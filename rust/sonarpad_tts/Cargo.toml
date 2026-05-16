@@ -1,0 +1,20 @@
+[package]
+name = "sonarpad_tts"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "sonarpad_tts"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+chrono = "0.4"
+futures-util = "0.3"
+hex = "0.4"
+rand = "0.8"
+rustls = { version = "0.23", default-features = false, features = ["ring"] }
+sha2 = "0.10"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "net"] }
+tokio-tungstenite = { version = "0.24", features = ["rustls-tls-webpki-roots"] }
+url = "2"
+uuid = { version = "1", features = ["v4"] }
