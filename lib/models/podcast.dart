@@ -37,6 +37,22 @@ class PodcastSearchResult {
   });
 }
 
+class PodcastDetails {
+  final String title;
+  final String author;
+  final String description;
+  final String feedUrl;
+  final String? artworkUrl;
+
+  const PodcastDetails({
+    required this.title,
+    required this.author,
+    required this.description,
+    required this.feedUrl,
+    this.artworkUrl,
+  });
+}
+
 class PodcastCountry {
   final String code;
   final String name;

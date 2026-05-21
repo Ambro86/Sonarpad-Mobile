@@ -1,0 +1,114 @@
+name: Sonarpad iOS Build
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Sonarpad iOS App
+    runs-on: macos-latest
+
+    env:
+      APP_NAME: Sonarpad
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Setup Rust for iOS
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Run Flutter tests
+        run: flutter test
+
+      - name: Ensure iOS project exists
+        run: |
+          if [ ! -d "ios/Runner.xcodeproj" ]; then
+            flutter create --platforms=ios --project-name sonarpad .
+          fi
+
+      - name: Set iOS app name
+        run: |
+          PLIST="ios/Runner/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName ${APP_NAME}" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string ${APP_NAME}" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleName ${APP_NAME}" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleName string ${APP_NAME}" "$PLIST"
+
+      - name: Build Rust iOS framework
+        run: |
+          if [ -f "scripts/build_ios_rust.sh" ]; then
+            bash scripts/build_ios_rust.sh
+          fi
+
+      - name: Install CocoaPods dependencies
+        run: |
+          if [ -f "ios/Podfile" ]; then
+            cd ios
+            pod install --repo-update
+          fi
+
+      - name: Build unsigned iOS app
+        run: flutter build ios --release --no-codesign
+
+      - name: Create unsigned IPA
+        run: |
+          mkdir -p build/ipa/Payload
+
+          APP_PATH=$(find "build/ios/iphoneos" -maxdepth 1 -name "*.app" | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app file found in build/ios/iphoneos"
+            exit 1
+          fi
+
+          cp -R "$APP_PATH" "build/ipa/Payload/${APP_NAME}.app"
+          cd build/ipa
+          zip -qry "${APP_NAME}.ipa" Payload
+          ls -la "${APP_NAME}.ipa"
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sonarpad-ios-unsigned
+          path: build/ipa/Sonarpad.ipa
+          retention-days: 30
+
+      - name: Upload Rust iOS framework
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SonarpadTts-xcframework
+          path: ios/Rust/SonarpadTts.xcframework
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Upload build logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sonarpad-ios-build-logs
+          path: |
+            build/
+            ios/Pods/
+            ios/Flutter/
+          retention-days: 7

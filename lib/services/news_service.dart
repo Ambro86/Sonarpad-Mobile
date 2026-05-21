@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
@@ -26,7 +28,14 @@ class NewsService {
   final http.Client _client;
   NewsService({http.Client? client}) : _client = client ?? http.Client();
 
-  Future<List<NewsArticle>> fetchTopNews(NewsLanguage language) async {
+  Future<List<NewsArticle>> fetchTopNews(
+    NewsLanguage language, {
+    NewsRssSource? source,
+  }) async {
+    if (source != null) {
+      return fetchSourceNews(source);
+    }
+
     final articles = <NewsArticle>[];
     for (final source in language.rssSources) {
       articles.addAll(await _fetchRssSource(source));
@@ -42,12 +51,17 @@ class NewsService {
     return articles.take(40).toList();
   }
 
+  Future<List<NewsArticle>> fetchSourceNews(NewsRssSource source) async {
+    final articles = await _fetchRssSource(source);
+    return articles.take(40).toList();
+  }
+
   Future<List<NewsArticle>> _fetchRssSource(NewsRssSource rssSource) async {
     final response = await _client.get(rssSource.uri);
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore RSS ${rssSource.name}: ${response.statusCode}');
     }
-    final doc = XmlDocument.parse(response.body);
+    final doc = XmlDocument.parse(utf8.decode(response.bodyBytes));
     final items = doc.findAllElements('item');
     var index = 0;
     return items.map((item) {
@@ -57,7 +71,7 @@ class NewsService {
       final description = _cleanHtml(_text(item, 'description'));
       final source = item.findElements('source').isNotEmpty
           ? item.findElements('source').first.innerText.trim()
-          : 'Google News';
+          : rssSource.name;
       final pubDateRaw = _text(item, 'pubDate');
       return NewsArticle(
         id: '${rssSource.name}_$index',

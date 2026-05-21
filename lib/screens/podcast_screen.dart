@@ -20,6 +20,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
 
   List<PodcastSubscription> _subscriptions = [];
   List<PodcastSearchResult> _searchResults = [];
+  PodcastSearchResult? _selectedSearchResult;
+  Future<PodcastDetails>? _selectedSearchDetails;
   PodcastSubscription? _selected;
   Future<List<PodcastEpisode>>? _episodes;
   bool _searching = false;
@@ -75,6 +77,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
       final sub = await _service.addSearchResult(result);
       await _load();
       setState(() {
+        _selectedSearchResult = null;
+        _selectedSearchDetails = null;
         _selected = sub;
         _episodes = _service.fetchEpisodes(sub);
       });
@@ -86,6 +90,20 @@ class _PodcastScreenState extends State<PodcastScreen> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.subscriptionError(e))));
     }
+  }
+
+  void _openSearchResult(PodcastSearchResult result) {
+    setState(() {
+      _selectedSearchResult = result;
+      _selectedSearchDetails = _service.fetchPodcastDetails(result);
+    });
+  }
+
+  void _closeSearchResult() {
+    setState(() {
+      _selectedSearchResult = null;
+      _selectedSearchDetails = null;
+    });
   }
 
   Future<void> _addByUrl() async {
@@ -118,6 +136,22 @@ class _PodcastScreenState extends State<PodcastScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final selectedSearchResult = _selectedSearchResult;
+    final selectedSearchDetails = _selectedSearchDetails;
+    if (selectedSearchResult != null && selectedSearchDetails != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.podcastInfo),
+          leading: BackButton(onPressed: _closeSearchResult),
+        ),
+        body: _PodcastSearchDetail(
+          result: selectedSearchResult,
+          details: selectedSearchDetails,
+          onSubscribe: () => _subscribeResult(selectedSearchResult),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.podcasts)),
       body: ListView(
@@ -183,8 +217,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
                     title: Text(result.title),
                     subtitle: Text(
                         result.author.isEmpty ? result.feedUrl : result.author),
-                    trailing: const Icon(Icons.add_circle_outline),
-                    onTap: () => _subscribeResult(result),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _openSearchResult(result),
                   ),
                 )),
           ],
@@ -287,6 +321,77 @@ class _PodcastScreenState extends State<PodcastScreen> {
             ),
         ],
       ),
+    );
+  }
+}
+
+class _PodcastSearchDetail extends StatelessWidget {
+  const _PodcastSearchDetail({
+    required this.result,
+    required this.details,
+    required this.onSubscribe,
+  });
+
+  final PodcastSearchResult result;
+  final Future<PodcastDetails> details;
+  final VoidCallback onSubscribe;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return FutureBuilder<PodcastDetails>(
+      future: details,
+      builder: (context, snapshot) {
+        final data = snapshot.data;
+        final title = data?.title ?? result.title;
+        final author = data?.author ?? result.author;
+        final description = data?.description ?? '';
+        final artworkUrl = data?.artworkUrl ?? result.artworkUrl;
+        final feedUrl = data?.feedUrl ?? result.feedUrl;
+
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            if (artworkUrl != null) ...[
+              Center(
+                child: Image.network(
+                  artworkUrl,
+                  width: 160,
+                  height: 160,
+                  semanticLabel: l10n.podcastArtwork,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+            Text(title, style: Theme.of(context).textTheme.headlineSmall),
+            if (author.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text('${l10n.podcastAuthor}: $author'),
+            ],
+            const SizedBox(height: 16),
+            if (snapshot.connectionState != ConnectionState.done)
+              Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: l10n.loadingPodcastInfo,
+                ),
+              )
+            else if (snapshot.hasError)
+              Text(l10n.error(snapshot.error!))
+            else
+              Text(description.isEmpty
+                  ? l10n.noPodcastDescription
+                  : description),
+            const SizedBox(height: 16),
+            Text(feedUrl),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: onSubscribe,
+              icon: const Icon(Icons.add_circle_outline),
+              label: Text(l10n.subscribe),
+            ),
+          ],
+        );
+      },
     );
   }
 }

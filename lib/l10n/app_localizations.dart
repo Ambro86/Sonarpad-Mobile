@@ -48,6 +48,7 @@ class AppLocalizations {
   String get noNewsFound => 'Nessuna notizia trovata';
   String get italian => 'Italiano';
   String get english => 'English';
+  String get newsSource => 'Fonte notizie';
 
   String get article => 'Articolo';
   String source(String source) => 'Fonte: $source';
@@ -91,6 +92,11 @@ class AppLocalizations {
   String podcastSubscriptionError(Object error) =>
       'Errore iscrizione podcast: $error';
   String get searchResults => 'Risultati ricerca';
+  String get podcastInfo => 'Info podcast';
+  String get subscribe => 'Iscriviti';
+  String get podcastAuthor => 'Autore';
+  String get noPodcastDescription => 'Nessuna descrizione disponibile.';
+  String get loadingPodcastInfo => 'Caricamento info podcast';
   String get podcastArtwork => 'Copertina podcast';
   String get addFeedUrlManually => 'Aggiungi manualmente URL feed RSS';
   String get podcastFeedUrl => 'URL feed podcast RSS';

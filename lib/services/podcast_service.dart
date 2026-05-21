@@ -293,12 +293,66 @@ class PodcastService {
     return sub;
   }
 
+  Future<PodcastDetails> fetchPodcastDetails(PodcastSearchResult result) async {
+    final response = await _client.get(Uri.parse(result.feedUrl));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Feed non raggiungibile: ${response.statusCode}');
+    }
+    final doc = XmlDocument.parse(utf8.decode(response.bodyBytes));
+    final channel = doc.findAllElements('channel').firstOrNull;
+    if (channel == null) {
+      return PodcastDetails(
+        title: result.title,
+        author: result.author,
+        description: '',
+        feedUrl: result.feedUrl,
+        artworkUrl: result.artworkUrl,
+      );
+    }
+
+    final title = channel.findElements('title').firstOrNull?.innerText.trim();
+    final description = _cleanHtml(
+      channel.findElements('description').firstOrNull?.innerText ??
+          channel
+              .findAllElements('summary', namespace: '*')
+              .firstOrNull
+              ?.innerText ??
+          '',
+    );
+    final author = channel
+            .findAllElements('author', namespace: '*')
+            .firstOrNull
+            ?.innerText
+            .trim() ??
+        result.author;
+    final artworkUrl = channel
+            .findAllElements('image', namespace: '*')
+            .firstOrNull
+            ?.getAttribute('href') ??
+        channel
+            .findElements('image')
+            .firstOrNull
+            ?.findElements('url')
+            .firstOrNull
+            ?.innerText
+            .trim() ??
+        result.artworkUrl;
+
+    return PodcastDetails(
+      title: title?.isEmpty ?? true ? result.title : title!,
+      author: author,
+      description: description,
+      feedUrl: result.feedUrl,
+      artworkUrl: artworkUrl,
+    );
+  }
+
   Future<PodcastSubscription> addSubscription(String feedUrl) async {
     final response = await _client.get(Uri.parse(feedUrl));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Feed non raggiungibile: ${response.statusCode}');
     }
-    final doc = XmlDocument.parse(response.body);
+    final doc = XmlDocument.parse(utf8.decode(response.bodyBytes));
     final channel = doc.findAllElements('channel').isNotEmpty
         ? doc.findAllElements('channel').first
         : null;
@@ -318,7 +372,7 @@ class PodcastService {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore feed podcast: ${response.statusCode}');
     }
-    final doc = XmlDocument.parse(response.body);
+    final doc = XmlDocument.parse(utf8.decode(response.bodyBytes));
     return doc
         .findAllElements('item')
         .map((item) {
