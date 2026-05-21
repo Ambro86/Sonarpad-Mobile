@@ -4,21 +4,20 @@ use rand::Rng;
 use sha2::{Digest, Sha256};
 use std::ffi::{CStr, CString};
 use std::fs;
+use std::os::raw::c_char;
 use std::panic;
 use std::sync::Once;
-use std::os::raw::c_char;
 use std::time::Duration;
 use tokio_tungstenite::{
-    connect_async,
-    tungstenite::client::IntoClientRequest,
-    tungstenite::http::HeaderValue,
+    connect_async, tungstenite::client::IntoClientRequest, tungstenite::http::HeaderValue,
     tungstenite::protocol::Message,
 };
 use url::Url;
 use uuid::Uuid;
 
 const TRUSTED_CLIENT_TOKEN: &str = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
-const WSS_URL_BASE: &str = "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
+const WSS_URL_BASE: &str =
+    "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
 
 static RUSTLS_PROVIDER_INIT: Once = Once::new();
 
@@ -39,7 +38,10 @@ pub extern "C" fn sonarpad_edge_tts_to_file(
         let text = cstr_to_string(text)?;
         let voice = cstr_to_string(voice)?;
         let output_path = cstr_to_string(output_path)?;
-        debug_log(&output_path, &format!("start voice={voice} text_len={}", text.chars().count()));
+        debug_log(
+            &output_path,
+            &format!("start voice={voice} text_len={}", text.chars().count()),
+        );
 
         let rt = tokio::runtime::Builder::new_current_thread()
             .enable_all()
@@ -72,7 +74,7 @@ pub extern "C" fn sonarpad_edge_tts_to_file(
 }
 
 #[no_mangle]
-pub extern "C" fn sonarpad_string_free(value: *mut c_char) {
+extern "C" fn sonarpad_string_free(value: *mut c_char) {
     if value.is_null() {
         return;
     }
@@ -92,7 +94,9 @@ fn cstr_to_string(ptr: *const c_char) -> Result<String, String> {
 }
 
 fn string_to_ptr(value: String) -> *mut c_char {
-    CString::new(value).unwrap_or_else(|_| CString::new("error:stringa non valida").unwrap()).into_raw()
+    CString::new(value)
+        .unwrap_or_else(|_| CString::new("error:stringa non valida").unwrap())
+        .into_raw()
 }
 
 async fn download_audio(text: &str, voice: &str, output_path: &str) -> Result<Vec<u8>, String> {
@@ -105,15 +109,27 @@ async fn download_audio(text: &str, voice: &str, output_path: &str) -> Result<Ve
     );
     debug_log(output_path, "preparo URL websocket Edge TTS");
     let url = Url::parse(&url_str).map_err(|e| format!("URL websocket non valido: {e}"))?;
-    let mut request = url.as_str().into_client_request().map_err(|e| e.to_string())?;
+    let mut request = url
+        .as_str()
+        .into_client_request()
+        .map_err(|e| e.to_string())?;
     let headers = request.headers_mut();
     headers.insert("Pragma", HeaderValue::from_static("no-cache"));
     headers.insert("Cache-Control", HeaderValue::from_static("no-cache"));
-    headers.insert("Origin", HeaderValue::from_static("chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold"));
+    headers.insert(
+        "Origin",
+        HeaderValue::from_static("chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold"),
+    );
     headers.insert("User-Agent", HeaderValue::from_static("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 Edg/132.0.0.0"));
-    headers.insert("Accept-Language", HeaderValue::from_static("it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7"));
+    headers.insert(
+        "Accept-Language",
+        HeaderValue::from_static("it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7"),
+    );
     let cookie = format!("muid={};", generate_muid());
-    headers.insert("Cookie", HeaderValue::from_str(&cookie).map_err(|e| e.to_string())?);
+    headers.insert(
+        "Cookie",
+        HeaderValue::from_str(&cookie).map_err(|e| e.to_string())?,
+    );
 
     debug_log(output_path, "connessione websocket...");
     let (ws_stream, _) = tokio::time::timeout(Duration::from_secs(20), connect_async(request))
@@ -127,7 +143,10 @@ async fn download_audio(text: &str, voice: &str, output_path: &str) -> Result<Ve
         "X-Timestamp:{}\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{{\"context\":{{\"synthesis\":{{\"audio\":{{\"metadataoptions\":{{\"sentenceBoundaryEnabled\":\"false\",\"wordBoundaryEnabled\":\"false\"}},\"outputFormat\":\"audio-24khz-48kbitrate-mono-mp3\"}}}}}}}}",
         get_date_string()
     );
-    write.send(Message::Text(config_msg.into())).await.map_err(|e| format!("invio speech.config fallito: {e}"))?;
+    write
+        .send(Message::Text(config_msg))
+        .await
+        .map_err(|e| format!("invio speech.config fallito: {e}"))?;
     debug_log(output_path, "speech.config inviato");
 
     let ssml = mkssml(text, voice);
@@ -137,7 +156,10 @@ async fn download_audio(text: &str, voice: &str, output_path: &str) -> Result<Ve
         get_date_string(),
         ssml
     );
-    write.send(Message::Text(ssml_msg.into())).await.map_err(|e| format!("invio SSML fallito: {e}"))?;
+    write
+        .send(Message::Text(ssml_msg))
+        .await
+        .map_err(|e| format!("invio SSML fallito: {e}"))?;
     debug_log(output_path, "SSML inviato");
 
     let mut audio_data = Vec::new();
@@ -154,7 +176,10 @@ async fn download_audio(text: &str, voice: &str, output_path: &str) -> Result<Ve
             _ => {}
         }
     }
-    debug_log(output_path, &format!("fine ricezione: {} bytes", audio_data.len()));
+    debug_log(
+        output_path,
+        &format!("fine ricezione: {} bytes", audio_data.len()),
+    );
     Ok(audio_data)
 }
 
@@ -188,12 +213,18 @@ fn generate_muid() -> String {
 }
 
 fn get_date_string() -> String {
-    Local::now().format("%a %b %d %Y %H:%M:%S GMT+0000 (Coordinated Universal Time)").to_string()
+    Local::now()
+        .format("%a %b %d %Y %H:%M:%S GMT+0000 (Coordinated Universal Time)")
+        .to_string()
 }
 
 fn mkssml(text: &str, voice: &str) -> String {
     let lang_parts: Vec<&str> = voice.split('-').collect();
-    let lang = if lang_parts.len() >= 2 { format!("{}-{}", lang_parts[0], lang_parts[1]) } else { "it-IT".to_string() };
+    let lang = if lang_parts.len() >= 2 {
+        format!("{}-{}", lang_parts[0], lang_parts[1])
+    } else {
+        "it-IT".to_string()
+    };
     let text = escape_xml(&sanitize_text(text));
     format!(
         "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{lang}'><voice name='{voice}'><prosody pitch='+0Hz' rate='+0%' volume='+0%'>{text}</prosody></voice></speak>"
@@ -232,7 +263,9 @@ fn parse_edge_binary_audio_payload(data: &[u8]) -> Result<Option<Vec<u8>>, Strin
     };
     let header_text = String::from_utf8_lossy(&data[2..2 + header_len]);
     let payload = &data[2 + header_len..];
-    let is_audio = header_text.lines().any(|line| line.trim().eq_ignore_ascii_case("Path:audio"));
+    let is_audio = header_text
+        .lines()
+        .any(|line| line.trim().eq_ignore_ascii_case("Path:audio"));
     if !is_audio {
         return Ok(None);
     }

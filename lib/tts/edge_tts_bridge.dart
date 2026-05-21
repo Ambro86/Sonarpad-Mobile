@@ -55,7 +55,9 @@ class EdgeTtsBridge {
       resultPtr = _generate!(textPtr, voicePtr, outPtr);
       final result = resultPtr == nullptr ? '' : resultPtr.toDartString();
       if (!result.startsWith('ok:')) {
-        throw Exception(result.isEmpty ? 'Edge TTS non ha restituito un risultato' : result);
+        throw Exception(result.isEmpty
+            ? 'Edge TTS non ha restituito un risultato'
+            : result);
       }
       final file = File(outPath);
       if (!await file.exists()) {
@@ -73,7 +75,6 @@ class EdgeTtsBridge {
       if (resultPtr != nullptr && _free != null) _free!(resultPtr);
     }
   }
-
 
   /// Versione pratica “quasi streaming”: divide il testo in blocchi piccoli,
   /// genera un MP3 per blocco e permette alla UI di iniziare a riprodurre il
@@ -95,10 +96,8 @@ class EdgeTtsBridge {
   }
 
   List<String> splitTextForStreaming(String text, {int maxChunkChars = 650}) {
-    final cleaned = text
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .replaceAll('...', '…')
-        .trim();
+    final cleaned =
+        text.replaceAll(RegExp(r'\s+'), ' ').replaceAll('...', '…').trim();
     if (cleaned.isEmpty) return const [];
 
     final sentenceMatches = RegExp(r'[^.!?。！？]+[.!?。！？]?').allMatches(cleaned);
@@ -143,7 +142,6 @@ class EdgeTtsBridge {
     return chunks;
   }
 
-
   void _ensureLoaded() {
     if (_lib != null) return;
     final candidates = _libraryCandidates();
@@ -157,7 +155,8 @@ class EdgeTtsBridge {
         _generate = _lib!.lookupFunction<_GenerateNative, _GenerateDart>(
           'sonarpad_edge_tts_to_file',
         );
-        _free = _lib!.lookupFunction<_FreeNative, _FreeDart>('sonarpad_string_free');
+        _free = _lib!
+            .lookupFunction<_FreeNative, _FreeDart>('sonarpad_string_free');
         return;
       } catch (e) {
         lastError = e;
@@ -166,7 +165,8 @@ class EdgeTtsBridge {
         _free = null;
       }
     }
-    throw Exception('Libreria Rust Edge TTS non caricata. Tentativi: ${candidates.join(', ')}. Ultimo errore: $lastError');
+    throw Exception(
+        'Libreria Rust Edge TTS non caricata. Tentativi: ${candidates.join(', ')}. Ultimo errore: $lastError');
   }
 
   List<String> _libraryCandidates() {

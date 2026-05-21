@@ -2,19 +2,23 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
+import 'news_sources/english_news_sources.dart';
+import 'news_sources/italian_news_sources.dart';
+import 'news_sources/news_rss_source.dart';
 
 enum NewsLanguage { italian, english }
 
 extension NewsLanguageInfo on NewsLanguage {
-  String get label => switch (this) {
-        NewsLanguage.italian => 'Italiano',
-        NewsLanguage.english => 'English',
+  String label(AppLocalizations l10n) => switch (this) {
+        NewsLanguage.italian => l10n.italian,
+        NewsLanguage.english => l10n.english,
       };
 
-  Uri get googleNewsRss => switch (this) {
-        NewsLanguage.italian => Uri.parse('https://news.google.com/rss?hl=it&gl=IT&ceid=IT:it'),
-        NewsLanguage.english => Uri.parse('https://news.google.com/rss?hl=en&gl=US&ceid=US:en'),
+  List<NewsRssSource> get rssSources => switch (this) {
+        NewsLanguage.italian => italianNewsSources,
+        NewsLanguage.english => englishNewsSources,
       };
 }
 
@@ -23,9 +27,25 @@ class NewsService {
   NewsService({http.Client? client}) : _client = client ?? http.Client();
 
   Future<List<NewsArticle>> fetchTopNews(NewsLanguage language) async {
-    final response = await _client.get(language.googleNewsRss);
+    final articles = <NewsArticle>[];
+    for (final source in language.rssSources) {
+      articles.addAll(await _fetchRssSource(source));
+    }
+    articles.sort((a, b) {
+      final aDate = a.publishedAt;
+      final bDate = b.publishedAt;
+      if (aDate == null && bDate == null) return 0;
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+      return bDate.compareTo(aDate);
+    });
+    return articles.take(40).toList();
+  }
+
+  Future<List<NewsArticle>> _fetchRssSource(NewsRssSource rssSource) async {
+    final response = await _client.get(rssSource.uri);
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Errore RSS Google News: ${response.statusCode}');
+      throw Exception('Errore RSS ${rssSource.name}: ${response.statusCode}');
     }
     final doc = XmlDocument.parse(response.body);
     final items = doc.findAllElements('item');
@@ -40,14 +60,14 @@ class NewsService {
           : 'Google News';
       final pubDateRaw = _text(item, 'pubDate');
       return NewsArticle(
-        id: 'news_$index',
+        id: '${rssSource.name}_$index',
         title: _cleanGoogleTitle(title),
         link: link,
         summary: description,
         source: source,
         publishedAt: DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
       );
-    }).take(40).toList();
+    }).toList();
   }
 
   String _text(XmlElement parent, String name) {
@@ -84,10 +104,21 @@ class NewsService {
 class HttpDate {
   static DateTime parse(String value) {
     final months = {
-      'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
-      'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12,
+      'Jan': 1,
+      'Feb': 2,
+      'Mar': 3,
+      'Apr': 4,
+      'May': 5,
+      'Jun': 6,
+      'Jul': 7,
+      'Aug': 8,
+      'Sep': 9,
+      'Oct': 10,
+      'Nov': 11,
+      'Dec': 12,
     };
-    final parts = value.split(RegExp(r'[ ,:]')).where((e) => e.isNotEmpty).toList();
+    final parts =
+        value.split(RegExp(r'[ ,:]')).where((e) => e.isNotEmpty).toList();
     if (parts.length < 7) throw const FormatException('Data RSS non valida');
     final day = int.parse(parts[1]);
     final month = months[parts[2]]!;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
 import '../services/news_service.dart';
 import 'news_detail_screen.dart';
@@ -22,17 +23,19 @@ class _NewsScreenState extends State<NewsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Notizie')),
+      appBar: AppBar(title: Text(l10n.news)),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(12),
             child: DropdownButtonFormField<NewsLanguage>(
-              value: _language,
-              decoration: const InputDecoration(labelText: 'Lingua notizie'),
+              initialValue: _language,
+              decoration: InputDecoration(labelText: l10n.newsLanguage),
               items: NewsLanguage.values
-                  .map((lang) => DropdownMenuItem(value: lang, child: Text(lang.label)))
+                  .map((lang) => DropdownMenuItem(
+                      value: lang, child: Text(lang.label(l10n))))
                   .toList(),
               onChanged: (value) {
                 if (value == null) return;
@@ -46,13 +49,17 @@ class _NewsScreenState extends State<NewsScreen> {
               future: _future,
               builder: (context, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
-                  return const Center(child: CircularProgressIndicator(semanticsLabel: 'Caricamento notizie'));
+                  return Center(
+                      child: CircularProgressIndicator(
+                          semanticsLabel: l10n.loadingNews));
                 }
                 if (snapshot.hasError) {
-                  return Center(child: Text('Errore: ${snapshot.error}'));
+                  return Center(child: Text(l10n.error(snapshot.error!)));
                 }
                 final articles = snapshot.data ?? const [];
-                if (articles.isEmpty) return const Center(child: Text('Nessuna notizia trovata'));
+                if (articles.isEmpty) {
+                  return Center(child: Text(l10n.noNewsFound));
+                }
                 return ListView.separated(
                   itemCount: articles.length,
                   separatorBuilder: (_, __) => const Divider(height: 1),
@@ -60,10 +67,13 @@ class _NewsScreenState extends State<NewsScreen> {
                     final article = articles[index];
                     return ListTile(
                       title: Text(article.title),
-                      subtitle: Text('${article.source}. ${article.summary}', maxLines: 3, overflow: TextOverflow.ellipsis),
+                      subtitle: Text('${article.source}. ${article.summary}',
+                          maxLines: 3, overflow: TextOverflow.ellipsis),
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => NewsDetailScreen(article: article, language: _language)),
+                        MaterialPageRoute(
+                            builder: (_) => NewsDetailScreen(
+                                article: article, language: _language)),
                       ),
                     );
                   },

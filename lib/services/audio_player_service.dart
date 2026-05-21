@@ -33,7 +33,9 @@ class AudioPlayerService {
       if (_stopRequested) break;
       await _player.play();
       await _player.playerStateStream.firstWhere(
-        (state) => state.processingState == ProcessingState.completed || _stopRequested,
+        (state) =>
+            state.processingState == ProcessingState.completed ||
+            _stopRequested,
       );
       await _player.stop();
     }

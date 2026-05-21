@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import 'news_screen.dart';
 import 'podcast_screen.dart';
 import 'wikipedia_screen.dart';
@@ -9,32 +10,36 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Sonarpad')),
+      appBar: AppBar(title: Text(l10n.appTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            const Text(
-              'Sonarpad',
-              style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
-              semanticsLabel: 'Sonarpad, schermata principale',
+            Text(
+              l10n.appTitle,
+              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+              semanticsLabel: l10n.homeSemanticsLabel,
             ),
             const SizedBox(height: 24),
             _HomeButton(
-              label: 'Notizie',
-              hint: 'Apre le notizie da Google News RSS',
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewsScreen())),
+              label: l10n.news,
+              hint: l10n.newsHint,
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const NewsScreen())),
             ),
             _HomeButton(
-              label: 'Podcast',
-              hint: 'Iscriviti ai podcast, riproduci o scarica episodi',
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PodcastScreen())),
+              label: l10n.podcasts,
+              hint: l10n.podcastsHint,
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const PodcastScreen())),
             ),
             _HomeButton(
-              label: 'Importa da Wikipedia',
-              hint: 'Cerca un articolo Wikipedia e importa il testo',
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WikipediaScreen())),
+              label: l10n.importFromWikipedia,
+              hint: l10n.wikipediaHint,
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const WikipediaScreen())),
             ),
           ],
         ),
@@ -47,7 +52,8 @@ class _HomeButton extends StatelessWidget {
   final String label;
   final String hint;
   final VoidCallback onPressed;
-  const _HomeButton({required this.label, required this.hint, required this.onPressed});
+  const _HomeButton(
+      {required this.label, required this.hint, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

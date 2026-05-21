@@ -15,7 +15,8 @@ class PodcastSubscription {
         'artworkUrl': artworkUrl,
       };
 
-  factory PodcastSubscription.fromJson(Map<String, dynamic> json) => PodcastSubscription(
+  factory PodcastSubscription.fromJson(Map<String, dynamic> json) =>
+      PodcastSubscription(
         title: json['title'] as String,
         feedUrl: json['feedUrl'] as String,
         artworkUrl: json['artworkUrl'] as String?,
@@ -34,6 +35,20 @@ class PodcastSearchResult {
     required this.feedUrl,
     this.artworkUrl,
   });
+}
+
+class PodcastCountry {
+  final String code;
+  final String name;
+
+  const PodcastCountry(this.code, this.name);
+}
+
+class PodcastCategory {
+  final int? genreId;
+  final String name;
+
+  const PodcastCategory(this.genreId, this.name);
 }
 
 class PodcastEpisode {
