@@ -22,6 +22,18 @@ class AppLocalizations {
 
   String get appTitle => 'Sonarpad';
   String get homeSemanticsLabel => 'Sonarpad, schermata principale';
+  String get settings => 'Impostazioni';
+  String get settingsHint => 'Apre le impostazioni';
+  String get info => 'Info';
+  String get infoHint => 'Apre le informazioni sull\'app';
+  String get loading => 'Caricamento';
+  String get ttsVoiceLanguage => 'Lingua voci TTS';
+  String get ttsVoice => 'Voce TTS';
+  String get saveSettings => 'Salva impostazioni';
+  String get settingsSaved => 'Impostazioni salvate.';
+  String get infoDescription =>
+      'Sonarpad è un\'app con cui ascoltare le notizie, iscriversi ai podcast, ascoltare radio e usare altri strumenti di lettura e ascolto.';
+  String get infoAuthor => 'Autore: Ambrogio Riili';
   String get news => 'Notizie';
   String get newsHint => 'Apre le notizie da Google News RSS';
   String get podcasts => 'Podcast';

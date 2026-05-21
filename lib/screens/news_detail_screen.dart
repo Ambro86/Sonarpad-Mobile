@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
+import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
 import '../tts/edge_tts_bridge.dart';
@@ -23,14 +24,19 @@ class NewsDetailScreen extends StatefulWidget {
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
   final _tts = EdgeTtsBridge();
   final _audio = AudioPlayerService();
+  final _settings = AppSettingsService();
   bool _speaking = false;
   String? _status;
   int _readyChunks = 0;
   int _totalChunks = 0;
 
-  String get _voice => widget.language == NewsLanguage.italian
-      ? 'it-IT-ElsaNeural'
-      : 'en-US-JennyNeural';
+  Future<String> _voice() async {
+    final configured = await _settings.loadTtsVoice();
+    if (configured.trim().isNotEmpty) return configured;
+    return widget.language == NewsLanguage.italian
+        ? 'it-IT-ElsaNeural'
+        : 'en-US-JennyNeural';
+  }
 
   Future<void> _readWithEdgeTtsStreaming() async {
     final l10n = AppLocalizations.of(context);
@@ -43,6 +49,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
     try {
       final text = '${widget.article.title}. ${widget.article.summary}';
+      final voice = await _voice();
       final chunks = _tts.splitTextForStreaming(text, maxChunkChars: 650);
       _totalChunks = chunks.length;
       if (chunks.isEmpty) throw Exception(l10n.noTextToRead);
@@ -56,7 +63,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
       final generation = Future<void>(() async {
         for (var i = 0; i < chunks.length; i++) {
-          final file = await _tts.speakToFile(text: chunks[i], voice: _voice);
+          final file = await _tts.speakToFile(text: chunks[i], voice: voice);
           queue.add(file);
           controller.add(file);
           if (!mounted) return;
