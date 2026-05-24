@@ -184,8 +184,7 @@ class _HomeButton extends StatelessWidget {
   final String label;
   final String? hint;
   final VoidCallback onPressed;
-  const _HomeButton(
-      {required this.label, this.hint, required this.onPressed});
+  const _HomeButton({required this.label, this.hint, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
@@ -18,7 +20,7 @@ class TvChannelScreen extends StatefulWidget {
 class _TvChannelScreenState extends State<TvChannelScreen> {
   final _settings = AppSettingsService();
   final _service = TvService();
-  
+
   List<TvProgram> _guide = [];
   bool _loading = true;
   String? _error;
@@ -48,23 +50,78 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   }
 
   Future<void> _play() async {
-    final station = RadioStation(
-      name: widget.channel.name,
-      streamUrl: widget.channel.url,
-      languageCode: 'it',
-    );
-    
-    if (TvService().isRaiAudioDescriptionChannel(widget.channel)) {
-      // ignore: deprecated_member_use
-      SemanticsService.announce("Audiodescrizione attivata se configurata nelle impostazioni di accessibilità del dispositivo.", TextDirection.ltr);
+    try {
+      final resolvedUrl = await _service.resolveStreamUrl(widget.channel);
+      if (!mounted) return;
+
+      if (Platform.isWindows) {
+        await _playWithExternalWindowsPlayer(resolvedUrl);
+        return;
+      }
+
+      final station = RadioStation(
+        name: widget.channel.name,
+        streamUrl: resolvedUrl,
+        languageCode: 'it',
+      );
+
+      if (TvService().isRaiAudioDescriptionChannel(widget.channel)) {
+        // ignore: deprecated_member_use
+        SemanticsService.announce(
+          'Audiodescrizione attivata se disponibile nello stream.',
+          TextDirection.ltr,
+        );
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => RadioPlayerScreen(station: station),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Impossibile avviare la diretta: $e')),
+      );
     }
-    
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => RadioPlayerScreen(station: station),
-      ),
-    );
+  }
+
+  Future<void> _playWithExternalWindowsPlayer(String url) async {
+    try {
+      await Process.start(
+        'ffplay.exe',
+        [
+          '-user_agent',
+          'Sonarpad TV/1.0',
+          '-nodisp',
+          '-loglevel',
+          'warning',
+          url,
+        ],
+        mode: ProcessStartMode.detached,
+      );
+      return;
+    } on ProcessException {
+      // Continue with VLC fallback below.
+    }
+
+    const vlcPaths = [
+      r'C:\Program Files\VideoLAN\VLC\vlc.exe',
+      r'C:\Program Files (x86)\VideoLAN\VLC\vlc.exe',
+    ];
+    for (final path in vlcPaths) {
+      if (await File(path).exists()) {
+        await Process.start(
+          path,
+          ['--http-user-agent=Sonarpad TV/1.0', url],
+          mode: ProcessStartMode.detached,
+        );
+        return;
+      }
+    }
+
+    throw Exception('ffplay o VLC non trovato per riprodurre la diretta.');
   }
 
   @override
@@ -78,44 +135,62 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
             child: Semantics(
               hint: 'Guarda ${widget.channel.name} in diretta',
               child: FilledButton.icon(
-                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(64)),
+                style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(64)),
                 onPressed: _play,
                 icon: const Icon(Icons.play_circle_fill, size: 32),
-                label: const Text('Riproduci Diretta', style: TextStyle(fontSize: 20)),
+                label: const Text('Riproduci Diretta',
+                    style: TextStyle(fontSize: 20)),
               ),
             ),
           ),
           const Divider(),
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(semanticsLabel: 'Caricamento guida in corso'))
+                ? const Center(
+                    child: CircularProgressIndicator(
+                        semanticsLabel: 'Caricamento guida in corso'))
                 : _error != null
                     ? Center(child: Text(_error!))
                     : _guide.isEmpty
-                        ? const Center(child: Text('Nessun programma trovato per oggi.'))
+                        ? const Center(
+                            child: Text('Nessun programma trovato per oggi.'))
                         : ListView.builder(
                             itemCount: _guide.length,
                             itemBuilder: (context, index) {
                               final program = _guide[index];
-                              final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-                              final isCurrent = program.startTime <= now && program.endTime > now;
-                              
+                              final now =
+                                  DateTime.now().millisecondsSinceEpoch ~/ 1000;
+                              final isCurrent = program.startTime <= now &&
+                                  program.endTime > now;
+
                               return ListTile(
-                                tileColor: isCurrent ? Theme.of(context).colorScheme.primaryContainer : null,
+                                tileColor: isCurrent
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .primaryContainer
+                                    : null,
                                 leading: Text(
                                   program.hour,
                                   style: TextStyle(
-                                    fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                                    fontWeight: isCurrent
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                     fontSize: 16,
                                   ),
                                 ),
                                 title: Text(
                                   program.title,
                                   style: TextStyle(
-                                    fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                                    fontWeight: isCurrent
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                   ),
                                 ),
-                                trailing: isCurrent ? const Icon(Icons.live_tv, color: Colors.red) : null,
+                                trailing: isCurrent
+                                    ? const Icon(Icons.live_tv,
+                                        color: Colors.red)
+                                    : null,
                               );
                             },
                           ),

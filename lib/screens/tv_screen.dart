@@ -14,7 +14,7 @@ class TvScreen extends StatefulWidget {
 class _TvScreenState extends State<TvScreen> {
   final _settings = AppSettingsService();
   final _service = TvService();
-  
+
   List<TvChannel> _channels = [];
   bool _loading = true;
   String? _error;
@@ -66,7 +66,9 @@ class _TvScreenState extends State<TvScreen> {
 
   Widget _buildList() {
     if (_channels.isEmpty) {
-      return const Center(child: Text('Nessun canale TV trovato. Controlla il codice inserito nelle impostazioni.'));
+      return const Center(
+          child: Text(
+              'Nessun canale TV trovato. Controlla il codice inserito nelle impostazioni.'));
     }
 
     final map = <String, List<TvChannel>>{};
@@ -75,7 +77,7 @@ class _TvScreenState extends State<TvScreen> {
     }
 
     final categories = ['Rai', 'Mediaset', 'Regionali', 'Altri'];
-    
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: categories.where((c) => map.containsKey(c)).map((c) {
@@ -88,11 +90,6 @@ class _TvScreenState extends State<TvScreen> {
                 leading: const Icon(Icons.tv),
                 title: Text(ch.name),
                 onTap: () => _openChannel(ch),
-                trailing: IconButton(
-                  tooltip: 'Apri guida e riproduci',
-                  onPressed: () => _openChannel(ch),
-                  icon: const Icon(Icons.chevron_right),
-                ),
               ),
             );
           }).toList(),
