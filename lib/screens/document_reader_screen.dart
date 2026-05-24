@@ -294,6 +294,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 ? _buildEditor(context, l10n, theme)
                 : CustomScrollView(
                     controller: _scrollController,
+                    cacheExtent:
+                        4000, // Precarica i blocchi successivi per VoiceOver
                     // BouncingScrollPhysics → flick naturale su iPhone
                     physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics(),
