@@ -216,8 +216,21 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<void> _saveDocument() async {
     final text = _editController.text;
     try {
-      final file = File(widget.document.path);
+      final ext = widget.document.extension.toLowerCase();
+      String savePath = widget.document.path;
+      bool isNewFile = false;
+
+      if (ext != 'txt' && ext != 'md') {
+        final originalFile = File(savePath);
+        final dir = originalFile.parent.path;
+        final nameWithoutExt = widget.document.name.replaceAll(RegExp(r'\.[^.]+$'), '');
+        savePath = '$dir/$nameWithoutExt (Modificato).txt';
+        isNewFile = true;
+      }
+
+      final file = File(savePath);
       await file.writeAsString(text);
+
       if (!mounted) return;
       setState(() {
         _isEditing = false;
@@ -236,7 +249,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         }
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Documento salvato con successo.')),
+        SnackBar(
+          content: Text(isNewFile
+              ? 'Salvato come nuovo documento di testo nella libreria.'
+              : 'Documento salvato con successo.'),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
@@ -367,17 +384,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          if (['txt', 'md'].contains(doc.extension.toLowerCase())) ...[
-                            OutlinedButton.icon(
-                              onPressed: _speaking ? null : () {
-                                _editController.text = _documentText;
-                                setState(() => _isEditing = true);
-                              },
-                              icon: const Icon(Icons.edit),
-                              label: Text(l10n.edit),
-                            ),
-                            const SizedBox(height: 8),
-                          ],
+                          OutlinedButton.icon(
+                            onPressed: _speaking ? null : () {
+                              _editController.text = _documentText;
+                              setState(() => _isEditing = true);
+                            },
+                            icon: const Icon(Icons.edit),
+                            label: Text(l10n.edit),
+                          ),
+                          const SizedBox(height: 8),
                           OutlinedButton.icon(
                             onPressed: _speaking ? _stopReading : null,
                             icon: const Icon(Icons.stop),
