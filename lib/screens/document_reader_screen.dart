@@ -46,7 +46,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   int _readyChunks = 0;
   int _totalChunks = 0;
   String? _ttsStatus;
-  
+
   bool _ttsPaused = false;
   StreamSubscription<bool>? _playingSub;
 
@@ -156,8 +156,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       // Generazione audio in background
       final generation = Future<void>(() async {
         for (var i = 0; i < _chunks.length; i++) {
-          final file =
-              await _tts.speakToFile(text: _chunks[i], voice: voice);
+          final file = await _tts.speakToFile(text: _chunks[i], voice: voice);
           controller.add((i, file));
           if (!mounted) return;
           setState(() {
@@ -236,7 +235,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (ext != 'txt' && ext != 'md') {
         final originalFile = File(savePath);
         final dir = originalFile.parent.path;
-        final nameWithoutExt = widget.document.name.replaceAll(RegExp(r'\.[^.]+$'), '');
+        final nameWithoutExt =
+            widget.document.name.replaceAll(RegExp(r'\.[^.]+$'), '');
         savePath = '$dir/$nameWithoutExt (Modificato).txt';
         isNewFile = true;
       }
@@ -298,155 +298,186 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       body: SafeArea(
         child: _loadingText
             ? const Center(child: CircularProgressIndicator())
-            : CustomScrollView(
-                controller: _scrollController,
-                // BouncingScrollPhysics → flick naturale su iPhone
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.all(16),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        // --- Intestazione ---
-                        Row(
-                          children: [
-                            _ExtBadge(ext: doc.extension),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    doc.name,
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.bold),
+            : _isEditing
+                ? _buildEditor(context, l10n, theme)
+                : CustomScrollView(
+                    controller: _scrollController,
+                    // BouncingScrollPhysics → flick naturale su iPhone
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.all(16),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
+                            // --- Intestazione ---
+                            Row(
+                              children: [
+                                _ExtBadge(ext: doc.extension),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        doc.name,
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        doc.extension.toUpperCase(),
+                                        style: theme.textTheme.bodySmall,
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    doc.extension.toUpperCase(),
-                                    style: theme.textTheme.bodySmall,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-
-                        if (_isEditing) ...[
-                          TextField(
-                            controller: _editController,
-                            maxLines: null,
-                            autofocus: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: FilledButton.icon(
-                                  onPressed: _saveDocument,
-                                  icon: const Icon(Icons.save),
-                                  label: Text(l10n.save),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () => setState(() => _isEditing = false),
-                                  icon: const Icon(Icons.cancel),
-                                  label: Text(l10n.cancel),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ] else ...[
-                          // --- Status TTS ---
-                          Semantics(
-                            liveRegion: true,
-                            child: Text(_ttsStatus ?? 'Pronto.'),
-                          ),
-                          if (_totalChunks > 0) ...[
-                            const SizedBox(height: 8),
-                            LinearProgressIndicator(
-                              value: _totalChunks > 0
-                                  ? _readyChunks / _totalChunks
-                                  : 0,
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Blocchi audio pronti: $_readyChunks / $_totalChunks',
-                              style: theme.textTheme.bodySmall,
-                            ),
-                          ],
-                          const SizedBox(height: 12),
+                            const SizedBox(height: 20),
 
-                          // --- Pulsanti TTS ---
-                          Semantics(
-                            focused: true,
-                            child: FilledButton.icon(
-                              onPressed: () {
-                                if (!_speaking) {
-                                  _readWithEdgeTts();
-                                } else if (_ttsPaused) {
-                                  _audio.play();
-                                } else {
-                                  _audio.pause();
-                                }
-                              },
-                              icon: Icon(!_speaking ? Icons.volume_up : (_ttsPaused ? Icons.play_arrow : Icons.pause)),
-                              label: Text(!_speaking ? 'Leggi con Edge TTS' : (_ttsPaused ? 'Riprendi lettura' : 'Pausa lettura')),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          OutlinedButton.icon(
-                            onPressed: _speaking ? null : () {
-                              _editController.text = _documentText;
-                              setState(() => _isEditing = true);
-                            },
-                            icon: const Icon(Icons.edit),
-                            label: Text(l10n.edit),
-                          ),
-                          const SizedBox(height: 8),
-                          OutlinedButton.icon(
-                            onPressed: _speaking ? _stopReading : null,
-                            icon: const Icon(Icons.stop),
-                            label: const Text('Interrompi lettura'),
-                          ),
-
-                          const SizedBox(height: 24),
-                          const Divider(),
-                          const SizedBox(height: 8),
-
-                          // --- Corpo documento ---
-                          if (_loadError != null)
+                            // --- Status TTS ---
                             Semantics(
                               liveRegion: true,
-                              child: Text(
-                                _loadError!,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.secondary,
-                                ),
-                              ),
-                            )
-                          else if (_chunks.isNotEmpty)
-                            ..._buildChunkWidgets(theme, colorScheme)
-                          else if (_documentText.isEmpty && _loadError == null)
-                            Text(
-                              'Nessun testo disponibile per questo documento.',
-                              style: theme.textTheme.bodyMedium,
+                              child: Text(_ttsStatus ?? 'Pronto.'),
                             ),
-                        ],
-                      ]),
-                    ),
+                            if (_totalChunks > 0) ...[
+                              const SizedBox(height: 8),
+                              LinearProgressIndicator(
+                                value: _totalChunks > 0
+                                    ? _readyChunks / _totalChunks
+                                    : 0,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Blocchi audio pronti: $_readyChunks / $_totalChunks',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
+                            const SizedBox(height: 12),
+
+                            // --- Pulsanti TTS ---
+                            Semantics(
+                              focused: true,
+                              child: FilledButton.icon(
+                                onPressed: () {
+                                  if (!_speaking) {
+                                    _readWithEdgeTts();
+                                  } else if (_ttsPaused) {
+                                    _audio.play();
+                                  } else {
+                                    _audio.pause();
+                                  }
+                                },
+                                icon: Icon(!_speaking
+                                    ? Icons.volume_up
+                                    : (_ttsPaused
+                                        ? Icons.play_arrow
+                                        : Icons.pause)),
+                                label: Text(!_speaking
+                                    ? 'Leggi con Edge TTS'
+                                    : (_ttsPaused
+                                        ? 'Riprendi lettura'
+                                        : 'Pausa lettura')),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: _speaking
+                                  ? null
+                                  : () {
+                                      _editController.text = _documentText;
+                                      setState(() => _isEditing = true);
+                                    },
+                              icon: const Icon(Icons.edit),
+                              label: Text(l10n.edit),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: _speaking ? _stopReading : null,
+                              icon: const Icon(Icons.stop),
+                              label: const Text('Interrompi lettura'),
+                            ),
+
+                            const SizedBox(height: 24),
+                            const Divider(),
+                            const SizedBox(height: 8),
+
+                            // --- Corpo documento ---
+                            if (_loadError != null)
+                              Semantics(
+                                liveRegion: true,
+                                child: Text(
+                                  _loadError!,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.secondary,
+                                  ),
+                                ),
+                              )
+                            else if (_chunks.isNotEmpty)
+                              ..._buildChunkWidgets(theme, colorScheme)
+                            else if (_documentText.isEmpty &&
+                                _loadError == null)
+                              Text(
+                                'Nessun testo disponibile per questo documento.',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                          ]),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+      ),
+    );
+  }
+
+  Widget _buildEditor(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _editController,
+              expands: true,
+              maxLines: null,
+              minLines: null,
+              autofocus: true,
+              keyboardType: TextInputType.multiline,
+              textAlignVertical: TextAlignVertical.top,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
               ),
+              style: theme.textTheme.bodyLarge,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _saveDocument,
+                  icon: const Icon(Icons.save),
+                  label: Text(l10n.save),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => setState(() => _isEditing = false),
+                  icon: const Icon(Icons.cancel),
+                  label: Text(l10n.cancel),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -469,9 +500,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             margin: const EdgeInsets.only(bottom: 6),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: isPlaying
-                  ? colorScheme.primaryContainer
-                  : Colors.transparent,
+              color:
+                  isPlaying ? colorScheme.primaryContainer : Colors.transparent,
               borderRadius: BorderRadius.circular(8),
               border: isPlaying
                   ? Border.all(
@@ -483,11 +513,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             child: Text(
               _chunks[i],
               style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight:
-                    isPlaying ? FontWeight.w600 : FontWeight.normal,
-                color: isPlaying
-                    ? colorScheme.onPrimaryContainer
-                    : null,
+                fontWeight: isPlaying ? FontWeight.w600 : FontWeight.normal,
+                color: isPlaying ? colorScheme.onPrimaryContainer : null,
               ),
             ),
           ),

@@ -48,6 +48,15 @@ class _PodcastEpisodePlayerScreenState
     await _audio.pause();
   }
 
+  Future<void> _togglePlayback() async {
+    if (_loading) return;
+    if (_audio.isPlaying) {
+      await _pause();
+    } else {
+      await _play();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -66,9 +75,12 @@ class _PodcastEpisodePlayerScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.episodePlayer),
+    return Semantics(
+      container: true,
+      onTap: _togglePlayback,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.episodePlayer),
           leading: BackButton(onPressed: () => Navigator.pop(context)),
         ),
         body: ListView(
@@ -97,7 +109,8 @@ class _PodcastEpisodePlayerScreenState
               alignment: WrapAlignment.center,
               children: [
                 FilledButton.icon(
-                  onPressed: _loading || !_loaded ? null : () => _audio.seekBackward(),
+                  onPressed:
+                      _loading || !_loaded ? null : () => _audio.seekBackward(),
                   icon: const Icon(Icons.fast_rewind),
                   label: Text(l10n.rewind15s),
                 ),
@@ -108,9 +121,8 @@ class _PodcastEpisodePlayerScreenState
                     return Semantics(
                       focused: true,
                       child: FilledButton.icon(
-                        onPressed: _loading
-                            ? null
-                            : (isPlaying ? _pause : _play),
+                        onPressed:
+                            _loading ? null : (isPlaying ? _pause : _play),
                         icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
                         label: Text(isPlaying ? l10n.pause : l10n.play),
                       ),
@@ -127,6 +139,7 @@ class _PodcastEpisodePlayerScreenState
             ),
           ],
         ),
+      ),
     );
   }
 }

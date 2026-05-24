@@ -10,6 +10,8 @@ class AudioPlayerService {
 
   Stream<bool> get playingStream => _player.playingStream;
 
+  bool get isPlaying => _player.playing;
+
   Future<void> _prepareAudioSession() async {
     if (_sessionReady) return;
     final session = await AudioSession.instance;
@@ -46,6 +48,14 @@ class AudioPlayerService {
   Future<void> pause() async {
     debugPrint('Sonarpad audio: pause requested');
     await _player.pause();
+  }
+
+  Future<void> togglePlayPause() async {
+    if (_player.playing) {
+      await pause();
+    } else {
+      await play();
+    }
   }
 
   Future<void> playFile(File file) async {
@@ -102,13 +112,16 @@ class AudioPlayerService {
     }
   }
 
-  Future<void> seekBackward([Duration duration = const Duration(seconds: 15)]) async {
+  Future<void> seekBackward(
+      [Duration duration = const Duration(seconds: 15)]) async {
     final current = _player.position;
     final newPosition = current - duration;
-    await _player.seek(newPosition < Duration.zero ? Duration.zero : newPosition);
+    await _player
+        .seek(newPosition < Duration.zero ? Duration.zero : newPosition);
   }
 
-  Future<void> seekForward([Duration duration = const Duration(seconds: 15)]) async {
+  Future<void> seekForward(
+      [Duration duration = const Duration(seconds: 15)]) async {
     final current = _player.position;
     final max = _player.duration ?? Duration.zero;
     final newPosition = current + duration;

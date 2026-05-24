@@ -37,8 +37,12 @@ class _PodcastScreenState extends State<PodcastScreen> {
     final subs = await _service.loadSubscriptions();
     setState(() {
       _subscriptions = subs;
-      _selected = subs.isEmpty ? null : subs.first;
-      _episodes = _selected == null ? null : _service.fetchEpisodes(_selected!);
+      if (_selected != null &&
+          !subs.any(
+              (subscription) => subscription.feedUrl == _selected!.feedUrl)) {
+        _selected = null;
+        _episodes = null;
+      }
     });
   }
 
@@ -73,13 +77,13 @@ class _PodcastScreenState extends State<PodcastScreen> {
   Future<void> _subscribeResult(PodcastSearchResult result) async {
     final l10n = AppLocalizations.of(context);
     try {
-      final sub = await _service.addSearchResult(result);
+      await _service.addSearchResult(result);
       await _load();
       setState(() {
         _selectedSearchResult = null;
         _selectedSearchDetails = null;
-        _selected = sub;
-        _episodes = _service.fetchEpisodes(sub);
+        _selected = null;
+        _episodes = null;
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,17 +119,24 @@ class _PodcastScreenState extends State<PodcastScreen> {
     );
   }
 
+  void _openSubscription(PodcastSubscription subscription) {
+    setState(() {
+      _selected = subscription;
+      _episodes = _service.fetchEpisodes(subscription);
+    });
+  }
+
   Future<void> _addByUrl() async {
     final l10n = AppLocalizations.of(context);
     final url = _feedController.text.trim();
     if (url.isEmpty) return;
     try {
-      final sub = await _service.addSubscription(url);
+      await _service.addSubscription(url);
       _feedController.clear();
       await _load();
       setState(() {
-        _selected = sub;
-        _episodes = _service.fetchEpisodes(sub);
+        _selected = null;
+        _episodes = null;
       });
     } catch (e) {
       if (!mounted) return;
@@ -248,24 +259,30 @@ class _PodcastScreenState extends State<PodcastScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          if (_subscriptions.isNotEmpty)
-            DropdownButtonFormField<PodcastSubscription>(
-              initialValue: _selected,
-              decoration: InputDecoration(labelText: l10n.subscribedPodcasts),
-              items: _subscriptions
-                  .map((s) => DropdownMenuItem(
-                      value: s,
-                      child: Text(s.title, overflow: TextOverflow.ellipsis)))
-                  .toList(),
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  _selected = value;
-                  _episodes = _service.fetchEpisodes(value);
-                });
-              },
-            )
-          else
+          Text(l10n.subscribedPodcasts,
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          if (_subscriptions.isNotEmpty) ...[
+            ..._subscriptions.map(
+              (subscription) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(56),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  onPressed: () => _openSubscription(subscription),
+                  icon: const Icon(Icons.podcasts),
+                  label: Text(
+                    subscription.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+            ),
+          ] else
             Text(l10n.noSubscribedPodcasts),
           const SizedBox(height: 16),
           if (_episodes != null)
@@ -283,8 +300,12 @@ class _PodcastScreenState extends State<PodcastScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(l10n.episodes,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      _selected == null
+                          ? l10n.episodes
+                          : '${l10n.episodes}: ${_selected!.title}',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     ...episodes.map((episode) => Card(
                           child: ListTile(
                             title: Text(episode.title),

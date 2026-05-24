@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 
 enum RaiPlayItemKind { media, page }
 
+const _menuSectionSourcePrefix = 'raiplay-menu-section:';
+
 class RaiPlayItem {
   final String id;
   final String title;
@@ -61,7 +63,7 @@ class RaiPlayService {
       throw Exception('Codice segreto non valido.');
     }
 
-    final resp = await http.get(Uri.parse(url));
+    final resp = await _get(url);
     if (resp.statusCode != 200) {
       throw Exception('Impossibile caricare il menu RaiPlay.');
     }
@@ -76,6 +78,7 @@ class RaiPlayService {
     final seen = <String>{};
 
     for (var section in sections) {
+      if (section is! Map<String, dynamic>) continue;
       final item = _parseRootSection(section);
       if (item != null && seen.add(item.id)) {
         items.add(item);
@@ -85,7 +88,15 @@ class RaiPlayService {
     return RaiPlayPage(title: 'RaiPlay', items: items);
   }
 
-  Future<RaiPlayPage> loadPage(String pathId, String secretKey, {String? pageTitle}) async {
+  Future<RaiPlayPage> loadPage(String pathId, String secretKey,
+      {String? pageTitle}) async {
+    if (pathId.startsWith(_menuSectionSourcePrefix)) {
+      return _loadMenuSectionPage(
+        pathId.substring(_menuSectionSourcePrefix.length),
+        secretKey,
+      );
+    }
+
     final baseUrl = decodeUrl(_baseUrlB64, secretKey);
     if (baseUrl == null) {
       throw Exception('Codice segreto non valido.');
@@ -95,10 +106,10 @@ class RaiPlayService {
     if (pathId.startsWith('http://') || pathId.startsWith('https://')) {
       fullUrl = pathId;
     } else {
-      fullUrl = '$baseUrl$pathId';
+      fullUrl = _absoluteUrl(pathId, baseUrl);
     }
 
-    final resp = await http.get(Uri.parse(fullUrl));
+    final resp = await _get(fullUrl);
     if (resp.statusCode != 200) {
       throw Exception('Impossibile caricare la pagina RaiPlay.');
     }
@@ -107,28 +118,197 @@ class RaiPlayService {
     final items = <RaiPlayItem>[];
     final seen = <String>{};
 
-    final blocks = root['blocks'];
-    if (blocks != null && blocks is List) {
-      for (var block in blocks) {
-        final cards = block['cards'];
-        if (cards != null && cards is List) {
-          _collectCards(cards, seen, items);
-        }
-      }
+    _collectNestedItems(root, seen, items, baseUrl);
+    if (items.isEmpty && root is Map<String, dynamic>) {
+      final item = _parseCard(root, baseUrl);
+      if (item != null) items.add(item);
     }
 
-    return RaiPlayPage(title: pageTitle ?? 'RaiPlay', items: items);
+    return RaiPlayPage(
+      title: pageTitle ?? _pageTitle(root),
+      items: items,
+    );
   }
 
   RaiPlayItem? _parseRootSection(Map<String, dynamic> section) {
-    final name = section['name']?.toString().trim();
-    final pathId = section['path_id']?.toString().trim();
+    final rawTitle = _stringField(section, 'name');
+    if (rawTitle == null) return null;
 
-    if (name != null && name.isNotEmpty && pathId != null && pathId.isNotEmpty) {
+    final title = rawTitle.toLowerCase() == 'cerca' ? 'Esplora' : rawTitle;
+    final elements = section['elements'];
+    if (elements is List && elements.isNotEmpty) {
       return RaiPlayItem(
-        id: pathId,
-        title: name,
-        description: '',
+        id: 'page|root|$title',
+        title: title,
+        description: _stringField(section, 'title') ??
+            _stringField(section, 'menu_type') ??
+            '',
+        kind: RaiPlayItemKind.page,
+        pathId: '$_menuSectionSourcePrefix$title',
+        mediaUrl: '',
+      );
+    }
+
+    final pathId = _stringField(section, 'path_id');
+    if (pathId != null && _isSupportedInternalTarget(pathId)) {
+      return RaiPlayItem(
+        id: 'page|$pathId',
+        title: title,
+        description: _stringField(section, 'menu_type') ?? '',
+        kind: RaiPlayItemKind.page,
+        pathId: pathId,
+        mediaUrl: '',
+      );
+    }
+
+    return null;
+  }
+
+  Future<RaiPlayPage> _loadMenuSectionPage(
+      String sectionName, String secretKey) async {
+    final url = decodeUrl(_menuUrlB64, secretKey);
+    final baseUrl = decodeUrl(_baseUrlB64, secretKey);
+    if (url == null || baseUrl == null) {
+      throw Exception('Codice segreto non valido.');
+    }
+
+    final resp = await _get(url);
+    if (resp.statusCode != 200) {
+      throw Exception('Impossibile caricare il menu RaiPlay.');
+    }
+
+    final root = jsonDecode(resp.body);
+    final sections = root['menuv4'] ?? root['menuv3'];
+    if (sections == null || sections is! List) {
+      throw Exception('Menu RaiPlay non disponibile.');
+    }
+
+    Map<String, dynamic>? section;
+    for (final entry in sections) {
+      if (entry is! Map<String, dynamic>) continue;
+      final name = _stringField(entry, 'name');
+      final title = name?.toLowerCase() == 'cerca' ? 'Esplora' : name;
+      if (title != null && title.toLowerCase() == sectionName.toLowerCase()) {
+        section = entry;
+        break;
+      }
+    }
+    if (section == null) {
+      throw Exception('Sezione RaiPlay non trovata.');
+    }
+
+    final elements = section['elements'];
+    if (elements is! List) {
+      throw Exception('Sezione RaiPlay non disponibile.');
+    }
+
+    final items = <RaiPlayItem>[];
+    final seen = <String>{};
+    _collectCards(elements, seen, items, baseUrl);
+
+    return RaiPlayPage(
+      title: _stringField(section, 'title') ??
+          _stringField(section, 'name') ??
+          'RaiPlay',
+      items: items,
+    );
+  }
+
+  void _collectNestedItems(
+    dynamic value,
+    Set<String> seen,
+    List<RaiPlayItem> items,
+    String baseUrl,
+  ) {
+    if (value is List) {
+      for (final entry in value) {
+        _collectEntry(entry, seen, items, baseUrl);
+      }
+      return;
+    }
+    if (value is Map<String, dynamic>) {
+      for (final key in ['items', 'contents', 'blocks', 'sets', 'elements']) {
+        final array = value[key];
+        if (array is List) {
+          for (final entry in array) {
+            _collectEntry(entry, seen, items, baseUrl);
+          }
+        }
+      }
+    }
+  }
+
+  void _collectEntry(
+    dynamic entry,
+    Set<String> seen,
+    List<RaiPlayItem> items,
+    String baseUrl,
+  ) {
+    if (entry is Map<String, dynamic>) {
+      final item = _parseCard(entry, baseUrl);
+      if (item != null && seen.add(item.id)) {
+        items.add(item);
+      }
+    }
+    _collectNestedItems(entry, seen, items, baseUrl);
+  }
+
+  void _collectCards(
+    List cards,
+    Set<String> seen,
+    List<RaiPlayItem> items,
+    String baseUrl,
+  ) {
+    for (var card in cards) {
+      if (card is! Map<String, dynamic>) continue;
+      final item = _parseCard(card, baseUrl);
+      if (item != null && seen.add(item.id)) {
+        items.add(item);
+      }
+    }
+  }
+
+  RaiPlayItem? _parseCard(Map<String, dynamic> card, String baseUrl) {
+    if (card.containsKey('action')) return null;
+    final type = _stringField(card, 'type');
+    if (type == 'label' || type == 'placeholder') return null;
+    if ((_stringField(card, 'menu_type') ?? '').toLowerCase() ==
+        'raiplay separatore nav'.toLowerCase()) {
+      return null;
+    }
+
+    final video = card['video'];
+    final mediaUrl = video is Map<String, dynamic>
+        ? _stringField(video, 'content_url') ?? _stringField(card, 'video_url')
+        : _stringField(card, 'video_url');
+    String? rawPathId;
+    final pathId = _stringField(card, 'path_id');
+    if (pathId != null && _isSupportedInternalTarget(pathId)) {
+      rawPathId = pathId;
+    } else {
+      final url = _stringField(card, 'url');
+      if (url != null) rawPathId = _htmlUrlToJsonPath(url);
+    }
+
+    final title = _preferredTitle(card);
+    if (title == null) return null;
+
+    if (mediaUrl != null) {
+      return RaiPlayItem(
+        id: 'media|$mediaUrl|${rawPathId ?? ''}',
+        title: title,
+        description: _preferredDescription(card) ?? '',
+        kind: RaiPlayItemKind.media,
+        pathId: '',
+        mediaUrl: mediaUrl,
+      );
+    }
+    if (rawPathId != null) {
+      final pathId = _absoluteUrl(rawPathId, baseUrl);
+      return RaiPlayItem(
+        id: 'page|$pathId',
+        title: title,
+        description: _preferredDescription(card) ?? '',
         kind: RaiPlayItemKind.page,
         pathId: pathId,
         mediaUrl: '',
@@ -137,58 +317,99 @@ class RaiPlayService {
     return null;
   }
 
-  void _collectCards(List cards, Set<String> seen, List<RaiPlayItem> items) {
-    for (var card in cards) {
-      if (card is! Map<String, dynamic>) continue;
-      
-      final type = card['type']?.toString() ?? '';
-      
-      if (type == 'RaiPlay Programma Item' || type == 'RaiPlay Playlist Item') {
-        final title = card['name']?.toString().trim() ?? '';
-        final pathId = card['path_id']?.toString().trim() ?? '';
-        if (title.isNotEmpty && pathId.isNotEmpty && seen.add(pathId)) {
-          items.add(RaiPlayItem(
-            id: pathId,
-            title: title,
-            description: card['description']?.toString().trim() ?? '',
-            kind: RaiPlayItemKind.page,
-            pathId: pathId,
-            mediaUrl: '',
-          ));
-        }
-      } else if (type == 'RaiPlay Video Item') {
-        final title = card['episode_title']?.toString().trim() ?? card['name']?.toString().trim() ?? '';
-        var mediaUrl = card['video_url']?.toString().trim() ?? '';
-        if (title.isNotEmpty && mediaUrl.isNotEmpty && seen.add(mediaUrl)) {
-          items.add(RaiPlayItem(
-            id: mediaUrl,
-            title: title,
-            description: card['description']?.toString().trim() ?? '',
-            kind: RaiPlayItemKind.media,
-            pathId: '',
-            mediaUrl: mediaUrl,
-          ));
-        }
-      } else if (type == 'RaiPlay Orizzontale Item') {
-        final title = card['name']?.toString().trim() ?? '';
-        final pathId = card['path_id']?.toString().trim() ?? '';
-        if (title.isNotEmpty && pathId.isNotEmpty && seen.add(pathId)) {
-          items.add(RaiPlayItem(
-            id: pathId,
-            title: title,
-            description: card['description']?.toString().trim() ?? '',
-            kind: RaiPlayItemKind.page,
-            pathId: pathId,
-            mediaUrl: '',
-          ));
-        }
-      }
+  String? _preferredTitle(Map<String, dynamic> card) {
+    for (final key in [
+      'titolo',
+      'episode_title',
+      'toptitle',
+      'title',
+      'name',
+      'label',
+      'programma',
+      'program_name',
+    ]) {
+      final value = _stringField(card, key);
+      if (value != null) return value;
     }
+    return null;
+  }
+
+  String? _preferredDescription(Map<String, dynamic> card) {
+    for (final key in [
+      'sommario',
+      'description',
+      'vanity',
+      'caption',
+      'subtitle',
+      'duration_in_minutes',
+      'menu_type',
+    ]) {
+      final value = _stringField(card, key);
+      if (value != null) return value;
+    }
+    return null;
+  }
+
+  String _pageTitle(dynamic root) {
+    if (root is Map<String, dynamic>) {
+      return _stringField(root, 'name') ??
+          _stringField(root, 'title') ??
+          _stringField(root, 'label') ??
+          'RaiPlay';
+    }
+    return 'RaiPlay';
+  }
+
+  String? _stringField(Map<String, dynamic> value, String key) {
+    final raw = value[key];
+    if (raw is! String) return null;
+    final trimmed = raw.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
+  bool _isSupportedInternalTarget(String pathOrUrl) {
+    final trimmed = pathOrUrl.trim();
+    if (trimmed.isEmpty) return false;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed.contains('raiplay.it') &&
+          (trimmed.endsWith('.json') || trimmed.contains('.json?'));
+    }
+    return trimmed.startsWith('/') && trimmed.endsWith('.json');
+  }
+
+  String? _htmlUrlToJsonPath(String pathOrUrl) {
+    final trimmed = pathOrUrl.trim();
+    if (trimmed.isEmpty) return null;
+    if (trimmed.endsWith('.json')) return trimmed;
+    if (trimmed.endsWith('.html')) {
+      return '${trimmed.substring(0, trimmed.length - 5)}.json';
+    }
+    if (trimmed.startsWith('/')) return '$trimmed.json';
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      final replaced = trimmed.replaceAll('.html', '.json');
+      return replaced == trimmed ? '$trimmed.json' : replaced;
+    }
+    return null;
+  }
+
+  String _absoluteUrl(String pathOrUrl, String baseUrl) {
+    final trimmed = pathOrUrl.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    return '$baseUrl$trimmed';
+  }
+
+  Future<http.Response> _get(String url) {
+    return http.get(
+      Uri.parse(url),
+      headers: {'User-Agent': 'SonarpadMobile/0.1'},
+    );
   }
 
   Future<String> resolveMediaUrl(String url) async {
     String resolvedUrl = url;
-    
+
     if (url.contains('/relinker/relinkerServlet')) {
       final sep = url.contains('?') ? '&' : '?';
       final xmlUrl = '$url${sep}output=45&pl=native';
@@ -196,12 +417,14 @@ class RaiPlayService {
         final resp = await http.get(Uri.parse(xmlUrl));
         if (resp.statusCode == 200) {
           final body = resp.body;
-          final match = RegExp(r'<url[^>]*type="content"[^>]*>([^<]+)</url>').firstMatch(body);
+          final match = RegExp(r'<url[^>]*type="content"[^>]*>([^<]+)</url>')
+              .firstMatch(body);
           if (match != null) {
             resolvedUrl = match.group(1)!;
           } else {
             // Se fallisce con type="content", proviamo qualsiasi <url> o <url type="...">
-            final matchAny = RegExp(r'<url[^>]*>([^<]+)</url>').firstMatch(body);
+            final matchAny =
+                RegExp(r'<url[^>]*>([^<]+)</url>').firstMatch(body);
             if (matchAny != null) {
               resolvedUrl = matchAny.group(1)!;
             }
@@ -217,19 +440,21 @@ class RaiPlayService {
           final playlist = resp.body;
           String? adUrl;
           String? itaUrl;
-          
+
           final lines = playlist.split('\n');
           for (var line in lines) {
             final trimmed = line.trim();
-            if (trimmed.startsWith('#EXT-X-MEDIA:') && trimmed.contains('TYPE=AUDIO')) {
+            if (trimmed.startsWith('#EXT-X-MEDIA:') &&
+                trimmed.contains('TYPE=AUDIO')) {
               final uriMatch = RegExp(r'URI="([^"]+)"').firstMatch(trimmed);
               if (uriMatch != null) {
                 final uri = uriMatch.group(1)!;
-                final langMatch = RegExp(r'LANGUAGE="([^"]+)"').firstMatch(trimmed);
+                final langMatch =
+                    RegExp(r'LANGUAGE="([^"]+)"').firstMatch(trimmed);
                 final nameMatch = RegExp(r'NAME="([^"]+)"').firstMatch(trimmed);
                 final lang = langMatch?.group(1)?.toLowerCase();
                 final name = nameMatch?.group(1)?.toLowerCase();
-                
+
                 if (lang == 'des' || name == 'audiodescrizione') {
                   adUrl = _resolveHlsChildUrl(resolvedUrl, uri);
                   break; // Audiodescrizione trovata, ha precedenza assoluta
@@ -253,16 +478,16 @@ class RaiPlayService {
     if (childUri.startsWith('http://') || childUri.startsWith('https://')) {
       return childUri;
     }
-    
+
     final masterUri = Uri.parse(masterUrl);
     final query = masterUri.hasQuery ? '?${masterUri.query}' : '';
     final path = masterUri.path;
     final lastSlash = path.lastIndexOf('/');
     final basePath = lastSlash != -1 ? path.substring(0, lastSlash) : path;
-    
+
     final scheme = masterUri.scheme;
     final host = masterUri.host;
-    
+
     if (childUri.contains('?')) {
       return '$scheme://$host$basePath/$childUri';
     } else {

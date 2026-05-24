@@ -72,7 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
             _HomeButton(
               label: l10n.documents,
-              hint: l10n.documentsHint,
               onPressed: () => AccessibilityFeedbackService.goNamed(
                 context,
                 routeName: '/documents',
@@ -80,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _HomeButton(
               label: l10n.news,
-              hint: l10n.newsHint,
               onPressed: () => AccessibilityFeedbackService.goNamed(
                 context,
                 routeName: '/news',
@@ -88,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _HomeButton(
               label: l10n.podcasts,
-              hint: l10n.podcastsHint,
               onPressed: () => AccessibilityFeedbackService.goNamed(
                 context,
                 routeName: '/podcasts',
@@ -96,7 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _HomeButton(
               label: l10n.radio,
-              hint: l10n.radioHint,
               onPressed: () => AccessibilityFeedbackService.goNamed(
                 context,
                 routeName: '/radio',
@@ -105,7 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
             if (_isTvCodeValid)
               _HomeButton(
                 label: 'TV',
-                hint: 'Guarda i canali TV',
                 onPressed: () => AccessibilityFeedbackService.goNamed(
                   context,
                   routeName: '/tv',
@@ -114,7 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
             if (_isSecretCodeValid)
               _HomeButton(
                 label: 'RaiPlay Sound',
-                hint: 'Podcast e audiolibri Rai',
                 onPressed: () => AccessibilityFeedbackService.goNamed(
                   context,
                   routeName: '/raiplaysound',
@@ -123,7 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
             if (_isRaiPlayValid)
               _HomeButton(
                 label: 'RaiPlay',
-                hint: 'Programmi e video Rai on demand',
                 onPressed: () => AccessibilityFeedbackService.goNamed(
                   context,
                   routeName: '/raiplay',
@@ -131,7 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             _HomeButton(
               label: l10n.importFromWikipedia,
-              hint: l10n.wikipediaHint,
               onPressed: () => AccessibilityFeedbackService.goNamed(
                 context,
                 routeName: '/wikipedia',
@@ -139,7 +131,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _HomeButton(
               label: l10n.settings,
-              hint: null,
               onPressed: () => AccessibilityFeedbackService.goNamed(
                 context,
                 routeName: '/settings',
@@ -147,7 +138,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _HomeButton(
               label: l10n.info,
-              hint: null,
               onPressed: () => AccessibilityFeedbackService.goNamed(
                 context,
                 routeName: '/info',
@@ -162,21 +152,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _HomeButton extends StatelessWidget {
   final String label;
-  final String? hint;
   final VoidCallback onPressed;
-  const _HomeButton({required this.label, this.hint, required this.onPressed});
+  const _HomeButton({required this.label, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Semantics(
-        hint: hint,
-        child: FilledButton(
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
-          onPressed: onPressed,
-          child: Text(label, style: const TextStyle(fontSize: 20)),
-        ),
+      child: FilledButton(
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+        onPressed: onPressed,
+        child: Text(label, style: const TextStyle(fontSize: 20)),
       ),
     );
   }

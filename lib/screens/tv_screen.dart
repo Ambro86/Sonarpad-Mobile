@@ -53,6 +53,20 @@ class _TvScreenState extends State<TvScreen> {
     );
   }
 
+  Future<void> _openCategory(String category, List<TvChannel> channels) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/tv/category'),
+        builder: (_) => _TvCategoryScreen(
+          category: category,
+          channels: channels,
+          onOpenChannel: _openChannel,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,20 +96,64 @@ class _TvScreenState extends State<TvScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: categories.where((c) => map.containsKey(c)).map((c) {
-        return ExpansionTile(
-          initiallyExpanded: c == 'Rai',
-          title: Text(c, style: const TextStyle(fontWeight: FontWeight.bold)),
-          children: map[c]!.map((ch) {
-            return Card(
-              child: ListTile(
-                leading: const Icon(Icons.tv),
-                title: Text(ch.name),
-                onTap: () => _openChannel(ch),
-              ),
-            );
-          }).toList(),
+        final channels = map[c]!;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: FilledButton.icon(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+              alignment: Alignment.centerLeft,
+            ),
+            onPressed: () => _openCategory(c, channels),
+            icon: const Icon(Icons.folder_open),
+            label: Text(
+              c,
+              style: const TextStyle(fontSize: 20),
+            ),
+          ),
         );
       }).toList(),
+    );
+  }
+}
+
+class _TvCategoryScreen extends StatelessWidget {
+  const _TvCategoryScreen({
+    required this.category,
+    required this.channels,
+    required this.onOpenChannel,
+  });
+
+  final String category;
+  final List<TvChannel> channels;
+  final ValueChanged<TvChannel> onOpenChannel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(category)),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: channels.length,
+        itemBuilder: (context, index) {
+          final channel = channels[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(56),
+                alignment: Alignment.centerLeft,
+              ),
+              onPressed: () => onOpenChannel(channel),
+              icon: const Icon(Icons.tv),
+              label: Text(
+                channel.name,
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

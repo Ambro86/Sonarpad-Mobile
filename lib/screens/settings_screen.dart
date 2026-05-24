@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -46,14 +48,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context);
-    await _settings.saveTtsSettings(
-      languageCode: _languageCode,
-      voice: _voice,
-    );
+    await _saveTtsSelection();
     await _settings.setTvSecretCode(_tvSecretCodeController.text);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.settingsSaved)),
+    );
+  }
+
+  Future<void> _saveTtsSelection() async {
+    await _settings.saveTtsSettings(
+      languageCode: _languageCode,
+      voice: _voice,
+    );
+  }
+
+  void _persistTtsSelection() {
+    unawaited(
+      _saveTtsSelection().catchError((Object error) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Errore salvataggio voce TTS: $error')),
+        );
+      }),
     );
   }
 
@@ -165,6 +182,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       _languageCode = next;
                       _voice = AppSettingsService.defaultVoiceForLanguage(next);
                     });
+                    _persistTtsSelection();
                   },
                 ),
                 const SizedBox(height: 12),
@@ -177,11 +195,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child: Text('${voice.label} (${voice.voice})'),
                           ))
                       .toList(),
-                  onChanged: (value) => setState(
-                    () => _voice = value ??
-                        AppSettingsService.defaultVoiceForLanguage(
-                            _languageCode),
-                  ),
+                  onChanged: (value) {
+                    setState(
+                      () => _voice = value ??
+                          AppSettingsService.defaultVoiceForLanguage(
+                              _languageCode),
+                    );
+                    _persistTtsSelection();
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextField(

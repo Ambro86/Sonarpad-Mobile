@@ -116,10 +116,16 @@ class WikipediaService {
       }
     }
 
+    final fullText = _normalizeTextBlock(container.text);
     if (blocks.isEmpty) {
-      return _normalizeTextBlock(container.text);
+      return fullText;
     }
-    return blocks.join('\n\n');
+
+    final structuredText = blocks.join('\n\n');
+    if (fullText.length > structuredText.length * 2) {
+      return fullText;
+    }
+    return structuredText;
   }
 
   static const _acceptedBlockNames = {

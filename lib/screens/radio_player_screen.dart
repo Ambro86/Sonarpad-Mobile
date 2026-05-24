@@ -50,6 +50,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await _audio.stop();
   }
 
+  Future<void> _togglePlayback() async {
+    if (_loading) return;
+    if (_audio.isPlaying) {
+      await _stop();
+    } else {
+      await _play();
+    }
+  }
+
   @override
   void dispose() {
     unawaited(_audio.stop().whenComplete(_audio.dispose));
@@ -59,58 +68,63 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Player Radio'),
-        leading: BackButton(onPressed: () => Navigator.pop(context)),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(
-            widget.station.name,
-            style: Theme.of(context).textTheme.headlineSmall,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 32),
-          if (_loading) LinearProgressIndicator(semanticsLabel: l10n.loading),
-          if (_error != null) ...[
-            const SizedBox(height: 12),
+    return Semantics(
+      container: true,
+      onTap: _togglePlayback,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Player Radio'),
+          leading: BackButton(onPressed: () => Navigator.pop(context)),
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
             Text(
-              _error!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              widget.station.name,
+              style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
-          ],
-          const SizedBox(height: 24),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            alignment: WrapAlignment.center,
-            children: [
-              StreamBuilder<bool>(
-                stream: _audio.playingStream,
-                builder: (context, snapshot) {
-                  final isPlaying = snapshot.data ?? false;
-                  return Semantics(
-                    focused: true,
-                    child: FilledButton.icon(
-                      onPressed: _loading ? null : (isPlaying ? _stop : _play),
-                      icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                      label: Text(isPlaying ? l10n.pause : l10n.play),
-                    ),
-                  );
-                },
+            const SizedBox(height: 32),
+            if (_loading) LinearProgressIndicator(semanticsLabel: l10n.loading),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _error!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                textAlign: TextAlign.center,
               ),
             ],
-          ),
-          const SizedBox(height: 24),
-          OutlinedButton.icon(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back),
-            label: Text(l10n.back),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
+              children: [
+                StreamBuilder<bool>(
+                  stream: _audio.playingStream,
+                  builder: (context, snapshot) {
+                    final isPlaying = snapshot.data ?? false;
+                    return Semantics(
+                      focused: true,
+                      child: FilledButton.icon(
+                        onPressed:
+                            _loading ? null : (isPlaying ? _stop : _play),
+                        icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                        label: Text(isPlaying ? l10n.pause : l10n.play),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back),
+              label: Text(l10n.back),
+            ),
+          ],
+        ),
       ),
     );
   }

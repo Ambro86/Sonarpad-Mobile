@@ -16,35 +16,26 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final _service = NewsService();
   NewsLanguage _language = NewsLanguage.italian;
-  NewsRssSource? _selectedSource;
-  Future<List<NewsArticle>>? _future;
 
   void _openSource(NewsRssSource source) {
-    setState(() {
-      _selectedSource = source;
-      _future = _service.fetchSourceNews(source);
-    });
-  }
-
-  void _showSources() {
-    setState(() {
-      _selectedSource = null;
-      _future = null;
-    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/source'),
+        builder: (_) => _NewsSourceArticlesScreen(
+          source: source,
+          future: _service.fetchSourceNews(source),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final selectedSource = _selectedSource;
     return Scaffold(
       appBar: AppBar(
-        title: Text(selectedSource?.name ?? l10n.news),
-        leading: selectedSource == null
-            ? null
-            : BackButton(
-                onPressed: _showSources,
-              ),
+        title: Text(l10n.news),
       ),
       body: Column(
         children: [
@@ -66,24 +57,36 @@ class _NewsScreenState extends State<NewsScreen> {
                 if (value == null) return;
                 setState(() {
                   _language = value;
-                  _selectedSource = null;
-                  _future = null;
                 });
               },
             ),
           ),
           Expanded(
-            child: selectedSource == null
-                ? _NewsSourceList(
-                    sources: _language.rssSources,
-                    onSourceSelected: _openSource,
-                  )
-                : _NewsArticleList(
-                    future: _future!,
-                  ),
+            child: _NewsSourceList(
+              sources: _language.rssSources,
+              onSourceSelected: _openSource,
+            ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _NewsSourceArticlesScreen extends StatelessWidget {
+  const _NewsSourceArticlesScreen({
+    required this.source,
+    required this.future,
+  });
+
+  final NewsRssSource source;
+  final Future<List<NewsArticle>> future;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(source.name)),
+      body: _NewsArticleList(future: future),
     );
   }
 }
