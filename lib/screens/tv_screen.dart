@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
-import 'radio_player_screen.dart';
+import 'tv_channel_screen.dart';
 
 class TvScreen extends StatefulWidget {
   const TvScreen({super.key});
@@ -44,16 +43,11 @@ class _TvScreenState extends State<TvScreen> {
     }
   }
 
-  Future<void> _play(TvChannel channel) async {
-    final station = RadioStation(
-      name: channel.name,
-      streamUrl: channel.url,
-      languageCode: 'it',
-    );
+  Future<void> _openChannel(TvChannel channel) async {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RadioPlayerScreen(station: station),
+        builder: (_) => TvChannelScreen(channel: channel),
       ),
     );
   }
@@ -93,11 +87,11 @@ class _TvScreenState extends State<TvScreen> {
               child: ListTile(
                 leading: const Icon(Icons.tv),
                 title: Text(ch.name),
-                onTap: () => _play(ch),
+                onTap: () => _openChannel(ch),
                 trailing: IconButton(
-                  tooltip: 'Riproduci',
-                  onPressed: () => _play(ch),
-                  icon: const Icon(Icons.play_arrow),
+                  tooltip: 'Apri guida e riproduci',
+                  onPressed: () => _openChannel(ch),
+                  icon: const Icon(Icons.chevron_right),
                 ),
               ),
             );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
@@ -62,6 +63,78 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return AppSettingsService.defaultVoiceForLanguage(languageCode);
   }
 
+  Future<void> _requestSecretCode() async {
+    final nameCtrl = TextEditingController();
+    final surnameCtrl = TextEditingController();
+    final emailCtrl = TextEditingController();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Richiedi codice all\'autore'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameCtrl,
+                decoration: const InputDecoration(labelText: 'Nome'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: surnameCtrl,
+                decoration: const InputDecoration(labelText: 'Cognome'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: emailCtrl,
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Invia'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      final name = nameCtrl.text.trim();
+      final surname = surnameCtrl.text.trim();
+      final email = emailCtrl.text.trim();
+      
+      if (name.isEmpty || surname.isEmpty || email.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Compila tutti i campi per richiedere il codice.')),
+        );
+        return;
+      }
+      
+      final subject = Uri.encodeComponent('Richiesta Codice Sonarpad');
+      final body = Uri.encodeComponent('Nome: $name\nCognome: $surname\nEmail: $email\nSistema Operativo: iOS');
+      final url = Uri.parse('mailto:ambro86@gmail.com?subject=$subject&body=$body');
+      
+      try {
+        await launchUrl(url);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Errore apertura mail: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -115,6 +188,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     border: OutlineInputBorder(),
                   ),
                   obscureText: true,
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: _requestSecretCode,
+                  icon: const Icon(Icons.mail_outline),
+                  label: const Text('Richiedi codice all\'autore'),
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
