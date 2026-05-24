@@ -24,7 +24,7 @@ class _EdgeTtsLogScreenState extends State<EdgeTtsLogScreen> {
     try {
       final dir = await getTemporaryDirectory();
       final List<File> logFiles = [];
-      
+
       if (await dir.exists()) {
         final entities = dir.listSync();
         for (final entity in entities) {
@@ -37,7 +37,8 @@ class _EdgeTtsLogScreenState extends State<EdgeTtsLogScreen> {
       if (logFiles.isEmpty) {
         if (!mounted) return;
         setState(() {
-          _logContent = 'Nessun log trovato. Prova ad avviare una lettura Edge TTS prima.';
+          _logContent =
+              'Nessun log trovato. Prova ad avviare una lettura Edge TTS prima.';
           _loading = false;
         });
         return;
@@ -53,9 +54,10 @@ class _EdgeTtsLogScreenState extends State<EdgeTtsLogScreen> {
       // Prendi gli ultimi 5 log per non appesantire troppo
       final buffer = StringBuffer();
       final filesToRead = logFiles.take(5).toList();
-      
+
       for (final file in filesToRead) {
-        buffer.writeln('=== LOG: ${file.path.split(Platform.pathSeparator).last} ===');
+        buffer.writeln(
+            '=== LOG: ${file.path.split(Platform.pathSeparator).last} ===');
         try {
           final content = await file.readAsString();
           buffer.writeln(content.trim());

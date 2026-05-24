@@ -163,7 +163,8 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                                 controller: _searchController,
                                 decoration: const InputDecoration(
                                   labelText: 'Cerca su RaiPlay',
-                                  hintText: 'Es. TG1, Blob, Un posto al sole...',
+                                  hintText:
+                                      'Es. TG1, Blob, Un posto al sole...',
                                   prefixIcon: Icon(Icons.search),
                                   border: OutlineInputBorder(),
                                 ),
@@ -214,8 +215,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                         itemCount: _page!.items.length,
                         itemBuilder: (context, index) {
                           final item = _page!.items[index];
-                          final isMedia =
-                              item.kind == RaiPlayItemKind.media;
+                          final isMedia = item.kind == RaiPlayItemKind.media;
 
                           return Card(
                             child: ListTile(
@@ -230,9 +230,8 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                                   : null,
                               onTap: () => _openItem(item),
                               trailing: IconButton(
-                                tooltip: isMedia
-                                    ? 'Riproduci'
-                                    : 'Apri cartella',
+                                tooltip:
+                                    isMedia ? 'Riproduci' : 'Apri cartella',
                                 onPressed: () => _openItem(item),
                                 icon: Icon(isMedia
                                     ? Icons.play_arrow

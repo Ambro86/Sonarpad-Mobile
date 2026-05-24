@@ -9,7 +9,8 @@ import 'package:crypto/crypto.dart';
 
 class EdgeTtsBridge {
   static const String _trustedClientToken = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
-  static const String _wssUrlBase = "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
+  static const String _wssUrlBase =
+      "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
 
   bool get isAvailable => true;
   String? get lastLibraryPath => "Puro Dart (Nessuna libreria C)";
@@ -23,7 +24,7 @@ class EdgeTtsBridge {
       dir.path,
       'sonarpad_edge_tts_${DateTime.now().millisecondsSinceEpoch}.mp3',
     );
-    
+
     // Inizia log (simile al comportamento precedente in Rust per la pagina di log)
     final logFile = File('$outPath.log.txt');
     await logFile.writeAsString('start voice=$voice text_len=${text.length}\n');
@@ -35,14 +36,15 @@ class EdgeTtsBridge {
       }
       final file = File(outPath);
       await file.writeAsBytes(audioData);
-      
+
       final size = await file.length();
       if (size < 1000) {
         throw Exception('File audio troppo piccolo o vuoto: $size byte');
       }
       return file;
     } catch (e) {
-      await logFile.writeAsString('Errore Edge TTS: $e\n', mode: FileMode.append);
+      await logFile.writeAsString('Errore Edge TTS: $e\n',
+          mode: FileMode.append);
       throw Exception('Edge TTS error: $e');
     }
   }
@@ -64,7 +66,8 @@ class EdgeTtsBridge {
   }
 
   List<String> splitTextForStreaming(String text, {int maxChunkChars = 650}) {
-    final cleaned = text.replaceAll(RegExp(r'\s+'), ' ').replaceAll('...', '…').trim();
+    final cleaned =
+        text.replaceAll(RegExp(r'\s+'), ' ').replaceAll('...', '…').trim();
     if (cleaned.isEmpty) return const [];
 
     final sentenceMatches = RegExp(r'[^.!?。！？]+[.!?。！？]?').allMatches(cleaned);
@@ -109,22 +112,27 @@ class EdgeTtsBridge {
     return chunks;
   }
 
-  Future<List<int>> _downloadAudio(String text, String voice, File logFile) async {
+  Future<List<int>> _downloadAudio(
+      String text, String voice, File logFile) async {
     final requestId = const Uuid().v4().replaceAll('-', '');
     final secMsGec = _generateSecMsGec();
     const secMsGecVersion = "1-132.0.2917.39";
-    
-    final urlStr = "$_wssUrlBase?TrustedClientToken=$_trustedClientToken&ConnectionId=$requestId&Sec-MS-GEC=$secMsGec&Sec-MS-GEC-Version=$secMsGecVersion";
-    
-    await logFile.writeAsString('preparo URL websocket Edge TTS\n', mode: FileMode.append);
-    
+
+    final urlStr =
+        "$_wssUrlBase?TrustedClientToken=$_trustedClientToken&ConnectionId=$requestId&Sec-MS-GEC=$secMsGec&Sec-MS-GEC-Version=$secMsGecVersion";
+
+    await logFile.writeAsString('preparo URL websocket Edge TTS\n',
+        mode: FileMode.append);
+
     WebSocket? ws;
     try {
-      await logFile.writeAsString('connessione websocket...\n', mode: FileMode.append);
-      
+      await logFile.writeAsString('connessione websocket...\n',
+          mode: FileMode.append);
+
       final client = HttpClient();
-      client.userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 Edg/132.0.0.0";
-      
+      client.userAgent =
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 Edg/132.0.0.0";
+
       ws = await WebSocket.connect(urlStr, customClient: client, headers: {
         "Pragma": "no-cache",
         "Cache-Control": "no-cache",
@@ -132,18 +140,22 @@ class EdgeTtsBridge {
         "Accept-Language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
         "Cookie": "muid=${_generateMuid()};"
       }).timeout(const Duration(seconds: 20));
-      
-      await logFile.writeAsString('websocket connesso\n', mode: FileMode.append);
+
+      await logFile.writeAsString('websocket connesso\n',
+          mode: FileMode.append);
 
       final dateString = _getDateString();
-      final configMsg = "X-Timestamp:$dateString\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{\"context\":{\"synthesis\":{\"audio\":{\"metadataoptions\":{\"sentenceBoundaryEnabled\":\"false\",\"wordBoundaryEnabled\":\"false\"},\"outputFormat\":\"audio-24khz-48kbitrate-mono-mp3\"}}}}";
-      
+      final configMsg =
+          "X-Timestamp:$dateString\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{\"context\":{\"synthesis\":{\"audio\":{\"metadataoptions\":{\"sentenceBoundaryEnabled\":\"false\",\"wordBoundaryEnabled\":\"false\"},\"outputFormat\":\"audio-24khz-48kbitrate-mono-mp3\"}}}}";
+
       ws.add(configMsg);
-      await logFile.writeAsString('speech.config inviato\n', mode: FileMode.append);
+      await logFile.writeAsString('speech.config inviato\n',
+          mode: FileMode.append);
 
       final ssml = _mkssml(text, voice);
-      final ssmlMsg = "X-RequestId:$requestId\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:${dateString}Z\r\nPath:ssml\r\n\r\n$ssml";
-      
+      final ssmlMsg =
+          "X-RequestId:$requestId\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:${dateString}Z\r\nPath:ssml\r\n\r\n$ssml";
+
       ws.add(ssmlMsg);
       await logFile.writeAsString('SSML inviato\n', mode: FileMode.append);
 
@@ -168,8 +180,9 @@ class EdgeTtsBridge {
       });
 
       await completer.future.timeout(const Duration(seconds: 60));
-      await logFile.writeAsString('fine ricezione: ${audioData.length} bytes\n', mode: FileMode.append);
-      
+      await logFile.writeAsString('fine ricezione: ${audioData.length} bytes\n',
+          mode: FileMode.append);
+
       return audioData;
     } finally {
       await ws?.close();
@@ -178,7 +191,9 @@ class EdgeTtsBridge {
 
   String _generateSecMsGec() {
     const winEpoch = 11644473600;
-    final ticks = (DateTime.now().toUtc().millisecondsSinceEpoch / 1000).truncate() + winEpoch;
+    final ticks =
+        (DateTime.now().toUtc().millisecondsSinceEpoch / 1000).truncate() +
+            winEpoch;
     final roundedTicks = (ticks - (ticks % 300)) * 10000000;
     final strToHash = "$roundedTicks$_trustedClientToken";
     final bytes = utf8.encode(strToHash);
@@ -189,14 +204,30 @@ class EdgeTtsBridge {
   String _generateMuid() {
     final random = math.Random.secure();
     final bytes = List<int>.generate(16, (i) => random.nextInt(256));
-    return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join().toUpperCase();
+    return bytes
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join()
+        .toUpperCase();
   }
 
   String _getDateString() {
     final now = DateTime.now().toUtc();
     final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+
     final weekday = weekdays[now.weekday - 1];
     final month = months[now.month - 1];
     final day = now.day.toString().padLeft(2, '0');
@@ -210,29 +241,34 @@ class EdgeTtsBridge {
 
   String _mkssml(String text, String voice) {
     final langParts = voice.split('-');
-    final lang = langParts.length >= 2 ? "${langParts[0]}-${langParts[1]}" : "it-IT";
+    final lang =
+        langParts.length >= 2 ? "${langParts[0]}-${langParts[1]}" : "it-IT";
     final sanitizedText = _escapeXml(_sanitizeText(text));
     return "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='$lang'><voice name='$voice'><prosody pitch='+0Hz' rate='+0%' volume='+0%'>$sanitizedText</prosody></voice></speak>";
   }
 
   String _sanitizeText(String text) {
-    return text.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), ' ').replaceAll(RegExp(r'\s+'), ' ').trim();
+    return text
+        .replaceAll(RegExp(r'[\x00-\x1F\x7F]'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
   }
 
   String _escapeXml(String text) {
-    return text.replaceAll('&', '&amp;')
-               .replaceAll('<', '&lt;')
-               .replaceAll('>', '&gt;')
-               .replaceAll('"', '&quot;')
-               .replaceAll("'", '&apos;');
+    return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&apos;');
   }
 
   List<int>? _parseEdgeBinaryAudioPayload(List<int> data) {
     if (data.length < 2) return null;
-    
+
     final beLen = (data[0] << 8) | data[1];
     final leLen = (data[1] << 8) | data[0];
-    
+
     int headerLen = 0;
     if (beLen > 0 && data.length >= beLen + 2) {
       headerLen = beLen;
@@ -242,7 +278,8 @@ class EdgeTtsBridge {
       return null;
     }
 
-    final headerText = utf8.decode(data.sublist(2, 2 + headerLen), allowMalformed: true);
+    final headerText =
+        utf8.decode(data.sublist(2, 2 + headerLen), allowMalformed: true);
     final payload = data.sublist(2 + headerLen);
 
     if (headerText.toLowerCase().contains("path:audio")) {

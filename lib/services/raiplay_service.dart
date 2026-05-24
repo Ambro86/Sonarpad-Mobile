@@ -36,8 +36,9 @@ class RaiPlayPage {
 class RaiPlayService {
   static const _baseUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshC3lYBw==";
   static const _menuUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshC3lYB3ZbAShFRiBAGiw=";
-  static const _searchUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshC3lYB3ZXECldCT5aFm0INBs8XSMQXz4lHS4OIxRSEyJEES9dDBAkXVU4Bm8fJFQSK1UM";
-  
+  static const _searchUrlB64 =
+      "BT9NUQVqHVc7T1RfJlUTPlshC3lYB3ZXECldCT5aFm0INBs8XSMQXz4lHS4OIxRSEyJEES9dDBAkXVU4Bm8fJFQSK1UM";
+
   static const _searchTemplateIn = "6470a982e4e0301afe1f81f1";
   static const _searchTemplateOut = "6516ac5d40da6c377b151642";
   static const _searchPageSize = 12;

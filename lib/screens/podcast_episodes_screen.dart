@@ -102,8 +102,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                           }
                         },
                         itemBuilder: (_) => [
-                          PopupMenuItem(
-                              value: 'play', child: Text(l10n.play)),
+                          PopupMenuItem(value: 'play', child: Text(l10n.play)),
                           PopupMenuItem(
                               value: 'download', child: Text(l10n.download)),
                         ],

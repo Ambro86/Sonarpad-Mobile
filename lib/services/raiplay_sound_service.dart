@@ -33,7 +33,8 @@ class RaiPlaySoundPage {
 
 class RaiPlaySoundService {
   static const _baseUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshCyReBjdSSi9E";
-  static const _genresUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshCyReBjdSSi9ERy1WGycIPFwmQi0H";
+  static const _genresUrlB64 =
+      "BT9NUQVqHVc7T1RfJlUTPlshCyReBjdSSi9ERy1WGycIPFwmQi0H";
 
   String? decodeUrl(String encoded, String secretKey) {
     if (secretKey.trim().isEmpty) return null;
@@ -65,7 +66,8 @@ class RaiPlaySoundService {
   }
 
   Future<RaiPlaySoundPage> loadPage(String url) async {
-    final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+    final response =
+        await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
       throw Exception('HTTP ${response.statusCode}');
     }
@@ -77,24 +79,36 @@ class RaiPlaySoundService {
     void parseCards(List<dynamic> cards) {
       for (var c in cards) {
         if (c is! Map) continue;
-        final pathId = c['path_id']?.toString() ?? c['pathId']?.toString() ?? '';
-        final itemTitle = c['name']?.toString() ?? c['title']?.toString() ?? c['brand']?.toString() ?? c['program_title']?.toString() ?? 'Senza titolo';
-        final description = c['description']?.toString() ?? c['subtitle']?.toString() ?? '';
-        
+        final pathId =
+            c['path_id']?.toString() ?? c['pathId']?.toString() ?? '';
+        final itemTitle = c['name']?.toString() ??
+            c['title']?.toString() ??
+            c['brand']?.toString() ??
+            c['program_title']?.toString() ??
+            'Senza titolo';
+        final description =
+            c['description']?.toString() ?? c['subtitle']?.toString() ?? '';
+
         String audioUrl = '';
-        if (c['downloadable_audio'] != null && c['downloadable_audio']['url'] != null) {
+        if (c['downloadable_audio'] != null &&
+            c['downloadable_audio']['url'] != null) {
           audioUrl = c['downloadable_audio']['url'].toString();
-        } else if (c['downlodable_audio'] != null && c['downlodable_audio']['url'] != null) {
+        } else if (c['downlodable_audio'] != null &&
+            c['downlodable_audio']['url'] != null) {
           audioUrl = c['downlodable_audio']['url'].toString();
         } else if (c['audio'] != null && c['audio']['url'] != null) {
           audioUrl = c['audio']['url'].toString();
         }
 
-        final kind = audioUrl.isNotEmpty ? RaiPlaySoundItemKind.audio : (pathId.isNotEmpty ? RaiPlaySoundItemKind.page : null);
+        final kind = audioUrl.isNotEmpty
+            ? RaiPlaySoundItemKind.audio
+            : (pathId.isNotEmpty ? RaiPlaySoundItemKind.page : null);
         if (kind == null) continue;
         if (itemTitle.trim().isEmpty) continue;
 
-        final id = kind == RaiPlaySoundItemKind.audio ? 'audio|$audioUrl|$pathId' : 'page|$pathId';
+        final id = kind == RaiPlaySoundItemKind.audio
+            ? 'audio|$audioUrl|$pathId'
+            : 'page|$pathId';
         if (seen.add(id)) {
           items.add(RaiPlaySoundItem(
             id: id,
@@ -111,7 +125,7 @@ class RaiPlaySoundService {
     if (root['block'] != null && root['block']['cards'] is List) {
       parseCards(root['block']['cards']);
     }
-    
+
     if (root['blocks'] is List) {
       for (var block in root['blocks']) {
         if (block['cards'] is List) {
@@ -120,6 +134,7 @@ class RaiPlaySoundService {
       }
     }
 
-    return RaiPlaySoundPage(title: title.isEmpty ? 'RaiPlay Sound' : title, items: items);
+    return RaiPlaySoundPage(
+        title: title.isEmpty ? 'RaiPlay Sound' : title, items: items);
   }
 }

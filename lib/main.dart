@@ -12,6 +12,7 @@ import 'screens/raiplay_screen.dart';
 import 'screens/raiplaysound_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/tv_screen.dart';
+import 'screens/aifa_search_screen.dart';
 import 'screens/wikipedia_screen.dart';
 
 void main() {
@@ -51,6 +52,7 @@ class SonarpadApp extends StatelessWidget {
         '/raiplay': (_) => const RaiPlayScreen(),
         '/wikipedia': (_) => const WikipediaScreen(),
         '/settings': (_) => const SettingsScreen(),
+        '/aifa': (_) => const AifaSearchScreen(),
         '/info': (_) => const InfoScreen(),
       },
     );

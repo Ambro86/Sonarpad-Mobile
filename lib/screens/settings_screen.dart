@@ -139,7 +139,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return;
       }
 
-      final subject = 'Richiesta Codice Sonarpad';
+      const subject = 'Richiesta Codice Sonarpad';
       final os = Platform.isIOS
           ? 'iOS'
           : Platform.isAndroid

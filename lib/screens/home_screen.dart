@@ -130,6 +130,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             _HomeButton(
+              label: 'Ricerca Farmaci AIFA',
+              onPressed: () => AccessibilityFeedbackService.goNamed(
+                context,
+                routeName: '/aifa',
+              ),
+            ),
+            _HomeButton(
               label: l10n.settings,
               onPressed: () => AccessibilityFeedbackService.goNamed(
                 context,
