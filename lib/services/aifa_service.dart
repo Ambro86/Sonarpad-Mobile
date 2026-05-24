@@ -44,59 +44,47 @@ class AifaService {
   }
 
   void _collectResultsFromJson(dynamic value, List<AifaDrugResult> results) {
-    if (value is List) {
-      for (final item in value) {
-        _tryPushResult(item, results);
-        _collectResultsFromJson(item, results);
-      }
-    } else if (value is Map<String, dynamic>) {
-      _tryPushResult(value, results);
-      for (final child in value.values) {
-        _collectResultsFromJson(child, results);
-      }
-    }
-  }
+    if (value is Map<String, dynamic> && value['content'] is List) {
+      final content = value['content'] as List;
+      for (final item in content) {
+        if (item is! Map<String, dynamic>) continue;
 
-  void _tryPushResult(dynamic value, List<AifaDrugResult> results) {
-    if (value is! Map<String, dynamic>) return;
+        // Controlla se c'è il foglio illustrativo, altrimenti 404
+        final flagFI = item['flagFI'];
+        if (flagFI != 1 && flagFI != '1') {
+          continue;
+        }
 
-    final codiceSis =
-        _getStringAny(value, ['CodiceSis', 'codiceSis', 'codice_sis']);
-    final aic6 = _getStringAny(value, ['aic6', 'Aic6', 'AIC6']);
-    final name = _getStringAny(value, [
-      'denominazione',
-      'nome',
-      'descrizione',
-      'farmaco',
-      'denominazioneFarmaco',
-      'nomeFarmaco',
-    ]);
+        final med = item['medicinale'] ?? <String, dynamic>{};
+        final den = med['denominazioneMedicinale']?.toString() ?? 'Sconosciuto';
+        final desc = item['descrizioneFormaDosaggio']?.toString() ?? '';
+        final name = '$den $desc'.trim();
 
-    if (codiceSis != null && aic6 != null) {
-      final drugName = name ?? 'Farmaco AIC $aic6';
+        // Gestisce importazioni parallele che hanno un codiceSIS diverso per il PDF
+        final isP = item['tipoAutorizzazione'] == 'P';
+        final codiceSis = isP
+            ? item['sisImportazioneParallela']?.toString()
+            : med['codiceSis']?.toString();
+        final aic6 = isP
+            ? item['aic6ImportazioneParallela']?.toString()
+            : med['aic6']?.toString();
 
-      // Evita duplicati
-      final exists =
-          results.any((r) => r.codiceSis == codiceSis && r.aic6 == aic6);
-      if (!exists) {
-        results.add(AifaDrugResult(
-          name: drugName,
-          codiceSis: codiceSis,
-          aic6: aic6,
-        ));
-      }
-    }
-  }
+        if (codiceSis != null && aic6 != null) {
+          final drugName = name.isEmpty ? 'Farmaco AIC $aic6' : name;
 
-  String? _getStringAny(Map<String, dynamic> obj, List<String> keys) {
-    for (final key in keys) {
-      final val = obj[key];
-      if (val != null) {
-        if (val is String && val.trim().isNotEmpty) return val.trim();
-        if (val is num) return val.toString();
+          // Evita duplicati
+          final exists =
+              results.any((r) => r.codiceSis == codiceSis && r.aic6 == aic6);
+          if (!exists) {
+            results.add(AifaDrugResult(
+              name: drugName,
+              codiceSis: codiceSis,
+              aic6: aic6,
+            ));
+          }
+        }
       }
     }
-    return null;
   }
 
   /// Scarica il PDF del Foglio Illustrativo e lo salva in cache.
