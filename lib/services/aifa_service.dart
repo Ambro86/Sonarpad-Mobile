@@ -49,12 +49,6 @@ class AifaService {
       for (final item in content) {
         if (item is! Map<String, dynamic>) continue;
 
-        // Controlla se c'è il foglio illustrativo, altrimenti 404
-        final flagFI = item['flagFI'];
-        if (flagFI != 1 && flagFI != '1') {
-          continue;
-        }
-
         final med = item['medicinale'] ?? <String, dynamic>{};
         final den = med['denominazioneMedicinale']?.toString() ?? 'Sconosciuto';
         final desc = item['descrizioneFormaDosaggio']?.toString() ?? '';
