@@ -36,6 +36,11 @@ class RaiPlayPage {
 class RaiPlayService {
   static const _baseUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshC3lYBw==";
   static const _menuUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshC3lYB3ZbAShFRiBAGiw=";
+  static const _searchUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshC3lYB3ZXECldCT5aFm0INBs8XSMQXz4lHS4OIxRSEyJEES9dDBAkXVU4Bm8fJFQSK1UM";
+  
+  static const _searchTemplateIn = "6470a982e4e0301afe1f81f1";
+  static const _searchTemplateOut = "6516ac5d40da6c377b151642";
+  static const _searchPageSize = 12;
 
   String? decodeUrl(String encoded, String secretKey) {
     if (secretKey.trim().isEmpty) return null;
@@ -411,14 +416,35 @@ class RaiPlayService {
   ///
   /// Usa lo stesso meccanismo di autenticazione degli altri metodi del servizio.
   Future<RaiPlayPage> searchContent(String query, String secretKey) async {
+    final searchUrl = decodeUrl(_searchUrlB64, secretKey);
     final baseUrl = decodeUrl(_baseUrlB64, secretKey);
-    if (baseUrl == null) {
+    if (searchUrl == null || baseUrl == null) {
       throw Exception('Codice segreto non valido.');
     }
-    final encodedQuery = Uri.encodeQueryComponent(query.trim());
-    final searchUrl = '${baseUrl}ricerca.json?q=$encodedQuery';
 
-    final resp = await _get(searchUrl);
+    final body = {
+      "templateIn": _searchTemplateIn,
+      "templateOut": _searchTemplateOut,
+      "params": {
+        "param": query,
+        "from": 0,
+        "sort": "relevance",
+        "size": _searchPageSize,
+        "additionalSize": _searchPageSize,
+        "onlyVideoQuery": false,
+        "onlyProgramsQuery": false,
+      }
+    };
+
+    final resp = await http.post(
+      Uri.parse(searchUrl),
+      headers: {
+        'User-Agent': 'SonarpadMobile/0.1',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body),
+    );
+
     if (resp.statusCode != 200) {
       throw Exception('Impossibile eseguire la ricerca su RaiPlay.');
     }
