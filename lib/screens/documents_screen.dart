@@ -130,7 +130,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => DocumentReaderScreen(document: doc),
-        settings: const RouteSettings(name: 'document_reader'),
+        settings: const RouteSettings(name: '/documents/reader'),
       ),
     );
   }
@@ -176,8 +176,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                         child: _service.documents.isEmpty
                             ? const _EmptyState()
                             : ListView.separated(
-                                padding: const EdgeInsets.fromLTRB(
-                                    16, 8, 16, 16),
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 8, 16, 16),
                                 itemCount: _service.documents.length,
                                 separatorBuilder: (_, __) =>
                                     const SizedBox(height: 8),

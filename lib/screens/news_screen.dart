@@ -156,6 +156,7 @@ class _NewsArticleList extends StatelessWidget {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
+                  settings: const RouteSettings(name: '/news/article'),
                   builder: (_) => NewsWebViewScreen(article: article),
                 ),
               ),

@@ -17,7 +17,7 @@ class RaiPlaySoundScreen extends StatefulWidget {
 class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   final _settings = AppSettingsService();
   final _service = RaiPlaySoundService();
-  
+
   RaiPlaySoundPage? _page;
   bool _loading = true;
   String? _error;
@@ -53,27 +53,28 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
 
   void _openItem(RaiPlaySoundItem item) async {
     final code = await _settings.getTvSecretCode();
-    
+
     if (item.kind == RaiPlaySoundItemKind.page) {
       final baseUrl = _service.getBaseUrl(code);
       if (baseUrl == null) return;
-      
+
       var path = item.pathId;
       if (!path.startsWith('/')) path = '/$path';
       if (!path.endsWith('.json')) path = '$path.json';
-      
+
       final url = '$baseUrl$path';
       if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
+          settings: const RouteSettings(name: '/raiplaysound/page'),
           builder: (_) => RaiPlaySoundScreen(url: url),
         ),
       );
     } else {
       final baseUrl = _service.getBaseUrl(code);
       if (baseUrl == null) return;
-      
+
       var audioPath = item.audioUrl;
       if (!audioPath.startsWith('http')) {
         if (!audioPath.startsWith('/')) audioPath = '/$audioPath';
@@ -91,6 +92,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
+          settings: const RouteSettings(name: '/raiplaysound/player'),
           builder: (_) => PodcastEpisodePlayerScreen(
             episode: episode,
           ),
@@ -113,19 +115,22 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                   itemBuilder: (context, index) {
                     final item = _page!.items[index];
                     final isAudio = item.kind == RaiPlaySoundItemKind.audio;
-                    
+
                     return Card(
                       child: ListTile(
-                        leading: Icon(isAudio ? Icons.audiotrack : Icons.folder),
+                        leading:
+                            Icon(isAudio ? Icons.audiotrack : Icons.folder),
                         title: Text(item.title),
                         subtitle: item.description.isNotEmpty
-                            ? Text(item.description, maxLines: 2, overflow: TextOverflow.ellipsis)
+                            ? Text(item.description,
+                                maxLines: 2, overflow: TextOverflow.ellipsis)
                             : null,
                         onTap: () => _openItem(item),
                         trailing: IconButton(
                           tooltip: isAudio ? 'Riproduci' : 'Apri cartella',
                           onPressed: () => _openItem(item),
-                          icon: Icon(isAudio ? Icons.play_arrow : Icons.chevron_right),
+                          icon: Icon(
+                              isAudio ? Icons.play_arrow : Icons.chevron_right),
                         ),
                       ),
                     );

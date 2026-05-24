@@ -47,6 +47,7 @@ class _TvScreenState extends State<TvScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: '/tv/channel'),
         builder: (_) => TvChannelScreen(channel: channel),
       ),
     );

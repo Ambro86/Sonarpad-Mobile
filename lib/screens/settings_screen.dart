@@ -111,19 +111,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final name = nameCtrl.text.trim();
       final surname = surnameCtrl.text.trim();
       final email = emailCtrl.text.trim();
-      
+
       if (name.isEmpty || surname.isEmpty || email.isEmpty) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Compila tutti i campi per richiedere il codice.')),
+          const SnackBar(
+              content: Text('Compila tutti i campi per richiedere il codice.')),
         );
         return;
       }
-      
+
       final subject = Uri.encodeComponent('Richiesta Codice Sonarpad');
-      final body = Uri.encodeComponent('Nome: $name\nCognome: $surname\nEmail: $email\nSistema Operativo: iOS');
-      final url = Uri.parse('mailto:ambro86@gmail.com?subject=$subject&body=$body');
-      
+      final body = Uri.encodeComponent(
+          'Nome: $name\nCognome: $surname\nEmail: $email\nSistema Operativo: iOS');
+      final url =
+          Uri.parse('mailto:ambro86@gmail.com?subject=$subject&body=$body');
+
       try {
         await launchUrl(url);
       } catch (e) {
@@ -207,7 +210,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 OutlinedButton.icon(
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const EdgeTtsLogScreen()),
+                    MaterialPageRoute(
+                      settings:
+                          const RouteSettings(name: '/settings/edge-tts-log'),
+                      builder: (_) => const EdgeTtsLogScreen(),
+                    ),
                   ),
                   icon: const Icon(Icons.bug_report_outlined),
                   label: const Text('Visualizza log Edge TTS'),

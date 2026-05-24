@@ -71,6 +71,7 @@ class _RadioScreenState extends State<RadioScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: '/radio/player'),
         builder: (_) => RadioPlayerScreen(station: station),
       ),
     );

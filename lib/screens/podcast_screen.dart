@@ -109,6 +109,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: '/podcasts/player'),
         builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
       ),
     );

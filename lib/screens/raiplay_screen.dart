@@ -18,7 +18,7 @@ class RaiPlayScreen extends StatefulWidget {
 class _RaiPlayScreenState extends State<RaiPlayScreen> {
   final _settings = AppSettingsService();
   final _service = RaiPlayService();
-  
+
   RaiPlayPage? _page;
   bool _loading = true;
   String? _error;
@@ -40,7 +40,8 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
       if (widget.pathId == null) {
         page = await _service.loadRootPage(code);
       } else {
-        page = await _service.loadPage(widget.pathId!, code, pageTitle: widget.pageTitle);
+        page = await _service.loadPage(widget.pathId!, code,
+            pageTitle: widget.pageTitle);
       }
 
       if (!mounted) return;
@@ -62,6 +63,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
+          settings: const RouteSettings(name: '/raiplay/page'),
           builder: (_) => RaiPlayScreen(
             pathId: item.pathId,
             pageTitle: item.title,
@@ -92,6 +94,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
+          settings: const RouteSettings(name: '/raiplay/player'),
           builder: (_) => PodcastEpisodePlayerScreen(
             episode: episode,
           ),
@@ -114,19 +117,22 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                   itemBuilder: (context, index) {
                     final item = _page!.items[index];
                     final isMedia = item.kind == RaiPlayItemKind.media;
-                    
+
                     return Card(
                       child: ListTile(
-                        leading: Icon(isMedia ? Icons.play_circle_filled : Icons.folder),
+                        leading: Icon(
+                            isMedia ? Icons.play_circle_filled : Icons.folder),
                         title: Text(item.title),
                         subtitle: item.description.isNotEmpty
-                            ? Text(item.description, maxLines: 2, overflow: TextOverflow.ellipsis)
+                            ? Text(item.description,
+                                maxLines: 2, overflow: TextOverflow.ellipsis)
                             : null,
                         onTap: () => _openItem(item),
                         trailing: IconButton(
                           tooltip: isMedia ? 'Riproduci' : 'Apri cartella',
                           onPressed: () => _openItem(item),
-                          icon: Icon(isMedia ? Icons.play_arrow : Icons.chevron_right),
+                          icon: Icon(
+                              isMedia ? Icons.play_arrow : Icons.chevron_right),
                         ),
                       ),
                     );

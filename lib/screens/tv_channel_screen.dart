@@ -80,6 +80,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
+          settings: const RouteSettings(name: '/tv/channel/player'),
           builder: (_) => RadioPlayerScreen(station: station),
         ),
       );

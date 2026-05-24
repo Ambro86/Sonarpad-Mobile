@@ -246,7 +246,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          settings: const RouteSettings(name: 'documentReader'),
+          settings: const RouteSettings(name: '/documents/reader'),
           builder: (_) => DocumentReaderScreen(document: doc),
         ),
       );
