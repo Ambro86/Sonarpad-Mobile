@@ -141,15 +141,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       appBar: AppBar(
         title: const Text('Documenti'),
         actions: [
-          Semantics(
-            button: true,
-            label: 'Aggiungi alla libreria',
-            hint: 'Sfoglia i file del dispositivo',
-            child: IconButton(
-              icon: const Icon(Icons.add),
-              tooltip: 'Aggiungi alla libreria',
-              onPressed: _pickFile,
-            ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Aggiungi documento',
+            onPressed: _pickFile,
           ),
         ],
       ),
@@ -163,8 +158,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                         child: Semantics(
-                          button: true,
-                          label: 'Aggiungi alla libreria',
                           hint: 'Sfoglia i file del dispositivo e aggiungili',
                           child: FilledButton.icon(
                             icon: const Icon(Icons.folder_open),

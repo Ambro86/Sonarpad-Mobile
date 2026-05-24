@@ -1,7 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
 import '../services/wikipedia_service.dart';
+import '../services/document_library_service.dart';
+import '../models/document_item.dart';
+import 'document_reader_screen.dart';
 
 class WikipediaScreen extends StatefulWidget {
   const WikipediaScreen({super.key});
@@ -160,8 +166,16 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
                 setState(() => _selectedSection = value);
               },
             ),
-            const SizedBox(height: 12),
-            SelectableText(_selectedText),
+            const SizedBox(height: 24),
+            Semantics(
+              hint: 'Salva l\'articolo nella libreria e avvia la lettura con Edge TTS',
+              child: FilledButton.icon(
+                onPressed: _importToLibrary,
+                icon: const Icon(Icons.download),
+                label: const Text('Importa e leggi', style: TextStyle(fontSize: 18)),
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+              ),
+            ),
           ],
         ],
       ),
@@ -179,5 +193,50 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
   String _sectionLabel(WikipediaArticleSection section) {
     final indent = section.level <= 2 ? '' : '  ' * (section.level - 2);
     return '$indent${section.title}';
+  }
+
+  Future<void> _importToLibrary() async {
+    final article = _article;
+    if (article == null) return;
+    final text = _selectedText;
+    if (text.isEmpty) return;
+
+    String docName = article.title;
+    if (_selectedSection > 0) {
+      docName += ' - ${article.sections[_selectedSection - 1].title}';
+    }
+
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final safeName = docName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+      final fileName = 'wiki_${DateTime.now().microsecondsSinceEpoch}_$safeName.txt';
+      final file = File(p.join(dir.path, fileName));
+      await file.writeAsString(text);
+
+      final doc = DocumentItem(
+        id: '${DateTime.now().microsecondsSinceEpoch}',
+        name: docName,
+        path: file.path,
+        extension: 'txt',
+        addedAt: DateTime.now(),
+      );
+
+      final lib = DocumentLibraryService();
+      await lib.load();
+      await lib.add(doc);
+
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => DocumentReaderScreen(document: doc),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Errore salvataggio: $e')),
+        );
+      }
+    }
   }
 }

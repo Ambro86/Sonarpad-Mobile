@@ -1,91 +1,52 @@
-import 'dart:ffi';
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
-
-import 'package:ffi/ffi.dart';
-import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as p;
+import 'dart:math' as math;
 import 'package:path_provider/path_provider.dart';
-
-typedef _GenerateNative = Pointer<Utf8> Function(
-  Pointer<Utf8> text,
-  Pointer<Utf8> voice,
-  Pointer<Utf8> outputPath,
-);
-typedef _GenerateDart = Pointer<Utf8> Function(
-  Pointer<Utf8> text,
-  Pointer<Utf8> voice,
-  Pointer<Utf8> outputPath,
-);
-
-typedef _FreeNative = Void Function(Pointer<Utf8> value);
-typedef _FreeDart = void Function(Pointer<Utf8> value);
+import 'package:path/path.dart' as p;
+import 'package:uuid/uuid.dart';
+import 'package:crypto/crypto.dart';
 
 class EdgeTtsBridge {
-  DynamicLibrary? _lib;
-  _GenerateDart? _generate;
-  _FreeDart? _free;
-  String? _lastLibraryPath;
+  static const String _trustedClientToken = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
+  static const String _wssUrlBase = "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
 
-  String? get lastLibraryPath => _lastLibraryPath;
-
-  bool get isAvailable {
-    try {
-      _ensureLoaded();
-      return _generate != null;
-    } catch (_) {
-      return false;
-    }
-  }
+  bool get isAvailable => true;
+  String? get lastLibraryPath => "Puro Dart (Nessuna libreria C)";
 
   Future<File> speakToFile({
     required String text,
     String voice = 'it-IT-ElsaNeural',
   }) async {
-    debugPrint(
-      'Sonarpad TTS: speakToFile start voice=$voice textLength=${text.length}',
-    );
-    _ensureLoaded();
     final dir = await getTemporaryDirectory();
     final outPath = p.join(
       dir.path,
       'sonarpad_edge_tts_${DateTime.now().millisecondsSinceEpoch}.mp3',
     );
+    
+    // Inizia log (simile al comportamento precedente in Rust per la pagina di log)
+    final logFile = File('$outPath.log.txt');
+    await logFile.writeAsString('start voice=$voice text_len=${text.length}\n');
 
-    final textPtr = text.toNativeUtf8();
-    final voicePtr = voice.toNativeUtf8();
-    final outPtr = outPath.toNativeUtf8();
-    Pointer<Utf8> resultPtr = nullptr;
     try {
-      debugPrint('Sonarpad TTS: generating output=$outPath');
-      resultPtr = _generate!(textPtr, voicePtr, outPtr);
-      final result = resultPtr == nullptr ? '' : resultPtr.toDartString();
-      debugPrint('Sonarpad TTS: native result=$result');
-      if (!result.startsWith('ok:')) {
-        throw Exception(result.isEmpty
-            ? 'Edge TTS non ha restituito un risultato'
-            : result);
+      final audioData = await _downloadAudio(text, voice, logFile);
+      if (audioData.isEmpty) {
+        throw Exception("Edge TTS ha restituito audio vuoto");
       }
       final file = File(outPath);
-      if (!await file.exists()) {
-        throw Exception('File audio non creato: $outPath');
-      }
+      await file.writeAsBytes(audioData);
+      
       final size = await file.length();
-      debugPrint('Sonarpad TTS: generated file path=$outPath size=$size');
       if (size < 1000) {
         throw Exception('File audio troppo piccolo o vuoto: $size byte');
       }
       return file;
-    } finally {
-      calloc.free(textPtr);
-      calloc.free(voicePtr);
-      calloc.free(outPtr);
-      if (resultPtr != nullptr && _free != null) _free!(resultPtr);
+    } catch (e) {
+      await logFile.writeAsString('Errore Edge TTS: $e\n', mode: FileMode.append);
+      throw Exception('Edge TTS error: $e');
     }
   }
 
-  /// Versione pratica “quasi streaming”: divide il testo in blocchi piccoli,
-  /// genera un MP3 per blocco e permette alla UI di iniziare a riprodurre il
-  /// primo blocco senza aspettare tutto l'articolo.
   Future<List<File>> speakToChunkFiles({
     required String text,
     String voice = 'it-IT-ElsaNeural',
@@ -103,8 +64,7 @@ class EdgeTtsBridge {
   }
 
   List<String> splitTextForStreaming(String text, {int maxChunkChars = 650}) {
-    final cleaned =
-        text.replaceAll(RegExp(r'\s+'), ' ').replaceAll('...', '…').trim();
+    final cleaned = text.replaceAll(RegExp(r'\s+'), ' ').replaceAll('...', '…').trim();
     if (cleaned.isEmpty) return const [];
 
     final sentenceMatches = RegExp(r'[^.!?。！？]+[.!?。！？]?').allMatches(cleaned);
@@ -149,62 +109,145 @@ class EdgeTtsBridge {
     return chunks;
   }
 
-  void _ensureLoaded() {
-    if (_lib != null) return;
-    final candidates = _libraryCandidates();
-    Object? lastError;
-    for (final candidate in candidates) {
-      try {
-        _lib = candidate == '__process__'
-            ? DynamicLibrary.process()
-            : DynamicLibrary.open(candidate);
-        _lastLibraryPath = candidate;
-        _generate = _lib!.lookupFunction<_GenerateNative, _GenerateDart>(
-          'sonarpad_edge_tts_to_file',
-        );
-        _free = _lib!
-            .lookupFunction<_FreeNative, _FreeDart>('sonarpad_string_free');
-        debugPrint('Sonarpad TTS: loaded library candidate=$candidate');
-        return;
-      } catch (e) {
-        debugPrint(
-            'Sonarpad TTS: failed library candidate=$candidate error=$e');
-        lastError = e;
-        _lib = null;
-        _generate = null;
-        _free = null;
-      }
+  Future<List<int>> _downloadAudio(String text, String voice, File logFile) async {
+    final requestId = const Uuid().v4().replaceAll('-', '');
+    final secMsGec = _generateSecMsGec();
+    const secMsGecVersion = "1-132.0.2917.39";
+    
+    final urlStr = "$_wssUrlBase?TrustedClientToken=$_trustedClientToken&ConnectionId=$requestId&Sec-MS-GEC=$secMsGec&Sec-MS-GEC-Version=$secMsGecVersion";
+    
+    await logFile.writeAsString('preparo URL websocket Edge TTS\n', mode: FileMode.append);
+    
+    WebSocket? ws;
+    try {
+      await logFile.writeAsString('connessione websocket...\n', mode: FileMode.append);
+      
+      ws = await WebSocket.connect(urlStr, headers: {
+        "Pragma": "no-cache",
+        "Cache-Control": "no-cache",
+        "Origin": "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 Edg/132.0.0.0",
+        "Accept-Language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cookie": "muid=${_generateMuid()};"
+      }).timeout(const Duration(seconds: 20));
+      
+      await logFile.writeAsString('websocket connesso\n', mode: FileMode.append);
+
+      final dateString = _getDateString();
+      final configMsg = "X-Timestamp:$dateString\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{\"context\":{\"synthesis\":{\"audio\":{\"metadataoptions\":{\"sentenceBoundaryEnabled\":\"false\",\"wordBoundaryEnabled\":\"false\"},\"outputFormat\":\"audio-24khz-48kbitrate-mono-mp3\"}}}}";
+      
+      ws.add(configMsg);
+      await logFile.writeAsString('speech.config inviato\n', mode: FileMode.append);
+
+      final ssml = _mkssml(text, voice);
+      final ssmlMsg = "X-RequestId:$requestId\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:${dateString}Z\r\nPath:ssml\r\n\r\n$ssml";
+      
+      ws.add(ssmlMsg);
+      await logFile.writeAsString('SSML inviato\n', mode: FileMode.append);
+
+      final audioData = <int>[];
+      final completer = Completer<void>();
+
+      ws.listen((dynamic data) {
+        if (data is String) {
+          if (data.contains("Path:turn.end")) {
+            if (!completer.isCompleted) completer.complete();
+          }
+        } else if (data is List<int>) {
+          final payload = _parseEdgeBinaryAudioPayload(data);
+          if (payload != null) {
+            audioData.addAll(payload);
+          }
+        }
+      }, onError: (e) {
+        if (!completer.isCompleted) completer.completeError(e);
+      }, onDone: () {
+        if (!completer.isCompleted) completer.complete();
+      });
+
+      await completer.future.timeout(const Duration(seconds: 60));
+      await logFile.writeAsString('fine ricezione: ${audioData.length} bytes\n', mode: FileMode.append);
+      
+      return audioData;
+    } finally {
+      await ws?.close();
     }
-    throw Exception(
-        'Libreria Rust Edge TTS non caricata. Tentativi: ${candidates.join(', ')}. Ultimo errore: $lastError');
   }
 
-  List<String> _libraryCandidates() {
-    if (Platform.isIOS) return ['__process__'];
-    if (Platform.isAndroid) return ['libsonarpad_tts.so'];
-    final exeDir = p.dirname(Platform.resolvedExecutable);
-    final cwd = Directory.current.path;
-    if (Platform.isWindows) {
-      return [
-        p.join(exeDir, 'sonarpad_tts.dll'),
-        p.join(cwd, 'sonarpad_tts.dll'),
-        'sonarpad_tts.dll',
-      ];
+  String _generateSecMsGec() {
+    const winEpoch = 11644473600;
+    final ticks = (DateTime.now().toUtc().millisecondsSinceEpoch / 1000).truncate() + winEpoch;
+    final roundedTicks = (ticks - (ticks % 300)) * 10000000;
+    final strToHash = "$roundedTicks$_trustedClientToken";
+    final bytes = utf8.encode(strToHash);
+    final digest = sha256.convert(bytes);
+    return digest.toString().toUpperCase();
+  }
+
+  String _generateMuid() {
+    final random = math.Random.secure();
+    final bytes = List<int>.generate(16, (i) => random.nextInt(256));
+    return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join().toUpperCase();
+  }
+
+  String _getDateString() {
+    final now = DateTime.now().toUtc();
+    final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    final weekday = weekdays[now.weekday - 1];
+    final month = months[now.month - 1];
+    final day = now.day.toString().padLeft(2, '0');
+    final year = now.year.toString();
+    final hour = now.hour.toString().padLeft(2, '0');
+    final minute = now.minute.toString().padLeft(2, '0');
+    final second = now.second.toString().padLeft(2, '0');
+
+    return "$weekday $month $day $year $hour:$minute:$second GMT+0000 (Coordinated Universal Time)";
+  }
+
+  String _mkssml(String text, String voice) {
+    final langParts = voice.split('-');
+    final lang = langParts.length >= 2 ? "${langParts[0]}-${langParts[1]}" : "it-IT";
+    final sanitizedText = _escapeXml(_sanitizeText(text));
+    return "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='$lang'><voice name='$voice'><prosody pitch='+0Hz' rate='+0%' volume='+0%'>$sanitizedText</prosody></voice></speak>";
+  }
+
+  String _sanitizeText(String text) {
+    return text.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), ' ').replaceAll(RegExp(r'\s+'), ' ').trim();
+  }
+
+  String _escapeXml(String text) {
+    return text.replaceAll('&', '&amp;')
+               .replaceAll('<', '&lt;')
+               .replaceAll('>', '&gt;')
+               .replaceAll('"', '&quot;')
+               .replaceAll("'", '&apos;');
+  }
+
+  List<int>? _parseEdgeBinaryAudioPayload(List<int> data) {
+    if (data.length < 2) return null;
+    
+    final beLen = (data[0] << 8) | data[1];
+    final leLen = (data[1] << 8) | data[0];
+    
+    int headerLen = 0;
+    if (beLen > 0 && data.length >= beLen + 2) {
+      headerLen = beLen;
+    } else if (leLen > 0 && data.length >= leLen + 2) {
+      headerLen = leLen;
+    } else {
+      return null;
     }
-    if (Platform.isMacOS) {
-      return [
-        p.join(exeDir, 'libsonarpad_tts.dylib'),
-        p.join(cwd, 'libsonarpad_tts.dylib'),
-        'libsonarpad_tts.dylib',
-      ];
+
+    final headerText = utf8.decode(data.sublist(2, 2 + headerLen), allowMalformed: true);
+    final payload = data.sublist(2 + headerLen);
+
+    if (headerText.toLowerCase().contains("path:audio")) {
+      if (payload.isNotEmpty) {
+        return payload;
+      }
     }
-    if (Platform.isLinux) {
-      return [
-        p.join(exeDir, 'libsonarpad_tts.so'),
-        p.join(cwd, 'libsonarpad_tts.so'),
-        'libsonarpad_tts.so',
-      ];
-    }
-    throw UnsupportedError('Piattaforma non supportata per Edge TTS Rust');
+    return null;
   }
 }

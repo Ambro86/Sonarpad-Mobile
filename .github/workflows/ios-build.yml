@@ -30,11 +30,6 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Setup Rust for iOS
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-ios,aarch64-apple-ios-sim
-
       - name: Install Flutter dependencies
         run: flutter pub get
 
@@ -63,12 +58,6 @@ jobs:
             /usr/libexec/PlistBuddy -c "Set :LSSupportsOpeningDocumentsInPlace true" "$PLIST"
           /usr/libexec/PlistBuddy -c "Add :UIFileSharingEnabled bool true" "$PLIST" || \
             /usr/libexec/PlistBuddy -c "Set :UIFileSharingEnabled true" "$PLIST"
-
-      - name: Build Rust iOS framework
-        run: |
-          if [ -f "scripts/build_ios_rust.sh" ]; then
-            bash scripts/build_ios_rust.sh
-          fi
 
       - name: Install CocoaPods dependencies
         run: |
@@ -100,15 +89,6 @@ jobs:
         with:
           name: Sonarpad-ios-unsigned
           path: build/ipa/Sonarpad.ipa
-          retention-days: 30
-
-      - name: Upload Rust iOS framework
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: SonarpadTts-xcframework
-          path: ios/Rust/SonarpadTts.xcframework
-          if-no-files-found: ignore
           retention-days: 30
 
       - name: Upload build logs

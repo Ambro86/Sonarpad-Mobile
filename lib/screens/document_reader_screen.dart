@@ -338,8 +338,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       widgets.add(
         Semantics(
           key: _chunkKeys[i],
+          container: true,
           liveRegion: isPlaying,
-          label: isPlaying ? 'In lettura: ${_chunks[i]}' : _chunks[i],
+          label: isPlaying ? 'In lettura ' : null,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,

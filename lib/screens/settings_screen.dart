@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
+import 'edge_tts_log_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -101,6 +102,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onPressed: _save,
                   icon: const Icon(Icons.save),
                   label: Text(l10n.saveSettings),
+                ),
+                const SizedBox(height: 24),
+                const Divider(),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const EdgeTtsLogScreen()),
+                  ),
+                  icon: const Icon(Icons.bug_report_outlined),
+                  label: const Text('Visualizza log Edge TTS'),
                 ),
               ],
             ),
