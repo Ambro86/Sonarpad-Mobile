@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
@@ -46,11 +47,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   int _totalChunks = 0;
   String? _ttsStatus;
 
+  bool _isEditing = false;
+  late final TextEditingController _editController;
+
   static const int _maxChunkChars = 650;
 
   @override
   void initState() {
     super.initState();
+    _editController = TextEditingController();
     _extractText();
   }
 
@@ -58,6 +63,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   void dispose() {
     _audio.dispose();
     _scrollController.dispose();
+    _editController.dispose();
     super.dispose();
   }
 
@@ -204,11 +210,49 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   // ---------------------------------------------------------------------------
+  // Modifica
+  // ---------------------------------------------------------------------------
+
+  Future<void> _saveDocument() async {
+    final text = _editController.text;
+    try {
+      final file = File(widget.document.path);
+      await file.writeAsString(text);
+      if (!mounted) return;
+      setState(() {
+        _isEditing = false;
+        _documentText = text;
+        if (_documentText.isNotEmpty) {
+          _chunks = _tts.splitTextForStreaming(
+            _documentText,
+            maxChunkChars: _maxChunkChars,
+          );
+          _chunkKeys
+            ..clear()
+            ..addAll(List.generate(_chunks.length, (_) => GlobalKey()));
+        } else {
+          _chunks = [];
+          _chunkKeys.clear();
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Documento salvato con successo.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errore durante il salvataggio: $e')),
+      );
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Build
   // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final doc = widget.document;
     final colorScheme = theme.colorScheme;
@@ -261,65 +305,108 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                         ),
                         const SizedBox(height: 20),
 
-                        // --- Status TTS ---
-                        Semantics(
-                          liveRegion: true,
-                          child: Text(_ttsStatus ?? 'Pronto.'),
-                        ),
-                        if (_totalChunks > 0) ...[
-                          const SizedBox(height: 8),
-                          LinearProgressIndicator(
-                            value: _totalChunks > 0
-                                ? _readyChunks / _totalChunks
-                                : 0,
+                        if (_isEditing) ...[
+                          TextField(
+                            controller: _editController,
+                            maxLines: null,
+                            autofocus: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                            ),
+                            style: theme.textTheme.bodyLarge,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Blocchi audio pronti: $_readyChunks / $_totalChunks',
-                            style: theme.textTheme.bodySmall,
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: FilledButton.icon(
+                                  onPressed: _saveDocument,
+                                  icon: const Icon(Icons.save),
+                                  label: Text(l10n.save),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () => setState(() => _isEditing = false),
+                                  icon: const Icon(Icons.cancel),
+                                  label: Text(l10n.cancel),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                        const SizedBox(height: 12),
-
-                        // --- Pulsanti TTS ---
-                        FilledButton.icon(
-                          onPressed: _speaking ? null : _readWithEdgeTts,
-                          icon: const Icon(Icons.volume_up),
-                          label: Text(
-                            _speaking
-                                ? 'Lettura in corso...'
-                                : 'Leggi con Edge TTS',
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        OutlinedButton.icon(
-                          onPressed: _speaking ? _stopReading : null,
-                          icon: const Icon(Icons.stop),
-                          label: const Text('Interrompi lettura'),
-                        ),
-
-                        const SizedBox(height: 24),
-                        const Divider(),
-                        const SizedBox(height: 8),
-
-                        // --- Corpo documento ---
-                        if (_loadError != null)
+                        ] else ...[
+                          // --- Status TTS ---
                           Semantics(
                             liveRegion: true,
-                            child: Text(
-                              _loadError!,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.secondary,
-                              ),
-                            ),
-                          )
-                        else if (_chunks.isNotEmpty)
-                          ..._buildChunkWidgets(theme, colorScheme)
-                        else if (_documentText.isEmpty && _loadError == null)
-                          Text(
-                            'Nessun testo disponibile per questo documento.',
-                            style: theme.textTheme.bodyMedium,
+                            child: Text(_ttsStatus ?? 'Pronto.'),
                           ),
+                          if (_totalChunks > 0) ...[
+                            const SizedBox(height: 8),
+                            LinearProgressIndicator(
+                              value: _totalChunks > 0
+                                  ? _readyChunks / _totalChunks
+                                  : 0,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Blocchi audio pronti: $_readyChunks / $_totalChunks',
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ],
+                          const SizedBox(height: 12),
+
+                          // --- Pulsanti TTS ---
+                          FilledButton.icon(
+                            onPressed: _speaking ? null : _readWithEdgeTts,
+                            icon: const Icon(Icons.volume_up),
+                            label: Text(
+                              _speaking
+                                  ? 'Lettura in corso...'
+                                  : 'Leggi con Edge TTS',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          if (['txt', 'md'].contains(doc.extension.toLowerCase())) ...[
+                            OutlinedButton.icon(
+                              onPressed: _speaking ? null : () {
+                                _editController.text = _documentText;
+                                setState(() => _isEditing = true);
+                              },
+                              icon: const Icon(Icons.edit),
+                              label: Text(l10n.edit),
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                          OutlinedButton.icon(
+                            onPressed: _speaking ? _stopReading : null,
+                            icon: const Icon(Icons.stop),
+                            label: const Text('Interrompi lettura'),
+                          ),
+
+                          const SizedBox(height: 24),
+                          const Divider(),
+                          const SizedBox(height: 8),
+
+                          // --- Corpo documento ---
+                          if (_loadError != null)
+                            Semantics(
+                              liveRegion: true,
+                              child: Text(
+                                _loadError!,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.secondary,
+                                ),
+                              ),
+                            )
+                          else if (_chunks.isNotEmpty)
+                            ..._buildChunkWidgets(theme, colorScheme)
+                          else if (_documentText.isEmpty && _loadError == null)
+                            Text(
+                              'Nessun testo disponibile per questo documento.',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                        ],
                       ]),
                     ),
                   ),

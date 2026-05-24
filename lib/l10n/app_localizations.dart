@@ -150,6 +150,9 @@ class AppLocalizations {
   String get documentPickerError => 'Errore apertura file';
   String get readDocument => 'Leggi documento';
   String get documentReaderTitle => 'Lettore documento';
+  String get edit => 'Modifica';
+  String get save => 'Salva';
+  String get cancel => 'Annulla';
 }
 
 class _AppLocalizationsDelegate
