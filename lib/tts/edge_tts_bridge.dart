@@ -122,11 +122,13 @@ class EdgeTtsBridge {
     try {
       await logFile.writeAsString('connessione websocket...\n', mode: FileMode.append);
       
-      ws = await WebSocket.connect(urlStr, headers: {
+      final client = HttpClient();
+      client.userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 Edg/132.0.0.0";
+      
+      ws = await WebSocket.connect(urlStr, customClient: client, headers: {
         "Pragma": "no-cache",
         "Cache-Control": "no-cache",
         "Origin": "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 Edg/132.0.0.0",
         "Accept-Language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
         "Cookie": "muid=${_generateMuid()};"
       }).timeout(const Duration(seconds: 20));
