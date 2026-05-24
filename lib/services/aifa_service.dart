@@ -44,37 +44,41 @@ class AifaService {
   }
 
   void _collectResultsFromJson(dynamic value, List<AifaDrugResult> results) {
-    if (value is Map<String, dynamic> && value['content'] is List) {
-      final content = value['content'] as List;
-      for (final item in content) {
-        if (item is! Map<String, dynamic>) continue;
+    if (value is Map<String, dynamic>) {
+      final content =
+          (value['content'] as List?) ?? (value['data']?['content'] as List?);
+      if (content != null) {
+        for (final item in content) {
+          if (item is! Map<String, dynamic>) continue;
 
-        final med = item['medicinale'] ?? <String, dynamic>{};
-        final den = med['denominazioneMedicinale']?.toString() ?? 'Sconosciuto';
-        final desc = item['descrizioneFormaDosaggio']?.toString() ?? '';
-        final name = '$den $desc'.trim();
+          final med = item['medicinale'] ?? <String, dynamic>{};
+          final den =
+              med['denominazioneMedicinale']?.toString() ?? 'Sconosciuto';
+          final desc = item['descrizioneFormaDosaggio']?.toString() ?? '';
+          final name = '$den $desc'.trim();
 
-        // Gestisce importazioni parallele che hanno un codiceSIS diverso per il PDF
-        final isP = item['tipoAutorizzazione'] == 'P';
-        final codiceSis = isP
-            ? item['sisImportazioneParallela']?.toString()
-            : med['codiceSis']?.toString();
-        final aic6 = isP
-            ? item['aic6ImportazioneParallela']?.toString()
-            : med['aic6']?.toString();
+          // Gestisce importazioni parallele che hanno un codiceSIS diverso per il PDF
+          final isP = item['tipoAutorizzazione'] == 'P';
+          final codiceSis = isP
+              ? item['sisImportazioneParallela']?.toString()
+              : med['codiceSis']?.toString();
+          final aic6 = isP
+              ? item['aic6ImportazioneParallela']?.toString()
+              : med['aic6']?.toString();
 
-        if (codiceSis != null && aic6 != null) {
-          final drugName = name.isEmpty ? 'Farmaco AIC $aic6' : name;
+          if (codiceSis != null && aic6 != null) {
+            final drugName = name.isEmpty ? 'Farmaco AIC $aic6' : name;
 
-          // Evita duplicati
-          final exists =
-              results.any((r) => r.codiceSis == codiceSis && r.aic6 == aic6);
-          if (!exists) {
-            results.add(AifaDrugResult(
-              name: drugName,
-              codiceSis: codiceSis,
-              aic6: aic6,
-            ));
+            // Evita duplicati
+            final exists =
+                results.any((r) => r.codiceSis == codiceSis && r.aic6 == aic6);
+            if (!exists) {
+              results.add(AifaDrugResult(
+                name: drugName,
+                codiceSis: codiceSis,
+                aic6: aic6,
+              ));
+            }
           }
         }
       }
