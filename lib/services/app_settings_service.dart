@@ -22,6 +22,7 @@ class TtsVoiceOption {
 class AppSettingsService {
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
+  static const _tvSecretCodeKey = 'tvSecretCode';
 
   static const ttsLanguages = [
     TtsVoiceLanguage('it', 'Italiano'),
@@ -103,6 +104,16 @@ class AppSettingsService {
     final prefs = await SharedPreferences.getInstance();
     final language = prefs.getString(_ttsLanguageKey) ?? 'it';
     return prefs.getString(_ttsVoiceKey) ?? defaultVoiceForLanguage(language);
+  }
+
+  Future<String> getTvSecretCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_tvSecretCodeKey) ?? '';
+  }
+
+  Future<void> setTvSecretCode(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_tvSecretCodeKey, value);
   }
 
   Future<void> saveTtsSettings({

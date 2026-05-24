@@ -3,16 +3,38 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../services/accessibility_feedback_service.dart';
+import '../services/app_settings_service.dart';
 import 'documents_screen.dart';
 import 'info_screen.dart';
 import 'news_screen.dart';
 import 'podcast_screen.dart';
 import 'radio_screen.dart';
 import 'settings_screen.dart';
+import 'tv_screen.dart';
 import 'wikipedia_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _settings = AppSettingsService();
+  String _tvCode = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final code = await _settings.getTvSecretCode();
+    if (!mounted) return;
+    setState(() => _tvCode = code);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +100,16 @@ class HomeScreen extends StatelessWidget {
                 routeName: 'radio',
               ),
             ),
+            if (_tvCode.isNotEmpty)
+              _HomeButton(
+                label: 'TV',
+                hint: 'Guarda i canali TV',
+                onPressed: () => AccessibilityFeedbackService.push(
+                  context,
+                  builder: (_) => const TvScreen(),
+                  routeName: 'tv',
+                ),
+              ),
             _HomeButton(
               label: l10n.importFromWikipedia,
               hint: l10n.wikipediaHint,
@@ -94,7 +126,7 @@ class HomeScreen extends StatelessWidget {
                 context,
                 builder: (_) => const SettingsScreen(),
                 routeName: 'settings',
-              ),
+              ).then((_) => _load()),
             ),
             _HomeButton(
               label: l10n.info,

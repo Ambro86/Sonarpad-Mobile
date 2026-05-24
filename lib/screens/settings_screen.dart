@@ -15,6 +15,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _settings = AppSettingsService();
   String _languageCode = 'it';
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
+  final _tvSecretCodeController = TextEditingController();
   bool _loading = true;
 
   @override
@@ -23,13 +24,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _load();
   }
 
+  @override
+  void dispose() {
+    _tvSecretCodeController.dispose();
+    super.dispose();
+  }
+
   Future<void> _load() async {
     final language = await _settings.loadTtsLanguage();
     final voice = await _settings.loadTtsVoice();
+    final tvSecretCode = await _settings.getTvSecretCode();
     if (!mounted) return;
     setState(() {
       _languageCode = language;
       _voice = _validVoiceForLanguage(language, voice);
+      _tvSecretCodeController.text = tvSecretCode;
       _loading = false;
     });
   }
@@ -40,6 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       languageCode: _languageCode,
       voice: _voice,
     );
+    await _settings.setTvSecretCode(_tvSecretCodeController.text);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.settingsSaved)),
@@ -96,6 +106,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         AppSettingsService.defaultVoiceForLanguage(
                             _languageCode),
                   ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _tvSecretCodeController,
+                  decoration: const InputDecoration(
+                    labelText: 'Codice Sonarpad per funzioni aggiuntive',
+                    border: OutlineInputBorder(),
+                  ),
+                  obscureText: true,
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
