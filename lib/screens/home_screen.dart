@@ -26,8 +26,7 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Semantics(
-              label: l10n.homeSemanticsLabel,
-              image: true,
+              excludeSemantics: true,
               child: Image.asset(
                 'assets/images/Sonarpad_Logo.png',
                 height: 92,
@@ -125,8 +124,6 @@ class _HomeButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Semantics(
-        button: true,
-        label: label,
         hint: hint,
         child: FilledButton(
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
