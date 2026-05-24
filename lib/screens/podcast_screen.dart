@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/podcast_service.dart';
-import 'podcast_episode_player_screen.dart';
+import 'podcast_episodes_screen.dart';
 
 class PodcastScreen extends StatefulWidget {
   const PodcastScreen({super.key});
@@ -21,8 +21,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
   List<PodcastSearchResult> _searchResults = [];
   PodcastSearchResult? _selectedSearchResult;
   Future<PodcastDetails>? _selectedSearchDetails;
-  PodcastSubscription? _selected;
-  Future<List<PodcastEpisode>>? _episodes;
   bool _searching = false;
   String _country = 'it';
   PodcastCategory _category = PodcastService.categories.first;
@@ -35,15 +33,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
 
   Future<void> _load() async {
     final subs = await _service.loadSubscriptions();
-    setState(() {
-      _subscriptions = subs;
-      if (_selected != null &&
-          !subs.any(
-              (subscription) => subscription.feedUrl == _selected!.feedUrl)) {
-        _selected = null;
-        _episodes = null;
-      }
-    });
+    if (!mounted) return;
+    setState(() => _subscriptions = subs);
   }
 
   Future<void> _search() async {
@@ -82,8 +73,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
       setState(() {
         _selectedSearchResult = null;
         _selectedSearchDetails = null;
-        _selected = null;
-        _episodes = null;
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -109,21 +98,14 @@ class _PodcastScreenState extends State<PodcastScreen> {
     });
   }
 
-  void _openEpisode(PodcastEpisode episode) {
+  void _openSubscription(PodcastSubscription subscription) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        settings: const RouteSettings(name: '/podcasts/player'),
-        builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+        settings: const RouteSettings(name: '/podcasts/episodes'),
+        builder: (_) => PodcastEpisodesScreen(subscription: subscription),
       ),
     );
-  }
-
-  void _openSubscription(PodcastSubscription subscription) {
-    setState(() {
-      _selected = subscription;
-      _episodes = _service.fetchEpisodes(subscription);
-    });
   }
 
   Future<void> _addByUrl() async {
@@ -134,10 +116,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
       await _service.addSubscription(url);
       _feedController.clear();
       await _load();
-      setState(() {
-        _selected = null;
-        _episodes = null;
-      });
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -285,69 +263,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
           ] else
             Text(l10n.noSubscribedPodcasts),
           const SizedBox(height: 16),
-          if (_episodes != null)
-            FutureBuilder<List<PodcastEpisode>>(
-              future: _episodes,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                          semanticsLabel: l10n.loadingEpisodes));
-                }
-                if (snapshot.hasError) return Text(l10n.error(snapshot.error!));
-                final episodes = snapshot.data ?? const [];
-                if (episodes.isEmpty) return Text(l10n.noAudioEpisodesFound);
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      _selected == null
-                          ? l10n.episodes
-                          : '${l10n.episodes}: ${_selected!.title}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    ...episodes.map((episode) => Card(
-                          child: ListTile(
-                            title: Text(episode.title),
-                            subtitle: Text(episode.description,
-                                maxLines: 2, overflow: TextOverflow.ellipsis),
-                            trailing: PopupMenuButton<String>(
-                              tooltip: l10n.episodeActions,
-                              onSelected: (action) async {
-                                final messenger = ScaffoldMessenger.of(context);
-                                try {
-                                  if (action == 'play') {
-                                    _openEpisode(episode);
-                                  }
-                                  if (action == 'download') {
-                                    final file =
-                                        await _service.downloadEpisode(episode);
-                                    if (!mounted) return;
-                                    messenger.showSnackBar(SnackBar(
-                                        content:
-                                            Text(l10n.downloaded(file.path))));
-                                  }
-                                } catch (e) {
-                                  if (!mounted) return;
-                                  messenger.showSnackBar(SnackBar(
-                                      content: Text(l10n.episodeError(e))));
-                                }
-                              },
-                              itemBuilder: (_) => [
-                                PopupMenuItem(
-                                    value: 'play', child: Text(l10n.play)),
-                                PopupMenuItem(
-                                    value: 'download',
-                                    child: Text(l10n.download)),
-                              ],
-                            ),
-                            onTap: () => _openEpisode(episode),
-                          ),
-                        )),
-                  ],
-                );
-              },
-            ),
         ],
       ),
     );

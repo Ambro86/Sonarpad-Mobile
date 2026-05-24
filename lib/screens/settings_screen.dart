@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -139,8 +140,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
 
       final subject = Uri.encodeComponent('Richiesta Codice Sonarpad');
+      final os = Platform.isIOS
+          ? 'iOS'
+          : Platform.isAndroid
+              ? 'Android'
+              : Platform.isWindows
+                  ? 'Windows'
+                  : Platform.isMacOS
+                      ? 'macOS'
+                      : Platform.isLinux
+                          ? 'Linux'
+                          : 'Sconosciuto';
       final body = Uri.encodeComponent(
-          'Nome: $name\nCognome: $surname\nEmail: $email\nSistema Operativo: iOS');
+          'Nome: $name\nCognome: $surname\nEmail: $email\nSistema Operativo: $os');
       final url =
           Uri.parse('mailto:ambro86@gmail.com?subject=$subject&body=$body');
 

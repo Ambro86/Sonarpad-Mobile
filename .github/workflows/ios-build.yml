@@ -59,6 +59,39 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :UIFileSharingEnabled bool true" "$PLIST" || \
             /usr/libexec/PlistBuddy -c "Set :UIFileSharingEnabled true" "$PLIST"
 
+      - name: Configure iOS background audio mode
+        run: |
+          PLIST="ios/Runner/Info.plist"
+          # Aggiunge UIBackgroundModes con audio se non esiste già
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes array" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes:0 string audio" "$PLIST" 2>/dev/null || true
+          echo "UIBackgroundModes configurato:"
+          /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$PLIST"
+
+      - name: Enable Background Modes capability in Xcode project
+        run: |
+          gem install xcodeproj --no-document --quiet
+          ruby - <<'RUBY'
+          require 'xcodeproj'
+          project_path = Dir.glob('ios/*.xcodeproj').first
+          abort 'Progetto Xcode non trovato' unless project_path
+          project = Xcodeproj::Project.open(project_path)
+          target = project.targets.find { |t| t.name == 'Runner' }
+          abort 'Target Runner non trovato' unless target
+          # Aggiunge la system capability BackgroundModes se non presente
+          unless target.build_configurations.all? { |c|
+            c.build_settings['INFOPLIST_KEY_UIBackgroundModes']&.include?('audio')
+          }
+            target.build_configurations.each do |config|
+              existing = config.build_settings['INFOPLIST_KEY_UIBackgroundModes'] || []
+              existing = [existing] if existing.is_a?(String)
+              config.build_settings['INFOPLIST_KEY_UIBackgroundModes'] = (existing + ['audio']).uniq
+            end
+          end
+          project.save
+          puts 'Background Modes audio abilitato nel progetto Xcode'
+          RUBY
+
       - name: Install CocoaPods dependencies
         run: |
           if [ -f "ios/Podfile" ]; then

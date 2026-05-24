@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 
@@ -107,7 +108,8 @@ class DocumentTextExtractor {
         error: 'Struttura DOCX non valida: word/document.xml non trovato.',
       );
     }
-    final xmlString = String.fromCharCodes(docEntry.content as List<int>);
+    final xmlString =
+        utf8.decode(docEntry.content as List<int>, allowMalformed: true);
     final document = xml_pkg.XmlDocument.parse(xmlString);
     final buffer = StringBuffer();
     // I run di testo sono in <w:t>; i paragrafi in <w:p>.

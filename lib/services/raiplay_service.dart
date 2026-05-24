@@ -407,6 +407,33 @@ class RaiPlayService {
     );
   }
 
+  /// Cerca contenuti su RaiPlay tramite l'endpoint /ricerca.json?q=<query>.
+  ///
+  /// Usa lo stesso meccanismo di autenticazione degli altri metodi del servizio.
+  Future<RaiPlayPage> searchContent(String query, String secretKey) async {
+    final baseUrl = decodeUrl(_baseUrlB64, secretKey);
+    if (baseUrl == null) {
+      throw Exception('Codice segreto non valido.');
+    }
+    final encodedQuery = Uri.encodeQueryComponent(query.trim());
+    final searchUrl = '${baseUrl}ricerca.json?q=$encodedQuery';
+
+    final resp = await _get(searchUrl);
+    if (resp.statusCode != 200) {
+      throw Exception('Impossibile eseguire la ricerca su RaiPlay.');
+    }
+
+    final root = jsonDecode(resp.body);
+    final items = <RaiPlayItem>[];
+    final seen = <String>{};
+    _collectNestedItems(root, seen, items, baseUrl);
+
+    return RaiPlayPage(
+      title: 'Risultati: $query',
+      items: items,
+    );
+  }
+
   Future<String> resolveMediaUrl(String url) async {
     String resolvedUrl = url;
 
