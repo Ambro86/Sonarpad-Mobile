@@ -20,26 +20,6 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
-        actions: [
-          IconButton(
-            tooltip: l10n.settingsHint,
-            onPressed: () => AccessibilityFeedbackService.push(
-              context,
-              builder: (_) => const SettingsScreen(),
-              routeName: 'settings',
-            ),
-            icon: const Icon(Icons.settings),
-          ),
-          IconButton(
-            tooltip: l10n.infoHint,
-            onPressed: () => AccessibilityFeedbackService.push(
-              context,
-              builder: (_) => const InfoScreen(),
-              routeName: 'info',
-            ),
-            icon: const Icon(Icons.info_outline),
-          ),
-        ],
       ),
       body: SafeArea(
         child: ListView(
@@ -108,6 +88,24 @@ class HomeScreen extends StatelessWidget {
                 routeName: 'wikipedia',
               ),
             ),
+            _HomeButton(
+              label: l10n.settings,
+              hint: null,
+              onPressed: () => AccessibilityFeedbackService.push(
+                context,
+                builder: (_) => const SettingsScreen(),
+                routeName: 'settings',
+              ),
+            ),
+            _HomeButton(
+              label: l10n.info,
+              hint: null,
+              onPressed: () => AccessibilityFeedbackService.push(
+                context,
+                builder: (_) => const InfoScreen(),
+                routeName: 'info',
+              ),
+            ),
           ],
         ),
       ),
@@ -117,10 +115,10 @@ class HomeScreen extends StatelessWidget {
 
 class _HomeButton extends StatelessWidget {
   final String label;
-  final String hint;
+  final String? hint;
   final VoidCallback onPressed;
   const _HomeButton(
-      {required this.label, required this.hint, required this.onPressed});
+      {required this.label, this.hint, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

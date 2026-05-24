@@ -24,7 +24,7 @@ class AppLocalizations {
   String get homeSemanticsLabel => 'Sonarpad, schermata principale';
   String get settings => 'Impostazioni';
   String get settingsHint => 'Apre le impostazioni';
-  String get info => 'Info';
+  String get info => 'Informazioni';
   String get infoHint => 'Apre le informazioni sull\'app';
   String get loading => 'Caricamento';
   String get ttsVoiceLanguage => 'Lingua voci TTS';
