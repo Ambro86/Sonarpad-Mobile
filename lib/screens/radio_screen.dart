@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../models/radio_station.dart';
-import '../services/audio_player_service.dart';
 import '../services/radio_service.dart';
+import 'radio_player_screen.dart';
 
 class RadioScreen extends StatefulWidget {
   const RadioScreen({super.key});
@@ -15,7 +15,6 @@ class RadioScreen extends StatefulWidget {
 
 class _RadioScreenState extends State<RadioScreen> {
   final _service = RadioService();
-  final _audio = AudioPlayerService();
   final _searchController = TextEditingController();
   final _addNameController = TextEditingController();
   final _addUrlController = TextEditingController();
@@ -28,7 +27,6 @@ class _RadioScreenState extends State<RadioScreen> {
   RadioGenreOption _addGenre = RadioService.genres[1];
   bool _searching = false;
   bool _addingCommunity = false;
-  String? _playingUrl;
 
   @override
   void initState() {
@@ -70,20 +68,12 @@ class _RadioScreenState extends State<RadioScreen> {
   }
 
   Future<void> _play(RadioStation station) async {
-    final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      setState(() => _playingUrl = station.streamUrl);
-      await _audio.playUrl(station.streamUrl);
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.radioNowPlaying(station.name))),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _playingUrl = null);
-      messenger.showSnackBar(SnackBar(content: Text(l10n.radioPlayError(e))));
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RadioPlayerScreen(station: station),
+      ),
+    );
   }
 
   Future<void> _toggleFavorite(RadioStation station) async {
@@ -150,7 +140,6 @@ class _RadioScreenState extends State<RadioScreen> {
     _searchController.dispose();
     _addNameController.dispose();
     _addUrlController.dispose();
-    _audio.dispose();
     super.dispose();
   }
 
@@ -171,7 +160,7 @@ class _RadioScreenState extends State<RadioScreen> {
                     .map((station) => _RadioTile(
                           station: station,
                           isFavorite: true,
-                          isPlaying: station.streamUrl == _playingUrl,
+                          isPlaying: false,
                           onPlay: () => _play(station),
                           onToggleFavorite: () => _toggleFavorite(station),
                         ))
@@ -228,7 +217,7 @@ class _RadioScreenState extends State<RadioScreen> {
               return _RadioTile(
                 station: station,
                 isFavorite: isFavorite,
-                isPlaying: station.streamUrl == _playingUrl,
+                isPlaying: false,
                 onPlay: () => _play(station),
                 onToggleFavorite: () => _toggleFavorite(station),
               );

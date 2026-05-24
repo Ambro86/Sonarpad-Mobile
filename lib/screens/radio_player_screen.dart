@@ -1,64 +1,53 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import '../l10n/app_localizations.dart';
-import '../models/podcast.dart';
+import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
 
-class PodcastEpisodePlayerScreen extends StatefulWidget {
-  const PodcastEpisodePlayerScreen({super.key, required this.episode});
-
-  final PodcastEpisode episode;
+class RadioPlayerScreen extends StatefulWidget {
+  final RadioStation station;
+  const RadioPlayerScreen({super.key, required this.station});
 
   @override
-  State<PodcastEpisodePlayerScreen> createState() =>
-      _PodcastEpisodePlayerScreenState();
+  State<RadioPlayerScreen> createState() => _RadioPlayerScreenState();
 }
 
-class _PodcastEpisodePlayerScreenState
-    extends State<PodcastEpisodePlayerScreen> {
+class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   final _audio = AudioPlayerService();
-  bool _loaded = false;
-  bool _loading = false;
   bool _playing = false;
+  bool _loading = false;
   String? _error;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _play();
+    });
+  }
+
   Future<void> _play() async {
-    final l10n = AppLocalizations.of(context);
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      if (!_loaded) {
-        await _audio.setUrl(widget.episode.audioUrl);
-        _loaded = true;
-      }
-      unawaited(_audio.play());
+      // Iniziamo lo stream audio
+      unawaited(_audio.playUrl(widget.station.streamUrl));
       if (!mounted) return;
       setState(() => _playing = true);
     } catch (e) {
       if (!mounted) return;
-      setState(() => _error = l10n.episodeError(e));
+      setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
-  Future<void> _pause() async {
-    await _audio.pause();
+  Future<void> _stop() async {
+    await _audio.stop();
     if (!mounted) return;
     setState(() => _playing = false);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Auto-play all'apertura del player
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _play();
-    });
   }
 
   @override
@@ -72,20 +61,20 @@ class _PodcastEpisodePlayerScreenState
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.episodePlayer),
+          title: const Text('Player Radio'),
           leading: BackButton(onPressed: () => Navigator.pop(context)),
         ),
         body: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              widget.episode.title,
+              widget.station.name,
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
             if (_loading)
-              LinearProgressIndicator(semanticsLabel: l10n.loadingEpisodeAudio),
+              LinearProgressIndicator(semanticsLabel: l10n.loading),
             if (_error != null) ...[
               const SizedBox(height: 12),
               Text(
@@ -105,17 +94,12 @@ class _PodcastEpisodePlayerScreenState
                   icon: const Icon(Icons.play_arrow),
                   label: Text(l10n.play),
                 ),
-                FilledButton.icon(
-                  onPressed: _loading || !_loaded ? null : () => _audio.seekBackward(),
-                  icon: const Icon(Icons.fast_rewind),
-                  label: Text(l10n.rewind15s),
-                ),
                 Semantics(
                   focused: true,
                   child: FilledButton.icon(
-                    onPressed: _playing ? _pause : null,
-                    icon: const Icon(Icons.pause),
-                    label: Text(l10n.pause),
+                    onPressed: _playing ? _stop : null,
+                    icon: const Icon(Icons.stop),
+                    label: Text(l10n.stop),
                   ),
                 ),
               ],

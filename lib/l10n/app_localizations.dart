@@ -122,6 +122,7 @@ class AppLocalizations {
   String episodeError(Object error) => 'Errore episodio: $error';
   String get play => 'Riproduci';
   String get pause => 'Pausa';
+  String get rewind15s => 'Indietro 15s';
   String get stop => 'Stop';
   String get back => 'Indietro';
   String get episodePlayer => 'Player episodio';

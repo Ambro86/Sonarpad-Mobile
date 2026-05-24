@@ -100,6 +100,19 @@ class AudioPlayerService {
     }
   }
 
+  Future<void> seekBackward([Duration duration = const Duration(seconds: 15)]) async {
+    final current = _player.position;
+    final newPosition = current - duration;
+    await _player.seek(newPosition < Duration.zero ? Duration.zero : newPosition);
+  }
+
+  Future<void> seekForward([Duration duration = const Duration(seconds: 15)]) async {
+    final current = _player.position;
+    final max = _player.duration ?? Duration.zero;
+    final newPosition = current + duration;
+    await _player.seek(newPosition > max ? max : newPosition);
+  }
+
   Future<void> stop() async {
     _stopRequested = true;
     debugPrint('Sonarpad audio: stop requested');
