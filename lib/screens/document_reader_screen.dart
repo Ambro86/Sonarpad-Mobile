@@ -38,13 +38,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   String _documentText = '';
   String? _loadError;
   List<String> _chunks = [];
-  final List<GlobalKey> _chunkKeys = [];
 
   // TTS state
   bool _speaking = false;
-  int _playingChunkIndex = -1; // indice del chunk in riproduzione
-  int _readyChunks = 0;
-  int _totalChunks = 0;
   String? _ttsStatus;
 
   bool _ttsPaused = false;
@@ -92,9 +88,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           _documentText,
           maxChunkChars: _maxChunkChars,
         );
-        _chunkKeys
-          ..clear()
-          ..addAll(List.generate(_chunks.length, (_) => GlobalKey()));
       }
     } catch (e) {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
@@ -102,23 +95,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } finally {
       if (mounted) setState(() => _loadingText = false);
     }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Scroll automatico al chunk corrente
-  // ---------------------------------------------------------------------------
-
-  void _scrollToChunk(int index) {
-    if (index < 0 || index >= _chunkKeys.length) return;
-    final key = _chunkKeys[index];
-    final ctx = key.currentContext;
-    if (ctx == null) return;
-    Scrollable.ensureVisible(
-      ctx,
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeInOut,
-      alignment: 0.3, // mostra il chunk a ~30% dall'alto
-    );
   }
 
   // ---------------------------------------------------------------------------
@@ -142,10 +118,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     setState(() {
       _speaking = true;
       _ttsPaused = false;
-      _playingChunkIndex = -1;
-      _readyChunks = 0;
-      _totalChunks = _chunks.length;
-      _ttsStatus = 'Preparo lettura Edge TTS a blocchi...';
+      _ttsStatus = null;
     });
 
     try {
@@ -158,12 +131,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         for (var i = 0; i < _chunks.length; i++) {
           final file = await _tts.speakToFile(text: _chunks[i], voice: voice);
           controller.add((i, file));
-          if (!mounted) return;
-          setState(() {
-            _readyChunks = i + 1;
-            _ttsStatus =
-                'Blocco ${i + 1} di ${_chunks.length} pronto. Lettura in corso...';
-          });
         }
         await controller.close();
       }).catchError((e) async {
@@ -172,14 +139,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       });
 
       // Riproduzione con avanzamento cursore
-      await for (final (index, file) in controller.stream) {
+      await for (final (_, file) in controller.stream) {
         if (!mounted || !_speaking) break;
-        // Aggiorna chunk evidenziato e scrolla
-        setState(() {
-          _playingChunkIndex = index;
-          _ttsStatus = 'Lettura blocco ${index + 1} di $_totalChunks...';
-        });
-        _scrollToChunk(index);
         await _audio.playFilesSequentially([file]);
       }
 
@@ -188,7 +149,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
       if (!mounted) return;
       setState(() {
-        _playingChunkIndex = -1;
         _speaking = false;
         _ttsPaused = false;
         _ttsStatus = 'Lettura terminata.';
@@ -197,7 +157,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       dev.log('DocumentReaderScreen TTS error: $e');
       if (!mounted) return;
       setState(() {
-        _playingChunkIndex = -1;
         _ttsStatus = 'Errore Edge TTS: $e';
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -216,7 +175,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     setState(() {
       _speaking = false;
       _ttsPaused = false;
-      _playingChunkIndex = -1;
       _ttsStatus = 'Lettura interrotta.';
     });
   }
@@ -253,12 +211,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             _documentText,
             maxChunkChars: _maxChunkChars,
           );
-          _chunkKeys
-            ..clear()
-            ..addAll(List.generate(_chunks.length, (_) => GlobalKey()));
         } else {
           _chunks = [];
-          _chunkKeys.clear();
         }
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -338,25 +292,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                             ),
                             const SizedBox(height: 20),
 
-                            // --- Status TTS ---
-                            Semantics(
-                              liveRegion: true,
-                              child: Text(_ttsStatus ?? 'Pronto.'),
-                            ),
-                            if (_totalChunks > 0) ...[
-                              const SizedBox(height: 8),
-                              LinearProgressIndicator(
-                                value: _totalChunks > 0
-                                    ? _readyChunks / _totalChunks
-                                    : 0,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Blocchi audio pronti: $_readyChunks / $_totalChunks',
-                                style: theme.textTheme.bodySmall,
-                              ),
+                            if (_ttsStatus != null) ...[
+                              Text(_ttsStatus!),
+                              const SizedBox(height: 12),
                             ],
-                            const SizedBox(height: 12),
 
                             // --- Pulsanti TTS ---
                             Semantics(
@@ -416,8 +355,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                   ),
                                 ),
                               )
-                            else if (_chunks.isNotEmpty)
-                              ..._buildChunkWidgets(theme, colorScheme)
+                            else if (_documentText.isNotEmpty)
+                              Text(
+                                _documentText,
+                                style: theme.textTheme.bodyLarge,
+                              )
                             else if (_documentText.isEmpty &&
                                 _loadError == null)
                               Text(
@@ -482,47 +424,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     );
   }
 
-  /// Costruisce la lista di widget per i blocchi di testo.
-  /// Il blocco in riproduzione viene evidenziato.
-  List<Widget> _buildChunkWidgets(ThemeData theme, ColorScheme colorScheme) {
-    final widgets = <Widget>[];
-    for (var i = 0; i < _chunks.length; i++) {
-      final isPlaying = i == _playingChunkIndex;
-      widgets.add(
-        Semantics(
-          key: _chunkKeys[i],
-          container: true,
-          liveRegion: isPlaying,
-          label: isPlaying ? 'In lettura ' : null,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
-            margin: const EdgeInsets.only(bottom: 6),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            decoration: BoxDecoration(
-              color:
-                  isPlaying ? colorScheme.primaryContainer : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              border: isPlaying
-                  ? Border.all(
-                      color: colorScheme.primary.withAlpha(128),
-                      width: 1.5,
-                    )
-                  : null,
-            ),
-            child: Text(
-              _chunks[i],
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: isPlaying ? FontWeight.w600 : FontWeight.normal,
-                color: isPlaying ? colorScheme.onPrimaryContainer : null,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-    return widgets;
-  }
 }
 
 // ---------------------------------------------------------------------------
