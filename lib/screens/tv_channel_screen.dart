@@ -55,7 +55,11 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
       if (!mounted) return;
 
       if (Platform.isWindows) {
-        await _playWithExternalWindowsPlayer(resolvedUrl);
+        await _playWithExternalWindowsPlayer(
+          resolvedUrl,
+          preferAudioDescription:
+              _service.isRaiAudioDescriptionChannel(widget.channel),
+        );
         return;
       }
 
@@ -87,18 +91,23 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     }
   }
 
-  Future<void> _playWithExternalWindowsPlayer(String url) async {
+  Future<void> _playWithExternalWindowsPlayer(
+    String url, {
+    required bool preferAudioDescription,
+  }) async {
+    final ffplayArgs = [
+      '-user_agent',
+      'Sonarpad TV/1.0',
+      if (preferAudioDescription) ...['-ast', 'a:2'],
+      '-nodisp',
+      '-loglevel',
+      'warning',
+      url,
+    ];
     try {
       await Process.start(
         'ffplay.exe',
-        [
-          '-user_agent',
-          'Sonarpad TV/1.0',
-          '-nodisp',
-          '-loglevel',
-          'warning',
-          url,
-        ],
+        ffplayArgs,
         mode: ProcessStartMode.detached,
       );
       return;
@@ -114,7 +123,11 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
       if (await File(path).exists()) {
         await Process.start(
           path,
-          ['--http-user-agent=Sonarpad TV/1.0', url],
+          [
+            '--http-user-agent=Sonarpad TV/1.0',
+            if (preferAudioDescription) '--audio-track=2',
+            url,
+          ],
           mode: ProcessStartMode.detached,
         );
         return;

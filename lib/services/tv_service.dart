@@ -257,13 +257,6 @@ class TvService {
       }
       final body = response.body;
       if (body.trimLeft().startsWith('#EXTM3U')) {
-        final baseUrl = response.request?.url.toString() ?? xmlUrl;
-        if (isRaiAudioDescriptionChannel(channel)) {
-          final audioDescriptionUri = _extractAudioDescriptionUri(body);
-          if (audioDescriptionUri != null) {
-            return Uri.parse(baseUrl).resolve(audioDescriptionUri).toString();
-          }
-        }
         resolvedUrl = xmlUrl;
       } else {
         final match = RegExp(r'<url[^>]*type="content"[^>]*>([^<]+)</url>')
@@ -277,57 +270,6 @@ class TvService {
     }
 
     return resolvedUrl;
-  }
-
-  String? _extractAudioDescriptionUri(String playlist) {
-    for (final line in const LineSplitter().convert(playlist)) {
-      if (!line.startsWith('#EXT-X-MEDIA:')) continue;
-      final attributes = _parseHlsAttributes(line.substring(13));
-      if (attributes['TYPE'] != 'AUDIO') continue;
-      final name = attributes['NAME']?.toLowerCase() ?? '';
-      final language = attributes['LANGUAGE']?.toLowerCase() ?? '';
-      if (name.contains('audiodescrizione') || language == 'des') {
-        final uri = attributes['URI']?.trim();
-        if (uri != null && uri.isNotEmpty) return uri;
-      }
-    }
-    return null;
-  }
-
-  Map<String, String> _parseHlsAttributes(String value) {
-    final attributes = <String, String>{};
-    var index = 0;
-    while (index < value.length) {
-      final equalsIndex = value.indexOf('=', index);
-      if (equalsIndex == -1) break;
-      final key = value.substring(index, equalsIndex).trim();
-      index = equalsIndex + 1;
-
-      String attributeValue;
-      if (index < value.length && value[index] == '"') {
-        index++;
-        final buffer = StringBuffer();
-        while (index < value.length) {
-          final char = value[index];
-          if (char == '"') {
-            index++;
-            break;
-          }
-          buffer.write(char);
-          index++;
-        }
-        attributeValue = buffer.toString();
-      } else {
-        final commaIndex = value.indexOf(',', index);
-        final endIndex = commaIndex == -1 ? value.length : commaIndex;
-        attributeValue = value.substring(index, endIndex).trim();
-        index = endIndex;
-      }
-
-      if (key.isNotEmpty) attributes[key] = attributeValue;
-      if (index < value.length && value[index] == ',') index++;
-    }
-    return attributes;
   }
 
   int _readInt(Map<String, dynamic> item, String camelKey, String snakeKey) {
