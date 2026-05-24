@@ -42,6 +42,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // TTS state
   bool _speaking = false;
   String? _ttsStatus;
+  int _playingChunkIndex = -1;
+  final _chunkKeys = <GlobalKey>[];
+  int _totalChunks = 0;
 
   bool _ttsPaused = false;
   StreamSubscription<bool>? _playingSub;
@@ -88,6 +91,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           _documentText,
           maxChunkChars: _maxChunkChars,
         );
+        _chunkKeys
+          ..clear()
+          ..addAll(List.generate(_chunks.length, (_) => GlobalKey()));
       }
     } catch (e) {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
@@ -95,6 +101,23 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } finally {
       if (mounted) setState(() => _loadingText = false);
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Scroll automatico al chunk corrente
+  // ---------------------------------------------------------------------------
+
+  void _scrollToChunk(int index) {
+    if (index < 0 || index >= _chunkKeys.length) return;
+    final key = _chunkKeys[index];
+    final ctx = key.currentContext;
+    if (ctx == null) return;
+    Scrollable.ensureVisible(
+      ctx,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOut,
+      alignment: 0.3, // mostra il chunk a ~30% dall'alto
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -118,7 +141,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     setState(() {
       _speaking = true;
       _ttsPaused = false;
-      _ttsStatus = null;
+      _playingChunkIndex = -1;
+      _totalChunks = _chunks.length;
+      _ttsStatus = 'Preparo lettura Edge TTS a blocchi...';
     });
 
     try {
@@ -139,8 +164,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       });
 
       // Riproduzione con avanzamento cursore
-      await for (final (_, file) in controller.stream) {
+      await for (final (index, file) in controller.stream) {
         if (!mounted || !_speaking) break;
+        // Aggiorna chunk evidenziato e scrolla
+        setState(() {
+          _playingChunkIndex = index;
+          _ttsStatus = 'Lettura blocco ${index + 1} di $_totalChunks...';
+        });
+        _scrollToChunk(index);
         await _audio.playFilesSequentially([file]);
       }
 
@@ -149,6 +180,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
       if (!mounted) return;
       setState(() {
+        _playingChunkIndex = -1;
         _speaking = false;
         _ttsPaused = false;
         _ttsStatus = 'Lettura terminata.';
@@ -157,6 +189,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       dev.log('DocumentReaderScreen TTS error: $e');
       if (!mounted) return;
       setState(() {
+        _playingChunkIndex = -1;
         _ttsStatus = 'Errore Edge TTS: $e';
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -175,6 +208,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     setState(() {
       _speaking = false;
       _ttsPaused = false;
+      _playingChunkIndex = -1;
       _ttsStatus = 'Lettura interrotta.';
     });
   }
@@ -211,8 +245,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             _documentText,
             maxChunkChars: _maxChunkChars,
           );
+          _chunkKeys
+            ..clear()
+            ..addAll(List.generate(_chunks.length, (_) => GlobalKey()));
         } else {
           _chunks = [];
+          _chunkKeys.clear();
         }
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -355,11 +393,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                   ),
                                 ),
                               )
-                            else if (_documentText.isNotEmpty)
-                              Text(
-                                _documentText,
-                                style: theme.textTheme.bodyLarge,
-                              )
+                            else if (_chunks.isNotEmpty)
+                              ..._buildChunkWidgets(theme, colorScheme)
                             else if (_documentText.isEmpty &&
                                 _loadError == null)
                               Text(
@@ -424,6 +459,47 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     );
   }
 
+  /// Costruisce la lista di widget per i blocchi di testo.
+  /// Il blocco in riproduzione viene evidenziato.
+  List<Widget> _buildChunkWidgets(ThemeData theme, ColorScheme colorScheme) {
+    final widgets = <Widget>[];
+    for (var i = 0; i < _chunks.length; i++) {
+      final isPlaying = i == _playingChunkIndex;
+      widgets.add(
+        Semantics(
+          key: _chunkKeys[i],
+          container: true,
+          liveRegion: isPlaying,
+          label: isPlaying ? 'In lettura ' : null,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            margin: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color:
+                  isPlaying ? colorScheme.primaryContainer : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              border: isPlaying
+                  ? Border.all(
+                      color: colorScheme.primary.withAlpha(128),
+                      width: 1.5,
+                    )
+                  : null,
+            ),
+            child: Text(
+              _chunks[i],
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontWeight: isPlaying ? FontWeight.w600 : FontWeight.normal,
+                color: isPlaying ? colorScheme.onPrimaryContainer : null,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return widgets;
+  }
 }
 
 // ---------------------------------------------------------------------------
