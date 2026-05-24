@@ -139,7 +139,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return;
       }
 
-      final subject = Uri.encodeComponent('Richiesta Codice Sonarpad');
+      final subject = 'Richiesta Codice Sonarpad';
       final os = Platform.isIOS
           ? 'iOS'
           : Platform.isAndroid
@@ -151,10 +151,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       : Platform.isLinux
                           ? 'Linux'
                           : 'Sconosciuto';
-      final body = Uri.encodeComponent(
-          'Nome: $name\nCognome: $surname\nEmail: $email\nSistema Operativo: $os');
-      final url =
-          Uri.parse('mailto:ambro86@gmail.com?subject=$subject&body=$body');
+
+      final body =
+          'Nome: $name\r\nCognome: $surname\r\nEmail: $email\r\nSistema Operativo: $os';
+
+      // I client mail richiedono %20 per gli spazi nei link mailto, mentre Uri(queryParameters)
+      // usa il '+' tipico dell'HTTP, che i client mail non decodificano.
+      // Quindi, codifichiamo manualmente con Uri.encodeComponent.
+      String encodeQueryParameters(Map<String, String> params) {
+        return params.entries
+            .map((e) =>
+                '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+            .join('&');
+      }
+
+      final url = Uri(
+        scheme: 'mailto',
+        path: 'ambro86@gmail.com',
+        query: encodeQueryParameters({
+          'subject': subject,
+          'body': body,
+        }),
+      );
 
       try {
         await launchUrl(url);
