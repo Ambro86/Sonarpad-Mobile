@@ -45,6 +45,11 @@ class TvService {
     return 'Altri';
   }
 
+  bool isRaiAudioDescriptionChannel(TvChannel channel) {
+    return (channel.name == 'Rai 1' || channel.name == 'Rai 2' || channel.name == 'Rai 3') &&
+           channel.url.contains('mediapolis.rai.it/relinker/');
+  }
+
   String _decodePayload(String jsonStr, String secretKey) {
     final Map<String, dynamic> payload = jsonDecode(jsonStr);
     final String algorithm = payload['algorithm'];
@@ -71,6 +76,16 @@ class TvService {
 
     final decompressed = gzip.decode(decrypted);
     return utf8.decode(decompressed);
+  }
+
+  bool isSecretCodeValid(String secretKey) {
+    if (secretKey.trim().isEmpty) return false;
+    try {
+      _decodePayload(_tvChannelsPayloadJson, secretKey.trim());
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   List<TvChannel> loadChannels(String secretKey) {

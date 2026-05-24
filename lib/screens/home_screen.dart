@@ -4,12 +4,15 @@ import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../services/accessibility_feedback_service.dart';
 import '../services/app_settings_service.dart';
+import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
+import '../services/tv_service.dart';
 import 'documents_screen.dart';
 import 'info_screen.dart';
 import 'news_screen.dart';
 import 'podcast_screen.dart';
 import 'radio_screen.dart';
+import 'raiplay_screen.dart';
 import 'raiplaysound_screen.dart';
 import 'settings_screen.dart';
 import 'tv_screen.dart';
@@ -24,9 +27,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _settings = AppSettingsService();
-  final _raiPlayService = RaiPlaySoundService();
-  String _tvCode = '';
+  final _raiPlaySoundService = RaiPlaySoundService();
+  final _raiPlayService = RaiPlayService();
   bool _isSecretCodeValid = false;
+  bool _isTvCodeValid = false;
+  bool _isRaiPlayValid = false;
 
   @override
   void initState() {
@@ -36,11 +41,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _load() async {
     final code = await _settings.getTvSecretCode();
-    final isValid = _raiPlayService.isSecretCodeValid(code);
+    final isValidTv = TvService().isSecretCodeValid(code);
+    final isValidRaiSound = _raiPlaySoundService.isSecretCodeValid(code);
+    final isValidRaiPlay = _raiPlayService.isSecretCodeValid(code);
     if (!mounted) return;
     setState(() {
-      _tvCode = code;
-      _isSecretCodeValid = isValid;
+      _isTvCodeValid = isValidTv;
+      _isSecretCodeValid = isValidRaiSound;
+      _isRaiPlayValid = isValidRaiPlay;
     });
   }
 
@@ -108,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 routeName: 'radio',
               ),
             ),
-            if (_tvCode.isNotEmpty)
+            if (_isTvCodeValid)
               _HomeButton(
                 label: 'TV',
                 hint: 'Guarda i canali TV',
@@ -121,11 +129,21 @@ class _HomeScreenState extends State<HomeScreen> {
             if (_isSecretCodeValid)
               _HomeButton(
                 label: 'RaiPlay Sound',
-                hint: 'Ascolta i contenuti di RaiPlay Sound',
+                hint: 'Podcast e audiolibri Rai',
                 onPressed: () => AccessibilityFeedbackService.push(
                   context,
                   builder: (_) => const RaiPlaySoundScreen(),
                   routeName: 'raiplaysound',
+                ),
+              ),
+            if (_isRaiPlayValid)
+              _HomeButton(
+                label: 'RaiPlay',
+                hint: 'Programmi e video Rai on demand',
+                onPressed: () => AccessibilityFeedbackService.push(
+                  context,
+                  builder: (_) => const RaiPlayScreen(),
+                  routeName: 'raiplay',
                 ),
               ),
             _HomeButton(

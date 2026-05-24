@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
@@ -52,6 +53,12 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
       streamUrl: widget.channel.url,
       languageCode: 'it',
     );
+    
+    if (TvService().isRaiAudioDescriptionChannel(widget.channel)) {
+      // ignore: deprecated_member_use
+      SemanticsService.announce("Audiodescrizione attivata se configurata nelle impostazioni di accessibilità del dispositivo.", TextDirection.ltr);
+    }
+    
     Navigator.push(
       context,
       MaterialPageRoute(

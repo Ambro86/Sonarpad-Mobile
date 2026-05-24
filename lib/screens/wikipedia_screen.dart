@@ -23,6 +23,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
   WikipediaArticle? _article;
   bool _importing = false;
   Object? _importError;
+  bool _hideKeyboardWhenResultsArrive = false;
   String _language = 'it';
   int _selectedSection = 0;
 
@@ -54,11 +55,23 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
   void _search() {
     final q = _controller.text.trim();
     if (q.isEmpty) return;
+    FocusScope.of(context).unfocus();
     setState(() {
       _article = null;
       _importError = null;
+      _hideKeyboardWhenResultsArrive = true;
       _selectedSection = 0;
       _results = _service.search(q, lang: _language);
+    });
+  }
+
+  void _hideKeyboardForSearchResults() {
+    if (!_hideKeyboardWhenResultsArrive) return;
+    _hideKeyboardWhenResultsArrive = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      }
     });
   }
 
@@ -138,6 +151,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
                 if ((snapshot.data ?? const []).isEmpty) {
                   return Text(l10n.noWikipediaResults);
                 }
+                _hideKeyboardForSearchResults();
                 return Column(
                   children: (snapshot.data ?? const [])
                       .map((r) => ListTile(
@@ -168,12 +182,15 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
             ),
             const SizedBox(height: 24),
             Semantics(
-              hint: 'Salva l\'articolo nella libreria e avvia la lettura con Edge TTS',
+              hint:
+                  'Salva l\'articolo nella libreria e avvia la lettura con Edge TTS',
               child: FilledButton.icon(
                 onPressed: _importToLibrary,
                 icon: const Icon(Icons.download),
-                label: const Text('Importa e leggi', style: TextStyle(fontSize: 18)),
-                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+                label: const Text('Importa e leggi',
+                    style: TextStyle(fontSize: 18)),
+                style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(56)),
               ),
             ),
           ],
@@ -209,7 +226,8 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     try {
       final dir = await getApplicationDocumentsDirectory();
       final safeName = docName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
-      final fileName = 'wiki_${DateTime.now().microsecondsSinceEpoch}_$safeName.txt';
+      final fileName =
+          'wiki_${DateTime.now().microsecondsSinceEpoch}_$safeName.txt';
       final file = File(p.join(dir.path, fileName));
       await file.writeAsString(text);
 
@@ -228,6 +246,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
+          settings: const RouteSettings(name: 'documentReader'),
           builder: (_) => DocumentReaderScreen(document: doc),
         ),
       );

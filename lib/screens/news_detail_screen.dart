@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
+import '../services/accessibility_feedback_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
@@ -190,11 +191,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             label: Text(l10n.stopReading),
           ),
           OutlinedButton.icon(
-            onPressed: () => Navigator.push(
+            onPressed: () => AccessibilityFeedbackService.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => NewsWebViewScreen(article: article),
-              ),
+              builder: (_) => NewsWebViewScreen(article: article),
+              routeName: 'news-webview',
             ),
             icon: const Icon(Icons.article),
             label: Text(l10n.readFullArticle),
