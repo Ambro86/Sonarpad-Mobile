@@ -14,7 +14,6 @@ class RadioPlayerScreen extends StatefulWidget {
 
 class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   final _audio = AudioPlayerService();
-  bool _playing = false;
   bool _loading = false;
   String? _error;
 
@@ -34,8 +33,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     try {
       // Iniziamo lo stream audio
       unawaited(_audio.playUrl(widget.station.streamUrl));
-      if (!mounted) return;
-      setState(() => _playing = true);
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e.toString());
@@ -46,8 +43,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   Future<void> _stop() async {
     await _audio.stop();
-    if (!mounted) return;
-    setState(() => _playing = false);
   }
 
   @override
@@ -89,18 +84,21 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               runSpacing: 12,
               alignment: WrapAlignment.center,
               children: [
-                FilledButton.icon(
-                  onPressed: _loading || _playing ? null : _play,
-                  icon: const Icon(Icons.play_arrow),
-                  label: Text(l10n.play),
-                ),
-                Semantics(
-                  focused: true,
-                  child: FilledButton.icon(
-                    onPressed: _playing ? _stop : null,
-                    icon: const Icon(Icons.stop),
-                    label: Text(l10n.stop),
-                  ),
+                StreamBuilder<bool>(
+                  stream: _audio.playingStream,
+                  builder: (context, snapshot) {
+                    final isPlaying = snapshot.data ?? false;
+                    return Semantics(
+                      focused: true,
+                      child: FilledButton.icon(
+                        onPressed: _loading
+                            ? null
+                            : (isPlaying ? _stop : _play),
+                        icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                        label: Text(isPlaying ? l10n.pause : l10n.play),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

@@ -46,6 +46,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   int _readyChunks = 0;
   int _totalChunks = 0;
   String? _ttsStatus;
+  
+  bool _ttsPaused = false;
+  StreamSubscription<bool>? _playingSub;
 
   bool _isEditing = false;
   late final TextEditingController _editController;
@@ -56,11 +59,17 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   void initState() {
     super.initState();
     _editController = TextEditingController();
+    _playingSub = _audio.playingStream.listen((playing) {
+      if (_speaking && mounted) {
+        setState(() => _ttsPaused = !playing);
+      }
+    });
     _extractText();
   }
 
   @override
   void dispose() {
+    _playingSub?.cancel();
     _audio.dispose();
     _scrollController.dispose();
     _editController.dispose();
@@ -132,6 +141,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     setState(() {
       _speaking = true;
+      _ttsPaused = false;
       _playingChunkIndex = -1;
       _readyChunks = 0;
       _totalChunks = _chunks.length;
@@ -180,6 +190,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (!mounted) return;
       setState(() {
         _playingChunkIndex = -1;
+        _speaking = false;
+        _ttsPaused = false;
         _ttsStatus = 'Lettura terminata.';
       });
     } catch (e) {
@@ -204,6 +216,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (!mounted) return;
     setState(() {
       _speaking = false;
+      _ttsPaused = false;
       _playingChunkIndex = -1;
       _ttsStatus = 'Lettura interrotta.';
     });
@@ -374,13 +387,20 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           const SizedBox(height: 12),
 
                           // --- Pulsanti TTS ---
-                          FilledButton.icon(
-                            onPressed: _speaking ? null : _readWithEdgeTts,
-                            icon: const Icon(Icons.volume_up),
-                            label: Text(
-                              _speaking
-                                  ? 'Lettura in corso...'
-                                  : 'Leggi con Edge TTS',
+                          Semantics(
+                            focused: true,
+                            child: FilledButton.icon(
+                              onPressed: () {
+                                if (!_speaking) {
+                                  _readWithEdgeTts();
+                                } else if (_ttsPaused) {
+                                  _audio.play();
+                                } else {
+                                  _audio.pause();
+                                }
+                              },
+                              icon: Icon(!_speaking ? Icons.volume_up : (_ttsPaused ? Icons.play_arrow : Icons.pause)),
+                              label: Text(!_speaking ? 'Leggi con Edge TTS' : (_ttsPaused ? 'Riprendi lettura' : 'Pausa lettura')),
                             ),
                           ),
                           const SizedBox(height: 8),

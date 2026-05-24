@@ -8,6 +8,8 @@ class AudioPlayerService {
   bool _stopRequested = false;
   bool _sessionReady = false;
 
+  Stream<bool> get playingStream => _player.playingStream;
+
   Future<void> _prepareAudioSession() async {
     if (_sessionReady) return;
     final session = await AudioSession.instance;
