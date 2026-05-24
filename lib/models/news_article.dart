@@ -15,3 +15,13 @@ class NewsArticle {
     required this.publishedAt,
   });
 }
+
+class NewsArticleContent {
+  final String text;
+  final String url;
+
+  const NewsArticleContent({
+    required this.text,
+    required this.url,
+  });
+}

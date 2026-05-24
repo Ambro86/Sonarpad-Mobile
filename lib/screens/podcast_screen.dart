@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
-import '../services/audio_player_service.dart';
 import '../services/podcast_service.dart';
+import 'podcast_episode_player_screen.dart';
 
 class PodcastScreen extends StatefulWidget {
   const PodcastScreen({super.key});
@@ -14,7 +14,6 @@ class PodcastScreen extends StatefulWidget {
 
 class _PodcastScreenState extends State<PodcastScreen> {
   final _service = PodcastService();
-  final _audio = AudioPlayerService();
   final _feedController = TextEditingController();
   final _searchController = TextEditingController();
 
@@ -106,6 +105,15 @@ class _PodcastScreenState extends State<PodcastScreen> {
     });
   }
 
+  void _openEpisode(PodcastEpisode episode) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+      ),
+    );
+  }
+
   Future<void> _addByUrl() async {
     final l10n = AppLocalizations.of(context);
     final url = _feedController.text.trim();
@@ -129,7 +137,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
   void dispose() {
     _feedController.dispose();
     _searchController.dispose();
-    _audio.dispose();
     super.dispose();
   }
 
@@ -288,7 +295,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
                                 final messenger = ScaffoldMessenger.of(context);
                                 try {
                                   if (action == 'play') {
-                                    await _audio.playUrl(episode.audioUrl);
+                                    _openEpisode(episode);
                                   }
                                   if (action == 'download') {
                                     final file =
@@ -312,7 +319,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
                                     child: Text(l10n.download)),
                               ],
                             ),
-                            onTap: () => _audio.playUrl(episode.audioUrl),
+                            onTap: () => _openEpisode(episode),
                           ),
                         )),
                   ],

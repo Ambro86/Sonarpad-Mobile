@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../services/accessibility_feedback_service.dart';
+import 'documents_screen.dart';
 import 'info_screen.dart';
 import 'news_screen.dart';
 import 'podcast_screen.dart';
@@ -62,6 +63,15 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
+            _HomeButton(
+              label: l10n.documents,
+              hint: l10n.documentsHint,
+              onPressed: () => AccessibilityFeedbackService.push(
+                context,
+                builder: (_) => const DocumentsScreen(),
+                routeName: 'documents',
+              ),
+            ),
             _HomeButton(
               label: l10n.news,
               hint: l10n.newsHint,

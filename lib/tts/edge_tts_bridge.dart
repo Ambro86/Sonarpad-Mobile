@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -40,6 +41,9 @@ class EdgeTtsBridge {
     required String text,
     String voice = 'it-IT-ElsaNeural',
   }) async {
+    debugPrint(
+      'Sonarpad TTS: speakToFile start voice=$voice textLength=${text.length}',
+    );
     _ensureLoaded();
     final dir = await getTemporaryDirectory();
     final outPath = p.join(
@@ -52,8 +56,10 @@ class EdgeTtsBridge {
     final outPtr = outPath.toNativeUtf8();
     Pointer<Utf8> resultPtr = nullptr;
     try {
+      debugPrint('Sonarpad TTS: generating output=$outPath');
       resultPtr = _generate!(textPtr, voicePtr, outPtr);
       final result = resultPtr == nullptr ? '' : resultPtr.toDartString();
+      debugPrint('Sonarpad TTS: native result=$result');
       if (!result.startsWith('ok:')) {
         throw Exception(result.isEmpty
             ? 'Edge TTS non ha restituito un risultato'
@@ -64,6 +70,7 @@ class EdgeTtsBridge {
         throw Exception('File audio non creato: $outPath');
       }
       final size = await file.length();
+      debugPrint('Sonarpad TTS: generated file path=$outPath size=$size');
       if (size < 1000) {
         throw Exception('File audio troppo piccolo o vuoto: $size byte');
       }
@@ -157,8 +164,11 @@ class EdgeTtsBridge {
         );
         _free = _lib!
             .lookupFunction<_FreeNative, _FreeDart>('sonarpad_string_free');
+        debugPrint('Sonarpad TTS: loaded library candidate=$candidate');
         return;
       } catch (e) {
+        debugPrint(
+            'Sonarpad TTS: failed library candidate=$candidate error=$e');
         lastError = e;
         _lib = null;
         _generate = null;

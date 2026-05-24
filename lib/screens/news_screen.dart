@@ -4,7 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
 import '../services/news_service.dart';
 import '../services/news_sources/news_rss_source.dart';
-import 'news_detail_screen.dart';
+import 'news_webview_screen.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -80,7 +80,6 @@ class _NewsScreenState extends State<NewsScreen> {
                   )
                 : _NewsArticleList(
                     future: _future!,
-                    language: _language,
                   ),
           ),
         ],
@@ -118,11 +117,9 @@ class _NewsSourceList extends StatelessWidget {
 class _NewsArticleList extends StatelessWidget {
   const _NewsArticleList({
     required this.future,
-    required this.language,
   });
 
   final Future<List<NewsArticle>> future;
-  final NewsLanguage language;
 
   @override
   Widget build(BuildContext context) {
@@ -159,10 +156,7 @@ class _NewsArticleList extends StatelessWidget {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => NewsDetailScreen(
-                    article: article,
-                    language: language,
-                  ),
+                  builder: (_) => NewsWebViewScreen(article: article),
                 ),
               ),
             );

@@ -10,6 +10,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import 'news_webview_screen.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsArticle article;
@@ -52,6 +53,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       final voice = await _voice();
       final chunks = _tts.splitTextForStreaming(text, maxChunkChars: 650);
       _totalChunks = chunks.length;
+      debugPrint(
+        'Sonarpad TTS: read requested article="${widget.article.title}" '
+        'voice=$voice textLength=${text.length} chunks=${chunks.length}',
+      );
       if (chunks.isEmpty) throw Exception(l10n.noTextToRead);
 
       // Coda semplice: appena il primo blocco è pronto parte la riproduzione,
@@ -64,6 +69,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       final generation = Future<void>(() async {
         for (var i = 0; i < chunks.length; i++) {
           final file = await _tts.speakToFile(text: chunks[i], voice: voice);
+          final size = await file.length();
+          debugPrint(
+            'Sonarpad TTS: chunk ${i + 1}/${chunks.length} ready '
+            'path=${file.path} size=$size',
+          );
           queue.add(file);
           controller.add(file);
           if (!mounted) return;
@@ -84,6 +94,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       await for (final file in controller.stream) {
         if (!mounted || !_speaking) break;
         final size = await file.length();
+        debugPrint(
+          'Sonarpad TTS: playing chunk ${index + 1}/$_totalChunks '
+          'path=${file.path} size=$size',
+        );
         setState(
             () => _status = l10n.playingChunk(index + 1, _totalChunks, size));
         await _audio.playFilesSequentially([file]);
@@ -94,6 +108,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       if (generationError != null) throw Exception(generationError);
 
       if (!mounted) return;
+      debugPrint(
+        'Sonarpad TTS: reading finished ready=$_readyChunks total=$_totalChunks '
+        'library=${_tts.lastLibraryPath}',
+      );
       setState(() {
         _status = generationDone
             ? l10n.readingFinished(
@@ -104,6 +122,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             : l10n.readingStopped;
       });
     } catch (e) {
+      debugPrint('Sonarpad TTS: reading error=$e');
       if (!mounted) return;
       setState(() => _status = l10n.edgeTtsError(e));
       ScaffoldMessenger.of(context).showSnackBar(
@@ -143,6 +162,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           const SizedBox(height: 8),
           Text(l10n.source(article.source)),
           const SizedBox(height: 16),
+          Text(l10n.articlePreview,
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
           Text(article.summary, style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 24),
           Semantics(
@@ -166,6 +188,16 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             onPressed: _speaking ? _stopReading : null,
             icon: const Icon(Icons.stop),
             label: Text(l10n.stopReading),
+          ),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => NewsWebViewScreen(article: article),
+              ),
+            ),
+            icon: const Icon(Icons.article),
+            label: Text(l10n.readFullArticle),
           ),
           OutlinedButton.icon(
             onPressed: () => launchUrl(Uri.parse(article.link),

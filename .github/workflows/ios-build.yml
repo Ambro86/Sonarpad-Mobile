@@ -55,6 +55,15 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :CFBundleName ${APP_NAME}" "$PLIST" || \
             /usr/libexec/PlistBuddy -c "Add :CFBundleName string ${APP_NAME}" "$PLIST"
 
+      - name: Configure iOS permissions for file_picker
+        run: |
+          PLIST="ios/Runner/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string Richiesto per allegare o leggere documenti salvati tra le foto." "$PLIST" || true
+          /usr/libexec/PlistBuddy -c "Add :LSSupportsOpeningDocumentsInPlace bool true" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Set :LSSupportsOpeningDocumentsInPlace true" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :UIFileSharingEnabled bool true" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Set :UIFileSharingEnabled true" "$PLIST"
+
       - name: Build Rust iOS framework
         run: |
           if [ -f "scripts/build_ios_rust.sh" ]; then

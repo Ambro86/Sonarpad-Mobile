@@ -46,11 +46,20 @@ class AppLocalizations {
   String get loadingNews => 'Caricamento notizie';
   String error(Object error) => 'Errore: $error';
   String get noNewsFound => 'Nessuna notizia trovata';
+  String get loadingArticle => 'Caricamento articolo';
+  String get noFullArticleFound =>
+      'Articolo integrale non disponibile. Mostro il riassunto del feed.';
   String get italian => 'Italiano';
   String get english => 'English';
   String get newsSource => 'Fonte notizie';
 
   String get article => 'Articolo';
+  String get articlePreview => 'Anteprima articolo';
+  String get readFullArticle => 'Leggi articolo completo';
+  String get extractingReaderArticleText =>
+      'Estraggo il testo in modalita lettura...';
+  String get extractingVisibleArticleText =>
+      'Estraggo il testo visibile dalla pagina...';
   String source(String source) => 'Fonte: $source';
   String get readyStatus => 'Pronto.';
   String get preparingEdgeTts => 'Preparo lettura Edge TTS a blocchi...';
@@ -112,6 +121,11 @@ class AppLocalizations {
   String downloaded(String path) => 'Scaricato: $path';
   String episodeError(Object error) => 'Errore episodio: $error';
   String get play => 'Riproduci';
+  String get pause => 'Pausa';
+  String get stop => 'Stop';
+  String get back => 'Indietro';
+  String get episodePlayer => 'Player episodio';
+  String get loadingEpisodeAudio => 'Caricamento audio episodio';
   String get download => 'Scarica';
 
   String get searchWikipedia => 'Cerca su Wikipedia';
@@ -122,6 +136,19 @@ class AppLocalizations {
   String get noWikipediaResults => 'Nessun risultato Wikipedia trovato';
   String get wikipediaImportMode => 'Importa';
   String get wikipediaImportWholeArticle => 'Tutto l\'articolo';
+
+  // Documenti
+  String get documents => 'Documenti';
+  String get documentsHint => 'Apre la libreria documenti';
+  String get documentLibrary => 'Libreria documenti';
+  String get addToLibrary => 'Aggiungi alla libreria';
+  String get noDocuments => 'Nessun documento. Aggiungi un file.';
+  String get documentAdded => 'Documento aggiunto';
+  String get documentRemoved => 'Documento rimosso';
+  String get removeDocument => 'Rimuovi documento';
+  String get documentPickerError => 'Errore apertura file';
+  String get readDocument => 'Leggi documento';
+  String get documentReaderTitle => 'Lettore documento';
 }
 
 class _AppLocalizationsDelegate
