@@ -333,16 +333,39 @@ class TvService {
           characteristics.contains('describes-video');
 
       if (isAudioDescription) {
-        adUrl = masterUri.resolve(uri).toString();
+        adUrl = _resolveHlsChildUrl(masterPlaylistUrl, uri);
         break; // AD trovata: precedenza assoluta, non cercare oltre
       }
 
       if (language == 'ita' && itaUrl == null) {
-        itaUrl = masterUri.resolve(uri).toString();
+        itaUrl = _resolveHlsChildUrl(masterPlaylistUrl, uri);
       }
     }
 
     return adUrl ?? itaUrl;
+  }
+
+  /// Risolve l'URI del manifest audio mantenendo i parametri query del master
+  /// (necessario per non perdere i token di autenticazione RAI/Akamai).
+  String _resolveHlsChildUrl(String masterUrl, String childUri) {
+    if (childUri.startsWith('http://') || childUri.startsWith('https://')) {
+      return childUri;
+    }
+
+    final masterUri = Uri.parse(masterUrl);
+    final query = masterUri.hasQuery ? '?${masterUri.query}' : '';
+    final path = masterUri.path;
+    final lastSlash = path.lastIndexOf('/');
+    final basePath = lastSlash != -1 ? path.substring(0, lastSlash) : path;
+
+    final scheme = masterUri.scheme;
+    final host = masterUri.host;
+
+    if (childUri.contains('?')) {
+      return '$scheme://$host$basePath/$childUri';
+    } else {
+      return '$scheme://$host$basePath/$childUri$query';
+    }
   }
 
   /// Parsa gli attributi di una riga HLS, ad esempio:
