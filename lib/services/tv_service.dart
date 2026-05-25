@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
@@ -270,6 +271,91 @@ class TvService {
     }
 
     return resolvedUrl;
+  }
+
+  /// Per i canali RAI con audiodescrizione, scarica il master playlist HLS
+  /// e restituisce l'URI della traccia AD se presente, altrimenti l'URL
+  /// principale. Funziona con just_audio su iOS (AVPlayer gestisce HLS audio).
+  Future<String> resolveAudioDescriptionStreamUrl(TvChannel channel) async {
+    final masterUrl = await resolveStreamUrl(channel);
+    try {
+      final adUrl = await _findAudioDescriptionTrackUrl(masterUrl);
+      if (adUrl != null) {
+        dev.log('TvService: traccia AD trovata: $adUrl');
+        return adUrl;
+      }
+    } catch (e) {
+      dev.log('TvService: errore ricerca traccia AD: $e');
+    }
+    return masterUrl;
+  }
+
+  /// Scarica il master playlist e cerca la traccia di audiodescrizione.
+  /// Priorità (identica a RaiPlayService):
+  ///   1. LANGUAGE="des" / NAME contiene "audiodescri" /
+  ///      CHARACTERISTICS contiene "describes-video"  → traccia AD
+  ///   2. LANGUAGE="ita"                              → audio italiano
+  ///   3. null → il chiamante usa l'URL master originale
+  Future<String?> _findAudioDescriptionTrackUrl(
+      String masterPlaylistUrl) async {
+    final response = await http.get(
+      Uri.parse(masterPlaylistUrl),
+      headers: {'User-Agent': 'Sonarpad TV/1.0'},
+    ).timeout(const Duration(seconds: 10));
+
+    if (response.statusCode != 200) return null;
+
+    final body = response.body;
+    if (!body.trimLeft().startsWith('#EXTM3U')) return null;
+
+    final masterUri = Uri.parse(masterPlaylistUrl);
+
+    String? adUrl;
+    String? itaUrl;
+
+    for (final line in body.split('\n')) {
+      final trimmed = line.trim();
+      if (!trimmed.startsWith('#EXT-X-MEDIA:')) continue;
+
+      final attrs =
+          _parseHlsAttributes(trimmed.substring('#EXT-X-MEDIA:'.length));
+      if (attrs['TYPE'] != 'AUDIO') continue;
+
+      final uri = attrs['URI'];
+      if (uri == null || uri.isEmpty) continue;
+
+      final language = (attrs['LANGUAGE'] ?? '').toLowerCase();
+      final name = (attrs['NAME'] ?? '').toLowerCase();
+      final characteristics = attrs['CHARACTERISTICS'] ?? '';
+
+      final isAudioDescription = language == 'des' ||
+          name.contains('audiodescri') ||
+          characteristics.contains('describes-video');
+
+      if (isAudioDescription) {
+        adUrl = masterUri.resolve(uri).toString();
+        break; // AD trovata: precedenza assoluta, non cercare oltre
+      }
+
+      if (language == 'ita' && itaUrl == null) {
+        itaUrl = masterUri.resolve(uri).toString();
+      }
+    }
+
+    return adUrl ?? itaUrl;
+  }
+
+  /// Parsa gli attributi di una riga HLS, ad esempio:
+  ///   TYPE=AUDIO,GROUP-ID="aac",LANGUAGE="des",URI="audio.m3u8"
+  Map<String, String> _parseHlsAttributes(String attrString) {
+    final result = <String, String>{};
+    final pattern = RegExp(r'([A-Z-]+)=(?:"([^"]*)"|(\S+?)(?:,|$))');
+    for (final match in pattern.allMatches(attrString)) {
+      final key = match.group(1)!;
+      final value = match.group(2) ?? match.group(3) ?? '';
+      result[key] = value;
+    }
+    return result;
   }
 
   int _readInt(Map<String, dynamic> item, String camelKey, String snakeKey) {

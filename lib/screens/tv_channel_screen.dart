@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+
 
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
@@ -51,14 +51,27 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
 
   Future<void> _play() async {
     try {
-      final resolvedUrl = await _service.resolveStreamUrl(widget.channel);
+      final isRaiAd = _service.isRaiAudioDescriptionChannel(widget.channel);
+
+      // Su iOS: per i canali RAI tentiamo la traccia di audiodescrizione.
+      // resolveAudioDescriptionStreamUrl scarica il master HLS, cerca
+      // EXT-X-MEDIA con LANGUAGE="des" / NAME="Audiodescrizione" /
+      // CHARACTERISTICS contains "describes-video" e restituisce quell'URI.
+      // Se la traccia non c'è, cade back sull'URL principale.
+      final String resolvedUrl;
+      if (!Platform.isWindows && isRaiAd) {
+        resolvedUrl =
+            await _service.resolveAudioDescriptionStreamUrl(widget.channel);
+      } else {
+        resolvedUrl = await _service.resolveStreamUrl(widget.channel);
+      }
+
       if (!mounted) return;
 
       if (Platform.isWindows) {
         await _playWithExternalWindowsPlayer(
           resolvedUrl,
-          preferAudioDescription:
-              _service.isRaiAudioDescriptionChannel(widget.channel),
+          preferAudioDescription: isRaiAd,
         );
         return;
       }
@@ -68,14 +81,6 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
         streamUrl: resolvedUrl,
         languageCode: 'it',
       );
-
-      if (TvService().isRaiAudioDescriptionChannel(widget.channel)) {
-        // ignore: deprecated_member_use
-        SemanticsService.announce(
-          'Audiodescrizione attivata se disponibile nello stream.',
-          TextDirection.ltr,
-        );
-      }
 
       Navigator.push(
         context,

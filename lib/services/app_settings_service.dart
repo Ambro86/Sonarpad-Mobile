@@ -35,13 +35,13 @@ class AppSettingsService {
   static const ttsVoices = [
     TtsVoiceOption(
       languageCode: 'it',
-      voice: 'it-IT-ElsaNeural',
-      label: 'Elsa',
+      voice: 'it-IT-IsabellaNeural',
+      label: 'Isabella',
     ),
     TtsVoiceOption(
       languageCode: 'it',
-      voice: 'it-IT-IsabellaNeural',
-      label: 'Isabella',
+      voice: 'it-IT-ElsaNeural',
+      label: 'Elsa',
     ),
     TtsVoiceOption(
       languageCode: 'it',

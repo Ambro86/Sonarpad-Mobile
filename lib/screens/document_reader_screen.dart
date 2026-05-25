@@ -4,10 +4,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
+import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
 import '../tts/edge_tts_bridge.dart';
 
@@ -48,11 +48,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   bool _ttsPaused = false;
   StreamSubscription<bool>? _playingSub;
 
-  bool _isEditing = false;
-  List<String> _editChunks = [];
-
   static const int _maxChunkChars = 650;
-  static const int _maxEditChunkChars = 4000;
 
   @override
   void initState() {
@@ -79,8 +75,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   Future<void> _extractText() async {
     final ext = widget.document.extension.toLowerCase();
-    final path = widget.document.path;
     try {
+      final path = await DocumentLibraryService().resolveFilePath(widget.document);
       final result = await _extractor.extract(path: path, extension: ext);
       _documentText = result.text;
       _loadError = result.error;
@@ -210,81 +206,46 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   // ---------------------------------------------------------------------------
-  // Modifica
+  // Modifica paragrafo singolo
   // ---------------------------------------------------------------------------
 
-  List<String> _splitTextForEditing(String text) {
-    if (text.isEmpty) return [''];
+  /// Apre un dialog per modificare solo il paragrafo [index].
+  /// Dopo la conferma, aggiorna il chunk in memoria e salva immediatamente
+  /// su file senza uscire dalla modalità di lettura.
+  Future<void> _editParagraph(int index) async {
+    if (index < 0 || index >= _chunks.length) return;
 
-    final chunks = <String>[];
-    var start = 0;
-    while (start < text.length) {
-      var end = start + _maxEditChunkChars;
-      if (end >= text.length) {
-        chunks.add(text.substring(start));
-        break;
-      }
-
-      final minEnd = start + (_maxEditChunkChars ~/ 2);
-      final paragraphBreak = text.lastIndexOf('\n\n', end);
-      final lineBreak = text.lastIndexOf('\n', end);
-      final space = text.lastIndexOf(' ', end);
-
-      if (paragraphBreak >= minEnd) {
-        end = paragraphBreak + 2;
-      } else if (lineBreak >= minEnd) {
-        end = lineBreak + 1;
-      } else if (space >= minEnd) {
-        end = space + 1;
-      }
-
-      chunks.add(text.substring(start, end));
-      start = end;
-    }
-
-    return chunks;
-  }
-
-  void _startEditing() {
-    _editChunks = _splitTextForEditing(_documentText);
-    setState(() => _isEditing = true);
-  }
-
-  void _cancelEditing() {
-    _editChunks = [];
-    setState(() => _isEditing = false);
-  }
-
-  Future<void> _editChunk(int index) async {
-    if (index < 0 || index >= _editChunks.length) return;
-
-    final controller = TextEditingController(text: _editChunks[index]);
+    final controller = TextEditingController(text: _chunks[index]);
     final edited = await showDialog<String>(
       context: context,
-      builder: (context) {
+      builder: (ctx) {
         return AlertDialog(
-          title: const Text('Modifica testo'),
+          title: const Text('Modifica paragrafo'),
           content: SizedBox(
             width: double.maxFinite,
-            child: TextField(
-              controller: controller,
-              autofocus: true,
-              keyboardType: TextInputType.multiline,
-              maxLines: 12,
-              minLines: 6,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+            child: Semantics(
+              label: 'Campo di testo per la modifica del paragrafo',
+              child: TextField(
+                controller: controller,
+                autofocus: true,
+                keyboardType: TextInputType.multiline,
+                maxLines: 12,
+                minLines: 6,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Modifica il testo del paragrafo',
+                ),
               ),
             ),
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(ctx),
               child: const Text('Annulla'),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(context, controller.text),
-              child: const Text('Applica'),
+              onPressed: () => Navigator.pop(ctx, controller.text),
+              child: const Text('Applica e salva'),
             ),
           ],
         );
@@ -293,11 +254,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     controller.dispose();
 
     if (edited == null || !mounted) return;
-    setState(() => _editChunks[index] = edited);
-  }
 
-  Future<void> _saveDocument() async {
-    final text = _editChunks.join();
+    // Aggiorna il chunk e ricostruisce il testo completo
+    final updatedChunks = List<String>.from(_chunks)..[index] = edited;
+    final newText = updatedChunks.join();
+
+    // Salva su file
     try {
       final ext = widget.document.extension.toLowerCase();
       String savePath = widget.document.path;
@@ -312,32 +274,27 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         isNewFile = true;
       }
 
-      final file = File(savePath);
-      await file.writeAsString(text);
+      await File(savePath).writeAsString(newText);
 
       if (!mounted) return;
+      // Aggiorna stato: testo e chunk (la lettura riparte dall'inizio se necessario)
       setState(() {
-        _isEditing = false;
-        _editChunks = [];
-        _documentText = text;
-        if (_documentText.isNotEmpty) {
-          _chunks = _tts.splitTextForStreaming(
-            _documentText,
-            maxChunkChars: _maxChunkChars,
-          );
-          _chunkKeys
-            ..clear()
-            ..addAll(List.generate(_chunks.length, (_) => GlobalKey()));
-        } else {
-          _chunks = [];
-          _chunkKeys.clear();
-        }
+        _documentText = newText;
+        _chunks = _tts.splitTextForStreaming(
+          _documentText,
+          maxChunkChars: _maxChunkChars,
+        );
+        _chunkKeys
+          ..clear()
+          ..addAll(List.generate(_chunks.length, (_) => GlobalKey()));
       });
+
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(isNewFile
-              ? 'Salvato come nuovo documento di testo nella libreria.'
-              : 'Documento salvato con successo.'),
+              ? 'Salvato come nuovo file di testo nella libreria.'
+              : 'Paragrafo salvato.'),
         ),
       );
     } catch (e) {
@@ -354,7 +311,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final doc = widget.document;
     final colorScheme = theme.colorScheme;
@@ -370,182 +326,122 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       body: SafeArea(
         child: _loadingText
             ? const Center(child: CircularProgressIndicator())
-            : _isEditing
-                ? _buildEditor(context, l10n, theme)
-                : CustomScrollView(
-                    controller: _scrollController,
-                    cacheExtent:
-                        4000, // Precarica i blocchi successivi per VoiceOver
-                    // BouncingScrollPhysics → flick naturale su iPhone
-                    physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics(),
-                    ),
-                    slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.all(16),
-                        sliver: SliverList(
-                          delegate: SliverChildListDelegate([
-                            // --- Intestazione ---
-                            Row(
-                              children: [
-                                _ExtBadge(ext: doc.extension),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        doc.name,
-                                        style: theme.textTheme.titleMedium
-                                            ?.copyWith(
-                                                fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        doc.extension.toUpperCase(),
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                    ],
+            : CustomScrollView(
+                controller: _scrollController,
+                cacheExtent:
+                    4000, // Precarica i blocchi successivi per VoiceOver
+                // BouncingScrollPhysics → flick naturale su iPhone
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.all(16),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        // --- Intestazione ---
+                        Row(
+                          children: [
+                            _ExtBadge(ext: doc.extension),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    doc.name,
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.bold),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-
-                            if (_ttsStatus != null) ...[
-                              Text(_ttsStatus!),
-                              const SizedBox(height: 12),
-                            ],
-
-                            // --- Pulsanti TTS ---
-                            FilledButton.icon(
-                              onPressed: () {
-                                if (!_speaking) {
-                                  _readWithEdgeTts();
-                                } else if (_ttsPaused) {
-                                  _audio.play();
-                                } else {
-                                  _audio.pause();
-                                }
-                              },
-                              icon: Icon(!_speaking
-                                  ? Icons.volume_up
-                                  : (_ttsPaused
-                                      ? Icons.play_arrow
-                                      : Icons.pause)),
-                              label: Text(!_speaking
-                                  ? 'Leggi con Edge TTS'
-                                  : (_ttsPaused
-                                      ? 'Riprendi lettura'
-                                      : 'Pausa lettura')),
-                            ),
-                            const SizedBox(height: 8),
-                            OutlinedButton.icon(
-                              onPressed: _speaking ? null : _startEditing,
-                              icon: const Icon(Icons.edit),
-                              label: Text(l10n.edit),
-                            ),
-                            const SizedBox(height: 8),
-                            OutlinedButton.icon(
-                              onPressed: _speaking ? _stopReading : null,
-                              icon: const Icon(Icons.stop),
-                              label: const Text('Interrompi lettura'),
-                            ),
-
-                            const SizedBox(height: 24),
-                            const Divider(),
-                            const SizedBox(height: 8),
-
-                            // --- Corpo documento ---
-                            if (_loadError != null)
-                              Semantics(
-                                liveRegion: true,
-                                child: Text(
-                                  _loadError!,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.secondary,
+                                  Text(
+                                    doc.extension.toUpperCase(),
+                                    style: theme.textTheme.bodySmall,
                                   ),
-                                ),
-                              )
-                            else if (_chunks.isNotEmpty)
-                              ..._buildChunkWidgets(theme, colorScheme)
-                            else if (_documentText.isEmpty &&
-                                _loadError == null)
-                              Text(
-                                'Nessun testo disponibile per questo documento.',
-                                style: theme.textTheme.bodyMedium,
+                                ],
                               ),
-                          ]),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-      ),
-    );
-  }
+                        const SizedBox(height: 20),
 
-  Widget _buildEditor(
-    BuildContext context,
-    AppLocalizations l10n,
-    ThemeData theme,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              itemCount: _editChunks.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Semantics(
-                    container: true,
-                    button: true,
-                    child: InkWell(
-                      key: ValueKey('document-edit-chunk-$index'),
-                      onTap: () => _editChunk(index),
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 8,
+                        if (_ttsStatus != null) ...[
+                          Text(_ttsStatus!),
+                          const SizedBox(height: 12),
+                        ],
+
+                        // --- Pulsanti TTS ---
+                        FilledButton.icon(
+                          onPressed: () {
+                            if (!_speaking) {
+                              _readWithEdgeTts();
+                            } else if (_ttsPaused) {
+                              _audio.play();
+                            } else {
+                              _audio.pause();
+                            }
+                          },
+                          icon: Icon(!_speaking
+                              ? Icons.volume_up
+                              : (_ttsPaused
+                                  ? Icons.play_arrow
+                                  : Icons.pause)),
+                          label: Text(!_speaking
+                              ? 'Leggi con Edge TTS'
+                              : (_ttsPaused
+                                  ? 'Riprendi lettura'
+                                  : 'Pausa lettura')),
                         ),
-                        child: Text(
-                          _editChunks[index],
-                          style: theme.textTheme.bodyLarge,
+                        const SizedBox(height: 8),
+                        OutlinedButton.icon(
+                          onPressed: _speaking ? _stopReading : null,
+                          icon: const Icon(Icons.stop),
+                          label: const Text('Interrompi lettura'),
                         ),
-                      ),
+
+                        const SizedBox(height: 8),
+                        // Suggerimento modifica paragrafo (solo in lettura)
+                        if (!_speaking && _chunks.isNotEmpty)
+                          Semantics(
+                            liveRegion: false,
+                            child: Text(
+                              'Tocca un paragrafo per modificarlo.',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.outline,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ),
+
+                        const SizedBox(height: 24),
+                        const Divider(),
+                        const SizedBox(height: 8),
+
+                        // --- Corpo documento ---
+                        if (_loadError != null)
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              _loadError!,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.secondary,
+                              ),
+                            ),
+                          )
+                        else if (_chunks.isNotEmpty)
+                          ..._buildChunkWidgets(theme, colorScheme)
+                        else if (_documentText.isEmpty &&
+                            _loadError == null)
+                          Text(
+                            'Nessun testo disponibile per questo documento.',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                      ]),
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: _saveDocument,
-                  icon: const Icon(Icons.save),
-                  label: Text(l10n.save),
-                ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _cancelEditing,
-                  icon: const Icon(Icons.cancel),
-                  label: Text(l10n.cancel),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
@@ -556,31 +452,40 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final widgets = <Widget>[];
     for (var i = 0; i < _chunks.length; i++) {
       final isPlaying = i == _playingChunkIndex;
+      // Durante la lettura TTS il tap è disabilitato per non interferire.
+      final canEdit = !_speaking;
       widgets.add(
         Semantics(
           key: _chunkKeys[i],
           container: true,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
-            margin: const EdgeInsets.only(bottom: 6),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            decoration: BoxDecoration(
-              color:
-                  isPlaying ? colorScheme.primaryContainer : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              border: isPlaying
-                  ? Border.all(
-                      color: colorScheme.primary.withAlpha(128),
-                      width: 1.5,
-                    )
-                  : null,
-            ),
-            child: Text(
-              _chunks[i],
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: isPlaying ? FontWeight.w600 : FontWeight.normal,
-                color: isPlaying ? colorScheme.onPrimaryContainer : null,
+          button: canEdit,
+          hint: canEdit ? 'Doppio tap per modificare questo paragrafo' : null,
+          child: GestureDetector(
+            onTap: canEdit ? () => _editParagraph(i) : null,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              margin: const EdgeInsets.only(bottom: 6),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: isPlaying
+                    ? colorScheme.primaryContainer
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+                border: isPlaying
+                    ? Border.all(
+                        color: colorScheme.primary.withAlpha(128),
+                        width: 1.5,
+                      )
+                    : null,
+              ),
+              child: Text(
+                _chunks[i],
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: isPlaying ? FontWeight.w600 : FontWeight.normal,
+                  color: isPlaying ? colorScheme.onPrimaryContainer : null,
+                ),
               ),
             ),
           ),

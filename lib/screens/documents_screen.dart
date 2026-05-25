@@ -1,8 +1,10 @@
 import 'dart:developer' as dev;
+import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
@@ -61,12 +63,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: _allowedExtensions,
-        allowMultiple: false,
-        withData: false,
-        withReadStream: false,
       );
     } catch (e) {
-      dev.log('DocumentsScreen: errore file picker: $e');
+      dev.log('DocumentsScreen: errore apertura file picker: $e');
       if (mounted) {
         _showSnack('Errore apertura file: $e');
       }
@@ -84,15 +83,21 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     final ext = p.extension(path).replaceFirst('.', '').toLowerCase();
     final name = p.basename(path);
-    final doc = DocumentItem(
-      id: '${DateTime.now().microsecondsSinceEpoch}_$name',
-      name: name,
-      path: path,
-      extension: ext,
-      addedAt: DateTime.now(),
-    );
+    final id = '${DateTime.now().microsecondsSinceEpoch}_$name';
 
     try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final localFile = File(p.join(appDir.path, id));
+      await File(path).copy(localFile.path);
+
+      final doc = DocumentItem(
+        id: id,
+        name: name,
+        path: id, // Salviamo solo l'ID come percorso relativo
+        extension: ext,
+        addedAt: DateTime.now(),
+      );
+
       await _service.add(doc);
     } catch (e) {
       dev.log('DocumentsScreen: errore aggiunta documento: $e');
@@ -108,6 +113,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Future<void> _remove(String id) async {
     try {
+      // Troviamo il documento per ottenerne il path e cancellarlo dal disco
+      final doc = _service.documents.firstWhere((d) => d.id == id);
+      final resolvedPath = await _service.resolveFilePath(doc);
+      final file = File(resolvedPath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+      
       await _service.remove(id);
     } catch (e) {
       dev.log('DocumentsScreen: errore rimozione documento: $e');

@@ -232,7 +232,9 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
       if (body.isEmpty || body.contains('==')) {
         return line;
       }
-      return body;
+      // Aggiunge una riga vuota prima e dopo il titolo così rimane
+      // separato dal testo circostante anche dopo la normalizzazione.
+      return '\n$body\n';
     }
     return line;
   }
