@@ -66,11 +66,19 @@ class EdgeTtsBridge {
   }
 
   List<String> splitTextForStreaming(String text, {int maxChunkChars = 650}) {
-    final cleaned =
-        text.replaceAll(RegExp(r'\s+'), ' ').replaceAll('...', '…').trim();
+    // Sostituisce spazi multipli orizzontali con singolo spazio, ma preserva gli a capo (\n).
+    // Riduce a capo multipli a un singolo a capo per evitare blocchi vuoti.
+    final cleaned = text
+        .replaceAll(RegExp(r'[ \t\r]+'), ' ')
+        .replaceAll(RegExp(r'\n+'), '\n')
+        .replaceAll('...', '…')
+        .trim();
     if (cleaned.isEmpty) return const [];
 
-    final sentenceMatches = RegExp(r'[^.!?。！？]+[.!?。！？]?').allMatches(cleaned);
+    // Splitta sulle fine frase canoniche OPPURE sugli a capo.
+    // Questo permette ai titoli (come in Wikipedia) di finire in blocchi separati.
+    final sentenceMatches =
+        RegExp(r'[^.!?。！？\n]+[.!?。！？\n]?').allMatches(cleaned);
     final sentences = sentenceMatches
         .map((m) => m.group(0)?.trim() ?? '')
         .where((s) => s.isNotEmpty)
