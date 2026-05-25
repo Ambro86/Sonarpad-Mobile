@@ -61,6 +61,22 @@ class DocumentLibraryService {
     return p.join(appDir.path, doc.path);
   }
 
+  /// Risolve il percorso del file modificato, se presente.
+  Future<String?> resolveEditedFilePath(DocumentItem doc) async {
+    if (doc.editedTextPath == null) return null;
+    final appDir = await getApplicationDocumentsDirectory();
+
+    if (p.isAbsolute(doc.editedTextPath!)) {
+      final f = File(doc.editedTextPath!);
+      if (await f.exists()) return doc.editedTextPath;
+      
+      final fallback = File(p.join(appDir.path, p.basename(doc.editedTextPath!)));
+      if (await fallback.exists()) return fallback.path;
+    }
+
+    return p.join(appDir.path, doc.editedTextPath!);
+  }
+
   /// Aggiorna un documento esistente (es. per salvare il segnalibro).
   Future<void> update(DocumentItem doc) async {
     final index = _documents.indexWhere((d) => d.id == doc.id);

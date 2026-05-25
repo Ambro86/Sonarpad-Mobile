@@ -12,6 +12,9 @@ import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
 import '../tts/edge_tts_bridge.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// Schermata di lettura/ascolto di un documento della libreria.
 ///
@@ -80,10 +83,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<void> _extractText() async {
     final ext = widget.document.extension.toLowerCase();
     try {
-      final path = await DocumentLibraryService().resolveFilePath(widget.document);
-      final result = await _extractor.extract(path: path, extension: ext);
-      _documentText = result.text;
-      _loadError = result.error;
+      final editedPath = await DocumentLibraryService().resolveEditedFilePath(widget.document);
+      if (editedPath != null && await File(editedPath).exists()) {
+        _documentText = await File(editedPath).readAsString();
+      } else {
+        final path = await DocumentLibraryService().resolveFilePath(widget.document);
+        final result = await _extractor.extract(path: path, extension: ext);
+        _documentText = result.text;
+        _loadError = result.error;
+      }
+
       if (_documentText.isNotEmpty) {
         _chunks = _tts.splitTextForStreaming(
           _documentText,
@@ -279,40 +288,29 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     // Salva su file
     try {
-      final ext = widget.document.extension.toLowerCase();
-      // Risolviamo il percorso assoluto per evitare errori di salvataggio
-      final absolutePath = await DocumentLibraryService().resolveFilePath(widget.document);
-      String savePath = absolutePath;
-      bool isNewFile = false;
-      DocumentItem? newDocItem;
+      final appDir = await getApplicationDocumentsDirectory();
+      // Generiamo un nome file univoco basato sull'ID del documento per contenere il testo modificato
+      final editedFileName = '${widget.document.id}_edited.txt';
+      final savePath = '${appDir.path}/$editedFileName';
 
-      if (ext != 'txt' && ext != 'md') {
-        final originalFile = File(savePath);
-        final dir = originalFile.parent.path;
-        final nameWithoutExt =
-            widget.document.name.replaceAll(RegExp(r'\.[^.]+$'), '');
-        final newFileName = '$nameWithoutExt (Modificato).txt';
-        savePath = '$dir/$newFileName';
-        isNewFile = true;
-        
-        newDocItem = DocumentItem(
-          id: const Uuid().v4(),
-          name: newFileName,
-          path: newFileName,
-          extension: 'txt',
-          addedAt: DateTime.now(),
-        );
-      }
-
-      dev.log('DocumentReaderScreen: Salvataggio documento in corso su: $savePath');
+      dev.log('DocumentReaderScreen: Salvataggio documento modificato in corso su: $savePath');
       await File(savePath).writeAsString(newText);
       
-      if (isNewFile && newDocItem != null) {
-        final lib = DocumentLibraryService();
-        await lib.load();
-        await lib.add(newDocItem);
-        dev.log('DocumentReaderScreen: Nuovo file salvato e aggiunto alla libreria come TXT');
-      }
+      // Aggiorniamo il DocumentItem esistente con il nuovo editedTextPath
+      final updatedDoc = DocumentItem(
+        id: widget.document.id,
+        name: widget.document.name,
+        path: widget.document.path,
+        extension: widget.document.extension,
+        addedAt: widget.document.addedAt,
+        bookmarkIndex: _bookmarkIndex,
+        editedTextPath: editedFileName,
+      );
+
+      final lib = DocumentLibraryService();
+      await lib.load();
+      await lib.update(updatedDoc);
+      dev.log('DocumentReaderScreen: DocumentItem aggiornato con editedTextPath');
 
       if (!mounted) return;
       // Aggiorna stato: testo e chunk (la lettura riparte dall'inizio se necessario)
@@ -329,10 +327,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isNewFile
-              ? 'Salvato come nuovo file di testo nella libreria.'
-              : 'Paragrafo salvato.'),
+        const SnackBar(
+          content: Text('Testo modificato e salvato nel documento corrente.'),
         ),
       );
     } catch (e) {
@@ -395,8 +391,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                             fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                    doc.extension.toUpperCase(),
-                                    style: theme.textTheme.bodySmall,
+                                    doc.extension.toUpperCase() +
+                                        (doc.editedTextPath != null ? ' (Modificato in Sonarpad)' : ''),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: doc.editedTextPath != null ? Colors.orange.shade700 : null,
+                                      fontWeight: doc.editedTextPath != null ? FontWeight.bold : null,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -440,6 +440,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           icon: const Icon(Icons.stop),
                           label: const Text('Interrompi lettura'),
                         ),
+
+                        if (!_speaking && _documentText.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          OutlinedButton.icon(
+                            onPressed: _exportDocument,
+                            icon: const Icon(Icons.share),
+                            label: const Text('Esporta documento'),
+                          ),
+                        ],
 
                         const SizedBox(height: 8),
                         // Suggerimento modifica paragrafo (solo in lettura)
@@ -579,6 +588,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       extension: widget.document.extension,
       addedAt: widget.document.addedAt,
       bookmarkIndex: index,
+      editedTextPath: widget.document.editedTextPath,
     );
     final lib = DocumentLibraryService();
     await lib.load();
@@ -601,6 +611,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       extension: widget.document.extension,
       addedAt: widget.document.addedAt,
       bookmarkIndex: 0, // Reset to 0 (default)
+      editedTextPath: widget.document.editedTextPath,
     );
     final lib = DocumentLibraryService();
     await lib.load();
@@ -611,6 +622,82 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         const SnackBar(content: Text('Segnalibro rimosso.')),
       );
     }
+  }
+
+  Future<void> _exportDocument() async {
+    final ext = widget.document.extension.toLowerCase();
+    
+    // Mostriamo un dialogo per scegliere il formato, a meno che non sia già txt/md
+    String? format = ext == 'txt' || ext == 'md' ? 'txt' : null;
+    
+    if (format == null) {
+      format = await showDialog<String>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Esporta documento'),
+          content: const Text('In quale formato desideri esportare il documento modificato?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, 'txt'),
+              child: const Text('Testo (.txt)'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, 'pdf'),
+              child: const Text('PDF (.pdf)'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (format == null || !mounted) return;
+
+    try {
+      final appDir = await getTemporaryDirectory();
+      final baseName = widget.document.name.replaceAll(RegExp(r'\.[^.]+$'), '');
+      
+      if (format == 'txt') {
+        final path = '${appDir.path}/${baseName}_export.txt';
+        await File(path).writeAsString(_documentText);
+        await Share.shareXFiles([XFile(path)], text: 'Documento esportato da Sonarpad');
+      } else if (format == 'pdf') {
+        final path = await _generatePdf(baseName, _documentText, appDir.path);
+        await Share.shareXFiles([XFile(path)], text: 'Documento esportato da Sonarpad');
+      }
+    } catch (e) {
+      dev.log('Errore durante l\'esportazione: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Errore esportazione: $e')),
+        );
+      }
+    }
+  }
+
+  Future<String> _generatePdf(String baseName, String text, String outDir) async {
+    final PdfDocument document = PdfDocument();
+    final PdfPage page = document.pages.add();
+    final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
+    
+    final PdfTextElement element = PdfTextElement(
+      text: text,
+      font: font,
+    );
+    
+    final PdfLayoutResult? result = element.draw(
+      page: page,
+      bounds: Rect.fromLTWH(0, 0, page.getClientSize().width, page.getClientSize().height),
+      format: PdfLayoutFormat(
+        layoutType: PdfLayoutType.paginate,
+      ),
+    );
+
+    final path = '$outDir/${baseName}_export.pdf';
+    final List<int> bytes = await document.save();
+    document.dispose();
+    
+    await File(path).writeAsBytes(bytes);
+    return path;
   }
 }
 

@@ -35,6 +35,7 @@ dependencies:
   wakelock_plus: ^1.2.10
   app_links: ^7.0.0
   just_audio_background: ^0.0.1-beta.17
+  share_plus: ^12.0.2
 
 dev_dependencies:
   flutter_test:
