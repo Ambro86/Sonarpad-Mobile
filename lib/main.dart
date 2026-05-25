@@ -16,8 +16,15 @@ import 'screens/tv_screen.dart';
 import 'screens/aifa_search_screen.dart';
 import 'screens/wikipedia_screen.dart';
 
-void main() {
+import 'package:just_audio_background/just_audio_background.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName: 'Audio playback',
+    androidNotificationOngoing: true,
+  );
   runApp(const SonarpadApp());
 }
 

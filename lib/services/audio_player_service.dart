@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 /// Tipo di sessione audio.
@@ -73,7 +74,17 @@ class AudioPlayerService {
     _stopRequested = false;
     await _prepareAudioSession(sessionType);
     debugPrint('Sonarpad audio: setUrl=$url');
-    final duration = await _player.setUrl(url);
+    final source = AudioSource.uri(
+      Uri.parse(url),
+      tag: MediaItem(
+        id: url,
+        album: 'Sonarpad',
+        title: sessionType == AudioSessionType.speech
+            ? 'Lettura Vocale'
+            : 'Riproduzione Audio',
+      ),
+    );
+    final duration = await _player.setAudioSource(source);
     debugPrint('Sonarpad audio: duration=$duration');
   }
 
@@ -107,7 +118,16 @@ class AudioPlayerService {
     debugPrint(
       'Sonarpad audio: playFile path=${file.path} exists=$exists size=$size',
     );
-    final duration = await _player.setFilePath(file.path);
+    final duration = await _player.setAudioSource(
+      AudioSource.uri(
+        Uri.file(file.path),
+        tag: MediaItem(
+          id: file.path,
+          album: 'Sonarpad',
+          title: 'Lettura Documento',
+        ),
+      ),
+    );
     debugPrint('Sonarpad audio: playFile duration=$duration');
     if (!_stopRequested) {
       debugPrint('Sonarpad audio: playFile play');
@@ -137,7 +157,16 @@ class AudioPlayerService {
           'Sonarpad audio: chunk ${i + 1}/${files.length} path=${file.path} '
           'exists=$exists size=$size',
         );
-        final duration = await _player.setFilePath(file.path);
+        final duration = await _player.setAudioSource(
+          AudioSource.uri(
+            Uri.file(file.path),
+            tag: MediaItem(
+              id: file.path,
+              album: 'Sonarpad',
+              title: 'Lettura Documento',
+            ),
+          ),
+        );
         debugPrint('Sonarpad audio: chunk ${i + 1} duration=$duration');
         if (_stopRequested) break;
         debugPrint('Sonarpad audio: chunk ${i + 1} play');
