@@ -569,23 +569,13 @@ class RaiPlayService {
   }
 
   String _resolveHlsChildUrl(String masterUrl, String childUri) {
-    if (childUri.startsWith('http://') || childUri.startsWith('https://')) {
-      return childUri;
-    }
-
     final masterUri = Uri.parse(masterUrl);
-    final query = masterUri.hasQuery ? '?${masterUri.query}' : '';
-    final path = masterUri.path;
-    final lastSlash = path.lastIndexOf('/');
-    final basePath = lastSlash != -1 ? path.substring(0, lastSlash) : path;
+    var resolvedUri = masterUri.resolve(childUri);
 
-    final scheme = masterUri.scheme;
-    final host = masterUri.host;
-
-    if (childUri.contains('?')) {
-      return '$scheme://$host$basePath/$childUri';
-    } else {
-      return '$scheme://$host$basePath/$childUri$query';
+    if (!resolvedUri.hasQuery && masterUri.hasQuery) {
+      resolvedUri = resolvedUri.replace(query: masterUri.query);
     }
+    
+    return resolvedUri.toString();
   }
 }
