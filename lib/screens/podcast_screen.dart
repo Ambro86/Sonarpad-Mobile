@@ -259,22 +259,24 @@ class _PodcastScreenState extends State<PodcastScreen> {
             ..._subscriptions.map(
               (subscription) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: Semantics(
-                  customSemanticsActions: {
-                    CustomSemanticsAction(label: l10n.removePodcast): () => _removeSubscription(subscription),
-                  },
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(56),
-                      alignment: Alignment.centerLeft,
-                    ),
-                    onPressed: () => _openSubscription(subscription),
-                    icon: const Icon(Icons.podcasts),
-                    label: Text(
-                      subscription.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
+                child: MergeSemantics(
+                  child: Semantics(
+                    customSemanticsActions: {
+                      CustomSemanticsAction(label: l10n.removePodcast): () => _removeSubscription(subscription),
+                    },
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(56),
+                        alignment: Alignment.centerLeft,
+                      ),
+                      onPressed: () => _openSubscription(subscription),
+                      icon: const Icon(Icons.podcasts),
+                      label: Text(
+                        subscription.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.left,
+                      ),
                     ),
                   ),
                 ),

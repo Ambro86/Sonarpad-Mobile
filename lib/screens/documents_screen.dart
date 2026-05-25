@@ -257,12 +257,13 @@ class _DocumentTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final badgeColor = _badgeColor(doc.extension);
 
-    return Semantics(
-      customSemanticsActions: {
-        CustomSemanticsAction(label: l10n.removeDocument): onRemove,
-      },
-      label: '${doc.name}, tipo ${doc.extension.toUpperCase()}, '
-          'aggiunto il ${_formattedDate(doc.addedAt)}',
+    return MergeSemantics(
+      child: Semantics(
+        customSemanticsActions: {
+          CustomSemanticsAction(label: l10n.removeDocument): onRemove,
+        },
+        label: '${doc.name}, tipo ${doc.extension.toUpperCase()}, '
+            'aggiunto il ${_formattedDate(doc.addedAt)}',
       hint: 'Tocca per aprire e leggere il documento',
       child: Card(
         elevation: 2,
@@ -332,6 +333,7 @@ class _DocumentTile extends StatelessWidget {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

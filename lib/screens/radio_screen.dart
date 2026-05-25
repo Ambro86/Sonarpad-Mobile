@@ -309,15 +309,16 @@ class RadioTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Semantics(
-      customSemanticsActions: {
-        CustomSemanticsAction(
-                label: isFavorite
-                    ? l10n.radioRemoveFavorite
-                    : l10n.radioAddFavorite):
-            onToggleFavorite,
-      },
-      child: Card(
+    return MergeSemantics(
+      child: Semantics(
+        customSemanticsActions: {
+          CustomSemanticsAction(
+                  label: isFavorite
+                      ? l10n.radioRemoveFavorite
+                      : l10n.radioAddFavorite):
+              onToggleFavorite,
+        },
+        child: Card(
         child: ListTile(
         leading: Icon(isPlaying ? Icons.volume_up : Icons.radio),
         title: Text(station.name),
@@ -341,6 +342,7 @@ class RadioTile extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
       ),
     ),
