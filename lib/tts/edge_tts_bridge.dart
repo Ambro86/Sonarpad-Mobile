@@ -66,57 +66,64 @@ class EdgeTtsBridge {
   }
 
   List<String> splitTextForStreaming(String text, {int maxChunkChars = 650}) {
-    // Sostituisce spazi multipli orizzontali con singolo spazio, ma preserva gli a capo (\n).
-    // Riduce a capo multipli a un singolo a capo per evitare blocchi vuoti.
-    final cleaned = text
-        .replaceAll(RegExp(r'[ \t\r]+'), ' ')
-        .replaceAll(RegExp(r'\n+'), '\n')
-        .replaceAll('...', '…')
-        .trim();
-    if (cleaned.isEmpty) return const [];
-
-    // Splitta sulle fine frase canoniche OPPURE sugli a capo.
-    // Questo permette ai titoli (come in Wikipedia) di finire in blocchi separati.
-    final sentenceMatches =
-        RegExp(r'[^.!?。！？\n]+[.!?。！？\n]?').allMatches(cleaned);
-    final sentences = sentenceMatches
-        .map((m) => m.group(0)?.trim() ?? '')
-        .where((s) => s.isNotEmpty)
-        .toList();
-
     final chunks = <String>[];
-    final buffer = StringBuffer();
 
-    void flush() {
-      final value = buffer.toString().trim();
-      if (value.isNotEmpty) chunks.add(value);
-      buffer.clear();
-    }
+    // Dividiamo il testo in paragrafi veri e propri (doppi a capo).
+    // Questo garantisce che titoli o paragrafi distinti non vengano mai fusi.
+    final paragraphs = text.split(RegExp(r'\n{2,}'));
 
-    for (final sentence in sentences) {
-      if (sentence.length > maxChunkChars) {
-        flush();
-        var start = 0;
-        while (start < sentence.length) {
-          var end = start + maxChunkChars;
-          if (end >= sentence.length) {
-            chunks.add(sentence.substring(start).trim());
-            break;
-          }
-          final cut = sentence.lastIndexOf(' ', end);
-          if (cut > start + 80) end = cut;
-          chunks.add(sentence.substring(start, end).trim());
-          start = end;
-        }
-        continue;
+    for (final p in paragraphs) {
+      // Normalizziamo tutti gli spazi (inclusi singoli \n) all'interno del paragrafo
+      final cleaned = p
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .replaceAll('...', '…')
+          .trim();
+
+      if (cleaned.isEmpty) continue;
+
+      final sentenceMatches =
+          RegExp(r'[^.!?。！？]+[.!?。！？]?').allMatches(cleaned);
+      final sentences = sentenceMatches
+          .map((m) => m.group(0)?.trim() ?? '')
+          .where((s) => s.isNotEmpty)
+          .toList();
+
+      final buffer = StringBuffer();
+
+      void flush() {
+        final value = buffer.toString().trim();
+        if (value.isNotEmpty) chunks.add(value);
+        buffer.clear();
       }
 
-      final candidateLength = buffer.length + sentence.length + 1;
-      if (candidateLength > maxChunkChars) flush();
-      if (buffer.isNotEmpty) buffer.write(' ');
-      buffer.write(sentence);
+      for (final sentence in sentences) {
+        if (sentence.length > maxChunkChars) {
+          flush();
+          var start = 0;
+          while (start < sentence.length) {
+            var end = start + maxChunkChars;
+            if (end >= sentence.length) {
+              chunks.add(sentence.substring(start).trim());
+              break;
+            }
+            final cut = sentence.lastIndexOf(' ', end);
+            if (cut > start + 80) end = cut;
+            chunks.add(sentence.substring(start, end).trim());
+            start = end;
+          }
+        } else {
+          if (buffer.length + sentence.length > maxChunkChars) {
+            flush();
+          }
+          buffer.write(sentence);
+          buffer.write(' ');
+        }
+      }
+      
+      // Forza il flush alla fine del paragrafo: i titoli restano separati!
+      flush();
     }
-    flush();
+
     return chunks;
   }
 
