@@ -1,3 +1,4 @@
+import 'package:flutter/semantics.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -123,6 +124,20 @@ class _PodcastScreenState extends State<PodcastScreen> {
     }
   }
 
+  Future<void> _removeSubscription(PodcastSubscription subscription) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      await _service.removeSubscription(subscription);
+      await _load();
+      if (!mounted) return;
+      SemanticsService.announce(l10n.podcastRemoved, TextDirection.ltr);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Errore: $e')));
+    }
+  }
+
   @override
   void dispose() {
     _feedController.dispose();
@@ -244,18 +259,23 @@ class _PodcastScreenState extends State<PodcastScreen> {
             ..._subscriptions.map(
               (subscription) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(56),
-                    alignment: Alignment.centerLeft,
-                  ),
-                  onPressed: () => _openSubscription(subscription),
-                  icon: const Icon(Icons.podcasts),
-                  label: Text(
-                    subscription.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left,
+                child: Semantics(
+                  customSemanticsActions: {
+                    CustomSemanticsAction(label: l10n.removePodcast): () => _removeSubscription(subscription),
+                  },
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(56),
+                      alignment: Alignment.centerLeft,
+                    ),
+                    onPressed: () => _openSubscription(subscription),
+                    icon: const Icon(Icons.podcasts),
+                    label: Text(
+                      subscription.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                    ),
                   ),
                 ),
               ),

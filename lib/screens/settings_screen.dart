@@ -10,6 +10,7 @@ import '../services/audio_player_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../main.dart';
 import 'app_log_screen.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,9 +21,16 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _settings = AppSettingsService();
+  final _flutterTts = FlutterTts();
   String _appLanguage = 'it';
   String _languageCode = 'it';
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
+  
+  String _ttsEngine = 'edge';
+  String _systemTtsLanguage = 'it-IT';
+  String? _systemTtsVoice;
+  List<Map<String, String>> _systemVoices = [];
+  
   double _ttsSpeed = 1.0;
   double _ttsPitch = 1.0;
   final _tvSecretCodeController = TextEditingController();
@@ -50,6 +58,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final speed = await _settings.loadTtsSpeed();
     final pitch = await _settings.loadTtsPitch();
     final tvSecretCode = await _settings.getTvSecretCode();
+    
+    final ttsEngine = await _settings.loadTtsEngine();
+    final sysLang = await _settings.loadSystemTtsLanguage();
+    final sysVoice = await _settings.loadSystemTtsVoice();
+
+    await _loadSystemVoices();
+
     if (!mounted) return;
     setState(() {
       _appLanguage = appLang;
@@ -58,8 +73,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _ttsSpeed = speed;
       _ttsPitch = pitch;
       _tvSecretCodeController.text = tvSecretCode;
+      _ttsEngine = ttsEngine;
+      _systemTtsLanguage = sysLang;
+      _systemTtsVoice = sysVoice;
       _loading = false;
     });
+  }
+
+  Future<void> _loadSystemVoices() async {
+    try {
+      final voices = await _flutterTts.getVoices;
+      if (voices != null && voices is List) {
+        final List<Map<String, String>> parsedVoices = [];
+        for (var v in voices) {
+          if (v is Map) {
+            final name = v['name']?.toString() ?? '';
+            final locale = v['locale']?.toString() ?? '';
+            if (name.isNotEmpty && locale.isNotEmpty) {
+              parsedVoices.add({'name': name, 'locale': locale});
+            }
+          }
+        }
+        _systemVoices = parsedVoices;
+      }
+    } catch (e) {
+      debugPrint('Errore caricamento voci di sistema: $e');
+    }
   }
 
   Future<void> _save() async {
@@ -79,13 +118,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await _settings.saveTtsSpeed(_ttsSpeed);
       await _settings.saveTtsPitch(_ttsPitch);
 
-      final tts = EdgeTtsBridge();
-      final file = await tts.speakToFile(
-        text: 'Questo è un test della voce selezionata.',
-        voice: _voice,
-      );
-      if (!mounted) return;
-      await _audio.playFile(file);
+      if (_ttsEngine == 'system') {
+        await _flutterTts.setSpeechRate(_ttsSpeed * 0.5); // flutter_tts usa range 0-1
+        await _flutterTts.setPitch(_ttsPitch);
+        if (_systemTtsVoice != null) {
+          await _flutterTts.setVoice({"name": _systemTtsVoice!, "locale": _systemTtsLanguage});
+        } else {
+          await _flutterTts.setLanguage(_systemTtsLanguage);
+        }
+        await _flutterTts.speak('Questo è un test della voce di sistema.');
+        // _flutterTts is asynchronous but we can just wait, or not wait.
+        // For simplicity, we just trigger speak.
+      } else {
+        final tts = EdgeTtsBridge();
+        final file = await tts.speakToFile(
+          text: 'Questo è un test della voce selezionata.',
+          voice: _voice,
+        );
+        if (!mounted) return;
+        await _audio.playFile(file);
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -99,10 +151,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _saveTtsSelection() async {
+    await _settings.saveTtsEngine(_ttsEngine);
     await _settings.saveTtsSettings(
       languageCode: _languageCode,
       voice: _voice,
     );
+    await _settings.saveSystemTtsLanguage(_systemTtsLanguage);
+    await _settings.saveSystemTtsVoice(_systemTtsVoice);
   }
 
   void _persistTtsSelection() {
@@ -253,42 +308,117 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  initialValue: _languageCode,
-                  decoration: InputDecoration(labelText: l10n.ttsVoiceLanguage),
-                  items: AppSettingsService.ttsLanguages
-                      .map((language) => DropdownMenuItem(
-                            value: language.code,
-                            child: Text(language.label),
-                          ))
-                      .toList(),
+                  initialValue: _ttsEngine,
+                  decoration: const InputDecoration(labelText: 'Motore di lettura'),
+                  items: const [
+                    DropdownMenuItem(value: 'edge', child: Text('Edge TTS (Alta qualità online)')),
+                    DropdownMenuItem(value: 'system', child: Text('Voci di sistema (VoiceOver / Google)')),
+                  ],
                   onChanged: (value) {
-                    final next = value ?? 'it';
-                    setState(() {
-                      _languageCode = next;
-                      _voice = AppSettingsService.defaultVoiceForLanguage(next);
-                    });
+                    if (value == null) return;
+                    setState(() => _ttsEngine = value);
                     _persistTtsSelection();
                   },
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: _voice,
-                  decoration: InputDecoration(labelText: l10n.ttsVoice),
-                  items: voices
-                      .map((voice) => DropdownMenuItem(
-                            value: voice.voice,
-                            child: Text('${voice.label} (${voice.voice})'),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(
-                      () => _voice = value ??
-                          AppSettingsService.defaultVoiceForLanguage(
-                              _languageCode),
-                    );
-                    _persistTtsSelection();
-                  },
-                ),
+                if (_ttsEngine == 'edge') ...[
+                  DropdownButtonFormField<String>(
+                    initialValue: _languageCode,
+                    decoration: InputDecoration(labelText: l10n.ttsVoiceLanguage),
+                    items: AppSettingsService.ttsLanguages
+                        .map((language) => DropdownMenuItem(
+                              value: language.code,
+                              child: Text(language.label),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      final next = value ?? 'it';
+                      setState(() {
+                        _languageCode = next;
+                        _voice = AppSettingsService.defaultVoiceForLanguage(next);
+                      });
+                      _persistTtsSelection();
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: _voice,
+                    decoration: InputDecoration(labelText: l10n.ttsVoice),
+                    items: voices
+                        .map((voice) => DropdownMenuItem(
+                              value: voice.voice,
+                              child: Text('${voice.label} (${voice.voice})'),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(
+                        () => _voice = value ??
+                            AppSettingsService.defaultVoiceForLanguage(
+                                _languageCode),
+                      );
+                      _persistTtsSelection();
+                    },
+                  ),
+                ] else ...[
+                  Builder(
+                    builder: (context) {
+                      final locales = _systemVoices.map((v) => v['locale']!).toSet().toList()..sort();
+                      if (locales.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text('Nessuna voce di sistema disponibile.'),
+                        );
+                      }
+                      final availableVoices = _systemVoices.where((v) => v['locale'] == _systemTtsLanguage).toList();
+                      
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          DropdownButtonFormField<String>(
+                            initialValue: locales.contains(_systemTtsLanguage) ? _systemTtsLanguage : locales.first,
+                            decoration: const InputDecoration(labelText: 'Lingua di sistema'),
+                            items: locales
+                                .map((l) => DropdownMenuItem(
+                                      value: l,
+                                      child: Text(l),
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              if (value == null) return;
+                              setState(() {
+                                _systemTtsLanguage = value;
+                                _systemTtsVoice = null;
+                              });
+                              _persistTtsSelection();
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<String?>(
+                            initialValue: availableVoices.any((v) => v['name'] == _systemTtsVoice) ? _systemTtsVoice : null,
+                            decoration: const InputDecoration(labelText: 'Voce di sistema'),
+                            hint: const Text('Voce predefinita'),
+                            items: [
+                              const DropdownMenuItem<String?>(
+                                value: null,
+                                child: Text('Predefinita'),
+                              ),
+                              ...availableVoices.map((v) => DropdownMenuItem<String?>(
+                                value: v['name'],
+                                child: Text(v['name'] ?? ''),
+                              )),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _systemTtsVoice = value;
+                              });
+                              _persistTtsSelection();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
                 const SizedBox(height: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

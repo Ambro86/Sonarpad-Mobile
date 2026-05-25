@@ -12,8 +12,10 @@ import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
 import '../tts/edge_tts_bridge.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 /// Schermata di lettura/ascolto di un documento della libreria.
 ///
@@ -55,10 +57,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   static const int _maxChunkChars = 650;
 
+  late DocumentItem _currentDoc;
+
   @override
   void initState() {
     super.initState();
-    _bookmarkIndex = widget.document.bookmarkIndex;
+    _currentDoc = widget.document;
+    _bookmarkIndex = _currentDoc.bookmarkIndex;
     _playingSub = _audio.playingStream.listen((playing) {
       if (_speaking && mounted) {
         setState(() => _ttsPaused = !playing);
@@ -80,13 +85,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // ---------------------------------------------------------------------------
 
   Future<void> _extractText() async {
-    final ext = widget.document.extension.toLowerCase();
+    final ext = _currentDoc.extension.toLowerCase();
     try {
-      final editedPath = await DocumentLibraryService().resolveEditedFilePath(widget.document);
+      final editedPath = await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
       if (editedPath != null && await File(editedPath).exists()) {
         _documentText = await File(editedPath).readAsString();
       } else {
-        final path = await DocumentLibraryService().resolveFilePath(widget.document);
+        final path = await DocumentLibraryService().resolveFilePath(_currentDoc);
         final result = await _extractor.extract(path: path, extension: ext);
         _documentText = result.text;
         _loadError = result.error;
@@ -143,7 +148,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     return 'it-IT-IsabellaNeural';
   }
 
-  Future<void> _readWithEdgeTts() async {
+  Future<void> _startReading() async {
     if (_chunks.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Nessun testo da leggere.')),
@@ -159,37 +164,78 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     });
 
     try {
-      final voice = await _voice();
-      final controller = StreamController<(int, File)>();
-      Object? generationError;
+      final engine = await _settings.loadTtsEngine();
+      final startIndex = _bookmarkIndex < _chunks.length && _bookmarkIndex >= 0 ? _bookmarkIndex : 0;
 
-      // Generazione audio in background
-      final startIndex = _bookmarkIndex < _chunks.length ? _bookmarkIndex : 0;
-      final generation = Future<void>(() async {
-        for (var i = startIndex; i < _chunks.length; i++) {
-          if (!mounted || !_speaking) break; // Ferma la generazione se l'utente preme stop
-          final file = await _tts.speakToFile(text: _chunks[i], voice: voice);
-          controller.add((i, file));
+      if (engine == 'system') {
+        await _flutterTts.awaitSpeakCompletion(true);
+        final speed = await _settings.loadTtsSpeed();
+        final pitch = await _settings.loadTtsPitch();
+        await _flutterTts.setSpeechRate(speed * 0.5);
+        await _flutterTts.setPitch(pitch);
+        
+        final sysLang = await _settings.loadSystemTtsLanguage();
+        final sysVoice = await _settings.loadSystemTtsVoice();
+        
+        if (sysVoice != null) {
+          await _flutterTts.setVoice({"name": sysVoice, "locale": sysLang});
+        } else {
+          await _flutterTts.setLanguage(sysLang);
         }
-        await controller.close();
-      }).catchError((e) async {
-        generationError = e;
-        await controller.close();
-      });
 
-      // Riproduzione con avanzamento cursore
-      await for (final (index, file) in controller.stream) {
-        if (!mounted || !_speaking) break;
-        // Aggiorna chunk evidenziato e scrolla
-        setState(() {
-          _playingChunkIndex = index;
+        for (var i = startIndex; i < _chunks.length; i++) {
+          if (!mounted || !_speaking) break;
+          
+          while (_ttsPaused) {
+            await Future.delayed(const Duration(milliseconds: 200));
+            if (!mounted || !_speaking) break;
+          }
+          if (!mounted || !_speaking) break;
+
+          setState(() {
+            _playingChunkIndex = i;
+          });
+          _scrollToChunk(i);
+          
+          await _flutterTts.speak(_chunks[i]);
+          
+          if (_ttsPaused) {
+            i--; // Ripete il chunk corrente quando si riprende dalla pausa
+          }
+        }
+        await _flutterTts.stop();
+      } else {
+        final voice = await _voice();
+        final controller = StreamController<(int, File)>();
+        Object? generationError;
+
+        // Generazione audio in background
+        final generation = Future<void>(() async {
+          for (var i = startIndex; i < _chunks.length; i++) {
+            if (!mounted || !_speaking) break; // Ferma la generazione se l'utente preme stop
+            final file = await _tts.speakToFile(text: _chunks[i], voice: voice);
+            controller.add((i, file));
+          }
+          await controller.close();
+        }).catchError((e) async {
+          generationError = e;
+          await controller.close();
         });
-        _scrollToChunk(index);
-        await _audio.playFilesSequentially([file]);
-      }
 
-      await generation;
-      if (generationError != null) throw Exception(generationError);
+        // Riproduzione con avanzamento cursore
+        await for (final (index, file) in controller.stream) {
+          if (!mounted || !_speaking) break;
+          // Aggiorna chunk evidenziato e scrolla
+          setState(() {
+            _playingChunkIndex = index;
+          });
+          _scrollToChunk(index);
+          await _audio.playFilesSequentially([file]);
+        }
+
+        await generation;
+        if (generationError != null) throw Exception(generationError);
+      }
 
       if (!mounted) return;
       setState(() {
@@ -203,10 +249,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (!mounted) return;
       setState(() {
         _playingChunkIndex = -1;
-        _ttsStatus = 'Errore Edge TTS: $e';
+        _ttsStatus = 'Errore sintesi vocale: $e';
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore Edge TTS: $e')),
+        SnackBar(content: Text('Errore sintesi vocale: $e')),
       );
     } finally {
       if (mounted) {
@@ -214,6 +260,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
     }
   }
+
+  final _flutterTts = FlutterTts();
 
   Future<void> _stopReading() async {
     // Aggiorna subito la UI per un feedback immediato
@@ -224,6 +272,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _ttsStatus = 'Lettura interrotta.';
     });
     await _audio.stop();
+    await _flutterTts.stop();
   }
 
   // ---------------------------------------------------------------------------
@@ -287,28 +336,32 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     // Salva su file
     try {
-      final appDir = await getApplicationDocumentsDirectory();
-      // Generiamo un nome file univoco basato sull'ID del documento per contenere il testo modificato
-      final editedFileName = '${widget.document.id}_edited.txt';
-      final savePath = '${appDir.path}/$editedFileName';
+      final dir = await getApplicationDocumentsDirectory();
+      final editedFileName = '${_currentDoc.id}_edited.txt';
+      final file = File(p.join(dir.path, editedFileName));
+      await file.writeAsString(newText);
 
-      dev.log('DocumentReaderScreen: Salvataggio documento modificato in corso su: $savePath');
-      await File(savePath).writeAsString(newText);
-      
-      // Aggiorniamo il DocumentItem esistente con il nuovo editedTextPath
-      final updatedDoc = DocumentItem(
-        id: widget.document.id,
-        name: widget.document.name,
-        path: widget.document.path,
-        extension: widget.document.extension,
-        addedAt: widget.document.addedAt,
+      // 4. Aggiorna l'elemento DocumentItem
+      final newDoc = DocumentItem(
+        id: _currentDoc.id,
+        name: _currentDoc.name,
+        path: _currentDoc.path,
+        extension: _currentDoc.extension,
+        addedAt: _currentDoc.addedAt,
         bookmarkIndex: _bookmarkIndex,
-        editedTextPath: editedFileName,
+        editedTextPath: file.path,
+        isTemporary: _currentDoc.isTemporary,
       );
 
-      final lib = DocumentLibraryService();
-      await lib.load();
-      await lib.update(updatedDoc);
+      setState(() {
+        _currentDoc = newDoc;
+      });
+
+      if (!_currentDoc.isTemporary) {
+        final lib = DocumentLibraryService();
+        await lib.load();
+        await lib.update(newDoc);
+      }
       dev.log('DocumentReaderScreen: DocumentItem aggiornato con editedTextPath');
 
       if (!mounted) return;
@@ -346,7 +399,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final doc = widget.document;
+    final doc = _currentDoc;
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
@@ -356,6 +409,40 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
+        actions: [
+          if (doc.isTemporary)
+            IconButton(
+              icon: const Icon(Icons.save),
+              tooltip: 'Salva nella libreria',
+              onPressed: () async {
+                final newDoc = DocumentItem(
+                  id: doc.id,
+                  name: doc.name,
+                  path: doc.path,
+                  extension: doc.extension,
+                  addedAt: doc.addedAt,
+                  bookmarkIndex: doc.bookmarkIndex,
+                  editedTextPath: doc.editedTextPath,
+                  isTemporary: false,
+                );
+                final lib = DocumentLibraryService();
+                await lib.load();
+                await lib.add(newDoc);
+                setState(() {
+                  _currentDoc = newDoc;
+                });
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Documento salvato nella libreria')),
+                );
+              },
+            ),
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Esporta / Condividi',
+            onPressed: _exportDocument,
+          ),
+        ],
       ),
       body: SafeArea(
         child: _loadingText
@@ -413,13 +500,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                         FilledButton.icon(
                           onPressed: () {
                             if (!_speaking) {
-                              _readWithEdgeTts();
+                              _startReading();
                             } else if (_ttsPaused) {
                               setState(() => _ttsPaused = false);
-                              _audio.play();
+                              _audio.play(); // No-op if system TTS
                             } else {
                               setState(() => _ttsPaused = true);
-                              _audio.pause();
+                              _audio.pause(); // No-op if system TTS
+                              _flutterTts.stop(); // Interrompe il chunk corrente, il while() fermerà il loop
                             }
                           },
                           icon: Icon(!_speaking
@@ -428,7 +516,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                   ? Icons.play_arrow
                                   : Icons.pause)),
                           label: Text(!_speaking
-                              ? 'Leggi con Edge TTS'
+                              ? 'Inizia lettura'
                               : (_ttsPaused
                                   ? 'Riprendi lettura'
                                   : 'Pausa lettura')),
@@ -581,17 +669,25 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     setState(() => _bookmarkIndex = index);
     
     final newDoc = DocumentItem(
-      id: widget.document.id,
-      name: widget.document.name,
-      path: widget.document.path,
-      extension: widget.document.extension,
-      addedAt: widget.document.addedAt,
+      id: _currentDoc.id,
+      name: _currentDoc.name,
+      path: _currentDoc.path,
+      extension: _currentDoc.extension,
+      addedAt: _currentDoc.addedAt,
       bookmarkIndex: index,
-      editedTextPath: widget.document.editedTextPath,
+      editedTextPath: _currentDoc.editedTextPath,
+      isTemporary: _currentDoc.isTemporary,
     );
-    final lib = DocumentLibraryService();
-    await lib.load();
-    await lib.update(newDoc);
+    
+    setState(() {
+      _currentDoc = newDoc;
+    });
+
+    if (!_currentDoc.isTemporary) {
+      final lib = DocumentLibraryService();
+      await lib.load();
+      await lib.update(newDoc);
+    }
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -604,17 +700,25 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     setState(() => _bookmarkIndex = -1);
     
     final newDoc = DocumentItem(
-      id: widget.document.id,
-      name: widget.document.name,
-      path: widget.document.path,
-      extension: widget.document.extension,
-      addedAt: widget.document.addedAt,
+      id: _currentDoc.id,
+      name: _currentDoc.name,
+      path: _currentDoc.path,
+      extension: _currentDoc.extension,
+      addedAt: _currentDoc.addedAt,
       bookmarkIndex: 0, // Reset to 0 (default)
-      editedTextPath: widget.document.editedTextPath,
+      editedTextPath: _currentDoc.editedTextPath,
+      isTemporary: _currentDoc.isTemporary,
     );
-    final lib = DocumentLibraryService();
-    await lib.load();
-    await lib.update(newDoc);
+    
+    setState(() {
+      _currentDoc = newDoc;
+    });
+
+    if (!_currentDoc.isTemporary) {
+      final lib = DocumentLibraryService();
+      await lib.load();
+      await lib.update(newDoc);
+    }
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -647,7 +751,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     try {
       final appDir = await getTemporaryDirectory();
-      final baseName = widget.document.name.replaceAll(RegExp(r'\.[^.]+$'), '');
+      final baseName = _currentDoc.name.replaceAll(RegExp(r'\.[^.]+$'), '');
       
       if (format == 'txt') {
         final path = '${appDir.path}/${baseName}_export.txt';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
@@ -303,30 +304,41 @@ class _RadioTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Card(
-      child: ListTile(
+    return Semantics(
+      customSemanticsActions: {
+        CustomSemanticsAction(
+                label: isFavorite
+                    ? l10n.radioRemoveFavorite
+                    : l10n.radioAddFavorite):
+            onToggleFavorite,
+      },
+      child: Card(
+        child: ListTile(
         leading: Icon(isPlaying ? Icons.volume_up : Icons.radio),
         title: Text(station.name),
         subtitle: Text(station.streamUrl,
             maxLines: 1, overflow: TextOverflow.ellipsis),
         onTap: onPlay,
-        trailing: Wrap(
-          spacing: 4,
-          children: [
-            IconButton(
-              tooltip: l10n.radioPlay,
-              onPressed: onPlay,
-              icon: const Icon(Icons.play_arrow),
-            ),
-            IconButton(
-              tooltip:
-                  isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
-              onPressed: onToggleFavorite,
-              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-            ),
-          ],
+        trailing: ExcludeSemantics(
+          child: Wrap(
+            spacing: 4,
+            children: [
+              IconButton(
+                tooltip: l10n.radioPlay,
+                onPressed: onPlay,
+                icon: const Icon(Icons.play_arrow),
+              ),
+              IconButton(
+                tooltip:
+                    isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
+                onPressed: onToggleFavorite,
+                icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+              ),
+            ],
+          ),
         ),
       ),
-    );
+    ),
+  );
   }
 }

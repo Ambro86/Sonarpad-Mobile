@@ -50,15 +50,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await _audio.stop();
   }
 
-  Future<void> _togglePlayback() async {
-    if (_loading) return;
-    if (_audio.isPlaying) {
-      await _stop();
-    } else {
-      await _play();
-    }
-  }
-
   @override
   void dispose() {
     unawaited(_audio.stop().whenComplete(_audio.dispose));
@@ -68,11 +59,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Semantics(
-      container: true,
-      onTap: _togglePlayback,
-      child: Scaffold(
-        appBar: AppBar(
+    return Scaffold(
+      appBar: AppBar(
           title: const Text('Player Radio'),
           leading: BackButton(onPressed: () => Navigator.pop(context)),
         ),
@@ -125,7 +113,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

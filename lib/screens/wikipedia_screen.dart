@@ -269,11 +269,8 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
         path: file.path,
         extension: 'txt',
         addedAt: DateTime.now(),
+        isTemporary: true,
       );
-
-      final lib = DocumentLibraryService();
-      await lib.load();
-      await lib.add(doc);
 
       if (!mounted) return;
       Navigator.of(context).pushReplacement(

@@ -158,6 +158,44 @@ class AppSettingsService {
     await prefs.setString(_ttsVoiceKey, voice);
   }
 
+  static const _ttsEngineKey = 'sonarpad_tts_engine';
+  static const _systemTtsLanguageKey = 'sonarpad_system_tts_language';
+  static const _systemTtsVoiceKey = 'sonarpad_system_tts_voice';
+
+  Future<String> loadTtsEngine() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_ttsEngineKey) ?? 'edge';
+  }
+
+  Future<void> saveTtsEngine(String engine) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_ttsEngineKey, engine);
+  }
+
+  Future<String> loadSystemTtsLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_systemTtsLanguageKey) ?? 'it-IT';
+  }
+
+  Future<void> saveSystemTtsLanguage(String language) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_systemTtsLanguageKey, language);
+  }
+
+  Future<String?> loadSystemTtsVoice() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_systemTtsVoiceKey);
+  }
+
+  Future<void> saveSystemTtsVoice(String? voice) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (voice == null) {
+      await prefs.remove(_systemTtsVoiceKey);
+    } else {
+      await prefs.setString(_systemTtsVoiceKey, voice);
+    }
+  }
+
   static List<TtsVoiceOption> voicesForLanguage(String languageCode) =>
       ttsVoices.where((voice) => voice.languageCode == languageCode).toList();
 

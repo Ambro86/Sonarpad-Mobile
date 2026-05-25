@@ -139,6 +139,8 @@ class AppLocalizations {
   String get documentAdded => _isEn ? 'Document added' : 'Documento aggiunto';
   String get documentRemoved => _isEn ? 'Document removed' : 'Documento rimosso';
   String get removeDocument => _isEn ? 'Remove document' : 'Rimuovi documento';
+  String get removePodcast => _isEn ? 'Remove podcast' : 'Rimuovi podcast';
+  String get podcastRemoved => _isEn ? 'Podcast removed' : 'Podcast rimosso';
   String get documentPickerError => _isEn ? 'Error opening file' : 'Errore apertura file';
   String get readDocument => _isEn ? 'Read document' : 'Leggi documento';
   String get documentReaderTitle => _isEn ? 'Document reader' : 'Lettore documento';

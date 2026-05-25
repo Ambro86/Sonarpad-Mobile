@@ -36,11 +36,13 @@ dependencies:
   app_links: ^7.0.0
   just_audio_background: ^0.0.1-beta.17
   share_plus: ^12.0.2
+  flutter_tts: ^4.2.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  golden_toolkit: ^0.15.0
 
 flutter:
   uses-material-design: true

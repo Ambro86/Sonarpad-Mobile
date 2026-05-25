@@ -80,29 +80,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      trailing: PopupMenuButton<String>(
-                        tooltip: l10n.episodeActions,
-                        onSelected: (action) async {
-                          final messenger = ScaffoldMessenger.of(context);
-                          try {
-                            if (action == 'download') {
-                              final file =
-                                  await _service.downloadEpisode(episode);
-                              if (!mounted) return;
-                              messenger.showSnackBar(SnackBar(
-                                  content: Text(l10n.downloaded(file.path))));
-                            }
-                          } catch (e) {
-                            if (!mounted) return;
-                            messenger.showSnackBar(
-                                SnackBar(content: Text(l10n.episodeError(e))));
-                          }
-                        },
-                        itemBuilder: (_) => [
-                          PopupMenuItem(
-                              value: 'download', child: Text(l10n.download)),
-                        ],
-                      ),
+
                       onTap: () => _openEpisode(episode),
                     ),
                   );

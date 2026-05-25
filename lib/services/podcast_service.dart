@@ -366,6 +366,12 @@ class PodcastService {
     return sub;
   }
 
+  Future<void> removeSubscription(PodcastSubscription subscription) async {
+    final list = await loadSubscriptions();
+    list.removeWhere((e) => e.feedUrl == subscription.feedUrl);
+    await saveSubscriptions(list);
+  }
+
   Future<List<PodcastEpisode>> fetchEpisodes(
       PodcastSubscription subscription) async {
     final response = await _client.get(Uri.parse(subscription.feedUrl));
