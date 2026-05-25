@@ -165,13 +165,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             .join('&');
       }
 
-      final url = Uri(
-        scheme: 'mailto',
-        path: 'ambro86@gmail.com',
-        query: encodeQueryParameters({
-          'subject': subject,
-          'body': body,
-        }),
+      final url = Uri.parse(
+        'mailto:ambro86@gmail.com?${encodeQueryParameters({
+              'subject': subject,
+              'body': body,
+            })}',
       );
 
       try {

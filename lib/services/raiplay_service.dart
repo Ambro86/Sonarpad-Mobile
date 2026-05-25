@@ -141,6 +141,7 @@ class RaiPlayService {
     if (rawTitle == null) return null;
 
     final title = rawTitle.toLowerCase() == 'cerca' ? 'Esplora' : rawTitle;
+    if (title.toLowerCase() == 'altro') return null;
     final elements = section['elements'];
     if (elements is List && elements.isNotEmpty) {
       return RaiPlayItem(
@@ -417,6 +418,11 @@ class RaiPlayService {
   ///
   /// Usa lo stesso meccanismo di autenticazione degli altri metodi del servizio.
   Future<RaiPlayPage> searchContent(String query, String secretKey) async {
+    final normalizedQuery = _normalizeSearchText(query);
+    if (normalizedQuery.isEmpty) {
+      throw Exception('Inserisci un testo da cercare in RaiPlay.');
+    }
+
     final searchUrl = decodeUrl(_searchUrlB64, secretKey);
     final baseUrl = decodeUrl(_baseUrlB64, secretKey);
     if (searchUrl == null || baseUrl == null) {
@@ -427,7 +433,7 @@ class RaiPlayService {
       "templateIn": _searchTemplateIn,
       "templateOut": _searchTemplateOut,
       "params": {
-        "param": query,
+        "param": normalizedQuery,
         "from": 0,
         "sort": "relevance",
         "size": _searchPageSize,
@@ -453,12 +459,46 @@ class RaiPlayService {
     final root = jsonDecode(resp.body);
     final items = <RaiPlayItem>[];
     final seen = <String>{};
-    _collectNestedItems(root, seen, items, baseUrl);
+    if (root is Map<String, dynamic>) {
+      final titleCards = root['agg']?['titoli']?['cards'];
+      if (titleCards is List) {
+        _collectCards(titleCards, seen, items, baseUrl);
+      }
+      final videoCards = root['agg']?['video']?['cards'];
+      if (videoCards is List) {
+        _collectCards(videoCards, seen, items, baseUrl);
+      }
+    }
 
     return RaiPlayPage(
       title: 'Risultati: $query',
       items: items,
     );
+  }
+
+  String _normalizeSearchText(String text) {
+    final parts = <String>[];
+    final buffer = StringBuffer();
+    for (final codeUnit in text.trim().codeUnits) {
+      final isWhitespace = codeUnit == 9 ||
+          codeUnit == 10 ||
+          codeUnit == 11 ||
+          codeUnit == 12 ||
+          codeUnit == 13 ||
+          codeUnit == 32;
+      if (isWhitespace) {
+        if (buffer.isNotEmpty) {
+          parts.add(buffer.toString());
+          buffer.clear();
+        }
+      } else {
+        buffer.writeCharCode(codeUnit);
+      }
+    }
+    if (buffer.isNotEmpty) {
+      parts.add(buffer.toString());
+    }
+    return parts.join(' ');
   }
 
   Future<String> resolveMediaUrl(String url) async {

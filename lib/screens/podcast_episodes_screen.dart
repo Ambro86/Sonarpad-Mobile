@@ -85,9 +85,6 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                         onSelected: (action) async {
                           final messenger = ScaffoldMessenger.of(context);
                           try {
-                            if (action == 'play') {
-                              _openEpisode(episode);
-                            }
                             if (action == 'download') {
                               final file =
                                   await _service.downloadEpisode(episode);
@@ -102,7 +99,6 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                           }
                         },
                         itemBuilder: (_) => [
-                          PopupMenuItem(value: 'play', child: Text(l10n.play)),
                           PopupMenuItem(
                               value: 'download', child: Text(l10n.download)),
                         ],

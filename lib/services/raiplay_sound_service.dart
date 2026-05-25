@@ -35,6 +35,13 @@ class RaiPlaySoundService {
   static const _baseUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshCyReBjdSSi9E";
   static const _genresUrlB64 =
       "BT9NUQVqHVc7T1RfJlUTPlshCyReBjdSSi9ERy1WGycIPFwmQi0H";
+  static const _searchUrlB64 =
+      "BT9NUQVqHVc7T1RfJlUTPlshCyReBjdSSi9ERytHGi8bIRsvHjAIG2AzGT0fKFEMBTVADiVbRl41RBNhQXFdOkIWOEQHLg==";
+  static const _suggestionUrlB64 =
+      "BT9NUQVqHVc7T1RfJlUTPlshCyReBjdSSi9ERytHGi8bIRsvHjAIG2AzGT0fKFEMBTVADiVbRl41RBNhQXJdJF4GN1JLNUUPLVYGNhM6HA==";
+  static const _searchTemplateIn = "650d4cc74d28b941fec3218c";
+  static const _searchTemplateOut = "6516d22540da6c377b151643";
+  static const _searchPageSize = 12;
 
   String? decodeUrl(String encoded, String secretKey) {
     if (secretKey.trim().isEmpty) return null;
@@ -65,7 +72,102 @@ class RaiPlaySoundService {
     return decodeUrl(_baseUrlB64, secretKey);
   }
 
-  Future<RaiPlaySoundPage> loadPage(String url) async {
+  Future<RaiPlaySoundPage> searchContent(String query, String secretKey) async {
+    final trimmedQuery = query.trim();
+    if (trimmedQuery.isEmpty) {
+      throw Exception('Inserisci un testo da cercare in RaiPlay Sound.');
+    }
+
+    final searchUrl = decodeUrl(_searchUrlB64, secretKey);
+    if (searchUrl == null) {
+      throw Exception('Codice segreto non valido.');
+    }
+
+    final effectiveQuery =
+        await _refineSearchQuery(trimmedQuery, secretKey) ?? trimmedQuery;
+    final body = {
+      'templateIn': _searchTemplateIn,
+      'templateOut': _searchTemplateOut,
+      'params': {
+        'from': 0,
+        'size': _searchPageSize,
+        'param': effectiveQuery,
+        'sort': 'relevance',
+      },
+    };
+
+    final response = await http
+        .post(
+          Uri.parse(searchUrl),
+          headers: {
+            'User-Agent': 'SonarpadMobile/0.1',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(body),
+        )
+        .timeout(const Duration(seconds: 10));
+    if (response.statusCode != 200) {
+      throw Exception('Impossibile cercare in RaiPlay Sound.');
+    }
+
+    final root = jsonDecode(response.body);
+    final items = <RaiPlaySoundItem>[];
+    final seen = <String>{};
+    if (root is Map<String, dynamic>) {
+      final podcastCards = root['aggs']?['podcast']?['cards'];
+      if (podcastCards is List) {
+        _collectCards(podcastCards, false, seen, items);
+      }
+      final audioCards = root['aggs']?['audio']?['cards'];
+      if (audioCards is List) {
+        _collectCards(audioCards, false, seen, items);
+      }
+    }
+
+    return RaiPlaySoundPage(title: 'Risultati: $trimmedQuery', items: items);
+  }
+
+  Future<String?> _refineSearchQuery(String query, String secretKey) async {
+    final normalizedQuery = _normalizeSearchText(query);
+    if (normalizedQuery.isEmpty) return null;
+
+    final suggestionUrl = decodeUrl(_suggestionUrlB64, secretKey);
+    if (suggestionUrl == null) return null;
+
+    try {
+      final response = await http
+          .post(
+            Uri.parse(suggestionUrl),
+            headers: {
+              'User-Agent': 'SonarpadMobile/0.1',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({'text': query}),
+          )
+          .timeout(const Duration(seconds: 10));
+      if (response.statusCode != 200) return null;
+      final root = jsonDecode(response.body);
+      if (root is! Map<String, dynamic>) return null;
+      final suggestions = root['suggestions'];
+      if (suggestions is! List || suggestions.isEmpty) return null;
+      final first = suggestions.first;
+      if (first is! Map<String, dynamic>) return null;
+      final suggestion = _stringField(first, 'text');
+      if (suggestion == null) return null;
+
+      final normalizedSuggestion = _normalizeSearchText(suggestion);
+      if (normalizedSuggestion == normalizedQuery ||
+          normalizedSuggestion.startsWith(normalizedQuery)) {
+        return suggestion;
+      }
+    } catch (_) {
+      return null;
+    }
+    return null;
+  }
+
+  Future<RaiPlaySoundPage> loadPage(String url,
+      {bool isRootPage = false}) async {
     final response =
         await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
@@ -76,65 +178,142 @@ class RaiPlaySoundService {
     final items = <RaiPlaySoundItem>[];
     final seen = <String>{};
 
-    void parseCards(List<dynamic> cards) {
-      for (var c in cards) {
-        if (c is! Map) continue;
-        final pathId =
-            c['path_id']?.toString() ?? c['pathId']?.toString() ?? '';
-        final itemTitle = c['name']?.toString() ??
-            c['title']?.toString() ??
-            c['brand']?.toString() ??
-            c['program_title']?.toString() ??
-            'Senza titolo';
-        final description =
-            c['description']?.toString() ?? c['subtitle']?.toString() ?? '';
-
-        String audioUrl = '';
-        if (c['downloadable_audio'] != null &&
-            c['downloadable_audio']['url'] != null) {
-          audioUrl = c['downloadable_audio']['url'].toString();
-        } else if (c['downlodable_audio'] != null &&
-            c['downlodable_audio']['url'] != null) {
-          audioUrl = c['downlodable_audio']['url'].toString();
-        } else if (c['audio'] != null && c['audio']['url'] != null) {
-          audioUrl = c['audio']['url'].toString();
-        }
-
-        final kind = audioUrl.isNotEmpty
-            ? RaiPlaySoundItemKind.audio
-            : (pathId.isNotEmpty ? RaiPlaySoundItemKind.page : null);
-        if (kind == null) continue;
-        if (itemTitle.trim().isEmpty) continue;
-
-        final id = kind == RaiPlaySoundItemKind.audio
-            ? 'audio|$audioUrl|$pathId'
-            : 'page|$pathId';
-        if (seen.add(id)) {
-          items.add(RaiPlaySoundItem(
-            id: id,
-            title: itemTitle.trim(),
-            description: description.trim(),
-            kind: kind,
-            pathId: pathId,
-            audioUrl: audioUrl,
-          ));
-        }
-      }
-    }
-
     if (root['block'] != null && root['block']['cards'] is List) {
-      parseCards(root['block']['cards']);
+      _collectCards(root['block']['cards'], isRootPage, seen, items);
     }
 
     if (root['blocks'] is List) {
       for (var block in root['blocks']) {
         if (block['cards'] is List) {
-          parseCards(block['cards']);
+          _collectCards(block['cards'], isRootPage, seen, items);
         }
       }
     }
 
     return RaiPlaySoundPage(
         title: title.isEmpty ? 'RaiPlay Sound' : title, items: items);
+  }
+
+  void _collectCards(
+    List<dynamic> cards,
+    bool isRootPage,
+    Set<String> seen,
+    List<RaiPlaySoundItem> items,
+  ) {
+    for (var card in cards) {
+      if (card is! Map<String, dynamic>) continue;
+      final item = _parseCard(card, isRootPage);
+      if (item != null && seen.add(item.id)) {
+        items.add(item);
+      }
+    }
+  }
+
+  RaiPlaySoundItem? _parseCard(Map<String, dynamic> card, bool isRootPage) {
+    final pathId =
+        _stringField(card, 'path_id') ?? _stringField(card, 'pathId') ?? '';
+    final title = _preferredTitle(card);
+    if (isRootPage && _shouldHideRootItem(title)) return null;
+
+    final audioUrl = _nestedStringField(card, 'downloadable_audio', 'url') ??
+        _nestedStringField(card, 'downlodable_audio', 'url') ??
+        _nestedStringField(card, 'audio', 'url') ??
+        '';
+    final kind = audioUrl.isNotEmpty
+        ? RaiPlaySoundItemKind.audio
+        : (pathId.isNotEmpty ? RaiPlaySoundItemKind.page : null);
+    if (kind == null) return null;
+
+    final id = kind == RaiPlaySoundItemKind.audio
+        ? 'audio|$audioUrl|$pathId'
+        : 'page|$pathId';
+    return RaiPlaySoundItem(
+      id: id,
+      title: title,
+      description: _preferredDescription(card) ?? '',
+      kind: kind,
+      pathId: pathId,
+      audioUrl: audioUrl,
+    );
+  }
+
+  String _preferredTitle(Map<String, dynamic> card) {
+    for (final key in [
+      'titolo',
+      'toptitle',
+      'episode_title',
+      'title',
+      'label',
+      'programma',
+      'name',
+      'brand',
+      'program_title',
+    ]) {
+      final value = _stringField(card, key);
+      if (value != null) return value;
+    }
+    return 'Elemento RaiPlay Sound';
+  }
+
+  String? _preferredDescription(Map<String, dynamic> card) {
+    for (final key in [
+      'sommario',
+      'subtitle',
+      'description',
+      'vanity',
+      'friendlyType',
+    ]) {
+      final value = _stringField(card, key);
+      if (value != null) return value;
+    }
+    return null;
+  }
+
+  String? _stringField(Map<String, dynamic> value, String key) {
+    final raw = value[key];
+    if (raw is! String) return null;
+    final trimmed = raw.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
+  String? _nestedStringField(
+    Map<String, dynamic> value,
+    String objectKey,
+    String fieldKey,
+  ) {
+    final object = value[objectKey];
+    if (object is! Map<String, dynamic>) return null;
+    return _stringField(object, fieldKey);
+  }
+
+  String _normalizeSearchText(String text) {
+    final parts = <String>[];
+    final buffer = StringBuffer();
+    for (final codeUnit in text.trim().codeUnits) {
+      final isWhitespace = codeUnit == 9 ||
+          codeUnit == 10 ||
+          codeUnit == 11 ||
+          codeUnit == 12 ||
+          codeUnit == 13 ||
+          codeUnit == 32;
+      if (isWhitespace) {
+        if (buffer.isNotEmpty) {
+          parts.add(buffer.toString());
+          buffer.clear();
+        }
+      } else {
+        buffer.writeCharCode(codeUnit);
+      }
+    }
+    if (buffer.isNotEmpty) {
+      parts.add(buffer.toString());
+    }
+    return parts.join(' ').toLowerCase();
+  }
+
+  bool _shouldHideRootItem(String title) {
+    final trimmed = title.trim();
+    return trimmed == 'Audiodescrizioni-fiction' ||
+        trimmed == 'Audiodescrizioni_film';
   }
 }

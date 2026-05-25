@@ -44,20 +44,19 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   String? _ttsStatus;
   int _playingChunkIndex = -1;
   final _chunkKeys = <GlobalKey>[];
-  int _totalChunks = 0;
 
   bool _ttsPaused = false;
   StreamSubscription<bool>? _playingSub;
 
   bool _isEditing = false;
-  late final TextEditingController _editController;
+  List<String> _editChunks = [];
 
   static const int _maxChunkChars = 650;
+  static const int _maxEditChunkChars = 4000;
 
   @override
   void initState() {
     super.initState();
-    _editController = TextEditingController();
     _playingSub = _audio.playingStream.listen((playing) {
       if (_speaking && mounted) {
         setState(() => _ttsPaused = !playing);
@@ -71,7 +70,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _playingSub?.cancel();
     _audio.dispose();
     _scrollController.dispose();
-    _editController.dispose();
     super.dispose();
   }
 
@@ -142,8 +140,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _speaking = true;
       _ttsPaused = false;
       _playingChunkIndex = -1;
-      _totalChunks = _chunks.length;
-      _ttsStatus = 'Preparo lettura Edge TTS a blocchi...';
+      _ttsStatus = null;
     });
 
     try {
@@ -169,7 +166,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         // Aggiorna chunk evidenziato e scrolla
         setState(() {
           _playingChunkIndex = index;
-          _ttsStatus = 'Lettura blocco ${index + 1} di $_totalChunks...';
         });
         _scrollToChunk(index);
         await _audio.playFilesSequentially([file]);
@@ -183,7 +179,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _playingChunkIndex = -1;
         _speaking = false;
         _ttsPaused = false;
-        _ttsStatus = 'Lettura terminata.';
+        _ttsStatus = null;
       });
     } catch (e) {
       dev.log('DocumentReaderScreen TTS error: $e');
@@ -217,8 +213,50 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // Modifica
   // ---------------------------------------------------------------------------
 
+  List<String> _splitTextForEditing(String text) {
+    if (text.isEmpty) return [''];
+
+    final chunks = <String>[];
+    var start = 0;
+    while (start < text.length) {
+      var end = start + _maxEditChunkChars;
+      if (end >= text.length) {
+        chunks.add(text.substring(start));
+        break;
+      }
+
+      final minEnd = start + (_maxEditChunkChars ~/ 2);
+      final paragraphBreak = text.lastIndexOf('\n\n', end);
+      final lineBreak = text.lastIndexOf('\n', end);
+      final space = text.lastIndexOf(' ', end);
+
+      if (paragraphBreak >= minEnd) {
+        end = paragraphBreak + 2;
+      } else if (lineBreak >= minEnd) {
+        end = lineBreak + 1;
+      } else if (space >= minEnd) {
+        end = space + 1;
+      }
+
+      chunks.add(text.substring(start, end));
+      start = end;
+    }
+
+    return chunks;
+  }
+
+  void _startEditing() {
+    _editChunks = _splitTextForEditing(_documentText);
+    setState(() => _isEditing = true);
+  }
+
+  void _cancelEditing() {
+    _editChunks = [];
+    setState(() => _isEditing = false);
+  }
+
   Future<void> _saveDocument() async {
-    final text = _editController.text;
+    final text = _editChunks.join();
     try {
       final ext = widget.document.extension.toLowerCase();
       String savePath = widget.document.path;
@@ -239,6 +277,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (!mounted) return;
       setState(() {
         _isEditing = false;
+        _editChunks = [];
         _documentText = text;
         if (_documentText.isNotEmpty) {
           _chunks = _tts.splitTextForStreaming(
@@ -364,12 +403,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
-                              onPressed: _speaking
-                                  ? null
-                                  : () {
-                                      _editController.text = _documentText;
-                                      setState(() => _isEditing = true);
-                                    },
+                              onPressed: _speaking ? null : _startEditing,
                               icon: const Icon(Icons.edit),
                               label: Text(l10n.edit),
                             ),
@@ -422,18 +456,29 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       child: Column(
         children: [
           Expanded(
-            child: TextField(
-              controller: _editController,
-              expands: true,
-              maxLines: null,
-              minLines: null,
-              autofocus: true,
-              keyboardType: TextInputType.multiline,
-              textAlignVertical: TextAlignVertical.top,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
               ),
-              style: theme.textTheme.bodyLarge,
+              itemCount: _editChunks.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: TextFormField(
+                    key: ValueKey('document-edit-chunk-$index'),
+                    initialValue: _editChunks[index],
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
+                    textAlignVertical: TextAlignVertical.top,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: 'Blocco ${index + 1} di ${_editChunks.length}',
+                    ),
+                    style: theme.textTheme.bodyLarge,
+                    onChanged: (value) => _editChunks[index] = value,
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(height: 16),
@@ -449,7 +494,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => setState(() => _isEditing = false),
+                  onPressed: _cancelEditing,
                   icon: const Icon(Icons.cancel),
                   label: Text(l10n.cancel),
                 ),

@@ -25,6 +25,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
   String? _error;
   bool _searching = false;
   String _secretCode = '';
+  bool _autoOpenedSingleItem = false;
 
   /// true solo se siamo nella root (nessun pathId fornito)
   bool get _isRoot => widget.pathId == null;
@@ -62,6 +63,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
         _page = page;
         _loading = false;
       });
+      _openSingleNestedItemIfNeeded(page);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -69,6 +71,15 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
         _loading = false;
       });
     }
+  }
+
+  void _openSingleNestedItemIfNeeded(RaiPlayPage page) {
+    if (_isRoot || _autoOpenedSingleItem || page.items.length != 1) return;
+    _autoOpenedSingleItem = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _openItem(page.items.single);
+    });
   }
 
   Future<void> _search() async {
@@ -229,14 +240,6 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                                       overflow: TextOverflow.ellipsis)
                                   : null,
                               onTap: () => _openItem(item),
-                              trailing: IconButton(
-                                tooltip:
-                                    isMedia ? 'Riproduci' : 'Apri cartella',
-                                onPressed: () => _openItem(item),
-                                icon: Icon(isMedia
-                                    ? Icons.play_arrow
-                                    : Icons.chevron_right),
-                              ),
                             ),
                           );
                         },

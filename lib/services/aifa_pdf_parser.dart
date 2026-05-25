@@ -27,11 +27,27 @@ class AifaPdfParser {
       RegExp(r'(?:\n|^)\s*4\.\s+Possibili\s+effetti', caseSensitive: false);
   static final _s5 =
       RegExp(r'(?:\n|^)\s*5\.\s+Come\s+conservare', caseSensitive: false);
-  static final _s6 =
-      RegExp(r'(?:\n|^)\s*6\.\s+Contenuto', caseSensitive: false);
   static final _sePrendePiu = RegExp(
       r'(?:\n|^)\s*Se\s+(?:prende|usa|assume)\s+più',
       caseSensitive: false);
+
+  static int? _chapterStart(RegExp pattern, String text) {
+    int? start;
+    for (final match in pattern.allMatches(text)) {
+      start = match.start;
+    }
+    return start;
+  }
+
+  static String _textBetween(
+    String text, {
+    required int? start,
+    required int? end,
+  }) {
+    if (start == null) return '';
+    final safeEnd = end == null || end <= start ? text.length : end;
+    return text.substring(start, safeEnd);
+  }
 
   /// Estrae il testo completo dal PDF e lo suddivide in base alla sezione richiesta.
   /// Salva il frammento in un file .txt e restituisce il percorso.
@@ -53,20 +69,18 @@ class AifaPdfParser {
     }
 
     // 2. Trova gli indici dei capitoli principali
-    final i1 = _s1.firstMatch(text)?.start ?? 0;
-    final i2 = _s2.firstMatch(text)?.start ?? text.length;
-    final i3 = _s3.firstMatch(text)?.start ?? text.length;
-    final i4 = _s4.firstMatch(text)?.start ?? text.length;
-    final i5 = _s5.firstMatch(text)?.start ?? text.length;
+    final i1 = _chapterStart(_s1, text);
+    final i2 = _chapterStart(_s2, text);
+    final i3 = _chapterStart(_s3, text);
+    final i4 = _chapterStart(_s4, text);
+    final i5 = _chapterStart(_s5, text);
 
     String extractedText = '';
 
     switch (type) {
       case AifaSectionType.aCosaServe:
         // Paragrafo 1 (da 1 a 2)
-        final start = i1;
-        final end = i2 < text.length ? i2 : text.length;
-        extractedText = text.substring(start, end);
+        extractedText = _textBetween(text, start: i1, end: i2);
         if (extractedText.trim().isEmpty) {
           extractedText =
               "Impossibile trovare chiaramente i capitoli 1 e 2. Il testo potrebbe essere formattato diversamente.";
@@ -75,9 +89,7 @@ class AifaPdfParser {
 
       case AifaSectionType.cosaDeveSapere:
         // Paragrafo 2 (da 2 a 3)
-        final start = i2 < text.length ? i2 : 0;
-        final end = i3 < text.length ? i3 : text.length;
-        extractedText = text.substring(start, end);
+        extractedText = _textBetween(text, start: i2, end: i3);
         if (extractedText.trim().isEmpty) {
           extractedText = "Impossibile trovare il capitolo 2.";
         }
@@ -85,9 +97,7 @@ class AifaPdfParser {
 
       case AifaSectionType.posologia:
         // Paragrafo 3 (solo la parte su come prendere, escludendo sovradosaggio se possibile)
-        final start = i3;
-        final end = i4 < text.length ? i4 : text.length;
-        var section3 = text.substring(start, end);
+        var section3 = _textBetween(text, start: i3, end: i4);
 
         // Cerchiamo di escludere "Se prende più"
         final sePrendeMatch = _sePrendePiu.firstMatch(section3);
@@ -103,9 +113,7 @@ class AifaPdfParser {
 
       case AifaSectionType.effettiIndesiderati:
         // Paragrafo 4 + eventuale parte finale del paragrafo 3
-        final start3 = i3;
-        final end3 = i4 < text.length ? i4 : text.length;
-        final section3 = text.substring(start3, end3);
+        final section3 = _textBetween(text, start: i3, end: i4);
 
         String sovradosaggio = '';
         final sePrendeMatch = _sePrendePiu.firstMatch(section3);
@@ -113,9 +121,7 @@ class AifaPdfParser {
           sovradosaggio = '${section3.substring(sePrendeMatch.start)}\n\n';
         }
 
-        final start4 = i4;
-        final end4 = i5 < text.length ? i5 : text.length;
-        final section4 = text.substring(start4, end4);
+        final section4 = _textBetween(text, start: i4, end: i5);
 
         extractedText = sovradosaggio + section4;
         if (extractedText.trim().isEmpty) {
@@ -126,8 +132,7 @@ class AifaPdfParser {
 
       case AifaSectionType.conservazione:
         // Paragrafo 5 e 6
-        final start = i5;
-        extractedText = text.substring(start);
+        extractedText = _textBetween(text, start: i5, end: null);
         if (extractedText.trim().isEmpty) {
           extractedText = "Impossibile trovare i capitoli 5 e 6.";
         }

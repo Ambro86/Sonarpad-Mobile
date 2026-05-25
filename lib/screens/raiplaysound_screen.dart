@@ -17,10 +17,16 @@ class RaiPlaySoundScreen extends StatefulWidget {
 class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   final _settings = AppSettingsService();
   final _service = RaiPlaySoundService();
+  final _searchController = TextEditingController();
 
   RaiPlaySoundPage? _page;
   bool _loading = true;
   String? _error;
+  bool _searching = false;
+  String _secretCode = '';
+  bool _autoOpenedSingleItem = false;
+
+  bool get _isRoot => widget.url == null;
 
   @override
   void initState() {
@@ -28,20 +34,28 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     _load();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _load() async {
     try {
       final code = await _settings.getTvSecretCode();
+      _secretCode = code;
       final url = widget.url ?? _service.getGenresUrl(code);
       if (url == null) {
         throw Exception('Codice non valido o mancante.');
       }
 
-      final page = await _service.loadPage(url);
+      final page = await _service.loadPage(url, isRootPage: _isRoot);
       if (!mounted) return;
       setState(() {
         _page = page;
         _loading = false;
       });
+      _openSingleNestedItemIfNeeded(page);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -49,6 +63,48 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
         _loading = false;
       });
     }
+  }
+
+  Future<void> _search() async {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) return;
+    setState(() {
+      _searching = true;
+      _error = null;
+    });
+    try {
+      final results = await _service.searchContent(query, _secretCode);
+      if (!mounted) return;
+      setState(() {
+        _page = results;
+        _searching = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = 'Errore nella ricerca: $e';
+        _searching = false;
+      });
+    }
+  }
+
+  Future<void> _resetToRoot() async {
+    _searchController.clear();
+    setState(() {
+      _loading = true;
+      _error = null;
+      _autoOpenedSingleItem = false;
+    });
+    await _load();
+  }
+
+  void _openSingleNestedItemIfNeeded(RaiPlaySoundPage page) {
+    if (_isRoot || _autoOpenedSingleItem || page.items.length != 1) return;
+    _autoOpenedSingleItem = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _openItem(page.items.single);
+    });
   }
 
   void _openItem(RaiPlaySoundItem item) async {
@@ -107,34 +163,98 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
       appBar: AppBar(title: Text(_page?.title ?? 'RaiPlay Sound')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _error != null
+          : _error != null && _page == null
               ? Center(child: Text(_error!))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _page!.items.length,
-                  itemBuilder: (context, index) {
-                    final item = _page!.items[index];
-                    final isAudio = item.kind == RaiPlaySoundItemKind.audio;
-
-                    return Card(
-                      child: ListTile(
-                        leading:
-                            Icon(isAudio ? Icons.audiotrack : Icons.folder),
-                        title: Text(item.title),
-                        subtitle: item.description.isNotEmpty
-                            ? Text(item.description,
-                                maxLines: 2, overflow: TextOverflow.ellipsis)
-                            : null,
-                        onTap: () => _openItem(item),
-                        trailing: IconButton(
-                          tooltip: isAudio ? 'Riproduci' : 'Apri cartella',
-                          onPressed: () => _openItem(item),
-                          icon: Icon(
-                              isAudio ? Icons.play_arrow : Icons.chevron_right),
+              : Column(
+                  children: [
+                    if (_isRoot)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Cerca su RaiPlay Sound',
+                                  hintText: 'Es. GR, teatro, podcast...',
+                                  prefixIcon: Icon(Icons.search),
+                                  border: OutlineInputBorder(),
+                                ),
+                                textInputAction: TextInputAction.search,
+                                onSubmitted: (_) => _search(),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            if (_searching)
+                              const Padding(
+                                padding: EdgeInsets.all(12),
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                  ),
+                                ),
+                              )
+                            else ...[
+                              IconButton(
+                                icon: const Icon(Icons.search),
+                                tooltip: 'Cerca',
+                                onPressed: _search,
+                              ),
+                              if (_page?.title.startsWith('Risultati:') == true)
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  tooltip: 'Torna alla home',
+                                  onPressed: _resetToRoot,
+                                ),
+                            ],
+                          ],
                         ),
                       ),
-                    );
-                  },
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        child: Text(
+                          _error!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _page!.items.length,
+                        itemBuilder: (context, index) {
+                          final item = _page!.items[index];
+                          final isAudio =
+                              item.kind == RaiPlaySoundItemKind.audio;
+
+                          return Card(
+                            child: ListTile(
+                              leading: Icon(
+                                isAudio ? Icons.audiotrack : Icons.folder,
+                              ),
+                              title: Text(item.title),
+                              subtitle: item.description.isNotEmpty
+                                  ? Text(
+                                      item.description,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    )
+                                  : null,
+                              onTap: () => _openItem(item),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
     );
   }
