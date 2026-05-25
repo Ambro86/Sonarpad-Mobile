@@ -6,6 +6,7 @@ import 'document_text_extractor.dart';
 
 enum AifaSectionType {
   aCosaServe,
+  cosaDeveSapere,
   posologia,
   effettiIndesiderati,
   conservazione,
@@ -13,16 +14,22 @@ enum AifaSectionType {
 }
 
 class AifaPdfParser {
-  static final RegExp _s1 =
+  // Regex per intercettare i titoli dei capitoli AIFA standard.
+  // Usiamo espressioni regolari robuste per ignorare spaziature strane e case-sensitivity.
+  static final _s1 =
       RegExp(r'(?:\n|^)\s*1\.\s+Che\s+cos', caseSensitive: false);
-  static final RegExp _s3 = RegExp(
+  static final _s2 =
+      RegExp(r'(?:\n|^)\s*2\.\s+Cosa\s+deve', caseSensitive: false);
+  static final _s3 = RegExp(
       r'(?:\n|^)\s*3\.\s+Come\s+(?:prendere|usare|assumere)',
       caseSensitive: false);
-  static final RegExp _s4 =
+  static final _s4 =
       RegExp(r'(?:\n|^)\s*4\.\s+Possibili\s+effetti', caseSensitive: false);
-  static final RegExp _s5 =
+  static final _s5 =
       RegExp(r'(?:\n|^)\s*5\.\s+Come\s+conservare', caseSensitive: false);
-  static final RegExp _sePrendePiu = RegExp(
+  static final _s6 =
+      RegExp(r'(?:\n|^)\s*6\.\s+Contenuto', caseSensitive: false);
+  static final _sePrendePiu = RegExp(
       r'(?:\n|^)\s*Se\s+(?:prende|usa|assume)\s+più',
       caseSensitive: false);
 
@@ -47,6 +54,7 @@ class AifaPdfParser {
 
     // 2. Trova gli indici dei capitoli principali
     final i1 = _s1.firstMatch(text)?.start ?? 0;
+    final i2 = _s2.firstMatch(text)?.start ?? text.length;
     final i3 = _s3.firstMatch(text)?.start ?? text.length;
     final i4 = _s4.firstMatch(text)?.start ?? text.length;
     final i5 = _s5.firstMatch(text)?.start ?? text.length;
@@ -55,13 +63,23 @@ class AifaPdfParser {
 
     switch (type) {
       case AifaSectionType.aCosaServe:
-        // Paragrafo 1 e 2 (da 1 a 3)
+        // Paragrafo 1 (da 1 a 2)
         final start = i1;
-        final end = i3 < text.length ? i3 : text.length;
+        final end = i2 < text.length ? i2 : text.length;
         extractedText = text.substring(start, end);
         if (extractedText.trim().isEmpty) {
           extractedText =
               "Impossibile trovare chiaramente i capitoli 1 e 2. Il testo potrebbe essere formattato diversamente.";
+        }
+        break;
+
+      case AifaSectionType.cosaDeveSapere:
+        // Paragrafo 2 (da 2 a 3)
+        final start = i2 < text.length ? i2 : 0;
+        final end = i3 < text.length ? i3 : text.length;
+        extractedText = text.substring(start, end);
+        if (extractedText.trim().isEmpty) {
+          extractedText = "Impossibile trovare il capitolo 2.";
         }
         break;
 

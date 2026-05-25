@@ -42,6 +42,14 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
                 },
               ),
               ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text("Cosa deve sapere prima dell'uso"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _openDrugPdf(conf, AifaSectionType.cosaDeveSapere);
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.medication),
                 title: const Text("Posologia d'uso"),
                 onTap: () {
@@ -109,6 +117,9 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
       switch (sectionType) {
         case AifaSectionType.aCosaServe:
           sectionName = 'A cosa serve';
+          break;
+        case AifaSectionType.cosaDeveSapere:
+          sectionName = 'Avvertenze';
           break;
         case AifaSectionType.posologia:
           sectionName = 'Posologia';
