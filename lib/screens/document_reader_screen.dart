@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:uuid/uuid.dart';
 
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
@@ -625,30 +624,24 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _exportDocument() async {
-    final ext = widget.document.extension.toLowerCase();
-    
-    // Mostriamo un dialogo per scegliere il formato, a meno che non sia già txt/md
-    String? format = ext == 'txt' || ext == 'md' ? 'txt' : null;
-    
-    if (format == null) {
-      format = await showDialog<String>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Esporta documento'),
-          content: const Text('In quale formato desideri esportare il documento modificato?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, 'txt'),
-              child: const Text('Testo (.txt)'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, 'pdf'),
-              child: const Text('PDF (.pdf)'),
-            ),
-          ],
-        ),
-      );
-    }
+    // Mostriamo sempre un dialogo per scegliere il formato
+    String? format = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Esporta documento'),
+        content: const Text('In quale formato desideri esportare il documento?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, 'txt'),
+            child: const Text('Testo (.txt)'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, 'pdf'),
+            child: const Text('PDF (.pdf)'),
+          ),
+        ],
+      ),
+    );
 
     if (format == null || !mounted) return;
 
@@ -684,7 +677,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       font: font,
     );
     
-    final PdfLayoutResult? result = element.draw(
+    element.draw(
       page: page,
       bounds: Rect.fromLTWH(0, 0, page.getClientSize().width, page.getClientSize().height),
       format: PdfLayoutFormat(
