@@ -18,7 +18,7 @@ void main() {
     await loadAppFonts();
   });
 
-  testGoldens('Generazione Screenshot App', (tester) async {
+  testGoldens('Generazione Screenshot Singoli', (tester) async {
     SharedPreferences.setMockInitialValues({
       'settings_tv_code': '',
       'settings_secret_code': '',
@@ -31,72 +31,37 @@ void main() {
       GlobalWidgetsLocalizations.delegate,
     ];
 
-    final builder = DeviceBuilder()
-      ..overrideDevicesForAllScenarios(devices: [
-        Device.iphone11, // Generiamo solo per iPhone 11 (utile per store)
-      ])
-      ..addScenario(
-        widget: const SonarpadApp(), 
-        name: '01_Home',
-      )
-      ..addScenario(
-        widget: MaterialApp(
-          localizationsDelegates: delegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('it'),
-          home: const Scaffold(body: SettingsScreen()),
-        ),
-        name: '02_Settings',
-      )
-      ..addScenario(
-        widget: MaterialApp(
-          localizationsDelegates: delegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('it'),
-          home: const Scaffold(body: DocumentsScreen()),
-        ),
-        name: '03_Documents',
-      )
-      ..addScenario(
-        widget: MaterialApp(
-          localizationsDelegates: delegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('it'),
-          home: const Scaffold(body: WikipediaScreen()),
-        ),
-        name: '04_Wikipedia',
-      )
-      ..addScenario(
-        widget: MaterialApp(
-          localizationsDelegates: delegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('it'),
-          home: const Scaffold(body: NewsScreen()),
-        ),
-        name: '05_News',
-      )
-      ..addScenario(
-        widget: MaterialApp(
-          localizationsDelegates: delegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('it'),
-          home: const Scaffold(body: PodcastScreen()),
-        ),
-        name: '06_Podcast',
-      )
-      ..addScenario(
-        widget: MaterialApp(
-          localizationsDelegates: delegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('it'),
-          home: const Scaffold(body: RadioScreen()),
-        ),
-        name: '07_Radio',
+    Widget buildScreen(Widget child) {
+      return MaterialApp(
+        localizationsDelegates: delegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('it'),
+        home: Scaffold(body: child),
       );
+    }
 
-    await tester.pumpDeviceBuilder(builder);
-    await tester.pump(const Duration(milliseconds: 500));
+    final screens = {
+      '01_home_screen': const SonarpadApp(),
+      '02_settings_screen': buildScreen(const SettingsScreen()),
+      '03_documents_screen': buildScreen(const DocumentsScreen()),
+      '04_wikipedia_screen': buildScreen(const WikipediaScreen()),
+      '05_news_screen': buildScreen(const NewsScreen()),
+      '06_podcast_screen': buildScreen(const PodcastScreen()),
+      '07_radio_screen': buildScreen(const RadioScreen()),
+    };
 
-    await screenMatchesGolden(tester, 'app_screenshots');
+    for (final entry in screens.entries) {
+      final builder = DeviceBuilder()
+        ..overrideDevicesForAllScenarios(devices: [Device.iphone11])
+        ..addScenario(widget: entry.value, name: entry.key);
+
+      await tester.pumpDeviceBuilder(builder);
+      await tester.pump(const Duration(milliseconds: 500));
+      await screenMatchesGolden(
+        tester,
+        entry.key,
+        customPump: (tester) => tester.pump(const Duration(milliseconds: 500)),
+      );
+    }
   });
 }

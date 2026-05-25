@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
+import 'favorite_radios_screen.dart';
 import 'radio_player_screen.dart';
 
 class RadioScreen extends StatefulWidget {
@@ -153,20 +154,23 @@ class _RadioScreenState extends State<RadioScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          ExpansionTile(
-            initiallyExpanded: _favorites.isNotEmpty,
-            title: Text(l10n.radioFavoritesButton),
-            children: _favorites.isEmpty
-                ? [ListTile(title: Text(l10n.radioNoFavorites))]
-                : _favorites
-                    .map((station) => _RadioTile(
-                          station: station,
-                          isFavorite: true,
-                          isPlaying: false,
-                          onPlay: () => _play(station),
-                          onToggleFavorite: () => _toggleFavorite(station),
-                        ))
-                    .toList(),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+              alignment: Alignment.centerLeft,
+            ),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(name: '/radio/favorites'),
+                  builder: (_) => const FavoriteRadiosScreen(),
+                ),
+              );
+              _loadFavorites();
+            },
+            icon: const Icon(Icons.favorite),
+            label: Text(l10n.radioFavoritesButton),
           ),
           const SizedBox(height: 16),
           TextField(
@@ -216,14 +220,14 @@ class _RadioScreenState extends State<RadioScreen> {
             ..._results.map((station) {
               final isFavorite =
                   _favorites.any((item) => item.streamUrl == station.streamUrl);
-              return _RadioTile(
+              return RadioTile(
                 station: station,
                 isFavorite: isFavorite,
                 isPlaying: false,
                 onPlay: () => _play(station),
                 onToggleFavorite: () => _toggleFavorite(station),
               );
-            }),
+            }).toList(),
           ] else if (!_searching) ...[
             const SizedBox(height: 16),
             Text(l10n.radioNoResults),
@@ -286,14 +290,15 @@ class _RadioScreenState extends State<RadioScreen> {
   }
 }
 
-class _RadioTile extends StatelessWidget {
+class RadioTile extends StatelessWidget {
   final RadioStation station;
   final bool isFavorite;
   final bool isPlaying;
   final VoidCallback onPlay;
   final VoidCallback onToggleFavorite;
 
-  const _RadioTile({
+  const RadioTile({
+    super.key,
     required this.station,
     required this.isFavorite,
     required this.isPlaying,

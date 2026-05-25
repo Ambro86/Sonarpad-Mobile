@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
 import 'document_reader_screen.dart';
@@ -252,9 +254,13 @@ class _DocumentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final badgeColor = _badgeColor(doc.extension);
 
     return Semantics(
+      customSemanticsActions: {
+        CustomSemanticsAction(label: l10n.removeDocument): onRemove,
+      },
       label: '${doc.name}, tipo ${doc.extension.toUpperCase()}, '
           'aggiunto il ${_formattedDate(doc.addedAt)}',
       hint: 'Tocca per aprire e leggere il documento',
@@ -312,13 +318,15 @@ class _DocumentTile extends StatelessWidget {
                   ),
                 ),
                 // Pulsante rimuovi
-                Semantics(
-                  button: true,
-                  label: 'Rimuovi ${doc.name}',
-                  child: IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    tooltip: 'Rimuovi documento',
-                    onPressed: onRemove,
+                ExcludeSemantics(
+                  child: Semantics(
+                    button: true,
+                    label: 'Rimuovi ${doc.name}',
+                    child: IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      tooltip: 'Rimuovi documento',
+                      onPressed: onRemove,
+                    ),
                   ),
                 ),
               ],
