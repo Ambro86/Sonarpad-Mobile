@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../utils/app_logger.dart';
+
 enum RaiPlayItemKind { media, page }
 
 const _menuSectionSourcePrefix = 'raiplay-menu-section:';
@@ -503,10 +505,12 @@ class RaiPlayService {
 
   Future<String> resolveMediaUrl(String url) async {
     String resolvedUrl = url;
+    await AppLogger.log('RaiPlayService: Inizio risoluzione media per: $url');
 
     if (url.contains('/relinker/relinkerServlet')) {
       final sep = url.contains('?') ? '&' : '?';
       final xmlUrl = '$url${sep}output=45&pl=native';
+      await AppLogger.log('RaiPlayService: Interrogo il relinker XML: $xmlUrl');
       try {
         final resp = await http.get(Uri.parse(xmlUrl));
         if (resp.statusCode == 200) {
@@ -523,14 +527,25 @@ class RaiPlayService {
               resolvedUrl = matchAny.group(1)!;
             }
           }
+          await AppLogger.log('RaiPlayService: Relinker risolto in: $resolvedUrl');
+        } else {
+          await AppLogger.log('RaiPlayService: Errore relinker HTTP ${resp.statusCode}');
         }
-      } catch (_) {}
+      } catch (e) {
+        await AppLogger.log('RaiPlayService: Eccezione relinker: $e');
+      }
     }
 
     if (resolvedUrl.toLowerCase().contains('.m3u8')) {
+      await AppLogger.log('RaiPlayService: Scarico playlist M3U8 per cercare audiodescrizione: $resolvedUrl');
       try {
         final resp = await http.get(Uri.parse(resolvedUrl));
         if (resp.statusCode == 200) {
+          final finalMasterUrl = resp.request?.url.toString() ?? resolvedUrl;
+          if (finalMasterUrl != resolvedUrl) {
+            await AppLogger.log('RaiPlayService: Redirect rilevato!\nOriginale: $resolvedUrl\nFinale: $finalMasterUrl');
+          }
+
           final playlist = resp.body;
           String? adUrl;
           String? itaUrl;
@@ -550,19 +565,34 @@ class RaiPlayService {
                 final name = nameMatch?.group(1)?.toLowerCase();
 
                 if (lang == 'des' || name == 'audiodescrizione') {
-                  adUrl = _resolveHlsChildUrl(resolvedUrl, uri);
+                  await AppLogger.log('RaiPlayService: Trovata AD: Lang=$lang Name=$name URI=$uri');
+                  adUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
                   break; // Audiodescrizione trovata, ha precedenza assoluta
                 }
                 if (lang == 'ita' && itaUrl == null) {
-                  itaUrl = _resolveHlsChildUrl(resolvedUrl, uri);
+                  await AppLogger.log('RaiPlayService: Trovata traccia ITA: URI=$uri');
+                  itaUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
                 }
               }
             }
           }
-          if (adUrl != null) return adUrl;
-          if (itaUrl != null) return itaUrl;
+          
+          if (adUrl != null) {
+            await AppLogger.log('RaiPlayService: Restituisco traccia AD: $adUrl');
+            return adUrl;
+          }
+          if (itaUrl != null) {
+            await AppLogger.log('RaiPlayService: Restituisco traccia ITA: $itaUrl');
+            return itaUrl;
+          }
+          
+          await AppLogger.log('RaiPlayService: Nessuna traccia AD/ITA trovata, uso master playlist.');
+        } else {
+          await AppLogger.log('RaiPlayService: Errore M3U8 HTTP ${resp.statusCode}');
         }
-      } catch (_) {}
+      } catch (e) {
+        await AppLogger.log('RaiPlayService: Eccezione download M3U8: $e');
+      }
     }
 
     return resolvedUrl;
@@ -576,6 +606,8 @@ class RaiPlayService {
       resolvedUri = resolvedUri.replace(query: masterUri.query);
     }
     
-    return resolvedUri.toString();
+    final finalUrl = resolvedUri.toString();
+    AppLogger.log('RaiPlayService: Child URI risolto in: $finalUrl');
+    return finalUrl;
   }
 }

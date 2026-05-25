@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
-import 'edge_tts_log_screen.dart';
+import 'app_log_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -256,18 +256,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 24),
                 const Divider(),
                 const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      settings:
-                          const RouteSettings(name: '/settings/edge-tts-log'),
-                      builder: (_) => const EdgeTtsLogScreen(),
-                    ),
+                  FilledButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          settings: const RouteSettings(name: '/settings/app-log'),
+                          builder: (_) => const AppLogScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.description),
+                    label: const Text('Visualizza log di sistema'),
                   ),
-                  icon: const Icon(Icons.bug_report_outlined),
-                  label: const Text('Visualizza log Edge TTS'),
-                ),
               ],
             ),
     );
