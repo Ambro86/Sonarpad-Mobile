@@ -125,7 +125,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<String> _voice() async {
     final configured = await _settings.loadTtsVoice();
     if (configured.trim().isNotEmpty) return configured;
-    return 'it-IT-ElsaNeural';
+    return 'it-IT-IsabellaNeural';
   }
 
   Future<void> _readWithEdgeTts() async {
@@ -255,6 +255,47 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     setState(() => _isEditing = false);
   }
 
+  Future<void> _editChunk(int index) async {
+    if (index < 0 || index >= _editChunks.length) return;
+
+    final controller = TextEditingController(text: _editChunks[index]);
+    final edited = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Modifica testo'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: TextField(
+              controller: controller,
+              autofocus: true,
+              keyboardType: TextInputType.multiline,
+              maxLines: 12,
+              minLines: 6,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, controller.text),
+              child: const Text('Applica'),
+            ),
+          ],
+        );
+      },
+    );
+    controller.dispose();
+
+    if (edited == null || !mounted) return;
+    setState(() => _editChunks[index] = edited);
+  }
+
   Future<void> _saveDocument() async {
     final text = _editChunks.join();
     try {
@@ -377,29 +418,26 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                             ],
 
                             // --- Pulsanti TTS ---
-                            Semantics(
-                              focused: true,
-                              child: FilledButton.icon(
-                                onPressed: () {
-                                  if (!_speaking) {
-                                    _readWithEdgeTts();
-                                  } else if (_ttsPaused) {
-                                    _audio.play();
-                                  } else {
-                                    _audio.pause();
-                                  }
-                                },
-                                icon: Icon(!_speaking
-                                    ? Icons.volume_up
-                                    : (_ttsPaused
-                                        ? Icons.play_arrow
-                                        : Icons.pause)),
-                                label: Text(!_speaking
-                                    ? 'Leggi con Edge TTS'
-                                    : (_ttsPaused
-                                        ? 'Riprendi lettura'
-                                        : 'Pausa lettura')),
-                              ),
+                            FilledButton.icon(
+                              onPressed: () {
+                                if (!_speaking) {
+                                  _readWithEdgeTts();
+                                } else if (_ttsPaused) {
+                                  _audio.play();
+                                } else {
+                                  _audio.pause();
+                                }
+                              },
+                              icon: Icon(!_speaking
+                                  ? Icons.volume_up
+                                  : (_ttsPaused
+                                      ? Icons.play_arrow
+                                      : Icons.pause)),
+                              label: Text(!_speaking
+                                  ? 'Leggi con Edge TTS'
+                                  : (_ttsPaused
+                                      ? 'Riprendi lettura'
+                                      : 'Pausa lettura')),
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
@@ -463,19 +501,25 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
               itemCount: _editChunks.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: TextFormField(
-                    key: ValueKey('document-edit-chunk-$index'),
-                    initialValue: _editChunks[index],
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    textAlignVertical: TextAlignVertical.top,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'Blocco ${index + 1} di ${_editChunks.length}',
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Semantics(
+                    container: true,
+                    button: true,
+                    child: InkWell(
+                      key: ValueKey('document-edit-chunk-$index'),
+                      onTap: () => _editChunk(index),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          _editChunks[index],
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                      ),
                     ),
-                    style: theme.textTheme.bodyLarge,
-                    onChanged: (value) => _editChunks[index] = value,
                   ),
                 );
               },
@@ -516,8 +560,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         Semantics(
           key: _chunkKeys[i],
           container: true,
-          liveRegion: isPlaying,
-          label: isPlaying ? 'In lettura ' : null,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,

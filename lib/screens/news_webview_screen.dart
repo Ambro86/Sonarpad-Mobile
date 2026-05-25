@@ -83,7 +83,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<String> _voice() async {
     final configured = await _settings.loadTtsVoice();
     if (configured.trim().isNotEmpty) return configured;
-    return 'it-IT-ElsaNeural';
+    return 'it-IT-IsabellaNeural';
   }
 
   Future<void> _loadReaderFromWebView(int navigationId) async {

@@ -78,7 +78,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
     _autoOpenedSingleItem = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _openItem(page.items.single);
+      _openItem(page.items.single, replaceCurrentRoute: true);
     });
   }
 
@@ -114,18 +114,23 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
     await _load();
   }
 
-  void _openItem(RaiPlayItem item) async {
+  void _openItem(
+    RaiPlayItem item, {
+    bool replaceCurrentRoute = false,
+  }) async {
     if (item.kind == RaiPlayItemKind.page) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/raiplay/page'),
-          builder: (_) => RaiPlayScreen(
-            pathId: item.pathId,
-            pageTitle: item.title,
-          ),
+      final route = MaterialPageRoute(
+        settings: const RouteSettings(name: '/raiplay/page'),
+        builder: (_) => RaiPlayScreen(
+          pathId: item.pathId,
+          pageTitle: item.title,
         ),
       );
+      if (replaceCurrentRoute) {
+        Navigator.pushReplacement(context, route);
+      } else {
+        Navigator.push(context, route);
+      }
     } else {
       if (!mounted) return;
       setState(() => _loading = true);
@@ -143,13 +148,15 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
       if (!mounted) return;
       setState(() => _loading = false);
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/raiplay/player'),
-          builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
-        ),
+      final route = MaterialPageRoute(
+        settings: const RouteSettings(name: '/raiplay/player'),
+        builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
       );
+      if (replaceCurrentRoute) {
+        Navigator.pushReplacement(context, route);
+      } else {
+        Navigator.push(context, route);
+      }
     }
   }
 

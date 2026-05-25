@@ -36,7 +36,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     final configured = await _settings.loadTtsVoice();
     if (configured.trim().isNotEmpty) return configured;
     return widget.language == NewsLanguage.italian
-        ? 'it-IT-ElsaNeural'
+        ? 'it-IT-IsabellaNeural'
         : 'en-US-JennyNeural';
   }
 

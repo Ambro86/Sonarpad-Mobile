@@ -129,7 +129,7 @@ class AppSettingsService {
       ttsVoices.where((voice) => voice.languageCode == languageCode).toList();
 
   static String defaultVoiceForLanguage(String languageCode) =>
-      voicesForLanguage(languageCode).firstOrNull?.voice ?? 'it-IT-ElsaNeural';
+      voicesForLanguage(languageCode).firstOrNull?.voice ?? 'it-IT-IsabellaNeural';
 }
 
 extension _FirstOrNull<T> on Iterable<T> {

@@ -103,11 +103,14 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     _autoOpenedSingleItem = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _openItem(page.items.single);
+      _openItem(page.items.single, replaceCurrentRoute: true);
     });
   }
 
-  void _openItem(RaiPlaySoundItem item) async {
+  void _openItem(
+    RaiPlaySoundItem item, {
+    bool replaceCurrentRoute = false,
+  }) async {
     final code = await _settings.getTvSecretCode();
 
     if (item.kind == RaiPlaySoundItemKind.page) {
@@ -120,13 +123,15 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
 
       final url = '$baseUrl$path';
       if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/raiplaysound/page'),
-          builder: (_) => RaiPlaySoundScreen(url: url),
-        ),
+      final route = MaterialPageRoute(
+        settings: const RouteSettings(name: '/raiplaysound/page'),
+        builder: (_) => RaiPlaySoundScreen(url: url),
       );
+      if (replaceCurrentRoute) {
+        Navigator.pushReplacement(context, route);
+      } else {
+        Navigator.push(context, route);
+      }
     } else {
       final baseUrl = _service.getBaseUrl(code);
       if (baseUrl == null) return;
@@ -145,15 +150,17 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
       );
 
       if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/raiplaysound/player'),
-          builder: (_) => PodcastEpisodePlayerScreen(
-            episode: episode,
-          ),
+      final route = MaterialPageRoute(
+        settings: const RouteSettings(name: '/raiplaysound/player'),
+        builder: (_) => PodcastEpisodePlayerScreen(
+          episode: episode,
         ),
       );
+      if (replaceCurrentRoute) {
+        Navigator.pushReplacement(context, route);
+      } else {
+        Navigator.push(context, route);
+      }
     }
   }
 

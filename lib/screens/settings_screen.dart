@@ -153,7 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           : 'Sconosciuto';
 
       final body =
-          'Nome: $name\r\nCognome: $surname\r\nEmail: $email\r\nSistema Operativo: $os';
+          'Nome: $name; Cognome: $surname; Email: $email; Sistema Operativo: $os';
 
       // I client mail richiedono %20 per gli spazi nei link mailto, mentre Uri(queryParameters)
       // usa il '+' tipico dell'HTTP, che i client mail non decodificano.

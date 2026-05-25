@@ -202,9 +202,39 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
   String get _selectedText {
     final article = _article;
     if (article == null || _selectedSection == 0) {
-      return article?.text ?? '';
+      return _cleanWikipediaHeadingMarks(article?.text ?? '');
     }
-    return article.sections[_selectedSection - 1].text;
+    return _cleanWikipediaHeadingMarks(
+        article.sections[_selectedSection - 1].text);
+  }
+
+  String _cleanWikipediaHeadingMarks(String text) {
+    final lines = text.split('\n');
+    final cleaned = <String>[];
+    for (final line in lines) {
+      cleaned.add(_cleanWikipediaHeadingLine(line));
+    }
+    return cleaned.join('\n').trim();
+  }
+
+  String _cleanWikipediaHeadingLine(String line) {
+    final trimmed = line.trim();
+    for (var level = 6; level >= 2; level -= 1) {
+      final marks = '=' * level;
+      final prefix = '$marks ';
+      final suffix = ' $marks';
+      if (!trimmed.startsWith(prefix) || !trimmed.endsWith(suffix)) {
+        continue;
+      }
+      final body = trimmed
+          .substring(prefix.length, trimmed.length - suffix.length)
+          .trim();
+      if (body.isEmpty || body.contains('==')) {
+        return line;
+      }
+      return body;
+    }
+    return line;
   }
 
   String _sectionLabel(WikipediaArticleSection section) {

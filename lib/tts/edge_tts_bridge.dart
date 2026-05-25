@@ -17,7 +17,7 @@ class EdgeTtsBridge {
 
   Future<File> speakToFile({
     required String text,
-    String voice = 'it-IT-ElsaNeural',
+    String voice = 'it-IT-IsabellaNeural',
   }) async {
     final dir = await getTemporaryDirectory();
     final outPath = p.join(
@@ -51,7 +51,7 @@ class EdgeTtsBridge {
 
   Future<List<File>> speakToChunkFiles({
     required String text,
-    String voice = 'it-IT-ElsaNeural',
+    String voice = 'it-IT-IsabellaNeural',
     int maxChunkChars = 650,
     void Function(int index, int total, File file)? onChunkReady,
   }) async {
