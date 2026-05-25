@@ -67,6 +67,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         setState(() => _ttsPaused = !playing);
       }
     });
+    _flutterTts.setPauseHandler(() {
+      if (mounted && _speaking) setState(() => _ttsPaused = true);
+    });
+    _flutterTts.setContinueHandler(() {
+      if (mounted && _speaking) setState(() => _ttsPaused = false);
+    });
     _extractText();
   }
 
@@ -167,6 +173,17 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
       if (engine == 'system') {
         await _flutterTts.awaitSpeakCompletion(true);
+        if (Platform.isIOS) {
+          await _flutterTts.setIosAudioCategory(
+            IosTextToSpeechAudioCategory.playback,
+            [
+              IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+              IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+              IosTextToSpeechAudioCategoryOptions.mixWithOthers,
+            ],
+            IosTextToSpeechAudioMode.defaultMode,
+          );
+        }
         final speed = await _settings.loadTtsSpeed();
         final pitch = await _settings.loadTtsPitch();
         await _flutterTts.setSpeechRate(speed * 0.5);

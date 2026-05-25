@@ -222,9 +222,17 @@ class TvService {
 
   Future<List<TvProgram>> loadChannelGuide(
       String channel, String secretKey, {DateTime? targetDate}) async {
+    final dt = targetDate ?? DateTime.now();
+    
+    // Proviamo prima con la timeline generale filtrata per canale
+    final timelinePrograms = await _loadTimelineChannelGuide(channel, secretKey.trim(), dt);
+    if (timelinePrograms.isNotEmpty) {
+      return timelinePrograms;
+    }
+
+    // Fallback sulla URL specifica per canale
     final template =
         _decodePayload(_oggiInTvGuideUrlPayloadJson, secretKey.trim());
-    final dt = targetDate ?? DateTime.now();
     final date =
         '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
     final normalizedChannel = normalizeChannelName(channel);
@@ -254,6 +262,50 @@ class TvService {
     }
 
     return programs.where((p) => p.title.isNotEmpty).toList();
+  }
+
+  Future<List<TvProgram>> _loadTimelineChannelGuide(
+      String channel, String secretKey, DateTime targetDate) async {
+    try {
+      final template = _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey);
+      final date =
+          '${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
+      final url = template.replaceAll('{date}', date);
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'User-Agent': 'Sonarpad TV/1.0'},
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        return [];
+      }
+
+      final target = normalizeChannelName(channel);
+      final root = jsonDecode(response.body);
+      if (root is! List) return [];
+
+      final programs = <TvProgram>[];
+      for (final group in root) {
+        if (group is! List) continue;
+        for (final item in group) {
+          if (item is! Map<String, dynamic>) continue;
+          final guideChannel = item['ch']?.toString().trim() ?? '';
+          if (normalizeChannelName(guideChannel) != target) continue;
+          final title = item['title']?.toString().trim() ?? '';
+          if (title.isEmpty) continue;
+          programs.add(TvProgram(
+            title: title,
+            hour: item['hour']?.toString().trim() ?? '',
+            startTime: _readInt(item, 'startTime', 'start_time'),
+            endTime: _readInt(item, 'endTime', 'end_time'),
+          ));
+        }
+      }
+      return programs;
+    } catch (e) {
+      dev.log('Errore caricamento timeline: $e');
+      return [];
+    }
   }
 
   Future<List<TvChannel>> loadFavorites() async {
