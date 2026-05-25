@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../services/aifa_service.dart';
+import '../services/recent_searches_service.dart';
 import 'aifa_confezioni_screen.dart';
+import 'recent_searches_screen.dart';
 
 class AifaSearchScreen extends StatefulWidget {
   const AifaSearchScreen({super.key});
@@ -43,6 +45,7 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
     });
 
     try {
+      RecentSearchesService().addSearch('farmaci', query);
       final res = await _service.searchDrugs(query);
       if (mounted) {
         setState(() {
@@ -74,6 +77,29 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton.tonal(
+                  onPressed: () async {
+                    final q = await Navigator.of(context).push<String>(
+                      MaterialPageRoute(
+                        builder: (ctx) => const RecentSearchesScreen(
+                          title: 'Farmaci recenti',
+                          domain: 'farmaci',
+                        ),
+                      ),
+                    );
+                    if (q != null && mounted) {
+                      _controller.text = q;
+                      _search();
+                    }
+                  },
+                  child: const Text('Farmaci recenti'),
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(

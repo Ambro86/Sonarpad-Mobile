@@ -7,7 +7,9 @@ import '../l10n/app_localizations.dart';
 import '../services/wikipedia_service.dart';
 import '../services/document_library_service.dart';
 import '../models/document_item.dart';
+import '../services/recent_searches_service.dart';
 import 'document_reader_screen.dart';
+import 'recent_searches_screen.dart';
 
 class WikipediaScreen extends StatefulWidget {
   const WikipediaScreen({super.key});
@@ -62,6 +64,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
       _hideKeyboardWhenResultsArrive = true;
       _selectedSection = 0;
       _results = _service.search(q, lang: _language);
+      RecentSearchesService().addSearch('wikipedia', q);
     });
   }
 
@@ -129,6 +132,24 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
                 _selectedSection = 0;
               });
             },
+          ),
+          const SizedBox(height: 8),
+          FilledButton.tonal(
+            onPressed: () async {
+              final q = await Navigator.of(context).push<String>(
+                MaterialPageRoute(
+                  builder: (ctx) => const RecentSearchesScreen(
+                    title: 'Articoli recenti',
+                    domain: 'wikipedia',
+                  ),
+                ),
+              );
+              if (q != null && mounted) {
+                _controller.text = q;
+                _search();
+              }
+            },
+            child: const Text('Articoli recenti'),
           ),
           const SizedBox(height: 8),
           FilledButton(onPressed: _search, child: Text(l10n.search)),

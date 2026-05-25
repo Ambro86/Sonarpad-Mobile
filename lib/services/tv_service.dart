@@ -223,12 +223,6 @@ class TvService {
   Future<List<TvProgram>> loadChannelGuide(
       String channel, String secretKey, {DateTime? targetDate}) async {
     final dt = targetDate ?? DateTime.now();
-    
-    // Proviamo prima con la timeline generale filtrata per canale
-    final timelinePrograms = await _loadTimelineChannelGuide(channel, secretKey.trim(), dt);
-    if (timelinePrograms.isNotEmpty) {
-      return timelinePrograms;
-    }
 
     // Fallback sulla URL specifica per canale
     final template =
