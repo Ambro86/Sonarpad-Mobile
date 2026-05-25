@@ -3,6 +3,7 @@ import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/document_item.dart';
@@ -45,6 +46,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   String? _ttsStatus;
   int _playingChunkIndex = -1;
   final _chunkKeys = <GlobalKey>[];
+  late int _bookmarkIndex;
 
   bool _ttsPaused = false;
   StreamSubscription<bool>? _playingSub;
@@ -54,6 +56,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   @override
   void initState() {
     super.initState();
+    _bookmarkIndex = widget.document.bookmarkIndex;
     _playingSub = _audio.playingStream.listen((playing) {
       if (_speaking && mounted) {
         setState(() => _ttsPaused = !playing);
@@ -94,7 +97,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
       _loadError = 'Errore apertura file: $e';
     } finally {
-      if (mounted) setState(() => _loadingText = false);
+      if (mounted) {
+        setState(() => _loadingText = false);
+        if (_bookmarkIndex > 0 && _bookmarkIndex < _chunks.length) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _scrollToChunk(_bookmarkIndex);
+          });
+        }
+      }
     }
   }
 
@@ -146,9 +156,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       Object? generationError;
 
       // Generazione audio in background
+      final startIndex = _bookmarkIndex < _chunks.length ? _bookmarkIndex : 0;
       final generation = Future<void>(() async {
-        for (var i = 0; i < _chunks.length; i++) {
-          if (!_speaking) break; // Ferma la generazione se l'utente preme stop
+        for (var i = startIndex; i < _chunks.length; i++) {
+          if (!mounted || !_speaking) break; // Ferma la generazione se l'utente preme stop
           final file = await _tts.speakToFile(text: _chunks[i], voice: voice);
           controller.add((i, file));
         }
@@ -481,6 +492,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final widgets = <Widget>[];
     for (var i = 0; i < _chunks.length; i++) {
       final isPlaying = i == _playingChunkIndex;
+      final isBookmarked = i == _bookmarkIndex;
       // Durante la lettura TTS il tap è disabilitato per non interferire.
       final canEdit = !_speaking;
       widgets.add(
@@ -488,7 +500,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           key: _chunkKeys[i],
           container: true,
           button: canEdit,
-          hint: canEdit ? 'Doppio tap per modificare questo paragrafo' : null,
+          hint: canEdit 
+              ? 'Doppio tap per modificare questo paragrafo. Fai flick verso il basso per aggiungere un segnalibro.' 
+              : 'Fai flick verso il basso per aggiungere un segnalibro.',
+          customSemanticsActions: {
+            const CustomSemanticsAction(label: 'Imposta segnalibro'): () => _setBookmark(i),
+          },
           child: GestureDetector(
             onTap: canEdit ? () => _editParagraph(i) : null,
             child: AnimatedContainer(
@@ -507,14 +524,29 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                         color: colorScheme.primary.withAlpha(128),
                         width: 1.5,
                       )
-                    : null,
+                    : (isBookmarked
+                        ? Border.all(
+                            color: Colors.red.withAlpha(128),
+                            width: 1.5,
+                          )
+                        : null),
               ),
-              child: Text(
-                _chunks[i],
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: isPlaying ? FontWeight.w600 : FontWeight.normal,
-                  color: isPlaying ? colorScheme.onPrimaryContainer : null,
-                ),
+              child: Stack(
+                children: [
+                  Text(
+                    _chunks[i],
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: isPlaying ? FontWeight.w600 : FontWeight.normal,
+                      color: isPlaying ? colorScheme.onPrimaryContainer : null,
+                    ),
+                  ),
+                  if (isBookmarked && !isPlaying)
+                    const Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Icon(Icons.bookmark, color: Colors.red, size: 16),
+                    ),
+                ],
               ),
             ),
           ),
@@ -522,6 +554,28 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       );
     }
     return widgets;
+  }
+
+  Future<void> _setBookmark(int index) async {
+    setState(() => _bookmarkIndex = index);
+    
+    final newDoc = DocumentItem(
+      id: widget.document.id,
+      name: widget.document.name,
+      path: widget.document.path,
+      extension: widget.document.extension,
+      addedAt: widget.document.addedAt,
+      bookmarkIndex: index,
+    );
+    final lib = DocumentLibraryService();
+    await lib.load();
+    await lib.update(newDoc);
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Segnalibro impostato al paragrafo ${index + 1}.')),
+      );
+    }
   }
 }
 

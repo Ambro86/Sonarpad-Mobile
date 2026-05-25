@@ -7,6 +7,7 @@ class DocumentItem {
   final String path;
   final String extension;
   final DateTime addedAt;
+  final int bookmarkIndex;
 
   const DocumentItem({
     required this.id,
@@ -14,6 +15,7 @@ class DocumentItem {
     required this.path,
     required this.extension,
     required this.addedAt,
+    this.bookmarkIndex = 0,
   });
 
   Map<String, dynamic> toJson() => {
@@ -22,6 +24,7 @@ class DocumentItem {
         'path': path,
         'extension': extension,
         'addedAt': addedAt.toIso8601String(),
+        'bookmarkIndex': bookmarkIndex,
       };
 
   factory DocumentItem.fromJson(Map<String, dynamic> json) => DocumentItem(
@@ -30,6 +33,7 @@ class DocumentItem {
         path: json['path'] as String,
         extension: json['extension'] as String,
         addedAt: DateTime.parse(json['addedAt'] as String),
+        bookmarkIndex: json['bookmarkIndex'] as int? ?? 0,
       );
 
   static DocumentItem? tryFromJson(Map<String, dynamic> json) {

@@ -61,6 +61,15 @@ class DocumentLibraryService {
     return p.join(appDir.path, doc.path);
   }
 
+  /// Aggiorna un documento esistente (es. per salvare il segnalibro).
+  Future<void> update(DocumentItem doc) async {
+    final index = _documents.indexWhere((d) => d.id == doc.id);
+    if (index != -1) {
+      _documents[index] = doc;
+      await _save();
+    }
+  }
+
   /// Rimuove un documento tramite [id] e salva la libreria aggiornata.
   Future<void> remove(String id) async {
     _documents = _documents.where((d) => d.id != id).toList();
