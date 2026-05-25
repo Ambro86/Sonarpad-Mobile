@@ -9,10 +9,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarpad_mobile_starter/main.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 void main() {
   testWidgets('Home screen shows localized actions',
       (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({'sonarpad_app_language': 'it'});
     await tester.pumpWidget(const SonarpadApp());
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Notizie'), findsOneWidget);
     expect(find.text('Podcast'), findsOneWidget);
