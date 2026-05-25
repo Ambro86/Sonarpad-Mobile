@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/app_logger.dart';
 
@@ -15,6 +16,18 @@ class TvChannel {
     required this.url,
     required this.category,
   });
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'url': url,
+        'category': category,
+      };
+
+  factory TvChannel.fromJson(Map<String, dynamic> json) => TvChannel(
+        name: json['name'] as String,
+        url: json['url'] as String,
+        category: json['category'] as String? ?? 'Altri',
+      );
 }
 
 class TvProgram {
@@ -32,6 +45,7 @@ class TvProgram {
 }
 
 class TvService {
+  static const _prefsKey = 'sonarpad_tv_favorites';
   static const _staticKeyParts = ['sonar', 'pad-', 'SonarSecure-'];
   static const _la7StreamUrl =
       'https://d1chghleocc9sm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-evfku205gqrtf/Live.m3u8';
@@ -46,7 +60,7 @@ class TvService {
       r'''{"payload_b64":"csAxIXZQMnhMMo4nOUegdie+WUmPr85Uj4uCpYb+eOdb7HZeI0qNCD7T7Xlq+7Z34/VojdnssHYJrF8MsIN5yUmAdYLumBrJ3Y1fD74xbk4UyD4bsx3g1GAH6rS84/ksoTk2E5536VjBOx7IYFz//hI2DPNEaUMkNk3znFwDXVNEy6+Gs3OSPhzVG0YQg3Bp3eSj7+Wkpd4LYzxx8+P6woCB2UIxKrXej36b/GQGUDa4cAtnmqla69uoehBDRXsxpp4RqRyyEb2tNmQ3RJW5O0OAP5bLMLL7atRd6lJbLxaATCMxAitjohs7CnWm8GxiW/cpCuMxbLffbLf1U/FkojcCWoVMxjem+MWbDOpyuO3x5muELmrcBfSFOTGK+6DNBm7b8XfmwsQz3QmoQRHIYcfwje/j6a/9frT35X3LSJAB0+UwSVGeMvCSSyeQcTJY3NtQUPd59Qt0svtvFwdksay9OjgKmvZiPQ5k+4hsR/DPixpoUFDgJboB3rR9+kw2i1mzYuAt7dEazKqaDh9C4uZTFVroYKOYNLxcfPoDvLE4NM0LJo6uRuYotBkMQS6GKep2TCJciQi9d+cbBLcfoVRw3Yajra9G/ZLbihg22u50J3iLTuUkSfsUHWepqHC90J//JfXmqFYzNKCZe5KO5vtS6z6+F1P51ZkPdA1En4a3jokxcqsPFN38rlbpsXG4IuphfOeNxneAac0Cjxlm1p/E7BdAnZkWb0g/i8gTcTmVjP5/4OICFuz5mn3DHcnXD61/vpIBJVvcgr8JnPx3OuYCfkoBgt3XSOoVjd2rqOKYfZyj64RqZrXV2olVFmKSBjU+9aVCugpQaYSeOgOcaO3qhFh7lqmb1blGphnTTe0eV4EtT068jcyJlzeGZ9n9I7ZqIVodQZXSJwJnRFNQLXnn6d3g86kkH5uyX2+/GiEWGGMlNIHm4g/wnzFkRgr9R/OSo2Fn9slLaF5vcpsYVy7GQK+O7p3wN0eSRb3Y39Qbbz2LB58SAEU432sE7yI6wA4cHgit33noxPQWM2kGNWfSFvJILtsEpWMAJYJnmwxGTIQgLwJRjGnZ8nnBdaUpLNf7ap9EHcW3PdAjH2Hjs+EG9SGj6f6D/x9RGzuowx7Am1t4odnr+KqBC34Z7jhe3ixIhkEE5pqfiPnqheU6X5gG/OZMKymJwo2+uOSPdWsu7A2nUaHJyUuv2sKbPjxELlIfjs8cWK21XEvL5fk9wfo3KdGjQkDrRKo9dpJbEzDKsexZqrT9c+A3ELAhv6gIMI0TRLCApOyH3E9/hFv7uzzcd4W10GEzWaOz1BZ+pVZy0+NCEyrQeFJDS8FxorM/2VPCGIPgejoFJ/UcaJeYyEILf1ZwcHb0G/SmyQTBY7F4eLnhwbvnVehk6clOMa09b9Lk+vxkvSAGuAbTnN+ZQGRWuk77GmFgTyho/0tmf+5y0XUG7zm8FXEjH0yiGtHoO7jrCkXH+pRGTPi9gA3RKZkhlfOiwa2bVrk/6/VtUloaCv0hrS0mvPojNLr6SPFEQDayGWwEluc+TWqkJO9VdvTNXcVIDDBvPnm6WcvsyUkcPX4PnbDVm+w5mzvNd4e8B7jHWHJM","algorithm":"gzip-xor-base64-v1"}''';
 
   String _tvCategory(String name) {
-    final n = _normalizeOggiInTvChannelName(name);
+    final n = normalizeChannelName(name);
     if (n.startsWith('rai')) return 'Rai';
     if (n == 'rete4' ||
         n == 'canale5' ||
@@ -160,20 +174,60 @@ class TvService {
     return channels;
   }
 
-  Future<List<TvProgram>> loadChannelGuide(
-      String channel, String secretKey) async {
-    final timelinePrograms =
-        await _loadTimelineChannelGuide(channel, secretKey.trim());
-    if (timelinePrograms.isNotEmpty) {
-      return timelinePrograms;
+  Future<Map<String, TvProgram>> loadCurrentPrograms(String secretKey) async {
+    final template = _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
+    final nowTime = DateTime.now();
+    final date =
+        '${nowTime.year}-${nowTime.month.toString().padLeft(2, '0')}-${nowTime.day.toString().padLeft(2, '0')}';
+    final url = template.replaceAll('{date}', date);
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'User-Agent': 'Sonarpad TV/1.0'},
+    ).timeout(const Duration(seconds: 10));
+
+    if (response.statusCode != 200) {
+      throw Exception('HTTP ${response.statusCode}');
     }
 
+    final root = jsonDecode(response.body);
+    if (root is! List) return {};
+
+    final currentPrograms = <String, TvProgram>{};
+    final nowSec = nowTime.millisecondsSinceEpoch ~/ 1000;
+
+    for (final group in root) {
+      if (group is! List) continue;
+      for (final item in group) {
+        if (item is! Map<String, dynamic>) continue;
+        final guideChannel = item['ch']?.toString().trim() ?? '';
+        final title = item['title']?.toString().trim() ?? '';
+        if (guideChannel.isEmpty || title.isEmpty) continue;
+
+        final startTime = _readInt(item, 'startTime', 'start_time');
+        final endTime = _readInt(item, 'endTime', 'end_time');
+
+        if (startTime <= nowSec && endTime > nowSec) {
+          final target = normalizeChannelName(guideChannel);
+          currentPrograms[target] = TvProgram(
+            title: title,
+            hour: item['hour']?.toString().trim() ?? '',
+            startTime: startTime,
+            endTime: endTime,
+          );
+        }
+      }
+    }
+    return currentPrograms;
+  }
+
+  Future<List<TvProgram>> loadChannelGuide(
+      String channel, String secretKey, {DateTime? targetDate}) async {
     final template =
         _decodePayload(_oggiInTvGuideUrlPayloadJson, secretKey.trim());
-    final now = DateTime.now();
+    final dt = targetDate ?? DateTime.now();
     final date =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-    final normalizedChannel = _normalizeOggiInTvChannelName(channel);
+        '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+    final normalizedChannel = normalizeChannelName(channel);
 
     final url = template
         .replaceAll('{channel}', Uri.encodeComponent(normalizedChannel))
@@ -194,56 +248,33 @@ class TvService {
       programs.add(TvProgram(
         title: item['title']?.toString().trim() ?? '',
         hour: item['hour']?.toString().trim() ?? '',
-        startTime: item['start_time'] is int
-            ? item['start_time'] as int
-            : int.tryParse(item['start_time'].toString()) ?? 0,
-        endTime: item['end_time'] is int
-            ? item['end_time'] as int
-            : int.tryParse(item['end_time'].toString()) ?? 0,
+        startTime: _readInt(item, 'start_time', 'start_time'),
+        endTime: _readInt(item, 'end_time', 'end_time'),
       ));
     }
 
     return programs.where((p) => p.title.isNotEmpty).toList();
   }
 
-  Future<List<TvProgram>> _loadTimelineChannelGuide(
-      String channel, String secretKey) async {
-    final template = _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey);
-    final now = DateTime.now();
-    final date =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-    final url = template.replaceAll('{date}', date);
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'User-Agent': 'Sonarpad TV/1.0'},
-    ).timeout(const Duration(seconds: 10));
-
-    if (response.statusCode != 200) {
-      throw Exception('HTTP ${response.statusCode}');
+  Future<List<TvChannel>> loadFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = prefs.getString(_prefsKey);
+    if (jsonStr == null || jsonStr.isEmpty) return [];
+    try {
+      final List<dynamic> list = jsonDecode(jsonStr);
+      return list
+          .map((item) => TvChannel.fromJson(Map<String, dynamic>.from(item)))
+          .toList();
+    } catch (e) {
+      dev.log('Errore caricamento canali tv preferiti: $e');
+      return [];
     }
+  }
 
-    final target = _normalizeOggiInTvChannelName(channel);
-    final root = jsonDecode(response.body);
-    if (root is! List) return [];
-
-    final programs = <TvProgram>[];
-    for (final group in root) {
-      if (group is! List) continue;
-      for (final item in group) {
-        if (item is! Map<String, dynamic>) continue;
-        final guideChannel = item['ch']?.toString().trim() ?? '';
-        if (_normalizeOggiInTvChannelName(guideChannel) != target) continue;
-        final title = item['title']?.toString().trim() ?? '';
-        if (title.isEmpty) continue;
-        programs.add(TvProgram(
-          title: title,
-          hour: item['hour']?.toString().trim() ?? '',
-          startTime: _readInt(item, 'startTime', 'start_time'),
-          endTime: _readInt(item, 'endTime', 'end_time'),
-        ));
-      }
-    }
-    return programs;
+  Future<void> saveFavorites(List<TvChannel> favorites) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = favorites.map((ch) => ch.toJson()).toList();
+    await prefs.setString(_prefsKey, jsonEncode(jsonList));
   }
 
   Future<String> resolveStreamUrl(TvChannel channel) async {
@@ -399,7 +430,7 @@ class TvService {
     return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 
-  String _normalizeOggiInTvChannelName(String name) {
+  String normalizeChannelName(String name) {
     var normalized = name
         .toLowerCase()
         .replaceAll('(dtt)', '')

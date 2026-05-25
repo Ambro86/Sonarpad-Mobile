@@ -6,10 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
+import '../services/document_text_extractor.dart';
 import 'document_reader_screen.dart';
 
 /// Schermata libreria documenti.
@@ -141,6 +144,79 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     );
   }
 
+  Future<void> _exportDocument(DocumentItem doc) async {
+    String? format = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Esporta documento'),
+        content: const Text('In quale formato desideri esportare il documento?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, 'txt'),
+            child: const Text('Testo (.txt)'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, 'pdf'),
+            child: const Text('PDF (.pdf)'),
+          ),
+        ],
+      ),
+    );
+
+    if (format == null || !mounted) return;
+
+    try {
+      final extractor = DocumentTextExtractor();
+      final result = await extractor.extract(path: doc.path, extension: doc.extension);
+      final text = result.text;
+
+      final appDir = await getTemporaryDirectory();
+      final baseName = doc.name.replaceAll(RegExp(r'\.[^.]+$'), '');
+      
+      if (format == 'txt') {
+        final path = '${appDir.path}/${baseName}_export.txt';
+        await File(path).writeAsString(text);
+        await Share.shareXFiles([XFile(path)], text: 'Documento esportato da Sonarpad');
+      } else if (format == 'pdf') {
+        final path = await _generatePdf(baseName, text, appDir.path);
+        await Share.shareXFiles([XFile(path)], text: 'Documento esportato da Sonarpad');
+      }
+    } catch (e) {
+      dev.log('Errore durante l\'esportazione: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Errore esportazione: $e')),
+        );
+      }
+    }
+  }
+
+  Future<String> _generatePdf(String baseName, String text, String outDir) async {
+    final PdfDocument document = PdfDocument();
+    final PdfPage page = document.pages.add();
+    final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
+    
+    final PdfTextElement element = PdfTextElement(
+      text: text,
+      font: font,
+    );
+    
+    element.draw(
+      page: page,
+      bounds: Rect.fromLTWH(0, 0, page.getClientSize().width, page.getClientSize().height),
+      format: PdfLayoutFormat(
+        layoutType: PdfLayoutType.paginate,
+      ),
+    );
+
+    final path = '$outDir/${baseName}_export.pdf';
+    final List<int> bytes = await document.save();
+    document.dispose();
+    
+    await File(path).writeAsBytes(bytes);
+    return path;
+  }
+
   Future<void> _openDocument(DocumentItem doc) async {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -199,6 +275,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                     doc: doc,
                                     onOpen: () => _openDocument(doc),
                                     onRemove: () => _remove(doc.id),
+                                    onExport: () => _exportDocument(doc),
                                   );
                                 },
                               ),
@@ -218,11 +295,13 @@ class _DocumentTile extends StatelessWidget {
   final DocumentItem doc;
   final VoidCallback onOpen;
   final VoidCallback onRemove;
+  final VoidCallback onExport;
 
   const _DocumentTile({
     required this.doc,
     required this.onOpen,
     required this.onRemove,
+    required this.onExport,
   });
 
   Color _badgeColor(String ext) {
@@ -261,6 +340,7 @@ class _DocumentTile extends StatelessWidget {
       child: Semantics(
         customSemanticsActions: {
           CustomSemanticsAction(label: l10n.removeDocument): onRemove,
+          CustomSemanticsAction(label: 'Esporta documento'): onExport,
         },
         label: '${doc.name}, tipo ${doc.extension.toUpperCase()}, '
             'aggiunto il ${_formattedDate(doc.addedAt)}',

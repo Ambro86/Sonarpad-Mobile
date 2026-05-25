@@ -11,9 +11,7 @@ import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
 import '../tts/edge_tts_bridge.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -396,6 +394,19 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // Build
   // ---------------------------------------------------------------------------
 
+  void _togglePlayPause() {
+    if (!_speaking) {
+      _startReading();
+    } else if (_ttsPaused) {
+      setState(() => _ttsPaused = false);
+      _audio.play(); // No-op if system TTS
+    } else {
+      setState(() => _ttsPaused = true);
+      _audio.pause(); // No-op if system TTS
+      _flutterTts.stop(); // Interrompe il chunk corrente, il while() fermerà il loop
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -437,11 +448,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 );
               },
             ),
-          IconButton(
-            icon: const Icon(Icons.share),
-            tooltip: 'Esporta / Condividi',
-            onPressed: _exportDocument,
-          ),
         ],
       ),
       body: SafeArea(
@@ -498,18 +504,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
                         // --- Pulsanti TTS ---
                         FilledButton.icon(
-                          onPressed: () {
-                            if (!_speaking) {
-                              _startReading();
-                            } else if (_ttsPaused) {
-                              setState(() => _ttsPaused = false);
-                              _audio.play(); // No-op if system TTS
-                            } else {
-                              setState(() => _ttsPaused = true);
-                              _audio.pause(); // No-op if system TTS
-                              _flutterTts.stop(); // Interrompe il chunk corrente, il while() fermerà il loop
-                            }
-                          },
+                          onPressed: _togglePlayPause,
                           icon: Icon(!_speaking
                               ? Icons.volume_up
                               : (_ttsPaused
@@ -528,14 +523,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           label: const Text('Interrompi lettura'),
                         ),
 
-                        if (!_speaking && _documentText.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          OutlinedButton.icon(
-                            onPressed: _exportDocument,
-                            icon: const Icon(Icons.share),
-                            label: const Text('Esporta documento'),
-                          ),
-                        ],
 
                         const SizedBox(height: 8),
                         // Suggerimento modifica paragrafo (solo in lettura)
@@ -574,7 +561,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                             'Nessun testo disponibile per questo documento.',
                             style: theme.textTheme.bodyMedium,
                           ),
-                      ]),
+                        ]),
                     ),
                   ),
                 ],
@@ -727,75 +714,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
-  Future<void> _exportDocument() async {
-    // Mostriamo sempre un dialogo per scegliere il formato
-    String? format = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Esporta documento'),
-        content: const Text('In quale formato desideri esportare il documento?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, 'txt'),
-            child: const Text('Testo (.txt)'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, 'pdf'),
-            child: const Text('PDF (.pdf)'),
-          ),
-        ],
-      ),
-    );
-
-    if (format == null || !mounted) return;
-
-    try {
-      final appDir = await getTemporaryDirectory();
-      final baseName = _currentDoc.name.replaceAll(RegExp(r'\.[^.]+$'), '');
-      
-      if (format == 'txt') {
-        final path = '${appDir.path}/${baseName}_export.txt';
-        await File(path).writeAsString(_documentText);
-        await Share.shareXFiles([XFile(path)], text: 'Documento esportato da Sonarpad');
-      } else if (format == 'pdf') {
-        final path = await _generatePdf(baseName, _documentText, appDir.path);
-        await Share.shareXFiles([XFile(path)], text: 'Documento esportato da Sonarpad');
-      }
-    } catch (e) {
-      dev.log('Errore durante l\'esportazione: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore esportazione: $e')),
-        );
-      }
-    }
-  }
-
-  Future<String> _generatePdf(String baseName, String text, String outDir) async {
-    final PdfDocument document = PdfDocument();
-    final PdfPage page = document.pages.add();
-    final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
-    
-    final PdfTextElement element = PdfTextElement(
-      text: text,
-      font: font,
-    );
-    
-    element.draw(
-      page: page,
-      bounds: Rect.fromLTWH(0, 0, page.getClientSize().width, page.getClientSize().height),
-      format: PdfLayoutFormat(
-        layoutType: PdfLayoutType.paginate,
-      ),
-    );
-
-    final path = '$outDir/${baseName}_export.pdf';
-    final List<int> bytes = await document.save();
-    document.dispose();
-    
-    await File(path).writeAsBytes(bytes);
-    return path;
-  }
 }
 
 // ---------------------------------------------------------------------------

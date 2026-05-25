@@ -24,17 +24,28 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   List<TvProgram> _guide = [];
   bool _loading = true;
   String? _error;
+  late DateTime _selectedDate;
 
   @override
   void initState() {
     super.initState();
+    final now = DateTime.now();
+    _selectedDate = DateTime(now.year, now.month, now.day);
     _loadGuide();
   }
 
   Future<void> _loadGuide() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final code = await _settings.getTvSecretCode();
-      final guide = await _service.loadChannelGuide(widget.channel.name, code);
+      final guide = await _service.loadChannelGuide(
+        widget.channel.name, 
+        code,
+        targetDate: _selectedDate,
+      );
       if (!mounted) return;
       setState(() {
         _guide = guide;
@@ -46,6 +57,65 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
         _error = 'Impossibile caricare la guida TV per ${widget.channel.name}.';
         _loading = false;
       });
+    }
+  }
+
+  String _getLabelForDate(DateTime d) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final diff = d.difference(today).inDays;
+    if (diff == -1) return 'Ieri';
+    if (diff == 0) return 'Oggi';
+    if (diff == 1) return 'Domani';
+    if (diff == 2) return 'Dopodomani';
+    return '${d.day}/${d.month}/${d.year}';
+  }
+
+  Future<void> _selectDay() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    final selected = await showDialog<DateTime>(
+      context: context,
+      builder: (context) {
+        DateTime tempDate = _selectedDate;
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text('Scegli giorno'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [-1, 0, 1, 2].map((offset) {
+                  final d = today.add(Duration(days: offset));
+                  return RadioListTile<DateTime>(
+                    title: Text(_getLabelForDate(d)),
+                    value: d,
+                    groupValue: tempDate,
+                    onChanged: (val) {
+                      if (val != null) setStateDialog(() => tempDate = val);
+                    },
+                  );
+                }).toList(),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Annulla'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(context, tempDate),
+                  child: const Text('Conferma'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (selected != null && selected != _selectedDate) {
+      setState(() => _selectedDate = selected);
+      _loadGuide();
     }
   }
 
@@ -160,6 +230,21 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                 icon: const Icon(Icons.play_circle_fill, size: 32),
                 label: const Text('Riproduci Diretta',
                     style: TextStyle(fontSize: 20)),
+              ),
+            ),
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilledButton.tonalIcon(
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(56),
+              ),
+              onPressed: _selectDay,
+              icon: const Icon(Icons.calendar_today),
+              label: Text(
+                'Giorno: ${_getLabelForDate(_selectedDate)}',
+                style: const TextStyle(fontSize: 18),
               ),
             ),
           ),
