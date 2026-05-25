@@ -100,8 +100,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (mounted) {
         setState(() => _loadingText = false);
         if (_bookmarkIndex > 0 && _bookmarkIndex < _chunks.length) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _scrollToChunk(_bookmarkIndex);
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted) _scrollToChunk(_bookmarkIndex);
           });
         }
       }
@@ -269,8 +269,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (edited == null || !mounted) return;
 
     // L'utente vuole che un invio (\n) spezzi il paragrafo.
-    // Convertiamo eventuali \n singoli in \n\n per farli riconoscere dal TTS.
-    final finalEdited = edited.replaceAll(RegExp(r'\n+'), '\n\n');
+    // Convertiamo eventuali \n o \r\n in doppi a capo per farli riconoscere dal TTS.
+    final normalized = edited.replaceAll('\r\n', '\n');
+    final finalEdited = normalized.replaceAll(RegExp(r'\n+'), '\n\n');
     final updatedChunks = List<String>.from(_chunks)..[index] = finalEdited;
     
     // Ricostruisce il testo separando i vecchi chunk correttamente
@@ -495,17 +496,29 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       final isBookmarked = i == _bookmarkIndex;
       // Durante la lettura TTS il tap è disabilitato per non interferire.
       final canEdit = !_speaking;
+      
+      String hintText = canEdit ? 'Doppio tap per modificare questo paragrafo. ' : '';
+      if (_bookmarkIndex > 0) {
+        hintText += 'Fai flick verso il basso per rimuovere o andare al segnalibro esistente.';
+      } else {
+        hintText += 'Fai flick verso il basso per impostare un segnalibro.';
+      }
+
+      final Map<CustomSemanticsAction, VoidCallback> actions = {};
+      if (_bookmarkIndex > 0) {
+        actions[const CustomSemanticsAction(label: 'Rimuovi segnalibro')] = () => _removeBookmark();
+        actions[const CustomSemanticsAction(label: 'Vai al segnalibro')] = () => _scrollToChunk(_bookmarkIndex);
+      } else {
+        actions[const CustomSemanticsAction(label: 'Imposta segnalibro')] = () => _setBookmark(i);
+      }
+
       widgets.add(
         Semantics(
           key: _chunkKeys[i],
           container: true,
           button: canEdit,
-          hint: canEdit 
-              ? 'Doppio tap per modificare questo paragrafo. Fai flick verso il basso per aggiungere un segnalibro.' 
-              : 'Fai flick verso il basso per aggiungere un segnalibro.',
-          customSemanticsActions: {
-            const CustomSemanticsAction(label: 'Imposta segnalibro'): () => _setBookmark(i),
-          },
+          hint: hintText,
+          customSemanticsActions: actions,
           child: GestureDetector(
             onTap: canEdit ? () => _editParagraph(i) : null,
             child: AnimatedContainer(
@@ -574,6 +587,28 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Segnalibro impostato al paragrafo ${index + 1}.')),
+      );
+    }
+  }
+
+  Future<void> _removeBookmark() async {
+    setState(() => _bookmarkIndex = -1);
+    
+    final newDoc = DocumentItem(
+      id: widget.document.id,
+      name: widget.document.name,
+      path: widget.document.path,
+      extension: widget.document.extension,
+      addedAt: widget.document.addedAt,
+      bookmarkIndex: 0, // Reset to 0 (default)
+    );
+    final lib = DocumentLibraryService();
+    await lib.load();
+    await lib.update(newDoc);
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Segnalibro rimosso.')),
       );
     }
   }

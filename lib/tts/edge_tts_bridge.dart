@@ -80,9 +80,12 @@ class EdgeTtsBridge {
   List<String> splitTextForStreaming(String text, {int maxChunkChars = 650}) {
     final chunks = <String>[];
 
+    // Normalizziamo \r\n in \n per evitare problemi su Windows
+    final normalizedText = text.replaceAll('\r\n', '\n');
+
     // Dividiamo il testo in paragrafi veri e propri (doppi a capo).
     // Questo garantisce che titoli o paragrafi distinti non vengano mai fusi.
-    final paragraphs = text.split(RegExp(r'\n{2,}'));
+    final paragraphs = normalizedText.split(RegExp(r'\n{2,}'));
 
     for (final p in paragraphs) {
       // Normalizziamo tutti gli spazi (inclusi singoli \n) all'interno del paragrafo

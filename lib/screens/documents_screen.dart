@@ -139,13 +139,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     );
   }
 
-  void _openDocument(DocumentItem doc) {
-    Navigator.of(context).push(
+  Future<void> _openDocument(DocumentItem doc) async {
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => DocumentReaderScreen(document: doc),
         settings: const RouteSettings(name: '/documents/reader'),
       ),
     );
+    if (mounted) {
+      await _service.load();
+      setState(() {});
+    }
   }
 
   @override

@@ -290,40 +290,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                Semantics(
-                  label: 'Velocità lettura: ${_ttsSpeed.toStringAsFixed(1)} per cento',
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Velocità lettura: ${_ttsSpeed.toStringAsFixed(1)}x'),
-                      Slider(
-                        value: _ttsSpeed,
-                        min: 0.5,
-                        max: 2.0,
-                        divisions: 15,
-                        onChanged: (value) => setState(() => _ttsSpeed = value),
-                        onChangeEnd: (value) => _settings.saveTtsSpeed(value),
-                      ),
-                    ],
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ExcludeSemantics(
+                      child: Text('Velocità lettura: ${_ttsSpeed.toStringAsFixed(1)}x'),
+                    ),
+                    Slider(
+                      value: _ttsSpeed,
+                      min: 0.5,
+                      max: 2.0,
+                      divisions: 15,
+                      semanticFormatterCallback: (double value) => 'Velocità lettura: ${value.toStringAsFixed(1)}',
+                      onChanged: (value) => setState(() => _ttsSpeed = value),
+                      onChangeEnd: (value) => _settings.saveTtsSpeed(value),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
-                Semantics(
-                  label: 'Tono voce: ${_ttsPitch.toStringAsFixed(1)} per cento',
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Tono voce: ${_ttsPitch.toStringAsFixed(1)}x'),
-                      Slider(
-                        value: _ttsPitch,
-                        min: 0.5,
-                        max: 2.0,
-                        divisions: 15,
-                        onChanged: (value) => setState(() => _ttsPitch = value),
-                        onChangeEnd: (value) => _settings.saveTtsPitch(value),
-                      ),
-                    ],
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ExcludeSemantics(
+                      child: Text('Tono voce: ${_ttsPitch.toStringAsFixed(1)}x'),
+                    ),
+                    Slider(
+                      value: _ttsPitch,
+                      min: 0.5,
+                      max: 2.0,
+                      divisions: 15,
+                      semanticFormatterCallback: (double value) => 'Tono voce: ${value.toStringAsFixed(1)}',
+                      onChanged: (value) => setState(() => _ttsPitch = value),
+                      onChangeEnd: (value) => _settings.saveTtsPitch(value),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(

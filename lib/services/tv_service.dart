@@ -251,16 +251,16 @@ class TvService {
     await AppLogger.log('Inizio risoluzione stream per: ${channel.name} (URL base: $resolvedUrl)');
 
     if (resolvedUrl.contains('/relinker/relinkerServlet')) {
-      // Rimuoviamo forceUserAgent perché causa il ritorno diretto di un M3U8 con path relativi rotti
       final uri = Uri.parse(resolvedUrl);
       final queryParams = Map<String, String>.from(uri.queryParameters);
       queryParams.remove('forceUserAgent');
-      final xmlUrl = uri.replace(queryParameters: queryParams).toString();
+      queryParams['output'] = '54'; // Richiede l'URL assoluto in plain text
+      final reqUrl = uri.replace(queryParameters: queryParams).toString();
       
-      await AppLogger.log('Interrogo il relinker RAI: $xmlUrl');
+      await AppLogger.log('Interrogo il relinker RAI con output=54: $reqUrl');
       
       final response = await http.get(
-        Uri.parse(xmlUrl),
+        Uri.parse(reqUrl),
         headers: {'User-Agent': 'Sonarpad TV/1.0'},
       ).timeout(const Duration(seconds: 10));
       
@@ -269,20 +269,24 @@ class TvService {
         throw Exception('HTTP ${response.statusCode}');
       }
       
-      final body = response.body;
-      if (body.trimLeft().startsWith('#EXTM3U')) {
+      final body = response.body.trim();
+      if (body.startsWith('http')) {
+        resolvedUrl = body;
+        await AppLogger.log('Relinker risolto in (output=54): $resolvedUrl');
+      } else if (body.startsWith('#EXTM3U')) {
         await AppLogger.log('Il relinker ha risposto direttamente con un HLS (EXTM3U).');
-        resolvedUrl = xmlUrl;
+        resolvedUrl = reqUrl;
       } else {
         final match = RegExp(r'<url[^>]*type="content"[^>]*>([^<]+)</url>')
                 .firstMatch(body) ??
             RegExp(r'<url[^>]*>([^<]+)</url>').firstMatch(body);
-        if (match == null) {
-          await AppLogger.log('Nessun tag <url> trovato nel corpo XML del relinker: $body');
+        if (match != null) {
+          resolvedUrl = match.group(1)!.trim();
+          await AppLogger.log('Relinker risolto da XML: $resolvedUrl');
+        } else {
+          await AppLogger.log('URL non trovato nel relinker: $body');
           throw Exception('Stream TV non trovato nel relinker.');
         }
-        resolvedUrl = match.group(1)!.trim();
-        await AppLogger.log('Relinker risolto in: $resolvedUrl');
       }
     }
 
