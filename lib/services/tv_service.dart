@@ -251,8 +251,10 @@ class TvService {
     await AppLogger.log('Inizio risoluzione stream per: ${channel.name} (URL base: $resolvedUrl)');
 
     if (resolvedUrl.contains('/relinker/relinkerServlet')) {
-      final sep = resolvedUrl.contains('?') ? '&' : '?';
-      final xmlUrl = '$resolvedUrl${sep}output=45&pl=native';
+      // Non aggiungiamo più &pl=native. RAI ha cambiato comportamento e con pl=native
+      // restituisce testo M3U8 con path relativi errati invece di fare redirect.
+      // Eseguendo la richiesta senza pl=native otteniamo l'XML con l'URL assoluto corretto (CDN).
+      final xmlUrl = resolvedUrl;
       await AppLogger.log('Interrogo il relinker RAI: $xmlUrl');
       
       final response = await http.get(
