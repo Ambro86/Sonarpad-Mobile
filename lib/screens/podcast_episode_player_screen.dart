@@ -129,6 +129,12 @@ class _PodcastEpisodePlayerScreenState
                     );
                   },
                 ),
+                FilledButton.icon(
+                  onPressed:
+                      _loading || !_loaded ? null : () => _audio.seekForward(),
+                  icon: const Icon(Icons.fast_forward),
+                  label: Text(l10n.forward15s),
+                ),
               ],
             ),
             const SizedBox(height: 24),

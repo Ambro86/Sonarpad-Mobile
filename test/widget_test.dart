@@ -16,6 +16,6 @@ void main() {
 
     expect(find.text('Notizie'), findsOneWidget);
     expect(find.text('Podcast'), findsOneWidget);
-    expect(find.text('Importa da Wikipedia'), findsOneWidget);
+    expect(find.text('Wikipedia'), findsOneWidget);
   });
 }

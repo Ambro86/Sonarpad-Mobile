@@ -1,9 +1,19 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
+import '../models/document_item.dart';
+import '../screens/document_reader_screen.dart';
 import '../services/accessibility_feedback_service.dart';
 import '../services/app_settings_service.dart';
+import '../services/document_library_service.dart';
 import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/tv_service.dart';
@@ -23,10 +33,77 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isTvCodeValid = false;
   bool _isRaiPlayValid = false;
 
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
+
   @override
   void initState() {
     super.initState();
     _load();
+    _initAppLinks();
+  }
+
+  void _initAppLinks() {
+    _appLinks = AppLinks();
+    // Gestione link iniziali all'avvio
+    _appLinks.getInitialLink().then((uri) {
+      if (uri != null && uri.scheme == 'file') {
+        _handleIncomingFile(uri);
+      }
+    });
+    // Gestione link in streaming (app già aperta)
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      if (uri.scheme == 'file') {
+        _handleIncomingFile(uri);
+      }
+    });
+  }
+
+  Future<void> _handleIncomingFile(Uri uri) async {
+    try {
+      // uri.path su iOS può contenere l'host 'localhost' o essere assoluto
+      String decodedPath = Uri.decodeComponent(uri.path);
+      // Rimuovi slash iniziale se su Windows, ma su iOS/Android di solito va bene
+      // File gestisce bene il path assoluto
+      final originalFile = File(decodedPath);
+      if (!await originalFile.exists()) return;
+
+      final appDir = await getApplicationDocumentsDirectory();
+      final ext = p.extension(originalFile.path).replaceAll('.', '');
+      final basename = p.basename(originalFile.path);
+      final id = const Uuid().v4();
+      final newPath = p.join(appDir.path, '$id.$ext');
+
+      await originalFile.copy(newPath);
+
+      final doc = DocumentItem(
+        id: id,
+        name: basename,
+        path: '$id.$ext',
+        extension: ext,
+        addedAt: DateTime.now(),
+      );
+
+      final lib = DocumentLibraryService();
+      await lib.load();
+      await lib.add(doc);
+
+      if (mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => DocumentReaderScreen(document: doc),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('HomeScreen: Errore importazione file condiviso: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -45,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isItalian = l10n.locale.languageCode == 'it';
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
@@ -98,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 routeName: '/radio',
               ),
             ),
-            if (_isTvCodeValid)
+            if (_isTvCodeValid && isItalian)
               _HomeButton(
                 label: 'TV',
                 onPressed: () => AccessibilityFeedbackService.goNamed(
@@ -106,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   routeName: '/tv',
                 ),
               ),
-            if (_isSecretCodeValid)
+            if (_isSecretCodeValid && isItalian)
               _HomeButton(
                 label: 'RaiPlay Sound',
                 onPressed: () => AccessibilityFeedbackService.goNamed(
@@ -114,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   routeName: '/raiplaysound',
                 ),
               ),
-            if (_isRaiPlayValid)
+            if (_isRaiPlayValid && isItalian)
               _HomeButton(
                 label: 'RaiPlay',
                 onPressed: () => AccessibilityFeedbackService.goNamed(
@@ -129,13 +207,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 routeName: '/wikipedia',
               ),
             ),
-            _HomeButton(
-              label: 'Ricerca Farmaci AIFA',
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                context,
-                routeName: '/aifa',
+            if (isItalian)
+              _HomeButton(
+                label: 'Ricerca Farmaci AIFA',
+                onPressed: () => AccessibilityFeedbackService.goNamed(
+                  context,
+                  routeName: '/aifa',
+                ),
               ),
-            ),
             _HomeButton(
               label: l10n.settings,
               onPressed: () => AccessibilityFeedbackService.goNamed(

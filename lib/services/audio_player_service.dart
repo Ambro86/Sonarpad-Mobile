@@ -142,7 +142,9 @@ class AudioPlayerService {
         if (_stopRequested) break;
         debugPrint('Sonarpad audio: chunk ${i + 1} play');
         if (!_stopRequested) {
-          await _player.play();
+          if (i == 0 || _player.playing) {
+            await _player.play();
+          }
         }
         final completedState = await _player.playerStateStream.firstWhere(
           (state) =>

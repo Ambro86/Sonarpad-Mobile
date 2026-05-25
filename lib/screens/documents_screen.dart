@@ -153,13 +153,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Documenti'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: 'Aggiungi documento',
-            onPressed: _pickFile,
-          ),
-        ],
       ),
       body: SafeArea(
         child: _loading
@@ -175,7 +168,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                           child: FilledButton.icon(
                             icon: const Icon(Icons.folder_open),
                             label: const Text(
-                              'Aggiungi alla libreria',
+                              'Aggiungi documento alla libreria',
                               style: TextStyle(fontSize: 18),
                             ),
                             style: FilledButton.styleFrom(

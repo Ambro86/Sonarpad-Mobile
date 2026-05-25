@@ -95,6 +95,16 @@ class AppSettingsService {
     ),
   ];
 
+  Future<String> loadAppLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('sonarpad_app_language') ?? 'it';
+  }
+
+  Future<void> saveAppLanguage(String languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('sonarpad_app_language', languageCode);
+  }
+
   Future<String> loadTtsLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_ttsLanguageKey) ?? 'it';
@@ -114,6 +124,29 @@ class AppSettingsService {
   Future<void> setTvSecretCode(String value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tvSecretCodeKey, value);
+  }
+
+  static const _ttsSpeedKey = 'sonarpad_tts_speed';
+  static const _ttsPitchKey = 'sonarpad_tts_pitch';
+
+  Future<double> loadTtsSpeed() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(_ttsSpeedKey) ?? 1.0;
+  }
+
+  Future<void> saveTtsSpeed(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_ttsSpeedKey, value);
+  }
+
+  Future<double> loadTtsPitch() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(_ttsPitchKey) ?? 1.0;
+  }
+
+  Future<void> saveTtsPitch(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_ttsPitchKey, value);
   }
 
   Future<void> saveTtsSettings({

@@ -3,6 +3,7 @@ import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
@@ -147,6 +148,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       // Generazione audio in background
       final generation = Future<void>(() async {
         for (var i = 0; i < _chunks.length; i++) {
+          if (!_speaking) break; // Ferma la generazione se l'utente preme stop
           final file = await _tts.speakToFile(text: _chunks[i], voice: voice);
           controller.add((i, file));
         }
@@ -195,14 +197,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _stopReading() async {
-    await _audio.stop();
-    if (!mounted) return;
+    // Aggiorna subito la UI per un feedback immediato
     setState(() {
       _speaking = false;
       _ttsPaused = false;
       _playingChunkIndex = -1;
       _ttsStatus = 'Lettura interrotta.';
     });
+    await _audio.stop();
   }
 
   // ---------------------------------------------------------------------------
@@ -255,26 +257,50 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     if (edited == null || !mounted) return;
 
-    // Aggiorna il chunk e ricostruisce il testo completo
-    final updatedChunks = List<String>.from(_chunks)..[index] = edited;
-    final newText = updatedChunks.join();
+    // L'utente vuole che un invio (\n) spezzi il paragrafo.
+    // Convertiamo eventuali \n singoli in \n\n per farli riconoscere dal TTS.
+    final finalEdited = edited.replaceAll(RegExp(r'\n+'), '\n\n');
+    final updatedChunks = List<String>.from(_chunks)..[index] = finalEdited;
+    
+    // Ricostruisce il testo separando i vecchi chunk correttamente
+    final newText = updatedChunks.join('\n\n');
 
     // Salva su file
     try {
       final ext = widget.document.extension.toLowerCase();
-      String savePath = widget.document.path;
+      // Risolviamo il percorso assoluto per evitare errori di salvataggio
+      final absolutePath = await DocumentLibraryService().resolveFilePath(widget.document);
+      String savePath = absolutePath;
       bool isNewFile = false;
+      DocumentItem? newDocItem;
 
       if (ext != 'txt' && ext != 'md') {
         final originalFile = File(savePath);
         final dir = originalFile.parent.path;
         final nameWithoutExt =
             widget.document.name.replaceAll(RegExp(r'\.[^.]+$'), '');
-        savePath = '$dir/$nameWithoutExt (Modificato).txt';
+        final newFileName = '$nameWithoutExt (Modificato).txt';
+        savePath = '$dir/$newFileName';
         isNewFile = true;
+        
+        newDocItem = DocumentItem(
+          id: const Uuid().v4(),
+          name: newFileName,
+          path: newFileName,
+          extension: 'txt',
+          addedAt: DateTime.now(),
+        );
       }
 
+      dev.log('DocumentReaderScreen: Salvataggio documento in corso su: $savePath');
       await File(savePath).writeAsString(newText);
+      
+      if (isNewFile && newDocItem != null) {
+        final lib = DocumentLibraryService();
+        await lib.load();
+        await lib.add(newDocItem);
+        dev.log('DocumentReaderScreen: Nuovo file salvato e aggiunto alla libreria come TXT');
+      }
 
       if (!mounted) return;
       // Aggiorna stato: testo e chunk (la lettura riparte dall'inizio se necessario)
@@ -298,6 +324,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         ),
       );
     } catch (e) {
+      dev.log('DocumentReaderScreen: Errore fatale durante il salvataggio: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Errore durante il salvataggio: $e')),
@@ -377,8 +404,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                             if (!_speaking) {
                               _readWithEdgeTts();
                             } else if (_ttsPaused) {
+                              setState(() => _ttsPaused = false);
                               _audio.play();
                             } else {
+                              setState(() => _ttsPaused = true);
                               _audio.pause();
                             }
                           },

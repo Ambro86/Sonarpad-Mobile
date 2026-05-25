@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'l10n/app_localizations.dart';
+import 'services/app_settings_service.dart';
 import 'screens/documents_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/info_screen.dart';
@@ -20,15 +21,52 @@ void main() {
   runApp(const SonarpadApp());
 }
 
-class SonarpadApp extends StatelessWidget {
+class SonarpadApp extends StatefulWidget {
   const SonarpadApp({super.key});
+
+  static void setLocale(BuildContext context, Locale newLocale) {
+    context.findAncestorStateOfType<_SonarpadAppState>()?.setLocale(newLocale);
+  }
+
+  @override
+  State<SonarpadApp> createState() => _SonarpadAppState();
+}
+
+class _SonarpadAppState extends State<SonarpadApp> {
+  Locale? _locale;
+
+  @override
+  void initState() {
+    super.initState();
+    AppSettingsService().loadAppLanguage().then((lang) {
+      if (mounted) {
+        setState(() {
+          _locale = Locale(lang);
+        });
+      }
+    });
+  }
+
+  void setLocale(Locale newLocale) {
+    setState(() {
+      _locale = newLocale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_locale == null) {
+      return const MaterialApp(
+        home: Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
     return MaterialApp(
       title: 'Sonarpad',
       debugShowCheckedModeBanner: false,
-      locale: const Locale('it'),
+      locale: _locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,

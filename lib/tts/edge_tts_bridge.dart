@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 import 'package:crypto/crypto.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EdgeTtsBridge {
   static const String _trustedClientToken = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
@@ -29,8 +30,19 @@ class EdgeTtsBridge {
     final logFile = File('$outPath.log.txt');
     await logFile.writeAsString('start voice=$voice text_len=${text.length}\n');
 
+    // Recupera impostazioni velocità e tono
+    final prefs = await SharedPreferences.getInstance();
+    final speed = prefs.getDouble('sonarpad_tts_speed') ?? 1.0;
+    final pitch = prefs.getDouble('sonarpad_tts_pitch') ?? 1.0;
+
+    final ratePercent = ((speed - 1.0) * 100).round();
+    final rateStr = ratePercent >= 0 ? '+$ratePercent%' : '$ratePercent%';
+
+    final pitchPercent = ((pitch - 1.0) * 100).round();
+    final pitchStr = pitchPercent >= 0 ? '+$pitchPercent%' : '$pitchPercent%';
+
     try {
-      final audioData = await _downloadAudio(text, voice, logFile);
+      final audioData = await _downloadAudio(text, voice, rateStr, pitchStr, logFile);
       if (audioData.isEmpty) {
         throw Exception("Edge TTS ha restituito audio vuoto");
       }
@@ -128,7 +140,7 @@ class EdgeTtsBridge {
   }
 
   Future<List<int>> _downloadAudio(
-      String text, String voice, File logFile) async {
+      String text, String voice, String rateStr, String pitchStr, File logFile) async {
     final requestId = const Uuid().v4().replaceAll('-', '');
     final secMsGec = _generateSecMsGec();
     const secMsGecVersion = "1-132.0.2917.39";
@@ -167,7 +179,7 @@ class EdgeTtsBridge {
       await logFile.writeAsString('speech.config inviato\n',
           mode: FileMode.append);
 
-      final ssml = _mkssml(text, voice);
+      final ssml = _mkssml(text, voice, rateStr, pitchStr);
       final ssmlMsg =
           "X-RequestId:$requestId\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:${dateString}Z\r\nPath:ssml\r\n\r\n$ssml";
 
@@ -254,12 +266,12 @@ class EdgeTtsBridge {
     return "$weekday $month $day $year $hour:$minute:$second GMT+0000 (Coordinated Universal Time)";
   }
 
-  String _mkssml(String text, String voice) {
+  String _mkssml(String text, String voice, String rateStr, String pitchStr) {
     final langParts = voice.split('-');
     final lang =
         langParts.length >= 2 ? "${langParts[0]}-${langParts[1]}" : "it-IT";
     final sanitizedText = _escapeXml(_sanitizeText(text));
-    return "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='$lang'><voice name='$voice'><prosody pitch='+0Hz' rate='+0%' volume='+0%'>$sanitizedText</prosody></voice></speak>";
+    return "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='$lang'><voice name='$voice'><prosody pitch='$pitchStr' rate='$rateStr' volume='+0%'>$sanitizedText</prosody></voice></speak>";
   }
 
   String _sanitizeText(String text) {

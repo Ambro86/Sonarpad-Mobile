@@ -6,6 +6,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
+import '../services/audio_player_service.dart';
+import '../tts/edge_tts_bridge.dart';
+import '../main.dart';
 import 'app_log_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -17,10 +20,15 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _settings = AppSettingsService();
+  String _appLanguage = 'it';
   String _languageCode = 'it';
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
+  double _ttsSpeed = 1.0;
+  double _ttsPitch = 1.0;
   final _tvSecretCodeController = TextEditingController();
   bool _loading = true;
+  bool _testingVoice = false;
+  final _audio = AudioPlayerService();
 
   @override
   void initState() {
@@ -31,17 +39,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void dispose() {
     _tvSecretCodeController.dispose();
+    unawaited(_audio.stop().whenComplete(_audio.dispose));
     super.dispose();
   }
 
   Future<void> _load() async {
+    final appLang = await _settings.loadAppLanguage();
     final language = await _settings.loadTtsLanguage();
     final voice = await _settings.loadTtsVoice();
+    final speed = await _settings.loadTtsSpeed();
+    final pitch = await _settings.loadTtsPitch();
     final tvSecretCode = await _settings.getTvSecretCode();
     if (!mounted) return;
     setState(() {
+      _appLanguage = appLang;
       _languageCode = language;
       _voice = _validVoiceForLanguage(language, voice);
+      _ttsSpeed = speed;
+      _ttsPitch = pitch;
       _tvSecretCodeController.text = tvSecretCode;
       _loading = false;
     });
@@ -55,6 +70,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.settingsSaved)),
     );
+  }
+
+  Future<void> _testVoice() async {
+    setState(() => _testingVoice = true);
+    try {
+      await _saveTtsSelection();
+      await _settings.saveTtsSpeed(_ttsSpeed);
+      await _settings.saveTtsPitch(_ttsPitch);
+
+      final tts = EdgeTtsBridge();
+      final file = await tts.speakToFile(
+        text: 'Questo è un test della voce selezionata.',
+        voice: _voice,
+      );
+      if (!mounted) return;
+      await _audio.playFile(file);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errore test voce: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _testingVoice = false);
+      }
+    }
   }
 
   Future<void> _saveTtsSelection() async {
@@ -196,6 +237,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.all(16),
               children: [
                 DropdownButtonFormField<String>(
+                  initialValue: _appLanguage,
+                  decoration: InputDecoration(labelText: l10n.appLanguage),
+                  items: [
+                    DropdownMenuItem(value: 'it', child: Text(l10n.italian)),
+                    DropdownMenuItem(value: 'en', child: Text(l10n.english)),
+                  ],
+                  onChanged: (value) async {
+                    if (value == null || value == _appLanguage) return;
+                    setState(() => _appLanguage = value);
+                    await _settings.saveAppLanguage(value);
+                    if (!mounted) return;
+                    SonarpadApp.setLocale(context, Locale(value));
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
                   initialValue: _languageCode,
                   decoration: InputDecoration(labelText: l10n.ttsVoiceLanguage),
                   items: AppSettingsService.ttsLanguages
@@ -233,20 +290,71 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  controller: _tvSecretCodeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Codice Sonarpad per funzioni aggiuntive',
-                    border: OutlineInputBorder(),
+                Semantics(
+                  label: 'Velocità lettura: ${_ttsSpeed.toStringAsFixed(1)} per cento',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Velocità lettura: ${_ttsSpeed.toStringAsFixed(1)}x'),
+                      Slider(
+                        value: _ttsSpeed,
+                        min: 0.5,
+                        max: 2.0,
+                        divisions: 15,
+                        onChanged: (value) => setState(() => _ttsSpeed = value),
+                        onChangeEnd: (value) => _settings.saveTtsSpeed(value),
+                      ),
+                    ],
                   ),
-                  obscureText: true,
                 ),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  onPressed: _requestSecretCode,
-                  icon: const Icon(Icons.mail_outline),
-                  label: const Text('Richiedi codice all\'autore'),
+                const SizedBox(height: 16),
+                Semantics(
+                  label: 'Tono voce: ${_ttsPitch.toStringAsFixed(1)} per cento',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Tono voce: ${_ttsPitch.toStringAsFixed(1)}x'),
+                      Slider(
+                        value: _ttsPitch,
+                        min: 0.5,
+                        max: 2.0,
+                        divisions: 15,
+                        onChanged: (value) => setState(() => _ttsPitch = value),
+                        onChangeEnd: (value) => _settings.saveTtsPitch(value),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: _testingVoice ? null : _testVoice,
+                  icon: _testingVoice 
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) 
+                      : const Icon(Icons.volume_up),
+                  label: Text(_testingVoice ? 'Riproduzione in corso...' : 'Testa voce'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+                if (_appLanguage == 'it') ...[
+                  const SizedBox(height: 24),
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _tvSecretCodeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Codice Sonarpad per funzioni aggiuntive',
+                      border: OutlineInputBorder(),
+                    ),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: _requestSecretCode,
+                    icon: const Icon(Icons.mail_outline),
+                    label: const Text('Richiedi codice all\'autore'),
+                  ),
+                ],
                 const SizedBox(height: 16),
                 FilledButton.icon(
                   onPressed: _save,

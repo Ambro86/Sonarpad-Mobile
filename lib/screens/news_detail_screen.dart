@@ -80,7 +80,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           if (!mounted) return;
           setState(() {
             _readyChunks = i + 1;
-            _status = l10n.chunkCreated(i + 1, chunks.length);
           });
         }
         generationDone = true;
