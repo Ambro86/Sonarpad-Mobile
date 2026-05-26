@@ -10,6 +10,7 @@ import 'package:sonarpad_mobile_starter/screens/wikipedia_screen.dart';
 import 'package:sonarpad_mobile_starter/screens/news_screen.dart';
 import 'package:sonarpad_mobile_starter/screens/podcast_screen.dart';
 import 'package:sonarpad_mobile_starter/screens/radio_screen.dart';
+import 'package:sonarpad_mobile_starter/screens/route_screen.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -48,6 +49,7 @@ void main() {
       '05_news_screen': buildScreen(const NewsScreen()),
       '06_podcast_screen': buildScreen(const PodcastScreen()),
       '07_radio_screen': buildScreen(const RadioScreen()),
+      '08_route_screen': buildScreen(const RouteScreen()),
     };
 
     for (final entry in screens.entries) {

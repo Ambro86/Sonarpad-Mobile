@@ -59,9 +59,10 @@ class AudioPlayerService {
   Future<void> playUrl(
     String url, {
     AudioSessionType sessionType = AudioSessionType.playback,
+    String? title,
   }) async {
     _stopRequested = false;
-    await setUrl(url, sessionType: sessionType);
+    await setUrl(url, sessionType: sessionType, title: title);
     if (!_stopRequested) {
       await play();
     }
@@ -70,18 +71,21 @@ class AudioPlayerService {
   Future<void> setUrl(
     String url, {
     AudioSessionType sessionType = AudioSessionType.playback,
+    String? title,
   }) async {
     _stopRequested = false;
     await _prepareAudioSession(sessionType);
     debugPrint('Sonarpad audio: setUrl=$url');
+    
+    String itemTitle = title ?? 
+        (sessionType == AudioSessionType.speech ? 'Lettura Vocale' : 'Riproduzione Audio');
+        
     final source = AudioSource.uri(
       Uri.parse(url),
       tag: MediaItem(
         id: url,
         album: 'Sonarpad',
-        title: sessionType == AudioSessionType.speech
-            ? 'Lettura Vocale'
-            : 'Riproduzione Audio',
+        title: itemTitle,
       ),
     );
     final duration = await _player.setAudioSource(source);

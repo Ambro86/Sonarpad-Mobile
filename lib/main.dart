@@ -15,6 +15,8 @@ import 'screens/settings_screen.dart';
 import 'screens/tv_screen.dart';
 import 'screens/aifa_search_screen.dart';
 import 'screens/wikipedia_screen.dart';
+import 'screens/route_screen.dart';
+import 'screens/audiodescription_recent_screen.dart';
 
 import 'package:just_audio_background/just_audio_background.dart';
 
@@ -98,6 +100,8 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/wikipedia': (_) => const WikipediaScreen(),
         '/settings': (_) => const SettingsScreen(),
         '/aifa': (_) => const AifaSearchScreen(),
+        '/route': (_) => const RouteScreen(),
+        '/audiodescriptions': (_) => const AudiodescriptionRecentScreen(),
         '/info': (_) => const InfoScreen(),
       },
     );

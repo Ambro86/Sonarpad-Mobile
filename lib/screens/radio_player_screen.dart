@@ -31,7 +31,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _error = null;
     });
     try {
-      await _audio.setUrl(widget.station.streamUrl);
+      await _audio.setUrl(widget.station.streamUrl, title: 'In riproduzione: \${widget.station.name}');
       if (!mounted) return;
       setState(() => _loading = false);
       unawaited(_audio.play().catchError((e) {
@@ -61,7 +61,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Player Radio'),
+          title: Text('In riproduzione: \${widget.station.name}'),
           leading: BackButton(onPressed: () => Navigator.pop(context)),
         ),
         body: ListView(

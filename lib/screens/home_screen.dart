@@ -9,6 +9,8 @@ import 'package:uuid/uuid.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
+import '../l10n/ui_route_localizations.dart';
+import '../l10n/ui_audiodescription_localizations.dart';
 import '../models/document_item.dart';
 import '../screens/document_reader_screen.dart';
 import '../services/accessibility_feedback_service.dart';
@@ -190,7 +192,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   routeName: '/tv',
                 ),
               ),
-            if (_isSecretCodeValid && isItalian)
+            if (_isSecretCodeValid && isItalian) ...[
+              _HomeButton(
+                label: l10n.audiodescriptionTitle,
+                onPressed: () => AccessibilityFeedbackService.goNamed(
+                  context,
+                  routeName: '/audiodescriptions',
+                ),
+              ),
               _HomeButton(
                 label: 'RaiPlay Sound',
                 onPressed: () => AccessibilityFeedbackService.goNamed(
@@ -198,6 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   routeName: '/raiplaysound',
                 ),
               ),
+            ],
             if (_isRaiPlayValid && isItalian)
               _HomeButton(
                 label: 'RaiPlay',
@@ -221,6 +231,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   routeName: '/aifa',
                 ),
               ),
+            _HomeButton(
+              label: l10n.routeTitle,
+              onPressed: () => AccessibilityFeedbackService.goNamed(
+                context,
+                routeName: '/route',
+              ),
+            ),
             _HomeButton(
               label: l10n.settings,
               onPressed: () => AccessibilityFeedbackService.goNamed(

@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
+import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
 import 'radio_player_screen.dart';
 
@@ -18,17 +19,12 @@ class RadioScreen extends StatefulWidget {
 class _RadioScreenState extends State<RadioScreen> {
   final _service = RadioService();
   final _searchController = TextEditingController();
-  final _addNameController = TextEditingController();
-  final _addUrlController = TextEditingController();
 
   List<RadioStation> _favorites = [];
   List<RadioStation> _results = [];
   String _languageCode = 'it';
   RadioGenreOption _genre = RadioService.genres.first;
-  String _addLanguage = 'italian';
-  RadioGenreOption _addGenre = RadioService.genres[1];
   bool _searching = false;
-  bool _addingCommunity = false;
 
   @override
   void initState() {
@@ -100,49 +96,9 @@ class _RadioScreenState extends State<RadioScreen> {
     );
   }
 
-  Future<void> _addCommunityRadio() async {
-    final l10n = AppLocalizations.of(context);
-    final name = _addNameController.text.trim();
-    final url = _addUrlController.text.trim();
-    if (name.isEmpty || url.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.radioAddMissingFields)),
-      );
-      return;
-    }
-    setState(() => _addingCommunity = true);
-    try {
-      final message = await _service.addCommunityRadio(
-        name: name,
-        streamUrl: url,
-        language: _addLanguage,
-        genre: _addGenre.tag ?? _addGenre.value,
-      );
-      if (!mounted) return;
-      _addNameController.clear();
-      _addUrlController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message.trim().isEmpty
-              ? l10n.radioCommunityAdded
-              : message.trim()),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.radioCommunityAddError(e))),
-      );
-    } finally {
-      if (mounted) setState(() => _addingCommunity = false);
-    }
-  }
-
   @override
   void dispose() {
     _searchController.dispose();
-    _addNameController.dispose();
-    _addUrlController.dispose();
     super.dispose();
   }
 
@@ -233,56 +189,22 @@ class _RadioScreenState extends State<RadioScreen> {
             Text(l10n.radioNoResults),
           ],
           const Divider(height: 32),
-          ExpansionTile(
-            title: Text(l10n.radioAddCommunity),
-            children: [
-              TextField(
-                controller: _addNameController,
-                decoration: InputDecoration(labelText: l10n.radioAddName),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _addUrlController,
-                decoration: InputDecoration(labelText: l10n.radioAddUrl),
-                keyboardType: TextInputType.url,
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                initialValue: _addLanguage,
-                decoration: InputDecoration(labelText: l10n.radioLanguage),
-                items: RadioService.communityLanguages
-                    .map((language) => DropdownMenuItem(
-                          value: language,
-                          child:
-                              Text(l10n.radioCommunityLanguageLabel(language)),
-                        ))
-                    .toList(),
-                onChanged: (value) =>
-                    setState(() => _addLanguage = value ?? 'italian'),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<RadioGenreOption>(
-                initialValue: _addGenre,
-                decoration: InputDecoration(labelText: l10n.radioGenre),
-                items: RadioService.genres
-                    .where((genre) => genre.tag != null)
-                    .map((genre) => DropdownMenuItem(
-                          value: genre,
-                          child: Text(l10n.radioGenreLabel(genre.value)),
-                        ))
-                    .toList(),
-                onChanged: (value) =>
-                    setState(() => _addGenre = value ?? RadioService.genres[1]),
-              ),
-              const SizedBox(height: 8),
-              FilledButton.icon(
-                onPressed: _addingCommunity ? null : _addCommunityRadio,
-                icon: const Icon(Icons.cloud_upload),
-                label: Text(_addingCommunity
-                    ? l10n.radioSearching
-                    : l10n.radioAddSubmit),
-              ),
-            ],
+          FilledButton.icon(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+              alignment: Alignment.centerLeft,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(name: '/radio/add'),
+                  builder: (_) => const AddRadioScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.add),
+            label: Text(l10n.radioAddCommunity),
           ),
         ],
       ),
