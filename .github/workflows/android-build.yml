@@ -101,14 +101,12 @@ jobs:
               gradle_text = re.sub(r'compileSdkVersion\s+\d+', 'compileSdkVersion 36', gradle_text)
               gradle.write_text(gradle_text, encoding="utf-8")
               print("build.gradle configurato (compileSdk=36)")
-
-          local_props = Path("android/local.properties")
-          text = local_props.read_text(encoding="utf-8") if local_props.exists() else ""
-          if "flutter.compileSdkVersion" not in text:
-              text += "\nflutter.compileSdkVersion=36\n"
-              local_props.write_text(text, encoding="utf-8")
-              print("local.properties configurato (compileSdkVersion=36)")
           PY
+
+      - name: Force compileSdk 36 in plugins
+        run: |
+          find ~/.pub-cache/hosted/pub.dev -name "build.gradle*" -exec sed -i -E 's/compileSdk\s*=?\s*([0-9]+|flutter\.compileSdkVersion)/compileSdk = 36/g' {} + || true
+          find ~/.pub-cache/hosted/pub.dev -name "build.gradle*" -exec sed -i -E 's/compileSdkVersion\s*=?\s*([0-9]+|flutter\.compileSdkVersion)/compileSdkVersion 36/g' {} + || true
 
       - name: Build release APK
         run: flutter build apk --release --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
