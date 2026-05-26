@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
@@ -61,6 +62,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   late DocumentItem _currentDoc;
 
+  static const _ttsCommands = MethodChannel('sonarpad/tts_commands');
+  static const _ttsEvents = EventChannel('sonarpad/tts_events');
+  StreamSubscription? _ttsEventsSub;
+
   @override
   void initState() {
     super.initState();
@@ -77,11 +82,22 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _flutterTts.setContinueHandler(() {
       if (mounted && _speaking) setState(() => _ttsPaused = false);
     });
+
+    _ttsEventsSub = _ttsEvents.receiveBroadcastStream().listen((event) {
+      if (event == 'toggle' && mounted) {
+        _togglePlayPause();
+      }
+    });
+
     _extractText();
   }
 
   @override
   void dispose() {
+    if (Platform.isIOS) {
+      _ttsCommands.invokeMethod('clearMagicTap').catchError((_) {});
+    }
+    _ttsEventsSub?.cancel();
     _playingSub?.cancel();
     _audio.dispose();
     _scrollController.dispose();
@@ -181,6 +197,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           : 0;
 
       if (engine == 'system') {
+        if (Platform.isIOS) {
+          try {
+            await _ttsCommands.invokeMethod('setupMagicTap', _currentDoc.name);
+          } catch (e) {
+            dev.log('DocumentReaderScreen: Errore setupMagicTap $e');
+          }
+        }
         await _configureSystemTtsAudioSession();
         await _flutterTts.awaitSpeakCompletion(true);
         if (Platform.isIOS) {
@@ -253,6 +276,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         if (generationError != null) throw Exception(generationError);
       }
 
+      if (Platform.isIOS && engine == 'system') {
+        try {
+          await _ttsCommands.invokeMethod('clearMagicTap');
+        } catch (_) {}
+      }
+
       if (!mounted) return;
       setState(() {
         _playingChunkIndex = -1;
@@ -299,6 +328,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _stopReading() async {
+    if (Platform.isIOS && _activeTtsEngine == 'system') {
+      try {
+        await _ttsCommands.invokeMethod('clearMagicTap');
+      } catch (_) {}
+    }
     // Aggiorna subito la UI per un feedback immediato
     setState(() {
       _speaking = false;
