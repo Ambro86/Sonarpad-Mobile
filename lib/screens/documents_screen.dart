@@ -13,6 +13,7 @@ import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
+import '../utils/app_logger.dart';
 import 'document_reader_screen.dart';
 
 /// Schermata libreria documenti.
@@ -197,31 +198,40 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (format == null || !mounted) return;
 
     try {
+      await AppLogger.log('Inizio esportazione documento in formato $format');
       final text = await _exportTextForDocument(doc);
+      await AppLogger.log('Testo estratto correttamente (lunghezza: ${text.length})');
 
       final appDir = await getTemporaryDirectory();
       final baseName = doc.displayName;
 
       if (format == 'txt') {
         final path = '${appDir.path}/${baseName}_export.txt';
+        await AppLogger.log('Scrittura file txt in: $path');
         await File(path).writeAsString(text);
+        await AppLogger.log('File txt scritto, avvio condivisione');
         await SharePlus.instance.share(
           ShareParams(
             files: [XFile(path)],
             text: p.basename(path),
           ),
         );
+        await AppLogger.log('Condivisione file txt completata o chiusa');
       } else if (format == 'pdf') {
+        await AppLogger.log('Inizio generazione PDF');
         final path = await _generatePdf(baseName, text, appDir.path);
+        await AppLogger.log('PDF generato in: $path, avvio condivisione');
         await SharePlus.instance.share(
           ShareParams(
             files: [XFile(path)],
             text: p.basename(path),
           ),
         );
+        await AppLogger.log('Condivisione PDF completata o chiusa');
       }
     } catch (e) {
       dev.log('Errore durante l\'esportazione: $e');
+      await AppLogger.log('Errore esportazione: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Errore esportazione: $e')),
@@ -231,15 +241,19 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Future<String> _exportTextForDocument(DocumentItem doc) async {
+    await AppLogger.log('Cerco file modificato per ${doc.id}');
     final editedPath = await _service.resolveEditedFilePath(doc);
     if (editedPath != null && await File(editedPath).exists()) {
+      await AppLogger.log('Trovato file modificato, lettura...');
       final text = await File(editedPath).readAsString();
       if (text.trim().isNotEmpty) return text;
       throw Exception(
           'Il documento modificato non contiene testo esportabile.');
     }
 
+    await AppLogger.log('Cerco file originale per ${doc.id}');
     final resolvedPath = await _service.resolveFilePath(doc);
+    await AppLogger.log('Estrazione testo da file originale (estensione: ${doc.extension})');
     final result = await DocumentTextExtractor().extract(
       path: resolvedPath,
       extension: doc.extension,
