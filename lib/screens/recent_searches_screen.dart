@@ -68,7 +68,7 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
         actions: [
           if (_searches.isNotEmpty)
             IconButton(
-              icon: const Icon(Icons.delete_sweep),
+              icon: Icon(Icons.delete_sweep, color: Theme.of(context).colorScheme.error),
               tooltip: 'Cancella cronologia',
               onPressed: _clearAll,
             ),

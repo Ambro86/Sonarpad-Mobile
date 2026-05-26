@@ -473,7 +473,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           ? null
           : BottomAppBar(
               child: Semantics(
-                liveRegion: true,
+                liveRegion: false,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,

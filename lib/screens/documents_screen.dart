@@ -523,7 +523,7 @@ class _DocumentTile extends StatelessWidget {
                       button: true,
                       label: 'Rimuovi $displayName',
                       child: IconButton(
-                        icon: const Icon(Icons.delete_outline),
+                        icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
                         tooltip: 'Rimuovi documento',
                         onPressed: onRemove,
                       ),

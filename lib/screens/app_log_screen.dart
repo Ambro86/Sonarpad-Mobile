@@ -48,7 +48,7 @@ class _AppLogScreenState extends State<AppLogScreen> {
         title: const Text('Log di Sistema'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
             tooltip: 'Svuota log',
             onPressed: _loading ? null : _clearLog,
           ),

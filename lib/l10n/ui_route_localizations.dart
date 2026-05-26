@@ -11,8 +11,8 @@ extension UiRouteLocalizations on AppLocalizations {
           ? 'Itinéraires routiers'
           : (_isEs ? 'Rutas callejeras' : 'Percorsi Stradali'));
   String get routeFrom =>
-      _isEn ? 'From' : (_isFr ? 'De' : (_isEs ? 'De' : 'Da'));
-  String get routeTo => _isEn ? 'To' : (_isFr ? 'À' : (_isEs ? 'A' : 'A'));
+      _isEn ? 'From' : (_isFr ? 'De' : (_isEs ? 'De' : 'Partenza'));
+  String get routeTo => _isEn ? 'To' : (_isFr ? 'À' : (_isEs ? 'A' : 'Destinazione'));
   String get routeCountry =>
       _isEn ? 'Country' : (_isFr ? 'Pays' : (_isEs ? 'País' : 'Paese'));
   String get routeVehicle =>

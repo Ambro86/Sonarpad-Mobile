@@ -80,6 +80,26 @@ jobs:
                       1,
                   )
 
+              # Permessi per just_audio_background
+              if "android.permission.WAKE_LOCK" not in text:
+                  text = text.replace(
+                      "<application",
+                      "    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK\" />\n    <application",
+                      1,
+                  )
+
+              # Servizi e receiver per just_audio_background
+              if "com.ryanheise.audioservice.AudioService" not in text:
+                  text = text.replace(
+                      "</activity>",
+                      "</activity>\n        <service android:name=\"com.ryanheise.audioservice.AudioService\" android:foregroundServiceType=\"mediaPlayback\" android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.media.browse.MediaBrowserService\" />\n            </intent-filter>\n        </service>\n        <receiver android:name=\"com.ryanheise.audioservice.MediaButtonReceiver\" android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MEDIA_BUTTON\" />\n            </intent-filter>\n        </receiver>",
+                      1,
+                  )
+
+              # Imposta AudioServiceActivity come main activity per just_audio_background
+              if "android:name=\".MainActivity\"" in text:
+                  text = text.replace("android:name=\".MainActivity\"", "android:name=\"com.ryanheise.audioservice.AudioServiceActivity\"")
+
               # Mantiene il nome dell'app coerente con iOS.
               if "android:label=" in text:
                   text = re.sub(r'android:label="[^"]*"', f'android:label="{app_name}"', text, count=1)
@@ -107,6 +127,15 @@ jobs:
         run: |
           find ~/.pub-cache/hosted/pub.dev -name "build.gradle*" -exec sed -i -E 's/compileSdk\s*=?\s*([0-9]+|flutter\.compileSdkVersion)/compileSdk = 36/g' {} + || true
           find ~/.pub-cache/hosted/pub.dev -name "build.gradle*" -exec sed -i -E 's/compileSdkVersion\s*=?\s*([0-9]+|flutter\.compileSdkVersion)/compileSdkVersion 36/g' {} + || true
+
+      - name: Run Integration Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel
+          script: flutter test integration_test/app_test.dart
 
       - name: Build release APK
         run: flutter build apk --release --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}

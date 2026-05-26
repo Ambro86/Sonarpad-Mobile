@@ -4,7 +4,8 @@ import '../l10n/app_localizations.dart';
 import '../l10n/ui_audiodescription_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audiodescription_service.dart';
-import 'radio_player_screen.dart';
+import '../models/podcast.dart';
+import 'podcast_episode_player_screen.dart';
 
 class AudiodescriptionFilmScreen extends StatefulWidget {
   final AudiodescriptionGroup filmGroup;
@@ -49,11 +50,11 @@ class _AudiodescriptionFilmScreenState
         context,
         MaterialPageRoute(
           settings: const RouteSettings(name: '/audiodescriptions/player'),
-          builder: (_) => RadioPlayerScreen(
-            station: RadioStation(
-              name: item.title,
-              streamUrl: resolvedUrl,
-              languageCode: 'it',
+          builder: (_) => PodcastEpisodePlayerScreen(
+            episode: PodcastEpisode(
+              title: item.title,
+              audioUrl: resolvedUrl,
+              publishedAt: DateTime.now(),
             ),
           ),
         ),

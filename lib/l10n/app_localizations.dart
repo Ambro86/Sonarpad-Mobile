@@ -410,7 +410,7 @@ class AppLocalizations {
       ? 'Search country'
       : (_isFr
           ? 'Pays de recherche'
-          : (_isEs ? 'País de búsqueda' : 'Paese ricerca'));
+          : (_isEs ? 'País de búsqueda' : 'Paese di ricerca'));
   String get podcastCategory => _isEn
       ? 'Podcast category'
       : (_isFr

@@ -8,6 +8,7 @@ import '../services/radio_service.dart';
 import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
 import 'radio_player_screen.dart';
+import 'radio_search_results_screen.dart';
 
 class RadioScreen extends StatefulWidget {
   const RadioScreen({super.key});
@@ -53,7 +54,6 @@ class _RadioScreenState extends State<RadioScreen> {
     final l10n = AppLocalizations.of(context);
     setState(() {
       _searching = true;
-      _results = [];
     });
     try {
       final results = await _service.searchRadios(
@@ -62,10 +62,13 @@ class _RadioScreenState extends State<RadioScreen> {
         query: _searchController.text,
       );
       if (!mounted) return;
-      setState(() => _results = results);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.radioResultsFound(results.length))),
-      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/radio/search_results'),
+          builder: (_) => RadioSearchResultsScreen(results: results),
+        ),
+      ).then((_) => _loadFavorites());
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -180,25 +183,7 @@ class _RadioScreenState extends State<RadioScreen> {
             icon: const Icon(Icons.radio),
             label: Text(_searching ? l10n.radioSearching : l10n.radioSearch),
           ),
-          if (_results.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text(l10n.radioSearchResults,
-                style: Theme.of(context).textTheme.titleMedium),
-            ..._results.map((station) {
-              final isFavorite =
-                  _favorites.any((item) => item.streamUrl == station.streamUrl);
-              return RadioTile(
-                station: station,
-                isFavorite: isFavorite,
-                isPlaying: false,
-                onPlay: () => _play(station),
-                onToggleFavorite: () => _toggleFavorite(station),
-              );
-            }),
-          ] else if (!_searching) ...[
-            const SizedBox(height: 16),
-            Text(l10n.radioNoResults),
-          ],
+          // I risultati vengono ora aperti in un'altra schermata tramite Navigator.push
           const Divider(height: 32),
           FilledButton.icon(
             style: FilledButton.styleFrom(

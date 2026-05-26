@@ -6,7 +6,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-
+import 'package:scroll_to_index/scroll_to_index.dart';
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
@@ -39,7 +39,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
   final _extractor = DocumentTextExtractor();
-  final _scrollController = ScrollController();
+  final _scrollController = AutoScrollController();
 
   // Testo e chunks
   bool _loadingText = true;
@@ -51,7 +51,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   bool _speaking = false;
   String? _ttsStatus;
   int _playingChunkIndex = -1;
-  final _chunkKeys = <GlobalKey>[];
+  // (chunkKeys rimosso, usiamo scroll_to_index)
   late int _bookmarkIndex;
 
   bool _ttsPaused = false;
@@ -128,9 +128,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           _documentText,
           maxChunkChars: _maxChunkChars,
         );
-        _chunkKeys
-          ..clear()
-          ..addAll(List.generate(_chunks.length, (_) => GlobalKey()));
+        // Le chiavi vengono gestite da AutoScrollTag
       }
     } catch (e) {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
@@ -152,15 +150,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // ---------------------------------------------------------------------------
 
   void _scrollToChunk(int index) {
-    if (index < 0 || index >= _chunkKeys.length) return;
-    final key = _chunkKeys[index];
-    final ctx = key.currentContext;
-    if (ctx == null) return;
-    Scrollable.ensureVisible(
-      ctx,
+    if (index < 0 || index >= _chunks.length) return;
+    _scrollController.scrollToIndex(
+      index,
+      preferPosition: AutoScrollPosition.begin,
       duration: const Duration(milliseconds: 350),
-      curve: Curves.easeInOut,
-      alignment: 0.3, // mostra il chunk a ~30% dall'alto
     );
   }
 
@@ -443,9 +437,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           _documentText,
           maxChunkChars: _maxChunkChars,
         );
-        _chunkKeys
-          ..clear()
-          ..addAll(List.generate(_chunks.length, (_) => GlobalKey()));
+        // Chiavi gestite da AutoScrollTag
       });
 
       if (!mounted) return;
@@ -702,53 +694,60 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
 
       widgets.add(
-        Semantics(
-          key: _chunkKeys[i],
-          container: true,
-          button: canEdit,
-          hint: hintText,
-          customSemanticsActions: actions,
-          child: GestureDetector(
-            onTap: canEdit ? () => _editParagraph(i) : null,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
-              margin: const EdgeInsets.only(bottom: 6),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              decoration: BoxDecoration(
-                color: isPlaying
-                    ? colorScheme.primaryContainer
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
-                border: isPlaying
-                    ? Border.all(
-                        color: colorScheme.primary.withAlpha(128),
-                        width: 1.5,
-                      )
-                    : (isBookmarked
-                        ? Border.all(
-                            color: Colors.red.withAlpha(128),
-                            width: 1.5,
-                          )
-                        : null),
-              ),
-              child: Stack(
-                children: [
-                  Text(
-                    _chunks[i],
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight:
-                          isPlaying ? FontWeight.w600 : FontWeight.normal,
-                      color: isPlaying ? colorScheme.onPrimaryContainer : null,
+        AutoScrollTag(
+          key: ValueKey(i),
+          controller: _scrollController,
+          index: i,
+          child: Semantics(
+            container: true,
+            button: canEdit,
+            hint: hintText,
+            customSemanticsActions: actions,
+            child: GestureDetector(
+              onTap: canEdit ? () => _editParagraph(i) : null,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                margin: const EdgeInsets.only(bottom: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isPlaying
+                      ? colorScheme.primaryContainer
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: isPlaying
+                      ? Border.all(
+                          color: colorScheme.primary.withAlpha(128),
+                          width: 1.5,
+                        )
+                      : (isBookmarked
+                          ? Border.all(
+                              color: Colors.red.withAlpha(128),
+                              width: 1.5,
+                            )
+                          : null),
+                ),
+                child: Stack(
+                  children: [
+                    Text(
+                      _chunks[i],
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight:
+                            isPlaying ? FontWeight.w600 : FontWeight.normal,
+                        color:
+                            isPlaying ? colorScheme.onPrimaryContainer : null,
+                      ),
                     ),
-                  ),
-                  if (isBookmarked && !isPlaying)
-                    const Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Icon(Icons.bookmark, color: Colors.red, size: 16),
-                    ),
-                ],
+                    if (isBookmarked && !isPlaying)
+                      const Positioned(
+                        top: 0,
+                        right: 0,
+                        child:
+                            Icon(Icons.bookmark, color: Colors.red, size: 16),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

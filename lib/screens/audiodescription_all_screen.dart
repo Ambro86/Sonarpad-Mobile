@@ -6,7 +6,8 @@ import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import 'audiodescription_film_screen.dart';
-import 'radio_player_screen.dart';
+import '../models/podcast.dart';
+import 'podcast_episode_player_screen.dart';
 
 class AudiodescriptionAllScreen extends StatefulWidget {
   const AudiodescriptionAllScreen({super.key});
@@ -75,11 +76,11 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
         context,
         MaterialPageRoute(
           settings: const RouteSettings(name: '/audiodescriptions/player'),
-          builder: (_) => RadioPlayerScreen(
-            station: RadioStation(
-              name: item.title,
-              streamUrl: resolvedUrl,
-              languageCode: 'it',
+          builder: (_) => PodcastEpisodePlayerScreen(
+            episode: PodcastEpisode(
+              title: item.title,
+              audioUrl: resolvedUrl,
+              publishedAt: DateTime.now(),
             ),
           ),
         ),

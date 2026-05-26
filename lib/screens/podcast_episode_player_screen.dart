@@ -76,12 +76,9 @@ class _PodcastEpisodePlayerScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Semantics(
-      container: true,
-      onTap: _togglePlayback,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('In riproduzione: ${widget.episode.title}'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('In riproduzione: ${widget.episode.title}'),
           leading: BackButton(onPressed: () => Navigator.pop(context)),
         ),
         body: ListView(
@@ -146,7 +143,6 @@ class _PodcastEpisodePlayerScreenState
             ),
           ],
         ),
-      ),
     );
   }
 }

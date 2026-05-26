@@ -168,7 +168,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           Text(article.summary, style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 24),
           Semantics(
-            liveRegion: true,
+            liveRegion: false,
             child: Text(_status ?? l10n.readyStatus),
           ),
           if (_totalChunks > 0) ...[
