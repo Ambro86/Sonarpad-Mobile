@@ -12,9 +12,21 @@ import 'package:sonarpad_mobile_starter/screens/radio_screen.dart';
 import 'package:sonarpad_mobile_starter/screens/route_screen.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('flutter_tts'),
+            (MethodCall methodCall) async {
+      if (methodCall.method == 'getVoices' ||
+          methodCall.method == 'getLanguages') {
+        return [];
+      }
+      return 1;
+    });
+
     await loadAppFonts();
   });
 

@@ -250,7 +250,11 @@ class AudioPlayerService {
 
   Future<void> dispose() async {
     await _disableWakelock();
-    await _player.dispose();
+    try {
+      await _player.dispose();
+    } catch (e) {
+      debugPrint('Sonarpad audio: dispose error: $e');
+    }
   }
 
   Future<File> _silentWavFile() async {
