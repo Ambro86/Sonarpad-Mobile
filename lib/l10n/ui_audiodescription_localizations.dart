@@ -1,12 +1,15 @@
 import 'app_localizations.dart';
 
 extension UiAudiodescriptionLocalizations on AppLocalizations {
-  String get audiodescriptionTitle => locale.languageCode == 'en' ? 'Audio Descriptions' : 'Audiodescrizioni Rai';
-  String get audiodescriptionRecent => locale.languageCode == 'en' ? 'Recent' : 'Recenti';
-  String get audiodescriptionAll => locale.languageCode == 'en' ? 'All Audio Descriptions' : 'Tutte le audiodescrizioni';
-  String get audiodescriptionFilm => locale.languageCode == 'en' ? 'Movies' : 'Film';
-  String get audiodescriptionSearch => locale.languageCode == 'en' ? 'Search...' : 'Cerca...';
-  String get audiodescriptionLoading => locale.languageCode == 'en' ? 'Loading...' : 'Caricamento in corso...';
-  String get audiodescriptionError => locale.languageCode == 'en' ? 'Error loading catalog' : 'Errore nel caricamento del catalogo';
-  String get audiodescriptionEmpty => locale.languageCode == 'en' ? 'No items found' : 'Nessun elemento trovato';
+  bool get _isEn => locale.languageCode == 'en';
+  bool get _isFr => locale.languageCode == 'fr';
+
+  String get audiodescriptionTitle => _isEn ? 'Audio Descriptions' : (_isFr ? 'Audiodescriptions Rai' : 'Audiodescrizioni Rai');
+  String get audiodescriptionRecent => _isEn ? 'Recent' : (_isFr ? 'Récents' : 'Recenti');
+  String get audiodescriptionAll => _isEn ? 'All Audio Descriptions' : (_isFr ? 'Toutes les audiodescriptions' : 'Tutte le audiodescrizioni');
+  String get audiodescriptionFilm => _isEn ? 'Movies' : (_isFr ? 'Films' : 'Film');
+  String get audiodescriptionSearch => _isEn ? 'Search...' : (_isFr ? 'Rechercher...' : 'Cerca...');
+  String get audiodescriptionLoading => _isEn ? 'Loading...' : (_isFr ? 'Chargement en cours...' : 'Caricamento in corso...');
+  String get audiodescriptionError => _isEn ? 'Error loading catalog' : (_isFr ? 'Erreur de chargement du catalogue' : 'Errore nel caricamento del catalogo');
+  String get audiodescriptionEmpty => _isEn ? 'No items found' : (_isFr ? 'Aucun élément trouvé' : 'Nessun elemento trovato');
 }
