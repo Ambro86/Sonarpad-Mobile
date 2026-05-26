@@ -3,6 +3,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 /// Tipo di sessione audio.
@@ -76,10 +77,12 @@ class AudioPlayerService {
     _stopRequested = false;
     await _prepareAudioSession(sessionType);
     debugPrint('Sonarpad audio: setUrl=$url');
-    
-    String itemTitle = title ?? 
-        (sessionType == AudioSessionType.speech ? 'Lettura Vocale' : 'Riproduzione Audio');
-        
+
+    String itemTitle = title ??
+        (sessionType == AudioSessionType.speech
+            ? 'Lettura Vocale'
+            : 'Riproduzione Audio');
+
     final source = AudioSource.uri(
       Uri.parse(url),
       tag: MediaItem(
@@ -96,6 +99,30 @@ class AudioPlayerService {
     if (!_stopRequested) {
       debugPrint('Sonarpad audio: play');
       await _enableWakelock();
+      await _player.play();
+    }
+  }
+
+  Future<void> startSilentPlaybackSession({
+    String title = 'Lettura Documento',
+  }) async {
+    _stopRequested = false;
+    await _prepareAudioSession(AudioSessionType.speech);
+    await _enableWakelock();
+    final file = await _silentWavFile();
+    await _player.setVolume(0);
+    await _player.setLoopMode(LoopMode.one);
+    await _player.setAudioSource(
+      AudioSource.uri(
+        Uri.file(file.path),
+        tag: MediaItem(
+          id: file.path,
+          album: 'Sonarpad',
+          title: title,
+        ),
+      ),
+    );
+    if (!_stopRequested) {
       await _player.play();
     }
   }
@@ -216,11 +243,57 @@ class AudioPlayerService {
     _stopRequested = true;
     debugPrint('Sonarpad audio: stop requested');
     await _player.stop();
+    await _player.setLoopMode(LoopMode.off);
+    await _player.setVolume(1);
     await _disableWakelock();
   }
 
   Future<void> dispose() async {
     await _disableWakelock();
     await _player.dispose();
+  }
+
+  Future<File> _silentWavFile() async {
+    final dir = await getTemporaryDirectory();
+    final file =
+        File('${dir.path}${Platform.pathSeparator}sonarpad_silence.wav');
+    if (!await file.exists()) {
+      await file.writeAsBytes(_silentWavBytes(), flush: true);
+    }
+    return file;
+  }
+
+  Uint8List _silentWavBytes() {
+    const sampleRate = 8000;
+    const seconds = 1;
+    const channels = 1;
+    const bitsPerSample = 16;
+    const bytesPerSample = bitsPerSample ~/ 8;
+    const dataSize = sampleRate * seconds * channels * bytesPerSample;
+    const fileSize = 36 + dataSize;
+    final bytes = Uint8List(44 + dataSize);
+    final data = ByteData.view(bytes.buffer);
+
+    void writeAscii(int offset, String value) {
+      for (var i = 0; i < value.length; i += 1) {
+        bytes[offset + i] = value.codeUnitAt(i);
+      }
+    }
+
+    writeAscii(0, 'RIFF');
+    data.setUint32(4, fileSize, Endian.little);
+    writeAscii(8, 'WAVE');
+    writeAscii(12, 'fmt ');
+    data.setUint32(16, 16, Endian.little);
+    data.setUint16(20, 1, Endian.little);
+    data.setUint16(22, channels, Endian.little);
+    data.setUint32(24, sampleRate, Endian.little);
+    data.setUint32(28, sampleRate * channels * bytesPerSample, Endian.little);
+    data.setUint16(32, channels * bytesPerSample, Endian.little);
+    data.setUint16(34, bitsPerSample, Endian.little);
+    writeAscii(36, 'data');
+    data.setUint32(40, dataSize, Endian.little);
+
+    return bytes;
   }
 }

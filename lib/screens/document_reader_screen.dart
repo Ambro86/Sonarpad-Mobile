@@ -55,6 +55,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   bool _ttsPaused = false;
   String? _activeTtsEngine;
   StreamSubscription<bool>? _playingSub;
+  bool _syncingSystemTtsWithMediaSession = false;
 
   static const int _maxChunkChars = 650;
 
@@ -66,7 +67,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _currentDoc = widget.document;
     _bookmarkIndex = _currentDoc.bookmarkIndex;
     _playingSub = _audio.playingStream.listen((playing) {
-      if (_speaking && _activeTtsEngine != 'system' && mounted) {
+      if (!_speaking || !mounted) return;
+      if (_activeTtsEngine == 'system') {
+        unawaited(_handleSystemMediaPlaybackChange(playing));
+      } else {
         setState(() => _ttsPaused = !playing);
       }
     });
@@ -77,6 +81,22 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (mounted && _speaking) setState(() => _ttsPaused = false);
     });
     _extractText();
+  }
+
+  Future<void> _handleSystemMediaPlaybackChange(bool playing) async {
+    if (_syncingSystemTtsWithMediaSession) return;
+    if (!_speaking || _activeTtsEngine != 'system') return;
+
+    _syncingSystemTtsWithMediaSession = true;
+    try {
+      if (!playing && !_ttsPaused) {
+        await _pauseReading(fromMediaSession: true);
+      } else if (playing && _ttsPaused) {
+        await _resumeReading(fromMediaSession: true);
+      }
+    } finally {
+      _syncingSystemTtsWithMediaSession = false;
+    }
   }
 
   @override
@@ -182,6 +202,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (engine == 'system') {
         await _configureSystemTtsAudioSession();
         await _flutterTts.awaitSpeakCompletion(true);
+        await _audio.startSilentPlaybackSession();
         if (Platform.isIOS) {
           await _flutterTts.setSharedInstance(true);
           await _flutterTts.autoStopSharedSession(false);
@@ -217,6 +238,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           await _flutterTts.speak(_chunks[i]);
         }
         await _flutterTts.stop();
+        _activeTtsEngine = null;
+        await _audio.stop();
       } else {
         final voice = await _voice();
         final controller = StreamController<(int, File)>();
@@ -307,6 +330,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     });
     await _audio.stop();
     await _flutterTts.stop();
+  }
+
+  Future<void> _stopAndEditParagraph(int index) async {
+    if (_speaking) {
+      await _stopReading();
+    }
+    if (!mounted) return;
+    await _editParagraph(index);
   }
 
   // ---------------------------------------------------------------------------
@@ -435,19 +466,42 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (!_speaking) {
       await _startReading();
     } else if (_ttsPaused) {
-      setState(() => _ttsPaused = false);
-      if (_activeTtsEngine == 'system') {
-        await _flutterTts.speak('');
-      } else {
-        await _audio.play();
-      }
+      await _resumeReading();
     } else {
-      setState(() => _ttsPaused = true);
-      if (_activeTtsEngine == 'system') {
-        await _flutterTts.pause();
-      } else {
+      await _pauseReading();
+    }
+  }
+
+  Future<void> _pauseReading({bool fromMediaSession = false}) async {
+    if (!_speaking || _ttsPaused) return;
+    if (mounted) setState(() => _ttsPaused = true);
+
+    if (_activeTtsEngine == 'system') {
+      if (!fromMediaSession) {
         await _audio.pause();
       }
+      await _flutterTts.pause();
+    } else {
+      await _audio.pause();
+    }
+  }
+
+  Future<void> _resumeReading({bool fromMediaSession = false}) async {
+    if (!_speaking || !_ttsPaused) return;
+    if (mounted) setState(() => _ttsPaused = false);
+
+    if (_activeTtsEngine == 'system') {
+      if (!fromMediaSession) {
+        await _audio.play();
+      }
+      unawaited(
+        _flutterTts.speak('').catchError((Object error) {
+          dev.log('DocumentReaderScreen system TTS resume error: $error');
+          return null;
+        }),
+      );
+    } else {
+      await _audio.play();
     }
   }
 
@@ -456,12 +510,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final doc = _currentDoc;
+    final displayName = doc.displayName;
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          doc.name,
+          displayName,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -522,7 +577,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    doc.name,
+                                    displayName,
                                     style: theme.textTheme.titleMedium
                                         ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
@@ -623,11 +678,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     for (var i = 0; i < _chunks.length; i++) {
       final isPlaying = i == _playingChunkIndex;
       final isBookmarked = i == _bookmarkIndex;
-      // Durante la lettura TTS il tap è disabilitato per non interferire.
-      final canEdit = !_speaking;
 
-      String hintText =
-          canEdit ? 'Doppio tap per modificare questo paragrafo. ' : '';
+      String hintText = _speaking
+          ? 'Doppio tap per interrompere la lettura e modificare questo paragrafo. '
+          : 'Doppio tap per modificare questo paragrafo. ';
       if (_bookmarkIndex > 0) {
         hintText +=
             'Fai flick verso il basso per rimuovere o andare al segnalibro esistente.';
@@ -650,11 +704,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         Semantics(
           key: _chunkKeys[i],
           container: true,
-          button: canEdit,
+          button: true,
           hint: hintText,
           customSemanticsActions: actions,
           child: GestureDetector(
-            onTap: canEdit ? () => _editParagraph(i) : null,
+            onTap: () => unawaited(_stopAndEditParagraph(i)),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,

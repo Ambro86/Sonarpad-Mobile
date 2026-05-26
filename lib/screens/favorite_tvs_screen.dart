@@ -22,6 +22,21 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
   List<TvChannel> _favorites = [];
   bool _loading = true;
 
+  TvProgram? _currentProgramFor(TvChannel channel) {
+    final normalizedName = _service.normalizeChannelName(channel.name);
+    return widget.currentPrograms[normalizedName] ??
+        widget.currentPrograms[channel.name] ??
+        widget.currentPrograms[channel.name.trim().toLowerCase()];
+  }
+
+  String _channelLabel(TvChannel channel, TvProgram? currentProgram) {
+    final title = currentProgram?.title.trim();
+    if (title != null && title.isNotEmpty) {
+      return '${channel.name}. Ora in onda: $title';
+    }
+    return channel.name;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -68,18 +83,21 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                   itemCount: _favorites.length,
                   itemBuilder: (context, index) {
                     final channel = _favorites[index];
-                    final normalizedChannelName =
-                        _service.normalizeChannelName(channel.name);
-                    final currentProgram =
-                        widget.currentPrograms[normalizedChannelName];
+                    final currentProgram = _currentProgramFor(channel);
+                    final semanticsLabel = _channelLabel(
+                      channel,
+                      currentProgram,
+                    );
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: MergeSemantics(
                         child: Semantics(
-                          label: currentProgram != null
-                              ? '${channel.name}. Ora in onda: ${currentProgram.title}'
-                              : channel.name,
+                          button: true,
+                          enabled: true,
+                          label: semanticsLabel,
+                          hint: 'Tocca per aprire il canale TV',
+                          onTap: () => widget.onOpenChannel(channel),
                           customSemanticsActions: {
                             const CustomSemanticsAction(
                                     label: 'Rimuovi dai preferiti'):

@@ -13,6 +13,7 @@ import '../l10n/ui_route_localizations.dart';
 import '../l10n/ui_audiodescription_localizations.dart';
 import '../models/document_item.dart';
 import '../screens/document_reader_screen.dart';
+import '../screens/documents_screen.dart';
 import '../services/accessibility_feedback_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/document_library_service.dart';
@@ -55,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _handleIncomingFile(uri);
         }
       }).catchError((_) {}); // Ignore errors in test
-      
+
       // Gestione link in streaming (app già aperta)
       _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
         if (uri.scheme == 'file') {
@@ -97,8 +98,17 @@ class _HomeScreenState extends State<HomeScreen> {
       await lib.add(doc);
 
       if (mounted) {
-        Navigator.of(context).push(
+        final navigator = Navigator.of(context);
+        navigator.pushAndRemoveUntil(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: '/documents'),
+            builder: (_) => const DocumentsScreen(),
+          ),
+          (route) => route.isFirst,
+        );
+        navigator.push(
           MaterialPageRoute(
+            settings: const RouteSettings(name: '/documents/reader'),
             builder: (_) => DocumentReaderScreen(document: doc),
           ),
         );

@@ -197,13 +197,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (format == null || !mounted) return;
 
     try {
-      final extractor = DocumentTextExtractor();
-      final result =
-          await extractor.extract(path: doc.path, extension: doc.extension);
-      final text = result.text;
+      final text = await _exportTextForDocument(doc);
 
       final appDir = await getTemporaryDirectory();
-      final baseName = doc.name.replaceAll(RegExp(r'\.[^.]+$'), '');
+      final baseName = doc.displayName;
 
       if (format == 'txt') {
         final path = '${appDir.path}/${baseName}_export.txt';
@@ -211,7 +208,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         await SharePlus.instance.share(
           ShareParams(
             files: [XFile(path)],
-            text: 'Documento esportato da Sonarpad',
+            text: p.basename(path),
           ),
         );
       } else if (format == 'pdf') {
@@ -219,7 +216,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         await SharePlus.instance.share(
           ShareParams(
             files: [XFile(path)],
-            text: 'Documento esportato da Sonarpad',
+            text: p.basename(path),
           ),
         );
       }
@@ -231,6 +228,26 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         );
       }
     }
+  }
+
+  Future<String> _exportTextForDocument(DocumentItem doc) async {
+    final editedPath = await _service.resolveEditedFilePath(doc);
+    if (editedPath != null && await File(editedPath).exists()) {
+      final text = await File(editedPath).readAsString();
+      if (text.trim().isNotEmpty) return text;
+      throw Exception(
+          'Il documento modificato non contiene testo esportabile.');
+    }
+
+    final resolvedPath = await _service.resolveFilePath(doc);
+    final result = await DocumentTextExtractor().extract(
+      path: resolvedPath,
+      extension: doc.extension,
+    );
+    if (result.text.trim().isEmpty) {
+      throw Exception(result.error ?? 'Nessun testo esportabile trovato.');
+    }
+    return result.text;
   }
 
   Future<String> _generatePdf(
@@ -393,6 +410,7 @@ class _DocumentTile extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final badgeColor = _badgeColor(doc.extension);
+    final displayName = doc.displayName;
 
     return MergeSemantics(
       child: Semantics(
@@ -408,7 +426,7 @@ class _DocumentTile extends StatelessWidget {
           CustomSemanticsAction(label: l10n.moveToPosition): () =>
               onAction(_DocumentAction.moveToPosition),
         },
-        label: '${doc.name}, tipo ${doc.extension.toUpperCase()}, '
+        label: '$displayName, tipo ${doc.extension.toUpperCase()}, '
             'aggiunto il ${_formattedDate(doc.addedAt)}',
         hint: 'Tocca per aprire e leggere il documento',
         child: Card(
@@ -448,7 +466,7 @@ class _DocumentTile extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            doc.name,
+                            displayName,
                             style: theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -468,7 +486,7 @@ class _DocumentTile extends StatelessWidget {
                   ExcludeSemantics(
                     child: Semantics(
                       button: true,
-                      label: 'Rimuovi ${doc.name}',
+                      label: 'Rimuovi $displayName',
                       child: IconButton(
                         icon: const Icon(Icons.delete_outline),
                         tooltip: 'Rimuovi documento',
@@ -523,7 +541,7 @@ class _DocumentPositionSliderDialogState
     } else {
       final targetIndex = pos >= widget.currentIndex ? pos + 1 : pos;
       final targetName = targetIndex < widget.documents.length
-          ? widget.documents[targetIndex].name
+          ? widget.documents[targetIndex].displayName
           : '';
       label = l10n.positionLabel(pos + 1, targetName);
     }

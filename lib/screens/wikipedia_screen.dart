@@ -222,7 +222,6 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
   WikipediaArticle? _article;
   Object? _importError;
   bool _importing = true;
-  int _selectedSection = 0;
 
   @override
   void initState() {
@@ -269,49 +268,32 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
             Text(article.title,
                 style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 12),
-            DropdownButtonFormField<int>(
-              initialValue: _selectedSection,
-              decoration: InputDecoration(labelText: l10n.wikipediaImportMode),
-              items: [
-                DropdownMenuItem(
-                    value: 0, child: Text(l10n.wikipediaImportWholeArticle)),
-                for (var i = 0; i < article.sections.length; i += 1)
-                  DropdownMenuItem(
-                    value: i + 1,
-                    child: Text(_sectionLabel(article.sections[i])),
-                  ),
-              ],
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() => _selectedSection = value);
-              },
+            ListTile(
+              leading: const Icon(Icons.article),
+              title: Text(l10n.wikipediaImportWholeArticle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _importToLibrary(0),
             ),
-            const SizedBox(height: 24),
-            Semantics(
-              hint:
-                  'Salva l\'articolo nella libreria e avvia la lettura con Edge TTS',
-              child: FilledButton.icon(
-                onPressed: _importToLibrary,
-                icon: const Icon(Icons.download),
-                label: const Text('Importa e leggi',
-                    style: TextStyle(fontSize: 18)),
-                style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(56)),
+            for (var i = 0; i < article.sections.length; i += 1)
+              ListTile(
+                leading: const Icon(Icons.subject),
+                title: Text(_sectionLabel(article.sections[i])),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _importToLibrary(i + 1),
               ),
-            ),
           ],
         ],
       ),
     );
   }
 
-  String get _selectedText {
+  String _selectedText(int selectedSection) {
     final article = _article;
-    if (article == null || _selectedSection == 0) {
+    if (article == null || selectedSection == 0) {
       return _cleanWikipediaHeadingMarks(article?.text ?? '');
     }
     return _cleanWikipediaHeadingMarks(
-        article.sections[_selectedSection - 1].text);
+        article.sections[selectedSection - 1].text);
   }
 
   String _cleanWikipediaHeadingMarks(String text) {
@@ -350,15 +332,15 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
     return '$indent${section.title}';
   }
 
-  Future<void> _importToLibrary() async {
+  Future<void> _importToLibrary(int selectedSection) async {
     final article = _article;
     if (article == null) return;
-    final text = _selectedText;
+    final text = _selectedText(selectedSection);
     if (text.isEmpty) return;
 
     String docName = article.title;
-    if (_selectedSection > 0) {
-      docName += ' - ${article.sections[_selectedSection - 1].title}';
+    if (selectedSection > 0) {
+      docName += ' - ${article.sections[selectedSection - 1].title}';
     }
 
     try {
@@ -379,7 +361,7 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
       );
 
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).push(
         MaterialPageRoute(
           settings: const RouteSettings(name: '/documents/reader'),
           builder: (_) => DocumentReaderScreen(document: doc),

@@ -22,6 +22,14 @@ class DocumentItem {
     this.isTemporary = false,
   });
 
+  String get displayName {
+    final suffix = '.${extension.toLowerCase()}';
+    if (suffix.length <= 1 || !name.toLowerCase().endsWith(suffix)) {
+      return name;
+    }
+    return name.substring(0, name.length - suffix.length);
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,

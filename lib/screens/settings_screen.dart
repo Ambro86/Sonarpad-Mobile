@@ -179,6 +179,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return AppSettingsService.defaultVoiceForLanguage(languageCode);
   }
 
+  double _sliderStep(double value, double delta) {
+    final next = (value + delta).clamp(0.5, 2.0);
+    return (next * 10).round() / 10;
+  }
+
+  void _setTtsSpeed(double value, {bool persist = false}) {
+    setState(() => _ttsSpeed = value);
+    if (persist) {
+      unawaited(_settings.saveTtsSpeed(value));
+    }
+  }
+
+  void _setTtsPitch(double value, {bool persist = false}) {
+    setState(() => _ttsPitch = value);
+    if (persist) {
+      unawaited(_settings.saveTtsPitch(value));
+    }
+  }
+
   Future<void> _requestSecretCode() async {
     final nameCtrl = TextEditingController();
     final surnameCtrl = TextEditingController();
@@ -452,15 +471,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Text(
                           'Velocità lettura: ${_ttsSpeed.toStringAsFixed(1)}x'),
                     ),
-                    Slider(
-                      value: _ttsSpeed,
-                      min: 0.5,
-                      max: 2.0,
-                      divisions: 15,
-                      semanticFormatterCallback: (double value) =>
-                          'Velocità lettura: ${value.toStringAsFixed(1)}',
-                      onChanged: (value) => setState(() => _ttsSpeed = value),
-                      onChangeEnd: (value) => _settings.saveTtsSpeed(value),
+                    Semantics(
+                      container: true,
+                      label: 'Velocità lettura',
+                      value: '${_ttsSpeed.toStringAsFixed(1)}x',
+                      increasedValue:
+                          '${_sliderStep(_ttsSpeed, 0.1).toStringAsFixed(1)}x',
+                      decreasedValue:
+                          '${_sliderStep(_ttsSpeed, -0.1).toStringAsFixed(1)}x',
+                      onIncrease: () => _setTtsSpeed(
+                        _sliderStep(_ttsSpeed, 0.1),
+                        persist: true,
+                      ),
+                      onDecrease: () => _setTtsSpeed(
+                        _sliderStep(_ttsSpeed, -0.1),
+                        persist: true,
+                      ),
+                      child: ExcludeSemantics(
+                        child: Slider(
+                          value: _ttsSpeed,
+                          min: 0.5,
+                          max: 2.0,
+                          divisions: 15,
+                          onChanged: _setTtsSpeed,
+                          onChangeEnd: _settings.saveTtsSpeed,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -472,15 +508,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child:
                           Text('Tono voce: ${_ttsPitch.toStringAsFixed(1)}x'),
                     ),
-                    Slider(
-                      value: _ttsPitch,
-                      min: 0.5,
-                      max: 2.0,
-                      divisions: 15,
-                      semanticFormatterCallback: (double value) =>
-                          'Tono voce: ${value.toStringAsFixed(1)}',
-                      onChanged: (value) => setState(() => _ttsPitch = value),
-                      onChangeEnd: (value) => _settings.saveTtsPitch(value),
+                    Semantics(
+                      container: true,
+                      label: 'Tono voce',
+                      value: '${_ttsPitch.toStringAsFixed(1)}x',
+                      increasedValue:
+                          '${_sliderStep(_ttsPitch, 0.1).toStringAsFixed(1)}x',
+                      decreasedValue:
+                          '${_sliderStep(_ttsPitch, -0.1).toStringAsFixed(1)}x',
+                      onIncrease: () => _setTtsPitch(
+                        _sliderStep(_ttsPitch, 0.1),
+                        persist: true,
+                      ),
+                      onDecrease: () => _setTtsPitch(
+                        _sliderStep(_ttsPitch, -0.1),
+                        persist: true,
+                      ),
+                      child: ExcludeSemantics(
+                        child: Slider(
+                          value: _ttsPitch,
+                          min: 0.5,
+                          max: 2.0,
+                          divisions: 15,
+                          onChanged: _setTtsPitch,
+                          onChangeEnd: _settings.saveTtsPitch,
+                        ),
+                      ),
                     ),
                   ],
                 ),
