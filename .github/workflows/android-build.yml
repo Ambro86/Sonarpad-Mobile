@@ -59,7 +59,7 @@ jobs:
       - name: Run Flutter tests
         run: flutter test --exclude-tags golden --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
 
-      - name: Configure Android manifest
+      - name: Configure Android project
         run: |
           python3 - <<'PY'
           import os
@@ -69,25 +69,38 @@ jobs:
           app_name = os.environ.get("APP_NAME", "Sonarpad")
           manifest = Path("android/app/src/main/AndroidManifest.xml")
 
-          if not manifest.exists():
-              raise SystemExit("AndroidManifest.xml non trovato")
+          if manifest.exists():
+              text = manifest.read_text(encoding="utf-8")
 
-          text = manifest.read_text(encoding="utf-8")
+              # Internet è necessario per TTS, RSS, podcast, aggiornamenti, mappe e API.
+              if "android.permission.INTERNET" not in text:
+                  text = text.replace(
+                      ">",
+                      ">\n    <uses-permission android:name=\"android.permission.INTERNET\" />",
+                      1,
+                  )
 
-          # Internet è necessario per TTS, RSS, podcast, aggiornamenti, mappe e API.
-          if "android.permission.INTERNET" not in text:
-              text = text.replace(
-                  ">",
-                  ">\n    <uses-permission android:name=\"android.permission.INTERNET\" />",
-                  1,
-              )
+              # Mantiene il nome dell'app coerente con iOS.
+              if "android:label=" in text:
+                  text = re.sub(r'android:label="[^"]*"', f'android:label="{app_name}"', text, count=1)
 
-          # Mantiene il nome dell'app coerente con iOS.
-          if "android:label=" in text:
-              text = re.sub(r'android:label="[^"]*"', f'android:label="{app_name}"', text, count=1)
+              manifest.write_text(text, encoding="utf-8")
+              print("AndroidManifest.xml configurato")
+          else:
+              print("AndroidManifest.xml non trovato")
 
-          manifest.write_text(text, encoding="utf-8")
-          print("AndroidManifest.xml configurato")
+          gradle = Path("android/app/build.gradle.kts")
+          if not gradle.exists():
+              gradle = Path("android/app/build.gradle")
+          
+          if gradle.exists():
+              gradle_text = gradle.read_text(encoding="utf-8")
+              gradle_text = re.sub(r'compileSdk\s*=\s*flutter\.compileSdkVersion', 'compileSdk = 36', gradle_text)
+              gradle_text = re.sub(r'compileSdkVersion\s+flutter\.compileSdkVersion', 'compileSdkVersion 36', gradle_text)
+              gradle_text = re.sub(r'compileSdk\s*=\s*\d+', 'compileSdk = 36', gradle_text)
+              gradle_text = re.sub(r'compileSdkVersion\s+\d+', 'compileSdkVersion 36', gradle_text)
+              gradle.write_text(gradle_text, encoding="utf-8")
+              print("build.gradle configurato (compileSdk=36)")
           PY
 
       - name: Build release APK
