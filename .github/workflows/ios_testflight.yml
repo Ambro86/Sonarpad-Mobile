@@ -250,15 +250,25 @@ jobs:
         run: |
           echo -n "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode -o "$RUNNER_TEMP/AuthKey.p8"
 
-          cat > "$RUNNER_TEMP/api_key.json" <<EOF
-          {
-            "key_id": "$APP_STORE_CONNECT_KEY_ID",
-            "issuer_id": "$APP_STORE_CONNECT_ISSUER_ID",
-            "key_filepath": "$RUNNER_TEMP/AuthKey.p8",
-            "duration": 1200,
-            "in_house": false
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          key_path = Path(os.environ["RUNNER_TEMP"]) / "AuthKey.p8"
+          api_key_path = Path(os.environ["RUNNER_TEMP"]) / "api_key.json"
+
+          data = {
+              "key_id": os.environ["APP_STORE_CONNECT_KEY_ID"],
+              "issuer_id": os.environ["APP_STORE_CONNECT_ISSUER_ID"],
+              "key": key_path.read_text(encoding="utf-8"),
+              "duration": 1200,
+              "in_house": False
           }
-          EOF
+
+          api_key_path.write_text(json.dumps(data), encoding="utf-8")
+          print(f"Created API key JSON at {api_key_path}")
+          PY
 
       - name: Upload to TestFlight
         if: github.event_name != 'pull_request'
