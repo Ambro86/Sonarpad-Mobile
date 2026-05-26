@@ -1,0 +1,141 @@
+name: Sonarpad Android APK Build
+
+on:
+  push:
+    branches: [master, main]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Sonarpad Android APK
+    runs-on: ubuntu-latest
+
+    env:
+      APP_NAME: Sonarpad
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Run Flutter tests
+        run: flutter test --exclude-tags golden --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+
+      - name: Ensure Android project exists
+        run: |
+          if [ ! -d "android/app" ]; then
+            flutter create --platforms=android --project-name sonarpad .
+          fi
+
+      - name: Configure Android manifest
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          app_name = os.environ.get("APP_NAME", "Sonarpad")
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+
+          if not manifest.exists():
+              raise SystemExit("AndroidManifest.xml non trovato")
+
+          text = manifest.read_text(encoding="utf-8")
+
+          # Internet è necessario per TTS, RSS, podcast, aggiornamenti, mappe e API.
+          if "android.permission.INTERNET" not in text:
+              text = text.replace(
+                  ">",
+                  ">\n    <uses-permission android:name=\"android.permission.INTERNET\" />",
+                  1,
+              )
+
+          # Mantiene il nome dell'app coerente con iOS.
+          if "android:label=" in text:
+              text = re.sub(r'android:label="[^"]*"', f'android:label="{app_name}"', text, count=1)
+
+          manifest.write_text(text, encoding="utf-8")
+          print("AndroidManifest.xml configurato")
+          PY
+
+      - name: Build release APK
+        run: flutter build apk --release --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+
+      - name: Sign APK with release keystore
+        id: sign_app
+        if: env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_PASSWORD != ''
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: build/app/outputs/flutter-apk
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Prepare signed APK artifact
+        if: env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_PASSWORD != ''
+        run: |
+          mkdir -p build/release
+          cp "${{ steps.sign_app.outputs.signedReleaseFile }}" "build/release/${APP_NAME}-android.apk"
+          ls -la build/release
+
+      - name: Prepare unsigned/debug-signed APK artifact
+        if: env.ANDROID_KEYSTORE_BASE64 == '' || env.ANDROID_KEY_ALIAS == '' || env.ANDROID_KEYSTORE_PASSWORD == '' || env.ANDROID_KEY_PASSWORD == ''
+        run: |
+          mkdir -p build/release
+          cp "build/app/outputs/flutter-apk/app-release.apk" "build/release/${APP_NAME}-android.apk"
+          ls -la build/release
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sonarpad-android-apk
+          path: build/release/Sonarpad-android.apk
+          retention-days: 30
+
+      - name: Publish APK to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/release/Sonarpad-android.apk
+          fail_on_unmatched_files: true
+
+      - name: Upload build logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sonarpad-android-build-logs
+          path: |
+            build/
+            android/.gradle/
+            android/app/build/
+          retention-days: 7
