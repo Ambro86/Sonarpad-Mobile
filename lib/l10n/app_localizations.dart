@@ -28,6 +28,8 @@ class AppLocalizations {
   String get settingsHint => _isEn ? 'Open settings' : 'Apre le impostazioni';
   String get info => _isEn ? 'About' : 'Informazioni';
   String get infoHint => _isEn ? 'Open app info' : 'Apre le informazioni sull\'app';
+  String get donations => _isEn ? 'Donations' : 'Donazioni';
+  String get donationsHint => _isEn ? 'Support the development of Sonarpad' : 'Supporta lo sviluppo di Sonarpad';
   String get loading => _isEn ? 'Loading' : 'Caricamento';
   String get ttsVoiceLanguage => _isEn ? 'TTS Voice Language' : 'Lingua voci TTS';
   String get ttsVoice => _isEn ? 'TTS Voice' : 'Voce TTS';
@@ -37,6 +39,18 @@ class AppLocalizations {
       ? 'Sonarpad is a simple app packed with features. Designed to be accessible for the visually impaired using VoiceOver, here you can listen to news, search and subscribe to podcasts, import Wikipedia articles, add documents to your library, save and edit them. Sonarpad\'s features are constantly updated, and they are all designed to make life easier for the visually impaired.'
       : 'Sonarpad è un\'app semplice, ma con tante funzioni. Nata per essere accessibile ai non vedenti usando VoiceOver, qui potrete ascoltare le notizie, cercare e iscriversi ai podcast, importare articoli di Wikipedia, aggiungere i documenti alla vostra libreria, salvarli e modificarli. Le funzioni di Sonarpad sono in continuo aggiornamento, e sono tutte pensate per rendere più facile la vita dei non vedenti.';
   String get infoAuthor => _isEn ? 'Author: Ambrogio Riili' : 'Autore: Ambrogio Riili';
+  String get donationsIntro => _isEn
+      ? 'Sonarpad is a program created at first to meet personal needs, but over time it has grown more and more. Developing it requires constant work to improve features, fix bugs, search for new ideas, and carefully test all functions.\n\nIf you find this program useful and want to support its development, you can make a donation.'
+      : 'Sonarpad è un programma creato inizialmente per soddisfare esigenze personali, ma nel tempo è cresciuto sempre di più. Il suo sviluppo richiede un lavoro costante per migliorare le funzionalità, correggere bug, ricercare nuove idee e testare a fondo ogni parte del programma.\n\nSe ritieni utile questo programma e desideri supportarne lo sviluppo, puoi effettuare una donazione.';
+  String get donationsPaypalDesc => _isEn
+      ? 'You can donate via PayPal using this link:\nhttps://www.paypal.me/ambrogio86\nPlease, if possible, add “Sonarpad” as the payment note.'
+      : 'Puoi donare tramite PayPal al seguente link:\nhttps://www.paypal.me/ambrogio86\nSe possibile, indica come causale “Sonarpad”.';
+  String get donationsBankDesc => _isEn
+      ? 'You can also donate via bank transfer to the bank account in the name of Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nPlease, if possible, use a clear payment reason, for example “Sonarpad”.'
+      : 'È possibile contribuire anche tramite bonifico bancario sul conto intestato a Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possibile, indica una causale chiara, ad esempio “Sonarpad”.';
+  String get donationsThanks => _isEn
+      ? 'Anyone who supports the project will be mentioned in the program and on the GitHub repository, unless they prefer to stay anonymous or use a nickname.\n\nThanks to Jiri Holzinger and Paola Vagata for their contribution.\nFor the Vietnamese translation, thanks to Anh Đức Nguyễn.\nFor the Czech translation, thanks to Radek Žalud and Jiri Holzinger.\nFor the Spanish translation, thanks to Arturo Fernandez Rivas.\nFor the Serbian translation, thanks to Mila Kuran.\nFor the Ukrainian translation, thanks to Ivan Shtefuriak.'
+      : 'Chiunque decida di supportare il progetto verrà ringraziato nel programma e sul repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nSi ringrazia per il contributo Jiri Holzinger e Paola Vagata.\nPer la traduzione in vietnamita ringrazio Anh Đức Nguyễn.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.\nPer la traduzione in serbo ringrazio Mila Kuran.\nPer la traduzione in ucraino ringrazio Ivan Shtefuriak.';
   String get news => _isEn ? 'News' : 'Notizie';
   String get newsHint => _isEn ? 'Open news from Google News RSS' : 'Apre le notizie da Google News RSS';
   String get podcasts => _isEn ? 'Podcasts' : 'Podcast';

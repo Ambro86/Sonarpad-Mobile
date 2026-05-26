@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'donations_screen.dart';
 import '../l10n/app_localizations.dart';
 
 class InfoScreen extends StatelessWidget {
@@ -28,7 +29,20 @@ class InfoScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(versionText, style: Theme.of(context).textTheme.titleMedium),
               ],
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const DonationsScreen()),
+                  );
+                },
+                icon: const Icon(Icons.favorite),
+                label: Text(l10n.donations),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+              const SizedBox(height: 24),
               Text(l10n.infoDescription,
                   style: Theme.of(context).textTheme.bodyLarge),
               const SizedBox(height: 16),
