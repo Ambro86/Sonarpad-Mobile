@@ -7,7 +7,7 @@ void main() {
 
   testWidgets('app should launch without crashing', (tester) async {
     // Lancia l'app principale
-    app.main();
+    await app.main();
     await tester.pumpAndSettle();
 
     // Se l'app non crascia durante main(), questo test passerà.
