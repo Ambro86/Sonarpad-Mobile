@@ -1,0 +1,299 @@
+name: Sonarpad iOS TestFlight Signed
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Upload Sonarpad iOS Signed
+    runs-on: macos-latest
+
+    env:
+      APP_NAME: Sonarpad
+      BUNDLE_IDENTIFIER: com.ambro86.sonarpad
+      IOS_PROFILE_NAME: Sonarpad AppStore
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: |
+          xcode-select -p
+          xcodebuild -version
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Run Flutter tests
+        run: flutter test --exclude-tags golden --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+
+      - name: Ensure iOS project exists
+        run: |
+          if [ ! -d "ios/Runner.xcodeproj" ]; then
+            flutter create --platforms=ios --project-name sonarpad .
+          fi
+
+      - name: Set iOS app name
+        run: |
+          PLIST="ios/Runner/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName ${APP_NAME}" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string ${APP_NAME}" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleName ${APP_NAME}" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleName string ${APP_NAME}" "$PLIST"
+
+      - name: Configure iOS permissions for file_picker
+        run: |
+          PLIST="ios/Runner/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string Richiesto per allegare o leggere documenti salvati tra le foto." "$PLIST" || true
+          /usr/libexec/PlistBuddy -c "Add :LSSupportsOpeningDocumentsInPlace bool true" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Set :LSSupportsOpeningDocumentsInPlace true" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :UIFileSharingEnabled bool true" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Set :UIFileSharingEnabled true" "$PLIST"
+
+      - name: Configure iOS background audio mode
+        run: |
+          PLIST="ios/Runner/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes array" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes:0 string audio" "$PLIST" 2>/dev/null || true
+          echo "UIBackgroundModes configurato:"
+          /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$PLIST"
+
+      - name: Enable Background Modes capability in Xcode project
+        run: |
+          gem install xcodeproj --no-document --quiet
+          ruby - <<'RUBY'
+          require 'xcodeproj'
+          project_path = Dir.glob('ios/*.xcodeproj').first
+          abort 'Progetto Xcode non trovato' unless project_path
+          project = Xcodeproj::Project.open(project_path)
+          target = project.targets.find { |t| t.name == 'Runner' }
+          abort 'Target Runner non trovato' unless target
+
+          target.build_configurations.each do |config|
+            existing = config.build_settings['INFOPLIST_KEY_UIBackgroundModes'] || []
+            existing = [existing] if existing.is_a?(String)
+            config.build_settings['INFOPLIST_KEY_UIBackgroundModes'] = (existing + ['audio']).uniq
+          end
+
+          project.save
+          puts 'Background Modes audio abilitato nel progetto Xcode'
+          RUBY
+
+      - name: Set iOS deployment target to 14.0
+        run: |
+          if [ -f "ios/Podfile" ]; then
+            sed -i '' -e "s/^# platform :ios.*/platform :ios, '14.0'/" ios/Podfile
+            sed -i '' -e "s/^platform :ios.*/platform :ios, '14.0'/" ios/Podfile
+          fi
+
+          if [ -d "ios/Runner.xcodeproj" ]; then
+            gem install xcodeproj --no-document --quiet
+            ruby - <<'RUBY'
+            require 'xcodeproj'
+            project = Xcodeproj::Project.open('ios/Runner.xcodeproj')
+            project.build_configurations.each do |config|
+              config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+            end
+            project.save
+            RUBY
+          fi
+
+      - name: Install Apple certificate and provisioning profile
+        env:
+          IOS_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          IOS_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          CERTIFICATE_PATH="$RUNNER_TEMP/ios_distribution.p12"
+          PP_PATH="$RUNNER_TEMP/Sonarpad_AppStore.mobileprovision"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+
+          echo -n "$IOS_DISTRIBUTION_CERTIFICATE_BASE64" | base64 --decode -o "$CERTIFICATE_PATH"
+          echo -n "$IOS_PROVISION_PROFILE_BASE64" | base64 --decode -o "$PP_PATH"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+
+          security import "$CERTIFICATE_PATH" \
+            -P "$P12_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k "$KEYCHAIN_PATH"
+
+          security set-key-partition-list \
+            -S apple-tool:,apple: \
+            -k "$KEYCHAIN_PASSWORD" \
+            "$KEYCHAIN_PATH"
+
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+
+          security cms -D -i "$PP_PATH" > "$RUNNER_TEMP/profile.plist"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" "$RUNNER_TEMP/profile.plist")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$RUNNER_TEMP/profile.plist")
+
+          echo "Provisioning profile name: $PROFILE_NAME"
+          echo "Provisioning profile UUID: $PROFILE_UUID"
+
+          cp "$PP_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
+
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+      - name: Configure iOS signing
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          gem install xcodeproj --no-document --quiet
+          ruby - <<'RUBY'
+          require 'xcodeproj'
+
+          project_path = 'ios/Runner.xcodeproj'
+          project = Xcodeproj::Project.open(project_path)
+
+          team_id = ENV.fetch('APPLE_TEAM_ID')
+          bundle_id = ENV.fetch('BUNDLE_IDENTIFIER')
+          profile_name = ENV.fetch('IOS_PROFILE_NAME')
+
+          project.targets.each do |target|
+            target.build_configurations.each do |config|
+              config.build_settings['DEVELOPMENT_TEAM'] = team_id
+              config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+              config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'
+              config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = profile_name
+              config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+
+              if target.name == 'Runner'
+                config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = bundle_id
+              end
+            end
+          end
+
+          project.save
+          puts "Firma iOS configurata per #{bundle_id} con profilo #{profile_name}"
+          RUBY
+
+      - name: Install CocoaPods dependencies
+        run: |
+          if [ -f "ios/Podfile" ]; then
+            cd ios
+            pod install --repo-update
+          fi
+
+      - name: Create ExportOptions.plist
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          cat > ios/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+
+            <key>teamID</key>
+            <string>${APPLE_TEAM_ID}</string>
+
+            <key>signingStyle</key>
+            <string>manual</string>
+
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${BUNDLE_IDENTIFIER}</key>
+              <string>${IOS_PROFILE_NAME}</string>
+            </dict>
+
+            <key>stripSwiftSymbols</key>
+            <true/>
+
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+
+          cat ios/ExportOptions.plist
+
+      - name: Build signed IPA
+        run: |
+          flutter build ipa \
+            --release \
+            --build-number=${{ github.run_number }} \
+            --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }} \
+            --export-options-plist=ios/ExportOptions.plist
+
+      - name: Show generated IPA
+        run: |
+          ls -la build/ios/ipa
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "Nessun IPA trovato"
+            exit 1
+          fi
+          echo "IPA generato: $IPA_PATH"
+
+      - name: Install fastlane
+        run: sudo gem install fastlane -NV
+
+      - name: Prepare App Store Connect API key
+        env:
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          echo -n "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode -o "$RUNNER_TEMP/AuthKey.p8"
+
+          cat > "$RUNNER_TEMP/api_key.json" <<EOF
+          {
+            "key_id": "$APP_STORE_CONNECT_KEY_ID",
+            "issuer_id": "$APP_STORE_CONNECT_ISSUER_ID",
+            "key_filepath": "$RUNNER_TEMP/AuthKey.p8",
+            "duration": 1200,
+            "in_house": false
+          }
+          EOF
+
+      - name: Upload to TestFlight
+        if: github.event_name != 'pull_request'
+        run: |
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -1)
+
+          fastlane pilot upload \
+            --ipa "$IPA_PATH" \
+            --api_key_path "$RUNNER_TEMP/api_key.json" \
+            --skip_waiting_for_build_processing true
+
+      - name: Upload signed IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sonarpad-ios-signed
+          path: build/ios/ipa/*.ipa
+          retention-days: 30
+
+      - name: Upload build logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sonarpad-ios-build-logs
+          path: |
+            build/
+            ios/Pods/
+            ios/Flutter/
+          retention-days: 7
