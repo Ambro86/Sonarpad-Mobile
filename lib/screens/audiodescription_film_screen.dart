@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_audiodescription_localizations.dart';
-import '../services/audio_player_service.dart';
+import '../models/radio_station.dart';
 import '../services/audiodescription_service.dart';
+import 'radio_player_screen.dart';
 
 class AudiodescriptionFilmScreen extends StatefulWidget {
   final AudiodescriptionGroup filmGroup;
@@ -11,13 +12,14 @@ class AudiodescriptionFilmScreen extends StatefulWidget {
   const AudiodescriptionFilmScreen({super.key, required this.filmGroup});
 
   @override
-  State<AudiodescriptionFilmScreen> createState() => _AudiodescriptionFilmScreenState();
+  State<AudiodescriptionFilmScreen> createState() =>
+      _AudiodescriptionFilmScreenState();
 }
 
-class _AudiodescriptionFilmScreenState extends State<AudiodescriptionFilmScreen> {
+class _AudiodescriptionFilmScreenState
+    extends State<AudiodescriptionFilmScreen> {
   final _service = AudiodescriptionService();
-  final _audioPlayer = AudioPlayerService();
-  
+
   List<AudiodescriptionItem> _filteredItems = [];
 
   @override
@@ -26,19 +28,15 @@ class _AudiodescriptionFilmScreenState extends State<AudiodescriptionFilmScreen>
     _filteredItems = widget.filmGroup.items;
   }
 
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
   void _onSearch(String query) {
     setState(() {
       if (query.trim().isEmpty) {
         _filteredItems = widget.filmGroup.items;
       } else {
         final q = query.trim().toLowerCase();
-        _filteredItems = widget.filmGroup.items.where((i) => i.title.toLowerCase().contains(q)).toList();
+        _filteredItems = widget.filmGroup.items
+            .where((i) => i.title.toLowerCase().contains(q))
+            .toList();
       }
     });
   }
@@ -46,10 +44,24 @@ class _AudiodescriptionFilmScreenState extends State<AudiodescriptionFilmScreen>
   Future<void> _play(AudiodescriptionItem item) async {
     try {
       final resolvedUrl = await _service.resolveAudioUrl(item.audioUrl);
-      await _audioPlayer.playUrl(resolvedUrl, sessionType: AudioSessionType.playback, title: 'In riproduzione: \${item.title}');
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/audiodescriptions/player'),
+          builder: (_) => RadioPlayerScreen(
+            station: RadioStation(
+              name: item.title,
+              streamUrl: resolvedUrl,
+              languageCode: 'it',
+            ),
+          ),
+        ),
+      );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -57,19 +69,21 @@ class _AudiodescriptionFilmScreenState extends State<AudiodescriptionFilmScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.audiodescriptionFilm),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: TextField(
               decoration: InputDecoration(
                 hintText: l10n.audiodescriptionSearch,
                 filled: true,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
               onChanged: _onSearch,
             ),

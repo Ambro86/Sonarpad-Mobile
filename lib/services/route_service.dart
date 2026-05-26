@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 
 enum RouteProfile {
@@ -23,7 +24,9 @@ class GeocodeCandidate {
   final String label;
   final String name;
   final String country;
+  final String region;
   final String locality;
+  final String postalcode;
   final double latitude;
   final double longitude;
 
@@ -31,7 +34,9 @@ class GeocodeCandidate {
     required this.label,
     required this.name,
     required this.country,
+    required this.region,
     required this.locality,
+    required this.postalcode,
     required this.latitude,
     required this.longitude,
   });
@@ -41,7 +46,9 @@ class GeocodeCandidate {
       label: (json['label'] ?? '').toString(),
       name: (json['name'] ?? '').toString(),
       country: (json['country'] ?? '').toString(),
+      region: (json['region'] ?? '').toString(),
       locality: (json['locality'] ?? '').toString(),
+      postalcode: (json['postalcode'] ?? '').toString(),
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
     );
@@ -54,6 +61,23 @@ class GeocodeCandidate {
     if (locality.trim().isNotEmpty) parts.add(locality);
     if (country.trim().isNotEmpty) parts.add(country);
     return parts.join(', ');
+  }
+}
+
+class RouteMunicipalityChange {
+  final String name;
+  final double distanceMeters;
+
+  const RouteMunicipalityChange({
+    required this.name,
+    required this.distanceMeters,
+  });
+
+  factory RouteMunicipalityChange.fromJson(Map<String, dynamic> json) {
+    return RouteMunicipalityChange(
+      name: (json['name'] ?? '').toString(),
+      distanceMeters: (json['distance_meters'] as num?)?.toDouble() ?? 0.0,
+    );
   }
 }
 
@@ -81,19 +105,26 @@ class RoutePath {
   final double distanceMeters;
   final double durationSeconds;
   final List<RouteStep> steps;
+  final List<RouteMunicipalityChange> municipalityChanges;
 
   const RoutePath({
     required this.distanceMeters,
     required this.durationSeconds,
     required this.steps,
+    required this.municipalityChanges,
   });
 
   factory RoutePath.fromJson(Map<String, dynamic> json) {
     final stepsJson = json['steps'] as List<dynamic>? ?? [];
+    final municipalitiesJson =
+        json['municipality_changes'] as List<dynamic>? ?? [];
     return RoutePath(
       distanceMeters: (json['distance_meters'] as num?)?.toDouble() ?? 0.0,
       durationSeconds: (json['duration_seconds'] as num?)?.toDouble() ?? 0.0,
       steps: stepsJson.map((e) => RouteStep.fromJson(e)).toList(),
+      municipalityChanges: municipalitiesJson
+          .map((e) => RouteMunicipalityChange.fromJson(e))
+          .toList(),
     );
   }
 }
@@ -116,8 +147,9 @@ class RouteResult {
 
 class RouteService {
   static const _baseUrl = 'https://sonarpad.com/api';
-  static const _clientToken = String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN');
-  
+  static const _clientToken =
+      String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN');
+
   final http.Client _client;
 
   RouteService({http.Client? client}) : _client = client ?? http.Client();
@@ -130,13 +162,20 @@ class RouteService {
 
   String _countryAlpha3(String countryCode) {
     switch (countryCode.toLowerCase()) {
-      case 'it': return 'ITA';
-      case 'fr': return 'FRA';
-      case 'de': return 'DEU';
-      case 'es': return 'ESP';
-      case 'us': return 'USA';
-      case 'gb': return 'GBR';
-      default: return 'ITA';
+      case 'it':
+        return 'ITA';
+      case 'fr':
+        return 'FRA';
+      case 'de':
+        return 'DEU';
+      case 'es':
+        return 'ESP';
+      case 'us':
+        return 'USA';
+      case 'gb':
+        return 'GBR';
+      default:
+        return 'ITA';
     }
   }
 
@@ -148,8 +187,59 @@ class RouteService {
     final q = query.trim();
     if (q.isEmpty) throw Exception('Indirizzo non valido');
 
-    final uri = Uri.parse('$_baseUrl/ors_geocode.php').replace(queryParameters: {
-      'q': q,
+    final results = await _fetchGeocode(
+      query: q,
+      language: language,
+      countryCode: countryCode,
+    );
+
+    if (_isAllCityFallback(results, q)) {
+      final simplified = _simplifyQuery(q);
+      if (simplified != null) {
+        try {
+          final fallbackResults = await _fetchGeocode(
+            query: simplified,
+            language: language,
+            countryCode: countryCode,
+          );
+          if (fallbackResults.isNotEmpty &&
+              !_isAllCityFallback(fallbackResults, simplified)) {
+            return fallbackResults;
+          }
+        } catch (error) {
+          developer.log('Route geocode fallback failed', error: error);
+        }
+      }
+
+      final moreSimplified = _simplifyQueryMore(q);
+      if (moreSimplified != null) {
+        try {
+          final fallbackResults = await _fetchGeocode(
+            query: moreSimplified,
+            language: language,
+            countryCode: countryCode,
+          );
+          if (fallbackResults.isNotEmpty &&
+              !_isAllCityFallback(fallbackResults, moreSimplified)) {
+            return fallbackResults;
+          }
+        } catch (error) {
+          developer.log('Route geocode fallback failed', error: error);
+        }
+      }
+    }
+
+    return results;
+  }
+
+  Future<List<GeocodeCandidate>> _fetchGeocode({
+    required String query,
+    required String language,
+    required String countryCode,
+  }) async {
+    final uri =
+        Uri.parse('$_baseUrl/ors_geocode.php').replace(queryParameters: {
+      'q': query,
       'size': '20',
       'layers': 'address,street,venue',
       'sources': 'osm,oa',
@@ -157,7 +247,9 @@ class RouteService {
       'language': language,
     });
 
-    final response = await _client.get(uri, headers: _headers).timeout(const Duration(seconds: 10));
+    final response = await _client
+        .get(uri, headers: _headers)
+        .timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
       throw Exception('Errore di rete geocode: HTTP ${response.statusCode}');
     }
@@ -171,11 +263,81 @@ class RouteService {
     return resultsJson.map((e) => GeocodeCandidate.fromJson(e)).toList();
   }
 
+  bool _isAllCityFallback(
+      List<GeocodeCandidate> results, String originalQuery) {
+    if (results.isEmpty || _splitWords(originalQuery).length <= 1) {
+      return false;
+    }
+
+    return results.every((candidate) =>
+        candidate.postalcode.isEmpty &&
+        (candidate.name == candidate.locality ||
+            candidate.name == candidate.region ||
+            candidate.name == candidate.country));
+  }
+
+  String? _simplifyQuery(String query) {
+    final words = _splitWords(query);
+    if (words.length <= 1) return null;
+
+    const prefixes = {
+      'via',
+      'corso',
+      'viale',
+      'piazza',
+      'vicolo',
+      'largo',
+      'strada',
+      'v.',
+      'c.so',
+      'p.zza',
+      'p.za',
+    };
+    if (prefixes.contains(words.first.toLowerCase())) {
+      words.removeAt(0);
+    }
+
+    if (words.isEmpty) return null;
+    return words.join(' ');
+  }
+
+  String? _simplifyQueryMore(String query) {
+    final words = _splitWords(query);
+
+    const prefixes = {
+      'via',
+      'corso',
+      'viale',
+      'piazza',
+      'vicolo',
+      'largo',
+      'strada',
+      'v.',
+      'c.so',
+      'p.zza',
+      'p.za',
+    };
+    if (words.isNotEmpty && prefixes.contains(words.first.toLowerCase())) {
+      words.removeAt(0);
+    }
+
+    if (words.length > 2) {
+      words.removeAt(0);
+      return words.join(' ');
+    }
+
+    return null;
+  }
+
+  List<String> _splitWords(String query) =>
+      query.split(' ').where((word) => word.trim().isNotEmpty).toList();
+
   Future<RouteResult> calculateRoute({
     required GeocodeCandidate from,
     required GeocodeCandidate to,
     required RouteProfile profile,
     required RoutePreference preference,
+    required bool includeMunicipalities,
     required String language,
     required String countryCode,
   }) async {
@@ -187,12 +349,14 @@ class RouteService {
       'profile': profile.apiValue,
       'preference': preference.apiValue,
       'avoid': '',
-      'include_municipalities': '0',
+      'include_municipalities': includeMunicipalities ? '1' : '0',
       'language': language,
       'boundary.country': _countryAlpha3(countryCode),
     });
 
-    final response = await _client.get(uri, headers: _headers).timeout(const Duration(seconds: 15));
+    final response = await _client
+        .get(uri, headers: _headers)
+        .timeout(const Duration(seconds: 15));
     if (response.statusCode != 200) {
       throw Exception('Errore di rete route: HTTP ${response.statusCode}');
     }
@@ -204,13 +368,18 @@ class RouteService {
 
     List<RoutePath> paths = [];
     if (data['routes'] != null && (data['routes'] as List).isNotEmpty) {
-      paths = (data['routes'] as List).map((e) => RoutePath.fromJson(e)).toList();
+      paths =
+          (data['routes'] as List).map((e) => RoutePath.fromJson(e)).toList();
     } else {
       paths = [
         RoutePath(
           distanceMeters: (data['distance_meters'] as num?)?.toDouble() ?? 0.0,
-          durationSeconds: (data['duration_seconds'] as num?)?.toDouble() ?? 0.0,
-          steps: (data['steps'] as List<dynamic>? ?? []).map((e) => RouteStep.fromJson(e)).toList(),
+          durationSeconds:
+              (data['duration_seconds'] as num?)?.toDouble() ?? 0.0,
+          steps: (data['steps'] as List<dynamic>? ?? [])
+              .map((e) => RouteStep.fromJson(e))
+              .toList(),
+          municipalityChanges: const [],
         )
       ];
     }
@@ -229,22 +398,28 @@ class RouteService {
     required String toAddress,
     required RouteProfile profile,
     required RoutePreference preference,
+    required bool includeMunicipalities,
     required String language,
     required String countryCode,
   }) async {
-    final fromCandidates = await geocode(query: fromAddress, language: language, countryCode: countryCode);
-    if (fromCandidates.isEmpty) throw Exception('Indirizzo di partenza non trovato');
+    final fromCandidates = await geocode(
+        query: fromAddress, language: language, countryCode: countryCode);
+    if (fromCandidates.isEmpty) {
+      throw Exception('Indirizzo di partenza non trovato');
+    }
 
-    final toCandidates = await geocode(query: toAddress, language: language, countryCode: countryCode);
-    if (toCandidates.isEmpty) throw Exception('Indirizzo di arrivo non trovato');
+    final toCandidates = await geocode(
+        query: toAddress, language: language, countryCode: countryCode);
+    if (toCandidates.isEmpty) {
+      throw Exception('Indirizzo di arrivo non trovato');
+    }
 
-    // Per semplicità prendiamo il primo risultato. In Rustnotepad c'era il NeedsSelection, 
-    // ma per l'UI standard prendiamo il best match.
     return calculateRoute(
       from: fromCandidates.first,
       to: toCandidates.first,
       profile: profile,
       preference: preference,
+      includeMunicipalities: includeMunicipalities,
       language: language,
       countryCode: countryCode,
     );

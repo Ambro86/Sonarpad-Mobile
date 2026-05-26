@@ -229,7 +229,7 @@ class RadioTile extends StatelessWidget {
   final bool isPlaying;
   final VoidCallback onPlay;
   final VoidCallback onToggleFavorite;
-  final List<Widget>? extraActions;
+  final Map<CustomSemanticsAction, VoidCallback>? extraSemanticsActions;
 
   const RadioTile({
     super.key,
@@ -238,7 +238,7 @@ class RadioTile extends StatelessWidget {
     required this.isPlaying,
     required this.onPlay,
     required this.onToggleFavorite,
-    this.extraActions,
+    this.extraSemanticsActions,
   });
 
   @override
@@ -251,6 +251,7 @@ class RadioTile extends StatelessWidget {
               label: isFavorite
                   ? l10n.radioRemoveFavorite
                   : l10n.radioAddFavorite): onToggleFavorite,
+          ...?extraSemanticsActions,
         },
         child: Card(
           child: ListTile(
@@ -264,7 +265,6 @@ class RadioTile extends StatelessWidget {
                 spacing: 4,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  ...?extraActions,
                   IconButton(
                     tooltip: l10n.radioPlay,
                     onPressed: onPlay,

@@ -464,40 +464,16 @@ class _DocumentTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Pulsante rimuovi e menu azioni
+                  // Pulsante rimuovi
                   ExcludeSemantics(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        PopupMenuButton<_DocumentAction>(
-                          onSelected: onAction,
-                          itemBuilder: (context) => [
-                            if (!isFirst)
-                              PopupMenuItem(
-                                value: _DocumentAction.moveUp,
-                                child: Text(l10n.moveUp),
-                              ),
-                            if (!isLast)
-                              PopupMenuItem(
-                                value: _DocumentAction.moveDown,
-                                child: Text(l10n.moveDown),
-                              ),
-                            PopupMenuItem(
-                              value: _DocumentAction.moveToPosition,
-                              child: Text(l10n.moveToPosition),
-                            ),
-                          ],
-                        ),
-                        Semantics(
-                          button: true,
-                          label: 'Rimuovi ${doc.name}',
-                          child: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            tooltip: 'Rimuovi documento',
-                            onPressed: onRemove,
-                          ),
-                        ),
-                      ],
+                    child: Semantics(
+                      button: true,
+                      label: 'Rimuovi ${doc.name}',
+                      child: IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        tooltip: 'Rimuovi documento',
+                        onPressed: onRemove,
+                      ),
                     ),
                   ),
                 ],

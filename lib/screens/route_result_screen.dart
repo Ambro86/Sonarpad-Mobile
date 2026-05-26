@@ -23,7 +23,7 @@ class RouteResultScreen extends StatelessWidget {
           final path = result.paths[index];
           final distanceStr = l10n.formatDistance(path.distanceMeters);
           final durationStr = l10n.formatDuration(path.durationSeconds);
-          
+
           return ListTile(
             title: Text('${l10n.routeDistance}: $distanceStr'),
             subtitle: Text('${l10n.routeDuration}: $durationStr'),
@@ -52,20 +52,23 @@ class RouteStepsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final items = _routeStepItems(path, l10n);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.routeNavigation)),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: path.steps.length,
+        itemCount: items.length,
         itemBuilder: (context, index) {
-          final step = path.steps[index];
-          final distanceStr = l10n.formatDistance(step.distanceMeters);
-          
+          final item = items[index];
+          final distanceStr = l10n.formatDistance(item.distanceMeters);
+
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: Text(
-              '${step.instruction} ($distanceStr)',
+              item.showDistance
+                  ? '${item.instruction} ($distanceStr)'
+                  : item.instruction,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           );
@@ -73,4 +76,86 @@ class RouteStepsScreen extends StatelessWidget {
       ),
     );
   }
+
+  List<_RouteStepItem> _routeStepItems(RoutePath path, AppLocalizations l10n) {
+    final items = <_RouteStepItem>[];
+    final changes = path.municipalityChanges
+        .where((change) => change.name.trim().isNotEmpty)
+        .toList()
+      ..sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
+
+    if (changes.isEmpty) {
+      return path.steps
+          .map((step) => _RouteStepItem(
+                instruction: step.instruction,
+                distanceMeters: step.distanceMeters,
+              ))
+          .toList();
+    }
+
+    final seenMunicipalities = <String>{};
+    final uniqueChanges = changes.where((change) {
+      final key = change.name.trim().toLowerCase();
+      return seenMunicipalities.add(key);
+    }).toList();
+
+    if (uniqueChanges.isNotEmpty && uniqueChanges.first.distanceMeters <= 1.0) {
+      items.add(_RouteStepItem(
+        instruction:
+            '${l10n.routeStartMunicipality}: ${uniqueChanges.first.name.trim()}',
+        distanceMeters: uniqueChanges.first.distanceMeters,
+        showDistance: false,
+      ));
+    }
+
+    var nextChangeIndex =
+        uniqueChanges.indexWhere((change) => change.distanceMeters > 1.0);
+    if (nextChangeIndex < 0) {
+      nextChangeIndex = uniqueChanges.length;
+    }
+
+    var travelledMeters = 0.0;
+    for (final step in path.steps) {
+      while (nextChangeIndex < uniqueChanges.length &&
+          uniqueChanges[nextChangeIndex].distanceMeters <= travelledMeters) {
+        final change = uniqueChanges[nextChangeIndex];
+        items.add(_RouteStepItem(
+          instruction: '${l10n.routeEnterMunicipality} ${change.name.trim()}',
+          distanceMeters: change.distanceMeters,
+          showDistance: false,
+        ));
+        nextChangeIndex += 1;
+      }
+
+      items.add(_RouteStepItem(
+        instruction: step.instruction,
+        distanceMeters: step.distanceMeters,
+      ));
+      travelledMeters += step.distanceMeters;
+    }
+
+    while (nextChangeIndex < uniqueChanges.length) {
+      final change = uniqueChanges[nextChangeIndex];
+      items.add(_RouteStepItem(
+        instruction: '${l10n.routeEnterMunicipality} ${change.name.trim()}',
+        distanceMeters: change.distanceMeters,
+        showDistance: false,
+      ));
+      nextChangeIndex += 1;
+    }
+
+    return items;
+  }
+}
+
+class _RouteStepItem {
+  final String instruction;
+  final double distanceMeters;
+  final bool showDistance;
+
+  const _RouteStepItem({
+    required this.instruction,
+    required this.distanceMeters,
+    this.showDistance = true,
+  });
 }

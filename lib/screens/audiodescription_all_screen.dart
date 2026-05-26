@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_audiodescription_localizations.dart';
+import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
-import '../services/audio_player_service.dart';
 import '../services/audiodescription_service.dart';
 import 'audiodescription_film_screen.dart';
+import 'radio_player_screen.dart';
 
 class AudiodescriptionAllScreen extends StatefulWidget {
   const AudiodescriptionAllScreen({super.key});
 
   @override
-  State<AudiodescriptionAllScreen> createState() => _AudiodescriptionAllScreenState();
+  State<AudiodescriptionAllScreen> createState() =>
+      _AudiodescriptionAllScreenState();
 }
 
 class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
   final _service = AudiodescriptionService();
-  final _audioPlayer = AudioPlayerService();
-  
+
   List<AudiodescriptionGroup> _groups = [];
   List<AudiodescriptionGroup> _filteredGroups = [];
   bool _loading = true;
@@ -29,12 +30,6 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
     _load();
   }
 
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
   Future<void> _load() async {
     try {
       final code = await AppSettingsService().getTvSecretCode();
@@ -42,7 +37,9 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
       if (mounted) {
         setState(() {
           _groups = groups;
-          _filteredGroups = groups.where((g) => g.title != 'Film').toList(); // Nascondiamo Film dalla lista principale
+          _filteredGroups = groups
+              .where((g) => g.title != 'Film')
+              .toList(); // Nascondiamo Film dalla lista principale
           _loading = false;
         });
       }
@@ -63,7 +60,8 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
       } else {
         final q = query.trim().toLowerCase();
         _filteredGroups = _groups
-            .where((g) => g.title != 'Film' && g.title.toLowerCase().contains(q))
+            .where(
+                (g) => g.title != 'Film' && g.title.toLowerCase().contains(q))
             .toList();
       }
     });
@@ -72,10 +70,24 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
   Future<void> _play(AudiodescriptionItem item) async {
     try {
       final resolvedUrl = await _service.resolveAudioUrl(item.audioUrl);
-      await _audioPlayer.playUrl(resolvedUrl, sessionType: AudioSessionType.playback, title: 'In riproduzione: \${item.title}');
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/audiodescriptions/player'),
+          builder: (_) => RadioPlayerScreen(
+            station: RadioStation(
+              name: item.title,
+              streamUrl: resolvedUrl,
+              languageCode: 'it',
+            ),
+          ),
+        ),
+      );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -83,19 +95,21 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.audiodescriptionAll),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: TextField(
               decoration: InputDecoration(
                 hintText: l10n.audiodescriptionSearch,
                 filled: true,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
               onChanged: _onSearch,
             ),
@@ -124,30 +138,40 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
                         padding: const EdgeInsets.only(bottom: 16),
                         child: ListTile(
                           leading: const Icon(Icons.movie),
-                          title: Text(l10n.audiodescriptionFilm, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          title: Text(l10n.audiodescriptionFilm,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
                             // Passa il gruppo film se presente
-                            final filmGroup = _groups.where((g) => g.title == 'Film').firstOrNull;
+                            final filmGroup = _groups
+                                .where((g) => g.title == 'Film')
+                                .firstOrNull;
                             if (filmGroup != null) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  settings: const RouteSettings(name: '/audiodescriptions/film'),
-                                  builder: (_) => AudiodescriptionFilmScreen(filmGroup: filmGroup),
+                                  settings: const RouteSettings(
+                                      name: '/audiodescriptions/film'),
+                                  builder: (_) => AudiodescriptionFilmScreen(
+                                      filmGroup: filmGroup),
                                 ),
                               );
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.audiodescriptionEmpty)));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content:
+                                          Text(l10n.audiodescriptionEmpty)));
                             }
                           },
                         ),
                       );
                     }
-                    
+
                     final group = _filteredGroups[index - 1];
                     return ExpansionTile(
-                      title: Text(group.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      title: Text(group.title,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                       children: group.items.map((item) {
                         return ListTile(
                           title: Text(item.title),

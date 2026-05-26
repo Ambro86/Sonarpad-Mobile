@@ -19,10 +19,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
   final _searchController = TextEditingController();
 
   List<PodcastSubscription> _subscriptions = [];
-  List<PodcastSearchResult> _searchResults = [];
-  PodcastSearchResult? _selectedSearchResult;
-  Future<PodcastDetails>? _selectedSearchDetails;
-  bool _searching = false;
   String _country = 'it';
   PodcastCategory _category = PodcastService.categories.first;
 
@@ -38,64 +34,22 @@ class _PodcastScreenState extends State<PodcastScreen> {
     setState(() => _subscriptions = subs);
   }
 
-  Future<void> _search() async {
-    final l10n = AppLocalizations.of(context);
+  void _search() {
     final query = _searchController.text.trim();
     if (query.isEmpty && _category.genreId == null) return;
-    setState(() {
-      _searching = true;
-      _searchResults = [];
-    });
-    try {
-      final results = await _service.searchPodcasts(
-        query,
-        country: _country,
-        category: _category,
-      );
-      if (!mounted) return;
-      setState(() => _searchResults = results);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.podcastResultsFound(results.length))),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.podcastSearchError(e))));
-    } finally {
-      if (mounted) setState(() => _searching = false);
-    }
-  }
-
-  Future<void> _subscribeResult(PodcastSearchResult result) async {
-    final l10n = AppLocalizations.of(context);
-    try {
-      await _service.addSearchResult(result);
+    Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/podcasts/search-results'),
+        builder: (_) => _PodcastSearchResultsScreen(
+          query: query,
+          country: _country,
+          category: _category,
+        ),
+      ),
+    ).then((subscribed) async {
+      if (!mounted || subscribed != true) return;
       await _load();
-      setState(() {
-        _selectedSearchResult = null;
-        _selectedSearchDetails = null;
-      });
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.subscribedTo(result.title))));
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.subscriptionError(e))));
-    }
-  }
-
-  void _openSearchResult(PodcastSearchResult result) {
-    setState(() {
-      _selectedSearchResult = result;
-      _selectedSearchDetails = _service.fetchPodcastDetails(result);
-    });
-  }
-
-  void _closeSearchResult() {
-    setState(() {
-      _selectedSearchResult = null;
-      _selectedSearchDetails = null;
     });
   }
 
@@ -182,22 +136,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final selectedSearchResult = _selectedSearchResult;
-    final selectedSearchDetails = _selectedSearchDetails;
-    if (selectedSearchResult != null && selectedSearchDetails != null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.podcastInfo),
-          leading: BackButton(onPressed: _closeSearchResult),
-        ),
-        body: _PodcastSearchDetail(
-          result: selectedSearchResult,
-          details: selectedSearchDetails,
-          onSubscribe: () => _subscribeResult(selectedSearchResult),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text(l10n.podcasts)),
       body: ListView(
@@ -243,31 +181,10 @@ class _PodcastScreenState extends State<PodcastScreen> {
           ),
           const SizedBox(height: 8),
           FilledButton.icon(
-            onPressed: _searching ? null : _search,
+            onPressed: _search,
             icon: const Icon(Icons.search),
-            label:
-                Text(_searching ? l10n.searchInProgress : l10n.searchPodcasts),
+            label: Text(l10n.searchPodcasts),
           ),
-          if (_searchResults.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(l10n.searchResults,
-                style: Theme.of(context).textTheme.titleMedium),
-            ..._searchResults.map((result) => Card(
-                  child: ListTile(
-                    leading: result.artworkUrl == null
-                        ? const Icon(Icons.podcasts)
-                        : Image.network(result.artworkUrl!,
-                            width: 48,
-                            height: 48,
-                            semanticLabel: l10n.podcastArtwork),
-                    title: Text(result.title),
-                    subtitle: Text(
-                        result.author.isEmpty ? result.feedUrl : result.author),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _openSearchResult(result),
-                  ),
-                )),
-          ],
           const Divider(height: 32),
           ExpansionTile(
             title: Text(l10n.addFeedUrlManually),
@@ -303,45 +220,28 @@ class _PodcastScreenState extends State<PodcastScreen> {
                     customSemanticsActions: {
                       CustomSemanticsAction(label: l10n.removePodcast): () =>
                           _removeSubscription(subscription),
+                      if (!isFirst)
+                        CustomSemanticsAction(label: l10n.moveUp): () =>
+                            _handleAction(_PodcastAction.moveUp, index),
+                      if (!isLast)
+                        CustomSemanticsAction(label: l10n.moveDown): () =>
+                            _handleAction(_PodcastAction.moveDown, index),
+                      CustomSemanticsAction(label: l10n.moveToPosition): () =>
+                          _handleAction(_PodcastAction.moveToPosition, index),
                     },
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: FilledButton.icon(
-                            style: FilledButton.styleFrom(
-                              minimumSize: const Size.fromHeight(56),
-                              alignment: Alignment.centerLeft,
-                            ),
-                            onPressed: () => _openSubscription(subscription),
-                            icon: const Icon(Icons.podcasts),
-                            label: Text(
-                              subscription.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
-                            ),
-                          ),
-                        ),
-                        PopupMenuButton<_PodcastAction>(
-                          onSelected: (action) => _handleAction(action, index),
-                          itemBuilder: (context) => [
-                            if (!isFirst)
-                              PopupMenuItem(
-                                value: _PodcastAction.moveUp,
-                                child: Text(l10n.moveUp),
-                              ),
-                            if (!isLast)
-                              PopupMenuItem(
-                                value: _PodcastAction.moveDown,
-                                child: Text(l10n.moveDown),
-                              ),
-                            PopupMenuItem(
-                              value: _PodcastAction.moveToPosition,
-                              child: Text(l10n.moveToPosition),
-                            ),
-                          ],
-                        ),
-                      ],
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(56),
+                        alignment: Alignment.centerLeft,
+                      ),
+                      onPressed: () => _openSubscription(subscription),
+                      icon: const Icon(Icons.podcasts),
+                      label: Text(
+                        subscription.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.left,
+                      ),
                     ),
                   ),
                 ),
@@ -431,6 +331,153 @@ class _PodcastPositionSliderDialogState
           child: const Text('Ok'),
         ),
       ],
+    );
+  }
+}
+
+class _PodcastSearchResultsScreen extends StatefulWidget {
+  final String query;
+  final String country;
+  final PodcastCategory category;
+
+  const _PodcastSearchResultsScreen({
+    required this.query,
+    required this.country,
+    required this.category,
+  });
+
+  @override
+  State<_PodcastSearchResultsScreen> createState() =>
+      _PodcastSearchResultsScreenState();
+}
+
+class _PodcastSearchResultsScreenState
+    extends State<_PodcastSearchResultsScreen> {
+  final _service = PodcastService();
+  late final Future<List<PodcastSearchResult>> _results;
+
+  @override
+  void initState() {
+    super.initState();
+    _results = _service.searchPodcasts(
+      widget.query,
+      country: widget.country,
+      category: widget.category,
+    );
+  }
+
+  Future<void> _openResult(PodcastSearchResult result) async {
+    final subscribed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/podcasts/search-detail'),
+        builder: (_) => _PodcastSearchDetailScreen(result: result),
+      ),
+    );
+    if (!mounted || subscribed != true) return;
+    Navigator.pop(context, true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.searchResults)),
+      body: FutureBuilder<List<PodcastSearchResult>>(
+        future: _results,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: l10n.searchInProgress,
+              ),
+            );
+          }
+          if (snapshot.hasError) {
+            return Center(
+                child: Text(l10n.podcastSearchError(snapshot.error!)));
+          }
+          final results = snapshot.data ?? const [];
+          if (results.isEmpty) {
+            return Center(child: Text(l10n.noPodcastResults));
+          }
+          return ListView.separated(
+            itemCount: results.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final result = results[index];
+              return ListTile(
+                leading: ExcludeSemantics(
+                  child: result.artworkUrl == null
+                      ? const Icon(Icons.podcasts)
+                      : Image.network(
+                          result.artworkUrl!,
+                          width: 48,
+                          height: 48,
+                        ),
+                ),
+                title: Text(result.title),
+                subtitle: Text(
+                  result.author.isEmpty ? result.feedUrl : result.author,
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _openResult(result),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _PodcastSearchDetailScreen extends StatefulWidget {
+  final PodcastSearchResult result;
+
+  const _PodcastSearchDetailScreen({required this.result});
+
+  @override
+  State<_PodcastSearchDetailScreen> createState() =>
+      _PodcastSearchDetailScreenState();
+}
+
+class _PodcastSearchDetailScreenState
+    extends State<_PodcastSearchDetailScreen> {
+  final _service = PodcastService();
+  late final Future<PodcastDetails> _details;
+
+  @override
+  void initState() {
+    super.initState();
+    _details = _service.fetchPodcastDetails(widget.result);
+  }
+
+  Future<void> _subscribe() async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      await _service.addSearchResult(widget.result);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.subscribedTo(widget.result.title))),
+      );
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.subscriptionError(e))));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.podcastInfo)),
+      body: _PodcastSearchDetail(
+        result: widget.result,
+        details: _details,
+        onSubscribe: _subscribe,
+      ),
     );
   }
 }

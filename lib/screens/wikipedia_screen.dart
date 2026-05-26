@@ -18,15 +18,8 @@ class WikipediaScreen extends StatefulWidget {
 }
 
 class _WikipediaScreenState extends State<WikipediaScreen> {
-  final _service = WikipediaService();
   final _controller = TextEditingController();
-  Future<List<WikipediaSearchResult>>? _results;
-  WikipediaArticle? _article;
-  bool _importing = false;
-  Object? _importError;
-  bool _hideKeyboardWhenResultsArrive = false;
   String? _language;
-  int _selectedSection = 0;
 
   @override
   void didChangeDependencies() {
@@ -68,46 +61,15 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     final q = _controller.text.trim();
     if (q.isEmpty) return;
     FocusScope.of(context).unfocus();
-    setState(() {
-      _article = null;
-      _importError = null;
-      _hideKeyboardWhenResultsArrive = true;
-      _selectedSection = 0;
-      _results = _service.search(q, lang: _language!);
-      RecentSearchesService().addSearch('wikipedia', q);
-    });
-  }
-
-  void _hideKeyboardForSearchResults() {
-    if (!_hideKeyboardWhenResultsArrive) return;
-    _hideKeyboardWhenResultsArrive = false;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        FocusManager.instance.primaryFocus?.unfocus();
-      }
-    });
-  }
-
-  Future<void> _import(WikipediaSearchResult result) async {
-    setState(() {
-      _article = null;
-      _importing = true;
-      _importError = null;
-      _selectedSection = 0;
-    });
-    try {
-      final article =
-          await _service.importArticle(result.pageId, lang: _language!);
-      if (!mounted) return;
-      setState(() => _article = article);
-    } catch (error) {
-      if (!mounted) return;
-      setState(() => _importError = error);
-    } finally {
-      if (mounted) {
-        setState(() => _importing = false);
-      }
-    }
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: '/wikipedia/results'),
+        builder: (_) => _WikipediaResultsScreen(
+          query: q,
+          language: _language!,
+        ),
+      ),
+    );
   }
 
   @override
@@ -136,10 +98,6 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
               if (value == null) return;
               setState(() {
                 _language = value;
-                _article = null;
-                _results = null;
-                _importError = null;
-                _selectedSection = 0;
               });
             },
           ),
@@ -163,36 +121,152 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
           ),
           const SizedBox(height: 8),
           FilledButton(onPressed: _search, child: Text(l10n.search)),
-          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+}
+
+class _WikipediaResultsScreen extends StatefulWidget {
+  final String query;
+  final String language;
+
+  const _WikipediaResultsScreen({
+    required this.query,
+    required this.language,
+  });
+
+  @override
+  State<_WikipediaResultsScreen> createState() =>
+      _WikipediaResultsScreenState();
+}
+
+class _WikipediaResultsScreenState extends State<_WikipediaResultsScreen> {
+  final _service = WikipediaService();
+  late final Future<List<WikipediaSearchResult>> _results;
+
+  @override
+  void initState() {
+    super.initState();
+    _results = _service.search(widget.query, lang: widget.language);
+  }
+
+  void _openArticle(WikipediaSearchResult result) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: '/wikipedia/article'),
+        builder: (_) => _WikipediaArticleScreen(
+          result: result,
+          language: widget.language,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.searchResults)),
+      body: FutureBuilder<List<WikipediaSearchResult>>(
+        future: _results,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: l10n.wikipediaSearch,
+              ),
+            );
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text(l10n.error(snapshot.error!)));
+          }
+          final results = snapshot.data ?? const [];
+          if (results.isEmpty) {
+            return Center(child: Text(l10n.noWikipediaResults));
+          }
+          return ListView.separated(
+            itemCount: results.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final result = results[index];
+              return ListTile(
+                title: Text(result.title),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _openArticle(result),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _WikipediaArticleScreen extends StatefulWidget {
+  final WikipediaSearchResult result;
+  final String language;
+
+  const _WikipediaArticleScreen({
+    required this.result,
+    required this.language,
+  });
+
+  @override
+  State<_WikipediaArticleScreen> createState() =>
+      _WikipediaArticleScreenState();
+}
+
+class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
+  final _service = WikipediaService();
+  WikipediaArticle? _article;
+  Object? _importError;
+  bool _importing = true;
+  int _selectedSection = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _import();
+  }
+
+  Future<void> _import() async {
+    try {
+      final article = await _service.importArticle(
+        widget.result.pageId,
+        lang: widget.language,
+      );
+      await RecentSearchesService().addSearch('wikipedia', article.title);
+      if (!mounted) return;
+      setState(() => _article = article);
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _importError = error);
+    } finally {
+      if (mounted) {
+        setState(() => _importing = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final article = _article;
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.result.title)),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
           if (_importing)
             Center(
-                child: CircularProgressIndicator(
-                    semanticsLabel: l10n.wikipediaImporting)),
-          if (_importError != null) Text(l10n.error(_importError!)),
-          if (_results != null && _article == null)
-            FutureBuilder<List<WikipediaSearchResult>>(
-              future: _results,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                          semanticsLabel: l10n.wikipediaSearch));
-                }
-                if (snapshot.hasError) return Text(l10n.error(snapshot.error!));
-                if ((snapshot.data ?? const []).isEmpty) {
-                  return Text(l10n.noWikipediaResults);
-                }
-                _hideKeyboardForSearchResults();
-                return Column(
-                  children: (snapshot.data ?? const [])
-                      .map((r) => ListTile(
-                          title: Text(r.title), onTap: () => _import(r)))
-                      .toList(),
-                );
-              },
+              child: CircularProgressIndicator(
+                semanticsLabel: l10n.wikipediaImporting,
+              ),
             ),
-          if (_article != null) ...[
-            Text(_article!.title,
+          if (_importError != null) Text(l10n.error(_importError!)),
+          if (article != null) ...[
+            Text(article.title,
                 style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
@@ -201,10 +275,11 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
               items: [
                 DropdownMenuItem(
                     value: 0, child: Text(l10n.wikipediaImportWholeArticle)),
-                for (var i = 0; i < _article!.sections.length; i += 1)
+                for (var i = 0; i < article.sections.length; i += 1)
                   DropdownMenuItem(
-                      value: i + 1,
-                      child: Text(_sectionLabel(_article!.sections[i]))),
+                    value: i + 1,
+                    child: Text(_sectionLabel(article.sections[i])),
+                  ),
               ],
               onChanged: (value) {
                 if (value == null) return;

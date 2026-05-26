@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
@@ -292,40 +293,27 @@ class _NewsSourceList extends StatelessWidget {
         final isFirst = index == 0;
         final isLast = index == sources.length - 1;
 
-        return ListTile(
-          title: Text(source.name),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PopupMenuButton<_NewsSourceAction>(
-                onSelected: (action) => _handleAction(context, action, index),
-                itemBuilder: (context) => [
-                  if (!isFirst)
-                    PopupMenuItem(
-                      value: _NewsSourceAction.moveUp,
-                      child: Text(l10n.moveUp),
-                    ),
-                  if (!isLast)
-                    PopupMenuItem(
-                      value: _NewsSourceAction.moveDown,
-                      child: Text(l10n.moveDown),
-                    ),
-                  PopupMenuItem(
-                    value: _NewsSourceAction.moveToPosition,
-                    child: Text(l10n.moveToPosition),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem(
-                    value: _NewsSourceAction.hide,
-                    child: Text(l10n.hide,
-                        style: const TextStyle(color: Colors.red)),
-                  ),
-                ],
-              ),
-              const Icon(Icons.chevron_right),
-            ],
+        return MergeSemantics(
+          child: Semantics(
+            customSemanticsActions: {
+              if (!isFirst)
+                CustomSemanticsAction(label: l10n.moveUp): () =>
+                    _handleAction(context, _NewsSourceAction.moveUp, index),
+              if (!isLast)
+                CustomSemanticsAction(label: l10n.moveDown): () =>
+                    _handleAction(context, _NewsSourceAction.moveDown, index),
+              CustomSemanticsAction(label: l10n.moveToPosition): () =>
+                  _handleAction(
+                      context, _NewsSourceAction.moveToPosition, index),
+              CustomSemanticsAction(label: l10n.hide): () =>
+                  _handleAction(context, _NewsSourceAction.hide, index),
+            },
+            child: ListTile(
+              title: Text(source.name),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => onSourceSelected(source),
+            ),
           ),
-          onTap: () => onSourceSelected(source),
         );
       },
     );

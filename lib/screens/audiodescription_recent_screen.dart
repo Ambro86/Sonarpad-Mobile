@@ -2,22 +2,24 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_audiodescription_localizations.dart';
+import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
-import '../services/audio_player_service.dart';
 import '../services/audiodescription_service.dart';
 import 'audiodescription_all_screen.dart';
+import 'radio_player_screen.dart';
 
 class AudiodescriptionRecentScreen extends StatefulWidget {
   const AudiodescriptionRecentScreen({super.key});
 
   @override
-  State<AudiodescriptionRecentScreen> createState() => _AudiodescriptionRecentScreenState();
+  State<AudiodescriptionRecentScreen> createState() =>
+      _AudiodescriptionRecentScreenState();
 }
 
-class _AudiodescriptionRecentScreenState extends State<AudiodescriptionRecentScreen> {
+class _AudiodescriptionRecentScreenState
+    extends State<AudiodescriptionRecentScreen> {
   final _service = AudiodescriptionService();
-  final _audioPlayer = AudioPlayerService();
-  
+
   List<AudiodescriptionItem> _items = [];
   List<AudiodescriptionItem> _filteredItems = [];
   bool _loading = true;
@@ -27,12 +29,6 @@ class _AudiodescriptionRecentScreenState extends State<AudiodescriptionRecentScr
   void initState() {
     super.initState();
     _load();
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
   }
 
   Future<void> _load() async {
@@ -62,7 +58,11 @@ class _AudiodescriptionRecentScreenState extends State<AudiodescriptionRecentScr
         _filteredItems = _items;
       } else {
         final q = query.trim().toLowerCase();
-        _filteredItems = _items.where((i) => i.title.toLowerCase().contains(q) || i.description.toLowerCase().contains(q)).toList();
+        _filteredItems = _items
+            .where((i) =>
+                i.title.toLowerCase().contains(q) ||
+                i.description.toLowerCase().contains(q))
+            .toList();
       }
     });
   }
@@ -70,10 +70,24 @@ class _AudiodescriptionRecentScreenState extends State<AudiodescriptionRecentScr
   Future<void> _play(AudiodescriptionItem item) async {
     try {
       final resolvedUrl = await _service.resolveAudioUrl(item.audioUrl);
-      await _audioPlayer.playUrl(resolvedUrl, sessionType: AudioSessionType.playback, title: 'In riproduzione: \${item.title}');
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/audiodescriptions/player'),
+          builder: (_) => RadioPlayerScreen(
+            station: RadioStation(
+              name: item.title,
+              streamUrl: resolvedUrl,
+              languageCode: 'it',
+            ),
+          ),
+        ),
+      );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -81,19 +95,21 @@ class _AudiodescriptionRecentScreenState extends State<AudiodescriptionRecentScr
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.audiodescriptionTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: TextField(
               decoration: InputDecoration(
                 hintText: l10n.audiodescriptionSearch,
                 filled: true,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
               onChanged: _onSearch,
             ),
@@ -121,20 +137,23 @@ class _AudiodescriptionRecentScreenState extends State<AudiodescriptionRecentScr
                     if (index == 0) {
                       return ListTile(
                         leading: const Icon(Icons.list),
-                        title: Text(l10n.audiodescriptionAll, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        title: Text(l10n.audiodescriptionAll,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              settings: const RouteSettings(name: '/audiodescriptions/all'),
+                              settings: const RouteSettings(
+                                  name: '/audiodescriptions/all'),
                               builder: (_) => const AudiodescriptionAllScreen(),
                             ),
                           );
                         },
                       );
                     }
-                    
+
                     final item = _filteredItems[index - 1];
                     return ListTile(
                       title: Text(item.title),

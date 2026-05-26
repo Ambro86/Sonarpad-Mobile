@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:io';
 
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
@@ -51,6 +53,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   late int _bookmarkIndex;
 
   bool _ttsPaused = false;
+  String? _activeTtsEngine;
   StreamSubscription<bool>? _playingSub;
 
   static const int _maxChunkChars = 650;
@@ -63,7 +66,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _currentDoc = widget.document;
     _bookmarkIndex = _currentDoc.bookmarkIndex;
     _playingSub = _audio.playingStream.listen((playing) {
-      if (_speaking && mounted) {
+      if (_speaking && _activeTtsEngine != 'system' && mounted) {
         setState(() => _ttsPaused = !playing);
       }
     });
@@ -91,11 +94,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<void> _extractText() async {
     final ext = _currentDoc.extension.toLowerCase();
     try {
-      final editedPath = await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
+      final editedPath =
+          await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
       if (editedPath != null && await File(editedPath).exists()) {
         _documentText = await File(editedPath).readAsString();
       } else {
-        final path = await DocumentLibraryService().resolveFilePath(_currentDoc);
+        final path =
+            await DocumentLibraryService().resolveFilePath(_currentDoc);
         final result = await _extractor.extract(path: path, extension: ext);
         _documentText = result.text;
         _loadError = result.error;
@@ -169,29 +174,26 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     try {
       final engine = await _settings.loadTtsEngine();
-      final startIndex = _bookmarkIndex < _chunks.length && _bookmarkIndex >= 0 ? _bookmarkIndex : 0;
+      _activeTtsEngine = engine;
+      final startIndex = _bookmarkIndex < _chunks.length && _bookmarkIndex >= 0
+          ? _bookmarkIndex
+          : 0;
 
       if (engine == 'system') {
+        await _configureSystemTtsAudioSession();
         await _flutterTts.awaitSpeakCompletion(true);
         if (Platform.isIOS) {
-          await _flutterTts.setIosAudioCategory(
-            IosTextToSpeechAudioCategory.playback,
-            [
-              IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-              IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-              IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-            ],
-            IosTextToSpeechAudioMode.defaultMode,
-          );
+          await _flutterTts.setSharedInstance(true);
+          await _flutterTts.autoStopSharedSession(false);
         }
         final speed = await _settings.loadTtsSpeed();
         final pitch = await _settings.loadTtsPitch();
         await _flutterTts.setSpeechRate(speed * 0.5);
         await _flutterTts.setPitch(pitch);
-        
+
         final sysLang = await _settings.loadSystemTtsLanguage();
         final sysVoice = await _settings.loadSystemTtsVoice();
-        
+
         if (sysVoice != null) {
           await _flutterTts.setVoice({"name": sysVoice, "locale": sysLang});
         } else {
@@ -200,7 +202,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
         for (var i = startIndex; i < _chunks.length; i++) {
           if (!mounted || !_speaking) break;
-          
+
           while (_ttsPaused) {
             await Future.delayed(const Duration(milliseconds: 200));
             if (!mounted || !_speaking) break;
@@ -211,12 +213,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             _playingChunkIndex = i;
           });
           _scrollToChunk(i);
-          
+
           await _flutterTts.speak(_chunks[i]);
-          
-          if (_ttsPaused) {
-            i--; // Ripete il chunk corrente quando si riprende dalla pausa
-          }
         }
         await _flutterTts.stop();
       } else {
@@ -227,7 +225,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         // Generazione audio in background
         final generation = Future<void>(() async {
           for (var i = startIndex; i < _chunks.length; i++) {
-            if (!mounted || !_speaking) break; // Ferma la generazione se l'utente preme stop
+            if (!mounted || !_speaking) {
+              break; // Ferma la generazione se l'utente preme stop
+            }
             final file = await _tts.speakToFile(text: _chunks[i], voice: voice);
             controller.add((i, file));
           }
@@ -257,6 +257,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _playingChunkIndex = -1;
         _speaking = false;
         _ttsPaused = false;
+        _activeTtsEngine = null;
         _ttsStatus = null;
       });
     } catch (e) {
@@ -265,6 +266,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       setState(() {
         _playingChunkIndex = -1;
         _ttsStatus = 'Errore sintesi vocale: $e';
+        _activeTtsEngine = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Errore sintesi vocale: $e')),
@@ -278,11 +280,28 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   final _flutterTts = FlutterTts();
 
+  Future<void> _configureSystemTtsAudioSession() async {
+    if (!Platform.isIOS) return;
+
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration.speech());
+    await _flutterTts.setIosAudioCategory(
+      IosTextToSpeechAudioCategory.playback,
+      [
+        IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+        IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+      ],
+      IosTextToSpeechAudioMode.defaultMode,
+    );
+    await session.setActive(true);
+  }
+
   Future<void> _stopReading() async {
     // Aggiorna subito la UI per un feedback immediato
     setState(() {
       _speaking = false;
       _ttsPaused = false;
+      _activeTtsEngine = null;
       _playingChunkIndex = -1;
       _ttsStatus = 'Lettura interrotta.';
     });
@@ -345,7 +364,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final normalized = edited.replaceAll('\r\n', '\n');
     final finalEdited = normalized.replaceAll(RegExp(r'\n+'), '\n\n');
     final updatedChunks = List<String>.from(_chunks)..[index] = finalEdited;
-    
+
     // Ricostruisce il testo separando i vecchi chunk correttamente
     final newText = updatedChunks.join('\n\n');
 
@@ -377,7 +396,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         await lib.load();
         await lib.update(newDoc);
       }
-      dev.log('DocumentReaderScreen: DocumentItem aggiornato con editedTextPath');
+      dev.log(
+          'DocumentReaderScreen: DocumentItem aggiornato con editedTextPath');
 
       if (!mounted) return;
       // Aggiorna stato: testo e chunk (la lettura riparte dall'inizio se necessario)
@@ -411,22 +431,30 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // Build
   // ---------------------------------------------------------------------------
 
-  void _togglePlayPause() {
+  Future<void> _togglePlayPause() async {
     if (!_speaking) {
-      _startReading();
+      await _startReading();
     } else if (_ttsPaused) {
       setState(() => _ttsPaused = false);
-      _audio.play(); // No-op if system TTS
+      if (_activeTtsEngine == 'system') {
+        await _flutterTts.speak('');
+      } else {
+        await _audio.play();
+      }
     } else {
       setState(() => _ttsPaused = true);
-      _audio.pause(); // No-op if system TTS
-      _flutterTts.stop(); // Interrompe il chunk corrente, il while() fermerà il loop
+      if (_activeTtsEngine == 'system') {
+        await _flutterTts.pause();
+      } else {
+        await _audio.pause();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final doc = _currentDoc;
     final colorScheme = theme.colorScheme;
 
@@ -461,7 +489,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 });
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Documento salvato nella libreria')),
+                  const SnackBar(
+                      content: Text('Documento salvato nella libreria')),
                 );
               },
             ),
@@ -490,21 +519,25 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     doc.name,
                                     style: theme.textTheme.titleMedium
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.bold),
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     doc.extension.toUpperCase() +
-                                        (doc.editedTextPath != null ? ' (Modificato in Sonarpad)' : ''),
+                                        (doc.editedTextPath != null
+                                            ? ' (Modificato in Sonarpad)'
+                                            : ''),
                                     style: theme.textTheme.bodySmall?.copyWith(
-                                      color: doc.editedTextPath != null ? Colors.orange.shade700 : null,
-                                      fontWeight: doc.editedTextPath != null ? FontWeight.bold : null,
+                                      color: doc.editedTextPath != null
+                                          ? Colors.orange.shade700
+                                          : null,
+                                      fontWeight: doc.editedTextPath != null
+                                          ? FontWeight.bold
+                                          : null,
                                     ),
                                   ),
                                 ],
@@ -524,9 +557,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           onPressed: _togglePlayPause,
                           icon: Icon(!_speaking
                               ? Icons.volume_up
-                              : (_ttsPaused
-                                  ? Icons.play_arrow
-                                  : Icons.pause)),
+                              : (_ttsPaused ? Icons.play_arrow : Icons.pause)),
                           label: Text(!_speaking
                               ? 'Inizia lettura'
                               : (_ttsPaused
@@ -540,14 +571,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           label: const Text('Interrompi lettura'),
                         ),
 
-
                         const SizedBox(height: 8),
                         // Suggerimento modifica paragrafo (solo in lettura)
                         if (!_speaking && _chunks.isNotEmpty)
                           Semantics(
                             liveRegion: false,
                             child: Text(
-                              'Tocca un paragrafo per modificarlo.',
+                              l10n.documentReaderEditHint,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: colorScheme.outline,
                                 fontStyle: FontStyle.italic,
@@ -572,13 +602,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           )
                         else if (_chunks.isNotEmpty)
                           ..._buildChunkWidgets(theme, colorScheme)
-                        else if (_documentText.isEmpty &&
-                            _loadError == null)
+                        else if (_documentText.isEmpty && _loadError == null)
                           Text(
                             'Nessun testo disponibile per questo documento.',
                             style: theme.textTheme.bodyMedium,
                           ),
-                        ]),
+                      ]),
                     ),
                   ),
                 ],
@@ -596,20 +625,25 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       final isBookmarked = i == _bookmarkIndex;
       // Durante la lettura TTS il tap è disabilitato per non interferire.
       final canEdit = !_speaking;
-      
-      String hintText = canEdit ? 'Doppio tap per modificare questo paragrafo. ' : '';
+
+      String hintText =
+          canEdit ? 'Doppio tap per modificare questo paragrafo. ' : '';
       if (_bookmarkIndex > 0) {
-        hintText += 'Fai flick verso il basso per rimuovere o andare al segnalibro esistente.';
+        hintText +=
+            'Fai flick verso il basso per rimuovere o andare al segnalibro esistente.';
       } else {
         hintText += 'Fai flick verso il basso per impostare un segnalibro.';
       }
 
       final Map<CustomSemanticsAction, VoidCallback> actions = {};
       if (_bookmarkIndex > 0) {
-        actions[const CustomSemanticsAction(label: 'Rimuovi segnalibro')] = () => _removeBookmark();
-        actions[const CustomSemanticsAction(label: 'Vai al segnalibro')] = () => _scrollToChunk(_bookmarkIndex);
+        actions[const CustomSemanticsAction(label: 'Rimuovi segnalibro')] =
+            () => _removeBookmark();
+        actions[const CustomSemanticsAction(label: 'Vai al segnalibro')] =
+            () => _scrollToChunk(_bookmarkIndex);
       } else {
-        actions[const CustomSemanticsAction(label: 'Imposta segnalibro')] = () => _setBookmark(i);
+        actions[const CustomSemanticsAction(label: 'Imposta segnalibro')] =
+            () => _setBookmark(i);
       }
 
       widgets.add(
@@ -625,8 +659,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
               margin: const EdgeInsets.only(bottom: 6),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               decoration: BoxDecoration(
                 color: isPlaying
                     ? colorScheme.primaryContainer
@@ -649,7 +682,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   Text(
                     _chunks[i],
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: isPlaying ? FontWeight.w600 : FontWeight.normal,
+                      fontWeight:
+                          isPlaying ? FontWeight.w600 : FontWeight.normal,
                       color: isPlaying ? colorScheme.onPrimaryContainer : null,
                     ),
                   ),
@@ -671,7 +705,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   Future<void> _setBookmark(int index) async {
     setState(() => _bookmarkIndex = index);
-    
+
     final newDoc = DocumentItem(
       id: _currentDoc.id,
       name: _currentDoc.name,
@@ -682,7 +716,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       editedTextPath: _currentDoc.editedTextPath,
       isTemporary: _currentDoc.isTemporary,
     );
-    
+
     setState(() {
       _currentDoc = newDoc;
     });
@@ -692,17 +726,18 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       await lib.load();
       await lib.update(newDoc);
     }
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Segnalibro impostato al paragrafo ${index + 1}.')),
+        SnackBar(
+            content: Text('Segnalibro impostato al paragrafo ${index + 1}.')),
       );
     }
   }
 
   Future<void> _removeBookmark() async {
     setState(() => _bookmarkIndex = -1);
-    
+
     final newDoc = DocumentItem(
       id: _currentDoc.id,
       name: _currentDoc.name,
@@ -713,7 +748,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       editedTextPath: _currentDoc.editedTextPath,
       isTemporary: _currentDoc.isTemporary,
     );
-    
+
     setState(() {
       _currentDoc = newDoc;
     });
@@ -723,14 +758,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       await lib.load();
       await lib.update(newDoc);
     }
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Segnalibro rimosso.')),
       );
     }
   }
-
 }
 
 // ---------------------------------------------------------------------------

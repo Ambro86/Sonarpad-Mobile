@@ -28,7 +28,9 @@ class _RouteScreenState extends State<RouteScreen> {
       _countryCode = code == 'es' ? 'es' : (code == 'fr' ? 'fr' : 'it');
     }
   }
+
   RoutePreference _preference = RoutePreference.fastest;
+  bool _includeMunicipalities = false;
   bool _calculating = false;
 
   @override
@@ -54,11 +56,26 @@ class _RouteScreenState extends State<RouteScreen> {
     setState(() => _calculating = true);
 
     try {
-      final result = await _service.routeFromAddresses(
-        fromAddress: fromAddress,
-        toAddress: toAddress,
+      final from = await _resolveAddress(
+        query: fromAddress,
+        title: l10n.routeChooseFrom,
+        notFoundMessage: l10n.routeErrorFromNotFound,
+      );
+      if (from == null) return;
+
+      final to = await _resolveAddress(
+        query: toAddress,
+        title: l10n.routeChooseTo,
+        notFoundMessage: l10n.routeErrorToNotFound,
+      );
+      if (to == null) return;
+
+      final result = await _service.calculateRoute(
+        from: from,
+        to: to,
         profile: _profile,
         preference: _preference,
+        includeMunicipalities: _includeMunicipalities,
         language: l10n.locale.languageCode,
         countryCode: _countryCode!,
       );
@@ -80,6 +97,57 @@ class _RouteScreenState extends State<RouteScreen> {
     } finally {
       if (mounted) setState(() => _calculating = false);
     }
+  }
+
+  Future<GeocodeCandidate?> _resolveAddress({
+    required String query,
+    required String title,
+    required String notFoundMessage,
+  }) async {
+    final l10n = AppLocalizations.of(context);
+    final candidates = await _service.geocode(
+      query: query,
+      language: l10n.locale.languageCode,
+      countryCode: _countryCode!,
+    );
+
+    if (candidates.isEmpty) {
+      throw Exception(notFoundMessage);
+    }
+
+    if (candidates.length == 1) {
+      return candidates.first;
+    }
+
+    if (!mounted) return null;
+    return showDialog<GeocodeCandidate>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(title),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: candidates.length,
+              itemBuilder: (context, index) {
+                final candidate = candidates[index];
+                return ListTile(
+                  title: Text(candidate.displayLabel),
+                  onTap: () => Navigator.pop(dialogContext, candidate),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.routeCancel),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -121,10 +189,15 @@ class _RouteScreenState extends State<RouteScreen> {
             initialValue: _profile,
             decoration: InputDecoration(labelText: l10n.routeVehicle),
             items: [
-              DropdownMenuItem(value: RouteProfile.walking, child: Text(l10n.routeWalking)),
-              DropdownMenuItem(value: RouteProfile.cycling, child: Text(l10n.routeCycling)),
-              DropdownMenuItem(value: RouteProfile.driving, child: Text(l10n.routeDriving)),
-              DropdownMenuItem(value: RouteProfile.wheelchair, child: Text(l10n.routeWheelchair)),
+              DropdownMenuItem(
+                  value: RouteProfile.walking, child: Text(l10n.routeWalking)),
+              DropdownMenuItem(
+                  value: RouteProfile.cycling, child: Text(l10n.routeCycling)),
+              DropdownMenuItem(
+                  value: RouteProfile.driving, child: Text(l10n.routeDriving)),
+              DropdownMenuItem(
+                  value: RouteProfile.wheelchair,
+                  child: Text(l10n.routeWheelchair)),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _profile = val);
@@ -135,18 +208,32 @@ class _RouteScreenState extends State<RouteScreen> {
             initialValue: _preference,
             decoration: InputDecoration(labelText: l10n.routeType),
             items: [
-              DropdownMenuItem(value: RoutePreference.fastest, child: Text(l10n.routeFastest)),
-              DropdownMenuItem(value: RoutePreference.shortest, child: Text(l10n.routeShortest)),
+              DropdownMenuItem(
+                  value: RoutePreference.fastest,
+                  child: Text(l10n.routeFastest)),
+              DropdownMenuItem(
+                  value: RoutePreference.shortest,
+                  child: Text(l10n.routeShortest)),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _preference = val);
+            },
+          ),
+          const SizedBox(height: 16),
+          CheckboxListTile(
+            value: _includeMunicipalities,
+            title: Text(l10n.routeIncludeMunicipalities),
+            contentPadding: EdgeInsets.zero,
+            onChanged: (value) {
+              setState(() => _includeMunicipalities = value ?? false);
             },
           ),
           const SizedBox(height: 32),
           FilledButton.icon(
             onPressed: _calculating ? null : _calculateRoute,
             icon: const Icon(Icons.directions),
-            label: Text(_calculating ? l10n.routeCalculating : l10n.routeCalculate),
+            label: Text(
+                _calculating ? l10n.routeCalculating : l10n.routeCalculate),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),

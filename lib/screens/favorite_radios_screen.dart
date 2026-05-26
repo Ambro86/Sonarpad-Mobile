@@ -120,28 +120,17 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                         isPlaying: false,
                         onPlay: () => _play(station),
                         onToggleFavorite: () => _toggleFavorite(station),
-                        extraActions: [
-                          PopupMenuButton<_RadioAction>(
-                            onSelected: (action) =>
-                                _handleAction(action, index),
-                            itemBuilder: (context) => [
-                              if (!isFirst)
-                                PopupMenuItem(
-                                  value: _RadioAction.moveUp,
-                                  child: Text(l10n.moveUp),
-                                ),
-                              if (!isLast)
-                                PopupMenuItem(
-                                  value: _RadioAction.moveDown,
-                                  child: Text(l10n.moveDown),
-                                ),
-                              PopupMenuItem(
-                                value: _RadioAction.moveToPosition,
-                                child: Text(l10n.moveToPosition),
-                              ),
-                            ],
-                          ),
-                        ],
+                        extraSemanticsActions: {
+                          if (!isFirst)
+                            CustomSemanticsAction(label: l10n.moveUp): () =>
+                                _handleAction(_RadioAction.moveUp, index),
+                          if (!isLast)
+                            CustomSemanticsAction(label: l10n.moveDown): () =>
+                                _handleAction(_RadioAction.moveDown, index),
+                          CustomSemanticsAction(label: l10n.moveToPosition):
+                              () => _handleAction(
+                                  _RadioAction.moveToPosition, index),
+                        },
                       ),
                     );
                   },
