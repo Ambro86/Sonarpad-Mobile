@@ -1,6 +1,10 @@
 import 'app_localizations.dart';
 
 extension UiRadioLocalizations on AppLocalizations {
+  bool get _isEn => locale.languageCode == 'en';
+  bool get _isFr => locale.languageCode == 'fr';
+  bool get _isEs => locale.languageCode == 'es';
+
   String get radio => _isEn ? 'Radio' : (_isFr ? 'Radio' : (_isEs ? 'Radio' : 'Radio'));
   String get radioHint => _isEn
       ? 'Search radios, listen to streams and manage favorites'
