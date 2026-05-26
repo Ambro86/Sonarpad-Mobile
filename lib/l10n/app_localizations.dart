@@ -60,9 +60,25 @@ class AppLocalizations {
   String get importFromWikipedia => 'Wikipedia';
   String get wikipediaHint => _isEn ? 'Search for a Wikipedia article and import the text' : (_isFr ? 'Rechercher un article Wikipedia et importer le texte' : (_isEs ? 'Busca un artículo de Wikipedia e importa el texto' : 'Cerca un articolo Wikipedia e importa il testo'));
 
+  String get newsCategoryTop => switch (locale.languageCode) {
+        'it' => 'Principali',
+        'en' => 'Top stories',
+        'fr' => 'À la une',
+        'es' => 'Titulares',
+        _ => 'Principali',
+      };
+
+  String get newsCategoryMyCity => switch (locale.languageCode) {
+        'it' => 'La mia città',
+        'en' => 'My City',
+        'fr' => 'Ma ville',
+        'es' => 'Mi ciudad',
+        _ => 'La mia città',
+      };
+
   String get newsLanguage => _isEn ? 'News Language' : (_isFr ? 'Langue des actualités' : (_isEs ? 'Idioma de las noticias' : 'Lingua notizie'));
   String get loadingNews => _isEn ? 'Loading news' : (_isFr ? 'Chargement des actualités' : (_isEs ? 'Cargando noticias' : 'Caricamento notizie'));
-  String error(Object error) => _isEn ? 'Error: \$error' : (_isFr ? 'Erreur : \$error' : (_isEs ? 'Error: \$error' : 'Errore: \$error'));
+  String error(Object error) => _isEn ? 'Error: $error' : (_isFr ? 'Erreur : $error' : (_isEs ? 'Error: $error' : 'Errore: $error'));
   String get noNewsFound => _isEn ? 'No news found' : (_isFr ? 'Aucune actualité trouvée' : (_isEs ? 'No se encontraron noticias' : 'Nessuna notizia trovata'));
   String get loadingArticle => _isEn ? 'Loading article' : (_isFr ? 'Chargement de l\'article' : (_isEs ? 'Cargando artículo' : 'Caricamento articolo'));
   String get noFullArticleFound => _isEn ? 'Full article not available. Showing feed summary.' : (_isFr ? 'Article complet indisponible. Affichage du résumé du flux.' : (_isEs ? 'Artículo completo no disponible. Mostrando el resumen del feed.' : 'Articolo integrale non disponibile. Mostro il riassunto del feed.'));

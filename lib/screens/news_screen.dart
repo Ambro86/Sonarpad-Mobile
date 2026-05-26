@@ -15,7 +15,21 @@ class NewsScreen extends StatefulWidget {
 
 class _NewsScreenState extends State<NewsScreen> {
   final _service = NewsService();
-  NewsLanguage _language = NewsLanguage.italian;
+  NewsLanguage? _language;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_language == null) {
+      final code = AppLocalizations.of(context).locale.languageCode;
+      _language = switch (code) {
+        'en' => NewsLanguage.english,
+        'fr' => NewsLanguage.french,
+        'es' => NewsLanguage.spanish,
+        _ => NewsLanguage.italian,
+      };
+    }
+  }
 
   void _openSource(NewsRssSource source) {
     Navigator.push(
@@ -63,7 +77,7 @@ class _NewsScreenState extends State<NewsScreen> {
           ),
           Expanded(
             child: _NewsSourceList(
-              sources: _language.rssSources,
+              sources: _language!.rssSources,
               onSourceSelected: _openSource,
             ),
           ),
@@ -73,20 +87,104 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 }
 
-class _NewsSourceArticlesScreen extends StatelessWidget {
+class _NewsSourceArticlesScreen extends StatefulWidget {
   const _NewsSourceArticlesScreen({
     required this.source,
-    required this.future,
   });
 
   final NewsRssSource source;
-  final Future<List<NewsArticle>> future;
+
+  @override
+  State<_NewsSourceArticlesScreen> createState() => _NewsSourceArticlesScreenState();
+}
+
+class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
+  final _service = NewsService();
+  late Future<List<NewsArticle>> _future;
+  late Uri _currentUri;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUri = widget.source.uri;
+    _fetch();
+  }
+
+  void _fetch() {
+    final cat = widget.source.categories?.where((c) => c.uri == _currentUri).firstOrNull;
+    if (cat != null && cat.isLocal) {
+      _future = _fetchLocalCategory(cat);
+    } else {
+      _future = _service.fetchSourceNews(NewsRssSource(
+        name: widget.source.name,
+        uri: _currentUri,
+      ));
+    }
+  }
+
+  Future<List<NewsArticle>> _fetchLocalCategory(NewsRssCategory cat) async {
+    final loc = await _service.getUserLocationData();
+    if (loc != null) {
+      final city = loc['city']!;
+      final lang = AppLocalizations.of(context).locale.languageCode;
+      final country = loc['countryCode']!;
+      final searchUri = Uri.parse('https://news.google.com/rss/search?q=${Uri.encodeComponent(city)}&hl=$lang&gl=$country&ceid=$country:$lang');
+      return _service.fetchSourceNews(NewsRssSource(name: widget.source.name, uri: searchUri));
+    }
+    // Fallback to top news if location fails
+    return _service.fetchSourceNews(NewsRssSource(name: widget.source.name, uri: widget.source.uri));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(source.name)),
-      body: _NewsArticleList(future: future),
+      appBar: AppBar(title: Text(widget.source.name)),
+      body: Column(
+        children: [
+          if (widget.source.categories != null && widget.source.categories!.isNotEmpty)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                children: [
+                  ChoiceChip(
+                    label: Text(AppLocalizations.of(context).newsCategoryTop),
+                    selected: _currentUri == widget.source.uri,
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() {
+                          _currentUri = widget.source.uri;
+                          _fetch();
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  ...widget.source.categories!.map((cat) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        label: Text(cat.name),
+                        selected: _currentUri == cat.uri,
+                        onSelected: (selected) {
+                          if (selected) {
+                            setState(() {
+                              _currentUri = cat.uri;
+                              _fetch();
+                            });
+                          }
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
+            ),
+          Expanded(
+            child: _NewsArticleList(future: _future),
+          ),
+        ],
+      ),
     );
   }
 }

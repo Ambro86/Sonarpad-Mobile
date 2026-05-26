@@ -10,17 +10,24 @@ import 'news_sources/english_news_sources.dart';
 import 'news_sources/italian_news_sources.dart';
 import 'news_sources/news_rss_source.dart';
 
-enum NewsLanguage { italian, english }
+import 'news_sources/french_news_sources.dart';
+import 'news_sources/spanish_news_sources.dart';
+
+enum NewsLanguage { italian, english, french, spanish }
 
 extension NewsLanguageInfo on NewsLanguage {
   String label(AppLocalizations l10n) => switch (this) {
         NewsLanguage.italian => l10n.italian,
         NewsLanguage.english => l10n.english,
+        NewsLanguage.french => l10n.french,
+        NewsLanguage.spanish => l10n.spanish,
       };
 
   List<NewsRssSource> get rssSources => switch (this) {
         NewsLanguage.italian => italianNewsSources,
         NewsLanguage.english => englishNewsSources,
+        NewsLanguage.french => frenchNewsSources,
+        NewsLanguage.spanish => spanishNewsSources,
       };
 }
 
@@ -59,6 +66,21 @@ class NewsService {
       if (bDate == null) return -1;
       return bDate.compareTo(aDate);
     });
+  }
+
+  Future<Map<String, String>?> getUserLocationData() async {
+    try {
+      final response = await _client.get(Uri.parse('https://ipwho.is/'));
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        final city = data['city']?.toString();
+        final countryCode = data['country_code']?.toString();
+        if (city != null && city.isNotEmpty && countryCode != null && countryCode.isNotEmpty) {
+          return {'city': city, 'countryCode': countryCode};
+        }
+      }
+    } catch (_) {}
+    return null;
   }
 
   Future<NewsArticleContent> fetchArticleContent(NewsArticle article) async {
