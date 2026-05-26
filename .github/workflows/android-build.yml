@@ -102,19 +102,12 @@ jobs:
               gradle.write_text(gradle_text, encoding="utf-8")
               print("build.gradle configurato (compileSdk=36)")
 
-          root_gradle = Path("android/build.gradle")
-          if root_gradle.exists():
-              text = root_gradle.read_text(encoding="utf-8")
-              text += "\nproject.ext.set('flutter.compileSdkVersion', 36)\n"
-              root_gradle.write_text(text, encoding="utf-8")
-              print("root build.gradle configurato")
-
-          root_gradle_kts = Path("android/build.gradle.kts")
-          if root_gradle_kts.exists():
-              text = root_gradle_kts.read_text(encoding="utf-8")
-              text += "\nextra[\"flutter.compileSdkVersion\"] = 36\n"
-              root_gradle_kts.write_text(text, encoding="utf-8")
-              print("root build.gradle.kts configurato")
+          local_props = Path("android/local.properties")
+          text = local_props.read_text(encoding="utf-8") if local_props.exists() else ""
+          if "flutter.compileSdkVersion" not in text:
+              text += "\nflutter.compileSdkVersion=36\n"
+              local_props.write_text(text, encoding="utf-8")
+              print("local.properties configurato (compileSdkVersion=36)")
           PY
 
       - name: Build release APK
