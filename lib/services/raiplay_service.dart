@@ -416,7 +416,7 @@ class RaiPlayService {
     );
   }
 
-  /// Cerca contenuti su RaiPlay tramite l'endpoint /ricerca.json?q=<query>.
+  /// Cerca contenuti su RaiPlay tramite l'endpoint /ricerca.json?q=[query].
   ///
   /// Usa lo stesso meccanismo di autenticazione degli altri metodi del servizio.
   Future<RaiPlayPage> searchContent(String query, String secretKey) async {
