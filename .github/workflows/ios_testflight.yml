@@ -52,14 +52,35 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :CFBundleName ${APP_NAME}" "$PLIST" || \
             /usr/libexec/PlistBuddy -c "Add :CFBundleName string ${APP_NAME}" "$PLIST"
 
-      - name: Configure iOS permissions for file_picker
+      - name: Configure iOS permissions and privacy descriptions
         run: |
           PLIST="ios/Runner/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string Richiesto per allegare o leggere documenti salvati tra le foto." "$PLIST" || true
-          /usr/libexec/PlistBuddy -c "Add :LSSupportsOpeningDocumentsInPlace bool true" "$PLIST" || \
-            /usr/libexec/PlistBuddy -c "Set :LSSupportsOpeningDocumentsInPlace true" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Add :UIFileSharingEnabled bool true" "$PLIST" || \
-            /usr/libexec/PlistBuddy -c "Set :UIFileSharingEnabled true" "$PLIST"
+
+          set_plist_string() {
+            KEY="$1"
+            VALUE="$2"
+            /usr/libexec/PlistBuddy -c "Set :$KEY $VALUE" "$PLIST" 2>/dev/null || \
+              /usr/libexec/PlistBuddy -c "Add :$KEY string $VALUE" "$PLIST"
+          }
+
+          set_plist_bool() {
+            KEY="$1"
+            VALUE="$2"
+            /usr/libexec/PlistBuddy -c "Set :$KEY $VALUE" "$PLIST" 2>/dev/null || \
+              /usr/libexec/PlistBuddy -c "Add :$KEY bool $VALUE" "$PLIST"
+          }
+
+          set_plist_string "NSPhotoLibraryUsageDescription" "Sonarpad può accedere alle foto solo quando scegli di selezionare o allegare immagini e documenti."
+          set_plist_string "NSCameraUsageDescription" "Sonarpad può usare la fotocamera solo quando scegli di acquisire o allegare un'immagine o un documento."
+          set_plist_string "NSLocationWhenInUseUsageDescription" "Sonarpad usa la posizione solo quando scegli funzioni di percorsi o navigazione, per calcolare indicazioni e luoghi vicini."
+
+          set_plist_bool "LSSupportsOpeningDocumentsInPlace" true
+          set_plist_bool "UIFileSharingEnabled" true
+
+          echo "Privacy descriptions configurate:"
+          /usr/libexec/PlistBuddy -c "Print :NSPhotoLibraryUsageDescription" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Print :NSCameraUsageDescription" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Print :NSLocationWhenInUseUsageDescription" "$PLIST"
 
       - name: Configure iOS background audio mode
         run: |
