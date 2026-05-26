@@ -66,7 +66,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   Future<void> _pickFile() async {
     FilePickerResult? result;
     try {
-      result = await FilePicker.pickFiles(
+      result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: _allowedExtensions,
       );
