@@ -264,14 +264,35 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     return result.text;
   }
 
+  String _sanitizeTextForPdf(String text) {
+    var sanitized = text
+        .replaceAll('’', "'")
+        .replaceAll('‘', "'")
+        .replaceAll('“', '"')
+        .replaceAll('”', '"')
+        .replaceAll('–', '-')
+        .replaceAll('—', '-')
+        .replaceAll('…', '...')
+        .replaceAll('€', 'EUR')
+        .replaceAll('™', '(TM)')
+        .replaceAll('\u200B', '') // Zero width space
+        .replaceAll('\uFEFF', '') // Byte order mark
+        .replaceAll('\r\n', '\n');
+    
+    // PdfStandardFont supporta solo caratteri 0-255 (WinAnsi)
+    return sanitized.replaceAllMapped(RegExp(r'[^\x00-\xFF]'), (match) => '?');
+  }
+
   Future<String> _generatePdf(
       String baseName, String text, String outDir) async {
     final PdfDocument document = PdfDocument();
     final PdfPage page = document.pages.add();
     final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
 
+    final safeText = _sanitizeTextForPdf(text);
+
     final PdfTextElement element = PdfTextElement(
-      text: text,
+      text: safeText,
       font: font,
     );
 
