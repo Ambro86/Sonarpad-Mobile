@@ -79,6 +79,7 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
           builder: (_) => PodcastEpisodePlayerScreen(
             episode: PodcastEpisode(
               title: item.title,
+              description: item.description,
               audioUrl: resolvedUrl,
               publishedAt: DateTime.now(),
             ),
