@@ -54,33 +54,30 @@ jobs:
 
       - name: Configure iOS permissions and privacy descriptions
         run: |
-          PLIST="ios/Runner/Info.plist"
+          python3 - <<'PY'
+          import plistlib
+          from pathlib import Path
 
-          set_plist_string() {
-            KEY="$1"
-            VALUE="$2"
-            /usr/libexec/PlistBuddy -c "Set :$KEY $VALUE" "$PLIST" 2>/dev/null || \
-              /usr/libexec/PlistBuddy -c "Add :$KEY string $VALUE" "$PLIST"
-          }
+          plist_path = Path("ios/Runner/Info.plist")
 
-          set_plist_bool() {
-            KEY="$1"
-            VALUE="$2"
-            /usr/libexec/PlistBuddy -c "Set :$KEY $VALUE" "$PLIST" 2>/dev/null || \
-              /usr/libexec/PlistBuddy -c "Add :$KEY bool $VALUE" "$PLIST"
-          }
+          with plist_path.open("rb") as f:
+              plist = plistlib.load(f)
 
-          set_plist_string "NSPhotoLibraryUsageDescription" "Sonarpad può accedere alle foto solo quando scegli di selezionare o allegare immagini e documenti."
-          set_plist_string "NSCameraUsageDescription" "Sonarpad può usare la fotocamera solo quando scegli di acquisire o allegare un'immagine o un documento."
-          set_plist_string "NSLocationWhenInUseUsageDescription" "Sonarpad usa la posizione solo quando scegli funzioni di percorsi o navigazione, per calcolare indicazioni e luoghi vicini."
+          plist["NSPhotoLibraryUsageDescription"] = "Sonarpad puo accedere alle foto solo quando scegli di selezionare o allegare immagini e documenti."
+          plist["NSCameraUsageDescription"] = "Sonarpad puo usare la fotocamera solo quando scegli di acquisire o allegare una immagine o un documento."
+          plist["NSLocationWhenInUseUsageDescription"] = "Sonarpad usa la posizione solo quando scegli funzioni di percorsi o navigazione, per calcolare indicazioni e luoghi vicini."
 
-          set_plist_bool "LSSupportsOpeningDocumentsInPlace" true
-          set_plist_bool "UIFileSharingEnabled" true
+          plist["LSSupportsOpeningDocumentsInPlace"] = True
+          plist["UIFileSharingEnabled"] = True
 
-          echo "Privacy descriptions configurate:"
-          /usr/libexec/PlistBuddy -c "Print :NSPhotoLibraryUsageDescription" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Print :NSCameraUsageDescription" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Print :NSLocationWhenInUseUsageDescription" "$PLIST"
+          with plist_path.open("wb") as f:
+              plistlib.dump(plist, f)
+
+          print("Privacy descriptions configurate:")
+          print("NSPhotoLibraryUsageDescription =", plist["NSPhotoLibraryUsageDescription"])
+          print("NSCameraUsageDescription =", plist["NSCameraUsageDescription"])
+          print("NSLocationWhenInUseUsageDescription =", plist["NSLocationWhenInUseUsageDescription"])
+          PY
 
       - name: Configure iOS background audio mode
         run: |
