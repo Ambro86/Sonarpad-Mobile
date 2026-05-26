@@ -92,6 +92,16 @@ jobs:
           puts 'Background Modes audio abilitato nel progetto Xcode'
           RUBY
 
+      - name: Set iOS deployment target to 14.0
+        run: |
+          if [ -f "ios/Podfile" ]; then
+            sed -i '' -e "s/^# platform :ios.*/platform :ios, '14.0'/" ios/Podfile
+            sed -i '' -e "s/^platform :ios.*/platform :ios, '14.0'/" ios/Podfile
+          fi
+          if [ -d "ios/Runner.xcodeproj" ]; then
+            ruby -e "require 'xcodeproj'; project = Xcodeproj::Project.open('ios/Runner.xcodeproj'); project.build_configurations.each { |c| c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0' }; project.save"
+          fi
+
       - name: Install CocoaPods dependencies
         run: |
           if [ -f "ios/Podfile" ]; then
