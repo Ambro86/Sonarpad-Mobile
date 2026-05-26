@@ -26,8 +26,17 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
   bool _importing = false;
   Object? _importError;
   bool _hideKeyboardWhenResultsArrive = false;
-  String _language = 'it';
+  String? _language;
   int _selectedSection = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_language == null) {
+      final code = AppLocalizations.of(context).locale.languageCode;
+      _language = code == 'es' ? 'es' : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
+    }
+  }
 
   static const _languages = [
     ('it', 'Italiano'),
@@ -63,7 +72,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
       _importError = null;
       _hideKeyboardWhenResultsArrive = true;
       _selectedSection = 0;
-      _results = _service.search(q, lang: _language);
+      _results = _service.search(q, lang: _language!);
       RecentSearchesService().addSearch('wikipedia', q);
     });
   }
@@ -87,7 +96,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     });
     try {
       final article =
-          await _service.importArticle(result.pageId, lang: _language);
+          await _service.importArticle(result.pageId, lang: _language!);
       if (!mounted) return;
       setState(() => _article = article);
     } catch (error) {

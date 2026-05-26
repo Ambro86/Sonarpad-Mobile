@@ -17,8 +17,17 @@ class _RouteScreenState extends State<RouteScreen> {
   final _fromController = TextEditingController();
   final _toController = TextEditingController();
 
-  String _countryCode = 'it';
+  String? _countryCode;
   RouteProfile _profile = RouteProfile.driving;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_countryCode == null) {
+      final code = AppLocalizations.of(context).locale.languageCode;
+      _countryCode = code == 'es' ? 'es' : (code == 'fr' ? 'fr' : 'it');
+    }
+  }
   RoutePreference _preference = RoutePreference.fastest;
   bool _calculating = false;
 
@@ -51,7 +60,7 @@ class _RouteScreenState extends State<RouteScreen> {
         profile: _profile,
         preference: _preference,
         language: l10n.locale.languageCode,
-        countryCode: _countryCode,
+        countryCode: _countryCode!,
       );
 
       if (!mounted) return;
@@ -101,6 +110,7 @@ class _RouteScreenState extends State<RouteScreen> {
             items: const [
               DropdownMenuItem(value: 'it', child: Text('Italia')),
               DropdownMenuItem(value: 'fr', child: Text('France')),
+              DropdownMenuItem(value: 'es', child: Text('España')),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _countryCode = val);

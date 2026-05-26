@@ -22,9 +22,18 @@ class _RadioScreenState extends State<RadioScreen> {
 
   List<RadioStation> _favorites = [];
   List<RadioStation> _results = [];
-  String _languageCode = 'it';
+  String? _languageCode;
   RadioGenreOption _genre = RadioService.genres.first;
   bool _searching = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_languageCode == null) {
+      final code = AppLocalizations.of(context).locale.languageCode;
+      _languageCode = code == 'es' ? 'es' : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
+    }
+  }
 
   @override
   void initState() {
@@ -46,7 +55,7 @@ class _RadioScreenState extends State<RadioScreen> {
     });
     try {
       final results = await _service.searchRadios(
-        languageCode: _languageCode,
+        languageCode: _languageCode!,
         genre: _genre,
         query: _searchController.text,
       );
