@@ -31,7 +31,8 @@ class _PodcastEpisodePlayerScreenState
     });
     try {
       if (!_loaded) {
-        await _audio.setUrl(widget.episode.audioUrl, title: 'In riproduzione: \${widget.episode.title}');
+        await _audio.setUrl(widget.episode.audioUrl,
+            title: 'In riproduzione: \${widget.episode.title}');
         _loaded = true;
       }
       unawaited(_audio.play());
@@ -80,7 +81,7 @@ class _PodcastEpisodePlayerScreenState
       onTap: _togglePlayback,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('In riproduzione: \${widget.episode.title}'),
+          title: const Text('In riproduzione: \${widget.episode.title}'),
           leading: BackButton(onPressed: () => Navigator.pop(context)),
         ),
         body: ListView(

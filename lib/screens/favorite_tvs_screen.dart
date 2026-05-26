@@ -78,7 +78,8 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                               ? '${channel.name}. Ora in onda: ${currentProgram.title}'
                               : channel.name,
                           customSemanticsActions: {
-                            CustomSemanticsAction(label: 'Rimuovi dai preferiti'):
+                            const CustomSemanticsAction(
+                                    label: 'Rimuovi dai preferiti'):
                                 () => _removeFromFavorites(channel),
                           },
                           child: ExcludeSemantics(

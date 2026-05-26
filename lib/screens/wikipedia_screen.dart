@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
 import '../services/wikipedia_service.dart';
-import '../services/document_library_service.dart';
 import '../models/document_item.dart';
 import '../services/recent_searches_service.dart';
 import 'document_reader_screen.dart';
@@ -34,7 +33,9 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     super.didChangeDependencies();
     if (_language == null) {
       final code = AppLocalizations.of(context).locale.languageCode;
-      _language = code == 'es' ? 'es' : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
+      _language = code == 'es'
+          ? 'es'
+          : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
     }
   }
 

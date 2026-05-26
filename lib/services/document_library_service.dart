@@ -100,4 +100,10 @@ class DocumentLibraryService {
       dev.log('DocumentLibraryService: impossibile salvare la libreria.');
     }
   }
+
+  /// Sovrascrive l'intera lista di documenti (es. per riordino)
+  Future<void> saveAll(List<DocumentItem> docs) async {
+    _documents = List.from(docs);
+    await _save();
+  }
 }

@@ -138,6 +138,36 @@ class _PodcastScreenState extends State<PodcastScreen> {
     }
   }
 
+  Future<void> _handleAction(_PodcastAction action, int index) async {
+    final list = List<PodcastSubscription>.from(_subscriptions);
+    final item = list.removeAt(index);
+
+    if (action == _PodcastAction.moveUp && index > 0) {
+      list.insert(index - 1, item);
+      await _service.saveSubscriptions(list);
+      setState(() => _subscriptions = list);
+    } else if (action == _PodcastAction.moveDown && index < list.length) {
+      list.insert(index + 1, item);
+      await _service.saveSubscriptions(list);
+      setState(() => _subscriptions = list);
+    } else if (action == _PodcastAction.moveToPosition) {
+      list.insert(index, item);
+      final newPos = await showDialog<int>(
+        context: context,
+        builder: (_) => _PodcastPositionSliderDialog(
+          currentIndex: index,
+          subscriptions: list,
+        ),
+      );
+      if (newPos != null && newPos != index) {
+        final toMove = list.removeAt(index);
+        list.insert(newPos, toMove);
+        await _service.saveSubscriptions(list);
+        setState(() => _subscriptions = list);
+      }
+    }
+  }
+
   @override
   void dispose() {
     _feedController.dispose();
@@ -256,37 +286,137 @@ class _PodcastScreenState extends State<PodcastScreen> {
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           if (_subscriptions.isNotEmpty) ...[
-            ..._subscriptions.map(
-              (subscription) => Padding(
+            ..._subscriptions.asMap().entries.map((entry) {
+              final index = entry.key;
+              final subscription = entry.value;
+              final isFirst = index == 0;
+              final isLast = index == _subscriptions.length - 1;
+
+              return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: MergeSemantics(
                   child: Semantics(
                     customSemanticsActions: {
                       CustomSemanticsAction(label: l10n.removePodcast): () => _removeSubscription(subscription),
                     },
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(56),
-                        alignment: Alignment.centerLeft,
-                      ),
-                      onPressed: () => _openSubscription(subscription),
-                      icon: const Icon(Icons.podcasts),
-                      label: Text(
-                        subscription.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
-                      ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton.icon(
+                            style: FilledButton.styleFrom(
+                              minimumSize: const Size.fromHeight(56),
+                              alignment: Alignment.centerLeft,
+                            ),
+                            onPressed: () => _openSubscription(subscription),
+                            icon: const Icon(Icons.podcasts),
+                            label: Text(
+                              subscription.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ),
+                        PopupMenuButton<_PodcastAction>(
+                          onSelected: (action) => _handleAction(action, index),
+                          itemBuilder: (context) => [
+                            if (!isFirst)
+                              PopupMenuItem(
+                                value: _PodcastAction.moveUp,
+                                child: Text(l10n.moveUp),
+                              ),
+                            if (!isLast)
+                              PopupMenuItem(
+                                value: _PodcastAction.moveDown,
+                                child: Text(l10n.moveDown),
+                              ),
+                            PopupMenuItem(
+                              value: _PodcastAction.moveToPosition,
+                              child: Text(l10n.moveToPosition),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ),
+              );
+            }),
           ] else
             Text(l10n.noSubscribedPodcasts),
           const SizedBox(height: 16),
         ],
       ),
+    );
+  }
+}
+
+enum _PodcastAction { moveUp, moveDown, moveToPosition }
+
+class _PodcastPositionSliderDialog extends StatefulWidget {
+  final int currentIndex;
+  final List<PodcastSubscription> subscriptions;
+
+  const _PodcastPositionSliderDialog({required this.currentIndex, required this.subscriptions});
+
+  @override
+  State<_PodcastPositionSliderDialog> createState() => _PodcastPositionSliderDialogState();
+}
+
+class _PodcastPositionSliderDialogState extends State<_PodcastPositionSliderDialog> {
+  late double _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.currentIndex.toDouble();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final pos = _value.toInt();
+    
+    String label;
+    if (pos == widget.subscriptions.length - 1) {
+      label = l10n.positionLabelLast;
+    } else {
+      final targetIndex = pos >= widget.currentIndex ? pos + 1 : pos;
+      final targetName = targetIndex < widget.subscriptions.length ? widget.subscriptions[targetIndex].title : '';
+      label = l10n.positionLabel(pos + 1, targetName);
+    }
+
+    return AlertDialog(
+      title: Text(l10n.moveToPosition),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          Slider(
+            value: _value,
+            min: 0,
+            max: (widget.subscriptions.length - 1).toDouble(),
+            divisions: widget.subscriptions.length > 1 ? widget.subscriptions.length - 1 : 1,
+            label: (pos + 1).toString(),
+            onChanged: (val) {
+              setState(() {
+                _value = val;
+              });
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, pos),
+          child: const Text('Ok'),
+        ),
+      ],
     );
   }
 }

@@ -212,7 +212,7 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                     ? '${channel.name}. Ora in onda: ${currentProgram.title}'
                     : channel.name,
                 customSemanticsActions: {
-                  CustomSemanticsAction(label: 'Aggiungi ai preferiti'):
+                  const CustomSemanticsAction(label: 'Aggiungi ai preferiti'):
                       () => _addToFavorites(channel),
                 },
                 child: ExcludeSemantics(
@@ -224,36 +224,39 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                           horizontal: 16, vertical: 8),
                     ),
                     onPressed: () => widget.onOpenChannel(channel),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.tv),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              channel.name,
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                            if (currentProgram != null) ...[
-                              const SizedBox(height: 4),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.tv),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
                               Text(
-                                'Ora in onda: ${currentProgram.title}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                channel.name,
+                                style: const TextStyle(fontSize: 20),
                               ),
+                              if (currentProgram != null) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Ora in onda: ${currentProgram.title}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary
+                                        .withOpacity(0.8),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                   ),
                 ),
               ),

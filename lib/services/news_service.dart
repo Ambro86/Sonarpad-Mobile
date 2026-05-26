@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart';
 
 import '../l10n/app_localizations.dart';
@@ -34,6 +35,54 @@ extension NewsLanguageInfo on NewsLanguage {
 class NewsService {
   final http.Client _client;
   NewsService({http.Client? client}) : _client = client ?? http.Client();
+
+  String _getPrefsKey(NewsLanguage language) => 'news_sources_order_${language.name}';
+  String _getHiddenPrefsKey(NewsLanguage language) => 'news_sources_hidden_${language.name}';
+
+  Future<List<NewsRssSource>> getOrderedSources(NewsLanguage language) async {
+    final prefs = await SharedPreferences.getInstance();
+    final defaultSources = language.rssSources;
+    final hiddenNames = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
+    
+    final savedOrder = prefs.getStringList(_getPrefsKey(language));
+    if (savedOrder == null || savedOrder.isEmpty) {
+      return defaultSources.where((s) => !hiddenNames.contains(s.name)).toList();
+    }
+    
+    final ordered = <NewsRssSource>[];
+    for (final name in savedOrder) {
+      if (hiddenNames.contains(name)) continue;
+      final source = defaultSources.where((s) => s.name == name).firstOrNull;
+      if (source != null) ordered.add(source);
+    }
+    
+    for (final source in defaultSources) {
+      if (!hiddenNames.contains(source.name) && !ordered.any((s) => s.name == source.name)) {
+        ordered.add(source);
+      }
+    }
+    return ordered;
+  }
+
+  Future<void> saveSourcesOrder(NewsLanguage language, List<NewsRssSource> sources) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_getPrefsKey(language), sources.map((s) => s.name).toList());
+  }
+
+  Future<void> hideSource(NewsLanguage language, NewsRssSource source) async {
+    final prefs = await SharedPreferences.getInstance();
+    final hidden = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
+    if (!hidden.contains(source.name)) {
+      hidden.add(source.name);
+      await prefs.setStringList(_getHiddenPrefsKey(language), hidden);
+    }
+  }
+
+  Future<void> restoreHiddenSources(NewsLanguage language) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_getHiddenPrefsKey(language));
+    await prefs.remove(_getPrefsKey(language)); // Also reset order when restoring
+  }
 
   Future<List<NewsArticle>> fetchTopNews(
     NewsLanguage language, {

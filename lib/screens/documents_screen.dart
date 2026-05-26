@@ -125,7 +125,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       if (await file.exists()) {
         await file.delete();
       }
-      
+
       await _service.remove(id);
     } catch (e) {
       dev.log('DocumentsScreen: errore rimozione documento: $e');
@@ -135,6 +135,36 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (mounted) {
       setState(() {});
       _showSnack('Documento rimosso');
+    }
+  }
+
+  Future<void> _handleAction(_DocumentAction action, int index) async {
+    final list = List<DocumentItem>.from(_service.documents);
+    final item = list.removeAt(index);
+
+    if (action == _DocumentAction.moveUp && index > 0) {
+      list.insert(index - 1, item);
+      await _service.saveAll(list);
+      setState(() {});
+    } else if (action == _DocumentAction.moveDown && index < list.length) {
+      list.insert(index + 1, item);
+      await _service.saveAll(list);
+      setState(() {});
+    } else if (action == _DocumentAction.moveToPosition) {
+      list.insert(index, item);
+      final newPos = await showDialog<int>(
+        context: context,
+        builder: (_) => _DocumentPositionSliderDialog(
+          currentIndex: index,
+          documents: list,
+        ),
+      );
+      if (newPos != null && newPos != index) {
+        final toMove = list.removeAt(index);
+        list.insert(newPos, toMove);
+        await _service.saveAll(list);
+        setState(() {});
+      }
     }
   }
 
@@ -149,7 +179,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Esporta documento'),
-        content: const Text('In quale formato desideri esportare il documento?'),
+        content:
+            const Text('In quale formato desideri esportare il documento?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, 'txt'),
@@ -167,19 +198,22 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     try {
       final extractor = DocumentTextExtractor();
-      final result = await extractor.extract(path: doc.path, extension: doc.extension);
+      final result =
+          await extractor.extract(path: doc.path, extension: doc.extension);
       final text = result.text;
 
       final appDir = await getTemporaryDirectory();
       final baseName = doc.name.replaceAll(RegExp(r'\.[^.]+$'), '');
-      
+
       if (format == 'txt') {
         final path = '${appDir.path}/${baseName}_export.txt';
         await File(path).writeAsString(text);
-        await Share.shareXFiles([XFile(path)], text: 'Documento esportato da Sonarpad');
+        await Share.shareXFiles([XFile(path)],
+            text: 'Documento esportato da Sonarpad');
       } else if (format == 'pdf') {
         final path = await _generatePdf(baseName, text, appDir.path);
-        await Share.shareXFiles([XFile(path)], text: 'Documento esportato da Sonarpad');
+        await Share.shareXFiles([XFile(path)],
+            text: 'Documento esportato da Sonarpad');
       }
     } catch (e) {
       dev.log('Errore durante l\'esportazione: $e');
@@ -191,19 +225,21 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
-  Future<String> _generatePdf(String baseName, String text, String outDir) async {
+  Future<String> _generatePdf(
+      String baseName, String text, String outDir) async {
     final PdfDocument document = PdfDocument();
     final PdfPage page = document.pages.add();
     final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
-    
+
     final PdfTextElement element = PdfTextElement(
       text: text,
       font: font,
     );
-    
+
     element.draw(
       page: page,
-      bounds: Rect.fromLTWH(0, 0, page.getClientSize().width, page.getClientSize().height),
+      bounds: Rect.fromLTWH(
+          0, 0, page.getClientSize().width, page.getClientSize().height),
       format: PdfLayoutFormat(
         layoutType: PdfLayoutType.paginate,
       ),
@@ -212,7 +248,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final path = '$outDir/${baseName}_export.pdf';
     final List<int> bytes = await document.save();
     document.dispose();
-    
+
     await File(path).writeAsBytes(bytes);
     return path;
   }
@@ -271,11 +307,19 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                     const SizedBox(height: 8),
                                 itemBuilder: (context, index) {
                                   final doc = _service.documents[index];
+                                  final isFirst = index == 0;
+                                  final isLast =
+                                      index == _service.documents.length - 1;
+
                                   return _DocumentTile(
                                     doc: doc,
+                                    isFirst: isFirst,
+                                    isLast: isLast,
                                     onOpen: () => _openDocument(doc),
                                     onRemove: () => _remove(doc.id),
                                     onExport: () => _exportDocument(doc),
+                                    onAction: (action) =>
+                                        _handleAction(action, index),
                                   );
                                 },
                               ),
@@ -293,15 +337,21 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
 class _DocumentTile extends StatelessWidget {
   final DocumentItem doc;
+  final bool isFirst;
+  final bool isLast;
   final VoidCallback onOpen;
   final VoidCallback onRemove;
   final VoidCallback onExport;
+  final ValueChanged<_DocumentAction> onAction;
 
   const _DocumentTile({
     required this.doc,
+    required this.isFirst,
+    required this.isLast,
     required this.onOpen,
     required this.onRemove,
     required this.onExport,
+    required this.onAction,
   });
 
   Color _badgeColor(String ext) {
@@ -340,82 +390,196 @@ class _DocumentTile extends StatelessWidget {
       child: Semantics(
         customSemanticsActions: {
           CustomSemanticsAction(label: l10n.removeDocument): onRemove,
-          CustomSemanticsAction(label: 'Esporta documento'): onExport,
+          const CustomSemanticsAction(label: 'Esporta documento'): onExport,
+          if (!isFirst)
+            CustomSemanticsAction(label: l10n.moveUp): () =>
+                onAction(_DocumentAction.moveUp),
+          if (!isLast)
+            CustomSemanticsAction(label: l10n.moveDown): () =>
+                onAction(_DocumentAction.moveDown),
+          CustomSemanticsAction(label: l10n.moveToPosition): () =>
+              onAction(_DocumentAction.moveToPosition),
         },
         label: '${doc.name}, tipo ${doc.extension.toUpperCase()}, '
             'aggiunto il ${_formattedDate(doc.addedAt)}',
-      hint: 'Tocca per aprire e leggere il documento',
-      child: Card(
-        elevation: 2,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onOpen,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              children: [
-                // Badge estensione
-                ExcludeSemantics(
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: badgeColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      doc.extension.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+        hint: 'Tocca per aprire e leggere il documento',
+        child: Card(
+          elevation: 2,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onOpen,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  // Badge estensione
+                  ExcludeSemantics(
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: badgeColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        doc.extension.toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                // Nome e data
-                Expanded(
-                  child: ExcludeSemantics(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          doc.name,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
+                  const SizedBox(width: 12),
+                  // Nome e data
+                  Expanded(
+                    child: ExcludeSemantics(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            doc.name,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          const SizedBox(height: 2),
+                          Text(
+                            'Aggiunto il ${_formattedDate(doc.addedAt)}',
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Pulsante rimuovi e menu azioni
+                  ExcludeSemantics(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        PopupMenuButton<_DocumentAction>(
+                          onSelected: onAction,
+                          itemBuilder: (context) => [
+                            if (!isFirst)
+                              PopupMenuItem(
+                                value: _DocumentAction.moveUp,
+                                child: Text(l10n.moveUp),
+                              ),
+                            if (!isLast)
+                              PopupMenuItem(
+                                value: _DocumentAction.moveDown,
+                                child: Text(l10n.moveDown),
+                              ),
+                            PopupMenuItem(
+                              value: _DocumentAction.moveToPosition,
+                              child: Text(l10n.moveToPosition),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Aggiunto il ${_formattedDate(doc.addedAt)}',
-                          style: theme.textTheme.bodySmall,
+                        Semantics(
+                          button: true,
+                          label: 'Rimuovi ${doc.name}',
+                          child: IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            tooltip: 'Rimuovi documento',
+                            onPressed: onRemove,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                // Pulsante rimuovi
-                ExcludeSemantics(
-                  child: Semantics(
-                    button: true,
-                    label: 'Rimuovi ${doc.name}',
-                    child: IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      tooltip: 'Rimuovi documento',
-                      onPressed: onRemove,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-        ),
       ),
+    );
+  }
+}
+
+enum _DocumentAction { moveUp, moveDown, moveToPosition }
+
+class _DocumentPositionSliderDialog extends StatefulWidget {
+  final int currentIndex;
+  final List<DocumentItem> documents;
+
+  const _DocumentPositionSliderDialog({
+    required this.currentIndex,
+    required this.documents,
+  });
+
+  @override
+  State<_DocumentPositionSliderDialog> createState() =>
+      _DocumentPositionSliderDialogState();
+}
+
+class _DocumentPositionSliderDialogState
+    extends State<_DocumentPositionSliderDialog> {
+  late double _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.currentIndex.toDouble();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final pos = _value.toInt();
+
+    String label;
+    if (pos == widget.documents.length - 1) {
+      label = l10n.positionLabelLast;
+    } else {
+      final targetIndex = pos >= widget.currentIndex ? pos + 1 : pos;
+      final targetName = targetIndex < widget.documents.length
+          ? widget.documents[targetIndex].name
+          : '';
+      label = l10n.positionLabel(pos + 1, targetName);
+    }
+
+    return AlertDialog(
+      title: Text(l10n.moveToPosition),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Slider(
+            value: _value,
+            min: 0,
+            max: (widget.documents.length - 1).toDouble(),
+            divisions:
+                widget.documents.length > 1 ? widget.documents.length - 1 : 1,
+            label: (pos + 1).toString(),
+            onChanged: (value) {
+              setState(() {
+                _value = value;
+              });
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, pos),
+          child: const Text('Ok'),
+        ),
+      ],
     );
   }
 }

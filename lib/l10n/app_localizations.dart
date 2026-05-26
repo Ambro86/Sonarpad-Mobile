@@ -76,6 +76,62 @@ class AppLocalizations {
         _ => 'La mia città',
       };
 
+  String get moveUp => switch (locale.languageCode) {
+        'it' => 'Sposta in alto',
+        'en' => 'Move up',
+        'fr' => 'Déplacer vers le haut',
+        'es' => 'Mover hacia arriba',
+        _ => 'Sposta in alto',
+      };
+
+  String get moveDown => switch (locale.languageCode) {
+        'it' => 'Sposta in basso',
+        'en' => 'Move down',
+        'fr' => 'Déplacer vers le bas',
+        'es' => 'Mover hacia abajo',
+        _ => 'Sposta in basso',
+      };
+
+  String get hide => switch (locale.languageCode) {
+        'it' => 'Elimina',
+        'en' => 'Delete',
+        'fr' => 'Supprimer',
+        'es' => 'Eliminar',
+        _ => 'Elimina',
+      };
+
+  String get moveToPosition => switch (locale.languageCode) {
+        'it' => 'Sposta alla posizione',
+        'en' => 'Move to position',
+        'fr' => 'Déplacer à la position',
+        'es' => 'Mover a la posición',
+        _ => 'Sposta alla posizione',
+      };
+
+  String positionLabel(int position, String targetName) => switch (locale.languageCode) {
+        'it' => 'Posizione $position: prima di $targetName',
+        'en' => 'Position $position: before $targetName',
+        'fr' => 'Position $position: avant $targetName',
+        'es' => 'Posición $position: antes de $targetName',
+        _ => 'Posizione $position: prima di $targetName',
+      };
+      
+  String get positionLabelLast => switch (locale.languageCode) {
+        'it' => 'Ultima posizione',
+        'en' => 'Last position',
+        'fr' => 'Dernière position',
+        'es' => 'Última posición',
+        _ => 'Ultima posizione',
+      };
+
+  String get restoreHiddenSources => switch (locale.languageCode) {
+        'it' => 'Ripristina testate eliminate',
+        'en' => 'Restore deleted sources',
+        'fr' => 'Restaurer les sources supprimées',
+        'es' => 'Restaurar fuentes eliminadas',
+        _ => 'Ripristina testate eliminate',
+      };
+
   String get newsLanguage => _isEn ? 'News Language' : (_isFr ? 'Langue des actualités' : (_isEs ? 'Idioma de las noticias' : 'Lingua notizie'));
   String get loadingNews => _isEn ? 'Loading news' : (_isFr ? 'Chargement des actualités' : (_isEs ? 'Cargando noticias' : 'Caricamento notizie'));
   String error(Object error) => _isEn ? 'Error: $error' : (_isFr ? 'Erreur : $error' : (_isEs ? 'Error: $error' : 'Errore: $error'));

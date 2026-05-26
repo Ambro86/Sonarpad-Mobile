@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/main.dart';
-import 'package:sonarpad_mobile_starter/screens/home_screen.dart';
 import 'package:sonarpad_mobile_starter/screens/settings_screen.dart';
 import 'package:sonarpad_mobile_starter/screens/documents_screen.dart';
 import 'package:sonarpad_mobile_starter/screens/wikipedia_screen.dart';

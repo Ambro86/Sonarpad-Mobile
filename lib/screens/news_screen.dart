@@ -16,6 +16,7 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final _service = NewsService();
   NewsLanguage? _language;
+  List<NewsRssSource>? _sources;
 
   @override
   void didChangeDependencies() {
@@ -28,6 +29,17 @@ class _NewsScreenState extends State<NewsScreen> {
         'es' => NewsLanguage.spanish,
         _ => NewsLanguage.italian,
       };
+      _loadSources();
+    }
+  }
+
+  Future<void> _loadSources() async {
+    if (_language == null) return;
+    final sources = await _service.getOrderedSources(_language!);
+    if (mounted) {
+      setState(() {
+        _sources = sources;
+      });
     }
   }
 
@@ -38,10 +50,15 @@ class _NewsScreenState extends State<NewsScreen> {
         settings: const RouteSettings(name: '/news/source'),
         builder: (_) => _NewsSourceArticlesScreen(
           source: source,
-          future: _service.fetchSourceNews(source),
         ),
       ),
     );
+  }
+
+  Future<void> _restoreSources() async {
+    if (_language == null) return;
+    await _service.restoreHiddenSources(_language!);
+    await _loadSources();
   }
 
   @override
@@ -50,6 +67,13 @@ class _NewsScreenState extends State<NewsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.news),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.restore),
+            tooltip: l10n.restoreHiddenSources,
+            onPressed: _restoreSources,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -71,15 +95,22 @@ class _NewsScreenState extends State<NewsScreen> {
                 if (value == null) return;
                 setState(() {
                   _language = value;
+                  _sources = null;
                 });
+                _loadSources();
               },
             ),
           ),
           Expanded(
-            child: _NewsSourceList(
-              sources: _language!.rssSources,
-              onSourceSelected: _openSource,
-            ),
+            child: _sources == null
+                ? const Center(child: CircularProgressIndicator())
+                : _NewsSourceList(
+                    sources: _sources!,
+                    language: _language!,
+                    service: _service,
+                    onSourceSelected: _openSource,
+                    onSourcesChanged: _loadSources,
+                  ),
           ),
         ],
       ),
@@ -95,7 +126,8 @@ class _NewsSourceArticlesScreen extends StatefulWidget {
   final NewsRssSource source;
 
   @override
-  State<_NewsSourceArticlesScreen> createState() => _NewsSourceArticlesScreenState();
+  State<_NewsSourceArticlesScreen> createState() =>
+      _NewsSourceArticlesScreenState();
 }
 
 class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
@@ -111,7 +143,9 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   }
 
   void _fetch() {
-    final cat = widget.source.categories?.where((c) => c.uri == _currentUri).firstOrNull;
+    final cat = widget.source.categories
+        ?.where((c) => c.uri == _currentUri)
+        .firstOrNull;
     if (cat != null && cat.isLocal) {
       _future = _fetchLocalCategory(cat);
     } else {
@@ -128,11 +162,14 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
       final city = loc['city']!;
       final lang = AppLocalizations.of(context).locale.languageCode;
       final country = loc['countryCode']!;
-      final searchUri = Uri.parse('https://news.google.com/rss/search?q=${Uri.encodeComponent(city)}&hl=$lang&gl=$country&ceid=$country:$lang');
-      return _service.fetchSourceNews(NewsRssSource(name: widget.source.name, uri: searchUri));
+      final searchUri = Uri.parse(
+          'https://news.google.com/rss/search?q=${Uri.encodeComponent(city)}&hl=$lang&gl=$country&ceid=$country:$lang');
+      return _service.fetchSourceNews(
+          NewsRssSource(name: widget.source.name, uri: searchUri));
     }
     // Fallback to top news if location fails
-    return _service.fetchSourceNews(NewsRssSource(name: widget.source.name, uri: widget.source.uri));
+    return _service.fetchSourceNews(
+        NewsRssSource(name: widget.source.name, uri: widget.source.uri));
   }
 
   @override
@@ -141,7 +178,8 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
       appBar: AppBar(title: Text(widget.source.name)),
       body: Column(
         children: [
-          if (widget.source.categories != null && widget.source.categories!.isNotEmpty)
+          if (widget.source.categories != null &&
+              widget.source.categories!.isNotEmpty)
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -176,7 +214,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                         },
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -189,28 +227,181 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   }
 }
 
+enum _NewsSourceAction { moveUp, moveDown, moveToPosition, hide }
+
 class _NewsSourceList extends StatelessWidget {
   const _NewsSourceList({
     required this.sources,
+    required this.language,
+    required this.service,
     required this.onSourceSelected,
+    required this.onSourcesChanged,
   });
 
   final List<NewsRssSource> sources;
+  final NewsLanguage language;
+  final NewsService service;
   final ValueChanged<NewsRssSource> onSourceSelected;
+  final VoidCallback onSourcesChanged;
+
+  void _handleAction(
+      BuildContext context, _NewsSourceAction action, int index) async {
+    if (action == _NewsSourceAction.hide) {
+      await service.hideSource(language, sources[index]);
+      onSourcesChanged();
+      return;
+    }
+
+    final list = List<NewsRssSource>.from(sources);
+    final item = list.removeAt(index);
+
+    if (action == _NewsSourceAction.moveUp && index > 0) {
+      list.insert(index - 1, item);
+      await service.saveSourcesOrder(language, list);
+      onSourcesChanged();
+    } else if (action == _NewsSourceAction.moveDown && index < list.length) {
+      list.insert(index + 1, item);
+      await service.saveSourcesOrder(language, list);
+      onSourcesChanged();
+    } else if (action == _NewsSourceAction.moveToPosition) {
+      list.insert(index, item); // put it back temporarily
+      final newPos = await showDialog<int>(
+        context: context,
+        builder: (_) => _PositionSliderDialog(
+          currentIndex: index,
+          sources: list,
+        ),
+      );
+      if (newPos != null && newPos != index) {
+        final toMove = list.removeAt(index);
+        list.insert(newPos, toMove);
+        await service.saveSourcesOrder(language, list);
+        onSourcesChanged();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ListView.separated(
       itemCount: sources.length,
       separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (context, index) {
         final source = sources[index];
+        final isFirst = index == 0;
+        final isLast = index == sources.length - 1;
+
         return ListTile(
           title: Text(source.name),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PopupMenuButton<_NewsSourceAction>(
+                onSelected: (action) => _handleAction(context, action, index),
+                itemBuilder: (context) => [
+                  if (!isFirst)
+                    PopupMenuItem(
+                      value: _NewsSourceAction.moveUp,
+                      child: Text(l10n.moveUp),
+                    ),
+                  if (!isLast)
+                    PopupMenuItem(
+                      value: _NewsSourceAction.moveDown,
+                      child: Text(l10n.moveDown),
+                    ),
+                  PopupMenuItem(
+                    value: _NewsSourceAction.moveToPosition,
+                    child: Text(l10n.moveToPosition),
+                  ),
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: _NewsSourceAction.hide,
+                    child: Text(l10n.hide,
+                        style: const TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
           onTap: () => onSourceSelected(source),
         );
       },
+    );
+  }
+}
+
+class _PositionSliderDialog extends StatefulWidget {
+  final int currentIndex;
+  final List<NewsRssSource> sources;
+
+  const _PositionSliderDialog(
+      {required this.currentIndex, required this.sources});
+
+  @override
+  State<_PositionSliderDialog> createState() => _PositionSliderDialogState();
+}
+
+class _PositionSliderDialogState extends State<_PositionSliderDialog> {
+  late double _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.currentIndex.toDouble();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final pos = _value.toInt();
+
+    String label;
+    if (pos == widget.sources.length - 1) {
+      label = l10n.positionLabelLast;
+    } else {
+      final targetIndex = pos >= widget.currentIndex ? pos + 1 : pos;
+      final targetName = targetIndex < widget.sources.length
+          ? widget.sources[targetIndex].name
+          : '';
+      label = l10n.positionLabel(pos + 1, targetName);
+    }
+
+    return AlertDialog(
+      title: Text(l10n.moveToPosition),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          Slider(
+            value: _value,
+            min: 0,
+            max: (widget.sources.length - 1).toDouble(),
+            divisions:
+                widget.sources.length > 1 ? widget.sources.length - 1 : 1,
+            label: (pos + 1).toString(),
+            onChanged: (val) {
+              setState(() {
+                _value = val;
+              });
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Annulla'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, pos),
+          child: const Text('Ok'),
+        ),
+      ],
     );
   }
 }

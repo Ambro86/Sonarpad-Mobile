@@ -31,7 +31,9 @@ class _RadioScreenState extends State<RadioScreen> {
     super.didChangeDependencies();
     if (_languageCode == null) {
       final code = AppLocalizations.of(context).locale.languageCode;
-      _languageCode = code == 'es' ? 'es' : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
+      _languageCode = code == 'es'
+          ? 'es'
+          : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
     }
   }
 
@@ -192,7 +194,7 @@ class _RadioScreenState extends State<RadioScreen> {
                 onPlay: () => _play(station),
                 onToggleFavorite: () => _toggleFavorite(station),
               );
-            }).toList(),
+            }),
           ] else if (!_searching) ...[
             const SizedBox(height: 16),
             Text(l10n.radioNoResults),
@@ -227,6 +229,7 @@ class RadioTile extends StatelessWidget {
   final bool isPlaying;
   final VoidCallback onPlay;
   final VoidCallback onToggleFavorite;
+  final List<Widget>? extraActions;
 
   const RadioTile({
     super.key,
@@ -235,6 +238,7 @@ class RadioTile extends StatelessWidget {
     required this.isPlaying,
     required this.onPlay,
     required this.onToggleFavorite,
+    this.extraActions,
   });
 
   @override
@@ -244,39 +248,42 @@ class RadioTile extends StatelessWidget {
       child: Semantics(
         customSemanticsActions: {
           CustomSemanticsAction(
-                  label: isFavorite
-                      ? l10n.radioRemoveFavorite
-                      : l10n.radioAddFavorite):
-              onToggleFavorite,
+              label: isFavorite
+                  ? l10n.radioRemoveFavorite
+                  : l10n.radioAddFavorite): onToggleFavorite,
         },
         child: Card(
-        child: ListTile(
-        leading: Icon(isPlaying ? Icons.volume_up : Icons.radio),
-        title: Text(station.name),
-        subtitle: Text(station.streamUrl,
-            maxLines: 1, overflow: TextOverflow.ellipsis),
-        onTap: onPlay,
-        trailing: ExcludeSemantics(
-          child: Wrap(
-            spacing: 4,
-            children: [
-              IconButton(
-                tooltip: l10n.radioPlay,
-                onPressed: onPlay,
-                icon: const Icon(Icons.play_arrow),
+          child: ListTile(
+            leading: Icon(isPlaying ? Icons.volume_up : Icons.radio),
+            title: Text(station.name),
+            subtitle: Text(station.streamUrl,
+                maxLines: 1, overflow: TextOverflow.ellipsis),
+            onTap: onPlay,
+            trailing: ExcludeSemantics(
+              child: Wrap(
+                spacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  ...?extraActions,
+                  IconButton(
+                    tooltip: l10n.radioPlay,
+                    onPressed: onPlay,
+                    icon: const Icon(Icons.play_arrow),
+                  ),
+                  IconButton(
+                    tooltip: isFavorite
+                        ? l10n.radioRemoveFavorite
+                        : l10n.radioAddFavorite,
+                    onPressed: onToggleFavorite,
+                    icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border),
+                  ),
+                ],
               ),
-              IconButton(
-                tooltip:
-                    isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
-                onPressed: onToggleFavorite,
-                icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-              ),
-            ],
+            ),
           ),
         ),
-        ),
       ),
-    ),
-  );
+    );
   }
 }

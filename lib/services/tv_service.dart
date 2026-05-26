@@ -175,7 +175,8 @@ class TvService {
   }
 
   Future<Map<String, TvProgram>> loadCurrentPrograms(String secretKey) async {
-    final template = _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
+    final template =
+        _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
     final nowTime = DateTime.now();
     final date =
         '${nowTime.year}-${nowTime.month.toString().padLeft(2, '0')}-${nowTime.day.toString().padLeft(2, '0')}';
@@ -220,17 +221,21 @@ class TvService {
     return currentPrograms;
   }
 
-  Future<List<TvProgram>> loadChannelGuide(
-      String channel, String secretKey, {DateTime? targetDate}) async {
+  Future<List<TvProgram>> loadChannelGuide(String channel, String secretKey,
+      {DateTime? targetDate}) async {
     final dt = targetDate ?? DateTime.now();
 
     // 1. Resolve exact channel name from timeline API
     String? exactChannelName;
     try {
-      final timelineTemplate = _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
-      final dateStr = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+      final timelineTemplate =
+          _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
+      final dateStr =
+          '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
       final timelineUrl = timelineTemplate.replaceAll('{date}', dateStr);
-      final response = await http.get(Uri.parse(timelineUrl), headers: {'User-Agent': 'Sonarpad TV/1.0'}).timeout(const Duration(seconds: 10));
+      final response = await http.get(Uri.parse(timelineUrl), headers: {
+        'User-Agent': 'Sonarpad TV/1.0'
+      }).timeout(const Duration(seconds: 10));
       if (response.statusCode == 200) {
         final root = jsonDecode(response.body);
         if (root is List) {
@@ -286,50 +291,6 @@ class TvService {
     return programs.where((p) => p.title.isNotEmpty).toList();
   }
 
-  Future<List<TvProgram>> _loadTimelineChannelGuide(
-      String channel, String secretKey, DateTime targetDate) async {
-    try {
-      final template = _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey);
-      final date =
-          '${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
-      final url = template.replaceAll('{date}', date);
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {'User-Agent': 'Sonarpad TV/1.0'},
-      ).timeout(const Duration(seconds: 10));
-
-      if (response.statusCode != 200) {
-        return [];
-      }
-
-      final target = normalizeChannelName(channel);
-      final root = jsonDecode(response.body);
-      if (root is! List) return [];
-
-      final programs = <TvProgram>[];
-      for (final group in root) {
-        if (group is! List) continue;
-        for (final item in group) {
-          if (item is! Map<String, dynamic>) continue;
-          final guideChannel = item['ch']?.toString().trim() ?? '';
-          if (normalizeChannelName(guideChannel) != target) continue;
-          final title = item['title']?.toString().trim() ?? '';
-          if (title.isEmpty) continue;
-          programs.add(TvProgram(
-            title: title,
-            hour: item['hour']?.toString().trim() ?? '',
-            startTime: _readInt(item, 'startTime', 'start_time'),
-            endTime: _readInt(item, 'endTime', 'end_time'),
-          ));
-        }
-      }
-      return programs;
-    } catch (e) {
-      dev.log('Errore caricamento timeline: $e');
-      return [];
-    }
-  }
-
   Future<List<TvChannel>> loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonStr = prefs.getString(_prefsKey);
@@ -353,7 +314,8 @@ class TvService {
 
   Future<String> resolveStreamUrl(TvChannel channel) async {
     var resolvedUrl = channel.url;
-    await AppLogger.log('Inizio risoluzione stream per: ${channel.name} (URL base: $resolvedUrl)');
+    await AppLogger.log(
+        'Inizio risoluzione stream per: ${channel.name} (URL base: $resolvedUrl)');
 
     if (resolvedUrl.contains('/relinker/relinkerServlet')) {
       final uri = Uri.parse(resolvedUrl);
@@ -361,25 +323,26 @@ class TvService {
       queryParams.remove('forceUserAgent');
       queryParams['output'] = '54'; // Richiede l'URL assoluto in plain text
       final reqUrl = uri.replace(queryParameters: queryParams).toString();
-      
+
       await AppLogger.log('Interrogo il relinker RAI con output=54: $reqUrl');
-      
+
       final response = await http.get(
         Uri.parse(reqUrl),
         headers: {'User-Agent': 'Sonarpad TV/1.0'},
       ).timeout(const Duration(seconds: 10));
-      
+
       if (response.statusCode != 200) {
         await AppLogger.log('Errore HTTP ${response.statusCode} dal relinker');
         throw Exception('HTTP ${response.statusCode}');
       }
-      
+
       final body = response.body.trim();
       if (body.startsWith('http')) {
         resolvedUrl = body;
         await AppLogger.log('Relinker risolto in (output=54): $resolvedUrl');
       } else if (body.startsWith('#EXTM3U')) {
-        await AppLogger.log('Il relinker ha risposto direttamente con un HLS (EXTM3U).');
+        await AppLogger.log(
+            'Il relinker ha risposto direttamente con un HLS (EXTM3U).');
         resolvedUrl = reqUrl;
       } else {
         final match = RegExp(r'<url[^>]*type="content"[^>]*>([^<]+)</url>')
@@ -403,7 +366,7 @@ class TvService {
   Future<String> resolveAudioDescriptionStreamUrl(TvChannel channel) async {
     final masterUrl = await resolveStreamUrl(channel);
     await AppLogger.log('Cerco traccia AD nel master URL: $masterUrl');
-    
+
     try {
       final response = await http.get(
         Uri.parse(masterUrl),
@@ -411,7 +374,8 @@ class TvService {
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
-        await AppLogger.log('Errore HTTP ${response.statusCode} scaricando master playlist.');
+        await AppLogger.log(
+            'Errore HTTP ${response.statusCode} scaricando master playlist.');
         return masterUrl;
       }
 
@@ -422,7 +386,8 @@ class TvService {
 
       final finalMasterUrl = response.request?.url.toString() ?? masterUrl;
       if (finalMasterUrl != masterUrl) {
-        await AppLogger.log('Redirect rilevato!\nOriginale: $masterUrl\nFinale: $finalMasterUrl');
+        await AppLogger.log(
+            'Redirect rilevato!\nOriginale: $masterUrl\nFinale: $finalMasterUrl');
       }
 
       String? adUrl;
@@ -432,7 +397,8 @@ class TvService {
         final trimmed = line.trim();
         if (!trimmed.startsWith('#EXT-X-MEDIA:')) continue;
 
-        final attrs = _parseHlsAttributes(trimmed.substring('#EXT-X-MEDIA:'.length));
+        final attrs =
+            _parseHlsAttributes(trimmed.substring('#EXT-X-MEDIA:'.length));
         if (attrs['TYPE'] != 'AUDIO') continue;
 
         final uri = attrs['URI'];
@@ -447,7 +413,8 @@ class TvService {
             characteristics.contains('describes-video');
 
         if (isAudioDescription) {
-          await AppLogger.log('Trovata traccia DESC:\nURI=$uri\nLang=$language\nName=$name');
+          await AppLogger.log(
+              'Trovata traccia DESC:\nURI=$uri\nLang=$language\nName=$name');
           adUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
           break; // AD trovata: precedenza assoluta, non cercare oltre
         }
@@ -479,7 +446,7 @@ class TvService {
     if (!resolvedUri.hasQuery && masterUri.hasQuery) {
       resolvedUri = resolvedUri.replace(query: masterUri.query);
     }
-    
+
     final finalUrl = resolvedUri.toString();
     AppLogger.log('Risolto child URI:\nDa: $childUri\nA: $finalUrl');
     return finalUrl;
