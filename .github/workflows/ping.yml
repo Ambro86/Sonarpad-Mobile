@@ -1,0 +1,13 @@
+name: Ping Actions
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test
+        run: echo "GitHub Actions funziona"
