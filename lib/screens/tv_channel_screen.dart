@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
@@ -42,7 +41,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     try {
       final code = await _settings.getTvSecretCode();
       final guide = await _service.loadChannelGuide(
-        widget.channel.name, 
+        widget.channel.name,
         code,
         targetDate: _selectedDate,
       );
@@ -74,7 +73,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   Future<void> _selectDay() async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     final selected = await showDialog<DateTime>(
       context: context,
       builder: (context) {
@@ -83,19 +82,21 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
           builder: (context, setStateDialog) {
             return AlertDialog(
               title: const Text('Scegli giorno'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [-1, 0, 1, 2].map((offset) {
-                  final d = today.add(Duration(days: offset));
-                  return RadioListTile<DateTime>(
-                    title: Text(_getLabelForDate(d)),
-                    value: d,
-                    groupValue: tempDate,
-                    onChanged: (val) {
-                      if (val != null) setStateDialog(() => tempDate = val);
-                    },
-                  );
-                }).toList(),
+              content: RadioGroup<DateTime>(
+                groupValue: tempDate,
+                onChanged: (value) {
+                  if (value != null) setStateDialog(() => tempDate = value);
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [-1, 0, 1, 2].map((offset) {
+                    final d = today.add(Duration(days: offset));
+                    return RadioListTile<DateTime>(
+                      title: Text(_getLabelForDate(d)),
+                      value: d,
+                    );
+                  }).toList(),
+                ),
               ),
               actions: [
                 TextButton(

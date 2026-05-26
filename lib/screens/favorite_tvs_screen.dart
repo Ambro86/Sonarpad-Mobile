@@ -42,8 +42,11 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
     favs.removeWhere((c) => c.name == channel.name);
     await _service.saveFavorites(favs);
     if (!mounted) return;
-    SemanticsService.announce(
-        '${channel.name} rimosso dai preferiti', TextDirection.ltr);
+    SemanticsService.sendAnnouncement(
+      View.of(context),
+      '${channel.name} rimosso dai preferiti',
+      TextDirection.ltr,
+    );
     _load();
   }
 
@@ -115,7 +118,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .onPrimary
-                                                  .withOpacity(0.8),
+                                                  .withValues(alpha: 0.8),
                                             ),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,

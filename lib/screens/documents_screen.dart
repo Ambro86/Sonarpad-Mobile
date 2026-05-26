@@ -208,12 +208,20 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       if (format == 'txt') {
         final path = '${appDir.path}/${baseName}_export.txt';
         await File(path).writeAsString(text);
-        await Share.shareXFiles([XFile(path)],
-            text: 'Documento esportato da Sonarpad');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(path)],
+            text: 'Documento esportato da Sonarpad',
+          ),
+        );
       } else if (format == 'pdf') {
         final path = await _generatePdf(baseName, text, appDir.path);
-        await Share.shareXFiles([XFile(path)],
-            text: 'Documento esportato da Sonarpad');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(path)],
+            text: 'Documento esportato da Sonarpad',
+          ),
+        );
       }
     } catch (e) {
       dev.log('Errore durante l\'esportazione: $e');

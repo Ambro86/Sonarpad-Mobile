@@ -25,12 +25,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _appLanguage = 'it';
   String _languageCode = 'it';
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
-  
+
   String _ttsEngine = 'edge';
   String _systemTtsLanguage = 'it-IT';
   String? _systemTtsVoice;
   List<Map<String, String>> _systemVoices = [];
-  
+
   double _ttsSpeed = 1.0;
   double _ttsPitch = 1.0;
   final _tvSecretCodeController = TextEditingController();
@@ -58,7 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final speed = await _settings.loadTtsSpeed();
     final pitch = await _settings.loadTtsPitch();
     final tvSecretCode = await _settings.getTvSecretCode();
-    
+
     final ttsEngine = await _settings.loadTtsEngine();
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
@@ -119,10 +119,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await _settings.saveTtsPitch(_ttsPitch);
 
       if (_ttsEngine == 'system') {
-        await _flutterTts.setSpeechRate(_ttsSpeed * 0.5); // flutter_tts usa range 0-1
+        await _flutterTts
+            .setSpeechRate(_ttsSpeed * 0.5); // flutter_tts usa range 0-1
         await _flutterTts.setPitch(_ttsPitch);
         if (_systemTtsVoice != null) {
-          await _flutterTts.setVoice({"name": _systemTtsVoice!, "locale": _systemTtsLanguage});
+          await _flutterTts.setVoice(
+              {"name": _systemTtsVoice!, "locale": _systemTtsLanguage});
         } else {
           await _flutterTts.setLanguage(_systemTtsLanguage);
         }
@@ -304,17 +306,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     if (value == null || value == _appLanguage) return;
                     setState(() => _appLanguage = value);
                     await _settings.saveAppLanguage(value);
-                    if (!mounted) return;
+                    if (!context.mounted) return;
                     SonarpadApp.setLocale(context, Locale(value));
                   },
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   initialValue: _ttsEngine,
-                  decoration: const InputDecoration(labelText: 'Motore di lettura'),
+                  decoration:
+                      const InputDecoration(labelText: 'Motore di lettura'),
                   items: const [
-                    DropdownMenuItem(value: 'edge', child: Text('Edge TTS (Alta qualità online)')),
-                    DropdownMenuItem(value: 'system', child: Text('Voci di sistema (VoiceOver / Google)')),
+                    DropdownMenuItem(
+                        value: 'edge',
+                        child: Text('Edge TTS (Alta qualità online)')),
+                    DropdownMenuItem(
+                        value: 'system',
+                        child: Text('Voci di sistema (VoiceOver / Google)')),
                   ],
                   onChanged: (value) {
                     if (value == null) return;
@@ -326,7 +333,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (_ttsEngine == 'edge') ...[
                   DropdownButtonFormField<String>(
                     initialValue: _languageCode,
-                    decoration: InputDecoration(labelText: l10n.ttsVoiceLanguage),
+                    decoration:
+                        InputDecoration(labelText: l10n.ttsVoiceLanguage),
                     items: AppSettingsService.ttsLanguages
                         .map((language) => DropdownMenuItem(
                               value: language.code,
@@ -337,7 +345,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       final next = value ?? 'it';
                       setState(() {
                         _languageCode = next;
-                        _voice = AppSettingsService.defaultVoiceForLanguage(next);
+                        _voice =
+                            AppSettingsService.defaultVoiceForLanguage(next);
                       });
                       _persistTtsSelection();
                     },
@@ -364,21 +373,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ] else ...[
                   Builder(
                     builder: (context) {
-                      final locales = _systemVoices.map((v) => v['locale']!).toSet().toList()..sort();
+                      final locales = _systemVoices
+                          .map((v) => v['locale']!)
+                          .toSet()
+                          .toList()
+                        ..sort();
                       if (locales.isEmpty) {
                         return const Padding(
                           padding: EdgeInsets.symmetric(vertical: 8.0),
                           child: Text('Nessuna voce di sistema disponibile.'),
                         );
                       }
-                      final availableVoices = _systemVoices.where((v) => v['locale'] == _systemTtsLanguage).toList();
-                      
+                      final availableVoices = _systemVoices
+                          .where((v) => v['locale'] == _systemTtsLanguage)
+                          .toList();
+
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           DropdownButtonFormField<String>(
-                            initialValue: locales.contains(_systemTtsLanguage) ? _systemTtsLanguage : locales.first,
-                            decoration: const InputDecoration(labelText: 'Lingua di sistema'),
+                            initialValue: locales.contains(_systemTtsLanguage)
+                                ? _systemTtsLanguage
+                                : locales.first,
+                            decoration: const InputDecoration(
+                                labelText: 'Lingua di sistema'),
                             items: locales
                                 .map((l) => DropdownMenuItem(
                                       value: l,
@@ -396,18 +414,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String?>(
-                            initialValue: availableVoices.any((v) => v['name'] == _systemTtsVoice) ? _systemTtsVoice : null,
-                            decoration: const InputDecoration(labelText: 'Voce di sistema'),
+                            initialValue: availableVoices
+                                    .any((v) => v['name'] == _systemTtsVoice)
+                                ? _systemTtsVoice
+                                : null,
+                            decoration: const InputDecoration(
+                                labelText: 'Voce di sistema'),
                             hint: const Text('Voce predefinita'),
                             items: [
                               const DropdownMenuItem<String?>(
                                 value: null,
                                 child: Text('Predefinita'),
                               ),
-                              ...availableVoices.map((v) => DropdownMenuItem<String?>(
-                                value: v['name'],
-                                child: Text(v['name'] ?? ''),
-                              )),
+                              ...availableVoices
+                                  .map((v) => DropdownMenuItem<String?>(
+                                        value: v['name'],
+                                        child: Text(v['name'] ?? ''),
+                                      )),
                             ],
                             onChanged: (value) {
                               setState(() {
@@ -426,14 +449,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ExcludeSemantics(
-                      child: Text('Velocità lettura: ${_ttsSpeed.toStringAsFixed(1)}x'),
+                      child: Text(
+                          'Velocità lettura: ${_ttsSpeed.toStringAsFixed(1)}x'),
                     ),
                     Slider(
                       value: _ttsSpeed,
                       min: 0.5,
                       max: 2.0,
                       divisions: 15,
-                      semanticFormatterCallback: (double value) => 'Velocità lettura: ${value.toStringAsFixed(1)}',
+                      semanticFormatterCallback: (double value) =>
+                          'Velocità lettura: ${value.toStringAsFixed(1)}',
                       onChanged: (value) => setState(() => _ttsSpeed = value),
                       onChangeEnd: (value) => _settings.saveTtsSpeed(value),
                     ),
@@ -444,14 +469,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ExcludeSemantics(
-                      child: Text('Tono voce: ${_ttsPitch.toStringAsFixed(1)}x'),
+                      child:
+                          Text('Tono voce: ${_ttsPitch.toStringAsFixed(1)}x'),
                     ),
                     Slider(
                       value: _ttsPitch,
                       min: 0.5,
                       max: 2.0,
                       divisions: 15,
-                      semanticFormatterCallback: (double value) => 'Tono voce: ${value.toStringAsFixed(1)}',
+                      semanticFormatterCallback: (double value) =>
+                          'Tono voce: ${value.toStringAsFixed(1)}',
                       onChanged: (value) => setState(() => _ttsPitch = value),
                       onChangeEnd: (value) => _settings.saveTtsPitch(value),
                     ),
@@ -460,10 +487,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 16),
                 FilledButton.icon(
                   onPressed: _testingVoice ? null : _testVoice,
-                  icon: _testingVoice 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) 
+                  icon: _testingVoice
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2))
                       : const Icon(Icons.volume_up),
-                  label: Text(_testingVoice ? 'Riproduzione in corso...' : 'Testa voce'),
+                  label: Text(_testingVoice
+                      ? 'Riproduzione in corso...'
+                      : 'Testa voce'),
                   style: FilledButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                   ),
@@ -496,18 +528,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 24),
                 const Divider(),
                 const SizedBox(height: 12),
-                  FilledButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          settings: const RouteSettings(name: '/settings/app-log'),
-                          builder: (_) => const AppLogScreen(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.description),
-                    label: const Text('Visualizza log di sistema'),
-                  ),
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        settings:
+                            const RouteSettings(name: '/settings/app-log'),
+                        builder: (_) => const AppLogScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.description),
+                  label: const Text('Visualizza log di sistema'),
+                ),
               ],
             ),
     );

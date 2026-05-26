@@ -37,13 +37,19 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
   }
 
   Future<void> _toggleFavorite(RadioStation station) async {
-    final next = _favorites.where((item) => item.streamUrl != station.streamUrl).toList();
+    final next = _favorites
+        .where((item) => item.streamUrl != station.streamUrl)
+        .toList();
     await _service.saveFavorites(next);
     setState(() => _favorites = next);
-    
+
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
-    SemanticsService.announce(l10n.radioFavoriteRemoved(station.name), TextDirection.ltr);
+    SemanticsService.sendAnnouncement(
+      View.of(context),
+      l10n.radioFavoriteRemoved(station.name),
+      TextDirection.ltr,
+    );
   }
 
   void _play(RadioStation station) {
@@ -94,7 +100,8 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
         title: Text(l10n.radioFavoritesButton),
       ),
       body: _loading
-          ? Center(child: CircularProgressIndicator(semanticsLabel: l10n.loading))
+          ? Center(
+              child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : _favorites.isEmpty
               ? Center(child: Text(l10n.radioNoFavorites))
               : ListView.builder(
@@ -115,7 +122,8 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                         onToggleFavorite: () => _toggleFavorite(station),
                         extraActions: [
                           PopupMenuButton<_RadioAction>(
-                            onSelected: (action) => _handleAction(action, index),
+                            onSelected: (action) =>
+                                _handleAction(action, index),
                             itemBuilder: (context) => [
                               if (!isFirst)
                                 PopupMenuItem(
@@ -148,13 +156,16 @@ class _RadioPositionSliderDialog extends StatefulWidget {
   final int currentIndex;
   final List<RadioStation> favorites;
 
-  const _RadioPositionSliderDialog({required this.currentIndex, required this.favorites});
+  const _RadioPositionSliderDialog(
+      {required this.currentIndex, required this.favorites});
 
   @override
-  State<_RadioPositionSliderDialog> createState() => _RadioPositionSliderDialogState();
+  State<_RadioPositionSliderDialog> createState() =>
+      _RadioPositionSliderDialogState();
 }
 
-class _RadioPositionSliderDialogState extends State<_RadioPositionSliderDialog> {
+class _RadioPositionSliderDialogState
+    extends State<_RadioPositionSliderDialog> {
   late double _value;
 
   @override
@@ -167,13 +178,15 @@ class _RadioPositionSliderDialogState extends State<_RadioPositionSliderDialog> 
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final pos = _value.toInt();
-    
+
     String label;
     if (pos == widget.favorites.length - 1) {
       label = l10n.positionLabelLast;
     } else {
       final targetIndex = pos >= widget.currentIndex ? pos + 1 : pos;
-      final targetName = targetIndex < widget.favorites.length ? widget.favorites[targetIndex].name : '';
+      final targetName = targetIndex < widget.favorites.length
+          ? widget.favorites[targetIndex].name
+          : '';
       label = l10n.positionLabel(pos + 1, targetName);
     }
 
@@ -182,13 +195,16 @@ class _RadioPositionSliderDialogState extends State<_RadioPositionSliderDialog> 
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           Slider(
             value: _value,
             min: 0,
             max: (widget.favorites.length - 1).toDouble(),
-            divisions: widget.favorites.length > 1 ? widget.favorites.length - 1 : 1,
+            divisions:
+                widget.favorites.length > 1 ? widget.favorites.length - 1 : 1,
             label: (pos + 1).toString(),
             onChanged: (val) {
               setState(() {

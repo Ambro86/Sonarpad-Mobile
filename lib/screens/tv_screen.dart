@@ -178,8 +178,11 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
       favs.add(channel);
       await _service.saveFavorites(favs);
       if (!mounted) return;
-      SemanticsService.announce(
-          '${channel.name} aggiunto ai preferiti', TextDirection.ltr);
+      SemanticsService.sendAnnouncement(
+        View.of(context),
+        '${channel.name} aggiunto ai preferiti',
+        TextDirection.ltr,
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${channel.name} aggiunto ai preferiti')),
       );
@@ -246,7 +249,7 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onPrimary
-                                        .withOpacity(0.8),
+                                        .withValues(alpha: 0.8),
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,

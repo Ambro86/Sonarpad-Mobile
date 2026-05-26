@@ -130,11 +130,15 @@ class _PodcastScreenState extends State<PodcastScreen> {
       await _service.removeSubscription(subscription);
       await _load();
       if (!mounted) return;
-      SemanticsService.announce(l10n.podcastRemoved, TextDirection.ltr);
+      SemanticsService.sendAnnouncement(
+        View.of(context),
+        l10n.podcastRemoved,
+        TextDirection.ltr,
+      );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Errore: $e')));
     }
   }
 
@@ -297,7 +301,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
                 child: MergeSemantics(
                   child: Semantics(
                     customSemanticsActions: {
-                      CustomSemanticsAction(label: l10n.removePodcast): () => _removeSubscription(subscription),
+                      CustomSemanticsAction(label: l10n.removePodcast): () =>
+                          _removeSubscription(subscription),
                     },
                     child: Row(
                       children: [
@@ -357,13 +362,16 @@ class _PodcastPositionSliderDialog extends StatefulWidget {
   final int currentIndex;
   final List<PodcastSubscription> subscriptions;
 
-  const _PodcastPositionSliderDialog({required this.currentIndex, required this.subscriptions});
+  const _PodcastPositionSliderDialog(
+      {required this.currentIndex, required this.subscriptions});
 
   @override
-  State<_PodcastPositionSliderDialog> createState() => _PodcastPositionSliderDialogState();
+  State<_PodcastPositionSliderDialog> createState() =>
+      _PodcastPositionSliderDialogState();
 }
 
-class _PodcastPositionSliderDialogState extends State<_PodcastPositionSliderDialog> {
+class _PodcastPositionSliderDialogState
+    extends State<_PodcastPositionSliderDialog> {
   late double _value;
 
   @override
@@ -376,13 +384,15 @@ class _PodcastPositionSliderDialogState extends State<_PodcastPositionSliderDial
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final pos = _value.toInt();
-    
+
     String label;
     if (pos == widget.subscriptions.length - 1) {
       label = l10n.positionLabelLast;
     } else {
       final targetIndex = pos >= widget.currentIndex ? pos + 1 : pos;
-      final targetName = targetIndex < widget.subscriptions.length ? widget.subscriptions[targetIndex].title : '';
+      final targetName = targetIndex < widget.subscriptions.length
+          ? widget.subscriptions[targetIndex].title
+          : '';
       label = l10n.positionLabel(pos + 1, targetName);
     }
 
@@ -391,13 +401,17 @@ class _PodcastPositionSliderDialogState extends State<_PodcastPositionSliderDial
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           Slider(
             value: _value,
             min: 0,
             max: (widget.subscriptions.length - 1).toDouble(),
-            divisions: widget.subscriptions.length > 1 ? widget.subscriptions.length - 1 : 1,
+            divisions: widget.subscriptions.length > 1
+                ? widget.subscriptions.length - 1
+                : 1,
             label: (pos + 1).toString(),
             onChanged: (val) {
               setState(() {

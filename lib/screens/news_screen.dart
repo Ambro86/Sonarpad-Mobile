@@ -157,10 +157,10 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   }
 
   Future<List<NewsArticle>> _fetchLocalCategory(NewsRssCategory cat) async {
+    final lang = AppLocalizations.of(context).locale.languageCode;
     final loc = await _service.getUserLocationData();
     if (loc != null) {
       final city = loc['city']!;
-      final lang = AppLocalizations.of(context).locale.languageCode;
       final country = loc['countryCode']!;
       final searchUri = Uri.parse(
           'https://news.google.com/rss/search?q=${Uri.encodeComponent(city)}&hl=$lang&gl=$country&ceid=$country:$lang');
