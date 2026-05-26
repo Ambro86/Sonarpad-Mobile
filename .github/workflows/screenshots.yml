@@ -22,7 +22,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate Screenshots
-        run: flutter test test/screenshots_test.dart --update-goldens
+        run: flutter test test/screenshots_test.dart --update-goldens --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v4

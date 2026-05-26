@@ -34,7 +34,7 @@ jobs:
         run: flutter pub get
 
       - name: Run Flutter tests
-        run: flutter test --exclude-tags golden
+        run: flutter test --exclude-tags golden --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
 
       - name: Ensure iOS project exists
         run: |
@@ -100,7 +100,7 @@ jobs:
           fi
 
       - name: Build unsigned iOS app
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --release --no-codesign --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
 
       - name: Create unsigned IPA
         run: |
