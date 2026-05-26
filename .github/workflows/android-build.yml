@@ -105,14 +105,14 @@ jobs:
           root_gradle = Path("android/build.gradle")
           if root_gradle.exists():
               text = root_gradle.read_text(encoding="utf-8")
-              text += "\nsubprojects {\n    afterEvaluate { project ->\n        if (project.hasProperty('android')) {\n            project.android {\n                compileSdkVersion 36\n            }\n        }\n    }\n}\n"
+              text += "\nproject.ext.set('flutter.compileSdkVersion', 36)\n"
               root_gradle.write_text(text, encoding="utf-8")
               print("root build.gradle configurato")
 
           root_gradle_kts = Path("android/build.gradle.kts")
           if root_gradle_kts.exists():
               text = root_gradle_kts.read_text(encoding="utf-8")
-              text += "\nsubprojects {\n    afterEvaluate {\n        val androidExt = project.extensions.findByName(\"android\")\n        if (androidExt != null) {\n            (androidExt as com.android.build.gradle.BaseExtension).compileSdkVersion(36)\n        }\n    }\n}\n"
+              text += "\nextra[\"flutter.compileSdkVersion\"] = 36\n"
               root_gradle_kts.write_text(text, encoding="utf-8")
               print("root build.gradle.kts configurato")
           PY
