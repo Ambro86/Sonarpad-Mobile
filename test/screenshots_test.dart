@@ -45,6 +45,7 @@ void main() {
 
     Widget buildScreen(Widget child) {
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         localizationsDelegates: delegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('it'),
@@ -64,11 +65,11 @@ void main() {
     };
 
     for (final entry in screens.entries) {
-      final builder = DeviceBuilder()
-        ..overrideDevicesForAllScenarios(devices: [Device.iphone11])
-        ..addScenario(widget: entry.value, name: entry.key);
-
-      await tester.pumpDeviceBuilder(builder);
+      await tester.pumpWidgetBuilder(
+        entry.value,
+        surfaceSize: const Size(414, 896),
+        wrapper: (child) => child,
+      );
       await tester.pump(const Duration(milliseconds: 500));
       await screenMatchesGolden(
         tester,
