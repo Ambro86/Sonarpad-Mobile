@@ -459,7 +459,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 setState(() {
                   _currentDoc = newDoc;
                 });
-                if (!mounted) return;
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Documento salvato nella libreria')),
                 );

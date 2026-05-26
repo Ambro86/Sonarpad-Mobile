@@ -224,15 +224,43 @@ class TvService {
       String channel, String secretKey, {DateTime? targetDate}) async {
     final dt = targetDate ?? DateTime.now();
 
+    // 1. Resolve exact channel name from timeline API
+    String? exactChannelName;
+    try {
+      final timelineTemplate = _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
+      final dateStr = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+      final timelineUrl = timelineTemplate.replaceAll('{date}', dateStr);
+      final response = await http.get(Uri.parse(timelineUrl), headers: {'User-Agent': 'Sonarpad TV/1.0'}).timeout(const Duration(seconds: 10));
+      if (response.statusCode == 200) {
+        final root = jsonDecode(response.body);
+        if (root is List) {
+          final targetNormalized = normalizeChannelName(channel);
+          for (final group in root) {
+            if (group is! List) continue;
+            for (final item in group) {
+              if (item is! Map<String, dynamic>) continue;
+              final chName = item['ch']?.toString().trim() ?? '';
+              if (normalizeChannelName(chName) == targetNormalized) {
+                exactChannelName = chName;
+                break;
+              }
+            }
+            if (exactChannelName != null) break;
+          }
+        }
+      }
+    } catch (_) {}
+
+    final targetChannelForApi = exactChannelName ?? channel;
+
     // Fallback sulla URL specifica per canale
     final template =
         _decodePayload(_oggiInTvGuideUrlPayloadJson, secretKey.trim());
     final date =
         '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
-    final normalizedChannel = normalizeChannelName(channel);
 
     final url = template
-        .replaceAll('{channel}', Uri.encodeComponent(normalizedChannel))
+        .replaceAll('{channel}', Uri.encodeComponent(targetChannelForApi))
         .replaceAll('{date}', date);
 
     final response = await http.get(
