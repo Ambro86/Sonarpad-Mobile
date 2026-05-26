@@ -72,6 +72,47 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     );
   }
 
+  Future<void> _openRecentArticle(String title) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    try {
+      final results = await WikipediaService().search(title, lang: _language!);
+      if (!mounted) return;
+      Navigator.of(context).pop(); // Chiude il dialog di caricamento
+
+      if (results.isNotEmpty) {
+        // Cerca il match esatto per titolo, altrimenti prende il primo
+        final match = results.firstWhere(
+          (r) => r.title.toLowerCase() == title.toLowerCase(),
+          orElse: () => results.first,
+        );
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: '/wikipedia/article'),
+            builder: (_) => _WikipediaArticleScreen(
+              result: match,
+              language: _language!,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Articolo non trovato.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) Navigator.of(context).pop();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Errore durante l'apertura: $e")),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -113,8 +154,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
                 ),
               );
               if (q != null && mounted) {
-                _controller.text = q;
-                _search();
+                _openRecentArticle(q);
               }
             },
             child: const Text('Articoli recenti'),
