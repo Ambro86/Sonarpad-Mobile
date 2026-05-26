@@ -89,7 +89,6 @@ jobs:
           project.save
           puts 'Background Modes audio abilitato nel progetto Xcode'
           RUBY
-
       - name: Set iOS deployment target to 14.0
         run: |
           if [ -f "ios/Podfile" ]; then
@@ -97,17 +96,8 @@ jobs:
             sed -i '' -e "s/^platform :ios.*/platform :ios, '14.0'/" ios/Podfile
           fi
 
-          if [ -d "ios/Runner.xcodeproj" ]; then
-            gem install xcodeproj --no-document --quiet
-            ruby - <<'RUBY'
-            require 'xcodeproj'
-            project = Xcodeproj::Project.open('ios/Runner.xcodeproj')
-            project.build_configurations.each do |config|
-              config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
-            end
-            project.save
-            RUBY
-          fi
+          gem install xcodeproj --no-document --quiet
+          ruby -e "require 'xcodeproj'; project = Xcodeproj::Project.open('ios/Runner.xcodeproj'); project.build_configurations.each { |config| config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0' }; project.targets.each { |target| target.build_configurations.each { |config| config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0' } }; project.save"
 
       - name: Install Apple certificate and provisioning profile
         env:
