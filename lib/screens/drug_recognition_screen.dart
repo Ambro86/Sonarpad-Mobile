@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import '../utils/app_logger.dart';
 
 class DrugRecognitionScreen extends StatefulWidget {
@@ -17,12 +19,12 @@ class DrugRecognitionScreen extends StatefulWidget {
 class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   CameraController? _cameraController;
   final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-  final FlutterTts _tts = FlutterTts();
 
   List<CameraDescription> _cameras = [];
   bool _isProcessing = false;
   bool _isCameraInitialized = false;
   bool _hasPermission = false;
+  bool _isRearCamera = true;
   
   String _statusText = 'Inizializzazione...';
   String? _recognizedDrug;
@@ -36,13 +38,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   @override
   void initState() {
     super.initState();
-    _initTts();
     _checkPermissionsAndInit();
-  }
-
-  Future<void> _initTts() async {
-    await _tts.setLanguage('it-IT');
-    await _tts.setSpeechRate(0.5);
   }
 
   Future<void> _checkPermissionsAndInit() async {
@@ -86,7 +82,12 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
 
     try {
       await _cameraController!.initialize();
-      AppLogger.log('DrugRecognition: Fotocamera inizializzata con successo.');
+      try {
+        await _cameraController!.setFlashMode(FlashMode.torch);
+      } catch (e) {
+        AppLogger.log('DrugRecognition: Torcia non supportata su questa camera.');
+      }
+      AppLogger.log('DrugRecognition: Fotocamera e torcia inizializzate con successo.');
       if (!mounted) return;
       setState(() => _isCameraInitialized = true);
       _startAnalysis();
@@ -233,7 +234,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   }
 
   Future<void> _speak(String text) async {
-    await _tts.speak(text);
+    // ignore: deprecated_member_use
+    SemanticsService.announce(text, TextDirection.ltr);
   }
 
   void _switchCamera() async {
@@ -248,10 +250,31 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     setState(() {
       _isCameraInitialized = false;
       _recognizedDrug = null;
+      _isRearCamera = newCamera.lensDirection == CameraLensDirection.back;
     });
     
     await _speak('Cambio fotocamera');
     await _initCamera(newCamera);
+  }
+
+  Future<void> _saveDebugPhoto() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
+    try {
+      if (_cameraController!.value.isStreamingImages) {
+        await _cameraController!.stopImageStream();
+      }
+      final file = await _cameraController!.takePicture();
+      final dir = await getApplicationDocumentsDirectory();
+      final targetPath = p.join(dir.path, 'Debug_Farmaco_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await file.saveTo(targetPath);
+      AppLogger.log('DrugRecognition: Salvata foto debug in $targetPath');
+      _speak('Foto salvata nei documenti per debug');
+      
+      _isProcessing = false;
+      _startAnalysis();
+    } catch(e) {
+      AppLogger.log('DrugRecognition: Errore foto debug: $e');
+    }
   }
 
   @override
@@ -260,7 +283,6 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     _cameraController?.stopImageStream();
     _cameraController?.dispose();
     _textRecognizer.close();
-    _tts.stop();
     super.dispose();
   }
 
@@ -330,11 +352,32 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                   Positioned(
                     top: 16,
                     right: 16,
-                    child: FloatingActionButton(
-                      mini: true,
-                      onPressed: _switchCamera,
-                      tooltip: 'Cambia fotocamera anteriore o posteriore',
-                      child: const Icon(Icons.flip_camera_ios),
+                    child: Semantics(
+                      label: 'Fotocamera attiva: ${_isRearCamera ? "posteriore" : "anteriore"}. Doppio tap per invertire.',
+                      button: true,
+                      excludeSemantics: true,
+                      child: FloatingActionButton(
+                        mini: true,
+                        onPressed: _switchCamera,
+                        child: const Icon(Icons.flip_camera_ios),
+                      ),
+                    ),
+                  ),
+                  
+                  // Bottone foto debug
+                  Positioned(
+                    top: 16,
+                    left: 16,
+                    child: Semantics(
+                      label: 'Salva foto di debug nei documenti',
+                      button: true,
+                      excludeSemantics: true,
+                      child: FloatingActionButton(
+                        mini: true,
+                        backgroundColor: Colors.redAccent,
+                        onPressed: _saveDebugPhoto,
+                        child: const Icon(Icons.bug_report),
+                      ),
                     ),
                   )
                 ],
@@ -350,7 +393,6 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                 child: FilledButton.icon(
                   onPressed: _recognizedDrug != null
                       ? () {
-                          _tts.stop();
                           Navigator.pop(context, _recognizedDrug);
                         }
                       : null,
