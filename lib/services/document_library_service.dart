@@ -106,4 +106,22 @@ class DocumentLibraryService {
     _documents = List.from(docs);
     await _save();
   }
+
+  /// Restituisce il JSON grezzo del database dei documenti.
+  Future<String?> getDatabaseJson() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_key);
+  }
+
+  /// Importa un database JSON, validandolo e sovrascrivendo l'attuale.
+  Future<void> importDatabaseJson(String jsonString) async {
+    try {
+      final newDocs = DocumentItem.listFromJsonString(jsonString);
+      _documents = newDocs;
+      await _save();
+    } catch (e) {
+      dev.log('DocumentLibraryService: errore importazione JSON: $e');
+      throw Exception('Formato database non valido o corrotto.');
+    }
+  }
 }

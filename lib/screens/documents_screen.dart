@@ -69,6 +69,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: _allowedExtensions,
+        allowMultiple: true,
       );
     } catch (e) {
       dev.log('DocumentsScreen: errore apertura file picker: $e');
@@ -80,40 +81,43 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     if (result == null || result.files.isEmpty) return;
 
-    final file = result.files.first;
-    final path = file.path;
-    if (path == null) {
-      if (mounted) _showSnack('Percorso file non disponibile.');
-      return;
-    }
+    for (final file in result.files) {
+      final path = file.path;
+      if (path == null) {
+        if (mounted) _showSnack('Percorso file non disponibile.');
+        continue;
+      }
 
-    final ext = p.extension(path).replaceFirst('.', '').toLowerCase();
-    final name = p.basename(path);
-    final id = '${DateTime.now().microsecondsSinceEpoch}_$name';
+      final ext = p.extension(path).replaceFirst('.', '').toLowerCase();
+      final name = p.basename(path);
+      // Aggiungiamo un piccolo delay basato sull'indice o semplicemente usando il microsecondo per garantire ID univoci
+      await Future.delayed(const Duration(milliseconds: 1));
+      final id = '${DateTime.now().microsecondsSinceEpoch}_$name';
 
-    try {
-      final appDir = await getApplicationDocumentsDirectory();
-      final localFile = File(p.join(appDir.path, id));
-      await File(path).copy(localFile.path);
+      try {
+        final appDir = await getApplicationDocumentsDirectory();
+        final localFile = File(p.join(appDir.path, id));
+        await File(path).copy(localFile.path);
 
-      final doc = DocumentItem(
-        id: id,
-        name: name,
-        path: id, // Salviamo solo l'ID come percorso relativo
-        extension: ext,
-        addedAt: DateTime.now(),
-      );
+        final doc = DocumentItem(
+          id: id,
+          name: name,
+          path: id, // Salviamo solo l'ID come percorso relativo
+          extension: ext,
+          addedAt: DateTime.now(),
+        );
 
-      await _service.add(doc);
-    } catch (e) {
-      dev.log('DocumentsScreen: errore aggiunta documento: $e');
-      if (mounted) _showSnack('Errore aggiunta documento: $e');
-      return;
+        await _service.add(doc);
+      } catch (e) {
+        dev.log('DocumentsScreen: errore aggiunta documento: $e');
+        if (mounted) _showSnack('Errore aggiunta documento: $e');
+        continue;
+      }
     }
 
     if (mounted) {
       setState(() {});
-      _showSnack('Documento aggiunto');
+      _showSnack('Documenti aggiunti');
     }
   }
 
@@ -326,11 +330,78 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
+  Future<void> _exportDatabase() async {
+    try {
+      final json = await _service.getDatabaseJson();
+      if (json == null || json.isEmpty) {
+        if (mounted) _showSnack('Nessun documento nel database da esportare.');
+        return;
+      }
+      final appDir = await getTemporaryDirectory();
+      final path = '${appDir.path}/sonarpad_database.json';
+      await File(path).writeAsString(json);
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(path)],
+          text: 'sonarpad_database.json',
+        ),
+      );
+    } catch (e) {
+      dev.log('Errore esportazione database: $e');
+      if (mounted) _showSnack('Errore esportazione: $e');
+    }
+  }
+
+  Future<void> _importDatabase() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (result == null || result.files.isEmpty) return;
+
+      final path = result.files.first.path;
+      if (path == null) return;
+
+      final jsonString = await File(path).readAsString();
+      await _service.importDatabaseJson(jsonString);
+      
+      if (mounted) {
+        await _load();
+        _showSnack('Database importato con successo!');
+      }
+    } catch (e) {
+      dev.log('Errore importazione database: $e');
+      if (mounted) _showSnack('Errore importazione: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Documenti'),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'export') {
+                _exportDatabase();
+              } else if (value == 'import') {
+                _importDatabase();
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'export',
+                child: Text('Esporta database documenti'),
+              ),
+              const PopupMenuItem(
+                value: 'import',
+                child: Text('Importa database documenti'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: SafeArea(
         child: _loading
