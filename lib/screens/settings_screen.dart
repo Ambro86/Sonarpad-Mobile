@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
+import '../services/audiodescription_service.dart';
 import '../services/audio_player_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../main.dart';
@@ -33,8 +34,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   double _ttsSpeed = 1.0;
   double _ttsPitch = 1.0;
-  final _tvSecretCodeController = TextEditingController();
   bool _loading = true;
+  bool _isSaving = false;
+  late TextEditingController _tvSecretCodeController;
   bool _testingVoice = false;
   bool _autoBookmark = true;
   int _seekSliderStep = 60;
@@ -53,6 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    _tvSecretCodeController = TextEditingController();
     _load();
   }
 
@@ -118,11 +121,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _save() async {
+    setState(() => _isSaving = true);
     final l10n = AppLocalizations.of(context);
+    final rawCode = _tvSecretCodeController.text.trim();
+
+    if (rawCode.isNotEmpty) {
+      try {
+        await AudiodescriptionService().fetchRecentCatalog(rawCode);
+      } catch (e) {
+        setState(() => _isSaving = false);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Il codice Sonarpad inserito non è valido. Verifica di averlo copiato senza spazi aggiuntivi.')),
+        );
+        return;
+      }
+    }
+
     await _saveTtsSelection();
-    await _settings.setTvSecretCode(_tvSecretCodeController.text);
+    await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.saveSeekSliderStep(_seekSliderStep);
+    
+    setState(() => _isSaving = false);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.settingsSaved)),
@@ -646,9 +667,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
                 const SizedBox(height: 16),
                 FilledButton.icon(
-                  onPressed: _save,
-                  icon: const Icon(Icons.save),
-                  label: Text(l10n.saveSettings),
+                  onPressed: _isSaving ? null : _save,
+                  icon: _isSaving 
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.save),
+                  label: Text(_isSaving ? 'Verifica codice e salvataggio...' : l10n.saveSettings),
                 ),
                 const SizedBox(height: 24),
                 const Divider(),
