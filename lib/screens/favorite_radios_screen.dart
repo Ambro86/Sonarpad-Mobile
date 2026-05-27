@@ -5,7 +5,6 @@ import '../l10n/ui_radio_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import 'package:flutter/semantics.dart';
-import '../widgets/sonarpad_scroller.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart'; // Per RadioTile
 
@@ -18,7 +17,6 @@ class FavoriteRadiosScreen extends StatefulWidget {
 
 class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
   final _service = RadioService();
-  final _scrollController = ScrollController();
   List<RadioStation> _favorites = [];
   bool _loading = true;
 
@@ -26,12 +24,6 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
   void initState() {
     super.initState();
     _loadFavorites();
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadFavorites() async {
@@ -112,13 +104,10 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
               child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : _favorites.isEmpty
               ? Center(child: Text(l10n.radioNoFavorites))
-              : SonarpadScroller(
-                  controller: _scrollController,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _favorites.length,
-                    itemBuilder: (context, index) {
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _favorites.length,
+                  itemBuilder: (context, index) {
                     final station = _favorites[index];
                     final isFirst = index == 0;
                     final isLast = index == _favorites.length - 1;
@@ -146,7 +135,6 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                     );
                   },
                 ),
-              ),
     );
   }
 }
