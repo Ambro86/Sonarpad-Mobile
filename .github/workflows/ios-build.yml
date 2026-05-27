@@ -92,6 +92,23 @@ jobs:
           puts 'Background Modes audio abilitato nel progetto Xcode'
           RUBY
 
+      - name: Change Bundle Identifier for AltStore
+        run: |
+          gem install xcodeproj --no-document --quiet
+          ruby - <<'RUBY'
+          require 'xcodeproj'
+          project_path = Dir.glob('ios/*.xcodeproj').first
+          abort 'Progetto Xcode non trovato' unless project_path
+          project = Xcodeproj::Project.open(project_path)
+          project.targets.each do |t|
+            t.build_configurations.each do |config|
+              config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'com.ambro86.sonarpad.altstore'
+            end
+          end
+          project.save
+          puts 'Bundle Identifier cambiato in com.ambro86.sonarpad.altstore'
+          RUBY
+
       - name: Set iOS deployment target to 14.0
         run: |
           if [ -f "ios/Podfile" ]; then
