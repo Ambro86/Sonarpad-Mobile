@@ -80,6 +80,7 @@ class _AudiodescriptionRecentScreenState
               title: item.title,
               description: item.description,
               audioUrl: resolvedUrl,
+              id: item.audioUrl,
               publishedAt: DateTime.now(),
             ),
           ),

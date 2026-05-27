@@ -146,6 +146,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
         title: item.title,
         description: item.description,
         audioUrl: audioPath,
+        id: 'raiplaysound:${item.id}',
         publishedAt: DateTime.now(),
       );
 

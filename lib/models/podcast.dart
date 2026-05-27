@@ -72,11 +72,13 @@ class PodcastEpisode {
   final String description;
   final String audioUrl;
   final DateTime? publishedAt;
+  final String? id;
 
   const PodcastEpisode({
     required this.title,
     required this.description,
     required this.audioUrl,
     this.publishedAt,
+    this.id,
   });
 }

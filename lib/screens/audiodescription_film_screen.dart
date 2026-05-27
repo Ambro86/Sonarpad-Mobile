@@ -54,6 +54,7 @@ class _AudiodescriptionFilmScreenState
               title: item.title,
               description: item.description,
               audioUrl: resolvedUrl,
+              id: item.audioUrl,
               publishedAt: DateTime.now(),
             ),
           ),

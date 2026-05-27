@@ -460,8 +460,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   ),
       ),
       floatingActionButton: Semantics(
-        label: 'Aggiungi documento alla libreria',
-        hint: 'Sfoglia i file del dispositivo e aggiungili',
+        button: true,
+        label: 'Aggiungi documento alla libreria. Sfoglia i file del dispositivo e aggiungili.',
+        excludeSemantics: true,
         child: FloatingActionButton(
           onPressed: _pickFile,
           child: const Icon(Icons.add),

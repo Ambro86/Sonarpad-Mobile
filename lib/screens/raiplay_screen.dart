@@ -142,6 +142,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
         title: item.title,
         description: item.description,
         audioUrl: resolvedUrl,
+        id: 'raiplay:${item.id}',
         publishedAt: DateTime.now(),
       );
 

@@ -31,8 +31,13 @@ class _PodcastEpisodePlayerScreenState
     });
     try {
       if (!_loaded) {
-        final uri = Uri.parse(widget.episode.audioUrl);
-        final stableId = 'media:${uri.scheme}://${uri.host}${uri.path}';
+        final String stableId;
+        if (widget.episode.id != null) {
+          stableId = widget.episode.id!;
+        } else {
+          final uri = Uri.parse(widget.episode.audioUrl);
+          stableId = 'media:${uri.scheme}://${uri.host}${uri.path}';
+        }
 
         await _audio.setUrl(
           widget.episode.audioUrl,
