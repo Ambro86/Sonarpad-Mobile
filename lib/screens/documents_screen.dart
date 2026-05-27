@@ -14,6 +14,7 @@ import '../models/document_item.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
 import '../utils/app_logger.dart';
+import 'document_editor_screen.dart';
 import 'document_reader_screen.dart';
 
 /// Schermata libreria documenti.
@@ -376,12 +377,29 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
+  Future<void> _createDocument() async {
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => DocumentEditorScreen(service: _service),
+      ),
+    );
+    if (result == true && mounted) {
+      await _load();
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Documenti'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.note_add),
+            tooltip: 'Scrivi nuovo documento',
+            onPressed: _createDocument,
+          ),
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'export') {
@@ -410,23 +428,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 ? _ErrorState(message: _errorMessage!)
                 : Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        child: Semantics(
-                          hint: 'Sfoglia i file del dispositivo e aggiungili',
-                          child: FilledButton.icon(
-                            icon: const Icon(Icons.folder_open),
-                            label: const Text(
-                              'Aggiungi documento alla libreria',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                            style: FilledButton.styleFrom(
-                              minimumSize: const Size.fromHeight(52),
-                            ),
-                            onPressed: _pickFile,
-                          ),
-                        ),
-                      ),
                       Expanded(
                         child: _service.documents.isEmpty
                             ? const _EmptyState()
@@ -457,6 +458,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       ),
                     ],
                   ),
+      ),
+      floatingActionButton: Semantics(
+        label: 'Aggiungi documento alla libreria',
+        hint: 'Sfoglia i file del dispositivo e aggiungili',
+        child: FloatingActionButton(
+          onPressed: _pickFile,
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
@@ -702,29 +711,21 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Semantics(
-        label: 'Nessun documento. Aggiungi un file usando il pulsante in cima.',
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.folder_open,
-              size: 72,
-              color: Theme.of(context).colorScheme.outline,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Nessun documento.',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Aggiungi un file usando il pulsante in cima.',
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.folder_open,
+            size: 72,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Nessun documento presente nella libreria.',
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }

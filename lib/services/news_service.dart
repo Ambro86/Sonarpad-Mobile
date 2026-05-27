@@ -38,25 +38,83 @@ class NewsService {
 
   String _getPrefsKey(NewsLanguage language) => 'news_sources_order_${language.name}';
   String _getHiddenPrefsKey(NewsLanguage language) => 'news_sources_hidden_${language.name}';
+  String _getCustomPrefsKey(NewsLanguage language) => 'news_custom_sources_${language.name}';
+
+  Future<List<NewsRssSource>> getCustomSources(NewsLanguage language) async {
+    final prefs = await SharedPreferences.getInstance();
+    final customListStr = prefs.getStringList(_getCustomPrefsKey(language)) ?? [];
+    return customListStr
+        .map((s) {
+          try {
+            return NewsRssSource.fromJson(jsonDecode(s));
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<NewsRssSource>()
+        .toList();
+  }
+
+  Future<void> addCustomSource(NewsLanguage language, String name, String url) async {
+    final prefs = await SharedPreferences.getInstance();
+    final customSources = await getCustomSources(language);
+    
+    // Controlla se esiste già
+    if (customSources.any((s) => s.uri.toString() == url)) {
+      throw Exception('Sorgente già presente');
+    }
+
+    final newSource = NewsRssSource(
+      name: name,
+      uri: Uri.parse(url),
+      isCustom: true,
+    );
+    
+    customSources.add(newSource);
+    final stringList = customSources.map((s) => jsonEncode(s.toJson())).toList();
+    await prefs.setStringList(_getCustomPrefsKey(language), stringList);
+  }
+
+  Future<void> removeCustomSource(NewsLanguage language, String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    final customSources = await getCustomSources(language);
+    
+    customSources.removeWhere((s) => s.name == name);
+    final stringList = customSources.map((s) => jsonEncode(s.toJson())).toList();
+    await prefs.setStringList(_getCustomPrefsKey(language), stringList);
+    
+    // Rimuovilo anche dai nascosti/ordinati
+    final hiddenNames = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
+    if (hiddenNames.remove(name)) {
+      await prefs.setStringList(_getHiddenPrefsKey(language), hiddenNames);
+    }
+    final order = prefs.getStringList(_getPrefsKey(language)) ?? [];
+    if (order.remove(name)) {
+      await prefs.setStringList(_getPrefsKey(language), order);
+    }
+  }
 
   Future<List<NewsRssSource>> getOrderedSources(NewsLanguage language) async {
     final prefs = await SharedPreferences.getInstance();
     final defaultSources = language.rssSources;
+    final customSources = await getCustomSources(language);
+    
+    final allSources = [...defaultSources, ...customSources];
     final hiddenNames = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
     
     final savedOrder = prefs.getStringList(_getPrefsKey(language));
     if (savedOrder == null || savedOrder.isEmpty) {
-      return defaultSources.where((s) => !hiddenNames.contains(s.name)).toList();
+      return allSources.where((s) => !hiddenNames.contains(s.name)).toList();
     }
     
     final ordered = <NewsRssSource>[];
     for (final name in savedOrder) {
       if (hiddenNames.contains(name)) continue;
-      final source = defaultSources.where((s) => s.name == name).firstOrNull;
+      final source = allSources.where((s) => s.name == name).firstOrNull;
       if (source != null) ordered.add(source);
     }
     
-    for (final source in defaultSources) {
+    for (final source in allSources) {
       if (!hiddenNames.contains(source.name) && !ordered.any((s) => s.name == source.name)) {
         ordered.add(source);
       }

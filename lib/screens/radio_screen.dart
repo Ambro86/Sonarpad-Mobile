@@ -5,9 +5,10 @@ import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
+import '../widgets/sonarpad_scroller.dart';
 import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
-import 'radio_search_results_screen.dart';
+import 'radio_player_screen.dart';
 
 class RadioScreen extends StatefulWidget {
   const RadioScreen({super.key});
@@ -19,7 +20,10 @@ class RadioScreen extends StatefulWidget {
 class _RadioScreenState extends State<RadioScreen> {
   final _service = RadioService();
   final _searchController = TextEditingController();
+  final _scrollController = ScrollController();
 
+  List<RadioStation> _favorites = [];
+  List<RadioStation> _results = [];
   String? _languageCode;
   RadioGenreOption _genre = RadioService.genres.first;
   bool _searching = false;
@@ -35,12 +39,23 @@ class _RadioScreenState extends State<RadioScreen> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
 
+  Future<void> _loadFavorites() async {
+    final favorites = await _service.loadFavorites();
+    if (!mounted) return;
+    setState(() => _favorites = favorites);
+  }
 
   Future<void> _search() async {
     final l10n = AppLocalizations.of(context);
     setState(() {
       _searching = true;
+      _results = [];
     });
     try {
       final results = await _service.searchRadios(
@@ -49,12 +64,9 @@ class _RadioScreenState extends State<RadioScreen> {
         query: _searchController.text,
       );
       if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/radio/search_results'),
-          builder: (_) => RadioSearchResultsScreen(results: results),
-        ),
+      setState(() => _results = results);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.radioResultsFound(results.length))),
       );
     } catch (e) {
       if (!mounted) return;
@@ -66,10 +78,41 @@ class _RadioScreenState extends State<RadioScreen> {
     }
   }
 
+  Future<void> _play(RadioStation station) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/radio/player'),
+        builder: (_) => RadioPlayerScreen(station: station),
+      ),
+    );
+  }
+
+  Future<void> _toggleFavorite(RadioStation station) async {
+    final l10n = AppLocalizations.of(context);
+    final exists =
+        _favorites.any((item) => item.streamUrl == station.streamUrl);
+    final next = exists
+        ? _favorites
+            .where((item) => item.streamUrl != station.streamUrl)
+            .toList()
+        : [..._favorites, station];
+    await _service.saveFavorites(next);
+    if (!mounted) return;
+    setState(() => _favorites = next);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(exists
+            ? l10n.radioFavoriteRemoved(station.name)
+            : l10n.radioFavoriteAdded(station.name)),
+      ),
+    );
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -78,9 +121,12 @@ class _RadioScreenState extends State<RadioScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioTitle)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+      body: SonarpadScroller(
+        controller: _scrollController,
+        child: ListView(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(16),
+          children: [
           FilledButton.icon(
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(56),
@@ -94,6 +140,7 @@ class _RadioScreenState extends State<RadioScreen> {
                   builder: (_) => const FavoriteRadiosScreen(),
                 ),
               );
+              _loadFavorites();
             },
             icon: const Icon(Icons.favorite),
             label: Text(l10n.radioFavoritesButton),
@@ -139,7 +186,25 @@ class _RadioScreenState extends State<RadioScreen> {
             icon: const Icon(Icons.radio),
             label: Text(_searching ? l10n.radioSearching : l10n.radioSearch),
           ),
-          // I risultati vengono ora aperti in un'altra schermata tramite Navigator.push
+          if (_results.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(l10n.radioSearchResults,
+                style: Theme.of(context).textTheme.titleMedium),
+            ..._results.map((station) {
+              final isFavorite =
+                  _favorites.any((item) => item.streamUrl == station.streamUrl);
+              return RadioTile(
+                station: station,
+                isFavorite: isFavorite,
+                isPlaying: false,
+                onPlay: () => _play(station),
+                onToggleFavorite: () => _toggleFavorite(station),
+              );
+            }),
+          ] else if (!_searching) ...[
+            const SizedBox(height: 16),
+            Text(l10n.radioNoResults),
+          ],
           const Divider(height: 32),
           FilledButton.icon(
             style: FilledButton.styleFrom(
@@ -159,6 +224,7 @@ class _RadioScreenState extends State<RadioScreen> {
             label: Text(l10n.radioAddCommunity),
           ),
         ],
+      ),
       ),
     );
   }

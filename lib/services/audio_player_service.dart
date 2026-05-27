@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/semantics.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
+import 'app_settings_service.dart';
 
 /// Tipo di sessione audio.
 ///
@@ -18,6 +22,58 @@ class AudioPlayerService {
   bool _stopRequested = false;
   bool _sessionReady = false;
   AudioSessionType _currentSessionType = AudioSessionType.speech;
+
+  // ignore: unused_field
+  StreamSubscription<Duration>? _positionSubscription;
+  String? _currentMediaId;
+  Duration? _currentDuration;
+  final AppSettingsService _settings = AppSettingsService();
+
+  AudioPlayerService() {
+    _initBookmarkListener();
+  }
+
+  void _initBookmarkListener() {
+    _player.durationStream.listen((d) => _currentDuration = d);
+    _player.playerStateStream.listen((state) {
+       if (state.processingState == ProcessingState.completed || !state.playing) {
+          _saveCurrentBookmark();
+       }
+    });
+    _positionSubscription = _player.positionStream.listen((pos) async {
+       if (_currentMediaId != null && _currentSessionType == AudioSessionType.playback) {
+          if (pos.inSeconds > 0 && pos.inSeconds % 10 == 0) {
+              await _saveCurrentBookmark();
+          }
+       }
+    });
+  }
+
+  Future<void> _saveCurrentBookmark() async {
+    if (_currentMediaId == null || _currentSessionType != AudioSessionType.playback) return;
+    if (_currentDuration == null || _currentDuration!.inSeconds == 0) return;
+    
+    final pos = _player.position;
+    if (pos.inSeconds < 30) return; // Non salvare ridicolmente
+
+    if (await _settings.isAutoBookmarkEnabled()) {
+       bool isFinished = false;
+       final durationSecs = _currentDuration!.inSeconds;
+       final remaining = durationSecs - pos.inSeconds;
+       
+       if (durationSecs > 600) {
+          if (remaining < 30) isFinished = true;
+       } else {
+          if ((pos.inSeconds / durationSecs) > 0.95) isFinished = true;
+       }
+
+       if (isFinished) {
+          await _settings.saveMediaBookmark(_currentMediaId!, 0);
+       } else {
+          await _settings.saveMediaBookmark(_currentMediaId!, pos.inSeconds);
+       }
+    }
+  }
 
   Stream<bool> get playingStream => _player.playingStream;
 
@@ -61,9 +117,10 @@ class AudioPlayerService {
     String url, {
     AudioSessionType sessionType = AudioSessionType.playback,
     String? title,
+    String? mediaId,
   }) async {
     _stopRequested = false;
-    await setUrl(url, sessionType: sessionType, title: title);
+    await setUrl(url, sessionType: sessionType, title: title, mediaId: mediaId);
     if (!_stopRequested) {
       await play();
     }
@@ -73,10 +130,12 @@ class AudioPlayerService {
     String url, {
     AudioSessionType sessionType = AudioSessionType.playback,
     String? title,
+    String? mediaId,
   }) async {
     _stopRequested = false;
+    _currentMediaId = mediaId;
     await _prepareAudioSession(sessionType);
-    debugPrint('Sonarpad audio: setUrl=$url');
+    debugPrint('Sonarpad audio: setUrl=$url, mediaId=$mediaId');
 
     String itemTitle = title ??
         (sessionType == AudioSessionType.speech
@@ -93,6 +152,22 @@ class AudioPlayerService {
     );
     final duration = await _player.setAudioSource(source);
     debugPrint('Sonarpad audio: duration=$duration');
+
+    if (sessionType == AudioSessionType.playback && _currentMediaId != null && await _settings.isAutoBookmarkEnabled()) {
+       final savedPos = await _settings.getMediaBookmark(_currentMediaId!);
+       if (savedPos != null && savedPos > 5) {
+          if (duration != null && duration.inSeconds > 0) {
+             if (savedPos < (duration.inSeconds - 30)) {
+                await _player.seek(Duration(seconds: savedPos));
+                
+                final mins = savedPos ~/ 60;
+                final secs = savedPos % 60;
+                // ignore: deprecated_member_use
+                SemanticsService.announce('Riprendo da $mins minuti e $secs secondi', TextDirection.ltr);
+             }
+          }
+       }
+    }
   }
 
   Future<void> play() async {
@@ -131,6 +206,7 @@ class AudioPlayerService {
     debugPrint('Sonarpad audio: pause');
     await _player.pause();
     await _disableWakelock();
+    await _saveCurrentBookmark();
   }
 
   Future<void> togglePlayPause() async {
@@ -227,8 +303,7 @@ class AudioPlayerService {
       [Duration duration = const Duration(seconds: 15)]) async {
     final current = _player.position;
     final newPosition = current - duration;
-    await _player
-        .seek(newPosition < Duration.zero ? Duration.zero : newPosition);
+    await seek(newPosition < Duration.zero ? Duration.zero : newPosition);
   }
 
   Future<void> seekForward(
@@ -236,19 +311,28 @@ class AudioPlayerService {
     final current = _player.position;
     final max = _player.duration ?? Duration.zero;
     final newPosition = current + duration;
-    await _player.seek(newPosition > max ? max : newPosition);
+    await seek(newPosition > max ? max : newPosition);
   }
 
   Future<void> stop() async {
     _stopRequested = true;
     debugPrint('Sonarpad audio: stop requested');
+    await _saveCurrentBookmark();
     await _player.stop();
     await _player.setLoopMode(LoopMode.off);
     await _player.setVolume(1);
     await _disableWakelock();
   }
 
+  Future<void> seek(Duration position) async {
+    if (position.inSeconds < 10 && _currentMediaId != null) {
+       await _settings.saveMediaBookmark(_currentMediaId!, 0); // Cancella bookmark
+    }
+    await _player.seek(position);
+  }
+
   Future<void> dispose() async {
+    await _saveCurrentBookmark();
     await _disableWakelock();
     try {
       await _player.dispose();

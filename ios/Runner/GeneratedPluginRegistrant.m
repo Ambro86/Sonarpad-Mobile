@@ -42,6 +42,12 @@
 @import flutter_tts;
 #endif
 
+#if __has_include(<google_mlkit_barcode_scanning/GoogleMlKitBarcodeScanningPlugin.h>)
+#import <google_mlkit_barcode_scanning/GoogleMlKitBarcodeScanningPlugin.h>
+#else
+@import google_mlkit_barcode_scanning;
+#endif
+
 #if __has_include(<google_mlkit_commons/GoogleMlKitCommonsPlugin.h>)
 #import <google_mlkit_commons/GoogleMlKitCommonsPlugin.h>
 #else
@@ -123,6 +129,7 @@
   [CameraPlugin registerWithRegistrar:[registry registrarForPlugin:@"CameraPlugin"]];
   [FilePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FilePickerPlugin"]];
   [FlutterTtsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterTtsPlugin"]];
+  [GoogleMlKitBarcodeScanningPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitBarcodeScanningPlugin"]];
   [GoogleMlKitCommonsPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitCommonsPlugin"]];
   [GoogleMlKitTextRecognitionPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitTextRecognitionPlugin"]];
   [IntegrationTestPlugin registerWithRegistrar:[registry registrarForPlugin:@"IntegrationTestPlugin"]];

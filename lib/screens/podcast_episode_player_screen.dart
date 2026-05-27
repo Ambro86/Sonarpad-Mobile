@@ -31,8 +31,14 @@ class _PodcastEpisodePlayerScreenState
     });
     try {
       if (!_loaded) {
-        await _audio.setUrl(widget.episode.audioUrl,
-            title: 'In riproduzione: ${widget.episode.title}');
+        final uri = Uri.parse(widget.episode.audioUrl);
+        final stableId = 'media:${uri.scheme}://${uri.host}${uri.path}';
+
+        await _audio.setUrl(
+          widget.episode.audioUrl,
+          title: 'In riproduzione: ${widget.episode.title}',
+          mediaId: stableId,
+        );
         _loaded = true;
       }
       unawaited(_audio.play());

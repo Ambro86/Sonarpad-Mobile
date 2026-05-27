@@ -37,7 +37,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
   void _search() {
     final query = _searchController.text.trim();
     if (query.isEmpty && _category.genreId == null) return;
-    Navigator.push<bool>(
+    Navigator.push<String>(
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/podcasts/search-results'),
@@ -47,9 +47,13 @@ class _PodcastScreenState extends State<PodcastScreen> {
           category: _category,
         ),
       ),
-    ).then((subscribed) async {
-      if (!mounted || subscribed != true) return;
+    ).then((feedUrl) async {
+      if (!mounted || feedUrl == null) return;
       await _load();
+      try {
+        final sub = _subscriptions.firstWhere((s) => s.feedUrl == feedUrl);
+        _openSubscription(sub);
+      } catch (_) {}
     });
   }
 
@@ -71,6 +75,10 @@ class _PodcastScreenState extends State<PodcastScreen> {
       await _service.addSubscription(url);
       _feedController.clear();
       await _load();
+      try {
+        final sub = _subscriptions.firstWhere((s) => s.feedUrl == url);
+        _openSubscription(sub);
+      } catch (_) {}
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -367,15 +375,15 @@ class _PodcastSearchResultsScreenState
   }
 
   Future<void> _openResult(PodcastSearchResult result) async {
-    final subscribed = await Navigator.push<bool>(
+    final feedUrl = await Navigator.push<String>(
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/podcasts/search-detail'),
         builder: (_) => _PodcastSearchDetailScreen(result: result),
       ),
     );
-    if (!mounted || subscribed != true) return;
-    Navigator.pop(context, true);
+    if (!mounted || feedUrl == null) return;
+    Navigator.pop(context, feedUrl);
   }
 
   @override
@@ -460,7 +468,7 @@ class _PodcastSearchDetailScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.subscribedTo(widget.result.title))),
       );
-      Navigator.pop(context, true);
+      Navigator.pop(context, widget.result.feedUrl);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)

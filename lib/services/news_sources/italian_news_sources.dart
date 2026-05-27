@@ -48,10 +48,6 @@ final italianNewsSources = [
     uri: Uri.parse('https://www.ilfattoquotidiano.it/feed/'),
   ),
   NewsRssSource(
-    name: 'Il Post',
-    uri: Uri.parse('https://www.ilpost.it/feed/'),
-  ),
-  NewsRssSource(
     name: 'Fanpage',
     uri: Uri.parse('https://www.fanpage.it/feed/'),
   ),

@@ -13,6 +13,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
+import '../widgets/sonarpad_scroller.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -545,8 +546,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       body: SafeArea(
         child: _loadingText
             ? const Center(child: CircularProgressIndicator())
-            : CustomScrollView(
+            : SonarpadScroller(
                 controller: _scrollController,
+                child: CustomScrollView(
+                  controller: _scrollController,
                 cacheExtent:
                     4000, // Precarica i blocchi successivi per VoiceOver
                 // BouncingScrollPhysics → flick naturale su iPhone
@@ -658,6 +661,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   ),
                 ],
               ),
+            ),
       ),
     );
   }

@@ -27,6 +27,17 @@ class ExtractionResult {
 /// - DOCX / DOC   → unzip (archive) + parsing XML word/document.xml
 /// - EPUB         → [epubx] EpubReader + strip HTML dei capitoli
 class DocumentTextExtractor {
+  Future<String> _readTextFileSafe(String path) async {
+    final file = File(path);
+    try {
+      return await file.readAsString();
+    } catch (e) {
+      dev.log('Fallback latin1 per file: $path ($e)');
+      final bytes = await file.readAsBytes();
+      return latin1.decode(bytes);
+    }
+  }
+
   Future<ExtractionResult> extract({
     required String path,
     required String extension,
@@ -36,11 +47,11 @@ class DocumentTextExtractor {
         case 'txt':
         case 'md':
         case 'rtf':
-          return ExtractionResult(text: await File(path).readAsString());
+          return ExtractionResult(text: await _readTextFileSafe(path));
 
         case 'html':
         case 'htm':
-          final raw = await File(path).readAsString();
+          final raw = await _readTextFileSafe(path);
           return ExtractionResult(text: _stripHtml(raw));
 
         case 'pdf':

@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
+import '../widgets/sonarpad_scroller.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart'; // Per RadioTile
 
@@ -19,12 +20,19 @@ class RadioSearchResultsScreen extends StatefulWidget {
 
 class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
   final _service = RadioService();
+  final _scrollController = ScrollController();
   List<RadioStation> _favorites = [];
 
   @override
   void initState() {
     super.initState();
     _loadFavorites();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadFavorites() async {
@@ -71,24 +79,28 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
       appBar: AppBar(title: Text(l10n.radioSearchResults)),
       body: widget.results.isEmpty
           ? Center(child: Text(l10n.radioNoResults))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: widget.results.length,
-              itemBuilder: (context, index) {
-                final station = widget.results[index];
-                final isFavorite = _favorites
-                    .any((item) => item.streamUrl == station.streamUrl);
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: RadioTile(
-                    station: station,
-                    isFavorite: isFavorite,
-                    isPlaying: false,
-                    onPlay: () => _play(station),
-                    onToggleFavorite: () => _toggleFavorite(station),
-                  ),
-                );
-              },
+          : SonarpadScroller(
+              controller: _scrollController,
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: widget.results.length,
+                itemBuilder: (context, index) {
+                  final station = widget.results[index];
+                  final isFavorite = _favorites
+                      .any((item) => item.streamUrl == station.streamUrl);
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: RadioTile(
+                      station: station,
+                      isFavorite: isFavorite,
+                      isPlaying: false,
+                      onPlay: () => _play(station),
+                      onToggleFavorite: () => _toggleFavorite(station),
+                    ),
+                  );
+                },
+              ),
             ),
     );
   }

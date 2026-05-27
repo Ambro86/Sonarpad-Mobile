@@ -223,6 +223,39 @@ class AppSettingsService {
 
   static String defaultVoiceForLanguage(String languageCode) =>
       voicesForLanguage(languageCode).firstOrNull?.voice ?? 'it-IT-IsabellaNeural';
+
+  // --- Segnalibro Automatico Media ---
+  
+  static const _autoBookmarkKey = 'sonarpad_auto_bookmark';
+
+  Future<bool> isAutoBookmarkEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_autoBookmarkKey) ?? true;
+  }
+
+  Future<void> setAutoBookmarkEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_autoBookmarkKey, value);
+  }
+
+  Future<int?> getMediaBookmark(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('bookmark_$id');
+  }
+
+  Future<void> saveMediaBookmark(String id, int positionInSeconds) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (positionInSeconds <= 0) {
+      await prefs.remove('bookmark_$id');
+    } else {
+      await prefs.setInt('bookmark_$id', positionInSeconds);
+    }
+  }
+
+  Future<void> removeMediaBookmark(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('bookmark_$id');
+  }
 }
 
 extension _FirstOrNull<T> on Iterable<T> {

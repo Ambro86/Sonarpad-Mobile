@@ -62,6 +62,60 @@ class _NewsScreenState extends State<NewsScreen> {
     await _loadSources();
   }
 
+  Future<void> _addCustomSource() async {
+    if (_language == null) return;
+    final nameCtrl = TextEditingController();
+    final urlCtrl = TextEditingController();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Aggiungi sorgente RSS'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: 'Nome testata/sito'),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: urlCtrl,
+              decoration: const InputDecoration(labelText: 'URL feed RSS'),
+              keyboardType: TextInputType.url,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Annulla'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Aggiungi'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != true) return;
+
+    final name = nameCtrl.text.trim();
+    final url = urlCtrl.text.trim();
+    if (name.isEmpty || url.isEmpty) return;
+
+    try {
+      await _service.addCustomSource(_language!, name, url);
+      await _loadSources();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errore: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -69,6 +123,11 @@ class _NewsScreenState extends State<NewsScreen> {
       appBar: AppBar(
         title: Text(l10n.news),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Aggiungi sorgente RSS personalizzata',
+            onPressed: _addCustomSource,
+          ),
           IconButton(
             icon: const Icon(Icons.restore),
             tooltip: l10n.restoreHiddenSources,
@@ -228,7 +287,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   }
 }
 
-enum _NewsSourceAction { moveUp, moveDown, moveToPosition, hide }
+enum _NewsSourceAction { moveUp, moveDown, moveToPosition, hide, delete }
 
 class _NewsSourceList extends StatelessWidget {
   const _NewsSourceList({
@@ -247,38 +306,50 @@ class _NewsSourceList extends StatelessWidget {
 
   void _handleAction(
       BuildContext context, _NewsSourceAction action, int index) async {
-    if (action == _NewsSourceAction.hide) {
-      await service.hideSource(language, sources[index]);
-      onSourcesChanged();
-      return;
-    }
+    try {
+      if (action == _NewsSourceAction.hide) {
+        await service.hideSource(language, sources[index]);
+        onSourcesChanged();
+        return;
+      }
+      if (action == _NewsSourceAction.delete) {
+        await service.removeCustomSource(language, sources[index].name);
+        onSourcesChanged();
+        return;
+      }
 
-    final list = List<NewsRssSource>.from(sources);
-    final item = list.removeAt(index);
+      final list = List<NewsRssSource>.from(sources);
+      final item = list.removeAt(index);
 
-    if (action == _NewsSourceAction.moveUp && index > 0) {
-      list.insert(index - 1, item);
-      await service.saveSourcesOrder(language, list);
-      onSourcesChanged();
-    } else if (action == _NewsSourceAction.moveDown && index < list.length) {
-      list.insert(index + 1, item);
-      await service.saveSourcesOrder(language, list);
-      onSourcesChanged();
-    } else if (action == _NewsSourceAction.moveToPosition) {
-      list.insert(index, item); // put it back temporarily
-      final newPos = await showDialog<int>(
-        context: context,
-        builder: (_) => _PositionSliderDialog(
-          currentIndex: index,
-          sources: list,
-        ),
-      );
-      if (newPos != null && newPos != index) {
-        final toMove = list.removeAt(index);
-        list.insert(newPos, toMove);
+      if (action == _NewsSourceAction.moveUp && index > 0) {
+        list.insert(index - 1, item);
         await service.saveSourcesOrder(language, list);
         onSourcesChanged();
+      } else if (action == _NewsSourceAction.moveDown && index < list.length) {
+        list.insert(index + 1, item);
+        await service.saveSourcesOrder(language, list);
+        onSourcesChanged();
+      } else if (action == _NewsSourceAction.moveToPosition) {
+        list.insert(index, item); // put it back temporarily
+        final newPos = await showDialog<int>(
+          context: context,
+          builder: (_) => _PositionSliderDialog(
+            currentIndex: index,
+            sources: list,
+          ),
+        );
+        if (newPos != null && newPos != index) {
+          final toMove = list.removeAt(index);
+          list.insert(newPos, toMove);
+          await service.saveSourcesOrder(language, list);
+          onSourcesChanged();
+        }
       }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errore: $e')),
+      );
     }
   }
 
@@ -307,6 +378,9 @@ class _NewsSourceList extends StatelessWidget {
                       context, _NewsSourceAction.moveToPosition, index),
               CustomSemanticsAction(label: l10n.hide): () =>
                   _handleAction(context, _NewsSourceAction.hide, index),
+              if (source.isCustom)
+                CustomSemanticsAction(label: 'Elimina sorgente'): () =>
+                    _handleAction(context, _NewsSourceAction.delete, index),
             },
             child: ListTile(
               title: Text(source.name),

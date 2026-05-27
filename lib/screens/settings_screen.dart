@@ -36,6 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _tvSecretCodeController = TextEditingController();
   bool _loading = true;
   bool _testingVoice = false;
+  bool _autoBookmark = true;
   final _audio = AudioPlayerService();
 
   @override
@@ -62,6 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final ttsEngine = await _settings.loadTtsEngine();
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
+    final autoBookmark = await _settings.isAutoBookmarkEnabled();
 
     await _loadSystemVoices();
 
@@ -76,6 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _ttsEngine = ttsEngine;
       _systemTtsLanguage = sysLang;
       _systemTtsVoice = sysVoice;
+      _autoBookmark = autoBookmark;
       _loading = false;
     });
   }
@@ -105,6 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
     await _saveTtsSelection();
     await _settings.setTvSecretCode(_tvSecretCodeController.text);
+    await _settings.setAutoBookmarkEnabled(_autoBookmark);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.settingsSaved)),
@@ -556,6 +560,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (_appLanguage == 'it') ...[
                   const SizedBox(height: 24),
                   const Divider(),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    title: const Text('Segnalibro automatico Media'),
+                    subtitle: const Text('Riprendi Podcast, RaiPlay e Audiodescrizioni dal punto interrotto.'),
+                    value: _autoBookmark,
+                    onChanged: (val) => setState(() => _autoBookmark = val),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 16),
                   const SizedBox(height: 16),
                   TextField(
                     controller: _tvSecretCodeController,

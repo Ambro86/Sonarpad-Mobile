@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:sonarpad_mobile_starter/services/aifa_cache_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -41,26 +40,13 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   bool _hasPermission = false;
   bool _isRearCamera = true;
   
-  String _statusText = 'Inizializzazione fotocamera...';
+  String _statusText = 'Inizializzazione...';
   String? _recognizedDrug;
-  DrugMatchLevel? _matchLevel;
   
   // Timer e Logica Ibrida
   DateTime _startTime = DateTime.now();
   bool _ocrFallbackActive = false;
   bool _scanCompleted = false;
-
-  // Multi-frame stabilization
-  String? _lastBarcodeRawValue;
-  int _barcodeConsecutiveReads = 0;
-  DateTime? _lastBarcodeTime;
-
-  String? _lastOcrCandidate;
-  int _ocrConsecutiveReads = 0;
-  DateTime? _lastOcrTime;
-  
-  DateTime? _lastFrameTime;
-  DateTime? _lastTTSSeenTime;
 
   Timer? _instructionTimer;
 
@@ -125,26 +111,11 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   }
 
   void _resetScanState() {
-    if (_recognizedDrug != null) return;
-    setState(() {
-      _recognizedDrug = null;
-      _matchLevel = null;
-      _scanCompleted = false;
-      _statusText = 'Inquadra codice a barre o etichetta...';
-    });
-
     _startTime = DateTime.now();
     _ocrFallbackActive = false;
     _scanCompleted = false;
-    
-    _lastBarcodeRawValue = null;
-    _barcodeConsecutiveReads = 0;
-    _lastBarcodeTime = null;
-    
-    _lastOcrCandidate = null;
-    _ocrConsecutiveReads = 0;
-    _lastOcrTime = null;
-
+    _recognizedDrug = null;
+    _statusText = 'Cerco codice al centro...';
     _startInstructionLoop();
   }
 
@@ -171,16 +142,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
 
   void _startAnalysis() {
     _cameraController!.startImageStream((CameraImage image) async {
-      final now = DateTime.now();
-      // Drop late frames
-      if (_lastFrameTime != null && now.difference(_lastFrameTime!).inMilliseconds < 300) {
-        return; // throttle artificiale a ~3 fps
-      }
-      
       if (_isProcessing || _recognizedDrug != null || _scanCompleted) return;
-      
       _isProcessing = true;
-      _lastFrameTime = now;
 
       try {
         final inputImage = _inputImageFromCameraImage(image);
@@ -197,49 +160,26 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
           
           if (rawValue.isNotEmpty) {
             final parsed = Gs1Parser.parse(rawValue);
-            AppLogger.log('DrugRecognition: Barcode DataMatrix processato (AIC/GTIN estratto).');
+            AppLogger.log('DrugRecognition: Barcode trovato: $rawValue -> $parsed');
             
             if (parsed.hasValidAic || parsed.gtin != null) {
+              _scanCompleted = true;
+              HapticFeedback.heavyImpact();
               
-              // Stabilizzazione multi-frame
-              if (_lastBarcodeRawValue == rawValue && _lastBarcodeTime != null && now.difference(_lastBarcodeTime!).inMilliseconds < 1500) {
-                _barcodeConsecutiveReads++;
+              if (parsed.hasValidAic) {
+                _speak('Codice letto. Cerco il farmaco nel database.');
+                setState(() => _statusText = 'Codice letto. Interrogo AIFA...');
+                await _searchDrugsByQuery(parsed.aic!, isGtin: false);
               } else {
-                _lastBarcodeRawValue = rawValue;
-                _barcodeConsecutiveReads = 1;
-                _lastBarcodeTime = now;
+                _speak('Codice a barre letto, ma senza AIC esplicito. Verifico.');
+                setState(() => _statusText = 'GTIN letto. Verifico...');
+                await _searchDrugsByQuery(parsed.gtin!, isGtin: true);
               }
-
-              // Accettiamo se letto 2 volte oppure è un AIC validissimo e lo forziamo subito (facoltativo, ma per sicurezza esigiamo 2 frame)
-              if (_barcodeConsecutiveReads >= 2 || parsed.hasValidAic) {
-                _scanCompleted = true;
-                HapticFeedback.heavyImpact();
-                
-                if (parsed.hasValidAic) {
-                  _speak('Codice letto. Cerco il farmaco nel database.');
-                  setState(() => _statusText = 'Codice letto. Interrogo AIFA...');
-                  await _searchDrugsByQuery(parsed.aic!, isGtin: false);
-                } else {
-                  _speak('Codice a barre letto, ma senza AIC esplicito. Verifico.');
-                  setState(() => _statusText = 'GTIN letto. Verifico...');
-                  await _searchDrugsByQuery(parsed.gtin!, isGtin: true);
-                }
-                return; // Termina qui
-              }
+              return; // Termina qui
             } else {
               // Se rileva un codice ma non lo decodifica come atteso
-              if (!_scanCompleted) {
-                 if (_lastTTSSeenTime == null || now.difference(_lastTTSSeenTime!).inMilliseconds > 4000) {
-                    _lastTTSSeenTime = now;
-                    _speak('Codice visto, avvicina o tieni fermo.');
-                 }
-              }
+              _speak('Codice visto, avvicina o tieni fermo.');
             }
-          }
-        } else {
-          // Reset contatore barcode se perso
-          if (now.difference(_lastBarcodeTime ?? now).inMilliseconds > 1500) {
-            _barcodeConsecutiveReads = 0;
           }
         }
 
@@ -254,15 +194,6 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
         _isProcessing = false;
       }
     });
-  }
-
-  String _normalizeOcrString(String raw) {
-    String norm = raw.toUpperCase();
-    norm = norm.replaceAll('1', 'I');
-    norm = norm.replaceAll('L', 'I');
-    norm = norm.replaceAll('0', 'O');
-    norm = norm.replaceAll(RegExp(r'[^A-Z]'), '');
-    return norm;
   }
 
   Future<void> _processOcrText(RecognizedText recognizedText) async {
@@ -291,30 +222,12 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     }
 
     if (possibleDrug != null && _recognizedDrug == null) {
-      final now = DateTime.now();
-      final normalizedCandidate = _normalizeOcrString(possibleDrug);
-
-      if (_lastOcrCandidate == normalizedCandidate && _lastOcrTime != null && now.difference(_lastOcrTime!).inMilliseconds < 1500) {
-        _ocrConsecutiveReads++;
-      } else {
-        _lastOcrCandidate = normalizedCandidate;
-        _ocrConsecutiveReads = 1;
-        _lastOcrTime = now;
-      }
-
-      if (_ocrConsecutiveReads >= 2) {
-        AppLogger.log('DrugRecognition OCR: Avvio ricerca locale stabilizzata.');
-        
-        // Mettiamo in pausa l'analisi per cercare
-        _scanCompleted = true; // finto flag per bloccare
-        setState(() => _statusText = 'Ricerca per "$normalizedCandidate"...');
-        await _searchDrugsByQuery(normalizedCandidate, isFuzzy: true);
-      }
-    } else {
-      final now = DateTime.now();
-      if (now.difference(_lastOcrTime ?? now).inMilliseconds > 1500) {
-        _ocrConsecutiveReads = 0;
-      }
+      AppLogger.log('DrugRecognition OCR: Trovato probabile farmaco "$possibleDrug"');
+      
+      // Mettiamo in pausa l'analisi per cercare
+      _scanCompleted = true; // finto flag per bloccare
+      setState(() => _statusText = 'Ricerca per "$possibleDrug"...');
+      await _searchDrugsByQuery(possibleDrug, isFuzzy: true);
     }
   }
 
@@ -326,9 +239,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       } else if (isGtin) {
         resultMatch = await _aifaService.searchByGtin(query);
       } else {
-        resultMatch = await _aifaService.searchByAic(query, onNetworkFallback: () {
-          _speak('Codice AIC letto, provo aggiornamento online.');
-        });
+        resultMatch = await _aifaService.searchByAic(query);
       }
 
       if (resultMatch.level != DrugMatchLevel.unknown && resultMatch.drug != null) {
@@ -336,18 +247,17 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
         setState(() {
           _recognizedDrug = drugName;
           _statusText = 'Trovato: $drugName';
-          _matchLevel = resultMatch.level;
         });
         
         switch (resultMatch.level) {
           case DrugMatchLevel.confirmed:
-            _speak('Identificazione confermata dal database locale: $drugName.');
+            _speak('Farmaco identificato: $drugName. Codice AIC confermato.');
             break;
           case DrugMatchLevel.strong:
             _speak('Ho trovato un codice prodotto associato a $drugName. Verifica prima di procedere.');
             break;
           case DrugMatchLevel.possible:
-            _speak('Possibile farmaco: $drugName. Conferma solo se il nome corrisponde alla confezione. Puoi ripetere la scansione o cercare manualmente.');
+            _speak('Possibile farmaco: $drugName. Confermi?');
             break;
           case DrugMatchLevel.unknown:
             break;
@@ -355,83 +265,18 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
         
         // Se l'utente non conferma in 8 sec, sblocchiamo per continuare a cercare
         Future.delayed(const Duration(seconds: 8), () {
-          if (mounted && _recognizedDrug == drugName && _matchLevel != DrugMatchLevel.possible) {
+          if (mounted && _recognizedDrug == drugName) {
             _resetScanState();
           }
         });
       } else {
         // Nessun risultato
-        AppLogger.log('DrugRecognition: Nessun risultato AIFA trovato.');
-        if (!isFuzzy && !isGtin) {
-          _speak('Codice AIC letto, ma non riesco a identificarlo. Controlla la confezione o chiedi al farmacista.');
-        }
+        AppLogger.log('DrugRecognition: Nessun risultato AIFA per "$query"');
         _resetScanState(); // Riavvia l'analisi
       }
     } catch (e) {
       AppLogger.log('DrugRecognition: Errore API AIFA -> $e');
       _resetScanState();
-    }
-  }
-
-  Future<void> _showDatabaseInfo() async {
-    try {
-      final meta = await AifaCacheManager().getDatabaseMetadata();
-      final version = meta['aifa_dataset_version'] ?? 'Sconosciuta';
-      final syncStr = meta['last_successful_sync_at'];
-      
-      String syncMsg = 'Oggi (Seed Base)';
-      bool isOld = false;
-      if (syncStr != null) {
-        final syncDate = DateTime.tryParse(syncStr);
-        if (syncDate != null) {
-          syncMsg = '${syncDate.day}/${syncDate.month}/${syncDate.year}';
-          if (DateTime.now().difference(syncDate).inDays > 30) {
-            isOld = true;
-          }
-        }
-      }
-
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Informazioni Database'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Fonte dati: Informazioni pubbliche AIFA.'),
-                const SizedBox(height: 8),
-                Text('Ultimo aggiornamento: $syncMsg'),
-                const SizedBox(height: 8),
-                Text('Versione dataset: $version'),
-                if (isOld) ...[
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Avviso: Database non aggiornato da più di 30 giorni. Alcuni farmaci recenti potrebbero non essere riconosciuti.',
-                    style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                const Text(
-                  'Disclaimer: Questo sistema è un supporto assistivo per identificare la confezione e non sostituisce il controllo medico, la verifica del farmacista o l\'attenta lettura dell\'etichetta.',
-                  style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Chiudi'),
-              ),
-            ],
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Impossibile leggere le informazioni del database.')));
-      }
     }
   }
 
@@ -525,13 +370,6 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Riconosci il Farmaco'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            tooltip: 'Informazioni Database',
-            onPressed: _showDatabaseInfo,
-          ),
-        ],
       ),
       body: SafeArea(
         child: Column(
@@ -609,70 +447,29 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
             ),
             
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: const Text(
-                'Questo strumento non sostituisce il medico o il farmacista. Verifica sempre la corrispondenza con la confezione fisica.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ),
-            
-            Container(
               padding: const EdgeInsets.all(16),
               color: Theme.of(context).colorScheme.surface,
-              child: _matchLevel == DrugMatchLevel.possible
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: () => Navigator.pop(context, _recognizedDrug),
-                            icon: const Icon(Icons.check_circle),
-                            label: Text('Conferma: $_recognizedDrug'),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: _resetScanState,
-                                child: const Text('Ripeti Scansione'),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: () => Navigator.pop(context, null),
-                                child: const Text('Cerca Manualmente'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    )
-                  : SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: _recognizedDrug != null
-                            ? () {
-                                Navigator.pop(context, _recognizedDrug);
-                              }
-                            : null,
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size(0, 60),
-                        ),
-                        icon: const Icon(Icons.check_circle_outline),
-                        label: Text(
-                          _recognizedDrug != null
-                              ? 'Conferma: $_recognizedDrug'
-                              : 'Inquadra codice o etichetta...',
-                          style: const TextStyle(fontSize: 16),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _recognizedDrug != null
+                      ? () {
+                          Navigator.pop(context, _recognizedDrug);
+                        }
+                      : null,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 60),
+                  ),
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: Text(
+                    _recognizedDrug != null
+                        ? 'Conferma: $_recognizedDrug'
+                        : 'Inquadra codice o etichetta...',
+                    style: const TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
