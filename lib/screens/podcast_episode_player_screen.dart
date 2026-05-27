@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
+import '../widgets/volume_slider.dart';
 
 class PodcastEpisodePlayerScreen extends StatefulWidget {
   const PodcastEpisodePlayerScreen({super.key, required this.episode});
@@ -219,6 +220,8 @@ class _PodcastEpisodePlayerScreenState
                 );
               },
             ),
+            const SizedBox(height: 24),
+            VolumeSlider(audioPlayer: _audio),
             const SizedBox(height: 24),
             OutlinedButton.icon(
               onPressed: () => Navigator.pop(context),

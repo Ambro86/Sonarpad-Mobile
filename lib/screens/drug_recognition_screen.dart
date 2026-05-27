@@ -217,7 +217,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
            double imgW = isRotated ? inputImage.metadata!.size.height : inputImage.metadata!.size.width;
            double imgH = isRotated ? inputImage.metadata!.size.width : inputImage.metadata!.size.height;
            
-           double margin = 50.0;
+           double margin = 10.0; // Tolleranza ridotta per permettere alla scatola di stare comodamente nell'inquadratura
            List<String> warnings = [];
            if (rect.left <= margin) warnings.add("sinistro");
            if (rect.right >= imgW - margin) warnings.add("destro");
@@ -234,7 +234,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                // Oggetto centrato
                double area = rect.width * rect.height;
                double totalArea = imgW * imgH;
-               if (area > totalArea * 0.15) {
+               if (area > totalArea * 0.05) { // Ridotto al 5% per facilitare lo scatto anche se si allontana il telefono
                    _scanCompleted = true;
                    _speak("Ferma!");
                    HapticFeedback.heavyImpact();

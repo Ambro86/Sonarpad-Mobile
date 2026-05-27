@@ -98,7 +98,17 @@ class AudioPlayerService {
     }
 
     await session.setActive(true);
-    await _player.setVolume(1);
+    if (type == AudioSessionType.playback) {
+      final vol = await _settings.loadMediaVolume();
+      await _player.setVolume(vol);
+    } else {
+      await _player.setVolume(1);
+    }
+  }
+
+  Future<void> setVolume(double volume) async {
+    await _player.setVolume(volume);
+    await _settings.saveMediaVolume(volume);
   }
 
   /// Attiva il wakelock (schermo sempre acceso) se non siamo su desktop/web.

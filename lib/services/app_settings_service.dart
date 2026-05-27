@@ -270,6 +270,20 @@ class AppSettingsService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_seekSliderStepKey, value);
   }
+
+  // --- Media Volume ---
+  
+  static const _mediaVolumeKey = 'sonarpad_media_volume';
+
+  Future<double> loadMediaVolume() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(_mediaVolumeKey) ?? 1.0;
+  }
+
+  Future<void> saveMediaVolume(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_mediaVolumeKey, value);
+  }
 }
 
 extension _FirstOrNull<T> on Iterable<T> {

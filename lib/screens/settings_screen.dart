@@ -40,6 +40,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _seekSliderStep = 60;
   final _audio = AudioPlayerService();
 
+  String _formatTime(int totalSeconds) {
+    if (totalSeconds < 60) return '$totalSeconds secondi';
+    int m = totalSeconds ~/ 60;
+    int s = totalSeconds % 60;
+    String minStr = m == 1 ? '1 minuto' : '$m minuti';
+    String secStr = s == 1 ? '1 secondo' : '$s secondi';
+    if (s == 0) return minStr;
+    return '$minStr e $secStr';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -579,16 +589,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       ExcludeSemantics(
                         child: Text(
-                            'Regola l\'avanzamento di riproduzione nei file media: $_seekSliderStep secondi'),
+                            'Regola l\'avanzamento di riproduzione nei file media: ${_formatTime(_seekSliderStep)}'),
                       ),
                       Semantics(
                         container: true,
                         label: 'Regola l\'avanzamento di riproduzione nei file media',
-                        value: '$_seekSliderStep secondi',
+                        value: _formatTime(_seekSliderStep),
                         increasedValue:
-                            '${(_seekSliderStep + 10).clamp(10, 300)} secondi',
+                            _formatTime((_seekSliderStep + 10).clamp(10, 300)),
                         decreasedValue:
-                            '${(_seekSliderStep - 10).clamp(10, 300)} secondi',
+                            _formatTime((_seekSliderStep - 10).clamp(10, 300)),
                         onIncrease: () {
                           setState(() {
                             _seekSliderStep =
