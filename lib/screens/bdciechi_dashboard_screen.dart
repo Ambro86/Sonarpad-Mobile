@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
 import '../services/bdciechi_service.dart';
+import '../services/app_settings_service.dart';
 import '../services/document_library_service.dart';
 import '../models/document_item.dart';
 import 'document_reader_screen.dart';
@@ -60,7 +61,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
       if (mounted) {
         setState(() {
           _fullCatalog = catalog;
-          _displayList = catalog;
+          _displayList = [];
           _isLoading = false;
         });
       }
@@ -104,7 +105,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   void _onSearchChanged(String query) {
     if (query.isEmpty) {
       setState(() {
-        _displayList = _fullCatalog;
+        _displayList = [];
       });
       return;
     }
@@ -131,23 +132,13 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   }
 
   String _extractIndex(String record) {
-    // Usually record is "INDEX - Author - Title"
-    final parts = record.split('-');
-    if (parts.isNotEmpty) {
-      return parts.first.trim();
-    }
-    return '';
+    final index = _fullCatalog.indexOf(record);
+    return index != -1 ? index.toString() : '0';
   }
 
   String _cleanFileName(String record) {
-    // Rimuove index e prende autore e titolo
-    final parts = record.split('-');
-    String name = record;
-    if (parts.length > 1) {
-      name = parts.sublist(1).join('-').trim();
-    }
-    // Sostituisce caratteri non validi per il filesystem
-    return name.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_').trim();
+    // Sostituisce caratteri non validi per il filesystem, mantenendo 'Autore - Titolo'
+    return record.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_').trim();
   }
 
   Future<void> _handleAction(String record, bool preview) async {
@@ -276,11 +267,20 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
     );
   }
 
+  Future<void> _logout() async {
+    final settings = AppSettingsService();
+    await settings.setBdCiechiUsername('');
+    await settings.setBdCiechiPassword('');
+    if (mounted) {
+      Navigator.of(context).pushReplacementNamed('/bdciechi');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Catalogo BdCiechi'),
+        title: const Text('Accesso completato, Bdciechi'),
         actions: [
           IconButton(
             icon: const Icon(Icons.new_releases),
@@ -304,6 +304,28 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
                 textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: FilledButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BdCiechiFullCatalogScreen(
+                        catalog: _fullCatalog,
+                        onWorkTapped: _onWorkTapped,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.library_books),
+                label: const Text('Catalogo della biblioteca', style: TextStyle(fontSize: 16)),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50),
+                ),
               ),
             ),
             Padding(
@@ -343,8 +365,52 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
                           },
                         ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: FilledButton.tonal(
+                onPressed: _logout,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50),
+                ),
+                child: const Text('Esci dalla biblioteca', style: TextStyle(fontSize: 16)),
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class BdCiechiFullCatalogScreen extends StatelessWidget {
+  final List<String> catalog;
+  final void Function(String) onWorkTapped;
+
+  const BdCiechiFullCatalogScreen({
+    super.key,
+    required this.catalog,
+    required this.onWorkTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Catalogo della biblioteca'),
+      ),
+      body: ListView.separated(
+        itemCount: catalog.length,
+        separatorBuilder: (context, index) => const Divider(height: 1),
+        itemBuilder: (context, index) {
+          final record = catalog[index];
+          return ListTile(
+            title: Text(record),
+            onTap: () {
+              Navigator.pop(context);
+              onWorkTapped(record);
+            },
+          );
+        },
       ),
     );
   }
