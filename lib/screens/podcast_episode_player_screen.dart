@@ -49,14 +49,7 @@ class _PodcastEpisodePlayerScreenState
     await _audio.pause();
   }
 
-  Future<void> _togglePlayback() async {
-    if (_loading) return;
-    if (_audio.isPlaying) {
-      await _pause();
-    } else {
-      await _play();
-    }
-  }
+
 
   @override
   void initState() {

@@ -7,7 +7,6 @@ import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
-import 'radio_player_screen.dart';
 import 'radio_search_results_screen.dart';
 
 class RadioScreen extends StatefulWidget {
@@ -21,8 +20,6 @@ class _RadioScreenState extends State<RadioScreen> {
   final _service = RadioService();
   final _searchController = TextEditingController();
 
-  List<RadioStation> _favorites = [];
-  List<RadioStation> _results = [];
   String? _languageCode;
   RadioGenreOption _genre = RadioService.genres.first;
   bool _searching = false;
@@ -38,17 +35,7 @@ class _RadioScreenState extends State<RadioScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadFavorites();
-  }
 
-  Future<void> _loadFavorites() async {
-    final favorites = await _service.loadFavorites();
-    if (!mounted) return;
-    setState(() => _favorites = favorites);
-  }
 
   Future<void> _search() async {
     final l10n = AppLocalizations.of(context);
@@ -68,7 +55,7 @@ class _RadioScreenState extends State<RadioScreen> {
           settings: const RouteSettings(name: '/radio/search_results'),
           builder: (_) => RadioSearchResultsScreen(results: results),
         ),
-      ).then((_) => _loadFavorites());
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,36 +66,6 @@ class _RadioScreenState extends State<RadioScreen> {
     }
   }
 
-  Future<void> _play(RadioStation station) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        settings: const RouteSettings(name: '/radio/player'),
-        builder: (_) => RadioPlayerScreen(station: station),
-      ),
-    );
-  }
-
-  Future<void> _toggleFavorite(RadioStation station) async {
-    final l10n = AppLocalizations.of(context);
-    final exists =
-        _favorites.any((item) => item.streamUrl == station.streamUrl);
-    final next = exists
-        ? _favorites
-            .where((item) => item.streamUrl != station.streamUrl)
-            .toList()
-        : [..._favorites, station];
-    await _service.saveFavorites(next);
-    if (!mounted) return;
-    setState(() => _favorites = next);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(exists
-            ? l10n.radioFavoriteRemoved(station.name)
-            : l10n.radioFavoriteAdded(station.name)),
-      ),
-    );
-  }
 
   @override
   void dispose() {
@@ -137,7 +94,6 @@ class _RadioScreenState extends State<RadioScreen> {
                   builder: (_) => const FavoriteRadiosScreen(),
                 ),
               );
-              _loadFavorites();
             },
             icon: const Icon(Icons.favorite),
             label: Text(l10n.radioFavoritesButton),

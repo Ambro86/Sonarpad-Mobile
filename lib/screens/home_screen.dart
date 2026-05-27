@@ -235,6 +235,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             if (isItalian)
               _HomeButton(
+                label: 'BdCiechi',
+                onPressed: () => AccessibilityFeedbackService.goNamed(
+                  context,
+                  routeName: '/bdciechi',
+                ),
+              ),
+            if (isItalian)
+              _HomeButton(
                 label: 'Ricerca Farmaci AIFA',
                 onPressed: () => AccessibilityFeedbackService.goNamed(
                   context,

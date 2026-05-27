@@ -15,6 +15,7 @@ import 'screens/settings_screen.dart';
 import 'screens/tv_screen.dart';
 import 'screens/aifa_search_screen.dart';
 import 'screens/wikipedia_screen.dart';
+import 'screens/bdciechi_login_screen.dart';
 import 'screens/route_screen.dart';
 import 'screens/audiodescription_recent_screen.dart';
 
@@ -122,6 +123,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/raiplaysound': (_) => const RaiPlaySoundScreen(),
         '/raiplay': (_) => const RaiPlayScreen(),
         '/wikipedia': (_) => const WikipediaScreen(),
+        '/bdciechi': (_) => const BdCiechiLoginScreen(),
         '/settings': (_) => const SettingsScreen(),
         '/aifa': (_) => const AifaSearchScreen(),
         '/route': (_) => const RouteScreen(),

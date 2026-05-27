@@ -23,6 +23,8 @@ class AppSettingsService {
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
+  static const _bdciechiUsernameKey = 'bdciechiUsername';
+  static const _bdciechiPasswordKey = 'bdciechiPassword';
 
   static const ttsLanguages = [
     TtsVoiceLanguage('it', 'Italiano'),
@@ -124,6 +126,26 @@ class AppSettingsService {
   Future<void> setTvSecretCode(String value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tvSecretCodeKey, value);
+  }
+
+  Future<String> getBdCiechiUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_bdciechiUsernameKey) ?? '';
+  }
+
+  Future<void> setBdCiechiUsername(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_bdciechiUsernameKey, value);
+  }
+
+  Future<String> getBdCiechiPassword() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_bdciechiPasswordKey) ?? '';
+  }
+
+  Future<void> setBdCiechiPassword(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_bdciechiPasswordKey, value);
   }
 
   static const _ttsSpeedKey = 'sonarpad_tts_speed';

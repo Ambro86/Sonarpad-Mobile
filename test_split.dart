@@ -3,9 +3,9 @@ import 'dart:io';
 void main() async {
   final text = await File(r'C:\Users\ambro\Downloads\Il libro del Dio vivente.txt').readAsString();
   final chunks = splitTextForStreaming(text);
-  print('Total chunks: ${chunks.length}');
+  // print('Total chunks: ${chunks.length}');
   for (var i = 0; i < chunks.length; i++) {
-    print('Chunk $i length: ${chunks[i].length}');
+    // print('Chunk $i length: ${chunks[i].length}');
   }
 }
 
