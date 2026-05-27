@@ -4,6 +4,7 @@ import '../services/aifa_service.dart';
 import '../services/recent_searches_service.dart';
 import 'aifa_confezioni_screen.dart';
 import 'recent_searches_screen.dart';
+import 'drug_recognition_screen.dart';
 
 class AifaSearchScreen extends StatefulWidget {
   const AifaSearchScreen({super.key});
@@ -77,6 +78,28 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () async {
+                    final drugName = await Navigator.of(context).push<String>(
+                      MaterialPageRoute(builder: (_) => const DrugRecognitionScreen()),
+                    );
+                    if (drugName != null && drugName.isNotEmpty && mounted) {
+                      _controller.text = drugName;
+                      _search();
+                    }
+                  },
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Inquadra / Riconosci il farmaco', style: TextStyle(fontSize: 16)),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
               child: SizedBox(

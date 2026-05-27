@@ -57,6 +57,8 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>L'app necessita dell'accesso alla fotocamera per riconoscere il testo sulle scatole dei farmaci e fornirti feedback vocale.</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
