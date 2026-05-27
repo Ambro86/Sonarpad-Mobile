@@ -12,6 +12,7 @@ import 'package:sonarpad_mobile_starter/services/aifa_cache_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:share_plus/share_plus.dart';
 
 import '../utils/app_logger.dart';
 import '../utils/gs1_parser.dart';
@@ -519,7 +520,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       final targetPath = p.join(dir.path, 'Debug_Farmaco_${DateTime.now().millisecondsSinceEpoch}.jpg');
       await file.saveTo(targetPath);
       AppLogger.log('DrugRecognition: Salvata foto debug in $targetPath');
-      _speak('Foto salvata nei documenti per debug');
+      _speak('Condivisione foto di debug in corso');
+      await Share.shareXFiles([XFile(targetPath)], text: 'Foto debug per riconoscimento farmaci');
       
       _isProcessing = false;
       _startAnalysis();
