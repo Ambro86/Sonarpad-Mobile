@@ -54,6 +54,12 @@
 @import google_mlkit_commons;
 #endif
 
+#if __has_include(<google_mlkit_object_detection/GoogleMlKitObjectDetectionPlugin.h>)
+#import <google_mlkit_object_detection/GoogleMlKitObjectDetectionPlugin.h>
+#else
+@import google_mlkit_object_detection;
+#endif
+
 #if __has_include(<google_mlkit_text_recognition/GoogleMlKitTextRecognitionPlugin.h>)
 #import <google_mlkit_text_recognition/GoogleMlKitTextRecognitionPlugin.h>
 #else
@@ -137,6 +143,7 @@
   [FlutterTtsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterTtsPlugin"]];
   [GoogleMlKitBarcodeScanningPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitBarcodeScanningPlugin"]];
   [GoogleMlKitCommonsPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitCommonsPlugin"]];
+  [GoogleMlKitObjectDetectionPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitObjectDetectionPlugin"]];
   [GoogleMlKitTextRecognitionPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitTextRecognitionPlugin"]];
   [IntegrationTestPlugin registerWithRegistrar:[registry registrarForPlugin:@"IntegrationTestPlugin"]];
   [JustAudioPlugin registerWithRegistrar:[registry registrarForPlugin:@"JustAudioPlugin"]];

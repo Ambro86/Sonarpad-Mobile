@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
 import 'package:sonarpad_mobile_starter/services/aifa_cache_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,6 +28,14 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   CameraController? _cameraController;
   final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
   final BarcodeScanner _barcodeScanner = BarcodeScanner(formats: [BarcodeFormat.all]);
+  final ObjectDetector _objectDetector = ObjectDetector(
+    options: ObjectDetectorOptions(
+      mode: DetectionMode.stream,
+      classifyObjects: false,
+      multipleObjects: false,
+    ),
+  );
+  final FlutterTts _flutterTts = FlutterTts();
   final AifaService _aifaService = AifaService();
 
   List<CameraDescription> _cameras = [];
@@ -53,14 +63,31 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   DateTime? _lastOcrTime;
   
   DateTime? _lastFrameTime;
-  DateTime? _lastTTSSeenTime;
+  DateTime? _lastEdgeWarningTime;
 
   Timer? _instructionTimer;
 
   @override
   void initState() {
     super.initState();
+    _initTts();
     _checkPermissionsAndInit();
+  }
+
+  Future<void> _initTts() async {
+    await _flutterTts.setLanguage("it-IT");
+    await _flutterTts.setSpeechRate(0.5);
+    if (Platform.isIOS) {
+       await _flutterTts.setIosAudioCategory(
+        IosTextToSpeechAudioCategory.ambient,
+        [
+          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+          IosTextToSpeechAudioCategoryOptions.mixWithOthers
+        ],
+        IosTextToSpeechAudioMode.defaultMode
+      );
+    }
   }
 
   Future<void> _checkPermissionsAndInit() async {
@@ -143,21 +170,17 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
 
   void _startInstructionLoop() {
     _instructionTimer?.cancel();
-    _speak('Cerca il codice al centro della fotocamera. Muovi lentamente la confezione.');
+    _speak('Inquadra la scatola del farmaco. Allontana o avvicina il telefono finché non ti dico ferma.');
     
-    _instructionTimer = Timer.periodic(const Duration(seconds: 7), (timer) {
+    _instructionTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (_recognizedDrug != null || _scanCompleted) {
         timer.cancel();
         return;
       }
       
       final elapsed = DateTime.now().difference(_startTime).inSeconds;
-      if (elapsed >= 7 && !_ocrFallbackActive) {
-        _ocrFallbackActive = true;
-        setState(() => _statusText = 'Nessun codice. Ricerca testo...');
-        _speak('Non trovo il codice. Prova a girare la scatola oppure avvicinala. Attivata ricerca del testo OCR.');
-      } else if (elapsed > 15) {
-        _speak('Ancora nessun risultato. Continua a muovere lentamente o accendi più luce.');
+      if (elapsed > 10) {
+        _speak('Assicurati di avere abbastanza luce e muovi lentamente la confezione.');
       }
     });
   }
@@ -166,8 +189,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     _cameraController!.startImageStream((CameraImage image) async {
       final now = DateTime.now();
       // Drop late frames
-      if (_lastFrameTime != null && now.difference(_lastFrameTime!).inMilliseconds < 300) {
-        return; // throttle artificiale a ~3 fps
+      if (_lastFrameTime != null && now.difference(_lastFrameTime!).inMilliseconds < 150) {
+        return; 
       }
       
       if (_isProcessing || _recognizedDrug != null || _scanCompleted) return;
@@ -182,71 +205,124 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
           return;
         }
 
-        // 1. Priorità Barcode/DataMatrix
-        final barcodes = await _barcodeScanner.processImage(inputImage);
-        if (barcodes.isNotEmpty) {
-          final bestBarcode = barcodes.first;
-          final rawValue = bestBarcode.rawValue ?? bestBarcode.displayValue ?? '';
-          
-          if (rawValue.isNotEmpty) {
-            final parsed = Gs1Parser.parse(rawValue);
-            AppLogger.log('DrugRecognition: Barcode DataMatrix processato (AIC/GTIN estratto).');
-            
-            if (parsed.hasValidAic || parsed.gtin != null) {
-              
-              // Stabilizzazione multi-frame
-              if (_lastBarcodeRawValue == rawValue && _lastBarcodeTime != null && now.difference(_lastBarcodeTime!).inMilliseconds < 1500) {
-                _barcodeConsecutiveReads++;
-              } else {
-                _lastBarcodeRawValue = rawValue;
-                _barcodeConsecutiveReads = 1;
-                _lastBarcodeTime = now;
-              }
-
-              // Accettiamo se letto 2 volte oppure è un AIC validissimo e lo forziamo subito (facoltativo, ma per sicurezza esigiamo 2 frame)
-              if (_barcodeConsecutiveReads >= 2 || parsed.hasValidAic) {
-                _scanCompleted = true;
-                HapticFeedback.heavyImpact();
-                
-                if (parsed.hasValidAic) {
-                  _speak('Codice letto. Cerco il farmaco nel database.');
-                  setState(() => _statusText = 'Codice letto. Interrogo AIFA...');
-                  await _searchDrugsByQuery(parsed.aic!, isGtin: false);
-                } else {
-                  _speak('Codice a barre letto, ma senza AIC esplicito. Verifico.');
-                  setState(() => _statusText = 'GTIN letto. Verifico...');
-                  await _searchDrugsByQuery(parsed.gtin!, isGtin: true);
-                }
-                return; // Termina qui
-              }
-            } else {
-              // Se rileva un codice ma non lo decodifica come atteso
-              if (!_scanCompleted) {
-                 if (_lastTTSSeenTime == null || now.difference(_lastTTSSeenTime!).inMilliseconds > 4000) {
-                    _lastTTSSeenTime = now;
-                    _speak('Codice visto, avvicina o tieni fermo.');
-                 }
-              }
-            }
-          }
-        } else {
-          // Reset contatore barcode se perso
-          if (now.difference(_lastBarcodeTime ?? now).inMilliseconds > 1500) {
-            _barcodeConsecutiveReads = 0;
-          }
+        final objects = await _objectDetector.processImage(inputImage);
+        
+        if (objects.isNotEmpty) {
+           final object = objects.first;
+           final rect = object.boundingBox;
+           
+           bool isRotated = inputImage.metadata!.rotation == InputImageRotation.rotation90deg ||
+                            inputImage.metadata!.rotation == InputImageRotation.rotation270deg;
+           
+           double imgW = isRotated ? inputImage.metadata!.size.height : inputImage.metadata!.size.width;
+           double imgH = isRotated ? inputImage.metadata!.size.width : inputImage.metadata!.size.height;
+           
+           double margin = 50.0;
+           List<String> warnings = [];
+           if (rect.left <= margin) warnings.add("sinistro");
+           if (rect.right >= imgW - margin) warnings.add("destro");
+           if (rect.top <= margin) warnings.add("superiore");
+           if (rect.bottom >= imgH - margin) warnings.add("inferiore");
+           
+           if (warnings.isNotEmpty) {
+               if (_lastEdgeWarningTime == null || now.difference(_lastEdgeWarningTime!).inMilliseconds > 2500) {
+                   _lastEdgeWarningTime = now;
+                   String edgeText = warnings.join(" e ");
+                   _speak("Bordo $edgeText non visibile");
+               }
+           } else {
+               // Oggetto centrato
+               double area = rect.width * rect.height;
+               double totalArea = imgW * imgH;
+               if (area > totalArea * 0.15) {
+                   _scanCompleted = true;
+                   _speak("Ferma!");
+                   HapticFeedback.heavyImpact();
+                   await _captureAndAnalyze();
+                   return;
+               }
+           }
         }
-
-        // 2. Fallback OCR (se fallback è attivo)
-        if (_ocrFallbackActive && !_scanCompleted) {
-          final recognizedText = await _textRecognizer.processImage(inputImage);
-          await _processOcrText(recognizedText);
-        }
+        
       } catch (e) {
         // Ignora piccoli errori di frame
       } finally {
         _isProcessing = false;
       }
     });
+  }
+
+  Future<void> _captureAndAnalyze() async {
+      try {
+          if (_cameraController!.value.isStreamingImages) {
+              await _cameraController!.stopImageStream();
+          }
+          if (!mounted) return;
+          setState(() => _statusText = 'Analisi in corso...');
+          
+          final XFile file = await _cameraController!.takePicture();
+          final inputImage = InputImage.fromFilePath(file.path);
+          
+          // 1. Priorità Barcode/DataMatrix
+          final barcodes = await _barcodeScanner.processImage(inputImage);
+          if (barcodes.isNotEmpty) {
+              final bestBarcode = barcodes.first;
+              final rawValue = bestBarcode.rawValue ?? bestBarcode.displayValue ?? '';
+              if (rawValue.isNotEmpty) {
+                  final parsed = Gs1Parser.parse(rawValue);
+                  if (parsed.hasValidAic) {
+                      _speak('Codice letto. Cerco il farmaco.');
+                      await _searchDrugsByQuery(parsed.aic!, isGtin: false);
+                      return;
+                  } else if (parsed.gtin != null) {
+                      _speak('GTIN letto. Verifico.');
+                      await _searchDrugsByQuery(parsed.gtin!, isGtin: true);
+                      return;
+                  }
+              }
+          }
+          
+          // 2. Fallback OCR
+          final recognizedText = await _textRecognizer.processImage(inputImage);
+          if (recognizedText.text.isNotEmpty) {
+              String? possibleDrug;
+              for (TextBlock block in recognizedText.blocks) {
+                  final text = block.text.trim();
+                  final lines = text.split('\n');
+                  
+                  for (var line in lines) {
+                      final upperLine = line.toUpperCase();
+                      if (upperLine.contains('SCAD') || upperLine.contains('EXP')) continue;
+                      if (upperLine.contains('LOTTO') || upperLine.contains('L.')) continue;
+                      
+                      if (line.length > 4 && RegExp(r'[A-Za-z]{4,}').hasMatch(line)) {
+                          if (possibleDrug == null || line.length > possibleDrug.length) {
+                              possibleDrug = line;
+                          }
+                      }
+                  }
+              }
+              
+              if (possibleDrug != null) {
+                  final normalizedCandidate = _normalizeOcrString(possibleDrug);
+                  if (mounted) setState(() => _statusText = 'Ricerca per "$normalizedCandidate"...');
+                  await _searchDrugsByQuery(normalizedCandidate, isFuzzy: true);
+                  return;
+              }
+          }
+          
+          // Fallback if nothing found
+          _speak("Non ho riconosciuto nulla, riproviamo.");
+          _resetScanState();
+          await _initCamera(_cameraController!.description); // riavvia stream
+          
+      } catch (e) {
+          AppLogger.log('DrugRecognition: Errore captureAndAnalyze: $e');
+          _resetScanState();
+          if (_cameraController != null && !_cameraController!.value.isStreamingImages) {
+             await _initCamera(_cameraController!.description);
+          }
+      }
   }
 
   String _normalizeOcrString(String raw) {
@@ -256,59 +332,6 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     norm = norm.replaceAll('0', 'O');
     norm = norm.replaceAll(RegExp(r'[^A-Z]'), '');
     return norm;
-  }
-
-  Future<void> _processOcrText(RecognizedText recognizedText) async {
-    if (recognizedText.text.isEmpty) return;
-
-    String? possibleDrug;
-    for (TextBlock block in recognizedText.blocks) {
-      final text = block.text.trim();
-      final lines = text.split('\n');
-      
-      for (var line in lines) {
-        final upperLine = line.toUpperCase();
-        if (upperLine.contains('SCAD') || upperLine.contains('EXP')) {
-          continue; // gestito da altri componenti
-        }
-        if (upperLine.contains('LOTTO') || upperLine.contains('L.')) {
-          continue;
-        }
-        
-        if (line.length > 4 && RegExp(r'[A-Za-z]{4,}').hasMatch(line)) {
-          if (possibleDrug == null || line.length > possibleDrug.length) {
-            possibleDrug = line;
-          }
-        }
-      }
-    }
-
-    if (possibleDrug != null && _recognizedDrug == null) {
-      final now = DateTime.now();
-      final normalizedCandidate = _normalizeOcrString(possibleDrug);
-
-      if (_lastOcrCandidate == normalizedCandidate && _lastOcrTime != null && now.difference(_lastOcrTime!).inMilliseconds < 1500) {
-        _ocrConsecutiveReads++;
-      } else {
-        _lastOcrCandidate = normalizedCandidate;
-        _ocrConsecutiveReads = 1;
-        _lastOcrTime = now;
-      }
-
-      if (_ocrConsecutiveReads >= 2) {
-        AppLogger.log('DrugRecognition OCR: Avvio ricerca locale stabilizzata.');
-        
-        // Mettiamo in pausa l'analisi per cercare
-        _scanCompleted = true; // finto flag per bloccare
-        setState(() => _statusText = 'Ricerca per "$normalizedCandidate"...');
-        await _searchDrugsByQuery(normalizedCandidate, isFuzzy: true);
-      }
-    } else {
-      final now = DateTime.now();
-      if (now.difference(_lastOcrTime ?? now).inMilliseconds > 1500) {
-        _ocrConsecutiveReads = 0;
-      }
-    }
   }
 
   Future<void> _searchDrugsByQuery(String query, {bool isFuzzy = false, bool isGtin = false}) async {
@@ -356,9 +379,12 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
         // Nessun risultato
         AppLogger.log('DrugRecognition: Nessun risultato AIFA trovato.');
         if (!isFuzzy && !isGtin) {
-          _speak('Codice AIC letto, ma non riesco a identificarlo. Controlla la confezione o chiedi al farmacista.');
+          _speak('Codice AIC letto, ma non lo trovo. Controlla la scatola o chiedi al medico.');
         }
-        _resetScanState(); // Riavvia l'analisi
+        _resetScanState();
+        if (_cameraController != null && !_cameraController!.value.isStreamingImages) {
+           await _initCamera(_cameraController!.description);
+        }
       }
     } catch (e) {
       AppLogger.log('DrugRecognition: Errore API AIFA -> $e');
@@ -461,8 +487,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   }
 
   Future<void> _speak(String text) async {
-    // ignore: deprecated_member_use
-    SemanticsService.announce(text, TextDirection.ltr);
+    await _flutterTts.speak(text);
   }
 
   void _switchCamera() async {
@@ -510,6 +535,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     _cameraController?.dispose();
     _textRecognizer.close();
     _barcodeScanner.close();
+    _objectDetector.close();
+    _flutterTts.stop();
     super.dispose();
   }
 

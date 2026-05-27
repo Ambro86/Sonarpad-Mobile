@@ -77,6 +77,10 @@ class AudioPlayerService {
 
   Stream<bool> get playingStream => _player.playingStream;
 
+  Stream<Duration> get positionStream => _player.positionStream;
+  
+  Stream<Duration?> get durationStream => _player.durationStream;
+
   bool get isPlaying => _player.playing;
 
   Future<void> _prepareAudioSession(AudioSessionType type) async {

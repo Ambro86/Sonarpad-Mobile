@@ -256,6 +256,20 @@ class AppSettingsService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('bookmark_$id');
   }
+
+  // --- Slider di Riproduzione ---
+  
+  static const _seekSliderStepKey = 'sonarpad_seek_slider_step';
+
+  Future<int> loadSeekSliderStep() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_seekSliderStepKey) ?? 60;
+  }
+
+  Future<void> saveSeekSliderStep(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_seekSliderStepKey, value);
+  }
 }
 
 extension _FirstOrNull<T> on Iterable<T> {

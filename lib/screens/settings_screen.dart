@@ -37,6 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _loading = true;
   bool _testingVoice = false;
   bool _autoBookmark = true;
+  int _seekSliderStep = 60;
   final _audio = AudioPlayerService();
 
   @override
@@ -64,6 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
+    final seekSliderStep = await _settings.loadSeekSliderStep();
 
     await _loadSystemVoices();
 
@@ -79,6 +81,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _systemTtsLanguage = sysLang;
       _systemTtsVoice = sysVoice;
       _autoBookmark = autoBookmark;
+      _seekSliderStep = seekSliderStep;
       _loading = false;
     });
   }
@@ -109,6 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _saveTtsSelection();
     await _settings.setTvSecretCode(_tvSecretCodeController.text);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
+    await _settings.saveSeekSliderStep(_seekSliderStep);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.settingsSaved)),
@@ -567,6 +571,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: _autoBookmark,
                     onChanged: (val) => setState(() => _autoBookmark = val),
                     contentPadding: EdgeInsets.zero,
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ExcludeSemantics(
+                        child: Text(
+                            'Regola l\'avanzamento di riproduzione nei file media: $_seekSliderStep secondi'),
+                      ),
+                      Semantics(
+                        container: true,
+                        label: 'Regola l\'avanzamento di riproduzione nei file media',
+                        value: '$_seekSliderStep secondi',
+                        increasedValue:
+                            '${(_seekSliderStep + 10).clamp(10, 300)} secondi',
+                        decreasedValue:
+                            '${(_seekSliderStep - 10).clamp(10, 300)} secondi',
+                        onIncrease: () {
+                          setState(() {
+                            _seekSliderStep =
+                                (_seekSliderStep + 10).clamp(10, 300);
+                          });
+                        },
+                        onDecrease: () {
+                          setState(() {
+                            _seekSliderStep =
+                                (_seekSliderStep - 10).clamp(10, 300);
+                          });
+                        },
+                        child: ExcludeSemantics(
+                          child: Slider(
+                            value: _seekSliderStep.toDouble(),
+                            min: 10,
+                            max: 300,
+                            divisions: 29,
+                            onChanged: (val) => setState(
+                                () => _seekSliderStep = val.toInt()),
+                            onChangeEnd: (val) =>
+                                _settings.saveSeekSliderStep(val.toInt()),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const Divider(),
                   const SizedBox(height: 16),

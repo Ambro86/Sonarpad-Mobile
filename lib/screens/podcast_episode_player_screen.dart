@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
+import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 
 class PodcastEpisodePlayerScreen extends StatefulWidget {
@@ -22,6 +23,7 @@ class _PodcastEpisodePlayerScreenState
   bool _loaded = false;
   bool _loading = false;
   String? _error;
+  int _seekStep = 60;
 
   Future<void> _play() async {
     final l10n = AppLocalizations.of(context);
@@ -65,10 +67,16 @@ class _PodcastEpisodePlayerScreenState
   @override
   void initState() {
     super.initState();
+    _loadSettings();
     // Auto-play all'apertura del player
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _play();
     });
+  }
+
+  Future<void> _loadSettings() async {
+    final step = await AppSettingsService().loadSeekSliderStep();
+    if (mounted) setState(() => _seekStep = step);
   }
 
   @override
@@ -138,6 +146,78 @@ class _PodcastEpisodePlayerScreenState
                   label: Text(l10n.forward15s),
                 ),
               ],
+            ),
+            const SizedBox(height: 24),
+            StreamBuilder<Duration?>(
+              stream: _audio.durationStream,
+              builder: (context, durSnapshot) {
+                final duration = durSnapshot.data ?? Duration.zero;
+                if (duration == Duration.zero) return const SizedBox();
+
+                return StreamBuilder<Duration>(
+                  stream: _audio.positionStream,
+                  builder: (context, posSnapshot) {
+                    final position = posSnapshot.data ?? Duration.zero;
+
+                    int currentStep = _seekStep;
+                    if (duration.inSeconds < currentStep) {
+                      currentStep = (duration.inSeconds * 0.2).round();
+                      if (currentStep < 1) currentStep = 1;
+                    }
+
+                    void seekBy(int seconds) {
+                      final newPos = position + Duration(seconds: seconds);
+                      if (newPos < Duration.zero) {
+                        _audio.seek(Duration.zero);
+                      } else if (newPos > duration) {
+                        _audio.seek(duration);
+                      } else {
+                        _audio.seek(newPos);
+                      }
+                    }
+
+                    String format(Duration d) {
+                      final mins = d.inMinutes;
+                      final secs = (d.inSeconds % 60).toString().padLeft(2, '0');
+                      return '$mins:$secs';
+                    }
+
+                    final posSecs = position.inSeconds.toDouble();
+                    final durSecs = duration.inSeconds.toDouble();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ExcludeSemantics(
+                          child: Text(
+                            '${format(position)} / ${format(duration)}',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Semantics(
+                          container: true,
+                          label: 'Posizione riproduzione',
+                          value: format(position),
+                          increasedValue: format(position + Duration(seconds: currentStep)),
+                          decreasedValue: format(position - Duration(seconds: currentStep)),
+                          onIncrease: () => seekBy(currentStep),
+                          onDecrease: () => seekBy(-currentStep),
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: posSecs.clamp(0.0, durSecs),
+                              min: 0,
+                              max: durSecs,
+                              onChanged: (val) {
+                                _audio.seek(Duration(seconds: val.toInt()));
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
             ),
             const SizedBox(height: 24),
             OutlinedButton.icon(
