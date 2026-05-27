@@ -123,6 +123,15 @@ class Gs1Parser {
       gtin = data;
     }
 
+    // Se è un Pharmacode italiano (Code 39), tipicamente A + 9 cifre (o solo 9 cifre)
+    if (gtin == null && aic == null) {
+      if (data.length == 10 && data.startsWith('A') && RegExp(r'^A\d{9}$').hasMatch(data)) {
+        aic = data.substring(1);
+      } else if (data.length == 9 && RegExp(r'^\d{9}$').hasMatch(data)) {
+        aic = data;
+      }
+    }
+
     // NESSUNA estrazione automatica dell'AIC dal GTIN.
     // L'AIC esiste solo se esplicitamente dichiarato con AI 716.
 

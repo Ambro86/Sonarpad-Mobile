@@ -25,14 +25,7 @@ class DrugRecognitionScreen extends StatefulWidget {
 class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   CameraController? _cameraController;
   final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-  final BarcodeScanner _barcodeScanner = BarcodeScanner(formats: [
-    BarcodeFormat.dataMatrix,
-    BarcodeFormat.ean13,
-    BarcodeFormat.ean8,
-    BarcodeFormat.code128,
-    BarcodeFormat.qrCode,
-    BarcodeFormat.pdf417,
-  ]);
+  final BarcodeScanner _barcodeScanner = BarcodeScanner(formats: [BarcodeFormat.all]);
   final AifaService _aifaService = AifaService();
 
   List<CameraDescription> _cameras = [];
@@ -102,7 +95,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
 
     _cameraController = CameraController(
       camera,
-      ResolutionPreset.medium,
+      ResolutionPreset.high,
       enableAudio: false,
       imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
     );
