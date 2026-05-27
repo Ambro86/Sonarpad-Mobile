@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   flutter_tts
   just_audio_windows
+  pdfx
   permission_handler_windows
   share_plus
   url_launcher_windows

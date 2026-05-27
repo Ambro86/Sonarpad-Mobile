@@ -6,6 +6,10 @@ import 'package:archive/archive_io.dart';
 import 'package:epubx/epubx.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:xml/xml.dart' as xml_pkg;
+import 'package:pdfx/pdfx.dart' as pdfx;
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 /// Risultato dell'estrazione testo da un documento.
 class ExtractionResult {
@@ -95,13 +99,71 @@ class DocumentTextExtractor {
       document.dispose();
     }
     if (text.isEmpty) {
-      return const ExtractionResult(
-        text: '',
-        error: 'Nessun testo estraibile da questo PDF '
-            '(potrebbe essere un PDF scansionato o protetto).',
-      );
+      dev.log('Nessun testo estratto. Tento fallback OCR...');
+      return await _extractPdfOcr(path);
     }
     return ExtractionResult(text: text);
+  }
+
+  Future<ExtractionResult> _extractPdfOcr(String path) async {
+    pdfx.PdfDocument? doc;
+    final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+    final buffer = StringBuffer();
+    
+    try {
+      doc = await pdfx.PdfDocument.openFile(path);
+      final pagesCount = doc.pagesCount;
+      final maxPages = pagesCount > 20 ? 20 : pagesCount; // Limitiamo a 20 per performance
+      
+      final tempDir = await getTemporaryDirectory();
+      
+      for (int i = 1; i <= maxPages; i++) {
+        final page = await doc.getPage(i);
+        // Render per OCR. Usiamo un ingrandimento (es 2x) per la qualità.
+        final pageImage = await page.render(
+          width: page.width * 2,
+          height: page.height * 2,
+          format: pdfx.PdfPageImageFormat.jpeg,
+        );
+        await page.close();
+        
+        if (pageImage != null) {
+          final tempFile = File(p.join(tempDir.path, 'ocr_page_$i.jpg'));
+          await tempFile.writeAsBytes(pageImage.bytes);
+          
+          final inputImage = InputImage.fromFile(tempFile);
+          final recognizedText = await textRecognizer.processImage(inputImage);
+          buffer.writeln(recognizedText.text);
+          buffer.writeln(); // Spazio tra pagine
+          
+          if (await tempFile.exists()) {
+            await tempFile.delete();
+          }
+        }
+      }
+      
+      final ocrText = buffer.toString().trim();
+      if (ocrText.isEmpty) {
+         return const ExtractionResult(
+          text: '',
+          error: 'Nessun testo trovato nel documento, neanche tramite scansione visiva OCR.',
+        );
+      }
+      return ExtractionResult(text: ocrText);
+    } catch(e) {
+       return ExtractionResult(
+          text: '',
+          error: 'Errore durante la scansione OCR del PDF: $e',
+        );
+    } finally {
+      await textRecognizer.close();
+      // Nota: doc non ha un dispose esplicito su alcune vecchie versioni pdfx,
+      // ma proviamo a chiuderlo se necessario. In pdfx doc viene gestito in automatico
+      // o con doc.close().
+      try {
+        // doc.close(); non supportato in pdfx.PdfDocument ma è document_ref internamente
+      } catch(_) {}
+    }
   }
 
   // ---------------------------------------------------------------------------
