@@ -121,7 +121,9 @@ jobs:
 
       - name: Install CocoaPods dependencies
         run: |
+          flutter build ios --config-only || true
           if [ -f "ios/Podfile" ]; then
+            sed -i '' -e 's/flutter_additional_ios_build_settings(target)/flutter_additional_ios_build_settings(target)\n      target.build_configurations.each do |config|\n        config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"] ||= ["$(inherited)", "PERMISSION_CAMERA=1"]\n      end/g' ios/Podfile
             cd ios
             pod install --repo-update
           fi

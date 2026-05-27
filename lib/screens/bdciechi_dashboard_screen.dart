@@ -30,9 +30,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   final BdCiechiService _service = BdCiechiService();
   
   List<String> _fullCatalog = [];
-  List<String> _displayList = [];
-  bool _isLoading = true;
-  String? _errorMessage;
+  bool _isLoadingCatalog = true;
   String _quotaInfo = '';
 
   @override
@@ -44,84 +42,35 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
 
   void _updateQuotaText(BdCiechiQuota? quota) {
     if (quota != null) {
-      _quotaInfo = 'Libri ancora disponibili in questo mese: ${quota.remaining} su ${quota.monthlyTotal}';
+      setState(() {
+        _quotaInfo = 'Libri ancora disponibili in questo mese: ${quota.remaining} su ${quota.monthlyTotal}';
+      });
     } else {
-      _quotaInfo = 'Informazioni quota non disponibili.';
+      setState(() {
+        _quotaInfo = 'Informazioni quota non disponibili.';
+      });
     }
   }
 
   Future<void> _loadCatalog() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
     try {
       final catalog = await _service.fetchCatalogList(widget.identifyResponse.nprov);
       if (mounted) {
         setState(() {
           _fullCatalog = catalog;
-          _displayList = [];
-          _isLoading = false;
+          _isLoadingCatalog = false;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Errore nel caricamento del catalogo: $e';
-          _isLoading = false;
+          _isLoadingCatalog = false;
         });
       }
     }
-  }
-
-  Future<void> _loadLatest() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      final latest = await _service.fetchLatestList(widget.identifyResponse.nprov);
-      if (mounted) {
-        setState(() {
-          _displayList = latest;
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ultime novità caricate')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Errore nel caricamento delle novità: $e';
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _onSearchChanged(String query) {
-    if (query.isEmpty) {
-      setState(() {
-        _displayList = [];
-      });
-      return;
-    }
-
-    final queryLower = _normalize(query);
-    final results = _fullCatalog.where((item) {
-      return _normalize(item).contains(queryLower);
-    }).toList();
-
-    setState(() {
-      _displayList = results;
-    });
   }
 
   String _normalize(String s) {
-    // Basic normalization for search ignoring accents
     return s.toLowerCase()
         .replaceAll('à', 'a')
         .replaceAll('è', 'e')
@@ -137,20 +86,25 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   }
 
   String _cleanFileName(String record) {
-    // Sostituisce caratteri non validi per il filesystem, mantenendo 'Autore - Titolo'
     return record.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_').trim();
   }
 
   Future<void> _handleAction(String record, bool preview) async {
     final index = _extractIndex(record);
-    if (index.isEmpty) {
+    if (index.isEmpty || index == '-1') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Impossibile estrarre l\'indice del libro.')),
       );
       return;
     }
 
-    setState(() => _isLoading = true);
+    // Mostra uno spinner di blocco durante il download
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
     try {
       final work = await _service.downloadWork(widget.username, widget.password, index, preview);
       final newQuota = _service.parseWorkQuota(work.info);
@@ -160,17 +114,21 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
 
       final textContent = work.decodedText;
 
+      // Chiudi spinner
+      if (mounted) Navigator.pop(context);
+
       if (preview) {
         if (mounted) {
-          setState(() => _isLoading = false);
           _showPreviewDialog(record, textContent);
         }
       } else {
         await _saveToLibrary(record, textContent);
       }
     } catch (e) {
+      // Chiudi spinner
+      if (mounted) Navigator.pop(context);
+      
       if (mounted) {
-        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Errore download: $e')),
         );
@@ -220,7 +178,6 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
       await lib.add(doc);
 
       if (mounted) {
-        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Libro importato nella libreria e salvato in documenti.')),
         );
@@ -233,7 +190,6 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Errore salvataggio: $e')),
         );
@@ -250,14 +206,14 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context); // chiude dialog scelte
               _handleAction(record, true); // Testo d'assaggio
             },
             child: const Text('Testo d\'assaggio'),
           ),
           FilledButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context); // chiude dialog scelte
               _handleAction(record, false); // Importa
             },
             child: const Text('Importa nella libreria'),
@@ -276,142 +232,220 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
     }
   }
 
+  void _performSearch(String query) {
+    if (_isLoadingCatalog) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Attendere il caricamento del catalogo completo.')),
+      );
+      return;
+    }
+    final queryLower = _normalize(query);
+    final results = _fullCatalog.where((item) => _normalize(item).contains(queryLower)).toList();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BdCiechiListScreen(
+          title: 'Risultati di ricerca',
+          items: results,
+          onWorkTapped: _onWorkTapped,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Accesso completato, Bdciechi'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.new_releases),
-            tooltip: 'Ultime Novità',
-            onPressed: _loadLatest,
-          ),
-        ],
+        title: const Text('Accesso a BdCiechi completato.'),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              color: Theme.of(context).colorScheme.primaryContainer,
-              width: double.infinity,
-              child: Text(
-                _quotaInfo,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // 1. Libri disponibili in questo mese
+              Container(
+                padding: const EdgeInsets.all(16),
+                color: Theme.of(context).colorScheme.primaryContainer,
+                child: Text(
+                  _quotaInfo,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: FilledButton.icon(
+              const SizedBox(height: 24),
+
+              // 2. Ultime novità
+              FilledButton.icon(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => BdCiechiFullCatalogScreen(
-                        catalog: _fullCatalog,
+                      builder: (_) => BdCiechiListScreen(
+                        title: 'Ultime novità',
+                        loadItems: () => _service.fetchLatestList(widget.identifyResponse.nprov),
+                        onWorkTapped: _onWorkTapped,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.new_releases),
+                label: const Text('Ultime novità', style: TextStyle(fontSize: 16)),
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+              ),
+              const SizedBox(height: 16),
+
+              // 3. Cerca nel catalogo
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Cerca nel catalogo...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+                textInputAction: TextInputAction.search,
+                onSubmitted: (query) {
+                  if (query.trim().isNotEmpty) {
+                    _performSearch(query.trim());
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // 4. Visualizza catalogo completo
+              FilledButton.icon(
+                onPressed: () {
+                  if (_isLoadingCatalog) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Caricamento catalogo in corso...')),
+                    );
+                    return;
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BdCiechiListScreen(
+                        title: 'Catalogo completo',
+                        items: _fullCatalog,
                         onWorkTapped: _onWorkTapped,
                       ),
                     ),
                   );
                 },
                 icon: const Icon(Icons.library_books),
-                label: const Text('Catalogo della biblioteca', style: TextStyle(fontSize: 16)),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                ),
+                label: const Text('Visualizza il catalogo completo', style: TextStyle(fontSize: 16)),
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Cerca nel catalogo...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: _onSearchChanged,
-              ),
-            ),
-            Expanded(
-              child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _errorMessage != null
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              _errorMessage!,
-                              style: TextStyle(color: Theme.of(context).colorScheme.error),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        )
-                      : ListView.separated(
-                          itemCount: _displayList.length,
-                          separatorBuilder: (context, index) => const Divider(height: 1),
-                          itemBuilder: (context, index) {
-                            final record = _displayList[index];
-                            return ListTile(
-                              title: Text(record),
-                              onTap: () => _onWorkTapped(record),
-                            );
-                          },
-                        ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: FilledButton.tonal(
+              const SizedBox(height: 32),
+
+              // 5. Esci
+              FilledButton.tonal(
                 onPressed: _logout,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                child: const Text('Esci dalla biblioteca', style: TextStyle(fontSize: 16)),
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                child: const Text('Esci', style: TextStyle(fontSize: 16)),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class BdCiechiFullCatalogScreen extends StatelessWidget {
-  final List<String> catalog;
+// Nuova schermata generica per mostrare i risultati in una nuova pagina
+class BdCiechiListScreen extends StatefulWidget {
+  final String title;
+  final List<String>? items; // se non nullo usa questi
+  final Future<List<String>> Function()? loadItems; // se nullo usa items
   final void Function(String) onWorkTapped;
 
-  const BdCiechiFullCatalogScreen({
+  const BdCiechiListScreen({
     super.key,
-    required this.catalog,
+    required this.title,
+    this.items,
+    this.loadItems,
     required this.onWorkTapped,
   });
+
+  @override
+  State<BdCiechiListScreen> createState() => _BdCiechiListScreenState();
+}
+
+class _BdCiechiListScreenState extends State<BdCiechiListScreen> {
+  List<String> _displayList = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.items != null) {
+      _displayList = widget.items!;
+      _isLoading = false;
+    } else if (widget.loadItems != null) {
+      _fetchData();
+    }
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      final results = await widget.loadItems!();
+      if (mounted) {
+        setState(() {
+          _displayList = results;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Errore durante il caricamento: $e';
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Catalogo della biblioteca'),
+        title: Text(widget.title),
       ),
-      body: ListView.separated(
-        itemCount: catalog.length,
-        separatorBuilder: (context, index) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final record = catalog[index];
-          return ListTile(
-            title: Text(record),
-            onTap: () {
-              Navigator.pop(context);
-              onWorkTapped(record);
-            },
-          );
-        },
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              : _displayList.isEmpty
+                  ? const Center(child: Text('Nessun risultato trovato.'))
+                  : ListView.separated(
+                      itemCount: _displayList.length,
+                      separatorBuilder: (context, index) => const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final record = _displayList[index];
+                        return ListTile(
+                          title: Text(record),
+                          onTap: () {
+                            widget.onWorkTapped(record);
+                          },
+                        );
+                      },
+                    ),
     );
   }
 }
