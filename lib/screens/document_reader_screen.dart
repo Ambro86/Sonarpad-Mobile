@@ -504,49 +504,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
-  void _scrollDocumentByPage(double direction) {
-    if (!_scrollController.hasClients) return;
 
-    final position = _scrollController.position;
-    final distance = position.viewportDimension * 0.85 * direction;
-    final target = (position.pixels + distance)
-        .clamp(position.minScrollExtent, position.maxScrollExtent)
-        .toDouble();
-
-    if ((target - position.pixels).abs() < 1) {
-      unawaited(
-        SemanticsService.sendAnnouncement(
-          View.of(context),
-          direction > 0 ? 'Fine documento' : 'Inizio documento',
-          Directionality.of(context),
-        ).catchError((Object error) {
-          dev.log('DocumentReaderScreen semantic announcement error: $error');
-        }),
-      );
-      return;
-    }
-
-    final flutterView = View.of(context);
-    final directionality = Directionality.of(context);
-
-    unawaited(
-      _scrollController
-          .animateTo(
-        target,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-      ).then((_) {
-        // Trigger VoiceOver scrolling sound or feedback
-        SemanticsService.sendAnnouncement(
-          flutterView,
-          direction > 0 ? 'Scorso giù' : 'Scorso su',
-          directionality,
-        );
-      }).catchError((Object error) {
-        dev.log('DocumentReaderScreen semantic scroll error: $error');
-      }),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -634,8 +592,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                     child: Semantics(
                       label: 'Testo documento',
                       explicitChildNodes: true,
-                      onScrollUp: () => _scrollDocumentByPage(1),
-                      onScrollDown: () => _scrollDocumentByPage(-1),
                       child: CustomScrollView(
                         controller: _scrollController,
                         cacheExtent:
