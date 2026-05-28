@@ -233,6 +233,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   routeName: '/aifa',
                 ),
               ),
+            if (isItalian)
+              _HomeButton(
+                label: 'Orari Apertura',
+                onPressed: () => AccessibilityFeedbackService.goNamed(
+                  context,
+                  routeName: '/orari_apertura',
+                ),
+              ),
             _HomeButton(
               label: l10n.routeTitle,
               onPressed: () => AccessibilityFeedbackService.goNamed(

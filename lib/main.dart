@@ -18,6 +18,7 @@ import 'screens/wikipedia_screen.dart';
 import 'screens/bdciechi_login_screen.dart';
 import 'screens/route_screen.dart';
 import 'screens/audiodescription_recent_screen.dart';
+import 'screens/orari_apertura_search_screen.dart';
 
 import 'package:just_audio_background/just_audio_background.dart';
 
@@ -126,6 +127,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/bdciechi': (_) => const BdCiechiLoginScreen(),
         '/settings': (_) => const SettingsScreen(),
         '/aifa': (_) => const AifaSearchScreen(),
+        '/orari_apertura': (_) => OrariAperturaSearchScreen(),
         '/route': (_) => const RouteScreen(),
         '/audiodescriptions': (_) => const AudiodescriptionRecentScreen(),
         '/info': (_) => const InfoScreen(),
