@@ -162,31 +162,54 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
-  Future<void> _handleAction(_DocumentAction action, int index) async {
-    final list = List<DocumentItem>.from(_service.documents);
-    final item = list.removeAt(index);
+  Future<void> _handleAction(_DocumentAction action, DocumentItem doc) async {
+    final displayed = _displayedDocs;
+    final currentIndex = displayed.indexWhere((d) => d.id == doc.id);
+    if (currentIndex == -1) return;
 
-    if (action == _DocumentAction.moveUp && index > 0) {
-      list.insert(index - 1, item);
-      await _service.saveAll(list);
+    final globalList = List<DocumentItem>.from(_service.documents);
+    final globalCurrentIndex = globalList.indexWhere((d) => d.id == doc.id);
+
+    if (action == _DocumentAction.moveUp && currentIndex > 0) {
+      final targetDoc = displayed[currentIndex - 1];
+      final globalTargetIndex = globalList.indexWhere((d) => d.id == targetDoc.id);
+      
+      final temp = globalList[globalCurrentIndex];
+      globalList[globalCurrentIndex] = globalList[globalTargetIndex];
+      globalList[globalTargetIndex] = temp;
+      
+      await _service.saveAll(globalList);
       setState(() {});
-    } else if (action == _DocumentAction.moveDown && index < list.length) {
-      list.insert(index + 1, item);
-      await _service.saveAll(list);
+    } else if (action == _DocumentAction.moveDown && currentIndex < displayed.length - 1) {
+      final targetDoc = displayed[currentIndex + 1];
+      final globalTargetIndex = globalList.indexWhere((d) => d.id == targetDoc.id);
+      
+      final temp = globalList[globalCurrentIndex];
+      globalList[globalCurrentIndex] = globalList[globalTargetIndex];
+      globalList[globalTargetIndex] = temp;
+      
+      await _service.saveAll(globalList);
       setState(() {});
     } else if (action == _DocumentAction.moveToPosition) {
-      list.insert(index, item);
       final newPos = await showDialog<int>(
         context: context,
         builder: (_) => _DocumentPositionSliderDialog(
-          currentIndex: index,
-          documents: list,
+          currentIndex: currentIndex,
+          documents: displayed,
         ),
       );
-      if (newPos != null && newPos != index) {
-        final toMove = list.removeAt(index);
-        list.insert(newPos, toMove);
-        await _service.saveAll(list);
+      if (newPos != null && newPos != currentIndex) {
+        final itemToMove = globalList.removeAt(globalCurrentIndex);
+        
+        if (newPos < displayed.length) {
+          final targetDoc = displayed[newPos];
+          final insertIdx = globalList.indexWhere((d) => d.id == targetDoc.id);
+          globalList.insert(insertIdx != -1 ? insertIdx : globalList.length, itemToMove);
+        } else {
+          globalList.add(itemToMove);
+        }
+        
+        await _service.saveAll(globalList);
         setState(() {});
       }
     }
@@ -480,7 +503,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                     onRemove: () => _remove(doc.id),
                                     onExport: () => _exportDocument(doc),
                                     onAction: (action) =>
-                                        _handleAction(action, index),
+                                        _handleAction(action, doc),
                                   );
                                 },
                               ),
