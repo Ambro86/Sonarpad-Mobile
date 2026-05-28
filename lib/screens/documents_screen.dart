@@ -121,43 +121,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
-  Future<void> _recoverDocuments() async {
-    try {
-      final visibleCount =
-          await _service.recoverVisibleDocuments(_allowedExtensions);
-      var folderCount = 0;
-      try {
-        final folderPath = await FilePicker.platform.getDirectoryPath(
-          dialogTitle: 'Scegli la vecchia cartella Sonarpad',
-        );
-        if (folderPath != null && folderPath.trim().isNotEmpty) {
-          await AppLogger.log('Selezionata cartella: $folderPath');
-          folderCount = await _service.recoverFromDirectory(
-            Directory(folderPath),
-            _allowedExtensions,
-          );
-        } else {
-          await AppLogger.log('Nessuna cartella selezionata.');
-        }
-      } catch (e) {
-        dev.log('DocumentsScreen: selezione cartella non disponibile: $e');
-        await AppLogger.log('DocumentsScreen: selezione cartella non disponibile: $e');
-        if (mounted) _showSnack('Errore selezione cartella: $e');
-      }
-      final count = visibleCount + folderCount;
-      if (!mounted) return;
-      setState(() {});
-      _showSnack(
-        count == 0
-            ? 'Nessun nuovo documento trovato nella cartella Sonarpad.'
-            : 'Documenti recuperati: $count',
-      );
-    } catch (e) {
-      dev.log('DocumentsScreen: errore recupero documenti: $e');
-      if (mounted) _showSnack('Errore recupero documenti: $e');
-    }
-  }
-
   Future<void> _remove(String id) async {
     try {
       // Troviamo il documento per ottenerne il path e cancellarlo dal disco
@@ -394,14 +357,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           ),
           PopupMenuButton<String>(
             onSelected: (value) {
-              if (value == 'recover') {
-                _recoverDocuments();
+              if (value == 'dropbox') {
+                _showSnack('Importa da Dropbox in arrivo nei prossimi aggiornamenti!');
               }
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
-                value: 'recover',
-                child: Text('Recupera documenti da Sonarpad'),
+                value: 'dropbox',
+                child: Text('Importa documenti da Dropbox'),
               ),
             ],
           ),
