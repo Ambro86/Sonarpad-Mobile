@@ -58,4 +58,5 @@ build/
 .aider*
 # File temporanei
 *.bac
+scratch*
 .antigravitycli/
