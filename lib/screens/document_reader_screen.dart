@@ -169,7 +169,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<void> _startReading() async {
     if (_chunks.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nessun testo da leggere.')),
+        SnackBar(content: Text(AppLocalizations.of(context).noTextToRead)),
       );
       return;
     }
@@ -294,7 +294,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _activeTtsEngine = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore sintesi vocale: $e')),
+        SnackBar(content: Text('${AppLocalizations.of(context).ttsError}: $e')),
       );
     } finally {
       if (mounted) {
@@ -365,7 +365,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Modifica paragrafo'),
+          title: Text(AppLocalizations.of(context).editParagraph),
           content: SizedBox(
             width: double.maxFinite,
             child: Semantics(
@@ -386,11 +386,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annulla'),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, controller.text),
-              child: const Text('Applica e salva'),
+              child: Text(AppLocalizations.of(context).applyAndSave),
             ),
           ],
         );
@@ -450,15 +450,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Testo modificato e salvato nel documento corrente.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).textEditedAndSaved),
         ),
       );
     } catch (e) {
       dev.log('DocumentReaderScreen: Errore fatale durante il salvataggio: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore durante il salvataggio: $e')),
+        SnackBar(content: Text('${AppLocalizations.of(context).saveError}: $e')),
       );
     }
   }
@@ -578,8 +578,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 });
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Documento salvato nella libreria')),
+                  SnackBar(
+                      content: Text(l10n.docSavedInLibrary)),
                 );
               },
             ),
@@ -615,7 +615,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                         OutlinedButton.icon(
                           onPressed: _speaking ? _stopReading : null,
                           icon: const Icon(Icons.stop),
-                          label: const Text('Interrompi lettura'),
+                          label: Text(l10n.stopReading),
                         ),
                       ],
                     ),
@@ -831,7 +831,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Segnalibro impostato al paragrafo ${index + 1}.')),
+            content: Text(AppLocalizations.of(context).bookmarkSet(index + 1))),
       );
     }
   }
@@ -863,7 +863,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (showSnack && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Segnalibro impostato al paragrafo ${index + 1}.')),
+            content: Text(AppLocalizations.of(context).bookmarkSet(index + 1))),
       );
     }
   }
@@ -894,7 +894,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Segnalibro rimosso.')),
+        SnackBar(content: Text(AppLocalizations.of(context).bookmarkRemoved)),
       );
     }
   }

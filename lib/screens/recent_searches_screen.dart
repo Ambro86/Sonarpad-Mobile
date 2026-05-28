@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/recent_searches_service.dart';
 
 class RecentSearchesScreen extends StatefulWidget {
@@ -39,16 +40,16 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
     final conf = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Cancella cronologia'),
-        content: const Text('Vuoi davvero cancellare tutte le ricerche recenti?'),
+        title: Text(AppLocalizations.of(context).clearHistory),
+        content: Text(AppLocalizations.of(context).confirmClearHistory),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Annulla'),
+            child: Text(AppLocalizations.of(context).cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Cancella'),
+            child: Text(AppLocalizations.of(context).clear),
           ),
         ],
       ),
@@ -69,7 +70,7 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
           if (_searches.isNotEmpty)
             IconButton(
               icon: Icon(Icons.delete_sweep, color: Theme.of(context).colorScheme.error),
-              tooltip: 'Cancella cronologia',
+              tooltip: AppLocalizations.of(context).clearHistory,
               onPressed: _clearAll,
             ),
         ],
@@ -77,7 +78,7 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _searches.isEmpty
-              ? const Center(child: Text('Nessuna ricerca recente.'))
+              ? Center(child: Text(AppLocalizations.of(context).noRecentSearches))
               : ListView.builder(
                   itemCount: _searches.length,
                   itemBuilder: (context, index) {

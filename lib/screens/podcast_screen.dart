@@ -115,7 +115,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Errore: $e')));
+          .showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context).errorPrefix}: $e')));
     }
   }
 
@@ -339,11 +339,11 @@ class _PodcastPositionSliderDialogState
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, pos),
-          child: const Text('Ok'),
+          child: Text(AppLocalizations.of(context).ok),
         ),
       ],
     );

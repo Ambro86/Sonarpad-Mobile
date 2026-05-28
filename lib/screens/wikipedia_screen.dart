@@ -97,14 +97,14 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Articolo non trovato.')),
+          SnackBar(content: Text(AppLocalizations.of(context).articleNotFound)),
         );
       }
     } catch (e) {
       if (mounted) Navigator.of(context).pop();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Errore durante l'apertura: $e")),
+          SnackBar(content: Text("${AppLocalizations.of(context).errorOpening}: $e")),
         );
       }
     }
@@ -154,7 +154,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
                 _openRecentArticle(q);
               }
             },
-            child: const Text('Articoli recenti'),
+            child: Text(l10n.recentArticles),
           ),
           const SizedBox(height: 8),
           FilledButton(onPressed: _search, child: Text(l10n.search)),
@@ -397,7 +397,7 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore salvataggio: $e')),
+          SnackBar(content: Text('${AppLocalizations.of(context).saveError}: $e')),
         );
       }
     }

@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+
+import '../l10n/app_localizations.dart';
 import '../services/dropbox_service.dart';
 import '../services/document_library_service.dart';
 
@@ -120,7 +122,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       await widget.documentService.add(doc);
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('File importato: $name')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context).fileImported}: $name')));
         setState(() {
           _loading = false;
         });
@@ -171,11 +173,11 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           children: [
             const Icon(Icons.cloud, size: 80, color: Colors.blue),
             const SizedBox(height: 16),
-            const Text('Accedi a Dropbox per importare i tuoi documenti.', textAlign: TextAlign.center),
+            Text(AppLocalizations.of(context).dropboxLoginPrompt, textAlign: TextAlign.center),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               icon: const Icon(Icons.login),
-              label: const Text('Accedi a Dropbox'),
+              label: Text(AppLocalizations.of(context).loginToDropbox),
               onPressed: _login,
             ),
             if (_error != null) ...[
@@ -196,7 +198,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _loadFolder(_currentPath),
-              child: const Text('Riprova'),
+              child: Text(AppLocalizations.of(context).retry),
             )
           ],
         ),
@@ -208,7 +210,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
         if (_currentPath.isNotEmpty)
           ListTile(
             leading: const Icon(Icons.drive_folder_upload, size: 40),
-            title: const Text('.. Torna indietro'),
+            title: Text(AppLocalizations.of(context).goBack),
             onTap: () {
               final parent = p.dirname(_currentPath);
               _loadFolder(parent == '/' ? '' : parent);
@@ -216,7 +218,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           ),
         Expanded(
           child: _entries.isEmpty
-              ? const Center(child: Text('Nessun file supportato in questa cartella.'))
+              ? Center(child: Text(AppLocalizations.of(context).noSupportedFilesInFolder))
               : ListView.builder(
                   itemCount: _entries.length,
                   itemBuilder: (context, index) {

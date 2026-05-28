@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
 
 class AppLogScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _AppLogScreenState extends State<AppLogScreen> {
   void _copyLog() {
     Clipboard.setData(ClipboardData(text: _logContent));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Log copiato negli appunti')),
+      SnackBar(content: Text(AppLocalizations.of(context).logCopiedToClipboard)),
     );
   }
 
@@ -45,7 +46,7 @@ class _AppLogScreenState extends State<AppLogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Log di Sistema'),
+        title: Text(AppLocalizations.of(context).systemLog),
         actions: [
           IconButton(
             icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),

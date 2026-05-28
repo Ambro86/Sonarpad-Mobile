@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/document_library_service.dart';
 
 class DocumentEditorScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
 
     if (content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Il documento è vuoto')),
+        SnackBar(content: Text(AppLocalizations.of(context).docEmpty)),
       );
       return;
     }
@@ -47,13 +48,13 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
       await widget.service.add(doc);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Documento salvato con successo!')),
+        SnackBar(content: Text(AppLocalizations.of(context).docSavedSuccessfully)),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore durante il salvataggio: $e')),
+        SnackBar(content: Text('${AppLocalizations.of(context).saveError}: $e')),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -64,7 +65,7 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scrivi Documento'),
+        title: Text(AppLocalizations.of(context).writeDocument),
       ),
       body: SafeArea(
         child: Padding(
@@ -108,7 +109,7 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
                         ),
                       )
                     : const Icon(Icons.save),
-                label: Text(_saving ? 'Salvataggio...' : 'Salva Documento'),
+                label: Text(_saving ? AppLocalizations.of(context).saving : AppLocalizations.of(context).saveDocument),
               ),
             ],
           ),

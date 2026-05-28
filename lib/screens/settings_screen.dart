@@ -185,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         actions: [
           FilledButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(AppLocalizations.of(context).ok),
           ),
         ],
       ),
@@ -318,11 +318,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Annulla'),
+              child: Text(AppLocalizations.of(context).annulla),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Invia'),
+              child: Text(AppLocalizations.of(context).invia),
             ),
           ],
         );
@@ -337,8 +337,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (name.isEmpty || surname.isEmpty || email.isEmpty) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Compila tutti i campi per richiedere il codice.')),
+          SnackBar(
+              content: Text(AppLocalizations.of(context).compilaTuttiICampiPerRichiedereIlCodice)),
         );
         return;
       }
@@ -423,14 +423,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 DropdownButtonFormField<String>(
                   initialValue: _ttsEngine,
                   decoration:
-                      const InputDecoration(labelText: 'Motore di lettura'),
-                  items: const [
+                      InputDecoration(labelText: l10n.settingsReadingEngine),
+                  items: [
                     DropdownMenuItem(
                         value: 'edge',
-                        child: Text('Edge TTS (Alta qualità online)')),
+                        child: Text(l10n.settingsEdgeTtsQuality)),
                     DropdownMenuItem(
                         value: 'system',
-                        child: Text('Voci di sistema (VoiceOver / Google)')),
+                        child: Text(l10n.settingsSystemVoices)),
                   ],
                   onChanged: (value) {
                     if (value == null) return;
@@ -492,9 +492,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           .toList()
                         ..sort();
                       if (locales.isEmpty) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text('Nessuna voce di sistema disponibile.'),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(l10n.settingsNoSystemVoices),
                         );
                       }
                       final availableVoices = _systemVoices
@@ -533,11 +533,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 : null,
                             decoration: const InputDecoration(
                                 labelText: 'Voce di sistema'),
-                            hint: const Text('Voce predefinita'),
+                            hint: Text(l10n.settingsDefaultVoiceHint),
                             items: [
-                              const DropdownMenuItem<String?>(
+                              DropdownMenuItem<String?>(
                                 value: null,
-                                child: Text('Predefinita'),
+                                child: Text(l10n.settingsDefaultVoice),
                               ),
                               ...availableVoices
                                   .map((v) => DropdownMenuItem<String?>(
@@ -563,7 +563,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     ExcludeSemantics(
                       child: Text(
-                          'Velocità lettura: ${_ttsSpeed.toStringAsFixed(1)}x'),
+                          '${l10n.settingsVoiceSpeed}${_ttsSpeed.toStringAsFixed(1)}x'),
                     ),
                     Semantics(
                       container: true,
@@ -600,7 +600,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     ExcludeSemantics(
                       child:
-                          Text('Tono voce: ${_ttsPitch.toStringAsFixed(1)}x'),
+                          Text('${l10n.settingsVoicePitch}${_ttsPitch.toStringAsFixed(1)}x'),
                     ),
                     Semantics(
                       container: true,
@@ -641,8 +641,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2))
                       : const Icon(Icons.volume_up),
                   label: Text(_testingVoice
-                      ? 'Riproduzione in corso...'
-                      : 'Testa voce'),
+                      ? l10n.settingsTestingVoice
+                      : l10n.settingsTestVoice),
                   style: FilledButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                   ),
@@ -652,10 +652,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Divider(),
                   const SizedBox(height: 8),
                   SwitchListTile(
-                    title: const Text(
-                        'Segnalibro automatico per testi e contenuti multimediali'),
-                    subtitle: const Text(
-                        'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'),
+                    title: Text(l10n.settingsAutoBookmark),
+                    subtitle: Text(l10n.settingsAutoBookmarkHint),
                     value: _autoBookmark,
                     onChanged: (val) => setState(() => _autoBookmark = val),
                     contentPadding: EdgeInsets.zero,
@@ -667,12 +665,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       ExcludeSemantics(
                         child: Text(
-                            'Regola l\'avanzamento di riproduzione nei file media: ${_formatTime(_seekSliderStep)}'),
+                            '${l10n.settingsSeekStep}: ${_formatTime(_seekSliderStep)}'),
                       ),
                       Semantics(
                         container: true,
-                        label:
-                            'Regola l\'avanzamento di riproduzione nei file media',
+                        label: l10n.settingsSeekStep,
                         value: _formatTime(_seekSliderStep),
                         increasedValue:
                             _formatTime((_seekSliderStep + 10).clamp(10, 300)),
@@ -710,9 +707,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 16),
                   TextField(
                     controller: _tvSecretCodeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Codice Sonarpad per funzioni aggiuntive',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.settingsSecretCode,
+                      border: const OutlineInputBorder(),
                     ),
                     obscureText: true,
                   ),
@@ -720,7 +717,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   OutlinedButton.icon(
                     onPressed: _requestSecretCode,
                     icon: const Icon(Icons.mail_outline),
-                    label: const Text('Richiedi codice all\'autore'),
+                    label: Text(l10n.settingsRequestCode),
                   ),
                 ],
                 const SizedBox(height: 16),
@@ -733,7 +730,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2))
                       : const Icon(Icons.save),
                   label: Text(_isSaving
-                      ? 'Verifica codice e salvataggio...'
+                      ? l10n.settingsVerifyCodeAndSave
                       : l10n.saveSettings),
                 ),
                 const SizedBox(height: 24),
@@ -750,7 +747,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     );
                   },
                   icon: const Icon(Icons.description),
-                  label: const Text('Visualizza log di sistema'),
+                  label: Text(l10n.settingsViewSysLog),
                 ),
               ],
             ),

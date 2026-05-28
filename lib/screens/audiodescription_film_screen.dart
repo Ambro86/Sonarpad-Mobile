@@ -20,21 +20,24 @@ class _AudiodescriptionFilmScreenState
     extends State<AudiodescriptionFilmScreen> {
   final _service = AudiodescriptionService();
 
+  late List<AudiodescriptionItem> _sortedItems;
   List<AudiodescriptionItem> _filteredItems = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredItems = widget.filmGroup.items;
+    _sortedItems = List.of(widget.filmGroup.items)
+      ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    _filteredItems = _sortedItems;
   }
 
   void _onSearch(String query) {
     setState(() {
       if (query.trim().isEmpty) {
-        _filteredItems = widget.filmGroup.items;
+        _filteredItems = _sortedItems;
       } else {
         final q = query.trim().toLowerCase();
-        _filteredItems = widget.filmGroup.items
+        _filteredItems = _sortedItems
             .where((i) => i.title.toLowerCase().contains(q))
             .toList();
       }

@@ -28,13 +28,13 @@ class DonationsScreen extends StatelessWidget {
               }
             },
             icon: const Icon(Icons.favorite),
-            label: const Text('Dona con PayPal'),
+            label: Text(l10n.donateWithPaypal),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
           ),
           const SizedBox(height: 24),
-          Text('Bonifico Bancario / Bank Transfer', style: Theme.of(context).textTheme.titleLarge),
+          Text(l10n.bankTransferTitle, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(l10n.donationsBankDesc, style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 24),

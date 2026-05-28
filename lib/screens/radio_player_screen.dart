@@ -63,7 +63,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('In riproduzione: ${widget.station.name}'),
+        title: Text('${l10n.nowPlaying}: ${widget.station.name}'),
         leading: BackButton(onPressed: () => Navigator.pop(context)),
       ),
       body: ListView(

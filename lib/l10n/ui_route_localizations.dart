@@ -6,7 +6,7 @@ extension UiRouteLocalizations on AppLocalizations {
   bool get _isEs => locale.languageCode == 'es';
 
   String get routeTitle => _isEn
-      ? 'Street Routes'
+      ? 'Travel Routes'
       : (_isFr
           ? 'Itinéraires routiers'
           : (_isEs ? 'Rutas callejeras' : 'Percorsi Stradali'));
@@ -20,7 +20,7 @@ extension UiRouteLocalizations on AppLocalizations {
   String get routeType =>
       _isEn ? 'Type' : (_isFr ? 'Type' : (_isEs ? 'Tipo' : 'Tipo'));
   String get routeIncludeMunicipalities => _isEn
-      ? 'Include municipalities crossed'
+      ? 'Include towns crossed'
       : (_isFr
           ? 'Inclure les communes traversées'
           : (_isEs

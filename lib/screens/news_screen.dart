@@ -70,7 +70,7 @@ class _NewsScreenState extends State<NewsScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Aggiungi sorgente RSS'),
+        title: Text(AppLocalizations.of(context).addRssSource),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -89,11 +89,11 @@ class _NewsScreenState extends State<NewsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text(AppLocalizations.of(context).cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Aggiungi'),
+            child: Text(AppLocalizations.of(context).add),
           ),
         ],
       ),
@@ -111,7 +111,7 @@ class _NewsScreenState extends State<NewsScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore: $e')),
+        SnackBar(content: Text('${AppLocalizations.of(context).errorPrefix}: $e')),
       );
     }
   }
@@ -348,7 +348,7 @@ class _NewsSourceList extends StatelessWidget {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore: $e')),
+        SnackBar(content: Text('${AppLocalizations.of(context).errorPrefix}: $e')),
       );
     }
   }
@@ -457,11 +457,11 @@ class _PositionSliderDialogState extends State<_PositionSliderDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, pos),
-          child: const Text('Ok'),
+          child: Text(AppLocalizations.of(context).ok),
         ),
       ],
     );

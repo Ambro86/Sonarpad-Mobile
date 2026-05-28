@@ -222,7 +222,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           selectedFolderId = await showDialog<String?>(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('Seleziona cartella'),
+              title: Text(AppLocalizations.of(context).selectFolder),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -234,7 +234,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annulla')),
+                TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context).cancel)),
               ],
             ),
           );
@@ -268,17 +268,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     String? format = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Esporta documento'),
+        title: Text(AppLocalizations.of(context).exportDocument),
         content:
-            const Text('In quale formato desideri esportare il documento?'),
+            Text(AppLocalizations.of(context).exportFormatPrompt),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, 'txt'),
-            child: const Text('Testo (.txt)'),
+            child: Text(AppLocalizations.of(context).textFormat),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, 'pdf'),
-            child: const Text('PDF (.pdf)'),
+            child: Text(AppLocalizations.of(context).pdfFormat),
           ),
         ],
       ),
@@ -324,7 +324,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       await AppLogger.log('Errore esportazione: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore esportazione: $e')),
+          SnackBar(content: Text('${AppLocalizations.of(context).exportError}: $e')),
         );
       }
     }
@@ -465,15 +465,15 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 final name = await showDialog<String>(
                   context: context,
                   builder: (ctx) => AlertDialog(
-                    title: const Text('Nuova cartella'),
+                    title: Text(AppLocalizations.of(context).newFolder),
                     content: TextField(
                       controller: ctrl,
                       autofocus: true,
                       decoration: const InputDecoration(hintText: 'Nome cartella'),
                     ),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annulla')),
-                      TextButton(onPressed: () => Navigator.pop(ctx, ctrl.text), child: const Text('Crea')),
+                      TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context).cancel)),
+                      TextButton(onPressed: () => Navigator.pop(ctx, ctrl.text), child: Text(AppLocalizations.of(context).create)),
                     ],
                   ),
                 );
@@ -494,13 +494,13 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'new_folder',
-                child: Text('Crea nuova cartella'),
+                child: Text(AppLocalizations.of(context).createNewFolder),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'dropbox',
-                child: Text('Importa documenti da Dropbox'),
+                child: Text(AppLocalizations.of(context).importFromDropbox),
               ),
             ],
           ),
@@ -757,7 +757,7 @@ class _DocumentPositionSliderDialogState
     }
 
     return AlertDialog(
-      title: const Text('Sposta documento'),
+      title: Text(AppLocalizations.of(context).moveDocument),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -786,20 +786,20 @@ class _DocumentPositionSliderDialogState
         if (widget.currentFolderId != null)
           TextButton(
             onPressed: () => Navigator.pop(context, 'root'),
-            child: const Text('Fuori dalla cartella'),
+            child: Text(AppLocalizations.of(context).outOfFolder),
           ),
         if (widget.allFolders.isNotEmpty)
           TextButton(
             onPressed: () => Navigator.pop(context, 'select_folder'),
-            child: const Text('Sposta in un\'altra cartella...'),
+            child: Text(AppLocalizations.of(context).moveToAnotherFolder),
           ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, pos),
-          child: const Text('Ok'),
+          child: Text(AppLocalizations.of(context).ok),
         ),
       ],
     );
