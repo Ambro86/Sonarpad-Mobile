@@ -5,8 +5,7 @@ import '../l10n/ui_audiodescription_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import 'audiodescription_film_screen.dart';
-import '../models/podcast.dart';
-import 'podcast_episode_player_screen.dart';
+import 'audiodescription_series_screen.dart';
 
 class AudiodescriptionAllScreen extends StatefulWidget {
   const AudiodescriptionAllScreen({super.key});
@@ -65,33 +64,6 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
             .toList();
       }
     });
-  }
-
-  Future<void> _play(AudiodescriptionItem item) async {
-    try {
-      final resolvedUrl = await _service.resolveAudioUrl(item.audioUrl);
-      if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/audiodescriptions/player'),
-          builder: (_) => PodcastEpisodePlayerScreen(
-            episode: PodcastEpisode(
-              title: item.title,
-              description: item.description,
-              audioUrl: resolvedUrl,
-              id: item.audioUrl,
-              publishedAt: DateTime.now(),
-            ),
-          ),
-        ),
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
-      }
-    }
   }
 
   @override
@@ -171,16 +143,21 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
                     }
 
                     final group = _filteredGroups[index - 1];
-                    return ExpansionTile(
+                    return ListTile(
                       title: Text(group.title,
                           style: const TextStyle(fontWeight: FontWeight.bold)),
-                      children: group.items.map((item) {
-                        return ListTile(
-                          title: Text(item.title),
-                          trailing: const Icon(Icons.play_arrow),
-                          onTap: () => _play(item),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            settings: const RouteSettings(
+                                name: '/audiodescriptions/series'),
+                            builder: (_) =>
+                                AudiodescriptionSeriesScreen(group: group),
+                          ),
                         );
-                      }).toList(),
+                      },
                     );
                   },
                 ),
