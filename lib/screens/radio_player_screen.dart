@@ -6,6 +6,7 @@ import '../services/audio_player_service.dart';
 import '../widgets/volume_slider.dart';
 import 'package:video_player/video_player.dart';
 import '../services/app_settings_service.dart';
+import '../utils/app_logger.dart';
 
 class RadioPlayerScreen extends StatefulWidget {
   final RadioStation station;

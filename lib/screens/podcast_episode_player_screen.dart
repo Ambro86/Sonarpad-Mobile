@@ -8,6 +8,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../widgets/volume_slider.dart';
 import 'package:video_player/video_player.dart';
+import '../utils/app_logger.dart';
 
 class PodcastEpisodePlayerScreen extends StatefulWidget {
   const PodcastEpisodePlayerScreen({super.key, required this.episode, this.isVideoSupported = false});
