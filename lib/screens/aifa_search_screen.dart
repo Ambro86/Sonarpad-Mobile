@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../services/recent_searches_service.dart';
 import 'recent_searches_screen.dart';
-import 'drug_recognition_screen.dart';
 
 import 'aifa_search_results_screen.dart';
 
@@ -44,28 +43,6 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: () async {
-                      final drugName = await Navigator.of(context).push<String>(
-                        MaterialPageRoute(builder: (_) => const DrugRecognitionScreen()),
-                      );
-                      if (drugName != null && drugName.isNotEmpty && mounted) {
-                        _controller.text = drugName;
-                        _submitSearch(drugName);
-                      }
-                    },
-                    icon: const Icon(Icons.camera_alt),
-                    label: const Text('Inquadra / Riconosci il farmaco', style: TextStyle(fontSize: 16)),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
                 child: SizedBox(
