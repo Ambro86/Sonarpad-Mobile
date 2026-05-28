@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
 
 import 'l10n/app_localizations.dart';
 import 'services/app_settings_service.dart';
@@ -24,6 +26,11 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await rhttp.Rhttp.init();
+  } catch (error) {
+    debugPrint('Errore inizializzazione rhttp_plus: $error');
+  }
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
     androidNotificationChannelName: 'Audio playback',

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
+import 'package:reader_mode/reader_mode.dart' as reader_mode;
+import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart';
 
@@ -15,6 +17,8 @@ import 'news_sources/french_news_sources.dart';
 import 'news_sources/spanish_news_sources.dart';
 
 enum NewsLanguage { italian, english, french, spanish }
+
+enum _BrowserFetchProfile { chrome, iphone }
 
 extension NewsLanguageInfo on NewsLanguage {
   String label(AppLocalizations l10n) => switch (this) {
@@ -36,9 +40,28 @@ class NewsService {
   static final _corriereHomeFeedUri = Uri.parse(
     'https://xml2.corriereobjects.it/feed-hp/homepage-restyle-2025.xml',
   );
+  static const _chromeClientSettings = rhttp.ClientSettings(
+    emulator: rhttp.Emulation.chrome136,
+    timeoutSettings: rhttp.TimeoutSettings(
+      timeout: Duration(seconds: 30),
+      connectTimeout: Duration(seconds: 15),
+    ),
+  );
+  static const _iphoneClientSettings = rhttp.ClientSettings(
+    emulator: rhttp.Emulation.safariIos1811,
+    timeoutSettings: rhttp.TimeoutSettings(
+      timeout: Duration(seconds: 30),
+      connectTimeout: Duration(seconds: 15),
+    ),
+  );
+  static Future<http.Client>? _chromeClientFuture;
+  static Future<http.Client>? _iphoneClientFuture;
 
   final http.Client _client;
-  NewsService({http.Client? client}) : _client = client ?? http.Client();
+  final bool _useBrowserClient;
+  NewsService({http.Client? client})
+      : _client = client ?? http.Client(),
+        _useBrowserClient = client == null;
 
   String _getPrefsKey(NewsLanguage language) => 'news_sources_order_${language.name}';
   String _getHiddenPrefsKey(NewsLanguage language) => 'news_sources_hidden_${language.name}';
@@ -199,7 +222,7 @@ class NewsService {
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
       return NewsArticleContent(text: article.summary, url: article.link);
     }
-    final response = await _client.get(
+    final fetch = await _browserGetWithFallback(
       Uri.parse(resolvedUrl),
       headers: const {
         'User-Agent':
@@ -207,6 +230,7 @@ class NewsService {
         'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
       },
     );
+    final response = fetch.response;
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Articolo non raggiungibile: ${response.statusCode}');
     }
@@ -214,7 +238,29 @@ class NewsService {
     if (_isGoogleConsentPage(html) || _isGoogleFullCoveragePage(html)) {
       return NewsArticleContent(text: article.summary, url: article.link);
     }
-    final text = _extractArticleText(html);
+    var text = _extractArticleText(html, baseUri: resolvedUrl);
+    if (fetch.profile != _BrowserFetchProfile.iphone &&
+        _isWeakArticleText(text, article.summary)) {
+      final iphoneResponse = await _browserGetWithProfile(
+        _BrowserFetchProfile.iphone,
+        Uri.parse(resolvedUrl),
+        headers: const {
+          'User-Agent':
+              'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+          'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+        },
+      );
+      if (iphoneResponse.statusCode >= 200 && iphoneResponse.statusCode < 300) {
+        final iphoneHtml = utf8.decode(
+          iphoneResponse.bodyBytes,
+          allowMalformed: true,
+        );
+        final iphoneText = _extractArticleText(iphoneHtml, baseUri: resolvedUrl);
+        if (iphoneText.trim().length > text.trim().length) {
+          text = iphoneText;
+        }
+      }
+    }
     return NewsArticleContent(
       text: text.isEmpty ? article.summary : text,
       url: resolvedUrl,
@@ -331,7 +377,7 @@ class NewsService {
   }
 
   Future<String?> _resolveGoogleNewsArticleUrl(String url) async {
-    final htmlResponse = await _client.get(
+    final htmlResponse = await _browserGet(
       Uri.parse(url),
       headers: const {
         'User-Agent':
@@ -365,7 +411,7 @@ class NewsService {
         ['Fbv4je', jsonEncode(requestInner)]
       ]
     ]);
-    final response = await _client.post(
+    final response = await _browserPost(
       Uri.parse(
         'https://news.google.com/_/DotsSplashUi/data/batchexecute?rpcids=Fbv4je',
       ),
@@ -425,7 +471,15 @@ class NewsService {
     return rest.substring(0, to);
   }
 
-  String _extractArticleText(String html) {
+  String _extractArticleText(String html, {String? baseUri}) {
+    final article = reader_mode.parse(
+      html,
+      baseUri: baseUri,
+      charThreshold: 250,
+    );
+    final readerText = _cleanHtml(article?.textContent ?? '');
+    if (readerText.length >= 400) return readerText;
+
     final document = html_parser.parse(html);
     final articleElements = document.getElementsByTagName('article');
     final paragraphs = articleElements.isEmpty
@@ -443,6 +497,207 @@ class NewsService {
         .querySelector('meta[property="og:description"]')
         ?.attributes['content'];
     return _cleanHtml(description ?? '');
+  }
+
+  bool _isWeakArticleText(String text, String fallbackDescription) {
+    final trimmed = text.trim();
+    return trimmed.isEmpty ||
+        trimmed.length < 80 ||
+        trimmed == fallbackDescription.trim();
+  }
+
+  static Future<http.Client> _browserClient(_BrowserFetchProfile profile) {
+    return switch (profile) {
+      _BrowserFetchProfile.chrome => _chromeClientFuture ??=
+          rhttp.RhttpCompatibleClient.create(settings: _chromeClientSettings),
+      _BrowserFetchProfile.iphone => _iphoneClientFuture ??=
+          rhttp.RhttpCompatibleClient.create(settings: _iphoneClientSettings),
+    };
+  }
+
+  Future<http.Response> _browserGet(
+    Uri uri, {
+    Map<String, String>? headers,
+  }) async {
+    return (await _browserGetWithFallback(uri, headers: headers)).response;
+  }
+
+  Future<({http.Response response, _BrowserFetchProfile profile})>
+      _browserGetWithFallback(
+    Uri uri, {
+    Map<String, String>? headers,
+  }) async {
+    if (!_useBrowserClient) {
+      return (
+        response: await _client.get(uri, headers: headers),
+        profile: _BrowserFetchProfile.chrome,
+      );
+    }
+
+    if (_shouldUseIphoneDirect(uri)) {
+      return (
+        response: await _browserGetWithProfile(
+          _BrowserFetchProfile.iphone,
+          uri,
+          headers: headers,
+        ),
+        profile: _BrowserFetchProfile.iphone,
+      );
+    }
+
+    http.Response? chromeResponse;
+    try {
+      chromeResponse = await _browserGetWithProfile(
+        _BrowserFetchProfile.chrome,
+        uri,
+        headers: headers,
+      );
+      if (!_shouldFallbackBrowserResponse(chromeResponse)) {
+        return (
+          response: chromeResponse,
+          profile: _BrowserFetchProfile.chrome,
+        );
+      }
+    } catch (_) {}
+
+    try {
+      return (
+        response: await _browserGetWithProfile(
+          _BrowserFetchProfile.iphone,
+          uri,
+          headers: headers,
+        ),
+        profile: _BrowserFetchProfile.iphone,
+      );
+    } catch (_) {
+      if (chromeResponse != null) {
+        return (
+          response: chromeResponse,
+          profile: _BrowserFetchProfile.chrome,
+        );
+      }
+      rethrow;
+    }
+  }
+
+  Future<http.Response> _browserGetWithProfile(
+    _BrowserFetchProfile profile,
+    Uri uri, {
+    Map<String, String>? headers,
+  }) async {
+    final client = await _browserClient(profile);
+    return client.get(
+      uri,
+      headers: _headersForProfile(profile, headers, navigation: true),
+    );
+  }
+
+  Future<http.Response> _browserPost(
+    Uri uri, {
+    Map<String, String>? headers,
+    Object? body,
+  }) async {
+    if (!_useBrowserClient) {
+      return _client.post(uri, headers: headers, body: body);
+    }
+    http.Response? chromeResponse;
+    try {
+      chromeResponse = await _browserPostWithProfile(
+        _BrowserFetchProfile.chrome,
+        uri,
+        headers: headers,
+        body: body,
+      );
+      if (chromeResponse.statusCode >= 200 && chromeResponse.statusCode < 300) {
+        return chromeResponse;
+      }
+    } catch (_) {}
+
+    try {
+      return _browserPostWithProfile(
+        _BrowserFetchProfile.iphone,
+        uri,
+        headers: headers,
+        body: body,
+      );
+    } catch (_) {
+      if (chromeResponse != null) return chromeResponse;
+      rethrow;
+    }
+  }
+
+  Future<http.Response> _browserPostWithProfile(
+    _BrowserFetchProfile profile,
+    Uri uri, {
+    Map<String, String>? headers,
+    Object? body,
+  }) async {
+    final client = await _browserClient(profile);
+    return client.post(
+      uri,
+      headers: _headersForProfile(profile, headers),
+      body: body,
+    );
+  }
+
+  bool _shouldUseIphoneDirect(Uri uri) {
+    final host = uri.host.toLowerCase();
+    return host.contains('wsj.com') ||
+        host.contains('dowjones.com') ||
+        host.contains('barrons.com') ||
+        host.contains('podbean.com');
+  }
+
+  bool _shouldFallbackBrowserResponse(http.Response response) {
+    if (response.statusCode < 200 || response.statusCode >= 400) return true;
+    final html = utf8.decode(response.bodyBytes, allowMalformed: true);
+    final lower = html.toLowerCase();
+    return lower.contains('just a moment') ||
+        lower.contains('dd-captcha') ||
+        lower.contains('checking your browser') ||
+        lower.contains('enable javascript and cookies') ||
+        lower.contains('cf-chl') ||
+        response.bodyBytes.length < 3000;
+  }
+
+  Map<String, String> _headersForProfile(
+    _BrowserFetchProfile profile,
+    Map<String, String>? headers, {
+    bool navigation = false,
+  }) {
+    final result = <String, String>{...?headers};
+    switch (profile) {
+      case _BrowserFetchProfile.chrome:
+        result['User-Agent'] =
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36';
+        result['Accept-Language'] = 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7';
+        if (navigation) {
+          result['Accept'] =
+              'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7';
+          result['Cache-Control'] = 'max-age=0';
+          result['Sec-Ch-Ua'] =
+              '"Google Chrome";v="136", "Chromium";v="136", "Not_A Brand";v="24"';
+          result['Sec-Ch-Ua-Mobile'] = '?0';
+          result['Sec-Ch-Ua-Platform'] = '"Windows"';
+          result['Upgrade-Insecure-Requests'] = '1';
+          result['Sec-Fetch-Dest'] = 'document';
+          result['Sec-Fetch-Mode'] = 'navigate';
+          result['Sec-Fetch-Site'] = 'none';
+          result['Sec-Fetch-User'] = '?1';
+          result['Referer'] = 'https://www.google.com/';
+        }
+      case _BrowserFetchProfile.iphone:
+        result['User-Agent'] =
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1';
+        result['Accept-Language'] = 'it-IT,it;q=0.9,en-US;q=0.8';
+        if (navigation) {
+          result['Accept'] =
+              'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+          result['Upgrade-Insecure-Requests'] = '1';
+          result['Connection'] = 'keep-alive';
+        }
+    }
+    return result;
   }
 
   bool _isGoogleConsentPage(String html) {

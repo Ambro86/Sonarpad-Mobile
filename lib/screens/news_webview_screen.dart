@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:readability/readability.dart' as readability;
-import 'package:reader_mode/reader_mode.dart' as reader_mode;
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../l10n/app_localizations.dart';
@@ -25,7 +22,6 @@ class NewsWebViewScreen extends StatefulWidget {
 
 class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   late final WebViewController _controller;
-  late final WebViewController _readerWebViewController;
   final _audio = AudioPlayerService();
   final _newsService = NewsService();
   final _settings = AppSettingsService();
@@ -35,48 +31,38 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   bool _speaking = false;
   String? _readerTitle;
   String? _readerText;
-  String? _readerHtml;
   String? _status;
   int _readyChunks = 0;
   int _totalChunks = 0;
-  int _navigationId = 0;
 
   @override
   void initState() {
     super.initState();
-    _readerWebViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted);
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (_) {
-            _navigationId++;
             if (mounted) {
               setState(() {
                 _loading = true;
-                _readerPreparing = true;
-                _readerTitle = null;
-                _readerText = null;
-                _readerHtml = null;
               });
             }
           },
           onPageFinished: (_) {
             if (mounted) setState(() => _loading = false);
-            unawaited(_loadReaderFromWebView(_navigationId));
           },
           onWebResourceError: (_) {
             if (mounted) {
               setState(() {
                 _loading = false;
-                _readerPreparing = false;
               });
             }
           },
         ),
       )
       ..loadRequest(Uri.parse(widget.article.link));
+    unawaited(_loadReaderArticle());
   }
 
   @override
@@ -91,63 +77,21 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return 'it-IT-IsabellaNeural';
   }
 
-  Future<void> _loadReaderFromWebView(int navigationId) async {
+  Future<void> _loadReaderArticle() async {
     try {
-      final article = await _extractReaderArticleFromWebViewHtml();
-      if (!mounted || navigationId != _navigationId) return;
-      
-      final title = article?.title ?? widget.article.title;
-      final htmlContent = article?.html ?? '';
-      
-      if (htmlContent.isNotEmpty) {
-        final template = '''
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 18px;
-    line-height: 1.6;
-    padding: 16px;
-    color: #333;
-    background-color: #fff;
-    margin: 0;
-  }
-  h1 { font-size: 24px; line-height: 1.3; margin-top: 0; }
-  h2 { font-size: 20px; line-height: 1.4; }
-  img { max-width: 100%; height: auto; border-radius: 8px; margin: 16px 0; }
-  figure { margin: 0; padding: 0; }
-  figcaption { font-size: 14px; color: #666; margin-top: 8px; }
-  a { color: #007aff; text-decoration: none; }
-  p { margin-bottom: 16px; }
-  @media (prefers-color-scheme: dark) {
-    body { background-color: #121212; color: #e0e0e0; }
-    a { color: #0a84ff; }
-    figcaption { color: #999; }
-  }
-</style>
-</head>
-<body>
-  <h1>$title</h1>
-  $htmlContent
-</body>
-</html>
-        ''';
-        await _readerWebViewController.loadHtmlString(template);
-      }
-
-      if (!mounted || navigationId != _navigationId) return;
+      final content = await _newsService.fetchArticleContent(widget.article);
+      if (!mounted) return;
+      final text = content.text.trim();
       setState(() {
-        _readerTitle = title;
-        _readerText = article?.text;
-        _readerHtml = htmlContent;
+        if (text.length >= 200) {
+          _readerTitle = widget.article.title;
+          _readerText = text;
+        }
         _readerPreparing = false;
       });
     } catch (e) {
-      debugPrint('Sonarpad reader: WebView HTML reader failed: $e');
-      if (!mounted || navigationId != _navigationId) return;
+      debugPrint('Sonarpad reader: rhttp reader failed: $e');
+      if (!mounted) return;
       setState(() => _readerPreparing = false);
     }
   }
@@ -160,57 +104,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<String?> _extractReaderArticleText() async {
-    try {
-      final htmlText = await _extractReaderArticleTextFromWebViewHtml();
-      if (htmlText != null) return htmlText;
-    } catch (e) {
-      debugPrint('Sonarpad TTS: reader_mode HTML extraction failed: $e');
-    }
-
-    if (!Platform.isAndroid && !Platform.isIOS && !Platform.isMacOS) {
-      return null;
-    }
-    try {
-      return await _extractReaderArticleTextFromUrl();
-    } catch (e) {
-      debugPrint('Sonarpad TTS: native readability extraction failed: $e');
-      return null;
-    }
-  }
-
-  Future<String?> _extractReaderArticleTextFromWebViewHtml() async {
-    final article = await _extractReaderArticleFromWebViewHtml();
-    return article?.text;
-  }
-
-  Future<({String title, String text, String html})?>
-      _extractReaderArticleFromWebViewHtml() async {
-    final currentUrl = await _controller.currentUrl();
-    final htmlResult = await _controller.runJavaScriptReturningResult(
-      'document.documentElement ? document.documentElement.outerHTML : ""',
-    );
-    final html = _stringFromJavaScriptResult(htmlResult);
-    if (html.length < 1000) return null;
-    final article = reader_mode.parse(
-      html,
-      baseUri: currentUrl ?? widget.article.link,
-      charThreshold: 250,
-    );
-    final text = _cleanVisibleText(article?.textContent ?? '');
-    if (text.length < 400) return null;
-    final title = article?.title.trim().isNotEmpty ?? false
-        ? article!.title.trim()
-        : widget.article.title;
-    return (title: title, text: text, html: article?.content ?? '');
-  }
-
-  Future<String?> _extractReaderArticleTextFromUrl() async {
-    final currentUrl = await _controller.currentUrl();
-    final url = currentUrl?.trim().isNotEmpty ?? false
-        ? currentUrl!
-        : widget.article.link;
-    final article = await readability.parseAsync(url);
-    final text = _cleanVisibleText(article.textContent ?? '');
+    final content = await _newsService.fetchArticleContent(widget.article);
+    final text = _cleanVisibleText(content.text);
     return text.length >= 400 ? text : null;
   }
 
@@ -375,7 +270,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final extractedReaderText = await _extractReaderArticleText();
       if (extractedReaderText != null) return extractedReaderText;
     } catch (e) {
-      debugPrint('Sonarpad TTS: readability extraction failed: $e');
+      debugPrint('Sonarpad TTS: rhttp reader extraction failed: $e');
     }
 
     setState(() => _status = l10n.extractingVisibleArticleText);
@@ -545,29 +440,24 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Widget _buildBody(AppLocalizations l10n) {
-    final readerHtml = _readerHtml;
-    if (readerHtml != null && readerHtml.isNotEmpty) {
-      return _ReaderArticleView(controller: _readerWebViewController);
+    final readerText = _readerText;
+    if (readerText != null && readerText.isNotEmpty) {
+      return _ReaderArticleView(
+        title: _readerTitle ?? widget.article.title,
+        text: readerText,
+      );
     }
 
     if (_readerPreparing) {
-      return Stack(
-        children: [
-          Opacity(
-            opacity: 0.01,
-            child: IgnorePointer(child: WebViewWidget(controller: _controller)),
-          ),
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(semanticsLabel: l10n.loadingArticle),
-                const SizedBox(height: 12),
-                Text(l10n.loadingArticle),
-              ],
-            ),
-          ),
-        ],
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(semanticsLabel: l10n.loadingArticle),
+            const SizedBox(height: 12),
+            Text(l10n.loadingArticle),
+          ],
+        ),
       );
     }
 
@@ -577,13 +467,32 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
 class _ReaderArticleView extends StatelessWidget {
   const _ReaderArticleView({
-    required this.controller,
+    required this.title,
+    required this.text,
   });
 
-  final WebViewController controller;
+  final String title;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    return WebViewWidget(controller: controller);
+    final theme = Theme.of(context);
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: SelectableText.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$title\n\n',
+              style: theme.textTheme.headlineSmall,
+            ),
+            TextSpan(
+              text: text,
+              style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
