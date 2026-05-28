@@ -22,7 +22,8 @@ import 'dropbox_browser_screen.dart';
 /// Permette di aggiungere file dal dispositivo (PDF, DOCX, EPUB, TXT, ecc.)
 /// e di sfogliarli / leggerli con TTS.
 class DocumentsScreen extends StatefulWidget {
-  const DocumentsScreen({super.key});
+  final String? folderId;
+  const DocumentsScreen({super.key, this.folderId});
 
   @override
   State<DocumentsScreen> createState() => _DocumentsScreenState();
@@ -32,10 +33,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   final _service = DocumentLibraryService();
   bool _loading = true;
   String? _errorMessage;
-  String? _currentFolderId;
 
   List<DocumentItem> get _displayedDocs => 
-      _service.documents.where((d) => d.parentId == _currentFolderId).toList();
+      _service.documents.where((d) => d.parentId == widget.folderId).toList();
 
   static const _allowedExtensions = [
     'pdf',
@@ -108,7 +108,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
       if (f.path.toLowerCase().endsWith('.zip')) {
         try {
-          await _service.importZip(f, parentId: _currentFolderId);
+          await _service.importZip(f, parentId: widget.folderId);
           await AppLogger.log('Zip importato: ${p.basename(path)}');
         } catch (e) {
           dev.log('DocumentsScreen: errore importazione zip: $e');
@@ -122,7 +122,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         final doc = await _service.importFile(
           f,
           originalName: file.name.isNotEmpty ? file.name : p.basename(path),
-          parentId: _currentFolderId,
+          parentId: widget.folderId,
         );
         await _service.add(doc);
         await AppLogger.log('File importato: ${doc.displayName}');
@@ -198,7 +198,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           currentIndex: currentIndex,
           documents: displayed,
           allFolders: folders,
-          currentFolderId: _currentFolderId,
+          currentFolderId: widget.folderId,
         ),
       );
 
@@ -406,7 +406,15 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Future<void> _openDocument(DocumentItem doc) async {
     if (doc.isFolder) {
-      setState(() => _currentFolderId = doc.id);
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => DocumentsScreen(folderId: doc.id),
+        ),
+      );
+      if (mounted) {
+        await _service.load();
+        setState(() {});
+      }
       return;
     }
 
@@ -437,32 +445,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   @override
   Widget build(BuildContext context) {
     final docs = _displayedDocs;
-    final currentFolderName = _currentFolderId != null
-        ? _service.documents.firstWhere((d) => d.id == _currentFolderId, orElse: () => _service.documents.first).name
+    final currentFolderName = widget.folderId != null
+        ? _service.documents.firstWhere((d) => d.id == widget.folderId, orElse: () => _service.documents.first).name
         : 'Documenti';
 
-    return PopScope(
-      canPop: _currentFolderId == null,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (_currentFolderId != null) {
-          final folder = _service.documents.firstWhere((d) => d.id == _currentFolderId, orElse: () => _service.documents.first);
-          setState(() => _currentFolderId = folder.parentId);
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(currentFolderName),
-          leading: _currentFolderId != null
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    final folder = _service.documents.firstWhere((d) => d.id == _currentFolderId, orElse: () => _service.documents.first);
-                    setState(() => _currentFolderId = folder.parentId);
-                  },
-                )
-              : null,
-          actions: [
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(currentFolderName),
+        actions: [
           IconButton(
             icon: const Icon(Icons.note_add),
             tooltip: 'Scrivi nuovo documento',
@@ -488,7 +478,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   ),
                 );
                 if (name != null && name.trim().isNotEmpty) {
-                  await _service.createFolder(name.trim(), parentId: _currentFolderId);
+                  await _service.createFolder(name.trim(), parentId: widget.folderId);
                   setState(() {});
                 }
               } else if (value == 'dropbox') {
@@ -564,7 +554,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           child: const Icon(Icons.add),
         ),
       ),
-      ),
     );
   }
 }
@@ -630,7 +619,7 @@ class _DocumentTile extends StatelessWidget {
     return MergeSemantics(
       child: Semantics(
         customSemanticsActions: {
-          CustomSemanticsAction(label: l10n.removeDocument): onRemove,
+          CustomSemanticsAction(label: doc.isFolder ? 'Rimuovi cartella' : l10n.removeDocument): onRemove,
           const CustomSemanticsAction(label: 'Esporta documento'): onExport,
           if (!isFirst)
             CustomSemanticsAction(label: l10n.moveUp): () =>
