@@ -131,8 +131,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       } catch (e) {
         setState(() => _isSaving = false);
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Il codice Sonarpad inserito non è valido. Verifica di averlo copiato senza spazi aggiuntivi.')),
+        await _showSaveResultDialog(
+          title: 'Codice non valido',
+          message:
+              'Il codice Sonarpad inserito non è valido. Verifica di averlo copiato senza spazi aggiuntivi.',
         );
         return;
       }
@@ -142,11 +144,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.saveSeekSliderStep(_seekSliderStep);
-    
+
     setState(() => _isSaving = false);
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.settingsSaved)),
+    await _showSaveResultDialog(
+      title: rawCode.isEmpty ? 'Impostazioni salvate' : 'Codice valido',
+      message: rawCode.isEmpty
+          ? l10n.settingsSaved
+          : 'Il codice Sonarpad è corretto. ${l10n.settingsSaved}',
+    );
+  }
+
+  Future<void> _showSaveResultDialog({
+    required String title,
+    required String message,
+  }) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -597,8 +622,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Divider(),
                   const SizedBox(height: 8),
                   SwitchListTile(
-                    title: const Text('Segnalibro automatico Media'),
-                    subtitle: const Text('Riprendi Podcast, RaiPlay e Audiodescrizioni dal punto interrotto.'),
+                    title: const Text(
+                        'Segnalibro automatico per testi e contenuti multimediali'),
+                    subtitle: const Text(
+                        'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'),
                     value: _autoBookmark,
                     onChanged: (val) => setState(() => _autoBookmark = val),
                     contentPadding: EdgeInsets.zero,
@@ -614,7 +641,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       Semantics(
                         container: true,
-                        label: 'Regola l\'avanzamento di riproduzione nei file media',
+                        label:
+                            'Regola l\'avanzamento di riproduzione nei file media',
                         value: _formatTime(_seekSliderStep),
                         increasedValue:
                             _formatTime((_seekSliderStep + 10).clamp(10, 300)),
@@ -638,8 +666,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             min: 10,
                             max: 300,
                             divisions: 29,
-                            onChanged: (val) => setState(
-                                () => _seekSliderStep = val.toInt()),
+                            onChanged: (val) =>
+                                setState(() => _seekSliderStep = val.toInt()),
                             onChangeEnd: (val) =>
                                 _settings.saveSeekSliderStep(val.toInt()),
                           ),
@@ -668,10 +696,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 16),
                 FilledButton.icon(
                   onPressed: _isSaving ? null : _save,
-                  icon: _isSaving 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  icon: _isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2))
                       : const Icon(Icons.save),
-                  label: Text(_isSaving ? 'Verifica codice e salvataggio...' : l10n.saveSettings),
+                  label: Text(_isSaving
+                      ? 'Verifica codice e salvataggio...'
+                      : l10n.saveSettings),
                 ),
                 const SizedBox(height: 24),
                 const Divider(),

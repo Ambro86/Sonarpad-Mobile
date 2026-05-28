@@ -4,14 +4,11 @@ import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../l10n/ui_route_localizations.dart';
 import '../l10n/ui_audiodescription_localizations.dart';
-import '../models/document_item.dart';
 import '../screens/document_reader_screen.dart';
 import '../screens/documents_screen.dart';
 import '../services/accessibility_feedback_service.dart';
@@ -77,24 +74,11 @@ class _HomeScreenState extends State<HomeScreen> {
       final originalFile = File(decodedPath);
       if (!await originalFile.exists()) return;
 
-      final appDir = await getApplicationDocumentsDirectory();
-      final ext = p.extension(originalFile.path).replaceAll('.', '');
       final basename = p.basename(originalFile.path);
-      final id = const Uuid().v4();
-      final newPath = p.join(appDir.path, '$id.$ext');
-
-      await originalFile.copy(newPath);
-
-      final doc = DocumentItem(
-        id: id,
-        name: basename,
-        path: '$id.$ext',
-        extension: ext,
-        addedAt: DateTime.now(),
-      );
 
       final lib = DocumentLibraryService();
       await lib.load();
+      final doc = await lib.importFile(originalFile, originalName: basename);
       await lib.add(doc);
 
       if (mounted) {

@@ -1,10 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
-import '../models/document_item.dart';
 import '../services/document_library_service.dart';
 
 class DocumentEditorScreen extends StatefulWidget {
@@ -44,18 +39,9 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
     setState(() => _saving = true);
     try {
       final name = '$finalTitle.txt';
-      final id = '${DateTime.now().microsecondsSinceEpoch}_$name';
-
-      final appDir = await getApplicationDocumentsDirectory();
-      final localFile = File(p.join(appDir.path, id));
-      await localFile.writeAsString(content);
-
-      final doc = DocumentItem(
-        id: id,
+      final doc = await widget.service.createTextDocument(
         name: name,
-        path: id,
-        extension: 'txt',
-        addedAt: DateTime.now(),
+        content: content,
       );
 
       await widget.service.add(doc);

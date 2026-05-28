@@ -16,8 +16,6 @@ import '../services/document_text_extractor.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 /// Schermata di lettura/ascolto di un documento della libreria.
 ///
@@ -322,6 +320,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _stopReading() async {
+    await _saveAutomaticBookmarkFromPlayback();
     if (Platform.isIOS && _activeTtsEngine == 'system') {
       try {
         await _ttsCommands.invokeMethod('clearMagicTap');
@@ -337,6 +336,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     });
     await _audio.stop();
     await _flutterTts.stop();
+  }
+
+  Future<void> _saveAutomaticBookmarkFromPlayback() async {
+    if (_playingChunkIndex < 0 || _playingChunkIndex >= _chunks.length) {
+      return;
+    }
+    if (!await _settings.isAutoBookmarkEnabled()) {
+      return;
+    }
+    await _saveBookmark(_playingChunkIndex, showSnack: false);
   }
 
   // ---------------------------------------------------------------------------
@@ -400,10 +409,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     // Salva su file
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final editedFileName = '${_currentDoc.id}_edited.txt';
-      final file = File(p.join(dir.path, editedFileName));
-      await file.writeAsString(newText);
+      final lib = DocumentLibraryService();
+      final editedPath = await lib.saveEditedText(_currentDoc, newText);
 
       // 4. Aggiorna l'elemento DocumentItem
       final newDoc = DocumentItem(
@@ -413,7 +420,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         extension: _currentDoc.extension,
         addedAt: _currentDoc.addedAt,
         bookmarkIndex: _bookmarkIndex,
-        editedTextPath: file.path,
+        editedTextPath: editedPath,
         isTemporary: _currentDoc.isTemporary,
       );
 
@@ -422,7 +429,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       });
 
       if (!_currentDoc.isTemporary) {
-        final lib = DocumentLibraryService();
         await lib.load();
         await lib.update(newDoc);
       }
@@ -496,6 +502,41 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
+  void _scrollDocumentByPage(double direction) {
+    if (!_scrollController.hasClients) return;
+
+    final position = _scrollController.position;
+    final distance = position.viewportDimension * 0.85 * direction;
+    final target = (position.pixels + distance)
+        .clamp(position.minScrollExtent, position.maxScrollExtent)
+        .toDouble();
+
+    if ((target - position.pixels).abs() < 1) {
+      unawaited(
+        SemanticsService.sendAnnouncement(
+          View.of(context),
+          direction > 0 ? 'Fine documento' : 'Inizio documento',
+          Directionality.of(context),
+        ).catchError((Object error) {
+          dev.log('DocumentReaderScreen semantic announcement error: $error');
+        }),
+      );
+      return;
+    }
+
+    unawaited(
+      _scrollController
+          .animateTo(
+        target,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      )
+          .catchError((Object error) {
+        dev.log('DocumentReaderScreen semantic scroll error: $error');
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -545,67 +586,25 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       body: SafeArea(
         child: _loadingText
             ? const Center(child: CircularProgressIndicator())
-            : CustomScrollView(
-                controller: _scrollController,
-                cacheExtent:
-                    4000, // Precarica i blocchi successivi per VoiceOver
-                // BouncingScrollPhysics → flick naturale su iPhone
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.all(16),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        // --- Intestazione ---
-                        Row(
-                          children: [
-                            _ExtBadge(ext: doc.extension),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    displayName,
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    doc.extension.toUpperCase() +
-                                        (doc.editedTextPath != null
-                                            ? ' (Modificato in Sonarpad)'
-                                            : ''),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: doc.editedTextPath != null
-                                          ? Colors.orange.shade700
-                                          : null,
-                                      fontWeight: doc.editedTextPath != null
-                                          ? FontWeight.bold
-                                          : null,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                         if (_ttsStatus != null) ...[
                           Text(_ttsStatus!),
                           const SizedBox(height: 12),
                         ],
-
-                        // --- Pulsanti TTS ---
                         FilledButton.icon(
                           onPressed: _togglePlayPause,
                           icon: Icon(!_speaking
                               ? Icons.volume_up
                               : (_ttsPaused ? Icons.play_arrow : Icons.pause)),
                           label: Text(!_speaking
-                              ? 'Inizia lettura'
+                              ? 'Avvia lettura'
                               : (_ttsPaused
                                   ? 'Riprendi lettura'
                                   : 'Pausa lettura')),
@@ -616,44 +615,111 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           icon: const Icon(Icons.stop),
                           label: const Text('Interrompi lettura'),
                         ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  Expanded(
+                    child: Semantics(
+                      label: 'Testo documento',
+                      explicitChildNodes: true,
+                      onScrollUp: () => _scrollDocumentByPage(1),
+                      onScrollDown: () => _scrollDocumentByPage(-1),
+                      child: CustomScrollView(
+                        controller: _scrollController,
+                        cacheExtent:
+                            4000, // Precarica i blocchi successivi per VoiceOver
+                        // BouncingScrollPhysics → flick naturale su iPhone
+                        physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics(),
+                        ),
+                        slivers: [
+                          SliverPadding(
+                            padding: const EdgeInsets.all(16),
+                            sliver: SliverList(
+                              delegate: SliverChildListDelegate([
+                                // --- Intestazione ---
+                                Row(
+                                  children: [
+                                    _ExtBadge(ext: doc.extension),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            displayName,
+                                            style: theme.textTheme.titleMedium
+                                                ?.copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                          ),
+                                          Text(
+                                            doc.extension.toUpperCase() +
+                                                (doc.editedTextPath != null
+                                                    ? ' (Modificato in Sonarpad)'
+                                                    : ''),
+                                            style: theme.textTheme.bodySmall
+                                                ?.copyWith(
+                                              color: doc.editedTextPath != null
+                                                  ? Colors.orange.shade700
+                                                  : null,
+                                              fontWeight:
+                                                  doc.editedTextPath != null
+                                                      ? FontWeight.bold
+                                                      : null,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                // Suggerimento modifica paragrafo (solo in lettura)
+                                if (!_speaking && _chunks.isNotEmpty)
+                                  Semantics(
+                                    liveRegion: false,
+                                    child: Text(
+                                      l10n.documentReaderEditHint,
+                                      style:
+                                          theme.textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.outline,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ),
 
-                        const SizedBox(height: 8),
-                        // Suggerimento modifica paragrafo (solo in lettura)
-                        if (!_speaking && _chunks.isNotEmpty)
-                          Semantics(
-                            liveRegion: false,
-                            child: Text(
-                              l10n.documentReaderEditHint,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.outline,
-                                fontStyle: FontStyle.italic,
-                              ),
+                                const SizedBox(height: 24),
+                                const Divider(),
+                                const SizedBox(height: 8),
+
+                                // --- Corpo documento ---
+                                if (_loadError != null)
+                                  Semantics(
+                                    liveRegion: true,
+                                    child: Text(
+                                      _loadError!,
+                                      style:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.secondary,
+                                      ),
+                                    ),
+                                  )
+                                else if (_chunks.isNotEmpty)
+                                  ..._buildChunkWidgets(theme, colorScheme)
+                                else if (_documentText.isEmpty &&
+                                    _loadError == null)
+                                  Text(
+                                    'Nessun testo disponibile per questo documento.',
+                                    style: theme.textTheme.bodyMedium,
+                                  ),
+                              ]),
                             ),
                           ),
-
-                        const SizedBox(height: 24),
-                        const Divider(),
-                        const SizedBox(height: 8),
-
-                        // --- Corpo documento ---
-                        if (_loadError != null)
-                          Semantics(
-                            liveRegion: true,
-                            child: Text(
-                              _loadError!,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.secondary,
-                              ),
-                            ),
-                          )
-                        else if (_chunks.isNotEmpty)
-                          ..._buildChunkWidgets(theme, colorScheme)
-                        else if (_documentText.isEmpty && _loadError == null)
-                          Text(
-                            'Nessun testo disponibile per questo documento.',
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                      ]),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -700,10 +766,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           index: i,
           child: Semantics(
             container: true,
-            button: canEdit,
             hint: hintText,
+            onTap: canEdit ? () => _editParagraph(i) : null,
             customSemanticsActions: actions,
             child: GestureDetector(
+              excludeFromSemantics: true,
               onTap: canEdit ? () => _editParagraph(i) : null,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
@@ -758,6 +825,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _setBookmark(int index) async {
+    await _saveBookmark(index, showSnack: false);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Segnalibro impostato al paragrafo ${index + 1}.')),
+      );
+    }
+  }
+
+  Future<void> _saveBookmark(int index, {required bool showSnack}) async {
     setState(() => _bookmarkIndex = index);
 
     final newDoc = DocumentItem(
@@ -781,7 +858,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       await lib.update(newDoc);
     }
 
-    if (mounted) {
+    if (showSnack && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text('Segnalibro impostato al paragrafo ${index + 1}.')),

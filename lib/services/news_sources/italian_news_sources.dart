@@ -17,7 +17,9 @@ final italianNewsSources = [
   ),
   NewsRssSource(
     name: 'Corriere della Sera',
-    uri: Uri.parse('https://xml2.corriereobjects.it/feed-hp/homepage.xml'),
+    uri: Uri.parse(
+      'https://xml2.corriereobjects.it/feed-hp/homepage-restyle-2025.xml',
+    ),
   ),
   NewsRssSource(
     name: 'La Repubblica',

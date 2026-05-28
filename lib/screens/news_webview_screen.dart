@@ -25,6 +25,7 @@ class NewsWebViewScreen extends StatefulWidget {
 
 class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   late final WebViewController _controller;
+  late final WebViewController _readerWebViewController;
   final _audio = AudioPlayerService();
   final _newsService = NewsService();
   final _settings = AppSettingsService();
@@ -34,6 +35,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   bool _speaking = false;
   String? _readerTitle;
   String? _readerText;
+  String? _readerHtml;
   String? _status;
   int _readyChunks = 0;
   int _totalChunks = 0;
@@ -42,6 +44,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   @override
   void initState() {
     super.initState();
+    _readerWebViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted);
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -54,6 +58,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                 _readerPreparing = true;
                 _readerTitle = null;
                 _readerText = null;
+                _readerHtml = null;
               });
             }
           },
@@ -90,9 +95,54 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     try {
       final article = await _extractReaderArticleFromWebViewHtml();
       if (!mounted || navigationId != _navigationId) return;
+      
+      final title = article?.title ?? widget.article.title;
+      final htmlContent = article?.html ?? '';
+      
+      if (htmlContent.isNotEmpty) {
+        final template = '''
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    padding: 16px;
+    color: #333;
+    background-color: #fff;
+    margin: 0;
+  }
+  h1 { font-size: 24px; line-height: 1.3; margin-top: 0; }
+  h2 { font-size: 20px; line-height: 1.4; }
+  img { max-width: 100%; height: auto; border-radius: 8px; margin: 16px 0; }
+  figure { margin: 0; padding: 0; }
+  figcaption { font-size: 14px; color: #666; margin-top: 8px; }
+  a { color: #007aff; text-decoration: none; }
+  p { margin-bottom: 16px; }
+  @media (prefers-color-scheme: dark) {
+    body { background-color: #121212; color: #e0e0e0; }
+    a { color: #0a84ff; }
+    figcaption { color: #999; }
+  }
+</style>
+</head>
+<body>
+  <h1>$title</h1>
+  $htmlContent
+</body>
+</html>
+        ''';
+        await _readerWebViewController.loadHtmlString(template);
+      }
+
+      if (!mounted || navigationId != _navigationId) return;
       setState(() {
-        _readerTitle = article?.title;
+        _readerTitle = title;
         _readerText = article?.text;
+        _readerHtml = htmlContent;
         _readerPreparing = false;
       });
     } catch (e) {
@@ -133,7 +183,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return article?.text;
   }
 
-  Future<({String title, String text})?>
+  Future<({String title, String text, String html})?>
       _extractReaderArticleFromWebViewHtml() async {
     final currentUrl = await _controller.currentUrl();
     final htmlResult = await _controller.runJavaScriptReturningResult(
@@ -151,7 +201,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     final title = article?.title.trim().isNotEmpty ?? false
         ? article!.title.trim()
         : widget.article.title;
-    return (title: title, text: text);
+    return (title: title, text: text, html: article?.content ?? '');
   }
 
   Future<String?> _extractReaderArticleTextFromUrl() async {
@@ -495,12 +545,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Widget _buildBody(AppLocalizations l10n) {
-    final readerText = _readerText;
-    if (readerText != null) {
-      return _ReaderArticleView(
-        title: _readerTitle ?? widget.article.title,
-        text: readerText,
-      );
+    final readerHtml = _readerHtml;
+    if (readerHtml != null && readerHtml.isNotEmpty) {
+      return _ReaderArticleView(controller: _readerWebViewController);
     }
 
     if (_readerPreparing) {
@@ -530,22 +577,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
 class _ReaderArticleView extends StatelessWidget {
   const _ReaderArticleView({
-    required this.title,
-    required this.text,
+    required this.controller,
   });
 
-  final String title;
-  final String text;
+  final WebViewController controller;
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text(title, style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 16),
-        Text(text, style: Theme.of(context).textTheme.bodyLarge),
-      ],
-    );
+    return WebViewWidget(controller: controller);
   }
 }

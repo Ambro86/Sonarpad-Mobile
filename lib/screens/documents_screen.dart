@@ -54,6 +54,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   Future<void> _load() async {
     try {
       await _service.load();
+      if (_service.documents.isEmpty) {
+        await _service.recoverVisibleDocuments(_allowedExtensions);
+      }
     } catch (e) {
       dev.log('DocumentsScreen: errore caricamento: $e');
       if (mounted) {
@@ -70,7 +73,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: _allowedExtensions,
-        allowMultiple: true,
+        allowMultiple: false,
       );
     } catch (e) {
       dev.log('DocumentsScreen: errore apertura file picker: $e');
@@ -89,25 +92,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         continue;
       }
 
-      final ext = p.extension(path).replaceFirst('.', '').toLowerCase();
-      final name = p.basename(path);
-      // Aggiungiamo un piccolo delay basato sull'indice o semplicemente usando il microsecondo per garantire ID univoci
-      await Future.delayed(const Duration(milliseconds: 1));
-      final id = '${DateTime.now().microsecondsSinceEpoch}_$name';
-
       try {
-        final appDir = await getApplicationDocumentsDirectory();
-        final localFile = File(p.join(appDir.path, id));
-        await File(path).copy(localFile.path);
-
-        final doc = DocumentItem(
-          id: id,
-          name: name,
-          path: id, // Salviamo solo l'ID come percorso relativo
-          extension: ext,
-          addedAt: DateTime.now(),
+        final doc = await _service.importFile(
+          File(path),
+          originalName: file.name.isNotEmpty ? file.name : p.basename(path),
         );
-
         await _service.add(doc);
       } catch (e) {
         dev.log('DocumentsScreen: errore aggiunta documento: $e');
@@ -119,6 +108,22 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (mounted) {
       setState(() {});
       _showSnack('Documenti aggiunti');
+    }
+  }
+
+  Future<void> _recoverDocuments() async {
+    try {
+      final count = await _service.recoverVisibleDocuments(_allowedExtensions);
+      if (!mounted) return;
+      setState(() {});
+      _showSnack(
+        count == 0
+            ? 'Nessun nuovo documento trovato nella cartella Sonarpad.'
+            : 'Documenti recuperati: $count',
+      );
+    } catch (e) {
+      dev.log('DocumentsScreen: errore recupero documenti: $e');
+      if (mounted) _showSnack('Errore recupero documenti: $e');
     }
   }
 
@@ -205,7 +210,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     try {
       await AppLogger.log('Inizio esportazione documento in formato $format');
       final text = await _exportTextForDocument(doc);
-      await AppLogger.log('Testo estratto correttamente (lunghezza: ${text.length})');
+      await AppLogger.log(
+          'Testo estratto correttamente (lunghezza: ${text.length})');
 
       final appDir = await getTemporaryDirectory();
       final baseName = doc.displayName;
@@ -258,7 +264,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     await AppLogger.log('Cerco file originale per ${doc.id}');
     final resolvedPath = await _service.resolveFilePath(doc);
-    await AppLogger.log('Estrazione testo da file originale (estensione: ${doc.extension})');
+    await AppLogger.log(
+        'Estrazione testo da file originale (estensione: ${doc.extension})');
     final result = await DocumentTextExtractor().extract(
       path: resolvedPath,
       extension: doc.extension,
@@ -283,7 +290,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         .replaceAll('\u200B', '') // Zero width space
         .replaceAll('\uFEFF', '') // Byte order mark
         .replaceAll('\r\n', '\n');
-    
+
     // PdfStandardFont supporta solo caratteri 0-255 (WinAnsi)
     return sanitized.replaceAllMapped(RegExp(r'[^\x00-\xFF]'), (match) => '?');
   }
@@ -331,52 +338,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
-  Future<void> _exportDatabase() async {
-    try {
-      final json = await _service.getDatabaseJson();
-      if (json == null || json.isEmpty) {
-        if (mounted) _showSnack('Nessun documento nel database da esportare.');
-        return;
-      }
-      final appDir = await getTemporaryDirectory();
-      final path = '${appDir.path}/sonarpad_database.json';
-      await File(path).writeAsString(json);
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(path)],
-          text: 'sonarpad_database.json',
-        ),
-      );
-    } catch (e) {
-      dev.log('Errore esportazione database: $e');
-      if (mounted) _showSnack('Errore esportazione: $e');
-    }
-  }
-
-  Future<void> _importDatabase() async {
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-      );
-      if (result == null || result.files.isEmpty) return;
-
-      final path = result.files.first.path;
-      if (path == null) return;
-
-      final jsonString = await File(path).readAsString();
-      await _service.importDatabaseJson(jsonString);
-      
-      if (mounted) {
-        await _load();
-        _showSnack('Database importato con successo!');
-      }
-    } catch (e) {
-      dev.log('Errore importazione database: $e');
-      if (mounted) _showSnack('Errore importazione: $e');
-    }
-  }
-
   Future<void> _createDocument() async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -402,20 +363,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           ),
           PopupMenuButton<String>(
             onSelected: (value) {
-              if (value == 'export') {
-                _exportDatabase();
-              } else if (value == 'import') {
-                _importDatabase();
+              if (value == 'recover') {
+                _recoverDocuments();
               }
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
-                value: 'export',
-                child: Text('Esporta database documenti'),
-              ),
-              const PopupMenuItem(
-                value: 'import',
-                child: Text('Importa database documenti'),
+                value: 'recover',
+                child: Text('Recupera documenti da Sonarpad'),
               ),
             ],
           ),
@@ -461,7 +416,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       ),
       floatingActionButton: Semantics(
         button: true,
-        label: 'Aggiungi documento alla libreria. Sfoglia i file del dispositivo e aggiungili.',
+        label:
+            'Aggiungi documento alla libreria. Sfoglia i file del dispositivo e aggiungili.',
         excludeSemantics: true,
         child: FloatingActionButton(
           onPressed: _pickFile,
@@ -604,7 +560,8 @@ class _DocumentTile extends StatelessWidget {
                       button: true,
                       label: 'Rimuovi $displayName',
                       child: IconButton(
-                        icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                        icon: Icon(Icons.delete_outline,
+                            color: Theme.of(context).colorScheme.error),
                         tooltip: 'Rimuovi documento',
                         onPressed: onRemove,
                       ),

@@ -1,13 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
-import 'package:uuid/uuid.dart';
 
 import '../services/bdciechi_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/document_library_service.dart';
-import '../models/document_item.dart';
 import 'document_reader_screen.dart';
 
 class BdCiechiDashboardScreen extends StatefulWidget {
@@ -23,12 +18,13 @@ class BdCiechiDashboardScreen extends StatefulWidget {
   });
 
   @override
-  State<BdCiechiDashboardScreen> createState() => _BdCiechiDashboardScreenState();
+  State<BdCiechiDashboardScreen> createState() =>
+      _BdCiechiDashboardScreenState();
 }
 
 class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   final BdCiechiService _service = BdCiechiService();
-  
+
   List<String> _fullCatalog = [];
   bool _isLoadingCatalog = true;
   String _quotaInfo = '';
@@ -43,7 +39,8 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   void _updateQuotaText(BdCiechiQuota? quota) {
     if (quota != null) {
       setState(() {
-        _quotaInfo = 'Libri ancora disponibili in questo mese: ${quota.remaining} su ${quota.monthlyTotal}';
+        _quotaInfo =
+            'Libri ancora disponibili in questo mese: ${quota.remaining} su ${quota.monthlyTotal}';
       });
     } else {
       setState(() {
@@ -54,7 +51,8 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
 
   Future<void> _loadCatalog() async {
     try {
-      final catalog = await _service.fetchCatalogList(widget.identifyResponse.nprov);
+      final catalog =
+          await _service.fetchCatalogList(widget.identifyResponse.nprov);
       if (mounted) {
         setState(() {
           _fullCatalog = catalog;
@@ -71,7 +69,8 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   }
 
   String _normalize(String s) {
-    return s.toLowerCase()
+    return s
+        .toLowerCase()
         .replaceAll('à', 'a')
         .replaceAll('è', 'e')
         .replaceAll('é', 'e')
@@ -93,7 +92,8 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
     final index = _extractIndex(record);
     if (index.isEmpty || index == '-1') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Impossibile estrarre l\'indice del libro.')),
+        const SnackBar(
+            content: Text('Impossibile estrarre l\'indice del libro.')),
       );
       return;
     }
@@ -106,7 +106,8 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
     );
 
     try {
-      final work = await _service.downloadWork(widget.username, widget.password, index, preview);
+      final work = await _service.downloadWork(
+          widget.username, widget.password, index, preview);
       final newQuota = _service.parseWorkQuota(work.info);
       if (newQuota != null) {
         _updateQuotaText(newQuota);
@@ -127,7 +128,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
     } catch (e) {
       // Chiudi spinner
       if (mounted) Navigator.pop(context);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Errore download: $e')),
@@ -159,27 +160,17 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
       final cleanName = _cleanFileName(record);
       final fileName = '$cleanName.txt';
 
-      final appDir = await getApplicationDocumentsDirectory();
-      final id = const Uuid().v4();
-      final newPath = p.join(appDir.path, '$id.txt');
-
-      await File(newPath).writeAsString(content);
-
-      final doc = DocumentItem(
-        id: id,
-        name: fileName,
-        path: '$id.txt',
-        extension: 'txt',
-        addedAt: DateTime.now(),
-      );
-
       final lib = DocumentLibraryService();
       await lib.load();
+      final doc =
+          await lib.createTextDocument(name: fileName, content: content);
       await lib.add(doc);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Libro importato nella libreria e salvato in documenti.')),
+          const SnackBar(
+              content: Text(
+                  'Libro importato nella libreria e salvato in documenti.')),
         );
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -235,12 +226,15 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   void _performSearch(String query) {
     if (_isLoadingCatalog) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Attendere il caricamento del catalogo completo.')),
+        const SnackBar(
+            content: Text('Attendere il caricamento del catalogo completo.')),
       );
       return;
     }
     final queryLower = _normalize(query);
-    final results = _fullCatalog.where((item) => _normalize(item).contains(queryLower)).toList();
+    final results = _fullCatalog
+        .where((item) => _normalize(item).contains(queryLower))
+        .toList();
 
     Navigator.push(
       context,
@@ -290,15 +284,18 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
                     MaterialPageRoute(
                       builder: (_) => BdCiechiListScreen(
                         title: 'Ultime novità',
-                        loadItems: () => _service.fetchLatestList(widget.identifyResponse.nprov),
+                        loadItems: () => _service
+                            .fetchLatestList(widget.identifyResponse.nprov),
                         onWorkTapped: _onWorkTapped,
                       ),
                     ),
                   );
                 },
                 icon: const Icon(Icons.new_releases),
-                label: const Text('Ultime novità', style: TextStyle(fontSize: 16)),
-                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                label:
+                    const Text('Ultime novità', style: TextStyle(fontSize: 16)),
+                style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50)),
               ),
               const SizedBox(height: 16),
 
@@ -323,7 +320,8 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
                 onPressed: () {
                   if (_isLoadingCatalog) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Caricamento catalogo in corso...')),
+                      const SnackBar(
+                          content: Text('Caricamento catalogo in corso...')),
                     );
                     return;
                   }
@@ -339,15 +337,18 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
                   );
                 },
                 icon: const Icon(Icons.library_books),
-                label: const Text('Visualizza il catalogo completo', style: TextStyle(fontSize: 16)),
-                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                label: const Text('Visualizza il catalogo completo',
+                    style: TextStyle(fontSize: 16)),
+                style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50)),
               ),
               const SizedBox(height: 32),
 
               // 5. Esci
               FilledButton.tonal(
                 onPressed: _logout,
-                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50)),
                 child: const Text('Esci', style: TextStyle(fontSize: 16)),
               ),
             ],
@@ -426,7 +427,8 @@ class _BdCiechiListScreenState extends State<BdCiechiListScreen> {
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       _errorMessage!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      style:
+                          TextStyle(color: Theme.of(context).colorScheme.error),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -435,7 +437,8 @@ class _BdCiechiListScreenState extends State<BdCiechiListScreen> {
                   ? const Center(child: Text('Nessun risultato trovato.'))
                   : ListView.separated(
                       itemCount: _displayList.length,
-                      separatorBuilder: (context, index) => const Divider(height: 1),
+                      separatorBuilder: (context, index) =>
+                          const Divider(height: 1),
                       itemBuilder: (context, index) {
                         final record = _displayList[index];
                         return ListTile(

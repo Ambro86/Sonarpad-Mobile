@@ -20,7 +20,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
 
   List<PodcastSubscription> _subscriptions = [];
   String _country = 'it';
-  PodcastCategory _category = PodcastService.categories.first;
 
   @override
   void initState() {
@@ -36,7 +35,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
 
   void _search() {
     final query = _searchController.text.trim();
-    if (query.isEmpty && _category.genreId == null) return;
+    if (query.isEmpty) return;
     Navigator.push<String>(
       context,
       MaterialPageRoute(
@@ -44,7 +43,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
         builder: (_) => _PodcastSearchResultsScreen(
           query: query,
           country: _country,
-          category: _category,
+          category: PodcastService.categories.first,
         ),
       ),
     ).then((feedUrl) async {
@@ -55,6 +54,22 @@ class _PodcastScreenState extends State<PodcastScreen> {
         _openSubscription(sub);
       } catch (_) {}
     });
+  }
+
+  Future<void> _openCategories() async {
+    final feedUrl = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/podcasts/categories'),
+        builder: (_) => _PodcastCategoryBrowserScreen(country: _country),
+      ),
+    );
+    if (!mounted || feedUrl == null) return;
+    await _load();
+    try {
+      final sub = _subscriptions.firstWhere((s) => s.feedUrl == feedUrl);
+      _openSubscription(sub);
+    } catch (_) {}
   }
 
   void _openSubscription(PodcastSubscription subscription) {
@@ -174,18 +189,10 @@ class _PodcastScreenState extends State<PodcastScreen> {
             onChanged: (value) => setState(() => _country = value ?? 'it'),
           ),
           const SizedBox(height: 8),
-          DropdownButtonFormField<PodcastCategory>(
-            initialValue: _category,
-            decoration: InputDecoration(labelText: l10n.podcastCategory),
-            items: PodcastService.categories
-                .map((category) => DropdownMenuItem(
-                      value: category,
-                      child: Text(category.name),
-                    ))
-                .toList(),
-            onChanged: (value) => setState(
-              () => _category = value ?? PodcastService.categories.first,
-            ),
+          FilledButton.icon(
+            onPressed: _openCategories,
+            icon: const Icon(Icons.category),
+            label: Text(l10n.browsePodcastCategories),
           ),
           const SizedBox(height: 8),
           FilledButton.icon(
@@ -339,6 +346,53 @@ class _PodcastPositionSliderDialogState
           child: const Text('Ok'),
         ),
       ],
+    );
+  }
+}
+
+class _PodcastCategoryBrowserScreen extends StatelessWidget {
+  final String country;
+
+  const _PodcastCategoryBrowserScreen({required this.country});
+
+  Future<void> _openCategory(
+      BuildContext context, PodcastCategory category) async {
+    final feedUrl = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/podcasts/category-results'),
+        builder: (_) => _PodcastSearchResultsScreen(
+          query: '',
+          country: country,
+          category: category,
+        ),
+      ),
+    );
+    if (!context.mounted || feedUrl == null) return;
+    Navigator.pop(context, feedUrl);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final categories = PodcastService.categories
+        .where((category) => category.genreId != null)
+        .toList();
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.podcastCategories)),
+      body: ListView.separated(
+        itemCount: categories.length,
+        separatorBuilder: (_, __) => const Divider(height: 1),
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          return ListTile(
+            leading: const Icon(Icons.category),
+            title: Text(category.nameForLanguage(l10n.locale.languageCode)),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _openCategory(context, category),
+          );
+        },
+      ),
     );
   }
 }

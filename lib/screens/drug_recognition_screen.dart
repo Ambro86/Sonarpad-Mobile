@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -13,10 +12,14 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../utils/app_logger.dart';
 import '../utils/gs1_parser.dart';
+import '../services/app_settings_service.dart';
+import '../services/audio_player_service.dart';
 import '../services/aifa_service.dart';
+import '../tts/edge_tts_bridge.dart';
 
 class DrugRecognitionScreen extends StatefulWidget {
   const DrugRecognitionScreen({super.key});
@@ -25,10 +28,20 @@ class DrugRecognitionScreen extends StatefulWidget {
   State<DrugRecognitionScreen> createState() => _DrugRecognitionScreenState();
 }
 
+class _OcrCandidate {
+  final String text;
+  final int score;
+  final int sequence;
+
+  const _OcrCandidate(this.text, this.score, this.sequence);
+}
+
 class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   CameraController? _cameraController;
-  final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-  final BarcodeScanner _barcodeScanner = BarcodeScanner(formats: [BarcodeFormat.all]);
+  final TextRecognizer _textRecognizer =
+      TextRecognizer(script: TextRecognitionScript.latin);
+  final BarcodeScanner _barcodeScanner =
+      BarcodeScanner(formats: [BarcodeFormat.all]);
   final ObjectDetector _objectDetector = ObjectDetector(
     options: ObjectDetectorOptions(
       mode: DetectionMode.stream,
@@ -38,35 +51,35 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   );
   final FlutterTts _flutterTts = FlutterTts();
   final AifaService _aifaService = AifaService();
+  final AppSettingsService _settings = AppSettingsService();
+  final EdgeTtsBridge _edgeTts = EdgeTtsBridge();
+  final AudioPlayerService _audio = AudioPlayerService();
 
   List<CameraDescription> _cameras = [];
   bool _isProcessing = false;
   bool _isCameraInitialized = false;
   bool _hasPermission = false;
   bool _isRearCamera = true;
-  
+  bool _scanWakelockEnabled = false;
+
   String _statusText = 'Inizializzazione fotocamera...';
   String? _recognizedDrug;
   DrugMatchLevel? _matchLevel;
-  
+
   // Timer e Logica Ibrida
   DateTime _startTime = DateTime.now();
-  bool _ocrFallbackActive = false;
   bool _scanCompleted = false;
 
-  // Multi-frame stabilization
-  String? _lastBarcodeRawValue;
-  int _barcodeConsecutiveReads = 0;
-  DateTime? _lastBarcodeTime;
-
-  String? _lastOcrCandidate;
-  int _ocrConsecutiveReads = 0;
-  DateTime? _lastOcrTime;
-  
   DateTime? _lastFrameTime;
   DateTime? _lastEdgeWarningTime;
+  DateTime? _lastBestEffortCaptureTime;
 
   Timer? _instructionTimer;
+  bool _speechSettingsLoaded = false;
+  String _ttsEngine = 'edge';
+  String _edgeVoice = AppSettingsService.defaultVoiceForLanguage('it');
+  String _systemTtsLanguage = 'it-IT';
+  String? _systemTtsVoice;
 
   @override
   void initState() {
@@ -76,18 +89,40 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   }
 
   Future<void> _initTts() async {
-    await _flutterTts.setLanguage("it-IT");
-    await _flutterTts.setSpeechRate(0.5);
+    await _loadSpeechSettings();
+    await _configureSystemTts();
+  }
+
+  Future<void> _loadSpeechSettings() async {
+    _ttsEngine = await _settings.loadTtsEngine();
+    _edgeVoice = await _settings.loadTtsVoice();
+    _systemTtsLanguage = await _settings.loadSystemTtsLanguage();
+    _systemTtsVoice = await _settings.loadSystemTtsVoice();
+    _speechSettingsLoaded = true;
+  }
+
+  Future<void> _configureSystemTts() async {
+    final speed = await _settings.loadTtsSpeed();
+    final pitch = await _settings.loadTtsPitch();
+    await _flutterTts.setSpeechRate(speed * 0.5);
+    await _flutterTts.setPitch(pitch);
     if (Platform.isIOS) {
-       await _flutterTts.setIosAudioCategory(
-        IosTextToSpeechAudioCategory.ambient,
-        [
-          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-          IosTextToSpeechAudioCategoryOptions.mixWithOthers
-        ],
-        IosTextToSpeechAudioMode.defaultMode
-      );
+      await _flutterTts.setIosAudioCategory(
+          IosTextToSpeechAudioCategory.ambient,
+          [
+            IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+            IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+            IosTextToSpeechAudioCategoryOptions.mixWithOthers
+          ],
+          IosTextToSpeechAudioMode.defaultMode);
+    }
+    if (_systemTtsVoice != null) {
+      await _flutterTts.setVoice({
+        "name": _systemTtsVoice!,
+        "locale": _systemTtsLanguage,
+      });
+    } else {
+      await _flutterTts.setLanguage(_systemTtsLanguage);
     }
   }
 
@@ -110,7 +145,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     } else {
       setState(() {
         _hasPermission = false;
-        _statusText = 'Permesso fotocamera negato. Abilitalo nelle impostazioni.';
+        _statusText =
+            'Permesso fotocamera negato. Abilitalo nelle impostazioni.';
       });
       _speak('Permesso fotocamera negato.');
     }
@@ -125,7 +161,9 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       camera,
       ResolutionPreset.high,
       enableAudio: false,
-      imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
+      imageFormatGroup: Platform.isAndroid
+          ? ImageFormatGroup.nv21
+          : ImageFormatGroup.bgra8888,
     );
 
     try {
@@ -138,10 +176,37 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       if (!mounted) return;
       setState(() => _isCameraInitialized = true);
       _resetScanState();
+      await _enableScanWakelock();
       _startAnalysis();
     } catch (e) {
       setState(() => _statusText = 'Errore inizializzazione fotocamera');
       _speak('Errore durante l\'avvio della fotocamera');
+    }
+  }
+
+  Future<void> _enableScanWakelock() async {
+    if (_scanWakelockEnabled || !(Platform.isIOS || Platform.isAndroid)) {
+      return;
+    }
+    try {
+      await WakelockPlus.enable();
+      _scanWakelockEnabled = true;
+      AppLogger.log('DrugRecognition: wakelock attivo durante la scansione.');
+    } catch (e) {
+      AppLogger.log('DrugRecognition: errore attivazione wakelock -> $e');
+    }
+  }
+
+  Future<void> _disableScanWakelock() async {
+    if (!_scanWakelockEnabled || !(Platform.isIOS || Platform.isAndroid)) {
+      return;
+    }
+    try {
+      await WakelockPlus.disable();
+      _scanWakelockEnabled = false;
+      AppLogger.log('DrugRecognition: wakelock disattivato.');
+    } catch (e) {
+      AppLogger.log('DrugRecognition: errore disattivazione wakelock -> $e');
     }
   }
 
@@ -155,33 +220,27 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     });
 
     _startTime = DateTime.now();
-    _ocrFallbackActive = false;
     _scanCompleted = false;
-    
-    _lastBarcodeRawValue = null;
-    _barcodeConsecutiveReads = 0;
-    _lastBarcodeTime = null;
-    
-    _lastOcrCandidate = null;
-    _ocrConsecutiveReads = 0;
-    _lastOcrTime = null;
+    _lastBestEffortCaptureTime = null;
 
     _startInstructionLoop();
   }
 
   void _startInstructionLoop() {
     _instructionTimer?.cancel();
-    _speak('Inquadra la scatola del farmaco. Allontana o avvicina il telefono finché non ti dico ferma.');
-    
+    _speak(
+        'Inquadra la scatola del farmaco. Allontana o avvicina il telefono finché non ti dico ferma.');
+
     _instructionTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (_recognizedDrug != null || _scanCompleted) {
         timer.cancel();
         return;
       }
-      
+
       final elapsed = DateTime.now().difference(_startTime).inSeconds;
       if (elapsed > 10) {
-        _speak('Assicurati di avere abbastanza luce e muovi lentamente la confezione.');
+        _speak(
+            'Assicurati di avere abbastanza luce e muovi lentamente la confezione.');
       }
     });
   }
@@ -190,12 +249,13 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     _cameraController!.startImageStream((CameraImage image) async {
       final now = DateTime.now();
       // Drop late frames
-      if (_lastFrameTime != null && now.difference(_lastFrameTime!).inMilliseconds < 150) {
-        return; 
+      if (_lastFrameTime != null &&
+          now.difference(_lastFrameTime!).inMilliseconds < 150) {
+        return;
       }
-      
+
       if (_isProcessing || _recognizedDrug != null || _scanCompleted) return;
-      
+
       _isProcessing = true;
       _lastFrameTime = now;
 
@@ -207,44 +267,70 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
         }
 
         final objects = await _objectDetector.processImage(inputImage);
-        
+        final elapsed = now.difference(_startTime);
+
         if (objects.isNotEmpty) {
-           final object = objects.first;
-           final rect = object.boundingBox;
-           
-           bool isRotated = inputImage.metadata!.rotation == InputImageRotation.rotation90deg ||
-                            inputImage.metadata!.rotation == InputImageRotation.rotation270deg;
-           
-           double imgW = isRotated ? inputImage.metadata!.size.height : inputImage.metadata!.size.width;
-           double imgH = isRotated ? inputImage.metadata!.size.width : inputImage.metadata!.size.height;
-           
-           double margin = 10.0; // Tolleranza ridotta per permettere alla scatola di stare comodamente nell'inquadratura
-           List<String> warnings = [];
-           if (rect.left <= margin) warnings.add("sinistro");
-           if (rect.right >= imgW - margin) warnings.add("destro");
-           if (rect.top <= margin) warnings.add("superiore");
-           if (rect.bottom >= imgH - margin) warnings.add("inferiore");
-           
-           if (warnings.isNotEmpty) {
-               if (_lastEdgeWarningTime == null || now.difference(_lastEdgeWarningTime!).inMilliseconds > 2500) {
-                   _lastEdgeWarningTime = now;
-                   String edgeText = warnings.join(" e ");
-                   _speak("Bordo $edgeText non visibile");
-               }
-           } else {
-               // Oggetto centrato
-               double area = rect.width * rect.height;
-               double totalArea = imgW * imgH;
-               if (area > totalArea * 0.05) { // Ridotto al 5% per facilitare lo scatto anche se si allontana il telefono
-                   _scanCompleted = true;
-                   _speak("Ferma!");
-                   HapticFeedback.heavyImpact();
-                   await _captureAndAnalyze();
-                   return;
-               }
-           }
+          final object = objects.first;
+          final rect = object.boundingBox;
+
+          bool isRotated = inputImage.metadata!.rotation ==
+                  InputImageRotation.rotation90deg ||
+              inputImage.metadata!.rotation ==
+                  InputImageRotation.rotation270deg;
+
+          double imgW = isRotated
+              ? inputImage.metadata!.size.height
+              : inputImage.metadata!.size.width;
+          double imgH = isRotated
+              ? inputImage.metadata!.size.width
+              : inputImage.metadata!.size.height;
+
+          double margin =
+              10.0; // Tolleranza ridotta per permettere alla scatola di stare comodamente nell'inquadratura
+          List<String> warnings = [];
+          if (rect.left <= margin) warnings.add("sinistro");
+          if (rect.right >= imgW - margin) warnings.add("destro");
+          if (rect.top <= margin) warnings.add("superiore");
+          if (rect.bottom >= imgH - margin) warnings.add("inferiore");
+
+          final area = rect.width * rect.height;
+          final totalArea = imgW * imgH;
+          if (warnings.isNotEmpty) {
+            if (_lastEdgeWarningTime == null ||
+                now.difference(_lastEdgeWarningTime!).inMilliseconds > 2500) {
+              _lastEdgeWarningTime = now;
+              String edgeText = warnings.join(" e ");
+              _speak("Bordo $edgeText non visibile");
+            }
+            if (elapsed.inSeconds >= 6 &&
+                area > totalArea * 0.02 &&
+                _canStartBestEffortCapture(now)) {
+              _scanCompleted = true;
+              _lastBestEffortCaptureTime = now;
+              _speak("Provo a leggere comunque. Tieni fermo.");
+              HapticFeedback.heavyImpact();
+              await _captureAndAnalyze();
+              return;
+            }
+          } else {
+            // Oggetto centrato
+            if (area > totalArea * 0.05) {
+              // Ridotto al 5% per facilitare lo scatto anche se si allontana il telefono
+              _scanCompleted = true;
+              _speak("Ferma!");
+              HapticFeedback.heavyImpact();
+              await _captureAndAnalyze();
+              return;
+            }
+          }
+        } else if (elapsed.inSeconds >= 8 && _canStartBestEffortCapture(now)) {
+          _scanCompleted = true;
+          _lastBestEffortCaptureTime = now;
+          _speak("Provo a leggere comunque. Tieni fermo.");
+          HapticFeedback.heavyImpact();
+          await _captureAndAnalyze();
+          return;
         }
-        
       } catch (e) {
         // Ignora piccoli errori di frame
       } finally {
@@ -253,89 +339,164 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     });
   }
 
+  bool _canStartBestEffortCapture(DateTime now) {
+    return _lastBestEffortCaptureTime == null ||
+        now.difference(_lastBestEffortCaptureTime!).inSeconds >= 8;
+  }
+
   Future<void> _captureAndAnalyze() async {
-      try {
-          if (_cameraController!.value.isStreamingImages) {
-              await _cameraController!.stopImageStream();
-          }
-          if (!mounted) return;
-          setState(() => _statusText = 'Analisi in corso...');
-          
-          final XFile file = await _cameraController!.takePicture();
-          final inputImage = InputImage.fromFilePath(file.path);
-          
-          // 1. Priorità Barcode/DataMatrix
-          final barcodes = await _barcodeScanner.processImage(inputImage);
-          if (barcodes.isNotEmpty) {
-              final bestBarcode = barcodes.first;
-              final rawValue = bestBarcode.rawValue ?? bestBarcode.displayValue ?? '';
-              if (rawValue.isNotEmpty) {
-                  final parsed = Gs1Parser.parse(rawValue);
-                  if (parsed.hasValidAic) {
-                      _speak('Codice letto. Cerco il farmaco.');
-                      await _searchDrugsByQuery(parsed.aic!, isGtin: false);
-                      return;
-                  } else if (parsed.gtin != null) {
-                      _speak('GTIN letto. Verifico.');
-                      await _searchDrugsByQuery(parsed.gtin!, isGtin: true);
-                      return;
-                  }
-              }
-          }
-          
-          // 2. Fallback OCR
-          final recognizedText = await _textRecognizer.processImage(inputImage);
-          if (recognizedText.text.isNotEmpty) {
-              String? possibleDrug;
-              for (TextBlock block in recognizedText.blocks) {
-                  final text = block.text.trim();
-                  final lines = text.split('\n');
-                  
-                  for (var line in lines) {
-                      final upperLine = line.toUpperCase();
-                      if (upperLine.contains('SCAD') || upperLine.contains('EXP')) continue;
-                      if (upperLine.contains('LOTTO') || upperLine.contains('L.')) continue;
-                      
-                      if (line.length > 4 && RegExp(r'[A-Za-z]{4,}').hasMatch(line)) {
-                          if (possibleDrug == null || line.length > possibleDrug.length) {
-                              possibleDrug = line;
-                          }
-                      }
-                  }
-              }
-              
-              if (possibleDrug != null) {
-                  final normalizedCandidate = _normalizeOcrString(possibleDrug);
-                  if (mounted) setState(() => _statusText = 'Ricerca per "$normalizedCandidate"...');
-                  await _searchDrugsByQuery(normalizedCandidate, isFuzzy: true);
-                  return;
-              }
-          }
-          
-          // Fallback if nothing found
-          _speak("Non ho riconosciuto nulla, riproviamo.");
-          _resetScanState();
-          await _initCamera(_cameraController!.description); // riavvia stream
-          
-      } catch (e) {
-          AppLogger.log('DrugRecognition: Errore captureAndAnalyze: $e');
-          _resetScanState();
-          if (_cameraController != null && !_cameraController!.value.isStreamingImages) {
-             await _initCamera(_cameraController!.description);
-          }
+    try {
+      if (_cameraController!.value.isStreamingImages) {
+        await _cameraController!.stopImageStream();
       }
+      if (!mounted) return;
+      setState(() => _statusText = 'Analisi in corso...');
+
+      final XFile file = await _cameraController!.takePicture();
+      final inputImage = InputImage.fromFilePath(file.path);
+
+      // 1. Priorità Barcode/DataMatrix
+      final barcodes = await _barcodeScanner.processImage(inputImage);
+      if (barcodes.isNotEmpty) {
+        final bestBarcode = barcodes.first;
+        final rawValue = bestBarcode.rawValue ?? bestBarcode.displayValue ?? '';
+        if (rawValue.isNotEmpty) {
+          final parsed = Gs1Parser.parse(rawValue);
+          if (parsed.hasValidAic) {
+            _speak('Codice letto. Cerco il farmaco.');
+            await _searchDrugsByQuery(parsed.aic!, isGtin: false);
+            return;
+          } else if (parsed.gtin != null) {
+            _speak('GTIN letto. Verifico.');
+            await _searchDrugsByQuery(parsed.gtin!, isGtin: true);
+            return;
+          }
+        }
+      }
+
+      // 2. Fallback OCR
+      final recognizedText = await _textRecognizer.processImage(inputImage);
+      if (recognizedText.text.isNotEmpty) {
+        final candidates = _extractOcrCandidates(recognizedText);
+        for (final candidate in candidates) {
+          final normalizedCandidate = _normalizeOcrString(candidate);
+          if (mounted) {
+            setState(
+                () => _statusText = 'Ricerca per "$normalizedCandidate"...');
+          }
+          final found = await _searchDrugsByQuery(
+            normalizedCandidate,
+            isFuzzy: true,
+            restartOnFailure: false,
+          );
+          if (found) return;
+        }
+      }
+
+      // Fallback if nothing found
+      _speak("Non ho riconosciuto nulla, riproviamo.");
+      _resetScanState();
+      await _initCamera(_cameraController!.description); // riavvia stream
+    } catch (e) {
+      AppLogger.log('DrugRecognition: Errore captureAndAnalyze: $e');
+      _resetScanState();
+      if (_cameraController != null &&
+          !_cameraController!.value.isStreamingImages) {
+        await _initCamera(_cameraController!.description);
+      }
+    }
+  }
+
+  List<String> _extractOcrCandidates(RecognizedText recognizedText) {
+    final weightedCandidates = <_OcrCandidate>[];
+    var sequence = 0;
+
+    for (final block in recognizedText.blocks) {
+      for (final line in block.lines) {
+        final text = line.text.trim();
+        final normalized = _normalizeOcrString(text);
+        if (normalized.length < 3 || _isIgnoredOcrLine(normalized)) continue;
+
+        var score = 0;
+        if (_looksLikeBrandLine(text)) score += 80;
+        if (normalized.length >= 5 && normalized.length <= 14) score += 30;
+        if (normalized.length > 24) score -= 35;
+        score += line.boundingBox.height.round();
+
+        weightedCandidates.add(_OcrCandidate(normalized, score, sequence));
+        sequence++;
+      }
+    }
+
+    weightedCandidates.sort((a, b) {
+      final scoreOrder = b.score.compareTo(a.score);
+      if (scoreOrder != 0) return scoreOrder;
+      return a.sequence.compareTo(b.sequence);
+    });
+
+    final deduped = <String>[];
+    for (final candidate in weightedCandidates) {
+      if (!deduped.contains(candidate.text)) {
+        deduped.add(candidate.text);
+      }
+      if (deduped.length >= 6) break;
+    }
+    return deduped;
   }
 
   String _normalizeOcrString(String raw) {
-    String norm = raw.toUpperCase();
-    norm = norm.replaceAll('1', 'I');
-    norm = norm.replaceAll('L', 'I');
-    norm = norm.replaceAll('0', 'O');
-    norm = norm.replaceAll(RegExp(r'[^A-Z]'), '');
-    return norm;
+    final buffer = StringBuffer();
+    for (final codeUnit in raw.toUpperCase().codeUnits) {
+      if (codeUnit >= 65 && codeUnit <= 90) {
+        buffer.writeCharCode(codeUnit);
+      } else if (codeUnit == 48) {
+        buffer.write('O');
+      } else if (codeUnit == 49) {
+        buffer.write('I');
+      }
+    }
+    return buffer.toString();
   }
 
-  Future<void> _searchDrugsByQuery(String query, {bool isFuzzy = false, bool isGtin = false}) async {
+  bool _isIgnoredOcrLine(String normalized) {
+    const ignoredTokens = [
+      'SCAD',
+      'EXP',
+      'LOTTO',
+      'COMPRESSE',
+      'RIVESTITE',
+      'FILM',
+      'CONTENENTE',
+      'CONTIENE',
+      'CONSERVARE',
+      'LEGGERE',
+      'MEDICINALE',
+      'BAMBINI',
+      'AIC',
+    ];
+    return ignoredTokens.any(normalized.contains);
+  }
+
+  bool _looksLikeBrandLine(String text) {
+    var letters = 0;
+    var uppercaseLetters = 0;
+    for (final codeUnit in text.codeUnits) {
+      final isUppercase = codeUnit >= 65 && codeUnit <= 90;
+      final isLowercase = codeUnit >= 97 && codeUnit <= 122;
+      if (isUppercase || isLowercase) {
+        letters++;
+        if (isUppercase) uppercaseLetters++;
+      }
+    }
+    return letters >= 3 && uppercaseLetters >= letters * 0.7;
+  }
+
+  Future<bool> _searchDrugsByQuery(
+    String query, {
+    bool isFuzzy = false,
+    bool isGtin = false,
+    bool restartOnFailure = true,
+  }) async {
     try {
       late DrugMatch resultMatch;
       if (isFuzzy) {
@@ -343,53 +504,69 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       } else if (isGtin) {
         resultMatch = await _aifaService.searchByGtin(query);
       } else {
-        resultMatch = await _aifaService.searchByAic(query, onNetworkFallback: () {
+        resultMatch =
+            await _aifaService.searchByAic(query, onNetworkFallback: () {
           _speak('Codice AIC letto, provo aggiornamento online.');
         });
       }
 
-      if (resultMatch.level != DrugMatchLevel.unknown && resultMatch.drug != null) {
+      if (resultMatch.level != DrugMatchLevel.unknown &&
+          resultMatch.drug != null) {
         final drugName = resultMatch.drug!.denominazione;
         setState(() {
           _recognizedDrug = drugName;
           _statusText = 'Trovato: $drugName';
           _matchLevel = resultMatch.level;
         });
-        
+
         switch (resultMatch.level) {
           case DrugMatchLevel.confirmed:
-            _speak('Identificazione confermata dal database locale: $drugName.');
+            _speak(
+                'Identificazione confermata dal database locale: $drugName.');
             break;
           case DrugMatchLevel.strong:
-            _speak('Ho trovato un codice prodotto associato a $drugName. Verifica prima di procedere.');
+            _speak(
+                'Ho trovato un codice prodotto associato a $drugName. Verifica prima di procedere.');
             break;
           case DrugMatchLevel.possible:
-            _speak('Possibile farmaco: $drugName. Conferma solo se il nome corrisponde alla confezione. Puoi ripetere la scansione o cercare manualmente.');
+            _speak(
+                'Possibile farmaco: $drugName. Conferma solo se il nome corrisponde alla confezione. Puoi ripetere la scansione o cercare manualmente.');
             break;
           case DrugMatchLevel.unknown:
             break;
         }
-        
+
         // Se l'utente non conferma in 8 sec, sblocchiamo per continuare a cercare
         Future.delayed(const Duration(seconds: 8), () {
-          if (mounted && _recognizedDrug == drugName && _matchLevel != DrugMatchLevel.possible) {
+          if (mounted &&
+              _recognizedDrug == drugName &&
+              _matchLevel != DrugMatchLevel.possible) {
             _resetScanState();
           }
         });
+        return true;
       } else {
         // Nessun risultato
         AppLogger.log('DrugRecognition: Nessun risultato AIFA trovato.');
         if (!isFuzzy && !isGtin) {
-          _speak('Codice AIC letto, ma non lo trovo. Controlla la scatola o chiedi al medico.');
+          _speak(
+              'Codice AIC letto, ma non lo trovo. Controlla la scatola o chiedi al medico.');
         }
-        _resetScanState();
-        if (_cameraController != null && !_cameraController!.value.isStreamingImages) {
-           await _initCamera(_cameraController!.description);
+        if (restartOnFailure) {
+          _resetScanState();
+          if (_cameraController != null &&
+              !_cameraController!.value.isStreamingImages) {
+            await _initCamera(_cameraController!.description);
+          }
         }
+        return false;
       }
     } catch (e) {
       AppLogger.log('DrugRecognition: Errore API AIFA -> $e');
-      _resetScanState();
+      if (restartOnFailure) {
+        _resetScanState();
+      }
+      return false;
     }
   }
 
@@ -398,7 +575,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       final meta = await AifaCacheManager().getDatabaseMetadata();
       final version = meta['aifa_dataset_version'] ?? 'Sconosciuta';
       final syncStr = meta['last_successful_sync_at'];
-      
+
       String syncMsg = 'Oggi (Seed Base)';
       bool isOld = false;
       if (syncStr != null) {
@@ -429,7 +606,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                   const SizedBox(height: 16),
                   const Text(
                     'Avviso: Database non aggiornato da più di 30 giorni. Alcuni farmaci recenti potrebbero non essere riconosciuti.',
-                    style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.orange, fontWeight: FontWeight.bold),
                   ),
                 ],
                 const SizedBox(height: 16),
@@ -450,7 +628,9 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Impossibile leggere le informazioni del database.')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content:
+                Text('Impossibile leggere le informazioni del database.')));
       }
     }
   }
@@ -488,44 +668,68 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   }
 
   Future<void> _speak(String text) async {
-    await _flutterTts.speak(text);
+    try {
+      if (!_speechSettingsLoaded) {
+        await _loadSpeechSettings();
+      }
+      if (_ttsEngine == 'system') {
+        await _configureSystemTts();
+        await _flutterTts.speak(text);
+        return;
+      }
+
+      final file = await _edgeTts.speakToFile(text: text, voice: _edgeVoice);
+      await _audio.playFile(file);
+    } catch (e) {
+      AppLogger.log('DrugRecognition: Errore sintesi vocale -> $e');
+      await _flutterTts.setLanguage("it-IT");
+      await _flutterTts.speak(text);
+    }
   }
 
   void _switchCamera() async {
     if (_cameras.length < 2) return;
-    
+
     final currentDirection = _cameraController?.description.lensDirection;
     final newCamera = _cameras.firstWhere(
       (c) => c.lensDirection != currentDirection,
       orElse: () => _cameras.first,
     );
-    
+
     setState(() {
       _isCameraInitialized = false;
       _isRearCamera = newCamera.lensDirection == CameraLensDirection.back;
     });
-    
+
     await _speak('Cambio fotocamera');
     await _initCamera(newCamera);
   }
 
   Future<void> _saveDebugPhoto() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
     try {
       if (_cameraController!.value.isStreamingImages) {
         await _cameraController!.stopImageStream();
       }
       final file = await _cameraController!.takePicture();
       final dir = await getApplicationDocumentsDirectory();
-      final targetPath = p.join(dir.path, 'Debug_Farmaco_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final targetPath = p.join(dir.path,
+          'Debug_Farmaco_${DateTime.now().millisecondsSinceEpoch}.jpg');
       await file.saveTo(targetPath);
       AppLogger.log('DrugRecognition: Salvata foto debug in $targetPath');
       _speak('Condivisione foto di debug in corso');
-      await Share.shareXFiles([XFile(targetPath)], text: 'Foto debug per riconoscimento farmaci');
-      
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(targetPath)],
+          text: 'Foto debug per riconoscimento farmaci',
+        ),
+      );
+
       _isProcessing = false;
       _startAnalysis();
-    } catch(e) {
+    } catch (e) {
       AppLogger.log('DrugRecognition: Errore foto debug: $e');
     }
   }
@@ -539,6 +743,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     _barcodeScanner.close();
     _objectDetector.close();
     _flutterTts.stop();
+    unawaited(_audio.stop().whenComplete(_audio.dispose));
+    unawaited(_disableScanWakelock());
     super.dispose();
   }
 
@@ -577,7 +783,6 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                         ),
                       ),
                     ),
-                  
                   Positioned(
                     top: 16,
                     left: 60,
@@ -590,17 +795,20 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                       ),
                       child: Text(
                         _statusText,
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
-
                   Positioned(
                     top: 16,
                     right: 16,
                     child: Semantics(
-                      label: 'Fotocamera attiva: ${_isRearCamera ? "posteriore" : "anteriore"}. Doppio tap per invertire.',
+                      label:
+                          'Fotocamera attiva: ${_isRearCamera ? "posteriore" : "anteriore"}. Doppio tap per invertire.',
                       button: true,
                       excludeSemantics: true,
                       child: FloatingActionButton(
@@ -610,7 +818,6 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                       ),
                     ),
                   ),
-                  
                   Positioned(
                     top: 16,
                     left: 16,
@@ -629,7 +836,6 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                 ],
               ),
             ),
-            
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: const Text(
@@ -638,7 +844,6 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                 style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ),
-            
             Container(
               padding: const EdgeInsets.all(16),
               color: Theme.of(context).colorScheme.surface,
@@ -649,7 +854,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton.icon(
-                            onPressed: () => Navigator.pop(context, _recognizedDrug),
+                            onPressed: () =>
+                                Navigator.pop(context, _recognizedDrug),
                             icon: const Icon(Icons.check_circle),
                             label: Text('Conferma: $_recognizedDrug'),
                           ),

@@ -1,11 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
 import '../services/wikipedia_service.dart';
-import '../models/document_item.dart';
+import '../services/document_library_service.dart';
 import '../services/recent_searches_service.dart';
 import 'document_reader_screen.dart';
 import 'recent_searches_screen.dart';
@@ -384,19 +381,9 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
     }
 
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final safeName = docName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
-      final fileName =
-          'wiki_${DateTime.now().microsecondsSinceEpoch}_$safeName.txt';
-      final file = File(p.join(dir.path, fileName));
-      await file.writeAsString(text);
-
-      final doc = DocumentItem(
-        id: '${DateTime.now().microsecondsSinceEpoch}',
-        name: docName,
-        path: file.path,
-        extension: 'txt',
-        addedAt: DateTime.now(),
+      final doc = await DocumentLibraryService().createTextDocument(
+        name: '$docName.txt',
+        content: text,
         isTemporary: true,
       );
 

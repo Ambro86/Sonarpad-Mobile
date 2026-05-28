@@ -149,6 +149,7 @@ class RouteService {
   static const _baseUrl = 'https://sonarpad.com/api';
   static const _clientToken =
       String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN');
+  static const _unauthorizedClientError = 'Client non autorizzato.';
 
   final http.Client _client;
 
@@ -332,6 +333,28 @@ class RouteService {
   List<String> _splitWords(String query) =>
       query.split(' ').where((word) => word.trim().isNotEmpty).toList();
 
+  Uri _routeEndpointUri(Map<String, String> params) {
+    final base = Uri.parse(_baseUrl);
+    return base.replace(
+      pathSegments: [
+        ...base.pathSegments.where((segment) => segment.isNotEmpty),
+        'ors_route.php',
+      ],
+      queryParameters: params,
+    );
+  }
+
+  String _serverError(dynamic error, String fallback) {
+    final message = error?.toString();
+    if (message == null || message.trim().isEmpty) {
+      return fallback;
+    }
+    if (message.trim() == _unauthorizedClientError) {
+      return 'Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell\'app.';
+    }
+    return message;
+  }
+
   Future<RouteResult> calculateRoute({
     required GeocodeCandidate from,
     required GeocodeCandidate to,
@@ -341,7 +364,7 @@ class RouteService {
     required String language,
     required String countryCode,
   }) async {
-    final uri = Uri.parse('$_baseUrl/ors_route.php').replace(queryParameters: {
+    final uri = _routeEndpointUri({
       'from_lat': from.latitude.toString(),
       'from_lon': from.longitude.toString(),
       'to_lat': to.latitude.toString(),
@@ -363,7 +386,9 @@ class RouteService {
 
     final data = jsonDecode(response.body);
     if (data['ok'] != true) {
-      throw Exception(data['error'] ?? 'Errore di calcolo percorso dal server');
+      throw Exception(
+        _serverError(data['error'], 'Errore di calcolo percorso dal server'),
+      );
     }
 
     List<RoutePath> paths = [];

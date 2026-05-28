@@ -33,6 +33,10 @@ extension NewsLanguageInfo on NewsLanguage {
 }
 
 class NewsService {
+  static final _corriereHomeFeedUri = Uri.parse(
+    'https://xml2.corriereobjects.it/feed-hp/homepage-restyle-2025.xml',
+  );
+
   final http.Client _client;
   NewsService({http.Client? client}) : _client = client ?? http.Client();
 
@@ -58,7 +62,7 @@ class NewsService {
   Future<void> addCustomSource(NewsLanguage language, String name, String url) async {
     final prefs = await SharedPreferences.getInstance();
     final customSources = await getCustomSources(language);
-    
+
     // Controlla se esiste già
     if (customSources.any((s) => s.uri.toString() == url)) {
       throw Exception('Sorgente già presente');
@@ -69,7 +73,7 @@ class NewsService {
       uri: Uri.parse(url),
       isCustom: true,
     );
-    
+
     customSources.add(newSource);
     final stringList = customSources.map((s) => jsonEncode(s.toJson())).toList();
     await prefs.setStringList(_getCustomPrefsKey(language), stringList);
@@ -78,11 +82,11 @@ class NewsService {
   Future<void> removeCustomSource(NewsLanguage language, String name) async {
     final prefs = await SharedPreferences.getInstance();
     final customSources = await getCustomSources(language);
-    
+
     customSources.removeWhere((s) => s.name == name);
     final stringList = customSources.map((s) => jsonEncode(s.toJson())).toList();
     await prefs.setStringList(_getCustomPrefsKey(language), stringList);
-    
+
     // Rimuovilo anche dai nascosti/ordinati
     final hiddenNames = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
     if (hiddenNames.remove(name)) {
@@ -98,22 +102,22 @@ class NewsService {
     final prefs = await SharedPreferences.getInstance();
     final defaultSources = language.rssSources;
     final customSources = await getCustomSources(language);
-    
+
     final allSources = [...defaultSources, ...customSources];
     final hiddenNames = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
-    
+
     final savedOrder = prefs.getStringList(_getPrefsKey(language));
     if (savedOrder == null || savedOrder.isEmpty) {
       return allSources.where((s) => !hiddenNames.contains(s.name)).toList();
     }
-    
+
     final ordered = <NewsRssSource>[];
     for (final name in savedOrder) {
       if (hiddenNames.contains(name)) continue;
       final source = allSources.where((s) => s.name == name).firstOrNull;
       if (source != null) ordered.add(source);
     }
-    
+
     for (final source in allSources) {
       if (!hiddenNames.contains(source.name) && !ordered.any((s) => s.name == source.name)) {
         ordered.add(source);
@@ -218,7 +222,7 @@ class NewsService {
   }
 
   Future<List<NewsArticle>> _fetchRssSource(NewsRssSource rssSource) async {
-    final response = await _client.get(rssSource.uri);
+    final response = await _client.get(_normalizedRssUri(rssSource.uri));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore RSS ${rssSource.name}: ${response.statusCode}');
     }
@@ -249,6 +253,31 @@ class NewsService {
     final elements = parent.findElements(name);
     if (elements.isEmpty) return '';
     return elements.first.innerText.trim();
+  }
+
+  Uri _normalizedRssUri(Uri uri) {
+    if (_isCorriereHomeFeedUri(uri)) {
+      return _corriereHomeFeedUri;
+    }
+    return uri;
+  }
+
+  bool _isCorriereHomeFeedUri(Uri uri) {
+    final host = uri.host.toLowerCase();
+    var path = uri.path.toLowerCase();
+    while (path.endsWith('/') && path.isNotEmpty) {
+      path = path.substring(0, path.length - 1);
+    }
+    switch (host) {
+      case 'corriere.it':
+      case 'www.corriere.it':
+        return path.isEmpty || path == '/rss' || path == '/rss/homepage.xml';
+      case 'xml2.corriereobjects.it':
+        return path == '/feed-hp/homepage.xml' ||
+            path == '/feed-hp/homepage-restyle-2025.xml';
+      default:
+        return false;
+    }
   }
 
   String _cleanGoogleTitle(String title) {

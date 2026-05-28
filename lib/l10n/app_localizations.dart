@@ -374,10 +374,10 @@ class AppLocalizations {
           ? 'Lecture en cours...'
           : (_isEs ? 'Lectura en curso...' : 'Lettura in corso...'));
   String get readWithEdgeTts => _isEn
-      ? 'Read with Edge TTS'
+      ? 'Start reading'
       : (_isFr
-          ? 'Lire avec Edge TTS'
-          : (_isEs ? 'Leer con Edge TTS' : 'Leggi con Edge TTS'));
+          ? 'Démarrer la lecture'
+          : (_isEs ? 'Iniciar lectura' : 'Avvia lettura'));
   String get stopReading => _isEn
       ? 'Stop reading'
       : (_isFr
@@ -416,6 +416,21 @@ class AppLocalizations {
       : (_isFr
           ? 'Catégorie de podcast'
           : (_isEs ? 'Categoría de podcast' : 'Categoria podcast'));
+  String get browsePodcastCategories => _isEn
+      ? 'Browse categories'
+      : (_isFr
+          ? 'Parcourir les catégories'
+          : (_isEs ? 'Explorar categorías' : 'Sfoglia categorie'));
+  String get selectedPodcastCategory => _isEn
+      ? 'Selected category'
+      : (_isFr
+          ? 'Catégorie sélectionnée'
+          : (_isEs ? 'Categoría seleccionada' : 'Categoria selezionata'));
+  String get podcastCategories => _isEn
+      ? 'Podcast categories'
+      : (_isFr
+          ? 'Catégories de podcasts'
+          : (_isEs ? 'Categorías de podcasts' : 'Categorie podcast'));
   String get countryItaly =>
       _isEn ? 'Italy' : (_isFr ? 'Italie' : (_isEs ? 'Italia' : 'Italia'));
   String get countryUnitedStatesEnglish => _isEn
