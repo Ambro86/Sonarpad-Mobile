@@ -92,14 +92,24 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         continue;
       }
 
+      await AppLogger.log('Importazione singolo file: $path');
+      final f = File(path);
+      if (!await f.exists()) {
+        await AppLogger.log('Il file non esiste o inaccessibile: $path');
+        if (mounted) _showSnack('File inaccessibile: ${p.basename(path)}');
+        continue;
+      }
+
       try {
         final doc = await _service.importFile(
-          File(path),
+          f,
           originalName: file.name.isNotEmpty ? file.name : p.basename(path),
         );
         await _service.add(doc);
+        await AppLogger.log('File importato: ${doc.displayName}');
       } catch (e) {
         dev.log('DocumentsScreen: errore aggiunta documento: $e');
+        await AppLogger.log('DocumentsScreen: errore aggiunta documento: $e');
         if (mounted) _showSnack('Errore aggiunta documento: $e');
         continue;
       }
@@ -121,13 +131,18 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           dialogTitle: 'Scegli la vecchia cartella Sonarpad',
         );
         if (folderPath != null && folderPath.trim().isNotEmpty) {
+          await AppLogger.log('Selezionata cartella: $folderPath');
           folderCount = await _service.recoverFromDirectory(
             Directory(folderPath),
             _allowedExtensions,
           );
+        } else {
+          await AppLogger.log('Nessuna cartella selezionata.');
         }
       } catch (e) {
         dev.log('DocumentsScreen: selezione cartella non disponibile: $e');
+        await AppLogger.log('DocumentsScreen: selezione cartella non disponibile: $e');
+        if (mounted) _showSnack('Errore selezione cartella: $e');
       }
       final count = visibleCount + folderCount;
       if (!mounted) return;

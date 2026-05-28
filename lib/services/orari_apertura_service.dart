@@ -162,7 +162,7 @@ class OrariAperturaService {
         timeStr = 'meno di un minuto';
       }
 
-      String res = input.replaceAll(match.group(0)! + ' ore', timeStr);
+      String res = input.replaceAll('${match.group(0)} ore', timeStr);
       res = res.replaceAll(match.group(0)!, timeStr);
       res = res.replaceAll('Apre in', 'Apre tra');
       res = res.replaceAll('Chiude in', 'Chiude tra');

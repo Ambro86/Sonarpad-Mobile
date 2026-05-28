@@ -11,6 +11,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
   const NewsWebViewScreen({super.key, required this.article});
@@ -27,6 +28,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   final _newsService = NewsService();
   final _settings = AppSettingsService();
   final _tts = EdgeTtsBridge();
+  final _flutterTts = FlutterTts();
   bool _loading = true;
   bool _readerPreparing = true;
   bool _speaking = false;
@@ -304,6 +306,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     try {
       final text = await _textForReading(l10n);
       final voice = await _voice();
+      final engine = await _settings.loadTtsEngine();
       final chunks = _tts.splitTextForStreaming(text, maxChunkChars: 650);
       _totalChunks = chunks.length;
       debugPrint(
@@ -313,56 +316,93 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       );
       if (chunks.isEmpty) throw Exception(l10n.noTextToRead);
 
-      final controller = StreamController<File>();
-      var generationDone = false;
-      Object? generationError;
+      if (engine == 'system') {
+        await _flutterTts.awaitSpeakCompletion(true);
+        if (Platform.isIOS) {
+          await _flutterTts.setSharedInstance(true);
+          await _flutterTts.autoStopSharedSession(false);
+        }
+        final speed = await _settings.loadTtsSpeed();
+        final pitch = await _settings.loadTtsPitch();
+        await _flutterTts.setSpeechRate(speed * 0.5);
+        await _flutterTts.setPitch(pitch);
 
-      final generation = Future<void>(() async {
+        final sysLang = await _settings.loadSystemTtsLanguage();
+        final sysVoice = await _settings.loadSystemTtsVoice();
+
+        if (sysVoice != null) {
+          await _flutterTts.setVoice({"name": sysVoice, "locale": sysLang});
+        } else {
+          await _flutterTts.setLanguage(sysLang);
+        }
+
         for (var i = 0; i < chunks.length; i++) {
-          final file = await _tts.speakToFile(text: chunks[i], voice: voice);
-          final size = await file.length();
-          debugPrint(
-            'Sonarpad TTS: web chunk ${i + 1}/${chunks.length} ready '
-            'path=${file.path} size=$size',
-          );
-          controller.add(file);
-          if (!mounted) return;
+          if (!mounted || !_speaking) break;
           setState(() {
             _readyChunks = i + 1;
+            _status = l10n.playingChunk(i + 1, _totalChunks, 0);
+          });
+          await _flutterTts.speak(chunks[i]);
+        }
+
+        if (mounted) {
+          setState(() {
+            _status = l10n.readingFinished(
+                _totalChunks, _totalChunks, l10n.libraryNotSpecified);
           });
         }
-        generationDone = true;
-        await controller.close();
-      }).catchError((e) async {
-        generationError = e;
-        generationDone = true;
-        await controller.close();
-      });
+      } else {
+        final controller = StreamController<File>();
+        var generationDone = false;
+        Object? generationError;
 
-      var index = 0;
-      await for (final file in controller.stream) {
-        if (!mounted || !_speaking) break;
-        final size = await file.length();
-        setState(
-          () => _status = l10n.playingChunk(index + 1, _totalChunks, size),
-        );
-        await _audio.playFilesSequentially([file]);
-        index++;
+        final generation = Future<void>(() async {
+          for (var i = 0; i < chunks.length; i++) {
+            final file = await _tts.speakToFile(text: chunks[i], voice: voice);
+            final size = await file.length();
+            debugPrint(
+              'Sonarpad TTS: web chunk ${i + 1}/${chunks.length} ready '
+              'path=${file.path} size=$size',
+            );
+            controller.add(file);
+            if (!mounted) return;
+            setState(() {
+              _readyChunks = i + 1;
+            });
+          }
+          generationDone = true;
+          await controller.close();
+        }).catchError((e) async {
+          generationError = e;
+          generationDone = true;
+          await controller.close();
+        });
+
+        var index = 0;
+        await for (final file in controller.stream) {
+          if (!mounted || !_speaking) break;
+          final size = await file.length();
+          setState(
+            () => _status = l10n.playingChunk(index + 1, _totalChunks, size),
+          );
+          await _audio.playFilesSequentially([file]);
+          index++;
+        }
+
+        await generation;
+        if (generationError != null) throw Exception(generationError);
+
+        if (!mounted) return;
+        setState(() {
+          _status = generationDone
+              ? l10n.readingFinished(
+                  _readyChunks,
+                  _totalChunks,
+                  _tts.lastLibraryPath ?? l10n.libraryNotSpecified,
+                )
+              : l10n.readingStopped;
+        });
       }
-
-      await generation;
-      if (generationError != null) throw Exception(generationError);
-
-      if (!mounted) return;
-      setState(() {
-        _status = generationDone
-            ? l10n.readingFinished(
-                _readyChunks,
-                _totalChunks,
-                _tts.lastLibraryPath ?? l10n.libraryNotSpecified,
-              )
-            : l10n.readingStopped;
-      });
     } catch (e) {
       debugPrint('Sonarpad TTS: web article reading error=$e');
       if (!mounted) return;
@@ -377,6 +417,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<void> _stopReading() async {
     await _audio.stop();
+    await _flutterTts.stop();
     if (!mounted) return;
     setState(() {
       _speaking = false;
@@ -478,22 +519,28 @@ class _ReaderArticleView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return SingleChildScrollView(
+    final paragraphs = text
+        .split('\n')
+        .map((p) => p.trim())
+        .where((p) => p.isNotEmpty)
+        .toList();
+
+    return ListView(
       padding: const EdgeInsets.all(16),
-      child: SelectableText.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: '$title\n\n',
-              style: theme.textTheme.headlineSmall,
-            ),
-            TextSpan(
-              text: text,
-              style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
-            ),
-          ],
+      children: [
+        SelectableText(
+          title,
+          style: theme.textTheme.headlineSmall,
         ),
-      ),
+        const SizedBox(height: 16),
+        ...paragraphs.map((p) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: SelectableText(
+                p,
+                style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
+              ),
+            )),
+      ],
     );
   }
 }

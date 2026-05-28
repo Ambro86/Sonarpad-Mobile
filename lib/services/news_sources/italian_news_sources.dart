@@ -43,7 +43,7 @@ final italianNewsSources = [
   ),
   NewsRssSource(
     name: 'Tgcom24',
-    uri: Uri.parse('http://www.tgcom24.mediaset.it/rss/homepage.xml'),
+    uri: Uri.parse('https://www.tgcom24.mediaset.it/rss/homepage.xml'),
   ),
   NewsRssSource(
     name: 'Il Fatto Quotidiano',

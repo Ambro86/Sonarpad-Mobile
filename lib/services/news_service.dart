@@ -179,7 +179,9 @@ class NewsService {
 
     final articles = <NewsArticle>[];
     for (final source in language.rssSources) {
-      articles.addAll(await _fetchRssSource(source));
+      try {
+        articles.addAll(await _fetchRssSource(source));
+      } catch (_) {}
     }
     _sortNewestFirst(articles);
     return articles.take(40).toList();
@@ -268,7 +270,15 @@ class NewsService {
   }
 
   Future<List<NewsArticle>> _fetchRssSource(NewsRssSource rssSource) async {
-    final response = await _client.get(_normalizedRssUri(rssSource.uri));
+    final fetch = await _browserGetWithFallback(
+      _normalizedRssUri(rssSource.uri),
+      headers: const {
+        'User-Agent':
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+        'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+      },
+    );
+    final response = fetch.response;
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore RSS ${rssSource.name}: ${response.statusCode}');
     }

@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/document_item.dart';
+import '../utils/app_logger.dart';
 
 /// Gestisce la persistenza della libreria documenti tramite SharedPreferences.
 class DocumentLibraryService {
@@ -120,7 +121,11 @@ class DocumentLibraryService {
     Directory sourceDir,
     List<String> allowedExtensions,
   ) async {
-    if (!await sourceDir.exists()) return 0;
+    await AppLogger.log('Avviato recupero da directory: ${sourceDir.path}');
+    if (!await sourceDir.exists()) {
+      await AppLogger.log("La directory ${sourceDir.path} non esiste o l'app non ha i permessi (Scoped Storage su Android).");
+      throw FileSystemException('Cartella inaccessibile per via delle protezioni di sistema (Android Scoped Storage). Prova ad importare i file singolarmente.', sourceDir.path);
+    }
 
     final allowed = allowedExtensions.map((e) => e.toLowerCase()).toSet();
     final existingKeys = <String>{};
@@ -131,29 +136,50 @@ class DocumentLibraryService {
     }
 
     final recovered = <DocumentItem>[];
-    await for (final entity in sourceDir.list(
-      recursive: true,
-      followLinks: false,
-    )) {
-      if (entity is! File) continue;
+    try {
+      await for (final entity in sourceDir.list(
+        recursive: true,
+        followLinks: false,
+      )) {
+        if (entity is! File) continue;
+        await AppLogger.log('Trovato elemento: ${entity.path}');
 
-      final basename = p.basename(entity.path);
-      if (_shouldSkipRecoveryFile(basename)) continue;
+        final basename = p.basename(entity.path);
+        if (_shouldSkipRecoveryFile(basename)) {
+          await AppLogger.log('Scartato (skip rule): $basename');
+          continue;
+        }
 
-      final ext = p.extension(basename).replaceFirst('.', '').toLowerCase();
-      if (!allowed.contains(ext)) continue;
+        final ext = p.extension(basename).replaceFirst('.', '').toLowerCase();
+        if (!allowed.contains(ext)) {
+          await AppLogger.log('Scartato (estensione non supportata $ext): $basename');
+          continue;
+        }
 
-      final displayName = _legacyDisplayName(basename);
-      final key = _documentKey(displayName);
-      if (existingKeys.contains(key)) continue;
+        final displayName = _legacyDisplayName(basename);
+        final key = _documentKey(displayName);
+        if (existingKeys.contains(key)) {
+          await AppLogger.log('Scartato (già presente): $displayName');
+          continue;
+        }
 
-      final doc = await importFile(entity, originalName: displayName);
-      recovered.add(doc);
-      existingKeys.add(_documentKey(doc.path));
-      existingKeys.add(_documentKey(doc.name));
-      existingKeys.add(_documentKey(doc.displayName));
+        try {
+          final doc = await importFile(entity, originalName: displayName);
+          recovered.add(doc);
+          existingKeys.add(_documentKey(doc.path));
+          existingKeys.add(_documentKey(doc.name));
+          existingKeys.add(_documentKey(doc.displayName));
+          await AppLogger.log('Importato con successo: $displayName');
+        } catch (e) {
+          await AppLogger.log('Errore importazione $basename: $e');
+        }
+      }
+    } catch (e) {
+      await AppLogger.log('Errore durante la scansione della cartella: $e');
+      throw FileSystemException('Errore di lettura della cartella (potenziali limiti permessi): $e', sourceDir.path);
     }
 
+    await AppLogger.log('Recuperati ${recovered.length} documenti da ${sourceDir.path}.');
     if (recovered.isEmpty) return 0;
     _documents = [...recovered, ..._documents];
     await _save();
