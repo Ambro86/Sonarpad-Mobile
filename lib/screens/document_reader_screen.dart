@@ -526,14 +526,23 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       return;
     }
 
+    final flutterView = View.of(context);
+    final directionality = Directionality.of(context);
+
     unawaited(
       _scrollController
           .animateTo(
         target,
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOut,
-      )
-          .catchError((Object error) {
+      ).then((_) {
+        // Trigger VoiceOver scrolling sound or feedback
+        SemanticsService.sendAnnouncement(
+          flutterView,
+          direction > 0 ? 'Scorso giù' : 'Scorso su',
+          directionality,
+        );
+      }).catchError((Object error) {
         dev.log('DocumentReaderScreen semantic scroll error: $error');
       }),
     );
