@@ -140,26 +140,20 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             alignment: WrapAlignment.center,
             children: [
               if (_videoController != null)
-                Semantics(
-                  focused: true,
-                  child: FilledButton.icon(
-                    onPressed: _loading ? null : (_videoController!.value.isPlaying ? _stop : _play),
-                    icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
-                    label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
-                  ),
+                FilledButton.icon(
+                  onPressed: _loading ? null : (_videoController!.value.isPlaying ? _stop : _play),
+                  icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
+                  label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
                 )
               else
                 StreamBuilder<bool>(
                   stream: _audio.playingStream,
                   builder: (context, snapshot) {
                     final isPlaying = snapshot.data ?? false;
-                    return Semantics(
-                      focused: true,
-                      child: FilledButton.icon(
-                        onPressed: _loading ? null : (isPlaying ? _stop : _play),
-                        icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                        label: Text(isPlaying ? l10n.pause : l10n.play),
-                      ),
+                    return FilledButton.icon(
+                      onPressed: _loading ? null : (isPlaying ? _stop : _play),
+                      icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                      label: Text(isPlaying ? l10n.pause : l10n.play),
                     );
                   },
                 ),
