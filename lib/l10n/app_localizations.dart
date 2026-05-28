@@ -90,6 +90,33 @@ class AppLocalizations {
       : (_isFr
           ? 'Paramètres sauvegardés.'
           : (_isEs ? 'Ajustes guardados.' : 'Impostazioni salvate.'));
+  String get settingsSavedTitle => _isEn
+      ? 'Settings saved'
+      : (_isFr
+          ? 'Paramètres sauvegardés'
+          : (_isEs ? 'Ajustes guardados' : 'Impostazioni salvate'));
+  String get sonarpadCodeValidTitle => _isEn
+      ? 'Valid code'
+      : (_isFr ? 'Code valide' : (_isEs ? 'Código válido' : 'Codice valido'));
+  String get sonarpadCodeValidMessage => _isEn
+      ? 'The Sonarpad code is correct. $settingsSaved'
+      : (_isFr
+          ? 'Le code Sonarpad est correct. $settingsSaved'
+          : (_isEs
+              ? 'El código Sonarpad es correcto. $settingsSaved'
+              : 'Il codice Sonarpad è corretto. $settingsSaved'));
+  String get sonarpadCodeInvalidTitle => _isEn
+      ? 'Invalid code'
+      : (_isFr
+          ? 'Code invalide'
+          : (_isEs ? 'Código no válido' : 'Codice non valido'));
+  String get sonarpadCodeInvalidMessage => _isEn
+      ? 'The Sonarpad code is not valid. Check that you copied it without extra spaces.'
+      : (_isFr
+          ? 'Le code Sonarpad n’est pas valide. Vérifiez que vous l’avez copié sans espaces supplémentaires.'
+          : (_isEs
+              ? 'El código Sonarpad no es válido. Comprueba que lo hayas copiado sin espacios adicionales.'
+              : 'Il codice Sonarpad inserito non è valido. Verifica di averlo copiato senza spazi aggiuntivi.'));
   String get infoDescription => _isEn
       ? 'Sonarpad is a simple app packed with features. Designed to be accessible for the visually impaired using VoiceOver, here you can listen to news, search and subscribe to podcasts, import Wikipedia articles, add documents to your library, save and edit them. Sonarpad\'s features are constantly updated, and they are all designed to make life easier for the visually impaired.'
       : (_isFr
@@ -494,6 +521,11 @@ class AppLocalizations {
   String get subscribe => _isEn
       ? 'Subscribe'
       : (_isFr ? 'S\'abonner' : (_isEs ? 'Suscribirse' : 'Iscriviti'));
+  String get viewEpisodes => _isEn
+      ? 'View episodes'
+      : (_isFr
+          ? 'Voir les épisodes'
+          : (_isEs ? 'Ver episodios' : 'Vedi episodi'));
   String get podcastAuthor =>
       _isEn ? 'Author' : (_isFr ? 'Auteur' : (_isEs ? 'Autor' : 'Autore'));
   String get noPodcastDescription => _isEn

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
+import '../services/podcast_service.dart';
 import '../services/raiplay_sound_service.dart';
 import 'podcast_episode_player_screen.dart';
 
@@ -17,6 +20,7 @@ class RaiPlaySoundScreen extends StatefulWidget {
 class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   final _settings = AppSettingsService();
   final _service = RaiPlaySoundService();
+  final _podcastService = PodcastService();
   final _searchController = TextEditingController();
 
   RaiPlaySoundPage? _page;
@@ -165,6 +169,45 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     }
   }
 
+  Future<void> _subscribeCurrentPageToPodcasts() async {
+    final page = _page;
+    if (page == null || !_canSubscribeCurrentPage) return;
+
+    try {
+      final subscriptions = await _podcastService.loadSubscriptions();
+      if (subscriptions.any((subscription) =>
+          subscription.feedUrl.trim().toLowerCase() ==
+          page.source.trim().toLowerCase())) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Podcast già presente')),
+        );
+        return;
+      }
+      await _podcastService.addSubscription(page.source);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Podcast aggiunto: ${page.title}')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errore iscrizione podcast: $e')),
+      );
+    }
+  }
+
+  bool get _canSubscribeCurrentPage {
+    final page = _page;
+    if (page == null) return false;
+    if (!page.source.trim().toLowerCase().contains('raiplaysound.it')) {
+      return false;
+    }
+    return page.items.any((item) =>
+        item.kind == RaiPlaySoundItemKind.audio &&
+        item.audioUrl.trim().isNotEmpty);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -244,19 +287,29 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                               item.kind == RaiPlaySoundItemKind.audio;
 
                           return Card(
-                            child: ListTile(
-                              leading: Icon(
-                                isAudio ? Icons.audiotrack : Icons.folder,
+                            child: Semantics(
+                              customSemanticsActions: {
+                                if (isAudio && _canSubscribeCurrentPage)
+                                  const CustomSemanticsAction(
+                                    label: 'Aggiungi ai podcast',
+                                  ): () => unawaited(
+                                        _subscribeCurrentPageToPodcasts(),
+                                      ),
+                              },
+                              child: ListTile(
+                                leading: Icon(
+                                  isAudio ? Icons.audiotrack : Icons.folder,
+                                ),
+                                title: Text(item.title),
+                                subtitle: item.description.isNotEmpty
+                                    ? Text(
+                                        item.description,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      )
+                                    : null,
+                                onTap: () => _openItem(item),
                               ),
-                              title: Text(item.title),
-                              subtitle: item.description.isNotEmpty
-                                  ? Text(
-                                      item.description,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    )
-                                  : null,
-                              onTap: () => _openItem(item),
                             ),
                           );
                         },

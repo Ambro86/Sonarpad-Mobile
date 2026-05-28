@@ -26,6 +26,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _appLanguage = 'it';
   String _languageCode = 'it';
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
+  List<TtsVoiceLanguage> _edgeLanguages = AppSettingsService.ttsLanguages;
+  List<TtsVoiceOption> _edgeVoices = AppSettingsService.ttsVoices;
 
   String _ttsEngine = 'edge';
   String _systemTtsLanguage = 'it-IT';
@@ -41,6 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _autoBookmark = true;
   int _seekSliderStep = 60;
   final _audio = AudioPlayerService();
+  String _savedTvSecretCode = '';
 
   String _formatTime(int totalSeconds) {
     if (totalSeconds < 60) return '$totalSeconds secondi';
@@ -79,17 +82,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
     final seekSliderStep = await _settings.loadSeekSliderStep();
+    final edgeVoices = await AppSettingsService.loadEdgeVoices();
+    final edgeLanguages = AppSettingsService.languagesForVoices(edgeVoices);
+    final normalizedLanguage = AppSettingsService.normalizedTtsLanguageCodeFor(
+      edgeLanguages,
+      edgeVoices,
+      language,
+      voice,
+    );
 
     await _loadSystemVoices();
 
     if (!mounted) return;
     setState(() {
       _appLanguage = appLang;
-      _languageCode = language;
-      _voice = _validVoiceForLanguage(language, voice);
+      _edgeLanguages = edgeLanguages;
+      _edgeVoices = edgeVoices;
+      _languageCode = normalizedLanguage;
+      _voice = _validVoiceForLanguage(normalizedLanguage, voice);
       _ttsSpeed = speed;
       _ttsPitch = pitch;
       _tvSecretCodeController.text = tvSecretCode;
+      _savedTvSecretCode = tvSecretCode;
       _ttsEngine = ttsEngine;
       _systemTtsLanguage = sysLang;
       _systemTtsVoice = sysVoice;
@@ -124,17 +138,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isSaving = true);
     final l10n = AppLocalizations.of(context);
     final rawCode = _tvSecretCodeController.text.trim();
+    final codeChanged = rawCode != _savedTvSecretCode;
 
-    if (rawCode.isNotEmpty) {
+    if (codeChanged && rawCode.isNotEmpty) {
       try {
         await AudiodescriptionService().fetchRecentCatalog(rawCode);
       } catch (e) {
         setState(() => _isSaving = false);
         if (!mounted) return;
         await _showSaveResultDialog(
-          title: 'Codice non valido',
-          message:
-              'Il codice Sonarpad inserito non è valido. Verifica di averlo copiato senza spazi aggiuntivi.',
+          title: l10n.sonarpadCodeInvalidTitle,
+          message: l10n.sonarpadCodeInvalidMessage,
         );
         return;
       }
@@ -142,16 +156,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     await _saveTtsSelection();
     await _settings.setTvSecretCode(rawCode);
+    _savedTvSecretCode = rawCode;
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.saveSeekSliderStep(_seekSliderStep);
 
     setState(() => _isSaving = false);
     if (!mounted) return;
     await _showSaveResultDialog(
-      title: rawCode.isEmpty ? 'Impostazioni salvate' : 'Codice valido',
-      message: rawCode.isEmpty
-          ? l10n.settingsSaved
-          : 'Il codice Sonarpad è corretto. ${l10n.settingsSaved}',
+      title: codeChanged && rawCode.isNotEmpty
+          ? l10n.sonarpadCodeValidTitle
+          : l10n.settingsSavedTitle,
+      message: codeChanged && rawCode.isNotEmpty
+          ? l10n.sonarpadCodeValidMessage
+          : l10n.settingsSaved,
     );
   }
 
@@ -238,9 +255,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   String _validVoiceForLanguage(String languageCode, String voice) {
-    final voices = AppSettingsService.voicesForLanguage(languageCode);
+    final voices = AppSettingsService.voicesForLanguageFrom(
+      _edgeVoices,
+      languageCode,
+    );
     if (voices.any((option) => option.voice == voice)) return voice;
-    return AppSettingsService.defaultVoiceForLanguage(languageCode);
+    return AppSettingsService.defaultVoiceForLanguageFrom(
+      _edgeVoices,
+      languageCode,
+    );
   }
 
   double _sliderStep(double value, double delta) {
@@ -367,7 +390,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final voices = AppSettingsService.voicesForLanguage(_languageCode);
+    final voices = AppSettingsService.voicesForLanguageFrom(
+      _edgeVoices,
+      _languageCode,
+    );
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
       body: _loading
@@ -418,7 +444,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     initialValue: _languageCode,
                     decoration:
                         InputDecoration(labelText: l10n.ttsVoiceLanguage),
-                    items: AppSettingsService.ttsLanguages
+                    items: _edgeLanguages
                         .map((language) => DropdownMenuItem(
                               value: language.code,
                               child: Text(language.label),
@@ -428,8 +454,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       final next = value ?? 'it';
                       setState(() {
                         _languageCode = next;
-                        _voice =
-                            AppSettingsService.defaultVoiceForLanguage(next);
+                        _voice = AppSettingsService.defaultVoiceForLanguageFrom(
+                          _edgeVoices,
+                          next,
+                        );
                       });
                       _persistTtsSelection();
                     },
@@ -447,8 +475,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onChanged: (value) {
                       setState(
                         () => _voice = value ??
-                            AppSettingsService.defaultVoiceForLanguage(
-                                _languageCode),
+                            AppSettingsService.defaultVoiceForLanguageFrom(
+                              _edgeVoices,
+                              _languageCode,
+                            ),
                       );
                       _persistTtsSelection();
                     },

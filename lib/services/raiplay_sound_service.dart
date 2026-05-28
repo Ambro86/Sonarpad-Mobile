@@ -23,10 +23,12 @@ class RaiPlaySoundItem {
 
 class RaiPlaySoundPage {
   final String title;
+  final String source;
   final List<RaiPlaySoundItem> items;
 
   RaiPlaySoundPage({
     required this.title,
+    required this.source,
     required this.items,
   });
 }
@@ -124,7 +126,11 @@ class RaiPlaySoundService {
       }
     }
 
-    return RaiPlaySoundPage(title: 'Risultati: $trimmedQuery', items: items);
+    return RaiPlaySoundPage(
+      title: 'Risultati: $trimmedQuery',
+      source: 'raiplaysound-search:$trimmedQuery',
+      items: items,
+    );
   }
 
   Future<String?> _refineSearchQuery(String query, String secretKey) async {
@@ -191,7 +197,10 @@ class RaiPlaySoundService {
     }
 
     return RaiPlaySoundPage(
-        title: title.isEmpty ? 'RaiPlay Sound' : title, items: items);
+      title: title.isEmpty ? 'RaiPlay Sound' : title,
+      source: url,
+      items: items,
+    );
   }
 
   void _collectCards(

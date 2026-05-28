@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TtsVoiceLanguage {
@@ -11,11 +15,13 @@ class TtsVoiceOption {
   final String languageCode;
   final String voice;
   final String label;
+  final String? languageLabel;
 
   const TtsVoiceOption({
     required this.languageCode,
     required this.voice,
     required this.label,
+    this.languageLabel,
   });
 }
 
@@ -218,11 +224,149 @@ class AppSettingsService {
     }
   }
 
+  static Future<List<TtsVoiceOption>> loadEdgeVoices() async {
+    try {
+      final raw = await rootBundle.loadString('assets/data/edge_voices.json');
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) {
+        debugPrint('Catalogo voci Edge non valido: formato inatteso.');
+        return ttsVoices;
+      }
+
+      final voices = <TtsVoiceOption>[];
+      for (final item in decoded) {
+        if (item is! Map) continue;
+        final shortName = item['ShortName']?.toString() ?? '';
+        final locale = item['Locale']?.toString() ?? '';
+        final friendlyName = item['FriendlyName']?.toString() ?? '';
+        if (shortName.isEmpty || locale.isEmpty) continue;
+
+        voices.add(
+          TtsVoiceOption(
+            languageCode: locale,
+            voice: shortName,
+            label: _edgeVoiceLabel(shortName, locale),
+            languageLabel: _edgeLanguageLabel(locale, friendlyName),
+          ),
+        );
+      }
+      if (voices.isEmpty) {
+        debugPrint('Catalogo voci Edge vuoto: uso le voci predefinite.');
+        return ttsVoices;
+      }
+      return voices;
+    } catch (error) {
+      debugPrint('Errore caricamento catalogo voci Edge: $error');
+      return ttsVoices;
+    }
+  }
+
+  static List<TtsVoiceLanguage> languagesForVoices(
+    List<TtsVoiceOption> voices,
+  ) {
+    final languages = <TtsVoiceLanguage>[];
+    final seen = <String>{};
+    for (final voice in voices) {
+      if (!seen.add(voice.languageCode)) continue;
+      languages.add(
+        TtsVoiceLanguage(
+          voice.languageCode,
+          voice.languageLabel ?? voice.languageCode,
+        ),
+      );
+    }
+    return languages;
+  }
+
   static List<TtsVoiceOption> voicesForLanguage(String languageCode) =>
-      ttsVoices.where((voice) => voice.languageCode == languageCode).toList();
+      voicesForLanguageFrom(ttsVoices, languageCode);
+
+  static List<TtsVoiceOption> voicesForLanguageFrom(
+    List<TtsVoiceOption> voices,
+    String languageCode,
+  ) {
+    final exactMatches =
+        voices.where((voice) => voice.languageCode == languageCode).toList();
+    if (exactMatches.isNotEmpty) return exactMatches;
+
+    final baseLanguage = languageCode.split('-').first;
+    return voices
+        .where((voice) => voice.languageCode.split('-').first == baseLanguage)
+        .toList();
+  }
 
   static String defaultVoiceForLanguage(String languageCode) =>
-      voicesForLanguage(languageCode).firstOrNull?.voice ?? 'it-IT-IsabellaNeural';
+      defaultVoiceForLanguageFrom(ttsVoices, languageCode);
+
+  static String defaultVoiceForLanguageFrom(
+    List<TtsVoiceOption> voices,
+    String languageCode,
+  ) {
+    final preferredVoice = _preferredEdgeVoice(languageCode);
+    final availableVoices = voicesForLanguageFrom(voices, languageCode);
+    if (availableVoices.any((voice) => voice.voice == preferredVoice)) {
+      return preferredVoice;
+    }
+    return availableVoices.firstOrNull?.voice ?? 'it-IT-IsabellaNeural';
+  }
+
+  static String normalizedTtsLanguageCodeFor(
+    List<TtsVoiceLanguage> languages,
+    List<TtsVoiceOption> voices,
+    String languageCode,
+    String voice,
+  ) {
+    if (languages.any((language) => language.code == languageCode)) {
+      return languageCode;
+    }
+
+    final voiceLanguage = voices
+        .where((option) => option.voice == voice)
+        .firstOrNull
+        ?.languageCode;
+    if (voiceLanguage != null) return voiceLanguage;
+
+    final baseLanguage = languageCode.split('-').first;
+    return languages
+            .where(
+              (language) => language.code.split('-').first == baseLanguage,
+            )
+            .firstOrNull
+            ?.code ??
+        'it-IT';
+  }
+
+  static String _preferredEdgeVoice(String languageCode) {
+    return switch (languageCode) {
+      'it' || 'it-IT' => 'it-IT-IsabellaNeural',
+      'en' || 'en-US' => 'en-US-JennyNeural',
+      'es' || 'es-ES' => 'es-ES-ElviraNeural',
+      'fr' || 'fr-FR' => 'fr-FR-DeniseNeural',
+      'de' || 'de-DE' => 'de-DE-KatjaNeural',
+      _ => '',
+    };
+  }
+
+  static String _edgeVoiceLabel(String shortName, String locale) {
+    var name = shortName;
+    final localePrefix = '$locale-';
+    if (name.startsWith(localePrefix)) {
+      name = name.substring(localePrefix.length);
+    }
+    if (name.endsWith('Neural')) {
+      name = name.substring(0, name.length - 'Neural'.length);
+    }
+    name = name.replaceAll('Multilingual', ' Multilingual');
+    return '$name ($locale)';
+  }
+
+  static String _edgeLanguageLabel(String locale, String friendlyName) {
+    final separatorIndex = friendlyName.lastIndexOf(' - ');
+    if (separatorIndex == -1) return locale;
+
+    final label = friendlyName.substring(separatorIndex + 3).trim();
+    return label.isEmpty ? locale : '$label ($locale)';
+  }
 
   // --- Segnalibro Automatico Media ---
   

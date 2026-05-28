@@ -530,6 +530,16 @@ class _PodcastSearchDetailScreenState
     }
   }
 
+  void _previewEpisodes(PodcastSubscription subscription) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/podcasts/search-episodes'),
+        builder: (_) => PodcastEpisodesScreen(subscription: subscription),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -539,6 +549,7 @@ class _PodcastSearchDetailScreenState
         result: widget.result,
         details: _details,
         onSubscribe: _subscribe,
+        onPreviewEpisodes: _previewEpisodes,
       ),
     );
   }
@@ -549,11 +560,13 @@ class _PodcastSearchDetail extends StatelessWidget {
     required this.result,
     required this.details,
     required this.onSubscribe,
+    required this.onPreviewEpisodes,
   });
 
   final PodcastSearchResult result;
   final Future<PodcastDetails> details;
   final VoidCallback onSubscribe;
+  final ValueChanged<PodcastSubscription> onPreviewEpisodes;
 
   @override
   Widget build(BuildContext context) {
@@ -567,6 +580,11 @@ class _PodcastSearchDetail extends StatelessWidget {
         final description = data?.description ?? '';
         final artworkUrl = data?.artworkUrl ?? result.artworkUrl;
         final feedUrl = data?.feedUrl ?? result.feedUrl;
+        final previewSubscription = PodcastSubscription(
+          title: title,
+          feedUrl: feedUrl,
+          artworkUrl: artworkUrl,
+        );
 
         return ListView(
           padding: const EdgeInsets.all(16),
@@ -607,6 +625,12 @@ class _PodcastSearchDetail extends StatelessWidget {
               onPressed: onSubscribe,
               icon: const Icon(Icons.add_circle_outline),
               label: Text(l10n.subscribe),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () => onPreviewEpisodes(previewSubscription),
+              icon: const Icon(Icons.list_alt),
+              label: Text(l10n.viewEpisodes),
             ),
           ],
         );

@@ -62,4 +62,5 @@ flutter:
 
   assets:
     - assets/aifa_cache_seed.db
+    - assets/data/edge_voices.json
     - assets/images/

@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart';
 
 import '../models/podcast.dart';
+import 'raiplay_sound_service.dart';
 
 class PodcastService {
   static const _prefsKey = 'sonarpad_podcast_subscriptions';
@@ -720,6 +721,16 @@ class PodcastService {
   }
 
   Future<PodcastSubscription> addSubscription(String feedUrl) async {
+    if (_isRaiPlaySoundUrl(feedUrl)) {
+      final page = await RaiPlaySoundService().loadPage(feedUrl);
+      final sub = PodcastSubscription(title: page.title, feedUrl: feedUrl);
+      final list = await loadSubscriptions();
+      if (!list.any((e) => e.feedUrl == feedUrl)) {
+        await saveSubscriptions([...list, sub]);
+      }
+      return sub;
+    }
+
     final response = await _client.get(Uri.parse(feedUrl));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Feed non raggiungibile: ${response.statusCode}');
@@ -746,6 +757,10 @@ class PodcastService {
 
   Future<List<PodcastEpisode>> fetchEpisodes(
       PodcastSubscription subscription) async {
+    if (_isRaiPlaySoundUrl(subscription.feedUrl)) {
+      return _fetchRaiPlaySoundEpisodes(subscription.feedUrl);
+    }
+
     final response = await _client.get(Uri.parse(subscription.feedUrl));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore feed podcast: ${response.statusCode}');
@@ -771,6 +786,32 @@ class PodcastService {
         })
         .where((e) => e.audioUrl.isNotEmpty)
         .toList();
+  }
+
+  Future<List<PodcastEpisode>> _fetchRaiPlaySoundEpisodes(String url) async {
+    final page = await RaiPlaySoundService().loadPage(url);
+    return page.items
+        .where((item) => item.kind == RaiPlaySoundItemKind.audio)
+        .map((item) {
+          var audioUrl = item.audioUrl;
+          if (!audioUrl.startsWith('http')) {
+            final baseUri = Uri.parse(url);
+            audioUrl = baseUri.resolve(audioUrl).toString();
+          }
+          return PodcastEpisode(
+            title: item.title,
+            description: item.description,
+            audioUrl: audioUrl,
+            id: 'raiplaysound:${item.id}',
+            publishedAt: null,
+          );
+        })
+        .where((episode) => episode.audioUrl.trim().isNotEmpty)
+        .toList();
+  }
+
+  bool _isRaiPlaySoundUrl(String url) {
+    return url.trim().toLowerCase().contains('raiplaysound.it');
   }
 
   Future<File> downloadEpisode(PodcastEpisode episode) async {

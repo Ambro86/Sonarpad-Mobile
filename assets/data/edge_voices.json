@@ -1,0 +1,1934 @@
+[
+  {
+    "ShortName": "af-ZA-AdriNeural",
+    "FriendlyName": "Microsoft Adri Online (Natural) - Afrikaans (South Africa)",
+    "Locale": "af-ZA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "af-ZA-WillemNeural",
+    "FriendlyName": "Microsoft Willem Online (Natural) - Afrikaans (South Africa)",
+    "Locale": "af-ZA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sq-AL-AnilaNeural",
+    "FriendlyName": "Microsoft Anila Online (Natural) - Albanian (Albania)",
+    "Locale": "sq-AL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sq-AL-IlirNeural",
+    "FriendlyName": "Microsoft Ilir Online (Natural) - Albanian (Albania)",
+    "Locale": "sq-AL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "am-ET-AmehaNeural",
+    "FriendlyName": "Microsoft Ameha Online (Natural) - Amharic (Ethiopia)",
+    "Locale": "am-ET",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "am-ET-MekdesNeural",
+    "FriendlyName": "Microsoft Mekdes Online (Natural) - Amharic (Ethiopia)",
+    "Locale": "am-ET",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-DZ-AminaNeural",
+    "FriendlyName": "Microsoft Amina Online (Natural) - Arabic (Algeria)",
+    "Locale": "ar-DZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-DZ-IsmaelNeural",
+    "FriendlyName": "Microsoft Ismael Online (Natural) - Arabic (Algeria)",
+    "Locale": "ar-DZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-BH-AliNeural",
+    "FriendlyName": "Microsoft Ali Online (Natural) - Arabic (Bahrain)",
+    "Locale": "ar-BH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-BH-LailaNeural",
+    "FriendlyName": "Microsoft Laila Online (Natural) - Arabic (Bahrain)",
+    "Locale": "ar-BH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-EG-SalmaNeural",
+    "FriendlyName": "Microsoft Salma Online (Natural) - Arabic (Egypt)",
+    "Locale": "ar-EG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-EG-ShakirNeural",
+    "FriendlyName": "Microsoft Shakir Online (Natural) - Arabic (Egypt)",
+    "Locale": "ar-EG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-IQ-BasselNeural",
+    "FriendlyName": "Microsoft Bassel Online (Natural) - Arabic (Iraq)",
+    "Locale": "ar-IQ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-IQ-RanaNeural",
+    "FriendlyName": "Microsoft Rana Online (Natural) - Arabic (Iraq)",
+    "Locale": "ar-IQ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-JO-SanaNeural",
+    "FriendlyName": "Microsoft Sana Online (Natural) - Arabic (Jordan)",
+    "Locale": "ar-JO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-JO-TaimNeural",
+    "FriendlyName": "Microsoft Taim Online (Natural) - Arabic (Jordan)",
+    "Locale": "ar-JO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-KW-FahedNeural",
+    "FriendlyName": "Microsoft Fahed Online (Natural) - Arabic (Kuwait)",
+    "Locale": "ar-KW",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-KW-NouraNeural",
+    "FriendlyName": "Microsoft Noura Online (Natural) - Arabic (Kuwait)",
+    "Locale": "ar-KW",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-LB-LaylaNeural",
+    "FriendlyName": "Microsoft Layla Online (Natural) - Arabic (Lebanon)",
+    "Locale": "ar-LB",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-LB-RamiNeural",
+    "FriendlyName": "Microsoft Rami Online (Natural) - Arabic (Lebanon)",
+    "Locale": "ar-LB",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-LY-ImanNeural",
+    "FriendlyName": "Microsoft Iman Online (Natural) - Arabic (Libya)",
+    "Locale": "ar-LY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-LY-OmarNeural",
+    "FriendlyName": "Microsoft Omar Online (Natural) - Arabic (Libya)",
+    "Locale": "ar-LY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-MA-JamalNeural",
+    "FriendlyName": "Microsoft Jamal Online (Natural) - Arabic (Morocco)",
+    "Locale": "ar-MA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-MA-MounaNeural",
+    "FriendlyName": "Microsoft Mouna Online (Natural) - Arabic (Morocco)",
+    "Locale": "ar-MA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-OM-AbdullahNeural",
+    "FriendlyName": "Microsoft Abdullah Online (Natural) - Arabic (Oman)",
+    "Locale": "ar-OM",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-OM-AyshaNeural",
+    "FriendlyName": "Microsoft Aysha Online (Natural) - Arabic (Oman)",
+    "Locale": "ar-OM",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-QA-AmalNeural",
+    "FriendlyName": "Microsoft Amal Online (Natural) - Arabic (Qatar)",
+    "Locale": "ar-QA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-QA-MoazNeural",
+    "FriendlyName": "Microsoft Moaz Online (Natural) - Arabic (Qatar)",
+    "Locale": "ar-QA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-SA-HamedNeural",
+    "FriendlyName": "Microsoft Hamed Online (Natural) - Arabic (Saudi Arabia)",
+    "Locale": "ar-SA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-SA-ZariyahNeural",
+    "FriendlyName": "Microsoft Zariyah Online (Natural) - Arabic (Saudi Arabia)",
+    "Locale": "ar-SA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-SY-AmanyNeural",
+    "FriendlyName": "Microsoft Amany Online (Natural) - Arabic (Syria)",
+    "Locale": "ar-SY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-SY-LaithNeural",
+    "FriendlyName": "Microsoft Laith Online (Natural) - Arabic (Syria)",
+    "Locale": "ar-SY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-TN-HediNeural",
+    "FriendlyName": "Microsoft Hedi Online (Natural) - Arabic (Tunisia)",
+    "Locale": "ar-TN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-TN-ReemNeural",
+    "FriendlyName": "Microsoft Reem Online (Natural) - Arabic (Tunisia)",
+    "Locale": "ar-TN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-AE-FatimaNeural",
+    "FriendlyName": "Microsoft Fatima Online (Natural) - Arabic (United Arab Emirates)",
+    "Locale": "ar-AE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-AE-HamdanNeural",
+    "FriendlyName": "Microsoft Hamdan Online (Natural) - Arabic (United Arab Emirates)",
+    "Locale": "ar-AE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-YE-MaryamNeural",
+    "FriendlyName": "Microsoft Maryam Online (Natural) - Arabic (Yemen)",
+    "Locale": "ar-YE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ar-YE-SalehNeural",
+    "FriendlyName": "Microsoft Saleh Online (Natural) - Arabic (Yemen)",
+    "Locale": "ar-YE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "az-AZ-BabekNeural",
+    "FriendlyName": "Microsoft Babek Online (Natural) - Azerbaijani (Azerbaijan)",
+    "Locale": "az-AZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "az-AZ-BanuNeural",
+    "FriendlyName": "Microsoft Banu Online (Natural) - Azerbaijani (Azerbaijan)",
+    "Locale": "az-AZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "bn-BD-NabanitaNeural",
+    "FriendlyName": "Microsoft Nabanita Online (Natural) - Bangla (Bangladesh)",
+    "Locale": "bn-BD",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "bn-BD-PradeepNeural",
+    "FriendlyName": "Microsoft Pradeep Online (Natural) - Bangla (Bangladesh)",
+    "Locale": "bn-BD",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "bn-IN-BashkarNeural",
+    "FriendlyName": "Microsoft Bashkar Online (Natural) - Bangla (India)",
+    "Locale": "bn-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "bn-IN-TanishaaNeural",
+    "FriendlyName": "Microsoft Tanishaa Online (Natural) - Bengali (India)",
+    "Locale": "bn-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "bs-BA-VesnaNeural",
+    "FriendlyName": "Microsoft Vesna Online (Natural) - Bosnian (Bosnia and Herzegovina)",
+    "Locale": "bs-BA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "bs-BA-GoranNeural",
+    "FriendlyName": "Microsoft Goran Online (Natural) - Bosnian (Bosnia)",
+    "Locale": "bs-BA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "bg-BG-BorislavNeural",
+    "FriendlyName": "Microsoft Borislav Online (Natural) - Bulgarian (Bulgaria)",
+    "Locale": "bg-BG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "bg-BG-KalinaNeural",
+    "FriendlyName": "Microsoft Kalina Online (Natural) - Bulgarian (Bulgaria)",
+    "Locale": "bg-BG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "my-MM-NilarNeural",
+    "FriendlyName": "Microsoft Nilar Online (Natural) - Burmese (Myanmar)",
+    "Locale": "my-MM",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "my-MM-ThihaNeural",
+    "FriendlyName": "Microsoft Thiha Online (Natural) - Burmese (Myanmar)",
+    "Locale": "my-MM",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ca-ES-EnricNeural",
+    "FriendlyName": "Microsoft Enric Online (Natural) - Catalan",
+    "Locale": "ca-ES",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ca-ES-JoanaNeural",
+    "FriendlyName": "Microsoft Joana Online (Natural) - Catalan",
+    "Locale": "ca-ES",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-HK-HiuGaaiNeural",
+    "FriendlyName": "Microsoft HiuGaai Online (Natural) - Chinese (Cantonese Traditional)",
+    "Locale": "zh-HK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-HK-HiuMaanNeural",
+    "FriendlyName": "Microsoft HiuMaan Online (Natural) - Chinese (Hong Kong SAR)",
+    "Locale": "zh-HK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-HK-WanLungNeural",
+    "FriendlyName": "Microsoft WanLung Online (Natural) - Chinese (Hong Kong SAR)",
+    "Locale": "zh-HK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-CN-XiaoxiaoNeural",
+    "FriendlyName": "Microsoft Xiaoxiao Online (Natural) - Chinese (Mainland)",
+    "Locale": "zh-CN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-CN-XiaoyiNeural",
+    "FriendlyName": "Microsoft Xiaoyi Online (Natural) - Chinese (Mainland)",
+    "Locale": "zh-CN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-CN-YunjianNeural",
+    "FriendlyName": "Microsoft Yunjian Online (Natural) - Chinese (Mainland)",
+    "Locale": "zh-CN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-CN-YunxiNeural",
+    "FriendlyName": "Microsoft Yunxi Online (Natural) - Chinese (Mainland)",
+    "Locale": "zh-CN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-CN-YunxiaNeural",
+    "FriendlyName": "Microsoft Yunxia Online (Natural) - Chinese (Mainland)",
+    "Locale": "zh-CN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-CN-YunyangNeural",
+    "FriendlyName": "Microsoft Yunyang Online (Natural) - Chinese (Mainland)",
+    "Locale": "zh-CN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-CN-liaoning-XiaobeiNeural",
+    "FriendlyName": "Microsoft Xiaobei Online (Natural) - Chinese (Northeastern Mandarin)",
+    "Locale": "zh-CN-liaoning",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-TW-HsiaoChenNeural",
+    "FriendlyName": "Microsoft HsiaoChen Online (Natural) - Chinese (Taiwan)",
+    "Locale": "zh-TW",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-TW-YunJheNeural",
+    "FriendlyName": "Microsoft YunJhe Online (Natural) - Chinese (Taiwan)",
+    "Locale": "zh-TW",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-TW-HsiaoYuNeural",
+    "FriendlyName": "Microsoft HsiaoYu Online (Natural) - Chinese (Taiwanese Mandarin)",
+    "Locale": "zh-TW",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zh-CN-shaanxi-XiaoniNeural",
+    "FriendlyName": "Microsoft Xiaoni Online (Natural) - Chinese (Zhongyuan Mandarin Shaanxi)",
+    "Locale": "zh-CN-shaanxi",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "hr-HR-GabrijelaNeural",
+    "FriendlyName": "Microsoft Gabrijela Online (Natural) - Croatian (Croatia)",
+    "Locale": "hr-HR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "hr-HR-SreckoNeural",
+    "FriendlyName": "Microsoft Srecko Online (Natural) - Croatian (Croatia)",
+    "Locale": "hr-HR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "cs-CZ-AntoninNeural",
+    "FriendlyName": "Microsoft Antonin Online (Natural) - Czech (Czech)",
+    "Locale": "cs-CZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "cs-CZ-VlastaNeural",
+    "FriendlyName": "Microsoft Vlasta Online (Natural) - Czech (Czech)",
+    "Locale": "cs-CZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "da-DK-ChristelNeural",
+    "FriendlyName": "Microsoft Christel Online (Natural) - Danish (Denmark)",
+    "Locale": "da-DK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "da-DK-JeppeNeural",
+    "FriendlyName": "Microsoft Jeppe Online (Natural) - Danish (Denmark)",
+    "Locale": "da-DK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "nl-BE-ArnaudNeural",
+    "FriendlyName": "Microsoft Arnaud Online (Natural) - Dutch (Belgium)",
+    "Locale": "nl-BE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "nl-BE-DenaNeural",
+    "FriendlyName": "Microsoft Dena Online (Natural) - Dutch (Belgium)",
+    "Locale": "nl-BE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "nl-NL-ColetteNeural",
+    "FriendlyName": "Microsoft Colette Online (Natural) - Dutch (Netherlands)",
+    "Locale": "nl-NL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "nl-NL-FennaNeural",
+    "FriendlyName": "Microsoft Fenna Online (Natural) - Dutch (Netherlands)",
+    "Locale": "nl-NL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "nl-NL-MaartenNeural",
+    "FriendlyName": "Microsoft Maarten Online (Natural) - Dutch (Netherlands)",
+    "Locale": "nl-NL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-AU-WilliamMultilingualNeural",
+    "FriendlyName": "Microsoft WilliamMultilingual Online (Natural) - English (Australia)",
+    "Locale": "en-AU",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-AU-NatashaNeural",
+    "FriendlyName": "Microsoft Natasha Online (Natural) - English (Australia)",
+    "Locale": "en-AU",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-CA-ClaraNeural",
+    "FriendlyName": "Microsoft Clara Online (Natural) - English (Canada)",
+    "Locale": "en-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-CA-LiamNeural",
+    "FriendlyName": "Microsoft Liam Online (Natural) - English (Canada)",
+    "Locale": "en-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-HK-YanNeural",
+    "FriendlyName": "Microsoft Yan Online (Natural) - English (Hong Kong SAR)",
+    "Locale": "en-HK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-HK-SamNeural",
+    "FriendlyName": "Microsoft Sam Online (Natural) - English (Hongkong)",
+    "Locale": "en-HK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-IN-NeerjaExpressiveNeural",
+    "FriendlyName": "Microsoft Neerja Online (Natural) - English (India) (Preview)",
+    "Locale": "en-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-IN-NeerjaNeural",
+    "FriendlyName": "Microsoft Neerja Online (Natural) - English (India)",
+    "Locale": "en-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-IN-PrabhatNeural",
+    "FriendlyName": "Microsoft Prabhat Online (Natural) - English (India)",
+    "Locale": "en-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-IE-ConnorNeural",
+    "FriendlyName": "Microsoft Connor Online (Natural) - English (Ireland)",
+    "Locale": "en-IE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-IE-EmilyNeural",
+    "FriendlyName": "Microsoft Emily Online (Natural) - English (Ireland)",
+    "Locale": "en-IE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-KE-AsiliaNeural",
+    "FriendlyName": "Microsoft Asilia Online (Natural) - English (Kenya)",
+    "Locale": "en-KE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-KE-ChilembaNeural",
+    "FriendlyName": "Microsoft Chilemba Online (Natural) - English (Kenya)",
+    "Locale": "en-KE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-NZ-MitchellNeural",
+    "FriendlyName": "Microsoft Mitchell Online (Natural) - English (New Zealand)",
+    "Locale": "en-NZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-NZ-MollyNeural",
+    "FriendlyName": "Microsoft Molly Online (Natural) - English (New Zealand)",
+    "Locale": "en-NZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-NG-AbeoNeural",
+    "FriendlyName": "Microsoft Abeo Online (Natural) - English (Nigeria)",
+    "Locale": "en-NG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-NG-EzinneNeural",
+    "FriendlyName": "Microsoft Ezinne Online (Natural) - English (Nigeria)",
+    "Locale": "en-NG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-PH-JamesNeural",
+    "FriendlyName": "Microsoft James Online (Natural) - English (Philippines)",
+    "Locale": "en-PH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-PH-RosaNeural",
+    "FriendlyName": "Microsoft Rosa Online (Natural) - English (Philippines)",
+    "Locale": "en-PH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-AvaNeural",
+    "FriendlyName": "Microsoft Ava Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-AndrewNeural",
+    "FriendlyName": "Microsoft Andrew Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-EmmaNeural",
+    "FriendlyName": "Microsoft Emma Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-BrianNeural",
+    "FriendlyName": "Microsoft Brian Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-SG-LunaNeural",
+    "FriendlyName": "Microsoft Luna Online (Natural) - English (Singapore)",
+    "Locale": "en-SG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-SG-WayneNeural",
+    "FriendlyName": "Microsoft Wayne Online (Natural) - English (Singapore)",
+    "Locale": "en-SG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-ZA-LeahNeural",
+    "FriendlyName": "Microsoft Leah Online (Natural) - English (South Africa)",
+    "Locale": "en-ZA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-ZA-LukeNeural",
+    "FriendlyName": "Microsoft Luke Online (Natural) - English (South Africa)",
+    "Locale": "en-ZA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-TZ-ElimuNeural",
+    "FriendlyName": "Microsoft Elimu Online (Natural) - English (Tanzania)",
+    "Locale": "en-TZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-TZ-ImaniNeural",
+    "FriendlyName": "Microsoft Imani Online (Natural) - English (Tanzania)",
+    "Locale": "en-TZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-GB-LibbyNeural",
+    "FriendlyName": "Microsoft Libby Online (Natural) - English (United Kingdom)",
+    "Locale": "en-GB",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-GB-MaisieNeural",
+    "FriendlyName": "Microsoft Maisie Online (Natural) - English (United Kingdom)",
+    "Locale": "en-GB",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-GB-RyanNeural",
+    "FriendlyName": "Microsoft Ryan Online (Natural) - English (United Kingdom)",
+    "Locale": "en-GB",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-GB-SoniaNeural",
+    "FriendlyName": "Microsoft Sonia Online (Natural) - English (United Kingdom)",
+    "Locale": "en-GB",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-GB-ThomasNeural",
+    "FriendlyName": "Microsoft Thomas Online (Natural) - English (United Kingdom)",
+    "Locale": "en-GB",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-AnaNeural",
+    "FriendlyName": "Microsoft Ana Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-AndrewMultilingualNeural",
+    "FriendlyName": "Microsoft AndrewMultilingual Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-AriaNeural",
+    "FriendlyName": "Microsoft Aria Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-AvaMultilingualNeural",
+    "FriendlyName": "Microsoft AvaMultilingual Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-BrianMultilingualNeural",
+    "FriendlyName": "Microsoft BrianMultilingual Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-ChristopherNeural",
+    "FriendlyName": "Microsoft Christopher Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-EmmaMultilingualNeural",
+    "FriendlyName": "Microsoft EmmaMultilingual Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-EricNeural",
+    "FriendlyName": "Microsoft Eric Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-GuyNeural",
+    "FriendlyName": "Microsoft Guy Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-JennyNeural",
+    "FriendlyName": "Microsoft Jenny Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-MichelleNeural",
+    "FriendlyName": "Microsoft Michelle Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-RogerNeural",
+    "FriendlyName": "Microsoft Roger Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "en-US-SteffanNeural",
+    "FriendlyName": "Microsoft Steffan Online (Natural) - English (United States)",
+    "Locale": "en-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "et-EE-AnuNeural",
+    "FriendlyName": "Microsoft Anu Online (Natural) - Estonian (Estonia)",
+    "Locale": "et-EE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "et-EE-KertNeural",
+    "FriendlyName": "Microsoft Kert Online (Natural) - Estonian (Estonia)",
+    "Locale": "et-EE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fil-PH-AngeloNeural",
+    "FriendlyName": "Microsoft Angelo Online (Natural) - Filipino (Philippines)",
+    "Locale": "fil-PH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fil-PH-BlessicaNeural",
+    "FriendlyName": "Microsoft Blessica Online (Natural) - Filipino (Philippines)",
+    "Locale": "fil-PH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fi-FI-HarriNeural",
+    "FriendlyName": "Microsoft Harri Online (Natural) - Finnish (Finland)",
+    "Locale": "fi-FI",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fi-FI-NooraNeural",
+    "FriendlyName": "Microsoft Noora Online (Natural) - Finnish (Finland)",
+    "Locale": "fi-FI",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-BE-CharlineNeural",
+    "FriendlyName": "Microsoft Charline Online (Natural) - French (Belgium)",
+    "Locale": "fr-BE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-BE-GerardNeural",
+    "FriendlyName": "Microsoft Gerard Online (Natural) - French (Belgium)",
+    "Locale": "fr-BE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-CA-ThierryNeural",
+    "FriendlyName": "Microsoft Thierry Online (Natural) - French (Canada)",
+    "Locale": "fr-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-CA-AntoineNeural",
+    "FriendlyName": "Microsoft Antoine Online (Natural) - French (Canada)",
+    "Locale": "fr-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-CA-JeanNeural",
+    "FriendlyName": "Microsoft Jean Online (Natural) - French (Canada)",
+    "Locale": "fr-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-CA-SylvieNeural",
+    "FriendlyName": "Microsoft Sylvie Online (Natural) - French (Canada)",
+    "Locale": "fr-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-FR-VivienneMultilingualNeural",
+    "FriendlyName": "Microsoft VivienneMultilingual Online (Natural) - French (France)",
+    "Locale": "fr-FR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-FR-RemyMultilingualNeural",
+    "FriendlyName": "Microsoft RemyMultilingual Online (Natural) - French (France)",
+    "Locale": "fr-FR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-FR-DeniseNeural",
+    "FriendlyName": "Microsoft Denise Online (Natural) - French (France)",
+    "Locale": "fr-FR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-FR-EloiseNeural",
+    "FriendlyName": "Microsoft Eloise Online (Natural) - French (France)",
+    "Locale": "fr-FR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-FR-HenriNeural",
+    "FriendlyName": "Microsoft Henri Online (Natural) - French (France)",
+    "Locale": "fr-FR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-CH-ArianeNeural",
+    "FriendlyName": "Microsoft Ariane Online (Natural) - French (Switzerland)",
+    "Locale": "fr-CH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fr-CH-FabriceNeural",
+    "FriendlyName": "Microsoft Fabrice Online (Natural) - French (Switzerland)",
+    "Locale": "fr-CH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "gl-ES-RoiNeural",
+    "FriendlyName": "Microsoft Roi Online (Natural) - Galician",
+    "Locale": "gl-ES",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "gl-ES-SabelaNeural",
+    "FriendlyName": "Microsoft Sabela Online (Natural) - Galician",
+    "Locale": "gl-ES",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ka-GE-EkaNeural",
+    "FriendlyName": "Microsoft Eka Online (Natural) - Georgian (Georgia)",
+    "Locale": "ka-GE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ka-GE-GiorgiNeural",
+    "FriendlyName": "Microsoft Giorgi Online (Natural) - Georgian (Georgia)",
+    "Locale": "ka-GE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-AT-IngridNeural",
+    "FriendlyName": "Microsoft Ingrid Online (Natural) - German (Austria)",
+    "Locale": "de-AT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-AT-JonasNeural",
+    "FriendlyName": "Microsoft Jonas Online (Natural) - German (Austria)",
+    "Locale": "de-AT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-DE-SeraphinaMultilingualNeural",
+    "FriendlyName": "Microsoft SeraphinaMultilingual Online (Natural) - German (Germany)",
+    "Locale": "de-DE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-DE-FlorianMultilingualNeural",
+    "FriendlyName": "Microsoft FlorianMultilingual Online (Natural) - German (Germany)",
+    "Locale": "de-DE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-DE-AmalaNeural",
+    "FriendlyName": "Microsoft Amala Online (Natural) - German (Germany)",
+    "Locale": "de-DE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-DE-ConradNeural",
+    "FriendlyName": "Microsoft Conrad Online (Natural) - German (Germany)",
+    "Locale": "de-DE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-DE-KatjaNeural",
+    "FriendlyName": "Microsoft Katja Online (Natural) - German (Germany)",
+    "Locale": "de-DE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-DE-KillianNeural",
+    "FriendlyName": "Microsoft Killian Online (Natural) - German (Germany)",
+    "Locale": "de-DE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-CH-JanNeural",
+    "FriendlyName": "Microsoft Jan Online (Natural) - German (Switzerland)",
+    "Locale": "de-CH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "de-CH-LeniNeural",
+    "FriendlyName": "Microsoft Leni Online (Natural) - German (Switzerland)",
+    "Locale": "de-CH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "el-GR-AthinaNeural",
+    "FriendlyName": "Microsoft Athina Online (Natural) - Greek (Greece)",
+    "Locale": "el-GR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "el-GR-NestorasNeural",
+    "FriendlyName": "Microsoft Nestoras Online (Natural) - Greek (Greece)",
+    "Locale": "el-GR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "gu-IN-DhwaniNeural",
+    "FriendlyName": "Microsoft Dhwani Online (Natural) - Gujarati (India)",
+    "Locale": "gu-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "gu-IN-NiranjanNeural",
+    "FriendlyName": "Microsoft Niranjan Online (Natural) - Gujarati (India)",
+    "Locale": "gu-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "he-IL-AvriNeural",
+    "FriendlyName": "Microsoft Avri Online (Natural) - Hebrew (Israel)",
+    "Locale": "he-IL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "he-IL-HilaNeural",
+    "FriendlyName": "Microsoft Hila Online (Natural) - Hebrew (Israel)",
+    "Locale": "he-IL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "hi-IN-MadhurNeural",
+    "FriendlyName": "Microsoft Madhur Online (Natural) - Hindi (India)",
+    "Locale": "hi-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "hi-IN-SwaraNeural",
+    "FriendlyName": "Microsoft Swara Online (Natural) - Hindi (India)",
+    "Locale": "hi-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "hu-HU-NoemiNeural",
+    "FriendlyName": "Microsoft Noemi Online (Natural) - Hungarian (Hungary)",
+    "Locale": "hu-HU",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "hu-HU-TamasNeural",
+    "FriendlyName": "Microsoft Tamas Online (Natural) - Hungarian (Hungary)",
+    "Locale": "hu-HU",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "is-IS-GudrunNeural",
+    "FriendlyName": "Microsoft Gudrun Online (Natural) - Icelandic (Iceland)",
+    "Locale": "is-IS",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "is-IS-GunnarNeural",
+    "FriendlyName": "Microsoft Gunnar Online (Natural) - Icelandic (Iceland)",
+    "Locale": "is-IS",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "id-ID-ArdiNeural",
+    "FriendlyName": "Microsoft Ardi Online (Natural) - Indonesian (Indonesia)",
+    "Locale": "id-ID",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "id-ID-GadisNeural",
+    "FriendlyName": "Microsoft Gadis Online (Natural) - Indonesian (Indonesia)",
+    "Locale": "id-ID",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "iu-Latn-CA-SiqiniqNeural",
+    "FriendlyName": "Microsoft Siqiniq Online (Natural) - Inuktitut (Latin, Canada)",
+    "Locale": "iu-Latn-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "iu-Latn-CA-TaqqiqNeural",
+    "FriendlyName": "Microsoft Taqqiq Online (Natural) - Inuktitut (Latin, Canada)",
+    "Locale": "iu-Latn-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "iu-Cans-CA-SiqiniqNeural",
+    "FriendlyName": "Microsoft Siqiniq Online (Natural) - Inuktitut (Syllabics, Canada)",
+    "Locale": "iu-Cans-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "iu-Cans-CA-TaqqiqNeural",
+    "FriendlyName": "Microsoft Taqqiq Online (Natural) - Inuktitut (Syllabics, Canada)",
+    "Locale": "iu-Cans-CA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ga-IE-ColmNeural",
+    "FriendlyName": "Microsoft Colm Online (Natural) - Irish (Ireland)",
+    "Locale": "ga-IE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ga-IE-OrlaNeural",
+    "FriendlyName": "Microsoft Orla Online (Natural) - Irish (Ireland)",
+    "Locale": "ga-IE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "it-IT-GiuseppeMultilingualNeural",
+    "FriendlyName": "Microsoft GiuseppeMultilingual Online (Natural) - Italian (Italy)",
+    "Locale": "it-IT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "it-IT-DiegoNeural",
+    "FriendlyName": "Microsoft Diego Online (Natural) - Italian (Italy)",
+    "Locale": "it-IT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "it-IT-ElsaNeural",
+    "FriendlyName": "Microsoft Elsa Online (Natural) - Italian (Italy)",
+    "Locale": "it-IT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "it-IT-IsabellaNeural",
+    "FriendlyName": "Microsoft Isabella Online (Natural) - Italian (Italy)",
+    "Locale": "it-IT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ja-JP-KeitaNeural",
+    "FriendlyName": "Microsoft Keita Online (Natural) - Japanese (Japan)",
+    "Locale": "ja-JP",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ja-JP-NanamiNeural",
+    "FriendlyName": "Microsoft Nanami Online (Natural) - Japanese (Japan)",
+    "Locale": "ja-JP",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "jv-ID-DimasNeural",
+    "FriendlyName": "Microsoft Dimas Online (Natural) - Javanese (Indonesia)",
+    "Locale": "jv-ID",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "jv-ID-SitiNeural",
+    "FriendlyName": "Microsoft Siti Online (Natural) - Javanese (Indonesia)",
+    "Locale": "jv-ID",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "kn-IN-GaganNeural",
+    "FriendlyName": "Microsoft Gagan Online (Natural) - Kannada (India)",
+    "Locale": "kn-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "kn-IN-SapnaNeural",
+    "FriendlyName": "Microsoft Sapna Online (Natural) - Kannada (India)",
+    "Locale": "kn-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "kk-KZ-AigulNeural",
+    "FriendlyName": "Microsoft Aigul Online (Natural) - Kazakh (Kazakhstan)",
+    "Locale": "kk-KZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "kk-KZ-DauletNeural",
+    "FriendlyName": "Microsoft Daulet Online (Natural) - Kazakh (Kazakhstan)",
+    "Locale": "kk-KZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "km-KH-PisethNeural",
+    "FriendlyName": "Microsoft Piseth Online (Natural) - Khmer (Cambodia)",
+    "Locale": "km-KH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "km-KH-SreymomNeural",
+    "FriendlyName": "Microsoft Sreymom Online (Natural) - Khmer (Cambodia)",
+    "Locale": "km-KH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ko-KR-HyunsuMultilingualNeural",
+    "FriendlyName": "Microsoft HyunsuMultilingual Online (Natural) - Korean (Korea)",
+    "Locale": "ko-KR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ko-KR-InJoonNeural",
+    "FriendlyName": "Microsoft InJoon Online (Natural) - Korean (Korea)",
+    "Locale": "ko-KR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ko-KR-SunHiNeural",
+    "FriendlyName": "Microsoft SunHi Online (Natural) - Korean (Korea)",
+    "Locale": "ko-KR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "lo-LA-ChanthavongNeural",
+    "FriendlyName": "Microsoft Chanthavong Online (Natural) - Lao (Laos)",
+    "Locale": "lo-LA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "lo-LA-KeomanyNeural",
+    "FriendlyName": "Microsoft Keomany Online (Natural) - Lao (Laos)",
+    "Locale": "lo-LA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "lv-LV-EveritaNeural",
+    "FriendlyName": "Microsoft Everita Online (Natural) - Latvian (Latvia)",
+    "Locale": "lv-LV",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "lv-LV-NilsNeural",
+    "FriendlyName": "Microsoft Nils Online (Natural) - Latvian (Latvia)",
+    "Locale": "lv-LV",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "lt-LT-LeonasNeural",
+    "FriendlyName": "Microsoft Leonas Online (Natural) - Lithuanian (Lithuania)",
+    "Locale": "lt-LT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "lt-LT-OnaNeural",
+    "FriendlyName": "Microsoft Ona Online (Natural) - Lithuanian (Lithuania)",
+    "Locale": "lt-LT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "mk-MK-AleksandarNeural",
+    "FriendlyName": "Microsoft Aleksandar Online (Natural) - Macedonian (North Macedonia)",
+    "Locale": "mk-MK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "mk-MK-MarijaNeural",
+    "FriendlyName": "Microsoft Marija Online (Natural) - Macedonian (North Macedonia)",
+    "Locale": "mk-MK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ms-MY-OsmanNeural",
+    "FriendlyName": "Microsoft Osman Online (Natural) - Malay (Malaysia)",
+    "Locale": "ms-MY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ms-MY-YasminNeural",
+    "FriendlyName": "Microsoft Yasmin Online (Natural) - Malay (Malaysia)",
+    "Locale": "ms-MY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ml-IN-MidhunNeural",
+    "FriendlyName": "Microsoft Midhun Online (Natural) - Malayalam (India)",
+    "Locale": "ml-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ml-IN-SobhanaNeural",
+    "FriendlyName": "Microsoft Sobhana Online (Natural) - Malayalam (India)",
+    "Locale": "ml-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "mt-MT-GraceNeural",
+    "FriendlyName": "Microsoft Grace Online (Natural) - Maltese (Malta)",
+    "Locale": "mt-MT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "mt-MT-JosephNeural",
+    "FriendlyName": "Microsoft Joseph Online (Natural) - Maltese (Malta)",
+    "Locale": "mt-MT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "mr-IN-AarohiNeural",
+    "FriendlyName": "Microsoft Aarohi Online (Natural) - Marathi (India)",
+    "Locale": "mr-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "mr-IN-ManoharNeural",
+    "FriendlyName": "Microsoft Manohar Online (Natural) - Marathi (India)",
+    "Locale": "mr-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "mn-MN-BataaNeural",
+    "FriendlyName": "Microsoft Bataa Online (Natural) - Mongolian (Mongolia)",
+    "Locale": "mn-MN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "mn-MN-YesuiNeural",
+    "FriendlyName": "Microsoft Yesui Online (Natural) - Mongolian (Mongolia)",
+    "Locale": "mn-MN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ne-NP-HemkalaNeural",
+    "FriendlyName": "Microsoft Hemkala Online (Natural) - Nepali (Nepal)",
+    "Locale": "ne-NP",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ne-NP-SagarNeural",
+    "FriendlyName": "Microsoft Sagar Online (Natural) - Nepali (Nepal)",
+    "Locale": "ne-NP",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "nb-NO-FinnNeural",
+    "FriendlyName": "Microsoft Finn Online (Natural) - Norwegian (Bokmål Norway)",
+    "Locale": "nb-NO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "nb-NO-PernilleNeural",
+    "FriendlyName": "Microsoft Pernille Online (Natural) - Norwegian (Bokmål, Norway)",
+    "Locale": "nb-NO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ps-AF-GulNawazNeural",
+    "FriendlyName": "Microsoft GulNawaz Online (Natural) - Pashto (Afghanistan)",
+    "Locale": "ps-AF",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ps-AF-LatifaNeural",
+    "FriendlyName": "Microsoft Latifa Online (Natural) - Pashto (Afghanistan)",
+    "Locale": "ps-AF",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fa-IR-DilaraNeural",
+    "FriendlyName": "Microsoft Dilara Online (Natural) - Persian (Iran)",
+    "Locale": "fa-IR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "fa-IR-FaridNeural",
+    "FriendlyName": "Microsoft Farid Online (Natural) - Persian (Iran)",
+    "Locale": "fa-IR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "pl-PL-MarekNeural",
+    "FriendlyName": "Microsoft Marek Online (Natural) - Polish (Poland)",
+    "Locale": "pl-PL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "pl-PL-ZofiaNeural",
+    "FriendlyName": "Microsoft Zofia Online (Natural) - Polish (Poland)",
+    "Locale": "pl-PL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "pt-BR-ThalitaMultilingualNeural",
+    "FriendlyName": "Microsoft ThalitaMultilingual Online (Natural) - Portuguese (Brazil)",
+    "Locale": "pt-BR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "pt-BR-AntonioNeural",
+    "FriendlyName": "Microsoft Antonio Online (Natural) - Portuguese (Brazil)",
+    "Locale": "pt-BR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "pt-BR-FranciscaNeural",
+    "FriendlyName": "Microsoft Francisca Online (Natural) - Portuguese (Brazil)",
+    "Locale": "pt-BR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "pt-PT-DuarteNeural",
+    "FriendlyName": "Microsoft Duarte Online (Natural) - Portuguese (Portugal)",
+    "Locale": "pt-PT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "pt-PT-RaquelNeural",
+    "FriendlyName": "Microsoft Raquel Online (Natural) - Portuguese (Portugal)",
+    "Locale": "pt-PT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ro-RO-AlinaNeural",
+    "FriendlyName": "Microsoft Alina Online (Natural) - Romanian (Romania)",
+    "Locale": "ro-RO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ro-RO-EmilNeural",
+    "FriendlyName": "Microsoft Emil Online (Natural) - Romanian (Romania)",
+    "Locale": "ro-RO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ru-RU-DmitryNeural",
+    "FriendlyName": "Microsoft Dmitry Online (Natural) - Russian (Russia)",
+    "Locale": "ru-RU",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ru-RU-SvetlanaNeural",
+    "FriendlyName": "Microsoft Svetlana Online (Natural) - Russian (Russia)",
+    "Locale": "ru-RU",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sr-RS-NicholasNeural",
+    "FriendlyName": "Microsoft Nicholas Online (Natural) - Serbian (Serbia)",
+    "Locale": "sr-RS",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sr-RS-SophieNeural",
+    "FriendlyName": "Microsoft Sophie Online (Natural) - Serbian (Serbia)",
+    "Locale": "sr-RS",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "si-LK-SameeraNeural",
+    "FriendlyName": "Microsoft Sameera Online (Natural) - Sinhala (Sri Lanka)",
+    "Locale": "si-LK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "si-LK-ThiliniNeural",
+    "FriendlyName": "Microsoft Thilini Online (Natural) - Sinhala (Sri Lanka)",
+    "Locale": "si-LK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sk-SK-LukasNeural",
+    "FriendlyName": "Microsoft Lukas Online (Natural) - Slovak (Slovakia)",
+    "Locale": "sk-SK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sk-SK-ViktoriaNeural",
+    "FriendlyName": "Microsoft Viktoria Online (Natural) - Slovak (Slovakia)",
+    "Locale": "sk-SK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sl-SI-PetraNeural",
+    "FriendlyName": "Microsoft Petra Online (Natural) - Slovenian (Slovenia)",
+    "Locale": "sl-SI",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sl-SI-RokNeural",
+    "FriendlyName": "Microsoft Rok Online (Natural) - Slovenian (Slovenia)",
+    "Locale": "sl-SI",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "so-SO-MuuseNeural",
+    "FriendlyName": "Microsoft Muuse Online (Natural) - Somali (Somalia)",
+    "Locale": "so-SO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "so-SO-UbaxNeural",
+    "FriendlyName": "Microsoft Ubax Online (Natural) - Somali (Somalia)",
+    "Locale": "so-SO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-AR-ElenaNeural",
+    "FriendlyName": "Microsoft Elena Online (Natural) - Spanish (Argentina)",
+    "Locale": "es-AR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-AR-TomasNeural",
+    "FriendlyName": "Microsoft Tomas Online (Natural) - Spanish (Argentina)",
+    "Locale": "es-AR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-BO-MarceloNeural",
+    "FriendlyName": "Microsoft Marcelo Online (Natural) - Spanish (Bolivia)",
+    "Locale": "es-BO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-BO-SofiaNeural",
+    "FriendlyName": "Microsoft Sofia Online (Natural) - Spanish (Bolivia)",
+    "Locale": "es-BO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-CL-CatalinaNeural",
+    "FriendlyName": "Microsoft Catalina Online (Natural) - Spanish (Chile)",
+    "Locale": "es-CL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-CL-LorenzoNeural",
+    "FriendlyName": "Microsoft Lorenzo Online (Natural) - Spanish (Chile)",
+    "Locale": "es-CL",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-CO-GonzaloNeural",
+    "FriendlyName": "Microsoft Gonzalo Online (Natural) - Spanish (Colombia)",
+    "Locale": "es-CO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-CO-SalomeNeural",
+    "FriendlyName": "Microsoft Salome Online (Natural) - Spanish (Colombia)",
+    "Locale": "es-CO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-ES-XimenaNeural",
+    "FriendlyName": "Microsoft Ximena Online (Natural) - Spanish (Colombia)",
+    "Locale": "es-ES",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-CR-JuanNeural",
+    "FriendlyName": "Microsoft Juan Online (Natural) - Spanish (Costa Rica)",
+    "Locale": "es-CR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-CR-MariaNeural",
+    "FriendlyName": "Microsoft Maria Online (Natural) - Spanish (Costa Rica)",
+    "Locale": "es-CR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-CU-BelkysNeural",
+    "FriendlyName": "Microsoft Belkys Online (Natural) - Spanish (Cuba)",
+    "Locale": "es-CU",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-CU-ManuelNeural",
+    "FriendlyName": "Microsoft Manuel Online (Natural) - Spanish (Cuba)",
+    "Locale": "es-CU",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-DO-EmilioNeural",
+    "FriendlyName": "Microsoft Emilio Online (Natural) - Spanish (Dominican Republic)",
+    "Locale": "es-DO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-DO-RamonaNeural",
+    "FriendlyName": "Microsoft Ramona Online (Natural) - Spanish (Dominican Republic)",
+    "Locale": "es-DO",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-EC-AndreaNeural",
+    "FriendlyName": "Microsoft Andrea Online (Natural) - Spanish (Ecuador)",
+    "Locale": "es-EC",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-EC-LuisNeural",
+    "FriendlyName": "Microsoft Luis Online (Natural) - Spanish (Ecuador)",
+    "Locale": "es-EC",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-SV-LorenaNeural",
+    "FriendlyName": "Microsoft Lorena Online (Natural) - Spanish (El Salvador)",
+    "Locale": "es-SV",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-SV-RodrigoNeural",
+    "FriendlyName": "Microsoft Rodrigo Online (Natural) - Spanish (El Salvador)",
+    "Locale": "es-SV",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-GQ-JavierNeural",
+    "FriendlyName": "Microsoft Javier Online (Natural) - Spanish (Equatorial Guinea)",
+    "Locale": "es-GQ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-GQ-TeresaNeural",
+    "FriendlyName": "Microsoft Teresa Online (Natural) - Spanish (Equatorial Guinea)",
+    "Locale": "es-GQ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-GT-AndresNeural",
+    "FriendlyName": "Microsoft Andres Online (Natural) - Spanish (Guatemala)",
+    "Locale": "es-GT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-GT-MartaNeural",
+    "FriendlyName": "Microsoft Marta Online (Natural) - Spanish (Guatemala)",
+    "Locale": "es-GT",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-HN-CarlosNeural",
+    "FriendlyName": "Microsoft Carlos Online (Natural) - Spanish (Honduras)",
+    "Locale": "es-HN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-HN-KarlaNeural",
+    "FriendlyName": "Microsoft Karla Online (Natural) - Spanish (Honduras)",
+    "Locale": "es-HN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-MX-DaliaNeural",
+    "FriendlyName": "Microsoft Dalia Online (Natural) - Spanish (Mexico)",
+    "Locale": "es-MX",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-MX-JorgeNeural",
+    "FriendlyName": "Microsoft Jorge Online (Natural) - Spanish (Mexico)",
+    "Locale": "es-MX",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-NI-FedericoNeural",
+    "FriendlyName": "Microsoft Federico Online (Natural) - Spanish (Nicaragua)",
+    "Locale": "es-NI",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-NI-YolandaNeural",
+    "FriendlyName": "Microsoft Yolanda Online (Natural) - Spanish (Nicaragua)",
+    "Locale": "es-NI",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-PA-MargaritaNeural",
+    "FriendlyName": "Microsoft Margarita Online (Natural) - Spanish (Panama)",
+    "Locale": "es-PA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-PA-RobertoNeural",
+    "FriendlyName": "Microsoft Roberto Online (Natural) - Spanish (Panama)",
+    "Locale": "es-PA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-PY-MarioNeural",
+    "FriendlyName": "Microsoft Mario Online (Natural) - Spanish (Paraguay)",
+    "Locale": "es-PY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-PY-TaniaNeural",
+    "FriendlyName": "Microsoft Tania Online (Natural) - Spanish (Paraguay)",
+    "Locale": "es-PY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-PE-AlexNeural",
+    "FriendlyName": "Microsoft Alex Online (Natural) - Spanish (Peru)",
+    "Locale": "es-PE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-PE-CamilaNeural",
+    "FriendlyName": "Microsoft Camila Online (Natural) - Spanish (Peru)",
+    "Locale": "es-PE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-PR-KarinaNeural",
+    "FriendlyName": "Microsoft Karina Online (Natural) - Spanish (Puerto Rico)",
+    "Locale": "es-PR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-PR-VictorNeural",
+    "FriendlyName": "Microsoft Victor Online (Natural) - Spanish (Puerto Rico)",
+    "Locale": "es-PR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-ES-AlvaroNeural",
+    "FriendlyName": "Microsoft Alvaro Online (Natural) - Spanish (Spain)",
+    "Locale": "es-ES",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-ES-ElviraNeural",
+    "FriendlyName": "Microsoft Elvira Online (Natural) - Spanish (Spain)",
+    "Locale": "es-ES",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-US-AlonsoNeural",
+    "FriendlyName": "Microsoft Alonso Online (Natural) - Spanish (United States)",
+    "Locale": "es-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-US-PalomaNeural",
+    "FriendlyName": "Microsoft Paloma Online (Natural) - Spanish (United States)",
+    "Locale": "es-US",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-UY-MateoNeural",
+    "FriendlyName": "Microsoft Mateo Online (Natural) - Spanish (Uruguay)",
+    "Locale": "es-UY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-UY-ValentinaNeural",
+    "FriendlyName": "Microsoft Valentina Online (Natural) - Spanish (Uruguay)",
+    "Locale": "es-UY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-VE-PaolaNeural",
+    "FriendlyName": "Microsoft Paola Online (Natural) - Spanish (Venezuela)",
+    "Locale": "es-VE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "es-VE-SebastianNeural",
+    "FriendlyName": "Microsoft Sebastian Online (Natural) - Spanish (Venezuela)",
+    "Locale": "es-VE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "su-ID-JajangNeural",
+    "FriendlyName": "Microsoft Jajang Online (Natural) - Sundanese (Indonesia)",
+    "Locale": "su-ID",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "su-ID-TutiNeural",
+    "FriendlyName": "Microsoft Tuti Online (Natural) - Sundanese (Indonesia)",
+    "Locale": "su-ID",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sw-KE-RafikiNeural",
+    "FriendlyName": "Microsoft Rafiki Online (Natural) - Swahili (Kenya)",
+    "Locale": "sw-KE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sw-KE-ZuriNeural",
+    "FriendlyName": "Microsoft Zuri Online (Natural) - Swahili (Kenya)",
+    "Locale": "sw-KE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sw-TZ-DaudiNeural",
+    "FriendlyName": "Microsoft Daudi Online (Natural) - Swahili (Tanzania)",
+    "Locale": "sw-TZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sw-TZ-RehemaNeural",
+    "FriendlyName": "Microsoft Rehema Online (Natural) - Swahili (Tanzania)",
+    "Locale": "sw-TZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sv-SE-MattiasNeural",
+    "FriendlyName": "Microsoft Mattias Online (Natural) - Swedish (Sweden)",
+    "Locale": "sv-SE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "sv-SE-SofieNeural",
+    "FriendlyName": "Microsoft Sofie Online (Natural) - Swedish (Sweden)",
+    "Locale": "sv-SE",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ta-IN-PallaviNeural",
+    "FriendlyName": "Microsoft Pallavi Online (Natural) - Tamil (India)",
+    "Locale": "ta-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ta-IN-ValluvarNeural",
+    "FriendlyName": "Microsoft Valluvar Online (Natural) - Tamil (India)",
+    "Locale": "ta-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ta-MY-KaniNeural",
+    "FriendlyName": "Microsoft Kani Online (Natural) - Tamil (Malaysia)",
+    "Locale": "ta-MY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ta-MY-SuryaNeural",
+    "FriendlyName": "Microsoft Surya Online (Natural) - Tamil (Malaysia)",
+    "Locale": "ta-MY",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ta-SG-AnbuNeural",
+    "FriendlyName": "Microsoft Anbu Online (Natural) - Tamil (Singapore)",
+    "Locale": "ta-SG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ta-SG-VenbaNeural",
+    "FriendlyName": "Microsoft Venba Online (Natural) - Tamil (Singapore)",
+    "Locale": "ta-SG",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ta-LK-KumarNeural",
+    "FriendlyName": "Microsoft Kumar Online (Natural) - Tamil (Sri Lanka)",
+    "Locale": "ta-LK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ta-LK-SaranyaNeural",
+    "FriendlyName": "Microsoft Saranya Online (Natural) - Tamil (Sri Lanka)",
+    "Locale": "ta-LK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "te-IN-MohanNeural",
+    "FriendlyName": "Microsoft Mohan Online (Natural) - Telugu (India)",
+    "Locale": "te-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "te-IN-ShrutiNeural",
+    "FriendlyName": "Microsoft Shruti Online (Natural) - Telugu (India)",
+    "Locale": "te-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "th-TH-NiwatNeural",
+    "FriendlyName": "Microsoft Niwat Online (Natural) - Thai (Thailand)",
+    "Locale": "th-TH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "th-TH-PremwadeeNeural",
+    "FriendlyName": "Microsoft Premwadee Online (Natural) - Thai (Thailand)",
+    "Locale": "th-TH",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "tr-TR-EmelNeural",
+    "FriendlyName": "Microsoft Emel Online (Natural) - Turkish (Turkey)",
+    "Locale": "tr-TR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "tr-TR-AhmetNeural",
+    "FriendlyName": "Microsoft Ahmet Online (Natural) - Turkish (Türkiye)",
+    "Locale": "tr-TR",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "uk-UA-OstapNeural",
+    "FriendlyName": "Microsoft Ostap Online (Natural) - Ukrainian (Ukraine)",
+    "Locale": "uk-UA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "uk-UA-PolinaNeural",
+    "FriendlyName": "Microsoft Polina Online (Natural) - Ukrainian (Ukraine)",
+    "Locale": "uk-UA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ur-IN-GulNeural",
+    "FriendlyName": "Microsoft Gul Online (Natural) - Urdu (India)",
+    "Locale": "ur-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ur-IN-SalmanNeural",
+    "FriendlyName": "Microsoft Salman Online (Natural) - Urdu (India)",
+    "Locale": "ur-IN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ur-PK-AsadNeural",
+    "FriendlyName": "Microsoft Asad Online (Natural) - Urdu (Pakistan)",
+    "Locale": "ur-PK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "ur-PK-UzmaNeural",
+    "FriendlyName": "Microsoft Uzma Online (Natural) - Urdu (Pakistan)",
+    "Locale": "ur-PK",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "uz-UZ-MadinaNeural",
+    "FriendlyName": "Microsoft Madina Online (Natural) - Uzbek (Uzbekistan)",
+    "Locale": "uz-UZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "uz-UZ-SardorNeural",
+    "FriendlyName": "Microsoft Sardor Online (Natural) - Uzbek (Uzbekistan)",
+    "Locale": "uz-UZ",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "vi-VN-HoaiMyNeural",
+    "FriendlyName": "Microsoft HoaiMy Online (Natural) - Vietnamese (Vietnam)",
+    "Locale": "vi-VN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "vi-VN-NamMinhNeural",
+    "FriendlyName": "Microsoft NamMinh Online (Natural) - Vietnamese (Vietnam)",
+    "Locale": "vi-VN",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "cy-GB-AledNeural",
+    "FriendlyName": "Microsoft Aled Online (Natural) - Welsh (United Kingdom)",
+    "Locale": "cy-GB",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "cy-GB-NiaNeural",
+    "FriendlyName": "Microsoft Nia Online (Natural) - Welsh (United Kingdom)",
+    "Locale": "cy-GB",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zu-ZA-ThandoNeural",
+    "FriendlyName": "Microsoft Thando Online (Natural) - Zulu (South Africa)",
+    "Locale": "zu-ZA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  },
+  {
+    "ShortName": "zu-ZA-ThembaNeural",
+    "FriendlyName": "Microsoft Themba Online (Natural) - Zulu (South Africa)",
+    "Locale": "zu-ZA",
+    "SuggestedCodec": "audio-24khz-48kbitrate-mono-mp3"
+  }
+]
