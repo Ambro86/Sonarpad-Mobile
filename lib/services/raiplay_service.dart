@@ -93,6 +93,15 @@ class RaiPlayService {
       }
     }
 
+    items.add(RaiPlayItem(
+      id: 'page|root|TGR',
+      title: 'TGR',
+      description: 'Telegiornali Regionali',
+      kind: RaiPlayItemKind.page,
+      pathId: 'local:tgr_regions',
+      mediaUrl: '',
+    ));
+
     return RaiPlayPage(title: 'RaiPlay', items: items);
   }
 
@@ -103,6 +112,31 @@ class RaiPlayService {
         pathId.substring(_menuSectionSourcePrefix.length),
         secretKey,
       );
+    }
+
+    if (pathId == 'local:tgr_regions') {
+      final regions = [
+        'Abruzzo', 'Basilicata', 'Calabria', 'Campania', 'Emilia-Romagna',
+        'Friuli-Venezia Giulia', 'Lazio', 'Liguria', 'Lombardia', 'Marche',
+        'Molise', 'Piemonte', 'Puglia', 'Sardegna', 'Sicilia', 'Toscana',
+        'Trentino-Alto Adige', 'Umbria', 'Valle d’Aosta', 'Veneto'
+      ];
+      return RaiPlayPage(
+        title: 'TGR',
+        items: regions.map((r) => RaiPlayItem(
+          id: 'search:TGR $r',
+          title: r,
+          description: 'TGR $r',
+          kind: RaiPlayItemKind.page,
+          pathId: 'search:TGR $r',
+          mediaUrl: '',
+        )).toList(),
+      );
+    }
+
+    if (pathId.startsWith('search:')) {
+      final query = pathId.substring(7);
+      return searchContent(query, secretKey);
     }
 
     final baseUrl = decodeUrl(_baseUrlB64, secretKey);
