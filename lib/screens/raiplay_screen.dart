@@ -151,7 +151,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
 
       final route = MaterialPageRoute(
         settings: const RouteSettings(name: '/raiplay/player'),
-        builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+        builder: (_) => PodcastEpisodePlayerScreen(episode: episode, isVideoSupported: true),
       );
       if (replaceCurrentRoute) {
         Navigator.pushReplacement(context, route);

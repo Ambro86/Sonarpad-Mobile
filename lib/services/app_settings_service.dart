@@ -428,6 +428,20 @@ class AppSettingsService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_mediaVolumeKey, value);
   }
+
+  // --- Video ---
+  
+  static const _videoEnabledKey = 'sonarpad_video_enabled';
+
+  Future<bool> isVideoEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_videoEnabledKey) ?? false;
+  }
+
+  Future<void> setVideoEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_videoEnabledKey, value);
+  }
 }
 
 extension _FirstOrNull<T> on Iterable<T> {

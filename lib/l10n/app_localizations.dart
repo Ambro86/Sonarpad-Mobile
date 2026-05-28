@@ -838,6 +838,7 @@ class AppLocalizations {
   String get systemLog => _isEn ? 'System Log' : (_isFr ? 'Journal système' : (_isEs ? 'Registro del sistema' : 'Log di Sistema'));
   String get donateWithPaypal => _isEn ? 'Donate with PayPal' : (_isFr ? 'Faire un don avec PayPal' : (_isEs ? 'Donar con PayPal' : 'Dona con PayPal'));
   String get bankTransferTitle => _isEn ? 'Bank Transfer' : (_isFr ? 'Virement bancaire' : (_isEs ? 'Transferencia bancaria' : 'Bonifico Bancario'));
+  String get enableVideo => _isEn ? 'Enable video' : (_isFr ? 'Activer la vidéo' : (_isEs ? 'Activar vídeo' : 'Attiva video'));
 }
 
 class _AppLocalizationsDelegate

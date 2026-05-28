@@ -157,7 +157,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
         context,
         MaterialPageRoute(
           settings: const RouteSettings(name: '/tv/channel/player'),
-          builder: (_) => RadioPlayerScreen(station: station),
+          builder: (_) => RadioPlayerScreen(station: station, isVideoSupported: true),
         ),
       );
     } catch (e) {

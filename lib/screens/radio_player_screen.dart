@@ -4,10 +4,13 @@ import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
 import '../widgets/volume_slider.dart';
+import 'package:video_player/video_player.dart';
+import '../services/app_settings_service.dart';
 
 class RadioPlayerScreen extends StatefulWidget {
   final RadioStation station;
-  const RadioPlayerScreen({super.key, required this.station});
+  final bool isVideoSupported;
+  const RadioPlayerScreen({super.key, required this.station, this.isVideoSupported = false});
 
   @override
   State<RadioPlayerScreen> createState() => _RadioPlayerScreenState();
@@ -15,13 +18,21 @@ class RadioPlayerScreen extends StatefulWidget {
 
 class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   final _audio = AudioPlayerService();
+  final _settings = AppSettingsService();
+  
+  VideoPlayerController? _videoController;
+  bool _isVideoEnabled = false;
+
   bool _loading = false;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _isVideoEnabled = await _settings.isVideoEnabled();
+      if (!mounted) return;
+      setState(() {});
       _play();
     });
   }
@@ -32,14 +43,24 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _error = null;
     });
     try {
-      await _audio.setUrl(widget.station.streamUrl,
-          title: 'In riproduzione: ${widget.station.name}');
-      if (!mounted) return;
-      setState(() => _loading = false);
-      unawaited(_audio.play().catchError((e) {
+      if (widget.isVideoSupported && _isVideoEnabled) {
+        await _audio.stop();
+        _videoController?.dispose();
+        _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.station.streamUrl));
+        await _videoController!.initialize();
+        await _videoController!.play();
+      } else {
+        _videoController?.pause();
+        _videoController?.dispose();
+        _videoController = null;
+        await _audio.setUrl(widget.station.streamUrl,
+            title: 'In riproduzione: ${widget.station.name}');
         if (!mounted) return;
-        setState(() => _error = e.toString());
-      }));
+        unawaited(_audio.play().catchError((e) {
+          if (!mounted) return;
+          setState(() => _error = e.toString());
+        }));
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e.toString());
@@ -49,11 +70,23 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _stop() async {
-    await _audio.stop();
+    if (_videoController != null) {
+      await _videoController!.pause();
+      setState(() {});
+    } else {
+      await _audio.stop();
+    }
+  }
+
+  Future<void> _toggleVideo(bool enable) async {
+    setState(() => _isVideoEnabled = enable);
+    await _settings.setVideoEnabled(enable);
+    _play();
   }
 
   @override
   void dispose() {
+    _videoController?.dispose();
     unawaited(_audio.stop().whenComplete(_audio.dispose));
     super.dispose();
   }
@@ -85,29 +118,57 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             ),
           ],
           const SizedBox(height: 24),
+          if (widget.isVideoSupported) ...[
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: Text(l10n.enableVideo),
+              value: _isVideoEnabled,
+              onChanged: _toggleVideo,
+            ),
+          ],
+          if (_videoController != null && _videoController!.value.isInitialized) ...[
+            const SizedBox(height: 24),
+            AspectRatio(
+              aspectRatio: _videoController!.value.aspectRatio,
+              child: VideoPlayer(_videoController!),
+            ),
+          ],
+          const SizedBox(height: 24),
           Wrap(
             spacing: 12,
             runSpacing: 12,
             alignment: WrapAlignment.center,
             children: [
-              StreamBuilder<bool>(
-                stream: _audio.playingStream,
-                builder: (context, snapshot) {
-                  final isPlaying = snapshot.data ?? false;
-                  return Semantics(
-                    focused: true,
-                    child: FilledButton.icon(
-                      onPressed: _loading ? null : (isPlaying ? _stop : _play),
-                      icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                      label: Text(isPlaying ? l10n.pause : l10n.play),
-                    ),
-                  );
-                },
-              ),
+              if (_videoController != null)
+                Semantics(
+                  focused: true,
+                  child: FilledButton.icon(
+                    onPressed: _loading ? null : (_videoController!.value.isPlaying ? _stop : _play),
+                    icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
+                    label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
+                  ),
+                )
+              else
+                StreamBuilder<bool>(
+                  stream: _audio.playingStream,
+                  builder: (context, snapshot) {
+                    final isPlaying = snapshot.data ?? false;
+                    return Semantics(
+                      focused: true,
+                      child: FilledButton.icon(
+                        onPressed: _loading ? null : (isPlaying ? _stop : _play),
+                        icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                        label: Text(isPlaying ? l10n.pause : l10n.play),
+                      ),
+                    );
+                  },
+                ),
             ],
           ),
-          const SizedBox(height: 24),
-          VolumeSlider(audioPlayer: _audio),
+          if (_videoController == null) ...[
+            const SizedBox(height: 24),
+            VolumeSlider(audioPlayer: _audio),
+          ],
           const SizedBox(height: 24),
           OutlinedButton.icon(
             onPressed: () => Navigator.pop(context),
