@@ -124,11 +124,11 @@ class RaiPlayService {
       return RaiPlayPage(
         title: 'TGR',
         items: regions.map((r) => RaiPlayItem(
-          id: 'search:TGR $r',
+          id: 'search_auto_open:TGR $r',
           title: r,
           description: 'TGR $r',
           kind: RaiPlayItemKind.page,
-          pathId: 'search:TGR $r',
+          pathId: 'search_auto_open:TGR $r',
           mediaUrl: '',
         )).toList(),
       );
@@ -137,6 +137,18 @@ class RaiPlayService {
     if (pathId.startsWith('search:')) {
       final query = pathId.substring(7);
       return searchContent(query, secretKey);
+    }
+
+    if (pathId.startsWith('search_auto_open:')) {
+      final query = pathId.substring(17);
+      final searchResults = await searchContent(query, secretKey);
+      if (searchResults.items.isNotEmpty) {
+        final firstItem = searchResults.items.first;
+        if (firstItem.kind == RaiPlayItemKind.page) {
+          return loadPage(firstItem.pathId, secretKey, pageTitle: firstItem.title);
+        }
+      }
+      return searchResults;
     }
 
     final baseUrl = decodeUrl(_baseUrlB64, secretKey);
