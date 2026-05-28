@@ -156,7 +156,7 @@ class OrariAperturaService {
       }
       if (minutes > 0) {
         if (timeStr.isNotEmpty) timeStr += ' e ';
-        timeStr += minutes.toString() + (minutes == 1 ? ' minuto' : ' minuti');
+        timeStr += '$minutes${minutes == 1 ? ' minuto' : ' minuti'}';
       }
       if (timeStr.isEmpty) {
         timeStr = 'meno di un minuto';
