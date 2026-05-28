@@ -54,7 +54,6 @@ class _OrariAperturaResultsScreenState extends State<OrariAperturaResultsScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text('Risultati Ricerca'),
-        semanticsLabel: 'Risultati della ricerca orari',
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
