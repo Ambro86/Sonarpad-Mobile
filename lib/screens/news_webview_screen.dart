@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../l10n/app_localizations.dart';
@@ -32,11 +32,29 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   bool _loading = true;
   bool _readerPreparing = true;
   bool _speaking = false;
+  bool _ttsPaused = false;
   String? _readerTitle;
   String? _readerText;
   String? _status;
   int _readyChunks = 0;
   int _totalChunks = 0;
+
+  static const _ttsCommands = MethodChannel('sonarpad/tts_commands');
+  static const _ttsEvents = EventChannel('sonarpad/tts_events');
+  StreamSubscription? _ttsEventsSub;
+
+  Future<void> _togglePlayPause() async {
+    if (!_speaking) return;
+    if (_ttsPaused) {
+      if (mounted) setState(() => _ttsPaused = false);
+      unawaited(_flutterTts.speak('').catchError((_) => null));
+      await _audio.play();
+    } else {
+      if (mounted) setState(() => _ttsPaused = true);
+      await _flutterTts.pause();
+      await _audio.pause();
+    }
+  }
 
   @override
   void initState() {
@@ -54,6 +72,31 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           },
           onPageFinished: (_) {
             if (mounted) setState(() => _loading = false);
+            _controller.runJavaScript('''
+              var videos = document.querySelectorAll("video");
+              for (var i = 0; i < videos.length; i++) {
+                videos[i].pause();
+                videos[i].remove();
+              }
+              var iframes = document.querySelectorAll("iframe");
+              for (var i = 0; i < iframes.length; i++) {
+                var src = iframes[i].src || "";
+                if (src.includes("video") || src.includes("player") || src.includes("youtube") || src.includes("mediaset.it/player") || src.includes("dailymotion")) {
+                  iframes[i].remove();
+                }
+              }
+            ''').catchError((_) {});
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            final url = request.url.toLowerCase();
+            if (url.contains('player') || 
+                url.contains('video') || 
+                url.contains('youtube.com/embed') || 
+                url.contains('mediaset.it/player') ||
+                url.contains('dailymotion.com/embed')) {
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
           },
           onWebResourceError: (_) {
             if (mounted) {
@@ -66,11 +109,28 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       )
       ..loadRequest(Uri.parse(widget.article.link));
     unawaited(_loadReaderArticle());
+
+    _ttsEventsSub = _ttsEvents.receiveBroadcastStream().listen((event) {
+      if (event == 'toggle' && mounted) {
+        _togglePlayPause();
+      }
+    });
+    _flutterTts.setPauseHandler(() {
+      if (mounted && _speaking) setState(() => _ttsPaused = true);
+    });
+    _flutterTts.setContinueHandler(() {
+      if (mounted && _speaking) setState(() => _ttsPaused = false);
+    });
   }
 
   @override
   void dispose() {
+    if (Platform.isIOS) {
+      _ttsCommands.invokeMethod('clearMagicTap').catchError((_) {});
+    }
+    _ttsEventsSub?.cancel();
     _audio.dispose();
+    _flutterTts.stop();
     super.dispose();
   }
 
@@ -296,8 +356,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<void> _readArticle() async {
     final l10n = AppLocalizations.of(context);
+    await _audio.stop();
+    await _flutterTts.stop();
+
     setState(() {
       _speaking = true;
+      _ttsPaused = false;
       _readyChunks = 0;
       _totalChunks = 0;
       _status = l10n.preparingEdgeTts;
@@ -317,6 +381,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       if (chunks.isEmpty) throw Exception(l10n.noTextToRead);
 
       if (engine == 'system') {
+        if (Platform.isIOS) {
+          try {
+            await _ttsCommands.invokeMethod('setupMagicTap', widget.article.title);
+          } catch (e) {
+            debugPrint('Errore setupMagicTap $e');
+          }
+        }
         await _flutterTts.awaitSpeakCompletion(true);
         if (Platform.isIOS) {
           await _flutterTts.setSharedInstance(true);
@@ -337,6 +408,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         }
 
         for (var i = 0; i < chunks.length; i++) {
+          if (!mounted || !_speaking) break;
+          while (_ttsPaused) {
+            if (!mounted || !_speaking) break;
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
           if (!mounted || !_speaking) break;
           setState(() {
             _readyChunks = i + 1;
@@ -380,6 +456,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
         var index = 0;
         await for (final file in controller.stream) {
+          while (_ttsPaused) {
+            if (!mounted || !_speaking) break;
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
           if (!mounted || !_speaking) break;
           final size = await file.length();
           setState(

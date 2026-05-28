@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
@@ -30,6 +31,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
   bool _speaking = false;
+  bool _ttsPaused = false;
+  
+  static const _ttsCommands = MethodChannel('sonarpad/tts_commands');
+  static const _ttsEvents = EventChannel('sonarpad/tts_events');
+  StreamSubscription? _ttsEventsSub;
   String? _status;
   int _readyChunks = 0;
   int _totalChunks = 0;
@@ -42,10 +48,67 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
         : 'en-US-JennyNeural';
   }
 
+  Future<void> _stopReading() async {
+    if (!_speaking) return;
+    setState(() {
+      _speaking = false;
+      _ttsPaused = false;
+      _status = null;
+      _readyChunks = 0;
+      _totalChunks = 0;
+    });
+    await _audio.stop();
+    await _flutterTts.stop();
+  }
+
+  Future<void> _togglePlayPause() async {
+    if (!_speaking) return;
+    if (_ttsPaused) {
+      if (mounted) setState(() => _ttsPaused = false);
+      unawaited(_flutterTts.speak('').catchError((_) => null));
+      await _audio.play();
+    } else {
+      if (mounted) setState(() => _ttsPaused = true);
+      await _flutterTts.pause();
+      await _audio.pause();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _ttsEventsSub = _ttsEvents.receiveBroadcastStream().listen((event) {
+      if (event == 'toggle' && mounted) {
+        _togglePlayPause();
+      }
+    });
+    _flutterTts.setPauseHandler(() {
+      if (mounted && _speaking) setState(() => _ttsPaused = true);
+    });
+    _flutterTts.setContinueHandler(() {
+      if (mounted && _speaking) setState(() => _ttsPaused = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    if (Platform.isIOS) {
+      _ttsCommands.invokeMethod('clearMagicTap').catchError((_) {});
+    }
+    _ttsEventsSub?.cancel();
+    _audio.dispose();
+    _flutterTts.stop();
+    super.dispose();
+  }
+
   Future<void> _readWithEdgeTtsStreaming() async {
     final l10n = AppLocalizations.of(context);
+    await _audio.stop();
+    await _flutterTts.stop();
+
     setState(() {
       _speaking = true;
+      _ttsPaused = false;
       _readyChunks = 0;
       _totalChunks = 0;
       _status = l10n.preparingEdgeTts;
@@ -64,6 +127,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       if (chunks.isEmpty) throw Exception(l10n.noTextToRead);
 
       if (engine == 'system') {
+        if (Platform.isIOS) {
+          try {
+            await _ttsCommands.invokeMethod('setupMagicTap', widget.article.title);
+          } catch (e) {
+            debugPrint('Errore setupMagicTap $e');
+          }
+        }
         await _flutterTts.awaitSpeakCompletion(true);
         if (Platform.isIOS) {
           await _flutterTts.setSharedInstance(true);
@@ -84,6 +154,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
         }
 
         for (var i = 0; i < chunks.length; i++) {
+          if (!mounted || !_speaking) break;
+          while (_ttsPaused) {
+            if (!mounted || !_speaking) break;
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
           if (!mounted || !_speaking) break;
           setState(() {
             _readyChunks = i + 1;
@@ -131,6 +206,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
         var index = 0;
         await for (final file in controller.stream) {
+          while (_ttsPaused) {
+            if (!mounted || !_speaking) break;
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
           if (!mounted || !_speaking) break;
           final size = await file.length();
           debugPrint(
@@ -173,22 +252,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     }
   }
 
-  Future<void> _stopReading() async {
-    await _audio.stop();
-    await _flutterTts.stop();
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context);
-    setState(() {
-      _speaking = false;
-      _status = l10n.readingStopped;
-    });
-  }
-
   @override
-  void dispose() {
-    _audio.dispose();
-    super.dispose();
-  }
+  // dispose() è stato spostato sopra
 
   @override
   Widget build(BuildContext context) {

@@ -23,7 +23,7 @@ class RecentSearchesService {
     final prefs = await SharedPreferences.getInstance();
     final searches = await getRecentSearches(domain);
     
-    searches.remove(q);
+    searches.removeWhere((item) => item.toLowerCase() == q.toLowerCase());
     searches.insert(0, q);
     
     if (searches.length > 50) {
