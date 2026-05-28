@@ -63,9 +63,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
     } catch (e) {
       if (!mounted) return;
+      AppLogger.log('RadioPlayer: Error during _play: $e');
       setState(() => _error = e.toString());
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+        AppLogger.log('RadioPlayer: _play complete. loading=false, isVideo=${_videoController != null}');
+      }
     }
   }
 
@@ -93,6 +97,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppLogger.log('RadioPlayer: build() called. loading=$_loading, error=$_error, videoEnabled=$_isVideoEnabled, videoControllerInit=${_videoController?.value.isInitialized}');
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(

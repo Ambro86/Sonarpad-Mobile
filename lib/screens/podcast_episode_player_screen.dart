@@ -72,9 +72,13 @@ class _PodcastEpisodePlayerScreenState
       if (!mounted) return;
     } catch (e) {
       if (!mounted) return;
+      AppLogger.log('PodcastPlayer: Error during _play: $e');
       setState(() => _error = l10n.episodeError(e));
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+        AppLogger.log('PodcastPlayer: _play complete. loading=false, loaded=$_loaded, isVideo=${_videoController != null}');
+      }
     }
   }
 
@@ -122,6 +126,7 @@ class _PodcastEpisodePlayerScreenState
 
   @override
   Widget build(BuildContext context) {
+    AppLogger.log('PodcastPlayer: build() called. loading=$_loading, loaded=$_loaded, error=$_error, videoEnabled=$_isVideoEnabled, videoControllerInit=${_videoController?.value.isInitialized}');
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
@@ -258,8 +263,14 @@ class _PodcastEpisodePlayerScreenState
                           value: format(position),
                           increasedValue: format(position + Duration(seconds: currentStep)),
                           decreasedValue: format(position - Duration(seconds: currentStep)),
-                          onIncrease: () => seekBy(currentStep),
-                          onDecrease: () => seekBy(-currentStep),
+                          onIncrease: () {
+                            AppLogger.log('PodcastPlayer: VoiceOver onIncrease slider');
+                            seekBy(currentStep);
+                          },
+                          onDecrease: () {
+                            AppLogger.log('PodcastPlayer: VoiceOver onDecrease slider');
+                            seekBy(-currentStep);
+                          },
                           child: ExcludeSemantics(
                             child: Slider(
                               value: posSecs.clamp(0.0, durSecs),
