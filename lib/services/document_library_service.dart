@@ -116,6 +116,50 @@ class DocumentLibraryService {
     return recovered.length;
   }
 
+  Future<int> recoverFromDirectory(
+    Directory sourceDir,
+    List<String> allowedExtensions,
+  ) async {
+    if (!await sourceDir.exists()) return 0;
+
+    final allowed = allowedExtensions.map((e) => e.toLowerCase()).toSet();
+    final existingKeys = <String>{};
+    for (final doc in _documents) {
+      existingKeys.add(_documentKey(doc.path));
+      existingKeys.add(_documentKey(doc.name));
+      existingKeys.add(_documentKey(doc.displayName));
+    }
+
+    final recovered = <DocumentItem>[];
+    await for (final entity in sourceDir.list(
+      recursive: true,
+      followLinks: false,
+    )) {
+      if (entity is! File) continue;
+
+      final basename = p.basename(entity.path);
+      if (_shouldSkipRecoveryFile(basename)) continue;
+
+      final ext = p.extension(basename).replaceFirst('.', '').toLowerCase();
+      if (!allowed.contains(ext)) continue;
+
+      final displayName = _legacyDisplayName(basename);
+      final key = _documentKey(displayName);
+      if (existingKeys.contains(key)) continue;
+
+      final doc = await importFile(entity, originalName: displayName);
+      recovered.add(doc);
+      existingKeys.add(_documentKey(doc.path));
+      existingKeys.add(_documentKey(doc.name));
+      existingKeys.add(_documentKey(doc.displayName));
+    }
+
+    if (recovered.isEmpty) return 0;
+    _documents = [...recovered, ..._documents];
+    await _save();
+    return recovered.length;
+  }
+
   /// Carica i documenti salvati. Deve essere chiamato prima di ogni accesso.
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();

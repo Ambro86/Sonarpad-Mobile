@@ -113,7 +113,23 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Future<void> _recoverDocuments() async {
     try {
-      final count = await _service.recoverVisibleDocuments(_allowedExtensions);
+      final visibleCount =
+          await _service.recoverVisibleDocuments(_allowedExtensions);
+      var folderCount = 0;
+      try {
+        final folderPath = await FilePicker.platform.getDirectoryPath(
+          dialogTitle: 'Scegli la vecchia cartella Sonarpad',
+        );
+        if (folderPath != null && folderPath.trim().isNotEmpty) {
+          folderCount = await _service.recoverFromDirectory(
+            Directory(folderPath),
+            _allowedExtensions,
+          );
+        }
+      } catch (e) {
+        dev.log('DocumentsScreen: selezione cartella non disponibile: $e');
+      }
+      final count = visibleCount + folderCount;
       if (!mounted) return;
       setState(() {});
       _showSnack(
