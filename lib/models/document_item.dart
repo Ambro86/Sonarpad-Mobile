@@ -34,6 +34,24 @@ class DocumentItem {
     return name.substring(0, name.length - suffix.length);
   }
 
+  DocumentItem copyWith({
+    String? parentId,
+    bool clearParentId = false,
+  }) {
+    return DocumentItem(
+      id: id,
+      name: name,
+      path: path,
+      extension: extension,
+      addedAt: addedAt,
+      bookmarkIndex: bookmarkIndex,
+      editedTextPath: editedTextPath,
+      isTemporary: isTemporary,
+      isFolder: isFolder,
+      parentId: clearParentId ? null : (parentId ?? this.parentId),
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,

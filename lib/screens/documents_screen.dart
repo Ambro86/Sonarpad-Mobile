@@ -191,18 +191,22 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       await _service.saveAll(globalList);
       setState(() {});
     } else if (action == _DocumentAction.moveToPosition) {
-      final newPos = await showDialog<int>(
+      final folders = _service.documents.where((d) => d.isFolder && d.id != doc.id).toList();
+      final result = await showDialog<dynamic>(
         context: context,
         builder: (_) => _DocumentPositionSliderDialog(
           currentIndex: currentIndex,
           documents: displayed,
+          allFolders: folders,
+          currentFolderId: _currentFolderId,
         ),
       );
-      if (newPos != null && newPos != currentIndex) {
+
+      if (result is int && result != currentIndex) {
         final itemToMove = globalList.removeAt(globalCurrentIndex);
         
-        if (newPos < displayed.length) {
-          final targetDoc = displayed[newPos];
+        if (result < displayed.length) {
+          final targetDoc = displayed[result];
           final insertIdx = globalList.indexWhere((d) => d.id == targetDoc.id);
           globalList.insert(insertIdx != -1 ? insertIdx : globalList.length, itemToMove);
         } else {
@@ -211,6 +215,45 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         
         await _service.saveAll(globalList);
         setState(() {});
+      } else if (result is String) {
+        String? selectedFolderId;
+        if (result == 'select_folder') {
+          if (!mounted) return;
+          selectedFolderId = await showDialog<String?>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Seleziona cartella'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: folders.map((f) => ListTile(
+                    leading: const Icon(Icons.folder, color: Colors.amber),
+                    title: Text(f.name),
+                    onTap: () => Navigator.pop(ctx, f.id),
+                  )).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annulla')),
+              ],
+            ),
+          );
+          if (selectedFolderId == null) return;
+        } else {
+          selectedFolderId = result;
+        }
+
+        final clearParent = selectedFolderId == 'root';
+        final newParentId = clearParent ? null : selectedFolderId;
+        if (doc.parentId != newParentId) {
+          final updatedDoc = doc.copyWith(
+            parentId: newParentId,
+            clearParentId: clearParent,
+          );
+          await _service.update(updatedDoc);
+          setState(() {});
+          _showSnack('Spostato correttamente');
+        }
       }
     }
   }
@@ -595,7 +638,7 @@ class _DocumentTile extends StatelessWidget {
           if (!isLast)
             CustomSemanticsAction(label: l10n.moveDown): () =>
                 onAction(_DocumentAction.moveDown),
-          CustomSemanticsAction(label: l10n.moveToPosition): () =>
+          CustomSemanticsAction(label: 'Sposta...'): () =>
               onAction(_DocumentAction.moveToPosition),
         },
         label: '${doc.isFolder ? 'Cartella' : 'Documento'} $displayName, ${doc.isFolder ? '' : 'tipo ${doc.extension.toUpperCase()}, '}aggiunto il ${_formattedDate(doc.addedAt)}',
@@ -683,10 +726,14 @@ enum _DocumentAction { moveUp, moveDown, moveToPosition }
 class _DocumentPositionSliderDialog extends StatefulWidget {
   final int currentIndex;
   final List<DocumentItem> documents;
+  final List<DocumentItem> allFolders;
+  final String? currentFolderId;
 
   const _DocumentPositionSliderDialog({
     required this.currentIndex,
     required this.documents,
+    required this.allFolders,
+    required this.currentFolderId,
   });
 
   @override
@@ -721,7 +768,7 @@ class _DocumentPositionSliderDialogState
     }
 
     return AlertDialog(
-      title: Text(l10n.moveToPosition),
+      title: const Text('Sposta documento'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -734,7 +781,7 @@ class _DocumentPositionSliderDialogState
           Slider(
             value: _value,
             min: 0,
-            max: (widget.documents.length - 1).toDouble(),
+            max: (widget.documents.isNotEmpty ? widget.documents.length - 1 : 0).toDouble(),
             divisions:
                 widget.documents.length > 1 ? widget.documents.length - 1 : 1,
             label: (pos + 1).toString(),
@@ -747,6 +794,16 @@ class _DocumentPositionSliderDialogState
         ],
       ),
       actions: [
+        if (widget.currentFolderId != null)
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'root'),
+            child: const Text('Fuori dalla cartella'),
+          ),
+        if (widget.allFolders.isNotEmpty)
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'select_folder'),
+            child: const Text('Sposta in un\'altra cartella...'),
+          ),
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Annulla'),
