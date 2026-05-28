@@ -282,7 +282,7 @@ class NewsService {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore RSS ${rssSource.name}: ${response.statusCode}');
     }
-    final doc = XmlDocument.parse(utf8.decode(response.bodyBytes));
+    final doc = XmlDocument.parse(utf8.decode(response.bodyBytes, allowMalformed: true));
     final items = doc.findAllElements('item');
     var index = 0;
     return items.map((item) {
@@ -570,24 +570,32 @@ class NewsService {
       }
     } catch (_) {}
 
+    http.Response? iphoneResponse;
     try {
-      return (
-        response: await _browserGetWithProfile(
-          _BrowserFetchProfile.iphone,
-          uri,
-          headers: headers,
-        ),
-        profile: _BrowserFetchProfile.iphone,
+      iphoneResponse = await _browserGetWithProfile(
+        _BrowserFetchProfile.iphone,
+        uri,
+        headers: headers,
       );
-    } catch (_) {
-      if (chromeResponse != null) {
+      if (!_shouldFallbackBrowserResponse(iphoneResponse)) {
         return (
-          response: chromeResponse,
-          profile: _BrowserFetchProfile.chrome,
+          response: iphoneResponse,
+          profile: _BrowserFetchProfile.iphone,
         );
       }
-      rethrow;
+    } catch (_) {}
+
+    if (chromeResponse != null && !_shouldFallbackBrowserResponse(chromeResponse)) {
+      return (
+        response: chromeResponse,
+        profile: _BrowserFetchProfile.chrome,
+      );
     }
+    
+    return (
+      response: await _client.get(uri),
+      profile: _BrowserFetchProfile.chrome,
+    );
   }
 
   Future<http.Response> _browserGetWithProfile(
@@ -623,17 +631,24 @@ class NewsService {
       }
     } catch (_) {}
 
+    http.Response? iphoneResponse;
     try {
-      return _browserPostWithProfile(
+      iphoneResponse = await _browserPostWithProfile(
         _BrowserFetchProfile.iphone,
         uri,
         headers: headers,
         body: body,
       );
-    } catch (_) {
-      if (chromeResponse != null) return chromeResponse;
-      rethrow;
+      if (iphoneResponse.statusCode >= 200 && iphoneResponse.statusCode < 300) {
+        return iphoneResponse;
+      }
+    } catch (_) {}
+
+    if (chromeResponse != null && chromeResponse.statusCode >= 200 && chromeResponse.statusCode < 300) {
+      return chromeResponse;
     }
+    
+    return _client.post(uri, body: body);
   }
 
   Future<http.Response> _browserPostWithProfile(
