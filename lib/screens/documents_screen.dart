@@ -32,6 +32,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   final _service = DocumentLibraryService();
   bool _loading = true;
   String? _errorMessage;
+  String? _currentFolderId;
+
+  List<DocumentItem> get _displayedDocs => 
+      _service.documents.where((d) => d.parentId == _currentFolderId).toList();
 
   static const _allowedExtensions = [
     'pdf',
@@ -44,6 +48,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     'md',
     'html',
     'htm',
+    'zip',
   ];
 
   @override
@@ -101,10 +106,23 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         continue;
       }
 
+      if (f.path.toLowerCase().endsWith('.zip')) {
+        try {
+          await _service.importZip(f, parentId: _currentFolderId);
+          await AppLogger.log('Zip importato: ${p.basename(path)}');
+        } catch (e) {
+          dev.log('DocumentsScreen: errore importazione zip: $e');
+          await AppLogger.log('DocumentsScreen: errore importazione zip: $e');
+          if (mounted) _showSnack('Errore importazione zip: $e');
+        }
+        continue;
+      }
+
       try {
         final doc = await _service.importFile(
           f,
           originalName: file.name.isNotEmpty ? file.name : p.basename(path),
+          parentId: _currentFolderId,
         );
         await _service.add(doc);
         await AppLogger.log('File importato: ${doc.displayName}');
@@ -321,6 +339,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Future<void> _openDocument(DocumentItem doc) async {
+    if (doc.isFolder) {
+      setState(() => _currentFolderId = doc.id);
+      return;
+    }
+
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => DocumentReaderScreen(document: doc),
@@ -347,10 +370,33 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Documenti'),
-        actions: [
+    final docs = _displayedDocs;
+    final currentFolderName = _currentFolderId != null
+        ? _service.documents.firstWhere((d) => d.id == _currentFolderId, orElse: () => _service.documents.first).name
+        : 'Documenti';
+
+    return PopScope(
+      canPop: _currentFolderId == null,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_currentFolderId != null) {
+          final folder = _service.documents.firstWhere((d) => d.id == _currentFolderId, orElse: () => _service.documents.first);
+          setState(() => _currentFolderId = folder.parentId);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(currentFolderName),
+          leading: _currentFolderId != null
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    final folder = _service.documents.firstWhere((d) => d.id == _currentFolderId, orElse: () => _service.documents.first);
+                    setState(() => _currentFolderId = folder.parentId);
+                  },
+                )
+              : null,
+          actions: [
           IconButton(
             icon: const Icon(Icons.note_add),
             tooltip: 'Scrivi nuovo documento',
@@ -358,7 +404,28 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           ),
           PopupMenuButton<String>(
             onSelected: (value) async {
-              if (value == 'dropbox') {
+              if (value == 'new_folder') {
+                final ctrl = TextEditingController();
+                final name = await showDialog<String>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Nuova cartella'),
+                    content: TextField(
+                      controller: ctrl,
+                      autofocus: true,
+                      decoration: const InputDecoration(hintText: 'Nome cartella'),
+                    ),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annulla')),
+                      TextButton(onPressed: () => Navigator.pop(ctx, ctrl.text), child: const Text('Crea')),
+                    ],
+                  ),
+                );
+                if (name != null && name.trim().isNotEmpty) {
+                  await _service.createFolder(name.trim(), parentId: _currentFolderId);
+                  setState(() {});
+                }
+              } else if (value == 'dropbox') {
                 await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => DropboxBrowserScreen(documentService: _service),
@@ -371,6 +438,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
               }
             },
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'new_folder',
+                child: Text('Crea nuova cartella'),
+              ),
               const PopupMenuItem(
                 value: 'dropbox',
                 child: Text('Importa documenti da Dropbox'),
@@ -387,19 +458,19 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 : Column(
                     children: [
                       Expanded(
-                        child: _service.documents.isEmpty
+                        child: docs.isEmpty
                             ? const _EmptyState()
                             : ListView.separated(
                                 padding:
                                     const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                                itemCount: _service.documents.length,
+                                itemCount: docs.length,
                                 separatorBuilder: (_, __) =>
                                     const SizedBox(height: 8),
                                 itemBuilder: (context, index) {
-                                  final doc = _service.documents[index];
+                                  final doc = docs[index];
                                   final isFirst = index == 0;
                                   final isLast =
-                                      index == _service.documents.length - 1;
+                                      index == docs.length - 1;
 
                                   return _DocumentTile(
                                     doc: doc,
@@ -426,6 +497,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           onPressed: _pickFile,
           child: const Icon(Icons.add),
         ),
+      ),
       ),
     );
   }
@@ -469,6 +541,8 @@ class _DocumentTile extends StatelessWidget {
       case 'rtf':
       case 'odt':
         return Colors.orange.shade700;
+      case 'folder':
+        return Colors.amber.shade700;
       default:
         return Colors.purple.shade700;
     }
@@ -501,9 +575,8 @@ class _DocumentTile extends StatelessWidget {
           CustomSemanticsAction(label: l10n.moveToPosition): () =>
               onAction(_DocumentAction.moveToPosition),
         },
-        label: '$displayName, tipo ${doc.extension.toUpperCase()}, '
-            'aggiunto il ${_formattedDate(doc.addedAt)}',
-        hint: 'Tocca per aprire e leggere il documento',
+        label: '${doc.isFolder ? 'Cartella' : 'Documento'} $displayName, ${doc.isFolder ? '' : 'tipo ${doc.extension.toUpperCase()}, '}aggiunto il ${_formattedDate(doc.addedAt)}',
+        hint: doc.isFolder ? 'Tocca per aprire la cartella' : 'Tocca per aprire e leggere il documento',
         child: Card(
           elevation: 2,
           clipBehavior: Clip.antiAlias,
@@ -523,14 +596,16 @@ class _DocumentTile extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       alignment: Alignment.center,
-                      child: Text(
-                        doc.extension.toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: doc.isFolder
+                          ? const Icon(Icons.folder, color: Colors.white, size: 28)
+                          : Text(
+                              doc.extension.toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
                   const SizedBox(width: 12),

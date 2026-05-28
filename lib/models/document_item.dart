@@ -10,6 +10,8 @@ class DocumentItem {
   final int bookmarkIndex;
   final String? editedTextPath;
   final bool isTemporary;
+  final bool isFolder;
+  final String? parentId;
 
   const DocumentItem({
     required this.id,
@@ -20,6 +22,8 @@ class DocumentItem {
     this.bookmarkIndex = 0,
     this.editedTextPath,
     this.isTemporary = false,
+    this.isFolder = false,
+    this.parentId,
   });
 
   String get displayName {
@@ -39,6 +43,8 @@ class DocumentItem {
         'bookmarkIndex': bookmarkIndex,
         if (editedTextPath != null) 'editedTextPath': editedTextPath,
         'isTemporary': isTemporary,
+        'isFolder': isFolder,
+        if (parentId != null) 'parentId': parentId,
       };
 
   factory DocumentItem.fromJson(Map<String, dynamic> json) => DocumentItem(
@@ -50,6 +56,8 @@ class DocumentItem {
         bookmarkIndex: json['bookmarkIndex'] as int? ?? 0,
         editedTextPath: json['editedTextPath'] as String?,
         isTemporary: json['isTemporary'] as bool? ?? false,
+        isFolder: json['isFolder'] as bool? ?? false,
+        parentId: json['parentId'] as String?,
       );
 
   static DocumentItem? tryFromJson(Map<String, dynamic> json) {

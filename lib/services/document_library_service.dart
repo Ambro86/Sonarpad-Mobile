@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:archive/archive_io.dart';
 
 import '../models/document_item.dart';
 import '../utils/app_logger.dart';
@@ -26,7 +27,7 @@ class DocumentLibraryService {
     return dir;
   }
 
-  Future<DocumentItem> importFile(File source, {String? originalName}) async {
+  Future<DocumentItem> importFile(File source, {String? originalName, String? parentId}) async {
     final sourceName = originalName?.trim().isNotEmpty == true
         ? originalName!.trim()
         : p.basename(source.path);
@@ -44,13 +45,57 @@ class DocumentLibraryService {
       path: relativePath,
       extension: ext,
       addedAt: DateTime.now(),
+      parentId: parentId,
     );
+  }
+
+  Future<DocumentItem> createFolder(String name, {String? parentId}) async {
+    final doc = DocumentItem(
+      id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
+      name: name,
+      path: '',
+      extension: 'folder',
+      addedAt: DateTime.now(),
+      isFolder: true,
+      parentId: parentId,
+    );
+    await add(doc);
+    return doc;
+  }
+
+  Future<void> importZip(File zipFile, {String? folderName, String? parentId}) async {
+    final bytes = await zipFile.readAsBytes();
+    final archive = ZipDecoder().decodeBytes(bytes);
+    
+    final name = folderName ?? p.basenameWithoutExtension(zipFile.path);
+    final folder = await createFolder(name, parentId: parentId);
+
+    final allowed = ['pdf', 'epub', 'txt', 'rtf', 'docx', 'doc'];
+    final tempDir = await getTemporaryDirectory();
+
+    for (final file in archive) {
+      if (file.isFile) {
+        final filename = p.basename(file.name);
+        if (filename.startsWith('.') || filename.startsWith('__MACOSX')) continue;
+        
+        final ext = p.extension(filename).replaceFirst('.', '').toLowerCase();
+        if (allowed.contains(ext)) {
+          final data = file.content as List<int>;
+          final tempFile = File(p.join(tempDir.path, filename));
+          await tempFile.writeAsBytes(data);
+          
+          final doc = await importFile(tempFile, originalName: filename, parentId: folder.id);
+          await add(doc);
+        }
+      }
+    }
   }
 
   Future<DocumentItem> createTextDocument({
     required String name,
     required String content,
     bool isTemporary = false,
+    String? parentId,
   }) async {
     final dir = await documentsFolder();
     final fileName = await _uniqueFileName(dir, name);
@@ -65,6 +110,7 @@ class DocumentLibraryService {
       extension: p.extension(fileName).replaceFirst('.', '').toLowerCase(),
       addedAt: DateTime.now(),
       isTemporary: isTemporary,
+      parentId: parentId,
     );
   }
 
@@ -276,7 +322,36 @@ class DocumentLibraryService {
 
   /// Rimuove un documento tramite [id] e salva la libreria aggiornata.
   Future<void> remove(String id) async {
-    _documents = _documents.where((d) => d.id != id).toList();
+    final toRemove = <String>{id};
+    var added = true;
+    while (added) {
+      added = false;
+      for (final d in _documents) {
+        if (d.parentId != null && toRemove.contains(d.parentId) && !toRemove.contains(d.id)) {
+          toRemove.add(d.id);
+          added = true;
+        }
+      }
+    }
+    
+    for (final docId in toRemove) {
+      try {
+        final doc = _documents.firstWhere((d) => d.id == docId);
+        if (!doc.isFolder) {
+          final resolvedPath = await resolveFilePath(doc);
+          final file = File(resolvedPath);
+          if (await file.exists()) await file.delete();
+          
+          final editedPath = await resolveEditedFilePath(doc);
+          if (editedPath != null) {
+            final editedFile = File(editedPath);
+            if (await editedFile.exists()) await editedFile.delete();
+          }
+        }
+      } catch (_) {}
+    }
+
+    _documents = _documents.where((d) => !toRemove.contains(d.id)).toList();
     await _save();
   }
 
