@@ -57,6 +57,19 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.sonarpad.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sonarpad</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>L'app necessita dell'accesso alla fotocamera per riconoscere il testo sulle scatole dei farmaci e fornirti feedback vocale.</string>
 	<key>CFBundleDocumentTypes</key>

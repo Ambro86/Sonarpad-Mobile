@@ -16,6 +16,7 @@ import '../services/document_text_extractor.dart';
 import '../utils/app_logger.dart';
 import 'document_editor_screen.dart';
 import 'document_reader_screen.dart';
+import 'dropbox_browser_screen.dart';
 
 /// Schermata libreria documenti.
 /// Permette di aggiungere file dal dispositivo (PDF, DOCX, EPUB, TXT, ecc.)
@@ -356,9 +357,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             onPressed: _createDocument,
           ),
           PopupMenuButton<String>(
-            onSelected: (value) {
+            onSelected: (value) async {
               if (value == 'dropbox') {
-                _showSnack('Importa da Dropbox in arrivo nei prossimi aggiornamenti!');
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => DropboxBrowserScreen(documentService: _service),
+                  ),
+                );
+                if (mounted) {
+                  await _load();
+                  setState(() {});
+                }
               }
             },
             itemBuilder: (context) => [
