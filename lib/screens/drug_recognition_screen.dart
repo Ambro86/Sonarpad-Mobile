@@ -73,6 +73,8 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   DateTime? _lastFrameTime;
   DateTime? _lastEdgeWarningTime;
   DateTime? _lastBestEffortCaptureTime;
+  final Map<String, DateTime> _lastSpokenAt = {};
+  String? _lastEdgeWarningText;
 
   Timer? _instructionTimer;
   bool _speechSettingsLoaded = false;
@@ -222,25 +224,30 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     _startTime = DateTime.now();
     _scanCompleted = false;
     _lastBestEffortCaptureTime = null;
+    _lastEdgeWarningText = null;
 
     _startInstructionLoop();
   }
 
   void _startInstructionLoop() {
     _instructionTimer?.cancel();
-    _speak(
-        'Inquadra la scatola del farmaco. Allontana o avvicina il telefono finché non ti dico ferma.');
+    unawaited(_speak(
+      'Inquadra la scatola del farmaco. Allontana o avvicina il telefono finché non ti dico ferma.',
+      force: true,
+    ));
 
-    _instructionTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+    _instructionTimer = Timer.periodic(const Duration(seconds: 20), (timer) {
       if (_recognizedDrug != null || _scanCompleted) {
         timer.cancel();
         return;
       }
 
       final elapsed = DateTime.now().difference(_startTime).inSeconds;
-      if (elapsed > 10) {
-        _speak(
-            'Assicurati di avere abbastanza luce e muovi lentamente la confezione.');
+      if (elapsed > 15) {
+        unawaited(_speak(
+          'Assicurati di avere abbastanza luce e muovi lentamente la confezione.',
+          cooldown: const Duration(seconds: 35),
+        ));
       }
     });
   }
@@ -285,8 +292,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
               ? inputImage.metadata!.size.width
               : inputImage.metadata!.size.height;
 
-          double margin =
-              10.0; // Tolleranza ridotta per permettere alla scatola di stare comodamente nell'inquadratura
+          final margin = (imgW < imgH ? imgW : imgH) * 0.08;
           List<String> warnings = [];
           if (rect.left <= margin) warnings.add("sinistro");
           if (rect.right >= imgW - margin) warnings.add("destro");
@@ -295,41 +301,49 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
 
           final area = rect.width * rect.height;
           final totalArea = imgW * imgH;
+          final centerX = rect.left + rect.width / 2;
+          final centerY = rect.top + rect.height / 2;
+          final centered = (centerX - imgW / 2).abs() < imgW * 0.25 &&
+              (centerY - imgH / 2).abs() < imgH * 0.25;
           if (warnings.isNotEmpty) {
             if (_lastEdgeWarningTime == null ||
                 now.difference(_lastEdgeWarningTime!).inMilliseconds > 2500) {
               _lastEdgeWarningTime = now;
-              String edgeText = warnings.join(" e ");
-              _speak("Bordo $edgeText non visibile");
+              final edgeText = warnings.join(" e ");
+              final warningText = "Bordo $edgeText non visibile";
+              if (_lastEdgeWarningText != warningText) {
+                _lastEdgeWarningText = warningText;
+                unawaited(_speak(
+                  warningText,
+                  cooldown: const Duration(seconds: 8),
+                ));
+              }
             }
             if (elapsed.inSeconds >= 6 &&
-                area > totalArea * 0.02 &&
+                area > totalArea * 0.12 &&
+                warnings.length == 1 &&
+                centered &&
                 _canStartBestEffortCapture(now)) {
               _scanCompleted = true;
               _lastBestEffortCaptureTime = now;
-              _speak("Provo a leggere comunque. Tieni fermo.");
+              unawaited(_speak(
+                "Provo a leggere comunque. Tieni fermo.",
+                force: true,
+              ));
               HapticFeedback.heavyImpact();
               await _captureAndAnalyze();
               return;
             }
           } else {
             // Oggetto centrato
-            if (area > totalArea * 0.05) {
-              // Ridotto al 5% per facilitare lo scatto anche se si allontana il telefono
+            if (area > totalArea * 0.08 && centered) {
               _scanCompleted = true;
-              _speak("Ferma!");
+              unawaited(_speak("Ferma!", force: true));
               HapticFeedback.heavyImpact();
               await _captureAndAnalyze();
               return;
             }
           }
-        } else if (elapsed.inSeconds >= 8 && _canStartBestEffortCapture(now)) {
-          _scanCompleted = true;
-          _lastBestEffortCaptureTime = now;
-          _speak("Provo a leggere comunque. Tieni fermo.");
-          HapticFeedback.heavyImpact();
-          await _captureAndAnalyze();
-          return;
         }
       } catch (e) {
         // Ignora piccoli errori di frame
@@ -394,7 +408,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       }
 
       // Fallback if nothing found
-      _speak("Non ho riconosciuto nulla, riproviamo.");
+      unawaited(_speak("Non ho riconosciuto nulla, riproviamo.", force: true));
       _resetScanState();
       await _initCamera(_cameraController!.description); // riavvia stream
     } catch (e) {
@@ -667,11 +681,23 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
     );
   }
 
-  Future<void> _speak(String text) async {
+  Future<void> _speak(
+    String text, {
+    Duration cooldown = const Duration(seconds: 12),
+    bool force = false,
+  }) async {
+    final now = DateTime.now();
+    final previous = _lastSpokenAt[text];
+    if (!force && previous != null && now.difference(previous) < cooldown) {
+      return;
+    }
+    _lastSpokenAt[text] = now;
+
     try {
       if (!_speechSettingsLoaded) {
         await _loadSpeechSettings();
       }
+      await _stopCurrentSpeech();
       if (_ttsEngine == 'system') {
         await _configureSystemTts();
         await _flutterTts.speak(text);
@@ -684,6 +710,19 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       AppLogger.log('DrugRecognition: Errore sintesi vocale -> $e');
       await _flutterTts.setLanguage("it-IT");
       await _flutterTts.speak(text);
+    }
+  }
+
+  Future<void> _stopCurrentSpeech() async {
+    try {
+      await _flutterTts.stop();
+    } catch (e) {
+      AppLogger.log('DrugRecognition: errore stop TTS sistema -> $e');
+    }
+    try {
+      await _audio.stop();
+    } catch (e) {
+      AppLogger.log('DrugRecognition: errore stop audio istruzioni -> $e');
     }
   }
 

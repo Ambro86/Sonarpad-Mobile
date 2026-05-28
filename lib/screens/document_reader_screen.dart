@@ -174,12 +174,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       return;
     }
 
-    setState(() {
-      _speaking = true;
-      _ttsPaused = false;
-      _playingChunkIndex = -1;
-      _ttsStatus = null;
-    });
+    _speaking = true;
+    _ttsPaused = false;
+    _playingChunkIndex = -1;
+    _ttsStatus = null;
 
     try {
       final engine = await _settings.loadTtsEngine();
@@ -225,12 +223,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           }
           if (!mounted || !_speaking) break;
 
-          setState(() {
-            _playingChunkIndex = i;
-          });
-          _scrollToChunk(i);
-
-          await _flutterTts.speak(_chunks[i]);
+          final speaking = _flutterTts.speak(_chunks[i]);
+          if (mounted) {
+            setState(() {
+              _playingChunkIndex = i;
+            });
+            _scrollToChunk(i);
+          }
+          await speaking;
         }
         await _flutterTts.stop();
       } else {
@@ -256,12 +256,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         // Riproduzione con avanzamento cursore
         await for (final (index, file) in controller.stream) {
           if (!mounted || !_speaking) break;
-          // Aggiorna chunk evidenziato e scrolla
-          setState(() {
-            _playingChunkIndex = index;
-          });
-          _scrollToChunk(index);
-          await _audio.playFilesSequentially([file]);
+          final playback = _audio.playFilesSequentially([file]);
+          if (mounted) {
+            setState(() {
+              _playingChunkIndex = index;
+            });
+            _scrollToChunk(index);
+          }
+          await playback;
         }
 
         await generation;
