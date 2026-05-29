@@ -66,22 +66,24 @@ class AudioPlayerService {
 
   Future<void> _saveCurrentBookmark() async {
     if (_currentMediaId == null || _currentSessionType != AudioSessionType.playback) return;
-    if (_currentDuration == null || _currentDuration!.inSeconds == 0) return;
     
     final pos = _player.position;
-    if (pos.inSeconds < 30) return; // Non salvare ridicolmente
+    if (pos.inSeconds < 3) return; // Abbassato per permettere test rapidi
 
-    AppLogger.log('Sonarpad audio: _saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration!.inSeconds}s');
+    AppLogger.log('Sonarpad audio: _saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration?.inSeconds}s');
 
     if (await _settings.isAutoBookmarkEnabled()) {
        bool isFinished = false;
-       final durationSecs = _currentDuration!.inSeconds;
-       final remaining = durationSecs - pos.inSeconds;
        
-       if (durationSecs > 600) {
-          if (remaining < 30) isFinished = true;
-       } else {
-          if ((pos.inSeconds / durationSecs) > 0.95) isFinished = true;
+       if (_currentDuration != null && _currentDuration!.inSeconds > 0) {
+           final durationSecs = _currentDuration!.inSeconds;
+           final remaining = durationSecs - pos.inSeconds;
+           
+           if (durationSecs > 600) {
+              if (remaining < 30) isFinished = true;
+           } else {
+              if ((pos.inSeconds / durationSecs) > 0.95) isFinished = true;
+           }
        }
 
        if (isFinished) {

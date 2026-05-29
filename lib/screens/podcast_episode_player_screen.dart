@@ -47,7 +47,7 @@ class _PodcastEpisodePlayerScreenState
     if (_videoController == null) return;
     final pos = _videoController!.value.position;
     final dur = _videoController!.value.duration;
-    if (pos.inSeconds < 10) return;
+    if (pos.inSeconds < 3) return;
 
     if (await _settings.isAutoBookmarkEnabled()) {
       bool isFinished = false;
