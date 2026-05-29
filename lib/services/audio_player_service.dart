@@ -50,7 +50,17 @@ class AudioPlayerService {
        }
     });
     _positionSubscription = _player.positionStream.listen((pos) async {
-       // Il salvataggio viene ora effettuato solo su pausa o stop/uscita
+       if (_currentMediaId != null && _currentSessionType == AudioSessionType.playback) {
+          final currentSecond = pos.inSeconds;
+          // Salva ogni 15 secondi, assicurandoci di non martellare il disco
+          if (currentSecond > 0 && currentSecond % 15 == 0) {
+              if (_lastSavedBookmarkSecond != currentSecond) {
+                  _lastSavedBookmarkSecond = currentSecond;
+                  AppLogger.log('Sonarpad audio: background auto-save at $currentSecond sec');
+                  await _saveCurrentBookmark();
+              }
+          }
+       }
     });
   }
 

@@ -82,6 +82,17 @@ class _PodcastEpisodePlayerScreenState
         _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.episode.audioUrl));
         await _videoController!.initialize();
 
+        _videoController!.addListener(() {
+          if (!mounted || _videoController == null) return;
+          final currentSecond = _videoController!.value.position.inSeconds;
+          if (currentSecond > 0 && currentSecond % 15 == 0) {
+            if (_lastLoggedSecond != currentSecond) {
+               _lastLoggedSecond = currentSecond;
+               _saveVideoBookmark();
+            }
+          }
+        });
+
         final stableId = _getStableId();
         if (await _settings.isAutoBookmarkEnabled()) {
           final savedPos = await _settings.getMediaBookmark(stableId);
