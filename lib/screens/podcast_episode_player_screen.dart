@@ -33,6 +33,7 @@ class _PodcastEpisodePlayerScreenState
   bool _loading = false;
   String? _error;
   int _seekStep = 60;
+  int _lastLoggedSecond = -1;
 
   Future<void> _play() async {
     final l10n = AppLocalizations.of(context);
@@ -222,6 +223,12 @@ class _PodcastEpisodePlayerScreenState
                   stream: _audio.positionStream,
                   builder: (context, posSnapshot) {
                     final position = posSnapshot.data ?? Duration.zero;
+
+                    // Logga solo al cambio di secondo per non esplodere la console
+                    if (_lastLoggedSecond != position.inSeconds) {
+                        _lastLoggedSecond = position.inSeconds;
+                        AppLogger.log('PodcastPlayer: positionStream builder called, pos: ${position.inSeconds}s, dur: ${duration.inSeconds}s');
+                    }
 
                     int currentStep = _seekStep;
                     if (duration.inSeconds < currentStep) {

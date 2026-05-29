@@ -36,17 +36,28 @@ class AudioPlayerService {
     _initBookmarkListener();
   }
 
+  int _lastSavedBookmarkSecond = -1;
+
   void _initBookmarkListener() {
-    _player.durationStream.listen((d) => _currentDuration = d);
+    _player.durationStream.listen((d) {
+       AppLogger.log('Sonarpad audio: durationStream emitted $d');
+       _currentDuration = d;
+    });
     _player.playerStateStream.listen((state) {
+       AppLogger.log('Sonarpad audio: playerStateStream emitted $state');
        if (state.processingState == ProcessingState.completed || !state.playing) {
           _saveCurrentBookmark();
        }
     });
     _positionSubscription = _player.positionStream.listen((pos) async {
        if (_currentMediaId != null && _currentSessionType == AudioSessionType.playback) {
-          if (pos.inSeconds > 0 && pos.inSeconds % 10 == 0) {
-              await _saveCurrentBookmark();
+          final currentSecond = pos.inSeconds;
+          if (currentSecond > 0 && currentSecond % 10 == 0) {
+              if (_lastSavedBookmarkSecond != currentSecond) {
+                  _lastSavedBookmarkSecond = currentSecond;
+                  AppLogger.log('Sonarpad audio: triggering _saveCurrentBookmark at $currentSecond sec');
+                  await _saveCurrentBookmark();
+              }
           }
        }
     });
@@ -58,6 +69,8 @@ class AudioPlayerService {
     
     final pos = _player.position;
     if (pos.inSeconds < 30) return; // Non salvare ridicolmente
+
+    AppLogger.log('Sonarpad audio: _saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration!.inSeconds}s');
 
     if (await _settings.isAutoBookmarkEnabled()) {
        bool isFinished = false;
@@ -71,8 +84,10 @@ class AudioPlayerService {
        }
 
        if (isFinished) {
+          AppLogger.log('Sonarpad audio: _saveCurrentBookmark() saving 0 (finished)');
           await _settings.saveMediaBookmark(_currentMediaId!, 0);
        } else {
+          AppLogger.log('Sonarpad audio: _saveCurrentBookmark() saving ${pos.inSeconds}');
           await _settings.saveMediaBookmark(_currentMediaId!, pos.inSeconds);
        }
     }
