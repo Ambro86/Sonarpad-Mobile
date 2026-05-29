@@ -357,9 +357,14 @@ class AudioPlayerService {
   Future<void> seekForward(
       [Duration duration = const Duration(seconds: 15)]) async {
     final current = _player.position;
-    final max = _player.duration ?? Duration.zero;
     final newPosition = current + duration;
-    await seek(newPosition > max ? max : newPosition);
+    final max = _player.duration;
+    
+    if (max != null && max > Duration.zero) {
+      await seek(newPosition > max ? max : newPosition);
+    } else {
+      await seek(newPosition);
+    }
   }
 
   Future<void> stop() async {
