@@ -97,7 +97,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
     _ttsEventsSub?.cancel();
     _playingSub?.cancel();
-    _audio.dispose();
+    unawaited(_audio.stopAndDispose());
     _scrollController.dispose();
     super.dispose();
   }

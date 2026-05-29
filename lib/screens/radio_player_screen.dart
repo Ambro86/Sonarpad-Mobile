@@ -92,7 +92,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   @override
   void dispose() {
     _videoController?.dispose();
-    unawaited(_audio.stop().whenComplete(_audio.dispose));
+    unawaited(_audio.stopAndDispose());
     super.dispose();
   }
 
