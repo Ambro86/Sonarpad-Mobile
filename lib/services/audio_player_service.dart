@@ -50,16 +50,7 @@ class AudioPlayerService {
        }
     });
     _positionSubscription = _player.positionStream.listen((pos) async {
-       if (_currentMediaId != null && _currentSessionType == AudioSessionType.playback) {
-          final currentSecond = pos.inSeconds;
-          if (currentSecond > 0 && currentSecond % 10 == 0) {
-              if (_lastSavedBookmarkSecond != currentSecond) {
-                  _lastSavedBookmarkSecond = currentSecond;
-                  AppLogger.log('Sonarpad audio: triggering _saveCurrentBookmark at $currentSecond sec');
-                  await _saveCurrentBookmark();
-              }
-          }
-       }
+       // Il salvataggio viene ora effettuato solo su pausa o stop/uscita
     });
   }
 
@@ -197,15 +188,20 @@ class AudioPlayerService {
     if (sessionType == AudioSessionType.playback && _currentMediaId != null && await _settings.isAutoBookmarkEnabled()) {
        final savedPos = await _settings.getMediaBookmark(_currentMediaId!);
        if (savedPos != null && savedPos > 5) {
+          bool shouldSeek = true;
           if (duration != null && duration.inSeconds > 0) {
-             if (savedPos < (duration.inSeconds - 30)) {
-                await _player.seek(Duration(seconds: savedPos));
-                
-                final mins = savedPos ~/ 60;
-                final secs = savedPos % 60;
-                // ignore: deprecated_member_use
-                SemanticsService.announce('Riprendo da $mins minuti e $secs secondi', TextDirection.ltr);
+             if (savedPos >= (duration.inSeconds - 30)) {
+                shouldSeek = false;
              }
+          }
+          
+          if (shouldSeek) {
+             await _player.seek(Duration(seconds: savedPos));
+             
+             final mins = savedPos ~/ 60;
+             final secs = savedPos % 60;
+             // ignore: deprecated_member_use
+             SemanticsService.announce('Riprendo da $mins minuti e $secs secondi', TextDirection.ltr);
           }
        }
     }

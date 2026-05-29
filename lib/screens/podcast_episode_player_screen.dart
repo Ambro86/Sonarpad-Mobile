@@ -35,6 +35,40 @@ class _PodcastEpisodePlayerScreenState
   int _seekStep = 60;
   int _lastLoggedSecond = -1;
 
+  String _getStableId() {
+    if (widget.episode.id != null) {
+      return widget.episode.id!;
+    }
+    final uri = Uri.parse(widget.episode.audioUrl);
+    return 'media:${uri.scheme}://${uri.host}${uri.path}';
+  }
+
+  Future<void> _saveVideoBookmark() async {
+    if (_videoController == null) return;
+    final pos = _videoController!.value.position;
+    final dur = _videoController!.value.duration;
+    if (pos.inSeconds < 10) return;
+
+    if (await _settings.isAutoBookmarkEnabled()) {
+      bool isFinished = false;
+      final durationSecs = dur.inSeconds;
+      final remaining = durationSecs - pos.inSeconds;
+
+      if (durationSecs > 600) {
+        if (remaining < 30) isFinished = true;
+      } else {
+        if (durationSecs > 0 && (pos.inSeconds / durationSecs) > 0.95) isFinished = true;
+      }
+
+      final stableId = _getStableId();
+      if (isFinished) {
+        await _settings.saveMediaBookmark(stableId, 0);
+      } else {
+        await _settings.saveMediaBookmark(stableId, pos.inSeconds);
+      }
+    }
+  }
+
   Future<void> _play() async {
     final l10n = AppLocalizations.of(context);
     setState(() {
@@ -47,25 +81,30 @@ class _PodcastEpisodePlayerScreenState
         _videoController?.dispose();
         _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.episode.audioUrl));
         await _videoController!.initialize();
+
+        final stableId = _getStableId();
+        if (await _settings.isAutoBookmarkEnabled()) {
+          final savedPos = await _settings.getMediaBookmark(stableId);
+          if (savedPos != null && savedPos > 5) {
+            final dur = _videoController!.value.duration;
+            if (savedPos < (dur.inSeconds - 30)) {
+              await _videoController!.seekTo(Duration(seconds: savedPos));
+            }
+          }
+        }
+
         await _videoController!.play();
       } else {
+        await _saveVideoBookmark();
         _videoController?.pause();
         _videoController?.dispose();
         _videoController = null;
 
         if (!_loaded) {
-          final String stableId;
-          if (widget.episode.id != null) {
-            stableId = widget.episode.id!;
-          } else {
-            final uri = Uri.parse(widget.episode.audioUrl);
-            stableId = 'media:${uri.scheme}://${uri.host}${uri.path}';
-          }
-
           await _audio.setUrl(
             widget.episode.audioUrl,
             title: 'In riproduzione: ${widget.episode.title}',
-            mediaId: stableId,
+            mediaId: _getStableId(),
           );
           _loaded = true;
         }
@@ -87,6 +126,7 @@ class _PodcastEpisodePlayerScreenState
   Future<void> _pause() async {
     if (_videoController != null) {
       await _videoController!.pause();
+      await _saveVideoBookmark();
       setState(() {});
     } else {
       await _audio.pause();
@@ -94,6 +134,9 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _toggleVideo(bool enable) async {
+    if (_videoController != null && _videoController!.value.isPlaying) {
+      await _pause();
+    }
     setState(() => _isVideoEnabled = enable);
     await _settings.setVideoEnabled(enable);
     _loaded = false; // force reload to switch player
@@ -121,6 +164,7 @@ class _PodcastEpisodePlayerScreenState
 
   @override
   void dispose() {
+    unawaited(_saveVideoBookmark());
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());
     super.dispose();
