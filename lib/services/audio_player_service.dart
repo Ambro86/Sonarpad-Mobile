@@ -199,7 +199,7 @@ class AudioPlayerService {
 
     if (sessionType == AudioSessionType.playback && _currentMediaId != null && await _settings.isAutoBookmarkEnabled()) {
        final savedPos = await _settings.getMediaBookmark(_currentMediaId!);
-       if (savedPos != null && savedPos > 5) {
+       if (savedPos != null && savedPos >= 3) {
           bool shouldSeek = true;
           if (duration != null && duration.inSeconds > 0) {
              if (savedPos >= (duration.inSeconds - 30)) {
@@ -208,12 +208,11 @@ class AudioPlayerService {
           }
           
           if (shouldSeek) {
-             await _player.seek(Duration(seconds: savedPos));
-             
-             final mins = savedPos ~/ 60;
-             final secs = savedPos % 60;
-             // ignore: deprecated_member_use
-             SemanticsService.announce('Riprendo da $mins minuti e $secs secondi', TextDirection.ltr);
+             try {
+                await _player.seek(Duration(seconds: savedPos));
+             } catch (e) {
+                AppLogger.log('Sonarpad audio: seek error: $e');
+             }
           }
        }
     }

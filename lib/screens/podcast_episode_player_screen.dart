@@ -96,7 +96,7 @@ class _PodcastEpisodePlayerScreenState
         final stableId = _getStableId();
         if (await _settings.isAutoBookmarkEnabled()) {
           final savedPos = await _settings.getMediaBookmark(stableId);
-          if (savedPos != null && savedPos > 5) {
+          if (savedPos != null && savedPos >= 3) {
             final dur = _videoController!.value.duration;
             if (savedPos < (dur.inSeconds - 30)) {
               await _videoController!.seekTo(Duration(seconds: savedPos));
