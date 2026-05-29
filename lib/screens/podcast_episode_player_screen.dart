@@ -258,30 +258,16 @@ class _PodcastEpisodePlayerScreenState
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        Semantics(
-                          container: true,
-                          label: 'Posizione riproduzione',
-                          value: format(position),
-                          increasedValue: format(position + Duration(seconds: currentStep)),
-                          decreasedValue: format(position - Duration(seconds: currentStep)),
-                          onIncrease: () {
-                            AppLogger.log('PodcastPlayer: VoiceOver onIncrease slider');
-                            seekBy(currentStep);
+                        Slider(
+                          value: posSecs.clamp(0.0, durSecs),
+                          min: 0,
+                          max: durSecs,
+                          semanticFormatterCallback: (double value) {
+                            return format(Duration(seconds: value.toInt()));
                           },
-                          onDecrease: () {
-                            AppLogger.log('PodcastPlayer: VoiceOver onDecrease slider');
-                            seekBy(-currentStep);
+                          onChanged: (val) {
+                            _audio.seek(Duration(seconds: val.toInt()));
                           },
-                          child: ExcludeSemantics(
-                            child: Slider(
-                              value: posSecs.clamp(0.0, durSecs),
-                              min: 0,
-                              max: durSecs,
-                              onChanged: (val) {
-                                _audio.seek(Duration(seconds: val.toInt()));
-                              },
-                            ),
-                          ),
                         ),
                       ],
                     );
