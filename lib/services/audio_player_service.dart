@@ -18,6 +18,8 @@ import 'app_settings_service.dart';
 enum AudioSessionType { speech, playback }
 
 class AudioPlayerService {
+  static Future<void>? _pendingDispose;
+
   final AudioPlayer _player = AudioPlayer();
   bool _stopRequested = false;
   bool _sessionReady = false;
@@ -84,6 +86,11 @@ class AudioPlayerService {
   bool get isPlaying => _player.playing;
 
   Future<void> _prepareAudioSession(AudioSessionType type) async {
+    if (_pendingDispose != null) {
+      debugPrint('Sonarpad audio: waiting for previous player to dispose...');
+      await _pendingDispose;
+    }
+
     final session = await AudioSession.instance;
 
     if (!_sessionReady || _currentSessionType != type) {
@@ -346,12 +353,20 @@ class AudioPlayerService {
   }
 
   Future<void> dispose() async {
+    final completer = Completer<void>();
+    _pendingDispose = completer.future;
+
     await _saveCurrentBookmark();
     await _disableWakelock();
     try {
       await _player.dispose();
     } catch (e) {
       debugPrint('Sonarpad audio: dispose error: $e');
+    }
+
+    completer.complete();
+    if (_pendingDispose == completer.future) {
+      _pendingDispose = null;
     }
   }
 
