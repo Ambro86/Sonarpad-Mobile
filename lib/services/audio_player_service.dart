@@ -18,6 +18,7 @@ import '../utils/app_logger.dart';
 enum AudioSessionType { speech, playback }
 
 class AudioPlayerService {
+  static const _audioSessionTimeout = Duration(seconds: 4);
   static Future<void>? _pendingDispose;
 
   final AudioPlayer _player = AudioPlayer();
@@ -149,8 +150,19 @@ class AudioPlayerService {
     }
 
     AppLogger.log('Sonarpad audio: setActive(true) start');
-    await session.setActive(true);
-    AppLogger.log('Sonarpad audio: setActive(true) completed after ${stopwatch.elapsedMilliseconds}ms');
+    await session.setActive(true).timeout(
+      _audioSessionTimeout,
+      onTimeout: () async {
+        await AppLogger.log(
+          'Sonarpad audio: setActive(true) timeout after '
+          '${_audioSessionTimeout.inSeconds}s; continuing state=$_playerDebugState',
+        );
+      },
+    );
+    AppLogger.log(
+      'Sonarpad audio: setActive(true) completed/continued after '
+      '${stopwatch.elapsedMilliseconds}ms',
+    );
     if (type == AudioSessionType.playback) {
       AppLogger.log('Sonarpad audio: loadMediaVolume start');
       final vol = await _settings.loadMediaVolume();

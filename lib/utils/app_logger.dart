@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 
 class AppLogger {
   static const String _logFileName = 'app_debug_log.txt';
+  static Future<void> _writeQueue = Future.value();
   
   static Future<File> get _logFile async {
     final dir = await getApplicationDocumentsDirectory();
@@ -16,6 +17,11 @@ class AppLogger {
     final logMessage = '[$timestamp] $message\n';
     dev.log(logMessage.trim());
 
+    _writeQueue = _writeQueue.then((_) => _append(logMessage));
+    await _writeQueue;
+  }
+
+  static Future<void> _append(String logMessage) async {
     try {
       final file = await _logFile;
       await file.writeAsString(logMessage, mode: FileMode.append);
@@ -26,6 +32,7 @@ class AppLogger {
 
   static Future<String> readLogs() async {
     try {
+      await _writeQueue;
       final file = await _logFile;
       if (await file.exists()) {
         final content = await file.readAsString();
@@ -40,6 +47,7 @@ class AppLogger {
 
   static Future<void> clearLogs() async {
     try {
+      await _writeQueue;
       final file = await _logFile;
       if (await file.exists()) {
         await file.delete();

@@ -30,8 +30,12 @@ class _AppLogScreenState extends State<AppLogScreen> {
     });
   }
 
-  void _copyLog() {
-    Clipboard.setData(ClipboardData(text: _logContent));
+  Future<void> _copyLog() async {
+    final logs = await AppLogger.readLogs();
+    if (!mounted) return;
+    setState(() => _logContent = logs);
+    await Clipboard.setData(ClipboardData(text: logs));
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppLocalizations.of(context).logCopiedToClipboard)),
     );
@@ -41,6 +45,11 @@ class _AppLogScreenState extends State<AppLogScreen> {
     await AppLogger.clearLogs();
     await _loadLogs();
   }
+
+  List<String> get _logLines => _logContent
+      .split('\n')
+      .where((line) => line.trim().isNotEmpty)
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -62,12 +71,17 @@ class _AppLogScreenState extends State<AppLogScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          : ListView.separated(
               padding: const EdgeInsets.all(16),
-              child: SelectableText(
-                _logContent,
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
-              ),
+              itemCount: _logLines.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final line = _logLines[index];
+                return SelectableText(
+                  line,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                );
+              },
             ),
     );
   }

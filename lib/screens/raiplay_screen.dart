@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/raiplay_service.dart';
+import '../services/recent_searches_service.dart';
 import 'podcast_episode_player_screen.dart';
+import 'recent_searches_screen.dart';
 
 class RaiPlayScreen extends StatefulWidget {
   final String? pathId;
@@ -91,6 +93,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
     });
     try {
       final results = await _service.searchContent(query, _secretCode);
+      await RecentSearchesService().addSearch('raiplay', query);
       if (!mounted) return;
       setState(() {
         _page = results;
@@ -112,6 +115,20 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
       _error = null;
     });
     await _load();
+  }
+
+  Future<void> _openRecentSearches() async {
+    final query = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (ctx) => const RecentSearchesScreen(
+          title: 'Ricerche recenti',
+          domain: 'raiplay',
+        ),
+      ),
+    );
+    if (query == null || !mounted) return;
+    _searchController.text = query;
+    await _search();
   }
 
   void _openItem(
@@ -207,6 +224,11 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                                 icon: const Icon(Icons.search),
                                 tooltip: 'Cerca',
                                 onPressed: _search,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.history),
+                                tooltip: 'Ricerche recenti',
+                                onPressed: _openRecentSearches,
                               ),
                               if (_page?.title.startsWith('Risultati:') == true)
                                 IconButton(

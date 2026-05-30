@@ -26,8 +26,8 @@ class RecentSearchesService {
     searches.removeWhere((item) => item.toLowerCase() == q.toLowerCase());
     searches.insert(0, q);
     
-    if (searches.length > 50) {
-      searches.removeRange(50, searches.length);
+    if (searches.length > 100) {
+      searches.removeRange(100, searches.length);
     }
     
     await prefs.setString('$_keyPrefix$domain', jsonEncode(searches));

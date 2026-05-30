@@ -136,7 +136,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     if (mounted) {
       setState(() {});
-      _showSnack('Documenti aggiunti');
+      await _showImportCompleteDialog('Documenti aggiunti');
     }
   }
 
@@ -261,6 +261,22 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   void _showSnack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
+    );
+  }
+
+  Future<void> _showImportCompleteDialog(String message) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppLocalizations.of(context).ok),
+          ),
+        ],
+      ),
     );
   }
 
