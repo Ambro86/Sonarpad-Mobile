@@ -800,6 +800,23 @@ class AppLocalizations {
   String get settingsViewSysLog => _isEn ? 'View system log' : (_isFr ? 'Voir le journal système' : (_isEs ? 'Ver registro del sistema' : 'Visualizza log di sistema'));
   String get ok => _isEn ? 'OK' : 'OK';
   String get invia => _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
+  String get saveArticle => _isEn
+      ? 'Save Article'
+      : (_isFr
+          ? 'Enregistrer l\'article'
+          : (_isEs ? 'Guardar artículo' : 'Salva l\'articolo'));
+  String get shareArticle => _isEn
+      ? 'Share Article'
+      : (_isFr
+          ? 'Partager l\'article'
+          : (_isEs ? 'Compartir artículo' : 'Condividi l\'articolo'));
+  String get articleSavedSuccess => _isEn
+      ? 'Article saved to Documents'
+      : (_isFr
+          ? 'Article enregistré dans les Documents'
+          : (_isEs
+              ? 'Artículo guardado en Documentos'
+              : 'Articolo salvato nei Documenti'));
   String get annulla => _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
   String get compilaTuttiICampiPerRichiedereIlCodice => _isEn ? 'Fill all fields to request the code.' : (_isFr ? 'Remplissez tous les champs pour demander le code.' : (_isEs ? 'Rellene todos los campos para solicitar el código.' : 'Compila tutti i campi per richiedere il codice.'));
   String get selectFolder => _isEn ? 'Select folder' : (_isFr ? 'Sélectionner le dossier' : (_isEs ? 'Seleccionar carpeta' : 'Seleziona cartella'));

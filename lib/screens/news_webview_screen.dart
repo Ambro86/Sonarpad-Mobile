@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
@@ -52,6 +54,31 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       if (mounted) setState(() => _ttsPaused = true);
       await _flutterTts.pause();
       await _audio.pause();
+    }
+  }
+
+  Future<void> _saveArticle() async {
+    if (_readerText == null) return;
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final titleSafe = widget.article.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
+      final file = File('${dir.path}/$titleSafe.txt');
+      await file.writeAsString('${widget.article.title}\n\n$_readerText');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).articleSavedSuccess)),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error saving article: $e');
+    }
+  }
+
+  Future<void> _shareArticle() async {
+    try {
+      await Share.share(widget.article.link, subject: widget.article.title);
+    } catch (e) {
+      debugPrint('Error sharing article: $e');
     }
   }
 
@@ -516,6 +543,16 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       appBar: AppBar(
         title: Text(l10n.article),
         actions: [
+          IconButton(
+            onPressed: _saveArticle,
+            icon: const Icon(Icons.save),
+            tooltip: l10n.saveArticle,
+          ),
+          IconButton(
+            onPressed: _shareArticle,
+            icon: const Icon(Icons.share),
+            tooltip: l10n.shareArticle,
+          ),
           IconButton(
             onPressed: _speaking ? null : _readArticle,
             icon: const Icon(Icons.volume_up),
