@@ -157,6 +157,7 @@ class AudioPlayerService {
           'Sonarpad audio: setActive(true) timeout after '
           '${_audioSessionTimeout.inSeconds}s; continuing state=$_playerDebugState',
         );
+        return true;
       },
     );
     AppLogger.log(
