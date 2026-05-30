@@ -436,6 +436,7 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
     });
     _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _latestPosition == _visiblePosition) return;
+      if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) return;
       setState(() => _visiblePosition = _latestPosition);
     });
   }
@@ -468,6 +469,18 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
       widget.audio.seek(newPos);
     }
   }
+
+  int _computeCurrentStep() {
+    int step = widget.seekStep;
+    if (_duration.inSeconds < step) {
+      step = (_duration.inSeconds * 0.2).round();
+      if (step < 1) step = 1;
+    }
+    return step;
+  }
+
+  void _handleIncrease() => _seekBy(_computeCurrentStep());
+  void _handleDecrease() => _seekBy(-_computeCurrentStep());
 
   @override
   Widget build(BuildContext context) {
@@ -511,8 +524,8 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
           decreasedValue: _roundedFormat(
             position - Duration(seconds: currentStep),
           ),
-          onIncrease: () => _seekBy(currentStep),
-          onDecrease: () => _seekBy(-currentStep),
+          onIncrease: _handleIncrease,
+          onDecrease: _handleDecrease,
           child: ExcludeSemantics(
             child: Slider(
               value: posSecs.clamp(0.0, durSecs),

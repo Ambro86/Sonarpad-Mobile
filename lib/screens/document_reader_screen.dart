@@ -458,7 +458,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       dev.log('DocumentReaderScreen: Errore fatale durante il salvataggio: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${AppLocalizations.of(context).saveError}: $e')),
+        SnackBar(
+            content: Text('${AppLocalizations.of(context).saveError}: $e')),
       );
     }
   }
@@ -504,8 +505,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -545,8 +544,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 });
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text(l10n.docSavedInLibrary)),
+                  SnackBar(content: Text(l10n.docSavedInLibrary)),
                 );
               },
             ),
@@ -727,60 +725,63 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
 
       widgets.add(
-        AutoScrollTag(
-          key: ValueKey(i),
-          controller: _scrollController,
-          index: i,
-          child: Semantics(
-            container: true,
-            hint: hintText,
-            onTap: canEdit ? () => _editParagraph(i) : null,
-            customSemanticsActions: actions,
-            child: GestureDetector(
-              excludeFromSemantics: true,
+        ExcludeSemantics(
+          excluding: _speaking,
+          child: AutoScrollTag(
+            key: ValueKey(i),
+            controller: _scrollController,
+            index: i,
+            child: Semantics(
+              container: true,
+              hint: hintText,
               onTap: canEdit ? () => _editParagraph(i) : null,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                margin: const EdgeInsets.only(bottom: 6),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isPlaying
-                      ? colorScheme.primaryContainer
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: isPlaying
-                      ? Border.all(
-                          color: colorScheme.primary.withAlpha(128),
-                          width: 1.5,
-                        )
-                      : (isBookmarked
-                          ? Border.all(
-                              color: Colors.red.withAlpha(128),
-                              width: 1.5,
-                            )
-                          : null),
-                ),
-                child: Stack(
-                  children: [
-                    Text(
-                      _chunks[i],
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight:
-                            isPlaying ? FontWeight.w600 : FontWeight.normal,
-                        color:
-                            isPlaying ? colorScheme.onPrimaryContainer : null,
+              customSemanticsActions: actions,
+              child: GestureDetector(
+                excludeFromSemantics: true,
+                onTap: canEdit ? () => _editParagraph(i) : null,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isPlaying
+                        ? colorScheme.primaryContainer
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    border: isPlaying
+                        ? Border.all(
+                            color: colorScheme.primary.withAlpha(128),
+                            width: 1.5,
+                          )
+                        : (isBookmarked
+                            ? Border.all(
+                                color: Colors.red.withAlpha(128),
+                                width: 1.5,
+                              )
+                            : null),
+                  ),
+                  child: Stack(
+                    children: [
+                      Text(
+                        _chunks[i],
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight:
+                              isPlaying ? FontWeight.w600 : FontWeight.normal,
+                          color:
+                              isPlaying ? colorScheme.onPrimaryContainer : null,
+                        ),
                       ),
-                    ),
-                    if (isBookmarked && !isPlaying)
-                      const Positioned(
-                        top: 0,
-                        right: 0,
-                        child:
-                            Icon(Icons.bookmark, color: Colors.red, size: 16),
-                      ),
-                  ],
+                      if (isBookmarked && !isPlaying)
+                        const Positioned(
+                          top: 0,
+                          right: 0,
+                          child:
+                              Icon(Icons.bookmark, color: Colors.red, size: 16),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
