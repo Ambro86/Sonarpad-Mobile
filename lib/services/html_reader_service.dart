@@ -524,6 +524,48 @@ class HtmlReaderService {
     return validLines.join('\n');
   }
 
+  static void cleanDomBeforeExtraction(Document document) {
+    // Remove unwanted elements
+    final selectorsToRemove = [
+      'aside',
+      'footer',
+      'nav',
+      'header',
+      '.paywall',
+      '.cookie-banner',
+      '#cookie-banner',
+      '.newsletter',
+      '.promo',
+      '.advertisement',
+      '.related-articles',
+      '.related',
+      '.social-share',
+      '.comments',
+      '.ad',
+      '.ads',
+      '.widget',
+      '.sidebar',
+      '.menu',
+      '#menu',
+      '[class*="paywall"]',
+      '[class*="cookie"]',
+      '[class*="advertisement"]',
+      '[class*="newsletter"]',
+      '[class*="related"]',
+      '[id*="paywall"]',
+      '[id*="cookie"]',
+      '[id*="advertisement"]',
+      '[id*="newsletter"]',
+      '[id*="related"]',
+    ];
+
+    for (var selector in selectorsToRemove) {
+      for (var element in document.querySelectorAll(selector)) {
+        element.remove();
+      }
+    }
+  }
+
   static ArticleContent? readerModeExtract(String htmlContent, String languageCode) {
     if (!htmlContent.contains("<html")) {
       var article = extractJinaMarkdownFixture(htmlContent, languageCode);
@@ -531,6 +573,7 @@ class HtmlReaderService {
     }
 
     final document = html_parser.parse(htmlContent);
+    cleanDomBeforeExtraction(document);
     final title = pickTitle(document, languageCode);
 
     StringBuffer bodyAcc = StringBuffer();
