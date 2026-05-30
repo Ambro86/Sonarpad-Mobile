@@ -1,6 +1,7 @@
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
-import '../utils/app_logger.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class ArticleContent {
   final String title;
@@ -795,7 +796,14 @@ class HtmlReaderService {
       }
     }
 
-    AppLogger.log("====== PARSER DEBUG ======\nRAW HTML START\n$htmlContent\nRAW HTML END\n\nEXTRACTED TEXT START\n$finalContent\nEXTRACTED TEXT END\n==========================");
+    // Save debug information asynchronously
+    Future.microtask(() async {
+      try {
+        final dir = await getApplicationDocumentsDirectory();
+        await File('${dir.path}/debug_parser_html.txt').writeAsString(htmlContent);
+        await File('${dir.path}/debug_parser_text.txt').writeAsString(finalContent);
+      } catch (_) {}
+    });
 
     return ArticleContent(title: title, content: finalContent);
   }
