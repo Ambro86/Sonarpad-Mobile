@@ -86,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
           title: basename,
           audioUrl: originalFile.uri.toString(),
           publishedAt: DateTime.now(),
-          podcastName: 'File Locale',
           description: '',
         );
         if (mounted) {
