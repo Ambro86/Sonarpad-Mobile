@@ -23,6 +23,39 @@ import 'screens/orari_apertura_search_screen.dart';
 
 import 'package:just_audio_background/just_audio_background.dart';
 
+ThemeData sonarpadTheme() {
+  const primaryBlue = Color(0xFF0072CE);
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: primaryBlue,
+      primary: primaryBlue,
+      secondary: const Color(0xFF005A9E),
+      tertiary: const Color(0xFFE6F2FF),
+      surface: Colors.white,
+      error: Colors.red.shade700,
+    ),
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black87,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+    ),
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+  );
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -91,35 +124,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF007BFF),
-          primary: const Color(0xFF007BFF),
-          secondary: const Color(0xFF0056b3),
-          tertiary: const Color(0xFFE6F2FF),
-          surface: Colors.white,
-          error: Colors.red.shade700,
-        ),
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black87,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-        ),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: sonarpadTheme(),
       home: const HomeScreen(),
       routes: {
         '/documents': (_) => const DocumentsScreen(),

@@ -35,7 +35,6 @@ class _PodcastEpisodePlayerScreenState
   int _seekStep = 60;
   int _lastVideoBookmarkSecond = -1;
   int _lastPositionLogSecond = -1;
-  int _semanticsRefreshTick = 0;
   Timer? _diagnosticHeartbeat;
   AppLifecycleState? _lastLifecycleState;
 
@@ -170,7 +169,6 @@ class _PodcastEpisodePlayerScreenState
           'PodcastPlayer: _play complete. loading=false, loaded=$_loaded, '
           'isVideo=${_videoController != null}, $_logSubject',
         );
-        _scheduleSemanticsRefresh('play complete');
       }
     }
   }
@@ -217,31 +215,6 @@ class _PodcastEpisodePlayerScreenState
       );
     });
   }
-
-  void _scheduleSemanticsRefresh(String reason) {
-    _refreshSemanticsTree('$reason immediate');
-    Future.delayed(const Duration(milliseconds: 700), () {
-      _refreshSemanticsTree('$reason delayed 700ms');
-    });
-    Future.delayed(const Duration(seconds: 2), () {
-      _refreshSemanticsTree('$reason delayed 2s');
-    });
-  }
-
-  void _refreshSemanticsTree(String reason) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      setState(() {
-        _semanticsRefreshTick += 1;
-      });
-      AppLogger.log(
-        'PodcastPlayer: semantics refresh tick=$_semanticsRefreshTick '
-        'reason="$reason", $_logSubject',
-      );
-    });
-  }
-
-
 
   @override
   void initState() {
@@ -290,9 +263,6 @@ class _PodcastEpisodePlayerScreenState
       'loaded=$_loaded loading=$_loading video=${_videoController != null}, '
       '$_logSubject',
     );
-    if (state == AppLifecycleState.resumed) {
-      _scheduleSemanticsRefresh('lifecycle resumed');
-    }
   }
 
   @override
@@ -329,8 +299,9 @@ class _PodcastEpisodePlayerScreenState
             },
           ),
         ),
-        body: KeyedSubtree(
-          key: ValueKey(_semanticsRefreshTick),
+        body: Semantics(
+          container: true,
+          explicitChildNodes: true,
           child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -438,6 +409,21 @@ class _PodcastEpisodePlayerScreenState
                       return '$mins:$secs';
                     }
 
+                    String roundedFormat(Duration d) {
+                      return format(Duration(minutes: (d.inSeconds / 60).round()));
+                    }
+
+                    void seekBy(int seconds) {
+                      final newPos = position + Duration(seconds: seconds);
+                      if (newPos < Duration.zero) {
+                        _audio.seek(Duration.zero);
+                      } else if (newPos > duration) {
+                        _audio.seek(duration);
+                      } else {
+                        _audio.seek(newPos);
+                      }
+                    }
+
                     final posSecs = position.inSeconds.toDouble();
                     final durSecs = duration.inSeconds.toDouble();
 
@@ -450,16 +436,29 @@ class _PodcastEpisodePlayerScreenState
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        Slider(
-                          value: posSecs.clamp(0.0, durSecs),
-                          min: 0,
-                          max: durSecs,
-                          semanticFormatterCallback: (double value) {
-                            return format(Duration(seconds: value.toInt()));
-                          },
-                          onChanged: (val) {
-                            _audio.seek(Duration(seconds: val.toInt()));
-                          },
+                        Semantics(
+                          container: true,
+                          label: 'Posizione',
+                          value:
+                              '${roundedFormat(position)} di ${roundedFormat(duration)}',
+                          increasedValue: roundedFormat(
+                            position + Duration(seconds: currentStep),
+                          ),
+                          decreasedValue: roundedFormat(
+                            position - Duration(seconds: currentStep),
+                          ),
+                          onIncrease: () => seekBy(currentStep),
+                          onDecrease: () => seekBy(-currentStep),
+                          child: ExcludeSemantics(
+                            child: Slider(
+                            value: posSecs.clamp(0.0, durSecs),
+                            min: 0,
+                            max: durSecs,
+                            onChanged: (val) {
+                              _audio.seek(Duration(seconds: val.toInt()));
+                            },
+                          ),
+                          ),
                         ),
                       ],
                     );

@@ -49,8 +49,15 @@ void main() {
         localizationsDelegates: delegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('it'),
+        theme: sonarpadTheme(),
         home: Scaffold(body: child),
       );
+    }
+
+    Future<void> waitForScreenReady() async {
+      for (var i = 0; i < 30; i += 1) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
     }
 
     final screens = {
@@ -70,11 +77,15 @@ void main() {
         surfaceSize: const Size(414, 896),
         wrapper: (child) => child,
       );
-      await tester.pump(const Duration(milliseconds: 500));
+      await waitForScreenReady();
       await screenMatchesGolden(
         tester,
         entry.key,
-        customPump: (tester) => tester.pump(const Duration(milliseconds: 500)),
+        customPump: (tester) async {
+          for (var i = 0; i < 10; i += 1) {
+            await tester.pump(const Duration(milliseconds: 100));
+          }
+        },
       );
     }
   });
