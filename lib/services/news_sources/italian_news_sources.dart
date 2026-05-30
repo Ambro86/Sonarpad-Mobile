@@ -54,6 +54,10 @@ final italianNewsSources = [
     uri: Uri.parse('https://www.fanpage.it/feed/'),
   ),
   NewsRssSource(
+    name: 'Viterbo Today',
+    uri: Uri.parse('https://www.viterbotoday.it/rss'),
+  ),
+  NewsRssSource(
     name: 'Open',
     uri: Uri.parse('https://www.open.online/feed/'),
   ),

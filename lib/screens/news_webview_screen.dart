@@ -86,6 +86,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                 }
               }
             ''').catchError((_) {});
+            unawaited(_loadVisibleReaderArticleFromWebView());
           },
           onNavigationRequest: (NavigationRequest request) {
             final url = request.url.toLowerCase();
@@ -156,6 +157,25 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       debugPrint('Sonarpad reader: rhttp reader failed: $e');
       if (!mounted) return;
       setState(() => _readerPreparing = false);
+    }
+  }
+
+  Future<void> _loadVisibleReaderArticleFromWebView() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (!mounted || _readerText != null) return;
+
+    try {
+      final text = await _extractVisibleArticleText();
+      if (!mounted || _readerText != null) return;
+      if (text.length < 400) return;
+
+      setState(() {
+        _readerTitle = widget.article.title;
+        _readerText = text;
+        _readerPreparing = false;
+      });
+    } catch (e) {
+      debugPrint('Sonarpad reader: visible WebView extraction failed: $e');
     }
   }
 

@@ -33,7 +33,10 @@ class _PodcastEpisodePlayerScreenState
   bool _loading = false;
   String? _error;
   int _seekStep = 60;
-  int _lastLoggedSecond = -1;
+  int _lastPositionLogSecond = -1;
+  int _semanticsRefreshTick = 0;
+  Timer? _diagnosticHeartbeat;
+  AppLifecycleState? _lastLifecycleState;
 
   String get _logSubject =>
       'episodeTitle="${widget.episode.title}", url=${widget.episode.audioUrl}, '
@@ -166,6 +169,7 @@ class _PodcastEpisodePlayerScreenState
           'PodcastPlayer: _play complete. loading=false, loaded=$_loaded, '
           'isVideo=${_videoController != null}, $_logSubject',
         );
+        _scheduleSemanticsRefresh('play complete');
       }
     }
   }
@@ -197,12 +201,53 @@ class _PodcastEpisodePlayerScreenState
     }));
   }
 
+  void _startDiagnosticHeartbeat() {
+    _diagnosticHeartbeat?.cancel();
+    _diagnosticHeartbeat = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!mounted) return;
+      final route = ModalRoute.of(context);
+      final focus = FocusManager.instance.primaryFocus;
+      AppLogger.log(
+        'PodcastPlayer: heartbeat mounted=$mounted loaded=$_loaded '
+        'loading=$_loading playing=${_audio.isPlaying} '
+        'routeCurrent=${route?.isCurrent} routeActive=${route?.isActive} '
+        'lifecycle=$_lastLifecycleState '
+        'primaryFocus=${focus?.context?.widget.runtimeType}, $_logSubject',
+      );
+    });
+  }
+
+  void _scheduleSemanticsRefresh(String reason) {
+    _refreshSemanticsTree('$reason immediate');
+    Future.delayed(const Duration(milliseconds: 700), () {
+      _refreshSemanticsTree('$reason delayed 700ms');
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      _refreshSemanticsTree('$reason delayed 2s');
+    });
+  }
+
+  void _refreshSemanticsTree(String reason) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        _semanticsRefreshTick += 1;
+      });
+      AppLogger.log(
+        'PodcastPlayer: semantics refresh tick=$_semanticsRefreshTick '
+        'reason="$reason", $_logSubject',
+      );
+    });
+  }
+
 
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _lastLifecycleState = WidgetsBinding.instance.lifecycleState;
+    _startDiagnosticHeartbeat();
     AppLogger.log(
       'PodcastPlayer: initState title=${widget.episode.title} '
       'url=${widget.episode.audioUrl} isVideoSupported=${widget.isVideoSupported}, '
@@ -238,11 +283,15 @@ class _PodcastEpisodePlayerScreenState
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _lastLifecycleState = state;
     AppLogger.log(
       'PodcastPlayer: lifecycle state=$state mounted=$mounted '
       'loaded=$_loaded loading=$_loading video=${_videoController != null}, '
       '$_logSubject',
     );
+    if (state == AppLifecycleState.resumed) {
+      _scheduleSemanticsRefresh('lifecycle resumed');
+    }
   }
 
   @override
@@ -252,6 +301,7 @@ class _PodcastEpisodePlayerScreenState
       'video=${_videoController != null}, $_logSubject',
     );
     WidgetsBinding.instance.removeObserver(this);
+    _diagnosticHeartbeat?.cancel();
     unawaited(_saveVideoBookmark());
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());
@@ -278,7 +328,9 @@ class _PodcastEpisodePlayerScreenState
             },
           ),
         ),
-        body: ListView(
+        body: KeyedSubtree(
+          key: ValueKey(_semanticsRefreshTick),
+          child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Text(
@@ -367,10 +419,10 @@ class _PodcastEpisodePlayerScreenState
                   builder: (context, posSnapshot) {
                     final position = posSnapshot.data ?? Duration.zero;
 
-                    // Logga solo al cambio di secondo per non esplodere la console
-                    if (_lastLoggedSecond != position.inSeconds) {
-                        _lastLoggedSecond = position.inSeconds;
-                        AppLogger.log('PodcastPlayer: positionStream builder called, pos: ${position.inSeconds}s, dur: ${duration.inSeconds}s');
+                    if (_lastPositionLogSecond != position.inSeconds &&
+                        position.inSeconds % 5 == 0) {
+                        _lastPositionLogSecond = position.inSeconds;
+                        AppLogger.log('PodcastPlayer: positionStream builder called, pos: ${position.inSeconds}s, dur: ${duration.inSeconds}s, $_logSubject');
                     }
 
                     int currentStep = _seekStep;
@@ -429,6 +481,7 @@ class _PodcastEpisodePlayerScreenState
             ),
           ],
         ),
+      ),
     );
   }
 }
