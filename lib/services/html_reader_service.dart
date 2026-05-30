@@ -1,5 +1,6 @@
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
+import '../utils/app_logger.dart';
 
 class ArticleContent {
   final String title;
@@ -793,6 +794,8 @@ class HtmlReaderService {
         finalContent = "Link esterno: $url";
       }
     }
+
+    AppLogger.log("====== PARSER DEBUG ======\nRAW HTML START\n$htmlContent\nRAW HTML END\n\nEXTRACTED TEXT START\n$finalContent\nEXTRACTED TEXT END\n==========================");
 
     return ArticleContent(title: title, content: finalContent);
   }
