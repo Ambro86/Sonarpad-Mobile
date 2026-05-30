@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
@@ -212,6 +213,13 @@ class _PodcastEpisodePlayerScreenState
         'lifecycle=$_lastLifecycleState '
         'primaryFocus=${focus?.context?.widget.runtimeType}, $_logSubject',
       );
+      
+      final rootNode = RendererBinding.instance.rootPipelineOwner.semanticsOwner?.rootSemanticsNode;
+      if (rootNode != null) {
+        AppLogger.log('PodcastPlayer Semantics Tree:\n${rootNode.toStringDeep()}');
+      } else {
+        AppLogger.log('PodcastPlayer Semantics Tree: NULL (semantics not generated/enabled)');
+      }
     });
   }
 
@@ -459,17 +467,8 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
     return _format(Duration(minutes: (d.inSeconds / 60).round()));
   }
 
-  void _seekBy(int seconds) {
-    final newPos = _visiblePosition + Duration(seconds: seconds);
-    if (newPos < Duration.zero) {
-      widget.audio.seek(Duration.zero);
-    } else if (newPos > _duration) {
-      widget.audio.seek(_duration);
-    } else {
-      widget.audio.seek(newPos);
   @override
   Widget build(BuildContext context) {
-
     final position = _visiblePosition;
     if (_lastPositionLogSecond != position.inSeconds &&
         position.inSeconds % 5 == 0) {
