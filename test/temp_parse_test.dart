@@ -6,6 +6,7 @@ void main() {
   test('Temp Parse', () async {
     final inputFile = File(r'C:\rustnotepad\rustnotepad\target\debug\debug_last_fetch.txt');
     if (!inputFile.existsSync()) {
+      // ignore: avoid_print
       print('Skipping test, input file not found');
       return;
     }

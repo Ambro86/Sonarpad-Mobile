@@ -73,6 +73,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
                   text: ctrl.text.trim(),
                 );
                 await _service.addEvent(ev);
+                if (!context.mounted) return;
                 Navigator.of(context).pop();
                 _loadEvents();
               }

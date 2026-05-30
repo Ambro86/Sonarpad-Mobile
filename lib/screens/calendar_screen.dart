@@ -4,7 +4,6 @@ import '../l10n/app_localizations.dart';
 import '../services/calendar/calendar_service.dart';
 import '../models/calendar_event.dart';
 import 'calendar_day_screen.dart';
-import '../services/accessibility_feedback_service.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -91,9 +90,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
           }
 
           String prefix = '';
-          if (offset == 0) prefix = 'Oggi, ';
-          else if (offset == 1) prefix = 'Domani, ';
-          else if (offset == -1) prefix = 'Ieri, ';
+          if (offset == 0) {
+            prefix = 'Oggi, ';
+          } else if (offset == 1) {
+            prefix = 'Domani, ';
+          } else if (offset == -1) {
+            prefix = 'Ieri, ';
+          }
 
           final fullTitle = '$prefix$capTitle';
 
