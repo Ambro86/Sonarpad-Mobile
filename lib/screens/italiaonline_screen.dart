@@ -110,37 +110,70 @@ class ItaliaOnlineResultsScreen extends StatefulWidget {
 class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
   final _service = ItaliaOnlineService();
   SearchResponse? _response;
+  final List<SearchResult> _results = [];
   String? _error;
   bool _loading = true;
+  bool _loadingMore = false;
+  int _currentPage = 1;
 
   @override
   void initState() {
     super.initState();
+    _currentPage = widget.query.page;
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  Future<void> _load({bool loadMore = false}) async {
+    if (loadMore) {
+      setState(() {
+        _loadingMore = true;
+        _error = null;
+      });
+    } else {
+      setState(() {
+        _loading = true;
+        _error = null;
+        _results.clear();
+      });
+    }
 
     try {
-      final res = await _service.search(widget.query);
+      final query = SearchQuery(
+        kind: widget.query.kind,
+        what: widget.query.what,
+        where: widget.query.where,
+        page: _currentPage,
+      );
+      final res = await _service.search(query);
       if (mounted) {
         setState(() {
           _response = res;
-          _loading = false;
+          _results.addAll(res.results);
+          if (loadMore) {
+            _loadingMore = false;
+          } else {
+            _loading = false;
+          }
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _error = e.toString();
-          _loading = false;
+          if (loadMore) {
+            _loadingMore = false;
+          } else {
+            _loading = false;
+          }
         });
       }
     }
+  }
+
+  void _loadNextPage() {
+    if (_loadingMore) return;
+    _currentPage++;
+    _load(loadMore: true);
   }
 
   Future<void> _openDetail(SearchResult result) async {
@@ -238,14 +271,26 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
       );
     }
 
-    if (res.results.isEmpty) {
+    if (_results.isEmpty) {
       return const Center(child: Text('Nessun risultato trovato.'));
     }
 
     return ListView.builder(
-      itemCount: res.results.length,
+      itemCount: _results.length + (res.isLastPage ? 0 : 1),
       itemBuilder: (context, index) {
-        final r = res.results[index];
+        if (index == _results.length) {
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: _loadingMore
+                ? const Center(child: CircularProgressIndicator())
+                : ElevatedButton(
+                    onPressed: _loadNextPage,
+                    child: const Text('Carica altri risultati'),
+                  ),
+          );
+        }
+
+        final r = _results[index];
         final subtitle = [
           if (r.category != null) r.category,
           if (r.address != null) r.address,

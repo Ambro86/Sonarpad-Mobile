@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
-import 'package:reader_mode/reader_mode.dart' as reader_mode;
 import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart';
@@ -13,14 +12,20 @@ import 'news_sources/english_news_sources.dart';
 import 'news_sources/italian_news_sources.dart';
 import 'news_sources/news_rss_source.dart';
 
+import 'html_reader_service.dart';
 import 'news_sources/french_news_sources.dart';
 import 'news_sources/spanish_news_sources.dart';
 
 enum NewsLanguage { italian, english, french, spanish }
 
-enum _BrowserFetchProfile { chrome, iphone }
-
 extension NewsLanguageInfo on NewsLanguage {
+  String get code => switch (this) {
+        NewsLanguage.italian => 'it',
+        NewsLanguage.english => 'en',
+        NewsLanguage.french => 'fr',
+        NewsLanguage.spanish => 'es',
+      };
+
   String label(AppLocalizations l10n) => switch (this) {
         NewsLanguage.italian => l10n.italian,
         NewsLanguage.english => l10n.english,
@@ -36,10 +41,13 @@ extension NewsLanguageInfo on NewsLanguage {
       };
 }
 
+enum _BrowserFetchProfile { chrome, iphone }
+
 class NewsService {
   static final _corriereHomeFeedUri = Uri.parse(
     'https://xml2.corriereobjects.it/feed-hp/homepage-restyle-2025.xml',
   );
+  
   static const _chromeClientSettings = rhttp.ClientSettings(
     emulator: rhttp.Emulation.chrome136,
     timeoutSettings: rhttp.TimeoutSettings(
@@ -219,7 +227,7 @@ class NewsService {
     return null;
   }
 
-  Future<NewsArticleContent> fetchArticleContent(NewsArticle article) async {
+  Future<NewsArticleContent> fetchArticleContent(NewsArticle article, {required NewsLanguage language}) async {
     final resolvedUrl = await _resolveArticleUrl(article.link);
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
       return NewsArticleContent(text: article.summary, url: article.link);
@@ -240,7 +248,7 @@ class NewsService {
     if (_isGoogleConsentPage(html) || _isGoogleFullCoveragePage(html)) {
       return NewsArticleContent(text: article.summary, url: article.link);
     }
-    var text = _extractArticleText(html, baseUri: resolvedUrl);
+    var text = _extractArticleText(html, language: language);
     if (fetch.profile != _BrowserFetchProfile.iphone &&
         _isWeakArticleText(text, article.summary)) {
       final iphoneResponse = await _browserGetWithProfile(
@@ -257,7 +265,7 @@ class NewsService {
           iphoneResponse.bodyBytes,
           allowMalformed: true,
         );
-        final iphoneText = _extractArticleText(iphoneHtml, baseUri: resolvedUrl);
+        final iphoneText = _extractArticleText(iphoneHtml, language: language);
         if (iphoneText.trim().length > text.trim().length) {
           text = iphoneText;
         }
@@ -481,15 +489,13 @@ class NewsService {
     return rest.substring(0, to);
   }
 
-  String _extractArticleText(String html, {String? baseUri}) {
-    final article = reader_mode.parse(
-      html,
-      baseUri: baseUri,
-      charThreshold: 250,
-    );
-    final readerText = _cleanHtml(article?.textContent ?? '');
-    if (readerText.length >= 400) return readerText;
-
+  String _extractArticleText(String html, {required NewsLanguage language}) {
+    final article = HtmlReaderService.readerModeExtract(html, language.code);
+    if (article != null && article.content.isNotEmpty) {
+      return article.content;
+    }
+    
+    // Fallback using simple parsing
     final document = html_parser.parse(html);
     final articleElements = document.getElementsByTagName('article');
     final paragraphs = articleElements.isEmpty

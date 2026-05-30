@@ -51,6 +51,7 @@ class _NewsScreenState extends State<NewsScreen> {
         settings: const RouteSettings(name: '/news/source'),
         builder: (_) => _NewsSourceArticlesScreen(
           source: source,
+          language: _language!,
         ),
       ),
     );
@@ -181,11 +182,13 @@ class _NewsScreenState extends State<NewsScreen> {
 class _NewsSourceArticlesScreen extends StatefulWidget {
   const _NewsSourceArticlesScreen({
     required this.source,
+    required this.language,
     this.initialUri,
     this.title,
   });
 
   final NewsRssSource source;
+  final NewsLanguage language;
   final Uri? initialUri;
   final String? title;
 
@@ -214,6 +217,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         settings: const RouteSettings(name: '/news/source/category'),
         builder: (_) => _NewsSourceArticlesScreen(
           source: widget.source,
+          language: widget.language,
           initialUri: uri,
           title: title,
         ),
@@ -301,7 +305,10 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
               ),
             ),
           Expanded(
-            child: _NewsArticleList(future: _future),
+            child: _NewsArticleList(
+              future: _future,
+              language: widget.language,
+            ),
           ),
         ],
       ),
@@ -493,9 +500,11 @@ class _PositionSliderDialogState extends State<_PositionSliderDialog> {
 class _NewsArticleList extends StatelessWidget {
   const _NewsArticleList({
     required this.future,
+    required this.language,
   });
 
   final Future<List<NewsArticle>> future;
+  final NewsLanguage language;
 
   @override
   Widget build(BuildContext context) {
@@ -533,7 +542,7 @@ class _NewsArticleList extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   settings: const RouteSettings(name: '/news/article'),
-                  builder: (_) => NewsWebViewScreen(article: article),
+                  builder: (_) => NewsWebViewScreen(article: article, language: language),
                 ),
               ),
             );

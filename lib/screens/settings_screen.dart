@@ -567,7 +567,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     Semantics(
                       container: true,
-                      label: 'Velocità lettura',
+                      label: l10n.settingsVoiceSpeedLabel,
                       value: '${_ttsSpeed.toStringAsFixed(1)}x',
                       increasedValue:
                           '${_sliderStep(_ttsSpeed, 0.1).toStringAsFixed(1)}x',
@@ -604,7 +604,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     Semantics(
                       container: true,
-                      label: 'Tono voce',
+                      label: l10n.settingsVoicePitchLabel,
                       value: '${_ttsPitch.toStringAsFixed(1)}x',
                       increasedValue:
                           '${_sliderStep(_ttsPitch, 0.1).toStringAsFixed(1)}x',

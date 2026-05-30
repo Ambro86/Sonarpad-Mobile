@@ -274,7 +274,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           OutlinedButton.icon(
             onPressed: () => AccessibilityFeedbackService.push(
               context,
-              builder: (_) => NewsWebViewScreen(article: article),
+              builder: (_) => NewsWebViewScreen(article: article, language: widget.language),
               routeName: 'news-webview',
             ),
             icon: const Icon(Icons.article),

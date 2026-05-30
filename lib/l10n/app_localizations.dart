@@ -781,7 +781,9 @@ class AppLocalizations {
   String get settingsDefaultVoiceHint => _isEn ? 'Default voice' : (_isFr ? 'Voix par défaut' : (_isEs ? 'Voz predeterminada' : 'Voce predefinita'));
   String get settingsDefaultVoice => _isEn ? 'Default' : (_isFr ? 'Défaut' : (_isEs ? 'Predeterminada' : 'Predefinita'));
   String get settingsVoiceSpeed => _isEn ? 'Speed: ' : (_isFr ? 'Vitesse: ' : (_isEs ? 'Velocidad: ' : 'Velocità lettura: '));
-  String get settingsVoicePitch => _isEn ? 'Pitch: ' : (_isFr ? 'Ton: ' : (_isEs ? 'Tono: ' : 'Tono voce: '));
+  String get settingsVoicePitch => _isEn ? 'Pitch: ' : (_isFr ? 'Ton: ' : (_isEs ? 'Tono: ' : 'Tono: '));
+  String get settingsVoiceSpeedLabel => _isEn ? 'Reading speed' : (_isFr ? 'Vitesse de lecture' : (_isEs ? 'Velocidad de lectura' : 'Velocità lettura'));
+  String get settingsVoicePitchLabel => _isEn ? 'Pitch' : (_isFr ? 'Ton' : (_isEs ? 'Tono' : 'Tono'));
   String get settingsTestVoice => _isEn ? 'Test voice' : (_isFr ? 'Tester la voix' : (_isEs ? 'Probar voz' : 'Testa voce'));
   String get settingsTestingVoice => _isEn ? 'Playing...' : (_isFr ? 'Lecture...' : (_isEs ? 'Reproduciendo...' : 'Riproduzione in corso...'));
   String get settingsAutoBookmark => _isEn ? 'Enable automatic bookmark saving' : (_isFr ? 'Activer la sauvegarde automatique du signet' : (_isEs ? 'Habilitar guardado automático de marcadores' : 'Segnalibro automatico per testi e contenuti multimediali'));

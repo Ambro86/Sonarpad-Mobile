@@ -14,9 +14,10 @@ import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
-  const NewsWebViewScreen({super.key, required this.article});
+  const NewsWebViewScreen({super.key, required this.article, required this.language});
 
   final NewsArticle article;
+  final NewsLanguage language;
 
   @override
   State<NewsWebViewScreen> createState() => _NewsWebViewScreenState();
@@ -141,7 +142,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<void> _loadReaderArticle() async {
     try {
-      final content = await _newsService.fetchArticleContent(widget.article);
+      final content = await _newsService.fetchArticleContent(widget.article, language: widget.language);
       if (!mounted) return;
       final text = content.text.trim();
       setState(() {
@@ -185,7 +186,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<String?> _extractReaderArticleText() async {
-    final content = await _newsService.fetchArticleContent(widget.article);
+    final content = await _newsService.fetchArticleContent(widget.article, language: widget.language);
     final text = _cleanVisibleText(content.text);
     return text.length >= 400 ? text : null;
   }
@@ -362,7 +363,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     setState(() => _status = l10n.loadingArticle);
     try {
-      final content = await _newsService.fetchArticleContent(widget.article);
+      final content = await _newsService.fetchArticleContent(widget.article, language: widget.language);
       if (content.text.trim().length >= 200) return content.text.trim();
     } catch (e) {
       debugPrint('Sonarpad TTS: article HTTP extraction failed: $e');

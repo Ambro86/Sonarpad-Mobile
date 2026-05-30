@@ -347,19 +347,25 @@ class ItaliaOnlineService {
 
     if (phones.isNotEmpty) {
       buffer.writeln('Numeri di telefono:');
-      for (final p in phones) buffer.writeln(p);
+      for (final p in phones) {
+        buffer.writeln(p);
+      }
       buffer.writeln();
     }
 
     if (emails.isNotEmpty) {
       buffer.writeln('Email:');
-      for (final e in emails) buffer.writeln(e);
+      for (final e in emails) {
+        buffer.writeln(e);
+      }
       buffer.writeln();
     }
 
     if (websites.isNotEmpty) {
       buffer.writeln('Siti web:');
-      for (final w in websites) buffer.writeln(w);
+      for (final w in websites) {
+        buffer.writeln(w);
+      }
       buffer.writeln();
     }
 

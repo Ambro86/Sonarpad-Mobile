@@ -463,12 +463,33 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
     return '$mins:$secs';
   }
 
-  String _roundedFormat(Duration d) {
-    return _format(Duration(minutes: (d.inSeconds / 60).round()));
+
+  void _seekBy(int seconds) {
+    final newPos = _visiblePosition + Duration(seconds: seconds);
+    if (newPos < Duration.zero) {
+      widget.audio.seek(Duration.zero);
+    } else if (newPos > _duration) {
+      widget.audio.seek(_duration);
+    } else {
+      widget.audio.seek(newPos);
+    }
   }
+
+  int _computeCurrentStep() {
+    int step = widget.seekStep;
+    if (_duration.inSeconds < step) {
+      step = (_duration.inSeconds * 0.2).round();
+      if (step < 1) step = 1;
+    }
+    return step;
+  }
+
+  void _handleIncrease() => _seekBy(_computeCurrentStep());
+  void _handleDecrease() => _seekBy(-_computeCurrentStep());
 
   @override
   Widget build(BuildContext context) {
+    if (_duration == Duration.zero) return const SizedBox();
     final position = _visiblePosition;
     if (_lastPositionLogSecond != position.inSeconds &&
         position.inSeconds % 5 == 0) {
@@ -497,17 +518,28 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
             textAlign: TextAlign.center,
           ),
         ),
-        Slider(
-          value: posSecs.clamp(0.0, durSecs > 0 ? durSecs : 1.0),
-          min: 0,
-          max: durSecs > 0 ? durSecs : 1.0,
-          semanticFormatterCallback: (double value) {
-            if (_duration == Duration.zero) return 'Caricamento';
-            return '${_roundedFormat(Duration(seconds: value.toInt()))} di ${_roundedFormat(_duration)}';
-          },
-          onChanged: _duration == Duration.zero ? null : (val) {
-            widget.audio.seek(Duration(seconds: val.toInt()));
-          },
+        Semantics(
+          container: true,
+          label: 'Posizione',
+          value: '${_format(position)} di ${_format(_duration)}',
+          increasedValue: _format(
+            position + Duration(seconds: currentStep),
+          ),
+          decreasedValue: _format(
+            position - Duration(seconds: currentStep),
+          ),
+          onIncrease: _handleIncrease,
+          onDecrease: _handleDecrease,
+          child: ExcludeSemantics(
+            child: Slider(
+              value: posSecs.clamp(0.0, durSecs),
+              min: 0,
+              max: durSecs,
+              onChanged: (val) {
+                widget.audio.seek(Duration(seconds: val.toInt()));
+              },
+            ),
+          ),
         ),
       ],
     );
