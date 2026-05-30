@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -95,7 +96,12 @@ class _PodcastEpisodePlayerScreenState
         );
         if (_loaded) await _audio.stop();
         _videoController?.dispose();
-        _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.episode.audioUrl));
+        final uri = Uri.parse(widget.episode.audioUrl);
+        if (uri.scheme == 'file') {
+          _videoController = VideoPlayerController.file(File(uri.toFilePath()));
+        } else {
+          _videoController = VideoPlayerController.networkUrl(uri);
+        }
         AppLogger.log('PodcastPlayer: video initialize start, $_logSubject');
         await _videoController!.initialize();
         AppLogger.log('PodcastPlayer: video initialize completed, $_logSubject');

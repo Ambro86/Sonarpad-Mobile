@@ -19,6 +19,9 @@ import '../services/raiplay_sound_service.dart';
 import '../services/tv_service.dart';
 import 'category_screen.dart';
 
+import '../models/podcast.dart';
+import 'podcast_episode_player_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -72,6 +75,34 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!await originalFile.exists()) return;
 
       final basename = p.basename(originalFile.path);
+      final ext = p.extension(originalFile.path).toLowerCase();
+      
+      final isAudio = ['.mp3', '.m4a', '.wav', '.ogg', '.flac', '.aac'].contains(ext);
+      final isVideo = ['.mp4', '.avi', '.mov', '.mkv'].contains(ext);
+
+      if (isAudio || isVideo) {
+        final episode = PodcastEpisode(
+          id: basename,
+          title: basename,
+          audioUrl: originalFile.uri.toString(),
+          publishedAt: DateTime.now(),
+          podcastName: 'File Locale',
+          description: '',
+        );
+        if (mounted) {
+          final navigator = Navigator.of(context);
+          navigator.push(
+            MaterialPageRoute(
+              settings: const RouteSettings(name: '/local_media_player'),
+              builder: (_) => PodcastEpisodePlayerScreen(
+                episode: episode,
+                isVideoSupported: isVideo,
+              ),
+            ),
+          );
+        }
+        return;
+      }
 
       final lib = DocumentLibraryService();
       await lib.load();
