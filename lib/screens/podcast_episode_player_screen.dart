@@ -34,7 +34,6 @@ class _PodcastEpisodePlayerScreenState
   String? _error;
   int _seekStep = 60;
   int _lastVideoBookmarkSecond = -1;
-  int _lastPositionLogSecond = -1;
   Timer? _diagnosticHeartbeat;
   AppLifecycleState? _lastLifecycleState;
 
@@ -299,10 +298,7 @@ class _PodcastEpisodePlayerScreenState
             },
           ),
         ),
-        body: Semantics(
-          container: true,
-          explicitChildNodes: true,
-          child: ListView(
+        body: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Text(
@@ -380,92 +376,11 @@ class _PodcastEpisodePlayerScreenState
             ),
             const SizedBox(height: 24),
             if (_videoController == null)
-              StreamBuilder<Duration?>(
-              stream: _audio.durationStream,
-              builder: (context, durSnapshot) {
-                final duration = durSnapshot.data ?? Duration.zero;
-                if (duration == Duration.zero) return const SizedBox();
-
-                return StreamBuilder<Duration>(
-                  stream: _audio.positionStream,
-                  builder: (context, posSnapshot) {
-                    final position = posSnapshot.data ?? Duration.zero;
-
-                    if (_lastPositionLogSecond != position.inSeconds &&
-                        position.inSeconds % 5 == 0) {
-                        _lastPositionLogSecond = position.inSeconds;
-                        AppLogger.log('PodcastPlayer: positionStream builder called, pos: ${position.inSeconds}s, dur: ${duration.inSeconds}s, $_logSubject');
-                    }
-
-                    int currentStep = _seekStep;
-                    if (duration.inSeconds < currentStep) {
-                      currentStep = (duration.inSeconds * 0.2).round();
-                      if (currentStep < 1) currentStep = 1;
-                    }
-
-                    String format(Duration d) {
-                      final mins = d.inMinutes;
-                      final secs = (d.inSeconds % 60).toString().padLeft(2, '0');
-                      return '$mins:$secs';
-                    }
-
-                    String roundedFormat(Duration d) {
-                      return format(Duration(minutes: (d.inSeconds / 60).round()));
-                    }
-
-                    void seekBy(int seconds) {
-                      final newPos = position + Duration(seconds: seconds);
-                      if (newPos < Duration.zero) {
-                        _audio.seek(Duration.zero);
-                      } else if (newPos > duration) {
-                        _audio.seek(duration);
-                      } else {
-                        _audio.seek(newPos);
-                      }
-                    }
-
-                    final posSecs = position.inSeconds.toDouble();
-                    final durSecs = duration.inSeconds.toDouble();
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        ExcludeSemantics(
-                          child: Text(
-                            '${format(position)} / ${format(duration)}',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Semantics(
-                          container: true,
-                          label: 'Posizione',
-                          value:
-                              '${roundedFormat(position)} di ${roundedFormat(duration)}',
-                          increasedValue: roundedFormat(
-                            position + Duration(seconds: currentStep),
-                          ),
-                          decreasedValue: roundedFormat(
-                            position - Duration(seconds: currentStep),
-                          ),
-                          onIncrease: () => seekBy(currentStep),
-                          onDecrease: () => seekBy(-currentStep),
-                          child: ExcludeSemantics(
-                            child: Slider(
-                            value: posSecs.clamp(0.0, durSecs),
-                            min: 0,
-                            max: durSecs,
-                            onChanged: (val) {
-                              _audio.seek(Duration(seconds: val.toInt()));
-                            },
-                          ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
+              _PodcastPositionControl(
+                audio: _audio,
+                seekStep: _seekStep,
+                logSubject: _logSubject,
+              ),
             if (_videoController == null) ...[
               const SizedBox(height: 24),
               VolumeSlider(audioPlayer: _audio),
@@ -481,7 +396,135 @@ class _PodcastEpisodePlayerScreenState
             ),
           ],
         ),
-      ),
+    );
+  }
+}
+
+class _PodcastPositionControl extends StatefulWidget {
+  const _PodcastPositionControl({
+    required this.audio,
+    required this.seekStep,
+    required this.logSubject,
+  });
+
+  final AudioPlayerService audio;
+  final int seekStep;
+  final String logSubject;
+
+  @override
+  State<_PodcastPositionControl> createState() => _PodcastPositionControlState();
+}
+
+class _PodcastPositionControlState extends State<_PodcastPositionControl> {
+  StreamSubscription<Duration?>? _durationSubscription;
+  StreamSubscription<Duration>? _positionSubscription;
+  Timer? _refreshTimer;
+  Duration _duration = Duration.zero;
+  Duration _latestPosition = Duration.zero;
+  Duration _visiblePosition = Duration.zero;
+  int _lastPositionLogSecond = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    _durationSubscription = widget.audio.durationStream.listen((duration) {
+      if (!mounted) return;
+      setState(() => _duration = duration ?? Duration.zero);
+    });
+    _positionSubscription = widget.audio.positionStream.listen((position) {
+      _latestPosition = position;
+    });
+    _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted || _latestPosition == _visiblePosition) return;
+      setState(() => _visiblePosition = _latestPosition);
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    _durationSubscription?.cancel();
+    _positionSubscription?.cancel();
+    super.dispose();
+  }
+
+  String _format(Duration d) {
+    final mins = d.inMinutes;
+    final secs = (d.inSeconds % 60).toString().padLeft(2, '0');
+    return '$mins:$secs';
+  }
+
+  String _roundedFormat(Duration d) {
+    return _format(Duration(minutes: (d.inSeconds / 60).round()));
+  }
+
+  void _seekBy(int seconds) {
+    final newPos = _visiblePosition + Duration(seconds: seconds);
+    if (newPos < Duration.zero) {
+      widget.audio.seek(Duration.zero);
+    } else if (newPos > _duration) {
+      widget.audio.seek(_duration);
+    } else {
+      widget.audio.seek(newPos);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_duration == Duration.zero) return const SizedBox();
+
+    final position = _visiblePosition;
+    if (_lastPositionLogSecond != position.inSeconds &&
+        position.inSeconds % 5 == 0) {
+      _lastPositionLogSecond = position.inSeconds;
+      AppLogger.log(
+        'PodcastPlayer: position control updated, pos: ${position.inSeconds}s, '
+        'dur: ${_duration.inSeconds}s, ${widget.logSubject}',
+      );
+    }
+
+    int currentStep = widget.seekStep;
+    if (_duration.inSeconds < currentStep) {
+      currentStep = (_duration.inSeconds * 0.2).round();
+      if (currentStep < 1) currentStep = 1;
+    }
+
+    final posSecs = position.inSeconds.toDouble();
+    final durSecs = _duration.inSeconds.toDouble();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ExcludeSemantics(
+          child: Text(
+            '${_format(position)} / ${_format(_duration)}',
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Semantics(
+          container: true,
+          label: 'Posizione',
+          value: '${_roundedFormat(position)} di ${_roundedFormat(_duration)}',
+          increasedValue: _roundedFormat(
+            position + Duration(seconds: currentStep),
+          ),
+          decreasedValue: _roundedFormat(
+            position - Duration(seconds: currentStep),
+          ),
+          onIncrease: () => _seekBy(currentStep),
+          onDecrease: () => _seekBy(-currentStep),
+          child: ExcludeSemantics(
+            child: Slider(
+              value: posSecs.clamp(0.0, durSecs),
+              min: 0,
+              max: durSecs,
+              onChanged: (val) {
+                widget.audio.seek(Duration(seconds: val.toInt()));
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -36,8 +36,6 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   String? _readerTitle;
   String? _readerText;
   String? _status;
-  int _readyChunks = 0;
-  int _totalChunks = 0;
 
   static const _ttsCommands = MethodChannel('sonarpad/tts_commands');
   static const _ttsEvents = EventChannel('sonarpad/tts_events');
@@ -393,9 +391,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     setState(() {
       _speaking = true;
       _ttsPaused = false;
-      _readyChunks = 0;
-      _totalChunks = 0;
-      _status = l10n.preparingEdgeTts;
+      _status = null;
     });
 
     try {
@@ -403,7 +399,6 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final voice = await _voice();
       final engine = await _settings.loadTtsEngine();
       final chunks = _tts.splitTextForStreaming(text, maxChunkChars: 650);
-      _totalChunks = chunks.length;
       debugPrint(
         'Sonarpad TTS: web article read requested '
         'title="${widget.article.title}" voice=$voice '
@@ -445,18 +440,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             await Future.delayed(const Duration(milliseconds: 100));
           }
           if (!mounted || !_speaking) break;
-          setState(() {
-            _readyChunks = i + 1;
-            _status = l10n.playingChunk(i + 1, _totalChunks, 0);
-          });
           await _flutterTts.speak(chunks[i]);
         }
 
         if (mounted) {
-          setState(() {
-            _status = l10n.readingFinished(
-                _totalChunks, _totalChunks, l10n.libraryNotSpecified);
-          });
+          _status = null;
         }
       } else {
         final controller = StreamController<File>();
@@ -472,10 +460,6 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               'path=${file.path} size=$size',
             );
             controller.add(file);
-            if (!mounted) return;
-            setState(() {
-              _readyChunks = i + 1;
-            });
           }
           generationDone = true;
           await controller.close();
@@ -485,34 +469,22 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           await controller.close();
         });
 
-        var index = 0;
         await for (final file in controller.stream) {
           while (_ttsPaused) {
             if (!mounted || !_speaking) break;
             await Future.delayed(const Duration(milliseconds: 100));
           }
           if (!mounted || !_speaking) break;
-          final size = await file.length();
-          setState(
-            () => _status = l10n.playingChunk(index + 1, _totalChunks, size),
-          );
           await _audio.playFilesSequentially([file]);
-          index++;
         }
 
         await generation;
         if (generationError != null) throw Exception(generationError);
 
         if (!mounted) return;
-        setState(() {
-          _status = generationDone
-              ? l10n.readingFinished(
-                  _readyChunks,
-                  _totalChunks,
-                  _tts.lastLibraryPath ?? l10n.libraryNotSpecified,
-                )
-              : l10n.readingStopped;
-        });
+        if (!generationDone) {
+          setState(() => _status = l10n.readingStopped);
+        }
       }
     } catch (e) {
       debugPrint('Sonarpad TTS: web article reading error=$e');
@@ -577,14 +549,6 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(_status!),
-                    if (_totalChunks > 0) ...[
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(
-                        value: _readyChunks / _totalChunks,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(l10n.audioChunksReady(_readyChunks, _totalChunks)),
-                    ],
                   ],
                 ),
               ),
@@ -703,13 +667,6 @@ class _ReaderArticleView extends StatelessWidget {
       } else {
         parts.add(current);
         current = sentence;
-      }
-
-      while (current.length > maxLength) {
-        final splitAt = current.lastIndexOf(' ', maxLength);
-        final index = splitAt > 80 ? splitAt : maxLength;
-        parts.add(current.substring(0, index).trim());
-        current = current.substring(index).trim();
       }
     }
 

@@ -253,11 +253,14 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final showCategories = widget.initialUri == null;
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.title ?? widget.source.name)),
       body: Column(
         children: [
-          if (widget.source.categories != null &&
+          if (showCategories &&
+              widget.source.categories != null &&
               widget.source.categories!.isNotEmpty)
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,

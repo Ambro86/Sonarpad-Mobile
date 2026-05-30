@@ -111,7 +111,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       _ttsPaused = false;
       _readyChunks = 0;
       _totalChunks = 0;
-      _status = l10n.preparingEdgeTts;
+      _status = null;
     });
 
     try {
@@ -160,18 +160,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             await Future.delayed(const Duration(milliseconds: 100));
           }
           if (!mounted || !_speaking) break;
-          setState(() {
-            _readyChunks = i + 1;
-            _status = l10n.playingChunk(i + 1, _totalChunks, 0);
-          });
+          _readyChunks = i + 1;
           await _flutterTts.speak(chunks[i]);
         }
 
         if (mounted) {
-          setState(() {
-            _status = l10n.readingFinished(
-                _totalChunks, _totalChunks, l10n.libraryNotSpecified);
-          });
+          _status = null;
         }
       } else {
         // Coda semplice: appena il primo blocco è pronto parte la riproduzione,
@@ -191,10 +185,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             );
             queue.add(file);
             controller.add(file);
-            if (!mounted) return;
-            setState(() {
-              _readyChunks = i + 1;
-            });
+            _readyChunks = i + 1;
           }
           generationDone = true;
           await controller.close();
@@ -211,13 +202,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             await Future.delayed(const Duration(milliseconds: 100));
           }
           if (!mounted || !_speaking) break;
-          final size = await file.length();
           debugPrint(
             'Sonarpad TTS: playing chunk ${index + 1}/$_totalChunks '
-            'path=${file.path} size=$size',
+            'path=${file.path}',
           );
-          setState(
-              () => _status = l10n.playingChunk(index + 1, _totalChunks, size));
           await _audio.playFilesSequentially([file]);
           index++;
         }
@@ -230,15 +218,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           'Sonarpad TTS: reading finished ready=$_readyChunks total=$_totalChunks '
           'library=${_tts.lastLibraryPath}',
         );
-        setState(() {
-          _status = generationDone
-              ? l10n.readingFinished(
-                  _readyChunks,
-                  _totalChunks,
-                  _tts.lastLibraryPath ?? l10n.libraryNotSpecified,
-                )
-              : l10n.readingStopped;
-        });
+        if (!generationDone) {
+          setState(() => _status = l10n.readingStopped);
+        }
       }
     } catch (e) {
       debugPrint('Sonarpad TTS: reading error=$e');
@@ -277,12 +259,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             liveRegion: false,
             child: Text(_status ?? l10n.readyStatus),
           ),
-          if (_totalChunks > 0) ...[
-            const SizedBox(height: 8),
-            LinearProgressIndicator(value: _readyChunks / _totalChunks),
-            const SizedBox(height: 8),
-            Text(l10n.audioChunksReady(_readyChunks, _totalChunks)),
-          ],
           const SizedBox(height: 12),
           FilledButton.icon(
             onPressed: _speaking ? null : _readWithEdgeTtsStreaming,
