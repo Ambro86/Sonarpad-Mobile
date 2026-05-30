@@ -178,6 +178,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _ttsPaused = false;
     _playingChunkIndex = -1;
     _ttsStatus = null;
+    await _audio.startKeepAlive();
 
     try {
       final engine = await _settings.loadTtsEngine();
@@ -297,6 +298,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         SnackBar(content: Text('${AppLocalizations.of(context).ttsError}: $e')),
       );
     } finally {
+      await _audio.stopKeepAlive();
       if (mounted) {
         setState(() => _speaking = false);
       }
@@ -315,6 +317,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       [
         IosTextToSpeechAudioCategoryOptions.allowBluetooth,
         IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+        IosTextToSpeechAudioCategoryOptions.mixWithOthers,
       ],
       IosTextToSpeechAudioMode.defaultMode,
     );
@@ -336,6 +339,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _playingChunkIndex = -1;
       _ttsStatus = 'Lettura interrotta.';
     });
+    await _audio.stopKeepAlive();
     await _audio.stop();
     await _flutterTts.stop();
   }

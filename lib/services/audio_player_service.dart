@@ -518,6 +518,34 @@ class AudioPlayerService {
     return file;
   }
 
+  static final AudioPlayer _keepAlivePlayer = AudioPlayer();
+
+  Future<void> startKeepAlive() async {
+    if (!Platform.isIOS && !Platform.isAndroid) return;
+    try {
+      final file = await _silentWavFile();
+      await _keepAlivePlayer.setLoopMode(LoopMode.all);
+      await _keepAlivePlayer.setVolume(0.01);
+      await _keepAlivePlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.file(file.path),
+          tag: const MediaItem(id: 'keepalive', album: 'Sonarpad', title: 'Lettura in corso...'),
+        ),
+      );
+      await _keepAlivePlayer.play();
+    } catch (e) {
+      AppLogger.log('Sonarpad audio: startKeepAlive error $e');
+    }
+  }
+
+  Future<void> stopKeepAlive() async {
+    try {
+      await _keepAlivePlayer.stop();
+    } catch (e) {
+      AppLogger.log('Sonarpad audio: stopKeepAlive error $e');
+    }
+  }
+
   Uint8List _silentWavBytes() {
     const sampleRate = 8000;
     const seconds = 1;
