@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isSecretCodeValid = false;
   bool _isTvCodeValid = false;
   bool _isRaiPlayValid = false;
-  bool _isGroupingEnabled = true;
+  bool _isGroupingEnabled = false;
 
   late AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;

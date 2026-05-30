@@ -41,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late TextEditingController _tvSecretCodeController;
   bool _testingVoice = false;
   bool _autoBookmark = true;
-  bool _homeGroupingEnabled = true;
+  bool _homeGroupingEnabled = false;
   int _seekSliderStep = 60;
   final _audio = AudioPlayerService();
   String _savedTvSecretCode = '';
