@@ -90,18 +90,35 @@ class NewsService {
         .toList();
   }
 
-  Future<void> addCustomSource(NewsLanguage language, String name, String url) async {
+  Future<void> addCustomSource(NewsLanguage language, String name, String urlOrSearch) async {
     final prefs = await SharedPreferences.getInstance();
     final customSources = await getCustomSources(language);
 
+    String finalUrl = urlOrSearch.trim();
+    if (!finalUrl.toLowerCase().startsWith('http://') && !finalUrl.toLowerCase().startsWith('https://')) {
+      if (finalUrl.contains('.') && !finalUrl.contains(' ')) {
+        finalUrl = 'https://$finalUrl';
+      } else {
+        final query = Uri.encodeComponent(finalUrl);
+        String hl, gl, ceid;
+        switch (language) {
+          case NewsLanguage.italian: hl = 'it'; gl = 'IT'; ceid = 'IT:it'; break;
+          case NewsLanguage.english: hl = 'en-US'; gl = 'US'; ceid = 'US:en'; break;
+          case NewsLanguage.french: hl = 'fr'; gl = 'FR'; ceid = 'FR:fr'; break;
+          case NewsLanguage.spanish: hl = 'es-419'; gl = '419'; ceid = '419:es'; break;
+        }
+        finalUrl = 'https://news.google.com/rss/search?q=$query&hl=$hl&gl=$gl&ceid=$ceid';
+      }
+    }
+
     // Controlla se esiste già
-    if (customSources.any((s) => s.uri.toString() == url)) {
+    if (customSources.any((s) => s.uri.toString() == finalUrl)) {
       throw Exception('Sorgente già presente');
     }
 
     final newSource = NewsRssSource(
       name: name,
-      uri: Uri.parse(url),
+      uri: Uri.parse(finalUrl),
       isCustom: true,
     );
 
@@ -290,27 +307,74 @@ class NewsService {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore RSS ${rssSource.name}: ${response.statusCode}');
     }
-    final doc = XmlDocument.parse(utf8.decode(response.bodyBytes, allowMalformed: true));
-    final items = doc.findAllElements('item');
+    final decodedBody = utf8.decode(response.bodyBytes, allowMalformed: true);
+    try {
+      final doc = XmlDocument.parse(decodedBody);
+      final items = doc.findAllElements('item');
+      var index = 0;
+      return items.map((item) {
+        index++;
+        final title = _text(item, 'title');
+        final link = _text(item, 'link');
+        final description = _cleanRssDescription(_text(item, 'description'));
+        final source = item.findElements('source').isNotEmpty
+            ? item.findElements('source').first.innerText.trim()
+            : rssSource.name;
+        final pubDateRaw = _text(item, 'pubDate');
+        return NewsArticle(
+          id: '${rssSource.name}_$index',
+          title: _cleanGoogleTitle(title),
+          link: link,
+          summary: description,
+          source: source,
+          publishedAt: DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
+        );
+      }).toList();
+    } catch (_) {
+      return _extractArticlesFromHtml(decodedBody, rssSource);
+    }
+  }
+
+  List<NewsArticle> _extractArticlesFromHtml(String htmlStr, NewsRssSource rssSource) {
+    final doc = html_parser.parse(htmlStr);
+    final links = doc.querySelectorAll('a');
+    final articles = <NewsArticle>[];
+    final seenHrefs = <String>{};
     var index = 0;
-    return items.map((item) {
+    
+    for (final link in links) {
+      final href = link.attributes['href'];
+      if (href == null || href.isEmpty || href.startsWith('#') || href.startsWith('javascript:')) continue;
+      
+      final text = link.text.trim();
+      if (text.length < 30) continue;
+      
+      final fullUrl = _resolveRelativeUrl(href, rssSource.uri.toString());
+      if (seenHrefs.contains(fullUrl)) continue;
+      seenHrefs.add(fullUrl);
+      
       index++;
-      final title = _text(item, 'title');
-      final link = _text(item, 'link');
-      final description = _cleanRssDescription(_text(item, 'description'));
-      final source = item.findElements('source').isNotEmpty
-          ? item.findElements('source').first.innerText.trim()
-          : rssSource.name;
-      final pubDateRaw = _text(item, 'pubDate');
-      return NewsArticle(
-        id: '${rssSource.name}_$index',
-        title: _cleanGoogleTitle(title),
-        link: link,
-        summary: description,
-        source: source,
-        publishedAt: DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
-      );
-    }).toList();
+      articles.add(NewsArticle(
+        id: '${rssSource.name}_html_$index',
+        title: text.replaceAll(RegExp(r'\s+'), ' '),
+        link: fullUrl,
+        summary: '',
+        source: rssSource.name,
+        publishedAt: DateTime.now(),
+      ));
+      if (articles.length >= 30) break;
+    }
+    return articles;
+  }
+
+  String _resolveRelativeUrl(String href, String baseUrl) {
+    if (href.startsWith('http')) return href;
+    try {
+      final base = Uri.parse(baseUrl);
+      return base.resolve(href).toString();
+    } catch (_) {
+      return href;
+    }
   }
 
   String _text(XmlElement parent, String name) {

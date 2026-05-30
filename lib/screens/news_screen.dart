@@ -82,7 +82,7 @@ class _NewsScreenState extends State<NewsScreen> {
             const SizedBox(height: 8),
             TextField(
               controller: urlCtrl,
-              decoration: const InputDecoration(labelText: 'URL feed RSS'),
+              decoration: const InputDecoration(labelText: 'URL sito, feed RSS o parola di ricerca'),
               keyboardType: TextInputType.url,
             ),
           ],
