@@ -60,16 +60,22 @@ class _VolumeSliderState extends State<VolumeSlider> {
           ),
         ),
         Semantics(
-          label: 'Volume',
-          child: Slider(
-            value: _volume,
-            min: 0.0,
-            max: 1.0,
-            divisions: 10,
-            onChanged: _setVolume,
-            semanticFormatterCallback: (double newValue) {
-              return '${(newValue * 100).round()}%';
-            },
+          key: const ValueKey('volume_slider_semantics'),
+          slider: true,
+          label: 'Regola il volume',
+          value: '$percentage%',
+          increasedValue: '$increasedPercentage%',
+          decreasedValue: '$decreasedPercentage%',
+          onIncrease: () => _setVolume((_volume + 0.1).clamp(0.0, 1.0)),
+          onDecrease: () => _setVolume((_volume - 0.1).clamp(0.0, 1.0)),
+          child: ExcludeSemantics(
+            child: Slider(
+              value: _volume,
+              min: 0.0,
+              max: 1.0,
+              divisions: 10,
+              onChanged: _setVolume,
+            ),
           ),
         ),
       ],
