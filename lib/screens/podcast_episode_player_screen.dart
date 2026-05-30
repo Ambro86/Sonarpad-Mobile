@@ -33,6 +33,7 @@ class _PodcastEpisodePlayerScreenState
   bool _loading = false;
   String? _error;
   int _seekStep = 60;
+  int _lastVideoBookmarkSecond = -1;
   int _lastPositionLogSecond = -1;
   int _semanticsRefreshTick = 0;
   Timer? _diagnosticHeartbeat;
@@ -104,8 +105,8 @@ class _PodcastEpisodePlayerScreenState
           if (!mounted || _videoController == null) return;
           final currentSecond = _videoController!.value.position.inSeconds;
           if (currentSecond > 0 && currentSecond % 15 == 0) {
-            if (_lastLoggedSecond != currentSecond) {
-               _lastLoggedSecond = currentSecond;
+            if (_lastVideoBookmarkSecond != currentSecond) {
+               _lastVideoBookmarkSecond = currentSecond;
                _saveVideoBookmark();
             }
           }
