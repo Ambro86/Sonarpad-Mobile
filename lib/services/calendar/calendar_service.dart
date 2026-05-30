@@ -3,6 +3,9 @@ import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/calendar_event.dart';
 
+import 'package:device_calendar/device_calendar.dart' as dc;
+import 'package:timezone/timezone.dart' as tz;
+
 class CalendarService {
   static const _eventsKey = 'sonarpad_calendar_events';
 
@@ -23,6 +26,53 @@ class CalendarService {
     final events = await getEvents();
     events.add(event);
     await _saveEvents(events);
+    
+    try {
+      await _syncToDeviceCalendar(event);
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  Future<void> _syncToDeviceCalendar(CalendarEvent event) async {
+    final deviceCalendarPlugin = dc.DeviceCalendarPlugin();
+    var permissionsGranted = await deviceCalendarPlugin.hasPermissions();
+    if (permissionsGranted.isSuccess && !(permissionsGranted.data ?? false)) {
+      permissionsGranted = await deviceCalendarPlugin.requestPermissions();
+      if (!permissionsGranted.isSuccess || !(permissionsGranted.data ?? false)) {
+        return;
+      }
+    }
+
+    final calendarsResult = await deviceCalendarPlugin.retrieveCalendars();
+    if (!calendarsResult.isSuccess || calendarsResult.data == null || calendarsResult.data!.isEmpty) {
+      return;
+    }
+
+    dc.Calendar? calendar;
+    try {
+      calendar = calendarsResult.data!.firstWhere((c) => (c.isDefault ?? false) && !(c.isReadOnly ?? true));
+    } catch (_) {
+      try {
+        calendar = calendarsResult.data!.firstWhere((c) => !(c.isReadOnly ?? true));
+      } catch (_) {}
+    }
+    
+    if (calendar == null) return;
+
+    final location = tz.getLocation('Europe/Rome');
+    final eventDate = tz.TZDateTime.from(event.date, location);
+    
+    final deviceEvent = dc.Event(
+      calendar.id,
+      title: event.text,
+      description: 'Promemoria da Sonarpad',
+      start: eventDate,
+      end: eventDate.add(const Duration(hours: 1)),
+      allDay: true,
+    );
+
+    await deviceCalendarPlugin.createOrUpdateEvent(deviceEvent);
   }
 
   Future<void> removeEvent(String id) async {

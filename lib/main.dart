@@ -24,6 +24,7 @@ import 'screens/italiaonline_screen.dart';
 import 'screens/calendar_screen.dart';
 
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:timezone/data/latest_all.dart' as tz_data;
 
 ThemeData sonarpadTheme() {
   const primaryBlue = Color(0xFF0072CE);
@@ -60,6 +61,7 @@ ThemeData sonarpadTheme() {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tz_data.initializeTimeZones();
   try {
     await rhttp.Rhttp.init();
   } catch (error) {

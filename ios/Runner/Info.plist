@@ -90,5 +90,11 @@
 	<true/>
 	<key>UIFileSharingEnabled</key>
 	<true/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Sonarpad necessita dell'accesso al calendario per aggiungere i tuoi promemoria ed eventi.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Sonarpad necessita dell'accesso completo al calendario per poter creare e salvare i tuoi promemoria direttamente nel calendario di sistema.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Sonarpad necessita dell'accesso ai contatti per associare invitati agli eventi del calendario.</string>
 </dict>
 </plist>
