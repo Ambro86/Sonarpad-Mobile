@@ -465,6 +465,34 @@ class HtmlReaderService {
         (lower.contains("\"categoryname\":\"undefined\"") && lower.contains("\"enabled\":\"true\""));
   }
 
+  static bool isKnownTextNoiseLine(String line) {
+    final lower = line.toLowerCase().trim();
+    if (lower.isEmpty) return false;
+
+    // Fatto Quotidiano Paywall/Boilerplate
+    if (lower == "facciamo un giornale con un solo padrone: i lettori.") return true;
+    if (lower.contains("sfoglia ogni giorno i contenuti di fq in edicola")) return true;
+    if (lower.contains("paga in modo rapido con:")) return true;
+    if (lower.contains("rinnovo automatico. disattiva quando vuoi")) return true;
+    if (lower.contains("hai bisogno di ulteriori informazioni?")) return true;
+    if (lower.contains("resta in contatto con la community de il fatto quotidiano")) return true;
+    if (lower == "abbiamo a cuore la tua privacy") return true;
+
+    // Corriere / RCS Boilerplate
+    if (lower.contains("per non perdere le ultime novità su tecnologia e innovazione")) return true;
+    if (lower.contains("rcs mediagroup s.p.a.")) return true;
+
+    // Twitter embeds remnants
+    if (lower.startsWith("— ") && lower.contains("(@") && lower.contains("style=\"min-height:")) return true;
+    if (lower.contains("\" style=\"min-height:200px\">")) return true;
+
+    // Related articles / headers sometimes injected
+    if (lower == "leggi anche") return true;
+    if (lower == "leggi anche:") return true;
+
+    return false;
+  }
+
   static String stripPostExtractionNoise(String content) {
     List<String> lines = content.split('\n');
     List<String> validLines = [];
@@ -483,8 +511,14 @@ class HtmlReaderService {
         }
         continue;
       }
-      if (!isKnownJsNoiseLine(line)) {
-        validLines.add(line);
+      if (!isKnownJsNoiseLine(line) && !isKnownTextNoiseLine(line)) {
+        // Also remove weird trailing HTML remnants from twitter
+        if (trimmed.endsWith("\" style=\"min-height:200px\">")) {
+            trimmed = trimmed.replaceAll(RegExp(r'" style="min-height:200px">$'), '');
+            validLines.add(trimmed);
+        } else {
+            validLines.add(line);
+        }
       }
     }
     return validLines.join('\n');
