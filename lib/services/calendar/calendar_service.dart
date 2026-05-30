@@ -163,8 +163,34 @@ class CalendarService {
       "The only way to do great work is to love what you do. - Steve Jobs",
       "Every day is a new opportunity to change your life. - Anonymous",
     ];
+    final quotesFr = [
+      "Le bonheur n'est pas d'avoir ce que l'on veut, mais de vouloir ce que l'on a. - Oscar Wilde",
+      "Le succès est la somme de petits efforts, répétés jour après jour. - Robert Collier",
+      "Il n'est jamais trop tard pour être ce que vous auriez pu être. - George Eliot",
+      "La vie, c'est ce qui arrive quand on a d'autres projets. - John Lennon",
+      "La meilleure façon de prédire l'avenir est de l'inventer. - Alan Kay",
+      "Soyez le changement que vous voulez voir dans le monde. - Mahatma Gandhi",
+      "La seule façon de faire du bon travail est d'aimer ce que vous faites. - Steve Jobs",
+      "Chaque jour est une nouvelle opportunité de changer de vie. - Anonyme",
+    ];
+    final quotesEs = [
+      "La felicidad no es tener lo que quieres, sino querer lo que tienes. - Oscar Wilde",
+      "El éxito es la suma de pequeños esfuerzos, repetidos día tras día. - Robert Collier",
+      "Nunca es demasiado tarde para ser lo que podrías haber sido. - George Eliot",
+      "La vida es lo que te pasa mientras estás ocupado haciendo otros planes. - John Lennon",
+      "La mejor forma de predecir el futuro es inventarlo. - Alan Kay",
+      "Sé el cambio que quieres ver en el mundo. - Mahatma Gandhi",
+      "La única forma de hacer un gran trabajo es amar lo que haces. - Steve Jobs",
+      "Cada día es una nueva oportunidad para cambiar tu vida. - Anónimo",
+    ];
     
-    final list = languageCode == 'it' ? quotesIt : quotesEn;
+    List<String> list;
+    switch (languageCode) {
+      case 'it': list = quotesIt; break;
+      case 'fr': list = quotesFr; break;
+      case 'es': list = quotesEs; break;
+      default: list = quotesEn; break;
+    }
     // Seminiamo il random con la data così ogni giorno ha la stessa frase
     final dayOfYear = int.parse(date.year.toString() + date.month.toString().padLeft(2, '0') + date.day.toString().padLeft(2, '0'));
     final random = Random(dayOfYear);
