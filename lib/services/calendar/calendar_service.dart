@@ -191,9 +191,9 @@ class CalendarService {
       case 'es': list = quotesEs; break;
       default: list = quotesEn; break;
     }
-    // Seminiamo il random con la data così ogni giorno ha la stessa frase
-    final dayOfYear = int.parse(date.year.toString() + date.month.toString().padLeft(2, '0') + date.day.toString().padLeft(2, '0'));
-    final random = Random(dayOfYear);
-    return list[random.nextInt(list.length)];
+    // Usiamo il numero di giorni dall'epoca (1970) per ciclare in modo perfetto
+    // su tutte le frasi nell'array in ordine, così da garantire una frase diversa ogni giorno.
+    final daysSinceEpoch = date.difference(DateTime.utc(1970, 1, 1)).inDays;
+    return list[daysSinceEpoch % list.length];
   }
 }
