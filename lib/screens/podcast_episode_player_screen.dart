@@ -22,7 +22,7 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
 }
 
 class _PodcastEpisodePlayerScreenState
-    extends State<PodcastEpisodePlayerScreen> {
+    extends State<PodcastEpisodePlayerScreen> with WidgetsBindingObserver {
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
 
@@ -34,6 +34,10 @@ class _PodcastEpisodePlayerScreenState
   String? _error;
   int _seekStep = 60;
   int _lastLoggedSecond = -1;
+
+  String get _logSubject =>
+      'episodeTitle="${widget.episode.title}", url=${widget.episode.audioUrl}, '
+      'stableId=${_getStableId()}';
 
   String _getStableId() {
     if (widget.episode.id != null) {
@@ -70,17 +74,28 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _play() async {
+    AppLogger.log(
+      'PodcastPlayer: _play start mounted=$mounted loaded=$_loaded '
+      'loading=$_loading videoEnabled=$_isVideoEnabled '
+      'videoSupported=${widget.isVideoSupported}, $_logSubject',
+    );
     final l10n = AppLocalizations.of(context);
     setState(() {
       _loading = true;
       _error = null;
     });
+    AppLogger.log('PodcastPlayer: _play set loading=true');
     try {
       if (widget.isVideoSupported && _isVideoEnabled) {
+        AppLogger.log(
+          'PodcastPlayer: video branch start loaded=$_loaded, $_logSubject',
+        );
         if (_loaded) await _audio.stop();
         _videoController?.dispose();
         _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.episode.audioUrl));
+        AppLogger.log('PodcastPlayer: video initialize start, $_logSubject');
         await _videoController!.initialize();
+        AppLogger.log('PodcastPlayer: video initialize completed, $_logSubject');
 
         _videoController!.addListener(() {
           if (!mounted || _videoController == null) return;
@@ -104,37 +119,62 @@ class _PodcastEpisodePlayerScreenState
           }
         }
 
+        AppLogger.log('PodcastPlayer: video play start, $_logSubject');
         await _videoController!.play();
+        AppLogger.log('PodcastPlayer: video play completed, $_logSubject');
       } else {
+        AppLogger.log(
+          'PodcastPlayer: audio branch start loaded=$_loaded, $_logSubject',
+        );
         await _saveVideoBookmark();
         _videoController?.pause();
         _videoController?.dispose();
         _videoController = null;
 
         if (!_loaded) {
+          AppLogger.log('PodcastPlayer: audio setUrl start, $_logSubject');
           await _audio.setUrl(
             widget.episode.audioUrl,
             title: 'In riproduzione: ${widget.episode.title}',
             mediaId: _getStableId(),
           );
           _loaded = true;
+          AppLogger.log(
+            'PodcastPlayer: audio setUrl completed loaded=$_loaded, '
+            'title="In riproduzione: ${widget.episode.title}", $_logSubject',
+          );
         }
-        unawaited(_audio.play());
+        AppLogger.log(
+          'PodcastPlayer: audio play scheduled, '
+          'title="In riproduzione: ${widget.episode.title}", $_logSubject',
+        );
+        unawaited(_audio.play().catchError((Object e, StackTrace stackTrace) {
+          AppLogger.log(
+            'PodcastPlayer: audio play async error: $e, $_logSubject',
+          );
+        }));
       }
       if (!mounted) return;
     } catch (e) {
       if (!mounted) return;
-      AppLogger.log('PodcastPlayer: Error during _play: $e');
+      AppLogger.log('PodcastPlayer: Error during _play: $e, $_logSubject');
       setState(() => _error = l10n.episodeError(e));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
-        AppLogger.log('PodcastPlayer: _play complete. loading=false, loaded=$_loaded, isVideo=${_videoController != null}');
+        AppLogger.log(
+          'PodcastPlayer: _play complete. loading=false, loaded=$_loaded, '
+          'isVideo=${_videoController != null}, $_logSubject',
+        );
       }
     }
   }
 
   Future<void> _pause() async {
+    AppLogger.log(
+      'PodcastPlayer: _pause start video=${_videoController != null} '
+      'loaded=$_loaded loading=$_loading, $_logSubject',
+    );
     if (_videoController != null) {
       await _videoController!.pause();
       await _saveVideoBookmark();
@@ -145,13 +185,16 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _toggleVideo(bool enable) async {
+    AppLogger.log('PodcastPlayer: _toggleVideo enable=$enable, $_logSubject');
     if (_videoController != null && _videoController!.value.isPlaying) {
       await _pause();
     }
     setState(() => _isVideoEnabled = enable);
     await _settings.setVideoEnabled(enable);
     _loaded = false; // force reload to switch player
-    _play();
+    unawaited(_play().catchError((Object e, StackTrace stackTrace) {
+      AppLogger.log('PodcastPlayer: _toggleVideo _play error: $e, $_logSubject');
+    }));
   }
 
 
@@ -159,36 +202,81 @@ class _PodcastEpisodePlayerScreenState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    AppLogger.log(
+      'PodcastPlayer: initState title=${widget.episode.title} '
+      'url=${widget.episode.audioUrl} isVideoSupported=${widget.isVideoSupported}, '
+      '$_logSubject',
+    );
     _loadSettings();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      AppLogger.log(
+        'PodcastPlayer: postFrame callback start mounted=$mounted, $_logSubject',
+      );
       _isVideoEnabled = await _settings.isVideoEnabled();
       if (!mounted) return;
       setState(() {});
-      _play();
+      AppLogger.log(
+        'PodcastPlayer: postFrame settings loaded '
+        'videoEnabled=$_isVideoEnabled, $_logSubject',
+      );
+      unawaited(_play().catchError((Object e, StackTrace stackTrace) {
+        AppLogger.log('PodcastPlayer: postFrame _play error: $e, $_logSubject');
+      }));
     });
   }
 
   Future<void> _loadSettings() async {
+    AppLogger.log('PodcastPlayer: load seek step start, $_logSubject');
     final step = await AppSettingsService().loadSeekSliderStep();
     if (mounted) setState(() => _seekStep = step);
+    AppLogger.log(
+      'PodcastPlayer: load seek step completed step=$step mounted=$mounted, '
+      '$_logSubject',
+    );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    AppLogger.log(
+      'PodcastPlayer: lifecycle state=$state mounted=$mounted '
+      'loaded=$_loaded loading=$_loading video=${_videoController != null}, '
+      '$_logSubject',
+    );
   }
 
   @override
   void dispose() {
+    AppLogger.log(
+      'PodcastPlayer: dispose start loaded=$_loaded loading=$_loading '
+      'video=${_videoController != null}, $_logSubject',
+    );
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(_saveVideoBookmark());
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());
     super.dispose();
+    AppLogger.log('PodcastPlayer: dispose end, $_logSubject');
   }
 
   @override
   Widget build(BuildContext context) {
-    AppLogger.log('PodcastPlayer: build() called. loading=$_loading, loaded=$_loaded, error=$_error, videoEnabled=$_isVideoEnabled, videoControllerInit=${_videoController?.value.isInitialized}');
+    AppLogger.log(
+      'PodcastPlayer: build() called. loading=$_loading, loaded=$_loaded, '
+      'error=$_error, videoEnabled=$_isVideoEnabled, '
+      'videoControllerInit=${_videoController?.value.isInitialized}, '
+      '$_logSubject',
+    );
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('In riproduzione: ${widget.episode.title}'),
-          leading: BackButton(onPressed: () => Navigator.pop(context)),
+          leading: BackButton(
+            onPressed: () {
+              AppLogger.log('PodcastPlayer: appbar back pressed, $_logSubject');
+              Navigator.pop(context);
+            },
+          ),
         ),
         body: ListView(
           padding: const EdgeInsets.all(16),
@@ -291,17 +379,6 @@ class _PodcastEpisodePlayerScreenState
                       if (currentStep < 1) currentStep = 1;
                     }
 
-                    void seekBy(int seconds) {
-                      final newPos = position + Duration(seconds: seconds);
-                      if (newPos < Duration.zero) {
-                        _audio.seek(Duration.zero);
-                      } else if (newPos > duration) {
-                        _audio.seek(duration);
-                      } else {
-                        _audio.seek(newPos);
-                      }
-                    }
-
                     String format(Duration d) {
                       final mins = d.inMinutes;
                       final secs = (d.inSeconds % 60).toString().padLeft(2, '0');
@@ -343,7 +420,10 @@ class _PodcastEpisodePlayerScreenState
             ],
             const SizedBox(height: 24),
             OutlinedButton.icon(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                AppLogger.log('PodcastPlayer: bottom back pressed, $_logSubject');
+                Navigator.pop(context);
+              },
               icon: const Icon(Icons.arrow_back),
               label: Text(l10n.back),
             ),
