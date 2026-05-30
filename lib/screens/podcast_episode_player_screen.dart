@@ -465,14 +465,17 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
 
 
   void _seekBy(int seconds) {
-    final newPos = _visiblePosition + Duration(seconds: seconds);
+    var newPos = _visiblePosition + Duration(seconds: seconds);
     if (newPos < Duration.zero) {
-      widget.audio.seek(Duration.zero);
+      newPos = Duration.zero;
     } else if (newPos > _duration) {
-      widget.audio.seek(_duration);
-    } else {
-      widget.audio.seek(newPos);
+      newPos = _duration;
     }
+    setState(() {
+      _visiblePosition = newPos;
+      _latestPosition = newPos;
+    });
+    widget.audio.seek(newPos);
   }
 
   int _computeCurrentStep() {
@@ -537,7 +540,12 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
               min: 0,
               max: durSecs,
               onChanged: (val) {
-                widget.audio.seek(Duration(seconds: val.toInt()));
+                final newPos = Duration(seconds: val.toInt());
+                setState(() {
+                  _visiblePosition = newPos;
+                  _latestPosition = newPos;
+                });
+                widget.audio.seek(newPos);
               },
             ),
           ),
