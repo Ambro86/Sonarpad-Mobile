@@ -12,6 +12,7 @@ import '../models/news_article.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
+import '../services/document_library_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -60,10 +61,16 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<void> _saveArticle() async {
     if (_readerText == null) return;
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final titleSafe = widget.article.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
-      final file = File('${dir.path}/$titleSafe.txt');
-      await file.writeAsString('${widget.article.title}\n\n$_readerText');
+      final titleSafe = widget.article.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_') + '.txt';
+      final service = DocumentLibraryService();
+      await service.load();
+      final content = '${widget.article.title}\n\n$_readerText';
+      final doc = await service.createTextDocument(
+        name: titleSafe,
+        content: content,
+      );
+      await service.add(doc);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context).articleSavedSuccess)),
