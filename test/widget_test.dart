@@ -18,8 +18,9 @@ void main() {
     await tester.pumpWidget(const SonarpadApp());
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.text('Notizie'), findsOneWidget);
-    expect(find.text('Podcast'), findsOneWidget);
-    expect(find.text('Wikipedia'), findsOneWidget);
+    expect(find.text('Lettura e documenti'), findsOneWidget);
+    expect(find.text('Media e intrattenimento'), findsOneWidget);
+    expect(find.text('Ricerche e utilità'), findsOneWidget);
+    expect(find.text('Impostazioni'), findsOneWidget);
   });
 }
