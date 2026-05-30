@@ -14,13 +14,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   testWidgets('Home screen shows localized actions',
       (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({'sonarpad_app_language': 'it'});
+    SharedPreferences.setMockInitialValues({
+      'sonarpad_app_language': 'it',
+      'sonarpad_home_grouping_enabled': true,
+    });
     await tester.pumpWidget(const SonarpadApp());
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.text('Lettura e documenti'), findsOneWidget);
-    expect(find.text('Media e intrattenimento'), findsOneWidget);
-    expect(find.text('Ricerche e utilità'), findsOneWidget);
-    expect(find.text('Impostazioni'), findsOneWidget);
+    expect(find.text('Documenti', skipOffstage: false), findsOneWidget);
+    expect(find.text('Radio', skipOffstage: false), findsOneWidget);
+    expect(find.text('Notizie', skipOffstage: false), findsOneWidget);
+    expect(find.text('Podcast', skipOffstage: false), findsOneWidget);
+    expect(find.text('Impostazioni', skipOffstage: false), findsOneWidget);
   });
 }
