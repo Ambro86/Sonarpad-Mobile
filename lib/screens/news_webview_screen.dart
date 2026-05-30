@@ -93,7 +93,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<void> _shareArticle() async {
     try {
-      await Share.shareUri(Uri.parse(widget.article.link));
+      // ignore: deprecated_member_use
+      await Share.share(widget.article.link, subject: widget.article.title);
     } catch (e) {
       debugPrint('Error sharing article: $e');
     }
