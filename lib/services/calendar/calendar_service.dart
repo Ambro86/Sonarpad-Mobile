@@ -117,8 +117,8 @@ class CalendarService {
     return null;
   }
 
-  String getSaint(DateTime date, String languageCode) {
-    if (languageCode != 'it') return ""; // Solo in italiano per ora
+  String? getSaint(DateTime date, String languageCode) {
+    if (languageCode != 'it') return null; // Solo in italiano per ora
     // Un piccolo set di santi comuni per dimostrazione, si può espandere
     final saints = {
       "1-1": "Maria SS. Madre di Dio",
@@ -138,7 +138,7 @@ class CalendarService {
       "25-12": "Natale del Signore",
     };
     final key = "${date.day}-${date.month}";
-    return saints[key] ?? "Santo del giorno non disponibile";
+    return saints[key];
   }
 
   String getQuote(DateTime date, String languageCode) {

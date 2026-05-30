@@ -103,8 +103,11 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
         buffer.writeln(e.text);
       }
     }
-    buffer.writeln(l10n.saintOfTheDay);
-    buffer.writeln(saint);
+    
+    if (saint != null) {
+      buffer.writeln('${l10n.saintOfTheDay}: $saint');
+    }
+    
     buffer.writeln(l10n.quoteOfTheDay);
     buffer.writeln(quote);
 
@@ -170,7 +173,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
             icon: const Icon(Icons.share),
             tooltip: 'Condividi',
             onPressed: () {
-              final shareText = '$capTitle\n\n${holiday != null ? '$holiday\n' : ''}$saint\n\n"$quote"';
+              final shareText = '$capTitle\n\n${holiday != null ? '$holiday\n' : ''}${saint != null ? '${l10n.saintOfTheDay}: $saint\n\n' : ''}"$quote"';
               // ignore: deprecated_member_use
               Share.share(shareText);
             },
@@ -187,35 +190,36 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
           ],
           const SizedBox(height: 24),
           
-          Text(l10n.reminders, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          if (_events.isEmpty)
-            Text(l10n.noReminders, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)),
-          for (final ev in _events)
-            Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                title: Text(ev.text),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () async {
-                    await _service.removeEvent(ev.id);
-                    _loadEvents();
-                  },
+          if (_events.isNotEmpty) ...[
+            Text(l10n.reminders, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            for (final ev in _events)
+              Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  title: Text(ev.text),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () async {
+                      await _service.removeEvent(ev.id);
+                      _loadEvents();
+                    },
+                  ),
                 ),
               ),
-            ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
+          
           FilledButton.icon(
             onPressed: _addReminder,
             icon: const Icon(Icons.add),
             label: Text(l10n.addReminder),
           ),
 
-          const SizedBox(height: 32),
-          Text(l10n.saintOfTheDay, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Text(saint, style: Theme.of(context).textTheme.bodyLarge),
+          if (saint != null) ...[
+            const SizedBox(height: 32),
+            Text('${l10n.saintOfTheDay}: $saint', style: Theme.of(context).textTheme.titleMedium),
+          ],
 
           const SizedBox(height: 32),
           Text(l10n.quoteOfTheDay, style: Theme.of(context).textTheme.titleMedium),
