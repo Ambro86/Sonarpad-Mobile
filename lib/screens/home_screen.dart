@@ -232,9 +232,21 @@ class _HomeScreenState extends State<HomeScreen> {
       ];
     } else {
       children = [
-        ...readingItems,
-        ...mediaItems,
-        ...utilityItems,
+        _HomeButton(label: l10n.documents, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/documents')),
+        _HomeButton(label: l10n.calendar, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/calendar')),
+        _HomeButton(label: l10n.news, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/news')),
+        _HomeButton(label: l10n.podcasts, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/podcasts')),
+        _HomeButton(label: l10n.radio, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/radio')),
+        if (_isTvCodeValid && isItalian) _HomeButton(label: 'TV', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/tv')),
+        if (_isSecretCodeValid && isItalian) _HomeButton(label: 'RaiPlay Sound', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/raiplaysound')),
+        if (_isRaiPlayValid && isItalian) _HomeButton(label: 'RaiPlay', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/raiplay')),
+        _HomeButton(label: l10n.importFromWikipedia, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/wikipedia')),
+        if (_isSecretCodeValid && isItalian) _HomeButton(label: 'BdCiechi', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/bdciechi')),
+        if (_isSecretCodeValid && isItalian) _HomeButton(label: l10n.audiodescriptionTitle, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/audiodescriptions')),
+        _HomeButton(label: l10n.routeTitle, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/route')),
+        if (isItalian) _HomeButton(label: 'Orari di apertura', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/orari_apertura')),
+        if (_isSecretCodeValid && isItalian) _HomeButton(label: 'Pagine Bianche e Gialle', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/italiaonline')),
+        if (isItalian) _HomeButton(label: 'Ricerca Farmaci AIFA', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/aifa')),
       ];
     }
 
