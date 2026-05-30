@@ -170,7 +170,8 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
             tooltip: 'Condividi',
             onPressed: () {
               final shareText = '$capTitle\n\n${holiday != null ? '$holiday\n' : ''}$saint\n\n"$quote"';
-              SharePlus.instance.share(shareText);
+              // ignore: deprecated_member_use
+              Share.share(shareText);
             },
           ),
         ],
