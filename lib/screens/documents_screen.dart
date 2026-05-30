@@ -33,6 +33,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   final _service = DocumentLibraryService();
   bool _loading = true;
   String? _errorMessage;
+  bool _allowMultipleSelection = false;
 
   List<DocumentItem> get _displayedDocs => 
       _service.documents.where((d) => d.parentId == widget.folderId).toList();
@@ -79,7 +80,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: _allowedExtensions,
-        allowMultiple: false,
+        allowMultiple: _allowMultipleSelection,
       );
     } catch (e) {
       dev.log('DocumentsScreen: errore apertura file picker: $e');
@@ -532,6 +533,15 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 ? _ErrorState(message: _errorMessage!)
                 : Column(
                     children: [
+                      CheckboxListTile(
+                        title: const Text('Attiva selezione multipla', style: TextStyle(fontWeight: FontWeight.bold)),
+                        value: _allowMultipleSelection,
+                        onChanged: (val) {
+                          setState(() {
+                            _allowMultipleSelection = val ?? false;
+                          });
+                        },
+                      ),
                       Expanded(
                         child: docs.isEmpty
                             ? const _EmptyState()
