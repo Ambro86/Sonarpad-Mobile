@@ -141,9 +141,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Future<void> _remove(String id) async {
+    bool isFolder = false;
     try {
       // Troviamo il documento per ottenerne il path e cancellarlo dal disco
       final doc = _service.documents.firstWhere((d) => d.id == id);
+      isFolder = doc.isFolder;
       final resolvedPath = await _service.resolveFilePath(doc);
       final file = File(resolvedPath);
       if (await file.exists()) {
@@ -158,7 +160,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
     if (mounted) {
       setState(() {});
-      _showSnack('Documento rimosso');
+      final l10n = AppLocalizations.of(context);
+      _showSnack(isFolder ? l10n.folderRemoved : l10n.documentRemoved);
     }
   }
 

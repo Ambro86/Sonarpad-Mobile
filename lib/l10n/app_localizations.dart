@@ -744,9 +744,10 @@ class AppLocalizations {
           : (_isEs ? 'Documento añadido' : 'Documento aggiunto'));
   String get documentRemoved => _isEn
       ? 'Document removed'
-      : (_isFr
-          ? 'Document supprimé'
-          : (_isEs ? 'Documento eliminado' : 'Documento rimosso'));
+      : (_isFr ? 'Document supprimé' : (_isEs ? 'Documento eliminado' : 'Documento rimosso'));
+  String get folderRemoved => _isEn
+      ? 'Folder removed'
+      : (_isFr ? 'Dossier supprimé' : (_isEs ? 'Carpeta eliminada' : 'Cartella rimossa'));
   String get removeDocument => _isEn
       ? 'Remove document'
       : (_isFr
