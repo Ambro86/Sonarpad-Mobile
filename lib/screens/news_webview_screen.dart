@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
@@ -29,16 +28,17 @@ class NewsWebViewScreen extends StatefulWidget {
 class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   late final WebViewController _controller;
   final _audio = AudioPlayerService();
-  final _newsService = NewsService();
   final _settings = AppSettingsService();
+  final _newsService = NewsService();
   final _tts = EdgeTtsBridge();
   final _flutterTts = FlutterTts();
+
   bool _loading = true;
+  String? _readerTitle;
+  String? _readerText;
   bool _readerPreparing = true;
   bool _speaking = false;
   bool _ttsPaused = false;
-  String? _readerTitle;
-  String? _readerText;
   String? _status;
 
   static const _ttsCommands = MethodChannel('sonarpad/tts_commands');
@@ -61,7 +61,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<void> _saveArticle() async {
     if (_readerText == null) return;
     try {
-      final titleSafe = widget.article.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_') + '.txt';
+      final safeName = widget.article.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
+      final titleSafe = '$safeName.txt';
       final service = DocumentLibraryService();
       await service.load();
       final content = '${widget.article.title}\n\n$_readerText';
@@ -92,7 +93,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<void> _shareArticle() async {
     try {
-      await Share.share(widget.article.link, subject: widget.article.title);
+      await Share.shareUri(Uri.parse(widget.article.link));
     } catch (e) {
       debugPrint('Error sharing article: $e');
     }
