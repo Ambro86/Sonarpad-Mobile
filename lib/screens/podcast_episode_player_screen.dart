@@ -519,26 +519,17 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
           ),
         ),
         Semantics(
-          container: true,
           label: 'Posizione',
-          value: '${_format(position)} di ${_format(_duration)}',
-          increasedValue: _format(
-            position + Duration(seconds: currentStep),
-          ),
-          decreasedValue: _format(
-            position - Duration(seconds: currentStep),
-          ),
-          onIncrease: _handleIncrease,
-          onDecrease: _handleDecrease,
-          child: ExcludeSemantics(
-            child: Slider(
-              value: posSecs.clamp(0.0, durSecs),
-              min: 0,
-              max: durSecs,
-              onChanged: (val) {
-                widget.audio.seek(Duration(seconds: val.toInt()));
-              },
-            ),
+          child: Slider(
+            value: posSecs.clamp(0.0, durSecs),
+            min: 0,
+            max: durSecs,
+            onChanged: (val) {
+              widget.audio.seek(Duration(seconds: val.toInt()));
+            },
+            semanticFormatterCallback: (double newValue) {
+              return '${_format(Duration(seconds: newValue.toInt()))} di ${_format(_duration)}';
+            },
           ),
         ),
       ],
