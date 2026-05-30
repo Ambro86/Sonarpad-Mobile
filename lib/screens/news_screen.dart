@@ -181,9 +181,13 @@ class _NewsScreenState extends State<NewsScreen> {
 class _NewsSourceArticlesScreen extends StatefulWidget {
   const _NewsSourceArticlesScreen({
     required this.source,
+    this.initialUri,
+    this.title,
   });
 
   final NewsRssSource source;
+  final Uri? initialUri;
+  final String? title;
 
   @override
   State<_NewsSourceArticlesScreen> createState() =>
@@ -198,8 +202,23 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   @override
   void initState() {
     super.initState();
-    _currentUri = widget.source.uri;
+    _currentUri = widget.initialUri ?? widget.source.uri;
     _fetch();
+  }
+
+  void _openCategory(Uri uri, String title) {
+    if (uri == _currentUri) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/source/category'),
+        builder: (_) => _NewsSourceArticlesScreen(
+          source: widget.source,
+          initialUri: uri,
+          title: title,
+        ),
+      ),
+    );
   }
 
   void _fetch() {
@@ -235,7 +254,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.source.name)),
+      appBar: AppBar(title: Text(widget.title ?? widget.source.name)),
       body: Column(
         children: [
           if (widget.source.categories != null &&
@@ -250,10 +269,10 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                     selected: _currentUri == widget.source.uri,
                     onSelected: (selected) {
                       if (selected) {
-                        setState(() {
-                          _currentUri = widget.source.uri;
-                          _fetch();
-                        });
+                        _openCategory(
+                          widget.source.uri,
+                          widget.source.name,
+                        );
                       }
                     },
                   ),
@@ -266,10 +285,10 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                         selected: _currentUri == cat.uri,
                         onSelected: (selected) {
                           if (selected) {
-                            setState(() {
-                              _currentUri = cat.uri;
-                              _fetch();
-                            });
+                            _openCategory(
+                              cat.uri,
+                              '${widget.source.name}: ${cat.name}',
+                            );
                           }
                         },
                       ),

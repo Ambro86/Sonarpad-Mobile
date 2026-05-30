@@ -346,7 +346,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<String> _textForReading(AppLocalizations l10n) async {
     final readerText = _readerText;
-    if (readerText != null && readerText.length >= 200) return readerText;
+    if (readerText != null && readerText.length >= 200) {
+      return _visibleReaderTextForSpeech(readerText);
+    }
 
     setState(() => _status = l10n.extractingReaderArticleText);
     try {
@@ -372,6 +374,15 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         '${widget.article.title}. ${widget.article.summary}'.trim();
     if (fallback.isEmpty) throw Exception(l10n.noTextToRead);
     return fallback;
+  }
+
+  String _visibleReaderTextForSpeech(String readerText) {
+    final title = (_readerTitle ?? widget.article.title).trim();
+    final paragraphs = _ReaderArticleView.readerParagraphs(readerText);
+    return [
+      if (title.isNotEmpty) title,
+      ...paragraphs,
+    ].join('\n\n').trim();
   }
 
   Future<void> _readArticle() async {
@@ -619,28 +630,90 @@ class _ReaderArticleView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final paragraphs = text
-        .split('\n')
-        .map((p) => p.trim())
-        .where((p) => p.isNotEmpty)
-        .toList();
+    final paragraphs = readerParagraphs(text);
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        SelectableText(
-          title,
-          style: theme.textTheme.headlineSmall,
+    return Semantics(
+      label: 'Testo articolo',
+      explicitChildNodes: true,
+      child: CustomScrollView(
+        cacheExtent: 4000,
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
         ),
-        const SizedBox(height: 16),
-        ...paragraphs.map((p) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: SelectableText(
-                p,
-                style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
-              ),
-            )),
-      ],
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                SelectableText(
+                  title,
+                  style: theme.textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 16),
+                ...paragraphs.map(
+                  (p) => Semantics(
+                    container: true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: SelectableText(
+                        p,
+                        style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
+                      ),
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  static List<String> readerParagraphs(String value) {
+    final sourceParagraphs = value
+        .replaceAll('\r', '\n')
+        .split(RegExp(r'\n{1,}'))
+        .map((p) => p.trim())
+        .where((p) => p.isNotEmpty);
+
+    final result = <String>[];
+    for (final paragraph in sourceParagraphs) {
+      result.addAll(_splitLongParagraph(paragraph));
+    }
+    return result;
+  }
+
+  static List<String> _splitLongParagraph(String paragraph) {
+    const maxLength = 650;
+    if (paragraph.length <= maxLength) return [paragraph];
+
+    final parts = <String>[];
+    final sentences = paragraph
+        .split(RegExp(r'(?<=[.!?])\s+'))
+        .map((sentence) => sentence.trim())
+        .where((sentence) => sentence.isNotEmpty);
+
+    var current = '';
+    for (final sentence in sentences) {
+      if (current.isEmpty) {
+        current = sentence;
+      } else if (current.length + sentence.length + 1 <= maxLength) {
+        current = '$current $sentence';
+      } else {
+        parts.add(current);
+        current = sentence;
+      }
+
+      while (current.length > maxLength) {
+        final splitAt = current.lastIndexOf(' ', maxLength);
+        final index = splitAt > 80 ? splitAt : maxLength;
+        parts.add(current.substring(0, index).trim());
+        current = current.substring(index).trim();
+      }
+    }
+
+    if (current.isNotEmpty) parts.add(current);
+    return parts;
   }
 }
