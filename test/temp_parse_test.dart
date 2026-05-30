@@ -5,6 +5,11 @@ import 'package:sonarpad_mobile_starter/services/html_reader_service.dart';
 void main() {
   test('Temp Parse', () async {
     final inputFile = File(r'C:\rustnotepad\rustnotepad\target\debug\debug_last_fetch.txt');
+    if (!inputFile.existsSync()) {
+      print('Skipping test, input file not found');
+      return;
+    }
+    
     final html = await inputFile.readAsString();
     final result = HtmlReaderService.readerModeExtract(html, 'it');
     
