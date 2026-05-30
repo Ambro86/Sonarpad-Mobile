@@ -174,6 +174,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final utilityItems = [
       _HomeButton(
+        label: l10n.calendar,
+        hint: l10n.calendarHint,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/calendar'),
+      ),
+      _HomeButton(
         label: l10n.news,
         onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/news'),
       ),

@@ -1,0 +1,123 @@
+import 'dart:convert';
+import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../models/calendar_event.dart';
+
+class CalendarService {
+  static const _eventsKey = 'sonarpad_calendar_events';
+
+  Future<List<CalendarEvent>> getEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_eventsKey);
+    if (jsonString == null) return [];
+    
+    try {
+      final List<dynamic> list = jsonDecode(jsonString);
+      return list.map((e) => CalendarEvent.fromJson(e)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> addEvent(CalendarEvent event) async {
+    final events = await getEvents();
+    events.add(event);
+    await _saveEvents(events);
+  }
+
+  Future<void> removeEvent(String id) async {
+    final events = await getEvents();
+    events.removeWhere((e) => e.id == id);
+    await _saveEvents(events);
+  }
+
+  Future<void> _saveEvents(List<CalendarEvent> events) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = jsonEncode(events.map((e) => e.toJson()).toList());
+    await prefs.setString(_eventsKey, jsonString);
+  }
+
+  Future<List<CalendarEvent>> getEventsForDate(DateTime date) async {
+    final events = await getEvents();
+    return events.where((e) => 
+      e.date.year == date.year && 
+      e.date.month == date.month && 
+      e.date.day == date.day
+    ).toList();
+  }
+
+  String? getHoliday(DateTime date, String languageCode) {
+    if (languageCode != 'it') return null; // Fallback per ora solo italiano
+    
+    final day = date.day;
+    final month = date.month;
+
+    if (day == 1 && month == 1) return "Capodanno";
+    if (day == 6 && month == 1) return "Epifania";
+    if (day == 25 && month == 4) return "Festa della Liberazione";
+    if (day == 1 && month == 5) return "Festa dei Lavoratori";
+    if (day == 2 && month == 6) return "Festa della Repubblica";
+    if (day == 15 && month == 8) return "Ferragosto";
+    if (day == 1 && month == 11) return "Tutti i Santi";
+    if (day == 8 && month == 12) return "Immacolata Concezione";
+    if (day == 25 && month == 12) return "Natale";
+    if (day == 26 && month == 12) return "Santo Stefano";
+    
+    // Non calcoliamo la Pasqua per semplicità, ma potremmo aggiungerla in futuro.
+    return null;
+  }
+
+  String getSaint(DateTime date, String languageCode) {
+    if (languageCode != 'it') return ""; // Solo in italiano per ora
+    // Un piccolo set di santi comuni per dimostrazione, si può espandere
+    final saints = {
+      "1-1": "Maria SS. Madre di Dio",
+      "17-1": "Sant'Antonio Abate",
+      "14-2": "San Valentino",
+      "19-3": "San Giuseppe",
+      "23-4": "San Giorgio",
+      "13-6": "Sant'Antonio di Padova",
+      "24-6": "San Giovanni Battista",
+      "29-6": "San Pietro e Paolo",
+      "15-8": "Assunzione di Maria",
+      "4-10": "San Francesco d'Assisi",
+      "1-11": "Tutti i Santi",
+      "6-12": "San Nicola",
+      "7-12": "Sant'Ambrogio",
+      "13-12": "Santa Lucia",
+      "25-12": "Natale del Signore",
+    };
+    final key = "${date.day}-${date.month}";
+    return saints[key] ?? "Santo del giorno non disponibile";
+  }
+
+  String getQuote(DateTime date, String languageCode) {
+    // Generiamo una citazione basata sul giorno dell'anno, così è uguale per tutti in quel giorno
+    final quotesIt = [
+      "La felicità non è avere quello che si desidera, ma desiderare quello che si ha. - Oscar Wilde",
+      "Il successo è la somma di piccoli sforzi, ripetuti giorno dopo giorno. - Robert Collier",
+      "Non è mai troppo tardi per essere ciò che avresti potuto essere. - George Eliot",
+      "La vita è quello che ti succede mentre sei occupato a fare altri progetti. - John Lennon",
+      "Il modo migliore per predire il futuro è inventarlo. - Alan Kay",
+      "Sii il cambiamento che vuoi vedere nel mondo. - Mahatma Gandhi",
+      "L'unico modo per fare un ottimo lavoro è amare quello che fai. - Steve Jobs",
+      "Ogni giorno è una nuova opportunità per cambiare la tua vita. - Anonimo",
+    ];
+    final quotesEn = [
+      "Happiness is not having what you want, but wanting what you have. - Oscar Wilde",
+      "Success is the sum of small efforts, repeated day in and day out. - Robert Collier",
+      "It is never too late to be what you might have been. - George Eliot",
+      "Life is what happens to you while you're busy making other plans. - John Lennon",
+      "The best way to predict the future is to invent it. - Alan Kay",
+      "Be the change that you wish to see in the world. - Mahatma Gandhi",
+      "The only way to do great work is to love what you do. - Steve Jobs",
+      "Every day is a new opportunity to change your life. - Anonymous",
+    ];
+    
+    final list = languageCode == 'it' ? quotesIt : quotesEn;
+    // Seminiamo il random con la data così ogni giorno ha la stessa frase
+    final dayOfYear = int.parse(date.year.toString() + date.month.toString().padLeft(2, '0') + date.day.toString().padLeft(2, '0'));
+    final random = Random(dayOfYear);
+    return list[random.nextInt(list.length)];
+  }
+}

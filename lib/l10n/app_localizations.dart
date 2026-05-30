@@ -883,6 +883,28 @@ class AppLocalizations {
   String get donateWithPaypal => _isEn ? 'Donate with PayPal' : (_isFr ? 'Faire un don avec PayPal' : (_isEs ? 'Donar con PayPal' : 'Dona con PayPal'));
   String get bankTransferTitle => _isEn ? 'Bank Transfer' : (_isFr ? 'Virement bancaire' : (_isEs ? 'Transferencia bancaria' : 'Bonifico Bancario'));
   String get enableVideo => _isEn ? 'Enable video' : (_isFr ? 'Activer la vidéo' : (_isEs ? 'Activar vídeo' : 'Attiva video'));
+
+  String get calendar => _isEn
+      ? 'Calendar'
+      : (_isFr ? 'Calendrier' : (_isEs ? 'Calendario' : 'Calendario'));
+  String get calendarHint => _isEn
+      ? 'View calendar, holidays, saint of the day, and your reminders'
+      : (_isFr
+          ? 'Afficher le calendrier, les jours fériés, le saint du jour et vos rappels'
+          : (_isEs
+              ? 'Ver calendario, festivos, santo del día y tus recordatorios'
+              : 'Apri il calendario con santi, festività e promemoria'));
+
+  String get saintOfTheDay => _isEn ? 'Saint of the day' : 'Santo del giorno';
+  String get quoteOfTheDay => _isEn ? 'Quote of the day' : 'Citazione del giorno';
+  String get reminders => _isEn ? 'Reminders' : 'Promemoria';
+  String get addReminder => _isEn ? 'Add reminder' : 'Aggiungi promemoria';
+  String get noReminders => _isEn ? 'No reminders' : 'Nessun promemoria';
+  String get writeReminder => _isEn ? 'Write your reminder here...' : 'Scrivi qui il tuo promemoria...';
+  String get saveReminder => _isEn ? 'Save' : 'Salva';
+  String get cancelReminder => _isEn ? 'Cancel' : 'Annulla';
+  String get backToToday => _isEn ? 'Back to today' : 'Torna a oggi';
+  String reminderSaved(int count) => _isEn ? '$count reminders' : '$count promemoria';
 }
 
 class _AppLocalizationsDelegate

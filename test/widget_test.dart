@@ -23,6 +23,7 @@ void main() {
 
     expect(find.text('Documenti', skipOffstage: false), findsOneWidget);
     expect(find.text('Radio', skipOffstage: false), findsOneWidget);
+    expect(find.text('Calendario', skipOffstage: false), findsOneWidget);
     expect(find.text('Notizie', skipOffstage: false), findsOneWidget);
     expect(find.text('Podcast', skipOffstage: false), findsOneWidget);
     expect(find.text('Impostazioni', skipOffstage: false), findsOneWidget);

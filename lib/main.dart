@@ -21,6 +21,7 @@ import 'screens/route_screen.dart';
 import 'screens/audiodescription_recent_screen.dart';
 import 'screens/orari_apertura_search_screen.dart';
 import 'screens/italiaonline_screen.dart';
+import 'screens/calendar_screen.dart';
 
 import 'package:just_audio_background/just_audio_background.dart';
 
@@ -144,6 +145,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/route': (_) => const RouteScreen(),
         '/audiodescriptions': (_) => const AudiodescriptionRecentScreen(),
         '/info': (_) => const InfoScreen(),
+        '/calendar': (_) => const CalendarScreen(),
       },
     );
   }
