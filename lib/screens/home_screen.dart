@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isSecretCodeValid = false;
   bool _isTvCodeValid = false;
   bool _isRaiPlayValid = false;
+  bool _isGroupingEnabled = true;
 
   late AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
@@ -48,30 +49,25 @@ class _HomeScreenState extends State<HomeScreen> {
     if (Platform.environment.containsKey('FLUTTER_TEST')) return;
     try {
       _appLinks = AppLinks();
-      // Gestione link iniziali all'avvio
       _appLinks.getInitialLink().then((uri) {
         if (uri != null && uri.scheme == 'file') {
           _handleIncomingFile(uri);
         }
-      }).catchError((_) {}); // Ignore errors in test
+      }).catchError((_) {});
 
-      // Gestione link in streaming (app già aperta)
       _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
         if (uri.scheme == 'file') {
           _handleIncomingFile(uri);
         }
       }, onError: (_) {});
     } catch (e) {
-      // Ignora eccezioni durante i widget test
+      // Ignore exceptions in test
     }
   }
 
   Future<void> _handleIncomingFile(Uri uri) async {
     try {
-      // uri.path su iOS può contenere l'host 'localhost' o essere assoluto
       String decodedPath = Uri.decodeComponent(uri.path);
-      // Rimuovi slash iniziale se su Windows, ma su iOS/Android di solito va bene
-      // File gestisce bene il path assoluto
       final originalFile = File(decodedPath);
       if (!await originalFile.exists()) return;
 
@@ -114,11 +110,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final isValidTv = TvService().isSecretCodeValid(code);
     final isValidRaiSound = _raiPlaySoundService.isSecretCodeValid(code);
     final isValidRaiPlay = _raiPlayService.isSecretCodeValid(code);
+    final isGroupingEnabled = await _settings.isHomeGroupingEnabled();
     if (!mounted) return;
     setState(() {
       _isTvCodeValid = isValidTv;
       _isSecretCodeValid = isValidRaiSound;
       _isRaiPlayValid = isValidRaiPlay;
+      _isGroupingEnabled = isGroupingEnabled;
     });
   }
 
@@ -126,6 +124,133 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isItalian = l10n.locale.languageCode == 'it';
+
+    final readingItems = [
+      _HomeButton(
+        label: l10n.documents,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/documents'),
+      ),
+      _HomeButton(
+        label: l10n.importFromWikipedia,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/wikipedia'),
+      ),
+      if (isItalian)
+        _HomeButton(
+          label: 'BdCiechi',
+          onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/bdciechi'),
+        ),
+    ];
+
+    final mediaItems = [
+      _HomeButton(
+        label: l10n.radio,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/radio'),
+      ),
+      _HomeButton(
+        label: l10n.podcasts,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/podcasts'),
+      ),
+      if (_isTvCodeValid && isItalian)
+        _HomeButton(
+          label: 'TV',
+          onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/tv'),
+        ),
+      if (_isRaiPlayValid && isItalian)
+        _HomeButton(
+          label: 'RaiPlay',
+          onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/raiplay'),
+        ),
+      if (_isSecretCodeValid && isItalian)
+        _HomeButton(
+          label: 'RaiPlay Sound',
+          onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/raiplaysound'),
+        ),
+      if (_isSecretCodeValid && isItalian)
+        _HomeButton(
+          label: l10n.audiodescriptionTitle,
+          onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/audiodescriptions'),
+        ),
+    ];
+
+    final utilityItems = [
+      _HomeButton(
+        label: l10n.news,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/news'),
+      ),
+      _HomeButton(
+        label: l10n.routeTitle,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/route'),
+      ),
+      if (isItalian)
+        _HomeButton(
+          label: 'Orari di apertura',
+          onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/orari_apertura'),
+        ),
+      if (_isSecretCodeValid && isItalian)
+        _HomeButton(
+          label: 'Pagine Bianche e Gialle',
+          onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/italiaonline'),
+        ),
+      if (isItalian)
+        _HomeButton(
+          label: 'Ricerca Farmaci AIFA',
+          onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/aifa'),
+        ),
+    ];
+
+    List<Widget> children = [];
+    if (_isGroupingEnabled) {
+      children = [
+        _HomeButton(
+          label: l10n.categoryReading,
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => CategoryScreen(title: l10n.categoryReading, children: readingItems),
+            ));
+          },
+        ),
+        _HomeButton(
+          label: l10n.categoryMedia,
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => CategoryScreen(title: l10n.categoryMedia, children: mediaItems),
+            ));
+          },
+        ),
+        _HomeButton(
+          label: l10n.categoryUtilities,
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => CategoryScreen(title: l10n.categoryUtilities, children: utilityItems),
+            ));
+          },
+        ),
+      ];
+    } else {
+      children = [
+        ...readingItems,
+        ...mediaItems,
+        ...utilityItems,
+      ];
+    }
+
+    children.addAll([
+      _HomeButton(
+        label: l10n.settings,
+        onPressed: () => AccessibilityFeedbackService.goNamed(
+          context,
+          routeName: '/settings',
+        ).then((_) => _load()),
+      ),
+      _HomeButton(
+        label: l10n.info,
+        onPressed: () => AccessibilityFeedbackService.goNamed(
+          context,
+          routeName: '/info',
+        ),
+      ),
+    ]);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
@@ -151,162 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            _HomeButton(
-              label: l10n.categoryReading,
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => CategoryScreen(
-                    title: l10n.categoryReading,
-                    children: [
-                      _HomeButton(
-                        label: l10n.documents,
-                        onPressed: () => AccessibilityFeedbackService.goNamed(
-                          context,
-                          routeName: '/documents',
-                        ),
-                      ),
-                      _HomeButton(
-                        label: l10n.importFromWikipedia,
-                        onPressed: () => AccessibilityFeedbackService.goNamed(
-                          context,
-                          routeName: '/wikipedia',
-                        ),
-                      ),
-                      if (isItalian)
-                        _HomeButton(
-                          label: 'BdCiechi',
-                          onPressed: () => AccessibilityFeedbackService.goNamed(
-                            context,
-                            routeName: '/bdciechi',
-                          ),
-                        ),
-                    ],
-                  ),
-                ));
-              },
-            ),
-            _HomeButton(
-              label: l10n.categoryMedia,
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => CategoryScreen(
-                    title: l10n.categoryMedia,
-                    children: [
-                      _HomeButton(
-                        label: l10n.radio,
-                        onPressed: () => AccessibilityFeedbackService.goNamed(
-                          context,
-                          routeName: '/radio',
-                        ),
-                      ),
-                      _HomeButton(
-                        label: l10n.podcasts,
-                        onPressed: () => AccessibilityFeedbackService.goNamed(
-                          context,
-                          routeName: '/podcasts',
-                        ),
-                      ),
-                      if (_isTvCodeValid && isItalian)
-                        _HomeButton(
-                          label: 'TV',
-                          onPressed: () => AccessibilityFeedbackService.goNamed(
-                            context,
-                            routeName: '/tv',
-                          ),
-                        ),
-                      if (_isRaiPlayValid && isItalian)
-                        _HomeButton(
-                          label: 'RaiPlay',
-                          onPressed: () => AccessibilityFeedbackService.goNamed(
-                            context,
-                            routeName: '/raiplay',
-                          ),
-                        ),
-                      if (_isSecretCodeValid && isItalian)
-                        _HomeButton(
-                          label: 'RaiPlay Sound',
-                          onPressed: () => AccessibilityFeedbackService.goNamed(
-                            context,
-                            routeName: '/raiplaysound',
-                          ),
-                        ),
-                      if (_isSecretCodeValid && isItalian)
-                        _HomeButton(
-                          label: l10n.audiodescriptionTitle,
-                          onPressed: () => AccessibilityFeedbackService.goNamed(
-                            context,
-                            routeName: '/audiodescriptions',
-                          ),
-                        ),
-                    ],
-                  ),
-                ));
-              },
-            ),
-            _HomeButton(
-              label: l10n.categoryUtilities,
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => CategoryScreen(
-                    title: l10n.categoryUtilities,
-                    children: [
-                      _HomeButton(
-                        label: l10n.news,
-                        onPressed: () => AccessibilityFeedbackService.goNamed(
-                          context,
-                          routeName: '/news',
-                        ),
-                      ),
-                      _HomeButton(
-                        label: l10n.routeTitle,
-                        onPressed: () => AccessibilityFeedbackService.goNamed(
-                          context,
-                          routeName: '/route',
-                        ),
-                      ),
-                      if (isItalian)
-                        _HomeButton(
-                          label: 'Orari di apertura',
-                          onPressed: () => AccessibilityFeedbackService.goNamed(
-                            context,
-                            routeName: '/orari_apertura',
-                          ),
-                        ),
-                      if (_isSecretCodeValid && isItalian)
-                        _HomeButton(
-                          label: 'Pagine Bianche e Gialle',
-                          onPressed: () => AccessibilityFeedbackService.goNamed(
-                            context,
-                            routeName: '/italiaonline',
-                          ),
-                        ),
-                      if (isItalian)
-                        _HomeButton(
-                          label: 'Ricerca Farmaci AIFA',
-                          onPressed: () => AccessibilityFeedbackService.goNamed(
-                            context,
-                            routeName: '/aifa',
-                          ),
-                        ),
-                    ],
-                  ),
-                ));
-              },
-            ),
-            _HomeButton(
-              label: l10n.settings,
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                context,
-                routeName: '/settings',
-              ).then((_) => _load()),
-            ),
-            _HomeButton(
-              label: l10n.info,
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                context,
-                routeName: '/info',
-              ),
-            ),
+            ...children,
           ],
         ),
       ),

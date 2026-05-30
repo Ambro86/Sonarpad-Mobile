@@ -203,6 +203,22 @@ class AppLocalizations {
         _ => 'Principali',
       };
 
+  String get settingsHomeGrouping => switch (locale.languageCode) {
+        'it' => 'Attiva il raggruppamento delle icone in categorie',
+        'en' => 'Enable grouping of home icons into categories',
+        'fr' => 'Activer le regroupement des icônes d\'accueil en catégories',
+        'es' => 'Habilitar la agrupación de iconos de inicio en categorías',
+        _ => 'Attiva il raggruppamento delle icone in categorie',
+      };
+
+  String get settingsHomeGroupingHint => switch (locale.languageCode) {
+        'it' => 'Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle',
+        'en' => 'If disabled, the main icons will be shown as a single list without subfolders',
+        'fr' => 'Si désactivé, les icônes principales seront affichées sous forme de liste unique sans sous-dossiers',
+        'es' => 'Si está deshabilitado, los iconos principales se mostrarán como una lista única sin subcarpetas',
+        _ => 'Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle',
+      };
+
   String get newsCategoryMyCity => switch (locale.languageCode) {
         'it' => 'La mia città',
         'en' => 'My City',

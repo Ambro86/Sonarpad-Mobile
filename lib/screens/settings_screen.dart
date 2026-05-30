@@ -41,6 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late TextEditingController _tvSecretCodeController;
   bool _testingVoice = false;
   bool _autoBookmark = true;
+  bool _homeGroupingEnabled = true;
   int _seekSliderStep = 60;
   final _audio = AudioPlayerService();
   String _savedTvSecretCode = '';
@@ -81,6 +82,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
+    final homeGrouping = await _settings.isHomeGroupingEnabled();
     final seekSliderStep = await _settings.loadSeekSliderStep();
     final edgeVoices = await AppSettingsService.loadEdgeVoices();
     final edgeLanguages = AppSettingsService.languagesForVoices(edgeVoices);
@@ -108,6 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _systemTtsLanguage = sysLang;
       _systemTtsVoice = sysVoice;
       _autoBookmark = autoBookmark;
+      _homeGroupingEnabled = homeGrouping;
       _seekSliderStep = seekSliderStep;
       _loading = false;
     });
@@ -158,6 +161,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.setTvSecretCode(rawCode);
     _savedTvSecretCode = rawCode;
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
+    await _settings.setHomeGroupingEnabled(_homeGroupingEnabled);
     await _settings.saveSeekSliderStep(_seekSliderStep);
 
     setState(() => _isSaving = false);
@@ -656,6 +660,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     subtitle: Text(l10n.settingsAutoBookmarkHint),
                     value: _autoBookmark,
                     onChanged: (val) => setState(() => _autoBookmark = val),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    title: Text(l10n.settingsHomeGrouping),
+                    subtitle: Text(l10n.settingsHomeGroupingHint),
+                    value: _homeGroupingEnabled,
+                    onChanged: (val) => setState(() => _homeGroupingEnabled = val),
                     contentPadding: EdgeInsets.zero,
                   ),
                   const Divider(),

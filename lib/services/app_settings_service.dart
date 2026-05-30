@@ -442,6 +442,19 @@ class AppSettingsService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_videoEnabledKey, value);
   }
+  // --- Grouping Home ---
+  
+  static const _homeGroupingEnabledKey = 'sonarpad_home_grouping_enabled';
+
+  Future<bool> isHomeGroupingEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_homeGroupingEnabledKey) ?? true;
+  }
+
+  Future<void> setHomeGroupingEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_homeGroupingEnabledKey, value);
+  }
 }
 
 extension _FirstOrNull<T> on Iterable<T> {
