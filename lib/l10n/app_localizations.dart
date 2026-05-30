@@ -59,6 +59,15 @@ class AppLocalizations {
           : (_isEs
               ? 'Abrir información de la aplicación'
               : 'Apre le informazioni sull\'app'));
+  String get categoryReading => _isEn
+      ? 'Reading and documents'
+      : (_isFr ? 'Lecture et documents' : (_isEs ? 'Lectura y documentos' : 'Lettura e documenti'));
+  String get categoryMedia => _isEn
+      ? 'Media and entertainment'
+      : (_isFr ? 'Médias et divertissement' : (_isEs ? 'Medios y entretenimiento' : 'Media e intrattenimento'));
+  String get categoryUtilities => _isEn
+      ? 'Searches and utilities'
+      : (_isFr ? 'Recherches et utilitaires' : (_isEs ? 'Búsquedas y utilidades' : 'Ricerche e utilità'));
   String get donations => _isEn
       ? 'Donations'
       : (_isFr ? 'Dons' : (_isEs ? 'Donaciones' : 'Donazioni'));

@@ -10,8 +10,9 @@ import 'recent_searches_screen.dart';
 class RaiPlayScreen extends StatefulWidget {
   final String? pathId;
   final String? pageTitle;
+  final String? searchQuery;
 
-  const RaiPlayScreen({super.key, this.pathId, this.pageTitle});
+  const RaiPlayScreen({super.key, this.pathId, this.pageTitle, this.searchQuery});
 
   @override
   State<RaiPlayScreen> createState() => _RaiPlayScreenState();
@@ -25,12 +26,10 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
   RaiPlayPage? _page;
   bool _loading = true;
   String? _error;
-  bool _searching = false;
-  String _secretCode = '';
   bool _autoOpenedSingleItem = false;
 
-  /// true solo se siamo nella root (nessun pathId fornito)
-  bool get _isRoot => widget.pathId == null;
+  /// true solo se siamo nella root (nessun pathId e nessuna ricerca attiva)
+  bool get _isRoot => widget.pathId == null && widget.searchQuery == null;
 
   @override
   void initState() {
@@ -50,10 +49,11 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
       if (!_service.isSecretCodeValid(code)) {
         throw Exception('Codice non valido o mancante.');
       }
-      _secretCode = code;
 
       RaiPlayPage page;
-      if (widget.pathId == null) {
+      if (widget.searchQuery != null) {
+        page = await _service.searchContent(widget.searchQuery!, code);
+      } else if (widget.pathId == null) {
         page = await _service.loadRootPage(code);
       } else {
         page = await _service.loadPage(widget.pathId!, code,
@@ -87,34 +87,21 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
   Future<void> _search() async {
     final query = _searchController.text.trim();
     if (query.isEmpty) return;
-    setState(() {
-      _searching = true;
-      _error = null;
-    });
-    try {
-      final results = await _service.searchContent(query, _secretCode);
-      await RecentSearchesService().addSearch('raiplay', query);
-      if (!mounted) return;
-      setState(() {
-        _page = results;
-        _searching = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'Errore nella ricerca: $e';
-        _searching = false;
-      });
-    }
-  }
-
-  Future<void> _resetToRoot() async {
-    _searchController.clear();
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    await _load();
+    
+    await RecentSearchesService().addSearch('raiplay', query);
+    
+    if (!mounted) return;
+    _searchController.clear(); // Pulisci prima di spostarsi, così tornando indietro è pulito
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/raiplay/search'),
+        builder: (_) => RaiPlayScreen(
+          searchQuery: query,
+          pageTitle: 'Risultati: $query',
+        ),
+      ),
+    );
   }
 
   Future<void> _openRecentSearches() async {
@@ -209,18 +196,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            if (_searching)
-                              const Padding(
-                                padding: EdgeInsets.all(12),
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2.5),
-                                ),
-                              )
-                            else ...[
-                              IconButton(
+                            IconButton(
                                 icon: const Icon(Icons.search),
                                 tooltip: 'Cerca',
                                 onPressed: _search,
@@ -230,13 +206,6 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                                 tooltip: 'Ricerche recenti',
                                 onPressed: _openRecentSearches,
                               ),
-                              if (_page?.title.startsWith('Risultati:') == true)
-                                IconButton(
-                                  icon: const Icon(Icons.close),
-                                  tooltip: 'Torna alla home',
-                                  onPressed: _resetToRoot,
-                                ),
-                            ],
                           ],
                         ),
                       ),

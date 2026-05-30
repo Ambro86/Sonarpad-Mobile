@@ -7,12 +7,15 @@ import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/podcast_service.dart';
 import '../services/raiplay_sound_service.dart';
+import '../services/recent_searches_service.dart';
 import 'podcast_episode_player_screen.dart';
+import 'recent_searches_screen.dart';
 
 class RaiPlaySoundScreen extends StatefulWidget {
   final String? url;
+  final String? searchQuery;
 
-  const RaiPlaySoundScreen({super.key, this.url});
+  const RaiPlaySoundScreen({super.key, this.url, this.searchQuery});
 
   @override
   State<RaiPlaySoundScreen> createState() => _RaiPlaySoundScreenState();
@@ -27,11 +30,10 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   RaiPlaySoundPage? _page;
   bool _loading = true;
   String? _error;
-  bool _searching = false;
-  String _secretCode = '';
   bool _autoOpenedSingleItem = false;
 
-  bool get _isRoot => widget.url == null;
+  /// true solo se siamo nella root e non stiamo visualizzando i risultati di una ricerca
+  bool get _isRoot => widget.url == null && widget.searchQuery == null;
 
   @override
   void initState() {
@@ -48,13 +50,18 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   Future<void> _load() async {
     try {
       final code = await _settings.getTvSecretCode();
-      _secretCode = code;
       final url = widget.url ?? _service.getGenresUrl(code);
-      if (url == null) {
+      if (url == null && widget.searchQuery == null) {
         throw Exception('Codice non valido o mancante.');
       }
 
-      final page = await _service.loadPage(url, isRootPage: _isRoot);
+      RaiPlaySoundPage page;
+      if (widget.searchQuery != null) {
+        page = await _service.searchContent(widget.searchQuery!, code);
+      } else {
+        page = await _service.loadPage(url!, isRootPage: _isRoot);
+      }
+
       if (!mounted) return;
       setState(() {
         _page = page;
@@ -73,34 +80,34 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   Future<void> _search() async {
     final query = _searchController.text.trim();
     if (query.isEmpty) return;
-    setState(() {
-      _searching = true;
-      _error = null;
-    });
-    try {
-      final results = await _service.searchContent(query, _secretCode);
-      if (!mounted) return;
-      setState(() {
-        _page = results;
-        _searching = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'Errore nella ricerca: $e';
-        _searching = false;
-      });
-    }
+    
+    await RecentSearchesService().addSearch('raiplaysound', query);
+    
+    if (!mounted) return;
+    _searchController.clear();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/raiplaysound/search'),
+        builder: (_) => RaiPlaySoundScreen(
+          searchQuery: query,
+        ),
+      ),
+    );
   }
 
-  Future<void> _resetToRoot() async {
-    _searchController.clear();
-    setState(() {
-      _loading = true;
-      _error = null;
-      _autoOpenedSingleItem = false;
-    });
-    await _load();
+  Future<void> _openRecentSearches() async {
+    final query = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (ctx) => const RecentSearchesScreen(
+          title: 'Ricerche recenti',
+          domain: 'raiplaysound',
+        ),
+      ),
+    );
+    if (query == null || !mounted) return;
+    _searchController.text = query;
+    await _search();
   }
 
   void _openSingleNestedItemIfNeeded(RaiPlaySoundPage page) {
@@ -238,30 +245,16 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            if (_searching)
-                              const Padding(
-                                padding: EdgeInsets.all(12),
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                  ),
-                                ),
-                              )
-                            else ...[
-                              IconButton(
-                                icon: const Icon(Icons.search),
-                                tooltip: 'Cerca',
-                                onPressed: _search,
-                              ),
-                              if (_page?.title.startsWith('Risultati:') == true)
-                                IconButton(
-                                  icon: const Icon(Icons.close),
-                                  tooltip: 'Torna alla home',
-                                  onPressed: _resetToRoot,
-                                ),
-                            ],
+                            IconButton(
+                              icon: const Icon(Icons.search),
+                              tooltip: 'Cerca',
+                              onPressed: _search,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.history),
+                              tooltip: 'Ricerche recenti',
+                              onPressed: _openRecentSearches,
+                            ),
                           ],
                         ),
                       ),

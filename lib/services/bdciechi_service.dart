@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -39,7 +40,12 @@ String _decodeServerText(List<int> bytes) {
 
 class BdCiechiService {
   static const String _baseUrl = 'https://www.bdciechi.it/route.php';
-  static const String _idenSp = 'SP';
+  
+  static String get _idenSp {
+    if (Platform.isIOS) return 'SPiOS';
+    if (Platform.isAndroid) return 'SPAnd';
+    return 'SP';
+  }
 
   String _cifra(String input) {
     int len = input.length;

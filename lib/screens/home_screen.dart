@@ -17,6 +17,7 @@ import '../services/document_library_service.dart';
 import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/tv_service.dart';
+import 'category_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -151,102 +152,146 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 24),
             _HomeButton(
-              label: l10n.documents,
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                context,
-                routeName: '/documents',
-              ),
+              label: l10n.categoryReading,
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => CategoryScreen(
+                    title: l10n.categoryReading,
+                    children: [
+                      _HomeButton(
+                        label: l10n.documents,
+                        onPressed: () => AccessibilityFeedbackService.goNamed(
+                          context,
+                          routeName: '/documents',
+                        ),
+                      ),
+                      _HomeButton(
+                        label: l10n.importFromWikipedia,
+                        onPressed: () => AccessibilityFeedbackService.goNamed(
+                          context,
+                          routeName: '/wikipedia',
+                        ),
+                      ),
+                      if (isItalian)
+                        _HomeButton(
+                          label: 'BdCiechi',
+                          onPressed: () => AccessibilityFeedbackService.goNamed(
+                            context,
+                            routeName: '/bdciechi',
+                          ),
+                        ),
+                    ],
+                  ),
+                ));
+              },
             ),
             _HomeButton(
-              label: l10n.news,
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                context,
-                routeName: '/news',
-              ),
+              label: l10n.categoryMedia,
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => CategoryScreen(
+                    title: l10n.categoryMedia,
+                    children: [
+                      _HomeButton(
+                        label: l10n.radio,
+                        onPressed: () => AccessibilityFeedbackService.goNamed(
+                          context,
+                          routeName: '/radio',
+                        ),
+                      ),
+                      _HomeButton(
+                        label: l10n.podcasts,
+                        onPressed: () => AccessibilityFeedbackService.goNamed(
+                          context,
+                          routeName: '/podcasts',
+                        ),
+                      ),
+                      if (_isTvCodeValid && isItalian)
+                        _HomeButton(
+                          label: 'TV',
+                          onPressed: () => AccessibilityFeedbackService.goNamed(
+                            context,
+                            routeName: '/tv',
+                          ),
+                        ),
+                      if (_isRaiPlayValid && isItalian)
+                        _HomeButton(
+                          label: 'RaiPlay',
+                          onPressed: () => AccessibilityFeedbackService.goNamed(
+                            context,
+                            routeName: '/raiplay',
+                          ),
+                        ),
+                      if (_isSecretCodeValid && isItalian)
+                        _HomeButton(
+                          label: 'RaiPlay Sound',
+                          onPressed: () => AccessibilityFeedbackService.goNamed(
+                            context,
+                            routeName: '/raiplaysound',
+                          ),
+                        ),
+                      if (_isSecretCodeValid && isItalian)
+                        _HomeButton(
+                          label: l10n.audiodescriptionTitle,
+                          onPressed: () => AccessibilityFeedbackService.goNamed(
+                            context,
+                            routeName: '/audiodescriptions',
+                          ),
+                        ),
+                    ],
+                  ),
+                ));
+              },
             ),
             _HomeButton(
-              label: l10n.podcasts,
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                context,
-                routeName: '/podcasts',
-              ),
-            ),
-            _HomeButton(
-              label: l10n.radio,
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                context,
-                routeName: '/radio',
-              ),
-            ),
-            if (_isTvCodeValid && isItalian)
-              _HomeButton(
-                label: 'TV',
-                onPressed: () => AccessibilityFeedbackService.goNamed(
-                  context,
-                  routeName: '/tv',
-                ),
-              ),
-            if (_isSecretCodeValid && isItalian) ...[
-              _HomeButton(
-                label: l10n.audiodescriptionTitle,
-                onPressed: () => AccessibilityFeedbackService.goNamed(
-                  context,
-                  routeName: '/audiodescriptions',
-                ),
-              ),
-              _HomeButton(
-                label: 'RaiPlay Sound',
-                onPressed: () => AccessibilityFeedbackService.goNamed(
-                  context,
-                  routeName: '/raiplaysound',
-                ),
-              ),
-            ],
-            if (_isRaiPlayValid && isItalian)
-              _HomeButton(
-                label: 'RaiPlay',
-                onPressed: () => AccessibilityFeedbackService.goNamed(
-                  context,
-                  routeName: '/raiplay',
-                ),
-              ),
-            _HomeButton(
-              label: l10n.importFromWikipedia,
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                context,
-                routeName: '/wikipedia',
-              ),
-            ),
-            if (isItalian)
-              _HomeButton(
-                label: 'BdCiechi',
-                onPressed: () => AccessibilityFeedbackService.goNamed(
-                  context,
-                  routeName: '/bdciechi',
-                ),
-              ),
-            if (isItalian)
-              _HomeButton(
-                label: 'Ricerca Farmaci AIFA',
-                onPressed: () => AccessibilityFeedbackService.goNamed(
-                  context,
-                  routeName: '/aifa',
-                ),
-              ),
-            if (isItalian)
-              _HomeButton(
-                label: 'Orari Apertura',
-                onPressed: () => AccessibilityFeedbackService.goNamed(
-                  context,
-                  routeName: '/orari_apertura',
-                ),
-              ),
-            _HomeButton(
-              label: l10n.routeTitle,
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                context,
-                routeName: '/route',
-              ),
+              label: l10n.categoryUtilities,
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => CategoryScreen(
+                    title: l10n.categoryUtilities,
+                    children: [
+                      _HomeButton(
+                        label: l10n.news,
+                        onPressed: () => AccessibilityFeedbackService.goNamed(
+                          context,
+                          routeName: '/news',
+                        ),
+                      ),
+                      _HomeButton(
+                        label: l10n.routeTitle,
+                        onPressed: () => AccessibilityFeedbackService.goNamed(
+                          context,
+                          routeName: '/route',
+                        ),
+                      ),
+                      if (isItalian)
+                        _HomeButton(
+                          label: 'Orari di apertura',
+                          onPressed: () => AccessibilityFeedbackService.goNamed(
+                            context,
+                            routeName: '/orari_apertura',
+                          ),
+                        ),
+                      if (_isSecretCodeValid && isItalian)
+                        _HomeButton(
+                          label: 'Pagine Bianche e Gialle',
+                          onPressed: () => AccessibilityFeedbackService.goNamed(
+                            context,
+                            routeName: '/italiaonline',
+                          ),
+                        ),
+                      if (isItalian)
+                        _HomeButton(
+                          label: 'Ricerca Farmaci AIFA',
+                          onPressed: () => AccessibilityFeedbackService.goNamed(
+                            context,
+                            routeName: '/aifa',
+                          ),
+                        ),
+                    ],
+                  ),
+                ));
+              },
             ),
             _HomeButton(
               label: l10n.settings,
