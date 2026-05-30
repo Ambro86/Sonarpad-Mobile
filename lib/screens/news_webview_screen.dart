@@ -72,8 +72,17 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       await service.add(doc);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).articleSavedSuccess)),
+        await showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(AppLocalizations.of(context).articleSavedSuccess),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
         );
       }
     } catch (e) {
