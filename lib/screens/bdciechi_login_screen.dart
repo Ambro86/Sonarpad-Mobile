@@ -167,13 +167,35 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
                     const SizedBox(height: 16),
                     TextButton(
                       onPressed: () {
-                        final Uri emailLaunchUri = Uri(
-                          scheme: 'mailto',
-                          path: 'biblioteca@bdciechi.it',
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Iscrizione'),
+                            content: const Text('Scegli dove vuoi iscriverti:'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  launchUrl(Uri.parse('https://www.salottopertutti.it/login/signupform.asp'));
+                                },
+                                child: const Text('Iscriviti a salottopertutti.it'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  launchUrl(Uri.parse('https://www.bdciechi.it/iscrizione/'));
+                                },
+                                child: const Text('Iscriviti a bdciechi.it'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Annulla'),
+                              ),
+                            ],
+                          ),
                         );
-                        launchUrl(emailLaunchUri);
                       },
-                      child: const Text('Iscriviti alla biblioteca', style: TextStyle(fontSize: 16)),
+                      child: const Text('Iscriviti a Bdciechi o Salotto per tutti', style: TextStyle(fontSize: 16)),
                     ),
                   ],
                 ),
