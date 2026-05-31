@@ -47,7 +47,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (widget.isVideoSupported && _isVideoEnabled) {
         await _audio.stop();
         _videoController?.dispose();
-        _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.station.streamUrl));
+        _videoController = VideoPlayerController.networkUrl(
+          Uri.parse(widget.station.streamUrl),
+          videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
+        );
         await _videoController!.initialize();
         await _videoController!.play();
       } else {

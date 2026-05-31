@@ -98,9 +98,15 @@ class _PodcastEpisodePlayerScreenState
         _videoController?.dispose();
         final uri = Uri.parse(widget.episode.audioUrl);
         if (uri.scheme == 'file') {
-          _videoController = VideoPlayerController.file(File(uri.toFilePath()));
+          _videoController = VideoPlayerController.file(
+            File(uri.toFilePath()),
+            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
+          );
         } else {
-          _videoController = VideoPlayerController.networkUrl(uri);
+          _videoController = VideoPlayerController.networkUrl(
+            uri,
+            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
+          );
         }
         AppLogger.log('PodcastPlayer: video initialize start, $_logSubject');
         await _videoController!.initialize();

@@ -174,8 +174,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ? l10n.sonarpadCodeValidMessage
           : l10n.settingsSaved,
     );
-    if (!mounted) return;
-    Navigator.of(context).pop();
   }
 
   Future<void> _showSaveResultDialog({
