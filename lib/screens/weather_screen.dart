@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
+import '../services/app_settings_service.dart';
 import '../services/news/weather_service.dart';
 
 class WeatherScreen extends StatefulWidget {
@@ -9,16 +11,30 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
+  final _settings = AppSettingsService();
   final _weatherService = OpenMeteoWeatherService();
-  final _searchCtrl = TextEditingController(text: 'Roma');
+  final _searchCtrl = TextEditingController();
   WeatherForecast? _forecast;
   bool _isLoading = false;
-  String _error = '';
+  _WeatherError? _error;
 
   @override
   void initState() {
     super.initState();
-    _fetchWeather();
+    _loadSavedCity();
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadSavedCity() async {
+    final city = await _settings.getWeatherCity();
+    if (!mounted) return;
+    _searchCtrl.text = city;
+    await _fetchWeather();
   }
 
   Future<void> _fetchWeather() async {
@@ -27,7 +43,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
     setState(() {
       _isLoading = true;
-      _error = '';
+      _error = null;
       _forecast = null;
     });
 
@@ -35,7 +51,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
       final cities = await _weatherService.searchCity(city);
       if (cities.isNotEmpty) {
         final loc = cities.first;
-        final forecast = await _weatherService.getForecast(loc.latitude, loc.longitude);
+        final forecast = await _weatherService.getForecast(
+          loc.latitude,
+          loc.longitude,
+        );
+        await _settings.setWeatherCity(city);
         if (mounted) {
           setState(() {
             _forecast = forecast;
@@ -45,7 +65,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
       } else {
         if (mounted) {
           setState(() {
-            _error = 'Città non trovata';
+            _error = _WeatherError.cityNotFound;
             _isLoading = false;
           });
         }
@@ -53,7 +73,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Errore durante la ricerca';
+          _error = _WeatherError.searchError;
           _isLoading = false;
         });
       }
@@ -62,9 +82,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Meteo'),
+        title: Text(l10n.meteoTitle),
       ),
       body: Column(
         children: [
@@ -75,9 +97,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 Expanded(
                   child: TextField(
                     controller: _searchCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Città',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.weatherCity,
+                      border: const OutlineInputBorder(),
                     ),
                     onSubmitted: (_) => _fetchWeather(),
                   ),
@@ -85,37 +107,43 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _fetchWeather,
-                  child: const Text('Cerca'),
+                  child: Text(l10n.search),
                 ),
               ],
             ),
           ),
           if (_isLoading)
             const Expanded(child: Center(child: CircularProgressIndicator())),
-          if (_error.isNotEmpty)
-            Expanded(child: Center(child: Text(_error))),
+          if (_error != null)
+            Expanded(child: Center(child: Text(_error!.label(l10n)))),
           if (_forecast != null && !_isLoading)
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.all(16.0),
                 children: [
-                  Text('Oggi', style: Theme.of(context).textTheme.headlineMedium),
+                  Text(
+                    l10n.weatherToday,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
                   const SizedBox(height: 16),
                   Card(
                     child: ListTile(
-                      title: Text('Temperatura Attuale'),
-                      trailing: Text('${_forecast!.current['temperature_2m']} °C', style: const TextStyle(fontSize: 24)),
+                      title: Text(l10n.weatherCurrentTemperature),
+                      trailing: Text(
+                        '${_forecast!.current['temperature_2m']} °C',
+                        style: const TextStyle(fontSize: 24),
+                      ),
                     ),
                   ),
                   Card(
                     child: ListTile(
-                      title: Text('Vento'),
+                      title: Text(l10n.weatherWind),
                       trailing: Text('${_forecast!.current['wind_speed_10m']} km/h'),
                     ),
                   ),
                   Card(
                     child: ListTile(
-                      title: Text('Umidità Relativa'),
+                      title: Text(l10n.weatherRelativeHumidity),
                       trailing: Text('${_forecast!.current['relative_humidity_2m']}%'),
                     ),
                   ),
@@ -125,5 +153,17 @@ class _WeatherScreenState extends State<WeatherScreen> {
         ],
       ),
     );
+  }
+}
+
+enum _WeatherError {
+  cityNotFound,
+  searchError;
+
+  String label(AppLocalizations l10n) {
+    return switch (this) {
+      _WeatherError.cityNotFound => l10n.weatherCityNotFound,
+      _WeatherError.searchError => l10n.weatherSearchError,
+    };
   }
 }

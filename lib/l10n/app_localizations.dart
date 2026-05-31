@@ -807,7 +807,40 @@ class AppLocalizations {
   String get settingsAutoBookmarkHint => _isEn ? 'Resume documents, podcasts, and media from where you left off.' : (_isFr ? 'Reprendre les documents et médias où vous vous êtes arrêté.' : (_isEs ? 'Reanudar documentos y multimedia desde donde los dejaste.' : 'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'));
   String get settingsSeekStep => _isEn ? 'Media rewind / fast forward step' : (_isFr ? 'Étape de retour/avance rapide multimédia' : (_isEs ? 'Paso de rebobinado / avance rápido multimedia' : 'Regola l\'avanzamento di riproduzione nei file media'));
   String get aiChatIntro => _isEn ? 'I am Sonarpad AI, how can I help you?' : 'Sono l\'intelligenza artificiale di Sonarpad, come posso aiutarti?';
-  String get meteoTitle => _isEn ? 'Weather' : 'Meteo';
+  String get meteoTitle => _isEn
+      ? 'Weather'
+      : (_isFr ? 'Météo' : (_isEs ? 'Tiempo' : 'Meteo'));
+  String get weatherCity => _isEn
+      ? 'City'
+      : (_isFr ? 'Ville' : (_isEs ? 'Ciudad' : 'Città'));
+  String get weatherCityNotFound => _isEn
+      ? 'City not found'
+      : (_isFr
+          ? 'Ville introuvable'
+          : (_isEs ? 'Ciudad no encontrada' : 'Città non trovata'));
+  String get weatherSearchError => _isEn
+      ? 'Error during search'
+      : (_isFr
+          ? 'Erreur pendant la recherche'
+          : (_isEs
+              ? 'Error durante la búsqueda'
+              : 'Errore durante la ricerca'));
+  String get weatherToday => _isEn
+      ? 'Today'
+      : (_isFr ? 'Aujourd\'hui' : (_isEs ? 'Hoy' : 'Oggi'));
+  String get weatherCurrentTemperature => _isEn
+      ? 'Current temperature'
+      : (_isFr
+          ? 'Température actuelle'
+          : (_isEs ? 'Temperatura actual' : 'Temperatura attuale'));
+  String get weatherWind => _isEn
+      ? 'Wind'
+      : (_isFr ? 'Vent' : (_isEs ? 'Viento' : 'Vento'));
+  String get weatherRelativeHumidity => _isEn
+      ? 'Relative humidity'
+      : (_isFr
+          ? 'Humidité relative'
+          : (_isEs ? 'Humedad relativa' : 'Umidità relativa'));
   String get settingsSecretCode => _isEn ? 'Sonarpad code for extra features' : (_isFr ? 'Code Sonarpad pour fonctionnalités' : (_isEs ? 'Código Sonarpad para funciones extra' : 'Codice Sonarpad per funzioni aggiuntive'));
   String get settingsRequestCode => _isEn ? 'Request code from author' : (_isFr ? 'Demander le code à l\'auteur' : (_isEs ? 'Solicitar código al autor' : 'Richiedi codice all\'autore'));
   String get settingsCancel => _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));

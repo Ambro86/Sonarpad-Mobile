@@ -31,6 +31,7 @@ class AppSettingsService {
   static const _tvSecretCodeKey = 'tvSecretCode';
   static const _bdciechiUsernameKey = 'bdciechiUsername';
   static const _bdciechiPasswordKey = 'bdciechiPassword';
+  static const _weatherCityKey = 'sonarpad_weather_city';
 
   static const ttsLanguages = [
     TtsVoiceLanguage('it', 'Italiano'),
@@ -152,6 +153,16 @@ class AppSettingsService {
   Future<void> setBdCiechiPassword(String value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_bdciechiPasswordKey, value);
+  }
+
+  Future<String> getWeatherCity() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_weatherCityKey) ?? 'Roma';
+  }
+
+  Future<void> setWeatherCity(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_weatherCityKey, value);
   }
 
   static const _ttsSpeedKey = 'sonarpad_tts_speed';

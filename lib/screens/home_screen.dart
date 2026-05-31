@@ -269,6 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _HomeButton(label: l10n.documents, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/documents')),
         _HomeButton(label: l10n.calendar, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/calendar')),
         _HomeButton(label: l10n.news, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/news')),
+        _HomeButton(label: l10n.meteoTitle, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/meteo')),
         _HomeButton(label: l10n.podcasts, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/podcasts')),
         _HomeButton(label: l10n.radio, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/radio')),
         if (_isTvCodeValid && isItalian) _HomeButton(label: 'TV', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/tv')),
