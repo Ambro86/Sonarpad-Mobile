@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/calendar_event.dart';
@@ -117,9 +118,8 @@ class CalendarService {
     return null;
   }
 
-  String? getSaint(DateTime date, String languageCode) {
-    if (languageCode != 'it') return null; // Solo in italiano per ora
-    // Un piccolo set di santi comuni per dimostrazione, si può espandere
+  Future<String?> getSaintAsync(DateTime date, String languageCode) async {
+    if (languageCode != 'it') return null;
     final saints = {
       "1-1": "Maria SS. Madre di Dio",
       "17-1": "Sant'Antonio Abate",
@@ -138,7 +138,21 @@ class CalendarService {
       "25-12": "Natale del Signore",
     };
     final key = "${date.day}-${date.month}";
-    return saints[key];
+    if (saints.containsKey(key)) return saints[key];
+
+    try {
+      final months = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
+      final url = "https://www.santodelgiorno.it/${date.day}-${months[date.month - 1]}/";
+      final res = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
+      if (res.statusCode == 200) {
+        final match = RegExp(r'<title>Santo del giorno[^:]*:\s*(.*?)\s*(-|</title>)').firstMatch(res.body);
+        if (match != null) {
+          final s = match.group(1)?.trim();
+          if (s != null && s.isNotEmpty) return s;
+        }
+      }
+    } catch (_) {}
+    return "Non disponibile";
   }
 
   String getQuote(DateTime date, String languageCode) {

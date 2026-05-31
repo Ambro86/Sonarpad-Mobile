@@ -27,11 +27,29 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
 
   List<CalendarEvent> _events = [];
   bool _speaking = false;
+  String? _saint;
+
+  bool _saintLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _loadEvents();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_saintLoaded) {
+      _saintLoaded = true;
+      _loadSaint();
+    }
+  }
+
+  Future<void> _loadSaint() async {
+    final l10n = AppLocalizations.of(context);
+    final s = await _service.getSaintAsync(widget.date, l10n.locale.languageCode);
+    if (mounted) setState(() => _saint = s);
   }
 
   Future<void> _loadEvents() async {
@@ -91,7 +109,6 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     final titleStr = dayFormat.format(widget.date);
     
     final holiday = _service.getHoliday(widget.date, l10n.locale.languageCode);
-    final saint = _service.getSaint(widget.date, l10n.locale.languageCode);
     final quote = _service.getQuote(widget.date, l10n.locale.languageCode);
 
     final buffer = StringBuffer();
@@ -104,8 +121,8 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
       }
     }
     
-    if (saint != null) {
-      buffer.writeln('${l10n.saintOfTheDay}: $saint');
+    if (_saint != null) {
+      buffer.writeln('${l10n.saintOfTheDay}: $_saint');
     }
     
     buffer.writeln(l10n.quoteOfTheDay);
@@ -162,7 +179,6 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     final capTitle = titleStr[0].toUpperCase() + titleStr.substring(1);
 
     final holiday = _service.getHoliday(widget.date, lang);
-    final saint = _service.getSaint(widget.date, lang);
     final quote = _service.getQuote(widget.date, lang);
 
     return Scaffold(
@@ -173,7 +189,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
             icon: const Icon(Icons.share),
             tooltip: 'Condividi',
             onPressed: () {
-              final shareText = '$capTitle\n\n${holiday != null ? '$holiday\n' : ''}${saint != null ? '${l10n.saintOfTheDay}: $saint\n\n' : ''}"$quote"';
+              final shareText = '$capTitle\n\n${holiday != null ? '$holiday\n' : ''}${_saint != null ? '${l10n.saintOfTheDay}: $_saint\n\n' : ''}"$quote"';
               // ignore: deprecated_member_use
               Share.share(shareText);
             },
@@ -217,9 +233,9 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
             label: Text(l10n.addReminder),
           ),
 
-          if (saint != null) ...[
+          if (_saint != null) ...[
             const SizedBox(height: 32),
-            Text('${l10n.saintOfTheDay}: $saint', style: Theme.of(context).textTheme.titleMedium),
+            Text('${l10n.saintOfTheDay}: $_saint', style: Theme.of(context).textTheme.titleMedium),
           ],
 
           const SizedBox(height: 32),
