@@ -16,6 +16,7 @@ import 'screens/settings_screen.dart';
 import 'screens/tv_screen.dart';
 import 'screens/aifa_search_screen.dart';
 import 'screens/wikipedia_screen.dart';
+import 'screens/weather_screen.dart';
 import 'screens/bdciechi_login_screen.dart';
 import 'screens/route_screen.dart';
 import 'screens/audiodescription_recent_screen.dart';
@@ -133,6 +134,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
       routes: {
         '/documents': (_) => const DocumentsScreen(),
         '/news': (_) => const NewsScreen(),
+        '/meteo': (_) => const WeatherScreen(),
         '/podcasts': (_) => const PodcastScreen(),
         '/radio': (_) => const RadioScreen(),
         '/tv': (_) => const TvScreen(),

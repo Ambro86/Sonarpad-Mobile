@@ -806,6 +806,8 @@ class AppLocalizations {
   String get settingsAutoBookmark => _isEn ? 'Enable automatic bookmark saving' : (_isFr ? 'Activer la sauvegarde automatique du signet' : (_isEs ? 'Habilitar guardado automático de marcadores' : 'Segnalibro automatico per testi e contenuti multimediali'));
   String get settingsAutoBookmarkHint => _isEn ? 'Resume documents, podcasts, and media from where you left off.' : (_isFr ? 'Reprendre les documents et médias où vous vous êtes arrêté.' : (_isEs ? 'Reanudar documentos y multimedia desde donde los dejaste.' : 'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'));
   String get settingsSeekStep => _isEn ? 'Media rewind / fast forward step' : (_isFr ? 'Étape de retour/avance rapide multimédia' : (_isEs ? 'Paso de rebobinado / avance rápido multimedia' : 'Regola l\'avanzamento di riproduzione nei file media'));
+  String get aiChatIntro => _isEn ? 'I am Sonarpad AI, how can I help you?' : 'Sono l\'intelligenza artificiale di Sonarpad, come posso aiutarti?';
+  String get meteoTitle => _isEn ? 'Weather' : 'Meteo';
   String get settingsSecretCode => _isEn ? 'Sonarpad code for extra features' : (_isFr ? 'Code Sonarpad pour fonctionnalités' : (_isEs ? 'Código Sonarpad para funciones extra' : 'Codice Sonarpad per funzioni aggiuntive'));
   String get settingsRequestCode => _isEn ? 'Request code from author' : (_isFr ? 'Demander le code à l\'auteur' : (_isEs ? 'Solicitar código al autor' : 'Richiedi codice all\'autore'));
   String get settingsCancel => _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));

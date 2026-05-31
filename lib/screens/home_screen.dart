@@ -212,6 +212,10 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/news'),
       ),
       _HomeButton(
+        label: l10n.meteoTitle,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/meteo'),
+      ),
+      _HomeButton(
         label: l10n.routeTitle,
         onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/route'),
       ),
