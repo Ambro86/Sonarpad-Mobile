@@ -91,11 +91,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
           String prefix = '';
           if (offset == 0) {
-            prefix = 'Oggi, ';
+            prefix = '${l10n.calendarToday}, ';
           } else if (offset == 1) {
-            prefix = 'Domani, ';
+            prefix = '${l10n.calendarTomorrow}, ';
           } else if (offset == -1) {
-            prefix = 'Ieri, ';
+            prefix = '${l10n.calendarYesterday}, ';
           }
 
           final fullTitle = '$prefix$capTitle';

@@ -7,6 +7,7 @@ import '../models/calendar_event.dart';
 import '../services/calendar/calendar_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/app_settings_service.dart';
+import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -24,6 +25,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
   final _settings = AppSettingsService();
   final _tts = EdgeTtsBridge();
   final _flutterTts = FlutterTts();
+  final _voiceDictionary = VoiceDictionaryService();
 
   List<CalendarEvent> _events = [];
   bool _speaking = false;
@@ -128,8 +130,11 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     buffer.writeln(l10n.quoteOfTheDay);
     buffer.writeln(quote);
 
-    final textToRead = buffer.toString();
+    final dictionaryEntries = await _voiceDictionary.loadEntries();
+    final textToRead =
+        _voiceDictionary.applyToText(buffer.toString(), dictionaryEntries);
 
+    if (!mounted) return;
     setState(() => _speaking = true);
     
     try {
@@ -187,7 +192,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
-            tooltip: 'Condividi',
+            tooltip: l10n.share,
             onPressed: () {
               final shareText = '$capTitle\n\n${holiday != null ? '$holiday\n' : ''}${_saint != null ? '${l10n.saintOfTheDay}: $_saint\n\n' : ''}"$quote"';
               // ignore: deprecated_member_use
@@ -256,7 +261,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
                   child: FilledButton.icon(
                     onPressed: _readAll,
                     icon: const Icon(Icons.volume_up),
-                    label: const Text('Ascolta tutto'),
+                    label: Text(l10n.listenToAll),
                   ),
                 )
               else
@@ -264,7 +269,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
                   child: OutlinedButton.icon(
                     onPressed: _stopReading,
                     icon: const Icon(Icons.stop),
-                    label: const Text('Ferma lettura'),
+                    label: Text(l10n.stopReading),
                   ),
                 ),
             ],

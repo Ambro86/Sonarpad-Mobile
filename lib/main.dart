@@ -35,6 +35,7 @@ import 'screens/orari_apertura_search_screen.dart';
 import 'screens/italiaonline_screen.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/podcast_episode_player_screen.dart';
+import 'screens/voice_dictionary_screen.dart';
 
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
@@ -313,6 +314,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/audiodescriptions': (_) => const AudiodescriptionRecentScreen(),
         '/info': (_) => const InfoScreen(),
         '/calendar': (_) => const CalendarScreen(),
+        '/voice_dictionary': (_) => const VoiceDictionaryScreen(),
       },
     );
   }

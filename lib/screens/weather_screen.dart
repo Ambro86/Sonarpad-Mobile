@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/news/weather_service.dart';
@@ -118,7 +119,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
             ),
           ),
           if (_isLoading)
-            const Expanded(child: Center(child: CircularProgressIndicator())),
+            Expanded(
+              child: Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: l10n.loading,
+                ),
+              ),
+            ),
           if (_error != null)
             Expanded(child: Center(child: Text(_error!.label(l10n)))),
           if (_forecast != null && !_isLoading)
@@ -165,7 +172,13 @@ class _WeatherForecastView extends StatelessWidget {
     if (day == 0) return l10n.weatherToday;
     if (day == 1) return l10n.weatherTomorrow;
     final times = _dailyValues('time');
-    if (day >= 0 && day < times.length) return times[day].toString();
+    if (day >= 0 && day < times.length) {
+      final date = DateTime.tryParse(times[day].toString());
+      if (date != null) {
+        return DateFormat.yMMMMd(l10n.locale.languageCode).format(date);
+      }
+      return times[day].toString();
+    }
     return '${l10n.weatherChooseDay} ${day + 1}';
   }
 

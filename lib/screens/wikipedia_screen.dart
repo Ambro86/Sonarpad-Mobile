@@ -70,10 +70,13 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
   }
 
   Future<void> _openRecentArticle(String title) async {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
+      builder: (_) => Center(
+        child: CircularProgressIndicator(semanticsLabel: l10n.loading),
+      ),
     );
     try {
       final results = await WikipediaService().search(title, lang: _language!);
@@ -97,14 +100,14 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).articleNotFound)),
+          SnackBar(content: Text(l10n.articleNotFound)),
         );
       }
     } catch (e) {
       if (mounted) Navigator.of(context).pop();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${AppLocalizations.of(context).errorOpening}: $e")),
+          SnackBar(content: Text("${l10n.errorOpening}: $e")),
         );
       }
     }
@@ -144,8 +147,8 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
             onPressed: () async {
               final q = await Navigator.of(context).push<String>(
                 MaterialPageRoute(
-                  builder: (ctx) => const RecentSearchesScreen(
-                    title: 'Articoli recenti',
+                  builder: (ctx) => RecentSearchesScreen(
+                    title: l10n.recentArticles,
                     domain: 'wikipedia',
                   ),
                 ),

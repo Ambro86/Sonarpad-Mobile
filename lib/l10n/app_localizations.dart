@@ -68,6 +68,68 @@ class AppLocalizations {
   String get categoryUtilities => _isEn
       ? 'Searches and utilities'
       : (_isFr ? 'Recherches et utilitaires' : (_isEs ? 'Búsquedas y utilidades' : 'Ricerche e utilità'));
+  String get voiceDictionaryTitle => _isEn
+      ? 'Voice Dictionary'
+      : (_isFr
+          ? 'Dictionnaire vocal'
+          : (_isEs ? 'Diccionario y voz' : 'Dizionario vocale'));
+  String get voiceDictionaryAdd => _isEn
+      ? 'Add Entries to Dictionary'
+      : (_isFr
+          ? 'Ajouter des entrées au dictionnaire'
+          : (_isEs
+              ? 'Agregar entradas al diccionario'
+              : 'Aggiungi voci al dizionario'));
+  String get voiceDictionaryOriginalWord => _isEn
+      ? 'Original Word'
+      : (_isFr
+          ? 'Mot original'
+          : (_isEs ? 'Palabra original' : 'Parola originale'));
+  String get voiceDictionaryReplacementWord => _isEn
+      ? 'Replacement Word'
+      : (_isFr
+          ? 'Mot de remplacement'
+          : (_isEs ? 'Palabra de reemplazo' : 'Parola in sostituzione'));
+  String get voiceDictionaryMatchCase => _isEn
+      ? 'Match Case'
+      : (_isFr
+          ? 'Respecter la casse'
+          : (_isEs
+              ? 'Distinguir mayúsculas y minúsculas'
+              : 'Distingui maiuscole e minuscole'));
+  String get voiceDictionaryIgnoreCase => _isEn
+      ? 'Ignore case'
+      : (_isFr
+          ? 'Ignorer la casse'
+          : (_isEs
+              ? 'Ignorar mayúsculas y minúsculas'
+              : 'Ignora maiuscole e minuscole'));
+  String get voiceDictionaryEntries => _isEn
+      ? 'Dictionary entries'
+      : (_isFr
+          ? 'Entrées du dictionnaire'
+          : (_isEs ? 'Entradas del diccionario' : 'Voci già aggiunte'));
+  String get voiceDictionaryEmpty => _isEn
+      ? 'No dictionary entries.'
+      : (_isFr
+          ? 'Aucune entrée dans le dictionnaire.'
+          : (_isEs
+              ? 'No hay entradas en el diccionario.'
+              : 'Nessuna voce nel dizionario.'));
+  String get voiceDictionaryRemove => _isEn
+      ? 'Remove Selected Entry'
+      : (_isFr
+          ? 'Supprimer l\'entrée sélectionnée'
+          : (_isEs
+              ? 'Eliminar entrada seleccionada'
+              : 'Rimuovi voce selezionata'));
+  String get voiceDictionaryOriginalRequired => _isEn
+      ? 'Enter the original word.'
+      : (_isFr
+          ? 'Saisissez le mot original.'
+          : (_isEs
+              ? 'Introduce la palabra original.'
+              : 'Inserisci la parola originale.'));
   String get donations => _isEn
       ? 'Donations'
       : (_isFr ? 'Dons' : (_isEs ? 'Donaciones' : 'Donazioni'));
@@ -283,6 +345,41 @@ class AppLocalizations {
         'es' => 'Restaurar fuentes eliminadas',
         _ => 'Ripristina testate eliminate',
       };
+  String get addCustomNewsSource => switch (locale.languageCode) {
+        'it' => 'Aggiungi sorgente RSS personalizzata',
+        'en' => 'Add custom RSS source',
+        'fr' => 'Ajouter une source RSS personnalisée',
+        'es' => 'Añadir fuente RSS personalizada',
+        _ => 'Aggiungi sorgente RSS personalizzata',
+      };
+  String get newsSourceName => switch (locale.languageCode) {
+        'it' => 'Nome testata/sito',
+        'en' => 'Source or site name',
+        'fr' => 'Nom de la source ou du site',
+        'es' => 'Nombre de la fuente o del sitio',
+        _ => 'Nome testata/sito',
+      };
+  String get newsSourceUrlOrSearch => switch (locale.languageCode) {
+        'it' => 'URL sito, feed RSS o parola di ricerca',
+        'en' => 'Website URL, RSS feed or search word',
+        'fr' => 'URL du site, flux RSS ou mot de recherche',
+        'es' => 'URL del sitio, feed RSS o palabra de búsqueda',
+        _ => 'URL sito, feed RSS o parola di ricerca',
+      };
+  String get deleteNewsSource => switch (locale.languageCode) {
+        'it' => 'Elimina sorgente',
+        'en' => 'Delete source',
+        'fr' => 'Supprimer la source',
+        'es' => 'Eliminar fuente',
+        _ => 'Elimina sorgente',
+      };
+  String get articleTextSemantics => switch (locale.languageCode) {
+        'it' => 'Testo articolo',
+        'en' => 'Article text',
+        'fr' => 'Texte de l\'article',
+        'es' => 'Texto del artículo',
+        _ => 'Testo articolo',
+      };
 
   String get newsLanguage => _isEn
       ? 'News Language'
@@ -435,6 +532,21 @@ class AppLocalizations {
       : (_isFr
           ? 'Arrêter la lecture'
           : (_isEs ? 'Detener lectura' : 'Interrompi lettura'));
+  String get startReading => _isEn
+      ? 'Start reading'
+      : (_isFr
+          ? 'Démarrer la lecture'
+          : (_isEs ? 'Iniciar lectura' : 'Avvia lettura'));
+  String get resumeReading => _isEn
+      ? 'Resume reading'
+      : (_isFr
+          ? 'Reprendre la lecture'
+          : (_isEs ? 'Reanudar lectura' : 'Riprendi lettura'));
+  String get pauseReading => _isEn
+      ? 'Pause reading'
+      : (_isFr
+          ? 'Mettre la lecture en pause'
+          : (_isEs ? 'Pausar lectura' : 'Pausa lettura'));
   String get openOriginalArticle => _isEn
       ? 'Open original article'
       : (_isFr
@@ -696,6 +808,11 @@ class AppLocalizations {
       : (_isFr
           ? 'Lecteur d\'épisode'
           : (_isEs ? 'Reproductor de episodios' : 'Player episodio'));
+  String nowPlayingTitle(String title) => _isEn
+      ? 'Now playing: $title'
+      : (_isFr
+          ? 'En lecture : $title'
+          : (_isEs ? 'Reproduciendo: $title' : 'In riproduzione: $title'));
   String get loadingEpisodeAudio => _isEn
       ? 'Loading episode audio'
       : (_isFr
@@ -703,6 +820,12 @@ class AppLocalizations {
           : (_isEs
               ? 'Cargando audio del episodio'
               : 'Caricamento audio episodio'));
+  String get playbackPosition => _isEn
+      ? 'Position'
+      : (_isFr ? 'Position' : (_isEs ? 'Posición' : 'Posizione'));
+  String playbackPositionValue(String position, String duration) => _isEn
+      ? '$position of $duration'
+      : (_isFr ? '$position sur $duration' : (_isEs ? '$position de $duration' : '$position di $duration'));
   String get download => _isEn
       ? 'Download'
       : (_isFr ? 'Télécharger' : (_isEs ? 'Descargar' : 'Scarica'));
@@ -792,22 +915,118 @@ class AppLocalizations {
           : (_isEs
               ? 'No hay documentos. Añade un archivo.'
               : 'Nessun documento. Aggiungi un file.'));
+  String get noDocumentsInLibrary => _isEn
+      ? 'No documents in the library.'
+      : (_isFr
+          ? 'Aucun document dans la bibliothèque.'
+          : (_isEs
+              ? 'No hay documentos en la biblioteca.'
+              : 'Nessun documento presente nella libreria.'));
   String get documentAdded => _isEn
       ? 'Document added'
       : (_isFr
           ? 'Document ajouté'
           : (_isEs ? 'Documento añadido' : 'Documento aggiunto'));
+  String get documentsAdded => _isEn
+      ? 'Documents added'
+      : (_isFr
+          ? 'Documents ajoutés'
+          : (_isEs ? 'Documentos añadidos' : 'Documenti aggiunti'));
+  String libraryLoadError(Object error) => _isEn
+      ? 'Library loading error: $error'
+      : (_isFr
+          ? 'Erreur de chargement de la bibliothèque : $error'
+          : (_isEs ? 'Error al cargar la biblioteca: $error' : 'Errore caricamento libreria: $error'));
+  String fileOpenError(Object error) => _isEn
+      ? 'File opening error: $error'
+      : (_isFr
+          ? 'Erreur d\'ouverture du fichier : $error'
+          : (_isEs ? 'Error al abrir el archivo: $error' : 'Errore apertura file: $error'));
+  String get filePathUnavailable => _isEn
+      ? 'File path unavailable.'
+      : (_isFr
+          ? 'Chemin du fichier indisponible.'
+          : (_isEs ? 'Ruta del archivo no disponible.' : 'Percorso file non disponibile.'));
+  String fileInaccessible(String name) => _isEn
+      ? 'File inaccessible: $name'
+      : (_isFr
+          ? 'Fichier inaccessible : $name'
+          : (_isEs ? 'Archivo inaccesible: $name' : 'File inaccessibile: $name'));
+  String documentAddError(Object error) => _isEn
+      ? 'Document add error: $error'
+      : (_isFr
+          ? 'Erreur d\'ajout du document : $error'
+          : (_isEs ? 'Error al añadir el documento: $error' : 'Errore aggiunta documento: $error'));
+  String documentRemoveError(Object error) => _isEn
+      ? 'Remove error: $error'
+      : (_isFr
+          ? 'Erreur de suppression : $error'
+          : (_isEs ? 'Error al eliminar: $error' : 'Errore rimozione: $error'));
+  String get noExportableTextFound => _isEn
+      ? 'No exportable text found.'
+      : (_isFr
+          ? 'Aucun texte exportable trouvé.'
+          : (_isEs ? 'No se encontró texto exportable.' : 'Nessun testo esportabile trovato.'));
+  String get modifiedDocumentNoExportableText => _isEn
+      ? 'The modified document contains no exportable text.'
+      : (_isFr
+          ? 'Le document modifié ne contient aucun texte exportable.'
+          : (_isEs
+              ? 'El documento modificado no contiene texto exportable.'
+              : 'Il documento modificato non contiene testo esportabile.'));
   String get documentRemoved => _isEn
       ? 'Document removed'
       : (_isFr ? 'Document supprimé' : (_isEs ? 'Documento eliminado' : 'Documento rimosso'));
   String get folderRemoved => _isEn
       ? 'Folder removed'
       : (_isFr ? 'Dossier supprimé' : (_isEs ? 'Carpeta eliminada' : 'Cartella rimossa'));
+  String get removeFolder => _isEn
+      ? 'Remove folder'
+      : (_isFr ? 'Supprimer le dossier' : (_isEs ? 'Eliminar carpeta' : 'Rimuovi cartella'));
   String get removeDocument => _isEn
       ? 'Remove document'
       : (_isFr
           ? 'Supprimer le document'
           : (_isEs ? 'Eliminar documento' : 'Rimuovi documento'));
+  String get writeNewDocument => _isEn
+      ? 'Write new document'
+      : (_isFr
+          ? 'Écrire un nouveau document'
+          : (_isEs ? 'Escribir nuevo documento' : 'Scrivi nuovo documento'));
+  String get addDocumentToLibraryHint => _isEn
+      ? 'Add document to library. Browse device files and add them.'
+      : (_isFr
+          ? 'Ajouter un document à la bibliothèque. Parcourez les fichiers de l’appareil et ajoutez-les.'
+          : (_isEs
+              ? 'Añadir documento a la biblioteca. Explora los archivos del dispositivo y añádelos.'
+              : 'Aggiungi documento alla libreria. Sfoglia i file del dispositivo e aggiungili.'));
+  String get documentTypeLabel => _isEn
+      ? 'Document'
+      : (_isFr ? 'Document' : (_isEs ? 'Documento' : 'Documento'));
+  String get folderTypeLabel => _isEn
+      ? 'Folder'
+      : (_isFr ? 'Dossier' : (_isEs ? 'Carpeta' : 'Cartella'));
+  String documentAddedOn(String date) => _isEn
+      ? 'added on $date'
+      : (_isFr
+          ? 'ajouté le $date'
+          : (_isEs ? 'añadido el $date' : 'aggiunto il $date'));
+  String documentTypeDescription(String extension) => _isEn
+      ? 'type $extension'
+      : (_isFr ? 'type $extension' : (_isEs ? 'tipo $extension' : 'tipo $extension'));
+  String get openFolderHint => _isEn
+      ? 'Double tap to open the folder'
+      : (_isFr
+          ? 'Touchez deux fois pour ouvrir le dossier'
+          : (_isEs ? 'Toca dos veces para abrir la carpeta' : 'Tocca due volte per aprire la cartella'));
+  String get openDocumentHint => _isEn
+      ? 'Double tap to open and read the document'
+      : (_isFr
+          ? 'Touchez deux fois pour ouvrir et lire le document'
+          : (_isEs ? 'Toca dos veces para abrir y leer el documento' : 'Tocca due volte per aprire e leggere il documento'));
+  String removeItem(String name) => _isEn
+      ? 'Remove $name'
+      : (_isFr ? 'Supprimer $name' : (_isEs ? 'Eliminar $name' : 'Rimuovi $name'));
   String get removePodcast => _isEn
       ? 'Remove podcast'
       : (_isFr
@@ -896,6 +1115,11 @@ class AppLocalizations {
   String get settingsVoicePitchLabel => _isEn ? 'Pitch' : (_isFr ? 'Ton' : (_isEs ? 'Tono' : 'Tono'));
   String get settingsTestVoice => _isEn ? 'Test voice' : (_isFr ? 'Tester la voix' : (_isEs ? 'Probar voz' : 'Testa voce'));
   String get settingsTestingVoice => _isEn ? 'Playing...' : (_isFr ? 'Lecture...' : (_isEs ? 'Reproduciendo...' : 'Riproduzione in corso...'));
+  String get settingsVoiceTestText => _isEn ? 'This is a test of the selected voice.' : (_isFr ? 'Ceci est un test de la voix sélectionnée.' : (_isEs ? 'Esta es una prueba de la voz seleccionada.' : 'Questo è un test della voce selezionata.'));
+  String settingsVoiceTestError(Object error) => _isEn ? 'Voice test error: $error' : (_isFr ? 'Erreur du test vocal : $error' : (_isEs ? 'Error de prueba de voz: $error' : 'Errore test voce: $error'));
+  String settingsVoiceSaveError(Object error) => _isEn ? 'TTS voice save error: $error' : (_isFr ? 'Erreur d’enregistrement de la voix TTS : $error' : (_isEs ? 'Error al guardar la voz TTS: $error' : 'Errore salvataggio voce TTS: $error'));
+  String get settingsSystemLanguage => _isEn ? 'System language' : (_isFr ? 'Langue système' : (_isEs ? 'Idioma del sistema' : 'Lingua di sistema'));
+  String get settingsSystemVoice => _isEn ? 'System voice' : (_isFr ? 'Voix système' : (_isEs ? 'Voz del sistema' : 'Voce di sistema'));
   String get settingsAutoBookmark => _isEn ? 'Enable automatic bookmark saving' : (_isFr ? 'Activer la sauvegarde automatique du signet' : (_isEs ? 'Habilitar guardado automático de marcadores' : 'Segnalibro automatico per testi e contenuti multimediali'));
   String get settingsAutoBookmarkHint => _isEn ? 'Resume documents, podcasts, and media from where you left off.' : (_isFr ? 'Reprendre les documents et médias où vous vous êtes arrêté.' : (_isEs ? 'Reanudar documentos y multimedia desde donde los dejaste.' : 'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'));
   String get settingsSeekStep => _isEn ? 'Media rewind / fast forward step' : (_isFr ? 'Étape de retour/avance rapide multimédia' : (_isEs ? 'Paso de rebobinado / avance rápido multimedia' : 'Regola l\'avanzamento di riproduzione nei file media'));
@@ -974,10 +1198,17 @@ class AppLocalizations {
   String get settingsCancel => _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
   String get settingsSend => _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
   String get settingsFillFieldsCode => _isEn ? 'Fill all fields to request the code.' : (_isFr ? 'Remplissez tous les champs pour demander le code.' : (_isEs ? 'Rellene todos los campos para solicitar el código.' : 'Compila tutti i campi per richiedere il codice.'));
+  String get settingsName => _isEn ? 'Name' : (_isFr ? 'Prénom' : (_isEs ? 'Nombre' : 'Nome'));
+  String get settingsSurname => _isEn ? 'Surname' : (_isFr ? 'Nom' : (_isEs ? 'Apellido' : 'Cognome'));
+  String get settingsEmail => _isEn ? 'Email' : (_isFr ? 'E-mail' : (_isEs ? 'Correo electrónico' : 'Email'));
+  String get settingsOperatingSystem => _isEn ? 'Operating system' : (_isFr ? 'Système d’exploitation' : (_isEs ? 'Sistema operativo' : 'Sistema Operativo'));
+  String settingsCodeRequestBody(String name, String surname, String email, String os) =>
+      '$settingsName: $name; $settingsSurname: $surname; $settingsEmail: $email; $settingsOperatingSystem: $os';
   String get settingsNameOptional => _isEn ? 'Name (optional)' : (_isFr ? 'Nom (optionnel)' : (_isEs ? 'Nombre (opcional)' : 'Nome (opzionale)'));
   String get settingsMessageOptional => _isEn ? 'Message (optional)' : (_isFr ? 'Message (optionnel)' : (_isEs ? 'Mensaje (opcional)' : 'Messaggio (opzionale)'));
   String get settingsVerifyCodeAndSave => _isEn ? 'Verifying code and saving...' : (_isFr ? 'Vérification et enregistrement...' : (_isEs ? 'Verificando y guardando...' : 'Verifica codice e salvataggio...'));
   String get settingsViewSysLog => _isEn ? 'View system log' : (_isFr ? 'Voir le journal système' : (_isEs ? 'Ver registro del sistema' : 'Visualizza log di sistema'));
+  String settingsMailOpenError(Object error) => _isEn ? 'Error opening email: $error' : (_isFr ? 'Erreur d’ouverture de l’e-mail : $error' : (_isEs ? 'Error al abrir el correo: $error' : 'Errore apertura mail: $error'));
   String get ok => _isEn ? 'OK' : 'OK';
   String get invia => _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
   String get saveArticle => _isEn
@@ -1006,32 +1237,71 @@ class AppLocalizations {
   String get pdfFormat => _isEn ? 'PDF (.pdf)' : (_isFr ? 'PDF (.pdf)' : (_isEs ? 'PDF (.pdf)' : 'PDF (.pdf)'));
   String get exportError => _isEn ? 'Export error' : (_isFr ? 'Erreur d\'exportation' : (_isEs ? 'Error de exportación' : 'Errore esportazione'));
   String get newFolder => _isEn ? 'New folder' : (_isFr ? 'Nouveau dossier' : (_isEs ? 'Nueva carpeta' : 'Nuova cartella'));
+  String get folderNameHint => _isEn ? 'Folder name' : (_isFr ? 'Nom du dossier' : (_isEs ? 'Nombre de la carpeta' : 'Nome cartella'));
   String get create => _isEn ? 'Create' : (_isFr ? 'Créer' : (_isEs ? 'Crear' : 'Crea'));
   String get createNewFolder => _isEn ? 'Create new folder' : (_isFr ? 'Créer un nouveau dossier' : (_isEs ? 'Crear nueva carpeta' : 'Crea nuova cartella'));
   String get importFromDropbox => _isEn ? 'Import documents from Dropbox' : (_isFr ? 'Importer des documents depuis Dropbox' : (_isEs ? 'Importar documentos desde Dropbox' : 'Importa documenti da Dropbox'));
   String get moveDocument => _isEn ? 'Move document' : (_isFr ? 'Déplacer le document' : (_isEs ? 'Mover documento' : 'Sposta documento'));
+  String get documentMoved => _isEn ? 'Moved successfully' : (_isFr ? 'Déplacé avec succès' : (_isEs ? 'Movido correctamente' : 'Spostato correttamente'));
   String get outOfFolder => _isEn ? 'Out of folder' : (_isFr ? 'Hors du dossier' : (_isEs ? 'Fuera de la carpeta' : 'Fuori dalla cartella'));
   String get moveToAnotherFolder => _isEn ? 'Move to another folder...' : (_isFr ? 'Déplacer vers un autre dossier...' : (_isEs ? 'Mover a otra carpeta...' : 'Sposta in un\'altra cartella...'));
   String get ttsError => _isEn ? 'TTS error' : (_isFr ? 'Erreur de synthèse vocale' : (_isEs ? 'Error de síntesis de voz' : 'Errore sintesi vocale'));
   String get editParagraph => _isEn ? 'Edit paragraph' : (_isFr ? 'Modifier le paragraphe' : (_isEs ? 'Editar párrafo' : 'Modifica paragrafo'));
+  String get editParagraphTextField => _isEn ? 'Text field for editing the paragraph' : (_isFr ? 'Champ de texte pour modifier le paragraphe' : (_isEs ? 'Campo de texto para editar el párrafo' : 'Campo di testo per la modifica del paragrafo'));
+  String get editParagraphHint => _isEn ? 'Edit the paragraph text' : (_isFr ? 'Modifier le texte du paragraphe' : (_isEs ? 'Editar el texto del párrafo' : 'Modifica il testo del paragrafo'));
   String get applyAndSave => _isEn ? 'Apply and save' : (_isFr ? 'Appliquer et enregistrer' : (_isEs ? 'Aplicar y guardar' : 'Applica e salva'));
   String get textEditedAndSaved => _isEn ? 'Text edited and saved in current document.' : (_isFr ? 'Texte modifié et enregistré dans le document actuel.' : (_isEs ? 'Texto editado y guardado en el documento actual.' : 'Testo modificato e salvato nel documento corrente.'));
   String get saveError => _isEn ? 'Error while saving' : (_isFr ? 'Erreur lors de la sauvegarde' : (_isEs ? 'Error al guardar' : 'Errore durante il salvataggio'));
   String get docSavedInLibrary => _isEn ? 'Document saved in library' : (_isFr ? 'Document enregistré dans la bibliothèque' : (_isEs ? 'Documento guardado en la biblioteca' : 'Documento salvato nella libreria'));
+  String get saveInLibrary => _isEn ? 'Save in library' : (_isFr ? 'Enregistrer dans la bibliothèque' : (_isEs ? 'Guardar en la biblioteca' : 'Salva nella libreria'));
+  String get documentTextLabel => _isEn ? 'Document text' : (_isFr ? 'Texte du document' : (_isEs ? 'Texto del documento' : 'Testo documento'));
+  String get modifiedInSonarpad => _isEn ? 'Modified in Sonarpad' : (_isFr ? 'Modifié dans Sonarpad' : (_isEs ? 'Modificado en Sonarpad' : 'Modificato in Sonarpad'));
+  String get noTextAvailableForDocument => _isEn ? 'No text available for this document.' : (_isFr ? 'Aucun texte disponible pour ce document.' : (_isEs ? 'No hay texto disponible para este documento.' : 'Nessun testo disponibile per questo documento.'));
   String bookmarkSet(int index) => _isEn ? 'Bookmark set at paragraph $index.' : (_isFr ? 'Signet défini au paragraphe $index.' : (_isEs ? 'Marcador establecido en el párrafo $index.' : 'Segnalibro impostato al paragrafo $index.'));
   String get bookmarkRemoved => _isEn ? 'Bookmark removed.' : (_isFr ? 'Signet supprimé.' : (_isEs ? 'Marcador eliminado.' : 'Segnalibro rimosso.'));
   String get docEmpty => _isEn ? 'Document is empty' : (_isFr ? 'Le document est vide' : (_isEs ? 'El documento está vacío' : 'Il documento è vuoto'));
   String get docSavedSuccessfully => _isEn ? 'Document saved successfully!' : (_isFr ? 'Document enregistré avec succès!' : (_isEs ? '¡Documento guardado con éxito!' : 'Documento salvato con successo!'));
   String get writeDocument => _isEn ? 'Write Document' : (_isFr ? 'Écrire un document' : (_isEs ? 'Escribir Documento' : 'Scrivi Documento'));
+  String get documentTitleOptional => _isEn ? 'Title (optional)' : (_isFr ? 'Titre (optionnel)' : (_isEs ? 'Título (opcional)' : 'Titolo (opzionale)'));
+  String get documentTitleHint => _isEn ? 'Example: Shopping notes' : (_isFr ? 'Exemple : Notes de courses' : (_isEs ? 'Ejemplo: Notas de compra' : 'Es: Appunti Spesa'));
+  String get documentTextField => _isEn ? 'Document text' : (_isFr ? 'Texte du document' : (_isEs ? 'Texto del documento' : 'Testo del documento'));
+  String get documentTextHint => _isEn ? 'Start writing here...' : (_isFr ? 'Commencez à écrire ici...' : (_isEs ? 'Empieza a escribir aquí...' : 'Inizia a scrivere qui...'));
+  String get newDocumentDefaultName => _isEn ? 'New_Document' : (_isFr ? 'Nouveau_Document' : (_isEs ? 'Nuevo_Documento' : 'Nuovo_Documento'));
   String get saving => _isEn ? 'Saving...' : (_isFr ? 'Enregistrement...' : (_isEs ? 'Guardando...' : 'Salvataggio...'));
   String get saveDocument => _isEn ? 'Save Document' : (_isFr ? 'Enregistrer le document' : (_isEs ? 'Guardar Documento' : 'Salva Documento'));
   String get addRssSource => _isEn ? 'Add RSS Source' : (_isFr ? 'Ajouter une source RSS' : (_isEs ? 'Agregar fuente RSS' : 'Aggiungi sorgente RSS'));
   String get add => _isEn ? 'Add' : (_isFr ? 'Ajouter' : (_isEs ? 'Agregar' : 'Aggiungi'));
   String get errorPrefix => _isEn ? 'Error' : (_isFr ? 'Erreur' : (_isEs ? 'Error' : 'Errore'));
+  String versionBuild(String version, String buildNumber) => _isEn
+      ? 'Version $version (Build $buildNumber)'
+      : (_isFr
+          ? 'Version $version (Build $buildNumber)'
+          : (_isEs ? 'Versión $version (Build $buildNumber)' : 'Versione $version (Build $buildNumber)'));
+  String get whatIsNew => _isEn ? 'What is new' : (_isFr ? 'Nouveautés' : (_isEs ? 'Novedades' : 'Novità'));
+  String changelogLoadError(Object error) => _isEn
+      ? 'Error loading what is new: $error'
+      : (_isFr
+          ? 'Erreur lors du chargement des nouveautés : $error'
+          : (_isEs ? 'Error al cargar las novedades: $error' : 'Errore caricamento novità: $error'));
+  String get visitSonarpadSite => _isEn
+      ? 'Visit the Sonarpad website'
+      : (_isFr
+          ? 'Visiter le site de Sonarpad'
+          : (_isEs ? 'Visitar el sitio de Sonarpad' : 'Visita il sito di Sonarpad'));
+  String visitSonarpadSiteWithUrl(String url) => _isEn
+      ? 'Visit the Sonarpad website: $url'
+      : (_isFr
+          ? 'Visiter le site de Sonarpad : $url'
+          : (_isEs ? 'Visitar el sitio de Sonarpad: $url' : 'Visita il sito di Sonarpad: $url'));
   String get nowPlaying => _isEn ? 'Now playing' : (_isFr ? 'En lecture' : (_isEs ? 'Reproduciendo' : 'In riproduzione'));
   String get fileImported => _isEn ? 'File imported' : (_isFr ? 'Fichier importé' : (_isEs ? 'Archivo importado' : 'File importato'));
+  String importZipError(Object error) => _isEn ? 'ZIP import error: $error' : (_isFr ? 'Erreur d’importation ZIP : $error' : (_isEs ? 'Error al importar ZIP: $error' : 'Errore importazione zip: $error'));
   String get dropboxLoginPrompt => _isEn ? 'Log in to Dropbox to import your documents.' : (_isFr ? 'Connectez-vous à Dropbox pour importer vos documents.' : (_isEs ? 'Inicia sesión en Dropbox para importar tus documentos.' : 'Accedi a Dropbox per importare i tuoi documenti.'));
   String get loginToDropbox => _isEn ? 'Log in to Dropbox' : (_isFr ? 'Se connecter à Dropbox' : (_isEs ? 'Iniciar sesión en Dropbox' : 'Accedi a Dropbox'));
+  String get logoutFromDropbox => _isEn ? 'Log out' : (_isFr ? 'Se déconnecter' : (_isEs ? 'Cerrar sesión' : 'Disconnetti'));
+  String get dropboxLoginFailed => _isEn ? 'Login failed or cancelled' : (_isFr ? 'Connexion échouée ou annulée' : (_isEs ? 'Inicio de sesión fallido o cancelado' : 'Accesso fallito o annullato'));
+  String dropboxLoadFolderError(Object error) => _isEn ? 'Folder loading error: $error' : (_isFr ? 'Erreur de chargement du dossier : $error' : (_isEs ? 'Error al cargar la carpeta: $error' : 'Errore caricamento cartella: $error'));
+  String dropboxImportError(Object error) => _isEn ? 'Import error: $error' : (_isFr ? 'Erreur d’importation : $error' : (_isEs ? 'Error de importación: $error' : 'Errore importazione: $error'));
   String get retry => _isEn ? 'Retry' : (_isFr ? 'Réessayer' : (_isEs ? 'Reintentar' : 'Riprova'));
   String get goBack => _isEn ? '.. Go back' : (_isFr ? '.. Retour' : (_isEs ? '.. Volver' : '.. Torna indietro'));
   String get noSupportedFilesInFolder => _isEn ? 'No supported files in this folder.' : (_isFr ? 'Aucun fichier pris en charge dans ce dossier.' : (_isEs ? 'No hay archivos compatibles en esta carpeta.' : 'Nessun file supportato in questa cartella.'));
@@ -1044,6 +1314,8 @@ class AppLocalizations {
   String get noRecentSearches => _isEn ? 'No recent searches.' : (_isFr ? 'Aucune recherche récente.' : (_isEs ? 'No hay búsquedas recientes.' : 'Nessuna ricerca recente.'));
   String get logCopiedToClipboard => _isEn ? 'Log copied to clipboard' : (_isFr ? 'Journal copié dans le presse-papiers' : (_isEs ? 'Registro copiado al portapapeles' : 'Log copiato negli appunti'));
   String get systemLog => _isEn ? 'System Log' : (_isFr ? 'Journal système' : (_isEs ? 'Registro del sistema' : 'Log di Sistema'));
+  String get clearSystemLog => _isEn ? 'Clear log' : (_isFr ? 'Vider le journal' : (_isEs ? 'Vaciar registro' : 'Svuota log'));
+  String get copySystemLog => _isEn ? 'Copy log' : (_isFr ? 'Copier le journal' : (_isEs ? 'Copiar registro' : 'Copia log'));
   String get donateWithPaypal => _isEn ? 'Donate with PayPal' : (_isFr ? 'Faire un don avec PayPal' : (_isEs ? 'Donar con PayPal' : 'Dona con PayPal'));
   String get bankTransferTitle => _isEn ? 'Bank Transfer' : (_isFr ? 'Virement bancaire' : (_isEs ? 'Transferencia bancaria' : 'Bonifico Bancario'));
   String get enableVideo => _isEn ? 'Enable video' : (_isFr ? 'Activer la vidéo' : (_isEs ? 'Activar vídeo' : 'Attiva video'));
@@ -1059,17 +1331,70 @@ class AppLocalizations {
               ? 'Ver calendario, festivos, santo del día y tus recordatorios'
               : 'Apri il calendario con santi, festività e promemoria'));
 
-  String get saintOfTheDay => _isEn ? 'Saint of the day' : 'Santo del giorno';
-  String get quoteOfTheDay => _isEn ? 'Quote of the day' : 'Citazione del giorno';
-  String get reminders => _isEn ? 'Reminders' : 'Promemoria';
-  String get addReminder => _isEn ? 'Add reminder' : 'Aggiungi promemoria';
-  String get removeReminder => _isEn ? 'Remove reminder' : 'Rimuovi promemoria';
-  String get noReminders => _isEn ? 'No reminders' : 'Nessun promemoria';
-  String get writeReminder => _isEn ? 'Write your reminder here...' : 'Scrivi qui il tuo promemoria...';
-  String get saveReminder => _isEn ? 'Save' : 'Salva';
-  String get cancelReminder => _isEn ? 'Cancel' : 'Annulla';
-  String get backToToday => _isEn ? 'Back to today' : 'Torna a oggi';
-  String reminderSaved(int count) => _isEn ? '$count reminders' : '$count promemoria';
+  String get saintOfTheDay => _isEn
+      ? 'Saint of the day'
+      : (_isFr
+          ? 'Saint du jour'
+          : (_isEs ? 'Santo del día' : 'Santo del giorno'));
+  String get quoteOfTheDay => _isEn
+      ? 'Quote of the day'
+      : (_isFr
+          ? 'Citation du jour'
+          : (_isEs ? 'Cita del día' : 'Citazione del giorno'));
+  String get reminders => _isEn
+      ? 'Reminders'
+      : (_isFr ? 'Rappels' : (_isEs ? 'Recordatorios' : 'Promemoria'));
+  String get addReminder => _isEn
+      ? 'Add reminder'
+      : (_isFr
+          ? 'Ajouter un rappel'
+          : (_isEs ? 'Añadir recordatorio' : 'Aggiungi promemoria'));
+  String get removeReminder => _isEn
+      ? 'Remove reminder'
+      : (_isFr
+          ? 'Supprimer le rappel'
+          : (_isEs ? 'Eliminar recordatorio' : 'Rimuovi promemoria'));
+  String get noReminders => _isEn
+      ? 'No reminders'
+      : (_isFr ? 'Aucun rappel' : (_isEs ? 'Sin recordatorios' : 'Nessun promemoria'));
+  String get writeReminder => _isEn
+      ? 'Write your reminder here...'
+      : (_isFr
+          ? 'Écrivez votre rappel ici...'
+          : (_isEs
+              ? 'Escribe aquí tu recordatorio...'
+              : 'Scrivi qui il tuo promemoria...'));
+  String get saveReminder => _isEn
+      ? 'Save'
+      : (_isFr ? 'Enregistrer' : (_isEs ? 'Guardar' : 'Salva'));
+  String get cancelReminder => _isEn
+      ? 'Cancel'
+      : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
+  String get backToToday => _isEn
+      ? 'Back to today'
+      : (_isFr
+          ? 'Retour à aujourd\'hui'
+          : (_isEs ? 'Volver a hoy' : 'Torna a oggi'));
+  String get calendarToday => _isEn
+      ? 'Today'
+      : (_isFr ? 'Aujourd\'hui' : (_isEs ? 'Hoy' : 'Oggi'));
+  String get calendarTomorrow => _isEn
+      ? 'Tomorrow'
+      : (_isFr ? 'Demain' : (_isEs ? 'Mañana' : 'Domani'));
+  String get calendarYesterday => _isEn
+      ? 'Yesterday'
+      : (_isFr ? 'Hier' : (_isEs ? 'Ayer' : 'Ieri'));
+  String get share => _isEn
+      ? 'Share'
+      : (_isFr ? 'Partager' : (_isEs ? 'Compartir' : 'Condividi'));
+  String get listenToAll => _isEn
+      ? 'Listen to all'
+      : (_isFr ? 'Tout écouter' : (_isEs ? 'Escuchar todo' : 'Ascolta tutto'));
+  String reminderSaved(int count) => _isEn
+      ? '$count reminders'
+      : (_isFr
+          ? '$count rappels'
+          : (_isEs ? '$count recordatorios' : '$count promemoria'));
 }
 
 class _AppLocalizationsDelegate

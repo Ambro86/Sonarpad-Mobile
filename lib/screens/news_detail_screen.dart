@@ -11,6 +11,7 @@ import '../services/accessibility_feedback_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
+import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'news_webview_screen.dart';
@@ -30,6 +31,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   final _flutterTts = FlutterTts();
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
+  final _voiceDictionary = VoiceDictionaryService();
   bool _speaking = false;
   bool _ttsPaused = false;
   
@@ -118,6 +120,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       final text = '${widget.article.title}. ${widget.article.summary}';
       final voice = await _voice();
       final engine = await _settings.loadTtsEngine();
+      final dictionaryEntries = await _voiceDictionary.loadEntries();
       final chunks = _tts.splitTextForStreaming(text, maxChunkChars: 650);
       _totalChunks = chunks.length;
       debugPrint(
@@ -161,7 +164,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           }
           if (!mounted || !_speaking) break;
           _readyChunks = i + 1;
-          await _flutterTts.speak(chunks[i]);
+          final textToSpeak =
+              _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+          await _flutterTts.speak(textToSpeak);
         }
 
         if (mounted) {
@@ -177,7 +182,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
         final generation = Future<void>(() async {
           for (var i = 0; i < chunks.length; i++) {
-            final file = await _tts.speakToFile(text: chunks[i], voice: voice);
+            final textToSpeak =
+                _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+            final file = await _tts.speakToFile(text: textToSpeak, voice: voice);
             final size = await file.length();
             debugPrint(
               'Sonarpad TTS: chunk ${i + 1}/${chunks.length} ready '

@@ -186,7 +186,7 @@ class RouteService {
     required String countryCode, // es: 'it'
   }) async {
     final q = query.trim();
-    if (q.isEmpty) throw Exception('Indirizzo non valido');
+    if (q.isEmpty) throw Exception(_invalidAddress(language));
 
     final results = await _fetchGeocode(
       query: q,
@@ -252,12 +252,12 @@ class RouteService {
         .get(uri, headers: _headers)
         .timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
-      throw Exception('Errore di rete geocode: HTTP ${response.statusCode}');
+      throw Exception(_networkGeocodeError(language, response.statusCode));
     }
 
     final data = jsonDecode(response.body);
     if (data['ok'] != true) {
-      throw Exception(data['error'] ?? 'Errore dal server');
+      throw Exception(data['error'] ?? _serverGenericError(language));
     }
 
     final resultsJson = data['results'] as List<dynamic>? ?? [];
@@ -344,13 +344,76 @@ class RouteService {
     );
   }
 
-  String _serverError(dynamic error, String fallback) {
+  String _invalidAddress(String language) => switch (language) {
+        'en' => 'Invalid address',
+        'fr' => 'Adresse non valide',
+        'es' => 'Dirección no válida',
+        _ => 'Indirizzo non valido',
+      };
+
+  String _networkGeocodeError(String language, int statusCode) =>
+      switch (language) {
+        'en' => 'Geocoding network error: HTTP $statusCode',
+        'fr' => 'Erreur réseau de géocodage : HTTP $statusCode',
+        'es' => 'Error de red de geocodificación: HTTP $statusCode',
+        _ => 'Errore di rete geocode: HTTP $statusCode',
+      };
+
+  String _networkRouteError(String language, int statusCode) =>
+      switch (language) {
+        'en' => 'Route network error: HTTP $statusCode',
+        'fr' => 'Erreur réseau de calcul d\'itinéraire : HTTP $statusCode',
+        'es' => 'Error de red de ruta: HTTP $statusCode',
+        _ => 'Errore di rete route: HTTP $statusCode',
+      };
+
+  String _serverGenericError(String language) => switch (language) {
+        'en' => 'Server error',
+        'fr' => 'Erreur du serveur',
+        'es' => 'Error del servidor',
+        _ => 'Errore dal server',
+      };
+
+  String _routeCalculationServerError(String language) => switch (language) {
+        'en' => 'Route calculation error from server',
+        'fr' => 'Erreur de calcul d\'itinéraire du serveur',
+        'es' => 'Error de cálculo de ruta del servidor',
+        _ => 'Errore di calcolo percorso dal server',
+      };
+
+  String _unauthorizedError(String language) => switch (language) {
+        'en' =>
+          'Unauthorized client. Update Sonarpad or check the app configuration.',
+        'fr' =>
+          'Client non autorisé. Mettez à jour Sonarpad ou vérifiez la configuration de l\'application.',
+        'es' =>
+          'Cliente no autorizado. Actualiza Sonarpad o comprueba la configuración de la app.',
+        _ =>
+          'Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell\'app.',
+      };
+
+  String _addressNotFound(String language, bool isStart) => switch (language) {
+        'en' => isStart
+            ? 'Starting address not found'
+            : 'Destination address not found',
+        'fr' => isStart
+            ? 'Adresse de départ introuvable'
+            : 'Adresse de destination introuvable',
+        'es' => isStart
+            ? 'Dirección de salida no encontrada'
+            : 'Dirección de llegada no encontrada',
+        _ => isStart
+            ? 'Indirizzo di partenza non trovato'
+            : 'Indirizzo di arrivo non trovato',
+      };
+
+  String _serverError(dynamic error, String fallback, String language) {
     final message = error?.toString();
     if (message == null || message.trim().isEmpty) {
       return fallback;
     }
     if (message.trim() == _unauthorizedClientError) {
-      return 'Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell\'app.';
+      return _unauthorizedError(language);
     }
     return message;
   }
@@ -381,13 +444,17 @@ class RouteService {
         .get(uri, headers: _headers)
         .timeout(const Duration(seconds: 15));
     if (response.statusCode != 200) {
-      throw Exception('Errore di rete route: HTTP ${response.statusCode}');
+      throw Exception(_networkRouteError(language, response.statusCode));
     }
 
     final data = jsonDecode(response.body);
     if (data['ok'] != true) {
       throw Exception(
-        _serverError(data['error'], 'Errore di calcolo percorso dal server'),
+        _serverError(
+          data['error'],
+          _routeCalculationServerError(language),
+          language,
+        ),
       );
     }
 
@@ -430,13 +497,13 @@ class RouteService {
     final fromCandidates = await geocode(
         query: fromAddress, language: language, countryCode: countryCode);
     if (fromCandidates.isEmpty) {
-      throw Exception('Indirizzo di partenza non trovato');
+      throw Exception(_addressNotFound(language, true));
     }
 
     final toCandidates = await geocode(
         query: toAddress, language: language, countryCode: countryCode);
     if (toCandidates.isEmpty) {
-      throw Exception('Indirizzo di arrivo non trovato');
+      throw Exception(_addressNotFound(language, false));
     }
 
     return calculateRoute(

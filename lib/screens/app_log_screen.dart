@@ -12,7 +12,7 @@ class AppLogScreen extends StatefulWidget {
 }
 
 class _AppLogScreenState extends State<AppLogScreen> {
-  String _logContent = 'Caricamento log...';
+  String _logContent = '';
   bool _loading = true;
 
   @override
@@ -53,24 +53,25 @@ class _AppLogScreenState extends State<AppLogScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).systemLog),
+        title: Text(l10n.systemLog),
         actions: [
           IconButton(
             icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
-            tooltip: 'Svuota log',
+            tooltip: l10n.clearSystemLog,
             onPressed: _loading ? null : _clearLog,
           ),
           IconButton(
             icon: const Icon(Icons.copy),
-            tooltip: 'Copia log',
+            tooltip: l10n.copySystemLog,
             onPressed: _loading ? null : _copyLog,
           ),
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: _logLines.length,

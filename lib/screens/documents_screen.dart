@@ -66,7 +66,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     } catch (e) {
       dev.log('DocumentsScreen: errore caricamento: $e');
       if (mounted) {
-        setState(() => _errorMessage = 'Errore caricamento libreria: $e');
+        setState(() => _errorMessage = AppLocalizations.of(context).libraryLoadError(e));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -87,7 +87,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     } catch (e) {
       dev.log('DocumentsScreen: errore apertura file picker: $e');
       if (mounted) {
-        _showSnack('Errore apertura file: $e');
+        _showSnack(AppLocalizations.of(context).fileOpenError(e));
       }
       return;
     }
@@ -97,7 +97,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     for (final file in result.files) {
       final path = file.path;
       if (path == null) {
-        if (mounted) _showSnack('Percorso file non disponibile.');
+        if (mounted) _showSnack(AppLocalizations.of(context).filePathUnavailable);
         continue;
       }
 
@@ -105,7 +105,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       final f = File(path);
       if (!await f.exists()) {
         await AppLogger.log('Il file non esiste o inaccessibile: $path');
-        if (mounted) _showSnack('File inaccessibile: ${p.basename(path)}');
+        if (mounted) _showSnack(AppLocalizations.of(context).fileInaccessible(p.basename(path)));
         continue;
       }
 
@@ -116,7 +116,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         } catch (e) {
           dev.log('DocumentsScreen: errore importazione zip: $e');
           await AppLogger.log('DocumentsScreen: errore importazione zip: $e');
-          if (mounted) _showSnack('Errore importazione zip: $e');
+          if (mounted) _showSnack(AppLocalizations.of(context).importZipError(e));
         }
         continue;
       }
@@ -132,14 +132,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       } catch (e) {
         dev.log('DocumentsScreen: errore aggiunta documento: $e');
         await AppLogger.log('DocumentsScreen: errore aggiunta documento: $e');
-        if (mounted) _showSnack('Errore aggiunta documento: $e');
+        if (mounted) _showSnack(AppLocalizations.of(context).documentAddError(e));
         continue;
       }
     }
 
     if (mounted) {
       setState(() {});
-      await _showImportCompleteDialog('Documenti aggiunti');
+      await _showImportCompleteDialog(AppLocalizations.of(context).documentsAdded);
     }
   }
 
@@ -165,6 +165,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Future<void> _remove(String id) async {
+    final l10n = AppLocalizations.of(context);
     bool isFolder = false;
     try {
       // Troviamo il documento per ottenerne il path e cancellarlo dal disco
@@ -179,17 +180,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       await _service.remove(id);
     } catch (e) {
       dev.log('DocumentsScreen: errore rimozione documento: $e');
-      if (mounted) _showSnack('Errore rimozione: $e');
+      if (mounted) _showSnack(l10n.documentRemoveError(e));
       return;
     }
     if (mounted) {
       setState(() {});
-      final l10n = AppLocalizations.of(context);
       _showSnack(isFolder ? l10n.folderRemoved : l10n.documentRemoved);
     }
   }
 
   Future<void> _handleAction(_DocumentAction action, DocumentItem doc) async {
+    final l10n = AppLocalizations.of(context);
     final displayed = _displayedDocs;
     final currentIndex = displayed.indexWhere((d) => d.id == doc.id);
     if (currentIndex == -1) return;
@@ -206,6 +207,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       globalList[globalTargetIndex] = temp;
       
       await _service.saveAll(globalList);
+      if (!mounted) return;
       setState(() {});
     } else if (action == _DocumentAction.moveDown && currentIndex < displayed.length - 1) {
       final targetDoc = displayed[currentIndex + 1];
@@ -216,6 +218,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       globalList[globalTargetIndex] = temp;
       
       await _service.saveAll(globalList);
+      if (!mounted) return;
       setState(() {});
     } else if (action == _DocumentAction.moveToPosition) {
       final folders = _service.documents.where((d) => d.isFolder && d.id != doc.id).toList();
@@ -243,6 +246,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         }
         
         await _service.saveAll(globalList);
+        if (!mounted) return;
         setState(() {});
       } else if (result is String) {
         String? selectedFolderId;
@@ -251,7 +255,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           selectedFolderId = await showDialog<String?>(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: Text(AppLocalizations.of(context).selectFolder),
+              title: Text(l10n.selectFolder),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -263,7 +267,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context).cancel)),
+                TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
               ],
             ),
           );
@@ -280,8 +284,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             clearParentId: clearParent,
           );
           await _service.update(updatedDoc);
+          if (!mounted) return;
           setState(() {});
-          _showSnack('Spostato correttamente');
+          _showSnack(l10n.documentMoved);
         }
       }
     }
@@ -376,14 +381,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Future<String> _exportTextForDocument(DocumentItem doc) async {
+    final l10n = AppLocalizations.of(context);
     await AppLogger.log('Cerco file modificato per ${doc.id}');
     final editedPath = await _service.resolveEditedFilePath(doc);
     if (editedPath != null && await File(editedPath).exists()) {
       await AppLogger.log('Trovato file modificato, lettura...');
       final text = await File(editedPath).readAsString();
       if (text.trim().isNotEmpty) return text;
-      throw Exception(
-          'Il documento modificato non contiene testo esportabile.');
+      throw Exception(l10n.modifiedDocumentNoExportableText);
     }
 
     await AppLogger.log('Cerco file originale per ${doc.id}');
@@ -395,7 +400,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       extension: doc.extension,
     );
     if (result.text.trim().isEmpty) {
-      throw Exception(result.error ?? 'Nessun testo esportabile trovato.');
+      throw Exception(result.error ?? l10n.noExportableTextFound);
     }
     return result.text;
   }
@@ -489,10 +494,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final docs = _displayedDocs;
     final currentFolderName = widget.folderId != null
         ? _service.documents.firstWhere((d) => d.id == widget.folderId, orElse: () => _service.documents.first).name
-        : 'Documenti';
+        : l10n.documents;
 
     return Scaffold(
       appBar: AppBar(
@@ -500,7 +506,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.note_add),
-            tooltip: 'Scrivi nuovo documento',
+            tooltip: l10n.writeNewDocument,
             onPressed: _createDocument,
           ),
           PopupMenuButton<String>(
@@ -514,7 +520,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                     content: TextField(
                       controller: ctrl,
                       autofocus: true,
-                      decoration: const InputDecoration(hintText: 'Nome cartella'),
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context).folderNameHint,
+                      ),
                     ),
                     actions: [
                       TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context).cancel)),
@@ -581,8 +589,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       ),
       floatingActionButton: Semantics(
         button: true,
-        label:
-            'Aggiungi documento alla libreria. Sfoglia i file del dispositivo e aggiungili.',
+        label: l10n.addDocumentToLibraryHint,
         excludeSemantics: true,
         child: FloatingActionButton(
           onPressed: _pickFile,
@@ -654,19 +661,19 @@ class _DocumentTile extends StatelessWidget {
     return MergeSemantics(
       child: Semantics(
         customSemanticsActions: {
-          CustomSemanticsAction(label: doc.isFolder ? 'Rimuovi cartella' : l10n.removeDocument): onRemove,
-          const CustomSemanticsAction(label: 'Esporta documento'): onExport,
+          CustomSemanticsAction(label: doc.isFolder ? l10n.removeFolder : l10n.removeDocument): onRemove,
+          CustomSemanticsAction(label: l10n.exportDocument): onExport,
           if (!isFirst)
             CustomSemanticsAction(label: l10n.moveUp): () =>
                 onAction(_DocumentAction.moveUp),
           if (!isLast)
             CustomSemanticsAction(label: l10n.moveDown): () =>
                 onAction(_DocumentAction.moveDown),
-          CustomSemanticsAction(label: 'Sposta...'): () =>
+          CustomSemanticsAction(label: l10n.moveToPosition): () =>
               onAction(_DocumentAction.moveToPosition),
         },
-        label: '${doc.isFolder ? 'Cartella' : 'Documento'} $displayName, ${doc.isFolder ? '' : 'tipo ${doc.extension.toUpperCase()}, '}aggiunto il ${_formattedDate(doc.addedAt)}',
-        hint: doc.isFolder ? 'Tocca per aprire la cartella' : 'Tocca per aprire e leggere il documento',
+        label: '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} $displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}',
+        hint: doc.isFolder ? l10n.openFolderHint : l10n.openDocumentHint,
         child: Card(
           elevation: 2,
           clipBehavior: Clip.antiAlias,
@@ -715,7 +722,7 @@ class _DocumentTile extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Aggiunto il ${_formattedDate(doc.addedAt)}',
+                            l10n.documentAddedOn(_formattedDate(doc.addedAt)),
                             style: theme.textTheme.bodySmall,
                           ),
                         ],
@@ -726,11 +733,11 @@ class _DocumentTile extends StatelessWidget {
                   ExcludeSemantics(
                     child: Semantics(
                       button: true,
-                      label: 'Rimuovi $displayName',
+                      label: l10n.removeItem(displayName),
                       child: IconButton(
                         icon: Icon(Icons.delete_outline,
                             color: Theme.of(context).colorScheme.error),
-                        tooltip: 'Rimuovi documento',
+                        tooltip: doc.isFolder ? l10n.removeFolder : l10n.removeDocument,
                         onPressed: onRemove,
                       ),
                     ),
@@ -882,7 +889,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Nessun documento presente nella libreria.',
+            AppLocalizations.of(context).noDocumentsInLibrary,
             style: Theme.of(context).textTheme.titleMedium,
             textAlign: TextAlign.center,
           ),

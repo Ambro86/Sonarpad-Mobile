@@ -39,6 +39,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _play() async {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _loading = true;
       _error = null;
@@ -58,7 +59,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         _videoController?.dispose();
         _videoController = null;
         await _audio.setUrl(widget.station.streamUrl,
-            title: 'In riproduzione: ${widget.station.name}');
+            title: l10n.nowPlayingTitle(widget.station.name));
         if (!mounted) return;
         unawaited(_audio.play().catchError((e) {
           if (!mounted) return;

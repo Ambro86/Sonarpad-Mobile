@@ -44,6 +44,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   }
 
   Future<void> _login() async {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _isAuthenticating = true;
       _error = null;
@@ -55,12 +56,13 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     } else if (mounted) {
       setState(() {
         _isAuthenticating = false;
-        _error = "Accesso fallito o annullato";
+        _error = l10n.dropboxLoginFailed;
       });
     }
   }
 
   Future<void> _loadFolder(String path) async {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _loading = true;
       _error = null;
@@ -96,7 +98,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = "Errore caricamento cartella: $e";
+          _error = l10n.dropboxLoadFolderError(e);
           _loading = false;
           _isAuthenticating = false;
         });
@@ -105,6 +107,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   }
 
   Future<void> _importFile(Map<String, dynamic> entry) async {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _loading = true;
     });
@@ -122,7 +125,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       await widget.documentService.add(doc);
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context).fileImported}: $name')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.fileImported}: $name')));
         setState(() {
           _loading = false;
         });
@@ -130,7 +133,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = "Errore importazione: $e";
+          _error = l10n.dropboxImportError(e);
           _loading = false;
         });
       }
@@ -146,7 +149,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           if (_dropbox.isAuthenticated)
             IconButton(
               icon: const Icon(Icons.logout),
-              tooltip: 'Disconnetti',
+              tooltip: AppLocalizations.of(context).logoutFromDropbox,
               onPressed: () async {
                 await _dropbox.logout();
                 setState(() {
@@ -162,8 +165,9 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context);
     if (_loading || _isAuthenticating) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(semanticsLabel: l10n.loading));
     }
 
     if (!_dropbox.isAuthenticated) {
@@ -173,11 +177,11 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           children: [
             const Icon(Icons.cloud, size: 80, color: Colors.blue),
             const SizedBox(height: 16),
-            Text(AppLocalizations.of(context).dropboxLoginPrompt, textAlign: TextAlign.center),
+            Text(l10n.dropboxLoginPrompt, textAlign: TextAlign.center),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               icon: const Icon(Icons.login),
-              label: Text(AppLocalizations.of(context).loginToDropbox),
+              label: Text(l10n.loginToDropbox),
               onPressed: _login,
             ),
             if (_error != null) ...[
@@ -198,7 +202,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _loadFolder(_currentPath),
-              child: Text(AppLocalizations.of(context).retry),
+              child: Text(l10n.retry),
             )
           ],
         ),
@@ -210,7 +214,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
         if (_currentPath.isNotEmpty)
           ListTile(
             leading: const Icon(Icons.drive_folder_upload, size: 40),
-            title: Text(AppLocalizations.of(context).goBack),
+            title: Text(l10n.goBack),
             onTap: () {
               final parent = p.dirname(_currentPath);
               _loadFolder(parent == '/' ? '' : parent);
@@ -218,7 +222,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           ),
         Expanded(
           child: _entries.isEmpty
-              ? Center(child: Text(AppLocalizations.of(context).noSupportedFilesInFolder))
+              ? Center(child: Text(l10n.noSupportedFilesInFolder))
               : ListView.builder(
                   itemCount: _entries.length,
                   itemBuilder: (context, index) {

@@ -35,7 +35,8 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
       return;
     }
 
-    final finalTitle = title.isEmpty ? 'Nuovo_Documento' : title;
+    final finalTitle =
+        title.isEmpty ? AppLocalizations.of(context).newDocumentDefaultName : title;
 
     setState(() => _saving = true);
     try {
@@ -75,10 +76,10 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
             children: [
               TextField(
                 controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Titolo (opzionale)',
-                  hintText: 'Es: Appunti Spesa',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).documentTitleOptional,
+                  hintText: AppLocalizations.of(context).documentTitleHint,
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
@@ -88,10 +89,10 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
                   maxLines: null,
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
-                  decoration: const InputDecoration(
-                    labelText: 'Testo del documento',
-                    hintText: 'Inizia a scrivere qui...',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context).documentTextField,
+                    hintText: AppLocalizations.of(context).documentTextHint,
+                    border: const OutlineInputBorder(),
                     alignLabelWithHint: true,
                   ),
                 ),

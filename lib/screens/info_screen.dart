@@ -11,13 +11,6 @@ import '../services/changelog_service.dart';
 class InfoScreen extends StatelessWidget {
   const InfoScreen({super.key});
 
-  String _changelogButtonLabel(String languageCode) => switch (languageCode) {
-        'en' => 'What is new',
-        'fr' => 'Nouveautes',
-        'es' => 'Novedades',
-        _ => 'Novita',
-      };
-
   Future<void> _openChangelog(BuildContext context) async {
     try {
       final appLanguage = await AppSettingsService().loadAppLanguage();
@@ -34,8 +27,9 @@ class InfoScreen extends StatelessWidget {
       );
     } catch (error) {
       if (!context.mounted) return;
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore caricamento novita: $error')),
+        SnackBar(content: Text(l10n.changelogLoadError(error))),
       );
     }
   }
@@ -48,8 +42,11 @@ class InfoScreen extends StatelessWidget {
       body: FutureBuilder<PackageInfo>(
         future: PackageInfo.fromPlatform(),
         builder: (context, snapshot) {
-          final versionText = snapshot.hasData 
-              ? 'Versione ${snapshot.data!.version} (Build ${snapshot.data!.buildNumber})' 
+          final versionText = snapshot.hasData
+              ? l10n.versionBuild(
+                  snapshot.data!.version,
+                  snapshot.data!.buildNumber,
+                )
               : '';
               
           return ListView(
@@ -78,7 +75,7 @@ class InfoScreen extends StatelessWidget {
               FilledButton.icon(
                 onPressed: () => _openChangelog(context),
                 icon: const Icon(Icons.new_releases),
-                label: Text(_changelogButtonLabel(l10n.locale.languageCode)),
+                label: Text(l10n.whatIsNew),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -90,7 +87,7 @@ class InfoScreen extends StatelessWidget {
               Semantics(
                 button: true,
                 excludeSemantics: true,
-                label: 'Visita il sito di Sonarpad',
+                label: l10n.visitSonarpadSite,
                 child: InkWell(
                   onTap: () async {
                     final url = Uri.parse('https://sonarpad.com');
@@ -98,9 +95,9 @@ class InfoScreen extends StatelessWidget {
                       await launchUrl(url);
                     }
                   },
-                  child: const Text(
-                    'Visita il sito di Sonarpad: https://sonarpad.com',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.visitSonarpadSiteWithUrl('https://sonarpad.com'),
+                    style: const TextStyle(
                       color: Colors.blue,
                       decoration: TextDecoration.underline,
                       fontSize: 16,

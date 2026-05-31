@@ -175,10 +175,10 @@ class _RouteScreenState extends State<RouteScreen> {
           DropdownButtonFormField<String>(
             initialValue: _countryCode,
             decoration: InputDecoration(labelText: l10n.routeCountry),
-            items: const [
-              DropdownMenuItem(value: 'it', child: Text('Italia')),
-              DropdownMenuItem(value: 'fr', child: Text('France')),
-              DropdownMenuItem(value: 'es', child: Text('España')),
+            items: [
+              DropdownMenuItem(value: 'it', child: Text(l10n.routeCountryItaly)),
+              DropdownMenuItem(value: 'fr', child: Text(l10n.routeCountryFrance)),
+              DropdownMenuItem(value: 'es', child: Text(l10n.routeCountrySpain)),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _countryCode = val);

@@ -77,12 +77,16 @@ class _NewsScreenState extends State<NewsScreen> {
           children: [
             TextField(
               controller: nameCtrl,
-              decoration: const InputDecoration(labelText: 'Nome testata/sito'),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).newsSourceName,
+              ),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: urlCtrl,
-              decoration: const InputDecoration(labelText: 'URL sito, feed RSS o parola di ricerca'),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).newsSourceUrlOrSearch,
+              ),
               keyboardType: TextInputType.url,
             ),
           ],
@@ -126,7 +130,7 @@ class _NewsScreenState extends State<NewsScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            tooltip: 'Aggiungi sorgente RSS personalizzata',
+            tooltip: l10n.addCustomNewsSource,
             onPressed: _addCustomSource,
           ),
           IconButton(
@@ -406,7 +410,7 @@ class _NewsSourceList extends StatelessWidget {
               CustomSemanticsAction(label: l10n.hide): () =>
                   _handleAction(context, _NewsSourceAction.hide, index),
               if (source.isCustom)
-                CustomSemanticsAction(label: 'Elimina sorgente'): () =>
+                CustomSemanticsAction(label: l10n.deleteNewsSource): () =>
                     _handleAction(context, _NewsSourceAction.delete, index),
             },
             child: ListTile(

@@ -15,6 +15,12 @@ extension UiRouteLocalizations on AppLocalizations {
   String get routeTo => _isEn ? 'To' : (_isFr ? 'À' : (_isEs ? 'A' : 'Destinazione'));
   String get routeCountry =>
       _isEn ? 'Country' : (_isFr ? 'Pays' : (_isEs ? 'País' : 'Paese'));
+  String get routeCountryItaly =>
+      _isEn ? 'Italy' : (_isFr ? 'Italie' : (_isEs ? 'Italia' : 'Italia'));
+  String get routeCountryFrance =>
+      _isEn ? 'France' : (_isFr ? 'France' : (_isEs ? 'Francia' : 'Francia'));
+  String get routeCountrySpain =>
+      _isEn ? 'Spain' : (_isFr ? 'Espagne' : (_isEs ? 'España' : 'Spagna'));
   String get routeVehicle =>
       _isEn ? 'Vehicle' : (_isFr ? 'Véhicule' : (_isEs ? 'Vehículo' : 'Mezzo'));
   String get routeType =>

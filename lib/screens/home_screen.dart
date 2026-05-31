@@ -62,6 +62,10 @@ class _HomeScreenState extends State<HomeScreen> {
         label: l10n.importFromWikipedia,
         onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/wikipedia'),
       ),
+      _HomeButton(
+        label: l10n.voiceDictionaryTitle,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/voice_dictionary'),
+      ),
       if (isItalian)
         _HomeButton(
           label: 'BdCiechi',
@@ -174,6 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (_isSecretCodeValid && isItalian) _HomeButton(label: 'RaiPlay Sound', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/raiplaysound')),
         if (_isRaiPlayValid && isItalian) _HomeButton(label: 'RaiPlay', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/raiplay')),
         _HomeButton(label: l10n.importFromWikipedia, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/wikipedia')),
+        _HomeButton(label: l10n.voiceDictionaryTitle, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/voice_dictionary')),
         if (_isSecretCodeValid && isItalian) _HomeButton(label: 'BdCiechi', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/bdciechi')),
         if (_isSecretCodeValid && isItalian) _HomeButton(label: l10n.audiodescriptionTitle, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/audiodescriptions')),
         _HomeButton(label: l10n.routeTitle, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/route')),

@@ -156,7 +156,7 @@ class _PodcastEpisodePlayerScreenState
           AppLogger.log('PodcastPlayer: audio setUrl start, $_logSubject');
           await _audio.setUrl(
             widget.episode.audioUrl,
-            title: 'In riproduzione: ${widget.episode.title}',
+            title: l10n.nowPlayingTitle(widget.episode.title),
             mediaId: _getStableId(),
           );
           _loaded = true;
@@ -317,7 +317,7 @@ class _PodcastEpisodePlayerScreenState
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('In riproduzione: ${widget.episode.title}'),
+        title: Text(l10n.nowPlayingTitle(widget.episode.title)),
           leading: BackButton(
             onPressed: () {
               AppLogger.log('PodcastPlayer: appbar back pressed, $_logSubject');
@@ -512,6 +512,7 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
   @override
   Widget build(BuildContext context) {
     if (_duration == Duration.zero) return const SizedBox();
+    final l10n = AppLocalizations.of(context);
     final position = _visiblePosition;
     if (_lastPositionLogSecond != position.inSeconds &&
         position.inSeconds % 5 == 0) {
@@ -543,8 +544,11 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
         Semantics(
           key: const ValueKey('podcast_position_slider_semantics'),
           slider: true,
-          label: 'Posizione',
-          value: '${_format(position)} di ${_format(_duration)}',
+          label: l10n.playbackPosition,
+          value: l10n.playbackPositionValue(
+            _format(position),
+            _format(_duration),
+          ),
           increasedValue: _format(
             position + Duration(seconds: currentStep),
           ),

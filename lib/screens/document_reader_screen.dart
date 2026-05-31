@@ -13,6 +13,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
+import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -37,6 +38,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
   final _extractor = DocumentTextExtractor();
+  final _voiceDictionary = VoiceDictionaryService();
   final _scrollController = AutoScrollController();
 
   // Testo e chunks
@@ -107,6 +109,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // ---------------------------------------------------------------------------
 
   Future<void> _extractText() async {
+    final l10n = AppLocalizations.of(context);
     final ext = _currentDoc.extension.toLowerCase();
     try {
       final editedPath =
@@ -130,7 +133,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
     } catch (e) {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
-      _loadError = 'Errore apertura file: $e';
+      _loadError = l10n.fileOpenError(e);
     } finally {
       if (mounted) {
         setState(() => _loadingText = false);
@@ -182,6 +185,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     try {
       final engine = await _settings.loadTtsEngine();
+      final dictionaryEntries = await _voiceDictionary.loadEntries();
       _activeTtsEngine = engine;
       final startIndex = _bookmarkIndex < _chunks.length && _bookmarkIndex >= 0
           ? _bookmarkIndex
@@ -224,7 +228,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           }
           if (!mounted || !_speaking) break;
 
-          final speaking = _flutterTts.speak(_chunks[i]);
+          final textToSpeak =
+              _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
+          final speaking = _flutterTts.speak(textToSpeak);
           if (mounted) {
             setState(() {
               _playingChunkIndex = i;
@@ -245,7 +251,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             if (!mounted || !_speaking) {
               break; // Ferma la generazione se l'utente preme stop
             }
-            final file = await _tts.speakToFile(text: _chunks[i], voice: voice);
+            final textToSpeak =
+                _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
+            final file = await _tts.speakToFile(text: textToSpeak, voice: voice);
             controller.add((i, file));
           }
           await controller.close();
@@ -291,7 +299,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (!mounted) return;
       setState(() {
         _playingChunkIndex = -1;
-        _ttsStatus = 'Errore sintesi vocale: $e';
+        _ttsStatus = '${AppLocalizations.of(context).ttsError}: $e';
         _activeTtsEngine = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -373,16 +381,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           content: SizedBox(
             width: double.maxFinite,
             child: Semantics(
-              label: 'Campo di testo per la modifica del paragrafo',
+              label: AppLocalizations.of(context).editParagraphTextField,
               child: TextField(
                 controller: controller,
                 autofocus: true,
                 keyboardType: TextInputType.multiline,
                 maxLines: 12,
                 minLines: 6,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Modifica il testo del paragrafo',
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  hintText: AppLocalizations.of(context).editParagraphHint,
                 ),
               ),
             ),
@@ -528,7 +536,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           if (doc.isTemporary)
             IconButton(
               icon: const Icon(Icons.save),
-              tooltip: 'Salva nella libreria',
+              tooltip: l10n.saveInLibrary,
               onPressed: () async {
                 final newDoc = DocumentItem(
                   id: doc.id,
@@ -575,10 +583,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                               ? Icons.volume_up
                               : (_ttsPaused ? Icons.play_arrow : Icons.pause)),
                           label: Text(!_speaking
-                              ? 'Avvia lettura'
+                              ? l10n.startReading
                               : (_ttsPaused
-                                  ? 'Riprendi lettura'
-                                  : 'Pausa lettura')),
+                                  ? l10n.resumeReading
+                                  : l10n.pauseReading)),
                         ),
                         const SizedBox(height: 8),
                         OutlinedButton.icon(
@@ -592,7 +600,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   const Divider(height: 1),
                   Expanded(
                     child: Semantics(
-                      label: 'Testo documento',
+                      label: l10n.documentTextLabel,
                       explicitChildNodes: true,
                       child: CustomScrollView(
                         controller: _scrollController,
@@ -627,7 +635,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                           Text(
                                             doc.extension.toUpperCase() +
                                                 (doc.editedTextPath != null
-                                                    ? ' (Modificato in Sonarpad)'
+                                                    ? ' (${l10n.modifiedInSonarpad})'
                                                     : ''),
                                             style: theme.textTheme.bodySmall
                                                 ?.copyWith(
@@ -685,7 +693,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                 else if (_documentText.isEmpty &&
                                     _loadError == null)
                                   Text(
-                                    'Nessun testo disponibile per questo documento.',
+                                    l10n.noTextAvailableForDocument,
                                     style: theme.textTheme.bodyMedium,
                                   ),
                               ]),

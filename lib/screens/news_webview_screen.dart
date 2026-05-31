@@ -12,6 +12,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
 import '../services/document_library_service.dart';
+import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -32,6 +33,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   final _newsService = NewsService();
   final _tts = EdgeTtsBridge();
   final _flutterTts = FlutterTts();
+  final _voiceDictionary = VoiceDictionaryService();
 
   bool _loading = true;
   String? _readerTitle;
@@ -525,6 +527,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final text = await _textForReading(l10n);
       final voice = await _voice();
       final engine = await _settings.loadTtsEngine();
+      final dictionaryEntries = await _voiceDictionary.loadEntries();
       final chunks = _tts.splitTextForStreaming(text, maxChunkChars: 650);
       debugPrint(
         'Sonarpad TTS: web article read requested '
@@ -567,7 +570,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             await Future.delayed(const Duration(milliseconds: 100));
           }
           if (!mounted || !_speaking) break;
-          await _flutterTts.speak(chunks[i]);
+          final textToSpeak =
+              _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+          await _flutterTts.speak(textToSpeak);
         }
 
         if (mounted) {
@@ -580,7 +585,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
         final generation = Future<void>(() async {
           for (var i = 0; i < chunks.length; i++) {
-            final file = await _tts.speakToFile(text: chunks[i], voice: voice);
+            final textToSpeak =
+                _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+            final file = await _tts.speakToFile(text: textToSpeak, voice: voice);
             final size = await file.length();
             debugPrint(
               'Sonarpad TTS: web chunk ${i + 1}/${chunks.length} ready '
@@ -731,10 +738,11 @@ class _ReaderArticleView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final paragraphs = readerParagraphs(text);
 
     return Semantics(
-      label: 'Testo articolo',
+      label: l10n.articleTextSemantics,
       explicitChildNodes: true,
       child: CustomScrollView(
         cacheExtent: 4000,

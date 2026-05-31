@@ -47,7 +47,7 @@ class WikipediaService {
     final response =
         await _client.get(uri, headers: {'User-Agent': 'SonarpadMobile/0.1'});
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Errore Wikipedia: ${response.statusCode}');
+      throw Exception(_searchError(lang, response.statusCode));
     }
     final json = jsonDecode(response.body) as Map<String, dynamic>;
     final hits = (json['query']['search'] as List).cast<Map<String, dynamic>>();
@@ -70,7 +70,7 @@ class WikipediaService {
     final response =
         await _client.get(uri, headers: {'User-Agent': 'SonarpadMobile/0.1'});
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Errore importazione Wikipedia: ${response.statusCode}');
+      throw Exception(_importError(lang, response.statusCode));
     }
     final json = jsonDecode(response.body) as Map<String, dynamic>;
     final parse = json['parse'] as Map<String, dynamic>;
@@ -292,4 +292,18 @@ class WikipediaService {
     }
     return null;
   }
+
+  String _searchError(String lang, int statusCode) => switch (lang) {
+        'en' => 'Wikipedia error: $statusCode',
+        'fr' => 'Erreur Wikipedia : $statusCode',
+        'es' => 'Error de Wikipedia: $statusCode',
+        _ => 'Errore Wikipedia: $statusCode',
+      };
+
+  String _importError(String lang, int statusCode) => switch (lang) {
+        'en' => 'Wikipedia import error: $statusCode',
+        'fr' => 'Erreur d\'importation Wikipedia : $statusCode',
+        'es' => 'Error de importación de Wikipedia: $statusCode',
+        _ => 'Errore importazione Wikipedia: $statusCode',
+      };
 }
