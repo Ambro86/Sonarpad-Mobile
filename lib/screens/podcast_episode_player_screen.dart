@@ -13,10 +13,16 @@ import 'package:video_player/video_player.dart';
 import '../utils/app_logger.dart';
 
 class PodcastEpisodePlayerScreen extends StatefulWidget {
-  const PodcastEpisodePlayerScreen({super.key, required this.episode, this.isVideoSupported = false});
+  const PodcastEpisodePlayerScreen({
+    super.key,
+    required this.episode,
+    this.isVideoSupported = false,
+    this.startWithVideo = false,
+  });
 
   final PodcastEpisode episode;
   final bool isVideoSupported;
+  final bool startWithVideo;
 
   @override
   State<PodcastEpisodePlayerScreen> createState() =>
@@ -251,7 +257,8 @@ class _PodcastEpisodePlayerScreenState
       AppLogger.log(
         'PodcastPlayer: postFrame callback start mounted=$mounted, $_logSubject',
       );
-      _isVideoEnabled = await _settings.isVideoEnabled();
+      _isVideoEnabled =
+          widget.startWithVideo || await _settings.isVideoEnabled();
       if (!mounted) return;
       setState(() {});
       AppLogger.log(

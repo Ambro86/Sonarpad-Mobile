@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
@@ -40,12 +41,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
+  static const _sharedMediaChannel = MethodChannel('sonarpad/shared_media');
+  static const _sharedMediaEvents = EventChannel('sonarpad/shared_media_events');
+  StreamSubscription<dynamic>? _sharedMediaSubscription;
 
   @override
   void initState() {
     super.initState();
     _load();
     _initAppLinks();
+    _initSharedMediaIntents();
   }
 
   void _initAppLinks() {
@@ -66,6 +71,23 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       // Ignore exceptions in test
     }
+  }
+
+  void _initSharedMediaIntents() {
+    if (Platform.environment.containsKey('FLUTTER_TEST')) return;
+    _sharedMediaChannel
+        .invokeMethod<String>('getInitialSharedFile')
+        .then((path) {
+      if (path == null || path.isEmpty) return;
+      _handleIncomingFile(Uri.file(path));
+    }).catchError((_) {});
+
+    _sharedMediaSubscription =
+        _sharedMediaEvents.receiveBroadcastStream().listen((event) {
+      final path = event?.toString() ?? '';
+      if (path.isEmpty) return;
+      _handleIncomingFile(Uri.file(path));
+    }, onError: (_) {});
   }
 
   Future<void> _handleIncomingFile(Uri uri) async {
@@ -96,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (_) => PodcastEpisodePlayerScreen(
                 episode: episode,
                 isVideoSupported: isVideo,
+                startWithVideo: isVideo,
               ),
             ),
           );
@@ -132,6 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _linkSubscription?.cancel();
+    _sharedMediaSubscription?.cancel();
     super.dispose();
   }
 

@@ -17,6 +17,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   WeatherForecast? _forecast;
   bool _isLoading = false;
   _WeatherError? _error;
+  int _selectedDay = 0;
 
   @override
   void initState() {
@@ -33,6 +34,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Future<void> _loadSavedCity() async {
     final city = await _settings.getWeatherCity();
     if (!mounted) return;
+    final shouldIgnoreOldDefault = city.trim().toLowerCase() == 'roma';
+    if (shouldIgnoreOldDefault || city.isEmpty) return;
     _searchCtrl.text = city;
     await _fetchWeather();
   }
@@ -45,6 +48,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
       _isLoading = true;
       _error = null;
       _forecast = null;
+      _selectedDay = 0;
     });
 
     try {
@@ -99,6 +103,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     controller: _searchCtrl,
                     decoration: InputDecoration(
                       labelText: l10n.weatherCity,
+                      hintText: l10n.weatherCityHint,
                       border: const OutlineInputBorder(),
                     ),
                     onSubmitted: (_) => _fetchWeather(),
@@ -117,37 +122,135 @@ class _WeatherScreenState extends State<WeatherScreen> {
           if (_error != null)
             Expanded(child: Center(child: Text(_error!.label(l10n)))),
           if (_forecast != null && !_isLoading)
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(16.0),
-                children: [
-                  Text(
-                    l10n.weatherToday,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  Card(
-                    child: ListTile(
-                      title: Text(l10n.weatherCurrentTemperature),
-                      trailing: Text(
-                        '${_forecast!.current['temperature_2m']} °C',
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                    ),
-                  ),
-                  Card(
-                    child: ListTile(
-                      title: Text(l10n.weatherWind),
-                      trailing: Text('${_forecast!.current['wind_speed_10m']} km/h'),
-                    ),
-                  ),
-                  Card(
-                    child: ListTile(
-                      title: Text(l10n.weatherRelativeHumidity),
-                      trailing: Text('${_forecast!.current['relative_humidity_2m']}%'),
-                    ),
-                  ),
-                ],
+            _WeatherForecastView(
+              forecast: _forecast!,
+              selectedDay: _selectedDay,
+              onDayChanged: (value) {
+                setState(() {
+                  _selectedDay = value;
+                });
+              },
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WeatherForecastView extends StatelessWidget {
+  const _WeatherForecastView({
+    required this.forecast,
+    required this.selectedDay,
+    required this.onDayChanged,
+  });
+
+  final WeatherForecast forecast;
+  final int selectedDay;
+  final ValueChanged<int> onDayChanged;
+
+  List<dynamic> _dailyValues(String key) {
+    final values = forecast.daily[key];
+    return values is List ? values : const [];
+  }
+
+  String _value(String key, int day, String unit) {
+    final values = _dailyValues(key);
+    if (day < 0 || day >= values.length) return '-';
+    final value = values[day];
+    if (value == null) return '-';
+    return '$value $unit';
+  }
+
+  String _dayLabel(AppLocalizations l10n, int day) {
+    if (day == 0) return l10n.weatherToday;
+    if (day == 1) return l10n.weatherTomorrow;
+    final times = _dailyValues('time');
+    if (day >= 0 && day < times.length) return times[day].toString();
+    return '${l10n.weatherChooseDay} ${day + 1}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final dayCount = _dailyValues('time').length;
+    final availableDays = dayCount > 0 ? dayCount : 1;
+    final day = selectedDay.clamp(0, availableDays - 1);
+
+    return Expanded(
+      child: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          DropdownButtonFormField<int>(
+            initialValue: day,
+            decoration: InputDecoration(
+              labelText: l10n.weatherChooseDay,
+              border: const OutlineInputBorder(),
+            ),
+            items: [
+              for (var i = 0; i < availableDays; i++)
+                DropdownMenuItem(
+                  value: i,
+                  child: Text(_dayLabel(l10n, i)),
+                ),
+            ],
+            onChanged: (value) {
+              if (value != null) onDayChanged(value);
+            },
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _dayLabel(l10n, day),
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 16),
+          if (day == 0)
+            Card(
+              child: ListTile(
+                title: Text(l10n.weatherCurrentTemperature),
+                trailing: Text(
+                  '${forecast.current['temperature_2m']} °C',
+                  style: const TextStyle(fontSize: 24),
+                ),
+              ),
+            ),
+          Card(
+            child: ListTile(
+              title: Text(l10n.weatherMaxTemperature),
+              trailing: Text(
+                _value('temperature_2m_max', day, '°C'),
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: Text(l10n.weatherMinTemperature),
+              trailing: Text(_value('temperature_2m_min', day, '°C')),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: Text(l10n.weatherPrecipitationProbability),
+              trailing: Text(_value('precipitation_probability_max', day, '%')),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: Text(l10n.weatherPrecipitation),
+              trailing: Text(_value('precipitation_sum', day, 'mm')),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: Text(l10n.weatherWind),
+              trailing: Text(_value('wind_speed_10m_max', day, 'km/h')),
+            ),
+          ),
+          if (day == 0)
+            Card(
+              child: ListTile(
+                title: Text(l10n.weatherRelativeHumidity),
+                trailing: Text('${forecast.current['relative_humidity_2m']}%'),
               ),
             ),
         ],

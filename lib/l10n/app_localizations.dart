@@ -730,6 +730,23 @@ class AppLocalizations {
       : (_isFr
           ? 'Ajouter à la bibliothèque'
           : (_isEs ? 'Añadir a la biblioteca' : 'Aggiungi alla libreria'));
+  String get documentImportSelectionMode => _isEn
+      ? 'Do you want to select one document or multiple documents?'
+      : (_isFr
+          ? 'Voulez-vous sélectionner un document ou plusieurs documents ?'
+          : (_isEs
+              ? '¿Quieres seleccionar un documento o varios documentos?'
+              : 'Vuoi selezionare un solo documento o più documenti?'));
+  String get documentImportSingle => _isEn
+      ? 'One document'
+      : (_isFr
+          ? 'Un document'
+          : (_isEs ? 'Un documento' : 'Un documento'));
+  String get documentImportMultiple => _isEn
+      ? 'Multiple documents'
+      : (_isFr
+          ? 'Plusieurs documents'
+          : (_isEs ? 'Varios documentos' : 'Più documenti'));
   String get noDocuments => _isEn
       ? 'No documents. Add a file.'
       : (_isFr
@@ -851,6 +868,11 @@ class AppLocalizations {
   String get weatherCity => _isEn
       ? 'City'
       : (_isFr ? 'Ville' : (_isEs ? 'Ciudad' : 'Città'));
+  String get weatherCityHint => _isEn
+      ? 'Example: Rome'
+      : (_isFr
+          ? 'Exemple : Rome'
+          : (_isEs ? 'Ejemplo: Roma' : 'Esempio: Roma'));
   String get weatherCityNotFound => _isEn
       ? 'City not found'
       : (_isFr
@@ -866,11 +888,41 @@ class AppLocalizations {
   String get weatherToday => _isEn
       ? 'Today'
       : (_isFr ? 'Aujourd\'hui' : (_isEs ? 'Hoy' : 'Oggi'));
+  String get weatherTomorrow => _isEn
+      ? 'Tomorrow'
+      : (_isFr ? 'Demain' : (_isEs ? 'Mañana' : 'Domani'));
+  String get weatherChooseDay => _isEn
+      ? 'Choose day'
+      : (_isFr
+          ? 'Choisir le jour'
+          : (_isEs ? 'Elegir día' : 'Scegli il giorno'));
   String get weatherCurrentTemperature => _isEn
       ? 'Current temperature'
       : (_isFr
           ? 'Température actuelle'
           : (_isEs ? 'Temperatura actual' : 'Temperatura attuale'));
+  String get weatherMaxTemperature => _isEn
+      ? 'Maximum temperature'
+      : (_isFr
+          ? 'Température maximale'
+          : (_isEs ? 'Temperatura máxima' : 'Temperatura massima'));
+  String get weatherMinTemperature => _isEn
+      ? 'Minimum temperature'
+      : (_isFr
+          ? 'Température minimale'
+          : (_isEs ? 'Temperatura mínima' : 'Temperatura minima'));
+  String get weatherPrecipitation => _isEn
+      ? 'Precipitation'
+      : (_isFr
+          ? 'Précipitations'
+          : (_isEs ? 'Precipitaciones' : 'Precipitazioni'));
+  String get weatherPrecipitationProbability => _isEn
+      ? 'Precipitation probability'
+      : (_isFr
+          ? 'Probabilité de précipitations'
+          : (_isEs
+              ? 'Probabilidad de precipitación'
+              : 'Probabilità di precipitazioni'));
   String get weatherWind => _isEn
       ? 'Wind'
       : (_isFr ? 'Vent' : (_isEs ? 'Viento' : 'Vento'));

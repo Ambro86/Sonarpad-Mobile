@@ -142,17 +142,59 @@ class CalendarService {
 
     try {
       final months = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
-      final url = "https://www.santodelgiorno.it/${date.day}-${months[date.month - 1]}/";
+      final url = "https://www.santodelgiorno.it/${date.day}/${months[date.month - 1]}/";
       final res = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
       if (res.statusCode == 200) {
-        final match = RegExp(r'<title>Santo del giorno[^:]*:\s*(.*?)\s*(-|</title>)').firstMatch(res.body);
-        if (match != null) {
-          final s = match.group(1)?.trim();
-          if (s != null && s.isNotEmpty) return s;
-        }
+        final saint = _extractSaintFromHtml(res.body);
+        if (saint != null) return saint;
       }
     } catch (_) {}
     return "Non disponibile";
+  }
+
+  String? _extractSaintFromHtml(String html) {
+    final markerIndex = html.indexOf('si venera:');
+    if (markerIndex == -1) return null;
+
+    final nameClass = 'class="NomeSantoDiOggi"';
+    final nameClassIndex = html.indexOf(nameClass, markerIndex);
+    if (nameClassIndex != -1) {
+      final startTagEnd = html.indexOf('>', nameClassIndex);
+      if (startTagEnd != -1) {
+        final end = html.indexOf('</div>', startTagEnd);
+        if (end != -1 && end > startTagEnd) {
+          final saint = _decodeHtml(html.substring(startTagEnd + 1, end));
+          if (saint != null) return saint;
+        }
+      }
+    }
+
+    final imageIndex = html.indexOf('<img', markerIndex);
+    if (imageIndex == -1) return null;
+
+    final altIndex = html.indexOf('alt="', imageIndex);
+    if (altIndex == -1) return null;
+
+    final start = altIndex + 'alt="'.length;
+    final end = html.indexOf('"', start);
+    if (end == -1 || end <= start) return null;
+
+    return _decodeHtml(html.substring(start, end));
+  }
+
+  String? _decodeHtml(String value) {
+    final decoded = value
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#039;', "'")
+        .replaceAll('&amp;', '&')
+        .replaceAll('&agrave;', 'à')
+        .replaceAll('&egrave;', 'è')
+        .replaceAll('&eacute;', 'é')
+        .replaceAll('&igrave;', 'ì')
+        .replaceAll('&ograve;', 'ò')
+        .replaceAll('&ugrave;', 'ù')
+        .trim();
+    return decoded.isEmpty ? null : decoded;
   }
 
   String getQuote(DateTime date, String languageCode) {

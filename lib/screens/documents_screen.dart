@@ -33,7 +33,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   final _service = DocumentLibraryService();
   bool _loading = true;
   String? _errorMessage;
-  bool _allowMultipleSelection = false;
 
   List<DocumentItem> get _displayedDocs => 
       _service.documents.where((d) => d.parentId == widget.folderId).toList();
@@ -75,12 +74,15 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Future<void> _pickFile() async {
+    final allowMultiple = await _askImportSelectionMode();
+    if (allowMultiple == null) return;
+
     FilePickerResult? result;
     try {
-      result = await FilePicker.platform.pickFiles(
+      result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: _allowedExtensions,
-        allowMultiple: _allowMultipleSelection,
+        allowMultiple: allowMultiple,
       );
     } catch (e) {
       dev.log('DocumentsScreen: errore apertura file picker: $e');
@@ -139,6 +141,27 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       setState(() {});
       await _showImportCompleteDialog('Documenti aggiunti');
     }
+  }
+
+  Future<bool?> _askImportSelectionMode() {
+    final l10n = AppLocalizations.of(context);
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.addToLibrary),
+        content: Text(l10n.documentImportSelectionMode),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.documentImportSingle),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.documentImportMultiple),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _remove(String id) async {
@@ -531,47 +554,28 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             ? const Center(child: CircularProgressIndicator())
             : _errorMessage != null
                 ? _ErrorState(message: _errorMessage!)
-                : Column(
-                    children: [
-                      CheckboxListTile(
-                        title: const Text('Attiva selezione multipla', style: TextStyle(fontWeight: FontWeight.bold)),
-                        value: _allowMultipleSelection,
-                        onChanged: (val) {
-                          setState(() {
-                            _allowMultipleSelection = val ?? false;
-                          });
+                : docs.isEmpty
+                    ? const _EmptyState()
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                        itemCount: docs.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final doc = docs[index];
+                          final isFirst = index == 0;
+                          final isLast = index == docs.length - 1;
+
+                          return _DocumentTile(
+                            doc: doc,
+                            isFirst: isFirst,
+                            isLast: isLast,
+                            onOpen: () => _openDocument(doc),
+                            onRemove: () => _remove(doc.id),
+                            onExport: () => _exportDocument(doc),
+                            onAction: (action) => _handleAction(action, doc),
+                          );
                         },
                       ),
-                      Expanded(
-                        child: docs.isEmpty
-                            ? const _EmptyState()
-                            : ListView.separated(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                                itemCount: docs.length,
-                                separatorBuilder: (_, __) =>
-                                    const SizedBox(height: 8),
-                                itemBuilder: (context, index) {
-                                  final doc = docs[index];
-                                  final isFirst = index == 0;
-                                  final isLast =
-                                      index == docs.length - 1;
-
-                                  return _DocumentTile(
-                                    doc: doc,
-                                    isFirst: isFirst,
-                                    isLast: isLast,
-                                    onOpen: () => _openDocument(doc),
-                                    onRemove: () => _remove(doc.id),
-                                    onExport: () => _exportDocument(doc),
-                                    onAction: (action) =>
-                                        _handleAction(action, doc),
-                                  );
-                                },
-                              ),
-                      ),
-                    ],
-                  ),
       ),
       floatingActionButton: Semantics(
         button: true,

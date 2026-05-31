@@ -157,7 +157,7 @@ class AppSettingsService {
 
   Future<String> getWeatherCity() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_weatherCityKey) ?? 'Roma';
+    return prefs.getString(_weatherCityKey) ?? '';
   }
 
   Future<void> setWeatherCity(String value) async {
