@@ -200,6 +200,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
                   title: Text(ev.text),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
+                    tooltip: l10n.removeReminder,
                     onPressed: () async {
                       await _service.removeEvent(ev.id);
                       _loadEvents();

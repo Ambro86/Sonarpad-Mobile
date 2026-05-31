@@ -900,6 +900,7 @@ class AppLocalizations {
   String get quoteOfTheDay => _isEn ? 'Quote of the day' : 'Citazione del giorno';
   String get reminders => _isEn ? 'Reminders' : 'Promemoria';
   String get addReminder => _isEn ? 'Add reminder' : 'Aggiungi promemoria';
+  String get removeReminder => _isEn ? 'Remove reminder' : 'Rimuovi promemoria';
   String get noReminders => _isEn ? 'No reminders' : 'Nessun promemoria';
   String get writeReminder => _isEn ? 'Write your reminder here...' : 'Scrivi qui il tuo promemoria...';
   String get saveReminder => _isEn ? 'Save' : 'Salva';
