@@ -572,7 +572,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           '${l10n.settingsVoiceSpeed}${_ttsSpeed.toStringAsFixed(1)}x'),
                     ),
                     Semantics(
-                      container: true,
+                      slider: true,
                       label: l10n.settingsVoiceSpeedLabel,
                       value: '${_ttsSpeed.toStringAsFixed(1)}x',
                       increasedValue:
@@ -609,7 +609,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Text('${l10n.settingsVoicePitch}${_ttsPitch.toStringAsFixed(1)}x'),
                     ),
                     Semantics(
-                      container: true,
+                      slider: true,
                       label: l10n.settingsVoicePitchLabel,
                       value: '${_ttsPitch.toStringAsFixed(1)}x',
                       increasedValue:
@@ -683,7 +683,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             '${l10n.settingsSeekStep}: ${_formatTime(_seekSliderStep)}'),
                       ),
                       Semantics(
-                        container: true,
+                        slider: true,
                         label: l10n.settingsSeekStep,
                         value: _formatTime(_seekSliderStep),
                         increasedValue:
