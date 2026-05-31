@@ -608,6 +608,44 @@ class AppLocalizations {
           : (_isEs
               ? 'No hay podcasts suscritos. Busca un podcast y toca un resultado para suscribirte.'
               : 'Nessun podcast iscritto. Cerca un podcast e tocca il risultato per iscriverti.'));
+  String get importPodcastsFromFile => _isEn
+      ? 'Import podcasts from file'
+      : (_isFr
+          ? 'Importer des podcasts depuis un fichier'
+          : (_isEs
+              ? 'Importar podcasts desde archivo'
+              : 'Importa podcast da file'));
+  String get exportPodcastsToFile => _isEn
+      ? 'Export podcasts to OPML file'
+      : (_isFr
+          ? 'Exporter les podcasts vers un fichier OPML'
+          : (_isEs
+              ? 'Exportar podcasts a archivo OPML'
+              : 'Esporta podcast in file OPML'));
+  String podcastImportComplete(int count) => _isEn
+      ? 'Imported podcasts: $count'
+      : (_isFr
+          ? 'Podcasts importés : $count'
+          : (_isEs ? 'Podcasts importados: $count' : 'Podcast importati: $count'));
+  String podcastImportError(Object error) => _isEn
+      ? 'Podcast import error: $error'
+      : (_isFr
+          ? 'Erreur d\'importation des podcasts : $error'
+          : (_isEs
+              ? 'Error al importar podcasts: $error'
+              : 'Errore importazione podcast: $error'));
+  String get podcastExportComplete => _isEn
+      ? 'Podcasts exported'
+      : (_isFr
+          ? 'Podcasts exportés'
+          : (_isEs ? 'Podcasts exportados' : 'Podcast esportati'));
+  String podcastExportError(Object error) => _isEn
+      ? 'Podcast export error: $error'
+      : (_isFr
+          ? 'Erreur d\'exportation des podcasts : $error'
+          : (_isEs
+              ? 'Error al exportar podcasts: $error'
+              : 'Errore esportazione podcast: $error'));
   String get loadingEpisodes => _isEn
       ? 'Loading episodes'
       : (_isFr

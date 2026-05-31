@@ -668,6 +668,14 @@ class HtmlReaderService {
           }
         }
       }
+      if (!hasRichJsonBody) {
+        String? bestJsonBody = pickBestJsonArticleText(json);
+        if (bestJsonBody != null && !bodyAcc.toString().contains(bestJsonBody)) {
+          bodyAcc.write(bestJsonBody);
+          bodyAcc.write("\n\n");
+          hasRichJsonBody = true;
+        }
+      }
       if (hasRichJsonBody) foundAnything = true;
     }
 

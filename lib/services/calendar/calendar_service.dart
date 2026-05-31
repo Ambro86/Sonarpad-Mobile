@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' as html_parser;
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/calendar_event.dart';
@@ -142,7 +143,8 @@ class CalendarService {
 
     try {
       final months = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
-      final url = "https://www.santodelgiorno.it/${date.day}/${months[date.month - 1]}/";
+      final day = date.day.toString().padLeft(2, '0');
+      final url = "https://www.santodelgiorno.it/$day/${months[date.month - 1]}/";
       final res = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
       if (res.statusCode == 200) {
         final saint = _extractSaintFromHtml(res.body);
@@ -153,48 +155,45 @@ class CalendarService {
   }
 
   String? _extractSaintFromHtml(String html) {
-    final markerIndex = html.indexOf('si venera:');
-    if (markerIndex == -1) return null;
+    final document = html_parser.parse(html);
+    final primaryName = document.querySelector('.NomeSantoDiOggi')?.text;
+    final primarySaint = _cleanSaintName(primaryName);
+    if (primarySaint != null) return primarySaint;
 
-    final nameClass = 'class="NomeSantoDiOggi"';
-    final nameClassIndex = html.indexOf(nameClass, markerIndex);
-    if (nameClassIndex != -1) {
-      final startTagEnd = html.indexOf('>', nameClassIndex);
-      if (startTagEnd != -1) {
-        final end = html.indexOf('</div>', startTagEnd);
-        if (end != -1 && end > startTagEnd) {
-          final saint = _decodeHtml(html.substring(startTagEnd + 1, end));
-          if (saint != null) return saint;
-        }
+    final bodyText = document.body?.text ?? document.documentElement?.text ?? html;
+    final lines = bodyText
+        .split('\n')
+        .map(_cleanSaintLine)
+        .where((line) => line.isNotEmpty)
+        .toList();
+
+    for (var i = 0; i < lines.length; i++) {
+      if (!lines[i].contains('si venera:')) continue;
+      for (var j = i + 1; j < lines.length && j <= i + 8; j++) {
+        final saint = _cleanSaintName(lines[j]);
+        if (saint != null) return saint;
       }
     }
 
-    final imageIndex = html.indexOf('<img', markerIndex);
-    if (imageIndex == -1) return null;
-
-    final altIndex = html.indexOf('alt="', imageIndex);
-    if (altIndex == -1) return null;
-
-    final start = altIndex + 'alt="'.length;
-    final end = html.indexOf('"', start);
-    if (end == -1 || end <= start) return null;
-
-    return _decodeHtml(html.substring(start, end));
+    return null;
   }
 
-  String? _decodeHtml(String value) {
-    final decoded = value
-        .replaceAll('&quot;', '"')
-        .replaceAll('&#039;', "'")
-        .replaceAll('&amp;', '&')
-        .replaceAll('&agrave;', 'à')
-        .replaceAll('&egrave;', 'è')
-        .replaceAll('&eacute;', 'é')
-        .replaceAll('&igrave;', 'ì')
-        .replaceAll('&ograve;', 'ò')
-        .replaceAll('&ugrave;', 'ù')
+  String _cleanSaintLine(String value) {
+    return value
+        .replaceAll('\u00a0', ' ')
+        .replaceAll('\t', ' ')
         .trim();
-    return decoded.isEmpty ? null : decoded;
+  }
+
+  String? _cleanSaintName(String? value) {
+    if (value == null) return null;
+    final cleaned = _cleanSaintLine(value);
+    if (cleaned.isEmpty) return null;
+    if (cleaned == 'Santo del Giorno') return null;
+    if (cleaned == 'Cerca un santo:') return null;
+    if (cleaned.startsWith('Il ') || cleaned.startsWith('Altri ')) return null;
+    if (cleaned.contains('>>')) return null;
+    return cleaned;
   }
 
   String getQuote(DateTime date, String languageCode) {

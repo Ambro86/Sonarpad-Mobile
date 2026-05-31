@@ -232,8 +232,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       if (result is int && result != currentIndex) {
         final itemToMove = globalList.removeAt(globalCurrentIndex);
         
-        if (result < displayed.length) {
-          final targetDoc = displayed[result];
+        final visibleTargets =
+            displayed.where((d) => d.id != doc.id).toList();
+        if (result < visibleTargets.length) {
+          final targetDoc = visibleTargets[result];
           final insertIdx = globalList.indexWhere((d) => d.id == targetDoc.id);
           globalList.insert(insertIdx != -1 ? insertIdx : globalList.length, itemToMove);
         } else {
@@ -777,18 +779,16 @@ class _DocumentPositionSliderDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final pos = _value.toInt();
-    final maxPosition =
-        widget.documents.isNotEmpty ? widget.documents.length - 1 : 0;
+    final targetDocuments = widget.documents
+        .where((d) => d.id != widget.documents[widget.currentIndex].id)
+        .toList();
+    final maxPosition = targetDocuments.length;
 
     String positionLabel(int position) {
-      if (position == widget.documents.length - 1) {
+      if (position >= targetDocuments.length) {
         return l10n.positionLabelLast;
       }
-      final targetIndex =
-          position >= widget.currentIndex ? position + 1 : position;
-      final targetName = targetIndex < widget.documents.length
-          ? widget.documents[targetIndex].displayName
-          : '';
+      final targetName = targetDocuments[position].displayName;
       return l10n.positionLabel(position + 1, targetName);
     }
 
@@ -826,7 +826,7 @@ class _DocumentPositionSliderDialogState
                 value: _value,
                 min: 0,
                 max: maxPosition.toDouble(),
-                divisions: widget.documents.length > 1 ? maxPosition : null,
+                divisions: maxPosition > 0 ? maxPosition : null,
                 label: (pos + 1).toString(),
                 onChanged: (value) {
                   setState(() {

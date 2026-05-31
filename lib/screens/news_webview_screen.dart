@@ -116,6 +116,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           },
           onPageFinished: (_) {
             if (mounted) setState(() => _loading = false);
+            unawaited(_acceptCookieConsentIfPresent());
             _controller.runJavaScript('''
               var videos = document.querySelectorAll("video");
               for (var i = 0; i < videos.length; i++) {
@@ -166,6 +167,86 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     _flutterTts.setContinueHandler(() {
       if (mounted && _speaking) setState(() => _ttsPaused = false);
     });
+  }
+
+  Future<void> _acceptCookieConsentIfPresent() async {
+    Future<void> run() {
+      return _controller.runJavaScript(r'''
+        (function () {
+          var acceptTexts = [
+            'accetta tutto',
+            'accetta',
+            'accept all',
+            'accept',
+            'agree',
+            'i agree',
+            'consenti tutto',
+            'consenti'
+          ];
+          var rejectTexts = [
+            'rifiuta',
+            'reject',
+            'decline',
+            'gestisci',
+            'manage',
+            'preferences',
+            'opzioni'
+          ];
+
+          function normalizedText(element) {
+            return ((element.innerText || element.textContent || element.value || element.getAttribute('aria-label') || '')
+              .toLowerCase()
+              .replace(/\s+/g, ' ')
+              .trim());
+          }
+
+          function isVisible(element) {
+            var style = window.getComputedStyle(element);
+            var rect = element.getBoundingClientRect();
+            return style.display !== 'none' &&
+              style.visibility !== 'hidden' &&
+              rect.width > 0 &&
+              rect.height > 0;
+          }
+
+          function shouldClick(text) {
+            if (!text) return false;
+            for (var i = 0; i < rejectTexts.length; i++) {
+              if (text.indexOf(rejectTexts[i]) !== -1) return false;
+            }
+            for (var j = 0; j < acceptTexts.length; j++) {
+              if (text === acceptTexts[j] || text.indexOf(acceptTexts[j]) !== -1) return true;
+            }
+            return false;
+          }
+
+          var selectors = [
+            'button',
+            'input[type="button"]',
+            'input[type="submit"]',
+            '[role="button"]',
+            'a'
+          ];
+          var elements = document.querySelectorAll(selectors.join(','));
+          for (var k = 0; k < elements.length; k++) {
+            var element = elements[k];
+            if (!isVisible(element)) continue;
+            var text = normalizedText(element);
+            if (!shouldClick(text)) continue;
+            element.click();
+            return true;
+          }
+          return false;
+        })();
+      ''').then((_) {});
+    }
+
+    try {
+      await run();
+      await Future.delayed(const Duration(milliseconds: 900));
+      if (!mounted) return;
+      await run();
+    } catch (_) {}
   }
 
   @override

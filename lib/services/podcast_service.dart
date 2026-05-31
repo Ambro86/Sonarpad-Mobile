@@ -539,6 +539,82 @@ class PodcastService {
         _prefsKey, subscriptions.map((e) => jsonEncode(e.toJson())).toList());
   }
 
+  Future<int> importSubscriptionsFromOpml(File file) async {
+    final text = await file.readAsString();
+    final document = XmlDocument.parse(text);
+    final imported = <PodcastSubscription>[];
+
+    for (final outline in document.findAllElements('outline')) {
+      final feedUrl = _opmlAttribute(outline, 'xmlUrl')?.trim();
+      if (feedUrl == null || feedUrl.isEmpty) continue;
+      final titleAttr = _opmlAttribute(outline, 'title')?.trim();
+      final textAttr = _opmlAttribute(outline, 'text')?.trim();
+      final title = titleAttr?.isNotEmpty == true ? titleAttr : textAttr;
+      imported.add(PodcastSubscription(
+        title: title == null || title.isEmpty ? feedUrl : title,
+        feedUrl: feedUrl,
+      ));
+    }
+
+    if (imported.isEmpty) return 0;
+
+    final current = await loadSubscriptions();
+    final seen = current.map((e) => e.feedUrl.trim().toLowerCase()).toSet();
+    final toAdd = <PodcastSubscription>[];
+    for (final subscription in imported) {
+      final key = subscription.feedUrl.trim().toLowerCase();
+      if (seen.add(key)) {
+        toAdd.add(subscription);
+      }
+    }
+
+    if (toAdd.isEmpty) return 0;
+    await saveSubscriptions([...current, ...toAdd]);
+    return toAdd.length;
+  }
+
+  Future<String> exportSubscriptionsToOpml() async {
+    final subscriptions = await loadSubscriptions();
+    final buffer = StringBuffer()
+      ..writeln('<?xml version="1.0" encoding="UTF-8"?>')
+      ..writeln('<opml version="1.0">')
+      ..writeln('<head>')
+      ..writeln('<title>Sonarpad Podcasts</title>')
+      ..writeln('</head>')
+      ..writeln('<body>');
+
+    for (final subscription in subscriptions) {
+      final title = _escapeOpmlAttribute(subscription.title);
+      final url = _escapeOpmlAttribute(subscription.feedUrl);
+      buffer.writeln(
+        '  <outline text="$title" title="$title" type="rss" xmlUrl="$url" />',
+      );
+    }
+
+    buffer
+      ..writeln('</body>')
+      ..writeln('</opml>');
+    return buffer.toString();
+  }
+
+  String? _opmlAttribute(XmlElement element, String name) {
+    for (final attribute in element.attributes) {
+      if (attribute.name.local.toLowerCase() == name.toLowerCase()) {
+        return attribute.value;
+      }
+    }
+    return null;
+  }
+
+  String _escapeOpmlAttribute(String value) {
+    return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('"', '&quot;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll("'", '&apos;');
+  }
+
   Future<List<PodcastSearchResult>> searchPodcasts(String query,
       {String country = 'it', PodcastCategory? category}) async {
     final q = query.trim();

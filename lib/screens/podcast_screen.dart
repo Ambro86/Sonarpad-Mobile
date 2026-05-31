@@ -1,3 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/material.dart';
 
@@ -98,6 +103,58 @@ class _PodcastScreenState extends State<PodcastScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.podcastSubscriptionError(e))));
+    }
+  }
+
+  Future<void> _importFromFile() async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['opml', 'xml'],
+      );
+      final path = result == null || result.files.isEmpty
+          ? null
+          : result.files.first.path;
+      if (path == null || path.isEmpty) return;
+
+      final added = await _service.importSubscriptionsFromOpml(File(path));
+      await _load();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.podcastImportComplete(added))),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.podcastImportError(e))),
+      );
+    }
+  }
+
+  Future<void> _exportToFile() async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final opml = await _service.exportSubscriptionsToOpml();
+      final bytes = utf8.encode(opml);
+      final path = await FilePicker.saveFile(
+        dialogTitle: l10n.exportPodcastsToFile,
+        fileName: 'Sonarpad Podcasts.opml',
+        type: FileType.custom,
+        allowedExtensions: const ['opml'],
+        bytes: Uint8List.fromList(bytes),
+      );
+      if (path == null || path.isEmpty) return;
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.podcastExportComplete)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.podcastExportError(e))),
+      );
     }
   }
 
@@ -265,6 +322,17 @@ class _PodcastScreenState extends State<PodcastScreen> {
           ] else
             Text(l10n.noSubscribedPodcasts),
           const SizedBox(height: 16),
+          FilledButton.icon(
+            onPressed: _importFromFile,
+            icon: const Icon(Icons.upload_file),
+            label: Text(l10n.importPodcastsFromFile),
+          ),
+          const SizedBox(height: 8),
+          FilledButton.icon(
+            onPressed: _exportToFile,
+            icon: const Icon(Icons.download),
+            label: Text(l10n.exportPodcastsToFile),
+          ),
         ],
       ),
     );

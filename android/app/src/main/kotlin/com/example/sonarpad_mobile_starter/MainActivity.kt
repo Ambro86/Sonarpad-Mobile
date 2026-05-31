@@ -76,13 +76,20 @@ class MainActivity : AudioServiceActivity() {
     private fun sharedUriFrom(intent: Intent?): Uri? {
         if (intent == null) return null
         return when (intent.action) {
-            Intent.ACTION_SEND -> {
-                @Suppress("DEPRECATION")
-                intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
-            }
+            Intent.ACTION_SEND -> streamUriFrom(intent)
+            Intent.ACTION_SEND_MULTIPLE -> streamUriFrom(intent)
             Intent.ACTION_VIEW -> intent.data
             else -> null
         }
+    }
+
+    private fun streamUriFrom(intent: Intent): Uri? {
+        @Suppress("DEPRECATION")
+        val streamUri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+        if (streamUri != null) return streamUri
+        val clipData = intent.clipData ?: return null
+        if (clipData.itemCount <= 0) return null
+        return clipData.getItemAt(0).uri
     }
 
     private fun copySharedUri(uri: Uri): String? {

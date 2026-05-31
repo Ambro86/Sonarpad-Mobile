@@ -1,27 +1,15 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
 import '../l10n/ui_radio_localizations.dart';
 import '../l10n/ui_route_localizations.dart';
 import '../l10n/ui_audiodescription_localizations.dart';
-import '../screens/document_reader_screen.dart';
-import '../screens/documents_screen.dart';
 import '../services/accessibility_feedback_service.dart';
 import '../services/app_settings_service.dart';
-import '../services/document_library_service.dart';
 import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/tv_service.dart';
 import 'category_screen.dart';
-
-import '../models/podcast.dart';
-import 'podcast_episode_player_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,124 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isRaiPlayValid = false;
   bool _isGroupingEnabled = false;
 
-  late AppLinks _appLinks;
-  StreamSubscription<Uri>? _linkSubscription;
-  static const _sharedMediaChannel = MethodChannel('sonarpad/shared_media');
-  static const _sharedMediaEvents = EventChannel('sonarpad/shared_media_events');
-  StreamSubscription<dynamic>? _sharedMediaSubscription;
-
   @override
   void initState() {
     super.initState();
     _load();
-    _initAppLinks();
-    _initSharedMediaIntents();
-  }
-
-  void _initAppLinks() {
-    if (Platform.environment.containsKey('FLUTTER_TEST')) return;
-    try {
-      _appLinks = AppLinks();
-      _appLinks.getInitialLink().then((uri) {
-        if (uri != null && uri.scheme == 'file') {
-          _handleIncomingFile(uri);
-        }
-      }).catchError((_) {});
-
-      _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
-        if (uri.scheme == 'file') {
-          _handleIncomingFile(uri);
-        }
-      }, onError: (_) {});
-    } catch (e) {
-      // Ignore exceptions in test
-    }
-  }
-
-  void _initSharedMediaIntents() {
-    if (Platform.environment.containsKey('FLUTTER_TEST')) return;
-    _sharedMediaChannel
-        .invokeMethod<String>('getInitialSharedFile')
-        .then((path) {
-      if (path == null || path.isEmpty) return;
-      _handleIncomingFile(Uri.file(path));
-    }).catchError((_) {});
-
-    _sharedMediaSubscription =
-        _sharedMediaEvents.receiveBroadcastStream().listen((event) {
-      final path = event?.toString() ?? '';
-      if (path.isEmpty) return;
-      _handleIncomingFile(Uri.file(path));
-    }, onError: (_) {});
-  }
-
-  Future<void> _handleIncomingFile(Uri uri) async {
-    try {
-      String decodedPath = Uri.decodeComponent(uri.path);
-      final originalFile = File(decodedPath);
-      if (!await originalFile.exists()) return;
-
-      final basename = p.basename(originalFile.path);
-      final ext = p.extension(originalFile.path).toLowerCase();
-      
-      final isAudio = ['.mp3', '.m4a', '.wav', '.ogg', '.flac', '.aac'].contains(ext);
-      final isVideo = ['.mp4', '.avi', '.mov', '.mkv'].contains(ext);
-
-      if (isAudio || isVideo) {
-        final episode = PodcastEpisode(
-          id: basename,
-          title: basename,
-          audioUrl: originalFile.uri.toString(),
-          publishedAt: DateTime.now(),
-          description: '',
-        );
-        if (mounted) {
-          final navigator = Navigator.of(context);
-          navigator.push(
-            MaterialPageRoute(
-              settings: const RouteSettings(name: '/local_media_player'),
-              builder: (_) => PodcastEpisodePlayerScreen(
-                episode: episode,
-                isVideoSupported: isVideo,
-                startWithVideo: isVideo,
-              ),
-            ),
-          );
-        }
-        return;
-      }
-
-      final lib = DocumentLibraryService();
-      await lib.load();
-      final doc = await lib.importFile(originalFile, originalName: basename);
-      await lib.add(doc);
-
-      if (mounted) {
-        final navigator = Navigator.of(context);
-        navigator.pushAndRemoveUntil(
-          MaterialPageRoute<void>(
-            settings: const RouteSettings(name: '/documents'),
-            builder: (_) => const DocumentsScreen(),
-          ),
-          (route) => route.isFirst,
-        );
-        navigator.push(
-          MaterialPageRoute(
-            settings: const RouteSettings(name: '/documents/reader'),
-            builder: (_) => DocumentReaderScreen(document: doc),
-          ),
-        );
-      }
-    } catch (e) {
-      debugPrint('HomeScreen: Errore importazione file condiviso: $e');
-    }
-  }
-
-  @override
-  void dispose() {
-    _linkSubscription?.cancel();
-    _sharedMediaSubscription?.cancel();
-    super.dispose();
   }
 
   Future<void> _load() async {

@@ -1,0 +1,42 @@
+[
+  {
+    "version": "0.2.0",
+    "date": "2026-05-31",
+    "it": [
+      "Aggiunto il meteo con ricerca della citta, scelta del giorno, precipitazioni e salvataggio dell'ultima citta cercata.",
+      "Aggiunto il calendario con santo del giorno e consultazione dei giorni successivi.",
+      "Migliorata la gestione dei documenti: selezione multipla nell'aggiunta alla libreria, segnalibri e spostamento accessibile con VoiceOver.",
+      "Aggiunti importazione ed esportazione OPML per i podcast.",
+      "Migliorata l'apertura dei file audio e video condivisi con Sonarpad.",
+      "Migliorata la lettura degli articoli e la gestione dei consensi cookie nelle notizie.",
+      "Migliorata la ricerca delle radio, anche quando il nome viene scritto con spazi o simboli diversi."
+    ],
+    "en": [
+      "Added weather with city search, day selection, precipitation and saved last searched city.",
+      "Added calendar with saint of the day and browsing for following days.",
+      "Improved documents: multi-selection while adding to library, bookmarks and VoiceOver-friendly move controls.",
+      "Added OPML import and export for podcasts.",
+      "Improved opening audio and video files shared with Sonarpad.",
+      "Improved article reading and cookie consent handling in news.",
+      "Improved radio search when names are typed with different spaces or symbols."
+    ],
+    "fr": [
+      "Ajout de la meteo avec recherche de ville, choix du jour, precipitations et sauvegarde de la derniere ville recherchee.",
+      "Ajout du calendrier avec saint du jour et consultation des jours suivants.",
+      "Amelioration des documents : selection multiple lors de l'ajout a la bibliotheque, signets et deplacement accessible avec VoiceOver.",
+      "Ajout de l'importation et de l'exportation OPML pour les podcasts.",
+      "Amelioration de l'ouverture des fichiers audio et video partages avec Sonarpad.",
+      "Amelioration de la lecture des articles et de la gestion du consentement aux cookies dans les actualites.",
+      "Amelioration de la recherche radio lorsque les noms sont saisis avec des espaces ou symboles differents."
+    ],
+    "es": [
+      "Agregado el tiempo con busqueda de ciudad, seleccion del dia, precipitaciones y guardado de la ultima ciudad buscada.",
+      "Agregado el calendario con santo del dia y consulta de los dias siguientes.",
+      "Mejorados los documentos: seleccion multiple al agregar a la biblioteca, marcadores y controles de movimiento accesibles con VoiceOver.",
+      "Agregadas importacion y exportacion OPML para podcasts.",
+      "Mejorada la apertura de archivos de audio y video compartidos con Sonarpad.",
+      "Mejorada la lectura de articulos y la gestion del consentimiento de cookies en noticias.",
+      "Mejorada la busqueda de radios cuando los nombres se escriben con espacios o simbolos diferentes."
+    ]
+  }
+]

@@ -3,10 +3,42 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'donations_screen.dart';
+import 'changelog_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../services/app_settings_service.dart';
+import '../services/changelog_service.dart';
 
 class InfoScreen extends StatelessWidget {
   const InfoScreen({super.key});
+
+  String _changelogButtonLabel(String languageCode) => switch (languageCode) {
+        'en' => 'What is new',
+        'fr' => 'Nouveautes',
+        'es' => 'Novedades',
+        _ => 'Novita',
+      };
+
+  Future<void> _openChangelog(BuildContext context) async {
+    try {
+      final appLanguage = await AppSettingsService().loadAppLanguage();
+      final entry = await ChangelogService().loadCurrentEntry();
+      if (!context.mounted || entry == null) return;
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          settings: const RouteSettings(name: '/info/changelog'),
+          builder: (_) => ChangelogScreen(
+            entry: entry,
+            languageCode: appLanguage,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errore caricamento novita: $error')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +70,15 @@ class InfoScreen extends StatelessWidget {
                 },
                 icon: const Icon(Icons.favorite),
                 label: Text(l10n.donations),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: () => _openChangelog(context),
+                icon: const Icon(Icons.new_releases),
+                label: Text(_changelogButtonLabel(l10n.locale.languageCode)),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),

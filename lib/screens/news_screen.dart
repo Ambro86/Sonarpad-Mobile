@@ -359,17 +359,15 @@ class _NewsSourceList extends StatelessWidget {
         await service.saveSourcesOrder(language, list);
         onSourcesChanged();
       } else if (action == _NewsSourceAction.moveToPosition) {
-        list.insert(index, item); // put it back temporarily
         final newPos = await showDialog<int>(
           context: context,
           builder: (_) => _PositionSliderDialog(
             currentIndex: index,
-            sources: list,
+            sources: sources,
           ),
         );
         if (newPos != null && newPos != index) {
-          final toMove = list.removeAt(index);
-          list.insert(newPos, toMove);
+          list.insert(newPos, item);
           await service.saveSourcesOrder(language, list);
           onSourcesChanged();
         }
@@ -447,17 +445,29 @@ class _PositionSliderDialogState extends State<_PositionSliderDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final pos = _value.toInt();
+    final targetSources = [
+      for (var i = 0; i < widget.sources.length; i++)
+        if (i != widget.currentIndex) widget.sources[i],
+    ];
+    final maxPosition = targetSources.length;
 
-    String label;
-    if (pos == widget.sources.length - 1) {
-      label = l10n.positionLabelLast;
-    } else {
-      final targetIndex = pos >= widget.currentIndex ? pos + 1 : pos;
-      final targetName = targetIndex < widget.sources.length
-          ? widget.sources[targetIndex].name
-          : '';
-      label = l10n.positionLabel(pos + 1, targetName);
+    String positionLabel(int position) {
+      if (position >= targetSources.length) {
+        return l10n.positionLabelLast;
+      }
+      final targetName = targetSources[position].name;
+      return l10n.positionLabel(position + 1, targetName);
     }
+
+    void setPosition(int position) {
+      setState(() {
+        _value = position.clamp(0, maxPosition).toDouble();
+      });
+    }
+
+    final label = positionLabel(pos);
+    final increasedPosition = pos < maxPosition ? pos + 1 : maxPosition;
+    final decreasedPosition = pos > 0 ? pos - 1 : 0;
 
     return AlertDialog(
       title: Text(l10n.moveToPosition),
@@ -468,18 +478,28 @@ class _PositionSliderDialogState extends State<_PositionSliderDialog> {
               textAlign: TextAlign.center,
               style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
-          Slider(
-            value: _value,
-            min: 0,
-            max: (widget.sources.length - 1).toDouble(),
-            divisions:
-                widget.sources.length > 1 ? widget.sources.length - 1 : 1,
-            label: (pos + 1).toString(),
-            onChanged: (val) {
-              setState(() {
-                _value = val;
-              });
-            },
+          Semantics(
+            slider: true,
+            label: l10n.moveToPosition,
+            value: label,
+            increasedValue: positionLabel(increasedPosition),
+            decreasedValue: positionLabel(decreasedPosition),
+            onIncrease: pos < maxPosition ? () => setPosition(pos + 1) : null,
+            onDecrease: pos > 0 ? () => setPosition(pos - 1) : null,
+            child: ExcludeSemantics(
+              child: Slider(
+                value: _value,
+                min: 0,
+                max: maxPosition.toDouble(),
+                divisions: maxPosition > 0 ? maxPosition : null,
+                label: (pos + 1).toString(),
+                onChanged: (val) {
+                  setState(() {
+                    _value = val;
+                  });
+                },
+              ),
+            ),
           ),
         ],
       ),

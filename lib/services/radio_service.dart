@@ -399,15 +399,18 @@ class RadioService {
     if (query.isEmpty) return _radioNamePriority(name);
     final normalized = _normalizedRadioName(name);
     final canonical = _canonicalRadioName(name);
-    final tier = normalized == query
+    final compactQuery = _compactRadioName(keyword);
+    final compactName = _compactRadioName(name);
+    final tier = normalized == query || compactName == compactQuery
         ? 0
-        : normalized.startsWith(query)
+        : normalized.startsWith(query) || compactName.startsWith(compactQuery)
             ? 1
             : normalized.contains(' $query')
                 ? 2
                 : 3;
     final rai = query == 'rai' && canonical.startsWith('rai radio ') ? 0 : 1;
-    final position = normalized.indexOf(query);
+    var position = normalized.indexOf(query);
+    if (position < 0) position = compactName.indexOf(compactQuery);
     return '$tier|$rai|${position < 0 ? 9999 : position}|$canonical';
   }
 
@@ -415,11 +418,37 @@ class RadioService {
     final query = _canonicalRadioName(keyword.trim());
     if (query.isEmpty) return true;
     final canonical = _canonicalRadioName(name);
+    final compactQuery = _compactRadioName(keyword);
+    final compactName = _compactRadioName(name);
     return canonical == query ||
         canonical.startsWith('$query ') ||
         canonical.contains(' $query ') ||
+        (compactQuery.length >= 2 && compactName.contains(compactQuery)) ||
         (query.length >= 4 &&
             canonical.split(' ').any((word) => word.startsWith(query)));
+  }
+
+  String _compactRadioName(String value) {
+    final normalized = _canonicalRadioName(value);
+    final buffer = StringBuffer();
+    for (final rune in normalized.runes) {
+      if ((rune >= 48 && rune <= 57) || (rune >= 97 && rune <= 122)) {
+        buffer.writeCharCode(rune);
+      } else {
+        final folded = switch (rune) {
+          224 || 225 || 226 || 227 || 228 || 229 => 'a',
+          232 || 233 || 234 || 235 => 'e',
+          236 || 237 || 238 || 239 => 'i',
+          242 || 243 || 244 || 245 || 246 => 'o',
+          249 || 250 || 251 || 252 => 'u',
+          241 => 'n',
+          231 => 'c',
+          _ => '',
+        };
+        buffer.write(folded);
+      }
+    }
+    return buffer.toString();
   }
 }
 
