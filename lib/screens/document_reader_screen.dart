@@ -677,7 +677,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                     ),
                                   )
                                 else if (_chunks.isNotEmpty)
-                                  ..._buildChunkWidgets(theme, colorScheme)
+                                  ..._buildChunkWidgets(
+                                    theme,
+                                    colorScheme,
+                                    l10n,
+                                  )
                                 else if (_documentText.isEmpty &&
                                     _loadError == null)
                                   Text(
@@ -699,7 +703,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   /// Costruisce la lista di widget per i blocchi di testo.
   /// Il blocco in riproduzione viene evidenziato.
-  List<Widget> _buildChunkWidgets(ThemeData theme, ColorScheme colorScheme) {
+  List<Widget> _buildChunkWidgets(
+    ThemeData theme,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
     final widgets = <Widget>[];
     for (var i = 0; i < _chunks.length; i++) {
       final isPlaying = i == _playingChunkIndex;
@@ -708,24 +716,25 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       // Durante la lettura TTS il tap è disabilitato per non interferire.
       final canEdit = !_speaking;
 
-      String hintText =
-          canEdit ? 'Doppio tap per modificare questo paragrafo. ' : '';
+      String hintText = canEdit ? l10n.documentEditParagraphActionHint : '';
       if (_bookmarkIndex > 0) {
-        hintText +=
-            'Fai flick verso il basso per rimuovere o andare al segnalibro esistente.';
+        hintText += l10n.documentBookmarkHintReplace;
       } else {
-        hintText += 'Fai flick verso il basso per impostare un segnalibro.';
+        hintText += l10n.documentBookmarkHintSet;
       }
 
       final Map<CustomSemanticsAction, VoidCallback> actions = {};
       if (_bookmarkIndex > 0) {
-        actions[const CustomSemanticsAction(label: 'Rimuovi segnalibro')] =
-            () => _removeBookmark();
-        actions[const CustomSemanticsAction(label: 'Vai al segnalibro')] =
-            () => _scrollToChunk(_bookmarkIndex);
+        actions[
+          CustomSemanticsAction(label: l10n.documentRemoveBookmarkAction)
+        ] = () => _removeBookmark();
+        actions[
+          CustomSemanticsAction(label: l10n.documentReplaceBookmarkAction)
+        ] = () => _setBookmark(i);
       } else {
-        actions[const CustomSemanticsAction(label: 'Imposta segnalibro')] =
-            () => _setBookmark(i);
+        actions[
+          CustomSemanticsAction(label: l10n.documentSetBookmarkAction)
+        ] = () => _setBookmark(i);
       }
 
       widgets.add(

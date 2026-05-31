@@ -773,17 +773,30 @@ class _DocumentPositionSliderDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final pos = _value.toInt();
+    final maxPosition =
+        widget.documents.isNotEmpty ? widget.documents.length - 1 : 0;
 
-    String label;
-    if (pos == widget.documents.length - 1) {
-      label = l10n.positionLabelLast;
-    } else {
-      final targetIndex = pos >= widget.currentIndex ? pos + 1 : pos;
+    String positionLabel(int position) {
+      if (position == widget.documents.length - 1) {
+        return l10n.positionLabelLast;
+      }
+      final targetIndex =
+          position >= widget.currentIndex ? position + 1 : position;
       final targetName = targetIndex < widget.documents.length
           ? widget.documents[targetIndex].displayName
           : '';
-      label = l10n.positionLabel(pos + 1, targetName);
+      return l10n.positionLabel(position + 1, targetName);
     }
+
+    void setPosition(int position) {
+      setState(() {
+        _value = position.clamp(0, maxPosition).toDouble();
+      });
+    }
+
+    final label = positionLabel(pos);
+    final increasedPosition = pos < maxPosition ? pos + 1 : maxPosition;
+    final decreasedPosition = pos > 0 ? pos - 1 : 0;
 
     return AlertDialog(
       title: Text(AppLocalizations.of(context).moveDocument),
@@ -796,18 +809,28 @@ class _DocumentPositionSliderDialogState
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          Slider(
-            value: _value,
-            min: 0,
-            max: (widget.documents.isNotEmpty ? widget.documents.length - 1 : 0).toDouble(),
-            divisions:
-                widget.documents.length > 1 ? widget.documents.length - 1 : 1,
-            label: (pos + 1).toString(),
-            onChanged: (value) {
-              setState(() {
-                _value = value;
-              });
-            },
+          Semantics(
+            slider: true,
+            label: l10n.moveDocument,
+            value: label,
+            increasedValue: positionLabel(increasedPosition),
+            decreasedValue: positionLabel(decreasedPosition),
+            onIncrease: pos < maxPosition ? () => setPosition(pos + 1) : null,
+            onDecrease: pos > 0 ? () => setPosition(pos - 1) : null,
+            child: ExcludeSemantics(
+              child: Slider(
+                value: _value,
+                min: 0,
+                max: maxPosition.toDouble(),
+                divisions: widget.documents.length > 1 ? maxPosition : null,
+                label: (pos + 1).toString(),
+                onChanged: (value) {
+                  setState(() {
+                    _value = value;
+                  });
+                },
+              ),
+            ),
           ),
         ],
       ),

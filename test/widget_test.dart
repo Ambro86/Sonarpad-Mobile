@@ -26,6 +26,7 @@ void main() {
     expect(find.text('Calendario', skipOffstage: false), findsOneWidget);
     expect(find.text('Notizie', skipOffstage: false), findsOneWidget);
     expect(find.text('Podcast', skipOffstage: false), findsOneWidget);
-    expect(find.text('Impostazioni', skipOffstage: false), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Impostazioni'), 200);
+    expect(find.text('Impostazioni'), findsOneWidget);
   });
 }

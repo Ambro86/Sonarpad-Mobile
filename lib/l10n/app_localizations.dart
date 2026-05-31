@@ -785,6 +785,44 @@ class AppLocalizations {
           : (_isEs
               ? 'Toca un párrafo para editarlo. Usa el flick vertical para añadir un marcador.'
               : 'Tocca un paragrafo per modificarlo. Usa il flick verticale per aggiungere un segnalibro.'));
+  String get documentBookmarkHintSet => _isEn
+      ? 'Use the vertical flick to set a bookmark.'
+      : (_isFr
+          ? 'Utilisez le flick vertical pour définir un signet.'
+          : (_isEs
+              ? 'Usa el flick vertical para establecer un marcador.'
+              : 'Usa il flick verticale per impostare un segnalibro.'));
+  String get documentEditParagraphActionHint => _isEn
+      ? 'Double tap to edit this paragraph. '
+      : (_isFr
+          ? 'Touchez deux fois pour modifier ce paragraphe. '
+          : (_isEs
+              ? 'Toca dos veces para editar este párrafo. '
+              : 'Doppio tap per modificare questo paragrafo. '));
+  String get documentBookmarkHintReplace => _isEn
+      ? 'Use the vertical flick to remove the existing bookmark or replace it with this paragraph.'
+      : (_isFr
+          ? 'Utilisez le flick vertical pour supprimer le signet existant ou le remplacer par ce paragraphe.'
+          : (_isEs
+              ? 'Usa el flick vertical para eliminar el marcador existente o reemplazarlo por este párrafo.'
+              : 'Usa il flick verticale per rimuovere il segnalibro esistente o sostituirlo con questo paragrafo.'));
+  String get documentSetBookmarkAction => _isEn
+      ? 'Set bookmark'
+      : (_isFr
+          ? 'Définir le signet'
+          : (_isEs ? 'Establecer marcador' : 'Imposta segnalibro'));
+  String get documentRemoveBookmarkAction => _isEn
+      ? 'Remove bookmark'
+      : (_isFr
+          ? 'Supprimer le signet'
+          : (_isEs ? 'Eliminar marcador' : 'Rimuovi segnalibro'));
+  String get documentReplaceBookmarkAction => _isEn
+      ? 'Remove and add a new bookmark'
+      : (_isFr
+          ? 'Supprimer et ajouter un nouveau signet'
+          : (_isEs
+              ? 'Eliminar y añadir un nuevo marcador'
+              : 'Rimuovi e aggiungi un nuovo segnalibro'));
   String get edit =>
       _isEn ? 'Edit' : (_isFr ? 'Modifier' : (_isEs ? 'Editar' : 'Modifica'));
   String get save =>
