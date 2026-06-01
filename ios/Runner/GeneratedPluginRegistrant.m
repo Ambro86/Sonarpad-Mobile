@@ -36,10 +36,10 @@
 @import device_calendar;
 #endif
 
-#if __has_include(<ffmpeg_kit_flutter/FFmpegKitFlutterPlugin.h>)
-#import <ffmpeg_kit_flutter/FFmpegKitFlutterPlugin.h>
+#if __has_include(<ffmpeg_kit_flutter_new/FFmpegKitFlutterPlugin.h>)
+#import <ffmpeg_kit_flutter_new/FFmpegKitFlutterPlugin.h>
 #else
-@import ffmpeg_kit_flutter;
+@import ffmpeg_kit_flutter_new;
 #endif
 
 #if __has_include(<file_picker/FilePickerPlugin.h>)
