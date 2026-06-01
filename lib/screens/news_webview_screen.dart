@@ -506,7 +506,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   String _visibleReaderTextForSpeech(String readerText) {
     final title = (_readerTitle ?? widget.article.title).trim();
-    final paragraphs = _ReaderArticleView.readerParagraphs(readerText);
+    final paragraphs = _dropLeadingDuplicateTitle(
+      title,
+      _ReaderArticleView.readerParagraphs(readerText),
+    );
     return [
       if (title.isNotEmpty) title,
       ...paragraphs,
@@ -740,7 +743,7 @@ class _ReaderArticleView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final paragraphs = readerParagraphs(text);
+    final paragraphs = _dropLeadingDuplicateTitle(title, readerParagraphs(text));
 
     return Semantics(
       label: l10n.articleTextSemantics,
@@ -819,4 +822,38 @@ class _ReaderArticleView extends StatelessWidget {
     if (current.isNotEmpty) parts.add(current);
     return parts;
   }
+}
+
+List<String> _dropLeadingDuplicateTitle(
+  String title,
+  List<String> paragraphs,
+) {
+  if (title.trim().isEmpty || paragraphs.isEmpty) return paragraphs;
+  if (!_sameNewsText(title, paragraphs.first)) return paragraphs;
+  return paragraphs.skip(1).toList();
+}
+
+bool _sameNewsText(String a, String b) =>
+    _normalizeNewsText(a) == _normalizeNewsText(b);
+
+String _normalizeNewsText(String value) {
+  var normalized = value.toLowerCase().trim();
+  const trailingPunctuation = '.,:;!?“”"‘’';
+  while (normalized.isNotEmpty &&
+      trailingPunctuation.contains(normalized[normalized.length - 1])) {
+    normalized = normalized.substring(0, normalized.length - 1).trimRight();
+  }
+  final buffer = StringBuffer();
+  var lastWasSpace = false;
+  for (final rune in normalized.runes) {
+    final char = String.fromCharCode(rune);
+    final isSpace = char.trim().isEmpty;
+    if (isSpace) {
+      if (!lastWasSpace) buffer.write(' ');
+    } else {
+      buffer.write(char);
+    }
+    lastWasSpace = isSpace;
+  }
+  return buffer.toString().trim();
 }

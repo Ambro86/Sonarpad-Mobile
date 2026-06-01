@@ -774,60 +774,63 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
 
       widgets.add(
-        AutoScrollTag(
-          key: ValueKey(i),
-          controller: _scrollController,
+        IndexedSemantics(
           index: i,
-          child: Semantics(
-            container: true,
-            hint: hintText,
-            onTap: canEdit ? () => _editParagraph(i) : null,
-            customSemanticsActions: actions,
-            child: GestureDetector(
-              excludeFromSemantics: true,
+          child: AutoScrollTag(
+            key: ValueKey(i),
+            controller: _scrollController,
+            index: i,
+            child: Semantics(
+              container: true,
+              hint: hintText,
               onTap: canEdit ? () => _editParagraph(i) : null,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                margin: const EdgeInsets.only(bottom: 6),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isPlaying
-                      ? colorScheme.primaryContainer
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: isPlaying
-                      ? Border.all(
-                          color: colorScheme.primary.withAlpha(128),
-                          width: 1.5,
-                        )
-                      : (isBookmarked
-                          ? Border.all(
-                              color: Colors.red.withAlpha(128),
-                              width: 1.5,
-                            )
-                          : null),
-                ),
-                child: Stack(
-                  children: [
-                    Text(
-                      _chunks[i],
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight:
-                            isPlaying ? FontWeight.w600 : FontWeight.normal,
-                        color:
-                            isPlaying ? colorScheme.onPrimaryContainer : null,
+              customSemanticsActions: actions,
+              child: GestureDetector(
+                excludeFromSemantics: true,
+                onTap: canEdit ? () => _editParagraph(i) : null,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isPlaying
+                        ? colorScheme.primaryContainer
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    border: isPlaying
+                        ? Border.all(
+                            color: colorScheme.primary.withAlpha(128),
+                            width: 1.5,
+                          )
+                        : (isBookmarked
+                            ? Border.all(
+                                color: Colors.red.withAlpha(128),
+                                width: 1.5,
+                              )
+                            : null),
+                  ),
+                  child: Stack(
+                    children: [
+                      Text(
+                        _chunks[i],
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight:
+                              isPlaying ? FontWeight.w600 : FontWeight.normal,
+                          color:
+                              isPlaying ? colorScheme.onPrimaryContainer : null,
+                        ),
                       ),
-                    ),
-                    if (isBookmarked && !isPlaying)
-                      const Positioned(
-                        top: 0,
-                        right: 0,
-                        child:
-                            Icon(Icons.bookmark, color: Colors.red, size: 16),
-                      ),
-                  ],
+                      if (isBookmarked && !isPlaying)
+                        const Positioned(
+                          top: 0,
+                          right: 0,
+                          child:
+                              Icon(Icons.bookmark, color: Colors.red, size: 16),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),

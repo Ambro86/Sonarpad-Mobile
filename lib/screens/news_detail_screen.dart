@@ -117,7 +117,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     });
 
     try {
-      final text = '${widget.article.title}. ${widget.article.summary}';
+      final text = _articleTextForSpeech(widget.article);
       final voice = await _voice();
       final engine = await _settings.loadTtsEngine();
       final dictionaryEntries = await _voiceDictionary.loadEntries();
@@ -248,6 +248,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   Widget build(BuildContext context) {
     final article = widget.article;
     final l10n = AppLocalizations.of(context);
+    final summary = _dropLeadingDuplicateTitle(article.title, article.summary);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.article)),
       body: ListView(
@@ -260,7 +261,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           Text(l10n.articlePreview,
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
-          Text(article.summary, style: Theme.of(context).textTheme.bodyLarge),
+          Text(summary, style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 24),
           Semantics(
             liveRegion: false,
@@ -297,4 +298,53 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       ),
     );
   }
+}
+
+String _articleTextForSpeech(NewsArticle article) {
+  final title = article.title.trim();
+  final summary = _dropLeadingDuplicateTitle(title, article.summary);
+  return [title, summary]
+      .where((part) => part.trim().isNotEmpty)
+      .join('. ')
+      .trim();
+}
+
+String _dropLeadingDuplicateTitle(String title, String text) {
+  final trimmed = text.trim();
+  if (title.trim().isEmpty || trimmed.isEmpty) return trimmed;
+  final paragraphs = trimmed
+      .replaceAll('\r', '\n')
+      .split('\n')
+      .map((p) => p.trim())
+      .where((p) => p.isNotEmpty)
+      .toList();
+  if (paragraphs.isEmpty || !_sameNewsText(title, paragraphs.first)) {
+    return trimmed;
+  }
+  return paragraphs.skip(1).join('\n\n').trim();
+}
+
+bool _sameNewsText(String a, String b) =>
+    _normalizeNewsText(a) == _normalizeNewsText(b);
+
+String _normalizeNewsText(String value) {
+  var normalized = value.toLowerCase().trim();
+  const trailingPunctuation = '.,:;!?“”"‘’';
+  while (normalized.isNotEmpty &&
+      trailingPunctuation.contains(normalized[normalized.length - 1])) {
+    normalized = normalized.substring(0, normalized.length - 1).trimRight();
+  }
+  final buffer = StringBuffer();
+  var lastWasSpace = false;
+  for (final rune in normalized.runes) {
+    final char = String.fromCharCode(rune);
+    final isSpace = char.trim().isEmpty;
+    if (isSpace) {
+      if (!lastWasSpace) buffer.write(' ');
+    } else {
+      buffer.write(char);
+    }
+    lastWasSpace = isSpace;
+  }
+  return buffer.toString().trim();
 }
