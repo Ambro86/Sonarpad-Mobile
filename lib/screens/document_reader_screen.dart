@@ -191,7 +191,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       'Document reader TTS: start doc="${_currentDoc.name}" '
       'chunks=${_chunks.length} moveCursor=$_moveCursorDuringPlayback',
     );
-    unawaited(_startKeepAliveForReading());
+    await _audio.startKeepAlive();
 
     try {
       await AppLogger.log('Document reader TTS: loading engine');
@@ -355,18 +355,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (mounted) {
         setState(() => _speaking = false);
       }
-    }
-  }
-
-  Future<void> _startKeepAliveForReading() async {
-    try {
-      await AppLogger.log('Document reader TTS: keepAlive start');
-      await _audio.startKeepAlive().timeout(const Duration(seconds: 5));
-      await AppLogger.log('Document reader TTS: keepAlive started');
-    } on TimeoutException {
-      await AppLogger.log('Document reader TTS: keepAlive timeout, continuing');
-    } catch (e) {
-      await AppLogger.log('Document reader TTS: keepAlive error $e');
     }
   }
 
