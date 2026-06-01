@@ -44,7 +44,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late TextEditingController _tvSecretCodeController;
   bool _testingVoice = false;
   bool _autoBookmark = true;
-  bool _moveCursorDuringReading = false;
   bool _homeGroupingEnabled = false;
   int _seekSliderStep = 60;
   final _audio = AudioPlayerService();
@@ -58,7 +57,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _savedTtsSpeed = 1.0;
   double _savedTtsPitch = 1.0;
   bool _savedAutoBookmark = true;
-  bool _savedMoveCursorDuringReading = false;
   bool _savedHomeGroupingEnabled = false;
   int _savedSeekSliderStep = 60;
 
@@ -99,8 +97,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
-    final moveCursorDuringReading =
-        await _settings.isMoveCursorDuringReadingEnabled();
     final homeGrouping = await _settings.isHomeGroupingEnabled();
     final seekSliderStep = await _settings.loadSeekSliderStep();
     final edgeVoices = await AppSettingsService.loadEdgeVoices();
@@ -138,8 +134,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedSystemTtsVoice = sysVoice;
       _autoBookmark = autoBookmark;
       _savedAutoBookmark = autoBookmark;
-      _moveCursorDuringReading = moveCursorDuringReading;
-      _savedMoveCursorDuringReading = moveCursorDuringReading;
       _homeGroupingEnabled = homeGrouping;
       _savedHomeGroupingEnabled = homeGrouping;
       _seekSliderStep = seekSliderStep;
@@ -181,7 +175,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       } catch (e) {
         setState(() => _isSaving = false);
         if (!mounted) return;
-        _showSaveResultNotice(l10n.sonarpadCodeInvalidMessage);
+        await _showSaveResultDialog(
+          title: l10n.sonarpadCodeInvalidTitle,
+          message: l10n.sonarpadCodeInvalidMessage,
+        );
         return;
       }
     }
@@ -192,8 +189,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.saveTtsPitch(_ttsPitch);
     await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
-    await _settings
-        .setMoveCursorDuringReadingEnabled(_moveCursorDuringReading);
     await _settings.setHomeGroupingEnabled(_homeGroupingEnabled);
     await _settings.saveSeekSliderStep(_seekSliderStep);
     _markSaved(rawCode);
@@ -203,19 +198,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (_appLanguage != Localizations.localeOf(context).languageCode) {
       SonarpadApp.setLocale(context, Locale(_appLanguage));
     }
-    _showSaveResultNotice(
-      codeChanged && rawCode.isNotEmpty
+    await _showSaveResultDialog(
+      title: codeChanged && rawCode.isNotEmpty
+          ? l10n.sonarpadCodeValidTitle
+          : l10n.settingsSavedTitle,
+      message: codeChanged && rawCode.isNotEmpty
           ? l10n.sonarpadCodeValidMessage
           : l10n.settingsSaved,
     );
   }
 
-  void _showSaveResultNotice(String message) {
+  Future<void> _showSaveResultDialog({
+    required String title,
+    required String message,
+  }) async {
     if (!mounted) return;
     FocusScope.of(context).unfocus();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context).ok),
+          ),
+        ],
+      ),
     );
+    if (!mounted) return;
     _screenFocusNode.requestFocus();
   }
 
@@ -230,7 +242,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedTtsPitch = _ttsPitch;
     _savedTvSecretCode = rawCode;
     _savedAutoBookmark = _autoBookmark;
-    _savedMoveCursorDuringReading = _moveCursorDuringReading;
     _savedHomeGroupingEnabled = _homeGroupingEnabled;
     _savedSeekSliderStep = _seekSliderStep;
   }
@@ -247,7 +258,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _ttsPitch != _savedTtsPitch ||
         _tvSecretCodeController.text.trim() != _savedTvSecretCode ||
         _autoBookmark != _savedAutoBookmark ||
-        _moveCursorDuringReading != _savedMoveCursorDuringReading ||
         _homeGroupingEnabled != _savedHomeGroupingEnabled ||
         _seekSliderStep != _savedSeekSliderStep;
   }
@@ -724,16 +734,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     subtitle: Text(l10n.settingsAutoBookmarkHint),
                     value: _autoBookmark,
                     onChanged: (val) => setState(() => _autoBookmark = val),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  SwitchListTile(
-                    title: Text(l10n.settingsMoveCursorDuringReading),
-                    subtitle: Text(l10n.settingsMoveCursorDuringReadingHint),
-                    value: _moveCursorDuringReading,
-                    onChanged: (val) =>
-                        setState(() => _moveCursorDuringReading = val),
                     contentPadding: EdgeInsets.zero,
                   ),
                   const Divider(),

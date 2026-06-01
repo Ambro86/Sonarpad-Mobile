@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import '../l10n/app_localizations.dart';
@@ -51,18 +51,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   bool _speaking = false;
   String? _ttsStatus;
   int _playingChunkIndex = -1;
-  int _lastPlaybackChunkIndex = -1;
-  bool _moveCursorDuringPlayback = false;
   // (chunkKeys rimosso, usiamo scroll_to_index)
   late int _bookmarkIndex;
 
   bool _ttsPaused = false;
   String? _activeTtsEngine;
-  int _readingToken = 0;
-  int _keepAliveToken = 0;
-  String? _pendingTtsEngine;
   StreamSubscription<bool>? _playingSub;
-  StreamSubscription<String>? _ttsEngineSub;
 
   static const int _maxChunkChars = 650;
 
@@ -94,9 +88,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _togglePlayPause();
       }
     });
-    _ttsEngineSub = AppSettingsService.ttsEngineChanges.listen((engine) {
-      unawaited(_handleTtsEngineChanged(engine));
-    });
 
     _extractText();
   }
@@ -108,8 +99,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
     _ttsEventsSub?.cancel();
     _playingSub?.cancel();
-    _ttsEngineSub?.cancel();
-    unawaited(_stopDocumentKeepAlive('dispose'));
     unawaited(_audio.stopAndDispose());
     _scrollController.dispose();
     super.dispose();
@@ -180,68 +169,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     return 'it-IT-IsabellaNeural';
   }
 
-  void _startSystemKeepAlive({String? expectedEngine}) {
-    final token = ++_keepAliveToken;
-    unawaited(
-      Future<void>(() async {
-        await AppLogger.log(
-          'Document reader TTS: starting keepAlive for system engine',
-        );
-        await _audio.startKeepAlive();
-        if (!mounted ||
-            !_speaking ||
-            (expectedEngine ?? _activeTtsEngine) != 'system' ||
-            token != _keepAliveToken) {
-          await AppLogger.log(
-            'Document reader TTS: keepAlive obsolete after start; stopping',
-          );
-          await _audio.stopKeepAlive();
-          return;
-        }
-        await AppLogger.log(
-          'Document reader TTS: keepAlive started for system engine',
-        );
-      }).catchError((Object error) {
-        return AppLogger.log(
-          'Document reader TTS: keepAlive start failed $error',
-        );
-      }),
-    );
-  }
-
-  Future<void> _handleTtsEngineChanged(String engine) async {
-    if (!_speaking || !_ttsPaused) return;
-    _pendingTtsEngine = engine;
-    await AppLogger.log(
-      'Document reader TTS: engine setting changed while paused '
-      'active=$_activeTtsEngine pending=$engine',
-    );
-    if (engine == 'system') {
-      if (_activeTtsEngine != 'system') {
-        await _audio.stop();
-      }
-      _startSystemKeepAlive(expectedEngine: engine);
-    } else {
-      await _stopDocumentKeepAlive('engine setting changed to Edge');
-      if (_activeTtsEngine == 'system') {
-        await _flutterTts.stop();
-      }
-    }
-  }
-
-  Future<void> _stopDocumentKeepAlive(String reason) async {
-    _keepAliveToken += 1;
-    await AppLogger.log('Document reader TTS: stopping keepAlive $reason');
-    try {
-      await _audio.stopKeepAlive();
-    } catch (error) {
-      await AppLogger.log(
-        'Document reader TTS: stop keepAlive failed $reason $error',
-      );
-    }
-  }
-
-  Future<void> _startReading({int? startIndexOverride}) async {
+  Future<void> _startReading() async {
     if (_chunks.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).noTextToRead)),
@@ -249,52 +177,28 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       return;
     }
 
-    final readingToken = ++_readingToken;
     _speaking = true;
     _ttsPaused = false;
-    _moveCursorDuringPlayback =
-        await _settings.isMoveCursorDuringReadingEnabled();
     _playingChunkIndex = -1;
-    _lastPlaybackChunkIndex = -1;
-    _pendingTtsEngine = null;
     _ttsStatus = null;
-    if (mounted) setState(() {});
-    await _stopDocumentKeepAlive('before reading start');
-    await AppLogger.log(
-      'Document reader TTS: start doc="${_currentDoc.name}" '
-      'chunks=${_chunks.length} moveCursor=$_moveCursorDuringPlayback',
-    );
+    await _audio.startKeepAlive();
 
     try {
-      await AppLogger.log('Document reader TTS: loading engine');
       final engine = await _settings.loadTtsEngine();
-      await AppLogger.log('Document reader TTS: engine loaded $engine');
-      await AppLogger.log('Document reader TTS: loading dictionary');
       final dictionaryEntries = await _voiceDictionary.loadEntries();
-      await AppLogger.log(
-        'Document reader TTS: dictionary loaded ${dictionaryEntries.length}',
-      );
       _activeTtsEngine = engine;
-      final requestedStartIndex = startIndexOverride ?? _bookmarkIndex;
-      final startIndex =
-          requestedStartIndex < _chunks.length && requestedStartIndex >= 0
-              ? requestedStartIndex
-              : 0;
-      await AppLogger.log(
-        'Document reader TTS: engine=$engine startIndex=$startIndex '
-        'dictionaryEntries=${dictionaryEntries.length}',
-      );
-      if (Platform.isIOS) {
-        try {
-          await _ttsCommands.invokeMethod('clearMagicTap');
-          await _ttsCommands.invokeMethod('setupMagicTap', _currentDoc.name);
-        } catch (e) {
-          dev.log('DocumentReaderScreen: Errore setupMagicTap $e');
-        }
-      }
+      final startIndex = _bookmarkIndex < _chunks.length && _bookmarkIndex >= 0
+          ? _bookmarkIndex
+          : 0;
 
       if (engine == 'system') {
-        _startSystemKeepAlive();
+        if (Platform.isIOS) {
+          try {
+            await _ttsCommands.invokeMethod('setupMagicTap', _currentDoc.name);
+          } catch (e) {
+            dev.log('DocumentReaderScreen: Errore setupMagicTap $e');
+          }
+        }
         await _configureSystemTtsAudioSession();
         await _flutterTts.awaitSpeakCompletion(true);
         if (Platform.isIOS) {
@@ -316,102 +220,72 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         }
 
         for (var i = startIndex; i < _chunks.length; i++) {
-          if (!mounted || !_speaking || readingToken != _readingToken) break;
+          if (!mounted || !_speaking) break;
 
           while (_ttsPaused) {
             await Future.delayed(const Duration(milliseconds: 200));
-            if (!mounted || !_speaking || readingToken != _readingToken) break;
+            if (!mounted || !_speaking) break;
           }
-          if (!mounted || !_speaking || readingToken != _readingToken) break;
+          if (!mounted || !_speaking) break;
 
           final textToSpeak =
               _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
           final speaking = _flutterTts.speak(textToSpeak);
-          _setPlaybackChunk(i);
+          if (mounted) {
+            setState(() {
+              _playingChunkIndex = i;
+            });
+            _scrollToChunk(i);
+          }
           await speaking;
         }
         await _flutterTts.stop();
       } else {
-        await _stopDocumentKeepAlive('Edge engine selected');
-        await AppLogger.log(
-          'Document reader TTS: keepAlive skipped for Edge engine',
-        );
         final voice = await _voice();
         final controller = StreamController<(int, File)>();
         Object? generationError;
-        await AppLogger.log(
-          'Document reader Edge TTS: start voice=$voice '
-          'from=$startIndex total=${_chunks.length}',
-        );
 
         // Generazione audio in background
         final generation = Future<void>(() async {
           for (var i = startIndex; i < _chunks.length; i++) {
-            if (!mounted || !_speaking || readingToken != _readingToken) {
-              await AppLogger.log(
-                'Document reader Edge TTS: generation stopped at chunk=$i '
-                'mounted=$mounted speaking=$_speaking tokenCurrent=${readingToken == _readingToken}',
-              );
+            if (!mounted || !_speaking) {
               break; // Ferma la generazione se l'utente preme stop
             }
             final textToSpeak =
                 _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
-            await AppLogger.log(
-              'Document reader Edge TTS: generating chunk=$i '
-              'chars=${textToSpeak.length}',
-            );
             final file = await _tts.speakToFile(text: textToSpeak, voice: voice);
-            final exists = await file.exists();
-            final bytes = exists ? await file.length() : 0;
-            await AppLogger.log(
-              'Document reader Edge TTS: generated chunk=$i '
-              'file="${file.path}" exists=$exists bytes=$bytes',
-            );
             controller.add((i, file));
           }
           await controller.close();
         }).catchError((e) async {
           generationError = e;
-          await AppLogger.log('Document reader Edge TTS: generation error $e');
           await controller.close();
         });
 
         // Riproduzione con avanzamento cursore
         await for (final (index, file) in controller.stream) {
-          if (!mounted || !_speaking || readingToken != _readingToken) {
-            await AppLogger.log(
-              'Document reader Edge TTS: playback stopped before chunk=$index '
-              'mounted=$mounted speaking=$_speaking tokenCurrent=${readingToken == _readingToken}',
-            );
-            break;
-          }
-          await AppLogger.log(
-            'Document reader Edge TTS: playback start chunk=$index '
-            'file="${file.path}"',
-          );
+          if (!mounted || !_speaking) break;
           final playback = _audio.playFilesSequentially([file]);
-          _setPlaybackChunk(index);
+          if (mounted) {
+            setState(() {
+              _playingChunkIndex = index;
+            });
+            _scrollToChunk(index);
+          }
           await playback;
-          await AppLogger.log(
-            'Document reader Edge TTS: playback completed chunk=$index',
-          );
         }
 
         await generation;
         if (generationError != null) throw Exception(generationError);
-        await AppLogger.log('Document reader Edge TTS: completed');
       }
 
-      if (Platform.isIOS) {
+      if (Platform.isIOS && engine == 'system') {
         try {
           await _ttsCommands.invokeMethod('clearMagicTap');
         } catch (_) {}
       }
 
       if (!mounted) return;
-      if (readingToken != _readingToken) return;
-      if (!_speaking) return;
-      await AppLogger.log('Document reader TTS: finished normally');
       setState(() {
         _playingChunkIndex = -1;
         _speaking = false;
@@ -421,9 +295,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       });
     } catch (e) {
       dev.log('DocumentReaderScreen TTS error: $e');
-      await AppLogger.log('Document reader TTS: error $e');
+      await AppLogger.log('Errore avvio TTS: $e');
       if (!mounted) return;
-      if (readingToken != _readingToken) return;
       setState(() {
         _playingChunkIndex = -1;
         _ttsStatus = '${AppLocalizations.of(context).ttsError}: $e';
@@ -433,25 +306,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         SnackBar(content: Text('${AppLocalizations.of(context).ttsError}: $e')),
       );
     } finally {
-      if (mounted && readingToken == _readingToken) {
-        await _stopDocumentKeepAlive('reading finished');
+      await _audio.stopKeepAlive();
+      if (mounted) {
         setState(() => _speaking = false);
       }
     }
-  }
-
-  void _setPlaybackChunk(int index) {
-    _lastPlaybackChunkIndex = index;
-    if (!_moveCursorDuringPlayback || !mounted) return;
-    setState(() => _playingChunkIndex = index);
-    _scrollToChunk(index);
-  }
-
-  void _revealPlaybackChunk() {
-    final index = _lastPlaybackChunkIndex;
-    if (index < 0 || index >= _chunks.length || !mounted) return;
-    setState(() => _playingChunkIndex = index);
-    _scrollToChunk(index);
   }
 
   final _flutterTts = FlutterTts();
@@ -474,75 +333,33 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _stopReading() async {
-    _readingToken += 1;
-    await AppLogger.log(
-      'Document reader TTS: stop requested engine=$_activeTtsEngine '
-      'lastChunk=$_lastPlaybackChunkIndex visualChunk=$_playingChunkIndex',
-    );
     await _saveAutomaticBookmarkFromPlayback();
-    if (Platform.isIOS) {
+    if (Platform.isIOS && _activeTtsEngine == 'system') {
       try {
         await _ttsCommands.invokeMethod('clearMagicTap');
       } catch (_) {}
     }
-    await _stopDocumentKeepAlive('stop requested');
     // Aggiorna subito la UI per un feedback immediato
     setState(() {
       _speaking = false;
       _ttsPaused = false;
       _activeTtsEngine = null;
+      _playingChunkIndex = -1;
       _ttsStatus = 'Lettura interrotta.';
     });
-    _revealPlaybackChunk();
+    await _audio.stopKeepAlive();
     await _audio.stop();
     await _flutterTts.stop();
-  }
-
-  int _resumeChunkIndex() {
-    if (_lastPlaybackChunkIndex >= 0 &&
-        _lastPlaybackChunkIndex < _chunks.length) {
-      return _lastPlaybackChunkIndex;
-    }
-    if (_playingChunkIndex >= 0 && _playingChunkIndex < _chunks.length) {
-      return _playingChunkIndex;
-    }
-    if (_bookmarkIndex >= 0 && _bookmarkIndex < _chunks.length) {
-      return _bookmarkIndex;
-    }
-    return 0;
-  }
-
-  Future<void> _restartReadingWithCurrentEngine(int startIndex) async {
-    final previousEngine = _activeTtsEngine;
-    await AppLogger.log(
-      'Document reader TTS: restarting after engine change '
-      'previous=$previousEngine startIndex=$startIndex',
-    );
-    _readingToken += 1;
-    _speaking = false;
-    _ttsPaused = false;
-    _pendingTtsEngine = null;
-    if (Platform.isIOS) {
-      try {
-        await _ttsCommands.invokeMethod('clearMagicTap');
-      } catch (_) {}
-    }
-    await _stopDocumentKeepAlive('engine change');
-    await _audio.stop();
-    await _flutterTts.stop();
-    if (!mounted) return;
-    await _startReading(startIndexOverride: startIndex);
   }
 
   Future<void> _saveAutomaticBookmarkFromPlayback() async {
-    if (_lastPlaybackChunkIndex < 0 ||
-        _lastPlaybackChunkIndex >= _chunks.length) {
+    if (_playingChunkIndex < 0 || _playingChunkIndex >= _chunks.length) {
       return;
     }
     if (!await _settings.isAutoBookmarkEnabled()) {
       return;
     }
-    await _saveBookmark(_lastPlaybackChunkIndex, showSnack: false);
+    await _saveBookmark(_playingChunkIndex, showSnack: false);
   }
 
   // ---------------------------------------------------------------------------
@@ -675,12 +492,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   Future<void> _pauseReading() async {
     if (!_speaking || _ttsPaused) return;
-    await AppLogger.log(
-      'Document reader TTS: pause requested engine=$_activeTtsEngine '
-      'lastChunk=$_lastPlaybackChunkIndex visualChunk=$_playingChunkIndex',
-    );
     if (mounted) setState(() => _ttsPaused = true);
-    _revealPlaybackChunk();
 
     if (_activeTtsEngine == 'system') {
       await _flutterTts.pause();
@@ -691,26 +503,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   Future<void> _resumeReading() async {
     if (!_speaking || !_ttsPaused) return;
-    final configuredEngine = await _settings.loadTtsEngine();
-    await AppLogger.log(
-      'Document reader TTS: resume requested engine=$_activeTtsEngine '
-      'configuredEngine=$configuredEngine lastChunk=$_lastPlaybackChunkIndex '
-      'visualChunk=$_playingChunkIndex',
-    );
-    if (_activeTtsEngine != null &&
-        (configuredEngine != _activeTtsEngine ||
-            _pendingTtsEngine != null)) {
-      await _restartReadingWithCurrentEngine(_resumeChunkIndex());
-      return;
-    }
-    if (mounted) {
-      setState(() {
-        _ttsPaused = false;
-        if (!_moveCursorDuringPlayback) {
-          _playingChunkIndex = -1;
-        }
-      });
-    }
+    if (mounted) setState(() => _ttsPaused = false);
 
     if (_activeTtsEngine == 'system') {
       unawaited(
@@ -811,8 +604,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                       explicitChildNodes: true,
                       child: CustomScrollView(
                         controller: _scrollController,
-                        scrollCacheExtent:
-                            const ScrollCacheExtent.pixels(4000), // Precarica i blocchi successivi per VoiceOver
+                        cacheExtent:
+                            4000, // Precarica i blocchi successivi per VoiceOver
                         // BouncingScrollPhysics → flick naturale su iPhone
                         physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics(),

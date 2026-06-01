@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -27,9 +26,6 @@ class TtsVoiceOption {
 }
 
 class AppSettingsService {
-  static final _ttsEngineChanges = StreamController<String>.broadcast();
-  static Stream<String> get ttsEngineChanges => _ttsEngineChanges.stream;
-
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -212,11 +208,7 @@ class AppSettingsService {
 
   Future<void> saveTtsEngine(String engine) async {
     final prefs = await SharedPreferences.getInstance();
-    final previous = prefs.getString(_ttsEngineKey) ?? 'edge';
     await prefs.setString(_ttsEngineKey, engine);
-    if (previous != engine) {
-      _ttsEngineChanges.add(engine);
-    }
   }
 
   Future<String> loadSystemTtsLanguage() async {
@@ -399,19 +391,6 @@ class AppSettingsService {
   Future<void> setAutoBookmarkEnabled(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_autoBookmarkKey, value);
-  }
-
-  static const _moveCursorDuringReadingKey =
-      'sonarpad_move_cursor_during_reading';
-
-  Future<bool> isMoveCursorDuringReadingEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_moveCursorDuringReadingKey) ?? false;
-  }
-
-  Future<void> setMoveCursorDuringReadingEnabled(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_moveCursorDuringReadingKey, value);
   }
 
   Future<int?> getMediaBookmark(String id) async {
