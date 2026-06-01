@@ -632,6 +632,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                       explicitChildNodes: true,
                       child: CustomScrollView(
                         controller: _scrollController,
+                        semanticChildCount:
+                            _chunks.isNotEmpty ? _chunks.length : null,
                         scrollCacheExtent:
                             const ScrollCacheExtent.pixels(4000), // Precarica i blocchi successivi per VoiceOver
                         // BouncingScrollPhysics → flick naturale su iPhone
@@ -699,34 +701,51 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                 const SizedBox(height: 24),
                                 const Divider(),
                                 const SizedBox(height: 8),
-
-                                // --- Corpo documento ---
-                                if (_loadError != null)
-                                  Semantics(
-                                    liveRegion: true,
-                                    child: Text(
-                                      _loadError!,
-                                      style:
-                                          theme.textTheme.bodyMedium?.copyWith(
-                                        color: colorScheme.secondary,
-                                      ),
-                                    ),
-                                  )
-                                else if (_chunks.isNotEmpty)
-                                  ..._buildChunkWidgets(
-                                    theme,
-                                    colorScheme,
-                                    l10n,
-                                  )
-                                else if (_documentText.isEmpty &&
-                                    _loadError == null)
-                                  Text(
-                                    l10n.noTextAvailableForDocument,
-                                    style: theme.textTheme.bodyMedium,
-                                  ),
                               ]),
                             ),
                           ),
+                          if (_loadError != null)
+                            SliverPadding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              sliver: SliverToBoxAdapter(
+                                child: Semantics(
+                                  liveRegion: true,
+                                  child: Text(
+                                    _loadError!,
+                                    style:
+                                        theme.textTheme.bodyMedium?.copyWith(
+                                      color: colorScheme.secondary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          else if (_chunks.isNotEmpty)
+                            SliverPadding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              sliver: SliverList(
+                                delegate: SliverChildListDelegate(
+                                  _buildChunkWidgets(
+                                    theme,
+                                    colorScheme,
+                                    l10n,
+                                  ),
+                                ),
+                              ),
+                            )
+                          else if (_documentText.isEmpty && _loadError == null)
+                            SliverPadding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              sliver: SliverToBoxAdapter(
+                                child: Text(
+                                  l10n.noTextAvailableForDocument,
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
