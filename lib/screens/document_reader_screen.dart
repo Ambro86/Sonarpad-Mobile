@@ -191,9 +191,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       'Document reader TTS: start doc="${_currentDoc.name}" '
       'chunks=${_chunks.length} moveCursor=$_moveCursorDuringPlayback',
     );
-    await AppLogger.log(
-      'Document reader TTS: keepAlive skipped to avoid multiple just_audio players',
-    );
+    var keepAliveStarted = false;
 
     try {
       await AppLogger.log('Document reader TTS: loading engine');
@@ -214,6 +212,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       );
 
       if (engine == 'system') {
+        await AppLogger.log(
+          'Document reader TTS: starting keepAlive for system engine',
+        );
+        await _audio.startKeepAlive();
+        keepAliveStarted = true;
         if (Platform.isIOS) {
           try {
             await _ttsCommands.invokeMethod('setupMagicTap', _currentDoc.name);
@@ -258,6 +261,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         }
         await _flutterTts.stop();
       } else {
+        await AppLogger.log(
+          'Document reader TTS: keepAlive skipped for Edge engine',
+        );
         final voice = await _voice();
         final controller = StreamController<(int, File)>();
         Object? generationError;
@@ -353,6 +359,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         SnackBar(content: Text('${AppLocalizations.of(context).ttsError}: $e')),
       );
     } finally {
+      if (keepAliveStarted) {
+        await _audio.stopKeepAlive();
+      }
       if (mounted) {
         setState(() => _speaking = false);
       }
@@ -402,6 +411,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       try {
         await _ttsCommands.invokeMethod('clearMagicTap');
       } catch (_) {}
+    }
+    if (_activeTtsEngine == 'system') {
+      await _audio.stopKeepAlive();
     }
     // Aggiorna subito la UI per un feedback immediato
     setState(() {
