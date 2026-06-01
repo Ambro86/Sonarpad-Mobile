@@ -82,6 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
         label: l10n.podcasts,
         onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/podcasts'),
       ),
+      _HomeButton(
+        label: l10n.convertMediaTitle,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/convert_media'),
+      ),
       if (_isTvCodeValid && isItalian)
         _HomeButton(
           label: 'TV',
@@ -173,6 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _HomeButton(label: l10n.news, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/news')),
         _HomeButton(label: l10n.meteoTitle, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/meteo')),
         _HomeButton(label: l10n.podcasts, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/podcasts')),
+        _HomeButton(label: l10n.convertMediaTitle, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/convert_media')),
         _HomeButton(label: l10n.radio, onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/radio')),
         if (_isTvCodeValid && isItalian) _HomeButton(label: 'TV', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/tv')),
         if (_isSecretCodeValid && isItalian) _HomeButton(label: 'RaiPlay Sound', onPressed: () => AccessibilityFeedbackService.goNamed(context, routeName: '/raiplaysound')),

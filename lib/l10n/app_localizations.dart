@@ -130,6 +130,95 @@ class AppLocalizations {
           : (_isEs
               ? 'Introduce la palabra original.'
               : 'Inserisci la parola originale.'));
+  String get convertMediaTitle => _isEn
+      ? 'Convert Media'
+      : (_isFr
+          ? 'Convertir le média'
+          : (_isEs ? 'Convertir medios' : 'Converti media'));
+  String get convertMediaInput => _isEn
+      ? 'Input file'
+      : (_isFr
+          ? 'Fichier d\'entrée'
+          : (_isEs ? 'Archivo de entrada' : 'File di input'));
+  String get convertMediaOutput => _isEn
+      ? 'Output file'
+      : (_isFr
+          ? 'Fichier de sortie'
+          : (_isEs ? 'Archivo de salida' : 'File di output'));
+  String get convertMediaImage => _isEn
+      ? 'Image'
+      : (_isFr ? 'Image' : (_isEs ? 'Imagen' : 'Immagine'));
+  String get convertMediaBrowse => _isEn
+      ? 'Browse...'
+      : (_isFr ? 'Parcourir...' : (_isEs ? 'Examinar...' : 'Sfoglia...'));
+  String get convertMediaFormat => _isEn
+      ? 'Format'
+      : (_isFr ? 'Format' : (_isEs ? 'Formato' : 'Formato'));
+  String get convertMediaBitrate => _isEn
+      ? 'Bitrate (kbps)'
+      : (_isFr ? 'Bitrate (kbps)' : (_isEs ? 'Bitrate (kbps)' : 'Bitrate (kbps)'));
+  String get convertMediaOggQuality => _isEn
+      ? 'Quality (q)'
+      : (_isFr ? 'Qualité (q)' : (_isEs ? 'Calidad (q)' : 'Qualità (q)'));
+  String get convertMediaFlacCompression => _isEn
+      ? 'Compression level'
+      : (_isFr
+          ? 'Niveau de compression'
+          : (_isEs ? 'Nivel de compresión' : 'Livello compressione'));
+  String get convertMediaReady => _isEn
+      ? 'Ready.'
+      : (_isFr ? 'Prêt.' : (_isEs ? 'Listo.' : 'Pronto.'));
+  String get convertMediaRunning => _isEn
+      ? 'Converting...'
+      : (_isFr
+          ? 'Conversion en cours...'
+          : (_isEs ? 'Convirtiendo...' : 'Conversione in corso...'));
+  String get convertMediaDone => _isEn
+      ? 'Conversion completed.'
+      : (_isFr
+          ? 'Conversion terminée.'
+          : (_isEs ? 'Conversión completada.' : 'Conversione completata.'));
+  String get convertMediaButton => _isEn
+      ? 'Convert Media'
+      : (_isFr ? 'Convertir' : (_isEs ? 'Convertir' : 'Converti'));
+  String get convertMediaNoInput => _isEn
+      ? 'Select an input file.'
+      : (_isFr
+          ? 'Sélectionnez un fichier d\'entrée.'
+          : (_isEs ? 'Selecciona un archivo de entrada.' : 'Seleziona un file di input.'));
+  String get convertMediaNoOutput => _isEn
+      ? 'Select an output file.'
+      : (_isFr
+          ? 'Sélectionnez un fichier de sortie.'
+          : (_isEs ? 'Selecciona un archivo de salida.' : 'Seleziona un file di output.'));
+  String get convertMediaNoImage => _isEn
+      ? 'Select an image for the video.'
+      : (_isFr
+          ? 'Sélectionnez une image pour la vidéo.'
+          : (_isEs
+              ? 'Selecciona una imagen para el vídeo.'
+              : 'Seleziona un\'immagine per il video.'));
+  String get convertMediaSamePath => _isEn
+      ? 'Output file must be different from input.'
+      : (_isFr
+          ? 'Le fichier de sortie doit être différent de l\'entrée.'
+          : (_isEs
+              ? 'El archivo de salida debe ser diferente del de entrada.'
+              : 'Il file di output deve essere diverso dall\'input.'));
+  String get convertMediaInvalidBitrate => _isEn
+      ? 'Invalid bitrate. Please enter a value between 64 and 320 kbps.'
+      : (_isFr
+          ? 'Entrez un débit valide entre 64 et 320 kbps.'
+          : (_isEs
+              ? 'Introduce un bitrate válido entre 64 y 320 kbps.'
+              : 'Bitrate non valido. Inserisci un valore tra 64 e 320 kbps.'));
+  String convertMediaFailed(Object error) => _isEn
+      ? 'Conversion failed: $error'
+      : (_isFr
+          ? 'Échec de la conversion : $error'
+          : (_isEs
+              ? 'La conversión falló: $error'
+              : 'Conversione non riuscita: $error'));
   String get donations => _isEn
       ? 'Donations'
       : (_isFr ? 'Dons' : (_isEs ? 'Donaciones' : 'Donazioni'));
