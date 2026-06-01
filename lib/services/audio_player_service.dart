@@ -374,58 +374,185 @@ class AudioPlayerService {
     }
   }
 
-  /// Riproduce più file in sequenza. Serve per la lettura "a streaming":
-  /// il primo blocco parte subito, mentre i blocchi successivi vengono generati
-  /// e riprodotti uno dopo l'altro.
+  /// Riproduce più file in una coda unica, senza fermare il player tra i chunk.
   Future<void> playFilesSequentially(
     List<File> files, {
     void Function(int index, File file)? onChunkStarted,
+    AudioSessionType sessionType = AudioSessionType.speech,
+    String title = 'Lettura Documento',
   }) async {
     _stopRequested = false;
-    await _prepareAudioSession(AudioSessionType.speech);
+    if (files.isEmpty) return;
+    await _prepareAudioSession(sessionType);
     await _enableWakelock();
     try {
+      final sources = <AudioSource>[];
       for (var i = 0; i < files.length; i++) {
-        if (_stopRequested) break;
         final file = files[i];
-        onChunkStarted?.call(i, file);
         final exists = await file.exists();
         final size = exists ? await file.length() : 0;
         AppLogger.log(
           'Sonarpad audio: chunk ${i + 1}/${files.length} path=${file.path} '
           'exists=$exists size=$size',
         );
-        final duration = await _player.setAudioSource(
+        sources.add(
           AudioSource.uri(
             Uri.file(file.path),
             tag: MediaItem(
               id: file.path,
               album: 'Sonarpad',
-              title: 'Lettura Documento',
+              title: title,
             ),
           ),
         );
-        AppLogger.log('Sonarpad audio: chunk ${i + 1} duration=$duration');
-        if (_stopRequested) break;
-        AppLogger.log('Sonarpad audio: chunk ${i + 1} play');
+      }
+
+      var lastNotifiedIndex = -1;
+      final indexSub = _player.currentIndexStream.listen((index) {
+        if (index == null || index < 0 || index >= files.length) return;
+        if (index == lastNotifiedIndex) return;
+        lastNotifiedIndex = index;
+        onChunkStarted?.call(index, files[index]);
+      });
+      try {
+        final duration = await _player.setAudioSources(
+          sources,
+          initialIndex: 0,
+          initialPosition: Duration.zero,
+        );
+        AppLogger.log(
+          'Sonarpad audio: playlist duration=$duration chunks=${files.length} '
+          'sessionType=$sessionType',
+        );
+        if (lastNotifiedIndex != 0) {
+          lastNotifiedIndex = 0;
+          onChunkStarted?.call(0, files[0]);
+        }
+        final completedFuture = _player.playerStateStream.firstWhere(
+          (state) =>
+              state.processingState == ProcessingState.completed ||
+              _stopRequested,
+        );
         if (!_stopRequested) {
-          if (i == 0 || _player.playing) {
+          AppLogger.log('Sonarpad audio: playlist play');
+          await _player.play();
+        }
+        final completedState = await completedFuture;
+        AppLogger.log(
+          'Sonarpad audio: playlist finished playing=${completedState.playing} '
+          'processingState=${completedState.processingState}',
+        );
+      } finally {
+        await indexSub.cancel();
+        if (!_stopRequested) {
+          try {
+            await _player.seek(Duration.zero, index: 0);
+          } catch (e) {
+            AppLogger.log('Sonarpad audio: playlist reset error: $e');
+          }
+        }
+      }
+    } finally {
+      await _disableWakelock();
+    }
+  }
+
+  Future<void> playFileStreamSequentially(
+    Stream<File> files, {
+    void Function(int index, File file)? onChunkStarted,
+    AudioSessionType sessionType = AudioSessionType.speech,
+    String title = 'Lettura Documento',
+    bool Function()? isPaused,
+  }) async {
+    _stopRequested = false;
+    await _prepareAudioSession(sessionType);
+    await _enableWakelock();
+    final queuedFiles = <File>[];
+    StreamSubscription<int?>? indexSub;
+    try {
+      var lastNotifiedIndex = -1;
+      indexSub = _player.currentIndexStream.listen((index) {
+        if (index == null || index < 0 || index >= queuedFiles.length) return;
+        if (index == lastNotifiedIndex) return;
+        lastNotifiedIndex = index;
+        onChunkStarted?.call(index, queuedFiles[index]);
+      });
+
+      var started = false;
+      await for (final file in files) {
+        if (_stopRequested) break;
+        final exists = await file.exists();
+        final size = exists ? await file.length() : 0;
+        queuedFiles.add(file);
+        final index = queuedFiles.length - 1;
+        AppLogger.log(
+          'Sonarpad audio: stream chunk ${index + 1} path=${file.path} '
+          'exists=$exists size=$size',
+        );
+        final source = AudioSource.uri(
+          Uri.file(file.path),
+          tag: MediaItem(
+            id: file.path,
+            album: 'Sonarpad',
+            title: title,
+          ),
+        );
+
+        if (!started) {
+          final duration = await _player.setAudioSources(
+            [source],
+            initialIndex: 0,
+            initialPosition: Duration.zero,
+          );
+          AppLogger.log(
+            'Sonarpad audio: stream playlist first duration=$duration '
+            'sessionType=$sessionType',
+          );
+          lastNotifiedIndex = 0;
+          onChunkStarted?.call(0, file);
+          started = true;
+          if (!_stopRequested && !(isPaused?.call() ?? false)) {
+            AppLogger.log('Sonarpad audio: stream playlist play');
+            await _player.play();
+          }
+        } else {
+          await _player.addAudioSource(source);
+          AppLogger.log(
+            'Sonarpad audio: stream playlist appended chunk ${index + 1}',
+          );
+          if (!_player.playing &&
+              _player.processingState == ProcessingState.completed &&
+              !(isPaused?.call() ?? false) &&
+              !_stopRequested) {
+            AppLogger.log(
+              'Sonarpad audio: stream playlist resumed after late append',
+            );
+            await _player.seek(Duration.zero, index: index);
             await _player.play();
           }
         }
+      }
+
+      if (started &&
+          !_stopRequested &&
+          _player.processingState != ProcessingState.completed) {
         final completedState = await _player.playerStateStream.firstWhere(
           (state) =>
               state.processingState == ProcessingState.completed ||
               _stopRequested,
         );
         AppLogger.log(
-          'Sonarpad audio: chunk ${i + 1} finished '
+          'Sonarpad audio: stream playlist finished '
           'playing=${completedState.playing} '
           'processingState=${completedState.processingState}',
         );
-        await _player.stop();
+      } else if (started) {
+        AppLogger.log(
+          'Sonarpad audio: stream playlist ended state=$_playerDebugState',
+        );
       }
     } finally {
+      await indexSub?.cancel();
       await _disableWakelock();
     }
   }
@@ -516,34 +643,6 @@ class AudioPlayerService {
       await file.writeAsBytes(_silentWavBytes(), flush: true);
     }
     return file;
-  }
-
-  static final AudioPlayer _keepAlivePlayer = AudioPlayer();
-
-  Future<void> startKeepAlive() async {
-    if (!Platform.isIOS && !Platform.isAndroid) return;
-    try {
-      final file = await _silentWavFile();
-      await _keepAlivePlayer.setLoopMode(LoopMode.all);
-      await _keepAlivePlayer.setVolume(0.01);
-      await _keepAlivePlayer.setAudioSource(
-        AudioSource.uri(
-          Uri.file(file.path),
-          tag: const MediaItem(id: 'keepalive', album: 'Sonarpad', title: 'Lettura in corso...'),
-        ),
-      );
-      await _keepAlivePlayer.play();
-    } catch (e) {
-      AppLogger.log('Sonarpad audio: startKeepAlive error $e');
-    }
-  }
-
-  Future<void> stopKeepAlive() async {
-    try {
-      await _keepAlivePlayer.stop();
-    } catch (e) {
-      AppLogger.log('Sonarpad audio: stopKeepAlive error $e');
-    }
   }
 
   Uint8List _silentWavBytes() {

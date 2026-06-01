@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import '../l10n/app_localizations.dart';
@@ -49,8 +49,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   // TTS state
   bool _speaking = false;
+  int _readingToken = 0;
   String? _ttsStatus;
   int _playingChunkIndex = -1;
+  StreamController<File>? _edgeFileController;
   // (chunkKeys rimosso, usiamo scroll_to_index)
   late int _bookmarkIndex;
 
@@ -177,11 +179,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       return;
     }
 
+    final readingToken = ++_readingToken;
     _speaking = true;
     _ttsPaused = false;
     _playingChunkIndex = -1;
     _ttsStatus = null;
-    await _audio.startKeepAlive();
 
     try {
       final engine = await _settings.loadTtsEngine();
@@ -242,40 +244,54 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         await _flutterTts.stop();
       } else {
         final voice = await _voice();
-        final controller = StreamController<(int, File)>();
+        final controller = StreamController<File>();
+        _edgeFileController = controller;
         Object? generationError;
 
-        // Generazione audio in background
         final generation = Future<void>(() async {
           for (var i = startIndex; i < _chunks.length; i++) {
-            if (!mounted || !_speaking) {
+            if (!mounted || !_speaking || readingToken != _readingToken) {
               break; // Ferma la generazione se l'utente preme stop
             }
             final textToSpeak =
                 _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
             final file = await _tts.speakToFile(text: textToSpeak, voice: voice);
-            controller.add((i, file));
+            if (!controller.isClosed &&
+                mounted &&
+                _speaking &&
+                readingToken == _readingToken) {
+              controller.add(file);
+            }
           }
-          await controller.close();
+          if (!controller.isClosed) await controller.close();
         }).catchError((e) async {
           generationError = e;
-          await controller.close();
+          if (!controller.isClosed) await controller.close();
         });
 
-        // Riproduzione con avanzamento cursore
-        await for (final (index, file) in controller.stream) {
-          if (!mounted || !_speaking) break;
-          final playback = _audio.playFilesSequentially([file]);
-          if (mounted) {
-            setState(() {
-              _playingChunkIndex = index;
-            });
-            _scrollToChunk(index);
-          }
-          await playback;
+        if (mounted && _speaking) {
+          await _audio.playFileStreamSequentially(
+            controller.stream,
+            sessionType: AudioSessionType.playback,
+            title: _currentDoc.name,
+            isPaused: () => _ttsPaused,
+            onChunkStarted: (index, file) {
+              final chunkIndex = startIndex + index;
+              if (mounted && readingToken == _readingToken) {
+                setState(() {
+                  _playingChunkIndex = chunkIndex;
+                });
+                _scrollToChunk(chunkIndex);
+              }
+            },
+          );
         }
-
+        if (!controller.isClosed) await controller.close();
         await generation;
+        if (_edgeFileController == controller) {
+          _edgeFileController = null;
+        }
+        if (readingToken != _readingToken) return;
         if (generationError != null) throw Exception(generationError);
       }
 
@@ -286,6 +302,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
 
       if (!mounted) return;
+      if (readingToken != _readingToken) return;
       setState(() {
         _playingChunkIndex = -1;
         _speaking = false;
@@ -297,6 +314,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       dev.log('DocumentReaderScreen TTS error: $e');
       await AppLogger.log('Errore avvio TTS: $e');
       if (!mounted) return;
+      if (readingToken != _readingToken) return;
       setState(() {
         _playingChunkIndex = -1;
         _ttsStatus = '${AppLocalizations.of(context).ttsError}: $e';
@@ -306,8 +324,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         SnackBar(content: Text('${AppLocalizations.of(context).ttsError}: $e')),
       );
     } finally {
-      await _audio.stopKeepAlive();
-      if (mounted) {
+      if (mounted && readingToken == _readingToken) {
         setState(() => _speaking = false);
       }
     }
@@ -333,6 +350,19 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _stopReading() async {
+    _readingToken += 1;
+    final edgeController = _edgeFileController;
+    _edgeFileController = null;
+    if (edgeController != null && !edgeController.isClosed) {
+      await edgeController.close();
+    }
+    setState(() {
+      _speaking = false;
+      _ttsPaused = false;
+      _ttsStatus = 'Lettura interrotta.';
+    });
+    await _audio.stop();
+    await _flutterTts.stop();
     await _saveAutomaticBookmarkFromPlayback();
     if (Platform.isIOS && _activeTtsEngine == 'system') {
       try {
@@ -341,15 +371,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
     // Aggiorna subito la UI per un feedback immediato
     setState(() {
-      _speaking = false;
-      _ttsPaused = false;
       _activeTtsEngine = null;
       _playingChunkIndex = -1;
-      _ttsStatus = 'Lettura interrotta.';
     });
-    await _audio.stopKeepAlive();
-    await _audio.stop();
-    await _flutterTts.stop();
   }
 
   Future<void> _saveAutomaticBookmarkFromPlayback() async {
@@ -604,8 +628,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                       explicitChildNodes: true,
                       child: CustomScrollView(
                         controller: _scrollController,
-                        cacheExtent:
-                            4000, // Precarica i blocchi successivi per VoiceOver
+                        scrollCacheExtent:
+                            const ScrollCacheExtent.pixels(4000), // Precarica i blocchi successivi per VoiceOver
                         // BouncingScrollPhysics → flick naturale su iPhone
                         physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics(),
