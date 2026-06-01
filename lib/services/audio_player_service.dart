@@ -348,6 +348,17 @@ class AudioPlayerService {
     }
   }
 
+  Future<void> resumeSequentialPlayback() async {
+    if (_player.processingState == ProcessingState.completed &&
+        _player.hasNext) {
+      AppLogger.log(
+        'Sonarpad audio: resume sequential playback seeking to next item',
+      );
+      await _player.seekToNext();
+    }
+    await play();
+  }
+
   Future<void> playFile(File file) async {
     _stopRequested = false;
     await _prepareAudioSession(AudioSessionType.speech);
@@ -462,6 +473,7 @@ class AudioPlayerService {
     void Function(int index, File file)? onChunkStarted,
     AudioSessionType sessionType = AudioSessionType.speech,
     String title = 'Lettura Documento',
+    int initialBufferCount = 1,
     bool Function()? isPaused,
   }) async {
     _stopRequested = false;
@@ -479,6 +491,26 @@ class AudioPlayerService {
       });
 
       var started = false;
+      final pendingSources = <AudioSource>[];
+      Future<void> startPlayback(List<AudioSource> sources) async {
+        final duration = await _player.setAudioSources(
+          sources,
+          initialIndex: 0,
+          initialPosition: Duration.zero,
+        );
+        AppLogger.log(
+          'Sonarpad audio: stream playlist start duration=$duration '
+          'initialSources=${sources.length} sessionType=$sessionType',
+        );
+        lastNotifiedIndex = 0;
+        onChunkStarted?.call(0, queuedFiles[0]);
+        started = true;
+        if (!_stopRequested && !(isPaused?.call() ?? false)) {
+          AppLogger.log('Sonarpad audio: stream playlist play');
+          await _player.play();
+        }
+      }
+
       await for (final file in files) {
         if (_stopRequested) break;
         final exists = await file.exists();
@@ -499,21 +531,9 @@ class AudioPlayerService {
         );
 
         if (!started) {
-          final duration = await _player.setAudioSources(
-            [source],
-            initialIndex: 0,
-            initialPosition: Duration.zero,
-          );
-          AppLogger.log(
-            'Sonarpad audio: stream playlist first duration=$duration '
-            'sessionType=$sessionType',
-          );
-          lastNotifiedIndex = 0;
-          onChunkStarted?.call(0, file);
-          started = true;
-          if (!_stopRequested && !(isPaused?.call() ?? false)) {
-            AppLogger.log('Sonarpad audio: stream playlist play');
-            await _player.play();
+          pendingSources.add(source);
+          if (pendingSources.length >= initialBufferCount) {
+            await startPlayback(pendingSources);
           }
         } else {
           await _player.addAudioSource(source);
@@ -531,6 +551,10 @@ class AudioPlayerService {
             await _player.play();
           }
         }
+      }
+
+      if (!started && pendingSources.isNotEmpty && !_stopRequested) {
+        await startPlayback(pendingSources);
       }
 
       if (started &&

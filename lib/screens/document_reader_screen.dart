@@ -247,6 +247,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         final controller = StreamController<File>();
         _edgeFileController = controller;
         Object? generationError;
+        const initialBufferChunks = 2;
 
         final generation = Future<void>(() async {
           for (var i = startIndex; i < _chunks.length; i++) {
@@ -274,6 +275,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             controller.stream,
             sessionType: AudioSessionType.playback,
             title: _currentDoc.name,
+            initialBufferCount: initialBufferChunks,
             isPaused: () => _ttsPaused,
             onChunkStarted: (index, file) {
               final chunkIndex = startIndex + index;
@@ -353,6 +355,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _readingToken += 1;
     final edgeController = _edgeFileController;
     _edgeFileController = null;
+    final stopAudio = _audio.stop();
+    final stopTts = _flutterTts.stop();
     if (edgeController != null && !edgeController.isClosed) {
       await edgeController.close();
     }
@@ -361,8 +365,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _ttsPaused = false;
       _ttsStatus = 'Lettura interrotta.';
     });
-    await _audio.stop();
-    await _flutterTts.stop();
+    await stopAudio;
+    await stopTts;
     await _saveAutomaticBookmarkFromPlayback();
     if (Platform.isIOS && _activeTtsEngine == 'system') {
       try {
@@ -537,7 +541,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         }),
       );
     } else {
-      await _audio.play();
+      await _audio.resumeSequentialPlayback();
     }
   }
 
