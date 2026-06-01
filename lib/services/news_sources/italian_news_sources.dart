@@ -63,7 +63,7 @@ final italianNewsSources = [
   ),
   NewsRssSource(
     name: 'Internazionale',
-    uri: Uri.parse('https://news.google.com/rss/search?q=site%3Ainternazionale.it&hl=it&gl=IT&ceid=IT:it'),
+    uri: Uri.parse('https://news.google.com/rss/search?q=site%3Ainternazionale.it%20-inurl%3Aultime-notizie-reuters&hl=it&gl=IT&ceid=IT:it'),
   ),
   NewsRssSource(
     name: 'Affaritaliani',

@@ -73,7 +73,7 @@ void main() {
       );
       expect(
         internazionale.uri.toString(),
-        'https://news.google.com/rss/search?q=site%3Ainternazionale.it&hl=it&gl=IT&ceid=IT:it',
+        'https://news.google.com/rss/search?q=site%3Ainternazionale.it%20-inurl%3Aultime-notizie-reuters&hl=it&gl=IT&ceid=IT:it',
       );
     });
 
