@@ -341,8 +341,12 @@ class NewsService {
   String _rssDescription(XmlElement item) {
     final description = _text(item, 'description');
     if (description.isNotEmpty) return description;
-    final encoded = item.findAllElements('encoded').firstOrNull;
-    return encoded?.innerText.trim() ?? '';
+    for (final element in item.descendantElements) {
+      if (element.name.local == 'encoded') {
+        return element.innerText.trim();
+      }
+    }
+    return '';
   }
 
   List<NewsArticle> _articlesFromAtomEntries(
