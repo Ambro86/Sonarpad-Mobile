@@ -215,8 +215,21 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         await AppLogger.log(
           'Document reader TTS: starting keepAlive for system engine',
         );
-        await _audio.startKeepAlive();
         keepAliveStarted = true;
+        unawaited(
+          _audio
+              .startKeepAlive()
+              .then(
+                (_) => AppLogger.log(
+                  'Document reader TTS: keepAlive started for system engine',
+                ),
+              )
+              .catchError((Object error) {
+                return AppLogger.log(
+                  'Document reader TTS: keepAlive start failed $error',
+                );
+              }),
+        );
         if (Platform.isIOS) {
           try {
             await _ttsCommands.invokeMethod('setupMagicTap', _currentDoc.name);
