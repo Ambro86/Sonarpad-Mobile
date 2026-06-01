@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -44,39 +46,44 @@ class _VoiceOverListTestScreenState extends State<VoiceOverListTestScreen> {
         title: Text(l10n.voiceOverListTestTitle),
       ),
       body: SafeArea(
-        child: Semantics(
-          container: true,
-          explicitChildNodes: true,
-          onScrollUp: () => _semanticScroll(8 * _rowExtent),
-          onScrollDown: () => _semanticScroll(-8 * _rowExtent),
-          child: ListView.builder(
-            controller: _scrollController,
-            primary: false,
-            addSemanticIndexes: false,
-            itemExtent: _rowExtent,
-            itemCount: _rowCount,
-            semanticChildCount: _rowCount,
-            itemBuilder: (context, index) {
-              final number = index + 1;
-              final rowLabel = l10n.voiceOverListTestRow(number, _rowCount);
-              final rowContent = l10n.voiceOverListTestContent(number);
+        child: Platform.isIOS
+            ? const UiKitView(
+                viewType: 'sonarpad/native_voiceover_list',
+              )
+            : Semantics(
+                container: true,
+                explicitChildNodes: true,
+                onScrollUp: () => _semanticScroll(8 * _rowExtent),
+                onScrollDown: () => _semanticScroll(-8 * _rowExtent),
+                child: ListView.builder(
+                  controller: _scrollController,
+                  primary: false,
+                  addSemanticIndexes: false,
+                  itemExtent: _rowExtent,
+                  itemCount: _rowCount,
+                  semanticChildCount: _rowCount,
+                  itemBuilder: (context, index) {
+                    final number = index + 1;
+                    final rowLabel =
+                        l10n.voiceOverListTestRow(number, _rowCount);
+                    final rowContent = l10n.voiceOverListTestContent(number);
 
-              return IndexedSemantics(
-                index: index,
-                child: Semantics(
-                  container: true,
-                  label: '$rowLabel, $rowContent',
-                  child: ExcludeSemantics(
-                    child: ListTile(
-                      title: Text(rowLabel),
-                      subtitle: Text(rowContent),
-                    ),
-                  ),
+                    return IndexedSemantics(
+                      index: index,
+                      child: Semantics(
+                        container: true,
+                        label: '$rowLabel, $rowContent',
+                        child: ExcludeSemantics(
+                          child: ListTile(
+                            title: Text(rowLabel),
+                            subtitle: Text(rowContent),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-        ),
+              ),
       ),
     );
   }
