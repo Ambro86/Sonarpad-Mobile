@@ -191,7 +191,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       'Document reader TTS: start doc="${_currentDoc.name}" '
       'chunks=${_chunks.length} moveCursor=$_moveCursorDuringPlayback',
     );
-    await _audio.startKeepAlive();
+    await AppLogger.log(
+      'Document reader TTS: keepAlive skipped to avoid multiple just_audio players',
+    );
 
     try {
       await AppLogger.log('Document reader TTS: loading engine');
@@ -351,7 +353,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         SnackBar(content: Text('${AppLocalizations.of(context).ttsError}: $e')),
       );
     } finally {
-      await _audio.stopKeepAlive();
       if (mounted) {
         setState(() => _speaking = false);
       }
@@ -410,7 +411,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _ttsStatus = 'Lettura interrotta.';
     });
     _revealPlaybackChunk();
-    await _audio.stopKeepAlive();
     await _audio.stop();
     await _flutterTts.stop();
   }
