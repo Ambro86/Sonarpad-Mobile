@@ -54,22 +54,20 @@ final italianNewsSources = [
     uri: Uri.parse('https://www.fanpage.it/feed/'),
   ),
   NewsRssSource(
-    name: 'Viterbo Today',
-    uri: Uri.parse('https://www.viterbotoday.it/rss'),
-  ),
-  NewsRssSource(
     name: 'Open',
     uri: Uri.parse('https://www.open.online/feed/'),
   ),
   NewsRssSource(
+    name: 'Il Post',
+    uri: Uri.parse('https://news.google.com/rss/search?q=site%3Ailpost.it&hl=it&gl=IT&ceid=IT:it'),
+  ),
+  NewsRssSource(
     name: 'Internazionale',
-    uri: Uri.parse('https://www.internazionale.it/rss'),
+    uri: Uri.parse('https://news.google.com/rss/search?q=site%3Ainternazionale.it&hl=it&gl=IT&ceid=IT:it'),
   ),
   NewsRssSource(
     name: 'Affaritaliani',
-    uri: Uri.parse(
-      'https://www.affaritaliani.it/static/rss/rssGadget.aspx?idchannel=1',
-    ),
+    uri: Uri.parse('https://www.affaritaliani.it/feed'),
   ),
   NewsRssSource(
     name: 'HuffPost Italia',
@@ -89,7 +87,7 @@ final italianNewsSources = [
   ),
   NewsRssSource(
     name: 'Tom\'s Hardware Italia',
-    uri: Uri.parse('https://www.tomshw.it/feed/'),
+    uri: Uri.parse('https://www.tomshw.it/feed'),
   ),
   NewsRssSource(
     name: 'Everyeye',
@@ -141,7 +139,7 @@ final italianNewsSources = [
   ),
   NewsRssSource(
     name: 'Il Foglio',
-    uri: Uri.parse('https://www.ilfoglio.it/rss.xml'),
+    uri: Uri.parse('https://naxos.ilfoglio.it/api/v5/rss/stories/latest'),
   ),
   NewsRssSource(
     name: 'Il Giornale',
@@ -154,5 +152,9 @@ final italianNewsSources = [
   NewsRssSource(
     name: 'Quotidiano.net',
     uri: Uri.parse('https://www.quotidiano.net/rss'),
+  ),
+  NewsRssSource(
+    name: 'Viterbo Today',
+    uri: Uri.parse('https://www.viterbotoday.it/rss'),
   ),
 ];

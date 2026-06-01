@@ -393,6 +393,19 @@ class AppSettingsService {
     await prefs.setBool(_autoBookmarkKey, value);
   }
 
+  static const _moveCursorDuringReadingKey =
+      'sonarpad_move_cursor_during_reading';
+
+  Future<bool> isMoveCursorDuringReadingEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_moveCursorDuringReadingKey) ?? false;
+  }
+
+  Future<void> setMoveCursorDuringReadingEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_moveCursorDuringReadingKey, value);
+  }
+
   Future<int?> getMediaBookmark(String id) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('bookmark_$id');

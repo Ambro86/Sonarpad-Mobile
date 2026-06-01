@@ -116,7 +116,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       if (!mounted) return;
       setState(() {
         _outputPath = outputPath;
-        _outputController.text = _shortPath(outputPath, parentCount: 2);
+        _outputController.text = _defaultOutputDisplayPath(outputPath);
       });
     }
   }
@@ -228,8 +228,11 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         'returnCode=${returnCode?.getValue()}',
       );
       if (!mounted) return;
-      setState(() => _status = l10n.convertMediaDone);
-      _showSnack(l10n.convertMediaDone);
+      setState(() {
+        _running = false;
+        _status = l10n.convertMediaDone;
+      });
+      await _showDoneDialog(l10n.convertMediaDone);
     } catch (error) {
       await AppLogger.log('Convert media: error $error');
       if (!mounted) return;
@@ -249,6 +252,22 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     final compact = value.replaceAll(RegExp(r'\s+'), ' ').trim();
     if (compact.length <= 1200) return compact;
     return '${compact.substring(0, 1200)}...';
+  }
+
+  Future<void> _showDoneDialog(String message) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text(message),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context).ok),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<List<String>> _buildArguments(
@@ -428,10 +447,13 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       }
       if (newSuggested != null) {
         _outputPath = newSuggested;
-        _outputController.text = _shortPath(newSuggested, parentCount: 2);
+        _outputController.text = _defaultOutputDisplayPath(newSuggested);
       }
     });
   }
+
+  String _defaultOutputDisplayPath(String path) =>
+      ['Sonarpad', 'media', p.basename(path)].join('/');
 
   String _shortPath(String path, {required int parentCount}) {
     final normalized = p.normalize(path);

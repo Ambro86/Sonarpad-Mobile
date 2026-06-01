@@ -33,7 +33,7 @@ final englishNewsSources = [
   NewsRssSource(name: 'New York Times – World News', uri: Uri.parse('https://rss.nytimes.com/services/xml/rss/nyt/World.xml')),
   NewsRssSource(name: 'Los Angeles Times – World News', uri: Uri.parse('https://www.latimes.com/world/rss2.0.xml')),
   NewsRssSource(name: 'TIME – Latest Stories', uri: Uri.parse('https://time.com/feed/')),
-  NewsRssSource(name: 'The Atlantic – All Articles', uri: Uri.parse('https://www.theatlantic.com/feed/all/')),
+  NewsRssSource(name: 'The Atlantic – All Articles', uri: Uri.parse('https://www.theatlantic.com/feed/all')),
   NewsRssSource(name: 'Vox – Latest Stories', uri: Uri.parse('https://www.vox.com/rss/index.xml')),
   NewsRssSource(name: 'Wired – Latest', uri: Uri.parse('https://www.wired.com/feed/rss')),
   NewsRssSource(name: 'TechCrunch – Startups & Tech', uri: Uri.parse('https://techcrunch.com/feed/')),

@@ -311,12 +311,15 @@ class NewsService {
     try {
       final doc = XmlDocument.parse(decodedBody);
       final items = doc.findAllElements('item');
+      if (items.isEmpty) {
+        return _articlesFromAtomEntries(doc, rssSource);
+      }
       var index = 0;
       return items.map((item) {
         index++;
         final title = _text(item, 'title');
         final link = _text(item, 'link');
-        final description = _cleanRssDescription(_text(item, 'description'));
+        final description = _cleanRssDescription(_rssDescription(item));
         final source = item.findElements('source').isNotEmpty
             ? item.findElements('source').first.innerText.trim()
             : rssSource.name;
@@ -333,6 +336,56 @@ class NewsService {
     } catch (_) {
       return _extractArticlesFromHtml(decodedBody, rssSource);
     }
+  }
+
+  String _rssDescription(XmlElement item) {
+    final description = _text(item, 'description');
+    if (description.isNotEmpty) return description;
+    final encoded = item.findAllElements('encoded').firstOrNull;
+    return encoded?.innerText.trim() ?? '';
+  }
+
+  List<NewsArticle> _articlesFromAtomEntries(
+    XmlDocument doc,
+    NewsRssSource rssSource,
+  ) {
+    final entries = doc.findAllElements('entry');
+    var index = 0;
+    return entries.map((entry) {
+      index++;
+      final title = _text(entry, 'title');
+      final link = _atomLink(entry);
+      final summary = _cleanHtml(
+        _text(entry, 'summary').isNotEmpty
+            ? _text(entry, 'summary')
+            : _text(entry, 'content'),
+      );
+      final publishedRaw = _text(entry, 'published');
+      final updatedRaw = _text(entry, 'updated');
+      return NewsArticle(
+        id: '${rssSource.name}_atom_$index',
+        title: title.trim(),
+        link: link,
+        summary: summary,
+        source: rssSource.name,
+        publishedAt: DateTime.tryParse(
+          publishedRaw.isNotEmpty ? publishedRaw : updatedRaw,
+        ),
+      );
+    }).toList();
+  }
+
+  String _atomLink(XmlElement entry) {
+    final links = entry.findElements('link').toList();
+    if (links.isEmpty) return '';
+    final alternate = links.firstWhere(
+      (link) {
+        final rel = link.getAttribute('rel');
+        return rel == null || rel == 'alternate';
+      },
+      orElse: () => links.first,
+    );
+    return alternate.getAttribute('href') ?? alternate.innerText.trim();
   }
 
   List<NewsArticle> _extractArticlesFromHtml(String htmlStr, NewsRssSource rssSource) {
@@ -746,6 +799,7 @@ class NewsService {
   bool _shouldFallbackBrowserResponse(http.Response response) {
     if (response.statusCode < 200 || response.statusCode >= 400) return true;
     final html = utf8.decode(response.bodyBytes, allowMalformed: true);
+    if (_looksLikeFeed(html)) return false;
     final lower = html.toLowerCase();
     return lower.contains('just a moment') ||
         lower.contains('dd-captcha') ||
@@ -753,6 +807,17 @@ class NewsService {
         lower.contains('enable javascript and cookies') ||
         lower.contains('cf-chl') ||
         response.bodyBytes.length < 3000;
+  }
+
+  bool _looksLikeFeed(String value) {
+    var trimmed = value.trimLeft();
+    if (trimmed.startsWith('\uFEFF')) {
+      trimmed = trimmed.substring(1).trimLeft();
+    }
+    final lower = trimmed.toLowerCase();
+    return lower.startsWith('<?xml') ||
+        lower.startsWith('<rss') ||
+        lower.startsWith('<feed');
   }
 
   Map<String, String> _headersForProfile(

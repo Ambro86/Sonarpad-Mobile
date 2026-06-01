@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
@@ -745,7 +746,7 @@ class _ReaderArticleView extends StatelessWidget {
       label: l10n.articleTextSemantics,
       explicitChildNodes: true,
       child: CustomScrollView(
-        cacheExtent: 4000,
+        scrollCacheExtent: const ScrollCacheExtent.pixels(4000),
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),
