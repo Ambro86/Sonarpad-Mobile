@@ -632,8 +632,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                       explicitChildNodes: true,
                       child: CustomScrollView(
                         controller: _scrollController,
-                        semanticChildCount:
-                            _chunks.isNotEmpty ? _chunks.length : null,
                         scrollCacheExtent:
                             const ScrollCacheExtent.pixels(4000), // Precarica i blocchi successivi per VoiceOver
                         // BouncingScrollPhysics → flick naturale su iPhone
@@ -701,51 +699,34 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                 const SizedBox(height: 24),
                                 const Divider(),
                                 const SizedBox(height: 8),
-                              ]),
-                            ),
-                          ),
-                          if (_loadError != null)
-                            SliverPadding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                              sliver: SliverToBoxAdapter(
-                                child: Semantics(
-                                  liveRegion: true,
-                                  child: Text(
-                                    _loadError!,
-                                    style:
-                                        theme.textTheme.bodyMedium?.copyWith(
-                                      color: colorScheme.secondary,
+
+                                // --- Corpo documento ---
+                                if (_loadError != null)
+                                  Semantics(
+                                    liveRegion: true,
+                                    child: Text(
+                                      _loadError!,
+                                      style:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        color: colorScheme.secondary,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          else if (_chunks.isNotEmpty)
-                            SliverPadding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                              sliver: SliverList(
-                                delegate: SliverChildListDelegate(
-                                  _buildChunkWidgets(
+                                  )
+                                else if (_chunks.isNotEmpty)
+                                  ..._buildChunkWidgets(
                                     theme,
                                     colorScheme,
                                     l10n,
+                                  )
+                                else if (_documentText.isEmpty &&
+                                    _loadError == null)
+                                  Text(
+                                    l10n.noTextAvailableForDocument,
+                                    style: theme.textTheme.bodyMedium,
                                   ),
-                                ),
-                              ),
-                            )
-                          else if (_documentText.isEmpty && _loadError == null)
-                            SliverPadding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                              sliver: SliverToBoxAdapter(
-                                child: Text(
-                                  l10n.noTextAvailableForDocument,
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                              ),
+                              ]),
                             ),
+                          ),
                         ],
                       ),
                     ),
@@ -793,63 +774,60 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
 
       widgets.add(
-        IndexedSemantics(
+        AutoScrollTag(
+          key: ValueKey(i),
+          controller: _scrollController,
           index: i,
-          child: AutoScrollTag(
-            key: ValueKey(i),
-            controller: _scrollController,
-            index: i,
-            child: Semantics(
-              container: true,
-              hint: hintText,
+          child: Semantics(
+            container: true,
+            hint: hintText,
+            onTap: canEdit ? () => _editParagraph(i) : null,
+            customSemanticsActions: actions,
+            child: GestureDetector(
+              excludeFromSemantics: true,
               onTap: canEdit ? () => _editParagraph(i) : null,
-              customSemanticsActions: actions,
-              child: GestureDetector(
-                excludeFromSemantics: true,
-                onTap: canEdit ? () => _editParagraph(i) : null,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                  margin: const EdgeInsets.only(bottom: 6),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isPlaying
-                        ? colorScheme.primaryContainer
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    border: isPlaying
-                        ? Border.all(
-                            color: colorScheme.primary.withAlpha(128),
-                            width: 1.5,
-                          )
-                        : (isBookmarked
-                            ? Border.all(
-                                color: Colors.red.withAlpha(128),
-                                width: 1.5,
-                              )
-                            : null),
-                  ),
-                  child: Stack(
-                    children: [
-                      Text(
-                        _chunks[i],
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight:
-                              isPlaying ? FontWeight.w600 : FontWeight.normal,
-                          color:
-                              isPlaying ? colorScheme.onPrimaryContainer : null,
-                        ),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                margin: const EdgeInsets.only(bottom: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isPlaying
+                      ? colorScheme.primaryContainer
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: isPlaying
+                      ? Border.all(
+                          color: colorScheme.primary.withAlpha(128),
+                          width: 1.5,
+                        )
+                      : (isBookmarked
+                          ? Border.all(
+                              color: Colors.red.withAlpha(128),
+                              width: 1.5,
+                            )
+                          : null),
+                ),
+                child: Stack(
+                  children: [
+                    Text(
+                      _chunks[i],
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight:
+                            isPlaying ? FontWeight.w600 : FontWeight.normal,
+                        color:
+                            isPlaying ? colorScheme.onPrimaryContainer : null,
                       ),
-                      if (isBookmarked && !isPlaying)
-                        const Positioned(
-                          top: 0,
-                          right: 0,
-                          child:
-                              Icon(Icons.bookmark, color: Colors.red, size: 16),
-                        ),
-                    ],
-                  ),
+                    ),
+                    if (isBookmarked && !isPlaying)
+                      const Positioned(
+                        top: 0,
+                        right: 0,
+                        child:
+                            Icon(Icons.bookmark, color: Colors.red, size: 16),
+                      ),
+                  ],
                 ),
               ),
             ),

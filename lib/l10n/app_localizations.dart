@@ -61,13 +61,33 @@ class AppLocalizations {
               : 'Apre le informazioni sull\'app'));
   String get categoryReading => _isEn
       ? 'Reading and documents'
-      : (_isFr ? 'Lecture et documents' : (_isEs ? 'Lectura y documentos' : 'Lettura e documenti'));
+      : (_isFr
+          ? 'Lecture et documents'
+          : (_isEs ? 'Lectura y documentos' : 'Lettura e documenti'));
   String get categoryMedia => _isEn
       ? 'Media and entertainment'
-      : (_isFr ? 'Médias et divertissement' : (_isEs ? 'Medios y entretenimiento' : 'Media e intrattenimento'));
+      : (_isFr
+          ? 'Médias et divertissement'
+          : (_isEs ? 'Medios y entretenimiento' : 'Media e intrattenimento'));
   String get categoryUtilities => _isEn
       ? 'Searches and utilities'
-      : (_isFr ? 'Recherches et utilitaires' : (_isEs ? 'Búsquedas y utilidades' : 'Ricerche e utilità'));
+      : (_isFr
+          ? 'Recherches et utilitaires'
+          : (_isEs ? 'Búsquedas y utilidades' : 'Ricerche e utilità'));
+  String get voiceOverListTestTitle =>
+      _isEn ? 'Test' : (_isFr ? 'Test' : (_isEs ? 'Prueba' : 'Prova'));
+  String voiceOverListTestRow(int current, int total) => _isEn
+      ? 'Row $current of $total'
+      : (_isFr
+          ? 'Ligne $current sur $total'
+          : (_isEs ? 'Fila $current de $total' : 'Riga $current di $total'));
+  String voiceOverListTestContent(int current) => _isEn
+      ? 'Test content $current'
+      : (_isFr
+          ? 'Contenu de test $current'
+          : (_isEs
+              ? 'Contenido de prueba $current'
+              : 'Contenuto di prova $current'));
   String get voiceDictionaryTitle => _isEn
       ? 'Voice Dictionary'
       : (_isFr
@@ -145,18 +165,18 @@ class AppLocalizations {
       : (_isFr
           ? 'Fichier de sortie'
           : (_isEs ? 'Archivo de salida' : 'File di output'));
-  String get convertMediaImage => _isEn
-      ? 'Image'
-      : (_isFr ? 'Image' : (_isEs ? 'Imagen' : 'Immagine'));
+  String get convertMediaImage =>
+      _isEn ? 'Image' : (_isFr ? 'Image' : (_isEs ? 'Imagen' : 'Immagine'));
   String get convertMediaBrowse => _isEn
       ? 'Browse...'
       : (_isFr ? 'Parcourir...' : (_isEs ? 'Examinar...' : 'Sfoglia...'));
-  String get convertMediaFormat => _isEn
-      ? 'Format'
-      : (_isFr ? 'Format' : (_isEs ? 'Formato' : 'Formato'));
+  String get convertMediaFormat =>
+      _isEn ? 'Format' : (_isFr ? 'Format' : (_isEs ? 'Formato' : 'Formato'));
   String get convertMediaBitrate => _isEn
       ? 'Bitrate (kbps)'
-      : (_isFr ? 'Bitrate (kbps)' : (_isEs ? 'Bitrate (kbps)' : 'Bitrate (kbps)'));
+      : (_isFr
+          ? 'Bitrate (kbps)'
+          : (_isEs ? 'Bitrate (kbps)' : 'Bitrate (kbps)'));
   String get convertMediaOggQuality => _isEn
       ? 'Quality (q)'
       : (_isFr ? 'Qualité (q)' : (_isEs ? 'Calidad (q)' : 'Qualità (q)'));
@@ -165,9 +185,8 @@ class AppLocalizations {
       : (_isFr
           ? 'Niveau de compression'
           : (_isEs ? 'Nivel de compresión' : 'Livello compressione'));
-  String get convertMediaReady => _isEn
-      ? 'Ready.'
-      : (_isFr ? 'Prêt.' : (_isEs ? 'Listo.' : 'Pronto.'));
+  String get convertMediaReady =>
+      _isEn ? 'Ready.' : (_isFr ? 'Prêt.' : (_isEs ? 'Listo.' : 'Pronto.'));
   String get convertMediaRunning => _isEn
       ? 'Converting...'
       : (_isFr
@@ -185,12 +204,16 @@ class AppLocalizations {
       ? 'Select an input file.'
       : (_isFr
           ? 'Sélectionnez un fichier d\'entrée.'
-          : (_isEs ? 'Selecciona un archivo de entrada.' : 'Seleziona un file di input.'));
+          : (_isEs
+              ? 'Selecciona un archivo de entrada.'
+              : 'Seleziona un file di input.'));
   String get convertMediaNoOutput => _isEn
       ? 'Select an output file.'
       : (_isFr
           ? 'Sélectionnez un fichier de sortie.'
-          : (_isEs ? 'Selecciona un archivo de salida.' : 'Seleziona un file di output.'));
+          : (_isEs
+              ? 'Selecciona un archivo de salida.'
+              : 'Seleziona un file di output.'));
   String get convertMediaNoImage => _isEn
       ? 'Select an image for the video.'
       : (_isFr
@@ -363,11 +386,16 @@ class AppLocalizations {
       };
 
   String get settingsHomeGroupingHint => switch (locale.languageCode) {
-        'it' => 'Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle',
-        'en' => 'If disabled, the main icons will be shown as a single list without subfolders',
-        'fr' => 'Si désactivé, les icônes principales seront affichées sous forme de liste unique sans sous-dossiers',
-        'es' => 'Si está deshabilitado, los iconos principales se mostrarán como una lista única sin subcarpetas',
-        _ => 'Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle',
+        'it' =>
+          'Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle',
+        'en' =>
+          'If disabled, the main icons will be shown as a single list without subfolders',
+        'fr' =>
+          'Si désactivé, les icônes principales seront affichées sous forme de liste unique sans sous-dossiers',
+        'es' =>
+          'Si está deshabilitado, los iconos principales se mostrarán como una lista única sin subcarpetas',
+        _ =>
+          'Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle',
       };
 
   String get newsCategoryMyCity => switch (locale.languageCode) {
@@ -827,7 +855,9 @@ class AppLocalizations {
       ? 'Imported podcasts: $count'
       : (_isFr
           ? 'Podcasts importés : $count'
-          : (_isEs ? 'Podcasts importados: $count' : 'Podcast importati: $count'));
+          : (_isEs
+              ? 'Podcasts importados: $count'
+              : 'Podcast importati: $count'));
   String podcastImportError(Object error) => _isEn
       ? 'Podcast import error: $error'
       : (_isFr
@@ -914,7 +944,9 @@ class AppLocalizations {
       : (_isFr ? 'Position' : (_isEs ? 'Posición' : 'Posizione'));
   String playbackPositionValue(String position, String duration) => _isEn
       ? '$position of $duration'
-      : (_isFr ? '$position sur $duration' : (_isEs ? '$position de $duration' : '$position di $duration'));
+      : (_isFr
+          ? '$position sur $duration'
+          : (_isEs ? '$position de $duration' : '$position di $duration'));
   String get download => _isEn
       ? 'Download'
       : (_isFr ? 'Télécharger' : (_isEs ? 'Descargar' : 'Scarica'));
@@ -989,9 +1021,7 @@ class AppLocalizations {
               : 'Vuoi selezionare un solo documento o più documenti?'));
   String get documentImportSingle => _isEn
       ? 'One document'
-      : (_isFr
-          ? 'Un document'
-          : (_isEs ? 'Un documento' : 'Un documento'));
+      : (_isFr ? 'Un document' : (_isEs ? 'Un documento' : 'Un documento'));
   String get documentImportMultiple => _isEn
       ? 'Multiple documents'
       : (_isFr
@@ -1025,27 +1055,37 @@ class AppLocalizations {
       ? 'Library loading error: $error'
       : (_isFr
           ? 'Erreur de chargement de la bibliothèque : $error'
-          : (_isEs ? 'Error al cargar la biblioteca: $error' : 'Errore caricamento libreria: $error'));
+          : (_isEs
+              ? 'Error al cargar la biblioteca: $error'
+              : 'Errore caricamento libreria: $error'));
   String fileOpenError(Object error) => _isEn
       ? 'File opening error: $error'
       : (_isFr
           ? 'Erreur d\'ouverture du fichier : $error'
-          : (_isEs ? 'Error al abrir el archivo: $error' : 'Errore apertura file: $error'));
+          : (_isEs
+              ? 'Error al abrir el archivo: $error'
+              : 'Errore apertura file: $error'));
   String get filePathUnavailable => _isEn
       ? 'File path unavailable.'
       : (_isFr
           ? 'Chemin du fichier indisponible.'
-          : (_isEs ? 'Ruta del archivo no disponible.' : 'Percorso file non disponibile.'));
+          : (_isEs
+              ? 'Ruta del archivo no disponible.'
+              : 'Percorso file non disponibile.'));
   String fileInaccessible(String name) => _isEn
       ? 'File inaccessible: $name'
       : (_isFr
           ? 'Fichier inaccessible : $name'
-          : (_isEs ? 'Archivo inaccesible: $name' : 'File inaccessibile: $name'));
+          : (_isEs
+              ? 'Archivo inaccesible: $name'
+              : 'File inaccessibile: $name'));
   String documentAddError(Object error) => _isEn
       ? 'Document add error: $error'
       : (_isFr
           ? 'Erreur d\'ajout du document : $error'
-          : (_isEs ? 'Error al añadir el documento: $error' : 'Errore aggiunta documento: $error'));
+          : (_isEs
+              ? 'Error al añadir el documento: $error'
+              : 'Errore aggiunta documento: $error'));
   String documentRemoveError(Object error) => _isEn
       ? 'Remove error: $error'
       : (_isFr
@@ -1055,7 +1095,9 @@ class AppLocalizations {
       ? 'No exportable text found.'
       : (_isFr
           ? 'Aucun texte exportable trouvé.'
-          : (_isEs ? 'No se encontró texto exportable.' : 'Nessun testo esportabile trovato.'));
+          : (_isEs
+              ? 'No se encontró texto exportable.'
+              : 'Nessun testo esportabile trovato.'));
   String get modifiedDocumentNoExportableText => _isEn
       ? 'The modified document contains no exportable text.'
       : (_isFr
@@ -1065,13 +1107,19 @@ class AppLocalizations {
               : 'Il documento modificato non contiene testo esportabile.'));
   String get documentRemoved => _isEn
       ? 'Document removed'
-      : (_isFr ? 'Document supprimé' : (_isEs ? 'Documento eliminado' : 'Documento rimosso'));
+      : (_isFr
+          ? 'Document supprimé'
+          : (_isEs ? 'Documento eliminado' : 'Documento rimosso'));
   String get folderRemoved => _isEn
       ? 'Folder removed'
-      : (_isFr ? 'Dossier supprimé' : (_isEs ? 'Carpeta eliminada' : 'Cartella rimossa'));
+      : (_isFr
+          ? 'Dossier supprimé'
+          : (_isEs ? 'Carpeta eliminada' : 'Cartella rimossa'));
   String get removeFolder => _isEn
       ? 'Remove folder'
-      : (_isFr ? 'Supprimer le dossier' : (_isEs ? 'Eliminar carpeta' : 'Rimuovi cartella'));
+      : (_isFr
+          ? 'Supprimer le dossier'
+          : (_isEs ? 'Eliminar carpeta' : 'Rimuovi cartella'));
   String get removeDocument => _isEn
       ? 'Remove document'
       : (_isFr
@@ -1092,9 +1140,8 @@ class AppLocalizations {
   String get documentTypeLabel => _isEn
       ? 'Document'
       : (_isFr ? 'Document' : (_isEs ? 'Documento' : 'Documento'));
-  String get folderTypeLabel => _isEn
-      ? 'Folder'
-      : (_isFr ? 'Dossier' : (_isEs ? 'Carpeta' : 'Cartella'));
+  String get folderTypeLabel =>
+      _isEn ? 'Folder' : (_isFr ? 'Dossier' : (_isEs ? 'Carpeta' : 'Cartella'));
   String documentAddedOn(String date) => _isEn
       ? 'added on $date'
       : (_isFr
@@ -1102,20 +1149,28 @@ class AppLocalizations {
           : (_isEs ? 'añadido el $date' : 'aggiunto il $date'));
   String documentTypeDescription(String extension) => _isEn
       ? 'type $extension'
-      : (_isFr ? 'type $extension' : (_isEs ? 'tipo $extension' : 'tipo $extension'));
+      : (_isFr
+          ? 'type $extension'
+          : (_isEs ? 'tipo $extension' : 'tipo $extension'));
   String get openFolderHint => _isEn
       ? 'Double tap to open the folder'
       : (_isFr
           ? 'Touchez deux fois pour ouvrir le dossier'
-          : (_isEs ? 'Toca dos veces para abrir la carpeta' : 'Tocca due volte per aprire la cartella'));
+          : (_isEs
+              ? 'Toca dos veces para abrir la carpeta'
+              : 'Tocca due volte per aprire la cartella'));
   String get openDocumentHint => _isEn
       ? 'Double tap to open and read the document'
       : (_isFr
           ? 'Touchez deux fois pour ouvrir et lire le document'
-          : (_isEs ? 'Toca dos veces para abrir y leer el documento' : 'Tocca due volte per aprire e leggere il documento'));
+          : (_isEs
+              ? 'Toca dos veces para abrir y leer el documento'
+              : 'Tocca due volte per aprire e leggere il documento'));
   String removeItem(String name) => _isEn
       ? 'Remove $name'
-      : (_isFr ? 'Supprimer $name' : (_isEs ? 'Eliminar $name' : 'Rimuovi $name'));
+      : (_isFr
+          ? 'Supprimer $name'
+          : (_isEs ? 'Eliminar $name' : 'Rimuovi $name'));
   String get removePodcast => _isEn
       ? 'Remove podcast'
       : (_isFr
@@ -1192,36 +1247,136 @@ class AppLocalizations {
       _isEn ? 'Save' : (_isFr ? 'Enregistrer' : (_isEs ? 'Guardar' : 'Salva'));
   String get cancel =>
       _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
-  String get settingsReadingEngine => _isEn ? 'Reading Engine' : (_isFr ? 'Moteur de lecture' : (_isEs ? 'Motor de lectura' : 'Motore di lettura'));
-  String get settingsEdgeTtsQuality => _isEn ? 'Edge TTS (High quality online)' : (_isFr ? 'Edge TTS (Haute qualité en ligne)' : (_isEs ? 'Edge TTS (Alta calidad en línea)' : 'Edge TTS (Alta qualità online)'));
-  String get settingsSystemVoices => _isEn ? 'System Voices (VoiceOver / Google)' : (_isFr ? 'Voix système (VoiceOver / Google)' : (_isEs ? 'Voces del sistema (VoiceOver / Google)' : 'Voci di sistema (VoiceOver / Google)'));
-  String get settingsNoSystemVoices => _isEn ? 'No system voices available.' : (_isFr ? 'Aucune voix système disponible.' : (_isEs ? 'No hay voces del sistema disponibles.' : 'Nessuna voce di sistema disponibile.'));
-  String get settingsDefaultVoiceHint => _isEn ? 'Default voice' : (_isFr ? 'Voix par défaut' : (_isEs ? 'Voz predeterminada' : 'Voce predefinita'));
-  String get settingsDefaultVoice => _isEn ? 'Default' : (_isFr ? 'Défaut' : (_isEs ? 'Predeterminada' : 'Predefinita'));
-  String get settingsVoiceSpeed => _isEn ? 'Speed: ' : (_isFr ? 'Vitesse: ' : (_isEs ? 'Velocidad: ' : 'Velocità lettura: '));
-  String get settingsVoicePitch => _isEn ? 'Pitch: ' : (_isFr ? 'Ton: ' : (_isEs ? 'Tono: ' : 'Tono: '));
-  String get settingsVoiceSpeedLabel => _isEn ? 'Reading speed' : (_isFr ? 'Vitesse de lecture' : (_isEs ? 'Velocidad de lectura' : 'Velocità lettura'));
-  String get settingsVoicePitchLabel => _isEn ? 'Pitch' : (_isFr ? 'Ton' : (_isEs ? 'Tono' : 'Tono'));
-  String get settingsTestVoice => _isEn ? 'Test voice' : (_isFr ? 'Tester la voix' : (_isEs ? 'Probar voz' : 'Testa voce'));
-  String get settingsTestingVoice => _isEn ? 'Playing...' : (_isFr ? 'Lecture...' : (_isEs ? 'Reproduciendo...' : 'Riproduzione in corso...'));
-  String get settingsVoiceTestText => _isEn ? 'This is a test of the selected voice.' : (_isFr ? 'Ceci est un test de la voix sélectionnée.' : (_isEs ? 'Esta es una prueba de la voz seleccionada.' : 'Questo è un test della voce selezionata.'));
-  String settingsVoiceTestError(Object error) => _isEn ? 'Voice test error: $error' : (_isFr ? 'Erreur du test vocal : $error' : (_isEs ? 'Error de prueba de voz: $error' : 'Errore test voce: $error'));
-  String settingsVoiceSaveError(Object error) => _isEn ? 'TTS voice save error: $error' : (_isFr ? 'Erreur d’enregistrement de la voix TTS : $error' : (_isEs ? 'Error al guardar la voz TTS: $error' : 'Errore salvataggio voce TTS: $error'));
-  String get settingsUnsavedTitle => _isEn ? 'Unsaved changes' : (_isFr ? 'Modifications non enregistrées' : (_isEs ? 'Cambios sin guardar' : 'Modifiche non salvate'));
-  String get settingsUnsavedMessage => _isEn ? 'Do you want to save your changes before leaving settings?' : (_isFr ? 'Voulez-vous enregistrer les modifications avant de quitter les paramètres ?' : (_isEs ? '¿Quieres guardar los cambios antes de salir de ajustes?' : 'Vuoi salvare le modifiche prima di uscire dalle impostazioni?'));
-  String get settingsExitWithoutSaving => _isEn ? 'Exit without saving' : (_isFr ? 'Quitter sans enregistrer' : (_isEs ? 'Salir sin guardar' : 'Esci senza salvare'));
-  String get settingsSystemLanguage => _isEn ? 'System language' : (_isFr ? 'Langue système' : (_isEs ? 'Idioma del sistema' : 'Lingua di sistema'));
-  String get settingsSystemVoice => _isEn ? 'System voice' : (_isFr ? 'Voix système' : (_isEs ? 'Voz del sistema' : 'Voce di sistema'));
-  String get settingsAutoBookmark => _isEn ? 'Enable automatic bookmark saving' : (_isFr ? 'Activer la sauvegarde automatique du signet' : (_isEs ? 'Habilitar guardado automático de marcadores' : 'Segnalibro automatico per testi e contenuti multimediali'));
-  String get settingsAutoBookmarkHint => _isEn ? 'Resume documents, podcasts, and media from where you left off.' : (_isFr ? 'Reprendre les documents et médias où vous vous êtes arrêté.' : (_isEs ? 'Reanudar documentos y multimedia desde donde los dejaste.' : 'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'));
-  String get settingsSeekStep => _isEn ? 'Media rewind / fast forward step' : (_isFr ? 'Étape de retour/avance rapide multimédia' : (_isEs ? 'Paso de rebobinado / avance rápido multimedia' : 'Regola l\'avanzamento di riproduzione nei file media'));
-  String get aiChatIntro => _isEn ? 'I am Sonarpad AI, how can I help you?' : 'Sono l\'intelligenza artificiale di Sonarpad, come posso aiutarti?';
-  String get meteoTitle => _isEn
-      ? 'Weather'
-      : (_isFr ? 'Météo' : (_isEs ? 'Tiempo' : 'Meteo'));
-  String get weatherCity => _isEn
-      ? 'City'
-      : (_isFr ? 'Ville' : (_isEs ? 'Ciudad' : 'Città'));
+  String get settingsReadingEngine => _isEn
+      ? 'Reading Engine'
+      : (_isFr
+          ? 'Moteur de lecture'
+          : (_isEs ? 'Motor de lectura' : 'Motore di lettura'));
+  String get settingsEdgeTtsQuality => _isEn
+      ? 'Edge TTS (High quality online)'
+      : (_isFr
+          ? 'Edge TTS (Haute qualité en ligne)'
+          : (_isEs
+              ? 'Edge TTS (Alta calidad en línea)'
+              : 'Edge TTS (Alta qualità online)'));
+  String get settingsSystemVoices => _isEn
+      ? 'System Voices (VoiceOver / Google)'
+      : (_isFr
+          ? 'Voix système (VoiceOver / Google)'
+          : (_isEs
+              ? 'Voces del sistema (VoiceOver / Google)'
+              : 'Voci di sistema (VoiceOver / Google)'));
+  String get settingsNoSystemVoices => _isEn
+      ? 'No system voices available.'
+      : (_isFr
+          ? 'Aucune voix système disponible.'
+          : (_isEs
+              ? 'No hay voces del sistema disponibles.'
+              : 'Nessuna voce di sistema disponibile.'));
+  String get settingsDefaultVoiceHint => _isEn
+      ? 'Default voice'
+      : (_isFr
+          ? 'Voix par défaut'
+          : (_isEs ? 'Voz predeterminada' : 'Voce predefinita'));
+  String get settingsDefaultVoice => _isEn
+      ? 'Default'
+      : (_isFr ? 'Défaut' : (_isEs ? 'Predeterminada' : 'Predefinita'));
+  String get settingsVoiceSpeed => _isEn
+      ? 'Speed: '
+      : (_isFr ? 'Vitesse: ' : (_isEs ? 'Velocidad: ' : 'Velocità lettura: '));
+  String get settingsVoicePitch =>
+      _isEn ? 'Pitch: ' : (_isFr ? 'Ton: ' : (_isEs ? 'Tono: ' : 'Tono: '));
+  String get settingsVoiceSpeedLabel => _isEn
+      ? 'Reading speed'
+      : (_isFr
+          ? 'Vitesse de lecture'
+          : (_isEs ? 'Velocidad de lectura' : 'Velocità lettura'));
+  String get settingsVoicePitchLabel =>
+      _isEn ? 'Pitch' : (_isFr ? 'Ton' : (_isEs ? 'Tono' : 'Tono'));
+  String get settingsTestVoice => _isEn
+      ? 'Test voice'
+      : (_isFr ? 'Tester la voix' : (_isEs ? 'Probar voz' : 'Testa voce'));
+  String get settingsTestingVoice => _isEn
+      ? 'Playing...'
+      : (_isFr
+          ? 'Lecture...'
+          : (_isEs ? 'Reproduciendo...' : 'Riproduzione in corso...'));
+  String get settingsVoiceTestText => _isEn
+      ? 'This is a test of the selected voice.'
+      : (_isFr
+          ? 'Ceci est un test de la voix sélectionnée.'
+          : (_isEs
+              ? 'Esta es una prueba de la voz seleccionada.'
+              : 'Questo è un test della voce selezionata.'));
+  String settingsVoiceTestError(Object error) => _isEn
+      ? 'Voice test error: $error'
+      : (_isFr
+          ? 'Erreur du test vocal : $error'
+          : (_isEs
+              ? 'Error de prueba de voz: $error'
+              : 'Errore test voce: $error'));
+  String settingsVoiceSaveError(Object error) => _isEn
+      ? 'TTS voice save error: $error'
+      : (_isFr
+          ? 'Erreur d’enregistrement de la voix TTS : $error'
+          : (_isEs
+              ? 'Error al guardar la voz TTS: $error'
+              : 'Errore salvataggio voce TTS: $error'));
+  String get settingsUnsavedTitle => _isEn
+      ? 'Unsaved changes'
+      : (_isFr
+          ? 'Modifications non enregistrées'
+          : (_isEs ? 'Cambios sin guardar' : 'Modifiche non salvate'));
+  String get settingsUnsavedMessage => _isEn
+      ? 'Do you want to save your changes before leaving settings?'
+      : (_isFr
+          ? 'Voulez-vous enregistrer les modifications avant de quitter les paramètres ?'
+          : (_isEs
+              ? '¿Quieres guardar los cambios antes de salir de ajustes?'
+              : 'Vuoi salvare le modifiche prima di uscire dalle impostazioni?'));
+  String get settingsExitWithoutSaving => _isEn
+      ? 'Exit without saving'
+      : (_isFr
+          ? 'Quitter sans enregistrer'
+          : (_isEs ? 'Salir sin guardar' : 'Esci senza salvare'));
+  String get settingsSystemLanguage => _isEn
+      ? 'System language'
+      : (_isFr
+          ? 'Langue système'
+          : (_isEs ? 'Idioma del sistema' : 'Lingua di sistema'));
+  String get settingsSystemVoice => _isEn
+      ? 'System voice'
+      : (_isFr
+          ? 'Voix système'
+          : (_isEs ? 'Voz del sistema' : 'Voce di sistema'));
+  String get settingsAutoBookmark => _isEn
+      ? 'Enable automatic bookmark saving'
+      : (_isFr
+          ? 'Activer la sauvegarde automatique du signet'
+          : (_isEs
+              ? 'Habilitar guardado automático de marcadores'
+              : 'Segnalibro automatico per testi e contenuti multimediali'));
+  String get settingsAutoBookmarkHint => _isEn
+      ? 'Resume documents, podcasts, and media from where you left off.'
+      : (_isFr
+          ? 'Reprendre les documents et médias où vous vous êtes arrêté.'
+          : (_isEs
+              ? 'Reanudar documentos y multimedia desde donde los dejaste.'
+              : 'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'));
+  String get settingsSeekStep => _isEn
+      ? 'Media rewind / fast forward step'
+      : (_isFr
+          ? 'Étape de retour/avance rapide multimédia'
+          : (_isEs
+              ? 'Paso de rebobinado / avance rápido multimedia'
+              : 'Regola l\'avanzamento di riproduzione nei file media'));
+  String get aiChatIntro => _isEn
+      ? 'I am Sonarpad AI, how can I help you?'
+      : 'Sono l\'intelligenza artificiale di Sonarpad, come posso aiutarti?';
+  String get meteoTitle =>
+      _isEn ? 'Weather' : (_isFr ? 'Météo' : (_isEs ? 'Tiempo' : 'Meteo'));
+  String get weatherCity =>
+      _isEn ? 'City' : (_isFr ? 'Ville' : (_isEs ? 'Ciudad' : 'Città'));
   String get weatherCityHint => _isEn
       ? 'Example: Rome'
       : (_isFr
@@ -1239,12 +1394,10 @@ class AppLocalizations {
           : (_isEs
               ? 'Error durante la búsqueda'
               : 'Errore durante la ricerca'));
-  String get weatherToday => _isEn
-      ? 'Today'
-      : (_isFr ? 'Aujourd\'hui' : (_isEs ? 'Hoy' : 'Oggi'));
-  String get weatherTomorrow => _isEn
-      ? 'Tomorrow'
-      : (_isFr ? 'Demain' : (_isEs ? 'Mañana' : 'Domani'));
+  String get weatherToday =>
+      _isEn ? 'Today' : (_isFr ? 'Aujourd\'hui' : (_isEs ? 'Hoy' : 'Oggi'));
+  String get weatherTomorrow =>
+      _isEn ? 'Tomorrow' : (_isFr ? 'Demain' : (_isEs ? 'Mañana' : 'Domani'));
   String get weatherChooseDay => _isEn
       ? 'Choose day'
       : (_isFr
@@ -1277,32 +1430,85 @@ class AppLocalizations {
           : (_isEs
               ? 'Probabilidad de precipitación'
               : 'Probabilità di precipitazioni'));
-  String get weatherWind => _isEn
-      ? 'Wind'
-      : (_isFr ? 'Vent' : (_isEs ? 'Viento' : 'Vento'));
+  String get weatherWind =>
+      _isEn ? 'Wind' : (_isFr ? 'Vent' : (_isEs ? 'Viento' : 'Vento'));
   String get weatherRelativeHumidity => _isEn
       ? 'Relative humidity'
       : (_isFr
           ? 'Humidité relative'
           : (_isEs ? 'Humedad relativa' : 'Umidità relativa'));
-  String get settingsSecretCode => _isEn ? 'Sonarpad code for extra features' : (_isFr ? 'Code Sonarpad pour fonctionnalités' : (_isEs ? 'Código Sonarpad para funciones extra' : 'Codice Sonarpad per funzioni aggiuntive'));
-  String get settingsRequestCode => _isEn ? 'Request code from author' : (_isFr ? 'Demander le code à l\'auteur' : (_isEs ? 'Solicitar código al autor' : 'Richiedi codice all\'autore'));
-  String get settingsCancel => _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
-  String get settingsSend => _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
-  String get settingsFillFieldsCode => _isEn ? 'Fill all fields to request the code.' : (_isFr ? 'Remplissez tous les champs pour demander le code.' : (_isEs ? 'Rellene todos los campos para solicitar el código.' : 'Compila tutti i campi per richiedere il codice.'));
-  String get settingsName => _isEn ? 'Name' : (_isFr ? 'Prénom' : (_isEs ? 'Nombre' : 'Nome'));
-  String get settingsSurname => _isEn ? 'Surname' : (_isFr ? 'Nom' : (_isEs ? 'Apellido' : 'Cognome'));
-  String get settingsEmail => _isEn ? 'Email' : (_isFr ? 'E-mail' : (_isEs ? 'Correo electrónico' : 'Email'));
-  String get settingsOperatingSystem => _isEn ? 'Operating system' : (_isFr ? 'Système d’exploitation' : (_isEs ? 'Sistema operativo' : 'Sistema Operativo'));
-  String settingsCodeRequestBody(String name, String surname, String email, String os) =>
+  String get settingsSecretCode => _isEn
+      ? 'Sonarpad code for extra features'
+      : (_isFr
+          ? 'Code Sonarpad pour fonctionnalités'
+          : (_isEs
+              ? 'Código Sonarpad para funciones extra'
+              : 'Codice Sonarpad per funzioni aggiuntive'));
+  String get settingsRequestCode => _isEn
+      ? 'Request code from author'
+      : (_isFr
+          ? 'Demander le code à l\'auteur'
+          : (_isEs
+              ? 'Solicitar código al autor'
+              : 'Richiedi codice all\'autore'));
+  String get settingsCancel =>
+      _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
+  String get settingsSend =>
+      _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
+  String get settingsFillFieldsCode => _isEn
+      ? 'Fill all fields to request the code.'
+      : (_isFr
+          ? 'Remplissez tous les champs pour demander le code.'
+          : (_isEs
+              ? 'Rellene todos los campos para solicitar el código.'
+              : 'Compila tutti i campi per richiedere il codice.'));
+  String get settingsName =>
+      _isEn ? 'Name' : (_isFr ? 'Prénom' : (_isEs ? 'Nombre' : 'Nome'));
+  String get settingsSurname =>
+      _isEn ? 'Surname' : (_isFr ? 'Nom' : (_isEs ? 'Apellido' : 'Cognome'));
+  String get settingsEmail => _isEn
+      ? 'Email'
+      : (_isFr ? 'E-mail' : (_isEs ? 'Correo electrónico' : 'Email'));
+  String get settingsOperatingSystem => _isEn
+      ? 'Operating system'
+      : (_isFr
+          ? 'Système d’exploitation'
+          : (_isEs ? 'Sistema operativo' : 'Sistema Operativo'));
+  String settingsCodeRequestBody(
+          String name, String surname, String email, String os) =>
       '$settingsName: $name; $settingsSurname: $surname; $settingsEmail: $email; $settingsOperatingSystem: $os';
-  String get settingsNameOptional => _isEn ? 'Name (optional)' : (_isFr ? 'Nom (optionnel)' : (_isEs ? 'Nombre (opcional)' : 'Nome (opzionale)'));
-  String get settingsMessageOptional => _isEn ? 'Message (optional)' : (_isFr ? 'Message (optionnel)' : (_isEs ? 'Mensaje (opcional)' : 'Messaggio (opzionale)'));
-  String get settingsVerifyCodeAndSave => _isEn ? 'Verifying code and saving...' : (_isFr ? 'Vérification et enregistrement...' : (_isEs ? 'Verificando y guardando...' : 'Verifica codice e salvataggio...'));
-  String get settingsViewSysLog => _isEn ? 'View system log' : (_isFr ? 'Voir le journal système' : (_isEs ? 'Ver registro del sistema' : 'Visualizza log di sistema'));
-  String settingsMailOpenError(Object error) => _isEn ? 'Error opening email: $error' : (_isFr ? 'Erreur d’ouverture de l’e-mail : $error' : (_isEs ? 'Error al abrir el correo: $error' : 'Errore apertura mail: $error'));
+  String get settingsNameOptional => _isEn
+      ? 'Name (optional)'
+      : (_isFr
+          ? 'Nom (optionnel)'
+          : (_isEs ? 'Nombre (opcional)' : 'Nome (opzionale)'));
+  String get settingsMessageOptional => _isEn
+      ? 'Message (optional)'
+      : (_isFr
+          ? 'Message (optionnel)'
+          : (_isEs ? 'Mensaje (opcional)' : 'Messaggio (opzionale)'));
+  String get settingsVerifyCodeAndSave => _isEn
+      ? 'Verifying code and saving...'
+      : (_isFr
+          ? 'Vérification et enregistrement...'
+          : (_isEs
+              ? 'Verificando y guardando...'
+              : 'Verifica codice e salvataggio...'));
+  String get settingsViewSysLog => _isEn
+      ? 'View system log'
+      : (_isFr
+          ? 'Voir le journal système'
+          : (_isEs ? 'Ver registro del sistema' : 'Visualizza log di sistema'));
+  String settingsMailOpenError(Object error) => _isEn
+      ? 'Error opening email: $error'
+      : (_isFr
+          ? 'Erreur d’ouverture de l’e-mail : $error'
+          : (_isEs
+              ? 'Error al abrir el correo: $error'
+              : 'Errore apertura mail: $error'));
   String get ok => _isEn ? 'OK' : 'OK';
-  String get invia => _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
+  String get invia =>
+      _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
   String get saveArticle => _isEn
       ? 'Save Article'
       : (_isFr
@@ -1320,97 +1526,402 @@ class AppLocalizations {
           : (_isEs
               ? 'Artículo guardado en Documentos'
               : 'Articolo salvato nei Documenti'));
-  String get annulla => _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
-  String get compilaTuttiICampiPerRichiedereIlCodice => _isEn ? 'Fill all fields to request the code.' : (_isFr ? 'Remplissez tous les champs pour demander le code.' : (_isEs ? 'Rellene todos los campos para solicitar el código.' : 'Compila tutti i campi per richiedere il codice.'));
-  String get selectFolder => _isEn ? 'Select folder' : (_isFr ? 'Sélectionner le dossier' : (_isEs ? 'Seleccionar carpeta' : 'Seleziona cartella'));
-  String get exportDocument => _isEn ? 'Export document' : (_isFr ? 'Exporter le document' : (_isEs ? 'Exportar documento' : 'Esporta documento'));
-  String get exportFormatPrompt => _isEn ? 'In which format do you want to export the document?' : (_isFr ? 'Dans quel format souhaitez-vous exporter le document ?' : (_isEs ? '¿En qué formato deseas exportar el documento?' : 'In quale formato desideri esportare il documento?'));
-  String get textFormat => _isEn ? 'Text (.txt)' : (_isFr ? 'Texte (.txt)' : (_isEs ? 'Texto (.txt)' : 'Testo (.txt)'));
-  String get pdfFormat => _isEn ? 'PDF (.pdf)' : (_isFr ? 'PDF (.pdf)' : (_isEs ? 'PDF (.pdf)' : 'PDF (.pdf)'));
-  String get exportError => _isEn ? 'Export error' : (_isFr ? 'Erreur d\'exportation' : (_isEs ? 'Error de exportación' : 'Errore esportazione'));
-  String get newFolder => _isEn ? 'New folder' : (_isFr ? 'Nouveau dossier' : (_isEs ? 'Nueva carpeta' : 'Nuova cartella'));
-  String get folderNameHint => _isEn ? 'Folder name' : (_isFr ? 'Nom du dossier' : (_isEs ? 'Nombre de la carpeta' : 'Nome cartella'));
-  String get create => _isEn ? 'Create' : (_isFr ? 'Créer' : (_isEs ? 'Crear' : 'Crea'));
-  String get createNewFolder => _isEn ? 'Create new folder' : (_isFr ? 'Créer un nouveau dossier' : (_isEs ? 'Crear nueva carpeta' : 'Crea nuova cartella'));
-  String get importFromDropbox => _isEn ? 'Import documents from Dropbox' : (_isFr ? 'Importer des documents depuis Dropbox' : (_isEs ? 'Importar documentos desde Dropbox' : 'Importa documenti da Dropbox'));
-  String get moveDocument => _isEn ? 'Move document' : (_isFr ? 'Déplacer le document' : (_isEs ? 'Mover documento' : 'Sposta documento'));
-  String get documentMoved => _isEn ? 'Moved successfully' : (_isFr ? 'Déplacé avec succès' : (_isEs ? 'Movido correctamente' : 'Spostato correttamente'));
-  String get outOfFolder => _isEn ? 'Out of folder' : (_isFr ? 'Hors du dossier' : (_isEs ? 'Fuera de la carpeta' : 'Fuori dalla cartella'));
-  String get moveToAnotherFolder => _isEn ? 'Move to another folder...' : (_isFr ? 'Déplacer vers un autre dossier...' : (_isEs ? 'Mover a otra carpeta...' : 'Sposta in un\'altra cartella...'));
-  String get ttsError => _isEn ? 'TTS error' : (_isFr ? 'Erreur de synthèse vocale' : (_isEs ? 'Error de síntesis de voz' : 'Errore sintesi vocale'));
-  String get editParagraph => _isEn ? 'Edit paragraph' : (_isFr ? 'Modifier le paragraphe' : (_isEs ? 'Editar párrafo' : 'Modifica paragrafo'));
-  String get editParagraphTextField => _isEn ? 'Text field for editing the paragraph' : (_isFr ? 'Champ de texte pour modifier le paragraphe' : (_isEs ? 'Campo de texto para editar el párrafo' : 'Campo di testo per la modifica del paragrafo'));
-  String get editParagraphHint => _isEn ? 'Edit the paragraph text' : (_isFr ? 'Modifier le texte du paragraphe' : (_isEs ? 'Editar el texto del párrafo' : 'Modifica il testo del paragrafo'));
-  String get applyAndSave => _isEn ? 'Apply and save' : (_isFr ? 'Appliquer et enregistrer' : (_isEs ? 'Aplicar y guardar' : 'Applica e salva'));
-  String get textEditedAndSaved => _isEn ? 'Text edited and saved in current document.' : (_isFr ? 'Texte modifié et enregistré dans le document actuel.' : (_isEs ? 'Texto editado y guardado en el documento actual.' : 'Testo modificato e salvato nel documento corrente.'));
-  String get saveError => _isEn ? 'Error while saving' : (_isFr ? 'Erreur lors de la sauvegarde' : (_isEs ? 'Error al guardar' : 'Errore durante il salvataggio'));
-  String get docSavedInLibrary => _isEn ? 'Document saved in library' : (_isFr ? 'Document enregistré dans la bibliothèque' : (_isEs ? 'Documento guardado en la biblioteca' : 'Documento salvato nella libreria'));
-  String get saveInLibrary => _isEn ? 'Save in library' : (_isFr ? 'Enregistrer dans la bibliothèque' : (_isEs ? 'Guardar en la biblioteca' : 'Salva nella libreria'));
-  String get documentTextLabel => _isEn ? 'Document text' : (_isFr ? 'Texte du document' : (_isEs ? 'Texto del documento' : 'Testo documento'));
-  String get modifiedInSonarpad => _isEn ? 'Modified in Sonarpad' : (_isFr ? 'Modifié dans Sonarpad' : (_isEs ? 'Modificado en Sonarpad' : 'Modificato in Sonarpad'));
-  String get noTextAvailableForDocument => _isEn ? 'No text available for this document.' : (_isFr ? 'Aucun texte disponible pour ce document.' : (_isEs ? 'No hay texto disponible para este documento.' : 'Nessun testo disponibile per questo documento.'));
-  String bookmarkSet(int index) => _isEn ? 'Bookmark set at paragraph $index.' : (_isFr ? 'Signet défini au paragraphe $index.' : (_isEs ? 'Marcador establecido en el párrafo $index.' : 'Segnalibro impostato al paragrafo $index.'));
-  String get bookmarkRemoved => _isEn ? 'Bookmark removed.' : (_isFr ? 'Signet supprimé.' : (_isEs ? 'Marcador eliminado.' : 'Segnalibro rimosso.'));
-  String get docEmpty => _isEn ? 'Document is empty' : (_isFr ? 'Le document est vide' : (_isEs ? 'El documento está vacío' : 'Il documento è vuoto'));
-  String get docSavedSuccessfully => _isEn ? 'Document saved successfully!' : (_isFr ? 'Document enregistré avec succès!' : (_isEs ? '¡Documento guardado con éxito!' : 'Documento salvato con successo!'));
-  String get writeDocument => _isEn ? 'Write Document' : (_isFr ? 'Écrire un document' : (_isEs ? 'Escribir Documento' : 'Scrivi Documento'));
-  String get documentTitleOptional => _isEn ? 'Title (optional)' : (_isFr ? 'Titre (optionnel)' : (_isEs ? 'Título (opcional)' : 'Titolo (opzionale)'));
-  String get documentTitleHint => _isEn ? 'Example: Shopping notes' : (_isFr ? 'Exemple : Notes de courses' : (_isEs ? 'Ejemplo: Notas de compra' : 'Es: Appunti Spesa'));
-  String get documentTextField => _isEn ? 'Document text' : (_isFr ? 'Texte du document' : (_isEs ? 'Texto del documento' : 'Testo del documento'));
-  String get documentTextHint => _isEn ? 'Start writing here...' : (_isFr ? 'Commencez à écrire ici...' : (_isEs ? 'Empieza a escribir aquí...' : 'Inizia a scrivere qui...'));
-  String get newDocumentDefaultName => _isEn ? 'New_Document' : (_isFr ? 'Nouveau_Document' : (_isEs ? 'Nuevo_Documento' : 'Nuovo_Documento'));
-  String get saving => _isEn ? 'Saving...' : (_isFr ? 'Enregistrement...' : (_isEs ? 'Guardando...' : 'Salvataggio...'));
-  String get saveDocument => _isEn ? 'Save Document' : (_isFr ? 'Enregistrer le document' : (_isEs ? 'Guardar Documento' : 'Salva Documento'));
-  String get addRssSource => _isEn ? 'Add RSS Source' : (_isFr ? 'Ajouter une source RSS' : (_isEs ? 'Agregar fuente RSS' : 'Aggiungi sorgente RSS'));
-  String get add => _isEn ? 'Add' : (_isFr ? 'Ajouter' : (_isEs ? 'Agregar' : 'Aggiungi'));
-  String get errorPrefix => _isEn ? 'Error' : (_isFr ? 'Erreur' : (_isEs ? 'Error' : 'Errore'));
+  String get annulla =>
+      _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
+  String get compilaTuttiICampiPerRichiedereIlCodice => _isEn
+      ? 'Fill all fields to request the code.'
+      : (_isFr
+          ? 'Remplissez tous les champs pour demander le code.'
+          : (_isEs
+              ? 'Rellene todos los campos para solicitar el código.'
+              : 'Compila tutti i campi per richiedere il codice.'));
+  String get selectFolder => _isEn
+      ? 'Select folder'
+      : (_isFr
+          ? 'Sélectionner le dossier'
+          : (_isEs ? 'Seleccionar carpeta' : 'Seleziona cartella'));
+  String get exportDocument => _isEn
+      ? 'Export document'
+      : (_isFr
+          ? 'Exporter le document'
+          : (_isEs ? 'Exportar documento' : 'Esporta documento'));
+  String get exportFormatPrompt => _isEn
+      ? 'In which format do you want to export the document?'
+      : (_isFr
+          ? 'Dans quel format souhaitez-vous exporter le document ?'
+          : (_isEs
+              ? '¿En qué formato deseas exportar el documento?'
+              : 'In quale formato desideri esportare il documento?'));
+  String get textFormat => _isEn
+      ? 'Text (.txt)'
+      : (_isFr ? 'Texte (.txt)' : (_isEs ? 'Texto (.txt)' : 'Testo (.txt)'));
+  String get pdfFormat => _isEn
+      ? 'PDF (.pdf)'
+      : (_isFr ? 'PDF (.pdf)' : (_isEs ? 'PDF (.pdf)' : 'PDF (.pdf)'));
+  String get exportError => _isEn
+      ? 'Export error'
+      : (_isFr
+          ? 'Erreur d\'exportation'
+          : (_isEs ? 'Error de exportación' : 'Errore esportazione'));
+  String get newFolder => _isEn
+      ? 'New folder'
+      : (_isFr
+          ? 'Nouveau dossier'
+          : (_isEs ? 'Nueva carpeta' : 'Nuova cartella'));
+  String get folderNameHint => _isEn
+      ? 'Folder name'
+      : (_isFr
+          ? 'Nom du dossier'
+          : (_isEs ? 'Nombre de la carpeta' : 'Nome cartella'));
+  String get create =>
+      _isEn ? 'Create' : (_isFr ? 'Créer' : (_isEs ? 'Crear' : 'Crea'));
+  String get createNewFolder => _isEn
+      ? 'Create new folder'
+      : (_isFr
+          ? 'Créer un nouveau dossier'
+          : (_isEs ? 'Crear nueva carpeta' : 'Crea nuova cartella'));
+  String get importFromDropbox => _isEn
+      ? 'Import documents from Dropbox'
+      : (_isFr
+          ? 'Importer des documents depuis Dropbox'
+          : (_isEs
+              ? 'Importar documentos desde Dropbox'
+              : 'Importa documenti da Dropbox'));
+  String get moveDocument => _isEn
+      ? 'Move document'
+      : (_isFr
+          ? 'Déplacer le document'
+          : (_isEs ? 'Mover documento' : 'Sposta documento'));
+  String get documentMoved => _isEn
+      ? 'Moved successfully'
+      : (_isFr
+          ? 'Déplacé avec succès'
+          : (_isEs ? 'Movido correctamente' : 'Spostato correttamente'));
+  String get outOfFolder => _isEn
+      ? 'Out of folder'
+      : (_isFr
+          ? 'Hors du dossier'
+          : (_isEs ? 'Fuera de la carpeta' : 'Fuori dalla cartella'));
+  String get moveToAnotherFolder => _isEn
+      ? 'Move to another folder...'
+      : (_isFr
+          ? 'Déplacer vers un autre dossier...'
+          : (_isEs
+              ? 'Mover a otra carpeta...'
+              : 'Sposta in un\'altra cartella...'));
+  String get ttsError => _isEn
+      ? 'TTS error'
+      : (_isFr
+          ? 'Erreur de synthèse vocale'
+          : (_isEs ? 'Error de síntesis de voz' : 'Errore sintesi vocale'));
+  String get editParagraph => _isEn
+      ? 'Edit paragraph'
+      : (_isFr
+          ? 'Modifier le paragraphe'
+          : (_isEs ? 'Editar párrafo' : 'Modifica paragrafo'));
+  String get editParagraphTextField => _isEn
+      ? 'Text field for editing the paragraph'
+      : (_isFr
+          ? 'Champ de texte pour modifier le paragraphe'
+          : (_isEs
+              ? 'Campo de texto para editar el párrafo'
+              : 'Campo di testo per la modifica del paragrafo'));
+  String get editParagraphHint => _isEn
+      ? 'Edit the paragraph text'
+      : (_isFr
+          ? 'Modifier le texte du paragraphe'
+          : (_isEs
+              ? 'Editar el texto del párrafo'
+              : 'Modifica il testo del paragrafo'));
+  String get applyAndSave => _isEn
+      ? 'Apply and save'
+      : (_isFr
+          ? 'Appliquer et enregistrer'
+          : (_isEs ? 'Aplicar y guardar' : 'Applica e salva'));
+  String get textEditedAndSaved => _isEn
+      ? 'Text edited and saved in current document.'
+      : (_isFr
+          ? 'Texte modifié et enregistré dans le document actuel.'
+          : (_isEs
+              ? 'Texto editado y guardado en el documento actual.'
+              : 'Testo modificato e salvato nel documento corrente.'));
+  String get saveError => _isEn
+      ? 'Error while saving'
+      : (_isFr
+          ? 'Erreur lors de la sauvegarde'
+          : (_isEs ? 'Error al guardar' : 'Errore durante il salvataggio'));
+  String get docSavedInLibrary => _isEn
+      ? 'Document saved in library'
+      : (_isFr
+          ? 'Document enregistré dans la bibliothèque'
+          : (_isEs
+              ? 'Documento guardado en la biblioteca'
+              : 'Documento salvato nella libreria'));
+  String get saveInLibrary => _isEn
+      ? 'Save in library'
+      : (_isFr
+          ? 'Enregistrer dans la bibliothèque'
+          : (_isEs ? 'Guardar en la biblioteca' : 'Salva nella libreria'));
+  String get documentTextLabel => _isEn
+      ? 'Document text'
+      : (_isFr
+          ? 'Texte du document'
+          : (_isEs ? 'Texto del documento' : 'Testo documento'));
+  String get modifiedInSonarpad => _isEn
+      ? 'Modified in Sonarpad'
+      : (_isFr
+          ? 'Modifié dans Sonarpad'
+          : (_isEs ? 'Modificado en Sonarpad' : 'Modificato in Sonarpad'));
+  String get noTextAvailableForDocument => _isEn
+      ? 'No text available for this document.'
+      : (_isFr
+          ? 'Aucun texte disponible pour ce document.'
+          : (_isEs
+              ? 'No hay texto disponible para este documento.'
+              : 'Nessun testo disponibile per questo documento.'));
+  String bookmarkSet(int index) => _isEn
+      ? 'Bookmark set at paragraph $index.'
+      : (_isFr
+          ? 'Signet défini au paragraphe $index.'
+          : (_isEs
+              ? 'Marcador establecido en el párrafo $index.'
+              : 'Segnalibro impostato al paragrafo $index.'));
+  String get bookmarkRemoved => _isEn
+      ? 'Bookmark removed.'
+      : (_isFr
+          ? 'Signet supprimé.'
+          : (_isEs ? 'Marcador eliminado.' : 'Segnalibro rimosso.'));
+  String get docEmpty => _isEn
+      ? 'Document is empty'
+      : (_isFr
+          ? 'Le document est vide'
+          : (_isEs ? 'El documento está vacío' : 'Il documento è vuoto'));
+  String get docSavedSuccessfully => _isEn
+      ? 'Document saved successfully!'
+      : (_isFr
+          ? 'Document enregistré avec succès!'
+          : (_isEs
+              ? '¡Documento guardado con éxito!'
+              : 'Documento salvato con successo!'));
+  String get writeDocument => _isEn
+      ? 'Write Document'
+      : (_isFr
+          ? 'Écrire un document'
+          : (_isEs ? 'Escribir Documento' : 'Scrivi Documento'));
+  String get documentTitleOptional => _isEn
+      ? 'Title (optional)'
+      : (_isFr
+          ? 'Titre (optionnel)'
+          : (_isEs ? 'Título (opcional)' : 'Titolo (opzionale)'));
+  String get documentTitleHint => _isEn
+      ? 'Example: Shopping notes'
+      : (_isFr
+          ? 'Exemple : Notes de courses'
+          : (_isEs ? 'Ejemplo: Notas de compra' : 'Es: Appunti Spesa'));
+  String get documentTextField => _isEn
+      ? 'Document text'
+      : (_isFr
+          ? 'Texte du document'
+          : (_isEs ? 'Texto del documento' : 'Testo del documento'));
+  String get documentTextHint => _isEn
+      ? 'Start writing here...'
+      : (_isFr
+          ? 'Commencez à écrire ici...'
+          : (_isEs
+              ? 'Empieza a escribir aquí...'
+              : 'Inizia a scrivere qui...'));
+  String get newDocumentDefaultName => _isEn
+      ? 'New_Document'
+      : (_isFr
+          ? 'Nouveau_Document'
+          : (_isEs ? 'Nuevo_Documento' : 'Nuovo_Documento'));
+  String get saving => _isEn
+      ? 'Saving...'
+      : (_isFr
+          ? 'Enregistrement...'
+          : (_isEs ? 'Guardando...' : 'Salvataggio...'));
+  String get saveDocument => _isEn
+      ? 'Save Document'
+      : (_isFr
+          ? 'Enregistrer le document'
+          : (_isEs ? 'Guardar Documento' : 'Salva Documento'));
+  String get addRssSource => _isEn
+      ? 'Add RSS Source'
+      : (_isFr
+          ? 'Ajouter une source RSS'
+          : (_isEs ? 'Agregar fuente RSS' : 'Aggiungi sorgente RSS'));
+  String get add =>
+      _isEn ? 'Add' : (_isFr ? 'Ajouter' : (_isEs ? 'Agregar' : 'Aggiungi'));
+  String get errorPrefix =>
+      _isEn ? 'Error' : (_isFr ? 'Erreur' : (_isEs ? 'Error' : 'Errore'));
   String versionBuild(String version, String buildNumber) => _isEn
       ? 'Version $version (Build $buildNumber)'
       : (_isFr
           ? 'Version $version (Build $buildNumber)'
-          : (_isEs ? 'Versión $version (Build $buildNumber)' : 'Versione $version (Build $buildNumber)'));
-  String get whatIsNew => _isEn ? 'What is new' : (_isFr ? 'Nouveautés' : (_isEs ? 'Novedades' : 'Novità'));
+          : (_isEs
+              ? 'Versión $version (Build $buildNumber)'
+              : 'Versione $version (Build $buildNumber)'));
+  String get whatIsNew => _isEn
+      ? 'What is new'
+      : (_isFr ? 'Nouveautés' : (_isEs ? 'Novedades' : 'Novità'));
   String changelogLoadError(Object error) => _isEn
       ? 'Error loading what is new: $error'
       : (_isFr
           ? 'Erreur lors du chargement des nouveautés : $error'
-          : (_isEs ? 'Error al cargar las novedades: $error' : 'Errore caricamento novità: $error'));
+          : (_isEs
+              ? 'Error al cargar las novedades: $error'
+              : 'Errore caricamento novità: $error'));
   String get visitSonarpadSite => _isEn
       ? 'Visit the Sonarpad website'
       : (_isFr
           ? 'Visiter le site de Sonarpad'
-          : (_isEs ? 'Visitar el sitio de Sonarpad' : 'Visita il sito di Sonarpad'));
+          : (_isEs
+              ? 'Visitar el sitio de Sonarpad'
+              : 'Visita il sito di Sonarpad'));
   String visitSonarpadSiteWithUrl(String url) => _isEn
       ? 'Visit the Sonarpad website: $url'
       : (_isFr
           ? 'Visiter le site de Sonarpad : $url'
-          : (_isEs ? 'Visitar el sitio de Sonarpad: $url' : 'Visita il sito di Sonarpad: $url'));
-  String get nowPlaying => _isEn ? 'Now playing' : (_isFr ? 'En lecture' : (_isEs ? 'Reproduciendo' : 'In riproduzione'));
-  String get fileImported => _isEn ? 'File imported' : (_isFr ? 'Fichier importé' : (_isEs ? 'Archivo importado' : 'File importato'));
-  String importZipError(Object error) => _isEn ? 'ZIP import error: $error' : (_isFr ? 'Erreur d’importation ZIP : $error' : (_isEs ? 'Error al importar ZIP: $error' : 'Errore importazione zip: $error'));
-  String get dropboxLoginPrompt => _isEn ? 'Log in to Dropbox to import your documents.' : (_isFr ? 'Connectez-vous à Dropbox pour importer vos documents.' : (_isEs ? 'Inicia sesión en Dropbox para importar tus documentos.' : 'Accedi a Dropbox per importare i tuoi documenti.'));
-  String get loginToDropbox => _isEn ? 'Log in to Dropbox' : (_isFr ? 'Se connecter à Dropbox' : (_isEs ? 'Iniciar sesión en Dropbox' : 'Accedi a Dropbox'));
-  String get logoutFromDropbox => _isEn ? 'Log out' : (_isFr ? 'Se déconnecter' : (_isEs ? 'Cerrar sesión' : 'Disconnetti'));
-  String get dropboxLoginFailed => _isEn ? 'Login failed or cancelled' : (_isFr ? 'Connexion échouée ou annulée' : (_isEs ? 'Inicio de sesión fallido o cancelado' : 'Accesso fallito o annullato'));
-  String dropboxLoadFolderError(Object error) => _isEn ? 'Folder loading error: $error' : (_isFr ? 'Erreur de chargement du dossier : $error' : (_isEs ? 'Error al cargar la carpeta: $error' : 'Errore caricamento cartella: $error'));
-  String dropboxImportError(Object error) => _isEn ? 'Import error: $error' : (_isFr ? 'Erreur d’importation : $error' : (_isEs ? 'Error de importación: $error' : 'Errore importazione: $error'));
-  String get retry => _isEn ? 'Retry' : (_isFr ? 'Réessayer' : (_isEs ? 'Reintentar' : 'Riprova'));
-  String get goBack => _isEn ? '.. Go back' : (_isFr ? '.. Retour' : (_isEs ? '.. Volver' : '.. Torna indietro'));
-  String get noSupportedFilesInFolder => _isEn ? 'No supported files in this folder.' : (_isFr ? 'Aucun fichier pris en charge dans ce dossier.' : (_isEs ? 'No hay archivos compatibles en esta carpeta.' : 'Nessun file supportato in questa cartella.'));
-  String get articleNotFound => _isEn ? 'Article not found.' : (_isFr ? 'Article introuvable.' : (_isEs ? 'Artículo no encontrado.' : 'Articolo non trovato.'));
-  String get errorOpening => _isEn ? 'Error opening' : (_isFr ? 'Erreur d\'ouverture' : (_isEs ? 'Error al abrir' : 'Errore durante l\'apertura'));
-  String get recentArticles => _isEn ? 'Recent articles' : (_isFr ? 'Articles récents' : (_isEs ? 'Artículos recientes' : 'Articoli recenti'));
-  String get clearHistory => _isEn ? 'Clear history' : (_isFr ? 'Effacer l\'historique' : (_isEs ? 'Borrar historial' : 'Cancella cronologia'));
-  String get confirmClearHistory => _isEn ? 'Do you really want to clear all recent searches?' : (_isFr ? 'Voulez-vous vraiment effacer toutes les recherches récentes ?' : (_isEs ? '¿Realmente deseas borrar todas las búsquedas recientes?' : 'Vuoi davvero cancellare tutte le ricerche recenti?'));
-  String get clear => _isEn ? 'Clear' : (_isFr ? 'Effacer' : (_isEs ? 'Borrar' : 'Cancella'));
-  String get noRecentSearches => _isEn ? 'No recent searches.' : (_isFr ? 'Aucune recherche récente.' : (_isEs ? 'No hay búsquedas recientes.' : 'Nessuna ricerca recente.'));
-  String get logCopiedToClipboard => _isEn ? 'Log copied to clipboard' : (_isFr ? 'Journal copié dans le presse-papiers' : (_isEs ? 'Registro copiado al portapapeles' : 'Log copiato negli appunti'));
-  String get systemLog => _isEn ? 'System Log' : (_isFr ? 'Journal système' : (_isEs ? 'Registro del sistema' : 'Log di Sistema'));
-  String get clearSystemLog => _isEn ? 'Clear log' : (_isFr ? 'Vider le journal' : (_isEs ? 'Vaciar registro' : 'Svuota log'));
-  String get copySystemLog => _isEn ? 'Copy log' : (_isFr ? 'Copier le journal' : (_isEs ? 'Copiar registro' : 'Copia log'));
-  String get donateWithPaypal => _isEn ? 'Donate with PayPal' : (_isFr ? 'Faire un don avec PayPal' : (_isEs ? 'Donar con PayPal' : 'Dona con PayPal'));
-  String get bankTransferTitle => _isEn ? 'Bank Transfer' : (_isFr ? 'Virement bancaire' : (_isEs ? 'Transferencia bancaria' : 'Bonifico Bancario'));
-  String get enableVideo => _isEn ? 'Enable video' : (_isFr ? 'Activer la vidéo' : (_isEs ? 'Activar vídeo' : 'Attiva video'));
+          : (_isEs
+              ? 'Visitar el sitio de Sonarpad: $url'
+              : 'Visita il sito di Sonarpad: $url'));
+  String get nowPlaying => _isEn
+      ? 'Now playing'
+      : (_isFr ? 'En lecture' : (_isEs ? 'Reproduciendo' : 'In riproduzione'));
+  String get fileImported => _isEn
+      ? 'File imported'
+      : (_isFr
+          ? 'Fichier importé'
+          : (_isEs ? 'Archivo importado' : 'File importato'));
+  String importZipError(Object error) => _isEn
+      ? 'ZIP import error: $error'
+      : (_isFr
+          ? 'Erreur d’importation ZIP : $error'
+          : (_isEs
+              ? 'Error al importar ZIP: $error'
+              : 'Errore importazione zip: $error'));
+  String get dropboxLoginPrompt => _isEn
+      ? 'Log in to Dropbox to import your documents.'
+      : (_isFr
+          ? 'Connectez-vous à Dropbox pour importer vos documents.'
+          : (_isEs
+              ? 'Inicia sesión en Dropbox para importar tus documentos.'
+              : 'Accedi a Dropbox per importare i tuoi documenti.'));
+  String get loginToDropbox => _isEn
+      ? 'Log in to Dropbox'
+      : (_isFr
+          ? 'Se connecter à Dropbox'
+          : (_isEs ? 'Iniciar sesión en Dropbox' : 'Accedi a Dropbox'));
+  String get logoutFromDropbox => _isEn
+      ? 'Log out'
+      : (_isFr ? 'Se déconnecter' : (_isEs ? 'Cerrar sesión' : 'Disconnetti'));
+  String get dropboxLoginFailed => _isEn
+      ? 'Login failed or cancelled'
+      : (_isFr
+          ? 'Connexion échouée ou annulée'
+          : (_isEs
+              ? 'Inicio de sesión fallido o cancelado'
+              : 'Accesso fallito o annullato'));
+  String dropboxLoadFolderError(Object error) => _isEn
+      ? 'Folder loading error: $error'
+      : (_isFr
+          ? 'Erreur de chargement du dossier : $error'
+          : (_isEs
+              ? 'Error al cargar la carpeta: $error'
+              : 'Errore caricamento cartella: $error'));
+  String dropboxImportError(Object error) => _isEn
+      ? 'Import error: $error'
+      : (_isFr
+          ? 'Erreur d’importation : $error'
+          : (_isEs
+              ? 'Error de importación: $error'
+              : 'Errore importazione: $error'));
+  String get retry => _isEn
+      ? 'Retry'
+      : (_isFr ? 'Réessayer' : (_isEs ? 'Reintentar' : 'Riprova'));
+  String get goBack => _isEn
+      ? '.. Go back'
+      : (_isFr ? '.. Retour' : (_isEs ? '.. Volver' : '.. Torna indietro'));
+  String get noSupportedFilesInFolder => _isEn
+      ? 'No supported files in this folder.'
+      : (_isFr
+          ? 'Aucun fichier pris en charge dans ce dossier.'
+          : (_isEs
+              ? 'No hay archivos compatibles en esta carpeta.'
+              : 'Nessun file supportato in questa cartella.'));
+  String get articleNotFound => _isEn
+      ? 'Article not found.'
+      : (_isFr
+          ? 'Article introuvable.'
+          : (_isEs ? 'Artículo no encontrado.' : 'Articolo non trovato.'));
+  String get errorOpening => _isEn
+      ? 'Error opening'
+      : (_isFr
+          ? 'Erreur d\'ouverture'
+          : (_isEs ? 'Error al abrir' : 'Errore durante l\'apertura'));
+  String get recentArticles => _isEn
+      ? 'Recent articles'
+      : (_isFr
+          ? 'Articles récents'
+          : (_isEs ? 'Artículos recientes' : 'Articoli recenti'));
+  String get clearHistory => _isEn
+      ? 'Clear history'
+      : (_isFr
+          ? 'Effacer l\'historique'
+          : (_isEs ? 'Borrar historial' : 'Cancella cronologia'));
+  String get confirmClearHistory => _isEn
+      ? 'Do you really want to clear all recent searches?'
+      : (_isFr
+          ? 'Voulez-vous vraiment effacer toutes les recherches récentes ?'
+          : (_isEs
+              ? '¿Realmente deseas borrar todas las búsquedas recientes?'
+              : 'Vuoi davvero cancellare tutte le ricerche recenti?'));
+  String get clear =>
+      _isEn ? 'Clear' : (_isFr ? 'Effacer' : (_isEs ? 'Borrar' : 'Cancella'));
+  String get noRecentSearches => _isEn
+      ? 'No recent searches.'
+      : (_isFr
+          ? 'Aucune recherche récente.'
+          : (_isEs
+              ? 'No hay búsquedas recientes.'
+              : 'Nessuna ricerca recente.'));
+  String get logCopiedToClipboard => _isEn
+      ? 'Log copied to clipboard'
+      : (_isFr
+          ? 'Journal copié dans le presse-papiers'
+          : (_isEs
+              ? 'Registro copiado al portapapeles'
+              : 'Log copiato negli appunti'));
+  String get systemLog => _isEn
+      ? 'System Log'
+      : (_isFr
+          ? 'Journal système'
+          : (_isEs ? 'Registro del sistema' : 'Log di Sistema'));
+  String get clearSystemLog => _isEn
+      ? 'Clear log'
+      : (_isFr
+          ? 'Vider le journal'
+          : (_isEs ? 'Vaciar registro' : 'Svuota log'));
+  String get copySystemLog => _isEn
+      ? 'Copy log'
+      : (_isFr
+          ? 'Copier le journal'
+          : (_isEs ? 'Copiar registro' : 'Copia log'));
+  String get donateWithPaypal => _isEn
+      ? 'Donate with PayPal'
+      : (_isFr
+          ? 'Faire un don avec PayPal'
+          : (_isEs ? 'Donar con PayPal' : 'Dona con PayPal'));
+  String get bankTransferTitle => _isEn
+      ? 'Bank Transfer'
+      : (_isFr
+          ? 'Virement bancaire'
+          : (_isEs ? 'Transferencia bancaria' : 'Bonifico Bancario'));
+  String get enableVideo => _isEn
+      ? 'Enable video'
+      : (_isFr
+          ? 'Activer la vidéo'
+          : (_isEs ? 'Activar vídeo' : 'Attiva video'));
 
   String get calendar => _isEn
       ? 'Calendar'
@@ -1448,7 +1959,9 @@ class AppLocalizations {
           : (_isEs ? 'Eliminar recordatorio' : 'Rimuovi promemoria'));
   String get noReminders => _isEn
       ? 'No reminders'
-      : (_isFr ? 'Aucun rappel' : (_isEs ? 'Sin recordatorios' : 'Nessun promemoria'));
+      : (_isFr
+          ? 'Aucun rappel'
+          : (_isEs ? 'Sin recordatorios' : 'Nessun promemoria'));
   String get writeReminder => _isEn
       ? 'Write your reminder here...'
       : (_isFr
@@ -1456,26 +1969,21 @@ class AppLocalizations {
           : (_isEs
               ? 'Escribe aquí tu recordatorio...'
               : 'Scrivi qui il tuo promemoria...'));
-  String get saveReminder => _isEn
-      ? 'Save'
-      : (_isFr ? 'Enregistrer' : (_isEs ? 'Guardar' : 'Salva'));
-  String get cancelReminder => _isEn
-      ? 'Cancel'
-      : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
+  String get saveReminder =>
+      _isEn ? 'Save' : (_isFr ? 'Enregistrer' : (_isEs ? 'Guardar' : 'Salva'));
+  String get cancelReminder =>
+      _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
   String get backToToday => _isEn
       ? 'Back to today'
       : (_isFr
           ? 'Retour à aujourd\'hui'
           : (_isEs ? 'Volver a hoy' : 'Torna a oggi'));
-  String get calendarToday => _isEn
-      ? 'Today'
-      : (_isFr ? 'Aujourd\'hui' : (_isEs ? 'Hoy' : 'Oggi'));
-  String get calendarTomorrow => _isEn
-      ? 'Tomorrow'
-      : (_isFr ? 'Demain' : (_isEs ? 'Mañana' : 'Domani'));
-  String get calendarYesterday => _isEn
-      ? 'Yesterday'
-      : (_isFr ? 'Hier' : (_isEs ? 'Ayer' : 'Ieri'));
+  String get calendarToday =>
+      _isEn ? 'Today' : (_isFr ? 'Aujourd\'hui' : (_isEs ? 'Hoy' : 'Oggi'));
+  String get calendarTomorrow =>
+      _isEn ? 'Tomorrow' : (_isFr ? 'Demain' : (_isEs ? 'Mañana' : 'Domani'));
+  String get calendarYesterday =>
+      _isEn ? 'Yesterday' : (_isFr ? 'Hier' : (_isEs ? 'Ayer' : 'Ieri'));
   String get share => _isEn
       ? 'Share'
       : (_isFr ? 'Partager' : (_isEs ? 'Compartir' : 'Condividi'));

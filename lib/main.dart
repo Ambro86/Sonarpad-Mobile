@@ -37,6 +37,7 @@ import 'screens/italiaonline_screen.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/podcast_episode_player_screen.dart';
 import 'screens/voice_dictionary_screen.dart';
+import 'screens/voiceover_list_test_screen.dart';
 
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
@@ -103,7 +104,8 @@ class SonarpadApp extends StatefulWidget {
 
 class _SonarpadAppState extends State<SonarpadApp> {
   static const _sharedMediaChannel = MethodChannel('sonarpad/shared_media');
-  static const _sharedMediaEvents = EventChannel('sonarpad/shared_media_events');
+  static const _sharedMediaEvents =
+      EventChannel('sonarpad/shared_media_events');
   final _navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription<Uri>? _linkSubscription;
   StreamSubscription<dynamic>? _sharedMediaSubscription;
@@ -200,7 +202,8 @@ class _SonarpadAppState extends State<SonarpadApp> {
       final basename = p.basename(originalFile.path);
       final displayName = _sharedMediaDisplayName(basename);
       final ext = p.extension(originalFile.path).toLowerCase();
-      final isAudio = ['.mp3', '.m4a', '.wav', '.ogg', '.flac', '.aac'].contains(ext);
+      final isAudio =
+          ['.mp3', '.m4a', '.wav', '.ogg', '.flac', '.aac'].contains(ext);
       final isVideo = ['.mp4', '.avi', '.mov', '.mkv'].contains(ext);
       final navigator = _navigatorKey.currentState;
       if (navigator == null) {
@@ -327,6 +330,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/info': (_) => const InfoScreen(),
         '/calendar': (_) => const CalendarScreen(),
         '/voice_dictionary': (_) => const VoiceDictionaryScreen(),
+        '/voiceover_list_test': (_) => const VoiceOverListTestScreen(),
       },
     );
   }
