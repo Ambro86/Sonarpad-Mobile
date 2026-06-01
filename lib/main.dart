@@ -198,6 +198,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
       if (!await originalFile.exists()) return;
 
       final basename = p.basename(originalFile.path);
+      final displayName = _sharedMediaDisplayName(basename);
       final ext = p.extension(originalFile.path).toLowerCase();
       final isAudio = ['.mp3', '.m4a', '.wav', '.ogg', '.flac', '.aac'].contains(ext);
       final isVideo = ['.mp4', '.avi', '.mov', '.mkv'].contains(ext);
@@ -210,7 +211,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
       if (isAudio || isVideo) {
         final episode = PodcastEpisode(
           id: basename,
-          title: basename,
+          title: displayName,
           audioUrl: originalFile.uri.toString(),
           publishedAt: DateTime.now(),
           description: '',
@@ -230,7 +231,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
 
       final lib = DocumentLibraryService();
       await lib.load();
-      final doc = await lib.importFile(originalFile, originalName: basename);
+      final doc = await lib.importFile(originalFile, originalName: displayName);
       await lib.add(doc);
 
       navigator.pushAndRemoveUntil(
@@ -249,6 +250,15 @@ class _SonarpadAppState extends State<SonarpadApp> {
     } catch (e) {
       debugPrint('SonarpadApp: Errore importazione file condiviso: $e');
     }
+  }
+
+  String _sharedMediaDisplayName(String basename) {
+    return basename.replaceFirst(
+      RegExp(
+        r'^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}_',
+      ),
+      '',
+    );
   }
 
   void setLocale(Locale newLocale) {

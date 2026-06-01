@@ -1207,6 +1207,9 @@ class AppLocalizations {
   String get settingsVoiceTestText => _isEn ? 'This is a test of the selected voice.' : (_isFr ? 'Ceci est un test de la voix sélectionnée.' : (_isEs ? 'Esta es una prueba de la voz seleccionada.' : 'Questo è un test della voce selezionata.'));
   String settingsVoiceTestError(Object error) => _isEn ? 'Voice test error: $error' : (_isFr ? 'Erreur du test vocal : $error' : (_isEs ? 'Error de prueba de voz: $error' : 'Errore test voce: $error'));
   String settingsVoiceSaveError(Object error) => _isEn ? 'TTS voice save error: $error' : (_isFr ? 'Erreur d’enregistrement de la voix TTS : $error' : (_isEs ? 'Error al guardar la voz TTS: $error' : 'Errore salvataggio voce TTS: $error'));
+  String get settingsUnsavedTitle => _isEn ? 'Unsaved changes' : (_isFr ? 'Modifications non enregistrées' : (_isEs ? 'Cambios sin guardar' : 'Modifiche non salvate'));
+  String get settingsUnsavedMessage => _isEn ? 'Do you want to save your changes before leaving settings?' : (_isFr ? 'Voulez-vous enregistrer les modifications avant de quitter les paramètres ?' : (_isEs ? '¿Quieres guardar los cambios antes de salir de ajustes?' : 'Vuoi salvare le modifiche prima di uscire dalle impostazioni?'));
+  String get settingsExitWithoutSaving => _isEn ? 'Exit without saving' : (_isFr ? 'Quitter sans enregistrer' : (_isEs ? 'Salir sin guardar' : 'Esci senza salvare'));
   String get settingsSystemLanguage => _isEn ? 'System language' : (_isFr ? 'Langue système' : (_isEs ? 'Idioma del sistema' : 'Lingua di sistema'));
   String get settingsSystemVoice => _isEn ? 'System voice' : (_isFr ? 'Voix système' : (_isEs ? 'Voz del sistema' : 'Voce di sistema'));
   String get settingsAutoBookmark => _isEn ? 'Enable automatic bookmark saving' : (_isFr ? 'Activer la sauvegarde automatique du signet' : (_isEs ? 'Habilitar guardado automático de marcadores' : 'Segnalibro automatico per testi e contenuti multimediali'));

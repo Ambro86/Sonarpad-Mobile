@@ -20,6 +20,8 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
+enum _SettingsLeaveAction { save, discard, cancel }
+
 class _SettingsScreenState extends State<SettingsScreen> {
   final _settings = AppSettingsService();
   final _flutterTts = FlutterTts();
@@ -46,6 +48,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _seekSliderStep = 60;
   final _audio = AudioPlayerService();
   String _savedTvSecretCode = '';
+  String _savedAppLanguage = 'it';
+  String _savedLanguageCode = 'it';
+  String _savedVoice = AppSettingsService.defaultVoiceForLanguage('it');
+  String _savedTtsEngine = 'edge';
+  String _savedSystemTtsLanguage = 'it-IT';
+  String? _savedSystemTtsVoice;
+  double _savedTtsSpeed = 1.0;
+  double _savedTtsPitch = 1.0;
+  bool _savedAutoBookmark = true;
+  bool _savedHomeGroupingEnabled = false;
+  int _savedSeekSliderStep = 60;
 
   String _formatTime(int totalSeconds) {
     if (totalSeconds < 60) return '$totalSeconds secondi';
@@ -100,20 +113,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
     setState(() {
       _appLanguage = appLang;
+      _savedAppLanguage = appLang;
       _edgeLanguages = edgeLanguages;
       _edgeVoices = edgeVoices;
       _languageCode = normalizedLanguage;
+      _savedLanguageCode = normalizedLanguage;
       _voice = _validVoiceForLanguage(normalizedLanguage, voice);
+      _savedVoice = _voice;
       _ttsSpeed = speed;
+      _savedTtsSpeed = speed;
       _ttsPitch = pitch;
+      _savedTtsPitch = pitch;
       _tvSecretCodeController.text = tvSecretCode;
       _savedTvSecretCode = tvSecretCode;
       _ttsEngine = ttsEngine;
+      _savedTtsEngine = ttsEngine;
       _systemTtsLanguage = sysLang;
+      _savedSystemTtsLanguage = sysLang;
       _systemTtsVoice = sysVoice;
+      _savedSystemTtsVoice = sysVoice;
       _autoBookmark = autoBookmark;
+      _savedAutoBookmark = autoBookmark;
       _homeGroupingEnabled = homeGrouping;
+      _savedHomeGroupingEnabled = homeGrouping;
       _seekSliderStep = seekSliderStep;
+      _savedSeekSliderStep = seekSliderStep;
       _loading = false;
     });
   }
@@ -160,14 +184,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     await _saveTtsSelection();
+    await _settings.saveAppLanguage(_appLanguage);
+    await _settings.saveTtsSpeed(_ttsSpeed);
+    await _settings.saveTtsPitch(_ttsPitch);
     await _settings.setTvSecretCode(rawCode);
-    _savedTvSecretCode = rawCode;
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.setHomeGroupingEnabled(_homeGroupingEnabled);
     await _settings.saveSeekSliderStep(_seekSliderStep);
+    _markSaved(rawCode);
 
     setState(() => _isSaving = false);
     if (!mounted) return;
+    if (_appLanguage != Localizations.localeOf(context).languageCode) {
+      SonarpadApp.setLocale(context, Locale(_appLanguage));
+    }
     await _showSaveResultDialog(
       title: codeChanged && rawCode.isNotEmpty
           ? l10n.sonarpadCodeValidTitle
@@ -201,14 +231,74 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _screenFocusNode.requestFocus();
   }
 
+  void _markSaved(String rawCode) {
+    _savedAppLanguage = _appLanguage;
+    _savedLanguageCode = _languageCode;
+    _savedVoice = _voice;
+    _savedTtsEngine = _ttsEngine;
+    _savedSystemTtsLanguage = _systemTtsLanguage;
+    _savedSystemTtsVoice = _systemTtsVoice;
+    _savedTtsSpeed = _ttsSpeed;
+    _savedTtsPitch = _ttsPitch;
+    _savedTvSecretCode = rawCode;
+    _savedAutoBookmark = _autoBookmark;
+    _savedHomeGroupingEnabled = _homeGroupingEnabled;
+    _savedSeekSliderStep = _seekSliderStep;
+  }
+
+  bool get _hasUnsavedChanges {
+    if (_loading) return false;
+    return _appLanguage != _savedAppLanguage ||
+        _languageCode != _savedLanguageCode ||
+        _voice != _savedVoice ||
+        _ttsEngine != _savedTtsEngine ||
+        _systemTtsLanguage != _savedSystemTtsLanguage ||
+        _systemTtsVoice != _savedSystemTtsVoice ||
+        _ttsSpeed != _savedTtsSpeed ||
+        _ttsPitch != _savedTtsPitch ||
+        _tvSecretCodeController.text.trim() != _savedTvSecretCode ||
+        _autoBookmark != _savedAutoBookmark ||
+        _homeGroupingEnabled != _savedHomeGroupingEnabled ||
+        _seekSliderStep != _savedSeekSliderStep;
+  }
+
+  Future<bool> _confirmLeaveSettings() async {
+    if (!_hasUnsavedChanges || _isSaving) return true;
+    final l10n = AppLocalizations.of(context);
+    final result = await showDialog<_SettingsLeaveAction>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.settingsUnsavedTitle),
+        content: Text(l10n.settingsUnsavedMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, _SettingsLeaveAction.cancel),
+            child: Text(l10n.annulla),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, _SettingsLeaveAction.discard),
+            child: Text(l10n.settingsExitWithoutSaving),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, _SettingsLeaveAction.save),
+            child: Text(l10n.saveSettings),
+          ),
+        ],
+      ),
+    );
+
+    if (result == _SettingsLeaveAction.discard) return true;
+    if (result == _SettingsLeaveAction.save) {
+      await _save();
+      return !_hasUnsavedChanges;
+    }
+    return false;
+  }
+
   Future<void> _testVoice() async {
     final l10n = AppLocalizations.of(context);
     setState(() => _testingVoice = true);
     try {
-      await _saveTtsSelection();
-      await _settings.saveTtsSpeed(_ttsSpeed);
-      await _settings.saveTtsPitch(_ttsPitch);
-
       if (_ttsEngine == 'system') {
         await _flutterTts
             .setSpeechRate(_ttsSpeed * 0.5); // flutter_tts usa range 0-1
@@ -253,17 +343,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.saveSystemTtsVoice(_systemTtsVoice);
   }
 
-  void _persistTtsSelection() {
-    unawaited(
-      _saveTtsSelection().catchError((Object error) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).settingsVoiceSaveError(error))),
-        );
-      }),
-    );
-  }
-
   String _validVoiceForLanguage(String languageCode, String voice) {
     final voices = AppSettingsService.voicesForLanguageFrom(
       _edgeVoices,
@@ -281,18 +360,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return (next * 10).round() / 10;
   }
 
-  void _setTtsSpeed(double value, {bool persist = false}) {
+  void _setTtsSpeed(double value) {
     setState(() => _ttsSpeed = value);
-    if (persist) {
-      unawaited(_settings.saveTtsSpeed(value));
-    }
   }
 
-  void _setTtsPitch(double value, {bool persist = false}) {
+  void _setTtsPitch(double value) {
     setState(() => _ttsPitch = value);
-    if (persist) {
-      unawaited(_settings.saveTtsPitch(value));
-    }
   }
 
   Future<void> _requestSecretCode() async {
@@ -403,9 +476,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _edgeVoices,
       _languageCode,
     );
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings)),
-      body: _loading
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldLeave = await _confirmLeaveSettings();
+        if (!context.mounted || !shouldLeave) return;
+        Navigator.of(context).pop();
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.settings)),
+        body: _loading
           ? Center(
               child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : Focus(
@@ -422,12 +503,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       DropdownMenuItem(value: 'fr', child: Text(l10n.french)),
                       DropdownMenuItem(value: 'es', child: Text(l10n.spanish)),
                     ],
-                    onChanged: (value) async {
+                    onChanged: (value) {
                       if (value == null || value == _appLanguage) return;
                       setState(() => _appLanguage = value);
-                      await _settings.saveAppLanguage(value);
-                      if (!context.mounted) return;
-                      SonarpadApp.setLocale(context, Locale(value));
                     },
                   ),
                 const SizedBox(height: 12),
@@ -446,7 +524,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onChanged: (value) {
                     if (value == null) return;
                     setState(() => _ttsEngine = value);
-                    _persistTtsSelection();
                   },
                 ),
                 const SizedBox(height: 12),
@@ -470,7 +547,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           next,
                         );
                       });
-                      _persistTtsSelection();
                     },
                   ),
                   const SizedBox(height: 12),
@@ -491,7 +567,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               _languageCode,
                             ),
                       );
-                      _persistTtsSelection();
                     },
                   ),
                 ] else ...[
@@ -533,7 +608,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 _systemTtsLanguage = value;
                                 _systemTtsVoice = null;
                               });
-                              _persistTtsSelection();
                             },
                           ),
                           const SizedBox(height: 12),
@@ -560,7 +634,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               setState(() {
                                 _systemTtsVoice = value;
                               });
-                              _persistTtsSelection();
                             },
                           ),
                         ],
@@ -586,11 +659,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           '${_sliderStep(_ttsSpeed, -0.1).toStringAsFixed(1)}x',
                       onIncrease: () => _setTtsSpeed(
                         _sliderStep(_ttsSpeed, 0.1),
-                        persist: true,
                       ),
                       onDecrease: () => _setTtsSpeed(
                         _sliderStep(_ttsSpeed, -0.1),
-                        persist: true,
                       ),
                       child: ExcludeSemantics(
                         child: Slider(
@@ -599,7 +670,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           max: 2.0,
                           divisions: 15,
                           onChanged: _setTtsSpeed,
-                          onChangeEnd: _settings.saveTtsSpeed,
                         ),
                       ),
                     ),
@@ -623,11 +693,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           '${_sliderStep(_ttsPitch, -0.1).toStringAsFixed(1)}x',
                       onIncrease: () => _setTtsPitch(
                         _sliderStep(_ttsPitch, 0.1),
-                        persist: true,
                       ),
                       onDecrease: () => _setTtsPitch(
                         _sliderStep(_ttsPitch, -0.1),
-                        persist: true,
                       ),
                       child: ExcludeSemantics(
                         child: Slider(
@@ -636,7 +704,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           max: 2.0,
                           divisions: 15,
                           onChanged: _setTtsPitch,
-                          onChangeEnd: _settings.saveTtsPitch,
                         ),
                       ),
                     ),
@@ -715,8 +782,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             divisions: 29,
                             onChanged: (val) =>
                                 setState(() => _seekSliderStep = val.toInt()),
-                            onChangeEnd: (val) =>
-                                _settings.saveSeekSliderStep(val.toInt()),
                           ),
                         ),
                       ),
@@ -769,9 +834,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: const Icon(Icons.description),
                   label: Text(l10n.settingsViewSysLog),
                 ),
-                ],
-              ),
+              ],
             ),
+          ),
+      ),
     );
   }
 }

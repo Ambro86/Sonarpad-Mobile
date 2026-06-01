@@ -5,8 +5,10 @@ import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../utils/app_logger.dart';
 
 enum _MediaFormat {
   mp3('mp3', 'MP3'),
@@ -39,6 +41,9 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   final _outputController = TextEditingController();
   final _imageController = TextEditingController();
   final _bitrateController = TextEditingController(text: '192');
+  String _inputPath = '';
+  String _outputPath = '';
+  String _imagePath = '';
 
   _MediaFormat _format = _MediaFormat.mp3;
   int _oggQuality = 5;
@@ -103,18 +108,26 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     if (path == null || path.isEmpty) return;
 
     setState(() {
-      _inputController.text = path;
-      if (_outputController.text.trim().isEmpty) {
-        _outputController.text = _defaultOutputPath(path);
-      }
+      _inputPath = path;
+      _inputController.text = _shortPath(path, parentCount: 1);
     });
+    if (_outputPath.isEmpty) {
+      final outputPath = await _defaultOutputPath(path);
+      if (!mounted) return;
+      setState(() {
+        _outputPath = outputPath;
+        _outputController.text = _shortPath(outputPath, parentCount: 2);
+      });
+    }
   }
 
   Future<void> _pickOutput() async {
     final l10n = AppLocalizations.of(context);
-    final fileName = _inputController.text.trim().isEmpty
-        ? 'converted.${_format.extension}'
-        : p.basename(_defaultOutputPath(_inputController.text.trim()));
+    final suggestedPath = _inputPath.isEmpty
+        ? null
+        : await _defaultOutputPath(_inputPath);
+    final fileName =
+        suggestedPath == null ? 'converted.${_format.extension}' : p.basename(suggestedPath);
     final path = await FilePicker.saveFile(
       dialogTitle: l10n.convertMediaOutput,
       fileName: fileName,
@@ -122,7 +135,10 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       allowedExtensions: [_format.extension],
     );
     if (path == null || path.isEmpty) return;
-    setState(() => _outputController.text = path);
+    setState(() {
+      _outputPath = path;
+      _outputController.text = _shortPath(path, parentCount: 2);
+    });
   }
 
   Future<void> _pickImage() async {
@@ -134,13 +150,16 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         ? null
         : result.files.first.path;
     if (path == null || path.isEmpty) return;
-    setState(() => _imageController.text = path);
+    setState(() {
+      _imagePath = path;
+      _imageController.text = _shortPath(path, parentCount: 1);
+    });
   }
 
   Future<void> _convert() async {
     final l10n = AppLocalizations.of(context);
-    final input = _inputController.text.trim();
-    final output = _outputController.text.trim();
+    final input = _inputPath;
+    final output = _outputPath;
 
     if (input.isEmpty) {
       _showSnack(l10n.convertMediaNoInput);
@@ -159,7 +178,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       return;
     }
     if (_requiresImage(input)) {
-      final image = _imageController.text.trim();
+      final image = _imagePath;
       if (image.isEmpty) {
         _showSnack(l10n.convertMediaNoImage);
         return;
@@ -184,17 +203,35 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
 
     try {
       final arguments = await _buildArguments(input, output, bitrate ?? 192);
+      await AppLogger.log(
+        'Convert media: start input="$input" output="$output" '
+        'format=${_format.label} bitrate=${bitrate ?? 192} '
+        'image="${_requiresImage(input) ? _imagePath : ''}" '
+        'args=${arguments.map(_quoteLogArg).join(' ')}',
+      );
       final session = await FFmpegKit.executeWithArguments(arguments);
       final returnCode = await session.getReturnCode();
+      final logs = await session.getAllLogsAsString() ?? '';
       if (!ReturnCode.isSuccess(returnCode)) {
-        final logs = await session.getAllLogsAsString() ?? '';
+        await AppLogger.log(
+          'Convert media: failed returnCode=${returnCode?.getValue()} '
+          'output="$output" logs="${_compactLog(logs)}"',
+        );
         throw logs.trim().isEmpty ? returnCode?.getValue() ?? 'FFmpeg' : logs;
       }
 
+      final outputFile = File(output);
+      final exists = await outputFile.exists();
+      final length = exists ? await outputFile.length() : 0;
+      await AppLogger.log(
+        'Convert media: completed output="$output" exists=$exists bytes=$length '
+        'returnCode=${returnCode?.getValue()}',
+      );
       if (!mounted) return;
       setState(() => _status = l10n.convertMediaDone);
       _showSnack(l10n.convertMediaDone);
     } catch (error) {
+      await AppLogger.log('Convert media: error $error');
       if (!mounted) return;
       setState(() => _status = l10n.convertMediaReady);
       _showSnack(l10n.convertMediaFailed(error));
@@ -203,13 +240,24 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     }
   }
 
+  String _quoteLogArg(String value) {
+    if (!value.contains(' ')) return value;
+    return '"${value.replaceAll('"', r'\"')}"';
+  }
+
+  String _compactLog(String value) {
+    final compact = value.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (compact.length <= 1200) return compact;
+    return '${compact.substring(0, 1200)}...';
+  }
+
   Future<List<String>> _buildArguments(
     String input,
     String output,
     int bitrate,
   ) async {
     final audioInputToVideo = _isVideoFormat(_format) && !_isVideoInput(input);
-    final coverPath = audioInputToVideo ? _imageController.text.trim() : null;
+    final coverPath = audioInputToVideo ? _imagePath : null;
 
     return [
       '-y',
@@ -339,24 +387,35 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
 
   bool get _canConvert {
     if (_running) return false;
-    if (_requiresImage(_inputController.text.trim()) &&
-        _imageController.text.trim().isEmpty) {
+    if (_requiresImage(_inputPath) && _imagePath.isEmpty) {
       return false;
     }
     return true;
   }
 
-  String _defaultOutputPath(String inputPath) {
-    final dir = p.dirname(inputPath);
+  Future<String> _defaultOutputPath(String inputPath) async {
+    final documentsDir = await getApplicationDocumentsDirectory();
+    final mediaDir = Directory(p.join(documentsDir.path, 'media'));
+    if (!await mediaDir.exists()) {
+      await mediaDir.create(recursive: true);
+    }
     final stem = p.basenameWithoutExtension(inputPath);
-    return p.join(dir, '${stem}_converted.${_format.extension}');
+    return p.join(mediaDir.path, '${stem}_converted.${_format.extension}');
   }
 
-  void _onFormatChanged(_MediaFormat? value) {
+  Future<void> _onFormatChanged(_MediaFormat? value) async {
     if (value == null) return;
-    final oldSuggested = _inputController.text.trim().isEmpty
-        ? ''
-        : _defaultOutputPath(_inputController.text.trim());
+    final input = _inputPath;
+    final oldSuggested = input.isEmpty ? '' : await _defaultOutputPath(input);
+    String? newSuggested;
+    if (input.isNotEmpty &&
+        (_outputPath.isEmpty || _outputPath == oldSuggested)) {
+      final previousFormat = _format;
+      _format = value;
+      newSuggested = await _defaultOutputPath(input);
+      _format = previousFormat;
+    }
+    if (!mounted) return;
     setState(() {
       _format = value;
       if (_format == _MediaFormat.opus &&
@@ -367,12 +426,21 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
           _bitrateController.text.trim() == '160') {
         _bitrateController.text = '192';
       }
-      if (_inputController.text.trim().isNotEmpty &&
-          (_outputController.text.trim().isEmpty ||
-              _outputController.text.trim() == oldSuggested)) {
-        _outputController.text = _defaultOutputPath(_inputController.text.trim());
+      if (newSuggested != null) {
+        _outputPath = newSuggested;
+        _outputController.text = _shortPath(newSuggested, parentCount: 2);
       }
     });
+  }
+
+  String _shortPath(String path, {required int parentCount}) {
+    final normalized = p.normalize(path);
+    final parts = p.split(normalized);
+    final fileName = parts.isEmpty ? path : parts.last;
+    final parents = parts.length <= 1
+        ? const <String>[]
+        : parts.sublist(0, parts.length - 1).reversed.take(parentCount).toList().reversed;
+    return [...parents, fileName].join('/');
   }
 
   void _showSnack(String message) {
@@ -417,7 +485,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            if (_requiresImage(_inputController.text.trim())) ...[
+            if (_requiresImage(_inputPath)) ...[
               TextField(
                 controller: _imageController,
                 readOnly: true,

@@ -12,24 +12,13 @@ class VoiceDictionaryScreen extends StatefulWidget {
 
 class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
   final _service = VoiceDictionaryService();
-  final _originalController = TextEditingController();
-  final _replacementController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
   var _entries = <VoiceDictionaryEntry>[];
-  var _matchCase = true;
   var _loading = true;
 
   @override
   void initState() {
     super.initState();
     _load();
-  }
-
-  @override
-  void dispose() {
-    _originalController.dispose();
-    _replacementController.dispose();
-    super.dispose();
   }
 
   Future<void> _load() async {
@@ -41,18 +30,13 @@ class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
     });
   }
 
-  Future<void> _addEntry() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    await _service.addEntry(
-      VoiceDictionaryEntry(
-        original: _originalController.text,
-        replacement: _replacementController.text,
-        matchCase: _matchCase,
-      ),
+  Future<void> _showAddEntryDialog() async {
+    final entry = await showDialog<VoiceDictionaryEntry>(
+      context: context,
+      builder: (_) => const _VoiceDictionaryEntryDialog(),
     );
-    _originalController.clear();
-    _replacementController.clear();
+    if (entry == null) return;
+    await _service.addEntry(entry);
     await _load();
   }
 
@@ -71,51 +55,10 @@ class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.voiceDictionaryAdd,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _originalController,
-                    decoration: InputDecoration(
-                      labelText: l10n.voiceDictionaryOriginalWord,
-                    ),
-                    textInputAction: TextInputAction.next,
-                    validator: (value) =>
-                        value == null || value.trim().isEmpty
-                            ? l10n.voiceDictionaryOriginalRequired
-                            : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _replacementController,
-                    decoration: InputDecoration(
-                      labelText: l10n.voiceDictionaryReplacementWord,
-                    ),
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => _addEntry(),
-                  ),
-                  const SizedBox(height: 8),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l10n.voiceDictionaryMatchCase),
-                    value: _matchCase,
-                    onChanged: (value) => setState(() => _matchCase = value),
-                  ),
-                  const SizedBox(height: 8),
-                  FilledButton.icon(
-                    onPressed: _addEntry,
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n.ok),
-                  ),
-                ],
-              ),
+            FilledButton.icon(
+              onPressed: _showAddEntryDialog,
+              icon: const Icon(Icons.add),
+              label: Text(l10n.voiceDictionaryAdd),
             ),
             const SizedBox(height: 24),
             Text(
@@ -148,6 +91,94 @@ class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _VoiceDictionaryEntryDialog extends StatefulWidget {
+  const _VoiceDictionaryEntryDialog();
+
+  @override
+  State<_VoiceDictionaryEntryDialog> createState() =>
+      _VoiceDictionaryEntryDialogState();
+}
+
+class _VoiceDictionaryEntryDialogState
+    extends State<_VoiceDictionaryEntryDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _originalController = TextEditingController();
+  final _replacementController = TextEditingController();
+  var _matchCase = true;
+
+  @override
+  void dispose() {
+    _originalController.dispose();
+    _replacementController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.of(context).pop(
+      VoiceDictionaryEntry(
+        original: _originalController.text,
+        replacement: _replacementController.text,
+        matchCase: _matchCase,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(l10n.voiceDictionaryAdd),
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _originalController,
+                decoration: InputDecoration(
+                  labelText: l10n.voiceDictionaryOriginalWord,
+                ),
+                textInputAction: TextInputAction.next,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? l10n.voiceDictionaryOriginalRequired
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _replacementController,
+                decoration: InputDecoration(
+                  labelText: l10n.voiceDictionaryReplacementWord,
+                ),
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (_) => _submit(),
+              ),
+              const SizedBox(height: 8),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(l10n.voiceDictionaryMatchCase),
+                value: _matchCase,
+                onChanged: (value) => setState(() => _matchCase = value),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.annulla),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(l10n.ok),
+        ),
+      ],
     );
   }
 }
