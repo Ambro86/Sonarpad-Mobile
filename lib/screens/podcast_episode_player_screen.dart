@@ -412,15 +412,6 @@ class _PodcastEpisodePlayerScreenState
               const SizedBox(height: 24),
               VolumeSlider(audioPlayer: _audio),
             ],
-            const SizedBox(height: 24),
-            OutlinedButton.icon(
-              onPressed: () {
-                AppLogger.log('PodcastPlayer: bottom back pressed, $_logSubject');
-                Navigator.pop(context);
-              },
-              icon: const Icon(Icons.arrow_back),
-              label: Text(l10n.back),
-            ),
           ],
         ),
     );

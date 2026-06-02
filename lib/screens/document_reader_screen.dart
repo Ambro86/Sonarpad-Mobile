@@ -797,9 +797,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       final Map<CustomSemanticsAction, VoidCallback> actions = {};
       if (_bookmarkIndex > 0) {
         actions[
-          CustomSemanticsAction(label: l10n.documentRemoveBookmarkAction)
-        ] = () => _removeBookmark();
-        actions[
           CustomSemanticsAction(label: l10n.documentReplaceBookmarkAction)
         ] = () => _setBookmark(i);
       } else {
@@ -915,36 +912,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
-  Future<void> _removeBookmark() async {
-    setState(() => _bookmarkIndex = -1);
-
-    final newDoc = DocumentItem(
-      id: _currentDoc.id,
-      name: _currentDoc.name,
-      path: _currentDoc.path,
-      extension: _currentDoc.extension,
-      addedAt: _currentDoc.addedAt,
-      bookmarkIndex: 0, // Reset to 0 (default)
-      editedTextPath: _currentDoc.editedTextPath,
-      isTemporary: _currentDoc.isTemporary,
-    );
-
-    setState(() {
-      _currentDoc = newDoc;
-    });
-
-    if (!_currentDoc.isTemporary) {
-      final lib = DocumentLibraryService();
-      await lib.load();
-      await lib.update(newDoc);
-    }
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).bookmarkRemoved)),
-      );
-    }
-  }
 }
 
 // ---------------------------------------------------------------------------

@@ -796,7 +796,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       labelText: l10n.settingsSecretCode,
                       border: const OutlineInputBorder(),
                     ),
-                    obscureText: true,
+                    obscureText: !Platform.isAndroid,
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
