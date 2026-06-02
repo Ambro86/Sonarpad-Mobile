@@ -198,14 +198,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (_appLanguage != Localizations.localeOf(context).languageCode) {
       SonarpadApp.setLocale(context, Locale(_appLanguage));
     }
-    await _showSaveResultDialog(
-      title: codeChanged && rawCode.isNotEmpty
-          ? l10n.sonarpadCodeValidTitle
-          : l10n.settingsSavedTitle,
-      message: codeChanged && rawCode.isNotEmpty
-          ? l10n.sonarpadCodeValidMessage
-          : l10n.settingsSaved,
+    FocusScope.of(context).unfocus();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          codeChanged && rawCode.isNotEmpty
+              ? l10n.sonarpadCodeValidMessage
+              : l10n.settingsSaved,
+        ),
+      ),
     );
+    _screenFocusNode.requestFocus();
   }
 
   Future<void> _showSaveResultDialog({

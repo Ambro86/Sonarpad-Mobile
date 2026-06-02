@@ -811,6 +811,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           controller: _scrollController,
           index: i,
           child: Semantics(
+            key: ValueKey('document_chunk_semantics_$i'),
             container: true,
             hint: hintText,
             onTap: canEdit ? () => _editParagraph(i) : null,
