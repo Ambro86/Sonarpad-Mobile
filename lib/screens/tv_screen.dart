@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
+import '../l10n/app_localizations.dart';
+import '../l10n/ui_radio_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
 import 'favorite_tvs_screen.dart';
@@ -171,6 +173,19 @@ class _TvCategoryScreen extends StatefulWidget {
 
 class _TvCategoryScreenState extends State<_TvCategoryScreen> {
   final _service = TvService();
+  List<TvChannel> _favorites = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    final favorites = await _service.loadFavorites();
+    if (!mounted) return;
+    setState(() => _favorites = favorites);
+  }
 
   TvProgram? _currentProgramFor(TvChannel channel) {
     final normalizedName = _service.normalizeChannelName(channel.name);
@@ -187,26 +202,30 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
     return channel.name;
   }
 
-  Future<void> _addToFavorites(TvChannel channel) async {
+  bool _isFavorite(TvChannel channel) =>
+      _favorites.any((favorite) => favorite.name == channel.name);
+
+  Future<void> _toggleFavorite(TvChannel channel) async {
+    final l10n = AppLocalizations.of(context);
     final favs = await _service.loadFavorites();
-    if (!favs.any((c) => c.name == channel.name)) {
-      favs.add(channel);
-      await _service.saveFavorites(favs);
-      if (!mounted) return;
-      SemanticsService.sendAnnouncement(
-        View.of(context),
-        '${channel.name} aggiunto ai preferiti',
-        TextDirection.ltr,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${channel.name} aggiunto ai preferiti')),
-      );
-    } else {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${channel.name} è già nei preferiti')),
-      );
-    }
+    final wasFavorite = favs.any((c) => c.name == channel.name);
+    final next = wasFavorite
+        ? favs.where((c) => c.name != channel.name).toList()
+        : [...favs, channel];
+    await _service.saveFavorites(next);
+    if (!mounted) return;
+    setState(() => _favorites = next);
+    final message = wasFavorite
+        ? l10n.radioFavoriteRemoved(channel.name)
+        : l10n.radioFavoriteAdded(channel.name);
+    SemanticsService.sendAnnouncement(
+      View.of(context),
+      message,
+      TextDirection.ltr,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -220,6 +239,7 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
           final channel = widget.channels[index];
           final currentProgram = _currentProgramFor(channel);
           final semanticsLabel = _channelLabel(channel, currentProgram);
+          final isFavorite = _isFavorite(channel);
 
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -231,8 +251,11 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                 hint: 'Tocca per aprire il canale TV',
                 onTap: () => widget.onOpenChannel(channel),
                 customSemanticsActions: {
-                  const CustomSemanticsAction(label: 'Aggiungi ai preferiti'):
-                      () => _addToFavorites(channel),
+                  CustomSemanticsAction(
+                    label: isFavorite
+                        ? AppLocalizations.of(context).radioRemoveFavorite
+                        : AppLocalizations.of(context).radioAddFavorite,
+                  ): () => _toggleFavorite(channel),
                 },
                 child: ExcludeSemantics(
                   child: FilledButton(

@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../l10n/ui_radio_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
+import '../services/radio_service.dart';
+import '../services/tv_service.dart';
 import '../widgets/volume_slider.dart';
 import 'package:video_player/video_player.dart';
 import '../services/app_settings_service.dart';
@@ -11,7 +14,13 @@ import '../utils/app_logger.dart';
 class RadioPlayerScreen extends StatefulWidget {
   final RadioStation station;
   final bool isVideoSupported;
-  const RadioPlayerScreen({super.key, required this.station, this.isVideoSupported = false});
+  final TvChannel? tvChannel;
+  const RadioPlayerScreen({
+    super.key,
+    required this.station,
+    this.isVideoSupported = false,
+    this.tvChannel,
+  });
 
   @override
   State<RadioPlayerScreen> createState() => _RadioPlayerScreenState();
@@ -23,6 +32,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   
   VideoPlayerController? _videoController;
   bool _isVideoEnabled = false;
+  bool _isFavorite = false;
 
   bool _loading = false;
   String? _error;
@@ -32,10 +42,20 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
+      _isFavorite = await _loadIsFavorite();
       if (!mounted) return;
       setState(() {});
       _play();
     });
+  }
+
+  Future<bool> _loadIsFavorite() async {
+    if (widget.tvChannel != null) {
+      final favorites = await TvService().loadFavorites();
+      return favorites.any((item) => item.name == widget.tvChannel!.name);
+    }
+    final favorites = await RadioService().loadFavorites();
+    return favorites.any((item) => item.streamUrl == widget.station.streamUrl);
   }
 
   Future<void> _play() async {
@@ -91,6 +111,51 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     setState(() => _isVideoEnabled = enable);
     await _settings.setVideoEnabled(enable);
     _play();
+  }
+
+  Future<void> _toggleFavorite() async {
+    final l10n = AppLocalizations.of(context);
+    if (widget.tvChannel != null) {
+      final service = TvService();
+      final channel = widget.tvChannel!;
+      final favorites = await service.loadFavorites();
+      final alreadyFavorite = favorites.any((item) => item.name == channel.name);
+      final next = alreadyFavorite
+          ? favorites.where((item) => item.name != channel.name).toList()
+          : [...favorites, channel];
+      await service.saveFavorites(next);
+      if (!mounted) return;
+      setState(() => _isFavorite = !alreadyFavorite);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(alreadyFavorite
+              ? l10n.radioFavoriteRemoved(channel.name)
+              : l10n.radioFavoriteAdded(channel.name)),
+        ),
+      );
+      return;
+    }
+
+    final service = RadioService();
+    final favorites = await service.loadFavorites();
+    final alreadyFavorite = favorites.any(
+      (item) => item.streamUrl == widget.station.streamUrl,
+    );
+    final next = alreadyFavorite
+        ? favorites
+            .where((item) => item.streamUrl != widget.station.streamUrl)
+            .toList()
+        : [...favorites, widget.station];
+    await service.saveFavorites(next);
+    if (!mounted) return;
+    setState(() => _isFavorite = !alreadyFavorite);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(alreadyFavorite
+            ? l10n.radioFavoriteRemoved(widget.station.name)
+            : l10n.radioFavoriteAdded(widget.station.name)),
+      ),
+    );
   }
 
   @override
@@ -175,9 +240,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           ],
           const SizedBox(height: 24),
           OutlinedButton.icon(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back),
-            label: Text(l10n.back),
+            onPressed: _toggleFavorite,
+            icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border),
+            label: Text(
+              _isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
+            ),
           ),
         ],
       ),

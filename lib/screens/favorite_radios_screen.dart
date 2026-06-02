@@ -52,14 +52,15 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
     );
   }
 
-  void _play(RadioStation station) {
-    Navigator.push(
+  Future<void> _play(RadioStation station) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/radio/player'),
         builder: (_) => RadioPlayerScreen(station: station),
       ),
     );
+    await _loadFavorites();
   }
 
   Future<void> _handleAction(_RadioAction action, int index) async {

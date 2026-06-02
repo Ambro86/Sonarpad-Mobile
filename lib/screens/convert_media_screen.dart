@@ -202,31 +202,33 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     });
 
     try {
-      final arguments = await _buildArguments(input, output, bitrate ?? 192);
-      await AppLogger.log(
-        'Convert media: start input="$input" output="$output" '
-        'format=${_format.label} bitrate=${bitrate ?? 192} '
-        'image="${_requiresImage(input) ? _imagePath : ''}" '
-        'args=${arguments.map(_quoteLogArg).join(' ')}',
-      );
-      final session = await FFmpegKit.executeWithArguments(arguments);
-      final returnCode = await session.getReturnCode();
-      final logs = await session.getAllLogsAsString() ?? '';
-      if (!ReturnCode.isSuccess(returnCode)) {
+      await _runWithProgressDialog(l10n, () async {
+        final arguments = await _buildArguments(input, output, bitrate ?? 192);
         await AppLogger.log(
-          'Convert media: failed returnCode=${returnCode?.getValue()} '
-          'output="$output" logs="${_compactLog(logs)}"',
+          'Convert media: start input="$input" output="$output" '
+          'format=${_format.label} bitrate=${bitrate ?? 192} '
+          'image="${_requiresImage(input) ? _imagePath : ''}" '
+          'args=${arguments.map(_quoteLogArg).join(' ')}',
         );
-        throw logs.trim().isEmpty ? returnCode?.getValue() ?? 'FFmpeg' : logs;
-      }
+        final session = await FFmpegKit.executeWithArguments(arguments);
+        final returnCode = await session.getReturnCode();
+        final logs = await session.getAllLogsAsString() ?? '';
+        if (!ReturnCode.isSuccess(returnCode)) {
+          await AppLogger.log(
+            'Convert media: failed returnCode=${returnCode?.getValue()} '
+            'output="$output" logs="${_compactLog(logs)}"',
+          );
+          throw logs.trim().isEmpty ? returnCode?.getValue() ?? 'FFmpeg' : logs;
+        }
 
-      final outputFile = File(output);
-      final exists = await outputFile.exists();
-      final length = exists ? await outputFile.length() : 0;
-      await AppLogger.log(
-        'Convert media: completed output="$output" exists=$exists bytes=$length '
-        'returnCode=${returnCode?.getValue()}',
-      );
+        final outputFile = File(output);
+        final exists = await outputFile.exists();
+        final length = exists ? await outputFile.length() : 0;
+        await AppLogger.log(
+          'Convert media: completed output="$output" exists=$exists bytes=$length '
+          'returnCode=${returnCode?.getValue()}',
+        );
+      });
       if (!mounted) return;
       setState(() {
         _running = false;
@@ -241,6 +243,50 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     } finally {
       if (mounted) setState(() => _running = false);
     }
+  }
+
+  Future<void> _runWithProgressDialog(
+    AppLocalizations l10n,
+    Future<void> Function() task,
+  ) async {
+    final taskFuture = task();
+    var closeAttached = false;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        void closeDialog() {
+          if (!dialogContext.mounted) return;
+          Navigator.of(dialogContext).pop();
+        }
+
+        if (!closeAttached) {
+          closeAttached = true;
+          taskFuture.then(
+            (_) => closeDialog(),
+            onError: (error, stackTrace) => closeDialog(),
+          );
+        }
+
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(l10n.convertMediaRunning),
+                const SizedBox(height: 16),
+                const LinearProgressIndicator(),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    await taskFuture;
   }
 
   String _quoteLogArg(String value) {

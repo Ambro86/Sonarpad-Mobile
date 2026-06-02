@@ -74,20 +74,6 @@ class AppLocalizations {
       : (_isFr
           ? 'Recherches et utilitaires'
           : (_isEs ? 'Búsquedas y utilidades' : 'Ricerche e utilità'));
-  String get voiceOverListTestTitle =>
-      _isEn ? 'Test' : (_isFr ? 'Test' : (_isEs ? 'Prueba' : 'Prova'));
-  String voiceOverListTestRow(int current, int total) => _isEn
-      ? 'Row $current of $total'
-      : (_isFr
-          ? 'Ligne $current sur $total'
-          : (_isEs ? 'Fila $current de $total' : 'Riga $current di $total'));
-  String voiceOverListTestContent(int current) => _isEn
-      ? 'Test content $current'
-      : (_isFr
-          ? 'Contenu de test $current'
-          : (_isEs
-              ? 'Contenido de prueba $current'
-              : 'Contenuto di prova $current'));
   String get voiceDictionaryTitle => _isEn
       ? 'Voice Dictionary'
       : (_isFr
@@ -1140,6 +1126,11 @@ class AppLocalizations {
   String get documentTypeLabel => _isEn
       ? 'Document'
       : (_isFr ? 'Document' : (_isEs ? 'Documento' : 'Documento'));
+  String get documentPosition => _isEn
+      ? 'Document position'
+      : (_isFr
+          ? 'Position du document'
+          : (_isEs ? 'Posición del documento' : 'Posizione documento'));
   String get folderTypeLabel =>
       _isEn ? 'Folder' : (_isFr ? 'Dossier' : (_isEs ? 'Carpeta' : 'Cartella'));
   String documentAddedOn(String date) => _isEn

@@ -545,6 +545,31 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
+  void _seekDocumentToPercent(double percent) {
+    if (_chunks.isEmpty) return;
+    final clampedPercent = percent.clamp(0.0, 100.0);
+    final maxIndex = _chunks.length - 1;
+    final targetIndex = ((clampedPercent / 100) * maxIndex).round();
+    setState(() {
+      _bookmarkIndex = targetIndex;
+      _playingChunkIndex = targetIndex;
+    });
+    _scrollToChunk(targetIndex);
+  }
+
+  void _seekDocumentByPercent(double delta) {
+    _seekDocumentToPercent(_documentProgressPercent + delta);
+  }
+
+  double get _documentProgressPercent {
+    if (_chunks.isEmpty) return 0;
+    final activeIndex = _playingChunkIndex >= 0
+        ? _playingChunkIndex
+        : _bookmarkIndex.clamp(0, _chunks.length - 1);
+    if (_chunks.length == 1) return 100;
+    return (activeIndex / (_chunks.length - 1)) * 100;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -622,6 +647,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           icon: const Icon(Icons.stop),
                           label: Text(l10n.stopReading),
                         ),
+                        if (_chunks.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          _DocumentPositionSlider(
+                            value: _documentProgressPercent,
+                            label: l10n.documentPosition,
+                            onChanged: _seekDocumentToPercent,
+                            onIncrease: () => _seekDocumentByPercent(10),
+                            onDecrease: () => _seekDocumentByPercent(-10),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -953,6 +988,48 @@ class _ExtBadge extends StatelessWidget {
           color: Colors.white,
           fontSize: 11,
           fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+class _DocumentPositionSlider extends StatelessWidget {
+  const _DocumentPositionSlider({
+    required this.value,
+    required this.label,
+    required this.onChanged,
+    required this.onIncrease,
+    required this.onDecrease,
+  });
+
+  final double value;
+  final String label;
+  final ValueChanged<double> onChanged;
+  final VoidCallback onIncrease;
+  final VoidCallback onDecrease;
+
+  @override
+  Widget build(BuildContext context) {
+    final percent = value.round().clamp(0, 100);
+    final increased = (percent + 10).clamp(0, 100);
+    final decreased = (percent - 10).clamp(0, 100);
+
+    return Semantics(
+      slider: true,
+      label: label,
+      value: '$percent%',
+      increasedValue: '$increased%',
+      decreasedValue: '$decreased%',
+      onIncrease: onIncrease,
+      onDecrease: onDecrease,
+      child: ExcludeSemantics(
+        child: Slider(
+          value: value.clamp(0.0, 100.0).toDouble(),
+          min: 0,
+          max: 100,
+          divisions: 10,
+          onChanged: onChanged,
         ),
       ),
     );

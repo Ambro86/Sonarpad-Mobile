@@ -34,13 +34,14 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
   }
 
   Future<void> _play(RadioStation station) async {
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/radio/player'),
         builder: (_) => RadioPlayerScreen(station: station),
       ),
     );
+    await _loadFavorites();
   }
 
   Future<void> _toggleFavorite(RadioStation station) async {

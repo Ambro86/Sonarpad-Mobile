@@ -169,57 +169,6 @@ class SonarpadSharedMediaPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
   }
 }
 
-class SonarpadVoiceOverListFactory: NSObject, FlutterPlatformViewFactory {
-  func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
-    FlutterStandardMessageCodec.sharedInstance()
-  }
-
-  func create(
-    withFrame frame: CGRect,
-    viewIdentifier viewId: Int64,
-    arguments args: Any?
-  ) -> FlutterPlatformView {
-    SonarpadVoiceOverListView(frame: frame)
-  }
-}
-
-class SonarpadVoiceOverListView: NSObject, FlutterPlatformView, UITableViewDataSource, UITableViewDelegate {
-  private static let rowCount = 300
-  private let tableView: UITableView
-
-  init(frame: CGRect) {
-    tableView = UITableView(frame: frame, style: .plain)
-    super.init()
-    tableView.dataSource = self
-    tableView.delegate = self
-    tableView.rowHeight = 72
-    tableView.estimatedRowHeight = 72
-    tableView.isAccessibilityElement = false
-    tableView.accessibilityLabel = "Prova"
-  }
-
-  func view() -> UIView {
-    tableView
-  }
-
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    Self.rowCount
-  }
-
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let identifier = "voiceover-list-test-cell"
-    let cell = tableView.dequeueReusableCell(withIdentifier: identifier)
-      ?? UITableViewCell(style: .subtitle, reuseIdentifier: identifier)
-    let number = indexPath.row + 1
-    cell.textLabel?.text = "Riga \(number) di \(Self.rowCount)"
-    cell.detailTextLabel?.text = "Contenuto di prova \(number)"
-    cell.isAccessibilityElement = true
-    cell.accessibilityLabel = "Riga \(number) di \(Self.rowCount), contenuto di prova \(number)"
-    cell.accessibilityTraits = .staticText
-    return cell
-  }
-}
-
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   override func application(
@@ -245,11 +194,5 @@ class SonarpadVoiceOverListView: NSObject, FlutterPlatformView, UITableViewDataS
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     SonarpadTTSPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadTTSPlugin")!)
     SonarpadSharedMediaPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadSharedMediaPlugin")!)
-    engineBridge.pluginRegistry
-      .registrar(forPlugin: "SonarpadVoiceOverListPlugin")!
-      .register(
-        SonarpadVoiceOverListFactory(),
-        withId: "sonarpad/native_voiceover_list"
-      )
   }
 }
