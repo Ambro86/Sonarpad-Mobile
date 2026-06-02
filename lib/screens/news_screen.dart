@@ -23,7 +23,7 @@ class _NewsScreenState extends State<NewsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_language == null) {
-      final code = AppLocalizations.of(context).locale.languageCode;
+      final code = AppLocalizations.of(context).localeName;
       _language = switch (code) {
         'en' => NewsLanguage.english,
         'fr' => NewsLanguage.french,
@@ -116,7 +116,8 @@ class _NewsScreenState extends State<NewsScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${AppLocalizations.of(context).errorPrefix}: $e')),
+        SnackBar(
+            content: Text('${AppLocalizations.of(context).errorPrefix}: $e')),
       );
     }
   }
@@ -244,7 +245,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   }
 
   Future<List<NewsArticle>> _fetchLocalCategory(NewsRssCategory cat) async {
-    final lang = AppLocalizations.of(context).locale.languageCode;
+    final lang = AppLocalizations.of(context).localeName;
     final loc = await _service.getUserLocationData();
     if (loc != null) {
       final city = loc['city']!;
@@ -379,7 +380,8 @@ class _NewsSourceList extends StatelessWidget {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${AppLocalizations.of(context).errorPrefix}: $e')),
+        SnackBar(
+            content: Text('${AppLocalizations.of(context).errorPrefix}: $e')),
       );
     }
   }
@@ -566,7 +568,8 @@ class _NewsArticleList extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   settings: const RouteSettings(name: '/news/article'),
-                  builder: (_) => NewsWebViewScreen(article: article, language: language),
+                  builder: (_) =>
+                      NewsWebViewScreen(article: article, language: language),
                 ),
               ),
             );

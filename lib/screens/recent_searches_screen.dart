@@ -69,7 +69,8 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
         actions: [
           if (_searches.isNotEmpty)
             IconButton(
-              icon: Icon(Icons.delete_sweep, color: Theme.of(context).colorScheme.error),
+              icon: Icon(Icons.delete_sweep,
+                  color: Theme.of(context).colorScheme.error),
               tooltip: AppLocalizations.of(context).clearHistory,
               onPressed: _clearAll,
             ),
@@ -78,7 +79,8 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _searches.isEmpty
-              ? Center(child: Text(AppLocalizations.of(context).noRecentSearches))
+              ? Center(
+                  child: Text(AppLocalizations.of(context).noRecentSearches))
               : ListView.builder(
                   itemCount: _searches.length,
                   itemBuilder: (context, index) {

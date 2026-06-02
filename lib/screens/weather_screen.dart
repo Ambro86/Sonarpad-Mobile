@@ -175,7 +175,7 @@ class _WeatherForecastView extends StatelessWidget {
     if (day >= 0 && day < times.length) {
       final date = DateTime.tryParse(times[day].toString());
       if (date != null) {
-        return DateFormat.yMMMMd(l10n.locale.languageCode).format(date);
+        return DateFormat.yMMMMd(l10n.localeName).format(date);
       }
       return times[day].toString();
     }

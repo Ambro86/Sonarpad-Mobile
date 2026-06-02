@@ -48,20 +48,24 @@ class WeatherForecast {
 }
 
 class OpenMeteoWeatherService {
-  static const String _geocodeEndpoint = 'https://geocoding-api.open-meteo.com/v1/search';
-  static const String _forecastEndpoint = 'https://api.open-meteo.com/v1/forecast';
+  static const String _geocodeEndpoint =
+      'https://geocoding-api.open-meteo.com/v1/search';
+  static const String _forecastEndpoint =
+      'https://api.open-meteo.com/v1/forecast';
   static const int _cacheTtlSeconds = 600;
 
   final Map<String, _CacheEntry> _cache = {};
 
   Future<List<WeatherGeocodingResult>> searchCity(String query) async {
-    final uri = Uri.parse('$_geocodeEndpoint?name=${Uri.encodeComponent(query)}&count=5&language=it&format=json');
+    final uri = Uri.parse(
+        '$_geocodeEndpoint?name=${Uri.encodeComponent(query)}&count=5&language=it&format=json');
     final res = await http.get(uri).timeout(const Duration(seconds: 10));
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
       if (data['results'] != null) {
         return (data['results'] as List)
-            .map((e) => WeatherGeocodingResult.fromJson(e as Map<String, dynamic>))
+            .map((e) =>
+                WeatherGeocodingResult.fromJson(e as Map<String, dynamic>))
             .toList();
       }
     }
@@ -72,7 +76,8 @@ class OpenMeteoWeatherService {
     final cacheKey = '$lat,$lon';
     if (_cache.containsKey(cacheKey)) {
       final entry = _cache[cacheKey]!;
-      if (DateTime.now().difference(entry.timestamp).inSeconds < _cacheTtlSeconds) {
+      if (DateTime.now().difference(entry.timestamp).inSeconds <
+          _cacheTtlSeconds) {
         return entry.forecast;
       }
     }
@@ -88,14 +93,15 @@ class OpenMeteoWeatherService {
 
     final uri = Uri.parse('$_forecastEndpoint?$queryParams');
     final res = await http.get(uri).timeout(const Duration(seconds: 15));
-    
+
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
       final forecast = WeatherForecast.fromJson(data);
-      _cache[cacheKey] = _CacheEntry(forecast: forecast, timestamp: DateTime.now());
+      _cache[cacheKey] =
+          _CacheEntry(forecast: forecast, timestamp: DateTime.now());
       return forecast;
     }
-    
+
     return null;
   }
 }

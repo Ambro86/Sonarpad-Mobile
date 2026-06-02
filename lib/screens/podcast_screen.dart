@@ -171,8 +171,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context).errorPrefix}: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('${AppLocalizations.of(context).errorPrefix}: $e')));
     }
   }
 
@@ -455,7 +455,7 @@ class _PodcastCategoryBrowserScreen extends StatelessWidget {
           final category = categories[index];
           return ListTile(
             leading: const Icon(Icons.category),
-            title: Text(category.nameForLanguage(l10n.locale.languageCode)),
+            title: Text(category.nameForLanguage(l10n.localeName)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _openCategory(context, category),
           );

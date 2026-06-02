@@ -37,7 +37,8 @@ class _AppLogScreenState extends State<AppLogScreen> {
     await Clipboard.setData(ClipboardData(text: logs));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context).logCopiedToClipboard)),
+      SnackBar(
+          content: Text(AppLocalizations.of(context).logCopiedToClipboard)),
     );
   }
 
@@ -46,10 +47,8 @@ class _AppLogScreenState extends State<AppLogScreen> {
     await _loadLogs();
   }
 
-  List<String> get _logLines => _logContent
-      .split('\n')
-      .where((line) => line.trim().isNotEmpty)
-      .toList();
+  List<String> get _logLines =>
+      _logContent.split('\n').where((line) => line.trim().isNotEmpty).toList();
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +58,8 @@ class _AppLogScreenState extends State<AppLogScreen> {
         title: Text(l10n.systemLog),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
+            icon:
+                Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
             tooltip: l10n.clearSystemLog,
             onPressed: _loading ? null : _clearLog,
           ),
@@ -71,7 +71,8 @@ class _AppLogScreenState extends State<AppLogScreen> {
         ],
       ),
       body: _loading
-          ? Center(child: CircularProgressIndicator(semanticsLabel: l10n.loading))
+          ? Center(
+              child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: _logLines.length,

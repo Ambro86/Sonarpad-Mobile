@@ -5,7 +5,8 @@ class OrariAperturaSearchScreen extends StatefulWidget {
   const OrariAperturaSearchScreen({super.key});
 
   @override
-  State<OrariAperturaSearchScreen> createState() => _OrariAperturaSearchScreenState();
+  State<OrariAperturaSearchScreen> createState() =>
+      _OrariAperturaSearchScreenState();
 }
 
 class _OrariAperturaSearchScreenState extends State<OrariAperturaSearchScreen> {

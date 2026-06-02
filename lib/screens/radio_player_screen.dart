@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
-import '../l10n/ui_radio_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
 import '../services/radio_service.dart';
@@ -29,7 +28,7 @@ class RadioPlayerScreen extends StatefulWidget {
 class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
-  
+
   VideoPlayerController? _videoController;
   bool _isVideoEnabled = false;
   bool _isFavorite = false;
@@ -93,7 +92,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     } finally {
       if (mounted) {
         setState(() => _loading = false);
-        AppLogger.log('RadioPlayer: _play complete. loading=false, isVideo=${_videoController != null}');
+        AppLogger.log(
+            'RadioPlayer: _play complete. loading=false, isVideo=${_videoController != null}');
       }
     }
   }
@@ -119,7 +119,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       final service = TvService();
       final channel = widget.tvChannel!;
       final favorites = await service.loadFavorites();
-      final alreadyFavorite = favorites.any((item) => item.name == channel.name);
+      final alreadyFavorite =
+          favorites.any((item) => item.name == channel.name);
       final next = alreadyFavorite
           ? favorites.where((item) => item.name != channel.name).toList()
           : [...favorites, channel];
@@ -167,7 +168,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppLogger.log('RadioPlayer: build() called. loading=$_loading, error=$_error, videoEnabled=$_isVideoEnabled, videoControllerInit=${_videoController?.value.isInitialized}');
+    AppLogger.log(
+        'RadioPlayer: build() called. loading=$_loading, error=$_error, videoEnabled=$_isVideoEnabled, videoControllerInit=${_videoController?.value.isInitialized}');
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
@@ -201,7 +203,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               onChanged: _toggleVideo,
             ),
           ],
-          if (_videoController != null && _videoController!.value.isInitialized) ...[
+          if (_videoController != null &&
+              _videoController!.value.isInitialized) ...[
             const SizedBox(height: 24),
             AspectRatio(
               aspectRatio: _videoController!.value.aspectRatio,
@@ -216,9 +219,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             children: [
               if (_videoController != null)
                 FilledButton.icon(
-                  onPressed: _loading ? null : (_videoController!.value.isPlaying ? _stop : _play),
-                  icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
-                  label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
+                  onPressed: _loading
+                      ? null
+                      : (_videoController!.value.isPlaying ? _stop : _play),
+                  icon: Icon(_videoController!.value.isPlaying
+                      ? Icons.pause
+                      : Icons.play_arrow),
+                  label: Text(_videoController!.value.isPlaying
+                      ? l10n.pause
+                      : l10n.play),
                 )
               else
                 StreamBuilder<bool>(

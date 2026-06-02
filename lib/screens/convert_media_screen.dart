@@ -102,9 +102,8 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       type: FileType.custom,
       allowedExtensions: _mediaExtensions,
     );
-    final path = result == null || result.files.isEmpty
-        ? null
-        : result.files.first.path;
+    final path =
+        result == null || result.files.isEmpty ? null : result.files.first.path;
     if (path == null || path.isEmpty) return;
 
     setState(() {
@@ -123,11 +122,11 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
 
   Future<void> _pickOutput() async {
     final l10n = AppLocalizations.of(context);
-    final suggestedPath = _inputPath.isEmpty
-        ? null
-        : await _defaultOutputPath(_inputPath);
-    final fileName =
-        suggestedPath == null ? 'converted.${_format.extension}' : p.basename(suggestedPath);
+    final suggestedPath =
+        _inputPath.isEmpty ? null : await _defaultOutputPath(_inputPath);
+    final fileName = suggestedPath == null
+        ? 'converted.${_format.extension}'
+        : p.basename(suggestedPath);
     final path = await FilePicker.saveFile(
       dialogTitle: l10n.convertMediaOutput,
       fileName: fileName,
@@ -146,9 +145,8 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       type: FileType.custom,
       allowedExtensions: _imageExtensions,
     );
-    final path = result == null || result.files.isEmpty
-        ? null
-        : result.files.first.path;
+    final path =
+        result == null || result.files.isEmpty ? null : result.files.first.path;
     if (path == null || path.isEmpty) return;
     setState(() {
       _imagePath = path;
@@ -426,7 +424,8 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   }
 
   bool _isVideoInput(String inputPath) {
-    final extension = p.extension(inputPath).toLowerCase().replaceFirst('.', '');
+    final extension =
+        p.extension(inputPath).toLowerCase().replaceFirst('.', '');
     return const {
       'mp4',
       'avi',
@@ -448,7 +447,9 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   }
 
   bool _requiresImage(String inputPath) =>
-      _isVideoFormat(_format) && inputPath.isNotEmpty && !_isVideoInput(inputPath);
+      _isVideoFormat(_format) &&
+      inputPath.isNotEmpty &&
+      !_isVideoInput(inputPath);
 
   bool get _canConvert {
     if (_running) return false;
@@ -507,7 +508,12 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     final fileName = parts.isEmpty ? path : parts.last;
     final parents = parts.length <= 1
         ? const <String>[]
-        : parts.sublist(0, parts.length - 1).reversed.take(parentCount).toList().reversed;
+        : parts
+            .sublist(0, parts.length - 1)
+            .reversed
+            .take(parentCount)
+            .toList()
+            .reversed;
     return [...parents, fileName].join('/');
   }
 
@@ -605,8 +611,9 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
                       ),
                     )
                     .toList(),
-                onChanged:
-                    _running ? null : (value) => setState(() => _oggQuality = value ?? 5),
+                onChanged: _running
+                    ? null
+                    : (value) => setState(() => _oggQuality = value ?? 5),
               )
             else if (_format == _MediaFormat.flac)
               DropdownButtonFormField<int>(

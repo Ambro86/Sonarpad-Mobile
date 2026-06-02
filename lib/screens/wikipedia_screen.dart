@@ -22,7 +22,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_language == null) {
-      final code = AppLocalizations.of(context).locale.languageCode;
+      final code = AppLocalizations.of(context).localeName;
       _language = code == 'es'
           ? 'es'
           : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
@@ -400,7 +400,8 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppLocalizations.of(context).saveError}: $e')),
+          SnackBar(
+              content: Text('${AppLocalizations.of(context).saveError}: $e')),
         );
       }
     }

@@ -44,7 +44,8 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
                 child: SizedBox(
                   width: double.infinity,
                   child: FilledButton.tonal(

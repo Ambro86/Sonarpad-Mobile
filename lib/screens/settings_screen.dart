@@ -275,11 +275,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: Text(l10n.settingsUnsavedMessage),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, _SettingsLeaveAction.cancel),
+            onPressed: () =>
+                Navigator.pop(context, _SettingsLeaveAction.cancel),
             child: Text(l10n.annulla),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, _SettingsLeaveAction.discard),
+            onPressed: () =>
+                Navigator.pop(context, _SettingsLeaveAction.discard),
             child: Text(l10n.settingsExitWithoutSaving),
           ),
           FilledButton(
@@ -490,356 +492,365 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.settings)),
         body: _loading
-          ? Center(
-              child: CircularProgressIndicator(semanticsLabel: l10n.loading))
-          : Focus(
-              focusNode: _screenFocusNode,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  DropdownButtonFormField<String>(
-                    initialValue: _appLanguage,
-                    decoration: InputDecoration(labelText: l10n.appLanguage),
-                    items: [
-                      DropdownMenuItem(value: 'it', child: Text(l10n.italian)),
-                      DropdownMenuItem(value: 'en', child: Text(l10n.english)),
-                      DropdownMenuItem(value: 'fr', child: Text(l10n.french)),
-                      DropdownMenuItem(value: 'es', child: Text(l10n.spanish)),
-                    ],
-                    onChanged: (value) {
-                      if (value == null || value == _appLanguage) return;
-                      setState(() => _appLanguage = value);
-                    },
-                  ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: _ttsEngine,
-                  decoration:
-                      InputDecoration(labelText: l10n.settingsReadingEngine),
-                  items: [
-                    DropdownMenuItem(
-                        value: 'edge',
-                        child: Text(l10n.settingsEdgeTtsQuality)),
-                    DropdownMenuItem(
-                        value: 'system',
-                        child: Text(l10n.settingsSystemVoices)),
-                  ],
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setState(() => _ttsEngine = value);
-                  },
-                ),
-                const SizedBox(height: 12),
-                if (_ttsEngine == 'edge') ...[
-                  DropdownButtonFormField<String>(
-                    initialValue: _languageCode,
-                    decoration:
-                        InputDecoration(labelText: l10n.ttsVoiceLanguage),
-                    items: _edgeLanguages
-                        .map((language) => DropdownMenuItem(
-                              value: language.code,
-                              child: Text(language.label),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      final next = value ?? 'it';
-                      setState(() {
-                        _languageCode = next;
-                        _voice = AppSettingsService.defaultVoiceForLanguageFrom(
-                          _edgeVoices,
-                          next,
-                        );
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    initialValue: _voice,
-                    decoration: InputDecoration(labelText: l10n.ttsVoice),
-                    items: voices
-                        .map((voice) => DropdownMenuItem(
-                              value: voice.voice,
-                              child: Text('${voice.label} (${voice.voice})'),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(
-                        () => _voice = value ??
-                            AppSettingsService.defaultVoiceForLanguageFrom(
+            ? Center(
+                child: CircularProgressIndicator(semanticsLabel: l10n.loading))
+            : Focus(
+                focusNode: _screenFocusNode,
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    DropdownButtonFormField<String>(
+                      initialValue: _appLanguage,
+                      decoration: InputDecoration(labelText: l10n.appLanguage),
+                      items: [
+                        DropdownMenuItem(
+                            value: 'it', child: Text(l10n.italian)),
+                        DropdownMenuItem(
+                            value: 'en', child: Text(l10n.english)),
+                        DropdownMenuItem(value: 'fr', child: Text(l10n.french)),
+                        DropdownMenuItem(
+                            value: 'es', child: Text(l10n.spanish)),
+                      ],
+                      onChanged: (value) {
+                        if (value == null || value == _appLanguage) return;
+                        setState(() => _appLanguage = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      initialValue: _ttsEngine,
+                      decoration: InputDecoration(
+                          labelText: l10n.settingsReadingEngine),
+                      items: [
+                        DropdownMenuItem(
+                            value: 'edge',
+                            child: Text(l10n.settingsEdgeTtsQuality)),
+                        DropdownMenuItem(
+                            value: 'system',
+                            child: Text(l10n.settingsSystemVoices)),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _ttsEngine = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    if (_ttsEngine == 'edge') ...[
+                      DropdownButtonFormField<String>(
+                        initialValue: _languageCode,
+                        decoration:
+                            InputDecoration(labelText: l10n.ttsVoiceLanguage),
+                        items: _edgeLanguages
+                            .map((language) => DropdownMenuItem(
+                                  value: language.code,
+                                  child: Text(language.label),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          final next = value ?? 'it';
+                          setState(() {
+                            _languageCode = next;
+                            _voice =
+                                AppSettingsService.defaultVoiceForLanguageFrom(
                               _edgeVoices,
-                              _languageCode,
-                            ),
-                      );
-                    },
-                  ),
-                ] else ...[
-                  Builder(
-                    builder: (context) {
-                      final locales = _systemVoices
-                          .map((v) => v['locale']!)
-                          .toSet()
-                          .toList()
-                        ..sort();
-                      if (locales.isEmpty) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(l10n.settingsNoSystemVoices),
-                        );
-                      }
-                      final availableVoices = _systemVoices
-                          .where((v) => v['locale'] == _systemTtsLanguage)
-                          .toList();
+                              next,
+                            );
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        initialValue: _voice,
+                        decoration: InputDecoration(labelText: l10n.ttsVoice),
+                        items: voices
+                            .map((voice) => DropdownMenuItem(
+                                  value: voice.voice,
+                                  child:
+                                      Text('${voice.label} (${voice.voice})'),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(
+                            () => _voice = value ??
+                                AppSettingsService.defaultVoiceForLanguageFrom(
+                                  _edgeVoices,
+                                  _languageCode,
+                                ),
+                          );
+                        },
+                      ),
+                    ] else ...[
+                      Builder(
+                        builder: (context) {
+                          final locales = _systemVoices
+                              .map((v) => v['locale']!)
+                              .toSet()
+                              .toList()
+                            ..sort();
+                          if (locales.isEmpty) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(l10n.settingsNoSystemVoices),
+                            );
+                          }
+                          final availableVoices = _systemVoices
+                              .where((v) => v['locale'] == _systemTtsLanguage)
+                              .toList();
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          DropdownButtonFormField<String>(
-                            initialValue: locales.contains(_systemTtsLanguage)
-                                ? _systemTtsLanguage
-                                : locales.first,
-                            decoration: InputDecoration(
-                                labelText: l10n.settingsSystemLanguage),
-                            items: locales
-                                .map((l) => DropdownMenuItem(
-                                      value: l,
-                                      child: Text(l),
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              if (value == null) return;
-                              setState(() {
-                                _systemTtsLanguage = value;
-                                _systemTtsVoice = null;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          DropdownButtonFormField<String?>(
-                            initialValue: availableVoices
-                                    .any((v) => v['name'] == _systemTtsVoice)
-                                ? _systemTtsVoice
-                                : null,
-                            decoration:
-                                InputDecoration(labelText: l10n.settingsSystemVoice),
-                            hint: Text(l10n.settingsDefaultVoiceHint),
-                            items: [
-                              DropdownMenuItem<String?>(
-                                value: null,
-                                child: Text(l10n.settingsDefaultVoice),
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              DropdownButtonFormField<String>(
+                                initialValue:
+                                    locales.contains(_systemTtsLanguage)
+                                        ? _systemTtsLanguage
+                                        : locales.first,
+                                decoration: InputDecoration(
+                                    labelText: l10n.settingsSystemLanguage),
+                                items: locales
+                                    .map((l) => DropdownMenuItem(
+                                          value: l,
+                                          child: Text(l),
+                                        ))
+                                    .toList(),
+                                onChanged: (value) {
+                                  if (value == null) return;
+                                  setState(() {
+                                    _systemTtsLanguage = value;
+                                    _systemTtsVoice = null;
+                                  });
+                                },
                               ),
-                              ...availableVoices
-                                  .map((v) => DropdownMenuItem<String?>(
-                                        value: v['name'],
-                                        child: Text(v['name'] ?? ''),
-                                      )),
+                              const SizedBox(height: 12),
+                              DropdownButtonFormField<String?>(
+                                initialValue: availableVoices.any(
+                                        (v) => v['name'] == _systemTtsVoice)
+                                    ? _systemTtsVoice
+                                    : null,
+                                decoration: InputDecoration(
+                                    labelText: l10n.settingsSystemVoice),
+                                hint: Text(l10n.settingsDefaultVoiceHint),
+                                items: [
+                                  DropdownMenuItem<String?>(
+                                    value: null,
+                                    child: Text(l10n.settingsDefaultVoice),
+                                  ),
+                                  ...availableVoices
+                                      .map((v) => DropdownMenuItem<String?>(
+                                            value: v['name'],
+                                            child: Text(v['name'] ?? ''),
+                                          )),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _systemTtsVoice = value;
+                                  });
+                                },
+                              ),
                             ],
-                            onChanged: (value) {
+                          );
+                        },
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Text(
+                              '${l10n.settingsVoiceSpeed}${_ttsSpeed.toStringAsFixed(1)}x'),
+                        ),
+                        Semantics(
+                          slider: true,
+                          label: l10n.settingsVoiceSpeedLabel,
+                          value: '${_ttsSpeed.toStringAsFixed(1)}x',
+                          increasedValue:
+                              '${_sliderStep(_ttsSpeed, 0.1).toStringAsFixed(1)}x',
+                          decreasedValue:
+                              '${_sliderStep(_ttsSpeed, -0.1).toStringAsFixed(1)}x',
+                          onIncrease: () => _setTtsSpeed(
+                            _sliderStep(_ttsSpeed, 0.1),
+                          ),
+                          onDecrease: () => _setTtsSpeed(
+                            _sliderStep(_ttsSpeed, -0.1),
+                          ),
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: _ttsSpeed,
+                              min: 0.5,
+                              max: 2.0,
+                              divisions: 15,
+                              onChanged: _setTtsSpeed,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Text(
+                              '${l10n.settingsVoicePitch}${_ttsPitch.toStringAsFixed(1)}x'),
+                        ),
+                        Semantics(
+                          slider: true,
+                          label: l10n.settingsVoicePitchLabel,
+                          value: '${_ttsPitch.toStringAsFixed(1)}x',
+                          increasedValue:
+                              '${_sliderStep(_ttsPitch, 0.1).toStringAsFixed(1)}x',
+                          decreasedValue:
+                              '${_sliderStep(_ttsPitch, -0.1).toStringAsFixed(1)}x',
+                          onIncrease: () => _setTtsPitch(
+                            _sliderStep(_ttsPitch, 0.1),
+                          ),
+                          onDecrease: () => _setTtsPitch(
+                            _sliderStep(_ttsPitch, -0.1),
+                          ),
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: _ttsPitch,
+                              min: 0.5,
+                              max: 2.0,
+                              divisions: 15,
+                              onChanged: _setTtsPitch,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: _testingVoice ? null : _testVoice,
+                      icon: _testingVoice
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.volume_up),
+                      label: Text(_testingVoice
+                          ? l10n.settingsTestingVoice
+                          : l10n.settingsTestVoice),
+                      style: FilledButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    if (_appLanguage == 'it') ...[
+                      const SizedBox(height: 24),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      SwitchListTile(
+                        title: Text(l10n.settingsAutoBookmark),
+                        subtitle: Text(l10n.settingsAutoBookmarkHint),
+                        value: _autoBookmark,
+                        onChanged: (val) => setState(() => _autoBookmark = val),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      SwitchListTile(
+                        title: Text(l10n.settingsHomeGrouping),
+                        subtitle: Text(l10n.settingsHomeGroupingHint),
+                        value: _homeGroupingEnabled,
+                        onChanged: (val) =>
+                            setState(() => _homeGroupingEnabled = val),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      const Divider(),
+                      const SizedBox(height: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ExcludeSemantics(
+                            child: Text(
+                                '${l10n.settingsSeekStep}: ${_formatTime(_seekSliderStep)}'),
+                          ),
+                          Semantics(
+                            slider: true,
+                            label: l10n.settingsSeekStep,
+                            value: _formatTime(_seekSliderStep),
+                            increasedValue: _formatTime(
+                                (_seekSliderStep + 10).clamp(10, 300)),
+                            decreasedValue: _formatTime(
+                                (_seekSliderStep - 10).clamp(10, 300)),
+                            onIncrease: () {
                               setState(() {
-                                _systemTtsVoice = value;
+                                _seekSliderStep =
+                                    (_seekSliderStep + 10).clamp(10, 300);
                               });
                             },
+                            onDecrease: () {
+                              setState(() {
+                                _seekSliderStep =
+                                    (_seekSliderStep - 10).clamp(10, 300);
+                              });
+                            },
+                            child: ExcludeSemantics(
+                              child: Slider(
+                                value: _seekSliderStep.toDouble(),
+                                min: 10,
+                                max: 300,
+                                divisions: 29,
+                                onChanged: (val) => setState(
+                                    () => _seekSliderStep = val.toInt()),
+                              ),
+                            ),
                           ),
                         ],
-                      );
-                    },
-                  ),
-                ],
-                const SizedBox(height: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ExcludeSemantics(
-                      child: Text(
-                          '${l10n.settingsVoiceSpeed}${_ttsSpeed.toStringAsFixed(1)}x'),
-                    ),
-                    Semantics(
-                      slider: true,
-                      label: l10n.settingsVoiceSpeedLabel,
-                      value: '${_ttsSpeed.toStringAsFixed(1)}x',
-                      increasedValue:
-                          '${_sliderStep(_ttsSpeed, 0.1).toStringAsFixed(1)}x',
-                      decreasedValue:
-                          '${_sliderStep(_ttsSpeed, -0.1).toStringAsFixed(1)}x',
-                      onIncrease: () => _setTtsSpeed(
-                        _sliderStep(_ttsSpeed, 0.1),
                       ),
-                      onDecrease: () => _setTtsSpeed(
-                        _sliderStep(_ttsSpeed, -0.1),
-                      ),
-                      child: ExcludeSemantics(
-                        child: Slider(
-                          value: _ttsSpeed,
-                          min: 0.5,
-                          max: 2.0,
-                          divisions: 15,
-                          onChanged: _setTtsSpeed,
+                      const Divider(),
+                      const SizedBox(height: 16),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _tvSecretCodeController,
+                        decoration: InputDecoration(
+                          labelText: l10n.settingsSecretCode,
+                          border: const OutlineInputBorder(),
                         ),
+                        obscureText: !Platform.isAndroid,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ExcludeSemantics(
-                      child:
-                          Text('${l10n.settingsVoicePitch}${_ttsPitch.toStringAsFixed(1)}x'),
-                    ),
-                    Semantics(
-                      slider: true,
-                      label: l10n.settingsVoicePitchLabel,
-                      value: '${_ttsPitch.toStringAsFixed(1)}x',
-                      increasedValue:
-                          '${_sliderStep(_ttsPitch, 0.1).toStringAsFixed(1)}x',
-                      decreasedValue:
-                          '${_sliderStep(_ttsPitch, -0.1).toStringAsFixed(1)}x',
-                      onIncrease: () => _setTtsPitch(
-                        _sliderStep(_ttsPitch, 0.1),
-                      ),
-                      onDecrease: () => _setTtsPitch(
-                        _sliderStep(_ttsPitch, -0.1),
-                      ),
-                      child: ExcludeSemantics(
-                        child: Slider(
-                          value: _ttsPitch,
-                          min: 0.5,
-                          max: 2.0,
-                          divisions: 15,
-                          onChanged: _setTtsPitch,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: _testingVoice ? null : _testVoice,
-                  icon: _testingVoice
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.volume_up),
-                  label: Text(_testingVoice
-                      ? l10n.settingsTestingVoice
-                      : l10n.settingsTestVoice),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                if (_appLanguage == 'it') ...[
-                  const SizedBox(height: 24),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  SwitchListTile(
-                    title: Text(l10n.settingsAutoBookmark),
-                    subtitle: Text(l10n.settingsAutoBookmarkHint),
-                    value: _autoBookmark,
-                    onChanged: (val) => setState(() => _autoBookmark = val),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  SwitchListTile(
-                    title: Text(l10n.settingsHomeGrouping),
-                    subtitle: Text(l10n.settingsHomeGroupingHint),
-                    value: _homeGroupingEnabled,
-                    onChanged: (val) => setState(() => _homeGroupingEnabled = val),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  const Divider(),
-                  const SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ExcludeSemantics(
-                        child: Text(
-                            '${l10n.settingsSeekStep}: ${_formatTime(_seekSliderStep)}'),
-                      ),
-                      Semantics(
-                        slider: true,
-                        label: l10n.settingsSeekStep,
-                        value: _formatTime(_seekSliderStep),
-                        increasedValue:
-                            _formatTime((_seekSliderStep + 10).clamp(10, 300)),
-                        decreasedValue:
-                            _formatTime((_seekSliderStep - 10).clamp(10, 300)),
-                        onIncrease: () {
-                          setState(() {
-                            _seekSliderStep =
-                                (_seekSliderStep + 10).clamp(10, 300);
-                          });
-                        },
-                        onDecrease: () {
-                          setState(() {
-                            _seekSliderStep =
-                                (_seekSliderStep - 10).clamp(10, 300);
-                          });
-                        },
-                        child: ExcludeSemantics(
-                          child: Slider(
-                            value: _seekSliderStep.toDouble(),
-                            min: 10,
-                            max: 300,
-                            divisions: 29,
-                            onChanged: (val) =>
-                                setState(() => _seekSliderStep = val.toInt()),
-                          ),
-                        ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: _requestSecretCode,
+                        icon: const Icon(Icons.mail_outline),
+                        label: Text(l10n.settingsRequestCode),
                       ),
                     ],
-                  ),
-                  const Divider(),
-                  const SizedBox(height: 16),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _tvSecretCodeController,
-                    decoration: InputDecoration(
-                      labelText: l10n.settingsSecretCode,
-                      border: const OutlineInputBorder(),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: _isSaving ? null : _save,
+                      icon: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.save),
+                      label: Text(_isSaving
+                          ? l10n.settingsVerifyCodeAndSave
+                          : l10n.saveSettings),
                     ),
-                    obscureText: !Platform.isAndroid,
-                  ),
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: _requestSecretCode,
-                    icon: const Icon(Icons.mail_outline),
-                    label: Text(l10n.settingsRequestCode),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: _isSaving ? null : _save,
-                  icon: _isSaving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.save),
-                  label: Text(_isSaving
-                      ? l10n.settingsVerifyCodeAndSave
-                      : l10n.saveSettings),
+                    const SizedBox(height: 24),
+                    const Divider(),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            settings:
+                                const RouteSettings(name: '/settings/app-log'),
+                            builder: (_) => const AppLogScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.description),
+                      label: Text(l10n.settingsViewSysLog),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 24),
-                const Divider(),
-                const SizedBox(height: 12),
-                FilledButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        settings:
-                            const RouteSettings(name: '/settings/app-log'),
-                        builder: (_) => const AppLogScreen(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.description),
-                  label: Text(l10n.settingsViewSysLog),
-                ),
-              ],
-            ),
-          ),
+              ),
       ),
     );
   }

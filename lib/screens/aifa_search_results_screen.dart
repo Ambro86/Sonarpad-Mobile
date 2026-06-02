@@ -9,7 +9,8 @@ class AifaSearchResultsScreen extends StatefulWidget {
   const AifaSearchResultsScreen({super.key, required this.query});
 
   @override
-  State<AifaSearchResultsScreen> createState() => _AifaSearchResultsScreenState();
+  State<AifaSearchResultsScreen> createState() =>
+      _AifaSearchResultsScreenState();
 }
 
 class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {

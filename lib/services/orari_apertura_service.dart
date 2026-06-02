@@ -38,7 +38,7 @@ class OrariAperturaService {
   }) async {
     final formattedCosa = cosa.trim().replaceAll(RegExp(r'\s+'), '+');
     final formattedDove = dove.trim().replaceAll(RegExp(r'\s+'), '+');
-    
+
     String path = '/cercaI/filiale-';
     if (formattedDove.isNotEmpty) {
       path += '$formattedDove-';
@@ -47,30 +47,34 @@ class OrariAperturaService {
       }
     }
     path += '$formattedCosa-1.html';
-    
+
     final url = Uri.parse('$_baseUrl$path');
-    
+
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final doc = parser.parse(response.body);
         final containers = doc.querySelectorAll('.cboxinnerL');
-        
+
         final results = <OrariSearchResult>[];
         for (var container in containers) {
           final link = container.querySelector('a.serpFtitleT');
           if (link == null) continue;
-          
+
           final title = link.text.trim();
           final href = link.attributes['href'];
-          
+
           final addrDiv = container.querySelector('.cboxAddr');
-          final address = addrDiv != null ? addrDiv.text.trim().replaceAll(RegExp(r'\s+'), ' ') : '';
-          
+          final address = addrDiv != null
+              ? addrDiv.text.trim().replaceAll(RegExp(r'\s+'), ' ')
+              : '';
+
           final statusSpan = container.querySelector('#ozstatus_');
-          String status = statusSpan != null ? statusSpan.text.trim().replaceAll(RegExp(r'\s+'), ' ') : '';
+          String status = statusSpan != null
+              ? statusSpan.text.trim().replaceAll(RegExp(r'\s+'), ' ')
+              : '';
           status = _formatStatus(status);
-          
+
           if (title.isNotEmpty && href != null) {
             results.add(OrariSearchResult(
               title: title,
@@ -80,7 +84,7 @@ class OrariAperturaService {
             ));
           }
         }
-        
+
         // Return unique results based on URL
         final uniqueResults = <String, OrariSearchResult>{};
         for (var res in results) {
@@ -91,7 +95,7 @@ class OrariAperturaService {
     } catch (e) {
       debugPrint('Errore durante la ricerca orari: $e');
     }
-    
+
     return [];
   }
 
@@ -99,7 +103,7 @@ class OrariAperturaService {
     try {
       final url = Uri.parse(detailUrl);
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final doc = parser.parse(response.body);
         String title = '';
@@ -128,7 +132,7 @@ class OrariAperturaService {
             }
           }
         }
-        
+
         return OrariDetailResult(
           title: title,
           status: status,
@@ -138,7 +142,7 @@ class OrariAperturaService {
     } catch (e) {
       debugPrint('Errore durante il fetch dei dettagli orari: $e');
     }
-    
+
     return null;
   }
 
@@ -149,7 +153,7 @@ class OrariAperturaService {
     if (match != null) {
       int hours = int.parse(match.group(1)!);
       int minutes = int.parse(match.group(2)!);
-      
+
       String timeStr = '';
       if (hours > 0) {
         timeStr += hours.toString() + (hours == 1 ? ' ora' : ' ore');

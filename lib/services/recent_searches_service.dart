@@ -19,17 +19,17 @@ class RecentSearchesService {
   Future<void> addSearch(String domain, String query) async {
     if (query.trim().isEmpty) return;
     final q = query.trim();
-    
+
     final prefs = await SharedPreferences.getInstance();
     final searches = await getRecentSearches(domain);
-    
+
     searches.removeWhere((item) => item.toLowerCase() == q.toLowerCase());
     searches.insert(0, q);
-    
+
     if (searches.length > 100) {
       searches.removeRange(100, searches.length);
     }
-    
+
     await prefs.setString('$_keyPrefix$domain', jsonEncode(searches));
   }
 

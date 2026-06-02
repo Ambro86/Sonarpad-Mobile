@@ -35,7 +35,7 @@ class AifaCacheManager {
       final brokenPath = join(dbPath, 'aifa_cache.broken.db');
       try {
         if (await File(path).exists()) {
-           await File(path).rename(brokenPath);
+          await File(path).rename(brokenPath);
         }
       } catch (_) {}
       await _copySeed(path);
@@ -48,7 +48,8 @@ class AifaCacheManager {
     try {
       await Directory(dirname(path)).create(recursive: true);
       ByteData data = await rootBundle.load('assets/aifa_cache_seed.db');
-      List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      List<int> bytes =
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       await File(path).writeAsBytes(bytes, flush: true);
     } catch (e) {
       // Ignora se non c'è seed, verrà creato vuoto da onCreate
@@ -83,8 +84,10 @@ class AifaCacheManager {
             value TEXT NOT NULL
           )
         ''');
-        await db.insert('cache_metadata', {'key': 'aifa_dataset_version', 'value': '1.0.0'});
-        await db.insert('cache_metadata', {'key': 'schema_version', 'value': '1'});
+        await db.insert('cache_metadata',
+            {'key': 'aifa_dataset_version', 'value': '1.0.0'});
+        await db
+            .insert('cache_metadata', {'key': 'schema_version', 'value': '1'});
       },
     );
   }
@@ -100,11 +103,13 @@ class AifaCacheManager {
     for (var drug in drugs) {
       final normalizedName = _normalizeName(drug.denominazione);
       final normalizedAi = _normalizeName(drug.principiAttivi);
-      final confezioniJson = jsonEncode(drug.confezioni.map((c) => {
-        'name': c.name,
-        'codiceSis': c.codiceSis,
-        'aic6': c.aic6,
-      }).toList());
+      final confezioniJson = jsonEncode(drug.confezioni
+          .map((c) => {
+                'name': c.name,
+                'codiceSis': c.codiceSis,
+                'aic6': c.aic6,
+              })
+          .toList());
 
       batch.insert(
         'drugs',
@@ -126,11 +131,13 @@ class AifaCacheManager {
   Future<void> _insertDrug(Database db, AifaDrugResult drug) async {
     final normalizedName = _normalizeName(drug.denominazione);
     final normalizedAi = _normalizeName(drug.principiAttivi);
-    final confezioniJson = jsonEncode(drug.confezioni.map((c) => {
-      'name': c.name,
-      'codiceSis': c.codiceSis,
-      'aic6': c.aic6,
-    }).toList());
+    final confezioniJson = jsonEncode(drug.confezioni
+        .map((c) => {
+              'name': c.name,
+              'codiceSis': c.codiceSis,
+              'aic6': c.aic6,
+            })
+        .toList());
 
     await db.insert(
       'drugs',
@@ -172,11 +179,12 @@ class AifaCacheManager {
   }
 
   // Pre-filtro SQL, ritorna un po' di roba che la Dart similarity poi raffinerà
-  Future<List<AifaDrugResult>> searchDrugsByNormalizedName(String rawName) async {
+  Future<List<AifaDrugResult>> searchDrugsByNormalizedName(
+      String rawName) async {
     final db = await database;
     final normalized = _normalizeName(rawName);
     if (normalized.isEmpty) return [];
-    
+
     final searchTerm = '%$normalized%';
     final List<Map<String, dynamic>> maps = await db.query(
       'drugs',
@@ -198,11 +206,13 @@ class AifaCacheManager {
 
   AifaDrugResult _mapToDrugResult(Map<String, dynamic> map) {
     final List<dynamic> confList = jsonDecode(map['confezioni_json'] as String);
-    final confezioni = confList.map((c) => AifaConfezione(
-      name: c['name'] as String,
-      codiceSis: c['codiceSis'] as String,
-      aic6: c['aic6'] as String,
-    )).toList();
+    final confezioni = confList
+        .map((c) => AifaConfezione(
+              name: c['name'] as String,
+              codiceSis: c['codiceSis'] as String,
+              aic6: c['aic6'] as String,
+            ))
+        .toList();
 
     return AifaDrugResult(
       denominazione: map['denominazione'] as String,

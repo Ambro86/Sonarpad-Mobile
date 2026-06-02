@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/ui_radio_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import 'package:flutter/semantics.dart';

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/ui_route_localizations.dart';
 import '../services/route_service.dart';
 import 'route_result_screen.dart';
 
@@ -24,7 +23,7 @@ class _RouteScreenState extends State<RouteScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_countryCode == null) {
-      final code = AppLocalizations.of(context).locale.languageCode;
+      final code = AppLocalizations.of(context).localeName;
       _countryCode = code == 'es' ? 'es' : (code == 'fr' ? 'fr' : 'it');
     }
   }
@@ -76,7 +75,7 @@ class _RouteScreenState extends State<RouteScreen> {
         profile: _profile,
         preference: _preference,
         includeMunicipalities: _includeMunicipalities,
-        language: l10n.locale.languageCode,
+        language: l10n.localeName,
         countryCode: _countryCode!,
       );
 
@@ -107,7 +106,7 @@ class _RouteScreenState extends State<RouteScreen> {
     final l10n = AppLocalizations.of(context);
     final candidates = await _service.geocode(
       query: query,
-      language: l10n.locale.languageCode,
+      language: l10n.localeName,
       countryCode: _countryCode!,
     );
 
@@ -176,9 +175,12 @@ class _RouteScreenState extends State<RouteScreen> {
             initialValue: _countryCode,
             decoration: InputDecoration(labelText: l10n.routeCountry),
             items: [
-              DropdownMenuItem(value: 'it', child: Text(l10n.routeCountryItaly)),
-              DropdownMenuItem(value: 'fr', child: Text(l10n.routeCountryFrance)),
-              DropdownMenuItem(value: 'es', child: Text(l10n.routeCountrySpain)),
+              DropdownMenuItem(
+                  value: 'it', child: Text(l10n.routeCountryItaly)),
+              DropdownMenuItem(
+                  value: 'fr', child: Text(l10n.routeCountryFrance)),
+              DropdownMenuItem(
+                  value: 'es', child: Text(l10n.routeCountrySpain)),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _countryCode = val);

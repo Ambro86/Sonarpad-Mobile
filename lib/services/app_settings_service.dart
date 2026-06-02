@@ -380,7 +380,7 @@ class AppSettingsService {
   }
 
   // --- Segnalibro Automatico Media ---
-  
+
   static const _autoBookmarkKey = 'sonarpad_auto_bookmark';
 
   Future<bool> isAutoBookmarkEnabled() async {
@@ -413,7 +413,7 @@ class AppSettingsService {
   }
 
   // --- Slider di Riproduzione ---
-  
+
   static const _seekSliderStepKey = 'sonarpad_seek_slider_step';
 
   Future<int> loadSeekSliderStep() async {
@@ -427,7 +427,7 @@ class AppSettingsService {
   }
 
   // --- Media Volume ---
-  
+
   static const _mediaVolumeKey = 'sonarpad_media_volume';
 
   Future<double> loadMediaVolume() async {
@@ -441,7 +441,7 @@ class AppSettingsService {
   }
 
   // --- Video ---
-  
+
   static const _videoEnabledKey = 'sonarpad_video_enabled';
 
   Future<bool> isVideoEnabled() async {
@@ -454,7 +454,7 @@ class AppSettingsService {
     await prefs.setBool(_videoEnabledKey, value);
   }
   // --- Grouping Home ---
-  
+
   static const _homeGroupingEnabledKey = 'sonarpad_home_grouping_enabled';
 
   Future<bool> isHomeGroupingEnabled() async {

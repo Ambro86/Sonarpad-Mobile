@@ -40,7 +40,7 @@ String _decodeServerText(List<int> bytes) {
 
 class BdCiechiService {
   static const String _baseUrl = 'https://www.bdciechi.it/route.php';
-  
+
   static String get _idenSp {
     if (Platform.isIOS) return 'SPiOS';
     if (Platform.isAndroid) return 'SPAnd';
@@ -65,7 +65,8 @@ class BdCiechiService {
   }
 
   String _rnd() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random();
     return String.fromCharCodes(Iterable.generate(
         8, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
@@ -75,7 +76,8 @@ class BdCiechiService {
     return text.trimLeft().startsWith('!');
   }
 
-  Future<BdCiechiIdentifyResponse> identify(String username, String password) async {
+  Future<BdCiechiIdentifyResponse> identify(
+      String username, String password) async {
     final queryPlain = '$_idenSp;$username;$password;*;${_rnd()}';
     final queryEnc = _cifra(queryPlain);
     final url = Uri.parse('$_baseUrl?$queryEnc');
@@ -99,7 +101,9 @@ class BdCiechiService {
     BdCiechiQuota? quota;
     if (parts.length > 1 && parts[1].trim().isNotEmpty) {
       final remaining = parts[1].trim();
-      final monthlyTotal = (parts.length > 2 && parts[2].trim().isNotEmpty) ? parts[2].trim() : '60';
+      final monthlyTotal = (parts.length > 2 && parts[2].trim().isNotEmpty)
+          ? parts[2].trim()
+          : '60';
       quota = BdCiechiQuota(remaining: remaining, monthlyTotal: monthlyTotal);
     }
 
@@ -150,7 +154,8 @@ class BdCiechiService {
     String index,
     bool preview,
   ) async {
-    final utc = DateFormat('yyyy-MM-dd HH.mm.ss').format(DateTime.now().toUtc());
+    final utc =
+        DateFormat('yyyy-MM-dd HH.mm.ss').format(DateTime.now().toUtc());
     final sample = preview ? '+' : '';
     final queryPlain = '$_idenSp;$username;$password;$index;$utc;$sample;150';
     final queryEnc = _cifra(queryPlain);
@@ -162,7 +167,8 @@ class BdCiechiService {
     }
 
     final bytes = response.bodyBytes;
-    if (bytes.isNotEmpty && bytes[0] == 33) { // 33 is '!'
+    if (bytes.isNotEmpty && bytes[0] == 33) {
+      // 33 is '!'
       final text = _decodeServerText(bytes);
       if (_isProtocolError(text)) {
         throw Exception(text);
@@ -186,7 +192,9 @@ class BdCiechiService {
       return null;
     }
     final remaining = parts[1].trim();
-    final monthlyTotal = (parts.length > 4 && parts[4].trim().isNotEmpty) ? parts[4].trim() : '60';
+    final monthlyTotal = (parts.length > 4 && parts[4].trim().isNotEmpty)
+        ? parts[4].trim()
+        : '60';
     return BdCiechiQuota(remaining: remaining, monthlyTotal: monthlyTotal);
   }
 }

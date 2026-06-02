@@ -34,7 +34,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   bool _loading = true;
   String? _errorMessage;
 
-  List<DocumentItem> get _displayedDocs => 
+  List<DocumentItem> get _displayedDocs =>
       _service.documents.where((d) => d.parentId == widget.folderId).toList();
 
   static const _allowedExtensions = [
@@ -66,7 +66,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     } catch (e) {
       dev.log('DocumentsScreen: errore caricamento: $e');
       if (mounted) {
-        setState(() => _errorMessage = AppLocalizations.of(context).libraryLoadError(e));
+        setState(() =>
+            _errorMessage = AppLocalizations.of(context).libraryLoadError(e));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -92,12 +93,16 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       return;
     }
 
-    if (result == null || result.files.isEmpty) return;
+    if (result == null || result.files.isEmpty) {
+      return;
+    }
 
     for (final file in result.files) {
       final path = file.path;
       if (path == null) {
-        if (mounted) _showSnack(AppLocalizations.of(context).filePathUnavailable);
+        if (mounted) {
+          _showSnack(AppLocalizations.of(context).filePathUnavailable);
+        }
         continue;
       }
 
@@ -105,7 +110,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       final f = File(path);
       if (!await f.exists()) {
         await AppLogger.log('Il file non esiste o inaccessibile: $path');
-        if (mounted) _showSnack(AppLocalizations.of(context).fileInaccessible(p.basename(path)));
+        if (mounted) {
+          _showSnack(
+              AppLocalizations.of(context).fileInaccessible(p.basename(path)));
+        }
         continue;
       }
 
@@ -116,7 +124,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         } catch (e) {
           dev.log('DocumentsScreen: errore importazione zip: $e');
           await AppLogger.log('DocumentsScreen: errore importazione zip: $e');
-          if (mounted) _showSnack(AppLocalizations.of(context).importZipError(e));
+          if (mounted) {
+            _showSnack(AppLocalizations.of(context).importZipError(e));
+          }
         }
         continue;
       }
@@ -132,14 +142,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       } catch (e) {
         dev.log('DocumentsScreen: errore aggiunta documento: $e');
         await AppLogger.log('DocumentsScreen: errore aggiunta documento: $e');
-        if (mounted) _showSnack(AppLocalizations.of(context).documentAddError(e));
+        if (mounted) {
+          _showSnack(AppLocalizations.of(context).documentAddError(e));
+        }
         continue;
       }
     }
 
     if (mounted) {
       setState(() {});
-      await _showImportCompleteDialog(AppLocalizations.of(context).documentsAdded);
+      await _showImportCompleteDialog(
+          AppLocalizations.of(context).documentsAdded);
     }
   }
 
@@ -200,28 +213,33 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     if (action == _DocumentAction.moveUp && currentIndex > 0) {
       final targetDoc = displayed[currentIndex - 1];
-      final globalTargetIndex = globalList.indexWhere((d) => d.id == targetDoc.id);
-      
+      final globalTargetIndex =
+          globalList.indexWhere((d) => d.id == targetDoc.id);
+
       final temp = globalList[globalCurrentIndex];
       globalList[globalCurrentIndex] = globalList[globalTargetIndex];
       globalList[globalTargetIndex] = temp;
-      
+
       await _service.saveAll(globalList);
       if (!mounted) return;
       setState(() {});
-    } else if (action == _DocumentAction.moveDown && currentIndex < displayed.length - 1) {
+    } else if (action == _DocumentAction.moveDown &&
+        currentIndex < displayed.length - 1) {
       final targetDoc = displayed[currentIndex + 1];
-      final globalTargetIndex = globalList.indexWhere((d) => d.id == targetDoc.id);
-      
+      final globalTargetIndex =
+          globalList.indexWhere((d) => d.id == targetDoc.id);
+
       final temp = globalList[globalCurrentIndex];
       globalList[globalCurrentIndex] = globalList[globalTargetIndex];
       globalList[globalTargetIndex] = temp;
-      
+
       await _service.saveAll(globalList);
       if (!mounted) return;
       setState(() {});
     } else if (action == _DocumentAction.moveToPosition) {
-      final folders = _service.documents.where((d) => d.isFolder && d.id != doc.id).toList();
+      final folders = _service.documents
+          .where((d) => d.isFolder && d.id != doc.id)
+          .toList();
       final result = await showDialog<dynamic>(
         context: context,
         builder: (_) => _DocumentPositionSliderDialog(
@@ -234,17 +252,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
       if (result is int && result != currentIndex) {
         final itemToMove = globalList.removeAt(globalCurrentIndex);
-        
-        final visibleTargets =
-            displayed.where((d) => d.id != doc.id).toList();
+
+        final visibleTargets = displayed.where((d) => d.id != doc.id).toList();
         if (result < visibleTargets.length) {
           final targetDoc = visibleTargets[result];
           final insertIdx = globalList.indexWhere((d) => d.id == targetDoc.id);
-          globalList.insert(insertIdx != -1 ? insertIdx : globalList.length, itemToMove);
+          globalList.insert(
+              insertIdx != -1 ? insertIdx : globalList.length, itemToMove);
         } else {
           globalList.add(itemToMove);
         }
-        
+
         await _service.saveAll(globalList);
         if (!mounted) return;
         setState(() {});
@@ -259,15 +277,20 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: folders.map((f) => ListTile(
-                    leading: const Icon(Icons.folder, color: Colors.amber),
-                    title: Text(f.name),
-                    onTap: () => Navigator.pop(ctx, f.id),
-                  )).toList(),
+                  children: folders
+                      .map((f) => ListTile(
+                            leading:
+                                const Icon(Icons.folder, color: Colors.amber),
+                            title: Text(f.name),
+                            onTap: () => Navigator.pop(ctx, f.id),
+                          ))
+                      .toList(),
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+                TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: Text(l10n.cancel)),
               ],
             ),
           );
@@ -319,8 +342,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context).exportDocument),
-        content:
-            Text(AppLocalizations.of(context).exportFormatPrompt),
+        content: Text(AppLocalizations.of(context).exportFormatPrompt),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, 'txt'),
@@ -374,7 +396,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       await AppLogger.log('Errore esportazione: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppLocalizations.of(context).exportError}: $e')),
+          SnackBar(
+              content: Text('${AppLocalizations.of(context).exportError}: $e')),
         );
       }
     }
@@ -497,7 +520,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final l10n = AppLocalizations.of(context);
     final docs = _displayedDocs;
     final currentFolderName = widget.folderId != null
-        ? _service.documents.firstWhere((d) => d.id == widget.folderId, orElse: () => _service.documents.first).name
+        ? _service.documents
+            .firstWhere((d) => d.id == widget.folderId,
+                orElse: () => _service.documents.first)
+            .name
         : l10n.documents;
 
     return Scaffold(
@@ -525,19 +551,25 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       ),
                     ),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context).cancel)),
-                      TextButton(onPressed: () => Navigator.pop(ctx, ctrl.text), child: Text(AppLocalizations.of(context).create)),
+                      TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: Text(AppLocalizations.of(context).cancel)),
+                      TextButton(
+                          onPressed: () => Navigator.pop(ctx, ctrl.text),
+                          child: Text(AppLocalizations.of(context).create)),
                     ],
                   ),
                 );
                 if (name != null && name.trim().isNotEmpty) {
-                  await _service.createFolder(name.trim(), parentId: widget.folderId);
+                  await _service.createFolder(name.trim(),
+                      parentId: widget.folderId);
                   setState(() {});
                 }
               } else if (value == 'dropbox') {
                 await Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => DropboxBrowserScreen(documentService: _service),
+                    builder: (_) =>
+                        DropboxBrowserScreen(documentService: _service),
                   ),
                 );
                 if (mounted) {
@@ -661,7 +693,10 @@ class _DocumentTile extends StatelessWidget {
     return MergeSemantics(
       child: Semantics(
         customSemanticsActions: {
-          CustomSemanticsAction(label: doc.isFolder ? l10n.removeFolder : l10n.removeDocument): onRemove,
+          CustomSemanticsAction(
+              label: doc.isFolder
+                  ? l10n.removeFolder
+                  : l10n.removeDocument): onRemove,
           CustomSemanticsAction(label: l10n.exportDocument): onExport,
           if (!isFirst)
             CustomSemanticsAction(label: l10n.moveUp): () =>
@@ -672,7 +707,8 @@ class _DocumentTile extends StatelessWidget {
           CustomSemanticsAction(label: l10n.moveToPosition): () =>
               onAction(_DocumentAction.moveToPosition),
         },
-        label: '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} $displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}',
+        label:
+            '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} $displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}',
         hint: doc.isFolder ? l10n.openFolderHint : l10n.openDocumentHint,
         child: Card(
           elevation: 2,
@@ -694,7 +730,8 @@ class _DocumentTile extends StatelessWidget {
                       ),
                       alignment: Alignment.center,
                       child: doc.isFolder
-                          ? const Icon(Icons.folder, color: Colors.white, size: 28)
+                          ? const Icon(Icons.folder,
+                              color: Colors.white, size: 28)
                           : Text(
                               doc.extension.toUpperCase(),
                               style: const TextStyle(
@@ -737,7 +774,9 @@ class _DocumentTile extends StatelessWidget {
                       child: IconButton(
                         icon: Icon(Icons.delete_outline,
                             color: Theme.of(context).colorScheme.error),
-                        tooltip: doc.isFolder ? l10n.removeFolder : l10n.removeDocument,
+                        tooltip: doc.isFolder
+                            ? l10n.removeFolder
+                            : l10n.removeDocument,
                         onPressed: onRemove,
                       ),
                     ),

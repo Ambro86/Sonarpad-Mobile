@@ -47,7 +47,7 @@ class NewsService {
   static final _corriereHomeFeedUri = Uri.parse(
     'https://xml2.corriereobjects.it/feed-hp/homepage-restyle-2025.xml',
   );
-  
+
   static const _chromeClientSettings = rhttp.ClientSettings(
     emulator: rhttp.Emulation.chrome136,
     timeoutSettings: rhttp.TimeoutSettings(
@@ -71,13 +71,17 @@ class NewsService {
       : _client = client ?? http.Client(),
         _useBrowserClient = client == null;
 
-  String _getPrefsKey(NewsLanguage language) => 'news_sources_order_${language.name}';
-  String _getHiddenPrefsKey(NewsLanguage language) => 'news_sources_hidden_${language.name}';
-  String _getCustomPrefsKey(NewsLanguage language) => 'news_custom_sources_${language.name}';
+  String _getPrefsKey(NewsLanguage language) =>
+      'news_sources_order_${language.name}';
+  String _getHiddenPrefsKey(NewsLanguage language) =>
+      'news_sources_hidden_${language.name}';
+  String _getCustomPrefsKey(NewsLanguage language) =>
+      'news_custom_sources_${language.name}';
 
   Future<List<NewsRssSource>> getCustomSources(NewsLanguage language) async {
     final prefs = await SharedPreferences.getInstance();
-    final customListStr = prefs.getStringList(_getCustomPrefsKey(language)) ?? [];
+    final customListStr =
+        prefs.getStringList(_getCustomPrefsKey(language)) ?? [];
     return customListStr
         .map((s) {
           try {
@@ -90,24 +94,43 @@ class NewsService {
         .toList();
   }
 
-  Future<void> addCustomSource(NewsLanguage language, String name, String urlOrSearch) async {
+  Future<void> addCustomSource(
+      NewsLanguage language, String name, String urlOrSearch) async {
     final prefs = await SharedPreferences.getInstance();
     final customSources = await getCustomSources(language);
 
     String finalUrl = urlOrSearch.trim();
-    if (!finalUrl.toLowerCase().startsWith('http://') && !finalUrl.toLowerCase().startsWith('https://')) {
+    if (!finalUrl.toLowerCase().startsWith('http://') &&
+        !finalUrl.toLowerCase().startsWith('https://')) {
       if (finalUrl.contains('.') && !finalUrl.contains(' ')) {
         finalUrl = 'https://$finalUrl';
       } else {
         final query = Uri.encodeComponent(finalUrl);
         String hl, gl, ceid;
         switch (language) {
-          case NewsLanguage.italian: hl = 'it'; gl = 'IT'; ceid = 'IT:it'; break;
-          case NewsLanguage.english: hl = 'en-US'; gl = 'US'; ceid = 'US:en'; break;
-          case NewsLanguage.french: hl = 'fr'; gl = 'FR'; ceid = 'FR:fr'; break;
-          case NewsLanguage.spanish: hl = 'es-419'; gl = '419'; ceid = '419:es'; break;
+          case NewsLanguage.italian:
+            hl = 'it';
+            gl = 'IT';
+            ceid = 'IT:it';
+            break;
+          case NewsLanguage.english:
+            hl = 'en-US';
+            gl = 'US';
+            ceid = 'US:en';
+            break;
+          case NewsLanguage.french:
+            hl = 'fr';
+            gl = 'FR';
+            ceid = 'FR:fr';
+            break;
+          case NewsLanguage.spanish:
+            hl = 'es-419';
+            gl = '419';
+            ceid = '419:es';
+            break;
         }
-        finalUrl = 'https://news.google.com/rss/search?q=$query&hl=$hl&gl=$gl&ceid=$ceid';
+        finalUrl =
+            'https://news.google.com/rss/search?q=$query&hl=$hl&gl=$gl&ceid=$ceid';
       }
     }
 
@@ -123,7 +146,8 @@ class NewsService {
     );
 
     customSources.add(newSource);
-    final stringList = customSources.map((s) => jsonEncode(s.toJson())).toList();
+    final stringList =
+        customSources.map((s) => jsonEncode(s.toJson())).toList();
     await prefs.setStringList(_getCustomPrefsKey(language), stringList);
   }
 
@@ -132,7 +156,8 @@ class NewsService {
     final customSources = await getCustomSources(language);
 
     customSources.removeWhere((s) => s.name == name);
-    final stringList = customSources.map((s) => jsonEncode(s.toJson())).toList();
+    final stringList =
+        customSources.map((s) => jsonEncode(s.toJson())).toList();
     await prefs.setStringList(_getCustomPrefsKey(language), stringList);
 
     // Rimuovilo anche dai nascosti/ordinati
@@ -167,16 +192,19 @@ class NewsService {
     }
 
     for (final source in allSources) {
-      if (!hiddenNames.contains(source.name) && !ordered.any((s) => s.name == source.name)) {
+      if (!hiddenNames.contains(source.name) &&
+          !ordered.any((s) => s.name == source.name)) {
         ordered.add(source);
       }
     }
     return ordered;
   }
 
-  Future<void> saveSourcesOrder(NewsLanguage language, List<NewsRssSource> sources) async {
+  Future<void> saveSourcesOrder(
+      NewsLanguage language, List<NewsRssSource> sources) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_getPrefsKey(language), sources.map((s) => s.name).toList());
+    await prefs.setStringList(
+        _getPrefsKey(language), sources.map((s) => s.name).toList());
   }
 
   Future<void> hideSource(NewsLanguage language, NewsRssSource source) async {
@@ -191,7 +219,8 @@ class NewsService {
   Future<void> restoreHiddenSources(NewsLanguage language) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_getHiddenPrefsKey(language));
-    await prefs.remove(_getPrefsKey(language)); // Also reset order when restoring
+    await prefs
+        .remove(_getPrefsKey(language)); // Also reset order when restoring
   }
 
   Future<List<NewsArticle>> fetchTopNews(
@@ -236,7 +265,10 @@ class NewsService {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
         final city = data['city']?.toString();
         final countryCode = data['country_code']?.toString();
-        if (city != null && city.isNotEmpty && countryCode != null && countryCode.isNotEmpty) {
+        if (city != null &&
+            city.isNotEmpty &&
+            countryCode != null &&
+            countryCode.isNotEmpty) {
           return {'city': city, 'countryCode': countryCode};
         }
       }
@@ -244,7 +276,8 @@ class NewsService {
     return null;
   }
 
-  Future<NewsArticleContent> fetchArticleContent(NewsArticle article, {required NewsLanguage language}) async {
+  Future<NewsArticleContent> fetchArticleContent(NewsArticle article,
+      {required NewsLanguage language}) async {
     final resolvedUrl = await _resolveArticleUrl(article.link);
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
       return NewsArticleContent(text: article.summary, url: article.link);
@@ -330,7 +363,8 @@ class NewsService {
           link: link,
           summary: description,
           source: source,
-          publishedAt: DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
+          publishedAt:
+              DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
         );
       }).toList();
     } catch (_) {
@@ -392,24 +426,34 @@ class NewsService {
     return alternate.getAttribute('href') ?? alternate.innerText.trim();
   }
 
-  List<NewsArticle> _extractArticlesFromHtml(String htmlStr, NewsRssSource rssSource) {
+  List<NewsArticle> _extractArticlesFromHtml(
+      String htmlStr, NewsRssSource rssSource) {
     final doc = html_parser.parse(htmlStr);
     final links = doc.querySelectorAll('a');
     final articles = <NewsArticle>[];
     final seenHrefs = <String>{};
     var index = 0;
-    
+
     for (final link in links) {
       final href = link.attributes['href'];
-      if (href == null || href.isEmpty || href.startsWith('#') || href.startsWith('javascript:')) continue;
-      
+      if (href == null ||
+          href.isEmpty ||
+          href.startsWith('#') ||
+          href.startsWith('javascript:')) {
+        continue;
+      }
+
       final text = link.text.trim();
-      if (text.length < 30) continue;
-      
+      if (text.length < 30) {
+        continue;
+      }
+
       final fullUrl = _resolveRelativeUrl(href, rssSource.uri.toString());
-      if (seenHrefs.contains(fullUrl)) continue;
+      if (seenHrefs.contains(fullUrl)) {
+        continue;
+      }
       seenHrefs.add(fullUrl);
-      
+
       index++;
       articles.add(NewsArticle(
         id: '${rssSource.name}_html_$index',
@@ -615,7 +659,7 @@ class NewsService {
     if (article != null && article.content.isNotEmpty) {
       return article.content;
     }
-    
+
     // Fallback using simple parsing
     final document = html_parser.parse(html);
     final articleElements = document.getElementsByTagName('article');
@@ -712,13 +756,14 @@ class NewsService {
       }
     } catch (_) {}
 
-    if (chromeResponse != null && !_shouldFallbackBrowserResponse(chromeResponse)) {
+    if (chromeResponse != null &&
+        !_shouldFallbackBrowserResponse(chromeResponse)) {
       return (
         response: chromeResponse,
         profile: _BrowserFetchProfile.chrome,
       );
     }
-    
+
     return (
       response: await _client.get(uri),
       profile: _BrowserFetchProfile.chrome,
@@ -771,10 +816,12 @@ class NewsService {
       }
     } catch (_) {}
 
-    if (chromeResponse != null && chromeResponse.statusCode >= 200 && chromeResponse.statusCode < 300) {
+    if (chromeResponse != null &&
+        chromeResponse.statusCode >= 200 &&
+        chromeResponse.statusCode < 300) {
       return chromeResponse;
     }
-    
+
     return _client.post(uri, body: body);
   }
 

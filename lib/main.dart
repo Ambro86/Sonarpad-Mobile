@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
@@ -300,12 +299,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
       debugShowCheckedModeBanner: false,
       locale: _locale,
       supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: sonarpadTheme(),
       home: const HomeScreen(),
       routes: {

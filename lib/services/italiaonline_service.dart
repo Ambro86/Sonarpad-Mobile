@@ -138,8 +138,9 @@ class ItaliaOnlineService {
       queryParams['page'] = query.page.toString();
     }
 
-    final uri = Uri.parse('$_baseUrl${query.kind.searchEndpoint}').replace(queryParameters: queryParams);
-    
+    final uri = Uri.parse('$_baseUrl${query.kind.searchEndpoint}')
+        .replace(queryParameters: queryParams);
+
     final response = await http.get(uri).timeout(const Duration(seconds: 45));
     if (response.statusCode != 200) {
       throw Exception('Errore di rete: ${response.statusCode}');
@@ -164,8 +165,9 @@ class ItaliaOnlineService {
       queryParams['where'] = query.where.trim();
     }
 
-    final uri = Uri.parse('$_baseUrl${query.kind.detailEndpoint}').replace(queryParameters: queryParams);
-    
+    final uri = Uri.parse('$_baseUrl${query.kind.detailEndpoint}')
+        .replace(queryParameters: queryParams);
+
     final response = await http.get(uri).timeout(const Duration(seconds: 45));
     if (response.statusCode != 200) {
       throw Exception('Errore di rete: ${response.statusCode}');
@@ -192,10 +194,12 @@ class ItaliaOnlineService {
     final status = responseNode.getElement('status')?.innerText.trim();
     if (status == '302') {
       final placesNode = responseNode.getElement('places');
-      final places = placesNode?.findElements('place')
-          .map((e) => e.getElement('address')?.innerText.trim() ?? '')
-          .where((e) => e.isNotEmpty)
-          .toList() ?? [];
+      final places = placesNode
+              ?.findElements('place')
+              .map((e) => e.getElement('address')?.innerText.trim() ?? '')
+              .where((e) => e.isNotEmpty)
+              .toList() ??
+          [];
       return SearchResponse(
         currentPage: 1,
         isLastPage: true,
@@ -209,13 +213,16 @@ class ItaliaOnlineService {
     }
 
     final displayWhere = responseNode.getElement('where')?.innerText.trim();
-    final currentPage = int.tryParse(responseNode.getElement('current_page')?.innerText.trim() ?? '1') ?? 1;
-    final isLastPageStr = responseNode.getElement('isLastPage')?.innerText.trim();
+    final currentPage = int.tryParse(
+            responseNode.getElement('current_page')?.innerText.trim() ?? '1') ??
+        1;
+    final isLastPageStr =
+        responseNode.getElement('isLastPage')?.innerText.trim();
     bool isLastPage = isLastPageStr == '1';
 
     final resultsNode = responseNode.getElement('results');
     final results = <SearchResult>[];
-    
+
     if (resultsNode != null) {
       for (final resultNode in resultsNode.findElements('result')) {
         final id = resultNode.getElement('id')?.innerText.trim() ?? '';
@@ -323,7 +330,7 @@ class ItaliaOnlineService {
       buffer.writeln('Categoria: $category');
       buffer.writeln();
     }
-    
+
     // Indirizzo
     String locality = '';
     if (city != null && province != null) {
@@ -333,7 +340,7 @@ class ItaliaOnlineService {
     } else if (province != null) {
       locality = province;
     }
-    
+
     if (address != null && address.isNotEmpty) {
       buffer.writeln('Indirizzo:');
       buffer.writeln(address);

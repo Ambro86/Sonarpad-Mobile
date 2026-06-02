@@ -35,8 +35,9 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
       return;
     }
 
-    final finalTitle =
-        title.isEmpty ? AppLocalizations.of(context).newDocumentDefaultName : title;
+    final finalTitle = title.isEmpty
+        ? AppLocalizations.of(context).newDocumentDefaultName
+        : title;
 
     setState(() => _saving = true);
     try {
@@ -49,13 +50,15 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
       await widget.service.add(doc);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).docSavedSuccessfully)),
+        SnackBar(
+            content: Text(AppLocalizations.of(context).docSavedSuccessfully)),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${AppLocalizations.of(context).saveError}: $e')),
+        SnackBar(
+            content: Text('${AppLocalizations.of(context).saveError}: $e')),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -110,7 +113,9 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
                         ),
                       )
                     : const Icon(Icons.save),
-                label: Text(_saving ? AppLocalizations.of(context).saving : AppLocalizations.of(context).saveDocument),
+                label: Text(_saving
+                    ? AppLocalizations.of(context).saving
+                    : AppLocalizations.of(context).saveDocument),
               ),
             ],
           ),

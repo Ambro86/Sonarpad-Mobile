@@ -211,7 +211,7 @@ class HtmlReaderService {
     Set<String> seenShort = {};
     List<String> lines = s.split('\n');
     String? prevLine;
-    
+
     for (var line in lines) {
       String l = line.trim();
       if (l.isEmpty) {
@@ -236,7 +236,7 @@ class HtmlReaderService {
       }
     }
     String result = out.toString();
-    while(result.endsWith('\n')) {
+    while (result.endsWith('\n')) {
       result = result.substring(0, result.length - 1);
     }
     return result;
@@ -324,7 +324,8 @@ class HtmlReaderService {
     }
     if (best.isEmpty) {
       List<String> lines = [];
-      for (var val in extractJsonValues(htmlContent, '"type":"text","content":"')) {
+      for (var val
+          in extractJsonValues(htmlContent, '"type":"text","content":"')) {
         String cleaned = collapseBlankLines(cleanText(val));
         String trimmed = cleaned.trim();
         if (trimmed.length < 20) continue;
@@ -349,7 +350,8 @@ class HtmlReaderService {
     return best.isEmpty ? null : best;
   }
 
-  static ArticleContent? extractJinaMarkdownFixture(String rawContent, String languageCode) {
+  static ArticleContent? extractJinaMarkdownFixture(
+      String rawContent, String languageCode) {
     if (!rawContent.contains("URL Source:") ||
         !rawContent.contains("Markdown Content:") ||
         !rawContent.contains("Title:")) {
@@ -379,23 +381,35 @@ class HtmlReaderService {
         lines.add("");
         continue;
       }
-      if (trimmed.toLowerCase() == "[you make our work possible.](https://iowacapitaldispatch.com/donate/?oa_referrer=midstorybox)") break;
-      if (trimmed.startsWith("If you value") || trimmed.startsWith("Support")) break;
+      if (trimmed.toLowerCase() ==
+          "[you make our work possible.](https://iowacapitaldispatch.com/donate/?oa_referrer=midstorybox)") {
+        break;
+      }
+      if (trimmed.startsWith("If you value") || trimmed.startsWith("Support")) {
+        break;
+      }
       lines.add(trimmed);
     }
     String body = collapseBlankLines(cleanText(lines.join('\n')));
     String content = body.trim();
-    if (content.length < 300 || countSentences(content) < 3) return null;
+    if (content.length < 300 || countSentences(content) < 3) {
+      return null;
+    }
     return ArticleContent(title: title, content: content);
   }
 
   static String authorPrefix(String languageCode) {
     switch (languageCode) {
-      case 'it': return "Di";
-      case 'fr': return "Par";
-      case 'es': return "Por";
-      case 'en': return "By";
-      default: return "Di";
+      case 'it':
+        return "Di";
+      case 'fr':
+        return "Par";
+      case 'es':
+        return "Por";
+      case 'en':
+        return "By";
+      default:
+        return "Di";
     }
   }
 
@@ -405,7 +419,8 @@ class HtmlReaderService {
       final elements = document.querySelectorAll(sel);
       if (elements.isNotEmpty) {
         var el = elements.first;
-        String t = sel.contains("meta") ? (el.attributes['content'] ?? '') : el.text;
+        String t =
+            sel.contains("meta") ? (el.attributes['content'] ?? '') : el.text;
         String cleanT = t.trim();
         if (cleanT.length > 5 && !cleanT.toLowerCase().endsWith(".com")) {
           return decodeUnicode(cleanT);
@@ -436,7 +451,8 @@ class HtmlReaderService {
   }
 
   static String? pickRedditLinkPostUrl(Document document) {
-    final elements = document.querySelectorAll("shreddit-post[post-type='link'] div[slot='post-media-container'] a[href]");
+    final elements = document.querySelectorAll(
+        "shreddit-post[post-type='link'] div[slot='post-media-container'] a[href]");
     for (var el in elements) {
       final href = el.attributes['href'];
       if (href != null) {
@@ -462,33 +478,66 @@ class HtmlReaderService {
         lower.contains("label: 'visualizzazione soft regwall") ||
         lower.contains("if (softregwall") ||
         lower.contains("window.datalayer = window.datalayer") ||
-        (lower.contains("\"categoryname\":\"undefined\"") && lower.contains("\"enabled\":\"true\""));
+        (lower.contains("\"categoryname\":\"undefined\"") &&
+            lower.contains("\"enabled\":\"true\""));
   }
 
   static bool isKnownTextNoiseLine(String line) {
     final lower = line.toLowerCase().trim();
-    if (lower.isEmpty) return false;
+    if (lower.isEmpty) {
+      return false;
+    }
 
     // Fatto Quotidiano Paywall/Boilerplate
-    if (lower == "facciamo un giornale con un solo padrone: i lettori.") return true;
-    if (lower.contains("sfoglia ogni giorno i contenuti di fq in edicola")) return true;
-    if (lower.contains("paga in modo rapido con:")) return true;
-    if (lower.contains("rinnovo automatico. disattiva quando vuoi")) return true;
-    if (lower.contains("hai bisogno di ulteriori informazioni?")) return true;
-    if (lower.contains("resta in contatto con la community de il fatto quotidiano")) return true;
-    if (lower == "abbiamo a cuore la tua privacy") return true;
+    if (lower == "facciamo un giornale con un solo padrone: i lettori.") {
+      return true;
+    }
+    if (lower.contains("sfoglia ogni giorno i contenuti di fq in edicola")) {
+      return true;
+    }
+    if (lower.contains("paga in modo rapido con:")) {
+      return true;
+    }
+    if (lower.contains("rinnovo automatico. disattiva quando vuoi")) {
+      return true;
+    }
+    if (lower.contains("hai bisogno di ulteriori informazioni?")) {
+      return true;
+    }
+    if (lower
+        .contains("resta in contatto con la community de il fatto quotidiano")) {
+      return true;
+    }
+    if (lower == "abbiamo a cuore la tua privacy") {
+      return true;
+    }
 
     // Corriere / RCS Boilerplate
-    if (lower.contains("per non perdere le ultime novità su tecnologia e innovazione")) return true;
-    if (lower.contains("rcs mediagroup s.p.a.")) return true;
+    if (lower.contains(
+        "per non perdere le ultime novità su tecnologia e innovazione")) {
+      return true;
+    }
+    if (lower.contains("rcs mediagroup s.p.a.")) {
+      return true;
+    }
 
     // Twitter embeds remnants
-    if (lower.startsWith("— ") && lower.contains("(@") && lower.contains("style=\"min-height:")) return true;
-    if (lower.contains("\" style=\"min-height:200px\">")) return true;
+    if (lower.startsWith("— ") &&
+        lower.contains("(@") &&
+        lower.contains("style=\"min-height:")) {
+      return true;
+    }
+    if (lower.contains("\" style=\"min-height:200px\">")) {
+      return true;
+    }
 
     // Related articles / headers sometimes injected
-    if (lower == "leggi anche") return true;
-    if (lower == "leggi anche:") return true;
+    if (lower == "leggi anche") {
+      return true;
+    }
+    if (lower == "leggi anche:") {
+      return true;
+    }
 
     return false;
   }
@@ -514,10 +563,11 @@ class HtmlReaderService {
       if (!isKnownJsNoiseLine(line) && !isKnownTextNoiseLine(line)) {
         // Also remove weird trailing HTML remnants from twitter
         if (trimmed.endsWith("\" style=\"min-height:200px\">")) {
-            trimmed = trimmed.replaceAll(RegExp(r'" style="min-height:200px">$'), '');
-            validLines.add(trimmed);
+          trimmed =
+              trimmed.replaceAll(RegExp(r'" style="min-height:200px">$'), '');
+          validLines.add(trimmed);
         } else {
-            validLines.add(line);
+          validLines.add(line);
         }
       }
     }
@@ -566,7 +616,8 @@ class HtmlReaderService {
     }
   }
 
-  static ArticleContent? readerModeExtract(String htmlContent, String languageCode) {
+  static ArticleContent? readerModeExtract(
+      String htmlContent, String languageCode) {
     if (!htmlContent.contains("<html")) {
       var article = extractJinaMarkdownFixture(htmlContent, languageCode);
       if (article != null) return article;
@@ -581,7 +632,8 @@ class HtmlReaderService {
     bool foundAnything = false;
 
     // 1. ESTRAZIONE DA JSON-LD
-    final ldScripts = document.querySelectorAll("script[type='application/ld+json']");
+    final ldScripts =
+        document.querySelectorAll("script[type='application/ld+json']");
     for (var element in ldScripts) {
       final json = element.text;
       bool hasRichJsonBody = false;
@@ -621,13 +673,18 @@ class HtmlReaderService {
           final res = extractJsonString(json.substring(dIdx + 17));
           if (res != null) {
             String dateStr = res.value;
-            String date = dateStr.length >= 10 ? dateStr.substring(0, 10) : dateStr;
+            String date =
+                dateStr.length >= 10 ? dateStr.substring(0, 10) : dateStr;
             authorInfo += " ($date)";
           }
         }
       }
 
-      for (var key in ["\"description\":\"", "\"articleBody\":\"", "\"subtitle\":\""]) {
+      for (var key in [
+        "\"description\":\"",
+        "\"articleBody\":\"",
+        "\"subtitle\":\""
+      ]) {
         int searchPos = 0;
         while (true) {
           int keyPos = json.indexOf(key, searchPos);
@@ -639,7 +696,8 @@ class HtmlReaderService {
               if (key == "\"description\":\"") {
                 int windowStart = keyPos - 400 < 0 ? 0 : keyPos - 400;
                 String window = json.substring(windowStart, keyPos);
-                bool isPersonOrOrg = window.contains("\"@type\":\"Person\"") || window.contains("\"@type\":\"Organization\"");
+                bool isPersonOrOrg = window.contains("\"@type\":\"Person\"") ||
+                    window.contains("\"@type\":\"Organization\"");
                 bool isArticle = window.contains("\"@type\":\"Article\"") ||
                     window.contains("\"@type\":\"NewsArticle\"") ||
                     window.contains("\"@type\":\"TechArticle\"") ||
@@ -670,7 +728,8 @@ class HtmlReaderService {
       }
       if (!hasRichJsonBody) {
         String? bestJsonBody = pickBestJsonArticleText(json);
-        if (bestJsonBody != null && !bodyAcc.toString().contains(bestJsonBody)) {
+        if (bestJsonBody != null &&
+            !bodyAcc.toString().contains(bestJsonBody)) {
           bodyAcc.write(bestJsonBody);
           bodyAcc.write("\n\n");
           hasRichJsonBody = true;
@@ -684,7 +743,7 @@ class HtmlReaderService {
       final nextScripts = document.querySelectorAll("script#__NEXT_DATA__");
       if (nextScripts.isNotEmpty) {
         String jsonText = nextScripts.first.text;
-        
+
         Set<String> seenParagraphs = {};
         List<String> contentBlocks = jsonText.split("\"type\":\"paragraph\"");
         for (var contentBlock in contentBlocks) {
@@ -723,7 +782,8 @@ class HtmlReaderService {
 
         if (!foundAnything) {
           Set<String> seenTextContent = {};
-          for (var val in extractJsonValues(jsonText, "\"__typename\":\"Text\",\"content\":\"")) {
+          for (var val in extractJsonValues(
+              jsonText, "\"__typename\":\"Text\",\"content\":\"")) {
             String cleaned = collapseBlankLines(cleanText(val));
             String trimmed = cleaned.trim();
             if (trimmed.length < 30 ||
@@ -751,7 +811,9 @@ class HtmlReaderService {
             if (absStart < jsonText.length) {
               final res = extractJsonString(jsonText.substring(absStart));
               if (res != null) {
-                if (res.value.length > 30 && !res.value.contains("http") && !res.value.contains("{")) {
+                if (res.value.length > 30 &&
+                    !res.value.contains("http") &&
+                    !res.value.contains("{")) {
                   bodyAcc.write(res.value);
                   bodyAcc.write("\n\n");
                   foundAnything = true;
@@ -767,7 +829,7 @@ class HtmlReaderService {
             }
           }
         }
-        
+
         if (!foundAnything) {
           String? best = pickBestJsonArticleText(jsonText);
           if (best != null) {
@@ -779,7 +841,9 @@ class HtmlReaderService {
       }
     }
 
-    if (bodyAcc.length < 300 && htmlContent.contains("cbc.ca") && htmlContent.contains("__INITIAL_STATE__")) {
+    if (bodyAcc.length < 300 &&
+        htmlContent.contains("cbc.ca") &&
+        htmlContent.contains("__INITIAL_STATE__")) {
       String? cbcBody = extractCbcInitialStateArticleText(htmlContent);
       if (cbcBody != null) {
         bodyAcc.write(cbcBody);
@@ -854,7 +918,7 @@ class HtmlReaderService {
 
     String content = stripPostExtractionNoise(cleanText(finalText.toString()));
     String finalContent = collapseBlankLines(content);
-    
+
     String? metaDesc = pickMetaDescription(document);
     if (metaDesc != null) {
       bool shouldFallback = bodyAcc.toString().trim().length < 120 ||
@@ -867,7 +931,8 @@ class HtmlReaderService {
           fallback.write("$prefix $authorInfo\n\n");
         }
         fallback.write(metaDesc.trim());
-        String fallbackContent = collapseBlankLines(stripPostExtractionNoise(cleanText(fallback.toString())));
+        String fallbackContent = collapseBlankLines(
+            stripPostExtractionNoise(cleanText(fallback.toString())));
         if (fallbackContent.length > finalContent.length) {
           finalContent = fallbackContent;
         }
@@ -885,8 +950,10 @@ class HtmlReaderService {
     Future.microtask(() async {
       try {
         final dir = await getApplicationDocumentsDirectory();
-        await File('${dir.path}/debug_parser_html.txt').writeAsString(htmlContent);
-        await File('${dir.path}/debug_parser_text.txt').writeAsString(finalContent);
+        await File('${dir.path}/debug_parser_html.txt')
+            .writeAsString(htmlContent);
+        await File('${dir.path}/debug_parser_text.txt')
+            .writeAsString(finalContent);
       } catch (_) {}
     });
 

@@ -1,1995 +1,2783 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
 
-class AppLocalizations {
-  const AppLocalizations(this.locale);
+import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+import 'app_localizations_fr.dart';
+import 'app_localizations_it.dart';
 
-  final Locale locale;
-  bool get _isEn => locale.languageCode == 'en';
-  bool get _isFr => locale.languageCode == 'fr';
-  bool get _isEs => locale.languageCode == 'es';
+// ignore_for_file: type=lint
 
-  static const supportedLocales = [
-    Locale('it'),
-    Locale('en'),
-    Locale('fr'),
-    Locale('es')
-  ];
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
 
-  static AppLocalizations of(BuildContext context) {
-    final localizations = Localizations.of<AppLocalizations>(
-      context,
-      AppLocalizations,
-    );
-    assert(localizations != null, 'AppLocalizations not found in context');
-    return localizations!;
-  }
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
-  String get appTitle => 'Sonarpad';
-  String get appLanguage => _isEn
-      ? 'App Language'
-      : (_isFr
-          ? 'Langue de l\'application'
-          : (_isEs ? 'Idioma de la aplicación' : 'Lingua dell\'app'));
-  String get homeSemanticsLabel => _isEn
-      ? 'Sonarpad, main screen'
-      : (_isFr
-          ? 'Sonarpad, écran principal'
-          : (_isEs
-              ? 'Sonarpad, pantalla principal'
-              : 'Sonarpad, schermata principale'));
-  String get settings => _isEn
-      ? 'Settings'
-      : (_isFr ? 'Paramètres' : (_isEs ? 'Ajustes' : 'Impostazioni'));
-  String get settingsHint => _isEn
-      ? 'Open settings'
-      : (_isFr
-          ? 'Ouvrir les paramètres'
-          : (_isEs ? 'Abrir ajustes' : 'Apre le impostazioni'));
-  String get info => _isEn
-      ? 'About'
-      : (_isFr ? 'À propos' : (_isEs ? 'Acerca de' : 'Informazioni'));
-  String get infoHint => _isEn
-      ? 'Open app info'
-      : (_isFr
-          ? 'Ouvrir les informations sur l\'application'
-          : (_isEs
-              ? 'Abrir información de la aplicación'
-              : 'Apre le informazioni sull\'app'));
-  String get categoryReading => _isEn
-      ? 'Reading and documents'
-      : (_isFr
-          ? 'Lecture et documents'
-          : (_isEs ? 'Lectura y documentos' : 'Lettura e documenti'));
-  String get categoryMedia => _isEn
-      ? 'Media and entertainment'
-      : (_isFr
-          ? 'Médias et divertissement'
-          : (_isEs ? 'Medios y entretenimiento' : 'Media e intrattenimento'));
-  String get categoryUtilities => _isEn
-      ? 'Searches and utilities'
-      : (_isFr
-          ? 'Recherches et utilitaires'
-          : (_isEs ? 'Búsquedas y utilidades' : 'Ricerche e utilità'));
-  String get voiceDictionaryTitle => _isEn
-      ? 'Voice dictionary'
-      : (_isFr
-          ? 'Dictionnaire vocal'
-          : (_isEs ? 'Diccionario y voz' : 'Dizionario vocale'));
-  String get voiceDictionaryAdd => _isEn
-      ? 'Add entries to dictionary'
-      : (_isFr
-          ? 'Ajouter des entrées au dictionnaire'
-          : (_isEs
-              ? 'Agregar entradas al diccionario'
-              : 'Aggiungi voci al dizionario'));
-  String get voiceDictionaryOriginalWord => _isEn
-      ? 'Original Word'
-      : (_isFr
-          ? 'Mot original'
-          : (_isEs ? 'Palabra original' : 'Parola originale'));
-  String get voiceDictionaryReplacementWord => _isEn
-      ? 'Replacement Word'
-      : (_isFr
-          ? 'Mot de remplacement'
-          : (_isEs ? 'Palabra de reemplazo' : 'Parola sostitutiva'));
-  String get voiceDictionaryMatchCase => _isEn
-      ? 'Match Case'
-      : (_isFr
-          ? 'Respecter la casse'
-          : (_isEs
-              ? 'Distinguir mayúsculas y minúsculas'
-              : 'Distingui maiuscole e minuscole'));
-  String get voiceDictionaryIgnoreCase => _isEn
-      ? 'Ignore case'
-      : (_isFr
-          ? 'Ignorer la casse'
-          : (_isEs
-              ? 'Ignorar mayúsculas y minúsculas'
-              : 'Ignora maiuscole e minuscole'));
-  String get voiceDictionaryEntries => _isEn
-      ? 'Dictionary entries'
-      : (_isFr
-          ? 'Entrées du dictionnaire'
-          : (_isEs ? 'Entradas del diccionario' : 'Voci del dizionario'));
-  String get voiceDictionaryEmpty => _isEn
-      ? 'No dictionary entries.'
-      : (_isFr
-          ? 'Aucune entrée dans le dictionnaire.'
-          : (_isEs
-              ? 'No hay entradas en el diccionario.'
-              : 'Nessuna voce nel dizionario.'));
-  String get voiceDictionaryRemove => _isEn
-      ? 'Remove Selected Entry'
-      : (_isFr
-          ? 'Supprimer l\'entrée sélectionnée'
-          : (_isEs
-              ? 'Eliminar entrada seleccionada'
-              : 'Rimuovi voce selezionata'));
-  String get voiceDictionaryOriginalRequired => _isEn
-      ? 'Enter the original word.'
-      : (_isFr
-          ? 'Saisissez le mot original.'
-          : (_isEs
-              ? 'Introduce la palabra original.'
-              : 'Inserisci la parola originale.'));
-  String get convertMediaTitle => _isEn
-      ? 'Convert Media'
-      : (_isFr
-          ? 'Convertir le média'
-          : (_isEs ? 'Convertir medios' : 'Converti media'));
-  String get convertMediaInput => _isEn
-      ? 'Input file'
-      : (_isFr
-          ? 'Fichier d\'entrée'
-          : (_isEs ? 'Archivo de entrada' : 'File di input'));
-  String get convertMediaOutput => _isEn
-      ? 'Output file'
-      : (_isFr
-          ? 'Fichier de sortie'
-          : (_isEs ? 'Archivo de salida' : 'File di output'));
-  String get convertMediaImage =>
-      _isEn ? 'Image' : (_isFr ? 'Image' : (_isEs ? 'Imagen' : 'Immagine'));
-  String get convertMediaBrowse => _isEn
-      ? 'Browse...'
-      : (_isFr ? 'Parcourir...' : (_isEs ? 'Examinar...' : 'Sfoglia...'));
-  String get convertMediaFormat =>
-      _isEn ? 'Format' : (_isFr ? 'Format' : (_isEs ? 'Formato' : 'Formato'));
-  String get convertMediaBitrate => _isEn
-      ? 'Bitrate (kbps)'
-      : (_isFr
-          ? 'Bitrate (kbps)'
-          : (_isEs ? 'Bitrate (kbps)' : 'Bitrate (kbps)'));
-  String get convertMediaOggQuality => _isEn
-      ? 'Quality (q)'
-      : (_isFr ? 'Qualité (q)' : (_isEs ? 'Calidad (q)' : 'Qualità (q)'));
-  String get convertMediaFlacCompression => _isEn
-      ? 'Compression level'
-      : (_isFr
-          ? 'Niveau de compression'
-          : (_isEs ? 'Nivel de compresión' : 'Livello di compressione'));
-  String get convertMediaReady =>
-      _isEn ? 'Ready.' : (_isFr ? 'Prêt.' : (_isEs ? 'Listo.' : 'Pronto.'));
-  String get convertMediaRunning => _isEn
-      ? 'Converting...'
-      : (_isFr
-          ? 'Conversion en cours...'
-          : (_isEs ? 'Convirtiendo...' : 'Conversione in corso...'));
-  String get convertMediaDone => _isEn
-      ? 'Conversion completed.'
-      : (_isFr
-          ? 'Conversion terminée.'
-          : (_isEs ? 'Conversión completada.' : 'Conversione completata.'));
-  String get convertMediaButton => _isEn
-      ? 'Convert Media'
-      : (_isFr ? 'Convertir' : (_isEs ? 'Convertir' : 'Converti'));
-  String get convertMediaNoInput => _isEn
-      ? 'Select an input file.'
-      : (_isFr
-          ? 'Sélectionnez un fichier d\'entrée.'
-          : (_isEs
-              ? 'Selecciona un archivo de entrada.'
-              : 'Seleziona un file di input.'));
-  String get convertMediaNoOutput => _isEn
-      ? 'Select an output file.'
-      : (_isFr
-          ? 'Sélectionnez un fichier de sortie.'
-          : (_isEs
-              ? 'Selecciona un archivo de salida.'
-              : 'Seleziona un file di output.'));
-  String get convertMediaNoImage => _isEn
-      ? 'Select an image for the video.'
-      : (_isFr
-          ? 'Sélectionnez une image pour la vidéo.'
-          : (_isEs
-              ? 'Selecciona una imagen para el vídeo.'
-              : 'Seleziona un\'immagine per il video.'));
-  String get convertMediaSamePath => _isEn
-      ? 'Output file must be different from input.'
-      : (_isFr
-          ? 'Le fichier de sortie doit être différent de l\'entrée.'
-          : (_isEs
-              ? 'El archivo de salida debe ser diferente del de entrada.'
-              : 'Il file di output deve essere diverso dall\'input.'));
-  String get convertMediaInvalidBitrate => _isEn
-      ? 'Invalid bitrate. Please enter a value between 64 and 320 kbps.'
-      : (_isFr
-          ? 'Entrez un débit valide entre 64 et 320 kbps.'
-          : (_isEs
-              ? 'Introduce un bitrate válido entre 64 y 320 kbps.'
-              : 'Bitrate non valido. Inserisci un valore tra 64 e 320 kbps.'));
-  String convertMediaFailed(Object error) => _isEn
-      ? 'Conversion failed: $error'
-      : (_isFr
-          ? 'Échec de la conversion : $error'
-          : (_isEs
-              ? 'La conversión falló: $error'
-              : 'Conversione non riuscita: $error'));
-  String get donations => _isEn
-      ? 'Donations'
-      : (_isFr ? 'Dons' : (_isEs ? 'Donaciones' : 'Donazioni'));
-  String get donationsHint => _isEn
-      ? 'Support the development of Sonarpad'
-      : (_isFr
-          ? 'Soutenir le développement de Sonarpad'
-          : (_isEs
-              ? 'Apoya el desarrollo de Sonarpad'
-              : 'Sostieni lo sviluppo di Sonarpad'));
-  String get loading => _isEn
-      ? 'Loading'
-      : (_isFr ? 'Chargement' : (_isEs ? 'Cargando' : 'Caricamento'));
-  String get ttsVoiceLanguage => _isEn
-      ? 'TTS voice language'
-      : (_isFr
-          ? 'Langue de la voix TTS'
-          : (_isEs ? 'Idioma de la voz TTS' : 'Lingua della voce TTS'));
-  String get ttsVoice => _isEn
-      ? 'TTS voice'
-      : (_isFr ? 'Voix TTS' : (_isEs ? 'Voz TTS' : 'Voce TTS'));
-  String get saveSettings => _isEn
-      ? 'Save settings'
-      : (_isFr
-          ? 'Sauvegarder les paramètres'
-          : (_isEs ? 'Guardar ajustes' : 'Salva impostazioni'));
-  String get settingsSaved => _isEn
-      ? 'Settings saved.'
-      : (_isFr
-          ? 'Paramètres sauvegardés.'
-          : (_isEs ? 'Ajustes guardados.' : 'Impostazioni salvate.'));
-  String get settingsSavedTitle => _isEn
-      ? 'Settings saved'
-      : (_isFr
-          ? 'Paramètres sauvegardés'
-          : (_isEs ? 'Ajustes guardados' : 'Impostazioni salvate'));
-  String get sonarpadCodeValidTitle => _isEn
-      ? 'Valid code'
-      : (_isFr ? 'Code valide' : (_isEs ? 'Código válido' : 'Codice valido'));
-  String get sonarpadCodeValidMessage => _isEn
-      ? 'The Sonarpad code is correct. $settingsSaved'
-      : (_isFr
-          ? 'Le code Sonarpad est correct. $settingsSaved'
-          : (_isEs
-              ? 'El código Sonarpad es correcto. $settingsSaved'
-              : 'Il codice Sonarpad è corretto. $settingsSaved'));
-  String get sonarpadCodeInvalidTitle => _isEn
-      ? 'Invalid code'
-      : (_isFr
-          ? 'Code invalide'
-          : (_isEs ? 'Código no válido' : 'Codice non valido'));
-  String get sonarpadCodeInvalidMessage => _isEn
-      ? 'The Sonarpad code is not valid. Check that you copied it without extra spaces.'
-      : (_isFr
-          ? 'Le code Sonarpad n’est pas valide. Vérifiez que vous l’avez copié sans espaces supplémentaires.'
-          : (_isEs
-              ? 'El código Sonarpad no es válido. Comprueba que lo hayas copiado sin espacios adicionales.'
-              : 'Il codice Sonarpad inserito non è valido. Verifica di averlo copiato senza spazi aggiuntivi.'));
-  String get infoDescription => _isEn
-      ? 'Sonarpad is a simple app with many features. Designed to be accessible with VoiceOver for blind and visually impaired people, it lets you listen to news, search for and subscribe to podcasts, import Wikipedia articles, add documents to your library, save them and edit them. Sonarpad is constantly updated, and every feature is designed to make everyday life easier.'
-      : (_isFr
-          ? 'Sonarpad est une application simple et riche en fonctionnalités. Conçue pour être accessible avec VoiceOver aux personnes aveugles ou malvoyantes, elle permet d’écouter les actualités, de rechercher des podcasts et de s’y abonner, d’importer des articles Wikipédia, d’ajouter des documents à votre bibliothèque, de les enregistrer et de les modifier. Sonarpad est constamment mise à jour, et chaque fonctionnalité est pensée pour faciliter la vie quotidienne.'
-          : (_isEs
-              ? 'Sonarpad es una aplicación sencilla con muchas funciones. Diseñada para ser accesible con VoiceOver para personas ciegas o con discapacidad visual, permite escuchar noticias, buscar podcasts y suscribirse a ellos, importar artículos de Wikipedia, añadir documentos a la biblioteca, guardarlos y editarlos. Sonarpad se actualiza constantemente y cada función está pensada para facilitar la vida diaria.'
-              : 'Sonarpad è un’app semplice, ma ricca di funzioni. È pensata per essere accessibile con VoiceOver alle persone non vedenti e ipovedenti: permette di ascoltare le notizie, cercare podcast e iscriversi, importare articoli da Wikipedia, aggiungere documenti alla libreria, salvarli e modificarli. Sonarpad è in continuo aggiornamento e ogni funzione è progettata per rendere più semplice la vita quotidiana.'));
-  String get infoAuthor => _isEn
-      ? 'Author: Ambrogio Riili'
-      : (_isFr
-          ? 'Auteur : Ambrogio Riili'
-          : (_isEs ? 'Autor: Ambrogio Riili' : 'Autore: Ambrogio Riili'));
-  String get donationsIntro => _isEn
-      ? 'Sonarpad was initially created to meet personal needs, but over time it has grown into a broader app. Its development requires constant work: improving features, fixing bugs, exploring new ideas, and carefully testing every function.\n\nIf you find Sonarpad useful and want to support its development, you can make a donation.'
-      : (_isFr
-          ? 'Sonarpad a d’abord été créé pour répondre à des besoins personnels, puis l’application s’est développée au fil du temps. Son développement demande un travail constant : améliorer les fonctionnalités, corriger les bogues, explorer de nouvelles idées et tester soigneusement chaque fonction.\n\nSi vous trouvez Sonarpad utile et souhaitez soutenir son développement, vous pouvez faire un don.'
-          : (_isEs
-              ? 'Sonarpad se creó inicialmente para responder a necesidades personales, pero con el tiempo se ha convertido en una aplicación más completa. Su desarrollo requiere un trabajo constante: mejorar funciones, corregir errores, explorar nuevas ideas y probar cuidadosamente cada función.\n\nSi Sonarpad te resulta útil y quieres apoyar su desarrollo, puedes hacer una donación.'
-              : 'Sonarpad è nato inizialmente per rispondere a esigenze personali, ma nel tempo è diventato un’app più completa. Il suo sviluppo richiede un lavoro costante: migliorare le funzionalità, correggere bug, cercare nuove idee e testare con attenzione ogni funzione.\n\nSe Sonarpad ti è utile e vuoi sostenerne lo sviluppo, puoi effettuare una donazione.'));
-  String get donationsPaypalDesc => _isEn
-      ? 'You can donate via PayPal using this link:\nhttps://www.paypal.me/ambrogio86\nPlease, if possible, add “Sonarpad” as the payment note.'
-      : (_isFr
-          ? 'Vous pouvez faire un don via PayPal via ce lien :\nhttps://www.paypal.me/ambrogio86\nVeuillez, si possible, ajouter "Sonarpad" comme note de paiement.'
-          : (_isEs
-              ? 'Puedes donar a través de PayPal usando este enlace:\nhttps://www.paypal.me/ambrogio86\nPor favor, si es posible, añade "Sonarpad" como nota de pago.'
-              : 'Puoi donare tramite PayPal al seguente link:\nhttps://www.paypal.me/ambrogio86\nSe possibile, indica come causale “Sonarpad”.'));
-  String get donationsBankDesc => _isEn
-      ? 'You can also donate via bank transfer to the bank account in the name of Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nPlease, if possible, use a clear payment reason, for example “Sonarpad”.'
-      : (_isFr
-          ? 'Vous pouvez également contribuer par virement bancaire sur le compte au nom d\'Ambrogio Riili.\nIBAN : IT77W0306901020100000064149\nSi possible, indiquez un motif de paiement clair, par exemple "Sonarpad".'
-          : (_isEs
-              ? 'También puedes hacer una donación por transferencia bancaria a la cuenta a nombre de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nPor favor, si es posible, usa un motivo de pago claro, por ejemplo, "Sonarpad".'
-              : 'È possibile contribuire anche tramite bonifico bancario sul conto intestato a Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possibile, indica una causale chiara, ad esempio “Sonarpad”.'));
-  String get donationsThanks => _isEn
-      ? 'Anyone who supports the project will be mentioned in the program and on the GitHub repository, unless they prefer to stay anonymous or use a nickname.\n\nThanks to Jiri Holzinger and Paola Vagata for their contribution.\nFor the Vietnamese translation, thanks to Anh Đức Nguyễn.\nFor the Czech translation, thanks to Radek Žalud and Jiri Holzinger.\nFor the Spanish translation, thanks to Arturo Fernandez Rivas.\nFor the Serbian translation, thanks to Mila Kuran.\nFor the Ukrainian translation, thanks to Ivan Shtefuriak.'
-      : (_isFr
-          ? 'Toute personne qui soutient le projet sera mentionnée dans l’application et dans le dépôt GitHub, sauf si elle préfère rester anonyme ou utiliser un pseudonyme.\n\nMerci à Jiri Holzinger et Paola Vagata pour leur contribution.\nPour la traduction en vietnamien, merci à Anh Đức Nguyễn.\nPour la traduction en tchèque, merci à Radek Žalud et Jiri Holzinger.\nPour la traduction en espagnol, merci à Arturo Fernandez Rivas.\nPour la traduction en serbe, merci à Mila Kuran.\nPour la traduction en ukrainien, merci à Ivan Shtefuriak.'
-          : (_isEs
-              ? 'Toda persona que apoye el proyecto será mencionada en la aplicación y en el repositorio de GitHub, salvo que prefiera permanecer en el anonimato o usar un seudónimo.\n\nGracias a Jiri Holzinger y Paola Vagata por su contribución.\nPor la traducción al vietnamita, gracias a Anh Đức Nguyễn.\nPor la traducción al checo, gracias a Radek Žalud y Jiri Holzinger.\nPor la traducción al español, gracias a Arturo Fernandez Rivas.\nPor la traducción al serbio, gracias a Mila Kuran.\nPor la traducción al ucraniano, gracias a Ivan Shtefuriak.'
-              : 'Chiunque decida di sostenere il progetto verrà ringraziato nell’app e nel repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nRingrazio Jiri Holzinger e Paola Vagata per il loro contributo.\nPer la traduzione in vietnamita ringrazio Anh Đức Nguyễn.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.\nPer la traduzione in serbo ringrazio Mila Kuran.\nPer la traduzione in ucraino ringrazio Ivan Shtefuriak.'));
-  String get news => _isEn
-      ? 'News'
-      : (_isFr ? 'Actualités' : (_isEs ? 'Noticias' : 'Notizie'));
-  String get newsHint => _isEn
-      ? 'Open news from Google News RSS'
-      : (_isFr
-          ? 'Ouvrir les actualités de Google News RSS'
-          : (_isEs
-              ? 'Abrir noticias del RSS de Google News'
-              : 'Apre le notizie da Google News RSS'));
-  String get podcasts => _isEn
-      ? 'Podcasts'
-      : (_isFr ? 'Podcasts' : (_isEs ? 'Podcasts' : 'Podcast'));
-  String get podcastsHint => _isEn
-      ? 'Subscribe to podcasts, play or download episodes'
-      : (_isFr
-          ? 'S\'abonner aux podcasts, lire ou télécharger des épisodes'
-          : (_isEs
-              ? 'Suscríbete a podcasts, reproduce o descarga episodios'
-              : 'Iscriviti ai podcast, riproduci o scarica episodi'));
-  String get importFromWikipedia => 'Wikipedia';
-  String get wikipediaHint => _isEn
-      ? 'Search for a Wikipedia article and import the text'
-      : (_isFr
-          ? 'Rechercher un article Wikipedia et importer le texte'
-          : (_isEs
-              ? 'Busca un artículo de Wikipedia e importa el texto'
-              : 'Cerca un articolo Wikipedia e importa il testo'));
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('it'),
+    Locale('en'),
+    Locale('es'),
+    Locale('fr')
+  ];
 
-  String get newsCategoryTop => switch (locale.languageCode) {
-        'it' => 'Principali',
-        'en' => 'Top stories',
-        'fr' => 'À la une',
-        'es' => 'Titulares',
-        _ => 'Principali',
-      };
+  /// Localized text for appTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Sonarpad'**
+  String get appTitle;
 
-  String get settingsHomeGrouping => switch (locale.languageCode) {
-        'it' => 'Attiva il raggruppamento delle icone in categorie',
-        'en' => 'Enable grouping of home icons into categories',
-        'fr' => 'Activer le regroupement des icônes d\'accueil en catégories',
-        'es' => 'Habilitar la agrupación de iconos de inicio en categorías',
-        _ => 'Attiva il raggruppamento delle icone in categorie',
-      };
+  /// Localized text for appLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua dell\'app'**
+  String get appLanguage;
 
-  String get settingsHomeGroupingHint => switch (locale.languageCode) {
-        'it' =>
-          'Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle',
-        'en' =>
-          'If disabled, the main icons will be shown as a single list without subfolders',
-        'fr' =>
-          'Si désactivé, les icônes principales seront affichées sous forme de liste unique sans sous-dossiers',
-        'es' =>
-          'Si está deshabilitado, los iconos principales se mostrarán como una lista única sin subcarpetas',
-        _ =>
-          'Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle',
-      };
+  /// Localized text for homeSemanticsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Sonarpad, schermata principale'**
+  String get homeSemanticsLabel;
 
-  String get newsCategoryMyCity => switch (locale.languageCode) {
-        'it' => 'La mia città',
-        'en' => 'My City',
-        'fr' => 'Ma ville',
-        'es' => 'Mi ciudad',
-        _ => 'La mia città',
-      };
+  /// Localized text for settings.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni'**
+  String get settings;
 
-  String get moveUp => switch (locale.languageCode) {
-        'it' => 'Sposta in alto',
-        'en' => 'Move up',
-        'fr' => 'Déplacer vers le haut',
-        'es' => 'Mover hacia arriba',
-        _ => 'Sposta in alto',
-      };
+  /// Localized text for settingsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Apre le impostazioni'**
+  String get settingsHint;
 
-  String get moveDown => switch (locale.languageCode) {
-        'it' => 'Sposta in basso',
-        'en' => 'Move down',
-        'fr' => 'Déplacer vers le bas',
-        'es' => 'Mover hacia abajo',
-        _ => 'Sposta in basso',
-      };
+  /// Localized text for info.
+  ///
+  /// In it, this message translates to:
+  /// **'Informazioni'**
+  String get info;
 
-  String get hide => switch (locale.languageCode) {
-        'it' => 'Elimina',
-        'en' => 'Delete',
-        'fr' => 'Supprimer',
-        'es' => 'Eliminar',
-        _ => 'Elimina',
-      };
+  /// Localized text for infoHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Apre le informazioni sull\'app'**
+  String get infoHint;
 
-  String get moveToPosition => switch (locale.languageCode) {
-        'it' => 'Sposta alla posizione',
-        'en' => 'Move to position',
-        'fr' => 'Déplacer à la position',
-        'es' => 'Mover a la posición',
-        _ => 'Sposta alla posizione',
-      };
+  /// Localized text for categoryReading.
+  ///
+  /// In it, this message translates to:
+  /// **'Lettura e documenti'**
+  String get categoryReading;
 
-  String positionLabel(int position, String targetName) =>
-      switch (locale.languageCode) {
-        'it' => 'Posizione $position: prima di $targetName',
-        'en' => 'Position $position: before $targetName',
-        'fr' => 'Position $position: avant $targetName',
-        'es' => 'Posición $position: antes de $targetName',
-        _ => 'Posizione $position: prima di $targetName',
-      };
+  /// Localized text for categoryMedia.
+  ///
+  /// In it, this message translates to:
+  /// **'Media e intrattenimento'**
+  String get categoryMedia;
 
-  String get positionLabelLast => switch (locale.languageCode) {
-        'it' => 'Ultima posizione',
-        'en' => 'Last position',
-        'fr' => 'Dernière position',
-        'es' => 'Última posición',
-        _ => 'Ultima posizione',
-      };
+  /// Localized text for categoryUtilities.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricerche e utilità'**
+  String get categoryUtilities;
 
-  String get restoreHiddenSources => switch (locale.languageCode) {
-        'it' => 'Ripristina testate eliminate',
-        'en' => 'Restore deleted sources',
-        'fr' => 'Restaurer les sources supprimées',
-        'es' => 'Restaurar fuentes eliminadas',
-        _ => 'Ripristina testate eliminate',
-      };
-  String get addCustomNewsSource => switch (locale.languageCode) {
-        'it' => 'Aggiungi sorgente RSS personalizzata',
-        'en' => 'Add custom RSS source',
-        'fr' => 'Ajouter une source RSS personnalisée',
-        'es' => 'Añadir fuente RSS personalizada',
-        _ => 'Aggiungi sorgente RSS personalizzata',
-      };
-  String get newsSourceName => switch (locale.languageCode) {
-        'it' => 'Nome testata/sito',
-        'en' => 'Source or site name',
-        'fr' => 'Nom de la source ou du site',
-        'es' => 'Nombre de la fuente o del sitio',
-        _ => 'Nome testata/sito',
-      };
-  String get newsSourceUrlOrSearch => switch (locale.languageCode) {
-        'it' => 'URL sito, feed RSS o parola di ricerca',
-        'en' => 'Website URL, RSS feed or search word',
-        'fr' => 'URL du site, flux RSS ou mot de recherche',
-        'es' => 'URL del sitio, feed RSS o palabra de búsqueda',
-        _ => 'URL sito, feed RSS o parola di ricerca',
-      };
-  String get deleteNewsSource => switch (locale.languageCode) {
-        'it' => 'Elimina sorgente',
-        'en' => 'Delete source',
-        'fr' => 'Supprimer la source',
-        'es' => 'Eliminar fuente',
-        _ => 'Elimina sorgente',
-      };
-  String get articleTextSemantics => switch (locale.languageCode) {
-        'it' => 'Testo articolo',
-        'en' => 'Article text',
-        'fr' => 'Texte de l\'article',
-        'es' => 'Texto del artículo',
-        _ => 'Testo articolo',
-      };
+  /// Localized text for voiceDictionaryTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Dizionario vocale'**
+  String get voiceDictionaryTitle;
 
-  String get newsLanguage => _isEn
-      ? 'News Language'
-      : (_isFr
-          ? 'Langue des actualités'
-          : (_isEs ? 'Idioma de las noticias' : 'Lingua notizie'));
-  String get loadingNews => _isEn
-      ? 'Loading news'
-      : (_isFr
-          ? 'Chargement des actualités'
-          : (_isEs ? 'Cargando noticias' : 'Caricamento notizie'));
-  String error(Object error) => _isEn
-      ? 'Error: $error'
-      : (_isFr
-          ? 'Erreur : $error'
-          : (_isEs ? 'Error: $error' : 'Errore: $error'));
-  String get noNewsFound => _isEn
-      ? 'No news found'
-      : (_isFr
-          ? 'Aucune actualité trouvée'
-          : (_isEs ? 'No se encontraron noticias' : 'Nessuna notizia trovata'));
-  String get loadingArticle => _isEn
-      ? 'Loading article'
-      : (_isFr
-          ? 'Chargement de l\'article'
-          : (_isEs ? 'Cargando artículo' : 'Caricamento articolo'));
-  String get noFullArticleFound => _isEn
-      ? 'Full article not available. Showing feed summary.'
-      : (_isFr
-          ? 'Article complet indisponible. Affichage du résumé du flux.'
-          : (_isEs
-              ? 'Artículo completo no disponible. Mostrando el resumen del feed.'
-              : 'Articolo integrale non disponibile. Mostro il riassunto del feed.'));
-  String get italian => _isEn
-      ? 'Italian'
-      : (_isFr ? 'Italien' : (_isEs ? 'Italiano' : 'Italiano'));
-  String get english =>
-      _isEn ? 'English' : (_isFr ? 'Anglais' : (_isEs ? 'Inglés' : 'English'));
-  String get french => _isEn
-      ? 'French'
-      : (_isFr ? 'Français' : (_isEs ? 'Francés' : 'Francese'));
-  String get spanish => _isEn
-      ? 'Spanish'
-      : (_isFr ? 'Espagnol' : (_isEs ? 'Español' : 'Spagnolo'));
-  String get newsSource => _isEn
-      ? 'News source'
-      : (_isFr
-          ? 'Source d\'actualité'
-          : (_isEs ? 'Fuente de noticias' : 'Fonte notizie'));
+  /// Localized text for voiceDictionaryAdd.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi voci al dizionario'**
+  String get voiceDictionaryAdd;
 
-  String get article => _isEn
-      ? 'Article'
-      : (_isFr ? 'Article' : (_isEs ? 'Artículo' : 'Articolo'));
-  String get articlePreview => _isEn
-      ? 'Article preview'
-      : (_isFr
-          ? 'Aperçu de l\'article'
-          : (_isEs ? 'Vista previa del artículo' : 'Anteprima articolo'));
-  String get readFullArticle => _isEn
-      ? 'Read full article'
-      : (_isFr
-          ? 'Lire l\'article complet'
-          : (_isEs ? 'Leer artículo completo' : 'Leggi articolo completo'));
-  String get extractingReaderArticleText => _isEn
-      ? 'Extracting text in reader mode...'
-      : (_isFr
-          ? 'Extraction du texte en mode lecteur...'
-          : (_isEs
-              ? 'Extrayendo texto en modo lectura...'
-              : 'Estraggo il testo in modalità lettura...'));
-  String get extractingVisibleArticleText => _isEn
-      ? 'Extracting visible text from page...'
-      : (_isFr
-          ? 'Extraction du texte visible de la page...'
-          : (_isEs
-              ? 'Extrayendo texto visible de la página...'
-              : 'Estraggo il testo visibile dalla pagina...'));
-  String source(String source) => _isEn
-      ? 'Source: $source'
-      : (_isFr
-          ? 'Source : $source'
-          : (_isEs ? 'Fuente: $source' : 'Fonte: $source'));
-  String get readyStatus =>
-      _isEn ? 'Ready.' : (_isFr ? 'Prêt.' : (_isEs ? 'Listo.' : 'Pronto.'));
-  String get preparingEdgeTts => _isEn
-      ? 'Preparing Edge TTS reading in blocks...'
-      : (_isFr
-          ? 'Préparation de la lecture Edge TTS en blocs...'
-          : (_isEs
-              ? 'Preparando lectura Edge TTS en bloques...'
-              : 'Preparo lettura Edge TTS a blocchi...'));
-  String get noTextToRead => _isEn
-      ? 'No text to read.'
-      : (_isFr
-          ? 'Aucun texte à lire.'
-          : (_isEs ? 'No hay texto para leer.' : 'Nessun testo da leggere.'));
-  String chunkCreated(int index, int total) => _isEn
-      ? 'Block $index of $total created. Reading in progress...'
-      : (_isFr
-          ? 'Bloc $index sur $total créé. Lecture en cours...'
-          : (_isEs
-              ? 'Bloque $index de $total creado. Lectura en curso...'
-              : 'Blocco $index di $total creato. Lettura in corso...'));
-  String playingChunk(int index, int total, int size) => _isEn
-      ? 'Playing block $index of $total ($size bytes)...'
-      : (_isFr
-          ? 'Lecture du bloc $index sur $total ($size octets)...'
-          : (_isEs
-              ? 'Reproduciendo bloque $index de $total ($size bytes)...'
-              : 'Riproduco blocco $index di $total ($size byte)...'));
-  String readingFinished(int readyChunks, int totalChunks, String libraryPath) => _isEn
-      ? 'Reading finished. Blocks created: $readyChunks/$totalChunks. Library: $libraryPath'
-      : (_isFr
-          ? 'Lecture terminée. Blocs créés : $readyChunks/$totalChunks. Bibliothèque : $libraryPath'
-          : (_isEs
-              ? 'Lectura finalizada. Bloques creados: $readyChunks/$totalChunks. Biblioteca: $libraryPath'
-              : 'Lettura terminata. Blocchi creati: $readyChunks/$totalChunks. Libreria: $libraryPath'));
-  String get libraryNotSpecified => _isEn
-      ? 'not specified'
-      : (_isFr ? 'non spécifié' : (_isEs ? 'no especificada' : 'non indicata'));
-  String get readingStopped => _isEn
-      ? 'Reading stopped.'
-      : (_isFr
-          ? 'Lecture arrêtée.'
-          : (_isEs ? 'Lectura detenida.' : 'Lettura interrotta.'));
-  String edgeTtsError(Object error) => _isEn
-      ? 'Edge TTS Error: $error'
-      : (_isFr
-          ? 'Erreur Edge TTS : $error'
-          : (_isEs ? 'Error de Edge TTS: $error' : 'Errore Edge TTS: $error'));
-  String audioChunksReady(int readyChunks, int totalChunks) => _isEn
-      ? 'Audio blocks ready: $readyChunks / $totalChunks'
-      : (_isFr
-          ? 'Blocs audio prêts : $readyChunks / $totalChunks'
-          : (_isEs
-              ? 'Bloques de audio listos: $readyChunks / $totalChunks'
-              : 'Blocchi audio pronti: $readyChunks / $totalChunks'));
-  String get readingInProgress => _isEn
-      ? 'Reading in progress...'
-      : (_isFr
-          ? 'Lecture en cours...'
-          : (_isEs ? 'Lectura en curso...' : 'Lettura in corso...'));
-  String get readWithEdgeTts => _isEn
-      ? 'Start reading'
-      : (_isFr
-          ? 'Démarrer la lecture'
-          : (_isEs ? 'Iniciar lectura' : 'Avvia lettura'));
-  String get stopReading => _isEn
-      ? 'Stop reading'
-      : (_isFr
-          ? 'Arrêter la lecture'
-          : (_isEs ? 'Detener lectura' : 'Interrompi lettura'));
-  String get startReading => _isEn
-      ? 'Start reading'
-      : (_isFr
-          ? 'Démarrer la lecture'
-          : (_isEs ? 'Iniciar lectura' : 'Avvia lettura'));
-  String get resumeReading => _isEn
-      ? 'Resume reading'
-      : (_isFr
-          ? 'Reprendre la lecture'
-          : (_isEs ? 'Reanudar lectura' : 'Riprendi lettura'));
-  String get pauseReading => _isEn
-      ? 'Pause reading'
-      : (_isFr
-          ? 'Mettre la lecture en pause'
-          : (_isEs ? 'Pausar lectura' : 'Pausa lettura'));
-  String get openOriginalArticle => _isEn
-      ? 'Open original article'
-      : (_isFr
-          ? 'Ouvrir l\'article original'
-          : (_isEs ? 'Abrir artículo original' : 'Apri articolo originale'));
+  /// Localized text for voiceDictionaryOriginalWord.
+  ///
+  /// In it, this message translates to:
+  /// **'Parola originale'**
+  String get voiceDictionaryOriginalWord;
 
-  String get searchPodcasts => _isEn
-      ? 'Search podcasts'
-      : (_isFr
-          ? 'Rechercher des podcasts'
-          : (_isEs ? 'Buscar podcasts' : 'Cerca podcast'));
-  String get podcastName => _isEn
-      ? 'Podcast name'
-      : (_isFr
-          ? 'Nom du podcast'
-          : (_isEs ? 'Nombre del podcast' : 'Nome podcast'));
-  String get podcastSearchHint => _isEn
-      ? 'Example: technology, history, the podcast name...'
-      : (_isFr
-          ? 'Exemple : technologie, histoire, le nom du podcast...'
-          : (_isEs
-              ? 'Ejemplo: tecnología, historia, el nombre del podcast...'
-              : 'Esempio: tecnologia, storia, il nome del podcast...'));
-  String get searchCountry => _isEn
-      ? 'Search country'
-      : (_isFr
-          ? 'Pays de recherche'
-          : (_isEs ? 'País de búsqueda' : 'Paese di ricerca'));
-  String get podcastCategory => _isEn
-      ? 'Podcast category'
-      : (_isFr
-          ? 'Catégorie de podcast'
-          : (_isEs ? 'Categoría de podcast' : 'Categoria podcast'));
-  String get browsePodcastCategories => _isEn
-      ? 'Browse categories'
-      : (_isFr
-          ? 'Parcourir les catégories'
-          : (_isEs ? 'Explorar categorías' : 'Sfoglia categorie'));
-  String get selectedPodcastCategory => _isEn
-      ? 'Selected category'
-      : (_isFr
-          ? 'Catégorie sélectionnée'
-          : (_isEs ? 'Categoría seleccionada' : 'Categoria selezionata'));
-  String get podcastCategories => _isEn
-      ? 'Podcast categories'
-      : (_isFr
-          ? 'Catégories de podcasts'
-          : (_isEs ? 'Categorías de podcasts' : 'Categorie podcast'));
-  String get countryItaly =>
-      _isEn ? 'Italy' : (_isFr ? 'Italie' : (_isEs ? 'Italia' : 'Italia'));
-  String get countryUnitedStatesEnglish => _isEn
-      ? 'United States / English'
-      : (_isFr
-          ? 'États-Unis / Anglais'
-          : (_isEs ? 'Estados Unidos / Inglés' : 'Stati Uniti / inglese'));
-  String get countryUnitedKingdom => _isEn
-      ? 'United Kingdom'
-      : (_isFr ? 'Royaume-Uni' : (_isEs ? 'Reino Unido' : 'Regno Unito'));
-  String get countrySpain =>
-      _isEn ? 'Spain' : (_isFr ? 'Espagne' : (_isEs ? 'España' : 'Spagna'));
-  String get countryFrance =>
-      _isEn ? 'France' : (_isFr ? 'France' : (_isEs ? 'Francia' : 'Francia'));
-  String get searchInProgress => _isEn
-      ? 'Search in progress...'
-      : (_isFr
-          ? 'Recherche en cours...'
-          : (_isEs ? 'Búsqueda en curso...' : 'Ricerca in corso...'));
-  String podcastResultsFound(int count) => _isEn
-      ? 'Found $count podcasts'
-      : (_isFr
-          ? '$count podcasts trouvés'
-          : (_isEs ? '$count podcasts encontrados' : 'Trovati $count podcast'));
-  String podcastSearchError(Object error) => _isEn
-      ? 'Podcast search error: $error'
-      : (_isFr
-          ? 'Erreur de recherche de podcast : $error'
-          : (_isEs
-              ? 'Error en la búsqueda de podcasts: $error'
-              : 'Errore ricerca podcast: $error'));
-  String subscribedTo(String title) => _isEn
-      ? 'Subscribed to $title'
-      : (_isFr
-          ? 'Abonné à $title'
-          : (_isEs ? 'Suscrito a $title' : 'Iscritto a $title'));
-  String subscriptionError(Object error) => _isEn
-      ? 'Subscription error: $error'
-      : (_isFr
-          ? 'Erreur d\'abonnement : $error'
-          : (_isEs
-              ? 'Error de suscripción: $error'
-              : 'Errore iscrizione: $error'));
-  String podcastSubscriptionError(Object error) => _isEn
-      ? 'Podcast subscription error: $error'
-      : (_isFr
-          ? 'Erreur d\'abonnement au podcast : $error'
-          : (_isEs
-              ? 'Error de suscripción de podcast: $error'
-              : 'Errore iscrizione podcast: $error'));
-  String get searchResults => _isEn
-      ? 'Search results'
-      : (_isFr
-          ? 'Résultats de recherche'
-          : (_isEs ? 'Resultados de la búsqueda' : 'Risultati ricerca'));
-  String get podcastInfo => _isEn
-      ? 'Podcast information'
-      : (_isFr
-          ? 'Informations sur le podcast'
-          : (_isEs ? 'Información del podcast' : 'Informazioni sul podcast'));
-  String get subscribe => _isEn
-      ? 'Subscribe'
-      : (_isFr ? 'S\'abonner' : (_isEs ? 'Suscribirse' : 'Iscriviti'));
-  String get viewEpisodes => _isEn
-      ? 'View episodes'
-      : (_isFr
-          ? 'Voir les épisodes'
-          : (_isEs ? 'Ver episodios' : 'Vedi episodi'));
-  String get podcastAuthor =>
-      _isEn ? 'Author' : (_isFr ? 'Auteur' : (_isEs ? 'Autor' : 'Autore'));
-  String get noPodcastDescription => _isEn
-      ? 'No description available.'
-      : (_isFr
-          ? 'Aucune description disponible.'
-          : (_isEs
-              ? 'No hay descripción disponible.'
-              : 'Nessuna descrizione disponibile.'));
-  String get noPodcastResults => _isEn
-      ? 'No podcasts found.'
-      : (_isFr
-          ? 'Aucun podcast trouvé.'
-          : (_isEs
-              ? 'No se encontraron podcasts.'
-              : 'Nessun podcast trovato.'));
-  String get loadingPodcastInfo => _isEn
-      ? 'Loading podcast info'
-      : (_isFr
-          ? 'Chargement des infos du podcast'
-          : (_isEs
-              ? 'Cargando información del podcast'
-              : 'Caricamento info podcast'));
-  String get podcastArtwork => _isEn
-      ? 'Podcast artwork'
-      : (_isFr
-          ? 'Pochette du podcast'
-          : (_isEs ? 'Portada del podcast' : 'Copertina podcast'));
-  String get addFeedUrlManually => _isEn
-      ? 'Add RSS feed URL manually'
-      : (_isFr
-          ? 'Ajouter l\'URL du flux RSS manuellement'
-          : (_isEs
-              ? 'Añadir URL del feed RSS manualmente'
-              : 'Aggiungi manualmente URL feed RSS'));
-  String get podcastFeedUrl => _isEn
-      ? 'Podcast RSS feed URL'
-      : (_isFr
-          ? 'URL du flux RSS du podcast'
-          : (_isEs ? 'URL del feed RSS del podcast' : 'URL feed podcast RSS'));
-  String get subscribeFromUrl => _isEn
-      ? 'Subscribe from URL'
-      : (_isFr
-          ? 'S\'abonner à partir de l\'URL'
-          : (_isEs ? 'Suscribirse desde URL' : 'Iscriviti da URL'));
-  String get subscribedPodcasts => _isEn
-      ? 'Subscribed podcasts'
-      : (_isFr
-          ? 'Abonnements aux podcasts'
-          : (_isEs ? 'Podcasts suscritos' : 'Podcast sottoscritti'));
-  String get noSubscribedPodcasts => _isEn
-      ? 'No subscribed podcasts. Search for a podcast and tap a result to subscribe.'
-      : (_isFr
-          ? 'Aucun abonnement aux podcasts. Recherchez un podcast et touchez un résultat pour vous abonner.'
-          : (_isEs
-              ? 'No tienes podcasts suscritos. Busca un podcast y toca un resultado para suscribirte.'
-              : 'Nessun podcast sottoscritto. Cerca un podcast e tocca un risultato per iscriverti.'));
-  String get importPodcastsFromFile => _isEn
-      ? 'Import podcasts from file'
-      : (_isFr
-          ? 'Importer des podcasts depuis un fichier'
-          : (_isEs
-              ? 'Importar podcasts desde archivo'
-              : 'Importa podcast da file'));
-  String get exportPodcastsToFile => _isEn
-      ? 'Export podcasts to OPML file'
-      : (_isFr
-          ? 'Exporter les podcasts vers un fichier OPML'
-          : (_isEs
-              ? 'Exportar podcasts a archivo OPML'
-              : 'Esporta podcast in file OPML'));
-  String podcastImportComplete(int count) => _isEn
-      ? 'Imported podcasts: $count'
-      : (_isFr
-          ? 'Podcasts importés : $count'
-          : (_isEs
-              ? 'Podcasts importados: $count'
-              : 'Podcast importati: $count'));
-  String podcastImportError(Object error) => _isEn
-      ? 'Podcast import error: $error'
-      : (_isFr
-          ? 'Erreur d\'importation des podcasts : $error'
-          : (_isEs
-              ? 'Error al importar podcasts: $error'
-              : 'Errore importazione podcast: $error'));
-  String get podcastExportComplete => _isEn
-      ? 'Podcasts exported'
-      : (_isFr
-          ? 'Podcasts exportés'
-          : (_isEs ? 'Podcasts exportados' : 'Podcast esportati'));
-  String podcastExportError(Object error) => _isEn
-      ? 'Podcast export error: $error'
-      : (_isFr
-          ? 'Erreur d\'exportation des podcasts : $error'
-          : (_isEs
-              ? 'Error al exportar podcasts: $error'
-              : 'Errore esportazione podcast: $error'));
-  String get loadingEpisodes => _isEn
-      ? 'Loading episodes'
-      : (_isFr
-          ? 'Chargement des épisodes'
-          : (_isEs ? 'Cargando episodios' : 'Caricamento episodi'));
-  String get noAudioEpisodesFound => _isEn
-      ? 'No audio episodes found in the feed.'
-      : (_isFr
-          ? 'Aucun épisode audio trouvé dans le flux.'
-          : (_isEs
-              ? 'No se encontraron episodios de audio en el feed.'
-              : 'Nessun episodio audio trovato nel feed.'));
-  String get episodes => _isEn
-      ? 'Episodes'
-      : (_isFr ? 'Épisodes' : (_isEs ? 'Episodios' : 'Episodi'));
-  String get episodeActions => _isEn
-      ? 'Episode actions'
-      : (_isFr
-          ? 'Actions de l\'épisode'
-          : (_isEs ? 'Acciones del episodio' : 'Azioni episodio'));
-  String downloaded(String path) => _isEn
-      ? 'Downloaded: $path'
-      : (_isFr
-          ? 'Téléchargé : $path'
-          : (_isEs ? 'Descargado: $path' : 'Scaricato: $path'));
-  String episodeError(Object error) => _isEn
-      ? 'Episode error: $error'
-      : (_isFr
-          ? 'Erreur de l\'épisode : $error'
-          : (_isEs ? 'Error del episodio: $error' : 'Errore episodio: $error'));
-  String get play =>
-      _isEn ? 'Play' : (_isFr ? 'Lire' : (_isEs ? 'Reproducir' : 'Riproduci'));
-  String get pause =>
-      _isEn ? 'Pause' : (_isFr ? 'Pause' : (_isEs ? 'Pausar' : 'Pausa'));
-  String get rewind15s => _isEn
-      ? 'Rewind 15s'
-      : (_isFr
-          ? 'Reculer de 15s'
-          : (_isEs ? 'Retroceder 15s' : 'Indietro 15s'));
-  String get forward15s => _isEn
-      ? 'Forward 15s'
-      : (_isFr ? 'Avancer de 15s' : (_isEs ? 'Avanzar 15s' : 'Avanti 15s'));
-  String get stop => 'Stop';
-  String get back =>
-      _isEn ? 'Back' : (_isFr ? 'Retour' : (_isEs ? 'Atrás' : 'Indietro'));
-  String get episodePlayer => _isEn
-      ? 'Episode player'
-      : (_isFr
-          ? 'Lecteur d\'épisode'
-          : (_isEs ? 'Reproductor de episodios' : 'Lettore episodio'));
-  String nowPlayingTitle(String title) => _isEn
-      ? 'Now playing: $title'
-      : (_isFr
-          ? 'En lecture : $title'
-          : (_isEs ? 'Reproduciendo: $title' : 'In riproduzione: $title'));
-  String get loadingEpisodeAudio => _isEn
-      ? 'Loading episode audio'
-      : (_isFr
-          ? 'Chargement de l\'audio de l\'épisode'
-          : (_isEs
-              ? 'Cargando audio del episodio'
-              : 'Caricamento audio episodio'));
-  String get playbackPosition => _isEn
-      ? 'Position'
-      : (_isFr ? 'Position' : (_isEs ? 'Posición' : 'Posizione'));
-  String playbackPositionValue(String position, String duration) => _isEn
-      ? '$position of $duration'
-      : (_isFr
-          ? '$position sur $duration'
-          : (_isEs ? '$position de $duration' : '$position di $duration'));
-  String get download => _isEn
-      ? 'Download'
-      : (_isFr ? 'Télécharger' : (_isEs ? 'Descargar' : 'Scarica'));
+  /// Localized text for voiceDictionaryReplacementWord.
+  ///
+  /// In it, this message translates to:
+  /// **'Parola sostitutiva'**
+  String get voiceDictionaryReplacementWord;
 
-  String get searchWikipedia => _isEn
-      ? 'Search on Wikipedia'
-      : (_isFr
-          ? 'Rechercher sur Wikipédia'
-          : (_isEs ? 'Buscar en Wikipedia' : 'Cerca su Wikipedia'));
-  String get wikipediaLanguage => _isEn
-      ? 'Wikipedia language'
-      : (_isFr
-          ? 'Langue Wikipédia'
-          : (_isEs ? 'Idioma de Wikipedia' : 'Lingua Wikipedia'));
-  String get search =>
-      _isEn ? 'Search' : (_isFr ? 'Rechercher' : (_isEs ? 'Buscar' : 'Cerca'));
-  String get wikipediaSearch => _isEn
-      ? 'Wikipedia search'
-      : (_isFr
-          ? 'Recherche Wikipédia'
-          : (_isEs ? 'Búsqueda en Wikipedia' : 'Ricerca Wikipedia'));
-  String get wikipediaImporting => _isEn
-      ? 'Wikipedia import'
-      : (_isFr
-          ? 'Importation Wikipédia'
-          : (_isEs ? 'Importación de Wikipedia' : 'Importazione Wikipedia'));
-  String get noWikipediaResults => _isEn
-      ? 'No Wikipedia results found'
-      : (_isFr
-          ? 'Aucun résultat Wikipédia trouvé'
-          : (_isEs
-              ? 'No se encontraron resultados en Wikipedia'
-              : 'Nessun risultato Wikipedia trovato'));
-  String get wikipediaImportMode => _isEn
-      ? 'Import mode'
-      : (_isFr
-          ? 'Mode d\'importation'
-          : (_isEs ? 'Modo de importación' : 'Modalità di importazione'));
-  String get wikipediaImportWholeArticle => _isEn
-      ? 'Whole article'
-      : (_isFr
-          ? 'Article complet'
-          : (_isEs ? 'Artículo completo' : 'Tutto l\'articolo'));
+  /// Localized text for voiceDictionaryMatchCase.
+  ///
+  /// In it, this message translates to:
+  /// **'Distingui maiuscole e minuscole'**
+  String get voiceDictionaryMatchCase;
 
-  // Documenti
-  String get documents => _isEn
-      ? 'Documents'
-      : (_isFr ? 'Documents' : (_isEs ? 'Documentos' : 'Documenti'));
-  String get documentsHint => _isEn
-      ? 'Open document library'
-      : (_isFr
-          ? 'Ouvrir la bibliothèque de documents'
-          : (_isEs
-              ? 'Abrir biblioteca de documentos'
-              : 'Apre la libreria documenti'));
-  String get documentLibrary => _isEn
-      ? 'Document library'
-      : (_isFr
-          ? 'Bibliothèque de documents'
-          : (_isEs ? 'Biblioteca de documentos' : 'Libreria documenti'));
-  String get addToLibrary => _isEn
-      ? 'Add to library'
-      : (_isFr
-          ? 'Ajouter à la bibliothèque'
-          : (_isEs ? 'Añadir a la biblioteca' : 'Aggiungi alla libreria'));
-  String get documentImportSelectionMode => _isEn
-      ? 'Do you want to select one document or multiple documents?'
-      : (_isFr
-          ? 'Voulez-vous sélectionner un document ou plusieurs documents ?'
-          : (_isEs
-              ? '¿Quieres seleccionar un documento o varios documentos?'
-              : 'Vuoi selezionare un solo documento o più documenti?'));
-  String get documentImportSingle => _isEn
-      ? 'One document'
-      : (_isFr ? 'Un document' : (_isEs ? 'Un documento' : 'Un documento'));
-  String get documentImportMultiple => _isEn
-      ? 'Multiple documents'
-      : (_isFr
-          ? 'Plusieurs documents'
-          : (_isEs ? 'Varios documentos' : 'Più documenti'));
-  String get noDocuments => _isEn
-      ? 'No documents. Add a file.'
-      : (_isFr
-          ? 'Aucun document. Ajoutez un fichier.'
-          : (_isEs
-              ? 'No hay documentos. Añade un archivo.'
-              : 'Nessun documento. Aggiungi un file.'));
-  String get noDocumentsInLibrary => _isEn
-      ? 'No documents in the library.'
-      : (_isFr
-          ? 'Aucun document dans la bibliothèque.'
-          : (_isEs
-              ? 'No hay documentos en la biblioteca.'
-              : 'Nessun documento presente nella libreria.'));
-  String get documentAdded => _isEn
-      ? 'Document added'
-      : (_isFr
-          ? 'Document ajouté'
-          : (_isEs ? 'Documento añadido' : 'Documento aggiunto'));
-  String get documentsAdded => _isEn
-      ? 'Documents added'
-      : (_isFr
-          ? 'Documents ajoutés'
-          : (_isEs ? 'Documentos añadidos' : 'Documenti aggiunti'));
-  String libraryLoadError(Object error) => _isEn
-      ? 'Library loading error: $error'
-      : (_isFr
-          ? 'Erreur de chargement de la bibliothèque : $error'
-          : (_isEs
-              ? 'Error al cargar la biblioteca: $error'
-              : 'Errore caricamento libreria: $error'));
-  String fileOpenError(Object error) => _isEn
-      ? 'File opening error: $error'
-      : (_isFr
-          ? 'Erreur d\'ouverture du fichier : $error'
-          : (_isEs
-              ? 'Error al abrir el archivo: $error'
-              : 'Errore apertura file: $error'));
-  String get filePathUnavailable => _isEn
-      ? 'File path unavailable.'
-      : (_isFr
-          ? 'Chemin du fichier indisponible.'
-          : (_isEs
-              ? 'Ruta del archivo no disponible.'
-              : 'Percorso file non disponibile.'));
-  String fileInaccessible(String name) => _isEn
-      ? 'File inaccessible: $name'
-      : (_isFr
-          ? 'Fichier inaccessible : $name'
-          : (_isEs
-              ? 'Archivo inaccesible: $name'
-              : 'File inaccessibile: $name'));
-  String documentAddError(Object error) => _isEn
-      ? 'Document add error: $error'
-      : (_isFr
-          ? 'Erreur d\'ajout du document : $error'
-          : (_isEs
-              ? 'Error al añadir el documento: $error'
-              : 'Errore aggiunta documento: $error'));
-  String documentRemoveError(Object error) => _isEn
-      ? 'Remove error: $error'
-      : (_isFr
-          ? 'Erreur de suppression : $error'
-          : (_isEs ? 'Error al eliminar: $error' : 'Errore rimozione: $error'));
-  String get noExportableTextFound => _isEn
-      ? 'No exportable text found.'
-      : (_isFr
-          ? 'Aucun texte exportable trouvé.'
-          : (_isEs
-              ? 'No se encontró texto exportable.'
-              : 'Nessun testo esportabile trovato.'));
-  String get modifiedDocumentNoExportableText => _isEn
-      ? 'The modified document contains no exportable text.'
-      : (_isFr
-          ? 'Le document modifié ne contient aucun texte exportable.'
-          : (_isEs
-              ? 'El documento modificado no contiene texto exportable.'
-              : 'Il documento modificato non contiene testo esportabile.'));
-  String get documentRemoved => _isEn
-      ? 'Document removed'
-      : (_isFr
-          ? 'Document supprimé'
-          : (_isEs ? 'Documento eliminado' : 'Documento rimosso'));
-  String get folderRemoved => _isEn
-      ? 'Folder removed'
-      : (_isFr
-          ? 'Dossier supprimé'
-          : (_isEs ? 'Carpeta eliminada' : 'Cartella rimossa'));
-  String get removeFolder => _isEn
-      ? 'Remove folder'
-      : (_isFr
-          ? 'Supprimer le dossier'
-          : (_isEs ? 'Eliminar carpeta' : 'Rimuovi cartella'));
-  String get removeDocument => _isEn
-      ? 'Remove document'
-      : (_isFr
-          ? 'Supprimer le document'
-          : (_isEs ? 'Eliminar documento' : 'Rimuovi documento'));
-  String get writeNewDocument => _isEn
-      ? 'Write new document'
-      : (_isFr
-          ? 'Écrire un nouveau document'
-          : (_isEs ? 'Escribir nuevo documento' : 'Scrivi nuovo documento'));
-  String get addDocumentToLibraryHint => _isEn
-      ? 'Add document to library. Browse device files and add them.'
-      : (_isFr
-          ? 'Ajouter un document à la bibliothèque. Parcourez les fichiers de l’appareil et ajoutez-les.'
-          : (_isEs
-              ? 'Añadir documento a la biblioteca. Explora los archivos del dispositivo y añádelos.'
-              : 'Aggiungi documento alla libreria. Sfoglia i file del dispositivo e aggiungili.'));
-  String get documentTypeLabel => _isEn
-      ? 'Document'
-      : (_isFr ? 'Document' : (_isEs ? 'Documento' : 'Documento'));
-  String get documentPosition => _isEn
-      ? 'Document position'
-      : (_isFr
-          ? 'Position du document'
-          : (_isEs ? 'Posición del documento' : 'Posizione documento'));
-  String get folderTypeLabel =>
-      _isEn ? 'Folder' : (_isFr ? 'Dossier' : (_isEs ? 'Carpeta' : 'Cartella'));
-  String documentAddedOn(String date) => _isEn
-      ? 'added on $date'
-      : (_isFr
-          ? 'ajouté le $date'
-          : (_isEs ? 'añadido el $date' : 'aggiunto il $date'));
-  String documentTypeDescription(String extension) => _isEn
-      ? 'type $extension'
-      : (_isFr
-          ? 'type $extension'
-          : (_isEs ? 'tipo $extension' : 'tipo $extension'));
-  String get openFolderHint => _isEn
-      ? 'Double tap to open the folder'
-      : (_isFr
-          ? 'Touchez deux fois pour ouvrir le dossier'
-          : (_isEs
-              ? 'Toca dos veces para abrir la carpeta'
-              : 'Tocca due volte per aprire la cartella'));
-  String get openDocumentHint => _isEn
-      ? 'Double tap to open and read the document'
-      : (_isFr
-          ? 'Touchez deux fois pour ouvrir et lire le document'
-          : (_isEs
-              ? 'Toca dos veces para abrir y leer el documento'
-              : 'Tocca due volte per aprire e leggere il documento'));
-  String removeItem(String name) => _isEn
-      ? 'Remove $name'
-      : (_isFr
-          ? 'Supprimer $name'
-          : (_isEs ? 'Eliminar $name' : 'Rimuovi $name'));
-  String get removePodcast => _isEn
-      ? 'Remove podcast'
-      : (_isFr
-          ? 'Supprimer le podcast'
-          : (_isEs ? 'Eliminar podcast' : 'Rimuovi podcast'));
-  String get podcastRemoved => _isEn
-      ? 'Podcast removed'
-      : (_isFr
-          ? 'Podcast supprimé'
-          : (_isEs ? 'Podcast eliminado' : 'Podcast rimosso'));
-  String get documentPickerError => _isEn
-      ? 'Error opening file'
-      : (_isFr
-          ? 'Erreur d\'ouverture du fichier'
-          : (_isEs ? 'Error al abrir el archivo' : 'Errore apertura file'));
-  String get readDocument => _isEn
-      ? 'Read document'
-      : (_isFr
-          ? 'Lire le document'
-          : (_isEs ? 'Leer documento' : 'Leggi documento'));
-  String get documentReaderTitle => _isEn
-      ? 'Document reader'
-      : (_isFr
-          ? 'Lecteur de document'
-          : (_isEs ? 'Lector de documentos' : 'Lettore documento'));
-  String get documentReaderEditHint => _isEn
-      ? 'Tap a paragraph to edit it. Swipe up or down to add a bookmark.'
-      : (_isFr
-          ? 'Touchez un paragraphe pour le modifier. Balayez vers le haut ou vers le bas pour ajouter un signet.'
-          : (_isEs
-              ? 'Toca un párrafo para editarlo. Desliza hacia arriba o hacia abajo para añadir un marcador.'
-              : 'Tocca un paragrafo per modificarlo. Scorri verso l’alto o verso il basso per aggiungere un segnalibro.'));
-  String get documentBookmarkHintSet => _isEn
-      ? 'Swipe up or down to set a bookmark.'
-      : (_isFr
-          ? 'Balayez vers le haut ou vers le bas pour définir un signet.'
-          : (_isEs
-              ? 'Desliza hacia arriba o hacia abajo para establecer un marcador.'
-              : 'Scorri verso l’alto o verso il basso per impostare un segnalibro.'));
-  String get documentEditParagraphActionHint => _isEn
-      ? 'Double tap to edit this paragraph. '
-      : (_isFr
-          ? 'Touchez deux fois pour modifier ce paragraphe. '
-          : (_isEs
-              ? 'Toca dos veces para editar este párrafo. '
-              : 'Tocca due volte per modificare questo paragrafo. '));
-  String get documentBookmarkHintReplace => _isEn
-      ? 'Swipe up or down to remove the existing bookmark or replace it with this paragraph.'
-      : (_isFr
-          ? 'Balayez vers le haut ou vers le bas pour supprimer le signet existant ou le remplacer par ce paragraphe.'
-          : (_isEs
-              ? 'Desliza hacia arriba o hacia abajo para eliminar el marcador existente o reemplazarlo por este párrafo.'
-              : 'Scorri verso l’alto o verso il basso per rimuovere il segnalibro esistente o sostituirlo con questo paragrafo.'));
-  String get documentSetBookmarkAction => _isEn
-      ? 'Set bookmark'
-      : (_isFr
-          ? 'Définir le signet'
-          : (_isEs ? 'Establecer marcador' : 'Imposta segnalibro'));
-  String get documentRemoveBookmarkAction => _isEn
-      ? 'Remove bookmark'
-      : (_isFr
-          ? 'Supprimer le signet'
-          : (_isEs ? 'Eliminar marcador' : 'Rimuovi segnalibro'));
-  String get documentReplaceBookmarkAction => _isEn
-      ? 'Remove and add a new bookmark'
-      : (_isFr
-          ? 'Supprimer et ajouter un nouveau signet'
-          : (_isEs
-              ? 'Eliminar y añadir un nuevo marcador'
-              : 'Rimuovi e aggiungi un nuovo segnalibro'));
-  String get edit =>
-      _isEn ? 'Edit' : (_isFr ? 'Modifier' : (_isEs ? 'Editar' : 'Modifica'));
-  String get save =>
-      _isEn ? 'Save' : (_isFr ? 'Enregistrer' : (_isEs ? 'Guardar' : 'Salva'));
-  String get cancel =>
-      _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
-  String get settingsReadingEngine => _isEn
-      ? 'Reading Engine'
-      : (_isFr
-          ? 'Moteur de lecture'
-          : (_isEs ? 'Motor de lectura' : 'Motore di lettura'));
-  String get settingsEdgeTtsQuality => _isEn
-      ? 'Edge TTS (High quality online)'
-      : (_isFr
-          ? 'Edge TTS (Haute qualité en ligne)'
-          : (_isEs
-              ? 'Edge TTS (Alta calidad en línea)'
-              : 'Edge TTS (Alta qualità online)'));
-  String get settingsSystemVoices => _isEn
-      ? 'System Voices (VoiceOver / Google)'
-      : (_isFr
-          ? 'Voix système (VoiceOver / Google)'
-          : (_isEs
-              ? 'Voces del sistema (VoiceOver / Google)'
-              : 'Voci di sistema (VoiceOver / Google)'));
-  String get settingsNoSystemVoices => _isEn
-      ? 'No system voices available.'
-      : (_isFr
-          ? 'Aucune voix système disponible.'
-          : (_isEs
-              ? 'No hay voces del sistema disponibles.'
-              : 'Nessuna voce di sistema disponibile.'));
-  String get settingsDefaultVoiceHint => _isEn
-      ? 'Default voice'
-      : (_isFr
-          ? 'Voix par défaut'
-          : (_isEs ? 'Voz predeterminada' : 'Voce predefinita'));
-  String get settingsDefaultVoice => _isEn
-      ? 'Default'
-      : (_isFr ? 'Défaut' : (_isEs ? 'Predeterminada' : 'Predefinita'));
-  String get settingsVoiceSpeed => _isEn
-      ? 'Speed: '
-      : (_isFr ? 'Vitesse: ' : (_isEs ? 'Velocidad: ' : 'Velocità lettura: '));
-  String get settingsVoicePitch =>
-      _isEn ? 'Pitch: ' : (_isFr ? 'Ton: ' : (_isEs ? 'Tono: ' : 'Tono: '));
-  String get settingsVoiceSpeedLabel => _isEn
-      ? 'Reading speed'
-      : (_isFr
-          ? 'Vitesse de lecture'
-          : (_isEs ? 'Velocidad de lectura' : 'Velocità lettura'));
-  String get settingsVoicePitchLabel =>
-      _isEn ? 'Pitch' : (_isFr ? 'Ton' : (_isEs ? 'Tono' : 'Tono'));
-  String get settingsTestVoice => _isEn
-      ? 'Test voice'
-      : (_isFr ? 'Tester la voix' : (_isEs ? 'Probar voz' : 'Testa voce'));
-  String get settingsTestingVoice => _isEn
-      ? 'Playing...'
-      : (_isFr
-          ? 'Lecture...'
-          : (_isEs ? 'Reproduciendo...' : 'Riproduzione in corso...'));
-  String get settingsVoiceTestText => _isEn
-      ? 'This is a test of the selected voice.'
-      : (_isFr
-          ? 'Ceci est un test de la voix sélectionnée.'
-          : (_isEs
-              ? 'Esta es una prueba de la voz seleccionada.'
-              : 'Questo è un test della voce selezionata.'));
-  String settingsVoiceTestError(Object error) => _isEn
-      ? 'Voice test error: $error'
-      : (_isFr
-          ? 'Erreur du test vocal : $error'
-          : (_isEs
-              ? 'Error de prueba de voz: $error'
-              : 'Errore test voce: $error'));
-  String settingsVoiceSaveError(Object error) => _isEn
-      ? 'TTS voice save error: $error'
-      : (_isFr
-          ? 'Erreur d’enregistrement de la voix TTS : $error'
-          : (_isEs
-              ? 'Error al guardar la voz TTS: $error'
-              : 'Errore salvataggio voce TTS: $error'));
-  String get settingsUnsavedTitle => _isEn
-      ? 'Unsaved changes'
-      : (_isFr
-          ? 'Modifications non enregistrées'
-          : (_isEs ? 'Cambios sin guardar' : 'Modifiche non salvate'));
-  String get settingsUnsavedMessage => _isEn
-      ? 'Do you want to save your changes before leaving settings?'
-      : (_isFr
-          ? 'Voulez-vous enregistrer les modifications avant de quitter les paramètres ?'
-          : (_isEs
-              ? '¿Quieres guardar los cambios antes de salir de ajustes?'
-              : 'Vuoi salvare le modifiche prima di uscire dalle impostazioni?'));
-  String get settingsExitWithoutSaving => _isEn
-      ? 'Exit without saving'
-      : (_isFr
-          ? 'Quitter sans enregistrer'
-          : (_isEs ? 'Salir sin guardar' : 'Esci senza salvare'));
-  String get settingsSystemLanguage => _isEn
-      ? 'System language'
-      : (_isFr
-          ? 'Langue système'
-          : (_isEs ? 'Idioma del sistema' : 'Lingua di sistema'));
-  String get settingsSystemVoice => _isEn
-      ? 'System voice'
-      : (_isFr
-          ? 'Voix système'
-          : (_isEs ? 'Voz del sistema' : 'Voce di sistema'));
-  String get settingsAutoBookmark => _isEn
-      ? 'Automatic bookmark'
-      : (_isFr
-          ? 'Signet automatique'
-          : (_isEs
-              ? 'Marcador automático'
-              : 'Segnalibro automatico'));
-  String get settingsAutoBookmarkHint => _isEn
-      ? 'Resume documents, podcasts, RaiPlay and audio descriptions from where you left off.'
-      : (_isFr
-          ? 'Reprenez les documents, podcasts, RaiPlay et audiodescriptions là où vous vous étiez arrêté.'
-          : (_isEs
-              ? 'Reanuda documentos, podcasts, RaiPlay y audiodescripciones desde donde los dejaste.'
-              : 'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'));
-  String get settingsSeekStep => _isEn
-      ? 'Rewind / fast-forward step for media'
-      : (_isFr
-          ? 'Pas de retour / avance rapide pour les médias'
-          : (_isEs
-              ? 'Intervalo de retroceso / avance rápido para multimedia'
-              : 'Intervallo indietro / avanti nei media'));
-  String get aiChatIntro => _isEn
-      ? 'I’m Sonarpad AI. How can I help you?'
-      : (_isFr
-          ? 'Je suis l’intelligence artificielle de Sonarpad. Comment puis-je vous aider ?'
-          : (_isEs
-              ? 'Soy la inteligencia artificial de Sonarpad. ¿Cómo puedo ayudarte?'
-              : 'Sono l’intelligenza artificiale di Sonarpad. Come posso aiutarti?'));
-  String get meteoTitle =>
-      _isEn ? 'Weather' : (_isFr ? 'Météo' : (_isEs ? 'Tiempo' : 'Meteo'));
-  String get weatherCity =>
-      _isEn ? 'City' : (_isFr ? 'Ville' : (_isEs ? 'Ciudad' : 'Città'));
-  String get weatherCityHint => _isEn
-      ? 'Example: Rome'
-      : (_isFr
-          ? 'Exemple : Rome'
-          : (_isEs ? 'Ejemplo: Roma' : 'Esempio: Roma'));
-  String get weatherCityNotFound => _isEn
-      ? 'City not found'
-      : (_isFr
-          ? 'Ville introuvable'
-          : (_isEs ? 'Ciudad no encontrada' : 'Città non trovata'));
-  String get weatherSearchError => _isEn
-      ? 'Error during search'
-      : (_isFr
-          ? 'Erreur pendant la recherche'
-          : (_isEs
-              ? 'Error durante la búsqueda'
-              : 'Errore durante la ricerca'));
-  String get weatherToday =>
-      _isEn ? 'Today' : (_isFr ? 'Aujourd\'hui' : (_isEs ? 'Hoy' : 'Oggi'));
-  String get weatherTomorrow =>
-      _isEn ? 'Tomorrow' : (_isFr ? 'Demain' : (_isEs ? 'Mañana' : 'Domani'));
-  String get weatherChooseDay => _isEn
-      ? 'Choose day'
-      : (_isFr
-          ? 'Choisir le jour'
-          : (_isEs ? 'Elegir día' : 'Scegli il giorno'));
-  String get weatherCurrentTemperature => _isEn
-      ? 'Current temperature'
-      : (_isFr
-          ? 'Température actuelle'
-          : (_isEs ? 'Temperatura actual' : 'Temperatura attuale'));
-  String get weatherMaxTemperature => _isEn
-      ? 'Maximum temperature'
-      : (_isFr
-          ? 'Température maximale'
-          : (_isEs ? 'Temperatura máxima' : 'Temperatura massima'));
-  String get weatherMinTemperature => _isEn
-      ? 'Minimum temperature'
-      : (_isFr
-          ? 'Température minimale'
-          : (_isEs ? 'Temperatura mínima' : 'Temperatura minima'));
-  String get weatherPrecipitation => _isEn
-      ? 'Precipitation'
-      : (_isFr
-          ? 'Précipitations'
-          : (_isEs ? 'Precipitaciones' : 'Precipitazioni'));
-  String get weatherPrecipitationProbability => _isEn
-      ? 'Precipitation probability'
-      : (_isFr
-          ? 'Probabilité de précipitations'
-          : (_isEs
-              ? 'Probabilidad de precipitación'
-              : 'Probabilità di precipitazioni'));
-  String get weatherWind =>
-      _isEn ? 'Wind' : (_isFr ? 'Vent' : (_isEs ? 'Viento' : 'Vento'));
-  String get weatherRelativeHumidity => _isEn
-      ? 'Relative humidity'
-      : (_isFr
-          ? 'Humidité relative'
-          : (_isEs ? 'Humedad relativa' : 'Umidità relativa'));
-  String get settingsSecretCode => _isEn
-      ? 'Sonarpad code for extra features'
-      : (_isFr
-          ? 'Code Sonarpad pour les fonctionnalités supplémentaires'
-          : (_isEs
-              ? 'Código Sonarpad para funciones extra'
-              : 'Codice Sonarpad per funzioni aggiuntive'));
-  String get settingsRequestCode => _isEn
-      ? 'Request code from author'
-      : (_isFr
-          ? 'Demander le code à l\'auteur'
-          : (_isEs
-              ? 'Solicitar código al autor'
-              : 'Richiedi codice all\'autore'));
-  String get settingsCancel =>
-      _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
-  String get settingsSend =>
-      _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
-  String get settingsFillFieldsCode => _isEn
-      ? 'Fill all fields to request the code.'
-      : (_isFr
-          ? 'Remplissez tous les champs pour demander le code.'
-          : (_isEs
-              ? 'Rellena todos los campos para solicitar el código.'
-              : 'Compila tutti i campi per richiedere il codice.'));
-  String get settingsName =>
-      _isEn ? 'Name' : (_isFr ? 'Prénom' : (_isEs ? 'Nombre' : 'Nome'));
-  String get settingsSurname =>
-      _isEn ? 'Surname' : (_isFr ? 'Nom' : (_isEs ? 'Apellido' : 'Cognome'));
-  String get settingsEmail => _isEn
-      ? 'Email'
-      : (_isFr ? 'E-mail' : (_isEs ? 'Correo electrónico' : 'Email'));
-  String get settingsOperatingSystem => _isEn
-      ? 'Operating system'
-      : (_isFr
-          ? 'Système d’exploitation'
-          : (_isEs ? 'Sistema operativo' : 'Sistema operativo'));
+  /// Localized text for voiceDictionaryIgnoreCase.
+  ///
+  /// In it, this message translates to:
+  /// **'Ignora maiuscole e minuscole'**
+  String get voiceDictionaryIgnoreCase;
+
+  /// Localized text for voiceDictionaryEntries.
+  ///
+  /// In it, this message translates to:
+  /// **'Voci del dizionario'**
+  String get voiceDictionaryEntries;
+
+  /// Localized text for voiceDictionaryEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna voce nel dizionario.'**
+  String get voiceDictionaryEmpty;
+
+  /// Localized text for voiceDictionaryRemove.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi voce selezionata'**
+  String get voiceDictionaryRemove;
+
+  /// Localized text for voiceDictionaryOriginalRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci la parola originale.'**
+  String get voiceDictionaryOriginalRequired;
+
+  /// Localized text for convertMediaTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Converti media'**
+  String get convertMediaTitle;
+
+  /// Localized text for convertMediaInput.
+  ///
+  /// In it, this message translates to:
+  /// **'File di input'**
+  String get convertMediaInput;
+
+  /// Localized text for convertMediaOutput.
+  ///
+  /// In it, this message translates to:
+  /// **'File di output'**
+  String get convertMediaOutput;
+
+  /// Localized text for convertMediaImage.
+  ///
+  /// In it, this message translates to:
+  /// **'Immagine'**
+  String get convertMediaImage;
+
+  /// Localized text for convertMediaBrowse.
+  ///
+  /// In it, this message translates to:
+  /// **'Sfoglia...'**
+  String get convertMediaBrowse;
+
+  /// Localized text for convertMediaFormat.
+  ///
+  /// In it, this message translates to:
+  /// **'Formato'**
+  String get convertMediaFormat;
+
+  /// Localized text for convertMediaBitrate.
+  ///
+  /// In it, this message translates to:
+  /// **'Bitrate (kbps)'**
+  String get convertMediaBitrate;
+
+  /// Localized text for convertMediaOggQuality.
+  ///
+  /// In it, this message translates to:
+  /// **'Qualità (q)'**
+  String get convertMediaOggQuality;
+
+  /// Localized text for convertMediaFlacCompression.
+  ///
+  /// In it, this message translates to:
+  /// **'Livello di compressione'**
+  String get convertMediaFlacCompression;
+
+  /// Localized text for convertMediaReady.
+  ///
+  /// In it, this message translates to:
+  /// **'Pronto.'**
+  String get convertMediaReady;
+
+  /// Localized text for convertMediaRunning.
+  ///
+  /// In it, this message translates to:
+  /// **'Conversione in corso...'**
+  String get convertMediaRunning;
+
+  /// Localized text for convertMediaDone.
+  ///
+  /// In it, this message translates to:
+  /// **'Conversione completata.'**
+  String get convertMediaDone;
+
+  /// Localized text for convertMediaButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Converti'**
+  String get convertMediaButton;
+
+  /// Localized text for convertMediaNoInput.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona un file di input.'**
+  String get convertMediaNoInput;
+
+  /// Localized text for convertMediaNoOutput.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona un file di output.'**
+  String get convertMediaNoOutput;
+
+  /// Localized text for convertMediaNoImage.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona un\'immagine per il video.'**
+  String get convertMediaNoImage;
+
+  /// Localized text for convertMediaSamePath.
+  ///
+  /// In it, this message translates to:
+  /// **'Il file di output deve essere diverso dall\'input.'**
+  String get convertMediaSamePath;
+
+  /// Localized text for convertMediaInvalidBitrate.
+  ///
+  /// In it, this message translates to:
+  /// **'Bitrate non valido. Inserisci un valore tra 64 e 320 kbps.'**
+  String get convertMediaInvalidBitrate;
+
+  /// Localized text for convertMediaFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Conversione non riuscita: {error}'**
+  String convertMediaFailed(Object error);
+
+  /// Localized text for donations.
+  ///
+  /// In it, this message translates to:
+  /// **'Donazioni'**
+  String get donations;
+
+  /// Localized text for donationsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Sostieni lo sviluppo di Sonarpad'**
+  String get donationsHint;
+
+  /// Localized text for loading.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento'**
+  String get loading;
+
+  /// Localized text for ttsVoiceLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua della voce TTS'**
+  String get ttsVoiceLanguage;
+
+  /// Localized text for ttsVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce TTS'**
+  String get ttsVoice;
+
+  /// Localized text for saveSettings.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva impostazioni'**
+  String get saveSettings;
+
+  /// Localized text for settingsSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni salvate.'**
+  String get settingsSaved;
+
+  /// Localized text for settingsSavedTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni salvate'**
+  String get settingsSavedTitle;
+
+  /// Localized text for sonarpadCodeValidTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Codice valido'**
+  String get sonarpadCodeValidTitle;
+
+  /// Localized text for sonarpadCodeValidMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Il codice Sonarpad è corretto. Impostazioni salvate.'**
+  String get sonarpadCodeValidMessage;
+
+  /// Localized text for sonarpadCodeInvalidTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Codice non valido'**
+  String get sonarpadCodeInvalidTitle;
+
+  /// Localized text for sonarpadCodeInvalidMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Il codice Sonarpad inserito non è valido. Verifica di averlo copiato senza spazi aggiuntivi.'**
+  String get sonarpadCodeInvalidMessage;
+
+  /// Localized text for infoDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Sonarpad è un’app semplice, ma ricca di funzioni. È pensata per essere accessibile con VoiceOver alle persone non vedenti e ipovedenti: permette di ascoltare le notizie, cercare podcast e iscriversi, importare articoli da Wikipedia, aggiungere documenti alla libreria, salvarli e modificarli. Sonarpad è in continuo aggiornamento e ogni funzione è progettata per rendere più semplice la vita quotidiana.'**
+  String get infoDescription;
+
+  /// Localized text for infoAuthor.
+  ///
+  /// In it, this message translates to:
+  /// **'Autore: Ambrogio Riili'**
+  String get infoAuthor;
+
+  /// Localized text for donationsIntro.
+  ///
+  /// In it, this message translates to:
+  /// **'Sonarpad è nato inizialmente per rispondere a esigenze personali, ma nel tempo è diventato un’app più completa. Il suo sviluppo richiede un lavoro costante: migliorare le funzionalità, correggere bug, cercare nuove idee e testare con attenzione ogni funzione.\n\nSe Sonarpad ti è utile e vuoi sostenerne lo sviluppo, puoi effettuare una donazione.'**
+  String get donationsIntro;
+
+  /// Localized text for donationsPaypalDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Puoi donare tramite PayPal al seguente link:\nhttps://www.paypal.me/ambrogio86\nSe possibile, indica come causale “Sonarpad”.'**
+  String get donationsPaypalDesc;
+
+  /// Localized text for donationsBankDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'È possibile contribuire anche tramite bonifico bancario sul conto intestato a Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possibile, indica una causale chiara, ad esempio “Sonarpad”.'**
+  String get donationsBankDesc;
+
+  /// Localized text for donationsThanks.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiunque decida di sostenere il progetto verrà ringraziato nell’app e nel repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nRingrazio Jiri Holzinger e Paola Vagata per il loro contributo.\nPer la traduzione in vietnamita ringrazio Anh Đức Nguyễn.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.\nPer la traduzione in serbo ringrazio Mila Kuran.\nPer la traduzione in ucraino ringrazio Ivan Shtefuriak.'**
+  String get donationsThanks;
+
+  /// Localized text for news.
+  ///
+  /// In it, this message translates to:
+  /// **'Notizie'**
+  String get news;
+
+  /// Localized text for newsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Apre le notizie da Google News RSS'**
+  String get newsHint;
+
+  /// Localized text for podcasts.
+  ///
+  /// In it, this message translates to:
+  /// **'Podcast'**
+  String get podcasts;
+
+  /// Localized text for podcastsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Iscriviti ai podcast, riproduci o scarica episodi'**
+  String get podcastsHint;
+
+  /// Localized text for importFromWikipedia.
+  ///
+  /// In it, this message translates to:
+  /// **'Wikipedia'**
+  String get importFromWikipedia;
+
+  /// Localized text for wikipediaHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca un articolo Wikipedia e importa il testo'**
+  String get wikipediaHint;
+
+  /// Localized text for newsCategoryTop.
+  ///
+  /// In it, this message translates to:
+  /// **'Principali'**
+  String get newsCategoryTop;
+
+  /// Localized text for settingsHomeGrouping.
+  ///
+  /// In it, this message translates to:
+  /// **'Attiva il raggruppamento delle icone in categorie'**
+  String get settingsHomeGrouping;
+
+  /// Localized text for settingsHomeGroupingHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle'**
+  String get settingsHomeGroupingHint;
+
+  /// Localized text for newsCategoryMyCity.
+  ///
+  /// In it, this message translates to:
+  /// **'La mia città'**
+  String get newsCategoryMyCity;
+
+  /// Localized text for moveUp.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta in alto'**
+  String get moveUp;
+
+  /// Localized text for moveDown.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta in basso'**
+  String get moveDown;
+
+  /// Localized text for hide.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get hide;
+
+  /// Localized text for moveToPosition.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta alla posizione'**
+  String get moveToPosition;
+
+  /// Localized text for positionLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Posizione {position}: prima di {targetName}'**
+  String positionLabel(int position, String targetName);
+
+  /// Localized text for positionLabelLast.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultima posizione'**
+  String get positionLabelLast;
+
+  /// Localized text for restoreHiddenSources.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristina testate eliminate'**
+  String get restoreHiddenSources;
+
+  /// Localized text for addCustomNewsSource.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi sorgente RSS personalizzata'**
+  String get addCustomNewsSource;
+
+  /// Localized text for newsSourceName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome testata/sito'**
+  String get newsSourceName;
+
+  /// Localized text for newsSourceUrlOrSearch.
+  ///
+  /// In it, this message translates to:
+  /// **'URL sito, feed RSS o parola di ricerca'**
+  String get newsSourceUrlOrSearch;
+
+  /// Localized text for deleteNewsSource.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina sorgente'**
+  String get deleteNewsSource;
+
+  /// Localized text for articleTextSemantics.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo articolo'**
+  String get articleTextSemantics;
+
+  /// Localized text for newsLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua notizie'**
+  String get newsLanguage;
+
+  /// Localized text for loadingNews.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento notizie'**
+  String get loadingNews;
+
+  /// Localized text for error.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore: {error}'**
+  String error(Object error);
+
+  /// Localized text for noNewsFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna notizia trovata'**
+  String get noNewsFound;
+
+  /// Localized text for loadingArticle.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento articolo'**
+  String get loadingArticle;
+
+  /// Localized text for noFullArticleFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Articolo integrale non disponibile. Mostro il riassunto del feed.'**
+  String get noFullArticleFound;
+
+  /// Localized text for italian.
+  ///
+  /// In it, this message translates to:
+  /// **'Italiano'**
+  String get italian;
+
+  /// Localized text for english.
+  ///
+  /// In it, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// Localized text for french.
+  ///
+  /// In it, this message translates to:
+  /// **'Francese'**
+  String get french;
+
+  /// Localized text for spanish.
+  ///
+  /// In it, this message translates to:
+  /// **'Spagnolo'**
+  String get spanish;
+
+  /// Localized text for newsSource.
+  ///
+  /// In it, this message translates to:
+  /// **'Fonte notizie'**
+  String get newsSource;
+
+  /// Localized text for article.
+  ///
+  /// In it, this message translates to:
+  /// **'Articolo'**
+  String get article;
+
+  /// Localized text for articlePreview.
+  ///
+  /// In it, this message translates to:
+  /// **'Anteprima articolo'**
+  String get articlePreview;
+
+  /// Localized text for readFullArticle.
+  ///
+  /// In it, this message translates to:
+  /// **'Leggi articolo completo'**
+  String get readFullArticle;
+
+  /// Localized text for extractingReaderArticleText.
+  ///
+  /// In it, this message translates to:
+  /// **'Estraggo il testo in modalità lettura...'**
+  String get extractingReaderArticleText;
+
+  /// Localized text for extractingVisibleArticleText.
+  ///
+  /// In it, this message translates to:
+  /// **'Estraggo il testo visibile dalla pagina...'**
+  String get extractingVisibleArticleText;
+
+  /// Localized text for source.
+  ///
+  /// In it, this message translates to:
+  /// **'Fonte: {source}'**
+  String source(String source);
+
+  /// Localized text for readyStatus.
+  ///
+  /// In it, this message translates to:
+  /// **'Pronto.'**
+  String get readyStatus;
+
+  /// Localized text for preparingEdgeTts.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparo lettura Edge TTS a blocchi...'**
+  String get preparingEdgeTts;
+
+  /// Localized text for noTextToRead.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun testo da leggere.'**
+  String get noTextToRead;
+
+  /// Localized text for chunkCreated.
+  ///
+  /// In it, this message translates to:
+  /// **'Blocco {index} di {total} creato. Lettura in corso...'**
+  String chunkCreated(int index, int total);
+
+  /// Localized text for playingChunk.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduco blocco {index} di {total} ({size} byte)...'**
+  String playingChunk(int index, int total, int size);
+
+  /// Localized text for readingFinished.
+  ///
+  /// In it, this message translates to:
+  /// **'Lettura terminata. Blocchi creati: {readyChunks}/{totalChunks}. Libreria: {libraryPath}'**
+  String readingFinished(int readyChunks, int totalChunks, String libraryPath);
+
+  /// Localized text for libraryNotSpecified.
+  ///
+  /// In it, this message translates to:
+  /// **'non indicata'**
+  String get libraryNotSpecified;
+
+  /// Localized text for readingStopped.
+  ///
+  /// In it, this message translates to:
+  /// **'Lettura interrotta.'**
+  String get readingStopped;
+
+  /// Localized text for edgeTtsError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore Edge TTS: {error}'**
+  String edgeTtsError(Object error);
+
+  /// Localized text for audioChunksReady.
+  ///
+  /// In it, this message translates to:
+  /// **'Blocchi audio pronti: {readyChunks} / {totalChunks}'**
+  String audioChunksReady(int readyChunks, int totalChunks);
+
+  /// Localized text for readingInProgress.
+  ///
+  /// In it, this message translates to:
+  /// **'Lettura in corso...'**
+  String get readingInProgress;
+
+  /// Localized text for readWithEdgeTts.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvia lettura'**
+  String get readWithEdgeTts;
+
+  /// Localized text for stopReading.
+  ///
+  /// In it, this message translates to:
+  /// **'Interrompi lettura'**
+  String get stopReading;
+
+  /// Localized text for startReading.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvia lettura'**
+  String get startReading;
+
+  /// Localized text for resumeReading.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprendi lettura'**
+  String get resumeReading;
+
+  /// Localized text for pauseReading.
+  ///
+  /// In it, this message translates to:
+  /// **'Pausa lettura'**
+  String get pauseReading;
+
+  /// Localized text for openOriginalArticle.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri articolo originale'**
+  String get openOriginalArticle;
+
+  /// Localized text for searchPodcasts.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca podcast'**
+  String get searchPodcasts;
+
+  /// Localized text for podcastName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome podcast'**
+  String get podcastName;
+
+  /// Localized text for podcastSearchHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Esempio: tecnologia, storia, il nome del podcast...'**
+  String get podcastSearchHint;
+
+  /// Localized text for searchCountry.
+  ///
+  /// In it, this message translates to:
+  /// **'Paese di ricerca'**
+  String get searchCountry;
+
+  /// Localized text for podcastCategory.
+  ///
+  /// In it, this message translates to:
+  /// **'Categoria podcast'**
+  String get podcastCategory;
+
+  /// Localized text for browsePodcastCategories.
+  ///
+  /// In it, this message translates to:
+  /// **'Sfoglia categorie'**
+  String get browsePodcastCategories;
+
+  /// Localized text for selectedPodcastCategory.
+  ///
+  /// In it, this message translates to:
+  /// **'Categoria selezionata'**
+  String get selectedPodcastCategory;
+
+  /// Localized text for podcastCategories.
+  ///
+  /// In it, this message translates to:
+  /// **'Categorie podcast'**
+  String get podcastCategories;
+
+  /// Localized text for countryItaly.
+  ///
+  /// In it, this message translates to:
+  /// **'Italia'**
+  String get countryItaly;
+
+  /// Localized text for countryUnitedStatesEnglish.
+  ///
+  /// In it, this message translates to:
+  /// **'Stati Uniti / inglese'**
+  String get countryUnitedStatesEnglish;
+
+  /// Localized text for countryUnitedKingdom.
+  ///
+  /// In it, this message translates to:
+  /// **'Regno Unito'**
+  String get countryUnitedKingdom;
+
+  /// Localized text for countrySpain.
+  ///
+  /// In it, this message translates to:
+  /// **'Spagna'**
+  String get countrySpain;
+
+  /// Localized text for countryFrance.
+  ///
+  /// In it, this message translates to:
+  /// **'Francia'**
+  String get countryFrance;
+
+  /// Localized text for searchInProgress.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricerca in corso...'**
+  String get searchInProgress;
+
+  /// Localized text for podcastResultsFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Trovati {count} podcast'**
+  String podcastResultsFound(int count);
+
+  /// Localized text for podcastSearchError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore ricerca podcast: {error}'**
+  String podcastSearchError(Object error);
+
+  /// Localized text for subscribedTo.
+  ///
+  /// In it, this message translates to:
+  /// **'Iscritto a {title}'**
+  String subscribedTo(String title);
+
+  /// Localized text for subscriptionError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore iscrizione: {error}'**
+  String subscriptionError(Object error);
+
+  /// Localized text for podcastSubscriptionError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore iscrizione podcast: {error}'**
+  String podcastSubscriptionError(Object error);
+
+  /// Localized text for searchResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultati ricerca'**
+  String get searchResults;
+
+  /// Localized text for podcastInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Informazioni sul podcast'**
+  String get podcastInfo;
+
+  /// Localized text for subscribe.
+  ///
+  /// In it, this message translates to:
+  /// **'Iscriviti'**
+  String get subscribe;
+
+  /// Localized text for viewEpisodes.
+  ///
+  /// In it, this message translates to:
+  /// **'Vedi episodi'**
+  String get viewEpisodes;
+
+  /// Localized text for podcastAuthor.
+  ///
+  /// In it, this message translates to:
+  /// **'Autore'**
+  String get podcastAuthor;
+
+  /// Localized text for noPodcastDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna descrizione disponibile.'**
+  String get noPodcastDescription;
+
+  /// Localized text for noPodcastResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun podcast trovato.'**
+  String get noPodcastResults;
+
+  /// Localized text for loadingPodcastInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento info podcast'**
+  String get loadingPodcastInfo;
+
+  /// Localized text for podcastArtwork.
+  ///
+  /// In it, this message translates to:
+  /// **'Copertina podcast'**
+  String get podcastArtwork;
+
+  /// Localized text for addFeedUrlManually.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi manualmente URL feed RSS'**
+  String get addFeedUrlManually;
+
+  /// Localized text for podcastFeedUrl.
+  ///
+  /// In it, this message translates to:
+  /// **'URL feed podcast RSS'**
+  String get podcastFeedUrl;
+
+  /// Localized text for subscribeFromUrl.
+  ///
+  /// In it, this message translates to:
+  /// **'Iscriviti da URL'**
+  String get subscribeFromUrl;
+
+  /// Localized text for subscribedPodcasts.
+  ///
+  /// In it, this message translates to:
+  /// **'Podcast sottoscritti'**
+  String get subscribedPodcasts;
+
+  /// Localized text for noSubscribedPodcasts.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun podcast sottoscritto. Cerca un podcast e tocca un risultato per iscriverti.'**
+  String get noSubscribedPodcasts;
+
+  /// Localized text for importPodcastsFromFile.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa podcast da file'**
+  String get importPodcastsFromFile;
+
+  /// Localized text for exportPodcastsToFile.
+  ///
+  /// In it, this message translates to:
+  /// **'Esporta podcast in file OPML'**
+  String get exportPodcastsToFile;
+
+  /// Localized text for podcastImportComplete.
+  ///
+  /// In it, this message translates to:
+  /// **'Podcast importati: {count}'**
+  String podcastImportComplete(int count);
+
+  /// Localized text for podcastImportError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore importazione podcast: {error}'**
+  String podcastImportError(Object error);
+
+  /// Localized text for podcastExportComplete.
+  ///
+  /// In it, this message translates to:
+  /// **'Podcast esportati'**
+  String get podcastExportComplete;
+
+  /// Localized text for podcastExportError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore esportazione podcast: {error}'**
+  String podcastExportError(Object error);
+
+  /// Localized text for loadingEpisodes.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento episodi'**
+  String get loadingEpisodes;
+
+  /// Localized text for noAudioEpisodesFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun episodio audio trovato nel feed.'**
+  String get noAudioEpisodesFound;
+
+  /// Localized text for episodes.
+  ///
+  /// In it, this message translates to:
+  /// **'Episodi'**
+  String get episodes;
+
+  /// Localized text for episodeActions.
+  ///
+  /// In it, this message translates to:
+  /// **'Azioni episodio'**
+  String get episodeActions;
+
+  /// Localized text for downloaded.
+  ///
+  /// In it, this message translates to:
+  /// **'Scaricato: {path}'**
+  String downloaded(String path);
+
+  /// Localized text for episodeError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore episodio: {error}'**
+  String episodeError(Object error);
+
+  /// Localized text for play.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduci'**
+  String get play;
+
+  /// Localized text for pause.
+  ///
+  /// In it, this message translates to:
+  /// **'Pausa'**
+  String get pause;
+
+  /// Localized text for rewind15s.
+  ///
+  /// In it, this message translates to:
+  /// **'Indietro 15s'**
+  String get rewind15s;
+
+  /// Localized text for forward15s.
+  ///
+  /// In it, this message translates to:
+  /// **'Avanti 15s'**
+  String get forward15s;
+
+  /// Localized text for stop.
+  ///
+  /// In it, this message translates to:
+  /// **'Stop'**
+  String get stop;
+
+  /// Localized text for back.
+  ///
+  /// In it, this message translates to:
+  /// **'Indietro'**
+  String get back;
+
+  /// Localized text for episodePlayer.
+  ///
+  /// In it, this message translates to:
+  /// **'Lettore episodio'**
+  String get episodePlayer;
+
+  /// Localized text for nowPlayingTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'In riproduzione: {title}'**
+  String nowPlayingTitle(String title);
+
+  /// Localized text for loadingEpisodeAudio.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento audio episodio'**
+  String get loadingEpisodeAudio;
+
+  /// Localized text for playbackPosition.
+  ///
+  /// In it, this message translates to:
+  /// **'Posizione'**
+  String get playbackPosition;
+
+  /// Localized text for playbackPositionValue.
+  ///
+  /// In it, this message translates to:
+  /// **'{position} di {duration}'**
+  String playbackPositionValue(String position, String duration);
+
+  /// Localized text for download.
+  ///
+  /// In it, this message translates to:
+  /// **'Scarica'**
+  String get download;
+
+  /// Localized text for searchWikipedia.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca su Wikipedia'**
+  String get searchWikipedia;
+
+  /// Localized text for wikipediaLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua Wikipedia'**
+  String get wikipediaLanguage;
+
+  /// Localized text for search.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca'**
+  String get search;
+
+  /// Localized text for wikipediaSearch.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricerca Wikipedia'**
+  String get wikipediaSearch;
+
+  /// Localized text for wikipediaImporting.
+  ///
+  /// In it, this message translates to:
+  /// **'Importazione Wikipedia'**
+  String get wikipediaImporting;
+
+  /// Localized text for noWikipediaResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun risultato Wikipedia trovato'**
+  String get noWikipediaResults;
+
+  /// Localized text for wikipediaImportMode.
+  ///
+  /// In it, this message translates to:
+  /// **'Modalità di importazione'**
+  String get wikipediaImportMode;
+
+  /// Localized text for wikipediaImportWholeArticle.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutto l\'articolo'**
+  String get wikipediaImportWholeArticle;
+
+  /// Localized text for documents.
+  ///
+  /// In it, this message translates to:
+  /// **'Documenti'**
+  String get documents;
+
+  /// Localized text for documentsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Apre la libreria documenti'**
+  String get documentsHint;
+
+  /// Localized text for documentLibrary.
+  ///
+  /// In it, this message translates to:
+  /// **'Libreria documenti'**
+  String get documentLibrary;
+
+  /// Localized text for addToLibrary.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi alla libreria'**
+  String get addToLibrary;
+
+  /// Localized text for documentImportSelectionMode.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi selezionare un solo documento o più documenti?'**
+  String get documentImportSelectionMode;
+
+  /// Localized text for documentImportSingle.
+  ///
+  /// In it, this message translates to:
+  /// **'Un documento'**
+  String get documentImportSingle;
+
+  /// Localized text for documentImportMultiple.
+  ///
+  /// In it, this message translates to:
+  /// **'Più documenti'**
+  String get documentImportMultiple;
+
+  /// Localized text for noDocuments.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun documento. Aggiungi un file.'**
+  String get noDocuments;
+
+  /// Localized text for noDocumentsInLibrary.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun documento presente nella libreria.'**
+  String get noDocumentsInLibrary;
+
+  /// Localized text for documentAdded.
+  ///
+  /// In it, this message translates to:
+  /// **'Documento aggiunto'**
+  String get documentAdded;
+
+  /// Localized text for documentsAdded.
+  ///
+  /// In it, this message translates to:
+  /// **'Documenti aggiunti'**
+  String get documentsAdded;
+
+  /// Localized text for libraryLoadError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore caricamento libreria: {error}'**
+  String libraryLoadError(Object error);
+
+  /// Localized text for fileOpenError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore apertura file: {error}'**
+  String fileOpenError(Object error);
+
+  /// Localized text for filePathUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Percorso file non disponibile.'**
+  String get filePathUnavailable;
+
+  /// Localized text for fileInaccessible.
+  ///
+  /// In it, this message translates to:
+  /// **'File inaccessibile: {name}'**
+  String fileInaccessible(String name);
+
+  /// Localized text for documentAddError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore aggiunta documento: {error}'**
+  String documentAddError(Object error);
+
+  /// Localized text for documentRemoveError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore rimozione: {error}'**
+  String documentRemoveError(Object error);
+
+  /// Localized text for noExportableTextFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun testo esportabile trovato.'**
+  String get noExportableTextFound;
+
+  /// Localized text for modifiedDocumentNoExportableText.
+  ///
+  /// In it, this message translates to:
+  /// **'Il documento modificato non contiene testo esportabile.'**
+  String get modifiedDocumentNoExportableText;
+
+  /// Localized text for documentRemoved.
+  ///
+  /// In it, this message translates to:
+  /// **'Documento rimosso'**
+  String get documentRemoved;
+
+  /// Localized text for folderRemoved.
+  ///
+  /// In it, this message translates to:
+  /// **'Cartella rimossa'**
+  String get folderRemoved;
+
+  /// Localized text for removeFolder.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi cartella'**
+  String get removeFolder;
+
+  /// Localized text for removeDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi documento'**
+  String get removeDocument;
+
+  /// Localized text for writeNewDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi nuovo documento'**
+  String get writeNewDocument;
+
+  /// Localized text for addDocumentToLibraryHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi documento alla libreria. Sfoglia i file del dispositivo e aggiungili.'**
+  String get addDocumentToLibraryHint;
+
+  /// Localized text for documentTypeLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Documento'**
+  String get documentTypeLabel;
+
+  /// Localized text for documentPosition.
+  ///
+  /// In it, this message translates to:
+  /// **'Posizione documento'**
+  String get documentPosition;
+
+  /// Localized text for folderTypeLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cartella'**
+  String get folderTypeLabel;
+
+  /// Localized text for documentAddedOn.
+  ///
+  /// In it, this message translates to:
+  /// **'aggiunto il {date}'**
+  String documentAddedOn(String date);
+
+  /// Localized text for documentTypeDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'tipo {extension}'**
+  String documentTypeDescription(String extension);
+
+  /// Localized text for openFolderHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca due volte per aprire la cartella'**
+  String get openFolderHint;
+
+  /// Localized text for openDocumentHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca due volte per aprire e leggere il documento'**
+  String get openDocumentHint;
+
+  /// Localized text for removeItem.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi {name}'**
+  String removeItem(String name);
+
+  /// Localized text for removePodcast.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi podcast'**
+  String get removePodcast;
+
+  /// Localized text for podcastRemoved.
+  ///
+  /// In it, this message translates to:
+  /// **'Podcast rimosso'**
+  String get podcastRemoved;
+
+  /// Localized text for documentPickerError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore apertura file'**
+  String get documentPickerError;
+
+  /// Localized text for readDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Leggi documento'**
+  String get readDocument;
+
+  /// Localized text for documentReaderTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Lettore documento'**
+  String get documentReaderTitle;
+
+  /// Localized text for documentReaderEditHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca un paragrafo per modificarlo. Scorri verso l’alto o verso il basso per aggiungere un segnalibro.'**
+  String get documentReaderEditHint;
+
+  /// Localized text for documentBookmarkHintSet.
+  ///
+  /// In it, this message translates to:
+  /// **'Scorri verso l’alto o verso il basso per impostare un segnalibro.'**
+  String get documentBookmarkHintSet;
+
+  /// Localized text for documentEditParagraphActionHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca due volte per modificare questo paragrafo. '**
+  String get documentEditParagraphActionHint;
+
+  /// Localized text for documentBookmarkHintReplace.
+  ///
+  /// In it, this message translates to:
+  /// **'Scorri verso l’alto o verso il basso per rimuovere il segnalibro esistente o sostituirlo con questo paragrafo.'**
+  String get documentBookmarkHintReplace;
+
+  /// Localized text for documentSetBookmarkAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Imposta segnalibro'**
+  String get documentSetBookmarkAction;
+
+  /// Localized text for documentRemoveBookmarkAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi segnalibro'**
+  String get documentRemoveBookmarkAction;
+
+  /// Localized text for documentReplaceBookmarkAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi e aggiungi un nuovo segnalibro'**
+  String get documentReplaceBookmarkAction;
+
+  /// Localized text for edit.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica'**
+  String get edit;
+
+  /// Localized text for save.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva'**
+  String get save;
+
+  /// Localized text for cancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get cancel;
+
+  /// Localized text for settingsReadingEngine.
+  ///
+  /// In it, this message translates to:
+  /// **'Motore di lettura'**
+  String get settingsReadingEngine;
+
+  /// Localized text for settingsEdgeTtsQuality.
+  ///
+  /// In it, this message translates to:
+  /// **'Edge TTS (Alta qualità online)'**
+  String get settingsEdgeTtsQuality;
+
+  /// Localized text for settingsSystemVoices.
+  ///
+  /// In it, this message translates to:
+  /// **'Voci di sistema (VoiceOver / Google)'**
+  String get settingsSystemVoices;
+
+  /// Localized text for settingsNoSystemVoices.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna voce di sistema disponibile.'**
+  String get settingsNoSystemVoices;
+
+  /// Localized text for settingsDefaultVoiceHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce predefinita'**
+  String get settingsDefaultVoiceHint;
+
+  /// Localized text for settingsDefaultVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Predefinita'**
+  String get settingsDefaultVoice;
+
+  /// Localized text for settingsVoiceSpeed.
+  ///
+  /// In it, this message translates to:
+  /// **'Velocità lettura: '**
+  String get settingsVoiceSpeed;
+
+  /// Localized text for settingsVoicePitch.
+  ///
+  /// In it, this message translates to:
+  /// **'Tono: '**
+  String get settingsVoicePitch;
+
+  /// Localized text for settingsVoiceSpeedLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Velocità lettura'**
+  String get settingsVoiceSpeedLabel;
+
+  /// Localized text for settingsVoicePitchLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Tono'**
+  String get settingsVoicePitchLabel;
+
+  /// Localized text for settingsTestVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Testa voce'**
+  String get settingsTestVoice;
+
+  /// Localized text for settingsTestingVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduzione in corso...'**
+  String get settingsTestingVoice;
+
+  /// Localized text for settingsVoiceTestText.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo è un test della voce selezionata.'**
+  String get settingsVoiceTestText;
+
+  /// Localized text for settingsVoiceTestError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore test voce: {error}'**
+  String settingsVoiceTestError(Object error);
+
+  /// Localized text for settingsVoiceSaveError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore salvataggio voce TTS: {error}'**
+  String settingsVoiceSaveError(Object error);
+
+  /// Localized text for settingsUnsavedTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifiche non salvate'**
+  String get settingsUnsavedTitle;
+
+  /// Localized text for settingsUnsavedMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi salvare le modifiche prima di uscire dalle impostazioni?'**
+  String get settingsUnsavedMessage;
+
+  /// Localized text for settingsExitWithoutSaving.
+  ///
+  /// In it, this message translates to:
+  /// **'Esci senza salvare'**
+  String get settingsExitWithoutSaving;
+
+  /// Localized text for settingsSystemLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua di sistema'**
+  String get settingsSystemLanguage;
+
+  /// Localized text for settingsSystemVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce di sistema'**
+  String get settingsSystemVoice;
+
+  /// Localized text for settingsAutoBookmark.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalibro automatico'**
+  String get settingsAutoBookmark;
+
+  /// Localized text for settingsAutoBookmarkHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'**
+  String get settingsAutoBookmarkHint;
+
+  /// Localized text for settingsSeekStep.
+  ///
+  /// In it, this message translates to:
+  /// **'Intervallo indietro / avanti nei media'**
+  String get settingsSeekStep;
+
+  /// Localized text for aiChatIntro.
+  ///
+  /// In it, this message translates to:
+  /// **'Sono l’intelligenza artificiale di Sonarpad. Come posso aiutarti?'**
+  String get aiChatIntro;
+
+  /// Localized text for meteoTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Meteo'**
+  String get meteoTitle;
+
+  /// Localized text for weatherCity.
+  ///
+  /// In it, this message translates to:
+  /// **'Città'**
+  String get weatherCity;
+
+  /// Localized text for weatherCityHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Esempio: Roma'**
+  String get weatherCityHint;
+
+  /// Localized text for weatherCityNotFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Città non trovata'**
+  String get weatherCityNotFound;
+
+  /// Localized text for weatherSearchError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore durante la ricerca'**
+  String get weatherSearchError;
+
+  /// Localized text for weatherToday.
+  ///
+  /// In it, this message translates to:
+  /// **'Oggi'**
+  String get weatherToday;
+
+  /// Localized text for weatherTomorrow.
+  ///
+  /// In it, this message translates to:
+  /// **'Domani'**
+  String get weatherTomorrow;
+
+  /// Localized text for weatherChooseDay.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli il giorno'**
+  String get weatherChooseDay;
+
+  /// Localized text for weatherCurrentTemperature.
+  ///
+  /// In it, this message translates to:
+  /// **'Temperatura attuale'**
+  String get weatherCurrentTemperature;
+
+  /// Localized text for weatherMaxTemperature.
+  ///
+  /// In it, this message translates to:
+  /// **'Temperatura massima'**
+  String get weatherMaxTemperature;
+
+  /// Localized text for weatherMinTemperature.
+  ///
+  /// In it, this message translates to:
+  /// **'Temperatura minima'**
+  String get weatherMinTemperature;
+
+  /// Localized text for weatherPrecipitation.
+  ///
+  /// In it, this message translates to:
+  /// **'Precipitazioni'**
+  String get weatherPrecipitation;
+
+  /// Localized text for weatherPrecipitationProbability.
+  ///
+  /// In it, this message translates to:
+  /// **'Probabilità di precipitazioni'**
+  String get weatherPrecipitationProbability;
+
+  /// Localized text for weatherWind.
+  ///
+  /// In it, this message translates to:
+  /// **'Vento'**
+  String get weatherWind;
+
+  /// Localized text for weatherRelativeHumidity.
+  ///
+  /// In it, this message translates to:
+  /// **'Umidità relativa'**
+  String get weatherRelativeHumidity;
+
+  /// Localized text for settingsSecretCode.
+  ///
+  /// In it, this message translates to:
+  /// **'Codice Sonarpad per funzioni aggiuntive'**
+  String get settingsSecretCode;
+
+  /// Localized text for settingsRequestCode.
+  ///
+  /// In it, this message translates to:
+  /// **'Richiedi codice all\'autore'**
+  String get settingsRequestCode;
+
+  /// Localized text for settingsCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get settingsCancel;
+
+  /// Localized text for settingsSend.
+  ///
+  /// In it, this message translates to:
+  /// **'Invia'**
+  String get settingsSend;
+
+  /// Localized text for settingsFillFieldsCode.
+  ///
+  /// In it, this message translates to:
+  /// **'Compila tutti i campi per richiedere il codice.'**
+  String get settingsFillFieldsCode;
+
+  /// Localized text for settingsName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome'**
+  String get settingsName;
+
+  /// Localized text for settingsSurname.
+  ///
+  /// In it, this message translates to:
+  /// **'Cognome'**
+  String get settingsSurname;
+
+  /// Localized text for settingsEmail.
+  ///
+  /// In it, this message translates to:
+  /// **'Email'**
+  String get settingsEmail;
+
+  /// Localized text for settingsOperatingSystem.
+  ///
+  /// In it, this message translates to:
+  /// **'Sistema operativo'**
+  String get settingsOperatingSystem;
+
+  /// Localized text for settingsCodeRequestBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome: {name}; Cognome: {surname}; Email: {email}; Sistema operativo: {os}'**
   String settingsCodeRequestBody(
-          String name, String surname, String email, String os) =>
-      '$settingsName: $name; $settingsSurname: $surname; $settingsEmail: $email; $settingsOperatingSystem: $os';
-  String get settingsNameOptional => _isEn
-      ? 'Name (optional)'
-      : (_isFr
-          ? 'Prénom (facultatif)'
-          : (_isEs ? 'Nombre (opcional)' : 'Nome (opzionale)'));
-  String get settingsMessageOptional => _isEn
-      ? 'Message (optional)'
-      : (_isFr
-          ? 'Message (facultatif)'
-          : (_isEs ? 'Mensaje (opcional)' : 'Messaggio (opzionale)'));
-  String get settingsVerifyCodeAndSave => _isEn
-      ? 'Verifying code and saving...'
-      : (_isFr
-          ? 'Vérification et enregistrement...'
-          : (_isEs
-              ? 'Verificando y guardando...'
-              : 'Verifica codice e salvataggio...'));
-  String get settingsViewSysLog => _isEn
-      ? 'View system log'
-      : (_isFr
-          ? 'Voir le journal système'
-          : (_isEs ? 'Ver registro del sistema' : 'Visualizza log di sistema'));
-  String settingsMailOpenError(Object error) => _isEn
-      ? 'Error opening email: $error'
-      : (_isFr
-          ? 'Erreur d’ouverture de l’e-mail : $error'
-          : (_isEs
-              ? 'Error al abrir el correo: $error'
-              : 'Errore apertura mail: $error'));
-  String get ok => 'OK';
-  String get invia =>
-      _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
-  String get saveArticle => _isEn
-      ? 'Save Article'
-      : (_isFr
-          ? 'Enregistrer l\'article'
-          : (_isEs ? 'Guardar artículo' : 'Salva l\'articolo'));
-  String get shareArticle => _isEn
-      ? 'Share Article'
-      : (_isFr
-          ? 'Partager l\'article'
-          : (_isEs ? 'Compartir artículo' : 'Condividi l\'articolo'));
-  String get articleSavedSuccess => _isEn
-      ? 'Article saved to Documents'
-      : (_isFr
-          ? 'Article enregistré dans les Documents'
-          : (_isEs
-              ? 'Artículo guardado en Documentos'
-              : 'Articolo salvato nei Documenti'));
-  String get annulla =>
-      _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
-  String get compilaTuttiICampiPerRichiedereIlCodice => _isEn
-      ? 'Fill all fields to request the code.'
-      : (_isFr
-          ? 'Remplissez tous les champs pour demander le code.'
-          : (_isEs
-              ? 'Rellena todos los campos para solicitar el código.'
-              : 'Compila tutti i campi per richiedere il codice.'));
-  String get selectFolder => _isEn
-      ? 'Select folder'
-      : (_isFr
-          ? 'Sélectionner le dossier'
-          : (_isEs ? 'Seleccionar carpeta' : 'Seleziona cartella'));
-  String get exportDocument => _isEn
-      ? 'Export document'
-      : (_isFr
-          ? 'Exporter le document'
-          : (_isEs ? 'Exportar documento' : 'Esporta documento'));
-  String get exportFormatPrompt => _isEn
-      ? 'In which format do you want to export the document?'
-      : (_isFr
-          ? 'Dans quel format souhaitez-vous exporter le document ?'
-          : (_isEs
-              ? '¿En qué formato deseas exportar el documento?'
-              : 'In quale formato desideri esportare il documento?'));
-  String get textFormat => _isEn
-      ? 'Text (.txt)'
-      : (_isFr ? 'Texte (.txt)' : (_isEs ? 'Texto (.txt)' : 'Testo (.txt)'));
-  String get pdfFormat => _isEn
-      ? 'PDF (.pdf)'
-      : (_isFr ? 'PDF (.pdf)' : (_isEs ? 'PDF (.pdf)' : 'PDF (.pdf)'));
-  String get exportError => _isEn
-      ? 'Export error'
-      : (_isFr
-          ? 'Erreur d\'exportation'
-          : (_isEs ? 'Error de exportación' : 'Errore esportazione'));
-  String get newFolder => _isEn
-      ? 'New folder'
-      : (_isFr
-          ? 'Nouveau dossier'
-          : (_isEs ? 'Nueva carpeta' : 'Nuova cartella'));
-  String get folderNameHint => _isEn
-      ? 'Folder name'
-      : (_isFr
-          ? 'Nom du dossier'
-          : (_isEs ? 'Nombre de la carpeta' : 'Nome cartella'));
-  String get create =>
-      _isEn ? 'Create' : (_isFr ? 'Créer' : (_isEs ? 'Crear' : 'Crea'));
-  String get createNewFolder => _isEn
-      ? 'Create new folder'
-      : (_isFr
-          ? 'Créer un nouveau dossier'
-          : (_isEs ? 'Crear nueva carpeta' : 'Crea nuova cartella'));
-  String get importFromDropbox => _isEn
-      ? 'Import documents from Dropbox'
-      : (_isFr
-          ? 'Importer des documents depuis Dropbox'
-          : (_isEs
-              ? 'Importar documentos desde Dropbox'
-              : 'Importa documenti da Dropbox'));
-  String get moveDocument => _isEn
-      ? 'Move document'
-      : (_isFr
-          ? 'Déplacer le document'
-          : (_isEs ? 'Mover documento' : 'Sposta documento'));
-  String get documentMoved => _isEn
-      ? 'Moved successfully'
-      : (_isFr
-          ? 'Déplacé avec succès'
-          : (_isEs ? 'Movido correctamente' : 'Spostato correttamente'));
-  String get outOfFolder => _isEn
-      ? 'Out of folder'
-      : (_isFr
-          ? 'Hors du dossier'
-          : (_isEs ? 'Fuera de la carpeta' : 'Fuori dalla cartella'));
-  String get moveToAnotherFolder => _isEn
-      ? 'Move to another folder...'
-      : (_isFr
-          ? 'Déplacer vers un autre dossier...'
-          : (_isEs
-              ? 'Mover a otra carpeta...'
-              : 'Sposta in un\'altra cartella...'));
-  String get ttsError => _isEn
-      ? 'TTS error'
-      : (_isFr
-          ? 'Erreur de synthèse vocale'
-          : (_isEs ? 'Error de síntesis de voz' : 'Errore sintesi vocale'));
-  String get editParagraph => _isEn
-      ? 'Edit paragraph'
-      : (_isFr
-          ? 'Modifier le paragraphe'
-          : (_isEs ? 'Editar párrafo' : 'Modifica paragrafo'));
-  String get editParagraphTextField => _isEn
-      ? 'Text field for editing the paragraph'
-      : (_isFr
-          ? 'Champ de texte pour modifier le paragraphe'
-          : (_isEs
-              ? 'Campo de texto para editar el párrafo'
-              : 'Campo di testo per la modifica del paragrafo'));
-  String get editParagraphHint => _isEn
-      ? 'Edit the paragraph text'
-      : (_isFr
-          ? 'Modifier le texte du paragraphe'
-          : (_isEs
-              ? 'Editar el texto del párrafo'
-              : 'Modifica il testo del paragrafo'));
-  String get applyAndSave => _isEn
-      ? 'Apply and save'
-      : (_isFr
-          ? 'Appliquer et enregistrer'
-          : (_isEs ? 'Aplicar y guardar' : 'Applica e salva'));
-  String get textEditedAndSaved => _isEn
-      ? 'Text edited and saved in current document.'
-      : (_isFr
-          ? 'Texte modifié et enregistré dans le document actuel.'
-          : (_isEs
-              ? 'Texto editado y guardado en el documento actual.'
-              : 'Testo modificato e salvato nel documento corrente.'));
-  String get saveError => _isEn
-      ? 'Error while saving'
-      : (_isFr
-          ? 'Erreur lors de la sauvegarde'
-          : (_isEs ? 'Error al guardar' : 'Errore durante il salvataggio'));
-  String get docSavedInLibrary => _isEn
-      ? 'Document saved in library'
-      : (_isFr
-          ? 'Document enregistré dans la bibliothèque'
-          : (_isEs
-              ? 'Documento guardado en la biblioteca'
-              : 'Documento salvato nella libreria'));
-  String get saveInLibrary => _isEn
-      ? 'Save in library'
-      : (_isFr
-          ? 'Enregistrer dans la bibliothèque'
-          : (_isEs ? 'Guardar en la biblioteca' : 'Salva nella libreria'));
-  String get documentTextLabel => _isEn
-      ? 'Document text'
-      : (_isFr
-          ? 'Texte du document'
-          : (_isEs ? 'Texto del documento' : 'Testo documento'));
-  String get modifiedInSonarpad => _isEn
-      ? 'Modified in Sonarpad'
-      : (_isFr
-          ? 'Modifié dans Sonarpad'
-          : (_isEs ? 'Modificado en Sonarpad' : 'Modificato in Sonarpad'));
-  String get noTextAvailableForDocument => _isEn
-      ? 'No text available for this document.'
-      : (_isFr
-          ? 'Aucun texte disponible pour ce document.'
-          : (_isEs
-              ? 'No hay texto disponible para este documento.'
-              : 'Nessun testo disponibile per questo documento.'));
-  String bookmarkSet(int index) => _isEn
-      ? 'Bookmark set at paragraph $index.'
-      : (_isFr
-          ? 'Signet défini au paragraphe $index.'
-          : (_isEs
-              ? 'Marcador establecido en el párrafo $index.'
-              : 'Segnalibro impostato al paragrafo $index.'));
-  String get bookmarkRemoved => _isEn
-      ? 'Bookmark removed.'
-      : (_isFr
-          ? 'Signet supprimé.'
-          : (_isEs ? 'Marcador eliminado.' : 'Segnalibro rimosso.'));
-  String get docEmpty => _isEn
-      ? 'Document is empty'
-      : (_isFr
-          ? 'Le document est vide'
-          : (_isEs ? 'El documento está vacío' : 'Il documento è vuoto'));
-  String get docSavedSuccessfully => _isEn
-      ? 'Document saved successfully!'
-      : (_isFr
-          ? 'Document enregistré avec succès !'
-          : (_isEs
-              ? '¡Documento guardado con éxito!'
-              : 'Documento salvato correttamente.'));
-  String get writeDocument => _isEn
-      ? 'Write document'
-      : (_isFr
-          ? 'Écrire un document'
-          : (_isEs ? 'Escribir documento' : 'Scrivi documento'));
-  String get documentTitleOptional => _isEn
-      ? 'Title (optional)'
-      : (_isFr
-          ? 'Titre (facultatif)'
-          : (_isEs ? 'Título (opcional)' : 'Titolo (opzionale)'));
-  String get documentTitleHint => _isEn
-      ? 'Example: Shopping notes'
-      : (_isFr
-          ? 'Exemple : Notes de courses'
-          : (_isEs ? 'Ejemplo: Notas de compra' : 'Esempio: lista della spesa'));
-  String get documentTextField => _isEn
-      ? 'Document text'
-      : (_isFr
-          ? 'Texte du document'
-          : (_isEs ? 'Texto del documento' : 'Testo del documento'));
-  String get documentTextHint => _isEn
-      ? 'Start writing here...'
-      : (_isFr
-          ? 'Commencez à écrire ici...'
-          : (_isEs
-              ? 'Empieza a escribir aquí...'
-              : 'Inizia a scrivere qui...'));
-  String get newDocumentDefaultName => _isEn
-      ? 'New_Document'
-      : (_isFr
-          ? 'Nouveau_Document'
-          : (_isEs ? 'Nuevo_Documento' : 'Nuovo_Documento'));
-  String get saving => _isEn
-      ? 'Saving...'
-      : (_isFr
-          ? 'Enregistrement...'
-          : (_isEs ? 'Guardando...' : 'Salvataggio...'));
-  String get saveDocument => _isEn
-      ? 'Save document'
-      : (_isFr
-          ? 'Enregistrer le document'
-          : (_isEs ? 'Guardar documento' : 'Salva documento'));
-  String get addRssSource => _isEn
-      ? 'Add RSS Source'
-      : (_isFr
-          ? 'Ajouter une source RSS'
-          : (_isEs ? 'Agregar fuente RSS' : 'Aggiungi sorgente RSS'));
-  String get add =>
-      _isEn ? 'Add' : (_isFr ? 'Ajouter' : (_isEs ? 'Agregar' : 'Aggiungi'));
-  String get errorPrefix =>
-      _isEn ? 'Error' : (_isFr ? 'Erreur' : (_isEs ? 'Error' : 'Errore'));
-  String versionBuild(String version, String buildNumber) => _isEn
-      ? 'Version $version (Build $buildNumber)'
-      : (_isFr
-          ? 'Version $version (Build $buildNumber)'
-          : (_isEs
-              ? 'Versión $version (Build $buildNumber)'
-              : 'Versione $version (Build $buildNumber)'));
-  String get whatIsNew => _isEn
-      ? 'What’s new'
-      : (_isFr ? 'Nouveautés' : (_isEs ? 'Novedades' : 'Novità'));
-  String changelogLoadError(Object error) => _isEn
-      ? 'Error loading what is new: $error'
-      : (_isFr
-          ? 'Erreur lors du chargement des nouveautés : $error'
-          : (_isEs
-              ? 'Error al cargar las novedades: $error'
-              : 'Errore caricamento novità: $error'));
-  String get visitSonarpadSite => _isEn
-      ? 'Visit the Sonarpad website'
-      : (_isFr
-          ? 'Visiter le site de Sonarpad'
-          : (_isEs
-              ? 'Visitar el sitio de Sonarpad'
-              : 'Visita il sito di Sonarpad'));
-  String visitSonarpadSiteWithUrl(String url) => _isEn
-      ? 'Visit the Sonarpad website: $url'
-      : (_isFr
-          ? 'Visiter le site de Sonarpad : $url'
-          : (_isEs
-              ? 'Visitar el sitio de Sonarpad: $url'
-              : 'Visita il sito di Sonarpad: $url'));
-  String get nowPlaying => _isEn
-      ? 'Now playing'
-      : (_isFr ? 'En lecture' : (_isEs ? 'Reproduciendo' : 'In riproduzione'));
-  String get fileImported => _isEn
-      ? 'File imported'
-      : (_isFr
-          ? 'Fichier importé'
-          : (_isEs ? 'Archivo importado' : 'File importato'));
-  String importZipError(Object error) => _isEn
-      ? 'ZIP import error: $error'
-      : (_isFr
-          ? 'Erreur d’importation ZIP : $error'
-          : (_isEs
-              ? 'Error al importar ZIP: $error'
-              : 'Errore importazione zip: $error'));
-  String get dropboxLoginPrompt => _isEn
-      ? 'Log in to Dropbox to import your documents.'
-      : (_isFr
-          ? 'Connectez-vous à Dropbox pour importer vos documents.'
-          : (_isEs
-              ? 'Inicia sesión en Dropbox para importar tus documentos.'
-              : 'Accedi a Dropbox per importare i tuoi documenti.'));
-  String get loginToDropbox => _isEn
-      ? 'Log in to Dropbox'
-      : (_isFr
-          ? 'Se connecter à Dropbox'
-          : (_isEs ? 'Iniciar sesión en Dropbox' : 'Accedi a Dropbox'));
-  String get logoutFromDropbox => _isEn
-      ? 'Log out'
-      : (_isFr ? 'Se déconnecter' : (_isEs ? 'Cerrar sesión' : 'Disconnetti'));
-  String get dropboxLoginFailed => _isEn
-      ? 'Login failed or cancelled'
-      : (_isFr
-          ? 'Connexion échouée ou annulée'
-          : (_isEs
-              ? 'Inicio de sesión fallido o cancelado'
-              : 'Accesso fallito o annullato'));
-  String dropboxLoadFolderError(Object error) => _isEn
-      ? 'Folder loading error: $error'
-      : (_isFr
-          ? 'Erreur de chargement du dossier : $error'
-          : (_isEs
-              ? 'Error al cargar la carpeta: $error'
-              : 'Errore caricamento cartella: $error'));
-  String dropboxImportError(Object error) => _isEn
-      ? 'Import error: $error'
-      : (_isFr
-          ? 'Erreur d’importation : $error'
-          : (_isEs
-              ? 'Error de importación: $error'
-              : 'Errore importazione: $error'));
-  String get retry => _isEn
-      ? 'Retry'
-      : (_isFr ? 'Réessayer' : (_isEs ? 'Reintentar' : 'Riprova'));
-  String get goBack => _isEn
-      ? '.. Go back'
-      : (_isFr ? '.. Retour' : (_isEs ? '.. Volver' : '.. Torna indietro'));
-  String get noSupportedFilesInFolder => _isEn
-      ? 'No supported files in this folder.'
-      : (_isFr
-          ? 'Aucun fichier pris en charge dans ce dossier.'
-          : (_isEs
-              ? 'No hay archivos compatibles en esta carpeta.'
-              : 'Nessun file supportato in questa cartella.'));
-  String get articleNotFound => _isEn
-      ? 'Article not found.'
-      : (_isFr
-          ? 'Article introuvable.'
-          : (_isEs ? 'Artículo no encontrado.' : 'Articolo non trovato.'));
-  String get errorOpening => _isEn
-      ? 'Error opening'
-      : (_isFr
-          ? 'Erreur d\'ouverture'
-          : (_isEs ? 'Error al abrir' : 'Errore durante l\'apertura'));
-  String get recentArticles => _isEn
-      ? 'Recent articles'
-      : (_isFr
-          ? 'Articles récents'
-          : (_isEs ? 'Artículos recientes' : 'Articoli recenti'));
-  String get clearHistory => _isEn
-      ? 'Clear history'
-      : (_isFr
-          ? 'Effacer l\'historique'
-          : (_isEs ? 'Borrar historial' : 'Cancella cronologia'));
-  String get confirmClearHistory => _isEn
-      ? 'Do you really want to clear all recent searches?'
-      : (_isFr
-          ? 'Voulez-vous vraiment effacer toutes les recherches récentes ?'
-          : (_isEs
-              ? '¿Realmente deseas borrar todas las búsquedas recientes?'
-              : 'Vuoi davvero cancellare tutte le ricerche recenti?'));
-  String get clear =>
-      _isEn ? 'Clear' : (_isFr ? 'Effacer' : (_isEs ? 'Borrar' : 'Cancella'));
-  String get noRecentSearches => _isEn
-      ? 'No recent searches.'
-      : (_isFr
-          ? 'Aucune recherche récente.'
-          : (_isEs
-              ? 'No hay búsquedas recientes.'
-              : 'Nessuna ricerca recente.'));
-  String get logCopiedToClipboard => _isEn
-      ? 'Log copied to clipboard'
-      : (_isFr
-          ? 'Journal copié dans le presse-papiers'
-          : (_isEs
-              ? 'Registro copiado al portapapeles'
-              : 'Log copiato negli appunti'));
-  String get systemLog => _isEn
-      ? 'System log'
-      : (_isFr
-          ? 'Journal système'
-          : (_isEs ? 'Registro del sistema' : 'Log di sistema'));
-  String get clearSystemLog => _isEn
-      ? 'Clear log'
-      : (_isFr
-          ? 'Vider le journal'
-          : (_isEs ? 'Vaciar registro' : 'Svuota log'));
-  String get copySystemLog => _isEn
-      ? 'Copy log'
-      : (_isFr
-          ? 'Copier le journal'
-          : (_isEs ? 'Copiar registro' : 'Copia log'));
-  String get donateWithPaypal => _isEn
-      ? 'Donate with PayPal'
-      : (_isFr
-          ? 'Faire un don avec PayPal'
-          : (_isEs ? 'Donar con PayPal' : 'Dona con PayPal'));
-  String get bankTransferTitle => _isEn
-      ? 'Bank transfer'
-      : (_isFr
-          ? 'Virement bancaire'
-          : (_isEs ? 'Transferencia bancaria' : 'Bonifico bancario'));
-  String get enableVideo => _isEn
-      ? 'Enable video'
-      : (_isFr
-          ? 'Activer la vidéo'
-          : (_isEs ? 'Activar vídeo' : 'Attiva video'));
+      String name, String surname, String email, String os);
 
-  String get calendar => _isEn
-      ? 'Calendar'
-      : (_isFr ? 'Calendrier' : (_isEs ? 'Calendario' : 'Calendario'));
-  String get calendarHint => _isEn
-      ? 'View calendar, holidays, saint of the day, and your reminders'
-      : (_isFr
-          ? 'Afficher le calendrier, les jours fériés, le saint du jour et vos rappels'
-          : (_isEs
-              ? 'Ver calendario, festivos, santo del día y tus recordatorios'
-              : 'Apri il calendario con santi, festività e promemoria'));
+  /// Localized text for settingsNameOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome (opzionale)'**
+  String get settingsNameOptional;
 
-  String get saintOfTheDay => _isEn
-      ? 'Saint of the day'
-      : (_isFr
-          ? 'Saint du jour'
-          : (_isEs ? 'Santo del día' : 'Santo del giorno'));
-  String get quoteOfTheDay => _isEn
-      ? 'Quote of the day'
-      : (_isFr
-          ? 'Citation du jour'
-          : (_isEs ? 'Cita del día' : 'Citazione del giorno'));
-  String get reminders => _isEn
-      ? 'Reminders'
-      : (_isFr ? 'Rappels' : (_isEs ? 'Recordatorios' : 'Promemoria'));
-  String get addReminder => _isEn
-      ? 'Add reminder'
-      : (_isFr
-          ? 'Ajouter un rappel'
-          : (_isEs ? 'Añadir recordatorio' : 'Aggiungi promemoria'));
-  String get removeReminder => _isEn
-      ? 'Remove reminder'
-      : (_isFr
-          ? 'Supprimer le rappel'
-          : (_isEs ? 'Eliminar recordatorio' : 'Rimuovi promemoria'));
-  String get noReminders => _isEn
-      ? 'No reminders'
-      : (_isFr
-          ? 'Aucun rappel'
-          : (_isEs ? 'Sin recordatorios' : 'Nessun promemoria'));
-  String get writeReminder => _isEn
-      ? 'Write your reminder here...'
-      : (_isFr
-          ? 'Écrivez votre rappel ici...'
-          : (_isEs
-              ? 'Escribe aquí tu recordatorio...'
-              : 'Scrivi qui il tuo promemoria...'));
-  String get saveReminder =>
-      _isEn ? 'Save' : (_isFr ? 'Enregistrer' : (_isEs ? 'Guardar' : 'Salva'));
-  String get cancelReminder =>
-      _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
-  String get backToToday => _isEn
-      ? 'Back to today'
-      : (_isFr
-          ? 'Retour à aujourd\'hui'
-          : (_isEs ? 'Volver a hoy' : 'Torna a oggi'));
-  String get calendarToday =>
-      _isEn ? 'Today' : (_isFr ? 'Aujourd\'hui' : (_isEs ? 'Hoy' : 'Oggi'));
-  String get calendarTomorrow =>
-      _isEn ? 'Tomorrow' : (_isFr ? 'Demain' : (_isEs ? 'Mañana' : 'Domani'));
-  String get calendarYesterday =>
-      _isEn ? 'Yesterday' : (_isFr ? 'Hier' : (_isEs ? 'Ayer' : 'Ieri'));
-  String get share => _isEn
-      ? 'Share'
-      : (_isFr ? 'Partager' : (_isEs ? 'Compartir' : 'Condividi'));
-  String get listenToAll => _isEn
-      ? 'Listen to all'
-      : (_isFr ? 'Tout écouter' : (_isEs ? 'Escuchar todo' : 'Ascolta tutto'));
-  String reminderSaved(int count) => _isEn
-      ? '$count reminders'
-      : (_isFr
-          ? '$count rappels'
-          : (_isEs ? '$count recordatorios' : '$count promemoria'));
+  /// Localized text for settingsMessageOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Messaggio (opzionale)'**
+  String get settingsMessageOptional;
+
+  /// Localized text for settingsVerifyCodeAndSave.
+  ///
+  /// In it, this message translates to:
+  /// **'Verifica codice e salvataggio...'**
+  String get settingsVerifyCodeAndSave;
+
+  /// Localized text for settingsViewSysLog.
+  ///
+  /// In it, this message translates to:
+  /// **'Visualizza log di sistema'**
+  String get settingsViewSysLog;
+
+  /// Localized text for settingsMailOpenError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore apertura mail: {error}'**
+  String settingsMailOpenError(Object error);
+
+  /// Localized text for ok.
+  ///
+  /// In it, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// Localized text for invia.
+  ///
+  /// In it, this message translates to:
+  /// **'Invia'**
+  String get invia;
+
+  /// Localized text for saveArticle.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva l\'articolo'**
+  String get saveArticle;
+
+  /// Localized text for shareArticle.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi l\'articolo'**
+  String get shareArticle;
+
+  /// Localized text for articleSavedSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Articolo salvato nei Documenti'**
+  String get articleSavedSuccess;
+
+  /// Localized text for annulla.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get annulla;
+
+  /// Localized text for compilaTuttiICampiPerRichiedereIlCodice.
+  ///
+  /// In it, this message translates to:
+  /// **'Compila tutti i campi per richiedere il codice.'**
+  String get compilaTuttiICampiPerRichiedereIlCodice;
+
+  /// Localized text for selectFolder.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona cartella'**
+  String get selectFolder;
+
+  /// Localized text for exportDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Esporta documento'**
+  String get exportDocument;
+
+  /// Localized text for exportFormatPrompt.
+  ///
+  /// In it, this message translates to:
+  /// **'In quale formato desideri esportare il documento?'**
+  String get exportFormatPrompt;
+
+  /// Localized text for textFormat.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo (.txt)'**
+  String get textFormat;
+
+  /// Localized text for pdfFormat.
+  ///
+  /// In it, this message translates to:
+  /// **'PDF (.pdf)'**
+  String get pdfFormat;
+
+  /// Localized text for exportError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore esportazione'**
+  String get exportError;
+
+  /// Localized text for newFolder.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuova cartella'**
+  String get newFolder;
+
+  /// Localized text for folderNameHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome cartella'**
+  String get folderNameHint;
+
+  /// Localized text for create.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea'**
+  String get create;
+
+  /// Localized text for createNewFolder.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea nuova cartella'**
+  String get createNewFolder;
+
+  /// Localized text for importFromDropbox.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa documenti da Dropbox'**
+  String get importFromDropbox;
+
+  /// Localized text for moveDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta documento'**
+  String get moveDocument;
+
+  /// Localized text for documentMoved.
+  ///
+  /// In it, this message translates to:
+  /// **'Spostato correttamente'**
+  String get documentMoved;
+
+  /// Localized text for outOfFolder.
+  ///
+  /// In it, this message translates to:
+  /// **'Fuori dalla cartella'**
+  String get outOfFolder;
+
+  /// Localized text for moveToAnotherFolder.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta in un\'altra cartella...'**
+  String get moveToAnotherFolder;
+
+  /// Localized text for ttsError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore sintesi vocale'**
+  String get ttsError;
+
+  /// Localized text for editParagraph.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica paragrafo'**
+  String get editParagraph;
+
+  /// Localized text for editParagraphTextField.
+  ///
+  /// In it, this message translates to:
+  /// **'Campo di testo per la modifica del paragrafo'**
+  String get editParagraphTextField;
+
+  /// Localized text for editParagraphHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica il testo del paragrafo'**
+  String get editParagraphHint;
+
+  /// Localized text for applyAndSave.
+  ///
+  /// In it, this message translates to:
+  /// **'Applica e salva'**
+  String get applyAndSave;
+
+  /// Localized text for textEditedAndSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo modificato e salvato nel documento corrente.'**
+  String get textEditedAndSaved;
+
+  /// Localized text for saveError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore durante il salvataggio'**
+  String get saveError;
+
+  /// Localized text for docSavedInLibrary.
+  ///
+  /// In it, this message translates to:
+  /// **'Documento salvato nella libreria'**
+  String get docSavedInLibrary;
+
+  /// Localized text for saveInLibrary.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva nella libreria'**
+  String get saveInLibrary;
+
+  /// Localized text for documentTextLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo documento'**
+  String get documentTextLabel;
+
+  /// Localized text for modifiedInSonarpad.
+  ///
+  /// In it, this message translates to:
+  /// **'Modificato in Sonarpad'**
+  String get modifiedInSonarpad;
+
+  /// Localized text for noTextAvailableForDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun testo disponibile per questo documento.'**
+  String get noTextAvailableForDocument;
+
+  /// Localized text for bookmarkSet.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalibro impostato al paragrafo {index}.'**
+  String bookmarkSet(int index);
+
+  /// Localized text for bookmarkRemoved.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalibro rimosso.'**
+  String get bookmarkRemoved;
+
+  /// Localized text for docEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Il documento è vuoto'**
+  String get docEmpty;
+
+  /// Localized text for docSavedSuccessfully.
+  ///
+  /// In it, this message translates to:
+  /// **'Documento salvato correttamente.'**
+  String get docSavedSuccessfully;
+
+  /// Localized text for writeDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi documento'**
+  String get writeDocument;
+
+  /// Localized text for documentTitleOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo (opzionale)'**
+  String get documentTitleOptional;
+
+  /// Localized text for documentTitleHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Esempio: lista della spesa'**
+  String get documentTitleHint;
+
+  /// Localized text for documentTextField.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo del documento'**
+  String get documentTextField;
+
+  /// Localized text for documentTextHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizia a scrivere qui...'**
+  String get documentTextHint;
+
+  /// Localized text for newDocumentDefaultName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo_Documento'**
+  String get newDocumentDefaultName;
+
+  /// Localized text for saving.
+  ///
+  /// In it, this message translates to:
+  /// **'Salvataggio...'**
+  String get saving;
+
+  /// Localized text for saveDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva documento'**
+  String get saveDocument;
+
+  /// Localized text for addRssSource.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi sorgente RSS'**
+  String get addRssSource;
+
+  /// Localized text for add.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi'**
+  String get add;
+
+  /// Localized text for errorPrefix.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore'**
+  String get errorPrefix;
+
+  /// Localized text for versionBuild.
+  ///
+  /// In it, this message translates to:
+  /// **'Versione {version} (Build {buildNumber})'**
+  String versionBuild(String version, String buildNumber);
+
+  /// Localized text for whatIsNew.
+  ///
+  /// In it, this message translates to:
+  /// **'Novità'**
+  String get whatIsNew;
+
+  /// Localized text for changelogLoadError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore caricamento novità: {error}'**
+  String changelogLoadError(Object error);
+
+  /// Localized text for visitSonarpadSite.
+  ///
+  /// In it, this message translates to:
+  /// **'Visita il sito di Sonarpad'**
+  String get visitSonarpadSite;
+
+  /// Localized text for visitSonarpadSiteWithUrl.
+  ///
+  /// In it, this message translates to:
+  /// **'Visita il sito di Sonarpad: {url}'**
+  String visitSonarpadSiteWithUrl(String url);
+
+  /// Localized text for nowPlaying.
+  ///
+  /// In it, this message translates to:
+  /// **'In riproduzione'**
+  String get nowPlaying;
+
+  /// Localized text for fileImported.
+  ///
+  /// In it, this message translates to:
+  /// **'File importato'**
+  String get fileImported;
+
+  /// Localized text for importZipError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore importazione zip: {error}'**
+  String importZipError(Object error);
+
+  /// Localized text for dropboxLoginPrompt.
+  ///
+  /// In it, this message translates to:
+  /// **'Accedi a Dropbox per importare i tuoi documenti.'**
+  String get dropboxLoginPrompt;
+
+  /// Localized text for loginToDropbox.
+  ///
+  /// In it, this message translates to:
+  /// **'Accedi a Dropbox'**
+  String get loginToDropbox;
+
+  /// Localized text for logoutFromDropbox.
+  ///
+  /// In it, this message translates to:
+  /// **'Disconnetti'**
+  String get logoutFromDropbox;
+
+  /// Localized text for dropboxLoginFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Accesso fallito o annullato'**
+  String get dropboxLoginFailed;
+
+  /// Localized text for dropboxLoadFolderError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore caricamento cartella: {error}'**
+  String dropboxLoadFolderError(Object error);
+
+  /// Localized text for dropboxImportError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore importazione: {error}'**
+  String dropboxImportError(Object error);
+
+  /// Localized text for retry.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprova'**
+  String get retry;
+
+  /// Localized text for goBack.
+  ///
+  /// In it, this message translates to:
+  /// **'.. Torna indietro'**
+  String get goBack;
+
+  /// Localized text for noSupportedFilesInFolder.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun file supportato in questa cartella.'**
+  String get noSupportedFilesInFolder;
+
+  /// Localized text for articleNotFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Articolo non trovato.'**
+  String get articleNotFound;
+
+  /// Localized text for errorOpening.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore durante l\'apertura'**
+  String get errorOpening;
+
+  /// Localized text for recentArticles.
+  ///
+  /// In it, this message translates to:
+  /// **'Articoli recenti'**
+  String get recentArticles;
+
+  /// Localized text for clearHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Cancella cronologia'**
+  String get clearHistory;
+
+  /// Localized text for confirmClearHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi davvero cancellare tutte le ricerche recenti?'**
+  String get confirmClearHistory;
+
+  /// Localized text for clear.
+  ///
+  /// In it, this message translates to:
+  /// **'Cancella'**
+  String get clear;
+
+  /// Localized text for noRecentSearches.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna ricerca recente.'**
+  String get noRecentSearches;
+
+  /// Localized text for logCopiedToClipboard.
+  ///
+  /// In it, this message translates to:
+  /// **'Log copiato negli appunti'**
+  String get logCopiedToClipboard;
+
+  /// Localized text for systemLog.
+  ///
+  /// In it, this message translates to:
+  /// **'Log di sistema'**
+  String get systemLog;
+
+  /// Localized text for clearSystemLog.
+  ///
+  /// In it, this message translates to:
+  /// **'Svuota log'**
+  String get clearSystemLog;
+
+  /// Localized text for copySystemLog.
+  ///
+  /// In it, this message translates to:
+  /// **'Copia log'**
+  String get copySystemLog;
+
+  /// Localized text for donateWithPaypal.
+  ///
+  /// In it, this message translates to:
+  /// **'Dona con PayPal'**
+  String get donateWithPaypal;
+
+  /// Localized text for bankTransferTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Bonifico bancario'**
+  String get bankTransferTitle;
+
+  /// Localized text for enableVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Attiva video'**
+  String get enableVideo;
+
+  /// Localized text for calendar.
+  ///
+  /// In it, this message translates to:
+  /// **'Calendario'**
+  String get calendar;
+
+  /// Localized text for calendarHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri il calendario con santi, festività e promemoria'**
+  String get calendarHint;
+
+  /// Localized text for saintOfTheDay.
+  ///
+  /// In it, this message translates to:
+  /// **'Santo del giorno'**
+  String get saintOfTheDay;
+
+  /// Localized text for quoteOfTheDay.
+  ///
+  /// In it, this message translates to:
+  /// **'Citazione del giorno'**
+  String get quoteOfTheDay;
+
+  /// Localized text for reminders.
+  ///
+  /// In it, this message translates to:
+  /// **'Promemoria'**
+  String get reminders;
+
+  /// Localized text for addReminder.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi promemoria'**
+  String get addReminder;
+
+  /// Localized text for removeReminder.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi promemoria'**
+  String get removeReminder;
+
+  /// Localized text for noReminders.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun promemoria'**
+  String get noReminders;
+
+  /// Localized text for writeReminder.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi qui il tuo promemoria...'**
+  String get writeReminder;
+
+  /// Localized text for saveReminder.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva'**
+  String get saveReminder;
+
+  /// Localized text for cancelReminder.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get cancelReminder;
+
+  /// Localized text for backToToday.
+  ///
+  /// In it, this message translates to:
+  /// **'Torna a oggi'**
+  String get backToToday;
+
+  /// Localized text for calendarToday.
+  ///
+  /// In it, this message translates to:
+  /// **'Oggi'**
+  String get calendarToday;
+
+  /// Localized text for calendarTomorrow.
+  ///
+  /// In it, this message translates to:
+  /// **'Domani'**
+  String get calendarTomorrow;
+
+  /// Localized text for calendarYesterday.
+  ///
+  /// In it, this message translates to:
+  /// **'Ieri'**
+  String get calendarYesterday;
+
+  /// Localized text for share.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi'**
+  String get share;
+
+  /// Localized text for listenToAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Ascolta tutto'**
+  String get listenToAll;
+
+  /// Localized text for reminderSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} promemoria'**
+  String reminderSaved(int count);
+
+  /// Localized text for audiodescriptionTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiodescrizioni Rai'**
+  String get audiodescriptionTitle;
+
+  /// Localized text for audiodescriptionRecent.
+  ///
+  /// In it, this message translates to:
+  /// **'Recenti'**
+  String get audiodescriptionRecent;
+
+  /// Localized text for audiodescriptionAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutte le audiodescrizioni'**
+  String get audiodescriptionAll;
+
+  /// Localized text for audiodescriptionFilm.
+  ///
+  /// In it, this message translates to:
+  /// **'Film'**
+  String get audiodescriptionFilm;
+
+  /// Localized text for audiodescriptionSearch.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca...'**
+  String get audiodescriptionSearch;
+
+  /// Localized text for audiodescriptionLoading.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento in corso...'**
+  String get audiodescriptionLoading;
+
+  /// Localized text for audiodescriptionError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore nel caricamento del catalogo'**
+  String get audiodescriptionError;
+
+  /// Localized text for audiodescriptionEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun elemento trovato'**
+  String get audiodescriptionEmpty;
+
+  /// Localized text for radio.
+  ///
+  /// In it, this message translates to:
+  /// **'Radio'**
+  String get radio;
+
+  /// Localized text for radioHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca stazioni radio, ascolta streaming e gestisci le preferite'**
+  String get radioHint;
+
+  /// Localized text for radioTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Radio da tutto il mondo'**
+  String get radioTitle;
+
+  /// Localized text for radioFavoritesButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Radio preferite'**
+  String get radioFavoritesButton;
+
+  /// Localized text for radioNoFavorites.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna radio preferita.'**
+  String get radioNoFavorites;
+
+  /// Localized text for radioSearchText.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca radio'**
+  String get radioSearchText;
+
+  /// Localized text for radioSearchHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome della stazione o città...'**
+  String get radioSearchHint;
+
+  /// Localized text for radioLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua'**
+  String get radioLanguage;
+
+  /// Localized text for radioGenre.
+  ///
+  /// In it, this message translates to:
+  /// **'Genere'**
+  String get radioGenre;
+
+  /// Localized text for radioSearch.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricerca'**
+  String get radioSearch;
+
+  /// Localized text for radioSearching.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento radio...'**
+  String get radioSearching;
+
+  /// Localized text for radioSearchResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultati radio'**
+  String get radioSearchResults;
+
+  /// Localized text for radioNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna radio trovata.'**
+  String get radioNoResults;
+
+  /// Localized text for radioResultsFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Trovate {count} radio'**
+  String radioResultsFound(int count);
+
+  /// Localized text for radioSearchError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore ricerca radio: {error}'**
+  String radioSearchError(Object error);
+
+  /// Localized text for radioNowPlaying.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduco {name}'**
+  String radioNowPlaying(String name);
+
+  /// Localized text for radioPlayError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore streaming radio: {error}'**
+  String radioPlayError(Object error);
+
+  /// Localized text for radioAddFavorite.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi ai preferiti'**
+  String get radioAddFavorite;
+
+  /// Localized text for radioRemoveFavorite.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi dai preferiti'**
+  String get radioRemoveFavorite;
+
+  /// Localized text for radioFavoriteAdded.
+  ///
+  /// In it, this message translates to:
+  /// **'{name} aggiunta ai preferiti.'**
+  String radioFavoriteAdded(String name);
+
+  /// Localized text for radioFavoriteRemoved.
+  ///
+  /// In it, this message translates to:
+  /// **'{name} rimossa dai preferiti.'**
+  String radioFavoriteRemoved(String name);
+
+  /// Localized text for radioAddCommunity.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi radio alla comunità Sonarpad'**
+  String get radioAddCommunity;
+
+  /// Localized text for radioAddName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome radio'**
+  String get radioAddName;
+
+  /// Localized text for radioAddUrl.
+  ///
+  /// In it, this message translates to:
+  /// **'Indirizzo streaming'**
+  String get radioAddUrl;
+
+  /// Localized text for radioAddSubmit.
+  ///
+  /// In it, this message translates to:
+  /// **'Verifica e aggiungi'**
+  String get radioAddSubmit;
+
+  /// Localized text for radioAddMissingFields.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci nome radio e indirizzo streaming.'**
+  String get radioAddMissingFields;
+
+  /// Localized text for radioCommunityAdded.
+  ///
+  /// In it, this message translates to:
+  /// **'Radio aggiunta correttamente alla comunità Sonarpad.'**
+  String get radioCommunityAdded;
+
+  /// Localized text for radioCommunityAddError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore durante l\'aggiunta della radio: {error}'**
+  String radioCommunityAddError(Object error);
+
+  /// Localized text for radioPlay.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduci'**
+  String get radioPlay;
+
+  /// Localized text for routeTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Percorsi'**
+  String get routeTitle;
+
+  /// Localized text for routeFrom.
+  ///
+  /// In it, this message translates to:
+  /// **'Partenza'**
+  String get routeFrom;
+
+  /// Localized text for routeTo.
+  ///
+  /// In it, this message translates to:
+  /// **'Destinazione'**
+  String get routeTo;
+
+  /// Localized text for routeCountry.
+  ///
+  /// In it, this message translates to:
+  /// **'Paese'**
+  String get routeCountry;
+
+  /// Localized text for routeCountryItaly.
+  ///
+  /// In it, this message translates to:
+  /// **'Italia'**
+  String get routeCountryItaly;
+
+  /// Localized text for routeCountryFrance.
+  ///
+  /// In it, this message translates to:
+  /// **'Francia'**
+  String get routeCountryFrance;
+
+  /// Localized text for routeCountrySpain.
+  ///
+  /// In it, this message translates to:
+  /// **'Spagna'**
+  String get routeCountrySpain;
+
+  /// Localized text for routeVehicle.
+  ///
+  /// In it, this message translates to:
+  /// **'Mezzo di trasporto'**
+  String get routeVehicle;
+
+  /// Localized text for routeType.
+  ///
+  /// In it, this message translates to:
+  /// **'Tipo'**
+  String get routeType;
+
+  /// Localized text for routeIncludeMunicipalities.
+  ///
+  /// In it, this message translates to:
+  /// **'Includi comuni attraversati'**
+  String get routeIncludeMunicipalities;
+
+  /// Localized text for routeWalking.
+  ///
+  /// In it, this message translates to:
+  /// **'A piedi'**
+  String get routeWalking;
+
+  /// Localized text for routeCycling.
+  ///
+  /// In it, this message translates to:
+  /// **'In bicicletta'**
+  String get routeCycling;
+
+  /// Localized text for routeDriving.
+  ///
+  /// In it, this message translates to:
+  /// **'In auto'**
+  String get routeDriving;
+
+  /// Localized text for routeWheelchair.
+  ///
+  /// In it, this message translates to:
+  /// **'In sedia a rotelle'**
+  String get routeWheelchair;
+
+  /// Localized text for routeFastest.
+  ///
+  /// In it, this message translates to:
+  /// **'Più veloce'**
+  String get routeFastest;
+
+  /// Localized text for routeShortest.
+  ///
+  /// In it, this message translates to:
+  /// **'Più corto'**
+  String get routeShortest;
+
+  /// Localized text for routeCalculate.
+  ///
+  /// In it, this message translates to:
+  /// **'Calcola percorso'**
+  String get routeCalculate;
+
+  /// Localized text for routeCalculating.
+  ///
+  /// In it, this message translates to:
+  /// **'Calcolo in corso...'**
+  String get routeCalculating;
+
+  /// Localized text for routeChooseFrom.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli il punto di partenza'**
+  String get routeChooseFrom;
+
+  /// Localized text for routeChooseTo.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli la destinazione'**
+  String get routeChooseTo;
+
+  /// Localized text for routeCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get routeCancel;
+
+  /// Localized text for routeErrorMissingFields.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci punto di partenza e destinazione'**
+  String get routeErrorMissingFields;
+
+  /// Localized text for routeErrorFromNotFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun risultato trovato per l\'indirizzo di partenza'**
+  String get routeErrorFromNotFound;
+
+  /// Localized text for routeErrorToNotFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun risultato trovato per l\'indirizzo di arrivo'**
+  String get routeErrorToNotFound;
+
+  /// Localized text for routeResultsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Percorsi disponibili'**
+  String get routeResultsTitle;
+
+  /// Localized text for routeDistance.
+  ///
+  /// In it, this message translates to:
+  /// **'Distanza'**
+  String get routeDistance;
+
+  /// Localized text for routeDuration.
+  ///
+  /// In it, this message translates to:
+  /// **'Durata'**
+  String get routeDuration;
+
+  /// Localized text for routeNavigation.
+  ///
+  /// In it, this message translates to:
+  /// **'Dettagli navigazione'**
+  String get routeNavigation;
+
+  /// Localized text for routeStartMunicipality.
+  ///
+  /// In it, this message translates to:
+  /// **'Comune di partenza'**
+  String get routeStartMunicipality;
+
+  /// Localized text for routeEnterMunicipality.
+  ///
+  /// In it, this message translates to:
+  /// **'Entri nel comune di'**
+  String get routeEnterMunicipality;
+
+  /// Localized text for routeError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore: {error}'**
+  String routeError(Object error);
 }
 
 class _AppLocalizationsDelegate
@@ -1997,14 +2785,34 @@ class _AppLocalizationsDelegate
   const _AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) =>
-      ['en', 'it', 'fr', 'es'].contains(locale.languageCode);
-
-  @override
   Future<AppLocalizations> load(Locale locale) {
-    return SynchronousFuture(AppLocalizations(locale));
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
   }
 
   @override
+  bool isSupported(Locale locale) =>
+      <String>['en', 'es', 'fr', 'it'].contains(locale.languageCode);
+
+  @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+    case 'fr':
+      return AppLocalizationsFr();
+    case 'it':
+      return AppLocalizationsIt();
+  }
+
+  throw FlutterError(
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

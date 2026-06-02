@@ -104,7 +104,8 @@ class ItaliaOnlineResultsScreen extends StatefulWidget {
   const ItaliaOnlineResultsScreen({super.key, required this.query});
 
   @override
-  State<ItaliaOnlineResultsScreen> createState() => _ItaliaOnlineResultsScreenState();
+  State<ItaliaOnlineResultsScreen> createState() =>
+      _ItaliaOnlineResultsScreenState();
 }
 
 class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {

@@ -80,9 +80,9 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   Future<void> _search() async {
     final query = _searchController.text.trim();
     if (query.isEmpty) return;
-    
+
     await RecentSearchesService().addSearch('raiplaysound', query);
-    
+
     if (!mounted) return;
     _searchController.clear();
     Navigator.push(

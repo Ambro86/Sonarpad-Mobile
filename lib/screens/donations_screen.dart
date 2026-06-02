@@ -14,11 +14,13 @@ class DonationsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(l10n.donationsIntro, style: Theme.of(context).textTheme.bodyLarge),
+          Text(l10n.donationsIntro,
+              style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 24),
           Text('PayPal', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
-          Text(l10n.donationsPaypalDesc, style: Theme.of(context).textTheme.bodyLarge),
+          Text(l10n.donationsPaypalDesc,
+              style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () async {
@@ -34,11 +36,14 @@ class DonationsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Text(l10n.bankTransferTitle, style: Theme.of(context).textTheme.titleLarge),
+          Text(l10n.bankTransferTitle,
+              style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
-          Text(l10n.donationsBankDesc, style: Theme.of(context).textTheme.bodyLarge),
+          Text(l10n.donationsBankDesc,
+              style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 24),
-          Text(l10n.donationsThanks, style: Theme.of(context).textTheme.bodyMedium),
+          Text(l10n.donationsThanks,
+              style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );

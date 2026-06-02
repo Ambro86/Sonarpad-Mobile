@@ -116,21 +116,39 @@ class RaiPlayService {
 
     if (pathId == 'local:tgr_regions') {
       final regions = [
-        'Abruzzo', 'Basilicata', 'Calabria', 'Campania', 'Emilia-Romagna',
-        'Friuli-Venezia Giulia', 'Lazio', 'Liguria', 'Lombardia', 'Marche',
-        'Molise', 'Piemonte', 'Puglia', 'Sardegna', 'Sicilia', 'Toscana',
-        'Trentino-Alto Adige', 'Umbria', 'Valle d’Aosta', 'Veneto'
+        'Abruzzo',
+        'Basilicata',
+        'Calabria',
+        'Campania',
+        'Emilia-Romagna',
+        'Friuli-Venezia Giulia',
+        'Lazio',
+        'Liguria',
+        'Lombardia',
+        'Marche',
+        'Molise',
+        'Piemonte',
+        'Puglia',
+        'Sardegna',
+        'Sicilia',
+        'Toscana',
+        'Trentino-Alto Adige',
+        'Umbria',
+        'Valle d’Aosta',
+        'Veneto'
       ];
       return RaiPlayPage(
         title: 'TGR',
-        items: regions.map((r) => RaiPlayItem(
-          id: 'search_auto_open:TGR $r',
-          title: r,
-          description: 'TGR $r',
-          kind: RaiPlayItemKind.page,
-          pathId: 'search_auto_open:TGR $r',
-          mediaUrl: '',
-        )).toList(),
+        items: regions
+            .map((r) => RaiPlayItem(
+                  id: 'search_auto_open:TGR $r',
+                  title: r,
+                  description: 'TGR $r',
+                  kind: RaiPlayItemKind.page,
+                  pathId: 'search_auto_open:TGR $r',
+                  mediaUrl: '',
+                ))
+            .toList(),
       );
     }
 
@@ -145,7 +163,8 @@ class RaiPlayService {
       if (searchResults.items.isNotEmpty) {
         final firstItem = searchResults.items.first;
         if (firstItem.kind == RaiPlayItemKind.page) {
-          return loadPage(firstItem.pathId, secretKey, pageTitle: firstItem.title);
+          return loadPage(firstItem.pathId, secretKey,
+              pageTitle: firstItem.title);
         }
       }
       return searchResults;
@@ -573,9 +592,11 @@ class RaiPlayService {
               resolvedUrl = matchAny.group(1)!;
             }
           }
-          await AppLogger.log('RaiPlayService: Relinker risolto in: $resolvedUrl');
+          await AppLogger.log(
+              'RaiPlayService: Relinker risolto in: $resolvedUrl');
         } else {
-          await AppLogger.log('RaiPlayService: Errore relinker HTTP ${resp.statusCode}');
+          await AppLogger.log(
+              'RaiPlayService: Errore relinker HTTP ${resp.statusCode}');
         }
       } catch (e) {
         await AppLogger.log('RaiPlayService: Eccezione relinker: $e');
@@ -583,13 +604,15 @@ class RaiPlayService {
     }
 
     if (resolvedUrl.toLowerCase().contains('.m3u8')) {
-      await AppLogger.log('RaiPlayService: Scarico playlist M3U8 per cercare audiodescrizione: $resolvedUrl');
+      await AppLogger.log(
+          'RaiPlayService: Scarico playlist M3U8 per cercare audiodescrizione: $resolvedUrl');
       try {
         final resp = await http.get(Uri.parse(resolvedUrl));
         if (resp.statusCode == 200) {
           final finalMasterUrl = resp.request?.url.toString() ?? resolvedUrl;
           if (finalMasterUrl != resolvedUrl) {
-            await AppLogger.log('RaiPlayService: Redirect rilevato!\nOriginale: $resolvedUrl\nFinale: $finalMasterUrl');
+            await AppLogger.log(
+                'RaiPlayService: Redirect rilevato!\nOriginale: $resolvedUrl\nFinale: $finalMasterUrl');
           }
 
           final playlist = resp.body;
@@ -611,30 +634,36 @@ class RaiPlayService {
                 final name = nameMatch?.group(1)?.toLowerCase();
 
                 if (lang == 'des' || name == 'audiodescrizione') {
-                  await AppLogger.log('RaiPlayService: Trovata AD: Lang=$lang Name=$name URI=$uri');
+                  await AppLogger.log(
+                      'RaiPlayService: Trovata AD: Lang=$lang Name=$name URI=$uri');
                   adUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
                   break; // Audiodescrizione trovata, ha precedenza assoluta
                 }
                 if (lang == 'ita' && itaUrl == null) {
-                  await AppLogger.log('RaiPlayService: Trovata traccia ITA: URI=$uri');
+                  await AppLogger.log(
+                      'RaiPlayService: Trovata traccia ITA: URI=$uri');
                   itaUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
                 }
               }
             }
           }
-          
+
           if (adUrl != null) {
-            await AppLogger.log('RaiPlayService: Restituisco traccia AD: $adUrl');
+            await AppLogger.log(
+                'RaiPlayService: Restituisco traccia AD: $adUrl');
             return adUrl;
           }
           if (itaUrl != null) {
-            await AppLogger.log('RaiPlayService: Restituisco traccia ITA: $itaUrl');
+            await AppLogger.log(
+                'RaiPlayService: Restituisco traccia ITA: $itaUrl');
             return itaUrl;
           }
-          
-          await AppLogger.log('RaiPlayService: Nessuna traccia AD/ITA trovata, uso master playlist.');
+
+          await AppLogger.log(
+              'RaiPlayService: Nessuna traccia AD/ITA trovata, uso master playlist.');
         } else {
-          await AppLogger.log('RaiPlayService: Errore M3U8 HTTP ${resp.statusCode}');
+          await AppLogger.log(
+              'RaiPlayService: Errore M3U8 HTTP ${resp.statusCode}');
         }
       } catch (e) {
         await AppLogger.log('RaiPlayService: Eccezione download M3U8: $e');
@@ -651,7 +680,7 @@ class RaiPlayService {
     if (!resolvedUri.hasQuery && masterUri.hasQuery) {
       resolvedUri = resolvedUri.replace(query: masterUri.query);
     }
-    
+
     final finalUrl = resolvedUri.toString();
     AppLogger.log('RaiPlayService: Child URI risolto in: $finalUrl');
     return finalUrl;

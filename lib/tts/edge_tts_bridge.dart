@@ -42,7 +42,8 @@ class EdgeTtsBridge {
     final pitchStr = pitchPercent >= 0 ? '+$pitchPercent%' : '$pitchPercent%';
 
     try {
-      final audioData = await _downloadAudio(text, voice, rateStr, pitchStr, logFile);
+      final audioData =
+          await _downloadAudio(text, voice, rateStr, pitchStr, logFile);
       if (audioData.isEmpty) {
         throw Exception("Edge TTS ha restituito audio vuoto");
       }
@@ -89,10 +90,8 @@ class EdgeTtsBridge {
 
     for (final p in paragraphs) {
       // Normalizziamo tutti gli spazi (inclusi singoli \n) all'interno del paragrafo
-      final cleaned = p
-          .replaceAll(RegExp(r'\s+'), ' ')
-          .replaceAll('...', '…')
-          .trim();
+      final cleaned =
+          p.replaceAll(RegExp(r'\s+'), ' ').replaceAll('...', '…').trim();
 
       if (cleaned.isEmpty) continue;
 
@@ -134,7 +133,7 @@ class EdgeTtsBridge {
           buffer.write(' ');
         }
       }
-      
+
       // Forza il flush alla fine del paragrafo: i titoli restano separati!
       flush();
     }
@@ -142,8 +141,8 @@ class EdgeTtsBridge {
     return chunks;
   }
 
-  Future<List<int>> _downloadAudio(
-      String text, String voice, String rateStr, String pitchStr, File logFile) async {
+  Future<List<int>> _downloadAudio(String text, String voice, String rateStr,
+      String pitchStr, File logFile) async {
     final requestId = const Uuid().v4().replaceAll('-', '');
     final secMsGec = _generateSecMsGec();
     const secMsGecVersion = "1-132.0.2917.39";

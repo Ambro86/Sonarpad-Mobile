@@ -12,7 +12,8 @@ class OrariAperturaDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<OrariAperturaDetailScreen> createState() => _OrariAperturaDetailScreenState();
+  State<OrariAperturaDetailScreen> createState() =>
+      _OrariAperturaDetailScreenState();
 }
 
 class _OrariAperturaDetailScreenState extends State<OrariAperturaDetailScreen> {
@@ -48,27 +49,39 @@ class _OrariAperturaDetailScreenState extends State<OrariAperturaDetailScreen> {
         title: Text(widget.title),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(semanticsLabel: 'Caricamento orari in corso'))
+          ? Center(
+              child: CircularProgressIndicator(
+                  semanticsLabel: 'Caricamento orari in corso'))
           : _errorMessage != null
-              ? Center(child: Text(_errorMessage!, style: TextStyle(color: Colors.red, fontSize: 18)))
+              ? Center(
+                  child: Text(_errorMessage!,
+                      style: TextStyle(color: Colors.red, fontSize: 18)))
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        _detail!.title.isNotEmpty ? _detail!.title : widget.title,
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        _detail!.title.isNotEmpty
+                            ? _detail!.title
+                            : widget.title,
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10),
                       if (_detail!.status.isNotEmpty)
                         Text(
                           _detail!.status,
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.blueGrey),
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blueGrey),
                         ),
                       SizedBox(height: 20),
                       if (_detail!.hours.isEmpty)
-                        Text('Orari non disponibili o attività chiusa definitivamente.', style: TextStyle(fontSize: 18))
+                        Text(
+                            'Orari non disponibili o attività chiusa definitivamente.',
+                            style: TextStyle(fontSize: 18))
                       else
                         ..._detail!.hours.map((hourLine) {
                           return Padding(

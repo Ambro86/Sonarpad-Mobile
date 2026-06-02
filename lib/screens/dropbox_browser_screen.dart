@@ -72,7 +72,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       final entries = await _dropbox.listFolder(path);
       // Filtra cartelle o file supportati
       final allowed = ['pdf', 'epub', 'txt', 'rtf', 'docx', 'doc'];
-      
+
       final filtered = entries.where((e) {
         if (e['.tag'] == 'folder') return true;
         final name = (e['name'] as String).toLowerCase();
@@ -115,17 +115,19 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     try {
       final path = entry['path_display'] as String;
       final name = entry['name'] as String;
-      
+
       final bytes = await _dropbox.downloadFile(path);
       final tempDir = await getTemporaryDirectory();
       final tempFile = File(p.join(tempDir.path, name));
       await tempFile.writeAsBytes(bytes);
 
-      final doc = await widget.documentService.importFile(tempFile, originalName: name);
+      final doc =
+          await widget.documentService.importFile(tempFile, originalName: name);
       await widget.documentService.add(doc);
-      
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.fileImported}: $name')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${l10n.fileImported}: $name')));
         setState(() {
           _loading = false;
         });
@@ -144,7 +146,8 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_currentPath.isEmpty ? 'Dropbox' : p.basename(_currentPath)),
+        title:
+            Text(_currentPath.isEmpty ? 'Dropbox' : p.basename(_currentPath)),
         actions: [
           if (_dropbox.isAuthenticated)
             IconButton(
@@ -167,7 +170,8 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   Widget _buildBody() {
     final l10n = AppLocalizations.of(context);
     if (_loading || _isAuthenticating) {
-      return Center(child: CircularProgressIndicator(semanticsLabel: l10n.loading));
+      return Center(
+          child: CircularProgressIndicator(semanticsLabel: l10n.loading));
     }
 
     if (!_dropbox.isAuthenticated) {
@@ -198,7 +202,9 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(_error!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+            Text(_error!,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _loadFolder(_currentPath),

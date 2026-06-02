@@ -28,14 +28,12 @@ class _RadioScreenState extends State<RadioScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_languageCode == null) {
-      final code = AppLocalizations.of(context).locale.languageCode;
+      final code = AppLocalizations.of(context).localeName;
       _languageCode = code == 'es'
           ? 'es'
           : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
     }
   }
-
-
 
   Future<void> _search() async {
     final l10n = AppLocalizations.of(context);
@@ -65,7 +63,6 @@ class _RadioScreenState extends State<RadioScreen> {
       if (mounted) setState(() => _searching = false);
     }
   }
-
 
   @override
   void dispose() {

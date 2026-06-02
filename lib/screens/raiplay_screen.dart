@@ -12,7 +12,8 @@ class RaiPlayScreen extends StatefulWidget {
   final String? pageTitle;
   final String? searchQuery;
 
-  const RaiPlayScreen({super.key, this.pathId, this.pageTitle, this.searchQuery});
+  const RaiPlayScreen(
+      {super.key, this.pathId, this.pageTitle, this.searchQuery});
 
   @override
   State<RaiPlayScreen> createState() => _RaiPlayScreenState();
@@ -87,11 +88,12 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
   Future<void> _search() async {
     final query = _searchController.text.trim();
     if (query.isEmpty) return;
-    
+
     await RecentSearchesService().addSearch('raiplay', query);
-    
+
     if (!mounted) return;
-    _searchController.clear(); // Pulisci prima di spostarsi, così tornando indietro è pulito
+    _searchController
+        .clear(); // Pulisci prima di spostarsi, così tornando indietro è pulito
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -155,7 +157,8 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
 
       final route = MaterialPageRoute(
         settings: const RouteSettings(name: '/raiplay/player'),
-        builder: (_) => PodcastEpisodePlayerScreen(episode: episode, isVideoSupported: true),
+        builder: (_) => PodcastEpisodePlayerScreen(
+            episode: episode, isVideoSupported: true),
       );
       if (replaceCurrentRoute) {
         Navigator.pushReplacement(context, route);
@@ -197,15 +200,15 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                             ),
                             const SizedBox(width: 8),
                             IconButton(
-                                icon: const Icon(Icons.search),
-                                tooltip: 'Cerca',
-                                onPressed: _search,
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.history),
-                                tooltip: 'Ricerche recenti',
-                                onPressed: _openRecentSearches,
-                              ),
+                              icon: const Icon(Icons.search),
+                              tooltip: 'Cerca',
+                              onPressed: _search,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.history),
+                              tooltip: 'Ricerche recenti',
+                              onPressed: _openRecentSearches,
+                            ),
                           ],
                         ),
                       ),

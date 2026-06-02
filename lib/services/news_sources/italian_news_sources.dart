@@ -5,14 +5,38 @@ final italianNewsSources = [
     name: 'Google News Italia',
     uri: Uri.parse('https://news.google.com/rss?hl=it&gl=IT&ceid=IT:it'),
     categories: [
-      NewsRssCategory(name: 'La mia città', uri: Uri.parse('https://news.google.com/'), isLocal: true),
-      NewsRssCategory(name: 'Italia', uri: Uri.parse('https://news.google.com/news/rss/headlines/section/topic/NATION?hl=it&gl=IT&ceid=IT:it')),
-      NewsRssCategory(name: 'Dal mondo', uri: Uri.parse('https://news.google.com/news/rss/headlines/section/topic/WORLD?hl=it&gl=IT&ceid=IT:it')),
-      NewsRssCategory(name: 'Affari', uri: Uri.parse('https://news.google.com/news/rss/headlines/section/topic/BUSINESS?hl=it&gl=IT&ceid=IT:it')),
-      NewsRssCategory(name: 'Scienza e tecnologia', uri: Uri.parse('https://news.google.com/news/rss/headlines/section/topic/TECHNOLOGY?hl=it&gl=IT&ceid=IT:it')),
-      NewsRssCategory(name: 'Intrattenimento', uri: Uri.parse('https://news.google.com/news/rss/headlines/section/topic/ENTERTAINMENT?hl=it&gl=IT&ceid=IT:it')),
-      NewsRssCategory(name: 'Sport', uri: Uri.parse('https://news.google.com/news/rss/headlines/section/topic/SPORTS?hl=it&gl=IT&ceid=IT:it')),
-      NewsRssCategory(name: 'Salute', uri: Uri.parse('https://news.google.com/news/rss/headlines/section/topic/HEALTH?hl=it&gl=IT&ceid=IT:it')),
+      NewsRssCategory(
+          name: 'La mia città',
+          uri: Uri.parse('https://news.google.com/'),
+          isLocal: true),
+      NewsRssCategory(
+          name: 'Italia',
+          uri: Uri.parse(
+              'https://news.google.com/news/rss/headlines/section/topic/NATION?hl=it&gl=IT&ceid=IT:it')),
+      NewsRssCategory(
+          name: 'Dal mondo',
+          uri: Uri.parse(
+              'https://news.google.com/news/rss/headlines/section/topic/WORLD?hl=it&gl=IT&ceid=IT:it')),
+      NewsRssCategory(
+          name: 'Affari',
+          uri: Uri.parse(
+              'https://news.google.com/news/rss/headlines/section/topic/BUSINESS?hl=it&gl=IT&ceid=IT:it')),
+      NewsRssCategory(
+          name: 'Scienza e tecnologia',
+          uri: Uri.parse(
+              'https://news.google.com/news/rss/headlines/section/topic/TECHNOLOGY?hl=it&gl=IT&ceid=IT:it')),
+      NewsRssCategory(
+          name: 'Intrattenimento',
+          uri: Uri.parse(
+              'https://news.google.com/news/rss/headlines/section/topic/ENTERTAINMENT?hl=it&gl=IT&ceid=IT:it')),
+      NewsRssCategory(
+          name: 'Sport',
+          uri: Uri.parse(
+              'https://news.google.com/news/rss/headlines/section/topic/SPORTS?hl=it&gl=IT&ceid=IT:it')),
+      NewsRssCategory(
+          name: 'Salute',
+          uri: Uri.parse(
+              'https://news.google.com/news/rss/headlines/section/topic/HEALTH?hl=it&gl=IT&ceid=IT:it')),
     ],
   ),
   NewsRssSource(
@@ -59,11 +83,13 @@ final italianNewsSources = [
   ),
   NewsRssSource(
     name: 'Il Post',
-    uri: Uri.parse('https://news.google.com/rss/search?q=site%3Ailpost.it&hl=it&gl=IT&ceid=IT:it'),
+    uri: Uri.parse(
+        'https://news.google.com/rss/search?q=site%3Ailpost.it&hl=it&gl=IT&ceid=IT:it'),
   ),
   NewsRssSource(
     name: 'Internazionale',
-    uri: Uri.parse('https://news.google.com/rss/search?q=site%3Ainternazionale.it%20-inurl%3Aultime-notizie-reuters&hl=it&gl=IT&ceid=IT:it'),
+    uri: Uri.parse(
+        'https://news.google.com/rss/search?q=site%3Ainternazionale.it%20-inurl%3Aultime-notizie-reuters&hl=it&gl=IT&ceid=IT:it'),
   ),
   NewsRssSource(
     name: 'Affaritaliani',

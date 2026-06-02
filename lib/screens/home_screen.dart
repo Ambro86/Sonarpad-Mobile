@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/ui_radio_localizations.dart';
-import '../l10n/ui_route_localizations.dart';
-import '../l10n/ui_audiodescription_localizations.dart';
 import '../services/accessibility_feedback_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/raiplay_service.dart';
@@ -51,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isItalian = l10n.locale.languageCode == 'it';
+    final isItalian = l10n.localeName == 'it';
 
     final readingItems = [
       _HomeButton(

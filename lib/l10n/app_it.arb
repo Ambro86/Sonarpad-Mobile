@@ -1,0 +1,2105 @@
+{
+  "@@locale": "it",
+  "appTitle": "Sonarpad",
+  "@appTitle": {
+    "description": "Localized text for appTitle."
+  },
+  "appLanguage": "Lingua dell'app",
+  "@appLanguage": {
+    "description": "Localized text for appLanguage."
+  },
+  "homeSemanticsLabel": "Sonarpad, schermata principale",
+  "@homeSemanticsLabel": {
+    "description": "Localized text for homeSemanticsLabel."
+  },
+  "settings": "Impostazioni",
+  "@settings": {
+    "description": "Localized text for settings."
+  },
+  "settingsHint": "Apre le impostazioni",
+  "@settingsHint": {
+    "description": "Localized text for settingsHint."
+  },
+  "info": "Informazioni",
+  "@info": {
+    "description": "Localized text for info."
+  },
+  "infoHint": "Apre le informazioni sull'app",
+  "@infoHint": {
+    "description": "Localized text for infoHint."
+  },
+  "categoryReading": "Lettura e documenti",
+  "@categoryReading": {
+    "description": "Localized text for categoryReading."
+  },
+  "categoryMedia": "Media e intrattenimento",
+  "@categoryMedia": {
+    "description": "Localized text for categoryMedia."
+  },
+  "categoryUtilities": "Ricerche e utilità",
+  "@categoryUtilities": {
+    "description": "Localized text for categoryUtilities."
+  },
+  "voiceDictionaryTitle": "Dizionario vocale",
+  "@voiceDictionaryTitle": {
+    "description": "Localized text for voiceDictionaryTitle."
+  },
+  "voiceDictionaryAdd": "Aggiungi voci al dizionario",
+  "@voiceDictionaryAdd": {
+    "description": "Localized text for voiceDictionaryAdd."
+  },
+  "voiceDictionaryOriginalWord": "Parola originale",
+  "@voiceDictionaryOriginalWord": {
+    "description": "Localized text for voiceDictionaryOriginalWord."
+  },
+  "voiceDictionaryReplacementWord": "Parola sostitutiva",
+  "@voiceDictionaryReplacementWord": {
+    "description": "Localized text for voiceDictionaryReplacementWord."
+  },
+  "voiceDictionaryMatchCase": "Distingui maiuscole e minuscole",
+  "@voiceDictionaryMatchCase": {
+    "description": "Localized text for voiceDictionaryMatchCase."
+  },
+  "voiceDictionaryIgnoreCase": "Ignora maiuscole e minuscole",
+  "@voiceDictionaryIgnoreCase": {
+    "description": "Localized text for voiceDictionaryIgnoreCase."
+  },
+  "voiceDictionaryEntries": "Voci del dizionario",
+  "@voiceDictionaryEntries": {
+    "description": "Localized text for voiceDictionaryEntries."
+  },
+  "voiceDictionaryEmpty": "Nessuna voce nel dizionario.",
+  "@voiceDictionaryEmpty": {
+    "description": "Localized text for voiceDictionaryEmpty."
+  },
+  "voiceDictionaryRemove": "Rimuovi voce selezionata",
+  "@voiceDictionaryRemove": {
+    "description": "Localized text for voiceDictionaryRemove."
+  },
+  "voiceDictionaryOriginalRequired": "Inserisci la parola originale.",
+  "@voiceDictionaryOriginalRequired": {
+    "description": "Localized text for voiceDictionaryOriginalRequired."
+  },
+  "convertMediaTitle": "Converti media",
+  "@convertMediaTitle": {
+    "description": "Localized text for convertMediaTitle."
+  },
+  "convertMediaInput": "File di input",
+  "@convertMediaInput": {
+    "description": "Localized text for convertMediaInput."
+  },
+  "convertMediaOutput": "File di output",
+  "@convertMediaOutput": {
+    "description": "Localized text for convertMediaOutput."
+  },
+  "convertMediaImage": "Immagine",
+  "@convertMediaImage": {
+    "description": "Localized text for convertMediaImage."
+  },
+  "convertMediaBrowse": "Sfoglia...",
+  "@convertMediaBrowse": {
+    "description": "Localized text for convertMediaBrowse."
+  },
+  "convertMediaFormat": "Formato",
+  "@convertMediaFormat": {
+    "description": "Localized text for convertMediaFormat."
+  },
+  "convertMediaBitrate": "Bitrate (kbps)",
+  "@convertMediaBitrate": {
+    "description": "Localized text for convertMediaBitrate."
+  },
+  "convertMediaOggQuality": "Qualità (q)",
+  "@convertMediaOggQuality": {
+    "description": "Localized text for convertMediaOggQuality."
+  },
+  "convertMediaFlacCompression": "Livello di compressione",
+  "@convertMediaFlacCompression": {
+    "description": "Localized text for convertMediaFlacCompression."
+  },
+  "convertMediaReady": "Pronto.",
+  "@convertMediaReady": {
+    "description": "Localized text for convertMediaReady."
+  },
+  "convertMediaRunning": "Conversione in corso...",
+  "@convertMediaRunning": {
+    "description": "Localized text for convertMediaRunning."
+  },
+  "convertMediaDone": "Conversione completata.",
+  "@convertMediaDone": {
+    "description": "Localized text for convertMediaDone."
+  },
+  "convertMediaButton": "Converti",
+  "@convertMediaButton": {
+    "description": "Localized text for convertMediaButton."
+  },
+  "convertMediaNoInput": "Seleziona un file di input.",
+  "@convertMediaNoInput": {
+    "description": "Localized text for convertMediaNoInput."
+  },
+  "convertMediaNoOutput": "Seleziona un file di output.",
+  "@convertMediaNoOutput": {
+    "description": "Localized text for convertMediaNoOutput."
+  },
+  "convertMediaNoImage": "Seleziona un'immagine per il video.",
+  "@convertMediaNoImage": {
+    "description": "Localized text for convertMediaNoImage."
+  },
+  "convertMediaSamePath": "Il file di output deve essere diverso dall'input.",
+  "@convertMediaSamePath": {
+    "description": "Localized text for convertMediaSamePath."
+  },
+  "convertMediaInvalidBitrate": "Bitrate non valido. Inserisci un valore tra 64 e 320 kbps.",
+  "@convertMediaInvalidBitrate": {
+    "description": "Localized text for convertMediaInvalidBitrate."
+  },
+  "convertMediaFailed": "Conversione non riuscita: {error}",
+  "@convertMediaFailed": {
+    "description": "Localized text for convertMediaFailed.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "donations": "Donazioni",
+  "@donations": {
+    "description": "Localized text for donations."
+  },
+  "donationsHint": "Sostieni lo sviluppo di Sonarpad",
+  "@donationsHint": {
+    "description": "Localized text for donationsHint."
+  },
+  "loading": "Caricamento",
+  "@loading": {
+    "description": "Localized text for loading."
+  },
+  "ttsVoiceLanguage": "Lingua della voce TTS",
+  "@ttsVoiceLanguage": {
+    "description": "Localized text for ttsVoiceLanguage."
+  },
+  "ttsVoice": "Voce TTS",
+  "@ttsVoice": {
+    "description": "Localized text for ttsVoice."
+  },
+  "saveSettings": "Salva impostazioni",
+  "@saveSettings": {
+    "description": "Localized text for saveSettings."
+  },
+  "settingsSaved": "Impostazioni salvate.",
+  "@settingsSaved": {
+    "description": "Localized text for settingsSaved."
+  },
+  "settingsSavedTitle": "Impostazioni salvate",
+  "@settingsSavedTitle": {
+    "description": "Localized text for settingsSavedTitle."
+  },
+  "sonarpadCodeValidTitle": "Codice valido",
+  "@sonarpadCodeValidTitle": {
+    "description": "Localized text for sonarpadCodeValidTitle."
+  },
+  "sonarpadCodeValidMessage": "Il codice Sonarpad è corretto. Impostazioni salvate.",
+  "@sonarpadCodeValidMessage": {
+    "description": "Localized text for sonarpadCodeValidMessage."
+  },
+  "sonarpadCodeInvalidTitle": "Codice non valido",
+  "@sonarpadCodeInvalidTitle": {
+    "description": "Localized text for sonarpadCodeInvalidTitle."
+  },
+  "sonarpadCodeInvalidMessage": "Il codice Sonarpad inserito non è valido. Verifica di averlo copiato senza spazi aggiuntivi.",
+  "@sonarpadCodeInvalidMessage": {
+    "description": "Localized text for sonarpadCodeInvalidMessage."
+  },
+  "infoDescription": "Sonarpad è un’app semplice, ma ricca di funzioni. È pensata per essere accessibile con VoiceOver alle persone non vedenti e ipovedenti: permette di ascoltare le notizie, cercare podcast e iscriversi, importare articoli da Wikipedia, aggiungere documenti alla libreria, salvarli e modificarli. Sonarpad è in continuo aggiornamento e ogni funzione è progettata per rendere più semplice la vita quotidiana.",
+  "@infoDescription": {
+    "description": "Localized text for infoDescription."
+  },
+  "infoAuthor": "Autore: Ambrogio Riili",
+  "@infoAuthor": {
+    "description": "Localized text for infoAuthor."
+  },
+  "donationsIntro": "Sonarpad è nato inizialmente per rispondere a esigenze personali, ma nel tempo è diventato un’app più completa. Il suo sviluppo richiede un lavoro costante: migliorare le funzionalità, correggere bug, cercare nuove idee e testare con attenzione ogni funzione.\n\nSe Sonarpad ti è utile e vuoi sostenerne lo sviluppo, puoi effettuare una donazione.",
+  "@donationsIntro": {
+    "description": "Localized text for donationsIntro."
+  },
+  "donationsPaypalDesc": "Puoi donare tramite PayPal al seguente link:\nhttps://www.paypal.me/ambrogio86\nSe possibile, indica come causale “Sonarpad”.",
+  "@donationsPaypalDesc": {
+    "description": "Localized text for donationsPaypalDesc."
+  },
+  "donationsBankDesc": "È possibile contribuire anche tramite bonifico bancario sul conto intestato a Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possibile, indica una causale chiara, ad esempio “Sonarpad”.",
+  "@donationsBankDesc": {
+    "description": "Localized text for donationsBankDesc."
+  },
+  "donationsThanks": "Chiunque decida di sostenere il progetto verrà ringraziato nell’app e nel repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nRingrazio Jiri Holzinger e Paola Vagata per il loro contributo.\nPer la traduzione in vietnamita ringrazio Anh Đức Nguyễn.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.\nPer la traduzione in serbo ringrazio Mila Kuran.\nPer la traduzione in ucraino ringrazio Ivan Shtefuriak.",
+  "@donationsThanks": {
+    "description": "Localized text for donationsThanks."
+  },
+  "news": "Notizie",
+  "@news": {
+    "description": "Localized text for news."
+  },
+  "newsHint": "Apre le notizie da Google News RSS",
+  "@newsHint": {
+    "description": "Localized text for newsHint."
+  },
+  "podcasts": "Podcast",
+  "@podcasts": {
+    "description": "Localized text for podcasts."
+  },
+  "podcastsHint": "Iscriviti ai podcast, riproduci o scarica episodi",
+  "@podcastsHint": {
+    "description": "Localized text for podcastsHint."
+  },
+  "importFromWikipedia": "Wikipedia",
+  "@importFromWikipedia": {
+    "description": "Localized text for importFromWikipedia."
+  },
+  "wikipediaHint": "Cerca un articolo Wikipedia e importa il testo",
+  "@wikipediaHint": {
+    "description": "Localized text for wikipediaHint."
+  },
+  "newsCategoryTop": "Principali",
+  "@newsCategoryTop": {
+    "description": "Localized text for newsCategoryTop."
+  },
+  "settingsHomeGrouping": "Attiva il raggruppamento delle icone in categorie",
+  "@settingsHomeGrouping": {
+    "description": "Localized text for settingsHomeGrouping."
+  },
+  "settingsHomeGroupingHint": "Se disattivato, le icone principali saranno mostrate come elenco singolo senza sottocartelle",
+  "@settingsHomeGroupingHint": {
+    "description": "Localized text for settingsHomeGroupingHint."
+  },
+  "newsCategoryMyCity": "La mia città",
+  "@newsCategoryMyCity": {
+    "description": "Localized text for newsCategoryMyCity."
+  },
+  "moveUp": "Sposta in alto",
+  "@moveUp": {
+    "description": "Localized text for moveUp."
+  },
+  "moveDown": "Sposta in basso",
+  "@moveDown": {
+    "description": "Localized text for moveDown."
+  },
+  "hide": "Elimina",
+  "@hide": {
+    "description": "Localized text for hide."
+  },
+  "moveToPosition": "Sposta alla posizione",
+  "@moveToPosition": {
+    "description": "Localized text for moveToPosition."
+  },
+  "positionLabel": "Posizione {position}: prima di {targetName}",
+  "@positionLabel": {
+    "description": "Localized text for positionLabel.",
+    "placeholders": {
+      "position": {
+        "example": "3",
+        "type": "int"
+      },
+      "targetName": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "positionLabelLast": "Ultima posizione",
+  "@positionLabelLast": {
+    "description": "Localized text for positionLabelLast."
+  },
+  "restoreHiddenSources": "Ripristina testate eliminate",
+  "@restoreHiddenSources": {
+    "description": "Localized text for restoreHiddenSources."
+  },
+  "addCustomNewsSource": "Aggiungi sorgente RSS personalizzata",
+  "@addCustomNewsSource": {
+    "description": "Localized text for addCustomNewsSource."
+  },
+  "newsSourceName": "Nome testata/sito",
+  "@newsSourceName": {
+    "description": "Localized text for newsSourceName."
+  },
+  "newsSourceUrlOrSearch": "URL sito, feed RSS o parola di ricerca",
+  "@newsSourceUrlOrSearch": {
+    "description": "Localized text for newsSourceUrlOrSearch."
+  },
+  "deleteNewsSource": "Elimina sorgente",
+  "@deleteNewsSource": {
+    "description": "Localized text for deleteNewsSource."
+  },
+  "articleTextSemantics": "Testo articolo",
+  "@articleTextSemantics": {
+    "description": "Localized text for articleTextSemantics."
+  },
+  "newsLanguage": "Lingua notizie",
+  "@newsLanguage": {
+    "description": "Localized text for newsLanguage."
+  },
+  "loadingNews": "Caricamento notizie",
+  "@loadingNews": {
+    "description": "Localized text for loadingNews."
+  },
+  "error": "Errore: {error}",
+  "@error": {
+    "description": "Localized text for error.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "noNewsFound": "Nessuna notizia trovata",
+  "@noNewsFound": {
+    "description": "Localized text for noNewsFound."
+  },
+  "loadingArticle": "Caricamento articolo",
+  "@loadingArticle": {
+    "description": "Localized text for loadingArticle."
+  },
+  "noFullArticleFound": "Articolo integrale non disponibile. Mostro il riassunto del feed.",
+  "@noFullArticleFound": {
+    "description": "Localized text for noFullArticleFound."
+  },
+  "italian": "Italiano",
+  "@italian": {
+    "description": "Localized text for italian."
+  },
+  "english": "English",
+  "@english": {
+    "description": "Localized text for english."
+  },
+  "french": "Francese",
+  "@french": {
+    "description": "Localized text for french."
+  },
+  "spanish": "Spagnolo",
+  "@spanish": {
+    "description": "Localized text for spanish."
+  },
+  "newsSource": "Fonte notizie",
+  "@newsSource": {
+    "description": "Localized text for newsSource."
+  },
+  "article": "Articolo",
+  "@article": {
+    "description": "Localized text for article."
+  },
+  "articlePreview": "Anteprima articolo",
+  "@articlePreview": {
+    "description": "Localized text for articlePreview."
+  },
+  "readFullArticle": "Leggi articolo completo",
+  "@readFullArticle": {
+    "description": "Localized text for readFullArticle."
+  },
+  "extractingReaderArticleText": "Estraggo il testo in modalità lettura...",
+  "@extractingReaderArticleText": {
+    "description": "Localized text for extractingReaderArticleText."
+  },
+  "extractingVisibleArticleText": "Estraggo il testo visibile dalla pagina...",
+  "@extractingVisibleArticleText": {
+    "description": "Localized text for extractingVisibleArticleText."
+  },
+  "source": "Fonte: {source}",
+  "@source": {
+    "description": "Localized text for source.",
+    "placeholders": {
+      "source": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "readyStatus": "Pronto.",
+  "@readyStatus": {
+    "description": "Localized text for readyStatus."
+  },
+  "preparingEdgeTts": "Preparo lettura Edge TTS a blocchi...",
+  "@preparingEdgeTts": {
+    "description": "Localized text for preparingEdgeTts."
+  },
+  "noTextToRead": "Nessun testo da leggere.",
+  "@noTextToRead": {
+    "description": "Localized text for noTextToRead."
+  },
+  "chunkCreated": "Blocco {index} di {total} creato. Lettura in corso...",
+  "@chunkCreated": {
+    "description": "Localized text for chunkCreated.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "playingChunk": "Riproduco blocco {index} di {total} ({size} byte)...",
+  "@playingChunk": {
+    "description": "Localized text for playingChunk.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      },
+      "size": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "readingFinished": "Lettura terminata. Blocchi creati: {readyChunks}/{totalChunks}. Libreria: {libraryPath}",
+  "@readingFinished": {
+    "description": "Localized text for readingFinished.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "libraryPath": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "libraryNotSpecified": "non indicata",
+  "@libraryNotSpecified": {
+    "description": "Localized text for libraryNotSpecified."
+  },
+  "readingStopped": "Lettura interrotta.",
+  "@readingStopped": {
+    "description": "Localized text for readingStopped."
+  },
+  "edgeTtsError": "Errore Edge TTS: {error}",
+  "@edgeTtsError": {
+    "description": "Localized text for edgeTtsError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "audioChunksReady": "Blocchi audio pronti: {readyChunks} / {totalChunks}",
+  "@audioChunksReady": {
+    "description": "Localized text for audioChunksReady.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "readingInProgress": "Lettura in corso...",
+  "@readingInProgress": {
+    "description": "Localized text for readingInProgress."
+  },
+  "readWithEdgeTts": "Avvia lettura",
+  "@readWithEdgeTts": {
+    "description": "Localized text for readWithEdgeTts."
+  },
+  "stopReading": "Interrompi lettura",
+  "@stopReading": {
+    "description": "Localized text for stopReading."
+  },
+  "startReading": "Avvia lettura",
+  "@startReading": {
+    "description": "Localized text for startReading."
+  },
+  "resumeReading": "Riprendi lettura",
+  "@resumeReading": {
+    "description": "Localized text for resumeReading."
+  },
+  "pauseReading": "Pausa lettura",
+  "@pauseReading": {
+    "description": "Localized text for pauseReading."
+  },
+  "openOriginalArticle": "Apri articolo originale",
+  "@openOriginalArticle": {
+    "description": "Localized text for openOriginalArticle."
+  },
+  "searchPodcasts": "Cerca podcast",
+  "@searchPodcasts": {
+    "description": "Localized text for searchPodcasts."
+  },
+  "podcastName": "Nome podcast",
+  "@podcastName": {
+    "description": "Localized text for podcastName."
+  },
+  "podcastSearchHint": "Esempio: tecnologia, storia, il nome del podcast...",
+  "@podcastSearchHint": {
+    "description": "Localized text for podcastSearchHint."
+  },
+  "searchCountry": "Paese di ricerca",
+  "@searchCountry": {
+    "description": "Localized text for searchCountry."
+  },
+  "podcastCategory": "Categoria podcast",
+  "@podcastCategory": {
+    "description": "Localized text for podcastCategory."
+  },
+  "browsePodcastCategories": "Sfoglia categorie",
+  "@browsePodcastCategories": {
+    "description": "Localized text for browsePodcastCategories."
+  },
+  "selectedPodcastCategory": "Categoria selezionata",
+  "@selectedPodcastCategory": {
+    "description": "Localized text for selectedPodcastCategory."
+  },
+  "podcastCategories": "Categorie podcast",
+  "@podcastCategories": {
+    "description": "Localized text for podcastCategories."
+  },
+  "countryItaly": "Italia",
+  "@countryItaly": {
+    "description": "Localized text for countryItaly."
+  },
+  "countryUnitedStatesEnglish": "Stati Uniti / inglese",
+  "@countryUnitedStatesEnglish": {
+    "description": "Localized text for countryUnitedStatesEnglish."
+  },
+  "countryUnitedKingdom": "Regno Unito",
+  "@countryUnitedKingdom": {
+    "description": "Localized text for countryUnitedKingdom."
+  },
+  "countrySpain": "Spagna",
+  "@countrySpain": {
+    "description": "Localized text for countrySpain."
+  },
+  "countryFrance": "Francia",
+  "@countryFrance": {
+    "description": "Localized text for countryFrance."
+  },
+  "searchInProgress": "Ricerca in corso...",
+  "@searchInProgress": {
+    "description": "Localized text for searchInProgress."
+  },
+  "podcastResultsFound": "Trovati {count} podcast",
+  "@podcastResultsFound": {
+    "description": "Localized text for podcastResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "podcastSearchError": "Errore ricerca podcast: {error}",
+  "@podcastSearchError": {
+    "description": "Localized text for podcastSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "subscribedTo": "Iscritto a {title}",
+  "@subscribedTo": {
+    "description": "Localized text for subscribedTo.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionError": "Errore iscrizione: {error}",
+  "@subscriptionError": {
+    "description": "Localized text for subscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "podcastSubscriptionError": "Errore iscrizione podcast: {error}",
+  "@podcastSubscriptionError": {
+    "description": "Localized text for podcastSubscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "searchResults": "Risultati ricerca",
+  "@searchResults": {
+    "description": "Localized text for searchResults."
+  },
+  "podcastInfo": "Informazioni sul podcast",
+  "@podcastInfo": {
+    "description": "Localized text for podcastInfo."
+  },
+  "subscribe": "Iscriviti",
+  "@subscribe": {
+    "description": "Localized text for subscribe."
+  },
+  "viewEpisodes": "Vedi episodi",
+  "@viewEpisodes": {
+    "description": "Localized text for viewEpisodes."
+  },
+  "podcastAuthor": "Autore",
+  "@podcastAuthor": {
+    "description": "Localized text for podcastAuthor."
+  },
+  "noPodcastDescription": "Nessuna descrizione disponibile.",
+  "@noPodcastDescription": {
+    "description": "Localized text for noPodcastDescription."
+  },
+  "noPodcastResults": "Nessun podcast trovato.",
+  "@noPodcastResults": {
+    "description": "Localized text for noPodcastResults."
+  },
+  "loadingPodcastInfo": "Caricamento info podcast",
+  "@loadingPodcastInfo": {
+    "description": "Localized text for loadingPodcastInfo."
+  },
+  "podcastArtwork": "Copertina podcast",
+  "@podcastArtwork": {
+    "description": "Localized text for podcastArtwork."
+  },
+  "addFeedUrlManually": "Aggiungi manualmente URL feed RSS",
+  "@addFeedUrlManually": {
+    "description": "Localized text for addFeedUrlManually."
+  },
+  "podcastFeedUrl": "URL feed podcast RSS",
+  "@podcastFeedUrl": {
+    "description": "Localized text for podcastFeedUrl."
+  },
+  "subscribeFromUrl": "Iscriviti da URL",
+  "@subscribeFromUrl": {
+    "description": "Localized text for subscribeFromUrl."
+  },
+  "subscribedPodcasts": "Podcast sottoscritti",
+  "@subscribedPodcasts": {
+    "description": "Localized text for subscribedPodcasts."
+  },
+  "noSubscribedPodcasts": "Nessun podcast sottoscritto. Cerca un podcast e tocca un risultato per iscriverti.",
+  "@noSubscribedPodcasts": {
+    "description": "Localized text for noSubscribedPodcasts."
+  },
+  "importPodcastsFromFile": "Importa podcast da file",
+  "@importPodcastsFromFile": {
+    "description": "Localized text for importPodcastsFromFile."
+  },
+  "exportPodcastsToFile": "Esporta podcast in file OPML",
+  "@exportPodcastsToFile": {
+    "description": "Localized text for exportPodcastsToFile."
+  },
+  "podcastImportComplete": "Podcast importati: {count}",
+  "@podcastImportComplete": {
+    "description": "Localized text for podcastImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "podcastImportError": "Errore importazione podcast: {error}",
+  "@podcastImportError": {
+    "description": "Localized text for podcastImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "podcastExportComplete": "Podcast esportati",
+  "@podcastExportComplete": {
+    "description": "Localized text for podcastExportComplete."
+  },
+  "podcastExportError": "Errore esportazione podcast: {error}",
+  "@podcastExportError": {
+    "description": "Localized text for podcastExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "loadingEpisodes": "Caricamento episodi",
+  "@loadingEpisodes": {
+    "description": "Localized text for loadingEpisodes."
+  },
+  "noAudioEpisodesFound": "Nessun episodio audio trovato nel feed.",
+  "@noAudioEpisodesFound": {
+    "description": "Localized text for noAudioEpisodesFound."
+  },
+  "episodes": "Episodi",
+  "@episodes": {
+    "description": "Localized text for episodes."
+  },
+  "episodeActions": "Azioni episodio",
+  "@episodeActions": {
+    "description": "Localized text for episodeActions."
+  },
+  "downloaded": "Scaricato: {path}",
+  "@downloaded": {
+    "description": "Localized text for downloaded.",
+    "placeholders": {
+      "path": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "episodeError": "Errore episodio: {error}",
+  "@episodeError": {
+    "description": "Localized text for episodeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "play": "Riproduci",
+  "@play": {
+    "description": "Localized text for play."
+  },
+  "pause": "Pausa",
+  "@pause": {
+    "description": "Localized text for pause."
+  },
+  "rewind15s": "Indietro 15s",
+  "@rewind15s": {
+    "description": "Localized text for rewind15s."
+  },
+  "forward15s": "Avanti 15s",
+  "@forward15s": {
+    "description": "Localized text for forward15s."
+  },
+  "stop": "Stop",
+  "@stop": {
+    "description": "Localized text for stop."
+  },
+  "back": "Indietro",
+  "@back": {
+    "description": "Localized text for back."
+  },
+  "episodePlayer": "Lettore episodio",
+  "@episodePlayer": {
+    "description": "Localized text for episodePlayer."
+  },
+  "nowPlayingTitle": "In riproduzione: {title}",
+  "@nowPlayingTitle": {
+    "description": "Localized text for nowPlayingTitle.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "loadingEpisodeAudio": "Caricamento audio episodio",
+  "@loadingEpisodeAudio": {
+    "description": "Localized text for loadingEpisodeAudio."
+  },
+  "playbackPosition": "Posizione",
+  "@playbackPosition": {
+    "description": "Localized text for playbackPosition."
+  },
+  "playbackPositionValue": "{position} di {duration}",
+  "@playbackPositionValue": {
+    "description": "Localized text for playbackPositionValue.",
+    "placeholders": {
+      "position": {
+        "example": "01:23",
+        "type": "String"
+      },
+      "duration": {
+        "example": "01:23",
+        "type": "String"
+      }
+    }
+  },
+  "download": "Scarica",
+  "@download": {
+    "description": "Localized text for download."
+  },
+  "searchWikipedia": "Cerca su Wikipedia",
+  "@searchWikipedia": {
+    "description": "Localized text for searchWikipedia."
+  },
+  "wikipediaLanguage": "Lingua Wikipedia",
+  "@wikipediaLanguage": {
+    "description": "Localized text for wikipediaLanguage."
+  },
+  "search": "Cerca",
+  "@search": {
+    "description": "Localized text for search."
+  },
+  "wikipediaSearch": "Ricerca Wikipedia",
+  "@wikipediaSearch": {
+    "description": "Localized text for wikipediaSearch."
+  },
+  "wikipediaImporting": "Importazione Wikipedia",
+  "@wikipediaImporting": {
+    "description": "Localized text for wikipediaImporting."
+  },
+  "noWikipediaResults": "Nessun risultato Wikipedia trovato",
+  "@noWikipediaResults": {
+    "description": "Localized text for noWikipediaResults."
+  },
+  "wikipediaImportMode": "Modalità di importazione",
+  "@wikipediaImportMode": {
+    "description": "Localized text for wikipediaImportMode."
+  },
+  "wikipediaImportWholeArticle": "Tutto l'articolo",
+  "@wikipediaImportWholeArticle": {
+    "description": "Localized text for wikipediaImportWholeArticle."
+  },
+  "documents": "Documenti",
+  "@documents": {
+    "description": "Localized text for documents."
+  },
+  "documentsHint": "Apre la libreria documenti",
+  "@documentsHint": {
+    "description": "Localized text for documentsHint."
+  },
+  "documentLibrary": "Libreria documenti",
+  "@documentLibrary": {
+    "description": "Localized text for documentLibrary."
+  },
+  "addToLibrary": "Aggiungi alla libreria",
+  "@addToLibrary": {
+    "description": "Localized text for addToLibrary."
+  },
+  "documentImportSelectionMode": "Vuoi selezionare un solo documento o più documenti?",
+  "@documentImportSelectionMode": {
+    "description": "Localized text for documentImportSelectionMode."
+  },
+  "documentImportSingle": "Un documento",
+  "@documentImportSingle": {
+    "description": "Localized text for documentImportSingle."
+  },
+  "documentImportMultiple": "Più documenti",
+  "@documentImportMultiple": {
+    "description": "Localized text for documentImportMultiple."
+  },
+  "noDocuments": "Nessun documento. Aggiungi un file.",
+  "@noDocuments": {
+    "description": "Localized text for noDocuments."
+  },
+  "noDocumentsInLibrary": "Nessun documento presente nella libreria.",
+  "@noDocumentsInLibrary": {
+    "description": "Localized text for noDocumentsInLibrary."
+  },
+  "documentAdded": "Documento aggiunto",
+  "@documentAdded": {
+    "description": "Localized text for documentAdded."
+  },
+  "documentsAdded": "Documenti aggiunti",
+  "@documentsAdded": {
+    "description": "Localized text for documentsAdded."
+  },
+  "libraryLoadError": "Errore caricamento libreria: {error}",
+  "@libraryLoadError": {
+    "description": "Localized text for libraryLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "fileOpenError": "Errore apertura file: {error}",
+  "@fileOpenError": {
+    "description": "Localized text for fileOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "filePathUnavailable": "Percorso file non disponibile.",
+  "@filePathUnavailable": {
+    "description": "Localized text for filePathUnavailable."
+  },
+  "fileInaccessible": "File inaccessibile: {name}",
+  "@fileInaccessible": {
+    "description": "Localized text for fileInaccessible.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "documentAddError": "Errore aggiunta documento: {error}",
+  "@documentAddError": {
+    "description": "Localized text for documentAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "documentRemoveError": "Errore rimozione: {error}",
+  "@documentRemoveError": {
+    "description": "Localized text for documentRemoveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "noExportableTextFound": "Nessun testo esportabile trovato.",
+  "@noExportableTextFound": {
+    "description": "Localized text for noExportableTextFound."
+  },
+  "modifiedDocumentNoExportableText": "Il documento modificato non contiene testo esportabile.",
+  "@modifiedDocumentNoExportableText": {
+    "description": "Localized text for modifiedDocumentNoExportableText."
+  },
+  "documentRemoved": "Documento rimosso",
+  "@documentRemoved": {
+    "description": "Localized text for documentRemoved."
+  },
+  "folderRemoved": "Cartella rimossa",
+  "@folderRemoved": {
+    "description": "Localized text for folderRemoved."
+  },
+  "removeFolder": "Rimuovi cartella",
+  "@removeFolder": {
+    "description": "Localized text for removeFolder."
+  },
+  "removeDocument": "Rimuovi documento",
+  "@removeDocument": {
+    "description": "Localized text for removeDocument."
+  },
+  "writeNewDocument": "Scrivi nuovo documento",
+  "@writeNewDocument": {
+    "description": "Localized text for writeNewDocument."
+  },
+  "addDocumentToLibraryHint": "Aggiungi documento alla libreria. Sfoglia i file del dispositivo e aggiungili.",
+  "@addDocumentToLibraryHint": {
+    "description": "Localized text for addDocumentToLibraryHint."
+  },
+  "documentTypeLabel": "Documento",
+  "@documentTypeLabel": {
+    "description": "Localized text for documentTypeLabel."
+  },
+  "documentPosition": "Posizione documento",
+  "@documentPosition": {
+    "description": "Localized text for documentPosition."
+  },
+  "folderTypeLabel": "Cartella",
+  "@folderTypeLabel": {
+    "description": "Localized text for folderTypeLabel."
+  },
+  "documentAddedOn": "aggiunto il {date}",
+  "@documentAddedOn": {
+    "description": "Localized text for documentAddedOn.",
+    "placeholders": {
+      "date": {
+        "example": "1 gennaio 2026",
+        "type": "String"
+      }
+    }
+  },
+  "documentTypeDescription": "tipo {extension}",
+  "@documentTypeDescription": {
+    "description": "Localized text for documentTypeDescription.",
+    "placeholders": {
+      "extension": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "openFolderHint": "Tocca due volte per aprire la cartella",
+  "@openFolderHint": {
+    "description": "Localized text for openFolderHint."
+  },
+  "openDocumentHint": "Tocca due volte per aprire e leggere il documento",
+  "@openDocumentHint": {
+    "description": "Localized text for openDocumentHint."
+  },
+  "removeItem": "Rimuovi {name}",
+  "@removeItem": {
+    "description": "Localized text for removeItem.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "removePodcast": "Rimuovi podcast",
+  "@removePodcast": {
+    "description": "Localized text for removePodcast."
+  },
+  "podcastRemoved": "Podcast rimosso",
+  "@podcastRemoved": {
+    "description": "Localized text for podcastRemoved."
+  },
+  "documentPickerError": "Errore apertura file",
+  "@documentPickerError": {
+    "description": "Localized text for documentPickerError."
+  },
+  "readDocument": "Leggi documento",
+  "@readDocument": {
+    "description": "Localized text for readDocument."
+  },
+  "documentReaderTitle": "Lettore documento",
+  "@documentReaderTitle": {
+    "description": "Localized text for documentReaderTitle."
+  },
+  "documentReaderEditHint": "Tocca un paragrafo per modificarlo. Scorri verso l’alto o verso il basso per aggiungere un segnalibro.",
+  "@documentReaderEditHint": {
+    "description": "Localized text for documentReaderEditHint."
+  },
+  "documentBookmarkHintSet": "Scorri verso l’alto o verso il basso per impostare un segnalibro.",
+  "@documentBookmarkHintSet": {
+    "description": "Localized text for documentBookmarkHintSet."
+  },
+  "documentEditParagraphActionHint": "Tocca due volte per modificare questo paragrafo. ",
+  "@documentEditParagraphActionHint": {
+    "description": "Localized text for documentEditParagraphActionHint."
+  },
+  "documentBookmarkHintReplace": "Scorri verso l’alto o verso il basso per rimuovere il segnalibro esistente o sostituirlo con questo paragrafo.",
+  "@documentBookmarkHintReplace": {
+    "description": "Localized text for documentBookmarkHintReplace."
+  },
+  "documentSetBookmarkAction": "Imposta segnalibro",
+  "@documentSetBookmarkAction": {
+    "description": "Localized text for documentSetBookmarkAction."
+  },
+  "documentRemoveBookmarkAction": "Rimuovi segnalibro",
+  "@documentRemoveBookmarkAction": {
+    "description": "Localized text for documentRemoveBookmarkAction."
+  },
+  "documentReplaceBookmarkAction": "Rimuovi e aggiungi un nuovo segnalibro",
+  "@documentReplaceBookmarkAction": {
+    "description": "Localized text for documentReplaceBookmarkAction."
+  },
+  "edit": "Modifica",
+  "@edit": {
+    "description": "Localized text for edit."
+  },
+  "save": "Salva",
+  "@save": {
+    "description": "Localized text for save."
+  },
+  "cancel": "Annulla",
+  "@cancel": {
+    "description": "Localized text for cancel."
+  },
+  "settingsReadingEngine": "Motore di lettura",
+  "@settingsReadingEngine": {
+    "description": "Localized text for settingsReadingEngine."
+  },
+  "settingsEdgeTtsQuality": "Edge TTS (Alta qualità online)",
+  "@settingsEdgeTtsQuality": {
+    "description": "Localized text for settingsEdgeTtsQuality."
+  },
+  "settingsSystemVoices": "Voci di sistema (VoiceOver / Google)",
+  "@settingsSystemVoices": {
+    "description": "Localized text for settingsSystemVoices."
+  },
+  "settingsNoSystemVoices": "Nessuna voce di sistema disponibile.",
+  "@settingsNoSystemVoices": {
+    "description": "Localized text for settingsNoSystemVoices."
+  },
+  "settingsDefaultVoiceHint": "Voce predefinita",
+  "@settingsDefaultVoiceHint": {
+    "description": "Localized text for settingsDefaultVoiceHint."
+  },
+  "settingsDefaultVoice": "Predefinita",
+  "@settingsDefaultVoice": {
+    "description": "Localized text for settingsDefaultVoice."
+  },
+  "settingsVoiceSpeed": "Velocità lettura: ",
+  "@settingsVoiceSpeed": {
+    "description": "Localized text for settingsVoiceSpeed."
+  },
+  "settingsVoicePitch": "Tono: ",
+  "@settingsVoicePitch": {
+    "description": "Localized text for settingsVoicePitch."
+  },
+  "settingsVoiceSpeedLabel": "Velocità lettura",
+  "@settingsVoiceSpeedLabel": {
+    "description": "Localized text for settingsVoiceSpeedLabel."
+  },
+  "settingsVoicePitchLabel": "Tono",
+  "@settingsVoicePitchLabel": {
+    "description": "Localized text for settingsVoicePitchLabel."
+  },
+  "settingsTestVoice": "Testa voce",
+  "@settingsTestVoice": {
+    "description": "Localized text for settingsTestVoice."
+  },
+  "settingsTestingVoice": "Riproduzione in corso...",
+  "@settingsTestingVoice": {
+    "description": "Localized text for settingsTestingVoice."
+  },
+  "settingsVoiceTestText": "Questo è un test della voce selezionata.",
+  "@settingsVoiceTestText": {
+    "description": "Localized text for settingsVoiceTestText."
+  },
+  "settingsVoiceTestError": "Errore test voce: {error}",
+  "@settingsVoiceTestError": {
+    "description": "Localized text for settingsVoiceTestError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "settingsVoiceSaveError": "Errore salvataggio voce TTS: {error}",
+  "@settingsVoiceSaveError": {
+    "description": "Localized text for settingsVoiceSaveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "settingsUnsavedTitle": "Modifiche non salvate",
+  "@settingsUnsavedTitle": {
+    "description": "Localized text for settingsUnsavedTitle."
+  },
+  "settingsUnsavedMessage": "Vuoi salvare le modifiche prima di uscire dalle impostazioni?",
+  "@settingsUnsavedMessage": {
+    "description": "Localized text for settingsUnsavedMessage."
+  },
+  "settingsExitWithoutSaving": "Esci senza salvare",
+  "@settingsExitWithoutSaving": {
+    "description": "Localized text for settingsExitWithoutSaving."
+  },
+  "settingsSystemLanguage": "Lingua di sistema",
+  "@settingsSystemLanguage": {
+    "description": "Localized text for settingsSystemLanguage."
+  },
+  "settingsSystemVoice": "Voce di sistema",
+  "@settingsSystemVoice": {
+    "description": "Localized text for settingsSystemVoice."
+  },
+  "settingsAutoBookmark": "Segnalibro automatico",
+  "@settingsAutoBookmark": {
+    "description": "Localized text for settingsAutoBookmark."
+  },
+  "settingsAutoBookmarkHint": "Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.",
+  "@settingsAutoBookmarkHint": {
+    "description": "Localized text for settingsAutoBookmarkHint."
+  },
+  "settingsSeekStep": "Intervallo indietro / avanti nei media",
+  "@settingsSeekStep": {
+    "description": "Localized text for settingsSeekStep."
+  },
+  "aiChatIntro": "Sono l’intelligenza artificiale di Sonarpad. Come posso aiutarti?",
+  "@aiChatIntro": {
+    "description": "Localized text for aiChatIntro."
+  },
+  "meteoTitle": "Meteo",
+  "@meteoTitle": {
+    "description": "Localized text for meteoTitle."
+  },
+  "weatherCity": "Città",
+  "@weatherCity": {
+    "description": "Localized text for weatherCity."
+  },
+  "weatherCityHint": "Esempio: Roma",
+  "@weatherCityHint": {
+    "description": "Localized text for weatherCityHint."
+  },
+  "weatherCityNotFound": "Città non trovata",
+  "@weatherCityNotFound": {
+    "description": "Localized text for weatherCityNotFound."
+  },
+  "weatherSearchError": "Errore durante la ricerca",
+  "@weatherSearchError": {
+    "description": "Localized text for weatherSearchError."
+  },
+  "weatherToday": "Oggi",
+  "@weatherToday": {
+    "description": "Localized text for weatherToday."
+  },
+  "weatherTomorrow": "Domani",
+  "@weatherTomorrow": {
+    "description": "Localized text for weatherTomorrow."
+  },
+  "weatherChooseDay": "Scegli il giorno",
+  "@weatherChooseDay": {
+    "description": "Localized text for weatherChooseDay."
+  },
+  "weatherCurrentTemperature": "Temperatura attuale",
+  "@weatherCurrentTemperature": {
+    "description": "Localized text for weatherCurrentTemperature."
+  },
+  "weatherMaxTemperature": "Temperatura massima",
+  "@weatherMaxTemperature": {
+    "description": "Localized text for weatherMaxTemperature."
+  },
+  "weatherMinTemperature": "Temperatura minima",
+  "@weatherMinTemperature": {
+    "description": "Localized text for weatherMinTemperature."
+  },
+  "weatherPrecipitation": "Precipitazioni",
+  "@weatherPrecipitation": {
+    "description": "Localized text for weatherPrecipitation."
+  },
+  "weatherPrecipitationProbability": "Probabilità di precipitazioni",
+  "@weatherPrecipitationProbability": {
+    "description": "Localized text for weatherPrecipitationProbability."
+  },
+  "weatherWind": "Vento",
+  "@weatherWind": {
+    "description": "Localized text for weatherWind."
+  },
+  "weatherRelativeHumidity": "Umidità relativa",
+  "@weatherRelativeHumidity": {
+    "description": "Localized text for weatherRelativeHumidity."
+  },
+  "settingsSecretCode": "Codice Sonarpad per funzioni aggiuntive",
+  "@settingsSecretCode": {
+    "description": "Localized text for settingsSecretCode."
+  },
+  "settingsRequestCode": "Richiedi codice all'autore",
+  "@settingsRequestCode": {
+    "description": "Localized text for settingsRequestCode."
+  },
+  "settingsCancel": "Annulla",
+  "@settingsCancel": {
+    "description": "Localized text for settingsCancel."
+  },
+  "settingsSend": "Invia",
+  "@settingsSend": {
+    "description": "Localized text for settingsSend."
+  },
+  "settingsFillFieldsCode": "Compila tutti i campi per richiedere il codice.",
+  "@settingsFillFieldsCode": {
+    "description": "Localized text for settingsFillFieldsCode."
+  },
+  "settingsName": "Nome",
+  "@settingsName": {
+    "description": "Localized text for settingsName."
+  },
+  "settingsSurname": "Cognome",
+  "@settingsSurname": {
+    "description": "Localized text for settingsSurname."
+  },
+  "settingsEmail": "Email",
+  "@settingsEmail": {
+    "description": "Localized text for settingsEmail."
+  },
+  "settingsOperatingSystem": "Sistema operativo",
+  "@settingsOperatingSystem": {
+    "description": "Localized text for settingsOperatingSystem."
+  },
+  "settingsCodeRequestBody": "Nome: {name}; Cognome: {surname}; Email: {email}; Sistema operativo: {os}",
+  "@settingsCodeRequestBody": {
+    "description": "Localized text for settingsCodeRequestBody.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "surname": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "email": {
+        "example": "Example",
+        "type": "String"
+      },
+      "os": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "settingsNameOptional": "Nome (opzionale)",
+  "@settingsNameOptional": {
+    "description": "Localized text for settingsNameOptional."
+  },
+  "settingsMessageOptional": "Messaggio (opzionale)",
+  "@settingsMessageOptional": {
+    "description": "Localized text for settingsMessageOptional."
+  },
+  "settingsVerifyCodeAndSave": "Verifica codice e salvataggio...",
+  "@settingsVerifyCodeAndSave": {
+    "description": "Localized text for settingsVerifyCodeAndSave."
+  },
+  "settingsViewSysLog": "Visualizza log di sistema",
+  "@settingsViewSysLog": {
+    "description": "Localized text for settingsViewSysLog."
+  },
+  "settingsMailOpenError": "Errore apertura mail: {error}",
+  "@settingsMailOpenError": {
+    "description": "Localized text for settingsMailOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "Localized text for ok."
+  },
+  "invia": "Invia",
+  "@invia": {
+    "description": "Localized text for invia."
+  },
+  "saveArticle": "Salva l'articolo",
+  "@saveArticle": {
+    "description": "Localized text for saveArticle."
+  },
+  "shareArticle": "Condividi l'articolo",
+  "@shareArticle": {
+    "description": "Localized text for shareArticle."
+  },
+  "articleSavedSuccess": "Articolo salvato nei Documenti",
+  "@articleSavedSuccess": {
+    "description": "Localized text for articleSavedSuccess."
+  },
+  "annulla": "Annulla",
+  "@annulla": {
+    "description": "Localized text for annulla."
+  },
+  "compilaTuttiICampiPerRichiedereIlCodice": "Compila tutti i campi per richiedere il codice.",
+  "@compilaTuttiICampiPerRichiedereIlCodice": {
+    "description": "Localized text for compilaTuttiICampiPerRichiedereIlCodice."
+  },
+  "selectFolder": "Seleziona cartella",
+  "@selectFolder": {
+    "description": "Localized text for selectFolder."
+  },
+  "exportDocument": "Esporta documento",
+  "@exportDocument": {
+    "description": "Localized text for exportDocument."
+  },
+  "exportFormatPrompt": "In quale formato desideri esportare il documento?",
+  "@exportFormatPrompt": {
+    "description": "Localized text for exportFormatPrompt."
+  },
+  "textFormat": "Testo (.txt)",
+  "@textFormat": {
+    "description": "Localized text for textFormat."
+  },
+  "pdfFormat": "PDF (.pdf)",
+  "@pdfFormat": {
+    "description": "Localized text for pdfFormat."
+  },
+  "exportError": "Errore esportazione",
+  "@exportError": {
+    "description": "Localized text for exportError."
+  },
+  "newFolder": "Nuova cartella",
+  "@newFolder": {
+    "description": "Localized text for newFolder."
+  },
+  "folderNameHint": "Nome cartella",
+  "@folderNameHint": {
+    "description": "Localized text for folderNameHint."
+  },
+  "create": "Crea",
+  "@create": {
+    "description": "Localized text for create."
+  },
+  "createNewFolder": "Crea nuova cartella",
+  "@createNewFolder": {
+    "description": "Localized text for createNewFolder."
+  },
+  "importFromDropbox": "Importa documenti da Dropbox",
+  "@importFromDropbox": {
+    "description": "Localized text for importFromDropbox."
+  },
+  "moveDocument": "Sposta documento",
+  "@moveDocument": {
+    "description": "Localized text for moveDocument."
+  },
+  "documentMoved": "Spostato correttamente",
+  "@documentMoved": {
+    "description": "Localized text for documentMoved."
+  },
+  "outOfFolder": "Fuori dalla cartella",
+  "@outOfFolder": {
+    "description": "Localized text for outOfFolder."
+  },
+  "moveToAnotherFolder": "Sposta in un'altra cartella...",
+  "@moveToAnotherFolder": {
+    "description": "Localized text for moveToAnotherFolder."
+  },
+  "ttsError": "Errore sintesi vocale",
+  "@ttsError": {
+    "description": "Localized text for ttsError."
+  },
+  "editParagraph": "Modifica paragrafo",
+  "@editParagraph": {
+    "description": "Localized text for editParagraph."
+  },
+  "editParagraphTextField": "Campo di testo per la modifica del paragrafo",
+  "@editParagraphTextField": {
+    "description": "Localized text for editParagraphTextField."
+  },
+  "editParagraphHint": "Modifica il testo del paragrafo",
+  "@editParagraphHint": {
+    "description": "Localized text for editParagraphHint."
+  },
+  "applyAndSave": "Applica e salva",
+  "@applyAndSave": {
+    "description": "Localized text for applyAndSave."
+  },
+  "textEditedAndSaved": "Testo modificato e salvato nel documento corrente.",
+  "@textEditedAndSaved": {
+    "description": "Localized text for textEditedAndSaved."
+  },
+  "saveError": "Errore durante il salvataggio",
+  "@saveError": {
+    "description": "Localized text for saveError."
+  },
+  "docSavedInLibrary": "Documento salvato nella libreria",
+  "@docSavedInLibrary": {
+    "description": "Localized text for docSavedInLibrary."
+  },
+  "saveInLibrary": "Salva nella libreria",
+  "@saveInLibrary": {
+    "description": "Localized text for saveInLibrary."
+  },
+  "documentTextLabel": "Testo documento",
+  "@documentTextLabel": {
+    "description": "Localized text for documentTextLabel."
+  },
+  "modifiedInSonarpad": "Modificato in Sonarpad",
+  "@modifiedInSonarpad": {
+    "description": "Localized text for modifiedInSonarpad."
+  },
+  "noTextAvailableForDocument": "Nessun testo disponibile per questo documento.",
+  "@noTextAvailableForDocument": {
+    "description": "Localized text for noTextAvailableForDocument."
+  },
+  "bookmarkSet": "Segnalibro impostato al paragrafo {index}.",
+  "@bookmarkSet": {
+    "description": "Localized text for bookmarkSet.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "bookmarkRemoved": "Segnalibro rimosso.",
+  "@bookmarkRemoved": {
+    "description": "Localized text for bookmarkRemoved."
+  },
+  "docEmpty": "Il documento è vuoto",
+  "@docEmpty": {
+    "description": "Localized text for docEmpty."
+  },
+  "docSavedSuccessfully": "Documento salvato correttamente.",
+  "@docSavedSuccessfully": {
+    "description": "Localized text for docSavedSuccessfully."
+  },
+  "writeDocument": "Scrivi documento",
+  "@writeDocument": {
+    "description": "Localized text for writeDocument."
+  },
+  "documentTitleOptional": "Titolo (opzionale)",
+  "@documentTitleOptional": {
+    "description": "Localized text for documentTitleOptional."
+  },
+  "documentTitleHint": "Esempio: lista della spesa",
+  "@documentTitleHint": {
+    "description": "Localized text for documentTitleHint."
+  },
+  "documentTextField": "Testo del documento",
+  "@documentTextField": {
+    "description": "Localized text for documentTextField."
+  },
+  "documentTextHint": "Inizia a scrivere qui...",
+  "@documentTextHint": {
+    "description": "Localized text for documentTextHint."
+  },
+  "newDocumentDefaultName": "Nuovo_Documento",
+  "@newDocumentDefaultName": {
+    "description": "Localized text for newDocumentDefaultName."
+  },
+  "saving": "Salvataggio...",
+  "@saving": {
+    "description": "Localized text for saving."
+  },
+  "saveDocument": "Salva documento",
+  "@saveDocument": {
+    "description": "Localized text for saveDocument."
+  },
+  "addRssSource": "Aggiungi sorgente RSS",
+  "@addRssSource": {
+    "description": "Localized text for addRssSource."
+  },
+  "add": "Aggiungi",
+  "@add": {
+    "description": "Localized text for add."
+  },
+  "errorPrefix": "Errore",
+  "@errorPrefix": {
+    "description": "Localized text for errorPrefix."
+  },
+  "versionBuild": "Versione {version} (Build {buildNumber})",
+  "@versionBuild": {
+    "description": "Localized text for versionBuild.",
+    "placeholders": {
+      "version": {
+        "example": "Example",
+        "type": "String"
+      },
+      "buildNumber": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "whatIsNew": "Novità",
+  "@whatIsNew": {
+    "description": "Localized text for whatIsNew."
+  },
+  "changelogLoadError": "Errore caricamento novità: {error}",
+  "@changelogLoadError": {
+    "description": "Localized text for changelogLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "visitSonarpadSite": "Visita il sito di Sonarpad",
+  "@visitSonarpadSite": {
+    "description": "Localized text for visitSonarpadSite."
+  },
+  "visitSonarpadSiteWithUrl": "Visita il sito di Sonarpad: {url}",
+  "@visitSonarpadSiteWithUrl": {
+    "description": "Localized text for visitSonarpadSiteWithUrl.",
+    "placeholders": {
+      "url": {
+        "example": "https://example.com",
+        "type": "String"
+      }
+    }
+  },
+  "nowPlaying": "In riproduzione",
+  "@nowPlaying": {
+    "description": "Localized text for nowPlaying."
+  },
+  "fileImported": "File importato",
+  "@fileImported": {
+    "description": "Localized text for fileImported."
+  },
+  "importZipError": "Errore importazione zip: {error}",
+  "@importZipError": {
+    "description": "Localized text for importZipError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "dropboxLoginPrompt": "Accedi a Dropbox per importare i tuoi documenti.",
+  "@dropboxLoginPrompt": {
+    "description": "Localized text for dropboxLoginPrompt."
+  },
+  "loginToDropbox": "Accedi a Dropbox",
+  "@loginToDropbox": {
+    "description": "Localized text for loginToDropbox."
+  },
+  "logoutFromDropbox": "Disconnetti",
+  "@logoutFromDropbox": {
+    "description": "Localized text for logoutFromDropbox."
+  },
+  "dropboxLoginFailed": "Accesso fallito o annullato",
+  "@dropboxLoginFailed": {
+    "description": "Localized text for dropboxLoginFailed."
+  },
+  "dropboxLoadFolderError": "Errore caricamento cartella: {error}",
+  "@dropboxLoadFolderError": {
+    "description": "Localized text for dropboxLoadFolderError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "dropboxImportError": "Errore importazione: {error}",
+  "@dropboxImportError": {
+    "description": "Localized text for dropboxImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "retry": "Riprova",
+  "@retry": {
+    "description": "Localized text for retry."
+  },
+  "goBack": ".. Torna indietro",
+  "@goBack": {
+    "description": "Localized text for goBack."
+  },
+  "noSupportedFilesInFolder": "Nessun file supportato in questa cartella.",
+  "@noSupportedFilesInFolder": {
+    "description": "Localized text for noSupportedFilesInFolder."
+  },
+  "articleNotFound": "Articolo non trovato.",
+  "@articleNotFound": {
+    "description": "Localized text for articleNotFound."
+  },
+  "errorOpening": "Errore durante l'apertura",
+  "@errorOpening": {
+    "description": "Localized text for errorOpening."
+  },
+  "recentArticles": "Articoli recenti",
+  "@recentArticles": {
+    "description": "Localized text for recentArticles."
+  },
+  "clearHistory": "Cancella cronologia",
+  "@clearHistory": {
+    "description": "Localized text for clearHistory."
+  },
+  "confirmClearHistory": "Vuoi davvero cancellare tutte le ricerche recenti?",
+  "@confirmClearHistory": {
+    "description": "Localized text for confirmClearHistory."
+  },
+  "clear": "Cancella",
+  "@clear": {
+    "description": "Localized text for clear."
+  },
+  "noRecentSearches": "Nessuna ricerca recente.",
+  "@noRecentSearches": {
+    "description": "Localized text for noRecentSearches."
+  },
+  "logCopiedToClipboard": "Log copiato negli appunti",
+  "@logCopiedToClipboard": {
+    "description": "Localized text for logCopiedToClipboard."
+  },
+  "systemLog": "Log di sistema",
+  "@systemLog": {
+    "description": "Localized text for systemLog."
+  },
+  "clearSystemLog": "Svuota log",
+  "@clearSystemLog": {
+    "description": "Localized text for clearSystemLog."
+  },
+  "copySystemLog": "Copia log",
+  "@copySystemLog": {
+    "description": "Localized text for copySystemLog."
+  },
+  "donateWithPaypal": "Dona con PayPal",
+  "@donateWithPaypal": {
+    "description": "Localized text for donateWithPaypal."
+  },
+  "bankTransferTitle": "Bonifico bancario",
+  "@bankTransferTitle": {
+    "description": "Localized text for bankTransferTitle."
+  },
+  "enableVideo": "Attiva video",
+  "@enableVideo": {
+    "description": "Localized text for enableVideo."
+  },
+  "calendar": "Calendario",
+  "@calendar": {
+    "description": "Localized text for calendar."
+  },
+  "calendarHint": "Apri il calendario con santi, festività e promemoria",
+  "@calendarHint": {
+    "description": "Localized text for calendarHint."
+  },
+  "saintOfTheDay": "Santo del giorno",
+  "@saintOfTheDay": {
+    "description": "Localized text for saintOfTheDay."
+  },
+  "quoteOfTheDay": "Citazione del giorno",
+  "@quoteOfTheDay": {
+    "description": "Localized text for quoteOfTheDay."
+  },
+  "reminders": "Promemoria",
+  "@reminders": {
+    "description": "Localized text for reminders."
+  },
+  "addReminder": "Aggiungi promemoria",
+  "@addReminder": {
+    "description": "Localized text for addReminder."
+  },
+  "removeReminder": "Rimuovi promemoria",
+  "@removeReminder": {
+    "description": "Localized text for removeReminder."
+  },
+  "noReminders": "Nessun promemoria",
+  "@noReminders": {
+    "description": "Localized text for noReminders."
+  },
+  "writeReminder": "Scrivi qui il tuo promemoria...",
+  "@writeReminder": {
+    "description": "Localized text for writeReminder."
+  },
+  "saveReminder": "Salva",
+  "@saveReminder": {
+    "description": "Localized text for saveReminder."
+  },
+  "cancelReminder": "Annulla",
+  "@cancelReminder": {
+    "description": "Localized text for cancelReminder."
+  },
+  "backToToday": "Torna a oggi",
+  "@backToToday": {
+    "description": "Localized text for backToToday."
+  },
+  "calendarToday": "Oggi",
+  "@calendarToday": {
+    "description": "Localized text for calendarToday."
+  },
+  "calendarTomorrow": "Domani",
+  "@calendarTomorrow": {
+    "description": "Localized text for calendarTomorrow."
+  },
+  "calendarYesterday": "Ieri",
+  "@calendarYesterday": {
+    "description": "Localized text for calendarYesterday."
+  },
+  "share": "Condividi",
+  "@share": {
+    "description": "Localized text for share."
+  },
+  "listenToAll": "Ascolta tutto",
+  "@listenToAll": {
+    "description": "Localized text for listenToAll."
+  },
+  "reminderSaved": "{count} promemoria",
+  "@reminderSaved": {
+    "description": "Localized text for reminderSaved.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "audiodescriptionTitle": "Audiodescrizioni Rai",
+  "@audiodescriptionTitle": {
+    "description": "Localized text for audiodescriptionTitle."
+  },
+  "audiodescriptionRecent": "Recenti",
+  "@audiodescriptionRecent": {
+    "description": "Localized text for audiodescriptionRecent."
+  },
+  "audiodescriptionAll": "Tutte le audiodescrizioni",
+  "@audiodescriptionAll": {
+    "description": "Localized text for audiodescriptionAll."
+  },
+  "audiodescriptionFilm": "Film",
+  "@audiodescriptionFilm": {
+    "description": "Localized text for audiodescriptionFilm."
+  },
+  "audiodescriptionSearch": "Cerca...",
+  "@audiodescriptionSearch": {
+    "description": "Localized text for audiodescriptionSearch."
+  },
+  "audiodescriptionLoading": "Caricamento in corso...",
+  "@audiodescriptionLoading": {
+    "description": "Localized text for audiodescriptionLoading."
+  },
+  "audiodescriptionError": "Errore nel caricamento del catalogo",
+  "@audiodescriptionError": {
+    "description": "Localized text for audiodescriptionError."
+  },
+  "audiodescriptionEmpty": "Nessun elemento trovato",
+  "@audiodescriptionEmpty": {
+    "description": "Localized text for audiodescriptionEmpty."
+  },
+  "radio": "Radio",
+  "@radio": {
+    "description": "Localized text for radio."
+  },
+  "radioHint": "Cerca stazioni radio, ascolta streaming e gestisci le preferite",
+  "@radioHint": {
+    "description": "Localized text for radioHint."
+  },
+  "radioTitle": "Radio da tutto il mondo",
+  "@radioTitle": {
+    "description": "Localized text for radioTitle."
+  },
+  "radioFavoritesButton": "Radio preferite",
+  "@radioFavoritesButton": {
+    "description": "Localized text for radioFavoritesButton."
+  },
+  "radioNoFavorites": "Nessuna radio preferita.",
+  "@radioNoFavorites": {
+    "description": "Localized text for radioNoFavorites."
+  },
+  "radioSearchText": "Cerca radio",
+  "@radioSearchText": {
+    "description": "Localized text for radioSearchText."
+  },
+  "radioSearchHint": "Nome della stazione o città...",
+  "@radioSearchHint": {
+    "description": "Localized text for radioSearchHint."
+  },
+  "radioLanguage": "Lingua",
+  "@radioLanguage": {
+    "description": "Localized text for radioLanguage."
+  },
+  "radioGenre": "Genere",
+  "@radioGenre": {
+    "description": "Localized text for radioGenre."
+  },
+  "radioSearch": "Ricerca",
+  "@radioSearch": {
+    "description": "Localized text for radioSearch."
+  },
+  "radioSearching": "Caricamento radio...",
+  "@radioSearching": {
+    "description": "Localized text for radioSearching."
+  },
+  "radioSearchResults": "Risultati radio",
+  "@radioSearchResults": {
+    "description": "Localized text for radioSearchResults."
+  },
+  "radioNoResults": "Nessuna radio trovata.",
+  "@radioNoResults": {
+    "description": "Localized text for radioNoResults."
+  },
+  "radioResultsFound": "Trovate {count} radio",
+  "@radioResultsFound": {
+    "description": "Localized text for radioResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "radioSearchError": "Errore ricerca radio: {error}",
+  "@radioSearchError": {
+    "description": "Localized text for radioSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "radioNowPlaying": "Riproduco {name}",
+  "@radioNowPlaying": {
+    "description": "Localized text for radioNowPlaying.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "radioPlayError": "Errore streaming radio: {error}",
+  "@radioPlayError": {
+    "description": "Localized text for radioPlayError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "radioAddFavorite": "Aggiungi ai preferiti",
+  "@radioAddFavorite": {
+    "description": "Localized text for radioAddFavorite."
+  },
+  "radioRemoveFavorite": "Rimuovi dai preferiti",
+  "@radioRemoveFavorite": {
+    "description": "Localized text for radioRemoveFavorite."
+  },
+  "radioFavoriteAdded": "{name} aggiunta ai preferiti.",
+  "@radioFavoriteAdded": {
+    "description": "Localized text for radioFavoriteAdded.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "radioFavoriteRemoved": "{name} rimossa dai preferiti.",
+  "@radioFavoriteRemoved": {
+    "description": "Localized text for radioFavoriteRemoved.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "radioAddCommunity": "Aggiungi radio alla comunità Sonarpad",
+  "@radioAddCommunity": {
+    "description": "Localized text for radioAddCommunity."
+  },
+  "radioAddName": "Nome radio",
+  "@radioAddName": {
+    "description": "Localized text for radioAddName."
+  },
+  "radioAddUrl": "Indirizzo streaming",
+  "@radioAddUrl": {
+    "description": "Localized text for radioAddUrl."
+  },
+  "radioAddSubmit": "Verifica e aggiungi",
+  "@radioAddSubmit": {
+    "description": "Localized text for radioAddSubmit."
+  },
+  "radioAddMissingFields": "Inserisci nome radio e indirizzo streaming.",
+  "@radioAddMissingFields": {
+    "description": "Localized text for radioAddMissingFields."
+  },
+  "radioCommunityAdded": "Radio aggiunta correttamente alla comunità Sonarpad.",
+  "@radioCommunityAdded": {
+    "description": "Localized text for radioCommunityAdded."
+  },
+  "radioCommunityAddError": "Errore durante l'aggiunta della radio: {error}",
+  "@radioCommunityAddError": {
+    "description": "Localized text for radioCommunityAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "radioPlay": "Riproduci",
+  "@radioPlay": {
+    "description": "Localized text for radioPlay."
+  },
+  "routeTitle": "Percorsi",
+  "@routeTitle": {
+    "description": "Localized text for routeTitle."
+  },
+  "routeFrom": "Partenza",
+  "@routeFrom": {
+    "description": "Localized text for routeFrom."
+  },
+  "routeTo": "Destinazione",
+  "@routeTo": {
+    "description": "Localized text for routeTo."
+  },
+  "routeCountry": "Paese",
+  "@routeCountry": {
+    "description": "Localized text for routeCountry."
+  },
+  "routeCountryItaly": "Italia",
+  "@routeCountryItaly": {
+    "description": "Localized text for routeCountryItaly."
+  },
+  "routeCountryFrance": "Francia",
+  "@routeCountryFrance": {
+    "description": "Localized text for routeCountryFrance."
+  },
+  "routeCountrySpain": "Spagna",
+  "@routeCountrySpain": {
+    "description": "Localized text for routeCountrySpain."
+  },
+  "routeVehicle": "Mezzo di trasporto",
+  "@routeVehicle": {
+    "description": "Localized text for routeVehicle."
+  },
+  "routeType": "Tipo",
+  "@routeType": {
+    "description": "Localized text for routeType."
+  },
+  "routeIncludeMunicipalities": "Includi comuni attraversati",
+  "@routeIncludeMunicipalities": {
+    "description": "Localized text for routeIncludeMunicipalities."
+  },
+  "routeWalking": "A piedi",
+  "@routeWalking": {
+    "description": "Localized text for routeWalking."
+  },
+  "routeCycling": "In bicicletta",
+  "@routeCycling": {
+    "description": "Localized text for routeCycling."
+  },
+  "routeDriving": "In auto",
+  "@routeDriving": {
+    "description": "Localized text for routeDriving."
+  },
+  "routeWheelchair": "In sedia a rotelle",
+  "@routeWheelchair": {
+    "description": "Localized text for routeWheelchair."
+  },
+  "routeFastest": "Più veloce",
+  "@routeFastest": {
+    "description": "Localized text for routeFastest."
+  },
+  "routeShortest": "Più corto",
+  "@routeShortest": {
+    "description": "Localized text for routeShortest."
+  },
+  "routeCalculate": "Calcola percorso",
+  "@routeCalculate": {
+    "description": "Localized text for routeCalculate."
+  },
+  "routeCalculating": "Calcolo in corso...",
+  "@routeCalculating": {
+    "description": "Localized text for routeCalculating."
+  },
+  "routeChooseFrom": "Scegli il punto di partenza",
+  "@routeChooseFrom": {
+    "description": "Localized text for routeChooseFrom."
+  },
+  "routeChooseTo": "Scegli la destinazione",
+  "@routeChooseTo": {
+    "description": "Localized text for routeChooseTo."
+  },
+  "routeCancel": "Annulla",
+  "@routeCancel": {
+    "description": "Localized text for routeCancel."
+  },
+  "routeErrorMissingFields": "Inserisci punto di partenza e destinazione",
+  "@routeErrorMissingFields": {
+    "description": "Localized text for routeErrorMissingFields."
+  },
+  "routeErrorFromNotFound": "Nessun risultato trovato per l'indirizzo di partenza",
+  "@routeErrorFromNotFound": {
+    "description": "Localized text for routeErrorFromNotFound."
+  },
+  "routeErrorToNotFound": "Nessun risultato trovato per l'indirizzo di arrivo",
+  "@routeErrorToNotFound": {
+    "description": "Localized text for routeErrorToNotFound."
+  },
+  "routeResultsTitle": "Percorsi disponibili",
+  "@routeResultsTitle": {
+    "description": "Localized text for routeResultsTitle."
+  },
+  "routeDistance": "Distanza",
+  "@routeDistance": {
+    "description": "Localized text for routeDistance."
+  },
+  "routeDuration": "Durata",
+  "@routeDuration": {
+    "description": "Localized text for routeDuration."
+  },
+  "routeNavigation": "Dettagli navigazione",
+  "@routeNavigation": {
+    "description": "Localized text for routeNavigation."
+  },
+  "routeStartMunicipality": "Comune di partenza",
+  "@routeStartMunicipality": {
+    "description": "Localized text for routeStartMunicipality."
+  },
+  "routeEnterMunicipality": "Entri nel comune di",
+  "@routeEnterMunicipality": {
+    "description": "Localized text for routeEnterMunicipality."
+  },
+  "routeError": "Errore: {error}",
+  "@routeError": {
+    "description": "Localized text for routeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  }
+}

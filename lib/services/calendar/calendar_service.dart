@@ -15,7 +15,7 @@ class CalendarService {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_eventsKey);
     if (jsonString == null) return [];
-    
+
     try {
       final List<dynamic> list = jsonDecode(jsonString);
       return list.map((e) => CalendarEvent.fromJson(e)).toList();
@@ -28,7 +28,7 @@ class CalendarService {
     final events = await getEvents();
     events.add(event);
     await _saveEvents(events);
-    
+
     try {
       await _syncToDeviceCalendar(event);
     } catch (e) {
@@ -41,30 +41,35 @@ class CalendarService {
     var permissionsGranted = await deviceCalendarPlugin.hasPermissions();
     if (permissionsGranted.isSuccess && !(permissionsGranted.data ?? false)) {
       permissionsGranted = await deviceCalendarPlugin.requestPermissions();
-      if (!permissionsGranted.isSuccess || !(permissionsGranted.data ?? false)) {
+      if (!permissionsGranted.isSuccess ||
+          !(permissionsGranted.data ?? false)) {
         return;
       }
     }
 
     final calendarsResult = await deviceCalendarPlugin.retrieveCalendars();
-    if (!calendarsResult.isSuccess || calendarsResult.data == null || calendarsResult.data!.isEmpty) {
+    if (!calendarsResult.isSuccess ||
+        calendarsResult.data == null ||
+        calendarsResult.data!.isEmpty) {
       return;
     }
 
     dc.Calendar? calendar;
     try {
-      calendar = calendarsResult.data!.firstWhere((c) => (c.isDefault ?? false) && !(c.isReadOnly ?? true));
+      calendar = calendarsResult.data!
+          .firstWhere((c) => (c.isDefault ?? false) && !(c.isReadOnly ?? true));
     } catch (_) {
       try {
-        calendar = calendarsResult.data!.firstWhere((c) => !(c.isReadOnly ?? true));
+        calendar =
+            calendarsResult.data!.firstWhere((c) => !(c.isReadOnly ?? true));
       } catch (_) {}
     }
-    
+
     if (calendar == null) return;
 
     final location = tz.getLocation('Europe/Rome');
     final eventDate = tz.TZDateTime.from(event.date, location);
-    
+
     final deviceEvent = dc.Event(
       calendar.id,
       title: event.text,
@@ -91,16 +96,17 @@ class CalendarService {
 
   Future<List<CalendarEvent>> getEventsForDate(DateTime date) async {
     final events = await getEvents();
-    return events.where((e) => 
-      e.date.year == date.year && 
-      e.date.month == date.month && 
-      e.date.day == date.day
-    ).toList();
+    return events
+        .where((e) =>
+            e.date.year == date.year &&
+            e.date.month == date.month &&
+            e.date.day == date.day)
+        .toList();
   }
 
   String? getHoliday(DateTime date, String languageCode) {
     if (languageCode != 'it') return null; // Fallback per ora solo italiano
-    
+
     final day = date.day;
     final month = date.month;
 
@@ -114,7 +120,7 @@ class CalendarService {
     if (day == 8 && month == 12) return "Immacolata Concezione";
     if (day == 25 && month == 12) return "Natale";
     if (day == 26 && month == 12) return "Santo Stefano";
-    
+
     // Non calcoliamo la Pasqua per semplicità, ma potremmo aggiungerla in futuro.
     return null;
   }
@@ -142,10 +148,25 @@ class CalendarService {
     if (saints.containsKey(key)) return saints[key];
 
     try {
-      final months = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
+      final months = [
+        "gennaio",
+        "febbraio",
+        "marzo",
+        "aprile",
+        "maggio",
+        "giugno",
+        "luglio",
+        "agosto",
+        "settembre",
+        "ottobre",
+        "novembre",
+        "dicembre"
+      ];
       final day = date.day.toString().padLeft(2, '0');
-      final url = "https://www.santodelgiorno.it/$day/${months[date.month - 1]}/";
-      final res = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
+      final url =
+          "https://www.santodelgiorno.it/$day/${months[date.month - 1]}/";
+      final res =
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
       if (res.statusCode == 200) {
         final saint = _extractSaintFromHtml(res.body);
         if (saint != null) return saint;
@@ -160,7 +181,8 @@ class CalendarService {
     final primarySaint = _cleanSaintName(primaryName);
     if (primarySaint != null) return primarySaint;
 
-    final bodyText = document.body?.text ?? document.documentElement?.text ?? html;
+    final bodyText =
+        document.body?.text ?? document.documentElement?.text ?? html;
     final lines = bodyText
         .split('\n')
         .map(_cleanSaintLine)
@@ -179,10 +201,7 @@ class CalendarService {
   }
 
   String _cleanSaintLine(String value) {
-    return value
-        .replaceAll('\u00a0', ' ')
-        .replaceAll('\t', ' ')
-        .trim();
+    return value.replaceAll('\u00a0', ' ').replaceAll('\t', ' ').trim();
   }
 
   String? _cleanSaintName(String? value) {
@@ -238,13 +257,21 @@ class CalendarService {
       "La única forma de hacer un gran trabajo es amar lo que haces. - Steve Jobs",
       "Cada día es una nueva oportunidad para cambiar tu vida. - Anónimo",
     ];
-    
+
     List<String> list;
     switch (languageCode) {
-      case 'it': list = quotesIt; break;
-      case 'fr': list = quotesFr; break;
-      case 'es': list = quotesEs; break;
-      default: list = quotesEn; break;
+      case 'it':
+        list = quotesIt;
+        break;
+      case 'fr':
+        list = quotesFr;
+        break;
+      case 'es':
+        list = quotesEs;
+        break;
+      default:
+        list = quotesEn;
+        break;
     }
     // Usiamo il numero di giorni dall'epoca (1970) per ciclare in modo perfetto
     // su tutte le frasi nell'array in ordine, così da garantire una frase diversa ogni giorno.

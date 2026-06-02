@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/ui_audiodescription_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import 'audiodescription_film_screen.dart';

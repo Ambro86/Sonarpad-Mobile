@@ -18,7 +18,8 @@ import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
-  const NewsWebViewScreen({super.key, required this.article, required this.language});
+  const NewsWebViewScreen(
+      {super.key, required this.article, required this.language});
 
   final NewsArticle article;
   final NewsLanguage language;
@@ -64,7 +65,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<void> _saveArticle() async {
     if (_readerText == null) return;
     try {
-      final safeName = widget.article.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
+      final safeName =
+          widget.article.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
       final titleSafe = '$safeName.txt';
       final service = DocumentLibraryService();
       await service.load();
@@ -138,9 +140,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           },
           onNavigationRequest: (NavigationRequest request) {
             final url = request.url.toLowerCase();
-            if (url.contains('player') || 
-                url.contains('video') || 
-                url.contains('youtube.com/embed') || 
+            if (url.contains('player') ||
+                url.contains('video') ||
+                url.contains('youtube.com/embed') ||
                 url.contains('mediaset.it/player') ||
                 url.contains('dailymotion.com/embed')) {
               return NavigationDecision.prevent;
@@ -271,7 +273,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<void> _loadReaderArticle() async {
     try {
-      final content = await _newsService.fetchArticleContent(widget.article, language: widget.language);
+      final content = await _newsService.fetchArticleContent(widget.article,
+          language: widget.language);
       if (!mounted) return;
       final text = content.text.trim();
       setState(() {
@@ -315,7 +318,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<String?> _extractReaderArticleText() async {
-    final content = await _newsService.fetchArticleContent(widget.article, language: widget.language);
+    final content = await _newsService.fetchArticleContent(widget.article,
+        language: widget.language);
     final text = _cleanVisibleText(content.text);
     return text.length >= 400 ? text : null;
   }
@@ -492,7 +496,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     setState(() => _status = l10n.loadingArticle);
     try {
-      final content = await _newsService.fetchArticleContent(widget.article, language: widget.language);
+      final content = await _newsService.fetchArticleContent(widget.article,
+          language: widget.language);
       if (content.text.trim().length >= 200) return content.text.trim();
     } catch (e) {
       debugPrint('Sonarpad TTS: article HTTP extraction failed: $e');
@@ -543,7 +548,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       if (engine == 'system') {
         if (Platform.isIOS) {
           try {
-            await _ttsCommands.invokeMethod('setupMagicTap', widget.article.title);
+            await _ttsCommands.invokeMethod(
+                'setupMagicTap', widget.article.title);
           } catch (e) {
             debugPrint('Errore setupMagicTap $e');
           }
@@ -591,7 +597,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           for (var i = 0; i < chunks.length; i++) {
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
-            final file = await _tts.speakToFile(text: textToSpeak, voice: voice);
+            final file =
+                await _tts.speakToFile(text: textToSpeak, voice: voice);
             final size = await file.length();
             debugPrint(
               'Sonarpad TTS: web chunk ${i + 1}/${chunks.length} ready '
@@ -743,7 +750,8 @@ class _ReaderArticleView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final paragraphs = _dropLeadingDuplicateTitle(title, readerParagraphs(text));
+    final paragraphs =
+        _dropLeadingDuplicateTitle(title, readerParagraphs(text));
 
     return Semantics(
       label: l10n.articleTextSemantics,

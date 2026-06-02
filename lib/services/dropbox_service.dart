@@ -87,7 +87,7 @@ class DropboxService {
 
   Future<List<Map<String, dynamic>>> listFolder(String path) async {
     if (_accessToken == null) throw Exception('Non autenticato');
-    
+
     final response = await http.post(
       Uri.https('api.dropboxapi.com', '/2/files/list_folder'),
       headers: {

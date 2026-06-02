@@ -50,7 +50,7 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
 
     try {
       final response = await _bdCiechiService.identify(username, password);
-      
+
       // Save credentials if successful
       await _settings.setBdCiechiUsername(username);
       await _settings.setBdCiechiPassword(password);
@@ -132,7 +132,8 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
                         child: Text(
                           _errorMessage!,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
+                            color:
+                                Theme.of(context).colorScheme.onErrorContainer,
                           ),
                         ),
                       ),
@@ -162,7 +163,8 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
                         minimumSize: const Size.fromHeight(56),
                       ),
                       onPressed: _onLoginPressed,
-                      child: const Text('Accedi', style: TextStyle(fontSize: 18)),
+                      child:
+                          const Text('Accedi', style: TextStyle(fontSize: 18)),
                     ),
                     const SizedBox(height: 16),
                     TextButton(
@@ -176,14 +178,17 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
                               TextButton(
                                 onPressed: () {
                                   Navigator.pop(context);
-                                  launchUrl(Uri.parse('https://www.salottopertutti.it/login/signupform.asp'));
+                                  launchUrl(Uri.parse(
+                                      'https://www.salottopertutti.it/login/signupform.asp'));
                                 },
-                                child: const Text('Iscriviti a salottopertutti.it'),
+                                child: const Text(
+                                    'Iscriviti a salottopertutti.it'),
                               ),
                               TextButton(
                                 onPressed: () {
                                   Navigator.pop(context);
-                                  launchUrl(Uri.parse('https://www.bdciechi.it/iscrizione/'));
+                                  launchUrl(Uri.parse(
+                                      'https://www.bdciechi.it/iscrizione/'));
                                 },
                                 child: const Text('Iscriviti a bdciechi.it'),
                               ),
@@ -195,7 +200,9 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
                           ),
                         );
                       },
-                      child: const Text('Iscriviti a Bdciechi o Salotto per tutti', style: TextStyle(fontSize: 16)),
+                      child: const Text(
+                          'Iscriviti a Bdciechi o Salotto per tutti',
+                          style: TextStyle(fontSize: 16)),
                     ),
                   ],
                 ),

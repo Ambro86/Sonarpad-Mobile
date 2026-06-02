@@ -50,7 +50,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
 
   Future<void> _loadSaint() async {
     final l10n = AppLocalizations.of(context);
-    final s = await _service.getSaintAsync(widget.date, l10n.locale.languageCode);
+    final s = await _service.getSaintAsync(widget.date, l10n.localeName);
     if (mounted) setState(() => _saint = s);
   }
 
@@ -107,11 +107,11 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
 
   Future<void> _readAll() async {
     final l10n = AppLocalizations.of(context);
-    final dayFormat = DateFormat('EEEE d MMMM yyyy', l10n.locale.languageCode);
+    final dayFormat = DateFormat('EEEE d MMMM yyyy', l10n.localeName);
     final titleStr = dayFormat.format(widget.date);
-    
-    final holiday = _service.getHoliday(widget.date, l10n.locale.languageCode);
-    final quote = _service.getQuote(widget.date, l10n.locale.languageCode);
+
+    final holiday = _service.getHoliday(widget.date, l10n.localeName);
+    final quote = _service.getQuote(widget.date, l10n.localeName);
 
     final buffer = StringBuffer();
     buffer.writeln(titleStr);
@@ -122,11 +122,11 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
         buffer.writeln(e.text);
       }
     }
-    
+
     if (_saint != null) {
       buffer.writeln('${l10n.saintOfTheDay}: $_saint');
     }
-    
+
     buffer.writeln(l10n.quoteOfTheDay);
     buffer.writeln(quote);
 
@@ -136,7 +136,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
 
     if (!mounted) return;
     setState(() => _speaking = true);
-    
+
     try {
       final engine = await _settings.loadTtsEngine();
       if (engine == 'system') {
@@ -177,8 +177,8 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final lang = l10n.locale.languageCode;
-    
+    final lang = l10n.localeName;
+
     final dayFormat = DateFormat('EEEE d MMMM yyyy', lang);
     final titleStr = dayFormat.format(widget.date);
     final capTitle = titleStr[0].toUpperCase() + titleStr.substring(1);
@@ -194,7 +194,8 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
             icon: const Icon(Icons.share),
             tooltip: l10n.share,
             onPressed: () {
-              final shareText = '$capTitle\n\n${holiday != null ? '$holiday\n' : ''}${_saint != null ? '${l10n.saintOfTheDay}: $_saint\n\n' : ''}"$quote"';
+              final shareText =
+                  '$capTitle\n\n${holiday != null ? '$holiday\n' : ''}${_saint != null ? '${l10n.saintOfTheDay}: $_saint\n\n' : ''}"$quote"';
               // ignore: deprecated_member_use
               Share.share(shareText);
             },
@@ -207,12 +208,16 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
           Text(capTitle, style: Theme.of(context).textTheme.headlineMedium),
           if (holiday != null) ...[
             const SizedBox(height: 8),
-            Text(holiday, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary)),
+            Text(holiday,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(color: Theme.of(context).colorScheme.primary)),
           ],
           const SizedBox(height: 24),
-          
           if (_events.isNotEmpty) ...[
-            Text(l10n.reminders, style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.reminders,
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             for (final ev in _events)
               Card(
@@ -231,23 +236,25 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
               ),
             const SizedBox(height: 16),
           ],
-          
           FilledButton.icon(
             onPressed: _addReminder,
             icon: const Icon(Icons.add),
             label: Text(l10n.addReminder),
           ),
-
           if (_saint != null) ...[
             const SizedBox(height: 32),
-            Text('${l10n.saintOfTheDay}: $_saint', style: Theme.of(context).textTheme.titleMedium),
+            Text('${l10n.saintOfTheDay}: $_saint',
+                style: Theme.of(context).textTheme.titleMedium),
           ],
-
           const SizedBox(height: 32),
-          Text(l10n.quoteOfTheDay, style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.quoteOfTheDay,
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
-          Text(quote, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic)),
-
+          Text(quote,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(fontStyle: FontStyle.italic)),
         ],
       ),
       bottomNavigationBar: SafeArea(

@@ -70,8 +70,10 @@ class _AudiodescriptionSeriesScreenState
         itemBuilder: (context, index) {
           final item = _episodes[index];
           return ListTile(
-            title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.w600)),
-            subtitle: item.description.isNotEmpty ? Text(item.description) : null,
+            title: Text(item.title,
+                style: const TextStyle(fontWeight: FontWeight.w600)),
+            subtitle:
+                item.description.isNotEmpty ? Text(item.description) : null,
             trailing: const Icon(Icons.play_arrow),
             onTap: () => _play(item),
           );

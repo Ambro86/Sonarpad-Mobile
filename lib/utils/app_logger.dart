@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 class AppLogger {
   static const String _logFileName = 'app_debug_log.txt';
   static Future<void> _writeQueue = Future.value();
-  
+
   static Future<File> get _logFile async {
     final dir = await getApplicationDocumentsDirectory();
     return File(p.join(dir.path, _logFileName));

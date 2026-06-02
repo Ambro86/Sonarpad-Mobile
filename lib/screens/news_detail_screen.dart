@@ -34,7 +34,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   final _voiceDictionary = VoiceDictionaryService();
   bool _speaking = false;
   bool _ttsPaused = false;
-  
+
   static const _ttsCommands = MethodChannel('sonarpad/tts_commands');
   static const _ttsEvents = EventChannel('sonarpad/tts_events');
   StreamSubscription? _ttsEventsSub;
@@ -132,7 +132,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       if (engine == 'system') {
         if (Platform.isIOS) {
           try {
-            await _ttsCommands.invokeMethod('setupMagicTap', widget.article.title);
+            await _ttsCommands.invokeMethod(
+                'setupMagicTap', widget.article.title);
           } catch (e) {
             debugPrint('Errore setupMagicTap $e');
           }
@@ -184,7 +185,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           for (var i = 0; i < chunks.length; i++) {
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
-            final file = await _tts.speakToFile(text: textToSpeak, voice: voice);
+            final file =
+                await _tts.speakToFile(text: textToSpeak, voice: voice);
             final size = await file.length();
             debugPrint(
               'Sonarpad TTS: chunk ${i + 1}/${chunks.length} ready '
@@ -282,7 +284,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           OutlinedButton.icon(
             onPressed: () => AccessibilityFeedbackService.push(
               context,
-              builder: (_) => NewsWebViewScreen(article: article, language: widget.language),
+              builder: (_) => NewsWebViewScreen(
+                  article: article, language: widget.language),
               routeName: 'news-webview',
             ),
             icon: const Icon(Icons.article),

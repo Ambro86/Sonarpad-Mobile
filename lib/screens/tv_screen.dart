@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/ui_radio_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
 import 'favorite_tvs_screen.dart';

@@ -15,10 +15,12 @@ class OrariAperturaResultsScreen extends StatefulWidget {
   });
 
   @override
-  State<OrariAperturaResultsScreen> createState() => _OrariAperturaResultsScreenState();
+  State<OrariAperturaResultsScreen> createState() =>
+      _OrariAperturaResultsScreenState();
 }
 
-class _OrariAperturaResultsScreenState extends State<OrariAperturaResultsScreen> {
+class _OrariAperturaResultsScreenState
+    extends State<OrariAperturaResultsScreen> {
   final OrariAperturaService _orariService = OrariAperturaService();
   List<OrariSearchResult> _results = [];
   bool _isLoading = true;
@@ -58,7 +60,9 @@ class _OrariAperturaResultsScreenState extends State<OrariAperturaResultsScreen>
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? Center(child: Text(_errorMessage!, style: TextStyle(color: Colors.red, fontSize: 18)))
+              ? Center(
+                  child: Text(_errorMessage!,
+                      style: TextStyle(color: Colors.red, fontSize: 18)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16.0),
                   itemCount: _results.length,
@@ -66,14 +70,19 @@ class _OrariAperturaResultsScreenState extends State<OrariAperturaResultsScreen>
                     final result = _results[index];
                     return Card(
                       child: ListTile(
-                        title: Text(result.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        title: Text(result.title,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (result.address.isNotEmpty)
-                              Text(result.address, style: TextStyle(fontSize: 14)),
+                              Text(result.address,
+                                  style: TextStyle(fontSize: 14)),
                             if (result.status.isNotEmpty)
-                              Text(result.status, style: TextStyle(fontSize: 14, color: Colors.blueGrey)),
+                              Text(result.status,
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.blueGrey)),
                           ],
                         ),
                         onTap: () {

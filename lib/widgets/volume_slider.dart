@@ -46,9 +46,11 @@ class _VolumeSliderState extends State<VolumeSlider> {
 
     final int percentage = (_volume * 100).round();
     final String labelStr = 'Volume: $percentage%';
-    
-    final int increasedPercentage = ((_volume + 0.1).clamp(0.0, 1.0) * 100).round();
-    final int decreasedPercentage = ((_volume - 0.1).clamp(0.0, 1.0) * 100).round();
+
+    final int increasedPercentage =
+        ((_volume + 0.1).clamp(0.0, 1.0) * 100).round();
+    final int decreasedPercentage =
+        ((_volume - 0.1).clamp(0.0, 1.0) * 100).round();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

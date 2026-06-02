@@ -27,7 +27,8 @@ class DocumentLibraryService {
     return dir;
   }
 
-  Future<DocumentItem> importFile(File source, {String? originalName, String? parentId}) async {
+  Future<DocumentItem> importFile(File source,
+      {String? originalName, String? parentId}) async {
     final sourceName = originalName?.trim().isNotEmpty == true
         ? originalName!.trim()
         : p.basename(source.path);
@@ -63,10 +64,11 @@ class DocumentLibraryService {
     return doc;
   }
 
-  Future<void> importZip(File zipFile, {String? folderName, String? parentId}) async {
+  Future<void> importZip(File zipFile,
+      {String? folderName, String? parentId}) async {
     final bytes = await zipFile.readAsBytes();
     final archive = ZipDecoder().decodeBytes(bytes);
-    
+
     final name = folderName ?? p.basenameWithoutExtension(zipFile.path);
     final folder = await createFolder(name, parentId: parentId);
 
@@ -76,15 +78,18 @@ class DocumentLibraryService {
     for (final file in archive) {
       if (file.isFile) {
         final filename = p.basename(file.name);
-        if (filename.startsWith('.') || filename.startsWith('__MACOSX')) continue;
-        
+        if (filename.startsWith('.') || filename.startsWith('__MACOSX')) {
+          continue;
+        }
+
         final ext = p.extension(filename).replaceFirst('.', '').toLowerCase();
         if (allowed.contains(ext)) {
           final data = file.content as List<int>;
           final tempFile = File(p.join(tempDir.path, filename));
           await tempFile.writeAsBytes(data);
-          
-          final doc = await importFile(tempFile, originalName: filename, parentId: folder.id);
+
+          final doc = await importFile(tempFile,
+              originalName: filename, parentId: folder.id);
           await add(doc);
         }
       }
@@ -169,8 +174,11 @@ class DocumentLibraryService {
   ) async {
     await AppLogger.log('Avviato recupero da directory: ${sourceDir.path}');
     if (!await sourceDir.exists()) {
-      await AppLogger.log("La directory ${sourceDir.path} non esiste o l'app non ha i permessi (Scoped Storage su Android).");
-      throw FileSystemException('Cartella inaccessibile per via delle protezioni di sistema (Android Scoped Storage). Prova ad importare i file singolarmente.', sourceDir.path);
+      await AppLogger.log(
+          "La directory ${sourceDir.path} non esiste o l'app non ha i permessi (Scoped Storage su Android).");
+      throw FileSystemException(
+          'Cartella inaccessibile per via delle protezioni di sistema (Android Scoped Storage). Prova ad importare i file singolarmente.',
+          sourceDir.path);
     }
 
     final allowed = allowedExtensions.map((e) => e.toLowerCase()).toSet();
@@ -198,7 +206,8 @@ class DocumentLibraryService {
 
         final ext = p.extension(basename).replaceFirst('.', '').toLowerCase();
         if (!allowed.contains(ext)) {
-          await AppLogger.log('Scartato (estensione non supportata $ext): $basename');
+          await AppLogger.log(
+              'Scartato (estensione non supportata $ext): $basename');
           continue;
         }
 
@@ -222,10 +231,13 @@ class DocumentLibraryService {
       }
     } catch (e) {
       await AppLogger.log('Errore durante la scansione della cartella: $e');
-      throw FileSystemException('Errore di lettura della cartella (potenziali limiti permessi): $e', sourceDir.path);
+      throw FileSystemException(
+          'Errore di lettura della cartella (potenziali limiti permessi): $e',
+          sourceDir.path);
     }
 
-    await AppLogger.log('Recuperati ${recovered.length} documenti da ${sourceDir.path}.');
+    await AppLogger.log(
+        'Recuperati ${recovered.length} documenti da ${sourceDir.path}.');
     if (recovered.isEmpty) return 0;
     _documents = [...recovered, ..._documents];
     await _save();
@@ -327,13 +339,15 @@ class DocumentLibraryService {
     while (added) {
       added = false;
       for (final d in _documents) {
-        if (d.parentId != null && toRemove.contains(d.parentId) && !toRemove.contains(d.id)) {
+        if (d.parentId != null &&
+            toRemove.contains(d.parentId) &&
+            !toRemove.contains(d.id)) {
           toRemove.add(d.id);
           added = true;
         }
       }
     }
-    
+
     for (final docId in toRemove) {
       try {
         final doc = _documents.firstWhere((d) => d.id == docId);
@@ -341,7 +355,7 @@ class DocumentLibraryService {
           final resolvedPath = await resolveFilePath(doc);
           final file = File(resolvedPath);
           if (await file.exists()) await file.delete();
-          
+
           final editedPath = await resolveEditedFilePath(doc);
           if (editedPath != null) {
             final editedFile = File(editedPath);

@@ -6,17 +6,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:string_similarity/string_similarity.dart';
 import 'aifa_cache_manager.dart';
 
-enum DrugMatchLevel {
-  confirmed,
-  strong,
-  possible,
-  unknown
-}
+enum DrugMatchLevel { confirmed, strong, possible, unknown }
 
 class DrugMatch {
   final AifaDrugResult? drug;
   final DrugMatchLevel level;
-  
+
   DrugMatch(this.drug, this.level);
 }
 
@@ -73,16 +68,17 @@ class AifaService {
     return results;
   }
 
-  Future<DrugMatch> searchByAic(String aic, {void Function()? onNetworkFallback}) async {
+  Future<DrugMatch> searchByAic(String aic,
+      {void Function()? onNetworkFallback}) async {
     final cached = await AifaCacheManager().getDrugByAic(aic);
     if (cached != null) {
       return DrugMatch(cached, DrugMatchLevel.confirmed);
     }
-    
+
     if (onNetworkFallback != null) {
       onNetworkFallback();
     }
-    
+
     try {
       final results = await searchDrugs(aic);
       if (results.isNotEmpty) {
@@ -97,7 +93,7 @@ class AifaService {
   }
 
   Future<DrugMatch> searchByGtin(String gtin) async {
-    // Senza una tabella di mapping GTIN -> AIC validata, 
+    // Senza una tabella di mapping GTIN -> AIC validata,
     // un GTIN isolato non può garantire il farmaco in modo "Strong".
     return DrugMatch(null, DrugMatchLevel.unknown);
   }
@@ -107,8 +103,9 @@ class AifaService {
     if (ocrNorm.length < 3) return DrugMatch(null, DrugMatchLevel.unknown);
 
     List<AifaDrugResult> results = [];
-    
-    final cached = await AifaCacheManager().searchDrugsByNormalizedName(ocrNorm.toUpperCase());
+
+    final cached = await AifaCacheManager()
+        .searchDrugsByNormalizedName(ocrNorm.toUpperCase());
     if (cached.isNotEmpty) {
       results = cached;
     } else {
@@ -123,24 +120,25 @@ class AifaService {
     }
 
     if (results.isEmpty) return DrugMatch(null, DrugMatchLevel.unknown);
-    
+
     results.sort((a, b) {
       final scoreA = a.denominazione.toLowerCase().similarityTo(ocrNorm);
       final scoreB = b.denominazione.toLowerCase().similarityTo(ocrNorm);
       return scoreB.compareTo(scoreA);
     });
-    
+
     final bestResult = results[0];
     final bestName = bestResult.denominazione.toLowerCase();
     final bestScore = bestName.similarityTo(ocrNorm);
-    
+
     double secondScore = 0.0;
     if (results.length > 1) {
-      secondScore = results[1].denominazione.toLowerCase().similarityTo(ocrNorm);
+      secondScore =
+          results[1].denominazione.toLowerCase().similarityTo(ocrNorm);
     }
-    
+
     bool isValid = false;
-    
+
     if (ocrNorm.length <= 4) {
       // Massima rigidità per nomi corti come OKI
       if (bestName == ocrNorm) isValid = true;
@@ -149,14 +147,14 @@ class AifaService {
         isValid = true;
       } else if (bestScore >= 0.86) {
         // Regole speciali se sotto 0.92 ma sopra 0.86
-        if (ocrNorm.length >= 6 && 
-            ocrNorm[0] == bestName[0] && 
+        if (ocrNorm.length >= 6 &&
+            ocrNorm[0] == bestName[0] &&
             (bestScore - secondScore) >= 0.08) {
           isValid = true;
         }
       }
     }
-    
+
     if (isValid) {
       return DrugMatch(bestResult, DrugMatchLevel.possible);
     }

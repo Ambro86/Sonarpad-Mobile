@@ -117,9 +117,8 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
           FilledButton.icon(
             onPressed: _addingCommunity ? null : _addCommunityRadio,
             icon: const Icon(Icons.cloud_upload),
-            label: Text(_addingCommunity
-                ? l10n.radioSearching
-                : l10n.radioAddSubmit),
+            label: Text(
+                _addingCommunity ? l10n.radioSearching : l10n.radioAddSubmit),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),

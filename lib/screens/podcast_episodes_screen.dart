@@ -80,7 +80,6 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-
                       onTap: () => _openEpisode(episode),
                     ),
                   );

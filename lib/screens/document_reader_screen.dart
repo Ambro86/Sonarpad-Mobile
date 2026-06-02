@@ -256,7 +256,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             }
             final textToSpeak =
                 _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
-            final file = await _tts.speakToFile(text: textToSpeak, voice: voice);
+            final file =
+                await _tts.speakToFile(text: textToSpeak, voice: voice);
             if (!controller.isClosed &&
                 mounted &&
                 _speaking &&
@@ -667,8 +668,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                       explicitChildNodes: true,
                       child: CustomScrollView(
                         controller: _scrollController,
-                        scrollCacheExtent:
-                            const ScrollCacheExtent.pixels(4000), // Precarica i blocchi successivi per VoiceOver
+                        scrollCacheExtent: const ScrollCacheExtent.pixels(
+                            4000), // Precarica i blocchi successivi per VoiceOver
                         // BouncingScrollPhysics → flick naturale su iPhone
                         physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics(),
@@ -796,13 +797,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
       final Map<CustomSemanticsAction, VoidCallback> actions = {};
       if (_bookmarkIndex > 0) {
-        actions[
-          CustomSemanticsAction(label: l10n.documentReplaceBookmarkAction)
-        ] = () => _setBookmark(i);
+        actions[CustomSemanticsAction(
+            label: l10n.documentReplaceBookmarkAction)] = () => _setBookmark(i);
       } else {
-        actions[
-          CustomSemanticsAction(label: l10n.documentSetBookmarkAction)
-        ] = () => _setBookmark(i);
+        actions[CustomSemanticsAction(label: l10n.documentSetBookmarkAction)] =
+            () => _setBookmark(i);
       }
 
       widgets.add(
@@ -912,7 +911,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       );
     }
   }
-
 }
 
 // ---------------------------------------------------------------------------

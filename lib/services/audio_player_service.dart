@@ -48,93 +48,111 @@ class AudioPlayerService {
 
   void _initBookmarkListener() {
     _player.durationStream.listen((d) {
-       AppLogger.log('Sonarpad audio: durationStream emitted $d');
-       _currentDuration = d;
+      AppLogger.log('Sonarpad audio: durationStream emitted $d');
+      _currentDuration = d;
     }, onError: (Object error, StackTrace stackTrace) {
-       AppLogger.log('Sonarpad audio: durationStream error: $error');
+      AppLogger.log('Sonarpad audio: durationStream error: $error');
     }, onDone: () {
-       AppLogger.log('Sonarpad audio: durationStream done');
+      AppLogger.log('Sonarpad audio: durationStream done');
     });
     _player.playerStateStream.listen((state) {
-       AppLogger.log('Sonarpad audio: playerStateStream emitted $state');
-       if (state.processingState == ProcessingState.completed || !state.playing) {
-          _saveCurrentBookmark();
-       }
+      AppLogger.log('Sonarpad audio: playerStateStream emitted $state');
+      if (state.processingState == ProcessingState.completed ||
+          !state.playing) {
+        _saveCurrentBookmark();
+      }
     }, onError: (Object error, StackTrace stackTrace) {
-       AppLogger.log('Sonarpad audio: playerStateStream error: $error');
+      AppLogger.log('Sonarpad audio: playerStateStream error: $error');
     }, onDone: () {
-       AppLogger.log('Sonarpad audio: playerStateStream done');
+      AppLogger.log('Sonarpad audio: playerStateStream done');
     });
     _positionSubscription = _player.positionStream.listen((pos) async {
-       if (_currentMediaId != null && _currentSessionType == AudioSessionType.playback) {
-          final currentSecond = pos.inSeconds;
-          // Salva ogni 15 secondi, assicurandoci di non martellare il disco
-          if (currentSecond > 0 && currentSecond % 15 == 0) {
-              if (_lastSavedBookmarkSecond != currentSecond) {
-                  _lastSavedBookmarkSecond = currentSecond;
-                  AppLogger.log('Sonarpad audio: background auto-save at $currentSecond sec');
-                  await _saveCurrentBookmark();
-              }
+      if (_currentMediaId != null &&
+          _currentSessionType == AudioSessionType.playback) {
+        final currentSecond = pos.inSeconds;
+        // Salva ogni 15 secondi, assicurandoci di non martellare il disco
+        if (currentSecond > 0 && currentSecond % 15 == 0) {
+          if (_lastSavedBookmarkSecond != currentSecond) {
+            _lastSavedBookmarkSecond = currentSecond;
+            AppLogger.log(
+                'Sonarpad audio: background auto-save at $currentSecond sec');
+            await _saveCurrentBookmark();
           }
-       }
+        }
+      }
     }, onError: (Object error, StackTrace stackTrace) {
-       AppLogger.log('Sonarpad audio: positionStream error: $error');
+      AppLogger.log('Sonarpad audio: positionStream error: $error');
     }, onDone: () {
-       AppLogger.log('Sonarpad audio: positionStream done');
+      AppLogger.log('Sonarpad audio: positionStream done');
     });
   }
 
   Future<void> _saveCurrentBookmark() async {
-    if (_currentMediaId == null || _currentSessionType != AudioSessionType.playback) return;
-    
-    final pos = _player.position;
-    if (pos.inSeconds < 3) return; // Abbassato per permettere test rapidi
+    if (_currentMediaId == null ||
+        _currentSessionType != AudioSessionType.playback) {
+      return;
+    }
 
-    AppLogger.log('Sonarpad audio: _saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration?.inSeconds}s');
+    final pos = _player.position;
+    if (pos.inSeconds < 3) {
+      return; // Abbassato per permettere test rapidi
+    }
+
+    AppLogger.log(
+        'Sonarpad audio: _saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration?.inSeconds}s');
 
     if (await _settings.isAutoBookmarkEnabled()) {
-       bool isFinished = false;
-       
-       if (_currentDuration != null && _currentDuration!.inSeconds > 0) {
-           final durationSecs = _currentDuration!.inSeconds;
-           final remaining = durationSecs - pos.inSeconds;
-           
-           if (durationSecs > 600) {
-              if (remaining < 30) isFinished = true;
-           } else {
-              if ((pos.inSeconds / durationSecs) > 0.95) isFinished = true;
-           }
-       }
+      bool isFinished = false;
 
-       if (isFinished) {
-          AppLogger.log('Sonarpad audio: _saveCurrentBookmark() saving 0 (finished)');
-          await _settings.saveMediaBookmark(_currentMediaId!, 0);
-       } else {
-          AppLogger.log('Sonarpad audio: _saveCurrentBookmark() saving ${pos.inSeconds}');
-          await _settings.saveMediaBookmark(_currentMediaId!, pos.inSeconds);
-       }
+      if (_currentDuration != null && _currentDuration!.inSeconds > 0) {
+        final durationSecs = _currentDuration!.inSeconds;
+        final remaining = durationSecs - pos.inSeconds;
+
+        if (durationSecs > 600) {
+          if (remaining < 30) {
+            isFinished = true;
+          }
+        } else {
+          if ((pos.inSeconds / durationSecs) > 0.95) {
+            isFinished = true;
+          }
+        }
+      }
+
+      if (isFinished) {
+        AppLogger.log(
+            'Sonarpad audio: _saveCurrentBookmark() saving 0 (finished)');
+        await _settings.saveMediaBookmark(_currentMediaId!, 0);
+      } else {
+        AppLogger.log(
+            'Sonarpad audio: _saveCurrentBookmark() saving ${pos.inSeconds}');
+        await _settings.saveMediaBookmark(_currentMediaId!, pos.inSeconds);
+      }
     }
   }
 
   Stream<bool> get playingStream => _player.playingStream;
 
   Stream<Duration> get positionStream => _player.positionStream;
-  
+
   Stream<Duration?> get durationStream => _player.durationStream;
 
   bool get isPlaying => _player.playing;
 
   Future<void> _prepareAudioSession(AudioSessionType type) async {
     if (_pendingDispose != null) {
-      AppLogger.log('Sonarpad audio: waiting for previous player to dispose...');
+      AppLogger.log(
+          'Sonarpad audio: waiting for previous player to dispose...');
       await _pendingDispose;
       AppLogger.log('Sonarpad audio: previous player dispose completed');
     }
 
     final stopwatch = Stopwatch()..start();
-    AppLogger.log('Sonarpad audio: prepare session start type=$type state=$_playerDebugState');
+    AppLogger.log(
+        'Sonarpad audio: prepare session start type=$type state=$_playerDebugState');
     final session = await AudioSession.instance;
-    AppLogger.log('Sonarpad audio: AudioSession.instance completed after ${stopwatch.elapsedMilliseconds}ms');
+    AppLogger.log(
+        'Sonarpad audio: AudioSession.instance completed after ${stopwatch.elapsedMilliseconds}ms');
 
     if (!_sessionReady || _currentSessionType != type) {
       if (type == AudioSessionType.playback) {
@@ -174,7 +192,8 @@ class AudioPlayerService {
       await _player.setVolume(1);
       AppLogger.log('Sonarpad audio: player volume set for speech');
     }
-    AppLogger.log('Sonarpad audio: prepare session done after ${stopwatch.elapsedMilliseconds}ms state=$_playerDebugState');
+    AppLogger.log(
+        'Sonarpad audio: prepare session done after ${stopwatch.elapsedMilliseconds}ms state=$_playerDebugState');
   }
 
   Future<void> setVolume(double volume) async {
@@ -229,9 +248,11 @@ class AudioPlayerService {
     String? mediaId,
   }) async {
     if (_pendingDispose != null) {
-      AppLogger.log('Sonarpad audio: waiting for previous player to dispose in setUrl...');
+      AppLogger.log(
+          'Sonarpad audio: waiting for previous player to dispose in setUrl...');
       await _pendingDispose;
-      AppLogger.log('Sonarpad audio: previous player dispose completed in setUrl');
+      AppLogger.log(
+          'Sonarpad audio: previous player dispose completed in setUrl');
     }
     String itemTitle = title ??
         (sessionType == AudioSessionType.speech
@@ -271,28 +292,34 @@ class AudioPlayerService {
       'duration=$duration state=$_playerDebugState',
     );
 
-    if (sessionType == AudioSessionType.playback && _currentMediaId != null && await _settings.isAutoBookmarkEnabled()) {
-       AppLogger.log('Sonarpad audio: bookmark lookup start mediaId=$_currentMediaId title="$itemTitle"');
-       final savedPos = await _settings.getMediaBookmark(_currentMediaId!);
-       AppLogger.log('Sonarpad audio: bookmark lookup completed savedPos=$savedPos title="$itemTitle"');
-       if (savedPos != null && savedPos >= 3) {
-          bool shouldSeek = true;
-          if (duration != null && duration.inSeconds > 0) {
-             if (savedPos >= (duration.inSeconds - 30)) {
-                shouldSeek = false;
-             }
+    if (sessionType == AudioSessionType.playback &&
+        _currentMediaId != null &&
+        await _settings.isAutoBookmarkEnabled()) {
+      AppLogger.log(
+          'Sonarpad audio: bookmark lookup start mediaId=$_currentMediaId title="$itemTitle"');
+      final savedPos = await _settings.getMediaBookmark(_currentMediaId!);
+      AppLogger.log(
+          'Sonarpad audio: bookmark lookup completed savedPos=$savedPos title="$itemTitle"');
+      if (savedPos != null && savedPos >= 3) {
+        bool shouldSeek = true;
+        if (duration != null && duration.inSeconds > 0) {
+          if (savedPos >= (duration.inSeconds - 30)) {
+            shouldSeek = false;
           }
-          
-          if (shouldSeek) {
-             try {
-                AppLogger.log('Sonarpad audio: bookmark seek start seconds=$savedPos');
-                await _player.seek(Duration(seconds: savedPos));
-                AppLogger.log('Sonarpad audio: bookmark seek completed state=$_playerDebugState');
-             } catch (e) {
-                AppLogger.log('Sonarpad audio: seek error: $e');
-             }
+        }
+
+        if (shouldSeek) {
+          try {
+            AppLogger.log(
+                'Sonarpad audio: bookmark seek start seconds=$savedPos');
+            await _player.seek(Duration(seconds: savedPos));
+            AppLogger.log(
+                'Sonarpad audio: bookmark seek completed state=$_playerDebugState');
+          } catch (e) {
+            AppLogger.log('Sonarpad audio: seek error: $e');
           }
-       }
+        }
+      }
     }
   }
 
@@ -303,9 +330,11 @@ class AudioPlayerService {
       await _enableWakelock();
       AppLogger.log('Sonarpad audio: player.play() await start');
       await _player.play();
-      AppLogger.log('Sonarpad audio: play completed after ${stopwatch.elapsedMilliseconds}ms state=$_playerDebugState');
+      AppLogger.log(
+          'Sonarpad audio: play completed after ${stopwatch.elapsedMilliseconds}ms state=$_playerDebugState');
     } else {
-      AppLogger.log('Sonarpad audio: play skipped because stop requested state=$_playerDebugState');
+      AppLogger.log(
+          'Sonarpad audio: play skipped because stop requested state=$_playerDebugState');
     }
   }
 
@@ -593,7 +622,7 @@ class AudioPlayerService {
     final current = _player.position;
     final newPosition = current + duration;
     final max = _player.duration;
-    
+
     if (max != null && max > Duration.zero) {
       await seek(newPosition > max ? max : newPosition);
     } else {
@@ -635,7 +664,8 @@ class AudioPlayerService {
 
   Future<void> seek(Duration position) async {
     if (position.inSeconds < 10 && _currentMediaId != null) {
-       await _settings.saveMediaBookmark(_currentMediaId!, 0); // Cancella bookmark
+      await _settings.saveMediaBookmark(
+          _currentMediaId!, 0); // Cancella bookmark
     }
     await _player.seek(position);
   }

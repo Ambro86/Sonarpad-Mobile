@@ -15,14 +15,16 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   final _service = CalendarService();
   late final ScrollController _scrollController;
-  final int _todayIndex = 10000; // Un numero grande per simulare uno scroll infinito indietro
+  final int _todayIndex =
+      10000; // Un numero grande per simulare uno scroll infinito indietro
   List<CalendarEvent> _allEvents = [];
 
   @override
   void initState() {
     super.initState();
     // Iniziamo al centro della lista (Oggi)
-    _scrollController = ScrollController(initialScrollOffset: _todayIndex * 80.0);
+    _scrollController =
+        ScrollController(initialScrollOffset: _todayIndex * 80.0);
     _loadEvents();
   }
 
@@ -74,14 +76,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
         itemBuilder: (context, index) {
           final offset = index - _todayIndex;
           final date = baseToday.add(Duration(days: offset));
-          
-          final dayFormat = DateFormat('EEEE d MMMM yyyy', l10n.locale.languageCode);
+
+          final dayFormat = DateFormat('EEEE d MMMM yyyy', l10n.localeName);
           final titleStr = dayFormat.format(date);
           final capTitle = titleStr[0].toUpperCase() + titleStr.substring(1);
-          
-          final holiday = _service.getHoliday(date, l10n.locale.languageCode);
-          final dayEvents = _allEvents.where((e) => e.date.year == date.year && e.date.month == date.month && e.date.day == date.day).toList();
-          
+
+          final holiday = _service.getHoliday(date, l10n.localeName);
+          final dayEvents = _allEvents
+              .where((e) =>
+                  e.date.year == date.year &&
+                  e.date.month == date.month &&
+                  e.date.day == date.day)
+              .toList();
+
           String subtitle = '';
           if (holiday != null) subtitle += holiday;
           if (dayEvents.isNotEmpty) {
@@ -101,7 +108,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
           final fullTitle = '$prefix$capTitle';
 
           return ListTile(
-            title: Text(fullTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(fullTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
             trailing: const Icon(Icons.chevron_right),
             onTap: () async {
