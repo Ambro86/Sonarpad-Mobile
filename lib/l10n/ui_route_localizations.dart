@@ -6,10 +6,10 @@ extension UiRouteLocalizations on AppLocalizations {
   bool get _isEs => locale.languageCode == 'es';
 
   String get routeTitle => _isEn
-      ? 'Travel Routes'
+      ? 'Routes'
       : (_isFr
-          ? 'Itinéraires routiers'
-          : (_isEs ? 'Rutas callejeras' : 'Percorsi Stradali'));
+          ? 'Itinéraires'
+          : (_isEs ? 'Rutas' : 'Percorsi'));
   String get routeFrom =>
       _isEn ? 'From' : (_isFr ? 'De' : (_isEs ? 'De' : 'Partenza'));
   String get routeTo => _isEn ? 'To' : (_isFr ? 'À' : (_isEs ? 'A' : 'Destinazione'));
@@ -22,7 +22,7 @@ extension UiRouteLocalizations on AppLocalizations {
   String get routeCountrySpain =>
       _isEn ? 'Spain' : (_isFr ? 'Espagne' : (_isEs ? 'España' : 'Spagna'));
   String get routeVehicle =>
-      _isEn ? 'Vehicle' : (_isFr ? 'Véhicule' : (_isEs ? 'Vehículo' : 'Mezzo'));
+      _isEn ? 'Transport mode' : (_isFr ? 'Mode de transport' : (_isEs ? 'Medio de transporte' : 'Mezzo di trasporto'));
   String get routeType =>
       _isEn ? 'Type' : (_isFr ? 'Type' : (_isEs ? 'Tipo' : 'Tipo'));
   String get routeIncludeMunicipalities => _isEn
@@ -56,7 +56,7 @@ extension UiRouteLocalizations on AppLocalizations {
       : (_isFr ? 'Le plus court' : (_isEs ? 'Más corto' : 'Più corto'));
 
   String get routeCalculate => _isEn
-      ? 'Calculate Route'
+      ? 'Calculate route'
       : (_isFr
           ? 'Calculer l\'itinéraire'
           : (_isEs ? 'Calcular ruta' : 'Calcola percorso'));
@@ -69,21 +69,21 @@ extension UiRouteLocalizations on AppLocalizations {
       ? 'Choose starting point'
       : (_isFr
           ? 'Choisir le départ'
-          : (_isEs ? 'Elige la salida' : 'Scegli punto di partenza'));
+          : (_isEs ? 'Elige el punto de partida' : 'Scegli il punto di partenza'));
   String get routeChooseTo => _isEn
       ? 'Choose destination'
       : (_isFr
           ? 'Choisir la destination'
-          : (_isEs ? 'Elige el destino' : 'Scegli destinazione'));
+          : (_isEs ? 'Elige el destino' : 'Scegli la destinazione'));
   String get routeCancel =>
       _isEn ? 'Cancel' : (_isFr ? 'Annuler' : (_isEs ? 'Cancelar' : 'Annulla'));
   String get routeErrorMissingFields => _isEn
-      ? 'Please enter departure and arrival'
+      ? 'Please enter starting point and destination'
       : (_isFr
-          ? 'Veuillez saisir le départ et l\'arrivée'
+          ? 'Veuillez saisir le point de départ et la destination'
           : (_isEs
-              ? 'Por favor introduce salida y llegada'
-              : 'Inserisci partenza e arrivo'));
+              ? 'Introduce el punto de partida y el destino'
+              : 'Inserisci punto di partenza e destinazione'));
   String get routeErrorFromNotFound => _isEn
       ? 'No result found for the starting address'
       : (_isFr
@@ -100,7 +100,7 @@ extension UiRouteLocalizations on AppLocalizations {
               : 'Nessun risultato trovato per l\'indirizzo di arrivo'));
 
   String get routeResultsTitle => _isEn
-      ? 'Available Routes'
+      ? 'Available routes'
       : (_isFr
           ? 'Itinéraires disponibles'
           : (_isEs ? 'Rutas disponibles' : 'Percorsi disponibili'));
@@ -110,10 +110,10 @@ extension UiRouteLocalizations on AppLocalizations {
   String get routeDuration =>
       _isEn ? 'Duration' : (_isFr ? 'Durée' : (_isEs ? 'Duración' : 'Durata'));
   String get routeNavigation => _isEn
-      ? 'Navigation Details'
+      ? 'Navigation details'
       : (_isFr
           ? 'Détails de la navigation'
-          : (_isEs ? 'Detalles de navegación' : 'Dettagli Navigazione'));
+          : (_isEs ? 'Detalles de navegación' : 'Dettagli navigazione'));
   String get routeStartMunicipality => _isEn
       ? 'Starting municipality'
       : (_isFr

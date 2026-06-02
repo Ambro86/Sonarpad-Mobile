@@ -75,12 +75,12 @@ class AppLocalizations {
           ? 'Recherches et utilitaires'
           : (_isEs ? 'Búsquedas y utilidades' : 'Ricerche e utilità'));
   String get voiceDictionaryTitle => _isEn
-      ? 'Voice Dictionary'
+      ? 'Voice dictionary'
       : (_isFr
           ? 'Dictionnaire vocal'
           : (_isEs ? 'Diccionario y voz' : 'Dizionario vocale'));
   String get voiceDictionaryAdd => _isEn
-      ? 'Add Entries to Dictionary'
+      ? 'Add entries to dictionary'
       : (_isFr
           ? 'Ajouter des entrées au dictionnaire'
           : (_isEs
@@ -95,7 +95,7 @@ class AppLocalizations {
       ? 'Replacement Word'
       : (_isFr
           ? 'Mot de remplacement'
-          : (_isEs ? 'Palabra de reemplazo' : 'Parola in sostituzione'));
+          : (_isEs ? 'Palabra de reemplazo' : 'Parola sostitutiva'));
   String get voiceDictionaryMatchCase => _isEn
       ? 'Match Case'
       : (_isFr
@@ -114,7 +114,7 @@ class AppLocalizations {
       ? 'Dictionary entries'
       : (_isFr
           ? 'Entrées du dictionnaire'
-          : (_isEs ? 'Entradas del diccionario' : 'Voci già aggiunte'));
+          : (_isEs ? 'Entradas del diccionario' : 'Voci del dizionario'));
   String get voiceDictionaryEmpty => _isEn
       ? 'No dictionary entries.'
       : (_isFr
@@ -170,7 +170,7 @@ class AppLocalizations {
       ? 'Compression level'
       : (_isFr
           ? 'Niveau de compression'
-          : (_isEs ? 'Nivel de compresión' : 'Livello compressione'));
+          : (_isEs ? 'Nivel de compresión' : 'Livello di compressione'));
   String get convertMediaReady =>
       _isEn ? 'Ready.' : (_isFr ? 'Prêt.' : (_isEs ? 'Listo.' : 'Pronto.'));
   String get convertMediaRunning => _isEn
@@ -237,17 +237,17 @@ class AppLocalizations {
           ? 'Soutenir le développement de Sonarpad'
           : (_isEs
               ? 'Apoya el desarrollo de Sonarpad'
-              : 'Supporta lo sviluppo di Sonarpad'));
+              : 'Sostieni lo sviluppo di Sonarpad'));
   String get loading => _isEn
       ? 'Loading'
       : (_isFr ? 'Chargement' : (_isEs ? 'Cargando' : 'Caricamento'));
   String get ttsVoiceLanguage => _isEn
-      ? 'TTS Voice Language'
+      ? 'TTS voice language'
       : (_isFr
           ? 'Langue de la voix TTS'
-          : (_isEs ? 'Idioma de la voz TTS' : 'Lingua voci TTS'));
+          : (_isEs ? 'Idioma de la voz TTS' : 'Lingua della voce TTS'));
   String get ttsVoice => _isEn
-      ? 'TTS Voice'
+      ? 'TTS voice'
       : (_isFr ? 'Voix TTS' : (_isEs ? 'Voz TTS' : 'Voce TTS'));
   String get saveSettings => _isEn
       ? 'Save settings'
@@ -287,24 +287,24 @@ class AppLocalizations {
               ? 'El código Sonarpad no es válido. Comprueba que lo hayas copiado sin espacios adicionales.'
               : 'Il codice Sonarpad inserito non è valido. Verifica di averlo copiato senza spazi aggiuntivi.'));
   String get infoDescription => _isEn
-      ? 'Sonarpad is a simple app packed with features. Designed to be accessible for the visually impaired using VoiceOver, here you can listen to news, search and subscribe to podcasts, import Wikipedia articles, add documents to your library, save and edit them. Sonarpad\'s features are constantly updated, and they are all designed to make life easier for the visually impaired.'
+      ? 'Sonarpad is a simple app with many features. Designed to be accessible with VoiceOver for blind and visually impaired people, it lets you listen to news, search for and subscribe to podcasts, import Wikipedia articles, add documents to your library, save them and edit them. Sonarpad is constantly updated, and every feature is designed to make everyday life easier.'
       : (_isFr
-          ? 'Sonarpad est une application simple riche en fonctionnalités. Conçue pour être accessible aux personnes malvoyantes à l\'aide de VoiceOver, vous pouvez ici écouter les actualités, rechercher et vous abonner à des podcasts, importer des articles Wikipedia, ajouter des documents à votre bibliothèque, les enregistrer et les modifier. Les fonctionnalités de Sonarpad sont constamment mises à jour, et sont toutes conçues pour faciliter la vie des malvoyants.'
+          ? 'Sonarpad est une application simple et riche en fonctionnalités. Conçue pour être accessible avec VoiceOver aux personnes aveugles ou malvoyantes, elle permet d’écouter les actualités, de rechercher des podcasts et de s’y abonner, d’importer des articles Wikipédia, d’ajouter des documents à votre bibliothèque, de les enregistrer et de les modifier. Sonarpad est constamment mise à jour, et chaque fonctionnalité est pensée pour faciliter la vie quotidienne.'
           : (_isEs
-              ? 'Sonarpad es una aplicación sencilla repleta de funciones. Diseñada para ser accesible para personas con discapacidad visual a través de VoiceOver, aquí puedes escuchar noticias, buscar y suscribirte a podcasts, importar artículos de Wikipedia, añadir documentos a tu biblioteca, guardarlos y editarlos. Las características de Sonarpad se actualizan constantemente y están diseñadas para facilitar la vida a las personas con discapacidad visual.'
-              : 'Sonarpad è un\'app semplice, ma con tante funzioni. Nata per essere accessibile ai non vedenti usando VoiceOver, qui potrete ascoltare le notizie, cercare e iscriversi ai podcast, importare articoli di Wikipedia, aggiungere i documenti alla vostra libreria, salvarli e modificarli. Le funzioni di Sonarpad sono in continuo aggiornamento, e sono tutte pensate per rendere più facile la vita dei non vedenti.'));
+              ? 'Sonarpad es una aplicación sencilla con muchas funciones. Diseñada para ser accesible con VoiceOver para personas ciegas o con discapacidad visual, permite escuchar noticias, buscar podcasts y suscribirse a ellos, importar artículos de Wikipedia, añadir documentos a la biblioteca, guardarlos y editarlos. Sonarpad se actualiza constantemente y cada función está pensada para facilitar la vida diaria.'
+              : 'Sonarpad è un’app semplice, ma ricca di funzioni. È pensata per essere accessibile con VoiceOver alle persone non vedenti e ipovedenti: permette di ascoltare le notizie, cercare podcast e iscriversi, importare articoli da Wikipedia, aggiungere documenti alla libreria, salvarli e modificarli. Sonarpad è in continuo aggiornamento e ogni funzione è progettata per rendere più semplice la vita quotidiana.'));
   String get infoAuthor => _isEn
       ? 'Author: Ambrogio Riili'
       : (_isFr
           ? 'Auteur : Ambrogio Riili'
           : (_isEs ? 'Autor: Ambrogio Riili' : 'Autore: Ambrogio Riili'));
   String get donationsIntro => _isEn
-      ? 'Sonarpad is a program created at first to meet personal needs, but over time it has grown more and more. Developing it requires constant work to improve features, fix bugs, search for new ideas, and carefully test all functions.\n\nIf you find this program useful and want to support its development, you can make a donation.'
+      ? 'Sonarpad was initially created to meet personal needs, but over time it has grown into a broader app. Its development requires constant work: improving features, fixing bugs, exploring new ideas, and carefully testing every function.\n\nIf you find Sonarpad useful and want to support its development, you can make a donation.'
       : (_isFr
-          ? 'Sonarpad est un programme créé à l\'origine pour répondre à des besoins personnels, mais au fil du temps, il a de plus en plus grandi. Son développement nécessite un travail constant pour améliorer les fonctionnalités, corriger les bogues, rechercher de nouvelles idées et tester en profondeur chaque partie du programme.\n\nSi vous trouvez ce programme utile et souhaitez soutenir son développement, vous pouvez faire un don.'
+          ? 'Sonarpad a d’abord été créé pour répondre à des besoins personnels, puis l’application s’est développée au fil du temps. Son développement demande un travail constant : améliorer les fonctionnalités, corriger les bogues, explorer de nouvelles idées et tester soigneusement chaque fonction.\n\nSi vous trouvez Sonarpad utile et souhaitez soutenir son développement, vous pouvez faire un don.'
           : (_isEs
-              ? 'Sonarpad es un programa creado al principio para satisfacer necesidades personales, pero con el tiempo ha crecido cada vez más. Desarrollarlo requiere un trabajo constante para mejorar funciones, corregir errores, buscar nuevas ideas y probar cuidadosamente todas las funciones.\n\nSi encuentras útil este programa y deseas apoyar su desarrollo, puedes hacer una donación.'
-              : 'Sonarpad è un programma creato inizialmente per soddisfare esigenze personali, ma nel tempo è cresciuto sempre di più. Il suo sviluppo richiede un lavoro costante per migliorare le funzionalità, correggere bug, ricercare nuove idee e testare a fondo ogni parte del programma.\n\nSe ritieni utile questo programma e desideri supportarne lo sviluppo, puoi effettuare una donazione.'));
+              ? 'Sonarpad se creó inicialmente para responder a necesidades personales, pero con el tiempo se ha convertido en una aplicación más completa. Su desarrollo requiere un trabajo constante: mejorar funciones, corregir errores, explorar nuevas ideas y probar cuidadosamente cada función.\n\nSi Sonarpad te resulta útil y quieres apoyar su desarrollo, puedes hacer una donación.'
+              : 'Sonarpad è nato inizialmente per rispondere a esigenze personali, ma nel tempo è diventato un’app più completa. Il suo sviluppo richiede un lavoro costante: migliorare le funzionalità, correggere bug, cercare nuove idee e testare con attenzione ogni funzione.\n\nSe Sonarpad ti è utile e vuoi sostenerne lo sviluppo, puoi effettuare una donazione.'));
   String get donationsPaypalDesc => _isEn
       ? 'You can donate via PayPal using this link:\nhttps://www.paypal.me/ambrogio86\nPlease, if possible, add “Sonarpad” as the payment note.'
       : (_isFr
@@ -322,10 +322,10 @@ class AppLocalizations {
   String get donationsThanks => _isEn
       ? 'Anyone who supports the project will be mentioned in the program and on the GitHub repository, unless they prefer to stay anonymous or use a nickname.\n\nThanks to Jiri Holzinger and Paola Vagata for their contribution.\nFor the Vietnamese translation, thanks to Anh Đức Nguyễn.\nFor the Czech translation, thanks to Radek Žalud and Jiri Holzinger.\nFor the Spanish translation, thanks to Arturo Fernandez Rivas.\nFor the Serbian translation, thanks to Mila Kuran.\nFor the Ukrainian translation, thanks to Ivan Shtefuriak.'
       : (_isFr
-          ? 'Quiconque soutient le projet sera mentionné dans le programme et sur le référentiel GitHub, sauf s\'il préfère rester anonyme ou utiliser un surnom.\n\nMerci à Jiri Holzinger et Paola Vagata pour leur contribution.\nPour la traduction en vietnamien, merci à Anh Đức Nguyễn.\nPour la traduction en tchèque, merci à Radek Žalud et Jiri Holzinger.\nPour la traduction en espagnol, merci à Arturo Fernandez Rivas.\nPour la traduction en serbe, merci à Mila Kuran.\nPour la traduction en ukrainien, merci à Ivan Shtefuriak.'
+          ? 'Toute personne qui soutient le projet sera mentionnée dans l’application et dans le dépôt GitHub, sauf si elle préfère rester anonyme ou utiliser un pseudonyme.\n\nMerci à Jiri Holzinger et Paola Vagata pour leur contribution.\nPour la traduction en vietnamien, merci à Anh Đức Nguyễn.\nPour la traduction en tchèque, merci à Radek Žalud et Jiri Holzinger.\nPour la traduction en espagnol, merci à Arturo Fernandez Rivas.\nPour la traduction en serbe, merci à Mila Kuran.\nPour la traduction en ukrainien, merci à Ivan Shtefuriak.'
           : (_isEs
-              ? 'Cualquier persona que apoye el proyecto será mencionada en el programa y en el repositorio de GitHub, a menos que prefiera permanecer en el anonimato o usar un seudónimo.\n\nGracias a Jiri Holzinger y Paola Vagata por su contribución.\nPor la traducción al vietnamita, gracias a Anh Đức Nguyễn.\nPor la traducción al checo, gracias a Radek Žalud y Jiri Holzinger.\nPor la traducción al español, gracias a Arturo Fernandez Rivas.\nPor la traducción al serbio, gracias a Mila Kuran.\nPor la traducción al ucraniano, gracias a Ivan Shtefuriak.'
-              : 'Chiunque decida di supportare il progetto verrà ringraziato nel programma e sul repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nSi ringrazia per il contributo Jiri Holzinger e Paola Vagata.\nPer la traduzione in vietnamita ringrazio Anh Đức Nguyễn.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.\nPer la traduzione in serbo ringrazio Mila Kuran.\nPer la traduzione in ucraino ringrazio Ivan Shtefuriak.'));
+              ? 'Toda persona que apoye el proyecto será mencionada en la aplicación y en el repositorio de GitHub, salvo que prefiera permanecer en el anonimato o usar un seudónimo.\n\nGracias a Jiri Holzinger y Paola Vagata por su contribución.\nPor la traducción al vietnamita, gracias a Anh Đức Nguyễn.\nPor la traducción al checo, gracias a Radek Žalud y Jiri Holzinger.\nPor la traducción al español, gracias a Arturo Fernandez Rivas.\nPor la traducción al serbio, gracias a Mila Kuran.\nPor la traducción al ucraniano, gracias a Ivan Shtefuriak.'
+              : 'Chiunque decida di sostenere il progetto verrà ringraziato nell’app e nel repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nRingrazio Jiri Holzinger e Paola Vagata per il loro contributo.\nPer la traduzione in vietnamita ringrazio Anh Đức Nguyễn.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.\nPer la traduzione in serbo ringrazio Mila Kuran.\nPer la traduzione in ucraino ringrazio Ivan Shtefuriak.'));
   String get news => _isEn
       ? 'News'
       : (_isFr ? 'Actualités' : (_isEs ? 'Noticias' : 'Notizie'));
@@ -552,7 +552,7 @@ class AppLocalizations {
           ? 'Extraction du texte en mode lecteur...'
           : (_isEs
               ? 'Extrayendo texto en modo lectura...'
-              : 'Estraggo il testo in modalita lettura...'));
+              : 'Estraggo il testo in modalità lettura...'));
   String get extractingVisibleArticleText => _isEn
       ? 'Extracting visible text from page...'
       : (_isFr
@@ -754,10 +754,10 @@ class AppLocalizations {
           ? 'Résultats de recherche'
           : (_isEs ? 'Resultados de la búsqueda' : 'Risultati ricerca'));
   String get podcastInfo => _isEn
-      ? 'Podcast info'
+      ? 'Podcast information'
       : (_isFr
-          ? 'Infos sur le podcast'
-          : (_isEs ? 'Información del podcast' : 'Info podcast'));
+          ? 'Informations sur le podcast'
+          : (_isEs ? 'Información del podcast' : 'Informazioni sul podcast'));
   String get subscribe => _isEn
       ? 'Subscribe'
       : (_isFr ? 'S\'abonner' : (_isEs ? 'Suscribirse' : 'Iscriviti'));
@@ -814,15 +814,15 @@ class AppLocalizations {
   String get subscribedPodcasts => _isEn
       ? 'Subscribed podcasts'
       : (_isFr
-          ? 'Podcasts abonnés'
-          : (_isEs ? 'Podcasts suscritos' : 'Podcast iscritti'));
+          ? 'Abonnements aux podcasts'
+          : (_isEs ? 'Podcasts suscritos' : 'Podcast sottoscritti'));
   String get noSubscribedPodcasts => _isEn
       ? 'No subscribed podcasts. Search for a podcast and tap a result to subscribe.'
       : (_isFr
-          ? 'Aucun podcast abonné. Recherchez un podcast et appuyez sur un résultat pour vous abonner.'
+          ? 'Aucun abonnement aux podcasts. Recherchez un podcast et touchez un résultat pour vous abonner.'
           : (_isEs
-              ? 'No hay podcasts suscritos. Busca un podcast y toca un resultado para suscribirte.'
-              : 'Nessun podcast iscritto. Cerca un podcast e tocca il risultato per iscriverti.'));
+              ? 'No tienes podcasts suscritos. Busca un podcast y toca un resultado para suscribirte.'
+              : 'Nessun podcast sottoscritto. Cerca un podcast e tocca un risultato per iscriverti.'));
   String get importPodcastsFromFile => _isEn
       ? 'Import podcasts from file'
       : (_isFr
@@ -912,7 +912,7 @@ class AppLocalizations {
       ? 'Episode player'
       : (_isFr
           ? 'Lecteur d\'épisode'
-          : (_isEs ? 'Reproductor de episodios' : 'Player episodio'));
+          : (_isEs ? 'Reproductor de episodios' : 'Lettore episodio'));
   String nowPlayingTitle(String title) => _isEn
       ? 'Now playing: $title'
       : (_isFr
@@ -970,7 +970,7 @@ class AppLocalizations {
       ? 'Import mode'
       : (_isFr
           ? 'Mode d\'importation'
-          : (_isEs ? 'Modo de importación' : 'Importa'));
+          : (_isEs ? 'Modo de importación' : 'Modalità di importazione'));
   String get wikipediaImportWholeArticle => _isEn
       ? 'Whole article'
       : (_isFr
@@ -1188,33 +1188,33 @@ class AppLocalizations {
           ? 'Lecteur de document'
           : (_isEs ? 'Lector de documentos' : 'Lettore documento'));
   String get documentReaderEditHint => _isEn
-      ? 'Tap a paragraph to edit it. Use the vertical flick to add a bookmark.'
+      ? 'Tap a paragraph to edit it. Swipe up or down to add a bookmark.'
       : (_isFr
-          ? 'Touchez un paragraphe pour le modifier. Utilisez le flick vertical pour ajouter un signet.'
+          ? 'Touchez un paragraphe pour le modifier. Balayez vers le haut ou vers le bas pour ajouter un signet.'
           : (_isEs
-              ? 'Toca un párrafo para editarlo. Usa el flick vertical para añadir un marcador.'
-              : 'Tocca un paragrafo per modificarlo. Usa il flick verticale per aggiungere un segnalibro.'));
+              ? 'Toca un párrafo para editarlo. Desliza hacia arriba o hacia abajo para añadir un marcador.'
+              : 'Tocca un paragrafo per modificarlo. Scorri verso l’alto o verso il basso per aggiungere un segnalibro.'));
   String get documentBookmarkHintSet => _isEn
-      ? 'Use the vertical flick to set a bookmark.'
+      ? 'Swipe up or down to set a bookmark.'
       : (_isFr
-          ? 'Utilisez le flick vertical pour définir un signet.'
+          ? 'Balayez vers le haut ou vers le bas pour définir un signet.'
           : (_isEs
-              ? 'Usa el flick vertical para establecer un marcador.'
-              : 'Usa il flick verticale per impostare un segnalibro.'));
+              ? 'Desliza hacia arriba o hacia abajo para establecer un marcador.'
+              : 'Scorri verso l’alto o verso il basso per impostare un segnalibro.'));
   String get documentEditParagraphActionHint => _isEn
       ? 'Double tap to edit this paragraph. '
       : (_isFr
           ? 'Touchez deux fois pour modifier ce paragraphe. '
           : (_isEs
               ? 'Toca dos veces para editar este párrafo. '
-              : 'Doppio tap per modificare questo paragrafo. '));
+              : 'Tocca due volte per modificare questo paragrafo. '));
   String get documentBookmarkHintReplace => _isEn
-      ? 'Use the vertical flick to remove the existing bookmark or replace it with this paragraph.'
+      ? 'Swipe up or down to remove the existing bookmark or replace it with this paragraph.'
       : (_isFr
-          ? 'Utilisez le flick vertical pour supprimer le signet existant ou le remplacer par ce paragraphe.'
+          ? 'Balayez vers le haut ou vers le bas pour supprimer le signet existant ou le remplacer par ce paragraphe.'
           : (_isEs
-              ? 'Usa el flick vertical para eliminar el marcador existente o reemplazarlo por este párrafo.'
-              : 'Usa il flick verticale per rimuovere il segnalibro esistente o sostituirlo con questo paragrafo.'));
+              ? 'Desliza hacia arriba o hacia abajo para eliminar el marcador existente o reemplazarlo por este párrafo.'
+              : 'Scorri verso l’alto o verso il basso per rimuovere il segnalibro esistente o sostituirlo con questo paragrafo.'));
   String get documentSetBookmarkAction => _isEn
       ? 'Set bookmark'
       : (_isFr
@@ -1341,29 +1341,33 @@ class AppLocalizations {
           ? 'Voix système'
           : (_isEs ? 'Voz del sistema' : 'Voce di sistema'));
   String get settingsAutoBookmark => _isEn
-      ? 'Enable automatic bookmark saving'
+      ? 'Automatic bookmark'
       : (_isFr
-          ? 'Activer la sauvegarde automatique du signet'
+          ? 'Signet automatique'
           : (_isEs
-              ? 'Habilitar guardado automático de marcadores'
-              : 'Segnalibro automatico per testi e contenuti multimediali'));
+              ? 'Marcador automático'
+              : 'Segnalibro automatico'));
   String get settingsAutoBookmarkHint => _isEn
-      ? 'Resume documents, podcasts, and media from where you left off.'
+      ? 'Resume documents, podcasts, RaiPlay and audio descriptions from where you left off.'
       : (_isFr
-          ? 'Reprendre les documents et médias où vous vous êtes arrêté.'
+          ? 'Reprenez les documents, podcasts, RaiPlay et audiodescriptions là où vous vous étiez arrêté.'
           : (_isEs
-              ? 'Reanudar documentos y multimedia desde donde los dejaste.'
+              ? 'Reanuda documentos, podcasts, RaiPlay y audiodescripciones desde donde los dejaste.'
               : 'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'));
   String get settingsSeekStep => _isEn
-      ? 'Media rewind / fast forward step'
+      ? 'Rewind / fast-forward step for media'
       : (_isFr
-          ? 'Étape de retour/avance rapide multimédia'
+          ? 'Pas de retour / avance rapide pour les médias'
           : (_isEs
-              ? 'Paso de rebobinado / avance rápido multimedia'
-              : 'Regola l\'avanzamento di riproduzione nei file media'));
+              ? 'Intervalo de retroceso / avance rápido para multimedia'
+              : 'Intervallo indietro / avanti nei media'));
   String get aiChatIntro => _isEn
-      ? 'I am Sonarpad AI, how can I help you?'
-      : 'Sono l\'intelligenza artificiale di Sonarpad, come posso aiutarti?';
+      ? 'I’m Sonarpad AI. How can I help you?'
+      : (_isFr
+          ? 'Je suis l’intelligence artificielle de Sonarpad. Comment puis-je vous aider ?'
+          : (_isEs
+              ? 'Soy la inteligencia artificial de Sonarpad. ¿Cómo puedo ayudarte?'
+              : 'Sono l’intelligenza artificiale di Sonarpad. Come posso aiutarti?'));
   String get meteoTitle =>
       _isEn ? 'Weather' : (_isFr ? 'Météo' : (_isEs ? 'Tiempo' : 'Meteo'));
   String get weatherCity =>
@@ -1431,7 +1435,7 @@ class AppLocalizations {
   String get settingsSecretCode => _isEn
       ? 'Sonarpad code for extra features'
       : (_isFr
-          ? 'Code Sonarpad pour fonctionnalités'
+          ? 'Code Sonarpad pour les fonctionnalités supplémentaires'
           : (_isEs
               ? 'Código Sonarpad para funciones extra'
               : 'Codice Sonarpad per funzioni aggiuntive'));
@@ -1451,7 +1455,7 @@ class AppLocalizations {
       : (_isFr
           ? 'Remplissez tous les champs pour demander le code.'
           : (_isEs
-              ? 'Rellene todos los campos para solicitar el código.'
+              ? 'Rellena todos los campos para solicitar el código.'
               : 'Compila tutti i campi per richiedere il codice.'));
   String get settingsName =>
       _isEn ? 'Name' : (_isFr ? 'Prénom' : (_isEs ? 'Nombre' : 'Nome'));
@@ -1464,19 +1468,19 @@ class AppLocalizations {
       ? 'Operating system'
       : (_isFr
           ? 'Système d’exploitation'
-          : (_isEs ? 'Sistema operativo' : 'Sistema Operativo'));
+          : (_isEs ? 'Sistema operativo' : 'Sistema operativo'));
   String settingsCodeRequestBody(
           String name, String surname, String email, String os) =>
       '$settingsName: $name; $settingsSurname: $surname; $settingsEmail: $email; $settingsOperatingSystem: $os';
   String get settingsNameOptional => _isEn
       ? 'Name (optional)'
       : (_isFr
-          ? 'Nom (optionnel)'
+          ? 'Prénom (facultatif)'
           : (_isEs ? 'Nombre (opcional)' : 'Nome (opzionale)'));
   String get settingsMessageOptional => _isEn
       ? 'Message (optional)'
       : (_isFr
-          ? 'Message (optionnel)'
+          ? 'Message (facultatif)'
           : (_isEs ? 'Mensaje (opcional)' : 'Messaggio (opzionale)'));
   String get settingsVerifyCodeAndSave => _isEn
       ? 'Verifying code and saving...'
@@ -1497,7 +1501,7 @@ class AppLocalizations {
           : (_isEs
               ? 'Error al abrir el correo: $error'
               : 'Errore apertura mail: $error'));
-  String get ok => _isEn ? 'OK' : 'OK';
+  String get ok => 'OK';
   String get invia =>
       _isEn ? 'Send' : (_isFr ? 'Envoyer' : (_isEs ? 'Enviar' : 'Invia'));
   String get saveArticle => _isEn
@@ -1524,7 +1528,7 @@ class AppLocalizations {
       : (_isFr
           ? 'Remplissez tous les champs pour demander le code.'
           : (_isEs
-              ? 'Rellene todos los campos para solicitar el código.'
+              ? 'Rellena todos los campos para solicitar el código.'
               : 'Compila tutti i campi per richiedere il codice.'));
   String get selectFolder => _isEn
       ? 'Select folder'
@@ -1690,25 +1694,25 @@ class AppLocalizations {
   String get docSavedSuccessfully => _isEn
       ? 'Document saved successfully!'
       : (_isFr
-          ? 'Document enregistré avec succès!'
+          ? 'Document enregistré avec succès !'
           : (_isEs
               ? '¡Documento guardado con éxito!'
-              : 'Documento salvato con successo!'));
+              : 'Documento salvato correttamente.'));
   String get writeDocument => _isEn
-      ? 'Write Document'
+      ? 'Write document'
       : (_isFr
           ? 'Écrire un document'
-          : (_isEs ? 'Escribir Documento' : 'Scrivi Documento'));
+          : (_isEs ? 'Escribir documento' : 'Scrivi documento'));
   String get documentTitleOptional => _isEn
       ? 'Title (optional)'
       : (_isFr
-          ? 'Titre (optionnel)'
+          ? 'Titre (facultatif)'
           : (_isEs ? 'Título (opcional)' : 'Titolo (opzionale)'));
   String get documentTitleHint => _isEn
       ? 'Example: Shopping notes'
       : (_isFr
           ? 'Exemple : Notes de courses'
-          : (_isEs ? 'Ejemplo: Notas de compra' : 'Es: Appunti Spesa'));
+          : (_isEs ? 'Ejemplo: Notas de compra' : 'Esempio: lista della spesa'));
   String get documentTextField => _isEn
       ? 'Document text'
       : (_isFr
@@ -1732,10 +1736,10 @@ class AppLocalizations {
           ? 'Enregistrement...'
           : (_isEs ? 'Guardando...' : 'Salvataggio...'));
   String get saveDocument => _isEn
-      ? 'Save Document'
+      ? 'Save document'
       : (_isFr
           ? 'Enregistrer le document'
-          : (_isEs ? 'Guardar Documento' : 'Salva Documento'));
+          : (_isEs ? 'Guardar documento' : 'Salva documento'));
   String get addRssSource => _isEn
       ? 'Add RSS Source'
       : (_isFr
@@ -1753,7 +1757,7 @@ class AppLocalizations {
               ? 'Versión $version (Build $buildNumber)'
               : 'Versione $version (Build $buildNumber)'));
   String get whatIsNew => _isEn
-      ? 'What is new'
+      ? 'What’s new'
       : (_isFr ? 'Nouveautés' : (_isEs ? 'Novedades' : 'Novità'));
   String changelogLoadError(Object error) => _isEn
       ? 'Error loading what is new: $error'
@@ -1884,10 +1888,10 @@ class AppLocalizations {
               ? 'Registro copiado al portapapeles'
               : 'Log copiato negli appunti'));
   String get systemLog => _isEn
-      ? 'System Log'
+      ? 'System log'
       : (_isFr
           ? 'Journal système'
-          : (_isEs ? 'Registro del sistema' : 'Log di Sistema'));
+          : (_isEs ? 'Registro del sistema' : 'Log di sistema'));
   String get clearSystemLog => _isEn
       ? 'Clear log'
       : (_isFr
@@ -1904,10 +1908,10 @@ class AppLocalizations {
           ? 'Faire un don avec PayPal'
           : (_isEs ? 'Donar con PayPal' : 'Dona con PayPal'));
   String get bankTransferTitle => _isEn
-      ? 'Bank Transfer'
+      ? 'Bank transfer'
       : (_isFr
           ? 'Virement bancaire'
-          : (_isEs ? 'Transferencia bancaria' : 'Bonifico Bancario'));
+          : (_isEs ? 'Transferencia bancaria' : 'Bonifico bancario'));
   String get enableVideo => _isEn
       ? 'Enable video'
       : (_isFr

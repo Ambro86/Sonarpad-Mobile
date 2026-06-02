@@ -5,9 +5,9 @@ extension UiAudiodescriptionLocalizations on AppLocalizations {
   bool get _isFr => locale.languageCode == 'fr';
   bool get _isEs => locale.languageCode == 'es';
 
-  String get audiodescriptionTitle => _isEn ? 'Audio Descriptions' : (_isFr ? 'Audiodescriptions Rai' : (_isEs ? 'Audiodescripciones' : 'Audiodescrizioni Rai'));
+  String get audiodescriptionTitle => _isEn ? 'Audio descriptions' : (_isFr ? 'Audiodescriptions Rai' : (_isEs ? 'Audiodescripciones' : 'Audiodescrizioni Rai'));
   String get audiodescriptionRecent => _isEn ? 'Recent' : (_isFr ? 'Récents' : (_isEs ? 'Recientes' : 'Recenti'));
-  String get audiodescriptionAll => _isEn ? 'All Audio Descriptions' : (_isFr ? 'Toutes les audiodescriptions' : (_isEs ? 'Todas las audiodescripciones' : 'Tutte le audiodescrizioni'));
+  String get audiodescriptionAll => _isEn ? 'All audio descriptions' : (_isFr ? 'Toutes les audiodescriptions' : (_isEs ? 'Todas las audiodescripciones' : 'Tutte le audiodescrizioni'));
   String get audiodescriptionFilm => _isEn ? 'Movies' : (_isFr ? 'Films' : (_isEs ? 'Películas' : 'Film'));
   String get audiodescriptionSearch => _isEn ? 'Search...' : (_isFr ? 'Rechercher...' : (_isEs ? 'Buscar...' : 'Cerca...'));
   String get audiodescriptionLoading => _isEn ? 'Loading...' : (_isFr ? 'Chargement en cours...' : (_isEs ? 'Cargando...' : 'Caricamento in corso...'));

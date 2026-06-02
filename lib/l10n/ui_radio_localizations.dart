@@ -7,20 +7,20 @@ extension UiRadioLocalizations on AppLocalizations {
 
   String get radio => _isEn ? 'Radio' : (_isFr ? 'Radio' : (_isEs ? 'Radio' : 'Radio'));
   String get radioHint => _isEn
-      ? 'Search radios, listen to streams and manage favorites'
-      : (_isFr ? 'Rechercher des radios, écouter des flux et gérer les favoris' : (_isEs ? 'Busca radios, escucha streams y gestiona favoritos' : 'Cerca radio, ascolta streaming e gestisci le preferite'));
-  String get radioTitle => _isEn ? 'Radios from all over the world' : (_isFr ? 'Radios du monde entier' : (_isEs ? 'Radios de todo el mundo' : 'Radio da tutto il mondo'));
-  String get radioFavoritesButton => _isEn ? 'Favorite radios' : (_isFr ? 'Radios favorites' : (_isEs ? 'Radios favoritas' : 'Radio preferite'));
-  String get radioNoFavorites => _isEn ? 'No favorite radios.' : (_isFr ? 'Aucune radio favorite.' : (_isEs ? 'No hay radios favoritas.' : 'Nessuna radio preferita.'));
-  String get radioSearchText => _isEn ? 'Search radio' : (_isFr ? 'Rechercher une radio' : (_isEs ? 'Buscar radio' : 'Cerca radio'));
-  String get radioSearchHint => _isEn ? 'Radio name, station or city...' : (_isFr ? 'Nom de la radio, station ou ville...' : (_isEs ? 'Nombre de la radio, emisora o ciudad...' : 'Nome radio, emittente o città...'));
+      ? 'Search radio stations, listen to streams and manage favorites'
+      : (_isFr ? 'Rechercher des stations de radio, écouter des flux et gérer les favoris' : (_isEs ? 'Busca emisoras de radio, escucha transmisiones y gestiona favoritos' : 'Cerca stazioni radio, ascolta streaming e gestisci le preferite'));
+  String get radioTitle => _isEn ? 'Radio stations from around the world' : (_isFr ? 'Stations de radio du monde entier' : (_isEs ? 'Emisoras de radio de todo el mundo' : 'Radio da tutto il mondo'));
+  String get radioFavoritesButton => _isEn ? 'Favorite radio stations' : (_isFr ? 'Stations de radio favorites' : (_isEs ? 'Emisoras favoritas' : 'Radio preferite'));
+  String get radioNoFavorites => _isEn ? 'No favorite radio stations.' : (_isFr ? 'Aucune station de radio favorite.' : (_isEs ? 'No hay emisoras favoritas.' : 'Nessuna radio preferita.'));
+  String get radioSearchText => _isEn ? 'Search radio stations' : (_isFr ? 'Rechercher une station de radio' : (_isEs ? 'Buscar emisoras' : 'Cerca radio'));
+  String get radioSearchHint => _isEn ? 'Radio station name or city...' : (_isFr ? 'Nom de la station ou ville...' : (_isEs ? 'Nombre de la emisora o ciudad...' : 'Nome della stazione o città...'));
   String get radioLanguage => _isEn ? 'Language' : (_isFr ? 'Langue' : (_isEs ? 'Idioma' : 'Lingua'));
   String get radioGenre => _isEn ? 'Genre' : (_isFr ? 'Genre' : (_isEs ? 'Género' : 'Genere'));
   String get radioSearch => _isEn ? 'Search' : (_isFr ? 'Recherche' : (_isEs ? 'Buscar' : 'Ricerca'));
   String get radioSearching => _isEn ? 'Loading radios...' : (_isFr ? 'Chargement des radios...' : (_isEs ? 'Cargando radios...' : 'Caricamento radio...'));
   String get radioSearchResults => _isEn ? 'Radio results' : (_isFr ? 'Résultats radio' : (_isEs ? 'Resultados de radio' : 'Risultati radio'));
   String get radioNoResults => _isEn ? 'No radios found.' : (_isFr ? 'Aucune radio trouvée.' : (_isEs ? 'No se encontraron radios.' : 'Nessuna radio trovata.'));
-  String radioResultsFound(int count) => _isEn ? 'Found $count radios' : (_isFr ? '$count radios trouvées' : (_isEs ? '$count radios encontradas' : 'Trovate $count radio'));
+  String radioResultsFound(int count) => _isEn ? 'Found $count radio stations' : (_isFr ? '$count stations de radio trouvées' : (_isEs ? '$count emisoras encontradas' : 'Trovate $count radio'));
   String radioSearchError(Object error) => _isEn ? 'Radio search error: $error' : (_isFr ? 'Erreur de recherche radio : $error' : (_isEs ? 'Error en la búsqueda de radio: $error' : 'Errore ricerca radio: $error'));
   String radioNowPlaying(String name) => _isEn ? 'Playing $name' : (_isFr ? 'Lecture de $name' : (_isEs ? 'Reproduciendo $name' : 'Riproduco $name'));
   String radioPlayError(Object error) => _isEn ? 'Radio stream error: $error' : (_isFr ? 'Erreur de flux radio : $error' : (_isEs ? 'Error en la transmisión de radio: $error' : 'Errore streaming radio: $error'));
@@ -69,7 +69,7 @@ extension UiRadioLocalizations on AppLocalizations {
         'news' => _isEn ? 'News' : (_isFr ? 'Actualités' : (_isEs ? 'Noticias' : 'Notizie')),
         'music' => _isEn ? 'Music' : (_isFr ? 'Musique' : (_isEs ? 'Música' : 'Musica')),
         'sport' => _isEn ? 'Sport' : (_isFr ? 'Sport' : (_isEs ? 'Deporte' : 'Sport')),
-        'talk' => _isEn ? 'Talk and insights' : (_isFr ? 'Talk et insights' : (_isEs ? 'Charlas y debates' : 'Talk e approfondimenti')),
+        'talk' => _isEn ? 'Talk and analysis' : (_isFr ? 'Débats et analyses' : (_isEs ? 'Charlas y análisis' : 'Talk e approfondimenti')),
         'pop' => _isEn ? 'Pop' : (_isFr ? 'Pop' : (_isEs ? 'Pop' : 'Pop')),
         'rock' => _isEn ? 'Rock' : (_isFr ? 'Rock' : (_isEs ? 'Rock' : 'Rock')),
         'classical' => _isEn ? 'Classical' : (_isFr ? 'Classique' : (_isEs ? 'Clásica' : 'Classica')),
