@@ -481,6 +481,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _edgeVoices,
       _languageCode,
     );
+    final showItalianOnlySettings = _appLanguage == 'it' &&
+        Localizations.localeOf(context).languageCode == 'it';
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -738,17 +740,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Theme.of(context).colorScheme.secondary,
                       ),
                     ),
-                    if (_appLanguage == 'it') ...[
-                      const SizedBox(height: 24),
-                      const Divider(),
-                      const SizedBox(height: 8),
-                      SwitchListTile(
-                        title: Text(l10n.settingsAutoBookmark),
-                        subtitle: Text(l10n.settingsAutoBookmarkHint),
-                        value: _autoBookmark,
-                        onChanged: (val) => setState(() => _autoBookmark = val),
-                        contentPadding: EdgeInsets.zero,
-                      ),
+                    const SizedBox(height: 24),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    SwitchListTile(
+                      title: Text(l10n.settingsAutoBookmark),
+                      subtitle: Text(l10n.settingsAutoBookmarkHint),
+                      value: _autoBookmark,
+                      onChanged: (val) => setState(() => _autoBookmark = val),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    if (showItalianOnlySettings) ...[
                       const Divider(),
                       const SizedBox(height: 8),
                       SwitchListTile(

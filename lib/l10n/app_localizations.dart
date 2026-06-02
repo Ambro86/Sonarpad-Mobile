@@ -2089,6 +2089,12 @@ abstract class AppLocalizations {
   /// **'Novità'**
   String get whatIsNew;
 
+  /// Localized text for whatIsNewInVersion.
+  ///
+  /// In it, this message translates to:
+  /// **'Novità della versione {version}'**
+  String whatIsNewInVersion(String version);
+
   /// Localized text for changelogLoadError.
   ///
   /// In it, this message translates to:
@@ -3138,6 +3144,7 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{hours}h {minutes}m'**
   String routeDurationHoursMinutes(int hours, int minutes);
+
   /// Localized text for routeError.
   ///
   /// In it, this message translates to:

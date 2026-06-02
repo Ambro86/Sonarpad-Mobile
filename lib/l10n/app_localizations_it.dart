@@ -1111,6 +1111,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get whatIsNew => 'Novità';
 
   @override
+  String whatIsNewInVersion(String version) {
+    return 'Novità della versione $version';
+  }
+
+  @override
   String changelogLoadError(Object error) {
     return 'Errore caricamento novità: $error';
   }
@@ -1492,6 +1497,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String routeError(Object error) {
     return 'Errore: $error';
   }
+
   @override
   String get radioLanguageIt => 'Italiano';
 
@@ -1682,5 +1688,4 @@ class AppLocalizationsIt extends AppLocalizations {
   String routeDurationHoursMinutes(int hours, int minutes) {
     return '${hours}h ${minutes}m';
   }
-
 }

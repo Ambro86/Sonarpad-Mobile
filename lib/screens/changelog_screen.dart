@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/changelog_service.dart';
 
 class ChangelogScreen extends StatelessWidget {
@@ -14,11 +15,11 @@ class ChangelogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final labels = _ChangelogLabels.forLanguage(languageCode);
+    final l10n = AppLocalizations.of(context);
     final changes = entry.changesFor(languageCode);
 
     return Scaffold(
-      appBar: AppBar(title: Text(labels.title)),
+      appBar: AppBar(title: Text(l10n.whatIsNew)),
       body: SafeArea(
         child: ListView.separated(
           padding: const EdgeInsets.all(16),
@@ -27,7 +28,7 @@ class ChangelogScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             if (index == 0) {
               return Text(
-                labels.version(entry.version),
+                l10n.whatIsNewInVersion(entry.version),
                 style: Theme.of(context).textTheme.titleMedium,
               );
             }
@@ -47,13 +48,13 @@ Future<void> showChangelogDialog({
   required ChangelogEntry entry,
   required String languageCode,
 }) async {
-  final labels = _ChangelogLabels.forLanguage(languageCode);
+  final l10n = AppLocalizations.of(context);
   final changes = entry.changesFor(languageCode);
 
   await showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(labels.version(entry.version)),
+      title: Text(l10n.whatIsNewInVersion(entry.version)),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -70,46 +71,9 @@ Future<void> showChangelogDialog({
       actions: [
         FilledButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(labels.ok),
+          child: Text(l10n.ok),
         ),
       ],
     ),
   );
-}
-
-class _ChangelogLabels {
-  final String title;
-  final String ok;
-  final String Function(String version) version;
-
-  const _ChangelogLabels({
-    required this.title,
-    required this.ok,
-    required this.version,
-  });
-
-  static _ChangelogLabels forLanguage(String languageCode) {
-    return switch (languageCode) {
-      'en' => _ChangelogLabels(
-          title: 'What is new',
-          ok: 'OK',
-          version: (version) => 'What is new in version $version',
-        ),
-      'fr' => _ChangelogLabels(
-          title: 'Nouveautes',
-          ok: 'OK',
-          version: (version) => 'Nouveautes de la version $version',
-        ),
-      'es' => _ChangelogLabels(
-          title: 'Novedades',
-          ok: 'OK',
-          version: (version) => 'Novedades de la version $version',
-        ),
-      _ => _ChangelogLabels(
-          title: 'Novita',
-          ok: 'OK',
-          version: (version) => 'Novita della versione $version',
-        ),
-    };
-  }
 }

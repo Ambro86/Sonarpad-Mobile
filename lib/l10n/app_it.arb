@@ -1566,6 +1566,15 @@
   "@whatIsNew": {
     "description": "Localized text for whatIsNew."
   },
+  "whatIsNewInVersion": "Novità della versione {version}",
+  "@whatIsNewInVersion": {
+    "description": "Localized text for whatIsNewInVersion.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "changelogLoadError": "Errore caricamento novità: {error}",
   "@changelogLoadError": {
     "description": "Localized text for changelogLoadError.",

@@ -504,8 +504,8 @@ class HtmlReaderService {
     if (lower.contains("hai bisogno di ulteriori informazioni?")) {
       return true;
     }
-    if (lower
-        .contains("resta in contatto con la community de il fatto quotidiano")) {
+    if (lower.contains(
+        "resta in contatto con la community de il fatto quotidiano")) {
       return true;
     }
     if (lower == "abbiamo a cuore la tua privacy") {

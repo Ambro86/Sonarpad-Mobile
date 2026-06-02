@@ -1116,6 +1116,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get whatIsNew => 'Nouveautés';
 
   @override
+  String whatIsNewInVersion(String version) {
+    return 'Nouveautés de la version $version';
+  }
+
+  @override
   String changelogLoadError(Object error) {
     return 'Erreur lors du chargement des nouveautés : $error';
   }
@@ -1497,6 +1502,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String routeError(Object error) {
     return 'Erreur : $error';
   }
+
   @override
   String get radioLanguageIt => 'Italien';
 
@@ -1687,5 +1693,4 @@ class AppLocalizationsFr extends AppLocalizations {
   String routeDurationHoursMinutes(int hours, int minutes) {
     return '${hours}h ${minutes}m';
   }
-
 }
