@@ -1480,4 +1480,195 @@ class AppLocalizationsEn extends AppLocalizations {
   String routeError(Object error) {
     return 'Error: $error';
   }
+  @override
+  String get radioLanguageIt => 'Italian';
+
+  @override
+  String get radioLanguageEn => 'English';
+
+  @override
+  String get radioLanguageDe => 'German';
+
+  @override
+  String get radioLanguageCountryCh => 'Switzerland';
+
+  @override
+  String get radioLanguageEs => 'Spanish';
+
+  @override
+  String get radioLanguagePt => 'Portuguese';
+
+  @override
+  String get radioLanguageSv => 'Swedish';
+
+  @override
+  String get radioLanguageVi => 'Vietnamese';
+
+  @override
+  String get radioLanguageCs => 'Czech';
+
+  @override
+  String get radioLanguagePl => 'Polish';
+
+  @override
+  String get radioLanguageFr => 'French';
+
+  @override
+  String get radioLanguageSr => 'Serbian';
+
+  @override
+  String get radioLanguageUk => 'Ukrainian';
+
+  @override
+  String get radioLanguageHi => 'Hindi';
+
+  @override
+  String get radioLanguageLt => 'Lithuanian';
+
+  @override
+  String get radioLanguageRu => 'Russian';
+
+  @override
+  String get radioLanguageZh => 'Chinese';
+
+  @override
+  String get radioGenreOptionAll => 'All genres';
+
+  @override
+  String get radioGenreOptionNews => 'News';
+
+  @override
+  String get radioGenreOptionMusic => 'Music';
+
+  @override
+  String get radioGenreOptionSport => 'Sport';
+
+  @override
+  String get radioGenreOptionTalk => 'Talk and analysis';
+
+  @override
+  String get radioGenreOptionPop => 'Pop';
+
+  @override
+  String get radioGenreOptionRock => 'Rock';
+
+  @override
+  String get radioGenreOptionClassical => 'Classical';
+
+  @override
+  String get radioGenreOptionJazz => 'Jazz';
+
+  @override
+  String get radioGenreOptionDance => 'Dance';
+
+  @override
+  String get radioGenreOptionBlues => 'Blues';
+
+  @override
+  String get radioGenreOptionCountry => 'Country';
+
+  @override
+  String get radioGenreOptionHiphop => 'Hip hop';
+
+  @override
+  String get radioGenreOptionElectronic => 'Electronic';
+
+  @override
+  String get radioGenreOptionLatin => 'Latin';
+
+  @override
+  String get radioGenreOptionReggae => 'Reggae';
+
+  @override
+  String get radioGenreOptionMetal => 'Metal';
+
+  @override
+  String get radioGenreOptionFolk => 'Folk';
+
+  @override
+  String get radioGenreOptionReligion => 'Religion';
+
+  @override
+  String get radioGenreOptionLocal => 'Local';
+
+  @override
+  String get radioGenreOptionCulture => 'Culture';
+
+  @override
+  String get radioGenreOptionOldies => '70s / 80s / 90s';
+
+  @override
+  String get radioGenreOptionKids => 'Kids';
+
+  @override
+  String get radioGenreOptionAmbient => 'Ambient';
+
+  @override
+  String get radioCommunityLanguageItalian => 'Italian';
+
+  @override
+  String get radioCommunityLanguageEnglish => 'English';
+
+  @override
+  String get radioCommunityLanguageSpanish => 'Spanish';
+
+  @override
+  String get radioCommunityLanguageFrench => 'French';
+
+  @override
+  String get radioCommunityLanguageGerman => 'German';
+
+  @override
+  String get radioCommunityLanguagePortuguese => 'Portuguese';
+
+  @override
+  String get radioCommunityLanguageSwedish => 'Swedish';
+
+  @override
+  String get radioCommunityLanguageVietnamese => 'Vietnamese';
+
+  @override
+  String get radioCommunityLanguageCzech => 'Czech';
+
+  @override
+  String get radioCommunityLanguagePolish => 'Polish';
+
+  @override
+  String get radioCommunityLanguageSerbian => 'Serbian';
+
+  @override
+  String get radioCommunityLanguageUkrainian => 'Ukrainian';
+
+  @override
+  String get radioCommunityLanguageLithuanian => 'Lithuanian';
+
+  @override
+  String get radioCommunityLanguageRussian => 'Russian';
+
+  @override
+  String get radioCommunityLanguageChinese => 'Chinese';
+
+  @override
+  String get radioCommunityLanguageHindi => 'Hindi';
+
+  @override
+  String routeDistanceMeters(int meters) {
+    return '$meters m';
+  }
+
+  @override
+  String routeDistanceKilometers(String kilometers) {
+    return '$kilometers km';
+  }
+
+  @override
+  String routeDurationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String routeDurationHoursMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}m';
+  }
+
 }

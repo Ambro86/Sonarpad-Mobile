@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/ui_route_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../services/route_service.dart';
 
 class RouteResultScreen extends StatelessWidget {

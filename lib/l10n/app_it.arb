@@ -2101,5 +2101,277 @@
         "example": "Network error"
       }
     }
+  },
+  "radioLanguageIt": "Italiano",
+  "@radioLanguageIt": {
+    "description": "Localized text for radioLanguageIt."
+  },
+  "radioLanguageEn": "English",
+  "@radioLanguageEn": {
+    "description": "Localized text for radioLanguageEn."
+  },
+  "radioLanguageDe": "Tedesco",
+  "@radioLanguageDe": {
+    "description": "Localized text for radioLanguageDe."
+  },
+  "radioLanguageCountryCh": "Svizzera",
+  "@radioLanguageCountryCh": {
+    "description": "Localized text for radioLanguageCountryCh."
+  },
+  "radioLanguageEs": "Spagnolo",
+  "@radioLanguageEs": {
+    "description": "Localized text for radioLanguageEs."
+  },
+  "radioLanguagePt": "Portoghese",
+  "@radioLanguagePt": {
+    "description": "Localized text for radioLanguagePt."
+  },
+  "radioLanguageSv": "Svedese",
+  "@radioLanguageSv": {
+    "description": "Localized text for radioLanguageSv."
+  },
+  "radioLanguageVi": "Vietnamita",
+  "@radioLanguageVi": {
+    "description": "Localized text for radioLanguageVi."
+  },
+  "radioLanguageCs": "Ceco",
+  "@radioLanguageCs": {
+    "description": "Localized text for radioLanguageCs."
+  },
+  "radioLanguagePl": "Polacco",
+  "@radioLanguagePl": {
+    "description": "Localized text for radioLanguagePl."
+  },
+  "radioLanguageFr": "Français",
+  "@radioLanguageFr": {
+    "description": "Localized text for radioLanguageFr."
+  },
+  "radioLanguageSr": "Serbo",
+  "@radioLanguageSr": {
+    "description": "Localized text for radioLanguageSr."
+  },
+  "radioLanguageUk": "Ucraino",
+  "@radioLanguageUk": {
+    "description": "Localized text for radioLanguageUk."
+  },
+  "radioLanguageHi": "Hindi",
+  "@radioLanguageHi": {
+    "description": "Localized text for radioLanguageHi."
+  },
+  "radioLanguageLt": "Lituano",
+  "@radioLanguageLt": {
+    "description": "Localized text for radioLanguageLt."
+  },
+  "radioLanguageRu": "Russo",
+  "@radioLanguageRu": {
+    "description": "Localized text for radioLanguageRu."
+  },
+  "radioLanguageZh": "Cinese",
+  "@radioLanguageZh": {
+    "description": "Localized text for radioLanguageZh."
+  },
+  "radioGenreOptionAll": "Tutti i generi",
+  "@radioGenreOptionAll": {
+    "description": "Localized text for radioGenreOptionAll."
+  },
+  "radioGenreOptionNews": "Notizie",
+  "@radioGenreOptionNews": {
+    "description": "Localized text for radioGenreOptionNews."
+  },
+  "radioGenreOptionMusic": "Musica",
+  "@radioGenreOptionMusic": {
+    "description": "Localized text for radioGenreOptionMusic."
+  },
+  "radioGenreOptionSport": "Sport",
+  "@radioGenreOptionSport": {
+    "description": "Localized text for radioGenreOptionSport."
+  },
+  "radioGenreOptionTalk": "Talk e approfondimenti",
+  "@radioGenreOptionTalk": {
+    "description": "Localized text for radioGenreOptionTalk."
+  },
+  "radioGenreOptionPop": "Pop",
+  "@radioGenreOptionPop": {
+    "description": "Localized text for radioGenreOptionPop."
+  },
+  "radioGenreOptionRock": "Rock",
+  "@radioGenreOptionRock": {
+    "description": "Localized text for radioGenreOptionRock."
+  },
+  "radioGenreOptionClassical": "Classica",
+  "@radioGenreOptionClassical": {
+    "description": "Localized text for radioGenreOptionClassical."
+  },
+  "radioGenreOptionJazz": "Jazz",
+  "@radioGenreOptionJazz": {
+    "description": "Localized text for radioGenreOptionJazz."
+  },
+  "radioGenreOptionDance": "Dance",
+  "@radioGenreOptionDance": {
+    "description": "Localized text for radioGenreOptionDance."
+  },
+  "radioGenreOptionBlues": "Blues",
+  "@radioGenreOptionBlues": {
+    "description": "Localized text for radioGenreOptionBlues."
+  },
+  "radioGenreOptionCountry": "Country",
+  "@radioGenreOptionCountry": {
+    "description": "Localized text for radioGenreOptionCountry."
+  },
+  "radioGenreOptionHiphop": "Hip hop",
+  "@radioGenreOptionHiphop": {
+    "description": "Localized text for radioGenreOptionHiphop."
+  },
+  "radioGenreOptionElectronic": "Elettronica",
+  "@radioGenreOptionElectronic": {
+    "description": "Localized text for radioGenreOptionElectronic."
+  },
+  "radioGenreOptionLatin": "Latina",
+  "@radioGenreOptionLatin": {
+    "description": "Localized text for radioGenreOptionLatin."
+  },
+  "radioGenreOptionReggae": "Reggae",
+  "@radioGenreOptionReggae": {
+    "description": "Localized text for radioGenreOptionReggae."
+  },
+  "radioGenreOptionMetal": "Metal",
+  "@radioGenreOptionMetal": {
+    "description": "Localized text for radioGenreOptionMetal."
+  },
+  "radioGenreOptionFolk": "Folk",
+  "@radioGenreOptionFolk": {
+    "description": "Localized text for radioGenreOptionFolk."
+  },
+  "radioGenreOptionReligion": "Religione",
+  "@radioGenreOptionReligion": {
+    "description": "Localized text for radioGenreOptionReligion."
+  },
+  "radioGenreOptionLocal": "Locale",
+  "@radioGenreOptionLocal": {
+    "description": "Localized text for radioGenreOptionLocal."
+  },
+  "radioGenreOptionCulture": "Cultura",
+  "@radioGenreOptionCulture": {
+    "description": "Localized text for radioGenreOptionCulture."
+  },
+  "radioGenreOptionOldies": "Anni 70 / 80 / 90",
+  "@radioGenreOptionOldies": {
+    "description": "Localized text for radioGenreOptionOldies."
+  },
+  "radioGenreOptionKids": "Bambini",
+  "@radioGenreOptionKids": {
+    "description": "Localized text for radioGenreOptionKids."
+  },
+  "radioGenreOptionAmbient": "Ambient",
+  "@radioGenreOptionAmbient": {
+    "description": "Localized text for radioGenreOptionAmbient."
+  },
+  "radioCommunityLanguageItalian": "Italiano",
+  "@radioCommunityLanguageItalian": {
+    "description": "Localized text for radioCommunityLanguageItalian."
+  },
+  "radioCommunityLanguageEnglish": "Inglese",
+  "@radioCommunityLanguageEnglish": {
+    "description": "Localized text for radioCommunityLanguageEnglish."
+  },
+  "radioCommunityLanguageSpanish": "Spagnolo",
+  "@radioCommunityLanguageSpanish": {
+    "description": "Localized text for radioCommunityLanguageSpanish."
+  },
+  "radioCommunityLanguageFrench": "Francese",
+  "@radioCommunityLanguageFrench": {
+    "description": "Localized text for radioCommunityLanguageFrench."
+  },
+  "radioCommunityLanguageGerman": "Tedesco",
+  "@radioCommunityLanguageGerman": {
+    "description": "Localized text for radioCommunityLanguageGerman."
+  },
+  "radioCommunityLanguagePortuguese": "Portoghese",
+  "@radioCommunityLanguagePortuguese": {
+    "description": "Localized text for radioCommunityLanguagePortuguese."
+  },
+  "radioCommunityLanguageSwedish": "Svedese",
+  "@radioCommunityLanguageSwedish": {
+    "description": "Localized text for radioCommunityLanguageSwedish."
+  },
+  "radioCommunityLanguageVietnamese": "Vietnamita",
+  "@radioCommunityLanguageVietnamese": {
+    "description": "Localized text for radioCommunityLanguageVietnamese."
+  },
+  "radioCommunityLanguageCzech": "Ceco",
+  "@radioCommunityLanguageCzech": {
+    "description": "Localized text for radioCommunityLanguageCzech."
+  },
+  "radioCommunityLanguagePolish": "Polacco",
+  "@radioCommunityLanguagePolish": {
+    "description": "Localized text for radioCommunityLanguagePolish."
+  },
+  "radioCommunityLanguageSerbian": "Serbo",
+  "@radioCommunityLanguageSerbian": {
+    "description": "Localized text for radioCommunityLanguageSerbian."
+  },
+  "radioCommunityLanguageUkrainian": "Ucraino",
+  "@radioCommunityLanguageUkrainian": {
+    "description": "Localized text for radioCommunityLanguageUkrainian."
+  },
+  "radioCommunityLanguageLithuanian": "Lituano",
+  "@radioCommunityLanguageLithuanian": {
+    "description": "Localized text for radioCommunityLanguageLithuanian."
+  },
+  "radioCommunityLanguageRussian": "Russo",
+  "@radioCommunityLanguageRussian": {
+    "description": "Localized text for radioCommunityLanguageRussian."
+  },
+  "radioCommunityLanguageChinese": "Cinese",
+  "@radioCommunityLanguageChinese": {
+    "description": "Localized text for radioCommunityLanguageChinese."
+  },
+  "radioCommunityLanguageHindi": "Hindi",
+  "@radioCommunityLanguageHindi": {
+    "description": "Localized text for radioCommunityLanguageHindi."
+  },
+  "routeDistanceMeters": "{meters} m",
+  "@routeDistanceMeters": {
+    "description": "Formatted route distance in meters.",
+    "placeholders": {
+      "meters": {
+        "type": "int",
+        "example": "250"
+      }
+    }
+  },
+  "routeDistanceKilometers": "{kilometers} km",
+  "@routeDistanceKilometers": {
+    "description": "Formatted route distance in kilometers.",
+    "placeholders": {
+      "kilometers": {
+        "type": "String",
+        "example": "1.5"
+      }
+    }
+  },
+  "routeDurationMinutes": "{minutes} min",
+  "@routeDurationMinutes": {
+    "description": "Formatted route duration in minutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "routeDurationHoursMinutes": "{hours}h {minutes}m",
+  "@routeDurationHoursMinutes": {
+    "description": "Formatted route duration in hours and minutes.",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "1"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "5"
+      }
+    }
   }
 }

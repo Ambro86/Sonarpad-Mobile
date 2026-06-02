@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/ui_radio_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import 'add_radio_screen.dart';

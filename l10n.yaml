@@ -6,4 +6,3 @@ synthetic-package: false
 nullable-getter: false
 preferred-supported-locales:
   - it
-untranslated-messages-file: untranslated_messages.json

@@ -2773,6 +2773,371 @@ abstract class AppLocalizations {
   /// **'Entri nel comune di'**
   String get routeEnterMunicipality;
 
+  /// Localized text for radioLanguageIt.
+  ///
+  /// In it, this message translates to:
+  /// **'Italiano'**
+  String get radioLanguageIt;
+
+  /// Localized text for radioLanguageEn.
+  ///
+  /// In it, this message translates to:
+  /// **'English'**
+  String get radioLanguageEn;
+
+  /// Localized text for radioLanguageDe.
+  ///
+  /// In it, this message translates to:
+  /// **'Tedesco'**
+  String get radioLanguageDe;
+
+  /// Localized text for radioLanguageCountryCh.
+  ///
+  /// In it, this message translates to:
+  /// **'Svizzera'**
+  String get radioLanguageCountryCh;
+
+  /// Localized text for radioLanguageEs.
+  ///
+  /// In it, this message translates to:
+  /// **'Spagnolo'**
+  String get radioLanguageEs;
+
+  /// Localized text for radioLanguagePt.
+  ///
+  /// In it, this message translates to:
+  /// **'Portoghese'**
+  String get radioLanguagePt;
+
+  /// Localized text for radioLanguageSv.
+  ///
+  /// In it, this message translates to:
+  /// **'Svedese'**
+  String get radioLanguageSv;
+
+  /// Localized text for radioLanguageVi.
+  ///
+  /// In it, this message translates to:
+  /// **'Vietnamita'**
+  String get radioLanguageVi;
+
+  /// Localized text for radioLanguageCs.
+  ///
+  /// In it, this message translates to:
+  /// **'Ceco'**
+  String get radioLanguageCs;
+
+  /// Localized text for radioLanguagePl.
+  ///
+  /// In it, this message translates to:
+  /// **'Polacco'**
+  String get radioLanguagePl;
+
+  /// Localized text for radioLanguageFr.
+  ///
+  /// In it, this message translates to:
+  /// **'Français'**
+  String get radioLanguageFr;
+
+  /// Localized text for radioLanguageSr.
+  ///
+  /// In it, this message translates to:
+  /// **'Serbo'**
+  String get radioLanguageSr;
+
+  /// Localized text for radioLanguageUk.
+  ///
+  /// In it, this message translates to:
+  /// **'Ucraino'**
+  String get radioLanguageUk;
+
+  /// Localized text for radioLanguageHi.
+  ///
+  /// In it, this message translates to:
+  /// **'Hindi'**
+  String get radioLanguageHi;
+
+  /// Localized text for radioLanguageLt.
+  ///
+  /// In it, this message translates to:
+  /// **'Lituano'**
+  String get radioLanguageLt;
+
+  /// Localized text for radioLanguageRu.
+  ///
+  /// In it, this message translates to:
+  /// **'Russo'**
+  String get radioLanguageRu;
+
+  /// Localized text for radioLanguageZh.
+  ///
+  /// In it, this message translates to:
+  /// **'Cinese'**
+  String get radioLanguageZh;
+
+  /// Localized text for radioGenreOptionAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti i generi'**
+  String get radioGenreOptionAll;
+
+  /// Localized text for radioGenreOptionNews.
+  ///
+  /// In it, this message translates to:
+  /// **'Notizie'**
+  String get radioGenreOptionNews;
+
+  /// Localized text for radioGenreOptionMusic.
+  ///
+  /// In it, this message translates to:
+  /// **'Musica'**
+  String get radioGenreOptionMusic;
+
+  /// Localized text for radioGenreOptionSport.
+  ///
+  /// In it, this message translates to:
+  /// **'Sport'**
+  String get radioGenreOptionSport;
+
+  /// Localized text for radioGenreOptionTalk.
+  ///
+  /// In it, this message translates to:
+  /// **'Talk e approfondimenti'**
+  String get radioGenreOptionTalk;
+
+  /// Localized text for radioGenreOptionPop.
+  ///
+  /// In it, this message translates to:
+  /// **'Pop'**
+  String get radioGenreOptionPop;
+
+  /// Localized text for radioGenreOptionRock.
+  ///
+  /// In it, this message translates to:
+  /// **'Rock'**
+  String get radioGenreOptionRock;
+
+  /// Localized text for radioGenreOptionClassical.
+  ///
+  /// In it, this message translates to:
+  /// **'Classica'**
+  String get radioGenreOptionClassical;
+
+  /// Localized text for radioGenreOptionJazz.
+  ///
+  /// In it, this message translates to:
+  /// **'Jazz'**
+  String get radioGenreOptionJazz;
+
+  /// Localized text for radioGenreOptionDance.
+  ///
+  /// In it, this message translates to:
+  /// **'Dance'**
+  String get radioGenreOptionDance;
+
+  /// Localized text for radioGenreOptionBlues.
+  ///
+  /// In it, this message translates to:
+  /// **'Blues'**
+  String get radioGenreOptionBlues;
+
+  /// Localized text for radioGenreOptionCountry.
+  ///
+  /// In it, this message translates to:
+  /// **'Country'**
+  String get radioGenreOptionCountry;
+
+  /// Localized text for radioGenreOptionHiphop.
+  ///
+  /// In it, this message translates to:
+  /// **'Hip hop'**
+  String get radioGenreOptionHiphop;
+
+  /// Localized text for radioGenreOptionElectronic.
+  ///
+  /// In it, this message translates to:
+  /// **'Elettronica'**
+  String get radioGenreOptionElectronic;
+
+  /// Localized text for radioGenreOptionLatin.
+  ///
+  /// In it, this message translates to:
+  /// **'Latina'**
+  String get radioGenreOptionLatin;
+
+  /// Localized text for radioGenreOptionReggae.
+  ///
+  /// In it, this message translates to:
+  /// **'Reggae'**
+  String get radioGenreOptionReggae;
+
+  /// Localized text for radioGenreOptionMetal.
+  ///
+  /// In it, this message translates to:
+  /// **'Metal'**
+  String get radioGenreOptionMetal;
+
+  /// Localized text for radioGenreOptionFolk.
+  ///
+  /// In it, this message translates to:
+  /// **'Folk'**
+  String get radioGenreOptionFolk;
+
+  /// Localized text for radioGenreOptionReligion.
+  ///
+  /// In it, this message translates to:
+  /// **'Religione'**
+  String get radioGenreOptionReligion;
+
+  /// Localized text for radioGenreOptionLocal.
+  ///
+  /// In it, this message translates to:
+  /// **'Locale'**
+  String get radioGenreOptionLocal;
+
+  /// Localized text for radioGenreOptionCulture.
+  ///
+  /// In it, this message translates to:
+  /// **'Cultura'**
+  String get radioGenreOptionCulture;
+
+  /// Localized text for radioGenreOptionOldies.
+  ///
+  /// In it, this message translates to:
+  /// **'Anni 70 / 80 / 90'**
+  String get radioGenreOptionOldies;
+
+  /// Localized text for radioGenreOptionKids.
+  ///
+  /// In it, this message translates to:
+  /// **'Bambini'**
+  String get radioGenreOptionKids;
+
+  /// Localized text for radioGenreOptionAmbient.
+  ///
+  /// In it, this message translates to:
+  /// **'Ambient'**
+  String get radioGenreOptionAmbient;
+
+  /// Localized text for radioCommunityLanguageItalian.
+  ///
+  /// In it, this message translates to:
+  /// **'Italiano'**
+  String get radioCommunityLanguageItalian;
+
+  /// Localized text for radioCommunityLanguageEnglish.
+  ///
+  /// In it, this message translates to:
+  /// **'Inglese'**
+  String get radioCommunityLanguageEnglish;
+
+  /// Localized text for radioCommunityLanguageSpanish.
+  ///
+  /// In it, this message translates to:
+  /// **'Spagnolo'**
+  String get radioCommunityLanguageSpanish;
+
+  /// Localized text for radioCommunityLanguageFrench.
+  ///
+  /// In it, this message translates to:
+  /// **'Francese'**
+  String get radioCommunityLanguageFrench;
+
+  /// Localized text for radioCommunityLanguageGerman.
+  ///
+  /// In it, this message translates to:
+  /// **'Tedesco'**
+  String get radioCommunityLanguageGerman;
+
+  /// Localized text for radioCommunityLanguagePortuguese.
+  ///
+  /// In it, this message translates to:
+  /// **'Portoghese'**
+  String get radioCommunityLanguagePortuguese;
+
+  /// Localized text for radioCommunityLanguageSwedish.
+  ///
+  /// In it, this message translates to:
+  /// **'Svedese'**
+  String get radioCommunityLanguageSwedish;
+
+  /// Localized text for radioCommunityLanguageVietnamese.
+  ///
+  /// In it, this message translates to:
+  /// **'Vietnamita'**
+  String get radioCommunityLanguageVietnamese;
+
+  /// Localized text for radioCommunityLanguageCzech.
+  ///
+  /// In it, this message translates to:
+  /// **'Ceco'**
+  String get radioCommunityLanguageCzech;
+
+  /// Localized text for radioCommunityLanguagePolish.
+  ///
+  /// In it, this message translates to:
+  /// **'Polacco'**
+  String get radioCommunityLanguagePolish;
+
+  /// Localized text for radioCommunityLanguageSerbian.
+  ///
+  /// In it, this message translates to:
+  /// **'Serbo'**
+  String get radioCommunityLanguageSerbian;
+
+  /// Localized text for radioCommunityLanguageUkrainian.
+  ///
+  /// In it, this message translates to:
+  /// **'Ucraino'**
+  String get radioCommunityLanguageUkrainian;
+
+  /// Localized text for radioCommunityLanguageLithuanian.
+  ///
+  /// In it, this message translates to:
+  /// **'Lituano'**
+  String get radioCommunityLanguageLithuanian;
+
+  /// Localized text for radioCommunityLanguageRussian.
+  ///
+  /// In it, this message translates to:
+  /// **'Russo'**
+  String get radioCommunityLanguageRussian;
+
+  /// Localized text for radioCommunityLanguageChinese.
+  ///
+  /// In it, this message translates to:
+  /// **'Cinese'**
+  String get radioCommunityLanguageChinese;
+
+  /// Localized text for radioCommunityLanguageHindi.
+  ///
+  /// In it, this message translates to:
+  /// **'Hindi'**
+  String get radioCommunityLanguageHindi;
+
+  /// Formatted route distance in meters.
+  ///
+  /// In it, this message translates to:
+  /// **'{meters} m'**
+  String routeDistanceMeters(int meters);
+
+  /// Formatted route distance in kilometers.
+  ///
+  /// In it, this message translates to:
+  /// **'{kilometers} km'**
+  String routeDistanceKilometers(String kilometers);
+
+  /// Formatted route duration in minutes.
+  ///
+  /// In it, this message translates to:
+  /// **'{minutes} min'**
+  String routeDurationMinutes(int minutes);
+
+  /// Formatted route duration in hours and minutes.
+  ///
+  /// In it, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String routeDurationHoursMinutes(int hours, int minutes);
   /// Localized text for routeError.
   ///
   /// In it, this message translates to:
