@@ -887,10 +887,9 @@ packages:
   rhttp_plus:
     dependency: "direct main"
     description:
-      name: rhttp_plus
-      sha256: "89b35c401be8f696a31d5c3a78f5d7e6c10221ef094f3272b6e553dc46540ae9"
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/rhttp_plus"
+      relative: true
+    source: path
     version: "0.11.7"
   rxdart:
     dependency: transitive
