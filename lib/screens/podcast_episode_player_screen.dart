@@ -325,94 +325,98 @@ class _PodcastEpisodePlayerScreenState
             },
           ),
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              widget.episode.title,
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            if (_loading)
-              LinearProgressIndicator(semanticsLabel: l10n.loadingEpisodeAudio),
-            if (_error != null) ...[
-              const SizedBox(height: 12),
+        body: Semantics(
+          container: true,
+          explicitChildNodes: true,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
               Text(
-                _error!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                widget.episode.title,
+                style: Theme.of(context).textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
-            ],
-            if (widget.isVideoSupported) ...[
-              const SizedBox(height: 16),
-              SwitchListTile(
-                title: Text(l10n.enableVideo),
-                value: _isVideoEnabled,
-                onChanged: _toggleVideo,
-              ),
-            ],
-            if (_videoController != null && _videoController!.value.isInitialized) ...[
-              const SizedBox(height: 24),
-              AspectRatio(
-                aspectRatio: _videoController!.value.aspectRatio,
-                child: VideoPlayer(_videoController!),
-              ),
-            ],
-            const SizedBox(height: 24),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
-              children: [
-                if (_videoController == null)
-                  FilledButton.icon(
-                    onPressed:
-                        _loading || !_loaded ? null : () => _audio.seekBackward(),
-                    icon: const Icon(Icons.fast_rewind),
-                    label: Text(l10n.rewind15s),
-                  ),
-                if (_videoController != null)
-                  FilledButton.icon(
-                    onPressed:
-                        _loading ? null : (_videoController!.value.isPlaying ? _pause : _play),
-                    icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
-                    label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
-                  )
-                else
-                  StreamBuilder<bool>(
-                    stream: _audio.playingStream,
-                    builder: (context, snapshot) {
-                      final isPlaying = snapshot.data ?? false;
-                      return FilledButton.icon(
-                        onPressed:
-                            _loading ? null : (isPlaying ? _pause : _play),
-                        icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                        label: Text(isPlaying ? l10n.pause : l10n.play),
-                      );
-                    },
-                  ),
-                if (_videoController == null)
-                  FilledButton.icon(
-                    onPressed:
-                        _loading || !_loaded ? null : () => _audio.seekForward(),
-                    icon: const Icon(Icons.fast_forward),
-                    label: Text(l10n.forward15s),
-                  ),
+              const SizedBox(height: 32),
+              if (_loading)
+                LinearProgressIndicator(semanticsLabel: l10n.loadingEpisodeAudio),
+              if (_error != null) ...[
+                const SizedBox(height: 12),
+                Text(
+                  _error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  textAlign: TextAlign.center,
+                ),
               ],
-            ),
-            const SizedBox(height: 24),
-            if (_videoController == null)
-              _PodcastPositionControl(
-                audio: _audio,
-                seekStep: _seekStep,
-                logSubject: _logSubject,
-              ),
-            if (_videoController == null) ...[
+              if (widget.isVideoSupported) ...[
+                const SizedBox(height: 16),
+                SwitchListTile(
+                  title: Text(l10n.enableVideo),
+                  value: _isVideoEnabled,
+                  onChanged: _toggleVideo,
+                ),
+              ],
+              if (_videoController != null && _videoController!.value.isInitialized) ...[
+                const SizedBox(height: 24),
+                AspectRatio(
+                  aspectRatio: _videoController!.value.aspectRatio,
+                  child: VideoPlayer(_videoController!),
+                ),
+              ],
               const SizedBox(height: 24),
-              VolumeSlider(audioPlayer: _audio),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.center,
+                children: [
+                  if (_videoController == null)
+                    FilledButton.icon(
+                      onPressed:
+                          _loading || !_loaded ? null : () => _audio.seekBackward(),
+                      icon: const Icon(Icons.fast_rewind),
+                      label: Text(l10n.rewind15s),
+                    ),
+                  if (_videoController != null)
+                    FilledButton.icon(
+                      onPressed:
+                          _loading ? null : (_videoController!.value.isPlaying ? _pause : _play),
+                      icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
+                      label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
+                    )
+                  else
+                    StreamBuilder<bool>(
+                      stream: _audio.playingStream,
+                      builder: (context, snapshot) {
+                        final isPlaying = snapshot.data ?? false;
+                        return FilledButton.icon(
+                          onPressed:
+                              _loading ? null : (isPlaying ? _pause : _play),
+                          icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                          label: Text(isPlaying ? l10n.pause : l10n.play),
+                        );
+                      },
+                    ),
+                  if (_videoController == null)
+                    FilledButton.icon(
+                      onPressed:
+                          _loading || !_loaded ? null : () => _audio.seekForward(),
+                      icon: const Icon(Icons.fast_forward),
+                      label: Text(l10n.forward15s),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              if (_videoController == null)
+                _PodcastPositionControl(
+                  audio: _audio,
+                  seekStep: _seekStep,
+                  logSubject: _logSubject,
+                ),
+              if (_videoController == null) ...[
+                const SizedBox(height: 24),
+                VolumeSlider(audioPlayer: _audio),
+              ],
             ],
-          ],
+          ),
         ),
     );
   }
