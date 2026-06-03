@@ -2791,6 +2791,12 @@ abstract class AppLocalizations {
   /// **'Entri nel comune di'**
   String get routeEnterMunicipality;
 
+  /// Localized text for routeError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore: {error}'**
+  String routeError(Object error);
+
   /// Localized text for radioLanguageIt.
   ///
   /// In it, this message translates to:
@@ -3156,12 +3162,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{hours}h {minutes}m'**
   String routeDurationHoursMinutes(int hours, int minutes);
-
-  /// Localized text for routeError.
-  ///
-  /// In it, this message translates to:
-  /// **'Errore: {error}'**
-  String routeError(Object error);
 }
 
 class _AppLocalizationsDelegate

@@ -136,11 +136,13 @@ jobs:
           force-avd-creation: false
           script: flutter test integration_test/app_test.dart
 
-      - name: Fix Proguard rules for ML Kit
+      - name: Ensure Android Proguard rules
         run: |
           mkdir -p android/app
-          echo "-keep class com.google.mlkit.vision.text.** { *; }" > android/app/proguard-rules.pro
-          echo "-dontwarn com.google.mlkit.vision.text.**" >> android/app/proguard-rules.pro
+          touch android/app/proguard-rules.pro
+          grep -qxF -- "-keep class com.antonkarpenko.ffmpegkit.** { *; }" android/app/proguard-rules.pro || echo "-keep class com.antonkarpenko.ffmpegkit.** { *; }" >> android/app/proguard-rules.pro
+          grep -qxF -- "-keep class com.google.mlkit.vision.text.** { *; }" android/app/proguard-rules.pro || echo "-keep class com.google.mlkit.vision.text.** { *; }" >> android/app/proguard-rules.pro
+          grep -qxF -- "-dontwarn com.google.mlkit.vision.text.**" android/app/proguard-rules.pro || echo "-dontwarn com.google.mlkit.vision.text.**" >> android/app/proguard-rules.pro
 
       - name: Build release APK
         run: flutter build apk --release --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}

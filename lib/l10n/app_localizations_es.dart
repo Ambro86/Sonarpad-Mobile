@@ -849,11 +849,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsSystemVoice => 'Voz del sistema';
 
   @override
-  String get settingsAutoBookmark => 'Marcador automático';
+  String get settingsAutoBookmark => 'Reanudación automática';
 
   @override
   String get settingsAutoBookmarkHint =>
-      'Reanuda documentos, podcasts, RaiPlay y audiodescripciones desde donde los dejaste.';
+      'Reanuda documentos, podcasts y contenido multimedia desde donde lo dejaste.';
 
   @override
   String get settingsSeekStep =>

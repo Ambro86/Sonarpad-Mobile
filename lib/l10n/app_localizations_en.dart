@@ -840,11 +840,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsSystemVoice => 'System voice';
 
   @override
-  String get settingsAutoBookmark => 'Automatic bookmark';
+  String get settingsAutoBookmark => 'Automatic resume';
 
   @override
   String get settingsAutoBookmarkHint =>
-      'Resume documents, podcasts, RaiPlay and audio descriptions from where you left off.';
+      'Resume documents, podcasts, and media from where you left off.';
 
   @override
   String get settingsSeekStep => 'Rewind / fast-forward step for media';
