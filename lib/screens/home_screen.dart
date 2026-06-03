@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../main.dart';
 import '../services/accessibility_feedback_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/raiplay_service.dart';
@@ -276,10 +277,20 @@ class _HomeScreenState extends State<HomeScreen> {
     children.addAll([
       _HomeButton(
         label: l10n.settings,
-        onPressed: () => AccessibilityFeedbackService.goNamed(
-          context,
-          routeName: '/settings',
-        ).then((_) => _load()),
+        onPressed: () async {
+          final appLanguage = await AccessibilityFeedbackService.goNamed<String>(
+            context,
+            routeName: '/settings',
+          );
+          if (!context.mounted) return;
+          await _load();
+          if (!context.mounted || appLanguage == null) return;
+          if (appLanguage != Localizations.localeOf(context).languageCode) {
+            await Future<void>.delayed(Duration.zero);
+            if (!context.mounted) return;
+            SonarpadApp.setLocale(context, Locale(appLanguage));
+          }
+        },
       ),
       _HomeButton(
         label: l10n.info,

@@ -9,7 +9,6 @@ import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import '../services/audio_player_service.dart';
 import '../tts/edge_tts_bridge.dart';
-import '../main.dart';
 import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -195,9 +194,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     setState(() => _isSaving = false);
     if (!mounted) return;
-    if (_appLanguage != Localizations.localeOf(context).languageCode) {
-      SonarpadApp.setLocale(context, Locale(_appLanguage));
-    }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -490,7 +486,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         FocusManager.instance.primaryFocus?.unfocus();
         await Future<void>.delayed(Duration.zero);
         if (!context.mounted) return;
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(_appLanguage);
       },
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.settings)),

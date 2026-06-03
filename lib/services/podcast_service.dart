@@ -634,12 +634,12 @@ class PodcastService {
     } catch (e) {
       errors.add(e);
     }
-    try {
-      results.addAll(await _searchSpreaker(
-        q.isEmpty ? category?.name ?? '' : q,
-      ));
-    } catch (e) {
-      errors.add(e);
+    if (q.isNotEmpty) {
+      try {
+        results.addAll(await _searchSpreaker(q));
+      } catch (e) {
+        errors.add(e);
+      }
     }
     if (results.isEmpty && errors.isNotEmpty) {
       throw Exception(errors.join(' | '));
