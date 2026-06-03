@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 
@@ -44,8 +45,9 @@ class _VolumeSliderState extends State<VolumeSlider> {
   Widget build(BuildContext context) {
     if (!_initialized) return const SizedBox();
 
+    final l10n = AppLocalizations.of(context);
     final int percentage = (_volume * 100).round();
-    final String labelStr = 'Volume: $percentage%';
+    final String labelStr = l10n.volumeValue(percentage);
 
     final int increasedPercentage =
         ((_volume + 0.1).clamp(0.0, 1.0) * 100).round();
@@ -64,7 +66,7 @@ class _VolumeSliderState extends State<VolumeSlider> {
         Semantics(
           key: const ValueKey('volume_slider_semantics'),
           slider: true,
-          label: 'Regola il volume',
+          label: l10n.adjustVolume,
           value: '$percentage%',
           increasedValue: '$increasedPercentage%',
           decreasedValue: '$decreasedPercentage%',

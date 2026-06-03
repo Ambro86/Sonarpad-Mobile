@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
+import '../services/app_settings_service.dart';
 import '../services/podcast_service.dart';
 import 'podcast_episodes_screen.dart';
 
@@ -19,12 +20,14 @@ class PodcastScreen extends StatefulWidget {
 }
 
 class _PodcastScreenState extends State<PodcastScreen> {
+  final _settings = AppSettingsService();
   final _service = PodcastService();
   final _feedController = TextEditingController();
   final _searchController = TextEditingController();
 
   List<PodcastSubscription> _subscriptions = [];
   String _country = 'it';
+  bool _countryLoaded = false;
 
   @override
   void initState() {
@@ -33,9 +36,30 @@ class _PodcastScreenState extends State<PodcastScreen> {
   }
 
   Future<void> _load() async {
+    final appLanguage = await _settings.loadAppLanguage();
     final subs = await _service.loadSubscriptions();
     if (!mounted) return;
-    setState(() => _subscriptions = subs);
+    setState(() {
+      _subscriptions = subs;
+      if (!_countryLoaded) {
+        _country = _podcastCountryForAppLanguage(appLanguage);
+        _countryLoaded = true;
+      }
+    });
+  }
+
+  String _podcastCountryForAppLanguage(String languageCode) {
+    switch (languageCode) {
+      case 'en':
+        return 'us';
+      case 'fr':
+        return 'fr';
+      case 'es':
+        return 'es';
+      case 'it':
+      default:
+        return 'it';
+    }
   }
 
   void _search() {

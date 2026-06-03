@@ -574,6 +574,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get adjustVolume => 'Adjust volume';
+
+  @override
+  String volumeValue(int percentage) {
+    return 'Volume: $percentage%';
+  }
+
+  @override
   String get download => 'Download';
 
   @override

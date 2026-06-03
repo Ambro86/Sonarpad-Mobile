@@ -198,7 +198,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (_appLanguage != Localizations.localeOf(context).languageCode) {
       SonarpadApp.setLocale(context, Locale(_appLanguage));
     }
-    FocusScope.of(context).unfocus();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -208,7 +207,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
-    _screenFocusNode.requestFocus();
   }
 
   Future<void> _showSaveResultDialog({
@@ -489,6 +487,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (didPop) return;
         final shouldLeave = await _confirmLeaveSettings();
         if (!context.mounted || !shouldLeave) return;
+        FocusManager.instance.primaryFocus?.unfocus();
+        await Future<void>.delayed(Duration.zero);
+        if (!context.mounted) return;
         Navigator.of(context).pop();
       },
       child: Scaffold(

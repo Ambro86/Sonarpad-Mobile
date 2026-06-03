@@ -169,6 +169,8 @@
   "loadingEpisodeAudio": "Cargando audio del episodio",
   "playbackPosition": "Posición",
   "playbackPositionValue": "{position} de {duration}",
+  "adjustVolume": "Ajustar volumen",
+  "volumeValue": "Volumen: {percentage}%",
   "download": "Descargar",
   "searchWikipedia": "Buscar en Wikipedia",
   "wikipediaLanguage": "Idioma de Wikipedia",

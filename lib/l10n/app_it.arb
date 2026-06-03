@@ -825,6 +825,20 @@
       }
     }
   },
+  "adjustVolume": "Regola il volume",
+  "@adjustVolume": {
+    "description": "Accessibility label for the media volume slider."
+  },
+  "volumeValue": "Volume: {percentage}%",
+  "@volumeValue": {
+    "description": "Visible media volume percentage.",
+    "placeholders": {
+      "percentage": {
+        "example": "80",
+        "type": "int"
+      }
+    }
+  },
   "download": "Scarica",
   "@download": {
     "description": "Localized text for download."

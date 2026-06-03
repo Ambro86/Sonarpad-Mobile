@@ -1116,6 +1116,18 @@ abstract class AppLocalizations {
   /// **'{position} di {duration}'**
   String playbackPositionValue(String position, String duration);
 
+  /// Accessibility label for the media volume slider.
+  ///
+  /// In it, this message translates to:
+  /// **'Regola il volume'**
+  String get adjustVolume;
+
+  /// Visible media volume percentage.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume: {percentage}%'**
+  String volumeValue(int percentage);
+
   /// Localized text for download.
   ///
   /// In it, this message translates to:
