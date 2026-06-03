@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
+import 'saints_data.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/calendar_event.dart';
@@ -126,53 +127,49 @@ class CalendarService {
   }
 
   Future<String?> getSaintAsync(DateTime date, String languageCode) async {
-    if (languageCode != 'it') return null;
-    final saints = {
-      "1-1": "Maria SS. Madre di Dio",
-      "17-1": "Sant'Antonio Abate",
-      "14-2": "San Valentino",
-      "19-3": "San Giuseppe",
-      "23-4": "San Giorgio",
-      "13-6": "Sant'Antonio di Padova",
-      "24-6": "San Giovanni Battista",
-      "29-6": "San Pietro e Paolo",
-      "15-8": "Assunzione di Maria",
-      "4-10": "San Francesco d'Assisi",
-      "1-11": "Tutti i Santi",
-      "6-12": "San Nicola",
-      "7-12": "Sant'Ambrogio",
-      "13-12": "Santa Lucia",
-      "25-12": "Natale del Signore",
-    };
     final key = "${date.day}-${date.month}";
-    if (saints.containsKey(key)) return saints[key];
 
-    try {
-      final months = [
-        "gennaio",
-        "febbraio",
-        "marzo",
-        "aprile",
-        "maggio",
-        "giugno",
-        "luglio",
-        "agosto",
-        "settembre",
-        "ottobre",
-        "novembre",
-        "dicembre"
-      ];
-      final day = date.day.toString().padLeft(2, '0');
-      final url =
-          "https://www.santodelgiorno.it/$day/${months[date.month - 1]}/";
-      final res =
-          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
-      if (res.statusCode == 200) {
-        final saint = _extractSaintFromHtml(res.body);
-        if (saint != null) return saint;
+    // 1. Cerca prima nel dizionario locale (tutte le lingue)
+    final localEntry = kSaintsData[key];
+    if (localEntry != null) {
+      final localName = localEntry[languageCode];
+      if (localName != null && localName.isNotEmpty) {
+        return localName;
       }
-    } catch (_) {}
-    return "Non disponibile";
+    }
+
+    // 2. Per l'italiano, fallback live su santodelgiorno.it
+    if (languageCode == 'it') {
+      try {
+        final months = [
+          "gennaio",
+          "febbraio",
+          "marzo",
+          "aprile",
+          "maggio",
+          "giugno",
+          "luglio",
+          "agosto",
+          "settembre",
+          "ottobre",
+          "novembre",
+          "dicembre"
+        ];
+        final day = date.day.toString().padLeft(2, '0');
+        final url =
+            "https://www.santodelgiorno.it/$day/${months[date.month - 1]}/";
+        final res =
+            await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
+        if (res.statusCode == 200) {
+          final saint = _extractSaintFromHtml(res.body);
+          if (saint != null) return saint;
+        }
+      } catch (_) {}
+      return "Non disponibile";
+    }
+
+    // 3. Per le altre lingue, se il dizionario non ha dati restituisce null
+    return null;
   }
 
   String? _extractSaintFromHtml(String html) {

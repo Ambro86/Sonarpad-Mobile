@@ -299,8 +299,14 @@ class NewsService {
       return NewsArticleContent(text: article.summary, url: article.link);
     }
     var text = _extractArticleText(html, language: language);
+    final resolvedUri = Uri.parse(resolvedUrl);
+    final ampUri = _ampArticleUri(resolvedUri);
     if (fetch.profile != _BrowserFetchProfile.iphone &&
-        _isWeakArticleText(text, article.summary)) {
+        _isWeakArticleText(
+          text,
+          article.summary,
+          includeTruncated: ampUri != null,
+        )) {
       final iphoneResponse = await _browserGetWithProfile(
         _BrowserFetchProfile.iphone,
         Uri.parse(resolvedUrl),
@@ -318,6 +324,25 @@ class NewsService {
         final iphoneText = _extractArticleText(iphoneHtml, language: language);
         if (iphoneText.trim().length > text.trim().length) {
           text = iphoneText;
+        }
+      }
+    }
+    if (ampUri != null &&
+        _isWeakArticleText(
+          text,
+          article.summary,
+          includeTruncated: true,
+        )) {
+      final ampFetch = await _browserGetWithFallback(ampUri);
+      final ampResponse = ampFetch.response;
+      if (ampResponse.statusCode >= 200 && ampResponse.statusCode < 300) {
+        final ampHtml = utf8.decode(
+          ampResponse.bodyBytes,
+          allowMalformed: true,
+        );
+        final ampText = _extractArticleText(ampHtml, language: language);
+        if (ampText.trim().length > text.trim().length) {
+          text = ampText;
         }
       }
     }
@@ -680,11 +705,30 @@ class NewsService {
     return _cleanHtml(description ?? '');
   }
 
-  bool _isWeakArticleText(String text, String fallbackDescription) {
+  bool _isWeakArticleText(
+    String text,
+    String fallbackDescription, {
+    bool includeTruncated = false,
+  }) {
     final trimmed = text.trim();
     return trimmed.isEmpty ||
         trimmed.length < 80 ||
+        (includeTruncated &&
+            trimmed.length < 700 &&
+            _looksLikeTruncatedArticleText(trimmed)) ||
         trimmed == fallbackDescription.trim();
+  }
+
+  bool _looksLikeTruncatedArticleText(String text) {
+    final trimmed = text.trimRight();
+    if (trimmed.endsWith('...') || trimmed.endsWith('…')) {
+      return true;
+    }
+    if (trimmed.isEmpty) {
+      return false;
+    }
+    const sentenceEnd = '.!?»”")\']';
+    return !sentenceEnd.contains(trimmed[trimmed.length - 1]);
   }
 
   static Future<http.Client> _browserClient(_BrowserFetchProfile profile) {
@@ -845,6 +889,18 @@ class NewsService {
         host.contains('dowjones.com') ||
         host.contains('barrons.com') ||
         host.contains('podbean.com');
+  }
+
+  Uri? _ampArticleUri(Uri uri) {
+    final host = uri.host.toLowerCase();
+    if (!host.endsWith('lastampa.it') || uri.path.endsWith('/amp/')) {
+      return null;
+    }
+    var path = uri.path;
+    while (path.endsWith('/')) {
+      path = path.substring(0, path.length - 1);
+    }
+    return uri.replace(path: '$path/amp/');
   }
 
   bool _shouldFallbackBrowserResponse(http.Response response) {

@@ -29,8 +29,8 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
       _PodcastEpisodePlayerScreenState();
 }
 
-class _PodcastEpisodePlayerScreenState extends State<PodcastEpisodePlayerScreen>
-    with WidgetsBindingObserver {
+class _PodcastEpisodePlayerScreenState
+    extends State<PodcastEpisodePlayerScreen> with WidgetsBindingObserver {
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
 
@@ -69,13 +69,9 @@ class _PodcastEpisodePlayerScreenState extends State<PodcastEpisodePlayerScreen>
       final remaining = durationSecs - pos.inSeconds;
 
       if (durationSecs > 600) {
-        if (remaining < 30) {
-          isFinished = true;
-        }
+        if (remaining < 30) isFinished = true;
       } else {
-        if (durationSecs > 0 && (pos.inSeconds / durationSecs) > 0.95) {
-          isFinished = true;
-        }
+        if (durationSecs > 0 && (pos.inSeconds / durationSecs) > 0.95) isFinished = true;
       }
 
       final stableId = _getStableId();
@@ -110,28 +106,25 @@ class _PodcastEpisodePlayerScreenState extends State<PodcastEpisodePlayerScreen>
         if (uri.scheme == 'file') {
           _videoController = VideoPlayerController.file(
             File(uri.toFilePath()),
-            videoPlayerOptions:
-                VideoPlayerOptions(allowBackgroundPlayback: true),
+            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
           );
         } else {
           _videoController = VideoPlayerController.networkUrl(
             uri,
-            videoPlayerOptions:
-                VideoPlayerOptions(allowBackgroundPlayback: true),
+            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
           );
         }
         AppLogger.log('PodcastPlayer: video initialize start, $_logSubject');
         await _videoController!.initialize();
-        AppLogger.log(
-            'PodcastPlayer: video initialize completed, $_logSubject');
+        AppLogger.log('PodcastPlayer: video initialize completed, $_logSubject');
 
         _videoController!.addListener(() {
           if (!mounted || _videoController == null) return;
           final currentSecond = _videoController!.value.position.inSeconds;
           if (currentSecond > 0 && currentSecond % 15 == 0) {
             if (_lastVideoBookmarkSecond != currentSecond) {
-              _lastVideoBookmarkSecond = currentSecond;
-              _saveVideoBookmark();
+               _lastVideoBookmarkSecond = currentSecond;
+               _saveVideoBookmark();
             }
           }
         });
@@ -221,8 +214,7 @@ class _PodcastEpisodePlayerScreenState extends State<PodcastEpisodePlayerScreen>
     await _settings.setVideoEnabled(enable);
     _loaded = false; // force reload to switch player
     unawaited(_play().catchError((Object e, StackTrace stackTrace) {
-      AppLogger.log(
-          'PodcastPlayer: _toggleVideo _play error: $e, $_logSubject');
+      AppLogger.log('PodcastPlayer: _toggleVideo _play error: $e, $_logSubject');
     }));
   }
 
@@ -239,15 +231,12 @@ class _PodcastEpisodePlayerScreenState extends State<PodcastEpisodePlayerScreen>
         'lifecycle=$_lastLifecycleState '
         'primaryFocus=${focus?.context?.widget.runtimeType}, $_logSubject',
       );
-
-      final rootNode = RendererBinding
-          .instance.rootPipelineOwner.semanticsOwner?.rootSemanticsNode;
+      
+      final rootNode = RendererBinding.instance.rootPipelineOwner.semanticsOwner?.rootSemanticsNode;
       if (rootNode != null) {
-        AppLogger.log(
-            'PodcastPlayer Semantics Tree:\n${rootNode.toStringDeep()}');
+        AppLogger.log('PodcastPlayer Semantics Tree:\n${rootNode.toStringDeep()}');
       } else {
-        AppLogger.log(
-            'PodcastPlayer Semantics Tree: NULL (semantics not generated/enabled)');
+        AppLogger.log('PodcastPlayer Semantics Tree: NULL (semantics not generated/enabled)');
       }
     });
   }
@@ -329,107 +318,102 @@ class _PodcastEpisodePlayerScreenState extends State<PodcastEpisodePlayerScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.nowPlayingTitle(widget.episode.title)),
-        leading: BackButton(
-          onPressed: () {
-            AppLogger.log('PodcastPlayer: appbar back pressed, $_logSubject');
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(
-            widget.episode.title,
-            style: Theme.of(context).textTheme.headlineSmall,
-            textAlign: TextAlign.center,
+          leading: BackButton(
+            onPressed: () {
+              AppLogger.log('PodcastPlayer: appbar back pressed, $_logSubject');
+              Navigator.pop(context);
+            },
           ),
-          const SizedBox(height: 32),
-          if (_loading)
-            LinearProgressIndicator(semanticsLabel: l10n.loadingEpisodeAudio),
-          if (_error != null) ...[
-            const SizedBox(height: 12),
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
             Text(
-              _error!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              widget.episode.title,
+              style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
-          ],
-          if (widget.isVideoSupported) ...[
-            const SizedBox(height: 16),
-            SwitchListTile(
-              title: Text(l10n.enableVideo),
-              value: _isVideoEnabled,
-              onChanged: _toggleVideo,
-            ),
-          ],
-          if (_videoController != null &&
-              _videoController!.value.isInitialized) ...[
-            const SizedBox(height: 24),
-            AspectRatio(
-              aspectRatio: _videoController!.value.aspectRatio,
-              child: VideoPlayer(_videoController!),
-            ),
-          ],
-          const SizedBox(height: 24),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            alignment: WrapAlignment.center,
-            children: [
-              if (_videoController == null)
-                FilledButton.icon(
-                  onPressed:
-                      _loading || !_loaded ? null : () => _audio.seekBackward(),
-                  icon: const Icon(Icons.fast_rewind),
-                  label: Text(l10n.rewind15s),
-                ),
-              if (_videoController != null)
-                FilledButton.icon(
-                  onPressed: _loading
-                      ? null
-                      : (_videoController!.value.isPlaying ? _pause : _play),
-                  icon: Icon(_videoController!.value.isPlaying
-                      ? Icons.pause
-                      : Icons.play_arrow),
-                  label: Text(_videoController!.value.isPlaying
-                      ? l10n.pause
-                      : l10n.play),
-                )
-              else
-                StreamBuilder<bool>(
-                  stream: _audio.playingStream,
-                  builder: (context, snapshot) {
-                    final isPlaying = snapshot.data ?? false;
-                    return FilledButton.icon(
-                      onPressed: _loading ? null : (isPlaying ? _pause : _play),
-                      icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                      label: Text(isPlaying ? l10n.pause : l10n.play),
-                    );
-                  },
-                ),
-              if (_videoController == null)
-                FilledButton.icon(
-                  onPressed:
-                      _loading || !_loaded ? null : () => _audio.seekForward(),
-                  icon: const Icon(Icons.fast_forward),
-                  label: Text(l10n.forward15s),
-                ),
+            const SizedBox(height: 32),
+            if (_loading)
+              LinearProgressIndicator(semanticsLabel: l10n.loadingEpisodeAudio),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _error!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                textAlign: TextAlign.center,
+              ),
             ],
-          ),
-          const SizedBox(height: 24),
-          if (_videoController == null)
-            _PodcastPositionControl(
-              audio: _audio,
-              seekStep: _seekStep,
-              logSubject: _logSubject,
-            ),
-          if (_videoController == null) ...[
+            if (widget.isVideoSupported) ...[
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: Text(l10n.enableVideo),
+                value: _isVideoEnabled,
+                onChanged: _toggleVideo,
+              ),
+            ],
+            if (_videoController != null && _videoController!.value.isInitialized) ...[
+              const SizedBox(height: 24),
+              AspectRatio(
+                aspectRatio: _videoController!.value.aspectRatio,
+                child: VideoPlayer(_videoController!),
+              ),
+            ],
             const SizedBox(height: 24),
-            VolumeSlider(audioPlayer: _audio),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
+              children: [
+                if (_videoController == null)
+                  FilledButton.icon(
+                    onPressed:
+                        _loading || !_loaded ? null : () => _audio.seekBackward(),
+                    icon: const Icon(Icons.fast_rewind),
+                    label: Text(l10n.rewind15s),
+                  ),
+                if (_videoController != null)
+                  FilledButton.icon(
+                    onPressed:
+                        _loading ? null : (_videoController!.value.isPlaying ? _pause : _play),
+                    icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
+                    label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
+                  )
+                else
+                  StreamBuilder<bool>(
+                    stream: _audio.playingStream,
+                    builder: (context, snapshot) {
+                      final isPlaying = snapshot.data ?? false;
+                      return FilledButton.icon(
+                        onPressed:
+                            _loading ? null : (isPlaying ? _pause : _play),
+                        icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                        label: Text(isPlaying ? l10n.pause : l10n.play),
+                      );
+                    },
+                  ),
+                if (_videoController == null)
+                  FilledButton.icon(
+                    onPressed:
+                        _loading || !_loaded ? null : () => _audio.seekForward(),
+                    icon: const Icon(Icons.fast_forward),
+                    label: Text(l10n.forward15s),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            if (_videoController == null)
+              _PodcastPositionControl(
+                audio: _audio,
+                seekStep: _seekStep,
+                logSubject: _logSubject,
+              ),
+            if (_videoController == null) ...[
+              const SizedBox(height: 24),
+              VolumeSlider(audioPlayer: _audio),
+            ],
           ],
-        ],
-      ),
+        ),
     );
   }
 }
@@ -446,8 +430,7 @@ class _PodcastPositionControl extends StatefulWidget {
   final String logSubject;
 
   @override
-  State<_PodcastPositionControl> createState() =>
-      _PodcastPositionControlState();
+  State<_PodcastPositionControl> createState() => _PodcastPositionControlState();
 }
 
 class _PodcastPositionControlState extends State<_PodcastPositionControl> {
@@ -470,12 +453,8 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
       _latestPosition = position;
     });
     _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted || _latestPosition == _visiblePosition) {
-        return;
-      }
-      if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
-        return;
-      }
+      if (!mounted || _latestPosition == _visiblePosition) return;
+      if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) return;
       setState(() => _visiblePosition = _latestPosition);
     });
   }
@@ -493,6 +472,7 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
     final secs = (d.inSeconds % 60).toString().padLeft(2, '0');
     return '$mins:$secs';
   }
+
 
   void _seekBy(int seconds) {
     var newPos = _visiblePosition + Duration(seconds: seconds);
