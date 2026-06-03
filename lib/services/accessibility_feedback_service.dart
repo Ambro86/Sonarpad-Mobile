@@ -8,7 +8,9 @@ class AccessibilityFeedbackService {
     required String routeName,
   }) async {
     if (!context.mounted) return null;
-    return Navigator.of(context).pushNamed<T>(routeName);
+    final result = await Navigator.of(context).pushNamed<dynamic>(routeName);
+    if (result is T) return result;
+    return null;
   }
 
   static Future<T?> pushRoute<T>(
