@@ -9,6 +9,7 @@ import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
 
 import 'l10n/app_localizations.dart';
 import 'models/podcast.dart';
+import 'utils/app_logger.dart';
 import 'services/app_settings_service.dart';
 import 'services/changelog_service.dart';
 import 'services/document_library_service.dart';
@@ -75,17 +76,34 @@ ThemeData sonarpadTheme() {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AppLogger.log(
+    'Sonarpad bootstrap start platform=${Platform.operatingSystem} '
+    'version=${Platform.operatingSystemVersion} pid=$pid',
+  );
   tz_data.initializeTimeZones();
+  await AppLogger.log('Sonarpad bootstrap timezone data initialized');
   try {
     await rhttp.Rhttp.init();
+    await AppLogger.log('Sonarpad bootstrap rhttp_plus initialized');
   } catch (error) {
     debugPrint('Errore inizializzazione rhttp_plus: $error');
+    await AppLogger.log('Sonarpad bootstrap rhttp_plus init failed: $error');
   }
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
-    androidNotificationOngoing: true,
-  );
+  try {
+    await AppLogger.log('Sonarpad bootstrap just_audio_background init start');
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+      androidNotificationChannelName: 'Audio playback',
+      androidNotificationOngoing: true,
+    );
+    await AppLogger.log('Sonarpad bootstrap just_audio_background init ok');
+  } catch (error) {
+    await AppLogger.log(
+      'Sonarpad bootstrap just_audio_background init failed: $error',
+    );
+    rethrow;
+  }
+  await AppLogger.log('Sonarpad bootstrap runApp');
   runApp(const SonarpadApp());
 }
 
@@ -114,10 +132,12 @@ class _SonarpadAppState extends State<SonarpadApp> {
   @override
   void initState() {
     super.initState();
+    unawaited(AppLogger.log('SonarpadApp initState'));
     _initAppLinks();
     _initSharedMediaIntents();
     AppSettingsService().loadAppLanguage().then((lang) {
       if (mounted) {
+        unawaited(AppLogger.log('SonarpadApp language loaded: $lang'));
         setState(() {
           _locale = Locale(lang);
         });

@@ -96,10 +96,6 @@ jobs:
                       1,
                   )
 
-              # Imposta AudioServiceActivity come main activity per just_audio_background
-              if "android:name=\".MainActivity\"" in text:
-                  text = text.replace("android:name=\".MainActivity\"", "android:name=\"com.ryanheise.audioservice.AudioServiceActivity\"")
-
               # Mantiene il nome dell'app coerente con iOS.
               if "android:label=" in text:
                   text = re.sub(r'android:label="[^"]*"', f'android:label="{app_name}"', text, count=1)
