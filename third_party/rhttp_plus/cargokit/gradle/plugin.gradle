@@ -87,6 +87,8 @@ abstract class CargoKitBuildTask extends DefaultTask {
 class CargoKitPlugin implements Plugin<Project> {
 
     static String file;
+    static final List<String> DEFAULT_TARGET_PLATFORMS = ["android-arm", "android-arm64", "android-x64"];
+    static final Set<String> SUPPORTED_TARGET_PLATFORMS = DEFAULT_TARGET_PLATFORMS as Set;
 
     private Plugin findFlutterPlugin(Project rootProject) {
         _findFlutterPlugin(rootProject.childProjects)
@@ -134,7 +136,7 @@ class CargoKitPlugin implements Plugin<Project> {
             def jniLibs = project.android.sourceSets.maybeCreate(buildType).jniLibs;
             jniLibs.srcDir(new File(cargoOutputDir))
 
-            def platforms = plugin.getTargetPlatforms().collect()
+            def platforms = targetPlatformsFor(plugin.project)
 
             // Same thing addFlutterDependencies does in flutter.gradle
             if (buildType == "debug") {
@@ -177,5 +179,22 @@ class CargoKitPlugin implements Plugin<Project> {
                 project.tasks.whenTaskAdded onTask
             }
         }
+    }
+
+    private List<String> targetPlatformsFor(Project flutterProject) {
+        if (!flutterProject.hasProperty("target-platform")) {
+            return new ArrayList<String>(DEFAULT_TARGET_PLATFORMS)
+        }
+        def platforms = flutterProject.property("target-platform")
+            .toString()
+            .split(",")
+            .collect { it.trim() }
+            .findAll { !it.isEmpty() }
+        for (platform in platforms) {
+            if (!SUPPORTED_TARGET_PLATFORMS.contains(platform)) {
+                throw new GradleException("Invalid platform: ${platform}")
+            }
+        }
+        return platforms
     }
 }
