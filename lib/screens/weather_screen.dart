@@ -60,6 +60,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
           loc.latitude,
           loc.longitude,
         );
+        if (forecast == null) {
+          if (mounted) {
+            setState(() {
+              _error = _WeatherError.searchError;
+              _isLoading = false;
+            });
+          }
+          return;
+        }
         await _settings.setWeatherCity(city);
         if (mounted) {
           setState(() {
