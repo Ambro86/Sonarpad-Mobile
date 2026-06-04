@@ -764,7 +764,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Desliza hacia arriba o hacia abajo para eliminar el marcador existente o reemplazarlo por este párrafo.';
 
   @override
-  String get documentSetBookmarkAction => 'Establecer marcador';
+  String get documentSetBookmarkAction => 'Añadir nuevo marcador';
 
   @override
   String get documentRemoveBookmarkAction => 'Eliminar marcador';
@@ -880,6 +880,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get weatherToday => 'Hoy';
+
+  @override
+  String get weatherCurrentSituation => 'Situación actual';
 
   @override
   String get weatherTomorrow => 'Mañana';

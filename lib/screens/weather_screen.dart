@@ -182,6 +182,30 @@ class _WeatherForecastView extends StatelessWidget {
     return '${l10n.weatherChooseDay} ${day + 1}';
   }
 
+  int? _currentWeatherCode() {
+    final value = forecast.current['weather_code'];
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
+  }
+
+  String _currentSituation(AppLocalizations l10n) {
+    final code = _currentWeatherCode();
+    if (code == null) return '-';
+    return _weatherCodeLabel(l10n.localeName, code);
+  }
+
+  String _weatherCodeLabel(String localeName, int code) {
+    final languageCode = localeName.split('_').first.split('-').first;
+    final labels = switch (languageCode) {
+      'en' => _weatherCodeLabelsEn,
+      'fr' => _weatherCodeLabelsFr,
+      'es' => _weatherCodeLabelsEs,
+      _ => _weatherCodeLabelsIt,
+    };
+    return labels[code] ?? code.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -216,6 +240,13 @@ class _WeatherForecastView extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 16),
+          if (day == 0)
+            Card(
+              child: ListTile(
+                title: Text(l10n.weatherCurrentSituation),
+                trailing: Text(_currentSituation(l10n)),
+              ),
+            ),
           if (day == 0)
             Card(
               child: ListTile(
@@ -271,6 +302,130 @@ class _WeatherForecastView extends StatelessWidget {
     );
   }
 }
+
+const Map<int, String> _weatherCodeLabelsIt = {
+  0: 'Sereno',
+  1: 'Prevalentemente sereno',
+  2: 'Parzialmente nuvoloso',
+  3: 'Coperto',
+  45: 'Nebbia',
+  48: 'Nebbia con brina',
+  51: 'Pioviggine leggera',
+  53: 'Pioviggine moderata',
+  55: 'Pioviggine intensa',
+  56: 'Pioviggine gelata leggera',
+  57: 'Pioviggine gelata intensa',
+  61: 'Pioggia leggera',
+  63: 'Pioggia moderata',
+  65: 'Pioggia intensa',
+  66: 'Pioggia gelata leggera',
+  67: 'Pioggia gelata intensa',
+  71: 'Neve leggera',
+  73: 'Neve moderata',
+  75: 'Neve intensa',
+  77: 'Granelli di neve',
+  80: 'Rovesci leggeri',
+  81: 'Rovesci moderati',
+  82: 'Rovesci violenti',
+  85: 'Rovesci di neve leggeri',
+  86: 'Rovesci di neve intensi',
+  95: 'Temporale',
+  96: 'Temporale con grandine leggera',
+  99: 'Temporale con grandine intensa',
+};
+
+const Map<int, String> _weatherCodeLabelsEn = {
+  0: 'Clear sky',
+  1: 'Mainly clear',
+  2: 'Partly cloudy',
+  3: 'Overcast',
+  45: 'Fog',
+  48: 'Depositing rime fog',
+  51: 'Light drizzle',
+  53: 'Moderate drizzle',
+  55: 'Dense drizzle',
+  56: 'Light freezing drizzle',
+  57: 'Dense freezing drizzle',
+  61: 'Slight rain',
+  63: 'Moderate rain',
+  65: 'Heavy rain',
+  66: 'Light freezing rain',
+  67: 'Heavy freezing rain',
+  71: 'Slight snow fall',
+  73: 'Moderate snow fall',
+  75: 'Heavy snow fall',
+  77: 'Snow grains',
+  80: 'Slight rain showers',
+  81: 'Moderate rain showers',
+  82: 'Violent rain showers',
+  85: 'Slight snow showers',
+  86: 'Heavy snow showers',
+  95: 'Thunderstorm',
+  96: 'Thunderstorm with slight hail',
+  99: 'Thunderstorm with heavy hail',
+};
+
+const Map<int, String> _weatherCodeLabelsFr = {
+  0: 'Ciel degage',
+  1: 'Principalement clair',
+  2: 'Partiellement nuageux',
+  3: 'Couvert',
+  45: 'Brouillard',
+  48: 'Brouillard givrant',
+  51: 'Bruine legere',
+  53: 'Bruine moderee',
+  55: 'Bruine dense',
+  56: 'Bruine verglaçante legere',
+  57: 'Bruine verglaçante dense',
+  61: 'Pluie faible',
+  63: 'Pluie moderee',
+  65: 'Pluie forte',
+  66: 'Pluie verglaçante legere',
+  67: 'Pluie verglaçante forte',
+  71: 'Faibles chutes de neige',
+  73: 'Chutes de neige moderees',
+  75: 'Fortes chutes de neige',
+  77: 'Grains de neige',
+  80: 'Averses faibles',
+  81: 'Averses moderees',
+  82: 'Averses violentes',
+  85: 'Faibles averses de neige',
+  86: 'Fortes averses de neige',
+  95: 'Orage',
+  96: 'Orage avec grele legere',
+  99: 'Orage avec forte grele',
+};
+
+const Map<int, String> _weatherCodeLabelsEs = {
+  0: 'Cielo despejado',
+  1: 'Principalmente despejado',
+  2: 'Parcialmente nublado',
+  3: 'Cubierto',
+  45: 'Niebla',
+  48: 'Niebla con escarcha',
+  51: 'Llovizna ligera',
+  53: 'Llovizna moderada',
+  55: 'Llovizna intensa',
+  56: 'Llovizna helada ligera',
+  57: 'Llovizna helada intensa',
+  61: 'Lluvia ligera',
+  63: 'Lluvia moderada',
+  65: 'Lluvia intensa',
+  66: 'Lluvia helada ligera',
+  67: 'Lluvia helada intensa',
+  71: 'Nevada ligera',
+  73: 'Nevada moderada',
+  75: 'Nevada intensa',
+  77: 'Granulos de nieve',
+  80: 'Chubascos ligeros',
+  81: 'Chubascos moderados',
+  82: 'Chubascos violentos',
+  85: 'Chubascos de nieve ligeros',
+  86: 'Chubascos de nieve intensos',
+  95: 'Tormenta',
+  96: 'Tormenta con granizo ligero',
+  99: 'Tormenta con granizo intenso',
+};
 
 enum _WeatherError {
   cityNotFound,

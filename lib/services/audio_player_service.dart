@@ -569,8 +569,7 @@ class AudioPlayerService {
           AppLogger.log(
             'Sonarpad audio: stream playlist appended chunk ${index + 1}',
           );
-          if (!_player.playing &&
-              _player.processingState == ProcessingState.completed &&
+          if (_player.processingState == ProcessingState.completed &&
               !(isPaused?.call() ?? false) &&
               !_stopRequested) {
             AppLogger.log(

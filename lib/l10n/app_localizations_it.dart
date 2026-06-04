@@ -762,7 +762,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Scorri verso l’alto o verso il basso per rimuovere il segnalibro esistente o sostituirlo con questo paragrafo.';
 
   @override
-  String get documentSetBookmarkAction => 'Imposta segnalibro';
+  String get documentSetBookmarkAction => 'Aggiungi nuovo segnalibro';
 
   @override
   String get documentRemoveBookmarkAction => 'Rimuovi segnalibro';
@@ -877,6 +877,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherToday => 'Oggi';
+
+  @override
+  String get weatherCurrentSituation => 'Situazione attuale';
 
   @override
   String get weatherTomorrow => 'Domani';

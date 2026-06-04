@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       if (isItalian)
         _HomeButton(
-          label: 'BdCiechi',
+          label: 'Biblioteca digitale',
           onPressed: () => AccessibilityFeedbackService.goNamed(context,
               routeName: '/bdciechi'),
         ),
@@ -249,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 routeName: '/voice_dictionary')),
         if (_isSecretCodeValid && isItalian)
           _HomeButton(
-              label: 'BdCiechi',
+              label: 'Biblioteca digitale',
               onPressed: () => AccessibilityFeedbackService.goNamed(context,
                   routeName: '/bdciechi')),
         _HomeButton(

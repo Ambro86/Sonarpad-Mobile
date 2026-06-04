@@ -252,7 +252,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Accesso a BdCiechi completato.'),
+        title: const Text('Accesso alla Biblioteca Digitale completato.'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

@@ -55,6 +55,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   StreamController<File>? _edgeFileController;
   // (chunkKeys rimosso, usiamo scroll_to_index)
   late int _bookmarkIndex;
+  late bool _hasBookmark;
 
   bool _ttsPaused = false;
   String? _activeTtsEngine;
@@ -73,6 +74,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     super.initState();
     _currentDoc = widget.document;
     _bookmarkIndex = _currentDoc.bookmarkIndex;
+    _hasBookmark = _currentDoc.bookmarkIndex > 0;
     _playingSub = _audio.playingStream.listen((playing) {
       if (_speaking && _activeTtsEngine != 'system' && mounted) {
         setState(() => _ttsPaused = !playing);
@@ -783,20 +785,20 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final widgets = <Widget>[];
     for (var i = 0; i < _chunks.length; i++) {
       final isPlaying = i == _playingChunkIndex;
-      final isBookmarked = i == _bookmarkIndex;
+      final isBookmarked = _hasBookmark && i == _bookmarkIndex;
 
       // Durante la lettura TTS il tap è disabilitato per non interferire.
       final canEdit = !_speaking;
 
       String hintText = canEdit ? l10n.documentEditParagraphActionHint : '';
-      if (_bookmarkIndex > 0) {
+      if (_hasBookmark) {
         hintText += l10n.documentBookmarkHintReplace;
       } else {
         hintText += l10n.documentBookmarkHintSet;
       }
 
       final Map<CustomSemanticsAction, VoidCallback> actions = {};
-      if (_bookmarkIndex > 0) {
+      if (_hasBookmark) {
         actions[CustomSemanticsAction(
             label: l10n.documentReplaceBookmarkAction)] = () => _setBookmark(i);
       } else {
@@ -881,7 +883,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _saveBookmark(int index, {required bool showSnack}) async {
-    setState(() => _bookmarkIndex = index);
+    setState(() {
+      _bookmarkIndex = index;
+      _hasBookmark = true;
+    });
 
     final newDoc = DocumentItem(
       id: _currentDoc.id,

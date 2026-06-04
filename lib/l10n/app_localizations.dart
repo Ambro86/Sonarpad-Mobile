@@ -1437,7 +1437,7 @@ abstract class AppLocalizations {
   /// Localized text for documentSetBookmarkAction.
   ///
   /// In it, this message translates to:
-  /// **'Imposta segnalibro'**
+  /// **'Aggiungi nuovo segnalibro'**
   String get documentSetBookmarkAction;
 
   /// Localized text for documentRemoveBookmarkAction.
@@ -1649,6 +1649,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Oggi'**
   String get weatherToday;
+
+  /// Localized text for weatherCurrentSituation.
+  ///
+  /// In it, this message translates to:
+  /// **'Situazione attuale'**
+  String get weatherCurrentSituation;
 
   /// Localized text for weatherTomorrow.
   ///

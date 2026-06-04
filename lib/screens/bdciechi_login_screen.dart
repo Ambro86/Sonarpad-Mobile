@@ -100,7 +100,7 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Accesso BdCiechi'),
+        title: const Text('Accesso alla Biblioteca Digitale'),
       ),
       body: SafeArea(
         child: _isLoading

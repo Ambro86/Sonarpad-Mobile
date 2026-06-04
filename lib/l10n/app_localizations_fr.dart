@@ -765,7 +765,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Balayez vers le haut ou vers le bas pour supprimer le signet existant ou le remplacer par ce paragraphe.';
 
   @override
-  String get documentSetBookmarkAction => 'Définir le signet';
+  String get documentSetBookmarkAction => 'Ajouter un nouveau signet';
 
   @override
   String get documentRemoveBookmarkAction => 'Supprimer le signet';
@@ -881,6 +881,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weatherToday => 'Aujourd\'hui';
+
+  @override
+  String get weatherCurrentSituation => 'Situation actuelle';
 
   @override
   String get weatherTomorrow => 'Demain';

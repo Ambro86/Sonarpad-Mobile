@@ -26,7 +26,7 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
 
   Future<void> _save() async {
     final title = _titleController.text.trim();
-    final content = _contentController.text.trim();
+    final content = _normalizeParagraphBreaks(_contentController.text);
 
     if (content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -63,6 +63,15 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
     } finally {
       if (mounted) setState(() => _saving = false);
     }
+  }
+
+  String _normalizeParagraphBreaks(String text) {
+    final normalized = text.trim().replaceAll('\r\n', '\n');
+    final paragraphs = normalized
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty);
+    return paragraphs.join('\n\n');
   }
 
   @override

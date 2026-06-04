@@ -757,7 +757,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Swipe up or down to remove the existing bookmark or replace it with this paragraph.';
 
   @override
-  String get documentSetBookmarkAction => 'Set bookmark';
+  String get documentSetBookmarkAction => 'Add new bookmark';
 
   @override
   String get documentRemoveBookmarkAction => 'Remove bookmark';
@@ -869,6 +869,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherToday => 'Today';
+
+  @override
+  String get weatherCurrentSituation => 'Current situation';
 
   @override
   String get weatherTomorrow => 'Tomorrow';

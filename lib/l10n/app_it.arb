@@ -1087,7 +1087,7 @@
   "@documentBookmarkHintReplace": {
     "description": "Localized text for documentBookmarkHintReplace."
   },
-  "documentSetBookmarkAction": "Imposta segnalibro",
+  "documentSetBookmarkAction": "Aggiungi nuovo segnalibro",
   "@documentSetBookmarkAction": {
     "description": "Localized text for documentSetBookmarkAction."
   },
@@ -1240,6 +1240,10 @@
   "weatherToday": "Oggi",
   "@weatherToday": {
     "description": "Localized text for weatherToday."
+  },
+  "weatherCurrentSituation": "Situazione attuale",
+  "@weatherCurrentSituation": {
+    "description": "Localized text for weatherCurrentSituation."
   },
   "weatherTomorrow": "Domani",
   "@weatherTomorrow": {
