@@ -153,6 +153,9 @@ class _PodcastEpisodePlayerScreenState
 
         AppLogger.log('PodcastPlayer: video play start, $_logSubject');
         await _videoController!.play();
+        if (Platform.isIOS) {
+          await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
+        }
         AppLogger.log('PodcastPlayer: video play completed, $_logSubject');
       } else {
         AppLogger.log(
@@ -225,8 +228,14 @@ class _PodcastEpisodePlayerScreenState
     if (controller.value.isPlaying) {
       await controller.pause();
       await _saveVideoBookmark();
+      if (Platform.isIOS) {
+        await _mediaCommands.invokeMethod('setMagicTapPlaying', false);
+      }
     } else {
       await controller.play();
+      if (Platform.isIOS) {
+        await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
+      }
     }
     if (mounted) setState(() {});
   }
@@ -395,6 +404,7 @@ class _PodcastEpisodePlayerScreenState
                   title: Text(l10n.enableVideo),
                   value: _isVideoEnabled,
                   onChanged: _toggleVideo,
+                  contentPadding: EdgeInsets.zero,
                 ),
               ],
               if (_videoController != null && _videoController!.value.isInitialized) ...[

@@ -93,6 +93,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           );
         }
         await _videoController!.play();
+        if (Platform.isIOS) {
+          await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
+        }
       } else {
         if (Platform.isIOS && _videoController != null) {
           await _mediaCommands.invokeMethod('clearMagicTap');
@@ -135,20 +138,22 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     if (controller == null || !controller.value.isInitialized) return;
     if (controller.value.isPlaying) {
       await controller.pause();
+      if (Platform.isIOS) {
+        await _mediaCommands.invokeMethod('setMagicTapPlaying', false);
+      }
     } else {
       await controller.play();
+      if (Platform.isIOS) {
+        await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
+      }
     }
     if (mounted) setState(() {});
   }
 
-  void _toggleVideo(bool enable) {
+  Future<void> _toggleVideo(bool enable) async {
     setState(() => _isVideoEnabled = enable);
-    unawaited(_applyVideoSetting(enable));
-  }
-
-  Future<void> _applyVideoSetting(bool enable) async {
     await _settings.setVideoEnabled(enable);
-    await _play();
+    _play();
   }
 
   Future<void> _toggleFavorite() async {
@@ -243,6 +248,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               title: Text(l10n.enableVideo),
               value: _isVideoEnabled,
               onChanged: _toggleVideo,
+              contentPadding: EdgeInsets.zero,
             ),
           ],
           if (_videoController != null &&

@@ -20,6 +20,9 @@ class SonarpadTTSPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     if call.method == "setupMagicTap" {
       setupMagicTap(title: call.arguments as? String ?? "Lettura Documento")
       result(nil)
+    } else if call.method == "setMagicTapPlaying" {
+      setMagicTapPlaying(call.arguments as? Bool ?? false)
+      result(nil)
     } else if call.method == "clearMagicTap" {
       clearMagicTap()
       result(nil)
@@ -52,6 +55,13 @@ class SonarpadTTSPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
 
     var nowPlayingInfo = [String : Any]()
     nowPlayingInfo[MPMediaItemPropertyTitle] = title
+    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = 1.0
+    MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+  }
+
+  private func setMagicTapPlaying(_ isPlaying: Bool) {
+    var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
     MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
   }
 
