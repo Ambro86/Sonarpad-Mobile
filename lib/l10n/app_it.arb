@@ -1289,6 +1289,10 @@
   "@settingsRequestCode": {
     "description": "Localized text for settingsRequestCode."
   },
+  "settingsPasteCode": "Incolla codice",
+  "@settingsPasteCode": {
+    "description": "Localized text for settingsPasteCode."
+  },
   "settingsCancel": "Annulla",
   "@settingsCancel": {
     "description": "Localized text for settingsCancel."

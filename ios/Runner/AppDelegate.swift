@@ -37,6 +37,10 @@ class SonarpadTTSPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     }
 
     let commandCenter = MPRemoteCommandCenter.shared()
+    commandCenter.togglePlayPauseCommand.removeTarget(self, action: #selector(handleTogglePlayPause))
+    commandCenter.playCommand.removeTarget(self, action: #selector(handleTogglePlayPause))
+    commandCenter.pauseCommand.removeTarget(self, action: #selector(handleTogglePlayPause))
+
     commandCenter.togglePlayPauseCommand.isEnabled = true
     commandCenter.togglePlayPauseCommand.addTarget(self, action: #selector(handleTogglePlayPause))
 

@@ -915,6 +915,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsRequestCode => 'Richiedi codice all\'autore';
 
   @override
+  String get settingsPasteCode => 'Incolla codice';
+
+  @override
   String get settingsCancel => 'Annulla';
 
   @override

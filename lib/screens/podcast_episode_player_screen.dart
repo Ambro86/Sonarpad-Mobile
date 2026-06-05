@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
@@ -31,8 +32,12 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
 
 class _PodcastEpisodePlayerScreenState
     extends State<PodcastEpisodePlayerScreen> with WidgetsBindingObserver {
+  static const _mediaCommands = MethodChannel('sonarpad/tts_commands');
+  static const _mediaEvents = EventChannel('sonarpad/tts_events');
+
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
+  StreamSubscription<dynamic>? _mediaEventsSubscription;
 
   VideoPlayerController? _videoController;
   bool _isVideoEnabled = false;
@@ -117,6 +122,12 @@ class _PodcastEpisodePlayerScreenState
         AppLogger.log('PodcastPlayer: video initialize start, $_logSubject');
         await _videoController!.initialize();
         AppLogger.log('PodcastPlayer: video initialize completed, $_logSubject');
+        if (Platform.isIOS) {
+          await _mediaCommands.invokeMethod(
+            'setupMagicTap',
+            widget.episode.title,
+          );
+        }
 
         _videoController!.addListener(() {
           if (!mounted || _videoController == null) return;
@@ -148,6 +159,9 @@ class _PodcastEpisodePlayerScreenState
           'PodcastPlayer: audio branch start loaded=$_loaded, $_logSubject',
         );
         await _saveVideoBookmark();
+        if (Platform.isIOS && _videoController != null) {
+          await _mediaCommands.invokeMethod('clearMagicTap');
+        }
         _videoController?.pause();
         _videoController?.dispose();
         _videoController = null;
@@ -205,17 +219,33 @@ class _PodcastEpisodePlayerScreenState
     }
   }
 
-  Future<void> _toggleVideo(bool enable) async {
+  Future<void> _toggleVideoPlayback() async {
+    final controller = _videoController;
+    if (controller == null || !controller.value.isInitialized) return;
+    if (controller.value.isPlaying) {
+      await controller.pause();
+      await _saveVideoBookmark();
+    } else {
+      await controller.play();
+    }
+    if (mounted) setState(() {});
+  }
+
+  void _toggleVideo(bool enable) {
     AppLogger.log('PodcastPlayer: _toggleVideo enable=$enable, $_logSubject');
+    setState(() => _isVideoEnabled = enable);
+    unawaited(_applyVideoSetting(enable));
+  }
+
+  Future<void> _applyVideoSetting(bool enable) async {
     if (_videoController != null && _videoController!.value.isPlaying) {
       await _pause();
     }
-    setState(() => _isVideoEnabled = enable);
     await _settings.setVideoEnabled(enable);
     _loaded = false; // force reload to switch player
-    unawaited(_play().catchError((Object e, StackTrace stackTrace) {
+    await _play().catchError((Object e, StackTrace stackTrace) {
       AppLogger.log('PodcastPlayer: _toggleVideo _play error: $e, $_logSubject');
-    }));
+    });
   }
 
   void _startDiagnosticHeartbeat() {
@@ -244,6 +274,14 @@ class _PodcastEpisodePlayerScreenState
   @override
   void initState() {
     super.initState();
+    if (Platform.isIOS) {
+      _mediaEventsSubscription =
+          _mediaEvents.receiveBroadcastStream().listen((event) {
+        if (event == 'toggle' && mounted && _videoController != null) {
+          unawaited(_toggleVideoPlayback());
+        }
+      });
+    }
     WidgetsBinding.instance.addObserver(this);
     _lastLifecycleState = WidgetsBinding.instance.lifecycleState;
     _startDiagnosticHeartbeat();
@@ -299,6 +337,10 @@ class _PodcastEpisodePlayerScreenState
     );
     WidgetsBinding.instance.removeObserver(this);
     _diagnosticHeartbeat?.cancel();
+    if (Platform.isIOS && _videoController != null) {
+      unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
+    }
+    unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     unawaited(_saveVideoBookmark());
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());
@@ -326,8 +368,8 @@ class _PodcastEpisodePlayerScreenState
           ),
         ),
         body: Semantics(
-          container: true,
-          explicitChildNodes: true,
+          container: Platform.isIOS,
+          explicitChildNodes: Platform.isIOS,
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -377,8 +419,7 @@ class _PodcastEpisodePlayerScreenState
                     ),
                   if (_videoController != null)
                     FilledButton.icon(
-                      onPressed:
-                          _loading ? null : (_videoController!.value.isPlaying ? _pause : _play),
+                      onPressed: _loading ? null : _toggleVideoPlayback,
                       icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
                       label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
                     )

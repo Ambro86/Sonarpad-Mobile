@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
@@ -26,8 +28,12 @@ class RadioPlayerScreen extends StatefulWidget {
 }
 
 class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
+  static const _mediaCommands = MethodChannel('sonarpad/tts_commands');
+  static const _mediaEvents = EventChannel('sonarpad/tts_events');
+
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
+  StreamSubscription<dynamic>? _mediaEventsSubscription;
 
   VideoPlayerController? _videoController;
   bool _isVideoEnabled = false;
@@ -39,6 +45,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   @override
   void initState() {
     super.initState();
+    if (Platform.isIOS) {
+      _mediaEventsSubscription =
+          _mediaEvents.receiveBroadcastStream().listen((event) {
+        if (event == 'toggle' && mounted && _videoController != null) {
+          unawaited(_toggleVideoPlayback());
+        }
+      });
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
       _isFavorite = await _loadIsFavorite();
@@ -72,8 +86,17 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
         );
         await _videoController!.initialize();
+        if (Platform.isIOS) {
+          await _mediaCommands.invokeMethod(
+            'setupMagicTap',
+            widget.station.name,
+          );
+        }
         await _videoController!.play();
       } else {
+        if (Platform.isIOS && _videoController != null) {
+          await _mediaCommands.invokeMethod('clearMagicTap');
+        }
         _videoController?.pause();
         _videoController?.dispose();
         _videoController = null;
@@ -107,10 +130,25 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
   }
 
-  Future<void> _toggleVideo(bool enable) async {
+  Future<void> _toggleVideoPlayback() async {
+    final controller = _videoController;
+    if (controller == null || !controller.value.isInitialized) return;
+    if (controller.value.isPlaying) {
+      await controller.pause();
+    } else {
+      await controller.play();
+    }
+    if (mounted) setState(() {});
+  }
+
+  void _toggleVideo(bool enable) {
     setState(() => _isVideoEnabled = enable);
+    unawaited(_applyVideoSetting(enable));
+  }
+
+  Future<void> _applyVideoSetting(bool enable) async {
     await _settings.setVideoEnabled(enable);
-    _play();
+    await _play();
   }
 
   Future<void> _toggleFavorite() async {
@@ -161,6 +199,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   @override
   void dispose() {
+    if (Platform.isIOS && _videoController != null) {
+      unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
+    }
+    unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());
     super.dispose();
@@ -219,9 +261,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             children: [
               if (_videoController != null)
                 FilledButton.icon(
-                  onPressed: _loading
-                      ? null
-                      : (_videoController!.value.isPlaying ? _stop : _play),
+                  onPressed: _loading ? null : _toggleVideoPlayback,
                   icon: Icon(_videoController!.value.isPlaying
                       ? Icons.pause
                       : Icons.play_arrow),

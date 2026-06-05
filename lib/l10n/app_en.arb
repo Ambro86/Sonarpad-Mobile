@@ -270,6 +270,7 @@
   "weatherRelativeHumidity": "Relative humidity",
   "settingsSecretCode": "Sonarpad code for extra features",
   "settingsRequestCode": "Request code from author",
+  "settingsPasteCode": "Paste code",
   "settingsCancel": "Cancel",
   "settingsSend": "Send",
   "settingsFillFieldsCode": "Fill all fields to request the code.",

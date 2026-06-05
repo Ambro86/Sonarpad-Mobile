@@ -920,6 +920,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsRequestCode => 'Demander le code à l\'auteur';
 
   @override
+  String get settingsPasteCode => 'Coller le code';
+
+  @override
   String get settingsCancel => 'Annuler';
 
   @override

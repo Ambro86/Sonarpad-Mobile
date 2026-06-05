@@ -63,9 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
             routeName: '/wikipedia'),
       ),
       _HomeButton(
-        label: l10n.voiceDictionaryTitle,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/voice_dictionary'),
+        label: l10n.news,
+        onPressed: () =>
+            AccessibilityFeedbackService.goNamed(context, routeName: '/news'),
       ),
       if (isItalian)
         _HomeButton(
@@ -124,9 +124,9 @@ class _HomeScreenState extends State<HomeScreen> {
             routeName: '/calendar'),
       ),
       _HomeButton(
-        label: l10n.news,
-        onPressed: () =>
-            AccessibilityFeedbackService.goNamed(context, routeName: '/news'),
+        label: l10n.voiceDictionaryTitle,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context,
+            routeName: '/voice_dictionary'),
       ),
       _HomeButton(
         label: l10n.meteoTitle,

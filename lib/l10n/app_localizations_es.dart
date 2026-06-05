@@ -918,6 +918,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsRequestCode => 'Solicitar código al autor';
 
   @override
+  String get settingsPasteCode => 'Pegar código';
+
+  @override
   String get settingsCancel => 'Cancelar';
 
   @override

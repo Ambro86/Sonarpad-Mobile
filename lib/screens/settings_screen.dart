@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
@@ -468,6 +469,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _pasteSecretCode() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text?.trim();
+    if (text == null || text.isEmpty) return;
+    _tvSecretCodeController.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -809,13 +820,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           labelText: l10n.settingsSecretCode,
                           border: const OutlineInputBorder(),
                         ),
-                        obscureText: !Platform.isAndroid,
+                        obscureText: true,
                       ),
                       const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        onPressed: _requestSecretCode,
-                        icon: const Icon(Icons.mail_outline),
-                        label: Text(l10n.settingsRequestCode),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: _pasteSecretCode,
+                            icon: const Icon(Icons.content_paste),
+                            label: Text(l10n.settingsPasteCode),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: _requestSecretCode,
+                            icon: const Icon(Icons.mail_outline),
+                            label: Text(l10n.settingsRequestCode),
+                          ),
+                        ],
                       ),
                     ],
                     const SizedBox(height: 16),

@@ -1722,6 +1722,12 @@ abstract class AppLocalizations {
   /// **'Richiedi codice all\'autore'**
   String get settingsRequestCode;
 
+  /// Localized text for settingsPasteCode.
+  ///
+  /// In it, this message translates to:
+  /// **'Incolla codice'**
+  String get settingsPasteCode;
+
   /// Localized text for settingsCancel.
   ///
   /// In it, this message translates to:

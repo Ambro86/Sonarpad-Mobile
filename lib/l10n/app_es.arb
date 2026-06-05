@@ -270,6 +270,7 @@
   "weatherRelativeHumidity": "Humedad relativa",
   "settingsSecretCode": "Código Sonarpad para funciones extra",
   "settingsRequestCode": "Solicitar código al autor",
+  "settingsPasteCode": "Pegar código",
   "settingsCancel": "Cancelar",
   "settingsSend": "Enviar",
   "settingsFillFieldsCode": "Rellena todos los campos para solicitar el código.",
