@@ -674,7 +674,10 @@ class RaiPlayService {
 
           await AppLogger.log(
               'RaiPlayService: Nessuna traccia AD/ITA trovata, uso master playlist.');
-          return RaiPlayResolvedMedia(audioUrl: resolvedUrl, videoUrl: finalMasterUrl);
+          return RaiPlayResolvedMedia(
+            audioUrl: resolvedUrl,
+            videoUrl: finalMasterUrl,
+          );
         } else {
           await AppLogger.log(
               'RaiPlayService: Errore M3U8 HTTP ${resp.statusCode}');
@@ -684,7 +687,10 @@ class RaiPlayService {
       }
     }
 
-    return RaiPlayResolvedMedia(audioUrl: resolvedUrl, videoUrl: resolvedUrl);
+    return RaiPlayResolvedMedia(
+      audioUrl: resolvedUrl,
+      videoUrl: resolvedUrl,
+    );
   }
 
   RaiPlayResolvedMedia resolveHlsPlaybackUrlsFromPlaylist(

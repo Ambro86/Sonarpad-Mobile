@@ -281,6 +281,39 @@ class _PodcastEpisodePlayerScreenState
     if (mounted) setState(() {});
   }
 
+  Future<void> _seekBackward() async {
+    if (_videoController != null) {
+      final position = _videoController!.value.position;
+      final newPosition = position - Duration(seconds: _seekStep);
+      final target = newPosition < Duration.zero ? Duration.zero : newPosition;
+      await _videoController!.seekTo(target);
+      if (_videoUsesExternalAudio) {
+        await _audio.seek(target);
+      }
+      if (mounted) setState(() {});
+      return;
+    }
+    await _audio.seekBackward();
+  }
+
+  Future<void> _seekForward() async {
+    if (_videoController != null) {
+      final position = _videoController!.value.position;
+      final duration = _videoController!.value.duration;
+      final newPosition = position + Duration(seconds: _seekStep);
+      final target = duration > Duration.zero && newPosition > duration
+          ? duration
+          : newPosition;
+      await _videoController!.seekTo(target);
+      if (_videoUsesExternalAudio) {
+        await _audio.seek(target);
+      }
+      if (mounted) setState(() {});
+      return;
+    }
+    await _audio.seekForward();
+  }
+
   void _toggleVideo(bool enable) {
     AppLogger.log('PodcastPlayer: _toggleVideo enable=$enable, $_logSubject');
     setState(() => _isVideoEnabled = enable);
@@ -410,6 +443,9 @@ class _PodcastEpisodePlayerScreenState
       '$_logSubject',
     );
     final l10n = AppLocalizations.of(context);
+    final canSeek = _videoController == null ||
+        (_videoController!.value.isInitialized &&
+            _videoController!.value.duration > Duration.zero);
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.nowPlayingTitle(widget.episode.title)),
@@ -453,10 +489,22 @@ class _PodcastEpisodePlayerScreenState
               ],
               if (_videoController != null && _videoController!.value.isInitialized) ...[
                 const SizedBox(height: 24),
-                AspectRatio(
-                  aspectRatio: _videoController!.value.aspectRatio,
-                  child: VideoPlayer(_videoController!),
-                ),
+                if (_videoUsesExternalAudio)
+                  Semantics(
+                    label: l10n.nowPlayingTitle(widget.episode.title),
+                    value: _videoController!.value.isPlaying
+                        ? l10n.pause
+                        : l10n.play,
+                    child: AspectRatio(
+                      aspectRatio: _videoController!.value.aspectRatio,
+                      child: VideoPlayer(_videoController!),
+                    ),
+                  )
+                else
+                  AspectRatio(
+                    aspectRatio: _videoController!.value.aspectRatio,
+                    child: VideoPlayer(_videoController!),
+                  ),
               ],
               const SizedBox(height: 24),
               Wrap(
@@ -464,10 +512,10 @@ class _PodcastEpisodePlayerScreenState
                 runSpacing: 12,
                 alignment: WrapAlignment.center,
                 children: [
-                  if (_videoController == null)
+                  if (canSeek)
                     FilledButton.icon(
                       onPressed:
-                          _loading || !_loaded ? null : () => _audio.seekBackward(),
+                          _loading || !_loaded ? null : _seekBackward,
                       icon: const Icon(Icons.fast_rewind),
                       label: Text(l10n.rewind15s),
                     ),
@@ -490,17 +538,24 @@ class _PodcastEpisodePlayerScreenState
                         );
                       },
                     ),
-                  if (_videoController == null)
+                  if (canSeek)
                     FilledButton.icon(
                       onPressed:
-                          _loading || !_loaded ? null : () => _audio.seekForward(),
+                          _loading || !_loaded ? null : _seekForward,
                       icon: const Icon(Icons.fast_forward),
                       label: Text(l10n.forward15s),
                     ),
                 ],
               ),
               const SizedBox(height: 24),
-              if (_videoController == null)
+              if (_videoController != null && canSeek)
+                _VideoPositionControl(
+                  controller: _videoController!,
+                  audio: _videoUsesExternalAudio ? _audio : null,
+                  seekStep: _seekStep,
+                  logSubject: _logSubject,
+                )
+              else
                 _PodcastPositionControl(
                   audio: _audio,
                   seekStep: _seekStep,
@@ -659,6 +714,140 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
                   _latestPosition = newPos;
                 });
                 widget.audio.seek(newPos);
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _VideoPositionControl extends StatefulWidget {
+  const _VideoPositionControl({
+    required this.controller,
+    required this.seekStep,
+    required this.logSubject,
+    this.audio,
+  });
+
+  final VideoPlayerController controller;
+  final AudioPlayerService? audio;
+  final int seekStep;
+  final String logSubject;
+
+  @override
+  State<_VideoPositionControl> createState() => _VideoPositionControlState();
+}
+
+class _VideoPositionControlState extends State<_VideoPositionControl> {
+  Timer? _refreshTimer;
+  Duration _visiblePosition = Duration.zero;
+  int _lastPositionLogSecond = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    _visiblePosition = widget.controller.value.position;
+    _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) return;
+      final position = widget.controller.value.position;
+      if (position == _visiblePosition) return;
+      setState(() => _visiblePosition = position);
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  String _format(Duration d) {
+    final mins = d.inMinutes;
+    final secs = (d.inSeconds % 60).toString().padLeft(2, '0');
+    return '$mins:$secs';
+  }
+
+  Future<void> _seekTo(Duration position) async {
+    setState(() => _visiblePosition = position);
+    await widget.controller.seekTo(position);
+    await widget.audio?.seek(position);
+  }
+
+  int _computeCurrentStep(Duration duration) {
+    int step = widget.seekStep;
+    if (duration.inSeconds < step) {
+      step = (duration.inSeconds * 0.2).round();
+      if (step < 1) step = 1;
+    }
+    return step;
+  }
+
+  Future<void> _seekBy(int seconds) async {
+    final duration = widget.controller.value.duration;
+    var newPos = _visiblePosition + Duration(seconds: seconds);
+    if (newPos < Duration.zero) {
+      newPos = Duration.zero;
+    } else if (duration > Duration.zero && newPos > duration) {
+      newPos = duration;
+    }
+    await _seekTo(newPos);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final duration = widget.controller.value.duration;
+    if (duration == Duration.zero) return const SizedBox();
+    final l10n = AppLocalizations.of(context);
+    final position = _visiblePosition;
+    if (_lastPositionLogSecond != position.inSeconds &&
+        position.inSeconds % 5 == 0) {
+      _lastPositionLogSecond = position.inSeconds;
+      AppLogger.log(
+        'PodcastPlayer: video position control updated, '
+        'pos: ${position.inSeconds}s, dur: ${duration.inSeconds}s, '
+        '${widget.logSubject}',
+      );
+    }
+
+    final currentStep = _computeCurrentStep(duration);
+    final posSecs = position.inSeconds.toDouble();
+    final durSecs = duration.inSeconds.toDouble();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ExcludeSemantics(
+          child: Text(
+            '${_format(position)} / ${_format(duration)}',
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Semantics(
+          key: const ValueKey('podcast_video_position_slider_semantics'),
+          slider: true,
+          label: l10n.playbackPosition,
+          value: l10n.playbackPositionValue(
+            _format(position),
+            _format(duration),
+          ),
+          increasedValue: _format(
+            position + Duration(seconds: currentStep),
+          ),
+          decreasedValue: _format(
+            position - Duration(seconds: currentStep),
+          ),
+          onIncrease: () => _seekBy(currentStep),
+          onDecrease: () => _seekBy(-currentStep),
+          child: ExcludeSemantics(
+            child: Slider(
+              value: posSecs.clamp(0.0, durSecs),
+              min: 0,
+              max: durSecs,
+              onChanged: (val) {
+                unawaited(_seekTo(Duration(seconds: val.toInt())));
               },
             ),
           ),

@@ -1,8 +1,9 @@
-import 'package:matcher/matcher.dart';
-import 'package:test_api/test_api.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/services/raiplay_service.dart';
 
 void main() {
+  const secretKey = String.fromEnvironment('RAIPLAY_SECRET');
+
   test('keeps RaiPlay video master separate from described audio track', () {
     const masterUrl =
         'https://example.com/path/master.m3u8?token=abc';
@@ -31,31 +32,18 @@ video/playlist.m3u8
 
   test('resolves a real Mare Fuori episode into separate video and audio URLs',
       () async {
-    const secretKey = String.fromEnvironment('RAIPLAY_SECRET');
-    if (secretKey.trim().isEmpty) {
-      markTestSkipped(
-        'Pass RAIPLAY_SECRET with '
-        '--dart-define=RAIPLAY_SECRET=<code> to run the real RaiPlay test.',
-      );
-      return;
-    }
-
     final service = RaiPlayService();
     expect(service.isSecretCodeValid(secretKey), isTrue);
 
     final home = await service.loadRootPage(secretKey);
-    print('RaiPlay home items: ${home.items.map((item) => item.title).join(' | ')}');
     final mareFuoriPage = home.items.firstWhere(
       (item) => item.kind == RaiPlayItemKind.page,
     );
-    print('RaiPlay selected home item: ${mareFuoriPage.title}');
-
-    expect(mareFuoriPage, isNotNull);
 
     final episode = await _findEpisodeInLatestSeason(
       service,
       secretKey,
-      mareFuoriPage!,
+      mareFuoriPage,
     );
 
     expect(episode, isNotNull);
@@ -65,7 +53,10 @@ video/playlist.m3u8
     expect(resolved.videoUrl.toLowerCase(), contains('.m3u8'));
     expect(resolved.audioUrl.toLowerCase(), contains('.m3u8'));
     expect(resolved.videoUrl, isNot(equals(resolved.audioUrl)));
-  });
+  }, skip: secretKey.trim().isEmpty
+      ? 'Pass RAIPLAY_SECRET with '
+          '--dart-define=RAIPLAY_SECRET=<code> to run the real RaiPlay test.'
+      : false);
 }
 
 Future<RaiPlayItem?> _findEpisodeInLatestSeason(
@@ -75,7 +66,6 @@ Future<RaiPlayItem?> _findEpisodeInLatestSeason(
 ) async {
   final visited = <String>{};
   final root = await service.loadPage(page.pathId, secretKey, pageTitle: page.title);
-  print('RaiPlay Mare Fuori items: ${root.items.map((item) => item.title).join(' | ')}');
   final season = await _findSeasonPage(service, secretKey, root, visited);
   final episodePage = season ?? root;
   return _findEpisode(service, secretKey, episodePage, visited);
@@ -99,7 +89,6 @@ Future<RaiPlayPage?> _findSeasonPage(
           seasonItems.where((item) => _seasonNumber(item.title) == 1),
         ) ??
         seasonItems.first;
-    print('RaiPlay selected season: ${firstSeason.title}');
     if (visited.add(firstSeason.pathId)) {
       return service.loadPage(firstSeason.pathId, secretKey, pageTitle: firstSeason.title);
     }
@@ -111,8 +100,6 @@ Future<RaiPlayPage?> _findSeasonPage(
     }
     final child =
         await service.loadPage(item.pathId, secretKey, pageTitle: item.title);
-    print('RaiPlay season scan depth=$depth page="${item.title}" '
-        'items=${child.items.map((childItem) => childItem.title).join(' | ')}');
     final found = await _findSeasonPage(
       service,
       secretKey,
@@ -132,7 +119,6 @@ Future<RaiPlayItem?> _findEpisode(
   Set<String> visited, {
   int depth = 0,
 }) async {
-  print('RaiPlay episode candidates: ${page.items.map((item) => item.title).join(' | ')}');
   final media = page.items.where((item) => item.kind == RaiPlayItemKind.media);
   final firstMedia = _firstOrNull(
         media.where((item) => _normalized(item.title).contains('vite spezzate')),
@@ -171,11 +157,4 @@ int _seasonNumber(String value) {
 T? _firstOrNull<T>(Iterable<T> values) {
   final iterator = values.iterator;
   return iterator.moveNext() ? iterator.current : null;
-}
-
-void expect(Object? actual, Object? expected) {
-  final matcher = expected is Matcher ? expected : equals(expected);
-  if (!matcher.matches(actual, <Object?, Object?>{})) {
-    throw Exception('Expected $actual to match $expected');
-  }
 }
