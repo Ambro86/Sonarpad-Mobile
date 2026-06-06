@@ -518,6 +518,7 @@
   "cinemaReleased": "Estreno: {date}",
   "cinemaOverviewLabel": "Trama:",
   "cinemaUpcomingReleases": "Próximos estrenos",
+  "cinemaWillRelease": "Se estrenará el: {date}",
   "cinemaOpenTrailer": "Ver tráiler",
   "concertsTitle": "Conciertos y Eventos",
   "concertsSearchHint": "Introduce una ciudad (ej. Madrid, Barcelona)",

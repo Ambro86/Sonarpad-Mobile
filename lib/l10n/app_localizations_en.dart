@@ -1709,6 +1709,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cinemaOverviewLabel => 'Overview:';
 
   @override
+  String get cinemaUpcomingReleases => 'Upcoming releases';
+
+  @override
+  String cinemaWillRelease(String date) {
+    return 'Will be released on: $date';
+  }
+
+  @override
   String get cinemaOpenTrailer => 'Open trailer';
 
   @override

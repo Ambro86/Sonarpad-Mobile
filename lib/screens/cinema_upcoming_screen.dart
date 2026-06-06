@@ -84,7 +84,16 @@ class _CinemaUpcomingScreenState extends State<CinemaUpcomingScreen> {
                       itemBuilder: (context, index) {
                         final movie = _movies[index];
                         final formattedDate = _formatDate(movie.releaseDate, localeName);
-                        final releaseDateText = l10n.cinemaReleased(formattedDate);
+                        
+                        bool isFuture = false;
+                        try {
+                          final date = DateTime.parse(movie.releaseDate);
+                          if (date.isAfter(DateTime.now())) {
+                            isFuture = true;
+                          }
+                        } catch (_) {}
+                        
+                        final releaseDateText = isFuture ? l10n.cinemaWillRelease(formattedDate) : l10n.cinemaReleased(formattedDate);
                         
                         return ListTile(
                           title: Text(

@@ -518,6 +518,7 @@
   "cinemaReleased": "Sorti le : {date}",
   "cinemaOverviewLabel": "Synopsis :",
   "cinemaUpcomingReleases": "Prochaines sorties",
+  "cinemaWillRelease": "Sortira le : {date}",
   "cinemaOpenTrailer": "Ouvrir la bande-annonce",
   "concertsTitle": "Concerts et Événements",
   "concertsSearchHint": "Entrez une ville (ex. Paris, Lyon)",

@@ -2429,6 +2429,16 @@
   },
   "cinemaOverviewLabel": "Trama:",
   "cinemaUpcomingReleases": "Prossime uscite",
+  "cinemaWillRelease": "Uscirà il: {date}",
+  "@cinemaWillRelease": {
+    "description": "Data di uscita futura",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
+    }
+  },
   "@cinemaOverviewLabel": {
     "description": "Label trama"
   },

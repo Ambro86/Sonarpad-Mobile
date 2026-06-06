@@ -151,7 +151,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           },
           onNavigationRequest: (NavigationRequest request) {
             final url = request.url.toLowerCase();
-            if (url.contains('player') ||
+            if ((url.contains('player') && !url.contains('multiplayer.it')) ||
                 url.contains('video') ||
                 url.contains('youtube.com/embed') ||
                 url.contains('mediaset.it/player') ||

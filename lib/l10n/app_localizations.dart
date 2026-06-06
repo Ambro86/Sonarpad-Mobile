@@ -3205,6 +3205,18 @@ abstract class AppLocalizations {
   /// **'Trama:'**
   String get cinemaOverviewLabel;
 
+  /// No description provided for @cinemaUpcomingReleases.
+  ///
+  /// In it, this message translates to:
+  /// **'Prossime uscite'**
+  String get cinemaUpcomingReleases;
+
+  /// Data di uscita futura
+  ///
+  /// In it, this message translates to:
+  /// **'Uscirà il: {date}'**
+  String cinemaWillRelease(String date);
+
   /// Label per aprire il trailer
   ///
   /// In it, this message translates to:

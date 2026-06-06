@@ -254,6 +254,7 @@
   "aiChatIntro": "I’m Sonarpad AI. How can I help you?",
   "cinemaOverviewLabel": "Plot:",
   "cinemaUpcomingReleases": "Upcoming releases",
+  "cinemaWillRelease": "Will be released on: {date}",
   "meteoTitle": "Weather",
   "weatherCity": "City",
   "weatherCityHint": "Example: Rome",

@@ -18,18 +18,43 @@ class CinemaDetailScreen extends StatefulWidget {
 
 class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
   final _service = TmdbService();
+  bool _loadingTrailer = true;
+  String? _trailerUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTrailer();
+  }
+
+  Future<void> _loadTrailer() async {
+    try {
+      final localeName = Localizations.localeOf(context).languageCode;
+      final url = await _service.getTrailerUrl(widget.movie.id, languageCode: localeName);
+      if (mounted) {
+        setState(() {
+          _trailerUrl = url;
+          _loadingTrailer = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _loadingTrailer = false;
+        });
+      }
+    }
+  }
 
   Future<void> _openTrailer() async {
     try {
-      final localeName = Localizations.localeOf(context).languageCode;
-      final trailerUrl = await _service.getTrailerUrl(widget.movie.id, languageCode: localeName);
-      if (trailerUrl != null && mounted) {
+      if (_trailerUrl != null && mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
             settings: const RouteSettings(name: '/cinema/trailer'),
             builder: (_) => TrailerScreen(
-              videoUrl: trailerUrl,
+              videoUrl: _trailerUrl!,
               title: widget.movie.title,
             ),
           ),
@@ -64,7 +89,16 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
     final localeName = Localizations.localeOf(context).toString();
     final movie = widget.movie;
     final formattedDate = _formatDate(movie.releaseDate, localeName);
-    final releaseDateText = l10n.cinemaReleased(formattedDate);
+    
+    bool isFuture = false;
+    try {
+      final date = DateTime.parse(movie.releaseDate);
+      if (date.isAfter(DateTime.now())) {
+        isFuture = true;
+      }
+    } catch (_) {}
+    
+    final releaseDateText = isFuture ? l10n.cinemaWillRelease(formattedDate) : l10n.cinemaReleased(formattedDate);
 
     return Scaffold(
       appBar: AppBar(title: Text(movie.title)),
@@ -110,11 +144,14 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
             ),
             const SizedBox(height: 32),
           ],
-          FilledButton.icon(
-            onPressed: _openTrailer,
-            icon: const Icon(Icons.play_arrow),
-            label: Text(l10n.cinemaOpenTrailer),
-          ),
+          if (_loadingTrailer)
+            const Center(child: CircularProgressIndicator())
+          else if (_trailerUrl != null)
+            FilledButton.icon(
+              onPressed: _openTrailer,
+              icon: const Icon(Icons.play_arrow),
+              label: Text(l10n.cinemaOpenTrailer),
+            ),
         ],
       ),
       ),
