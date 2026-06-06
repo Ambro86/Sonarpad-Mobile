@@ -2428,6 +2428,7 @@
     }
   },
   "cinemaOverviewLabel": "Trama:",
+  "cinemaUpcomingReleases": "Prossime uscite",
   "@cinemaOverviewLabel": {
     "description": "Label trama"
   },

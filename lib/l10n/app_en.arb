@@ -252,6 +252,8 @@
   "settingsAutoBookmarkHint": "Resume documents, podcasts, and media from where you left off.",
   "settingsSeekStep": "Rewind / fast-forward step for media",
   "aiChatIntro": "I’m Sonarpad AI. How can I help you?",
+  "cinemaOverviewLabel": "Plot:",
+  "cinemaUpcomingReleases": "Upcoming releases",
   "meteoTitle": "Weather",
   "weatherCity": "City",
   "weatherCityHint": "Example: Rome",

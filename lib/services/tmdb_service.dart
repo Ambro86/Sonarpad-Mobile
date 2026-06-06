@@ -33,6 +33,24 @@ class TmdbService {
     }
   }
 
+  Future<List<TmdbMovie>> getUpcoming({String languageCode = 'it'}) async {
+    final langParam = languageCode == 'it' ? 'it-IT' : 'en-US';
+    final url = Uri.parse('$_baseUrl?action=upcoming&language=$langParam');
+    
+    final response = await http.get(
+      url,
+      headers: _headers,
+    );
+
+    if (response.statusCode == 200) {
+      final jsonBody = jsonDecode(response.body);
+      final List<dynamic> results = jsonBody['results'] ?? [];
+      return results.map((json) => TmdbMovie.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load upcoming movies: ${response.statusCode}');
+    }
+  }
+
   Future<String?> getTrailerUrl(int movieId, {String languageCode = 'it'}) async {
     final langParam = languageCode == 'it' ? 'it-IT' : 'en-US';
     final url = Uri.parse('$_baseUrl?action=trailer&movie_id=$movieId&language=$langParam');

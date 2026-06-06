@@ -6,16 +6,15 @@ import '../l10n/app_localizations.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
 import 'cinema_detail_screen.dart';
-import 'cinema_upcoming_screen.dart';
 
-class CinemaScreen extends StatefulWidget {
-  const CinemaScreen({super.key});
+class CinemaUpcomingScreen extends StatefulWidget {
+  const CinemaUpcomingScreen({super.key});
 
   @override
-  State<CinemaScreen> createState() => _CinemaScreenState();
+  State<CinemaUpcomingScreen> createState() => _CinemaUpcomingScreenState();
 }
 
-class _CinemaScreenState extends State<CinemaScreen> {
+class _CinemaUpcomingScreenState extends State<CinemaUpcomingScreen> {
   final _service = TmdbService();
   List<TmdbMovie> _movies = [];
   bool _loading = true;
@@ -30,10 +29,10 @@ class _CinemaScreenState extends State<CinemaScreen> {
   Future<void> _loadData() async {
     try {
       final localeName = Localizations.localeOf(context).languageCode;
-      final movies = await _service.getNowPlaying(languageCode: localeName);
+      final movies = await _service.getUpcoming(languageCode: localeName);
       
-      // Ordina dal più recente al meno recente (discendente)
-      movies.sort((a, b) => b.releaseDate.compareTo(a.releaseDate));
+      // Ordina dal più recente al meno recente in base all'uscita (o viceversa per le prossime uscite, mettiamo i più prossimi in cima)
+      movies.sort((a, b) => a.releaseDate.compareTo(b.releaseDate));
 
       if (!mounted) return;
       setState(() {
@@ -65,7 +64,7 @@ class _CinemaScreenState extends State<CinemaScreen> {
     final localeName = Localizations.localeOf(context).toString();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.cinemaTitle)),
+      appBar: AppBar(title: Text(l10n.cinemaUpcomingReleases)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -80,32 +79,10 @@ class _CinemaScreenState extends State<CinemaScreen> {
                           parent: AlwaysScrollableScrollPhysics(),
                         ),
                         padding: const EdgeInsets.all(8),
-                      itemCount: _movies.length + 1,
+                      itemCount: _movies.length,
                       separatorBuilder: (context, index) => const Divider(),
                       itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    settings: const RouteSettings(name: '/cinema/upcoming'),
-                                    builder: (_) => const CinemaUpcomingScreen(),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.new_releases),
-                              label: Text(l10n.cinemaUpcomingReleases, style: const TextStyle(fontSize: 18)),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.all(16),
-                              ),
-                            ),
-                          );
-                        }
-
-                        final movie = _movies[index - 1];
+                        final movie = _movies[index];
                         final formattedDate = _formatDate(movie.releaseDate, localeName);
                         final releaseDateText = l10n.cinemaReleased(formattedDate);
                         

@@ -517,6 +517,7 @@
   "cinemaError": "Erreur lors du chargement des films.",
   "cinemaReleased": "Sorti le : {date}",
   "cinemaOverviewLabel": "Synopsis :",
+  "cinemaUpcomingReleases": "Prochaines sorties",
   "cinemaOpenTrailer": "Ouvrir la bande-annonce",
   "concertsTitle": "Concerts et Événements",
   "concertsSearchHint": "Entrez une ville (ex. Paris, Lyon)",

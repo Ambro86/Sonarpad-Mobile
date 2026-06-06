@@ -15,6 +15,7 @@ import '../services/news_service.dart';
 import '../services/document_library_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../utils/app_logger.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
@@ -108,18 +109,24 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   @override
   void initState() {
     super.initState();
+    unawaited(AppLogger.log(
+      'News: apertura articolo title="${widget.article.title}" '
+      'url=${widget.article.link}',
+    ));
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageStarted: (_) {
+          onPageStarted: (url) {
+            unawaited(AppLogger.log('News WebView: caricamento avviato url=$url'));
             if (mounted) {
               setState(() {
                 _loading = true;
               });
             }
           },
-          onPageFinished: (_) {
+          onPageFinished: (url) {
+            unawaited(AppLogger.log('News WebView: caricamento completato url=$url'));
             if (mounted) setState(() => _loading = false);
             unawaited(_acceptCookieConsentIfPresent());
             _controller.runJavaScript('''
@@ -135,7 +142,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                   iframes[i].remove();
                 }
               }
-            ''').catchError((_) {});
+            ''').catchError((e) {
+              unawaited(AppLogger.log(
+                'News WebView: rimozione contenuti media fallita: $e',
+              ));
+            });
             unawaited(_loadVisibleReaderArticleFromWebView());
           },
           onNavigationRequest: (NavigationRequest request) {
@@ -145,11 +156,19 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                 url.contains('youtube.com/embed') ||
                 url.contains('mediaset.it/player') ||
                 url.contains('dailymotion.com/embed')) {
+              unawaited(AppLogger.log(
+                'News WebView: navigazione bloccata per contenuto media '
+                'url=${request.url}',
+              ));
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
           },
-          onWebResourceError: (_) {
+          onWebResourceError: (error) {
+            unawaited(AppLogger.log(
+              'News WebView: errore caricamento '
+              'code=${error.errorCode} description="${error.description}"',
+            ));
             if (mounted) {
               setState(() {
                 _loading = false;
@@ -175,8 +194,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<void> _acceptCookieConsentIfPresent() async {
-    Future<void> run() {
-      return _controller.runJavaScript(r'''
+    Future<bool> run() async {
+      final result = await _controller.runJavaScriptReturningResult(r'''
         (function () {
           var acceptTexts = [
             'accetta tutto',
@@ -270,15 +289,24 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           }
           return false;
         })();
-      ''').then((_) {});
+      ''');
+      return result == true || result.toString() == 'true';
     }
 
     try {
-      await run();
+      final firstClicked = await run();
+      unawaited(AppLogger.log(
+        'News cookie: primo tentativo consenso clicked=$firstClicked',
+      ));
       await Future.delayed(const Duration(milliseconds: 900));
       if (!mounted) return;
-      await run();
-    } catch (_) {}
+      final secondClicked = await run();
+      unawaited(AppLogger.log(
+        'News cookie: secondo tentativo consenso clicked=$secondClicked',
+      ));
+    } catch (e) {
+      unawaited(AppLogger.log('News cookie: gestione consenso fallita: $e'));
+    }
   }
 
   @override
@@ -299,11 +327,21 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<void> _loadReaderArticle() async {
+    unawaited(AppLogger.log('News reader HTTP: estrazione avviata'));
     try {
       final content = await _newsService.fetchArticleContent(widget.article,
           language: widget.language);
       if (!mounted) return;
       final text = content.text.trim();
+      unawaited(AppLogger.log(
+        'News reader HTTP: estrazione completata length=${text.length}',
+      ));
+      if (text.length < 200) {
+        unawaited(AppLogger.log(
+          'News reader HTTP: testo troppo corto, resta WebView '
+          'length=${text.length}',
+        ));
+      }
       setState(() {
         if (text.length >= 200) {
           _readerTitle = widget.article.title;
@@ -313,6 +351,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       });
     } catch (e) {
       debugPrint('Sonarpad reader: rhttp reader failed: $e');
+      unawaited(AppLogger.log('News reader HTTP: estrazione fallita: $e'));
       if (!mounted) return;
       setState(() => _readerPreparing = false);
     }
@@ -321,27 +360,49 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<void> _loadVisibleReaderArticleFromWebView() async {
     for (int i = 0; i < 4; i++) {
       await Future.delayed(const Duration(milliseconds: 1500));
-      if (!mounted || _readerText != null) return;
+      if (!mounted) return;
+      if (_readerText != null) {
+        unawaited(AppLogger.log(
+          'News reader WebView: skip tentativo ${i + 1}, testo già presente',
+        ));
+        return;
+      }
 
       try {
+        unawaited(AppLogger.log(
+          'News reader WebView: estrazione visibile tentativo ${i + 1}',
+        ));
         final text = await _extractVisibleArticleText();
         if (!mounted || _readerText != null) return;
-        
+
+        unawaited(AppLogger.log(
+          'News reader WebView: tentativo ${i + 1} length=${text.length}',
+        ));
         if (text.length >= 400) {
           setState(() {
             _readerTitle = widget.article.title;
             _readerText = text;
             _readerPreparing = false;
           });
+          unawaited(AppLogger.log(
+            'News reader WebView: testo accettato tentativo ${i + 1}',
+          ));
           return;
         }
       } catch (e) {
         debugPrint('Sonarpad reader: visible WebView extraction failed: $e');
+        unawaited(AppLogger.log(
+          'News reader WebView: estrazione fallita tentativo ${i + 1}: $e',
+        ));
       }
     }
-    
+
     // Fallback if it fails after all retries
     if (mounted && _readerText == null) {
+      unawaited(AppLogger.log(
+        'News reader WebView: nessun testo valido dopo 4 tentativi, '
+        'mostro WebView',
+      ));
       setState(() => _readerPreparing = false);
     }
   }
@@ -515,32 +576,65 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<String> _textForReading(AppLocalizations l10n) async {
     final readerText = _readerText;
     if (readerText != null && readerText.length >= 200) {
+      unawaited(AppLogger.log(
+        'News TTS: uso testo reader già pronto length=${readerText.length}',
+      ));
       return _visibleReaderTextForSpeech(readerText);
     }
 
     setState(() => _status = l10n.extractingReaderArticleText);
     try {
       final extractedReaderText = await _extractReaderArticleText();
-      if (extractedReaderText != null) return extractedReaderText;
+      if (extractedReaderText != null) {
+        unawaited(AppLogger.log(
+          'News TTS: uso estrazione HTTP pulita '
+          'length=${extractedReaderText.length}',
+        ));
+        return extractedReaderText;
+      }
+      unawaited(AppLogger.log(
+        'News TTS: estrazione HTTP pulita non valida',
+      ));
     } catch (e) {
       debugPrint('Sonarpad TTS: rhttp reader extraction failed: $e');
+      unawaited(AppLogger.log('News TTS: estrazione HTTP fallita: $e'));
     }
 
     setState(() => _status = l10n.extractingVisibleArticleText);
-    final visibleText = await _extractVisibleArticleText();
-    if (visibleText.length >= 400) return visibleText;
+    try {
+      final visibleText = await _extractVisibleArticleText();
+      unawaited(AppLogger.log(
+        'News TTS: estrazione visibile WebView length=${visibleText.length}',
+      ));
+      if (visibleText.length >= 400) {
+        unawaited(AppLogger.log('News TTS: uso testo visibile WebView'));
+        return visibleText;
+      }
+    } catch (e) {
+      unawaited(AppLogger.log(
+        'News TTS: estrazione visibile WebView fallita: $e',
+      ));
+    }
 
     setState(() => _status = l10n.loadingArticle);
     try {
       final content = await _newsService.fetchArticleContent(widget.article,
           language: widget.language);
-      if (content.text.trim().length >= 200) return content.text.trim();
+      final text = content.text.trim();
+      unawaited(AppLogger.log(
+        'News TTS: fallback HTTP articolo length=${text.length}',
+      ));
+      if (text.length >= 200) return text;
     } catch (e) {
       debugPrint('Sonarpad TTS: article HTTP extraction failed: $e');
+      unawaited(AppLogger.log('News TTS: fallback HTTP fallito: $e'));
     }
 
     final fallback =
         '${widget.article.title}. ${widget.article.summary}'.trim();
+    unawaited(AppLogger.log(
+      'News TTS: uso fallback titolo/riassunto length=${fallback.length}',
+    ));
     if (fallback.isEmpty) throw Exception(l10n.noTextToRead);
     return fallback;
   }
@@ -574,6 +668,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final engine = await _settings.loadTtsEngine();
       final dictionaryEntries = await _voiceDictionary.loadEntries();
       final chunks = _tts.splitTextForStreaming(text, maxChunkChars: 650);
+      unawaited(AppLogger.log(
+        'News TTS: lettura avviata engine=$engine voice=$voice '
+        'textLength=${text.length} chunks=${chunks.length}',
+      ));
       debugPrint(
         'Sonarpad TTS: web article read requested '
         'title="${widget.article.title}" voice=$voice '
