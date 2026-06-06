@@ -178,68 +178,49 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     Future<void> run() {
       return _controller.runJavaScript(r'''
         (function () {
-          var acceptContainsTexts = [
+          var acceptTexts = [
             'accetta tutto',
-            'consenti tutto',
-            'accept all',
-            'allow all',
-            'tout accepter',
-            'accepter tout',
-            'autoriser tout',
-            'aceptar todo',
-            'estoy de acuerdo',
-            'permitir todo'
-          ];
-          var acceptStandaloneTexts = [
             'accetta',
             'accetto',
             'acconsento',
+            'consenti tutto',
             'consenti',
+            'accept all',
             'accept',
             'agree',
             'i agree',
+            'allow all',
             'allow',
             'accepter',
             "j'accepte",
+            'tout accepter',
+            'accepter tout',
             'autoriser',
+            'autoriser tout',
             'aceptar',
+            'aceptar todo',
             'acepto',
-            'permitir'
+            'estoy de acuerdo',
+            'permitir',
+            'permitir todo'
           ];
           var rejectTexts = [
             'rifiuta',
-            'rifiuta tutto',
-            'non accetto',
-            'non consentire',
             'gestisci',
             'opzioni',
             'reject',
-            'reject all',
             'decline',
-            'deny',
-            'deny all',
-            "don't accept",
-            'do not accept',
-            'dont accept',
-            "don't allow",
-            'do not allow',
-            'dont allow',
-            'not allow',
             'manage',
             'preferences',
             'options',
             'refuser',
             'refuser tout',
-            'ne pas accepter',
-            'ne pas autoriser',
             'gérer',
             'préférences',
             'parametres',
             'paramètres',
             'rechazar',
             'rechazar todo',
-            'no aceptar',
-            'no permitir',
             'gestionar',
             'opciones'
           ];
@@ -265,17 +246,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             for (var i = 0; i < rejectTexts.length; i++) {
               if (text.indexOf(rejectTexts[i]) !== -1) return false;
             }
-            for (var j = 0; j < acceptContainsTexts.length; j++) {
-              if (text.indexOf(acceptContainsTexts[j]) !== -1) return true;
-            }
-            for (var k = 0; k < acceptStandaloneTexts.length; k++) {
-              var acceptText = acceptStandaloneTexts[k];
-              if (text === acceptText ||
-                  text.indexOf(acceptText + ' ') === 0 ||
-                  text.lastIndexOf(' ' + acceptText) === text.length - acceptText.length - 1 ||
-                  text.indexOf(' ' + acceptText + ' ') !== -1) {
-                return true;
-              }
+            for (var j = 0; j < acceptTexts.length; j++) {
+              if (text === acceptTexts[j] || text.indexOf(acceptTexts[j]) !== -1) return true;
             }
             return false;
           }
