@@ -96,6 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () => AccessibilityFeedbackService.goNamed(context,
             routeName: '/cinema'),
       ),
+      _HomeButton(
+        label: 'Concerti ed Eventi',
+        onPressed: () => AccessibilityFeedbackService.goNamed(context,
+            routeName: '/concerts'),
+      ),
       if (_isTvCodeValid && isItalian)
         _HomeButton(
           label: 'TV',
@@ -224,6 +229,10 @@ class _HomeScreenState extends State<HomeScreen> {
             label: l10n.cinemaTitle,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,
                 routeName: '/cinema')),
+        _HomeButton(
+            label: 'Concerti ed Eventi',
+            onPressed: () => AccessibilityFeedbackService.goNamed(context,
+                routeName: '/concerts')),
         _HomeButton(
             label: l10n.radio,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,

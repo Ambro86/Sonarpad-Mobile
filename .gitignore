@@ -118,4 +118,5 @@ scratch*
 .antigravitycli/
 t e s t / f a i l u r e s /  
 scripts/tmdb.php
+scripts/ticketmaster.php
  

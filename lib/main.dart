@@ -36,6 +36,7 @@ import 'screens/audiodescription_recent_screen.dart';
 import 'screens/orari_apertura_search_screen.dart';
 import 'screens/italiaonline_screen.dart';
 import 'screens/calendar_screen.dart';
+import 'screens/concerts_screen.dart';
 import 'screens/podcast_episode_player_screen.dart';
 import 'screens/voice_dictionary_screen.dart';
 
@@ -327,6 +328,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/documents': (_) => const DocumentsScreen(),
         '/news': (_) => const NewsScreen(),
         '/cinema': (_) => const CinemaScreen(),
+        '/concerts': (_) => const ConcertsScreen(),
         '/meteo': (_) => const WeatherScreen(),
         '/podcasts': (_) => const PodcastScreen(),
         '/convert_media': (_) => const ConvertMediaScreen(),
