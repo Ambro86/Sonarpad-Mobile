@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/tmdb_movie.dart';
@@ -47,11 +48,23 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
     }
   }
 
+  String _formatDate(String dateStr, String locale) {
+    if (dateStr.isEmpty) return '';
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat.yMMMMd(locale).format(date);
+    } catch (_) {
+      return dateStr;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final localeName = Localizations.localeOf(context).toString();
     final movie = widget.movie;
-    final releaseDateText = l10n.cinemaReleased(movie.releaseDate);
+    final formattedDate = _formatDate(movie.releaseDate, localeName);
+    final releaseDateText = l10n.cinemaReleased(formattedDate);
 
     return Scaffold(
       appBar: AppBar(title: Text(movie.title)),
