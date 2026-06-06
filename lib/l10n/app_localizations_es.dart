@@ -1704,4 +1704,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String routeDurationHoursMinutes(int hours, int minutes) {
     return '${hours}h ${minutes}m';
   }
+
+  @override
+  String get cinemaTitle => 'Películas en cines';
+
+  @override
+  String get cinemaNoMovies => 'No se encontraron películas en este momento.';
+
+  @override
+  String get cinemaError => 'Error al cargar las películas.';
+
+  @override
+  String cinemaReleased(String date) {
+    return 'Estreno: $date';
+  }
+
+  @override
+  String get cinemaOverviewLabel => 'Sinopsis:';
+
+  @override
+  String get cinemaOpenTrailer => 'Ver tráiler';
 }

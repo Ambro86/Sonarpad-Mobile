@@ -511,5 +511,11 @@
   "routeDistanceMeters": "{meters} m",
   "routeDistanceKilometers": "{kilometers} km",
   "routeDurationMinutes": "{minutes} min",
-  "routeDurationHoursMinutes": "{hours}h {minutes}m"
+  "routeDurationHoursMinutes": "{hours}h {minutes}m",
+  "cinemaTitle": "Movies in Theaters",
+  "cinemaNoMovies": "No movies found at the moment.",
+  "cinemaError": "Error loading movies.",
+  "cinemaReleased": "Released on: {date}",
+  "cinemaOverviewLabel": "Overview:",
+  "cinemaOpenTrailer": "Open trailer"
 }

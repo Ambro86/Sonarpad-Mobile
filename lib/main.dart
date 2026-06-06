@@ -20,6 +20,7 @@ import 'screens/document_reader_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/info_screen.dart';
 import 'screens/news_screen.dart';
+import 'screens/cinema_screen.dart';
 import 'screens/podcast_screen.dart';
 import 'screens/radio_screen.dart';
 import 'screens/raiplay_screen.dart';
@@ -325,6 +326,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
       routes: {
         '/documents': (_) => const DocumentsScreen(),
         '/news': (_) => const NewsScreen(),
+        '/cinema': (_) => const CinemaScreen(),
         '/meteo': (_) => const WeatherScreen(),
         '/podcasts': (_) => const PodcastScreen(),
         '/convert_media': (_) => const ConvertMediaScreen(),

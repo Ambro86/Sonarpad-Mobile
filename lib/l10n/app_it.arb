@@ -2404,5 +2404,22 @@
         "example": "5"
       }
     }
-  }
+  },
+  "cinemaTitle": "Film al Cinema",
+  "@cinemaTitle": { "description": "Titolo della schermata dei film al cinema" },
+  "cinemaNoMovies": "Nessun film trovato al momento.",
+  "@cinemaNoMovies": { "description": "Testo quando non ci sono film" },
+  "cinemaError": "Errore durante il caricamento dei film.",
+  "@cinemaError": { "description": "Errore caricamento film" },
+  "cinemaReleased": "Uscito il: {date}",
+  "@cinemaReleased": {
+    "description": "Data di uscita",
+    "placeholders": {
+      "date": { "type": "String", "example": "2024-05-15" }
+    }
+  },
+  "cinemaOverviewLabel": "Trama:",
+  "@cinemaOverviewLabel": { "description": "Label trama" },
+  "cinemaOpenTrailer": "Apri trailer",
+  "@cinemaOpenTrailer": { "description": "Label per aprire il trailer" }
 }

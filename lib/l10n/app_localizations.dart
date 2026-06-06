@@ -3174,6 +3174,42 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{hours}h {minutes}m'**
   String routeDurationHoursMinutes(int hours, int minutes);
+
+  /// Titolo della schermata dei film al cinema
+  ///
+  /// In it, this message translates to:
+  /// **'Film al Cinema'**
+  String get cinemaTitle;
+
+  /// Testo quando non ci sono film
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun film trovato al momento.'**
+  String get cinemaNoMovies;
+
+  /// Errore caricamento film
+  ///
+  /// In it, this message translates to:
+  /// **'Errore durante il caricamento dei film.'**
+  String get cinemaError;
+
+  /// Data di uscita
+  ///
+  /// In it, this message translates to:
+  /// **'Uscito il: {date}'**
+  String cinemaReleased(String date);
+
+  /// Label trama
+  ///
+  /// In it, this message translates to:
+  /// **'Trama:'**
+  String get cinemaOverviewLabel;
+
+  /// Label per aprire il trailer
+  ///
+  /// In it, this message translates to:
+  /// **'Apri trailer'**
+  String get cinemaOpenTrailer;
 }
 
 class _AppLocalizationsDelegate

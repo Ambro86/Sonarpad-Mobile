@@ -150,10 +150,17 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     if (mounted) setState(() {});
   }
 
-  Future<void> _toggleVideo(bool enable) async {
+  void _toggleVideo(bool enable) {
     setState(() => _isVideoEnabled = enable);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _isVideoEnabled != enable) return;
+      unawaited(_applyVideoSetting(enable));
+    });
+  }
+
+  Future<void> _applyVideoSetting(bool enable) async {
     await _settings.setVideoEnabled(enable);
-    _play();
+    await _play();
   }
 
   Future<void> _toggleFavorite() async {

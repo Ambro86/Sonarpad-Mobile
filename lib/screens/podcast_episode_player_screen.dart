@@ -243,7 +243,10 @@ class _PodcastEpisodePlayerScreenState
   void _toggleVideo(bool enable) {
     AppLogger.log('PodcastPlayer: _toggleVideo enable=$enable, $_logSubject');
     setState(() => _isVideoEnabled = enable);
-    unawaited(_applyVideoSetting(enable));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _isVideoEnabled != enable) return;
+      unawaited(_applyVideoSetting(enable));
+    });
   }
 
   Future<void> _applyVideoSetting(bool enable) async {
