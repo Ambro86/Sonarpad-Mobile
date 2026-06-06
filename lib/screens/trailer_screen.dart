@@ -43,22 +43,7 @@ class _TrailerScreenState extends State<TrailerScreen> {
       );
 
     if (videoId.isNotEmpty) {
-      final html = '''
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style>
-      body { margin: 0; padding: 0; background-color: black; display: flex; align-items: center; justify-content: center; height: 100vh; }
-      iframe { width: 100vw; height: 100vh; border: none; }
-    </style>
-  </head>
-  <body>
-    <iframe src="https://www.youtube.com/embed/$videoId?autoplay=1&playsinline=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
-  </body>
-</html>
-''';
-      _controller.loadHtmlString(html, baseUrl: "https://www.youtube.com");
+      _controller.loadRequest(Uri.parse('https://m.youtube.com/watch?v=$videoId'));
     } else {
       _controller.loadRequest(Uri.parse(widget.videoUrl));
     }

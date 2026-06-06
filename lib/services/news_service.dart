@@ -263,12 +263,27 @@ class NewsService {
       final response = await _client.get(Uri.parse('https://ipwho.is/'));
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
-        final city = data['city']?.toString();
+        var city = data['city']?.toString();
         final countryCode = data['country_code']?.toString();
         if (city != null &&
             city.isNotEmpty &&
             countryCode != null &&
             countryCode.isNotEmpty) {
+          
+          if (countryCode == 'IT') {
+            city = switch (city) {
+              'Rome' => 'Roma',
+              'Milan' => 'Milano',
+              'Turin' => 'Torino',
+              'Naples' => 'Napoli',
+              'Florence' => 'Firenze',
+              'Venice' => 'Venezia',
+              'Genoa' => 'Genova',
+              'Padua' => 'Padova',
+              _ => city,
+            };
+          }
+
           return {'city': city, 'countryCode': countryCode};
         }
       }
