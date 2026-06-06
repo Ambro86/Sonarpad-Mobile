@@ -517,5 +517,13 @@
   "cinemaError": "Error loading movies.",
   "cinemaReleased": "Released on: {date}",
   "cinemaOverviewLabel": "Overview:",
-  "cinemaOpenTrailer": "Open trailer"
+  "cinemaOpenTrailer": "Open trailer",
+  "concertsTitle": "Concerts & Events",
+  "concertsSearchHint": "Enter a city (e.g. London, New York)",
+  "concertsSearchLabel": "Search concerts by city",
+  "concertsSearchTooltip": "Search",
+  "concertsInitialText": "Enter the name of your city above to see upcoming music concerts.",
+  "concertsEmpty": "No concerts found in this city.",
+  "concertsVenue": "Concert venue:",
+  "concertsBuyTickets": "Buy or see details on Ticketmaster"
 }

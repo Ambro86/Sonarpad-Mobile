@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import '../models/concert_event.dart';
 
 class ConcertDetailScreen extends StatelessWidget {
@@ -35,6 +36,7 @@ class ConcertDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final localeName = Localizations.localeOf(context).toString();
     final formattedDate = _formatDate(concert.date, concert.time, localeName);
 
@@ -65,9 +67,9 @@ class ConcertDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Luogo del concerto:',
-              style: TextStyle(
+            Text(
+              l10n.concertsVenue,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
               ),
@@ -82,7 +84,7 @@ class ConcertDetailScreen extends StatelessWidget {
               FilledButton.icon(
                 onPressed: _buyTickets,
                 icon: const Icon(Icons.confirmation_number),
-                label: const Text('Acquista o vedi dettagli su Ticketmaster'),
+                label: Text(l10n.concertsBuyTickets),
               ),
           ],
         ),

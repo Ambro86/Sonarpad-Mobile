@@ -1727,4 +1727,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get cinemaOpenTrailer => 'Ouvrir la bande-annonce';
+
+  @override
+  String get concertsTitle => 'Concerts et Événements';
+
+  @override
+  String get concertsSearchHint => 'Entrez une ville (ex. Paris, Lyon)';
+
+  @override
+  String get concertsSearchLabel => 'Rechercher des concerts par ville';
+
+  @override
+  String get concertsSearchTooltip => 'Rechercher';
+
+  @override
+  String get concertsInitialText =>
+      'Entrez le nom de votre ville ci-dessus pour voir les prochains concerts de musique.';
+
+  @override
+  String get concertsEmpty => 'Aucun concert trouvé dans cette ville.';
+
+  @override
+  String get concertsVenue => 'Lieu du concert :';
+
+  @override
+  String get concertsBuyTickets =>
+      'Acheter ou voir les détails sur Ticketmaster';
 }

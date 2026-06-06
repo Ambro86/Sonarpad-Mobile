@@ -517,5 +517,13 @@
   "cinemaError": "Erreur lors du chargement des films.",
   "cinemaReleased": "Sorti le : {date}",
   "cinemaOverviewLabel": "Synopsis :",
-  "cinemaOpenTrailer": "Ouvrir la bande-annonce"
+  "cinemaOpenTrailer": "Ouvrir la bande-annonce",
+  "concertsTitle": "Concerts et Événements",
+  "concertsSearchHint": "Entrez une ville (ex. Paris, Lyon)",
+  "concertsSearchLabel": "Rechercher des concerts par ville",
+  "concertsSearchTooltip": "Rechercher",
+  "concertsInitialText": "Entrez le nom de votre ville ci-dessus pour voir les prochains concerts de musique.",
+  "concertsEmpty": "Aucun concert trouvé dans cette ville.",
+  "concertsVenue": "Lieu du concert :",
+  "concertsBuyTickets": "Acheter ou voir les détails sur Ticketmaster"
 }

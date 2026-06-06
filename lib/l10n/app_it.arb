@@ -2406,20 +2406,41 @@
     }
   },
   "cinemaTitle": "Film al Cinema",
-  "@cinemaTitle": { "description": "Titolo della schermata dei film al cinema" },
+  "@cinemaTitle": {
+    "description": "Titolo della schermata dei film al cinema"
+  },
   "cinemaNoMovies": "Nessun film trovato al momento.",
-  "@cinemaNoMovies": { "description": "Testo quando non ci sono film" },
+  "@cinemaNoMovies": {
+    "description": "Testo quando non ci sono film"
+  },
   "cinemaError": "Errore durante il caricamento dei film.",
-  "@cinemaError": { "description": "Errore caricamento film" },
+  "@cinemaError": {
+    "description": "Errore caricamento film"
+  },
   "cinemaReleased": "Uscito il: {date}",
   "@cinemaReleased": {
     "description": "Data di uscita",
     "placeholders": {
-      "date": { "type": "String", "example": "2024-05-15" }
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
     }
   },
   "cinemaOverviewLabel": "Trama:",
-  "@cinemaOverviewLabel": { "description": "Label trama" },
+  "@cinemaOverviewLabel": {
+    "description": "Label trama"
+  },
   "cinemaOpenTrailer": "Apri trailer",
-  "@cinemaOpenTrailer": { "description": "Label per aprire il trailer" }
+  "@cinemaOpenTrailer": {
+    "description": "Label per aprire il trailer"
+  },
+  "concertsTitle": "Concerti ed Eventi",
+  "concertsSearchHint": "Inserisci una città (es. Milano, Roma)",
+  "concertsSearchLabel": "Cerca concerti per città",
+  "concertsSearchTooltip": "Cerca",
+  "concertsInitialText": "Scrivi il nome della tua città in alto per vedere i concerti musicali in programma.",
+  "concertsEmpty": "Nessun concerto trovato in questa città.",
+  "concertsVenue": "Luogo del concerto:",
+  "concertsBuyTickets": "Acquista o vedi dettagli su Ticketmaster"
 }

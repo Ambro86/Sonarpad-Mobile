@@ -1710,4 +1710,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cinemaOpenTrailer => 'Open trailer';
+
+  @override
+  String get concertsTitle => 'Concerts & Events';
+
+  @override
+  String get concertsSearchHint => 'Enter a city (e.g. London, New York)';
+
+  @override
+  String get concertsSearchLabel => 'Search concerts by city';
+
+  @override
+  String get concertsSearchTooltip => 'Search';
+
+  @override
+  String get concertsInitialText =>
+      'Enter the name of your city above to see upcoming music concerts.';
+
+  @override
+  String get concertsEmpty => 'No concerts found in this city.';
+
+  @override
+  String get concertsVenue => 'Concert venue:';
+
+  @override
+  String get concertsBuyTickets => 'Buy or see details on Ticketmaster';
 }

@@ -3210,6 +3210,54 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Apri trailer'**
   String get cinemaOpenTrailer;
+
+  /// No description provided for @concertsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Concerti ed Eventi'**
+  String get concertsTitle;
+
+  /// No description provided for @concertsSearchHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci una città (es. Milano, Roma)'**
+  String get concertsSearchHint;
+
+  /// No description provided for @concertsSearchLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca concerti per città'**
+  String get concertsSearchLabel;
+
+  /// No description provided for @concertsSearchTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca'**
+  String get concertsSearchTooltip;
+
+  /// No description provided for @concertsInitialText.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi il nome della tua città in alto per vedere i concerti musicali in programma.'**
+  String get concertsInitialText;
+
+  /// No description provided for @concertsEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun concerto trovato in questa città.'**
+  String get concertsEmpty;
+
+  /// No description provided for @concertsVenue.
+  ///
+  /// In it, this message translates to:
+  /// **'Luogo del concerto:'**
+  String get concertsVenue;
+
+  /// No description provided for @concertsBuyTickets.
+  ///
+  /// In it, this message translates to:
+  /// **'Acquista o vedi dettagli su Ticketmaster'**
+  String get concertsBuyTickets;
 }
 
 class _AppLocalizationsDelegate

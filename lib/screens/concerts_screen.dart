@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/concert_event.dart';
+import '../services/news_service.dart';
 import '../services/ticketmaster_service.dart';
 import 'concert_detail_screen.dart';
 
@@ -21,6 +23,28 @@ class _ConcertsScreenState extends State<ConcertsScreen> {
   bool _loading = false;
   String? _error;
   bool _hasSearched = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initCity();
+  }
+
+  Future<void> _initCity() async {
+    try {
+      final loc = await NewsService().getUserLocationData();
+      if (loc != null && mounted) {
+        final city = loc['city'];
+        if (city != null && city.isNotEmpty) {
+          setState(() {
+            _searchController.text = city;
+          });
+          // Eseguiamo anche la ricerca automatica
+          _searchConcerts(city);
+        }
+      }
+    } catch (_) {}
+  }
 
   @override
   void dispose() {
@@ -65,25 +89,26 @@ class _ConcertsScreenState extends State<ConcertsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final localeName = Localizations.localeOf(context).toString();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Concerti ed Eventi')),
+      appBar: AppBar(title: Text(l10n.concertsTitle)),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Semantics(
-              label: 'Cerca concerti per città',
+              label: l10n.concertsSearchLabel,
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  labelText: 'Inserisci una città (es. Milano, Roma)',
+                  labelText: l10n.concertsSearchHint,
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.search),
                     onPressed: () => _searchConcerts(_searchController.text),
-                    tooltip: 'Cerca',
+                    tooltip: l10n.concertsSearchTooltip,
                   ),
                 ),
                 onSubmitted: _searchConcerts,
@@ -91,22 +116,22 @@ class _ConcertsScreenState extends State<ConcertsScreen> {
             ),
           ),
           Expanded(
-            child: _buildBody(localeName),
+            child: _buildBody(context, localeName, l10n),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBody(String localeName) {
+  Widget _buildBody(BuildContext context, String localeName, AppLocalizations l10n) {
     if (!_hasSearched) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Text(
-            'Scrivi il nome della tua città in alto per vedere i concerti musicali in programma.',
+            l10n.concertsInitialText,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18),
+            style: const TextStyle(fontSize: 18),
           ),
         ),
       );
@@ -117,14 +142,14 @@ class _ConcertsScreenState extends State<ConcertsScreen> {
     }
 
     if (_error != null) {
-      return Center(child: Text('Errore:\n$_error'));
+      return Center(child: Text('Error:\n$_error'));
     }
 
     if (_concerts.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'Nessun concerto trovato in questa città.',
-          style: TextStyle(fontSize: 18),
+          l10n.concertsEmpty,
+          style: const TextStyle(fontSize: 18),
         )
       );
     }

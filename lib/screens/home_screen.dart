@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             routeName: '/cinema'),
       ),
       _HomeButton(
-        label: 'Concerti ed Eventi',
+        label: l10n.concertsTitle,
         onPressed: () => AccessibilityFeedbackService.goNamed(context,
             routeName: '/concerts'),
       ),
@@ -230,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => AccessibilityFeedbackService.goNamed(context,
                 routeName: '/cinema')),
         _HomeButton(
-            label: 'Concerti ed Eventi',
+            label: l10n.concertsTitle,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,
                 routeName: '/concerts')),
         _HomeButton(
