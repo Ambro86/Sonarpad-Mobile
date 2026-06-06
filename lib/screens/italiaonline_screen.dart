@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/italiaonline_service.dart';
-import '../services/document_library_service.dart';
-import 'document_reader_screen.dart';
+import 'italiaonline_detail_screen.dart';
 
 class ItaliaOnlineScreen extends StatefulWidget {
   const ItaliaOnlineScreen({super.key});
@@ -189,16 +188,10 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
       if (!mounted) return;
       Navigator.of(context).pop(); // Chiudi loading
 
-      final doc = await DocumentLibraryService().createTextDocument(
-        name: '${detail.title}.txt',
-        content: detail.body,
-        isTemporary: true,
-      );
-
       if (!mounted) return;
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => DocumentReaderScreen(document: doc),
+          builder: (_) => ItaliaOnlineDetailScreen(detail: detail),
         ),
       );
     } catch (e) {

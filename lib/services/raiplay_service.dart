@@ -207,16 +207,22 @@ class RaiPlayService {
     final rawTitle = _stringField(section, 'name');
     if (rawTitle == null) return null;
 
-    final title = rawTitle.toLowerCase() == 'cerca' ? 'Esplora' : rawTitle;
+    String title = rawTitle;
+    if (title.toLowerCase() == 'cerca' || title.toLowerCase() == 'esplora cerca') {
+      title = 'Esplora';
+    }
+
     if (title.toLowerCase() == 'altro') return null;
     final elements = section['elements'];
     if (elements is List && elements.isNotEmpty) {
+      String desc = _stringField(section, 'title') ?? _stringField(section, 'menu_type') ?? '';
+      if (desc.toLowerCase() == 'cerca' || desc.toLowerCase() == 'esplora cerca') {
+        desc = 'Esplora';
+      }
       return RaiPlayItem(
         id: 'page|root|$title',
         title: title,
-        description: _stringField(section, 'title') ??
-            _stringField(section, 'menu_type') ??
-            '',
+        description: desc,
         kind: RaiPlayItemKind.page,
         pathId: '$_menuSectionSourcePrefix$title',
         mediaUrl: '',
@@ -225,10 +231,14 @@ class RaiPlayService {
 
     final pathId = _stringField(section, 'path_id');
     if (pathId != null && _isSupportedInternalTarget(pathId)) {
+      String desc = _stringField(section, 'menu_type') ?? '';
+      if (desc.toLowerCase() == 'cerca' || desc.toLowerCase() == 'esplora cerca') {
+        desc = 'Esplora';
+      }
       return RaiPlayItem(
         id: 'page|$pathId',
         title: title,
-        description: _stringField(section, 'menu_type') ?? '',
+        description: desc,
         kind: RaiPlayItemKind.page,
         pathId: pathId,
         mediaUrl: '',
@@ -261,7 +271,12 @@ class RaiPlayService {
     for (final entry in sections) {
       if (entry is! Map<String, dynamic>) continue;
       final name = _stringField(entry, 'name');
-      final title = name?.toLowerCase() == 'cerca' ? 'Esplora' : name;
+      
+      String? title = name;
+      if (title != null && (title.toLowerCase() == 'cerca' || title.toLowerCase() == 'esplora cerca')) {
+        title = 'Esplora';
+      }
+
       if (title != null && title.toLowerCase() == sectionName.toLowerCase()) {
         section = entry;
         break;

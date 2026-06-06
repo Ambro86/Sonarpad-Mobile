@@ -98,10 +98,26 @@ class SearchResponse {
 class DetailResponse {
   final String title;
   final String body;
+  final String? description;
+  final String? category;
+  final String? address;
+  final String? locality;
+  final List<String> phones;
+  final List<String> emails;
+  final List<String> websites;
+  final String? publicUrl;
 
   DetailResponse({
     required this.title,
     required this.body,
+    this.description,
+    this.category,
+    this.address,
+    this.locality,
+    this.phones = const [],
+    this.emails = const [],
+    this.websites = const [],
+    this.publicUrl,
   });
 }
 
@@ -384,6 +400,14 @@ class ItaliaOnlineService {
     return DetailResponse(
       title: name ?? 'Dettaglio',
       body: buffer.toString().trim(),
+      description: description,
+      category: category,
+      address: address,
+      locality: locality,
+      phones: phones,
+      emails: emails,
+      websites: websites,
+      publicUrl: publicUrl,
     );
   }
 }

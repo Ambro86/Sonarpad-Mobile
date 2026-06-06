@@ -31,7 +31,7 @@
       "Dalle impostazioni è possibile scegliere se visualizzare le schermate raggruppate per categoria oppure mantenere la visualizzazione classica.",
       "Migliorate le traduzioni in inglese, francese e spagnolo.",
       "Migliorata la chiarezza di varie schermate e messaggi dell'app.",
-      "Aggiunta la funzione Cinema per scoprire i film attualmente in programmazione nelle sale, con la possibilità di leggere la trama e guardare il trailer, qualora disponibile."
+      "Aggiunta la funzione Cinema per scoprire i film attualmente in programmazione nelle sale, con la possibilità di leggere la trama e guardare il trailer, qualora disponibile. È presente anche il pulsante 'Prossime uscite' per consultare i film di prossima uscita."
     ],
     "en": [
       "Added the ability to create a new document directly from Sonarpad.",
@@ -59,7 +59,7 @@
       "In settings, you can choose whether to display screens grouped by category or keep the classic view.",
       "Improved English, French, and Spanish translations.",
       "Improved the clarity of several screens and app messages.",
-      "Added the Cinema feature to discover movies currently playing in theaters, with the ability to read the plot and watch the trailer, if available."
+      "Added the Cinema feature to discover movies currently playing in theaters, with the ability to read the plot and watch the trailer, if available. There is also an 'Upcoming releases' button to check out upcoming movies."
     ],
     "fr": [
       "Ajout de la possibilité de créer un nouveau document directement depuis Sonarpad.",
@@ -87,7 +87,7 @@
       "Dans les réglages, vous pouvez choisir d'afficher les écrans regroupés par catégorie ou de conserver l'affichage classique.",
       "Amélioration des traductions en anglais, français et espagnol.",
       "Amélioration de la clarté de plusieurs écrans et messages de l'app.",
-      "Ajout de la fonction Cinéma pour découvrir les films actuellement en salles, avec la possibilité de lire l'intrigue et de regarder la bande-annonce, si disponible."
+      "Ajout de la fonction Cinéma pour découvrir les films actuellement en salles, avec la possibilité de lire l'intrigue et de regarder la bande-annonce, si disponible. Un bouton « Prochaines sorties » est également présent pour consulter les films à venir."
     ],
     "es": [
       "Agregada la posibilidad de crear un nuevo documento directamente desde Sonarpad.",
@@ -115,7 +115,7 @@
       "En los ajustes, puedes elegir si mostrar las pantallas agrupadas por categoría o mantener la vista clásica.",
       "Mejoradas las traducciones en inglés, francés y español.",
       "Mejorada la claridad de varias pantallas y mensajes de la app.",
-      "Agregada la función Cine para descubrir las películas que se proyectan actualmente en los cines, con la posibilidad de leer la trama y ver el tráiler, si está disponible."
+      "Agregada la función Cine para descubrir las películas que se proyectan actualmente en los cines, con la posibilidad de leer la trama y ver el tráiler, si está disponible. También se incluye el botón 'Próximos estrenos' para consultar las próximas películas."
     ]
   }
 ]

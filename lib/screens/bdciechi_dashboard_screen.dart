@@ -76,7 +76,10 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
         .replaceAll('é', 'e')
         .replaceAll('ì', 'i')
         .replaceAll('ò', 'o')
-        .replaceAll('ù', 'u');
+        .replaceAll('ù', 'u')
+        .replaceAll(',', ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
   }
 
   String _extractIndex(String record) {
