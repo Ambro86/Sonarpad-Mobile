@@ -23,11 +23,9 @@ class _TrailerScreenState extends State<TrailerScreen> {
   void initState() {
     super.initState();
     
-    // Converte il link standard in un link di tipo "embed" per nascondere distrazioni (commenti, ecc.)
-    String embedUrl = widget.videoUrl;
+    String videoId = '';
     if (widget.videoUrl.contains('watch?v=')) {
-      final videoId = widget.videoUrl.split('watch?v=')[1].split('&').first;
-      embedUrl = 'https://www.youtube.com/embed/$videoId?autoplay=1&rel=0';
+      videoId = widget.videoUrl.split('watch?v=')[1].split('&').first;
     }
 
     _controller = WebViewController()
@@ -42,8 +40,28 @@ class _TrailerScreenState extends State<TrailerScreen> {
             }
           },
         ),
-      )
-      ..loadRequest(Uri.parse(embedUrl));
+      );
+
+    if (videoId.isNotEmpty) {
+      final html = '''
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+      body { margin: 0; padding: 0; background-color: black; display: flex; align-items: center; justify-content: center; height: 100vh; }
+      iframe { width: 100vw; height: 100vh; border: none; }
+    </style>
+  </head>
+  <body>
+    <iframe src="https://www.youtube.com/embed/$videoId?autoplay=1&playsinline=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </body>
+</html>
+''';
+      _controller.loadHtmlString(html);
+    } else {
+      _controller.loadRequest(Uri.parse(widget.videoUrl));
+    }
   }
 
   @override
@@ -52,6 +70,7 @@ class _TrailerScreenState extends State<TrailerScreen> {
       appBar: AppBar(
         title: Text('Trailer: ${widget.title}'),
       ),
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Stack(
           children: [

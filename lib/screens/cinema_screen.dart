@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
-import 'trailer_screen.dart';
+import 'cinema_detail_screen.dart';
 
 class CinemaScreen extends StatefulWidget {
   const CinemaScreen({super.key});
@@ -42,35 +43,6 @@ class _CinemaScreenState extends State<CinemaScreen> {
     }
   }
 
-  Future<void> _openTrailer(TmdbMovie movie) async {
-    try {
-      final localeName = Localizations.localeOf(context).languageCode;
-      final trailerUrl = await _service.getTrailerUrl(movie.id, languageCode: localeName);
-      if (trailerUrl != null && mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            settings: const RouteSettings(name: '/cinema/trailer'),
-            builder: (_) => TrailerScreen(
-              videoUrl: trailerUrl,
-              title: movie.title,
-            ),
-          ),
-        );
-      } else {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nessun trailer disponibile per questo film')),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore: $e')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -83,65 +55,43 @@ class _CinemaScreenState extends State<CinemaScreen> {
               ? Center(child: Text('${l10n.cinemaError}\n$_error'))
               : _movies.isEmpty
                   ? Center(child: Text(l10n.cinemaNoMovies))
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
+                  : Semantics(
+                      explicitChildNodes: true,
+                      child: ListView.separated(
+                        scrollCacheExtent: const ScrollCacheExtent.pixels(4000),
+                        physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics(),
+                        ),
+                        padding: const EdgeInsets.all(8),
                       itemCount: _movies.length,
+                      separatorBuilder: (context, index) => const Divider(),
                       itemBuilder: (context, index) {
                         final movie = _movies[index];
                         final releaseDateText = l10n.cinemaReleased(movie.releaseDate);
                         
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: Card(
-                            elevation: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    movie.title,
-                                    style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    releaseDateText,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  if (movie.overview.isNotEmpty) ...[
-                                    Text(
-                                      l10n.cinemaOverviewLabel,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      movie.overview,
-                                      style: const TextStyle(fontSize: 18),
-                                    ),
-                                    const SizedBox(height: 16),
-                                  ],
-                                  FilledButton.icon(
-                                    onPressed: () => _openTrailer(movie),
-                                    icon: const Icon(Icons.play_arrow),
-                                    label: Text(l10n.cinemaOpenTrailer),
-                                  ),
-                                ],
-                              ),
-                            ),
+                        return ListTile(
+                          title: Text(
+                            movie.title,
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
+                          subtitle: Text(
+                            releaseDateText,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                settings: const RouteSettings(name: '/cinema/detail'),
+                                builder: (_) => CinemaDetailScreen(movie: movie),
+                              ),
+                            );
+                          },
                         );
                       },
                     ),
+                  ),
     );
   }
 }
