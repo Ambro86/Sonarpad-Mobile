@@ -24,6 +24,12 @@ class AppLogger {
   static Future<void> _append(String logMessage) async {
     try {
       final file = await _logFile;
+      if (await file.exists()) {
+        final size = await file.length();
+        if (size > 100 * 1024) {
+          await file.writeAsString('', mode: FileMode.write);
+        }
+      }
       await file.writeAsString(logMessage, mode: FileMode.append);
     } catch (e) {
       dev.log('AppLogger: Impossibile scrivere sul file di log: $e');

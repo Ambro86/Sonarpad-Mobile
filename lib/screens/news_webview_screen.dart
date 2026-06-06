@@ -181,21 +181,48 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           var acceptTexts = [
             'accetta tutto',
             'accetta',
+            'accetto',
+            'acconsento',
+            'consenti tutto',
+            'consenti',
             'accept all',
             'accept',
             'agree',
             'i agree',
-            'consenti tutto',
-            'consenti'
+            'allow all',
+            'allow',
+            'accepter',
+            "j'accepte",
+            'tout accepter',
+            'accepter tout',
+            'autoriser',
+            'autoriser tout',
+            'aceptar',
+            'aceptar todo',
+            'acepto',
+            'estoy de acuerdo',
+            'permitir',
+            'permitir todo'
           ];
           var rejectTexts = [
             'rifiuta',
+            'gestisci',
+            'opzioni',
             'reject',
             'decline',
-            'gestisci',
             'manage',
             'preferences',
-            'opzioni'
+            'options',
+            'refuser',
+            'refuser tout',
+            'gérer',
+            'préférences',
+            'parametres',
+            'paramètres',
+            'rechazar',
+            'rechazar todo',
+            'gestionar',
+            'opciones'
           ];
 
           function normalizedText(element) {
@@ -292,21 +319,30 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<void> _loadVisibleReaderArticleFromWebView() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (!mounted || _readerText != null) return;
-
-    try {
-      final text = await _extractVisibleArticleText();
+    for (int i = 0; i < 4; i++) {
+      await Future.delayed(const Duration(milliseconds: 1500));
       if (!mounted || _readerText != null) return;
-      if (text.length < 400) return;
 
-      setState(() {
-        _readerTitle = widget.article.title;
-        _readerText = text;
-        _readerPreparing = false;
-      });
-    } catch (e) {
-      debugPrint('Sonarpad reader: visible WebView extraction failed: $e');
+      try {
+        final text = await _extractVisibleArticleText();
+        if (!mounted || _readerText != null) return;
+        
+        if (text.length >= 400) {
+          setState(() {
+            _readerTitle = widget.article.title;
+            _readerText = text;
+            _readerPreparing = false;
+          });
+          return;
+        }
+      } catch (e) {
+        debugPrint('Sonarpad reader: visible WebView extraction failed: $e');
+      }
+    }
+    
+    // Fallback if it fails after all retries
+    if (mounted && _readerText == null) {
+      setState(() => _readerPreparing = false);
     }
   }
 

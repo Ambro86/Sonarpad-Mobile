@@ -30,7 +30,8 @@
       "Aggiunta la possibilità di raggruppare le schermate per categorie, così da organizzare meglio le icone della schermata principale.",
       "Dalle impostazioni è possibile scegliere se visualizzare le schermate raggruppate per categoria oppure mantenere la visualizzazione classica.",
       "Migliorate le traduzioni in inglese, francese e spagnolo.",
-      "Migliorata la chiarezza di varie schermate e messaggi dell'app."
+      "Migliorata la chiarezza di varie schermate e messaggi dell'app.",
+      "Aggiunta la funzione Cinema per scoprire i film attualmente in programmazione nelle sale, con la possibilità di leggere la trama e guardare il trailer, qualora disponibile."
     ],
     "en": [
       "Added the ability to create a new document directly from Sonarpad.",
@@ -57,7 +58,8 @@
       "Added the ability to group screens by category, making the main screen icons easier to organize.",
       "In settings, you can choose whether to display screens grouped by category or keep the classic view.",
       "Improved English, French, and Spanish translations.",
-      "Improved the clarity of several screens and app messages."
+      "Improved the clarity of several screens and app messages.",
+      "Added the Cinema feature to discover movies currently playing in theaters, with the ability to read the plot and watch the trailer, if available."
     ],
     "fr": [
       "Ajout de la possibilité de créer un nouveau document directement depuis Sonarpad.",
@@ -84,7 +86,8 @@
       "Ajout de la possibilité de regrouper les écrans par catégorie, afin de mieux organiser les icônes de l'écran principal.",
       "Dans les réglages, vous pouvez choisir d'afficher les écrans regroupés par catégorie ou de conserver l'affichage classique.",
       "Amélioration des traductions en anglais, français et espagnol.",
-      "Amélioration de la clarté de plusieurs écrans et messages de l'app."
+      "Amélioration de la clarté de plusieurs écrans et messages de l'app.",
+      "Ajout de la fonction Cinéma pour découvrir les films actuellement en salles, avec la possibilité de lire l'intrigue et de regarder la bande-annonce, si disponible."
     ],
     "es": [
       "Agregada la posibilidad de crear un nuevo documento directamente desde Sonarpad.",
@@ -111,7 +114,8 @@
       "Agregada la posibilidad de agrupar las pantallas por categoría, para organizar mejor los iconos de la pantalla principal.",
       "En los ajustes, puedes elegir si mostrar las pantallas agrupadas por categoría o mantener la vista clásica.",
       "Mejoradas las traducciones en inglés, francés y español.",
-      "Mejorada la claridad de varias pantallas y mensajes de la app."
+      "Mejorada la claridad de varias pantallas y mensajes de la app.",
+      "Agregada la función Cine para descubrir las películas que se proyectan actualmente en los cines, con la posibilidad de leer la trama y ver el tráiler, si está disponible."
     ]
   }
 ]

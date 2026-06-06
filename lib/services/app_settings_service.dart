@@ -459,7 +459,7 @@ class AppSettingsService {
 
   Future<bool> isHomeGroupingEnabled() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_homeGroupingEnabledKey) ?? false;
+    return prefs.getBool(_homeGroupingEnabledKey) ?? true;
   }
 
   Future<void> setHomeGroupingEnabled(bool value) async {

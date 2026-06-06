@@ -77,11 +77,13 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
           ),
           padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            movie.title,
-            style: const TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
+          ExcludeSemantics(
+            child: Text(
+              movie.title,
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(height: 8),
