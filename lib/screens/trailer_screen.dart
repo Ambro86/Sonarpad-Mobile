@@ -58,7 +58,7 @@ class _TrailerScreenState extends State<TrailerScreen> {
   </body>
 </html>
 ''';
-      _controller.loadHtmlString(html);
+      _controller.loadHtmlString(html, baseUrl: "https://www.youtube.com");
     } else {
       _controller.loadRequest(Uri.parse(widget.videoUrl));
     }

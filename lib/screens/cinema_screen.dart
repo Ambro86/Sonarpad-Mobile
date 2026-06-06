@@ -30,6 +30,10 @@ class _CinemaScreenState extends State<CinemaScreen> {
     try {
       final localeName = Localizations.localeOf(context).languageCode;
       final movies = await _service.getNowPlaying(languageCode: localeName);
+      
+      // Ordina dal più recente al meno recente (discendente)
+      movies.sort((a, b) => b.releaseDate.compareTo(a.releaseDate));
+
       if (!mounted) return;
       setState(() {
         _movies = movies;
