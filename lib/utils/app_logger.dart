@@ -27,7 +27,11 @@ class AppLogger {
       if (await file.exists()) {
         final size = await file.length();
         if (size > 100 * 1024) {
-          await file.writeAsString('', mode: FileMode.write);
+          final timestamp = DateTime.now().toIso8601String();
+          await file.writeAsString(
+            '[$timestamp] Log svuotato automaticamente: limite 100 KB superato.\n',
+            mode: FileMode.write,
+          );
         }
       }
       await file.writeAsString(logMessage, mode: FileMode.append);
