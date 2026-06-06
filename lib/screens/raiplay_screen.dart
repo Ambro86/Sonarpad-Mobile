@@ -142,12 +142,13 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
       setState(() => _loading = true);
 
       final mediaUrl = item.mediaUrl;
-      final resolvedUrl = await _service.resolveMediaUrl(mediaUrl);
+      final resolvedMedia = await _service.resolvePlaybackUrls(mediaUrl);
 
       final episode = PodcastEpisode(
         title: item.title,
         description: item.description,
-        audioUrl: resolvedUrl,
+        audioUrl: resolvedMedia.audioUrl,
+        videoUrl: resolvedMedia.videoUrl,
         id: 'raiplay:${item.id}',
         publishedAt: DateTime.now(),
       );

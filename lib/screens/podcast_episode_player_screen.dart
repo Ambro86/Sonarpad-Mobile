@@ -40,6 +40,7 @@ class _PodcastEpisodePlayerScreenState
   StreamSubscription<dynamic>? _mediaEventsSubscription;
 
   VideoPlayerController? _videoController;
+  bool _videoUsesExternalAudio = false;
   bool _isVideoEnabled = false;
 
   bool _loaded = false;
@@ -107,7 +108,16 @@ class _PodcastEpisodePlayerScreenState
         );
         if (_loaded) await _audio.stop();
         _videoController?.dispose();
-        final uri = Uri.parse(widget.episode.audioUrl);
+        final playbackUrl = widget.episode.videoUrl ?? widget.episode.audioUrl;
+        final useExternalAudio = widget.episode.videoUrl != null &&
+            widget.episode.videoUrl != widget.episode.audioUrl;
+        _videoUsesExternalAudio = useExternalAudio;
+        AppLogger.log(
+          'PodcastPlayer: video playback url selected url=$playbackUrl, '
+          'audioUrl=${widget.episode.audioUrl}, '
+          'externalAudio=$useExternalAudio, $_logSubject',
+        );
+        final uri = Uri.parse(playbackUrl);
         if (uri.scheme == 'file') {
           _videoController = VideoPlayerController.file(
             File(uri.toFilePath()),
@@ -122,6 +132,21 @@ class _PodcastEpisodePlayerScreenState
         AppLogger.log('PodcastPlayer: video initialize start, $_logSubject');
         await _videoController!.initialize();
         AppLogger.log('PodcastPlayer: video initialize completed, $_logSubject');
+        if (useExternalAudio) {
+          await _videoController!.setVolume(0);
+          await _audio.setUrl(
+            widget.episode.audioUrl,
+            title: l10n.nowPlayingTitle(widget.episode.title),
+            mediaId: _getStableId(),
+          );
+          _loaded = true;
+          AppLogger.log(
+            'PodcastPlayer: external audio setUrl completed for video, '
+            '$_logSubject',
+          );
+        } else {
+          await _videoController!.setVolume(1);
+        }
         if (Platform.isIOS) {
           await _mediaCommands.invokeMethod(
             'setupMagicTap',
@@ -147,12 +172,18 @@ class _PodcastEpisodePlayerScreenState
             final dur = _videoController!.value.duration;
             if (savedPos < (dur.inSeconds - 30)) {
               await _videoController!.seekTo(Duration(seconds: savedPos));
+              if (useExternalAudio) {
+                await _audio.seek(Duration(seconds: savedPos));
+              }
             }
           }
         }
 
         AppLogger.log('PodcastPlayer: video play start, $_logSubject');
         await _videoController!.play();
+        if (useExternalAudio) {
+          await _audio.play();
+        }
         if (Platform.isIOS) {
           await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
         }
@@ -168,6 +199,7 @@ class _PodcastEpisodePlayerScreenState
         _videoController?.pause();
         _videoController?.dispose();
         _videoController = null;
+        _videoUsesExternalAudio = false;
 
         if (!_loaded) {
           AppLogger.log('PodcastPlayer: audio setUrl start, $_logSubject');
@@ -215,6 +247,9 @@ class _PodcastEpisodePlayerScreenState
     );
     if (_videoController != null) {
       await _videoController!.pause();
+      if (_videoUsesExternalAudio) {
+        await _audio.pause();
+      }
       await _saveVideoBookmark();
       setState(() {});
     } else {
@@ -227,12 +262,18 @@ class _PodcastEpisodePlayerScreenState
     if (controller == null || !controller.value.isInitialized) return;
     if (controller.value.isPlaying) {
       await controller.pause();
+      if (_videoUsesExternalAudio) {
+        await _audio.pause();
+      }
       await _saveVideoBookmark();
       if (Platform.isIOS) {
         await _mediaCommands.invokeMethod('setMagicTapPlaying', false);
       }
     } else {
       await controller.play();
+      if (_videoUsesExternalAudio) {
+        await _audio.play();
+      }
       if (Platform.isIOS) {
         await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
       }

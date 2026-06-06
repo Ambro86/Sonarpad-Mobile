@@ -35,6 +35,25 @@ class RaiPlayPage {
   });
 }
 
+class RaiPlayResolvedMedia {
+  final String audioUrl;
+  final String videoUrl;
+  final String? audioLanguage;
+  final String? audioName;
+
+  const RaiPlayResolvedMedia({
+    required this.audioUrl,
+    required this.videoUrl,
+    this.audioLanguage,
+    this.audioName,
+  });
+
+  bool get hasDescribedAudio {
+    return audioLanguage?.toLowerCase() == 'des' ||
+        audioName?.toLowerCase() == 'audiodescrizione';
+  }
+}
+
 class RaiPlayService {
   static const _baseUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshC3lYBw==";
   static const _menuUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshC3lYB3ZbAShFRiBAGiw=";
@@ -584,6 +603,11 @@ class RaiPlayService {
   }
 
   Future<String> resolveMediaUrl(String url) async {
+    final media = await resolvePlaybackUrls(url);
+    return media.audioUrl;
+  }
+
+  Future<RaiPlayResolvedMedia> resolvePlaybackUrls(String url) async {
     String resolvedUrl = url;
     await AppLogger.log('RaiPlayService: Inizio risoluzione media per: $url');
 
@@ -631,51 +655,26 @@ class RaiPlayService {
           }
 
           final playlist = resp.body;
-          String? adUrl;
-          String? itaUrl;
+          final media = resolveHlsPlaybackUrlsFromPlaylist(
+            finalMasterUrl,
+            playlist,
+            fallbackAudioUrl: resolvedUrl,
+          );
 
-          final lines = playlist.split('\n');
-          for (var line in lines) {
-            final trimmed = line.trim();
-            if (trimmed.startsWith('#EXT-X-MEDIA:') &&
-                trimmed.contains('TYPE=AUDIO')) {
-              final uriMatch = RegExp(r'URI="([^"]+)"').firstMatch(trimmed);
-              if (uriMatch != null) {
-                final uri = uriMatch.group(1)!;
-                final langMatch =
-                    RegExp(r'LANGUAGE="([^"]+)"').firstMatch(trimmed);
-                final nameMatch = RegExp(r'NAME="([^"]+)"').firstMatch(trimmed);
-                final lang = langMatch?.group(1)?.toLowerCase();
-                final name = nameMatch?.group(1)?.toLowerCase();
-
-                if (lang == 'des' || name == 'audiodescrizione') {
-                  await AppLogger.log(
-                      'RaiPlayService: Trovata AD: Lang=$lang Name=$name URI=$uri');
-                  adUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
-                  break; // Audiodescrizione trovata, ha precedenza assoluta
-                }
-                if (lang == 'ita' && itaUrl == null) {
-                  await AppLogger.log(
-                      'RaiPlayService: Trovata traccia ITA: URI=$uri');
-                  itaUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
-                }
-              }
-            }
-          }
-
-          if (adUrl != null) {
+          if (media.hasDescribedAudio) {
             await AppLogger.log(
-                'RaiPlayService: Restituisco traccia AD: $adUrl');
-            return adUrl;
+                'RaiPlayService: Restituisco traccia AD: ${media.audioUrl}');
+            return media;
           }
-          if (itaUrl != null) {
+          if (media.audioUrl != resolvedUrl) {
             await AppLogger.log(
-                'RaiPlayService: Restituisco traccia ITA: $itaUrl');
-            return itaUrl;
+                'RaiPlayService: Restituisco traccia ITA: ${media.audioUrl}');
+            return media;
           }
 
           await AppLogger.log(
               'RaiPlayService: Nessuna traccia AD/ITA trovata, uso master playlist.');
+          return RaiPlayResolvedMedia(audioUrl: resolvedUrl, videoUrl: finalMasterUrl);
         } else {
           await AppLogger.log(
               'RaiPlayService: Errore M3U8 HTTP ${resp.statusCode}');
@@ -685,10 +684,58 @@ class RaiPlayService {
       }
     }
 
-    return resolvedUrl;
+    return RaiPlayResolvedMedia(audioUrl: resolvedUrl, videoUrl: resolvedUrl);
   }
 
-  String _resolveHlsChildUrl(String masterUrl, String childUri) {
+  RaiPlayResolvedMedia resolveHlsPlaybackUrlsFromPlaylist(
+    String masterUrl,
+    String playlist, {
+    String? fallbackAudioUrl,
+    bool logChildUrls = true,
+  }) {
+    String? adUrl;
+    String? itaUrl;
+    String? audioLanguage;
+    String? audioName;
+
+    final lines = playlist.split('\n');
+    for (var line in lines) {
+      final trimmed = line.trim();
+      if (trimmed.startsWith('#EXT-X-MEDIA:') &&
+          trimmed.contains('TYPE=AUDIO')) {
+        final uriMatch = RegExp(r'URI="([^"]+)"').firstMatch(trimmed);
+        if (uriMatch != null) {
+          final uri = uriMatch.group(1)!;
+          final langMatch = RegExp(r'LANGUAGE="([^"]+)"').firstMatch(trimmed);
+          final nameMatch = RegExp(r'NAME="([^"]+)"').firstMatch(trimmed);
+          final lang = langMatch?.group(1)?.toLowerCase();
+          final name = nameMatch?.group(1)?.toLowerCase();
+
+          if (lang == 'des' || name == 'audiodescrizione') {
+            adUrl = _resolveHlsChildUrl(masterUrl, uri, log: logChildUrls);
+            audioLanguage = lang;
+            audioName = name;
+            break;
+          }
+          if (lang == 'ita' && itaUrl == null) {
+            itaUrl = _resolveHlsChildUrl(masterUrl, uri, log: logChildUrls);
+            audioLanguage = lang;
+            audioName = name;
+          }
+        }
+      }
+    }
+
+    return RaiPlayResolvedMedia(
+      audioUrl: adUrl ?? itaUrl ?? fallbackAudioUrl ?? masterUrl,
+      videoUrl: masterUrl,
+      audioLanguage: audioLanguage,
+      audioName: audioName,
+    );
+  }
+
+  String _resolveHlsChildUrl(String masterUrl, String childUri,
+      {bool log = true}) {
     final masterUri = Uri.parse(masterUrl);
     var resolvedUri = masterUri.resolve(childUri);
 
@@ -697,7 +744,9 @@ class RaiPlayService {
     }
 
     final finalUrl = resolvedUri.toString();
-    AppLogger.log('RaiPlayService: Child URI risolto in: $finalUrl');
+    if (log) {
+      AppLogger.log('RaiPlayService: Child URI risolto in: $finalUrl');
+    }
     return finalUrl;
   }
 }

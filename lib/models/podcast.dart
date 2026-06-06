@@ -87,6 +87,7 @@ class PodcastEpisode {
   final String title;
   final String description;
   final String audioUrl;
+  final String? videoUrl;
   final DateTime? publishedAt;
   final String? id;
 
@@ -94,6 +95,7 @@ class PodcastEpisode {
     required this.title,
     required this.description,
     required this.audioUrl,
+    this.videoUrl,
     this.publishedAt,
     this.id,
   });
