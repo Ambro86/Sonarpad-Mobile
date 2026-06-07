@@ -17,8 +17,7 @@ enum AifaSectionType {
 class AifaPdfParser {
   // Regex per intercettare i titoli dei capitoli AIFA standard.
   // Usiamo espressioni regolari robuste per ignorare spaziature strane e case-sensitivity.
-  static final _chapterHeading =
-      RegExp(r'(?:\n|^)\s*([1-6])\s*[\.\)]\s*([^\n\r]+)');
+  static final _chapterNumber = RegExp(r'(?:\n|^)\s*([1-6])\s*[\.\)]');
   static final _s1 = RegExp(
       r'(?:\n|^)\s*1\s*[\.\)]\s*(?:Che\s+cos|Cos.?è|A\s+cosa\s+serve|Che\s+cosa\s+serve)',
       caseSensitive: false);
@@ -51,12 +50,8 @@ class AifaPdfParser {
 
   static int? _chapterStartByNumber(String text, int number) {
     int? start;
-    for (final match in _chapterHeading.allMatches(text)) {
-      final parsedNumber = int.tryParse(match.group(1) ?? '');
-      if (parsedNumber != number) continue;
-
-      final title = _normalizeHeading(match.group(2) ?? '');
-      if (!_looksLikeChapterTitle(number, title)) continue;
+    for (final match in _chapterNumber.allMatches(text)) {
+      if (!_numberMatchLooksLikeChapter(text, match, number)) continue;
       start = match.start;
     }
     return start;
@@ -64,15 +59,26 @@ class AifaPdfParser {
 
   static List<int> _chapterStartsByNumber(String text, int number) {
     final starts = <int>[];
-    for (final match in _chapterHeading.allMatches(text)) {
-      final parsedNumber = int.tryParse(match.group(1) ?? '');
-      if (parsedNumber != number) continue;
-
-      final title = _normalizeHeading(match.group(2) ?? '');
-      if (!_looksLikeChapterTitle(number, title)) continue;
+    for (final match in _chapterNumber.allMatches(text)) {
+      if (!_numberMatchLooksLikeChapter(text, match, number)) continue;
       starts.add(match.start);
     }
     return starts;
+  }
+
+  static bool _numberMatchLooksLikeChapter(
+    String text,
+    RegExpMatch match,
+    int number,
+  ) {
+    final parsedNumber = int.tryParse(match.group(1) ?? '');
+    if (parsedNumber != number) return false;
+
+    final end = match.end + 220 > text.length ? text.length : match.end + 220;
+    final title = _normalizeHeading(text.substring(match.end, end));
+    final compactTitle = _compactHeading(title);
+    return _looksLikeChapterTitle(number, title) ||
+        _looksLikeCompactChapterTitle(number, compactTitle);
   }
 
   static String _normalizeHeading(String text) {
@@ -120,6 +126,45 @@ class AifaPdfParser {
             title.startsWith('effetti indesiderati');
       case 5:
         return title.startsWith('come conservare');
+      default:
+        return false;
+    }
+  }
+
+  static String _compactHeading(String text) {
+    final buffer = StringBuffer();
+    for (final codeUnit in text.toLowerCase().codeUnits) {
+      final isAlpha = codeUnit >= 97 && codeUnit <= 122 ||
+          codeUnit >= 224 && codeUnit <= 255;
+      if (isAlpha) {
+        buffer.writeCharCode(codeUnit);
+      }
+    }
+    return buffer.toString();
+  }
+
+  static bool _looksLikeCompactChapterTitle(int number, String title) {
+    switch (number) {
+      case 1:
+        return title.startsWith('checos') ||
+            title.startsWith('cosè') ||
+            title.startsWith('cosè') ||
+            title.startsWith('acosaserve') ||
+            title.startsWith('checosa');
+      case 2:
+        return title.startsWith('cosadeve') ||
+            title.startsWith('primadiprendere') ||
+            title.startsWith('primadiusare') ||
+            title.startsWith('primadiassumere');
+      case 3:
+        return title.startsWith('comeprendere') ||
+            title.startsWith('comeusare') ||
+            title.startsWith('comeassumere');
+      case 4:
+        return title.startsWith('possibilieffetti') ||
+            title.startsWith('effettiindesiderati');
+      case 5:
+        return title.startsWith('comeconservare');
       default:
         return false;
     }
@@ -180,9 +225,15 @@ class AifaPdfParser {
 
     final tokens = _selectionTokens(farmacoName);
     if (tokens.isEmpty) return fallback;
+    final formTokens = tokens
+        .where((token) => _formSelectionTokens.contains(token))
+        .toList();
+    final scoringTokens = formTokens.isEmpty ? tokens : formTokens;
+    final excludedFormTokens =
+        formTokens.isEmpty ? const <String>[] : _excludedFormTokens(formTokens);
 
     _ChapterPositions? best;
-    var bestScore = 0;
+    var bestScore = -1000000;
     for (final i3 in i3Starts) {
       final i4 = _firstAfter(i4Starts, i3);
       if (i4 == null || i4 - i3 < 80) continue;
@@ -198,7 +249,8 @@ class AifaPdfParser {
         text,
         blockStart: blockStart,
         blockEnd: blockEnd,
-        tokens: tokens,
+        tokens: scoringTokens,
+        excludedTokens: excludedFormTokens,
       );
 
       if (score > bestScore) {
@@ -207,7 +259,9 @@ class AifaPdfParser {
       }
     }
 
-    return bestScore == 0 || best == null ? fallback : best;
+    if (best == null) return fallback;
+    if (formTokens.isNotEmpty) return best;
+    return bestScore <= 0 ? fallback : best;
   }
 
   static int? _lastBefore(List<int> starts, int position) {
@@ -228,13 +282,27 @@ class AifaPdfParser {
 
   static List<String> _selectionTokens(String farmacoName) {
     final normalized = _normalizeSearchText(farmacoName);
-    final tokens = normalized
+    final tokens = <String>{
+      ...normalized
         .split(' ')
         .where((token) =>
-            token.length >= 4 && !_commonSelectionTokens.contains(token))
-        .toSet()
-        .toList();
-    return tokens;
+            token.length >= 4 && !_commonSelectionTokens.contains(token)),
+    };
+
+    if (tokens.contains('compressa') || tokens.contains('compresse')) {
+      tokens.addAll(['compressa', 'compresse']);
+    }
+    if (tokens.contains('rivestita') || tokens.contains('rivestite')) {
+      tokens.addAll(['rivestita', 'rivestite']);
+    }
+    if (tokens.contains('supposta') || tokens.contains('supposte')) {
+      tokens.addAll(['supposta', 'supposte']);
+    }
+    if (tokens.contains('iniettabile') || tokens.contains('iniettabili')) {
+      tokens.addAll(['iniettabile', 'iniettabili']);
+    }
+
+    return tokens.toList();
   }
 
   static int _selectionScore(
@@ -242,15 +310,37 @@ class AifaPdfParser {
     required int blockStart,
     required int blockEnd,
     required List<String> tokens,
+    required List<String> excludedTokens,
   }) {
-    final safeStart = blockStart < 500 ? 0 : blockStart - 500;
+    final safeStart = blockStart < 1500 ? 0 : blockStart - 1500;
     final safeEnd = blockEnd > text.length ? text.length : blockEnd;
     final context = _normalizeSearchText(text.substring(safeStart, safeEnd));
     var score = 0;
     for (final token in tokens) {
-      if (context.contains(token)) score++;
+      if (!context.contains(token)) continue;
+      score += _selectionTokenWeight(token);
+    }
+    for (final token in excludedTokens) {
+      if (!context.contains(token)) continue;
+      score -= _selectionTokenWeight(token) * 3;
     }
     return score;
+  }
+
+  static int _selectionTokenWeight(String token) {
+    return _formSelectionTokens.contains(token) ? 4 : 1;
+  }
+
+  static List<String> _excludedFormTokens(List<String> selectedTokens) {
+    final selectedIsInjectable =
+        selectedTokens.any(_injectableSelectionTokens.contains);
+    if (selectedIsInjectable) {
+      return _nonInjectableSelectionTokens.toList();
+    }
+    if (selectedTokens.any(_nonInjectableSelectionTokens.contains)) {
+      return _injectableSelectionTokens.toList();
+    }
+    return const <String>[];
   }
 
   static String _normalizeSearchText(String text) {
@@ -398,7 +488,31 @@ const _commonSelectionTokens = <String>{
   'acido',
   'aic',
   'bromuro',
-  'compressa',
   'farmaco',
   'medicinale',
+};
+
+const _formSelectionTokens = <String>{
+  'compressa',
+  'compresse',
+  'iniettabile',
+  'iniettabili',
+  'rivestita',
+  'rivestite',
+  'supposta',
+  'supposte',
+};
+
+const _injectableSelectionTokens = <String>{
+  'iniettabile',
+  'iniettabili',
+};
+
+const _nonInjectableSelectionTokens = <String>{
+  'compressa',
+  'compresse',
+  'rivestita',
+  'rivestite',
+  'supposta',
+  'supposte',
 };

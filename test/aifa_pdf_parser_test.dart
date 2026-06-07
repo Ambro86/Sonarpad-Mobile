@@ -37,7 +37,7 @@ void main() {
     final result = AifaPdfParser.extractSectionTextForTest(
       text,
       AifaSectionType.posologia,
-      'BUSCOPAN 10 mg compresse rivestite - joscina butilbromuro',
+      'BUSCOPAN 10 mg COMPRESSA RIVESTITA - SCOPOLAMINA BUTILBROMURO',
     );
 
     expect(result, contains('Posologia corretta per le compresse rivestite'));
