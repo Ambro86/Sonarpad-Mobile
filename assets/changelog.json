@@ -1,7 +1,7 @@
 [
   {
     "version": "0.2.0",
-    "date": "2026-05-31",
+    "date": "2027-06-07",
     "it": [
       "Aggiunta la possibilità di creare un nuovo documento direttamente da Sonarpad.",
       "Aggiunta l'importazione da Dropbox: accedendo con il proprio account, è possibile sfogliare i file di Dropbox direttamente da Sonarpad e importarli nella libreria documenti.",
