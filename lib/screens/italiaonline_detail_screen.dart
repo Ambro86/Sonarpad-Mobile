@@ -48,10 +48,8 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
     try {
       final engine = await _settings.loadTtsEngine();
       final dictionaryEntries = await _voiceDictionary.loadEntries();
-      final chunks = _edgeTts.splitTextForStreaming(
-        widget.detail.body,
-        maxChunkChars: 650,
-      );
+      final text = _detailTextForSpeech(widget.detail);
+      final chunks = _edgeTts.splitTextForStreaming(text, maxChunkChars: 650);
       if (engine == 'system') {
         await _tts.awaitSpeakCompletion(true);
         final speed = await _settings.loadTtsSpeed();
@@ -251,4 +249,88 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
       ),
     );
   }
+}
+
+String _detailTextForSpeech(DetailResponse detail) {
+  final lines = <String>[];
+  final seen = <String>{};
+
+  void addLine(String? value) {
+    final trimmed = value?.trim();
+    if (trimmed == null || trimmed.isEmpty) return;
+    final key = _normalizeSpeechLine(trimmed);
+    if (!seen.add(key)) return;
+    lines.add(trimmed);
+  }
+
+  addLine(detail.title);
+
+  if (_shouldReadDescription(detail)) {
+    addLine(detail.description);
+  }
+
+  if (detail.category != null && detail.category!.isNotEmpty) {
+    addLine('Categoria: ${detail.category}');
+  }
+
+  if ((detail.address != null && detail.address!.isNotEmpty) ||
+      (detail.locality != null && detail.locality!.isNotEmpty)) {
+    addLine('Indirizzo:');
+    addLine(detail.address);
+    addLine(detail.locality);
+  }
+
+  if (detail.phones.isNotEmpty) {
+    addLine('Telefoni:');
+    for (final phone in detail.phones) {
+      addLine(phone);
+    }
+  }
+
+  if (detail.emails.isNotEmpty) {
+    addLine('Email:');
+    for (final email in detail.emails) {
+      addLine(email);
+    }
+  }
+
+  if (detail.websites.isNotEmpty) {
+    addLine('Siti web:');
+    for (final website in detail.websites) {
+      addLine(website);
+    }
+  }
+
+  return lines.join('\n');
+}
+
+bool _shouldReadDescription(DetailResponse detail) {
+  final description = detail.description?.trim();
+  if (description == null || description.isEmpty) return false;
+
+  final normalizedDescription = _normalizeSpeechLine(description);
+  final repeatedValues = [
+    detail.title,
+    detail.address,
+    detail.locality,
+    ...detail.phones,
+  ];
+
+  for (final value in repeatedValues) {
+    final normalizedValue = _normalizeSpeechLine(value ?? '');
+    if (normalizedValue.isNotEmpty &&
+        normalizedDescription.contains(normalizedValue)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+String _normalizeSpeechLine(String value) {
+  return value
+      .toLowerCase()
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .replaceAll(RegExp(r'[^\w\s]'), '')
+      .trim();
 }
