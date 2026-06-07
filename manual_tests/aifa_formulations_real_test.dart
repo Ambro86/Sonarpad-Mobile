@@ -19,14 +19,23 @@ void main() {
         matchesPackage: (name) =>
             name.contains('compressa') || name.contains('compresse'),
         expectedInPosologia: const ['compresse rivestite'],
-        forbiddenInPosologia: const ['1 fiala', 'soluzione iniettabile'],
+        forbiddenInPosologia: const [
+          '1 fiala',
+          '1 supposta',
+          'soluzione iniettabile',
+        ],
       ),
       _ExpectedCase(
         label: 'supposta',
         matchesPackage: (name) =>
             name.contains('supposta') || name.contains('supposte'),
         expectedInPosologia: const ['supposte', '1 supposta'],
-        forbiddenInPosologia: const ['1 fiala', 'soluzione iniettabile'],
+        forbiddenInPosologia: const [
+          '1 fiala',
+          '1-2 compresse',
+          'compresse rivestite',
+          'soluzione iniettabile',
+        ],
       ),
       _ExpectedCase(
         label: 'iniettabile',

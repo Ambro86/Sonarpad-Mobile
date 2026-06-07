@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/aifa_service.dart';
+import '../services/recent_searches_service.dart';
 import 'aifa_confezioni_screen.dart';
 
 class AifaSearchResultsScreen extends StatefulWidget {
@@ -28,6 +29,13 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
   Future<void> _search() async {
     try {
       final res = await _service.searchDrugs(widget.query);
+      if (res.isNotEmpty) {
+        try {
+          await RecentSearchesService().addSearch('farmaci', widget.query);
+        } catch (e) {
+          debugPrint('Errore salvataggio ricerca farmaci recente: $e');
+        }
+      }
       if (mounted) {
         setState(() {
           _results = res;

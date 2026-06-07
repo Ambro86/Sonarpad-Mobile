@@ -360,6 +360,74 @@ class AifaPdfParser {
     return buffer.toString().trim();
   }
 
+  static String _filterPosologiaForSelectedForm(
+    String section3,
+    String farmacoName,
+  ) {
+    final selectedGroup = _selectedPosologiaFormGroup(farmacoName);
+    if (selectedGroup == null) return section3;
+
+    final headings = _posologiaFormHeadings(section3);
+    if (headings.length < 2) return section3;
+
+    final selectedIndex = headings.indexWhere(
+      (heading) => heading.group == selectedGroup,
+    );
+    if (selectedIndex < 0) return section3;
+
+    final selected = headings[selectedIndex];
+    final nextStart = selectedIndex + 1 < headings.length
+        ? headings[selectedIndex + 1].start
+        : section3.length;
+    final prefix = section3.substring(0, headings.first.start).trim();
+    final selectedText = section3.substring(selected.start, nextStart).trim();
+
+    if (selectedText.isEmpty) return section3;
+    if (prefix.isEmpty) return selectedText;
+    return '$prefix\n\n$selectedText';
+  }
+
+  static String? _selectedPosologiaFormGroup(String farmacoName) {
+    final tokens = _selectionTokens(farmacoName);
+    if (tokens.any(_suppositorySelectionTokens.contains)) {
+      return _suppositoryFormGroup;
+    }
+    if (tokens.any(_tabletSelectionTokens.contains)) {
+      return _tabletFormGroup;
+    }
+    return null;
+  }
+
+  static List<_PosologiaFormHeading> _posologiaFormHeadings(String text) {
+    final headings = <_PosologiaFormHeading>[];
+    var lineStart = 0;
+
+    for (var i = 0; i <= text.length; i++) {
+      if (i < text.length && text.codeUnitAt(i) != 10) continue;
+
+      final rawLine = text.substring(lineStart, i);
+      final group = _posologiaFormHeadingGroup(rawLine);
+      if (group != null) {
+        headings.add(_PosologiaFormHeading(start: lineStart, group: group));
+      }
+
+      lineStart = i + 1;
+    }
+
+    return headings;
+  }
+
+  static String? _posologiaFormHeadingGroup(String line) {
+    final normalized = _normalizeSearchText(line);
+    if (_tabletPosologiaHeadings.contains(normalized)) {
+      return _tabletFormGroup;
+    }
+    if (_suppositoryPosologiaHeadings.contains(normalized)) {
+      return _suppositoryFormGroup;
+    }
+    return null;
+  }
+
   static String _extractSectionText(
     String text,
     AifaSectionType type,
@@ -396,7 +464,7 @@ class AifaPdfParser {
         if (section3.trim().isEmpty) {
           return "Impossibile trovare il capitolo 3 relativo alla posologia.";
         }
-        return section3;
+        return _filterPosologiaForSelectedForm(section3, farmacoName);
 
       case AifaSectionType.effettiIndesiderati:
         final section3 = _textBetween(text, start: i3, end: i4);
@@ -482,6 +550,16 @@ class _ChapterPositions {
   });
 }
 
+class _PosologiaFormHeading {
+  final int start;
+  final String group;
+
+  const _PosologiaFormHeading({
+    required this.start,
+    required this.group,
+  });
+}
+
 const _commonSelectionTokens = <String>{
   'acido',
   'aic',
@@ -511,6 +589,33 @@ const _nonInjectableSelectionTokens = <String>{
   'compresse',
   'rivestita',
   'rivestite',
+  'supposta',
+  'supposte',
+};
+
+const _tabletFormGroup = 'tablet';
+const _suppositoryFormGroup = 'suppository';
+
+const _tabletSelectionTokens = <String>{
+  'compressa',
+  'compresse',
+  'rivestita',
+  'rivestite',
+};
+
+const _suppositorySelectionTokens = <String>{
+  'supposta',
+  'supposte',
+};
+
+const _tabletPosologiaHeadings = <String>{
+  'compressa',
+  'compressa rivestita',
+  'compresse',
+  'compresse rivestite',
+};
+
+const _suppositoryPosologiaHeadings = <String>{
   'supposta',
   'supposte',
 };

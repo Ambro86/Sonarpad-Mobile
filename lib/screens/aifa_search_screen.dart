@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../services/recent_searches_service.dart';
 import 'recent_searches_screen.dart';
 
 import 'aifa_search_results_screen.dart';
@@ -25,7 +24,6 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
     query = query.trim();
     if (query.isEmpty) return;
 
-    RecentSearchesService().addSearch('farmaci', query);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => AifaSearchResultsScreen(query: query),
