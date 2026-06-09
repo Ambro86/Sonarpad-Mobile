@@ -1,7 +1,23 @@
 [
   {
+    "version": "0.2.1",
+    "date": "2026-06-09",
+    "it": [
+      "Corretta la rilevazione della lingua al primo avvio: Sonarpad ora usa la prima lingua preferita del dispositivo tra quelle supportate, se l'utente non ha ancora scelto una lingua dell'app."
+    ],
+    "en": [
+      "Fixed language detection on first launch: Sonarpad now uses the first supported preferred language from the device if the user has not selected an app language yet."
+    ],
+    "fr": [
+      "Correction de la détection de la langue au premier lancement : Sonarpad utilise désormais la première langue préférée prise en charge par l'appareil si l'utilisateur n'a pas encore choisi de langue pour l'app."
+    ],
+    "es": [
+      "Corregida la detección del idioma en el primer inicio: Sonarpad ahora usa el primer idioma preferido compatible del dispositivo si el usuario aún no ha elegido un idioma para la app."
+    ]
+  },
+  {
     "version": "0.2.0",
-    "date": "2027-06-07",
+    "date": "2026-06-07",
     "it": [
       "Aggiunta la possibilità di creare un nuovo documento direttamente da Sonarpad.",
       "Aggiunta l'importazione da Dropbox: accedendo con il proprio account, è possibile sfogliare i file di Dropbox direttamente da Sonarpad e importarli nella libreria documenti.",
@@ -13,7 +29,7 @@
       "Migliorata la gestione dei segnalibri nei documenti: l'opzione cambia automaticamente in base alla presenza o meno di un segnalibro.",
       "Aggiunta la possibilità di impostare automaticamente un nuovo segnalibro quando viene interrotta la lettura, se l'opzione è attiva nelle impostazioni.",
       "Aggiunta la nuova sezione Meteo, con ricerca della città, scelta del giorno, situazione attuale, precipitazioni, temperatura minima e massima e altri dati utili.",
-      "Aggiunto un calendario accessibile con santo del giorno e una citazione diversa per ogni giorno.",
+      "Aggiunto il calendario con indicazione delle varie festività, santo del giorno, una citazione diversa per ogni giorno e possibilità di aggiungere un promemoria.",
       "Aggiunta la ripresa automatica dei contenuti: documenti, podcast e file multimediali possono ripartire dal punto in cui erano stati lasciati. L'opzione può essere disattivata dalle impostazioni.",
       "Aggiunti slider per regolare il volume e la posizione nei file multimediali.",
       "Dalle impostazioni è possibile scegliere di quanto avanzare o retrocedere nei file multimediali. Il valore predefinito è di un minuto.",

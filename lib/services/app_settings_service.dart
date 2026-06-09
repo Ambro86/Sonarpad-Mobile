@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +27,7 @@ class TtsVoiceOption {
 }
 
 class AppSettingsService {
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -106,7 +108,16 @@ class AppSettingsService {
 
   Future<String> loadAppLanguage() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('sonarpad_app_language') ?? 'it';
+    final savedLanguage = prefs.getString('sonarpad_app_language');
+    if (savedLanguage != null) return savedLanguage;
+
+    for (final locale in PlatformDispatcher.instance.locales) {
+      final deviceLanguage = locale.languageCode;
+      if (_supportedAppLanguages.contains(deviceLanguage)) {
+        return deviceLanguage;
+      }
+    }
+    return 'en';
   }
 
   Future<void> saveAppLanguage(String languageCode) async {

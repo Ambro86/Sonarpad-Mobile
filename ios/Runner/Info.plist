@@ -4,6 +4,7 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>it</string>
+
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>it</string>
@@ -11,36 +12,50 @@
 		<string>fr</string>
 		<string>es</string>
 	</array>
+
 	<key>CFBundleDisplayName</key>
 	<string>Sonarpad</string>
+
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+
 	<key>CFBundleName</key>
 	<string>sonarpad_mobile_starter</string>
+
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
+
 	<key>CFBundleSignature</key>
 	<string>????</string>
+
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -48,37 +63,48 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<!-- Permette la riproduzione audio in background (radio, podcast, Edge TTS) -->
+
+	<!-- Permette la riproduzione audio in background: radio, podcast, TTS e media -->
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
 	</array>
+
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+
 			<key>CFBundleURLName</key>
 			<string>com.sonarpad.app</string>
+
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>sonarpad</string>
 			</array>
 		</dict>
 	</array>
+
+	<!-- Necessario se nel progetto è ancora presente codice o plugin che possono accedere alla fotocamera -->
 	<key>NSCameraUsageDescription</key>
-	<string>L'app necessita dell'accesso alla fotocamera per riconoscere il testo sulle scatole dei farmaci e fornirti feedback vocale.</string>
+	<string>Sonarpad può usare la fotocamera solo per funzioni di scansione o acquisizione immagini attivate dall’utente.</string>
+
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>Tutti i file supportati</string>
+
 			<key>LSHandlerRank</key>
 			<string>Alternate</string>
+
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.data</string>
@@ -86,14 +112,19 @@
 			</array>
 		</dict>
 	</array>
+
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+
 	<key>UIFileSharingEnabled</key>
 	<true/>
+
 	<key>NSCalendarsUsageDescription</key>
 	<string>Sonarpad necessita dell'accesso al calendario per aggiungere i tuoi promemoria ed eventi.</string>
+
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Sonarpad necessita dell'accesso completo al calendario per poter creare e salvare i tuoi promemoria direttamente nel calendario di sistema.</string>
+
 	<key>NSContactsUsageDescription</key>
 	<string>Sonarpad necessita dell'accesso ai contatti per associare invitati agli eventi del calendario.</string>
 </dict>
