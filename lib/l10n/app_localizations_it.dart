@@ -15,6 +15,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get appLanguage => 'Lingua dell\'app';
 
   @override
+  String get settingsTheme => 'Tema app';
+
+  @override
+  String get settingsThemeSystem => 'Sistema';
+
+  @override
+  String get settingsThemeLight => 'Chiaro';
+
+  @override
+  String get settingsThemeDark => 'Scuro';
+
+  @override
   String get homeSemanticsLabel => 'Sonarpad, schermata principale';
 
   @override
@@ -73,10 +85,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get convertMediaTitle => 'Converti media';
 
   @override
-  String get convertMediaInput => 'File di input';
+  String get convertMediaInput => 'File da convertire';
 
   @override
-  String get convertMediaOutput => 'File di output';
+  String get convertMediaOutput => 'Cartella di salvataggio';
 
   @override
   String get convertMediaImage => 'Immagine';
@@ -97,6 +109,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get convertMediaFlacCompression => 'Livello di compressione';
 
   @override
+  String get convertMediaWavBitDepth => 'Profondità bit WAV';
+
+  @override
   String get convertMediaReady => 'Pronto.';
 
   @override
@@ -109,17 +124,17 @@ class AppLocalizationsIt extends AppLocalizations {
   String get convertMediaButton => 'Converti';
 
   @override
-  String get convertMediaNoInput => 'Seleziona un file di input.';
+  String get convertMediaNoInput => 'Seleziona un file da convertire.';
 
   @override
-  String get convertMediaNoOutput => 'Seleziona un file di output.';
+  String get convertMediaNoOutput => 'Scegli una cartella di salvataggio.';
 
   @override
   String get convertMediaNoImage => 'Seleziona un\'immagine per il video.';
 
   @override
   String get convertMediaSamePath =>
-      'Il file di output deve essere diverso dall\'input.';
+      'Il file convertito deve essere diverso dal file sorgente.';
 
   @override
   String get convertMediaInvalidBitrate =>
@@ -223,6 +238,16 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get newsCategoryMyCity => 'La mia città';
+
+  @override
+  String get newsLocalCityLabel => 'Inserisci la tua città';
+
+  @override
+  String get newsLocalCityHint =>
+      'Correggi la città usata per le notizie locali';
+
+  @override
+  String get update => 'Aggiorna';
 
   @override
   String get moveUp => 'Sposta in alto';
@@ -493,6 +518,21 @@ class AppLocalizationsIt extends AppLocalizations {
       'Nessun podcast sottoscritto. Cerca un podcast e tocca un risultato per iscriverti.';
 
   @override
+  String get localAudioFiles => 'File audio locali';
+
+  @override
+  String get noLocalAudioFiles => 'Nessun file audio locale trovato.';
+
+  @override
+  String get importAudioFromITunes =>
+      'Importa audio da iTunes / Apple Devices';
+
+  @override
+  String localAudioFilesFound(int count) {
+    return 'File audio locali trovati: $count';
+  }
+
+  @override
   String get importPodcastsFromFile => 'Importa podcast da file';
 
   @override
@@ -646,6 +686,15 @@ class AppLocalizationsIt extends AppLocalizations {
   String get documentsAdded => 'Documenti aggiunti';
 
   @override
+  String get importDocumentsFromITunes =>
+      'Importa documenti da iTunes / Apple Devices';
+
+  @override
+  String sharedDocumentsImportComplete(int count) {
+    return 'Documenti importati da iTunes / Apple Devices: $count';
+  }
+
+  @override
   String libraryLoadError(Object error) {
     return 'Errore caricamento libreria: $error';
   }
@@ -770,6 +819,31 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get documentReplaceBookmarkAction =>
       'Rimuovi e aggiungi un nuovo segnalibro';
+
+  @override
+  String get searchInDocument => 'Cerca nel documento';
+
+  @override
+  String get documentSearchFieldLabel => 'Testo da cercare';
+
+  @override
+  String get documentSearchFieldHint => 'Parola o frase da trovare';
+
+  @override
+  String get documentSearchEmptyQuery => 'Inserisci il testo da cercare.';
+
+  @override
+  String get documentSearchResultsTitle => 'Risultati ricerca nel documento';
+
+  @override
+  String noDocumentSearchResults(String query) {
+    return 'Nessun risultato trovato per $query.';
+  }
+
+  @override
+  String documentSearchResultParagraph(int number) {
+    return 'Paragrafo $number';
+  }
 
   @override
   String get edit => 'Modifica';
@@ -1336,6 +1410,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get radioLanguage => 'Lingua';
 
   @override
+  String get radioBrowseBy => 'Sfoglia per';
+
+  @override
+  String get radioBrowseByLanguage => 'Sfoglia per lingua';
+
+  @override
+  String get radioBrowseByCountry => 'Sfoglia per nazione';
+
+  @override
+  String get radioCountry => 'Nazione';
+
+  @override
   String get radioGenre => 'Genere';
 
   @override
@@ -1562,6 +1648,66 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get radioLanguageZh => 'Cinese';
+
+  @override
+  String get radioCountryOptionIt => 'Italia';
+
+  @override
+  String get radioCountryOptionUs => 'Stati Uniti';
+
+  @override
+  String get radioCountryOptionGb => 'Regno Unito';
+
+  @override
+  String get radioCountryOptionFr => 'Francia';
+
+  @override
+  String get radioCountryOptionEs => 'Spagna';
+
+  @override
+  String get radioCountryOptionDe => 'Germania';
+
+  @override
+  String get radioCountryOptionCh => 'Svizzera';
+
+  @override
+  String get radioCountryOptionAt => 'Austria';
+
+  @override
+  String get radioCountryOptionBe => 'Belgio';
+
+  @override
+  String get radioCountryOptionNl => 'Paesi Bassi';
+
+  @override
+  String get radioCountryOptionPt => 'Portogallo';
+
+  @override
+  String get radioCountryOptionBr => 'Brasile';
+
+  @override
+  String get radioCountryOptionAr => 'Argentina';
+
+  @override
+  String get radioCountryOptionMx => 'Messico';
+
+  @override
+  String get radioCountryOptionCa => 'Canada';
+
+  @override
+  String get radioCountryOptionAu => 'Australia';
+
+  @override
+  String get radioCountryOptionIe => 'Irlanda';
+
+  @override
+  String get radioCountryOptionSe => 'Svezia';
+
+  @override
+  String get radioCountryOptionPl => 'Polonia';
+
+  @override
+  String get radioCountryOptionJp => 'Giappone';
 
   @override
   String get radioGenreOptionAll => 'Tutti i generi';

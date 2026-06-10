@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../../utils/text_input_normalizer.dart';
+
 class WeatherGeocodingResult {
   final double latitude;
   final double longitude;
@@ -57,8 +59,14 @@ class OpenMeteoWeatherService {
   final Map<String, _CacheEntry> _cache = {};
 
   Future<List<WeatherGeocodingResult>> searchCity(String query) async {
-    final uri = Uri.parse(
-        '$_geocodeEndpoint?name=${Uri.encodeComponent(query)}&count=5&language=it&format=json');
+    final normalizedQuery = normalizeSearchInput(query);
+    if (normalizedQuery.isEmpty) return const [];
+    final uri = Uri.parse(_geocodeEndpoint).replace(queryParameters: {
+      'name': normalizedQuery,
+      'count': '5',
+      'language': 'it',
+      'format': 'json',
+    });
     final res = await http.get(uri).timeout(const Duration(seconds: 10));
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);

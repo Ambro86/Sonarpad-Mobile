@@ -14,7 +14,9 @@ import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final ValueChanged<SonarpadThemeMode>? onThemeModeChanged;
+
+  const SettingsScreen({super.key, this.onThemeModeChanged});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -27,6 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _flutterTts = FlutterTts();
   final _screenFocusNode = FocusNode();
   String _appLanguage = 'it';
+  SonarpadThemeMode _themeMode = SonarpadThemeMode.system;
   String _languageCode = 'it';
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
   List<TtsVoiceLanguage> _edgeLanguages = AppSettingsService.ttsLanguages;
@@ -49,6 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _audio = AudioPlayerService();
   String _savedTvSecretCode = '';
   String _savedAppLanguage = 'it';
+  SonarpadThemeMode _savedThemeMode = SonarpadThemeMode.system;
   String _savedLanguageCode = 'it';
   String _savedVoice = AppSettingsService.defaultVoiceForLanguage('it');
   String _savedTtsEngine = 'edge';
@@ -87,6 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _load() async {
     final appLang = await _settings.loadAppLanguage();
+    final themeMode = await _settings.loadThemeMode();
     final language = await _settings.loadTtsLanguage();
     final voice = await _settings.loadTtsVoice();
     final speed = await _settings.loadTtsSpeed();
@@ -114,6 +119,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _appLanguage = appLang;
       _savedAppLanguage = appLang;
+      _themeMode = themeMode;
+      _savedThemeMode = themeMode;
       _edgeLanguages = edgeLanguages;
       _edgeVoices = edgeVoices;
       _languageCode = normalizedLanguage;
@@ -185,6 +192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     await _saveTtsSelection();
     await _settings.saveAppLanguage(_appLanguage);
+    await _settings.saveThemeMode(_themeMode);
     await _settings.saveTtsSpeed(_ttsSpeed);
     await _settings.saveTtsPitch(_ttsPitch);
     await _settings.setTvSecretCode(rawCode);
@@ -195,6 +203,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     setState(() => _isSaving = false);
     if (!mounted) return;
+    widget.onThemeModeChanged?.call(_themeMode);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -231,6 +240,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _markSaved(String rawCode) {
     _savedAppLanguage = _appLanguage;
+    _savedThemeMode = _themeMode;
     _savedLanguageCode = _languageCode;
     _savedVoice = _voice;
     _savedTtsEngine = _ttsEngine;
@@ -247,6 +257,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool get _hasUnsavedChanges {
     if (_loading) return false;
     return _appLanguage != _savedAppLanguage ||
+        _themeMode != _savedThemeMode ||
         _languageCode != _savedLanguageCode ||
         _voice != _savedVoice ||
         _ttsEngine != _savedTtsEngine ||
@@ -524,6 +535,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onChanged: (value) {
                         if (value == null || value == _appLanguage) return;
                         setState(() => _appLanguage = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<SonarpadThemeMode>(
+                      initialValue: _themeMode,
+                      decoration: InputDecoration(labelText: l10n.settingsTheme),
+                      items: [
+                        DropdownMenuItem(
+                          value: SonarpadThemeMode.system,
+                          child: Text(l10n.settingsThemeSystem),
+                        ),
+                        DropdownMenuItem(
+                          value: SonarpadThemeMode.light,
+                          child: Text(l10n.settingsThemeLight),
+                        ),
+                        DropdownMenuItem(
+                          value: SonarpadThemeMode.dark,
+                          child: Text(l10n.settingsThemeDark),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _themeMode = value);
                       },
                     ),
                     const SizedBox(height: 12),

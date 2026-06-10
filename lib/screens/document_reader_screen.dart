@@ -163,6 +163,26 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     );
   }
 
+  Future<void> _openDocumentSearch() async {
+    if (_chunks.isEmpty) return;
+    final selectedIndex = await Navigator.of(context).push<int>(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/documents/search'),
+        builder: (_) => _DocumentSearchScreen(chunks: _chunks),
+      ),
+    );
+    if (selectedIndex == null || !mounted) return;
+    _openChunkAt(selectedIndex);
+  }
+
+  void _openChunkAt(int index) {
+    if (index < 0 || index >= _chunks.length) return;
+    setState(() {
+      _playingChunkIndex = index;
+    });
+    _scrollToChunk(index);
+  }
+
   // ---------------------------------------------------------------------------
   // TTS
   // ---------------------------------------------------------------------------
@@ -589,6 +609,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: l10n.searchInDocument,
+            onPressed: _chunks.isEmpty
+                ? null
+                : () => unawaited(_openDocumentSearch()),
+          ),
           if (doc.isTemporary)
             IconButton(
               icon: const Icon(Icons.save),
@@ -805,6 +832,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         actions[CustomSemanticsAction(label: l10n.documentSetBookmarkAction)] =
             () => _setBookmark(i);
       }
+      actions[CustomSemanticsAction(label: l10n.searchInDocument)] =
+          () => unawaited(_openDocumentSearch());
 
       widgets.add(
         AutoScrollTag(
@@ -963,6 +992,158 @@ class _ExtBadge extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DocumentSearchScreen extends StatefulWidget {
+  const _DocumentSearchScreen({required this.chunks});
+
+  final List<String> chunks;
+
+  @override
+  State<_DocumentSearchScreen> createState() => _DocumentSearchScreenState();
+}
+
+class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
+  final _controller = TextEditingController();
+  String? _error;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _search() async {
+    final l10n = AppLocalizations.of(context);
+    final query = _controller.text.trim();
+    if (query.isEmpty) {
+      setState(() => _error = l10n.documentSearchEmptyQuery);
+      return;
+    }
+
+    final normalizedQuery = query.toLowerCase();
+    final results = <_DocumentSearchResult>[];
+    for (var i = 0; i < widget.chunks.length; i++) {
+      final text = widget.chunks[i];
+      final matchIndex = text.toLowerCase().indexOf(normalizedQuery);
+      if (matchIndex < 0) continue;
+      results.add(
+        _DocumentSearchResult(
+          chunkIndex: i,
+          excerpt: _excerptForMatch(text, query),
+        ),
+      );
+    }
+
+    final selectedIndex = await Navigator.of(context).push<int>(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/documents/search/results'),
+        builder: (_) => _DocumentSearchResultsScreen(
+          query: query,
+          results: results,
+        ),
+      ),
+    );
+    if (selectedIndex == null || !mounted) return;
+    Navigator.of(context).pop(selectedIndex);
+  }
+
+  String _excerptForMatch(String text, String query) {
+    final collapsed = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (collapsed.length <= 180) return collapsed;
+
+    final collapsedMatchIndex =
+        collapsed.toLowerCase().indexOf(query.toLowerCase());
+    final safeMatchIndex =
+        (collapsedMatchIndex < 0 ? 0 : collapsedMatchIndex)
+            .clamp(0, collapsed.length)
+            .toInt();
+    final start = (safeMatchIndex - 70).clamp(0, collapsed.length).toInt();
+    final end =
+        (safeMatchIndex + query.length + 90).clamp(0, collapsed.length).toInt();
+    final prefix = start > 0 ? '... ' : '';
+    final suffix = end < collapsed.length ? ' ...' : '';
+    return '$prefix${collapsed.substring(start, end)}$suffix';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.searchInDocument)),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: l10n.documentSearchFieldLabel,
+              hintText: l10n.documentSearchFieldHint,
+              errorText: _error,
+              border: const OutlineInputBorder(),
+            ),
+            textInputAction: TextInputAction.search,
+            onChanged: (_) {
+              if (_error != null) setState(() => _error = null);
+            },
+            onSubmitted: (_) => _search(),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.icon(
+            onPressed: _search,
+            icon: const Icon(Icons.search),
+            label: Text(l10n.search),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DocumentSearchResultsScreen extends StatelessWidget {
+  const _DocumentSearchResultsScreen({
+    required this.query,
+    required this.results,
+  });
+
+  final String query;
+  final List<_DocumentSearchResult> results;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.documentSearchResultsTitle)),
+      body: results.isEmpty
+          ? Center(child: Text(l10n.noDocumentSearchResults(query)))
+          : ListView.separated(
+              itemCount: results.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final result = results[index];
+                return ListTile(
+                  title: Text(l10n.documentSearchResultParagraph(
+                    result.chunkIndex + 1,
+                  )),
+                  subtitle: Text(result.excerpt),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).pop(result.chunkIndex),
+                );
+              },
+            ),
+    );
+  }
+}
+
+class _DocumentSearchResult {
+  const _DocumentSearchResult({
+    required this.chunkIndex,
+    required this.excerpt,
+  });
+
+  final int chunkIndex;
+  final String excerpt;
 }
 
 class _DocumentPositionSlider extends StatelessWidget {

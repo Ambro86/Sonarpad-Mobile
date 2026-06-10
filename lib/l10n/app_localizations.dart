@@ -114,6 +114,30 @@ abstract class AppLocalizations {
   /// **'Lingua dell\'app'**
   String get appLanguage;
 
+  /// Localized text for settingsTheme.
+  ///
+  /// In it, this message translates to:
+  /// **'Tema app'**
+  String get settingsTheme;
+
+  /// Localized text for settingsThemeSystem.
+  ///
+  /// In it, this message translates to:
+  /// **'Sistema'**
+  String get settingsThemeSystem;
+
+  /// Localized text for settingsThemeLight.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiaro'**
+  String get settingsThemeLight;
+
+  /// Localized text for settingsThemeDark.
+  ///
+  /// In it, this message translates to:
+  /// **'Scuro'**
+  String get settingsThemeDark;
+
   /// Localized text for homeSemanticsLabel.
   ///
   /// In it, this message translates to:
@@ -231,13 +255,13 @@ abstract class AppLocalizations {
   /// Localized text for convertMediaInput.
   ///
   /// In it, this message translates to:
-  /// **'File di input'**
+  /// **'File da convertire'**
   String get convertMediaInput;
 
   /// Localized text for convertMediaOutput.
   ///
   /// In it, this message translates to:
-  /// **'File di output'**
+  /// **'Cartella di salvataggio'**
   String get convertMediaOutput;
 
   /// Localized text for convertMediaImage.
@@ -276,6 +300,12 @@ abstract class AppLocalizations {
   /// **'Livello di compressione'**
   String get convertMediaFlacCompression;
 
+  /// Localized text for convertMediaWavBitDepth.
+  ///
+  /// In it, this message translates to:
+  /// **'Profondità bit WAV'**
+  String get convertMediaWavBitDepth;
+
   /// Localized text for convertMediaReady.
   ///
   /// In it, this message translates to:
@@ -303,13 +333,13 @@ abstract class AppLocalizations {
   /// Localized text for convertMediaNoInput.
   ///
   /// In it, this message translates to:
-  /// **'Seleziona un file di input.'**
+  /// **'Seleziona un file da convertire.'**
   String get convertMediaNoInput;
 
   /// Localized text for convertMediaNoOutput.
   ///
   /// In it, this message translates to:
-  /// **'Seleziona un file di output.'**
+  /// **'Scegli una cartella di salvataggio.'**
   String get convertMediaNoOutput;
 
   /// Localized text for convertMediaNoImage.
@@ -321,7 +351,7 @@ abstract class AppLocalizations {
   /// Localized text for convertMediaSamePath.
   ///
   /// In it, this message translates to:
-  /// **'Il file di output deve essere diverso dall\'input.'**
+  /// **'Il file convertito deve essere diverso dal file sorgente.'**
   String get convertMediaSamePath;
 
   /// Localized text for convertMediaInvalidBitrate.
@@ -503,6 +533,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'La mia città'**
   String get newsCategoryMyCity;
+
+  /// Localized text for newsLocalCityLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci la tua città'**
+  String get newsLocalCityLabel;
+
+  /// Localized text for newsLocalCityHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Correggi la città usata per le notizie locali'**
+  String get newsLocalCityHint;
+
+  /// Localized text for update.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiorna'**
+  String get update;
 
   /// Localized text for moveUp.
   ///
@@ -978,6 +1026,30 @@ abstract class AppLocalizations {
   /// **'Nessun podcast sottoscritto. Cerca un podcast e tocca un risultato per iscriverti.'**
   String get noSubscribedPodcasts;
 
+  /// Localized text for localAudioFiles.
+  ///
+  /// In it, this message translates to:
+  /// **'File audio locali'**
+  String get localAudioFiles;
+
+  /// Localized text for noLocalAudioFiles.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun file audio locale trovato.'**
+  String get noLocalAudioFiles;
+
+  /// Localized text for importAudioFromITunes.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa audio da iTunes / Apple Devices'**
+  String get importAudioFromITunes;
+
+  /// Localized text for localAudioFilesFound.
+  ///
+  /// In it, this message translates to:
+  /// **'File audio locali trovati: {count}'**
+  String localAudioFilesFound(int count);
+
   /// Localized text for importPodcastsFromFile.
   ///
   /// In it, this message translates to:
@@ -1248,6 +1320,18 @@ abstract class AppLocalizations {
   /// **'Documenti aggiunti'**
   String get documentsAdded;
 
+  /// Localized text for importDocumentsFromITunes.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa documenti da iTunes / Apple Devices'**
+  String get importDocumentsFromITunes;
+
+  /// Localized text for sharedDocumentsImportComplete.
+  ///
+  /// In it, this message translates to:
+  /// **'Documenti importati da iTunes / Apple Devices: {count}'**
+  String sharedDocumentsImportComplete(int count);
+
   /// Localized text for libraryLoadError.
   ///
   /// In it, this message translates to:
@@ -1451,6 +1535,48 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Rimuovi e aggiungi un nuovo segnalibro'**
   String get documentReplaceBookmarkAction;
+
+  /// Localized text for searchInDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca nel documento'**
+  String get searchInDocument;
+
+  /// Localized text for documentSearchFieldLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo da cercare'**
+  String get documentSearchFieldLabel;
+
+  /// Localized text for documentSearchFieldHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Parola o frase da trovare'**
+  String get documentSearchFieldHint;
+
+  /// Localized text for documentSearchEmptyQuery.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci il testo da cercare.'**
+  String get documentSearchEmptyQuery;
+
+  /// Localized text for documentSearchResultsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultati ricerca nel documento'**
+  String get documentSearchResultsTitle;
+
+  /// Localized text for noDocumentSearchResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun risultato trovato per {query}.'**
+  String noDocumentSearchResults(String query);
+
+  /// Localized text for documentSearchResultParagraph.
+  ///
+  /// In it, this message translates to:
+  /// **'Paragrafo {number}'**
+  String documentSearchResultParagraph(int number);
 
   /// Localized text for edit.
   ///
@@ -2497,6 +2623,14 @@ abstract class AppLocalizations {
   /// **'Lingua'**
   String get radioLanguage;
 
+  String get radioBrowseBy;
+
+  String get radioBrowseByLanguage;
+
+  String get radioBrowseByCountry;
+
+  String get radioCountry;
+
   /// Localized text for radioGenre.
   ///
   /// In it, this message translates to:
@@ -2910,6 +3044,46 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Cinese'**
   String get radioLanguageZh;
+
+  String get radioCountryOptionIt;
+
+  String get radioCountryOptionUs;
+
+  String get radioCountryOptionGb;
+
+  String get radioCountryOptionFr;
+
+  String get radioCountryOptionEs;
+
+  String get radioCountryOptionDe;
+
+  String get radioCountryOptionCh;
+
+  String get radioCountryOptionAt;
+
+  String get radioCountryOptionBe;
+
+  String get radioCountryOptionNl;
+
+  String get radioCountryOptionPt;
+
+  String get radioCountryOptionBr;
+
+  String get radioCountryOptionAr;
+
+  String get radioCountryOptionMx;
+
+  String get radioCountryOptionCa;
+
+  String get radioCountryOptionAu;
+
+  String get radioCountryOptionIe;
+
+  String get radioCountryOptionSe;
+
+  String get radioCountryOptionPl;
+
+  String get radioCountryOptionJp;
 
   /// Localized text for radioGenreOptionAll.
   ///

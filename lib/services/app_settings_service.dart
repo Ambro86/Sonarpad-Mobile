@@ -26,6 +26,16 @@ class TtsVoiceOption {
   });
 }
 
+enum SonarpadThemeMode {
+  system('system'),
+  light('light'),
+  dark('dark');
+
+  const SonarpadThemeMode(this.value);
+
+  final String value;
+}
+
 class AppSettingsService {
   static const _supportedAppLanguages = {'it', 'en', 'es', 'fr'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
@@ -34,6 +44,8 @@ class AppSettingsService {
   static const _bdciechiUsernameKey = 'bdciechiUsername';
   static const _bdciechiPasswordKey = 'bdciechiPassword';
   static const _weatherCityKey = 'sonarpad_weather_city';
+  static const _newsLocalCityKey = 'sonarpad_news_local_city';
+  static const _themeModeKey = 'sonarpad_theme_mode';
 
   static const ttsLanguages = [
     TtsVoiceLanguage('it', 'Italiano'),
@@ -125,6 +137,20 @@ class AppSettingsService {
     await prefs.setString('sonarpad_app_language', languageCode);
   }
 
+  Future<SonarpadThemeMode> loadThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString(_themeModeKey);
+    return SonarpadThemeMode.values.firstWhere(
+      (mode) => mode.value == saved,
+      orElse: () => SonarpadThemeMode.system,
+    );
+  }
+
+  Future<void> saveThemeMode(SonarpadThemeMode mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_themeModeKey, mode.value);
+  }
+
   Future<String> loadTtsLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_ttsLanguageKey) ?? 'it';
@@ -174,6 +200,16 @@ class AppSettingsService {
   Future<void> setWeatherCity(String value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_weatherCityKey, value);
+  }
+
+  Future<String> getNewsLocalCity() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_newsLocalCityKey) ?? '';
+  }
+
+  Future<void> setNewsLocalCity(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_newsLocalCityKey, value);
   }
 
   static const _ttsSpeedKey = 'sonarpad_tts_speed';

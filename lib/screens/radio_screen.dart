@@ -9,6 +9,8 @@ import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
 import 'radio_search_results_screen.dart';
 
+enum _RadioBrowseMode { language, country }
+
 class RadioScreen extends StatefulWidget {
   const RadioScreen({super.key});
 
@@ -21,6 +23,8 @@ class _RadioScreenState extends State<RadioScreen> {
   final _searchController = TextEditingController();
 
   String? _languageCode;
+  String? _countryCode;
+  _RadioBrowseMode _browseMode = _RadioBrowseMode.language;
   RadioGenreOption _genre = RadioService.genres.first;
   bool _searching = false;
 
@@ -32,6 +36,12 @@ class _RadioScreenState extends State<RadioScreen> {
       _languageCode = code == 'es'
           ? 'es'
           : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
+      _countryCode = switch (code) {
+        'en' => 'country:us',
+        'es' => 'country:es',
+        'fr' => 'country:fr',
+        _ => 'country:it',
+      };
     }
   }
 
@@ -42,7 +52,9 @@ class _RadioScreenState extends State<RadioScreen> {
     });
     try {
       final results = await _service.searchRadios(
-        languageCode: _languageCode!,
+        languageCode: _browseMode == _RadioBrowseMode.language
+            ? _languageCode!
+            : _countryCode!,
         genre: _genre,
         query: _searchController.text,
       );
@@ -73,6 +85,14 @@ class _RadioScreenState extends State<RadioScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final countryItems = RadioService.countries
+        .map((country) => MapEntry(
+              'country:${country.code}',
+              l10n.radioCountryLabel(country.code),
+            ))
+        .toList()
+      ..sort((a, b) => a.value.compareTo(b.value));
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioTitle)),
       body: ListView(
@@ -106,17 +126,59 @@ class _RadioScreenState extends State<RadioScreen> {
             onSubmitted: (_) => _search(),
           ),
           const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            initialValue: _languageCode,
-            decoration: InputDecoration(labelText: l10n.radioLanguage),
-            items: RadioService.languages
-                .map((language) => DropdownMenuItem(
-                      value: language.code,
-                      child: Text(l10n.radioLanguageLabel(language.code)),
-                    ))
-                .toList(),
-            onChanged: (value) => setState(() => _languageCode = value ?? 'it'),
+          Row(
+            children: [
+              Expanded(
+                child: _RadioBrowseButton(
+                  selected: _browseMode == _RadioBrowseMode.language,
+                  icon: Icons.language,
+                  label: l10n.radioBrowseByLanguage,
+                  onPressed: () => setState(
+                    () => _browseMode = _RadioBrowseMode.language,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _RadioBrowseButton(
+                  selected: _browseMode == _RadioBrowseMode.country,
+                  icon: Icons.public,
+                  label: l10n.radioBrowseByCountry,
+                  onPressed: () => setState(
+                    () => _browseMode = _RadioBrowseMode.country,
+                  ),
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 8),
+          if (_browseMode == _RadioBrowseMode.language)
+            DropdownButtonFormField<String>(
+              initialValue: _languageCode,
+              decoration: InputDecoration(labelText: l10n.radioLanguage),
+              items: RadioService.languages
+                  .map((language) => DropdownMenuItem(
+                        value: language.code,
+                        child: Text(l10n.radioLanguageLabel(language.code)),
+                      ))
+                  .toList(),
+              onChanged: (value) =>
+                  setState(() => _languageCode = value ?? 'it'),
+            )
+          else ...[
+            DropdownButtonFormField<String>(
+              initialValue: _countryCode,
+              decoration: InputDecoration(labelText: l10n.radioCountry),
+              items: countryItems
+                  .map((country) => DropdownMenuItem(
+                        value: country.key,
+                        child: Text(country.value),
+                      ))
+                  .toList(),
+              onChanged: (value) =>
+                  setState(() => _countryCode = value ?? 'country:it'),
+            ),
+          ],
           const SizedBox(height: 8),
           DropdownButtonFormField<RadioGenreOption>(
             initialValue: _genre,
@@ -157,6 +219,43 @@ class _RadioScreenState extends State<RadioScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _RadioBrowseButton extends StatelessWidget {
+  final bool selected;
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _RadioBrowseButton({
+    required this.selected,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final child = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon),
+        const SizedBox(width: 8),
+        Flexible(child: Text(label, textAlign: TextAlign.center)),
+      ],
+    );
+    if (selected) {
+      return FilledButton(
+        onPressed: onPressed,
+        child: child,
+      );
+    }
+    return OutlinedButton(
+      onPressed: onPressed,
+      child: child,
     );
   }
 }

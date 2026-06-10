@@ -5,11 +5,14 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/podcast_service.dart';
+import 'podcast_episode_player_screen.dart';
 import 'podcast_episodes_screen.dart';
 
 class PodcastScreen extends StatefulWidget {
@@ -26,8 +29,18 @@ class _PodcastScreenState extends State<PodcastScreen> {
   final _searchController = TextEditingController();
 
   List<PodcastSubscription> _subscriptions = [];
+  List<File> _localAudioFiles = [];
   String _country = 'it';
   bool _countryLoaded = false;
+
+  static const _localAudioExtensions = {
+    '.mp3',
+    '.m4a',
+    '.aac',
+    '.wav',
+    '.ogg',
+    '.flac',
+  };
 
   @override
   void initState() {
@@ -38,14 +51,34 @@ class _PodcastScreenState extends State<PodcastScreen> {
   Future<void> _load() async {
     final appLanguage = await _settings.loadAppLanguage();
     final subs = await _service.loadSubscriptions();
+    final localAudioFiles = await _scanLocalAudioFiles();
     if (!mounted) return;
     setState(() {
       _subscriptions = subs;
+      _localAudioFiles = localAudioFiles;
       if (!_countryLoaded) {
         _country = _podcastCountryForAppLanguage(appLanguage);
         _countryLoaded = true;
       }
     });
+  }
+
+  Future<List<File>> _scanLocalAudioFiles() async {
+    final dir = await getApplicationDocumentsDirectory();
+    if (!await dir.exists()) return const [];
+
+    final files = <File>[];
+    await for (final entity in dir.list(recursive: false, followLinks: false)) {
+      if (entity is! File) continue;
+      final basename = p.basename(entity.path);
+      if (basename.startsWith('.')) continue;
+      final ext = p.extension(basename).toLowerCase();
+      if (_localAudioExtensions.contains(ext)) {
+        files.add(entity);
+      }
+    }
+    files.sort((a, b) => p.basename(a.path).compareTo(p.basename(b.path)));
+    return files;
   }
 
   String _podcastCountryForAppLanguage(String languageCode) {
@@ -108,6 +141,34 @@ class _PodcastScreenState extends State<PodcastScreen> {
         settings: const RouteSettings(name: '/podcasts/episodes'),
         builder: (_) => PodcastEpisodesScreen(subscription: subscription),
       ),
+    );
+  }
+
+  void _openLocalAudioFile(File file) {
+    final basename = p.basename(file.path);
+    final episode = PodcastEpisode(
+      id: basename,
+      title: p.basenameWithoutExtension(basename),
+      audioUrl: file.uri.toString(),
+      publishedAt: DateTime.now(),
+      description: '',
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/podcasts/local-audio-player'),
+        builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+      ),
+    );
+  }
+
+  Future<void> _refreshLocalAudioFiles() async {
+    final l10n = AppLocalizations.of(context);
+    final files = await _scanLocalAudioFiles();
+    if (!mounted) return;
+    setState(() => _localAudioFiles = files);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.localAudioFilesFound(files.length))),
     );
   }
 
@@ -345,6 +406,39 @@ class _PodcastScreenState extends State<PodcastScreen> {
             }),
           ] else
             Text(l10n.noSubscribedPodcasts),
+          const SizedBox(height: 16),
+          Text(l10n.localAudioFiles,
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          if (_localAudioFiles.isNotEmpty) ...[
+            ..._localAudioFiles.map((file) {
+              final basename = p.basename(file.path);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(56),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  onPressed: () => _openLocalAudioFile(file),
+                  icon: const Icon(Icons.audio_file),
+                  label: Text(
+                    p.basenameWithoutExtension(basename),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              );
+            }),
+          ] else
+            Text(l10n.noLocalAudioFiles),
+          const SizedBox(height: 8),
+          FilledButton.icon(
+            onPressed: _refreshLocalAudioFiles,
+            icon: const Icon(Icons.sync),
+            label: Text(l10n.importAudioFromITunes),
+          ),
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: _importFromFile,

@@ -8,6 +8,22 @@
   "@appLanguage": {
     "description": "Localized text for appLanguage."
   },
+  "settingsTheme": "Tema app",
+  "@settingsTheme": {
+    "description": "Localized text for settingsTheme."
+  },
+  "settingsThemeSystem": "Sistema",
+  "@settingsThemeSystem": {
+    "description": "Localized text for settingsThemeSystem."
+  },
+  "settingsThemeLight": "Chiaro",
+  "@settingsThemeLight": {
+    "description": "Localized text for settingsThemeLight."
+  },
+  "settingsThemeDark": "Scuro",
+  "@settingsThemeDark": {
+    "description": "Localized text for settingsThemeDark."
+  },
   "homeSemanticsLabel": "Sonarpad, schermata principale",
   "@homeSemanticsLabel": {
     "description": "Localized text for homeSemanticsLabel."
@@ -84,11 +100,11 @@
   "@convertMediaTitle": {
     "description": "Localized text for convertMediaTitle."
   },
-  "convertMediaInput": "File di input",
+  "convertMediaInput": "File da convertire",
   "@convertMediaInput": {
     "description": "Localized text for convertMediaInput."
   },
-  "convertMediaOutput": "File di output",
+  "convertMediaOutput": "Cartella di salvataggio",
   "@convertMediaOutput": {
     "description": "Localized text for convertMediaOutput."
   },
@@ -116,6 +132,10 @@
   "@convertMediaFlacCompression": {
     "description": "Localized text for convertMediaFlacCompression."
   },
+  "convertMediaWavBitDepth": "Profondità bit WAV",
+  "@convertMediaWavBitDepth": {
+    "description": "Localized text for convertMediaWavBitDepth."
+  },
   "convertMediaReady": "Pronto.",
   "@convertMediaReady": {
     "description": "Localized text for convertMediaReady."
@@ -132,11 +152,11 @@
   "@convertMediaButton": {
     "description": "Localized text for convertMediaButton."
   },
-  "convertMediaNoInput": "Seleziona un file di input.",
+  "convertMediaNoInput": "Seleziona un file da convertire.",
   "@convertMediaNoInput": {
     "description": "Localized text for convertMediaNoInput."
   },
-  "convertMediaNoOutput": "Seleziona un file di output.",
+  "convertMediaNoOutput": "Scegli una cartella di salvataggio.",
   "@convertMediaNoOutput": {
     "description": "Localized text for convertMediaNoOutput."
   },
@@ -144,7 +164,7 @@
   "@convertMediaNoImage": {
     "description": "Localized text for convertMediaNoImage."
   },
-  "convertMediaSamePath": "Il file di output deve essere diverso dall'input.",
+  "convertMediaSamePath": "Il file convertito deve essere diverso dal file sorgente.",
   "@convertMediaSamePath": {
     "description": "Localized text for convertMediaSamePath."
   },
@@ -272,6 +292,18 @@
   "newsCategoryMyCity": "La mia città",
   "@newsCategoryMyCity": {
     "description": "Localized text for newsCategoryMyCity."
+  },
+  "newsLocalCityLabel": "Inserisci la tua città",
+  "@newsLocalCityLabel": {
+    "description": "Localized text for newsLocalCityLabel."
+  },
+  "newsLocalCityHint": "Correggi la città usata per le notizie locali",
+  "@newsLocalCityHint": {
+    "description": "Localized text for newsLocalCityHint."
+  },
+  "update": "Aggiorna",
+  "@update": {
+    "description": "Localized text for update."
   },
   "moveUp": "Sposta in alto",
   "@moveUp": {
@@ -690,6 +722,28 @@
   "@noSubscribedPodcasts": {
     "description": "Localized text for noSubscribedPodcasts."
   },
+  "localAudioFiles": "File audio locali",
+  "@localAudioFiles": {
+    "description": "Localized text for localAudioFiles."
+  },
+  "noLocalAudioFiles": "Nessun file audio locale trovato.",
+  "@noLocalAudioFiles": {
+    "description": "Localized text for noLocalAudioFiles."
+  },
+  "importAudioFromITunes": "Importa audio da iTunes / Apple Devices",
+  "@importAudioFromITunes": {
+    "description": "Localized text for importAudioFromITunes."
+  },
+  "localAudioFilesFound": "File audio locali trovati: {count}",
+  "@localAudioFilesFound": {
+    "description": "Localized text for localAudioFilesFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
   "importPodcastsFromFile": "Importa podcast da file",
   "@importPodcastsFromFile": {
     "description": "Localized text for importPodcastsFromFile."
@@ -919,6 +973,20 @@
   "@documentsAdded": {
     "description": "Localized text for documentsAdded."
   },
+  "importDocumentsFromITunes": "Importa documenti da iTunes / Apple Devices",
+  "@importDocumentsFromITunes": {
+    "description": "Localized text for importDocumentsFromITunes."
+  },
+  "sharedDocumentsImportComplete": "Documenti importati da iTunes / Apple Devices: {count}",
+  "@sharedDocumentsImportComplete": {
+    "description": "Localized text for sharedDocumentsImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
   "libraryLoadError": "Errore caricamento libreria: {error}",
   "@libraryLoadError": {
     "description": "Localized text for libraryLoadError.",
@@ -1098,6 +1166,46 @@
   "documentReplaceBookmarkAction": "Rimuovi e aggiungi un nuovo segnalibro",
   "@documentReplaceBookmarkAction": {
     "description": "Localized text for documentReplaceBookmarkAction."
+  },
+  "searchInDocument": "Cerca nel documento",
+  "@searchInDocument": {
+    "description": "Localized text for searchInDocument."
+  },
+  "documentSearchFieldLabel": "Testo da cercare",
+  "@documentSearchFieldLabel": {
+    "description": "Localized text for documentSearchFieldLabel."
+  },
+  "documentSearchFieldHint": "Parola o frase da trovare",
+  "@documentSearchFieldHint": {
+    "description": "Localized text for documentSearchFieldHint."
+  },
+  "documentSearchEmptyQuery": "Inserisci il testo da cercare.",
+  "@documentSearchEmptyQuery": {
+    "description": "Localized text for documentSearchEmptyQuery."
+  },
+  "documentSearchResultsTitle": "Risultati ricerca nel documento",
+  "@documentSearchResultsTitle": {
+    "description": "Localized text for documentSearchResultsTitle."
+  },
+  "noDocumentSearchResults": "Nessun risultato trovato per {query}.",
+  "@noDocumentSearchResults": {
+    "description": "Localized text for noDocumentSearchResults.",
+    "placeholders": {
+      "query": {
+        "example": "testo",
+        "type": "String"
+      }
+    }
+  },
+  "documentSearchResultParagraph": "Paragrafo {number}",
+  "@documentSearchResultParagraph": {
+    "description": "Localized text for documentSearchResultParagraph.",
+    "placeholders": {
+      "number": {
+        "example": "4",
+        "type": "int"
+      }
+    }
   },
   "edit": "Modifica",
   "@edit": {
@@ -1881,6 +1989,10 @@
   "@radioLanguage": {
     "description": "Localized text for radioLanguage."
   },
+  "radioBrowseBy": "Sfoglia per",
+  "radioBrowseByLanguage": "Sfoglia per lingua",
+  "radioBrowseByCountry": "Sfoglia per nazione",
+  "radioCountry": "Nazione",
   "radioGenre": "Genere",
   "@radioGenre": {
     "description": "Localized text for radioGenre."
@@ -2201,6 +2313,26 @@
   "@radioLanguageZh": {
     "description": "Localized text for radioLanguageZh."
   },
+  "radioCountryOptionIt": "Italia",
+  "radioCountryOptionUs": "Stati Uniti",
+  "radioCountryOptionGb": "Regno Unito",
+  "radioCountryOptionFr": "Francia",
+  "radioCountryOptionEs": "Spagna",
+  "radioCountryOptionDe": "Germania",
+  "radioCountryOptionCh": "Svizzera",
+  "radioCountryOptionAt": "Austria",
+  "radioCountryOptionBe": "Belgio",
+  "radioCountryOptionNl": "Paesi Bassi",
+  "radioCountryOptionPt": "Portogallo",
+  "radioCountryOptionBr": "Brasile",
+  "radioCountryOptionAr": "Argentina",
+  "radioCountryOptionMx": "Messico",
+  "radioCountryOptionCa": "Canada",
+  "radioCountryOptionAu": "Australia",
+  "radioCountryOptionIe": "Irlanda",
+  "radioCountryOptionSe": "Svezia",
+  "radioCountryOptionPl": "Polonia",
+  "radioCountryOptionJp": "Giappone",
   "radioGenreOptionAll": "Tutti i generi",
   "@radioGenreOptionAll": {
     "description": "Localized text for radioGenreOptionAll."

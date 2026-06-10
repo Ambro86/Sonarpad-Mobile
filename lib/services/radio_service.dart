@@ -20,7 +20,6 @@ class RadioService {
     RadioLanguageOption('it'),
     RadioLanguageOption('en'),
     RadioLanguageOption('de'),
-    RadioLanguageOption('country:ch'),
     RadioLanguageOption('es'),
     RadioLanguageOption('pt'),
     RadioLanguageOption('sv'),
@@ -34,6 +33,28 @@ class RadioService {
     RadioLanguageOption('lt'),
     RadioLanguageOption('ru'),
     RadioLanguageOption('zh'),
+  ];
+  static const countries = [
+    RadioCountryOption('it'),
+    RadioCountryOption('us'),
+    RadioCountryOption('gb'),
+    RadioCountryOption('fr'),
+    RadioCountryOption('es'),
+    RadioCountryOption('de'),
+    RadioCountryOption('ch'),
+    RadioCountryOption('at'),
+    RadioCountryOption('be'),
+    RadioCountryOption('nl'),
+    RadioCountryOption('pt'),
+    RadioCountryOption('br'),
+    RadioCountryOption('ar'),
+    RadioCountryOption('mx'),
+    RadioCountryOption('ca'),
+    RadioCountryOption('au'),
+    RadioCountryOption('ie'),
+    RadioCountryOption('se'),
+    RadioCountryOption('pl'),
+    RadioCountryOption('jp'),
   ];
   static const genres = [
     RadioGenreOption('all', null),
@@ -184,8 +205,8 @@ class RadioService {
         'limit': '50',
         if (query.trim().isNotEmpty) 'name': query.trim(),
         if (genreTag != null && genreTag.trim().isNotEmpty) 'tag': genreTag,
-        if (languageCode.startsWith('country:'))
-          'countrycode': languageCode.substring('country:'.length)
+        if (_isCountryCode(languageCode))
+          'countrycode': _countryCode(languageCode)
         else ...{
           'language': _radioBrowserLanguageName(languageCode),
           'languageExact': 'true',
@@ -217,6 +238,7 @@ class RadioService {
     required String query,
     required String? genreTag,
   }) async {
+    if (_isCountryCode(languageCode)) return const [];
     final wantedLanguage = _communityLanguageFromRadioCode(languageCode);
     if (wantedLanguage == null) return const [];
     final response = await _client
@@ -323,6 +345,11 @@ class RadioService {
         'zh' => 'chinese',
         _ => code,
       };
+
+  bool _isCountryCode(String code) => code.startsWith('country:');
+
+  String _countryCode(String code) =>
+      code.substring('country:'.length).toUpperCase();
 
   String? _communityLanguageFromRadioCode(String code) => switch (code) {
         'it' => 'italian',

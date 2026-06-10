@@ -119,4 +119,8 @@ scratch*
 t e s t / f a i l u r e s /  
 scripts/tmdb.php
 scripts/ticketmaster.php
+
+# Local testing artifacts
+TESTFLIGHT_TESTING_NOTES.txt
+tmp_apk_test/
  

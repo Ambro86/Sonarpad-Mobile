@@ -75,6 +75,45 @@ ThemeData sonarpadTheme() {
   );
 }
 
+ThemeData sonarpadDarkTheme() {
+  const primaryBlue = Color(0xFF64B5F6);
+  final colorScheme = ColorScheme.fromSeed(
+    seedColor: primaryBlue,
+    brightness: Brightness.dark,
+    primary: primaryBlue,
+    secondary: const Color(0xFF90CAF9),
+    error: Colors.redAccent,
+  );
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: colorScheme,
+    scaffoldBackgroundColor: colorScheme.surface,
+    appBarTheme: AppBarTheme(
+      backgroundColor: colorScheme.surface,
+      foregroundColor: colorScheme.onSurface,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: colorScheme.surfaceContainerHighest,
+      border: OutlineInputBorder(
+        borderSide: BorderSide(color: colorScheme.outline),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: colorScheme.outline),
+      ),
+    ),
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+  );
+}
+
+ThemeMode _materialThemeMode(SonarpadThemeMode mode) => switch (mode) {
+      SonarpadThemeMode.system => ThemeMode.system,
+      SonarpadThemeMode.light => ThemeMode.light,
+      SonarpadThemeMode.dark => ThemeMode.dark,
+    };
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppLogger.log(
@@ -128,6 +167,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
   StreamSubscription<dynamic>? _sharedMediaSubscription;
   Uri? _pendingSharedUri;
   Locale? _locale;
+  SonarpadThemeMode? _themeMode;
   bool _changelogChecked = false;
 
   @override
@@ -136,16 +176,21 @@ class _SonarpadAppState extends State<SonarpadApp> {
     unawaited(AppLogger.log('SonarpadApp initState'));
     _initAppLinks();
     _initSharedMediaIntents();
-    AppSettingsService().loadAppLanguage().then((lang) {
-      if (mounted) {
-        unawaited(AppLogger.log('SonarpadApp language loaded: $lang'));
-        setState(() {
-          _locale = Locale(lang);
-        });
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showChangelogIfNeeded(lang);
-        });
-      }
+    unawaited(_loadStartupSettings());
+  }
+
+  Future<void> _loadStartupSettings() async {
+    final settings = AppSettingsService();
+    final lang = await settings.loadAppLanguage();
+    final themeMode = await settings.loadThemeMode();
+    if (!mounted) return;
+    unawaited(AppLogger.log('SonarpadApp language loaded: $lang'));
+    setState(() {
+      _locale = Locale(lang);
+      _themeMode = themeMode;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showChangelogIfNeeded(lang);
     });
   }
 
@@ -289,6 +334,12 @@ class _SonarpadAppState extends State<SonarpadApp> {
     });
   }
 
+  void setThemeMode(SonarpadThemeMode mode) {
+    setState(() {
+      _themeMode = mode;
+    });
+  }
+
   @override
   void dispose() {
     _linkSubscription?.cancel();
@@ -298,7 +349,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (_locale == null) {
+    if (_locale == null || _themeMode == null) {
       return const MaterialApp(
         home: Scaffold(
           body: Center(child: CircularProgressIndicator()),
@@ -322,6 +373,8 @@ class _SonarpadAppState extends State<SonarpadApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: sonarpadTheme(),
+      darkTheme: sonarpadDarkTheme(),
+      themeMode: _materialThemeMode(_themeMode!),
       home: const HomeScreen(),
       routes: {
         '/documents': (_) => const DocumentsScreen(),
@@ -336,7 +389,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/raiplay': (_) => const RaiPlayScreen(),
         '/wikipedia': (_) => const WikipediaScreen(),
         '/bdciechi': (_) => const BdCiechiLoginScreen(),
-        '/settings': (_) => const SettingsScreen(),
+        '/settings': (_) => SettingsScreen(onThemeModeChanged: setThemeMode),
         '/aifa': (_) => const AifaSearchScreen(),
         '/orari_apertura': (_) => OrariAperturaSearchScreen(),
         '/italiaonline': (_) => const ItaliaOnlineScreen(),

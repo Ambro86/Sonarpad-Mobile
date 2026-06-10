@@ -1,6 +1,11 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
 import 'package:xml/xml.dart';
+
+import '../utils/app_logger.dart';
+import '../utils/text_input_normalizer.dart';
 
 enum DirectoryKind {
   pagineBianche,
@@ -132,12 +137,99 @@ String _decode(String encoded) {
 }
 
 class ItaliaOnlineService {
+  static const _browserClientSettings = rhttp.ClientSettings(
+    emulator: rhttp.Emulation.chrome136,
+    timeoutSettings: rhttp.TimeoutSettings(
+      timeout: Duration(seconds: 45),
+      connectTimeout: Duration(seconds: 15),
+    ),
+    throwOnStatusCode: false,
+  );
+  static Future<http.Client>? _browserClientFuture;
+
   String get _baseUrl => _decode('BT9NUUx/HRUjWkodMRoTOlYsGzZeHTVfCiMeAT4c');
   String get _client => _decode('HSlUThQ5Xh0=');
   String get _version => _decode('XmUAD0M=');
 
+  static Future<http.Client> _browserClient() {
+    return _browserClientFuture ??= rhttp.RhttpCompatibleClient.create(
+      settings: _browserClientSettings,
+    );
+  }
+
+  static Map<String, String> get _browserHeaders => {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+        'Accept':
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'max-age=0',
+        'Sec-Ch-Ua':
+            '"Google Chrome";v="136", "Chromium";v="136", "Not_A Brand";v="24"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Referer': 'https://www.google.com/',
+      };
+
+  Future<http.Response> _get(
+    Uri uri, {
+    required String operation,
+    required DirectoryKind kind,
+    required int page,
+    required bool hasWhere,
+  }) async {
+    await AppLogger.log(
+      'ItaliaOnlineService: $operation start kind=${kind.label} '
+      'page=$page hasWhere=$hasWhere',
+    );
+    http.Response? browserResponse;
+    try {
+      final client = await _browserClient();
+      browserResponse = await client
+          .get(uri, headers: _browserHeaders)
+          .timeout(const Duration(seconds: 45));
+      await AppLogger.log(
+        'ItaliaOnlineService: $operation browser status='
+        '${browserResponse.statusCode} bytes=${browserResponse.bodyBytes.length}',
+      );
+      if (browserResponse.statusCode >= 200 &&
+          browserResponse.statusCode < 500) {
+        return browserResponse;
+      }
+      await AppLogger.log(
+        'ItaliaOnlineService: browser client status '
+        '${browserResponse.statusCode}, trying fallback.',
+      );
+    } catch (e) {
+      await AppLogger.log(
+          'ItaliaOnlineService: $operation browser request failed: $e');
+    }
+
+    try {
+      final fallbackResponse = await http
+          .get(uri, headers: _browserHeaders)
+          .timeout(const Duration(seconds: 45));
+      await AppLogger.log(
+        'ItaliaOnlineService: $operation fallback status='
+        '${fallbackResponse.statusCode} bytes=${fallbackResponse.bodyBytes.length}',
+      );
+      return fallbackResponse;
+    } catch (e) {
+      await AppLogger.log(
+          'ItaliaOnlineService: $operation fallback request failed: $e');
+      if (browserResponse != null) return browserResponse;
+      rethrow;
+    }
+  }
+
   Future<SearchResponse> search(SearchQuery query) async {
-    final what = query.what.trim();
+    final what = normalizeSearchInput(query.what);
+    final where = normalizeSearchInput(query.where);
     if (what.isEmpty) {
       throw Exception('Il campo ${query.kind.primaryFieldLabel} è vuoto.');
     }
@@ -147,8 +239,8 @@ class ItaliaOnlineService {
       'version': _version,
       'what': what,
     };
-    if (query.where.trim().isNotEmpty) {
-      queryParams['where'] = query.where.trim();
+    if (where.isNotEmpty) {
+      queryParams['where'] = where;
     }
     if (query.page > 1) {
       queryParams['page'] = query.page.toString();
@@ -157,7 +249,13 @@ class ItaliaOnlineService {
     final uri = Uri.parse('$_baseUrl${query.kind.searchEndpoint}')
         .replace(queryParameters: queryParams);
 
-    final response = await http.get(uri).timeout(const Duration(seconds: 45));
+    final response = await _get(
+      uri,
+      operation: 'search',
+      kind: query.kind,
+      page: query.page,
+      hasWhere: where.isNotEmpty,
+    );
     if (response.statusCode != 200) {
       throw Exception('Errore di rete: ${response.statusCode}');
     }
@@ -175,16 +273,23 @@ class ItaliaOnlineService {
       'client': _client,
       'version': _version,
       'id': trimmedId,
-      'what': query.what.trim(),
+      'what': normalizeSearchInput(query.what),
     };
-    if (query.where.trim().isNotEmpty) {
-      queryParams['where'] = query.where.trim();
+    final where = normalizeSearchInput(query.where);
+    if (where.isNotEmpty) {
+      queryParams['where'] = where;
     }
 
     final uri = Uri.parse('$_baseUrl${query.kind.detailEndpoint}')
         .replace(queryParameters: queryParams);
 
-    final response = await http.get(uri).timeout(const Duration(seconds: 45));
+    final response = await _get(
+      uri,
+      operation: 'detail',
+      kind: query.kind,
+      page: query.page,
+      hasWhere: where.isNotEmpty,
+    );
     if (response.statusCode != 200) {
       throw Exception('Errore di rete: ${response.statusCode}');
     }

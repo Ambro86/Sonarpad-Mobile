@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/news/weather_service.dart';
+import '../utils/text_input_normalizer.dart';
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
@@ -16,6 +17,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   final _weatherService = OpenMeteoWeatherService();
   final _searchCtrl = TextEditingController();
   WeatherForecast? _forecast;
+  List<WeatherGeocodingResult> _cityResults = const [];
   bool _isLoading = false;
   _WeatherError? _error;
   int _selectedDay = 0;
@@ -42,40 +44,34 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Future<void> _fetchWeather() async {
-    final city = _searchCtrl.text.trim();
+    final city = normalizeSearchInput(_searchCtrl.text);
     if (city.isEmpty) return;
+    if (_searchCtrl.text != city) {
+      _searchCtrl.text = city;
+      _searchCtrl.selection = TextSelection.collapsed(offset: city.length);
+    }
 
     setState(() {
       _isLoading = true;
       _error = null;
       _forecast = null;
+      _cityResults = const [];
       _selectedDay = 0;
     });
 
     try {
       final cities = await _weatherService.searchCity(city);
       if (cities.isNotEmpty) {
-        final loc = cities.first;
-        final forecast = await _weatherService.getForecast(
-          loc.latitude,
-          loc.longitude,
-        );
-        if (forecast == null) {
+        if (cities.length > 1) {
           if (mounted) {
             setState(() {
-              _error = _WeatherError.searchError;
+              _cityResults = cities;
               _isLoading = false;
             });
           }
           return;
         }
-        await _settings.setWeatherCity(city);
-        if (mounted) {
-          setState(() {
-            _forecast = forecast;
-            _isLoading = false;
-          });
-        }
+        await _fetchForecastFor(cities.first, city);
       } else {
         if (mounted) {
           setState(() {
@@ -91,6 +87,45 @@ class _WeatherScreenState extends State<WeatherScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _selectCity(WeatherGeocodingResult city) async {
+    final cityName = city.name;
+    _searchCtrl.text = cityName;
+    setState(() {
+      _isLoading = true;
+      _error = null;
+      _forecast = null;
+      _cityResults = const [];
+      _selectedDay = 0;
+    });
+    await _fetchForecastFor(city, cityName);
+  }
+
+  Future<void> _fetchForecastFor(
+    WeatherGeocodingResult city,
+    String savedCity,
+  ) async {
+    final forecast = await _weatherService.getForecast(
+      city.latitude,
+      city.longitude,
+    );
+    if (forecast == null) {
+      if (mounted) {
+        setState(() {
+          _error = _WeatherError.searchError;
+          _isLoading = false;
+        });
+      }
+      return;
+    }
+    await _settings.setWeatherCity(savedCity);
+    if (mounted) {
+      setState(() {
+        _forecast = forecast;
+        _isLoading = false;
+      });
     }
   }
 
@@ -137,6 +172,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
             ),
           if (_error != null)
             Expanded(child: Center(child: Text(_error!.label(l10n)))),
+          if (_cityResults.isNotEmpty && !_isLoading)
+            _WeatherCityResultsView(
+              cities: _cityResults,
+              onCitySelected: _selectCity,
+            ),
           if (_forecast != null && !_isLoading)
             _WeatherForecastView(
               forecast: _forecast!,
@@ -146,6 +186,50 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   _selectedDay = value;
                 });
               },
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WeatherCityResultsView extends StatelessWidget {
+  const _WeatherCityResultsView({
+    required this.cities,
+    required this.onCitySelected,
+  });
+
+  final List<WeatherGeocodingResult> cities;
+  final ValueChanged<WeatherGeocodingResult> onCitySelected;
+
+  String _subtitle(WeatherGeocodingResult city) {
+    final parts = [
+      city.admin1,
+      city.country,
+    ].whereType<String>().where((part) => part.isNotEmpty).toList();
+    return parts.join(', ');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Expanded(
+      child: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          Text(
+            l10n.weatherCity,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          for (final city in cities)
+            Card(
+              child: ListTile(
+                title: Text(city.name),
+                subtitle: Text(_subtitle(city)),
+                onTap: () => onCitySelected(city),
+              ),
             ),
         ],
       ),

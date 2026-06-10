@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
+import '../services/app_settings_service.dart';
 import '../services/news_service.dart';
 import '../services/news_sources/news_rss_source.dart';
 import 'news_webview_screen.dart';
@@ -204,6 +205,8 @@ class _NewsSourceArticlesScreen extends StatefulWidget {
 
 class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   final _service = NewsService();
+  final _settings = AppSettingsService();
+  final _localCityController = TextEditingController();
   late Future<List<NewsArticle>> _future;
   late Uri _currentUri;
 
@@ -212,6 +215,12 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     super.initState();
     _currentUri = widget.initialUri ?? widget.source.uri;
     _fetch();
+  }
+
+  @override
+  void dispose() {
+    _localCityController.dispose();
+    super.dispose();
   }
 
   void _openCategory(Uri uri, String title) {
@@ -235,7 +244,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         ?.where((c) => c.uri == _currentUri)
         .firstOrNull;
     if (cat != null && cat.isLocal) {
-      _future = _fetchLocalCategory(cat);
+      _future = _fetchLocalCategory();
     } else {
       _future = _service.fetchSourceNews(NewsRssSource(
         name: widget.source.name,
@@ -244,12 +253,29 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     }
   }
 
-  Future<List<NewsArticle>> _fetchLocalCategory(NewsRssCategory cat) async {
+  Future<void> _reloadLocalCategory() async {
+    final city = _localCityController.text.trim();
+    if (city.isEmpty) return;
+    await _settings.setNewsLocalCity(city);
+    if (!mounted) return;
+    setState(_fetch);
+  }
+
+  Future<List<NewsArticle>> _fetchLocalCategory() async {
     final lang = AppLocalizations.of(context).localeName;
+    final savedCity = await _settings.getNewsLocalCity();
     final loc = await _service.getUserLocationData();
-    if (loc != null) {
-      final city = loc['city']!;
-      final country = loc['countryCode']!;
+    final detectedCity = loc?['city'] ?? '';
+    final country = loc?['countryCode'] ?? _defaultCountryCode(widget.language);
+    final city = savedCity.trim().isNotEmpty ? savedCity.trim() : detectedCity;
+    if (mounted &&
+        _localCityController.text.trim().isEmpty &&
+        city.isNotEmpty) {
+      _localCityController.text = city;
+      _localCityController.selection =
+          TextSelection.collapsed(offset: city.length);
+    }
+    if (city.isNotEmpty) {
       final searchUri = Uri.parse(
           'https://news.google.com/rss/search?q=${Uri.encodeComponent(city)}&hl=$lang&gl=$country&ceid=$country:$lang');
       return _service.fetchSourceNews(
@@ -260,9 +286,20 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         NewsRssSource(name: widget.source.name, uri: widget.source.uri));
   }
 
+  String _defaultCountryCode(NewsLanguage language) => switch (language) {
+        NewsLanguage.english => 'US',
+        NewsLanguage.french => 'FR',
+        NewsLanguage.spanish => 'ES',
+        NewsLanguage.italian => 'IT',
+      };
+
   @override
   Widget build(BuildContext context) {
     final showCategories = widget.initialUri == null;
+    final currentCategory = widget.source.categories
+        ?.where((c) => c.uri == _currentUri)
+        .firstOrNull;
+    final isLocalCategory = currentCategory?.isLocal == true;
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.title ?? widget.source.name)),
@@ -306,6 +343,31 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                       ),
                     );
                   }),
+                ],
+              ),
+            ),
+          if (isLocalCategory)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: _localCityController,
+                    decoration: InputDecoration(
+                      labelText:
+                          AppLocalizations.of(context).newsLocalCityLabel,
+                      hintText:
+                          AppLocalizations.of(context).newsLocalCityHint,
+                    ),
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (_) => _reloadLocalCategory(),
+                  ),
+                  const SizedBox(height: 8),
+                  FilledButton(
+                    onPressed: _reloadLocalCategory,
+                    child: Text(AppLocalizations.of(context).update),
+                  ),
                 ],
               ),
             ),

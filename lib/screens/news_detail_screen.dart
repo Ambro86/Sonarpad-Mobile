@@ -174,15 +174,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           _status = null;
         }
       } else {
-        // Coda semplice: appena il primo blocco è pronto parte la riproduzione,
-        // mentre gli altri blocchi vengono generati in sequenza.
-        final queue = <File>[];
         final controller = StreamController<File>();
-        var generationDone = false;
         Object? generationError;
+        const initialBufferChunks = 2;
 
         final generation = Future<void>(() async {
           for (var i = 0; i < chunks.length; i++) {
+            if (!mounted || !_speaking) break;
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
             final file =
@@ -192,33 +190,31 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
               'Sonarpad TTS: chunk ${i + 1}/${chunks.length} ready '
               'path=${file.path} size=$size',
             );
-            queue.add(file);
-            controller.add(file);
+            if (!controller.isClosed && mounted && _speaking) {
+              controller.add(file);
+            }
             _readyChunks = i + 1;
           }
-          generationDone = true;
-          await controller.close();
+          if (!controller.isClosed) await controller.close();
         }).catchError((e) async {
           generationError = e;
-          generationDone = true;
-          await controller.close();
+          if (!controller.isClosed) await controller.close();
         });
 
-        var index = 0;
-        await for (final file in controller.stream) {
-          while (_ttsPaused) {
-            if (!mounted || !_speaking) break;
-            await Future.delayed(const Duration(milliseconds: 100));
-          }
-          if (!mounted || !_speaking) break;
-          debugPrint(
-            'Sonarpad TTS: playing chunk ${index + 1}/$_totalChunks '
-            'path=${file.path}',
-          );
-          await _audio.playFilesSequentially([file]);
-          index++;
-        }
-
+        await _audio.playFileStreamSequentially(
+          controller.stream,
+          sessionType: AudioSessionType.playback,
+          title: widget.article.title,
+          initialBufferCount: initialBufferChunks,
+          isPaused: () => _ttsPaused,
+          onChunkStarted: (index, file) {
+            debugPrint(
+              'Sonarpad TTS: playing chunk ${index + 1}/$_totalChunks '
+              'path=${file.path}',
+            );
+          },
+        );
+        if (!controller.isClosed) await controller.close();
         await generation;
         if (generationError != null) throw Exception(generationError);
 
@@ -227,9 +223,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           'Sonarpad TTS: reading finished ready=$_readyChunks total=$_totalChunks '
           'library=${_tts.lastLibraryPath}',
         );
-        if (!generationDone) {
-          setState(() => _status = l10n.readingStopped);
-        }
       }
     } catch (e) {
       debugPrint('Sonarpad TTS: reading error=$e');

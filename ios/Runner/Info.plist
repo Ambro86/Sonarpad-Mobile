@@ -13,6 +13,9 @@
 		<string>es</string>
 	</array>
 
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+
 	<key>CFBundleDisplayName</key>
 	<string>Sonarpad</string>
 

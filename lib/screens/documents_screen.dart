@@ -156,6 +156,22 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
+  Future<void> _importSharedDocuments() async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final recovered =
+          await _service.recoverVisibleDocuments(_allowedExtensions);
+      if (!mounted) return;
+      setState(() {});
+      _showSnack(l10n.sharedDocumentsImportComplete(recovered));
+    } catch (e) {
+      dev.log('DocumentsScreen: errore importazione documenti condivisi: $e');
+      if (mounted) {
+        _showSnack(l10n.documentAddError(e));
+      }
+    }
+  }
+
   Future<bool?> _askImportSelectionMode() {
     final l10n = AppLocalizations.of(context);
     return showDialog<bool>(
@@ -576,12 +592,19 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   await _load();
                   setState(() {});
                 }
+              } else if (value == 'itunes') {
+                await _importSharedDocuments();
               }
             },
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'new_folder',
                 child: Text(AppLocalizations.of(context).createNewFolder),
+              ),
+              PopupMenuItem(
+                value: 'itunes',
+                child: Text(
+                    AppLocalizations.of(context).importDocumentsFromITunes),
               ),
               PopupMenuItem(
                 value: 'dropbox',

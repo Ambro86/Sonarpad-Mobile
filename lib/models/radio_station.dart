@@ -28,6 +28,12 @@ class RadioLanguageOption {
   const RadioLanguageOption(this.code);
 }
 
+class RadioCountryOption {
+  final String code;
+
+  const RadioCountryOption(this.code);
+}
+
 class RadioGenreOption {
   final String value;
   final String? tag;

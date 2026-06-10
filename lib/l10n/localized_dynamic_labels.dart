@@ -5,7 +5,6 @@ extension LocalizedDynamicLabels on AppLocalizations {
         'it' => radioLanguageIt,
         'en' => radioLanguageEn,
         'de' => radioLanguageDe,
-        'country:ch' => radioLanguageCountryCh,
         'es' => radioLanguageEs,
         'pt' => radioLanguagePt,
         'sv' => radioLanguageSv,
@@ -20,6 +19,30 @@ extension LocalizedDynamicLabels on AppLocalizations {
         'ru' => radioLanguageRu,
         'zh' => radioLanguageZh,
         _ => code,
+      };
+
+  String radioCountryLabel(String code) => switch (code) {
+        'it' => radioCountryOptionIt,
+        'us' => radioCountryOptionUs,
+        'gb' => radioCountryOptionGb,
+        'fr' => radioCountryOptionFr,
+        'es' => radioCountryOptionEs,
+        'de' => radioCountryOptionDe,
+        'ch' => radioCountryOptionCh,
+        'at' => radioCountryOptionAt,
+        'be' => radioCountryOptionBe,
+        'nl' => radioCountryOptionNl,
+        'pt' => radioCountryOptionPt,
+        'br' => radioCountryOptionBr,
+        'ar' => radioCountryOptionAr,
+        'mx' => radioCountryOptionMx,
+        'ca' => radioCountryOptionCa,
+        'au' => radioCountryOptionAu,
+        'ie' => radioCountryOptionIe,
+        'se' => radioCountryOptionSe,
+        'pl' => radioCountryOptionPl,
+        'jp' => radioCountryOptionJp,
+        _ => code.toUpperCase(),
       };
 
   String radioGenreLabel(String value) => switch (value) {

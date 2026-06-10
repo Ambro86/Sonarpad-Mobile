@@ -15,6 +15,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appLanguage => 'App Language';
 
   @override
+  String get settingsTheme => 'App theme';
+
+  @override
+  String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
   String get homeSemanticsLabel => 'Sonarpad, main screen';
 
   @override
@@ -72,10 +84,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get convertMediaTitle => 'Convert Media';
 
   @override
-  String get convertMediaInput => 'Input file';
+  String get convertMediaInput => 'File to convert';
 
   @override
-  String get convertMediaOutput => 'Output file';
+  String get convertMediaOutput => 'Save folder';
 
   @override
   String get convertMediaImage => 'Image';
@@ -96,6 +108,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get convertMediaFlacCompression => 'Compression level';
 
   @override
+  String get convertMediaWavBitDepth => 'WAV bit depth';
+
+  @override
   String get convertMediaReady => 'Ready.';
 
   @override
@@ -108,17 +123,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get convertMediaButton => 'Convert Media';
 
   @override
-  String get convertMediaNoInput => 'Select an input file.';
+  String get convertMediaNoInput => 'Select a file to convert.';
 
   @override
-  String get convertMediaNoOutput => 'Select an output file.';
+  String get convertMediaNoOutput => 'Select a save folder.';
 
   @override
   String get convertMediaNoImage => 'Select an image for the video.';
 
   @override
   String get convertMediaSamePath =>
-      'Output file must be different from input.';
+      'The converted file must be different from the source file.';
 
   @override
   String get convertMediaInvalidBitrate =>
@@ -222,6 +237,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newsCategoryMyCity => 'My City';
+
+  @override
+  String get newsLocalCityLabel => 'Enter your city';
+
+  @override
+  String get newsLocalCityHint => 'Correct the city used for local news';
+
+  @override
+  String get update => 'Update';
 
   @override
   String get moveUp => 'Move up';
@@ -491,6 +515,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'No subscribed podcasts. Search for a podcast and tap a result to subscribe.';
 
   @override
+  String get localAudioFiles => 'Local audio files';
+
+  @override
+  String get noLocalAudioFiles => 'No local audio files found.';
+
+  @override
+  String get importAudioFromITunes =>
+      'Import audio from iTunes / Apple Devices';
+
+  @override
+  String localAudioFilesFound(int count) {
+    return 'Local audio files found: $count';
+  }
+
+  @override
   String get importPodcastsFromFile => 'Import podcasts from file';
 
   @override
@@ -643,6 +682,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get documentsAdded => 'Documents added';
 
   @override
+  String get importDocumentsFromITunes =>
+      'Import documents from iTunes / Apple Devices';
+
+  @override
+  String sharedDocumentsImportComplete(int count) {
+    return 'Documents imported from iTunes / Apple Devices: $count';
+  }
+
+  @override
   String libraryLoadError(Object error) {
     return 'Library loading error: $error';
   }
@@ -764,6 +812,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get documentReplaceBookmarkAction => 'Remove and add a new bookmark';
+
+  @override
+  String get searchInDocument => 'Search in document';
+
+  @override
+  String get documentSearchFieldLabel => 'Search text';
+
+  @override
+  String get documentSearchFieldHint => 'Word or phrase to find';
+
+  @override
+  String get documentSearchEmptyQuery => 'Enter text to search for.';
+
+  @override
+  String get documentSearchResultsTitle => 'Document search results';
+
+  @override
+  String noDocumentSearchResults(String query) {
+    return 'No results found for $query.';
+  }
+
+  @override
+  String documentSearchResultParagraph(int number) {
+    return 'Paragraph $number';
+  }
 
   @override
   String get edit => 'Edit';
@@ -1324,6 +1397,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radioLanguage => 'Language';
 
   @override
+  String get radioBrowseBy => 'Browse by';
+
+  @override
+  String get radioBrowseByLanguage => 'Browse by language';
+
+  @override
+  String get radioBrowseByCountry => 'Browse by country';
+
+  @override
+  String get radioCountry => 'Country';
+
+  @override
   String get radioGenre => 'Genre';
 
   @override
@@ -1550,6 +1635,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get radioLanguageZh => 'Chinese';
+
+  @override
+  String get radioCountryOptionIt => 'Italy';
+
+  @override
+  String get radioCountryOptionUs => 'United States';
+
+  @override
+  String get radioCountryOptionGb => 'United Kingdom';
+
+  @override
+  String get radioCountryOptionFr => 'France';
+
+  @override
+  String get radioCountryOptionEs => 'Spain';
+
+  @override
+  String get radioCountryOptionDe => 'Germany';
+
+  @override
+  String get radioCountryOptionCh => 'Switzerland';
+
+  @override
+  String get radioCountryOptionAt => 'Austria';
+
+  @override
+  String get radioCountryOptionBe => 'Belgium';
+
+  @override
+  String get radioCountryOptionNl => 'Netherlands';
+
+  @override
+  String get radioCountryOptionPt => 'Portugal';
+
+  @override
+  String get radioCountryOptionBr => 'Brazil';
+
+  @override
+  String get radioCountryOptionAr => 'Argentina';
+
+  @override
+  String get radioCountryOptionMx => 'Mexico';
+
+  @override
+  String get radioCountryOptionCa => 'Canada';
+
+  @override
+  String get radioCountryOptionAu => 'Australia';
+
+  @override
+  String get radioCountryOptionIe => 'Ireland';
+
+  @override
+  String get radioCountryOptionSe => 'Sweden';
+
+  @override
+  String get radioCountryOptionPl => 'Poland';
+
+  @override
+  String get radioCountryOptionJp => 'Japan';
 
   @override
   String get radioGenreOptionAll => 'All genres';

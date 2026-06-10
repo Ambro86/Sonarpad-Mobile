@@ -29,6 +29,18 @@ enum _MediaFormat {
   final String label;
 }
 
+enum _WavBitDepth {
+  pcm16('pcm_s16le', '16-bit'),
+  pcm24('pcm_s24le', '24-bit'),
+  pcm32('pcm_s32le', '32-bit'),
+  float32('pcm_f32le', '32-bit float');
+
+  const _WavBitDepth(this.codec, this.label);
+
+  final String codec;
+  final String label;
+}
+
 class ConvertMediaScreen extends StatefulWidget {
   const ConvertMediaScreen({super.key});
 
@@ -42,10 +54,11 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   final _imageController = TextEditingController();
   final _bitrateController = TextEditingController(text: '192');
   String _inputPath = '';
-  String _outputPath = '';
+  String _outputDirectory = '';
   String _imagePath = '';
 
   _MediaFormat _format = _MediaFormat.mp3;
+  _WavBitDepth _wavBitDepth = _WavBitDepth.pcm16;
   int _oggQuality = 5;
   int _flacCompression = 5;
   bool _running = false;
@@ -110,32 +123,30 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       _inputPath = path;
       _inputController.text = _shortPath(path, parentCount: 1);
     });
-    if (_outputPath.isEmpty) {
-      final outputPath = await _defaultOutputPath(path);
+    if (_outputDirectory.isEmpty) {
+      final outputDirectory = await _defaultOutputDirectory();
       if (!mounted) return;
       setState(() {
-        _outputPath = outputPath;
-        _outputController.text = _defaultOutputDisplayPath(outputPath);
+        _outputDirectory = outputDirectory;
+        _outputController.text = _defaultOutputDirectoryDisplayPath(
+          outputDirectory,
+        );
       });
     }
   }
 
   Future<void> _pickOutput() async {
     final l10n = AppLocalizations.of(context);
-    final suggestedPath =
-        _inputPath.isEmpty ? null : await _defaultOutputPath(_inputPath);
-    final fileName = suggestedPath == null
-        ? 'converted.${_format.extension}'
-        : p.basename(suggestedPath);
-    final path = await FilePicker.saveFile(
+    final initialDirectory = _outputDirectory.isEmpty
+        ? await _defaultOutputDirectory()
+        : _outputDirectory;
+    final path = await FilePicker.getDirectoryPath(
       dialogTitle: l10n.convertMediaOutput,
-      fileName: fileName,
-      type: FileType.custom,
-      allowedExtensions: [_format.extension],
+      initialDirectory: initialDirectory,
     );
     if (path == null || path.isEmpty) return;
     setState(() {
-      _outputPath = path;
+      _outputDirectory = path;
       _outputController.text = _shortPath(path, parentCount: 2);
     });
   }
@@ -157,16 +168,17 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   Future<void> _convert() async {
     final l10n = AppLocalizations.of(context);
     final input = _inputPath;
-    final output = _outputPath;
+    final outputDirectory = _outputDirectory;
 
     if (input.isEmpty) {
       _showSnack(l10n.convertMediaNoInput);
       return;
     }
-    if (output.isEmpty) {
+    if (outputDirectory.isEmpty) {
       _showSnack(l10n.convertMediaNoOutput);
       return;
     }
+    final output = _buildOutputPath(input, outputDirectory);
     if (p.equals(input, output)) {
       _showSnack(l10n.convertMediaSamePath);
       return;
@@ -200,11 +212,13 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     });
 
     try {
+      await Directory(outputDirectory).create(recursive: true);
       await _runWithProgressDialog(l10n, () async {
         final arguments = await _buildArguments(input, output, bitrate ?? 192);
         await AppLogger.log(
           'Convert media: start input="$input" output="$output" '
           'format=${_format.label} bitrate=${bitrate ?? 192} '
+          'wavBitDepth=${_format == _MediaFormat.wav ? _wavBitDepth.label : ''} '
           'image="${_requiresImage(input) ? _imagePath : ''}" '
           'args=${arguments.map(_quoteLogArg).join(' ')}',
         );
@@ -391,7 +405,8 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
           '-compression_level',
           '$_flacCompression',
         ],
-      _MediaFormat.wav || _MediaFormat.aiff => ['-c:a', 'pcm_s16le'],
+      _MediaFormat.wav => ['-c:a', _wavBitDepth.codec],
+      _MediaFormat.aiff => ['-c:a', 'pcm_s16le'],
     };
   }
 
@@ -459,29 +474,22 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     return true;
   }
 
-  Future<String> _defaultOutputPath(String inputPath) async {
+  Future<String> _defaultOutputDirectory() async {
     final documentsDir = await getApplicationDocumentsDirectory();
     final mediaDir = Directory(p.join(documentsDir.path, 'media'));
     if (!await mediaDir.exists()) {
       await mediaDir.create(recursive: true);
     }
+    return mediaDir.path;
+  }
+
+  String _buildOutputPath(String inputPath, String outputDirectory) {
     final stem = p.basenameWithoutExtension(inputPath);
-    return p.join(mediaDir.path, '${stem}_converted.${_format.extension}');
+    return p.join(outputDirectory, '${stem}_converted.${_format.extension}');
   }
 
   Future<void> _onFormatChanged(_MediaFormat? value) async {
     if (value == null) return;
-    final input = _inputPath;
-    final oldSuggested = input.isEmpty ? '' : await _defaultOutputPath(input);
-    String? newSuggested;
-    if (input.isNotEmpty &&
-        (_outputPath.isEmpty || _outputPath == oldSuggested)) {
-      final previousFormat = _format;
-      _format = value;
-      newSuggested = await _defaultOutputPath(input);
-      _format = previousFormat;
-    }
-    if (!mounted) return;
     setState(() {
       _format = value;
       if (_format == _MediaFormat.opus &&
@@ -492,15 +500,13 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
           _bitrateController.text.trim() == '160') {
         _bitrateController.text = '192';
       }
-      if (newSuggested != null) {
-        _outputPath = newSuggested;
-        _outputController.text = _defaultOutputDisplayPath(newSuggested);
-      }
     });
   }
 
-  String _defaultOutputDisplayPath(String path) =>
-      ['Sonarpad', 'media', p.basename(path)].join('/');
+  String _defaultOutputDirectoryDisplayPath(String path) {
+    if (p.basename(path) == 'media') return ['Sonarpad', 'media'].join('/');
+    return _shortPath(path, parentCount: 2);
+  }
 
   String _shortPath(String path, {required int parentCount}) {
     final normalized = p.normalize(path);
@@ -554,7 +560,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
                 suffixIcon: IconButton(
                   tooltip: l10n.convertMediaBrowse,
                   onPressed: _running ? null : _pickOutput,
-                  icon: const Icon(Icons.save_as),
+                  icon: const Icon(Icons.drive_folder_upload),
                 ),
               ),
             ),
@@ -632,6 +638,26 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
                 onChanged: _running
                     ? null
                     : (value) => setState(() => _flacCompression = value ?? 5),
+              )
+            else if (_format == _MediaFormat.wav)
+              DropdownButtonFormField<_WavBitDepth>(
+                initialValue: _wavBitDepth,
+                decoration: InputDecoration(
+                  labelText: l10n.convertMediaWavBitDepth,
+                ),
+                items: _WavBitDepth.values
+                    .map(
+                      (value) => DropdownMenuItem(
+                        value: value,
+                        child: Text(value.label),
+                      ),
+                    )
+                    .toList(),
+                onChanged: _running
+                    ? null
+                    : (value) => setState(
+                          () => _wavBitDepth = value ?? _WavBitDepth.pcm16,
+                        ),
               ),
             const SizedBox(height: 16),
             Text(_status ?? l10n.convertMediaReady),
