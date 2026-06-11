@@ -24,7 +24,13 @@ class _RouteScreenState extends State<RouteScreen> {
     super.didChangeDependencies();
     if (_countryCode == null) {
       final code = AppLocalizations.of(context).localeName;
-      _countryCode = code == 'es' ? 'es' : (code == 'fr' ? 'fr' : 'it');
+      _countryCode = switch (code) {
+        'es' => 'es',
+        'fr' => 'fr',
+        'pt' => 'pt',
+        'pl' => 'pl',
+        _ => 'it',
+      };
     }
   }
 
@@ -181,6 +187,10 @@ class _RouteScreenState extends State<RouteScreen> {
                   value: 'fr', child: Text(l10n.routeCountryFrance)),
               DropdownMenuItem(
                   value: 'es', child: Text(l10n.routeCountrySpain)),
+              DropdownMenuItem(
+                  value: 'pt', child: Text(l10n.radioCountryOptionPt)),
+              DropdownMenuItem(
+                  value: 'pl', child: Text(l10n.radioCountryOptionPl)),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _countryCode = val);

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -37,7 +36,7 @@ enum SonarpadThemeMode {
 }
 
 class AppSettingsService {
-  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr'};
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pl'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -52,6 +51,8 @@ class AppSettingsService {
     TtsVoiceLanguage('en', 'English'),
     TtsVoiceLanguage('es', 'Spagnolo'),
     TtsVoiceLanguage('fr', 'Francese'),
+    TtsVoiceLanguage('pt', 'Portoghese'),
+    TtsVoiceLanguage('pl', 'Polski'),
     TtsVoiceLanguage('de', 'Tedesco'),
   ];
 
@@ -107,6 +108,26 @@ class AppSettingsService {
       label: 'Henri',
     ),
     TtsVoiceOption(
+      languageCode: 'pt',
+      voice: 'pt-PT-RaquelNeural',
+      label: 'Raquel',
+    ),
+    TtsVoiceOption(
+      languageCode: 'pt',
+      voice: 'pt-BR-FranciscaNeural',
+      label: 'Francisca',
+    ),
+    TtsVoiceOption(
+      languageCode: 'pl',
+      voice: 'pl-PL-ZofiaNeural',
+      label: 'Zofia',
+    ),
+    TtsVoiceOption(
+      languageCode: 'pl',
+      voice: 'pl-PL-MarekNeural',
+      label: 'Marek',
+    ),
+    TtsVoiceOption(
       languageCode: 'de',
       voice: 'de-DE-KatjaNeural',
       label: 'Katja',
@@ -121,7 +142,10 @@ class AppSettingsService {
   Future<String> loadAppLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     final savedLanguage = prefs.getString('sonarpad_app_language');
-    if (savedLanguage != null) return savedLanguage;
+    if (savedLanguage != null &&
+        _supportedAppLanguages.contains(savedLanguage)) {
+      return savedLanguage;
+    }
 
     for (final locale in PlatformDispatcher.instance.locales) {
       final deviceLanguage = locale.languageCode;
@@ -400,6 +424,9 @@ class AppSettingsService {
       'en' || 'en-US' => 'en-US-JennyNeural',
       'es' || 'es-ES' => 'es-ES-ElviraNeural',
       'fr' || 'fr-FR' => 'fr-FR-DeniseNeural',
+      'pt' || 'pt-PT' => 'pt-PT-RaquelNeural',
+      'pt-BR' => 'pt-BR-FranciscaNeural',
+      'pl' || 'pl-PL' => 'pl-PL-ZofiaNeural',
       'de' || 'de-DE' => 'de-DE-KatjaNeural',
       _ => '',
     };

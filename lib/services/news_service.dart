@@ -15,8 +15,10 @@ import 'news_sources/news_rss_source.dart';
 import 'html_reader_service.dart';
 import 'news_sources/french_news_sources.dart';
 import 'news_sources/spanish_news_sources.dart';
+import 'news_sources/portuguese_news_sources.dart';
+import 'news_sources/polish_news_sources.dart';
 
-enum NewsLanguage { italian, english, french, spanish }
+enum NewsLanguage { italian, english, french, spanish, portuguese, polish }
 
 extension NewsLanguageInfo on NewsLanguage {
   String get code => switch (this) {
@@ -24,6 +26,8 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.english => 'en',
         NewsLanguage.french => 'fr',
         NewsLanguage.spanish => 'es',
+        NewsLanguage.portuguese => 'pt',
+        NewsLanguage.polish => 'pl',
       };
 
   String label(AppLocalizations l10n) => switch (this) {
@@ -31,6 +35,8 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.english => l10n.english,
         NewsLanguage.french => l10n.french,
         NewsLanguage.spanish => l10n.spanish,
+        NewsLanguage.portuguese => l10n.radioLanguagePt,
+        NewsLanguage.polish => l10n.radioLanguagePl,
       };
 
   List<NewsRssSource> get rssSources => switch (this) {
@@ -38,6 +44,8 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.english => englishNewsSources,
         NewsLanguage.french => frenchNewsSources,
         NewsLanguage.spanish => spanishNewsSources,
+        NewsLanguage.portuguese => portugueseNewsSources,
+        NewsLanguage.polish => polishNewsSources,
       };
 }
 
@@ -127,6 +135,16 @@ class NewsService {
             hl = 'es-419';
             gl = '419';
             ceid = '419:es';
+            break;
+          case NewsLanguage.portuguese:
+            hl = 'pt-PT';
+            gl = 'PT';
+            ceid = 'PT:pt-150';
+            break;
+          case NewsLanguage.polish:
+            hl = 'pl';
+            gl = 'PL';
+            ceid = 'PL:pl';
             break;
         }
         finalUrl =

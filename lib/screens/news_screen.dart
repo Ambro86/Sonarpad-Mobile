@@ -29,6 +29,8 @@ class _NewsScreenState extends State<NewsScreen> {
         'en' => NewsLanguage.english,
         'fr' => NewsLanguage.french,
         'es' => NewsLanguage.spanish,
+        'pt' => NewsLanguage.portuguese,
+        'pl' => NewsLanguage.polish,
         _ => NewsLanguage.italian,
       };
       _loadSources();
@@ -290,6 +292,8 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         NewsLanguage.english => 'US',
         NewsLanguage.french => 'FR',
         NewsLanguage.spanish => 'ES',
+        NewsLanguage.portuguese => 'PT',
+        NewsLanguage.polish => 'PL',
         NewsLanguage.italian => 'IT',
       };
 

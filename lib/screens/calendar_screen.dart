@@ -82,6 +82,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           final capTitle = titleStr[0].toUpperCase() + titleStr.substring(1);
 
           final holiday = _service.getHoliday(date, l10n.localeName);
+          final saint = _service.getSaint(date, l10n.localeName);
           final dayEvents = _allEvents
               .where((e) =>
                   e.date.year == date.year &&
@@ -91,6 +92,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
           String subtitle = '';
           if (holiday != null) subtitle += holiday;
+          if (saint != null) {
+            if (subtitle.isNotEmpty) subtitle += ' - ';
+            subtitle += '${l10n.saintOfTheDay}: $saint';
+          }
           if (dayEvents.isNotEmpty) {
             if (subtitle.isNotEmpty) subtitle += ' - ';
             subtitle += l10n.reminderSaved(dayEvents.length);

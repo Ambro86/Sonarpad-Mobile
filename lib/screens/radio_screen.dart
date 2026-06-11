@@ -33,13 +33,20 @@ class _RadioScreenState extends State<RadioScreen> {
     super.didChangeDependencies();
     if (_languageCode == null) {
       final code = AppLocalizations.of(context).localeName;
-      _languageCode = code == 'es'
-          ? 'es'
-          : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
+      _languageCode = switch (code) {
+        'en' => 'en',
+        'es' => 'es',
+        'fr' => 'fr',
+        'pt' => 'pt',
+        'pl' => 'pl',
+        _ => 'it',
+      };
       _countryCode = switch (code) {
         'en' => 'country:us',
         'es' => 'country:es',
         'fr' => 'country:fr',
+        'pt' => 'country:pt',
+        'pl' => 'country:pl',
         _ => 'country:it',
       };
     }

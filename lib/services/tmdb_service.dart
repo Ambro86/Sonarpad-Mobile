@@ -15,8 +15,20 @@ class TmdbService {
         'X-Sonarpad-Route-Token': _clientToken,
       };
 
+  String _tmdbLanguage(String languageCode) {
+    final lang = languageCode.split('_').first.split('-').first;
+    return switch (lang) {
+      'it' => 'it-IT',
+      'fr' => 'fr-FR',
+      'es' => 'es-ES',
+      'pt' => 'pt-PT',
+      'pl' => 'pl-PL',
+      _ => 'en-US',
+    };
+  }
+
   Future<List<TmdbMovie>> getNowPlaying({String languageCode = 'it'}) async {
-    final langParam = languageCode == 'it' ? 'it-IT' : 'en-US';
+    final langParam = _tmdbLanguage(languageCode);
     final url = Uri.parse('$_baseUrl?action=now_playing&language=$langParam');
     
     final response = await http.get(
@@ -34,7 +46,7 @@ class TmdbService {
   }
 
   Future<List<TmdbMovie>> getUpcoming({String languageCode = 'it'}) async {
-    final langParam = languageCode == 'it' ? 'it-IT' : 'en-US';
+    final langParam = _tmdbLanguage(languageCode);
     final url = Uri.parse('$_baseUrl?action=upcoming&language=$langParam');
     
     final response = await http.get(
@@ -52,7 +64,7 @@ class TmdbService {
   }
 
   Future<String?> getTrailerUrl(int movieId, {String languageCode = 'it'}) async {
-    final langParam = languageCode == 'it' ? 'it-IT' : 'en-US';
+    final langParam = _tmdbLanguage(languageCode);
     final url = Uri.parse('$_baseUrl?action=trailer&movie_id=$movieId&language=$langParam');
     
     final response = await http.get(

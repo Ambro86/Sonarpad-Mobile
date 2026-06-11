@@ -23,9 +23,14 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     super.didChangeDependencies();
     if (_language == null) {
       final code = AppLocalizations.of(context).localeName;
-      _language = code == 'es'
-          ? 'es'
-          : (code == 'fr' ? 'fr' : (code == 'en' ? 'en' : 'it'));
+      _language = switch (code) {
+        'en' => 'en',
+        'es' => 'es',
+        'fr' => 'fr',
+        'pt' => 'pt',
+        'pl' => 'pl',
+        _ => 'it',
+      };
     }
   }
 

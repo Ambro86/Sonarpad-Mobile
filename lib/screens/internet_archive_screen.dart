@@ -166,11 +166,12 @@ class _InternetArchiveResultsScreenState
       if (!mounted) return;
       setState(() => _error = error);
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _loading = false;
-        _loadingMore = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _loadingMore = false;
+        });
+      }
     }
   }
 

@@ -26,6 +26,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
     ('fr', 'Français'),
     ('de', 'Deutsch'),
     ('pt', 'Português'),
+    ('pl', 'Polski'),
   ];
 
   @override
@@ -164,11 +165,12 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
       if (!mounted) return;
       setState(() => _error = error);
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _loading = false;
-        _loadingMore = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _loadingMore = false;
+        });
+      }
     }
   }
 
@@ -287,6 +289,7 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final book = widget.book;
     final summary = book.summaries.isEmpty ? null : book.summaries.first;
     return Scaffold(

@@ -406,6 +406,10 @@ class HtmlReaderService {
         return "Par";
       case 'es':
         return "Por";
+      case 'pt':
+        return "Por";
+      case 'pl':
+        return "Autor";
       case 'en':
         return "By";
       default:

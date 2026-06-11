@@ -106,10 +106,37 @@ class CalendarService {
   }
 
   String? getHoliday(DateTime date, String languageCode) {
-    if (languageCode != 'it') return null; // Fallback per ora solo italiano
-
+    final lang = languageCode.split('_').first.split('-').first;
     final day = date.day;
     final month = date.month;
+
+    if (lang == 'pl') {
+      if (day == 1 && month == 1) return "Nowy Rok";
+      if (day == 6 && month == 1) return "Święto Trzech Króli";
+      if (day == 1 && month == 5) return "Święto Pracy";
+      if (day == 3 && month == 5) return "Święto Konstytucji 3 Maja";
+      if (day == 15 && month == 8) return "Wniebowzięcie Najświętszej Maryi Panny";
+      if (day == 1 && month == 11) return "Wszystkich Świętych";
+      if (day == 11 && month == 11) return "Narodowe Święto Niepodległości";
+      if (day == 25 && month == 12) return "Boże Narodzenie";
+      if (day == 26 && month == 12) return "Drugi dzień Świąt Bożego Narodzenia";
+      return null;
+    }
+
+    if (lang == 'pt') {
+      if (day == 1 && month == 1) return "Ano Novo";
+      if (day == 6 && month == 1) return "Epifania";
+      if (day == 25 && month == 4) return "Dia da Liberdade";
+      if (day == 1 && month == 5) return "Dia do Trabalhador";
+      if (day == 10 && month == 6) return "Dia de Portugal";
+      if (day == 15 && month == 8) return "Assunção de Nossa Senhora";
+      if (day == 1 && month == 11) return "Todos os Santos";
+      if (day == 8 && month == 12) return "Imaculada Conceição";
+      if (day == 25 && month == 12) return "Natal";
+      return null;
+    }
+
+    if (lang != 'it') return null; // Fallback per ora: festività solo italiano e portoghese.
 
     if (day == 1 && month == 1) return "Capodanno";
     if (day == 6 && month == 1) return "Epifania";
@@ -126,20 +153,26 @@ class CalendarService {
     return null;
   }
 
-  Future<String?> getSaintAsync(DateTime date, String languageCode) async {
+
+  String? getSaint(DateTime date, String languageCode) {
     final key = "${date.day}-${date.month}";
+    final lang = languageCode.split('_').first.split('-').first;
+    final localEntry = kSaintsData[key];
+    if (localEntry == null) return null;
+    final localName = localEntry[lang] ?? localEntry[languageCode];
+    if (localName == null || localName.isEmpty) return null;
+    return localName;
+  }
+
+  Future<String?> getSaintAsync(DateTime date, String languageCode) async {
+    final lang = languageCode.split('_').first.split('-').first;
 
     // 1. Cerca prima nel dizionario locale (tutte le lingue)
-    final localEntry = kSaintsData[key];
-    if (localEntry != null) {
-      final localName = localEntry[languageCode];
-      if (localName != null && localName.isNotEmpty) {
-        return localName;
-      }
-    }
+    final localName = getSaint(date, languageCode);
+    if (localName != null) return localName;
 
     // 2. Per l'italiano, fallback live su santodelgiorno.it
-    if (languageCode == 'it') {
+    if (lang == 'it') {
       try {
         final months = [
           "gennaio",
@@ -167,6 +200,9 @@ class CalendarService {
       } catch (_) {}
       return "Non disponibile";
     }
+
+    if (lang == 'pt') return "Não disponível";
+    if (lang == 'pl') return "Niedostępne";
 
     // 3. Per le altre lingue, se il dizionario non ha dati restituisce null
     return null;
@@ -213,6 +249,7 @@ class CalendarService {
   }
 
   String getQuote(DateTime date, String languageCode) {
+    final lang = languageCode.split('_').first.split('-').first;
     // Generiamo una citazione basata sul giorno dell'anno, così è uguale per tutti in quel giorno
     final quotesIt = [
       "La felicità non è avere quello che si desidera, ma desiderare quello che si ha. - Oscar Wilde",
@@ -254,9 +291,29 @@ class CalendarService {
       "La única forma de hacer un gran trabajo es amar lo que haces. - Steve Jobs",
       "Cada día es una nueva oportunidad para cambiar tu vida. - Anónimo",
     ];
+    final quotesPt = [
+      "A felicidade não é ter o que se deseja, mas desejar o que se tem. - Oscar Wilde",
+      "O sucesso é a soma de pequenos esforços repetidos dia após dia. - Robert Collier",
+      "Nunca é tarde demais para ser o que poderias ter sido. - George Eliot",
+      "A vida é o que acontece enquanto estás ocupado a fazer outros planos. - John Lennon",
+      "A melhor forma de prever o futuro é inventá-lo. - Alan Kay",
+      "Sê a mudança que queres ver no mundo. - Mahatma Gandhi",
+      "A única forma de fazer um grande trabalho é amar o que fazes. - Steve Jobs",
+      "Cada dia é uma nova oportunidade para mudar a tua vida. - Anónimo",
+    ];
+    final quotesPl = [
+      "Szczęście nie polega na posiadaniu tego, czego się pragnie, lecz na pragnieniu tego, co się ma. - Oscar Wilde",
+      "Sukces jest sumą małych wysiłków powtarzanych dzień po dniu. - Robert Collier",
+      "Nigdy nie jest za późno, aby stać się tym, kim można było być. - George Eliot",
+      "Życie jest tym, co dzieje się, gdy jesteś zajęty robieniem innych planów. - John Lennon",
+      "Najlepszym sposobem przewidywania przyszłości jest jej tworzenie. - Alan Kay",
+      "Bądź zmianą, którą pragniesz ujrzeć w świecie. - Mahatma Gandhi",
+      "Jedynym sposobem wykonywania wspaniałej pracy jest kochanie tego, co się robi. - Steve Jobs",
+      "Każdy dzień jest nową szansą, aby zmienić swoje życie. - Anonim",
+    ];
 
     List<String> list;
-    switch (languageCode) {
+    switch (lang) {
       case 'it':
         list = quotesIt;
         break;
@@ -265,6 +322,12 @@ class CalendarService {
         break;
       case 'es':
         list = quotesEs;
+        break;
+      case 'pt':
+        list = quotesPt;
+        break;
+      case 'pl':
+        list = quotesPl;
         break;
       default:
         list = quotesEn;
