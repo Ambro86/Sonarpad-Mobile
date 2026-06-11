@@ -351,7 +351,9 @@ class DocumentLibraryService {
     for (final docId in toRemove) {
       try {
         final doc = _documents.firstWhere((d) => d.id == docId);
-        if (!doc.isFolder) {
+        if (!doc.isFolder &&
+            doc.extension != 'librivox' &&
+            doc.extension != 'archiveaudio') {
           final resolvedPath = await resolveFilePath(doc);
           final file = File(resolvedPath);
           if (await file.exists()) await file.delete();

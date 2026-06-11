@@ -2035,11 +2035,137 @@ abstract class AppLocalizations {
   /// **'Crea nuova cartella'**
   String get createNewFolder;
 
+  /// Localized text for importExternalSources.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa da fonti esterne'**
+  String get importExternalSources;
+
+  /// Localized text for importExternalSourcesTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Fonti esterne'**
+  String get importExternalSourcesTitle;
+
   /// Localized text for importFromDropbox.
   ///
   /// In it, this message translates to:
   /// **'Importa documenti da Dropbox'**
   String get importFromDropbox;
+
+  /// Localized text for importFromProjectGutenberg.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa da Project Gutenberg'**
+  String get importFromProjectGutenberg;
+
+  /// Localized text for projectGutenbergImportUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'L'importazione da Project Gutenberg non è ancora disponibile.'**
+  String get projectGutenbergImportUnavailable;
+
+  /// Localized text for importFromInternetArchive.
+  String get importFromInternetArchive;
+
+  /// Localized text for internetArchiveTitle.
+  String get internetArchiveTitle;
+
+  /// Localized text for internetArchiveSearchLabel.
+  String get internetArchiveSearchLabel;
+
+  /// Localized text for internetArchiveSourceLabel.
+  String get internetArchiveSourceLabel;
+
+  /// Localized text for internetArchiveOldTimeRadio.
+  String get internetArchiveOldTimeRadio;
+
+  /// Localized text for internetArchiveSpeeches.
+  String get internetArchiveSpeeches;
+
+  /// Localized text for internetArchiveLiveMusic.
+  String get internetArchiveLiveMusic;
+
+  /// Localized text for internetArchiveNoItemsFound.
+  String get internetArchiveNoItemsFound;
+
+  /// Localized text for saveAudioInDocuments.
+  String get saveAudioInDocuments;
+
+  /// Localized text for audioSavedInDocuments.
+  String get audioSavedInDocuments;
+
+  /// Localized text for noAudioTracksAvailable.
+  String get noAudioTracksAvailable;
+
+  /// Localized text for importFromLibriVox.
+  String get importFromLibriVox;
+
+  /// Localized text for gutenbergSearchLabel.
+  String get gutenbergSearchLabel;
+
+  /// Localized text for sourceLanguageLabel.
+  String get sourceLanguageLabel;
+
+  /// Localized text for noGutenbergBooksFound.
+  String get noGutenbergBooksFound;
+
+  /// Localized text for loadMore.
+  String get loadMore;
+
+  /// Localized text for sourceLanguageValue.
+  String sourceLanguageValue(String language);
+
+  /// Localized text for gutenbergImportAndRead.
+  String get gutenbergImportAndRead;
+
+  /// Localized text for gutenbergImporting.
+  String get gutenbergImporting;
+
+  /// Localized text for librivoxSearchLabel.
+  String get librivoxSearchLabel;
+
+  /// Localized text for noLibrivoxAudiobooksFound.
+  String get noLibrivoxAudiobooksFound;
+
+  /// Localized text for librivoxAudiobookSaved.
+  String get librivoxAudiobookSaved;
+
+  /// Localized text for librivoxSaveAudiobook.
+  String get librivoxSaveAudiobook;
+
+  /// Localized text for librivoxSaving.
+  String get librivoxSaving;
+
+  /// Localized text for librivoxNoAudioTracks.
+  String get librivoxNoAudioTracks;
+
+  /// Localized text for librivoxNotTextExportable.
+  String get librivoxNotTextExportable;
+
+  /// Localized text for sourceDurationValue.
+  String sourceDurationValue(String duration);
+
+  /// Localized text for importFromPoetryDb.
+  String get importFromPoetryDb;
+
+  /// Localized text for poetryDbSearchLabel.
+  String get poetryDbSearchLabel;
+
+  /// Localized text for poetryDbSearchBy.
+  String get poetryDbSearchBy;
+
+  /// Localized text for poetryDbSearchByTitle.
+  String get poetryDbSearchByTitle;
+
+  /// Localized text for poetryDbSearchByAuthor.
+  String get poetryDbSearchByAuthor;
+
+  /// Localized text for poetryDbNoPoemsFound.
+  String get poetryDbNoPoemsFound;
+
+  /// Localized text for poetryDbLineCount.
+  String poetryDbLineCount(int count);
 
   /// Localized text for moveDocument.
   ///

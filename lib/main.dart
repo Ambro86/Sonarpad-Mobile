@@ -17,8 +17,11 @@ import 'screens/changelog_screen.dart';
 import 'screens/convert_media_screen.dart';
 import 'screens/documents_screen.dart';
 import 'screens/document_reader_screen.dart';
+import 'screens/gutenberg_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/info_screen.dart';
+import 'screens/internet_archive_screen.dart';
+import 'screens/librivox_screen.dart';
 import 'screens/news_screen.dart';
 import 'screens/cinema_screen.dart';
 import 'screens/podcast_screen.dart';
@@ -37,6 +40,7 @@ import 'screens/orari_apertura_search_screen.dart';
 import 'screens/italiaonline_screen.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/podcast_episode_player_screen.dart';
+import 'screens/poetrydb_screen.dart';
 import 'screens/voice_dictionary_screen.dart';
 
 import 'package:just_audio_background/just_audio_background.dart';
@@ -388,6 +392,10 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/raiplaysound': (_) => const RaiPlaySoundScreen(),
         '/raiplay': (_) => const RaiPlayScreen(),
         '/wikipedia': (_) => const WikipediaScreen(),
+        '/gutenberg': (_) => const GutenbergScreen(),
+        '/internet_archive': (_) => const InternetArchiveScreen(),
+        '/librivox': (_) => const LibrivoxScreen(),
+        '/poetrydb': (_) => const PoetryDbScreen(),
         '/bdciechi': (_) => const BdCiechiLoginScreen(),
         '/settings': (_) => SettingsScreen(onThemeModeChanged: setThemeMode),
         '/aifa': (_) => const AifaSearchScreen(),

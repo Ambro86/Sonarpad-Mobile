@@ -1080,7 +1080,129 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createNewFolder => 'Create new folder';
 
   @override
+  String get importExternalSources => 'Import from external sources';
+
+  @override
+  String get importExternalSourcesTitle => 'External sources';
+
+  @override
   String get importFromDropbox => 'Import documents from Dropbox';
+
+  @override
+  String get importFromProjectGutenberg => 'Import from Project Gutenberg';
+
+  @override
+  String get projectGutenbergImportUnavailable =>
+      'Project Gutenberg import is not available yet.';
+
+  @override
+  String get importFromInternetArchive => 'Import from Internet Archive';
+
+  @override
+  String get internetArchiveTitle => 'Internet Archive';
+
+  @override
+  String get internetArchiveSearchLabel => 'Search audio';
+
+  @override
+  String get internetArchiveSourceLabel => 'Source';
+
+  @override
+  String get internetArchiveOldTimeRadio => 'Old Time Radio';
+
+  @override
+  String get internetArchiveSpeeches => 'Historical speeches';
+
+  @override
+  String get internetArchiveLiveMusic => 'Live Music Archive';
+
+  @override
+  String get internetArchiveNoItemsFound => 'No audio items found.';
+
+  @override
+  String get saveAudioInDocuments => 'Save audio in Documents';
+
+  @override
+  String get audioSavedInDocuments => 'Audio saved in Documents.';
+
+  @override
+  String get noAudioTracksAvailable => 'No audio tracks available.';
+
+  @override
+  String get importFromLibriVox => 'Import from LibriVox';
+
+  @override
+  String get gutenbergSearchLabel => 'Search book or author';
+
+  @override
+  String get sourceLanguageLabel => 'Language';
+
+  @override
+  String get noGutenbergBooksFound => 'No books found.';
+
+  @override
+  String get loadMore => 'Load more';
+
+  @override
+  String sourceLanguageValue(String language) {
+    return 'Language: $language';
+  }
+
+  @override
+  String get gutenbergImportAndRead => 'Import and read';
+
+  @override
+  String get gutenbergImporting => 'Importing...';
+
+  @override
+  String get librivoxSearchLabel => 'Search audiobook';
+
+  @override
+  String get noLibrivoxAudiobooksFound => 'No audiobooks found.';
+
+  @override
+  String get librivoxAudiobookSaved => 'Audiobook saved in Documents.';
+
+  @override
+  String get librivoxSaveAudiobook => 'Save audiobook in Documents';
+
+  @override
+  String get librivoxSaving => 'Saving...';
+
+  @override
+  String get librivoxNoAudioTracks => 'No audio tracks available.';
+
+  @override
+  String get librivoxNotTextExportable =>
+      'LibriVox audiobooks cannot be exported as text.';
+
+  @override
+  String sourceDurationValue(String duration) {
+    return 'Duration: $duration';
+  }
+
+  @override
+  String get importFromPoetryDb => 'Import from PoetryDB';
+
+  @override
+  String get poetryDbSearchLabel => 'Search poem';
+
+  @override
+  String get poetryDbSearchBy => 'Search by';
+
+  @override
+  String get poetryDbSearchByTitle => 'Title';
+
+  @override
+  String get poetryDbSearchByAuthor => 'Author';
+
+  @override
+  String get poetryDbNoPoemsFound => 'No poems found.';
+
+  @override
+  String poetryDbLineCount(int count) {
+    return '$count lines';
+  }
 
   @override
   String get moveDocument => 'Move document';

@@ -13,10 +13,16 @@ import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
+import '../services/internet_archive_service.dart';
+import '../services/librivox_service.dart';
 import '../utils/app_logger.dart';
 import 'document_editor_screen.dart';
 import 'document_reader_screen.dart';
 import 'dropbox_browser_screen.dart';
+import 'gutenberg_screen.dart';
+import 'internet_archive_screen.dart';
+import 'librivox_screen.dart';
+import 'poetrydb_screen.dart';
 
 /// Schermata libreria documenti.
 /// Permette di aggiungere file dal dispositivo (PDF, DOCX, EPUB, TXT, ecc.)
@@ -200,10 +206,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       // Troviamo il documento per ottenerne il path e cancellarlo dal disco
       final doc = _service.documents.firstWhere((d) => d.id == id);
       isFolder = doc.isFolder;
-      final resolvedPath = await _service.resolveFilePath(doc);
-      final file = File(resolvedPath);
-      if (await file.exists()) {
-        await file.delete();
+      if (!_isRemoteAudioDocument(doc)) {
+        final resolvedPath = await _service.resolveFilePath(doc);
+        final file = File(resolvedPath);
+        if (await file.exists()) {
+          await file.delete();
+        }
       }
 
       await _service.remove(id);
@@ -354,6 +362,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Future<void> _exportDocument(DocumentItem doc) async {
+    if (_isRemoteAudioDocument(doc)) {
+      _showSnack(AppLocalizations.of(context).librivoxNotTextExportable);
+      return;
+    }
     String? format = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -507,6 +519,36 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       return;
     }
 
+    if (_isLibrivoxDocument(doc)) {
+      try {
+        final book = librivoxBookFromLibraryPath(doc.path);
+        await Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: '/librivox/saved'),
+            builder: (_) => LibrivoxSavedBookScreen(book: book),
+          ),
+        );
+      } catch (e) {
+        if (mounted) _showSnack(AppLocalizations.of(context).error(e));
+      }
+      return;
+    }
+
+    if (_isInternetArchiveDocument(doc)) {
+      try {
+        final item = internetArchiveItemFromLibraryPath(doc.path);
+        await Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: '/internet_archive/saved'),
+            builder: (_) => InternetArchiveSavedItemScreen(item: item),
+          ),
+        );
+      } catch (e) {
+        if (mounted) _showSnack(AppLocalizations.of(context).error(e));
+      }
+      return;
+    }
+
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => DocumentReaderScreen(document: doc),
@@ -530,6 +572,119 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       setState(() {});
     }
   }
+
+  Future<void> _openExternalSources() async {
+    final l10n = AppLocalizations.of(context);
+    final source = await showDialog<String>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.importExternalSourcesTitle),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'dropbox'),
+            child: ListTile(
+              leading: const Icon(Icons.cloud_outlined),
+              title: Text(l10n.importFromDropbox),
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'gutenberg'),
+            child: ListTile(
+              leading: const Icon(Icons.public),
+              title: Text(l10n.importFromProjectGutenberg),
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'internet_archive'),
+            child: ListTile(
+              leading: const Icon(Icons.archive_outlined),
+              title: Text(l10n.importFromInternetArchive),
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'librivox'),
+            child: ListTile(
+              leading: const Icon(Icons.headphones),
+              title: Text(l10n.importFromLibriVox),
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'poetrydb'),
+            child: ListTile(
+              leading: const Icon(Icons.format_quote),
+              title: Text(l10n.importFromPoetryDb),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted || source == null) return;
+
+    if (source == 'dropbox') {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => DropboxBrowserScreen(documentService: _service),
+        ),
+      );
+      if (mounted) {
+        await _load();
+        setState(() {});
+      }
+    } else if (source == 'gutenberg') {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          settings: const RouteSettings(name: '/gutenberg'),
+          builder: (_) => GutenbergScreen(parentId: widget.folderId),
+        ),
+      );
+      if (mounted) {
+        await _load();
+        setState(() {});
+      }
+    } else if (source == 'internet_archive') {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          settings: const RouteSettings(name: '/internet_archive'),
+          builder: (_) => InternetArchiveScreen(parentId: widget.folderId),
+        ),
+      );
+      if (mounted) {
+        await _load();
+        setState(() {});
+      }
+    } else if (source == 'librivox') {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          settings: const RouteSettings(name: '/librivox'),
+          builder: (_) => LibrivoxScreen(parentId: widget.folderId),
+        ),
+      );
+      if (mounted) {
+        await _load();
+        setState(() {});
+      }
+    } else if (source == 'poetrydb') {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          settings: const RouteSettings(name: '/poetrydb'),
+          builder: (_) => PoetryDbScreen(parentId: widget.folderId),
+        ),
+      );
+      if (mounted) {
+        await _load();
+        setState(() {});
+      }
+    }
+  }
+
+  bool _isLibrivoxDocument(DocumentItem doc) => doc.extension == 'librivox';
+
+  bool _isInternetArchiveDocument(DocumentItem doc) =>
+      doc.extension == 'archiveaudio';
+
+  bool _isRemoteAudioDocument(DocumentItem doc) =>
+      _isLibrivoxDocument(doc) || _isInternetArchiveDocument(doc);
 
   @override
   Widget build(BuildContext context) {
@@ -581,17 +736,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       parentId: widget.folderId);
                   setState(() {});
                 }
-              } else if (value == 'dropbox') {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        DropboxBrowserScreen(documentService: _service),
-                  ),
-                );
-                if (mounted) {
-                  await _load();
-                  setState(() {});
-                }
+              } else if (value == 'external_sources') {
+                await _openExternalSources();
               } else if (value == 'itunes') {
                 await _importSharedDocuments();
               }
@@ -607,8 +753,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                     AppLocalizations.of(context).importDocumentsFromITunes),
               ),
               PopupMenuItem(
-                value: 'dropbox',
-                child: Text(AppLocalizations.of(context).importFromDropbox),
+                value: 'external_sources',
+                child:
+                    Text(AppLocalizations.of(context).importExternalSources),
               ),
             ],
           ),
@@ -695,6 +842,10 @@ class _DocumentTile extends StatelessWidget {
         return Colors.orange.shade700;
       case 'folder':
         return Colors.amber.shade700;
+      case 'librivox':
+        return Colors.indigo.shade700;
+      case 'archiveaudio':
+        return Colors.deepPurple.shade700;
       default:
         return Colors.purple.shade700;
     }
@@ -720,7 +871,8 @@ class _DocumentTile extends StatelessWidget {
               label: doc.isFolder
                   ? l10n.removeFolder
                   : l10n.removeDocument): onRemove,
-          CustomSemanticsAction(label: l10n.exportDocument): onExport,
+          if (doc.extension != 'librivox' && doc.extension != 'archiveaudio')
+            CustomSemanticsAction(label: l10n.exportDocument): onExport,
           if (!isFirst)
             CustomSemanticsAction(label: l10n.moveUp): () =>
                 onAction(_DocumentAction.moveUp),
@@ -755,14 +907,18 @@ class _DocumentTile extends StatelessWidget {
                       child: doc.isFolder
                           ? const Icon(Icons.folder,
                               color: Colors.white, size: 28)
-                          : Text(
-                              doc.extension.toUpperCase(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                          : doc.extension == 'librivox' ||
+                                  doc.extension == 'archiveaudio'
+                              ? const Icon(Icons.headphones,
+                                  color: Colors.white, size: 28)
+                              : Text(
+                                  doc.extension.toUpperCase(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                     ),
                   ),
                   const SizedBox(width: 12),

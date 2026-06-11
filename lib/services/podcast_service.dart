@@ -619,19 +619,29 @@ class PodcastService {
       {String country = 'it', PodcastCategory? category}) async {
     final q = query.trim();
     if (q.isEmpty && category?.genreId == null) return const [];
+    final genreId = category?.genreId;
     final appleParams = {
       'media': 'podcast',
       'entity': 'podcast',
       'country': country,
       'limit': '25',
       if (q.isNotEmpty) 'term': q,
-      if (category?.genreId != null) 'genreId': '${category!.genreId}',
+      if (genreId != null) 'genreId': '$genreId',
     };
     final results = <PodcastSearchResult>[];
     final errors = <Object>[];
+    Object? topByGenreError;
+    if (q.isEmpty && genreId != null) {
+      try {
+        results.addAll(await _searchAppleTopByGenre(genreId, country));
+      } catch (e) {
+        topByGenreError = e;
+      }
+    }
     try {
       results.addAll(await _searchApple(appleParams));
     } catch (e) {
+      if (topByGenreError != null) errors.add(topByGenreError);
       errors.add(e);
     }
     if (q.isNotEmpty) {
@@ -650,18 +660,28 @@ class PodcastService {
   Future<List<PodcastSearchResult>> _searchApple(
       Map<String, String> params) async {
     final uri = Uri.https('itunes.apple.com', '/search', params);
+    final results = await _fetchAppleItems(uri, 'Ricerca podcast non riuscita');
+    return _appleItemsToResults(results);
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchAppleItems(
+      Uri uri, String errorMessage) async {
     final response = await _client.get(uri, headers: const {
       'User-Agent': 'SonarpadMobile/0.1',
       'Accept': 'application/json',
     });
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Ricerca podcast non riuscita: ${response.statusCode}');
+      throw Exception('$errorMessage: ${response.statusCode}');
     }
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
     final results = (decoded['results'] as List<dynamic>? ?? const []);
+    return results.cast<Map<String, dynamic>>();
+  }
+
+  List<PodcastSearchResult> _appleItemsToResults(
+      List<Map<String, dynamic>> results) {
     return results
-        .map((raw) {
-          final item = raw as Map<String, dynamic>;
+        .map((item) {
           final feedUrl = (item['feedUrl'] ?? '').toString();
           if (feedUrl.isEmpty) return null;
           return PodcastSearchResult(
@@ -674,6 +694,58 @@ class PodcastService {
         })
         .whereType<PodcastSearchResult>()
         .toList();
+  }
+
+  Future<List<PodcastSearchResult>> _searchAppleTopByGenre(
+      int genreId, String country) async {
+    final uri = Uri.parse('https://itunes.apple.com/$country/rss/toppodcasts/'
+        'limit=50/genre=$genreId/json');
+    final response = await _client.get(uri, headers: const {
+      'User-Agent': 'SonarpadMobile/0.1',
+      'Accept': 'application/json',
+    });
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+          'Categorie podcast non raggiungibili: ${response.statusCode}');
+    }
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final feed = decoded['feed'] as Map<String, dynamic>? ?? const {};
+    final rawEntries = feed['entry'];
+    final entries = rawEntries is List
+        ? rawEntries
+        : rawEntries == null
+            ? const []
+            : [rawEntries];
+    final ids = entries
+        .map((raw) {
+          final entry = raw as Map<String, dynamic>;
+          final id = entry['id'] as Map<String, dynamic>? ?? const {};
+          final attributes =
+              id['attributes'] as Map<String, dynamic>? ?? const {};
+          return attributes['im:id']?.toString();
+        })
+        .whereType<String>()
+        .where((id) => id.isNotEmpty)
+        .toList();
+    if (ids.isEmpty) return const [];
+    final lookupUri = Uri.https('itunes.apple.com', '/lookup', {
+      'id': ids.join(','),
+      'country': country,
+    });
+    final lookup =
+        await _fetchAppleItems(lookupUri, 'Lookup podcast non riuscito');
+    final filtered =
+        lookup.where((item) => _appleItemMatchesGenre(item, genreId)).toList();
+    return _appleItemsToResults(filtered.isEmpty ? lookup : filtered);
+  }
+
+  bool _appleItemMatchesGenre(Map<String, dynamic> item, int genreId) {
+    if (item['primaryGenreId']?.toString() == '$genreId') return true;
+    final genreIds = item['genreIds'];
+    if (genreIds is List) {
+      return genreIds.any((id) => id.toString() == '$genreId');
+    }
+    return false;
   }
 
   Future<List<PodcastSearchResult>> _searchSpreaker(String query) async {

@@ -1544,9 +1544,176 @@
   "@createNewFolder": {
     "description": "Localized text for createNewFolder."
   },
+  "importExternalSources": "Importa da fonti esterne",
+  "@importExternalSources": {
+    "description": "Localized text for importExternalSources."
+  },
+  "importExternalSourcesTitle": "Fonti esterne",
+  "@importExternalSourcesTitle": {
+    "description": "Localized text for importExternalSourcesTitle."
+  },
   "importFromDropbox": "Importa documenti da Dropbox",
   "@importFromDropbox": {
     "description": "Localized text for importFromDropbox."
+  },
+  "importFromProjectGutenberg": "Importa da Project Gutenberg",
+  "@importFromProjectGutenberg": {
+    "description": "Localized text for importFromProjectGutenberg."
+  },
+  "projectGutenbergImportUnavailable": "L'importazione da Project Gutenberg non è ancora disponibile.",
+  "@projectGutenbergImportUnavailable": {
+    "description": "Localized text for projectGutenbergImportUnavailable."
+  },
+  "importFromInternetArchive": "Importa da Internet Archive",
+  "@importFromInternetArchive": {
+    "description": "Localized text for importFromInternetArchive."
+  },
+  "internetArchiveTitle": "Internet Archive",
+  "@internetArchiveTitle": {
+    "description": "Localized text for internetArchiveTitle."
+  },
+  "internetArchiveSearchLabel": "Cerca audio",
+  "@internetArchiveSearchLabel": {
+    "description": "Localized text for internetArchiveSearchLabel."
+  },
+  "internetArchiveSourceLabel": "Fonte",
+  "@internetArchiveSourceLabel": {
+    "description": "Localized text for internetArchiveSourceLabel."
+  },
+  "internetArchiveOldTimeRadio": "Old Time Radio",
+  "@internetArchiveOldTimeRadio": {
+    "description": "Localized text for internetArchiveOldTimeRadio."
+  },
+  "internetArchiveSpeeches": "Discorsi storici",
+  "@internetArchiveSpeeches": {
+    "description": "Localized text for internetArchiveSpeeches."
+  },
+  "internetArchiveLiveMusic": "Live Music Archive",
+  "@internetArchiveLiveMusic": {
+    "description": "Localized text for internetArchiveLiveMusic."
+  },
+  "internetArchiveNoItemsFound": "Nessun elemento audio trovato.",
+  "@internetArchiveNoItemsFound": {
+    "description": "Localized text for internetArchiveNoItemsFound."
+  },
+  "saveAudioInDocuments": "Salva audio nei Documenti",
+  "@saveAudioInDocuments": {
+    "description": "Localized text for saveAudioInDocuments."
+  },
+  "audioSavedInDocuments": "Audio salvato nei Documenti.",
+  "@audioSavedInDocuments": {
+    "description": "Localized text for audioSavedInDocuments."
+  },
+  "noAudioTracksAvailable": "Nessuna traccia audio disponibile.",
+  "@noAudioTracksAvailable": {
+    "description": "Localized text for noAudioTracksAvailable."
+  },
+  "importFromLibriVox": "Importa da LibriVox",
+  "@importFromLibriVox": {
+    "description": "Localized text for importFromLibriVox."
+  },
+  "gutenbergSearchLabel": "Cerca libro o autore",
+  "@gutenbergSearchLabel": {
+    "description": "Localized text for gutenbergSearchLabel."
+  },
+  "sourceLanguageLabel": "Lingua",
+  "@sourceLanguageLabel": {
+    "description": "Localized text for sourceLanguageLabel."
+  },
+  "noGutenbergBooksFound": "Nessun libro trovato.",
+  "@noGutenbergBooksFound": {
+    "description": "Localized text for noGutenbergBooksFound."
+  },
+  "loadMore": "Carica altri",
+  "@loadMore": {
+    "description": "Localized text for loadMore."
+  },
+  "sourceLanguageValue": "Lingua: {language}",
+  "@sourceLanguageValue": {
+    "description": "Localized text for sourceLanguageValue.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "gutenbergImportAndRead": "Importa e leggi",
+  "@gutenbergImportAndRead": {
+    "description": "Localized text for gutenbergImportAndRead."
+  },
+  "gutenbergImporting": "Importazione...",
+  "@gutenbergImporting": {
+    "description": "Localized text for gutenbergImporting."
+  },
+  "librivoxSearchLabel": "Cerca audiolibro",
+  "@librivoxSearchLabel": {
+    "description": "Localized text for librivoxSearchLabel."
+  },
+  "noLibrivoxAudiobooksFound": "Nessun audiolibro trovato.",
+  "@noLibrivoxAudiobooksFound": {
+    "description": "Localized text for noLibrivoxAudiobooksFound."
+  },
+  "librivoxAudiobookSaved": "Audiolibro salvato nei Documenti.",
+  "@librivoxAudiobookSaved": {
+    "description": "Localized text for librivoxAudiobookSaved."
+  },
+  "librivoxSaveAudiobook": "Salva audiolibro nei Documenti",
+  "@librivoxSaveAudiobook": {
+    "description": "Localized text for librivoxSaveAudiobook."
+  },
+  "librivoxSaving": "Salvataggio...",
+  "@librivoxSaving": {
+    "description": "Localized text for librivoxSaving."
+  },
+  "librivoxNoAudioTracks": "Nessuna traccia audio disponibile.",
+  "@librivoxNoAudioTracks": {
+    "description": "Localized text for librivoxNoAudioTracks."
+  },
+  "librivoxNotTextExportable": "Gli audiolibri LibriVox non sono esportabili come testo.",
+  "@librivoxNotTextExportable": {
+    "description": "Localized text for librivoxNotTextExportable."
+  },
+  "sourceDurationValue": "Durata: {duration}",
+  "@sourceDurationValue": {
+    "description": "Localized text for sourceDurationValue.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "importFromPoetryDb": "Importa da PoetryDB",
+  "@importFromPoetryDb": {
+    "description": "Localized text for importFromPoetryDb."
+  },
+  "poetryDbSearchLabel": "Cerca poesia",
+  "@poetryDbSearchLabel": {
+    "description": "Localized text for poetryDbSearchLabel."
+  },
+  "poetryDbSearchBy": "Cerca per",
+  "@poetryDbSearchBy": {
+    "description": "Localized text for poetryDbSearchBy."
+  },
+  "poetryDbSearchByTitle": "Titolo",
+  "@poetryDbSearchByTitle": {
+    "description": "Localized text for poetryDbSearchByTitle."
+  },
+  "poetryDbSearchByAuthor": "Autore",
+  "@poetryDbSearchByAuthor": {
+    "description": "Localized text for poetryDbSearchByAuthor."
+  },
+  "poetryDbNoPoemsFound": "Nessuna poesia trovata.",
+  "@poetryDbNoPoemsFound": {
+    "description": "Localized text for poetryDbNoPoemsFound."
+  },
+  "poetryDbLineCount": "{count} versi",
+  "@poetryDbLineCount": {
+    "description": "Localized text for poetryDbLineCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "moveDocument": "Sposta documento",
   "@moveDocument": {
