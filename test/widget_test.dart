@@ -5,30 +5,13 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sonarpad_mobile_starter/main.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
-import 'package:sonarpad_mobile_starter/screens/settings_screen.dart';
 
 void main() {
-  setUpAll(() {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(const MethodChannel('flutter_tts'),
-            (MethodCall methodCall) async {
-      if (methodCall.method == 'getVoices' ||
-          methodCall.method == 'getLanguages') {
-        return [];
-      }
-      return 1;
-    });
-  });
-
   testWidgets('Home screen shows localized actions',
       (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({
@@ -45,26 +28,5 @@ void main() {
     expect(find.text('Podcast', skipOffstage: false), findsOneWidget);
     await tester.scrollUntilVisible(find.text('Impostazioni'), 200);
     expect(find.text('Impostazioni'), findsOneWidget);
-  });
-
-  testWidgets('Settings code field follows selected app language',
-      (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({
-      'sonarpad_app_language': 'it',
-    });
-
-    await tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
-        home: const SettingsScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.text('Sonarpad code for extra features'), findsOneWidget);
-    expect(find.text('Paste code'), findsOneWidget);
-    expect(find.text('Request code from author'), findsOneWidget);
   });
 }

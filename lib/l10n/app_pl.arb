@@ -1,5 +1,5 @@
 {
-  "@@locale": "it",
+  "@@locale": "pl",
   "appTitle": "Sonarpad",
   "@appTitle": {
     "description": "Localized text for appTitle."
