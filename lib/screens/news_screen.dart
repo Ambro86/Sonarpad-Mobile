@@ -216,7 +216,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   void initState() {
     super.initState();
     _currentUri = widget.initialUri ?? widget.source.uri;
-    _fetch();
+    _future = _buildFuture();
   }
 
   @override
@@ -241,18 +241,28 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     );
   }
 
-  void _fetch() {
+  Future<List<NewsArticle>> _buildFuture() {
     final cat = widget.source.categories
         ?.where((c) => c.uri == _currentUri)
         .firstOrNull;
     if (cat != null && cat.isLocal) {
-      _future = _fetchLocalCategory();
-    } else {
-      _future = _service.fetchSourceNews(NewsRssSource(
-        name: widget.source.name,
-        uri: _currentUri,
-      ));
+      return _fetchLocalCategory();
     }
+    return _service.fetchSourceNews(NewsRssSource(
+      name: widget.source.name,
+      uri: _currentUri,
+    ));
+  }
+
+  void _fetch() {
+    setState(() {
+      _future = _buildFuture();
+    });
+  }
+
+  Future<void> _refresh() async {
+    _fetch();
+    await _future;
   }
 
   Future<void> _reloadLocalCategory() async {
@@ -306,7 +316,16 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     final isLocalCategory = currentCategory?.isLocal == true;
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title ?? widget.source.name)),
+      appBar: AppBar(
+        title: Text(widget.title ?? widget.source.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: AppLocalizations.of(context).update,
+            onPressed: _fetch,
+          ),
+        ],
+      ),
       body: Column(
         children: [
           if (showCategories &&
@@ -376,9 +395,12 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
               ),
             ),
           Expanded(
-            child: _NewsArticleList(
-              future: _future,
-              language: widget.language,
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              child: _NewsArticleList(
+                future: _future,
+                language: widget.language,
+              ),
             ),
           ),
         ],

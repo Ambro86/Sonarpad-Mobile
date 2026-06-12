@@ -56,6 +56,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
       _isFavorite = await _loadIsFavorite();
+      if (widget.tvChannel == null) {
+        unawaited(RadioService().addRecentRadio(widget.station));
+        unawaited(RadioService().recordRadioBrowserClick(widget.station));
+      }
       if (!mounted) return;
       setState(() {});
       _play();
@@ -238,6 +242,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             style: Theme.of(context).textTheme.headlineSmall,
             textAlign: TextAlign.center,
           ),
+          if (widget.station.detailsText.trim().isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              widget.station.detailsText,
+              textAlign: TextAlign.center,
+            ),
+          ],
           const SizedBox(height: 32),
           if (_loading) LinearProgressIndicator(semanticsLabel: l10n.loading),
           if (_error != null) ...[

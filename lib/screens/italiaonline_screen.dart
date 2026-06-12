@@ -116,6 +116,8 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
   bool _loadingMore = false;
   int _currentPage = 1;
 
+  DirectoryKind get _actualKind => _response?.actualKind ?? widget.query.kind;
+
   @override
   void initState() {
     super.initState();
@@ -139,7 +141,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
 
     try {
       final query = SearchQuery(
-        kind: widget.query.kind,
+        kind: loadMore ? _actualKind : widget.query.kind,
         what: widget.query.what,
         where: widget.query.where,
         page: _currentPage,
@@ -184,7 +186,15 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
     );
 
     try {
-      final detail = await _service.loadDetail(widget.query, result.id);
+      final detail = await _service.loadDetail(
+        SearchQuery(
+          kind: _actualKind,
+          what: widget.query.what,
+          where: widget.query.where,
+          page: widget.query.page,
+        ),
+        result.id,
+      );
       if (!mounted) return;
       Navigator.of(context).pop(); // Chiudi loading
 
@@ -208,7 +218,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.query.kind.label} - Risultati'),
+        title: Text('${_actualKind.label} - Risultati'),
       ),
       body: _buildBody(),
     );
@@ -251,7 +261,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
                     MaterialPageRoute(
                       builder: (_) => ItaliaOnlineResultsScreen(
                         query: SearchQuery(
-                          kind: widget.query.kind,
+                          kind: _actualKind,
                           what: widget.query.what,
                           where: place,
                           page: 1,

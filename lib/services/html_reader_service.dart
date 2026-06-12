@@ -106,7 +106,24 @@ class HtmlReaderService {
         v.contains('enable js') ||
         v.contains('advert') ||
         v.contains('sponsored') ||
-        v.contains('consent');
+        v.contains('consent') ||
+        // Polacco
+        v.contains('subskrybuj') ||
+        v.contains('zaloguj') ||
+        v.contains('zarejestruj') ||
+        v.contains('akceptuj') ||
+        v.contains('polityka prywatno') ||
+        v.contains('regulamin') ||
+        v.contains('wszystkie prawa zastrze') ||
+        // Portoghese
+        v.contains('subscrever') ||
+        v.contains('assinar') ||
+        v.contains('assinatura') ||
+        v.contains('entrar') ||
+        v.contains('iniciar sess') ||
+        v.contains('aceitar cookies') ||
+        v.contains('política de privacidade') ||
+        v.contains('todos os direitos reservados');
   }
 
   static int countSentences(String value) {
@@ -605,12 +622,17 @@ class HtmlReaderService {
       '[class*="cookie"]',
       '[class*="advertisement"]',
       '[class*="newsletter"]',
-      '[class*="related"]',
+      // Nota: [class*="related"] rimosso perché troppo aggressivo
+      // (colpirebbe classi come 'unrelated', 'correlation-related', ecc.)
+      '.related-articles',
+      '.related-posts',
+      '.related-news',
       '[id*="paywall"]',
       '[id*="cookie"]',
       '[id*="advertisement"]',
       '[id*="newsletter"]',
-      '[id*="related"]',
+      '[id*="related-articles"]',
+      '[id*="related-posts"]',
     ];
 
     for (var selector in selectorsToRemove) {
@@ -885,14 +907,35 @@ class HtmlReaderService {
         ".story-content p",
         ".article-body p",
         "#col-sx-interna p",
+        // selettori semantici aggiuntivi
+        "main article p",
+        "main p",
+        "[role='main'] p",
+        ".content p",
+        ".article p",
+        ".text p",
+        ".body p",
+        ".post p",
+        "[class*='article'] p",
+        "[class*='content'] p",
+        "[class*='story'] p",
+        "[class*='text'] p",
+        "[class*='body'] p",
       ];
       String bestSelAcc = '';
       for (var selStr in contentSelectors) {
+        final seenTexts = <String>{};
         StringBuffer selAcc = StringBuffer();
         final elements = document.querySelectorAll(selStr);
         for (var element in elements) {
-          String text = element.text;
+          String text = element.text.trim();
+          if (text.isEmpty) continue;
           if (text.toLowerCase().contains("enable js")) continue;
+          if (looksLikeUiChrome(text)) continue;
+          if (text.length < 20) continue;
+          // deduplicazione per paragrafo
+          if (seenTexts.contains(text)) continue;
+          seenTexts.add(text);
           selAcc.write(text);
           selAcc.write("\n\n");
         }
@@ -902,6 +945,24 @@ class HtmlReaderService {
       }
       if (bestSelAcc.length > 200) {
         bodyAcc.write(bestSelAcc);
+      } else if (bestSelAcc.isEmpty) {
+        // Heuristic fallback: tutti i <p> con almeno 80 chars e almeno 1 frase
+        final seenFallback = <String>{};
+        final allParas = document.querySelectorAll('p');
+        StringBuffer fallbackAcc = StringBuffer();
+        for (var p in allParas) {
+          final text = p.text.trim();
+          if (text.length < 80) continue;
+          if (looksLikeUiChrome(text)) continue;
+          if (countSentences(text) < 1) continue;
+          if (seenFallback.contains(text)) continue;
+          seenFallback.add(text);
+          fallbackAcc.write(text);
+          fallbackAcc.write('\n\n');
+        }
+        if (fallbackAcc.length > 200) {
+          bodyAcc.write(fallbackAcc.toString());
+        }
       }
     }
 

@@ -161,6 +161,16 @@ class AppSettingsService {
     await prefs.setString('sonarpad_app_language', languageCode);
   }
 
+  Future<String?> loadPodcastCountry() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('sonarpad_podcast_country');
+  }
+
+  Future<void> savePodcastCountry(String country) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('sonarpad_podcast_country', country);
+  }
+
   Future<SonarpadThemeMode> loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_themeModeKey);

@@ -50,6 +50,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
 
   Future<void> _load() async {
     final appLanguage = await _settings.loadAppLanguage();
+    final savedCountry = await _settings.loadPodcastCountry();
     final subs = await _service.loadSubscriptions();
     final localAudioFiles = await _scanLocalAudioFiles();
     if (!mounted) return;
@@ -57,7 +58,12 @@ class _PodcastScreenState extends State<PodcastScreen> {
       _subscriptions = subs;
       _localAudioFiles = localAudioFiles;
       if (!_countryLoaded) {
-        _country = _podcastCountryForAppLanguage(appLanguage);
+        if (savedCountry != null) {
+          _country = savedCountry;
+        } else {
+          _country = _podcastCountryForAppLanguage(appLanguage);
+          _settings.savePodcastCountry(_country);
+        }
         _countryLoaded = true;
       }
     });
@@ -332,7 +338,11 @@ class _PodcastScreenState extends State<PodcastScreen> {
                       child: Text(country.name),
                     ))
                 .toList(),
-            onChanged: (value) => setState(() => _country = value ?? 'it'),
+            onChanged: (value) async {
+              final newCountry = value ?? 'it';
+              setState(() => _country = newCountry);
+              await _settings.savePodcastCountry(newCountry);
+            },
           ),
           const SizedBox(height: 8),
           FilledButton.icon(

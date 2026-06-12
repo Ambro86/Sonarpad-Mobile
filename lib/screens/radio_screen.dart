@@ -8,6 +8,7 @@ import '../services/radio_service.dart';
 import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
 import 'radio_search_results_screen.dart';
+import 'recent_radios_screen.dart';
 
 enum _RadioBrowseMode { language, country }
 
@@ -26,7 +27,41 @@ class _RadioScreenState extends State<RadioScreen> {
   String? _countryCode;
   _RadioBrowseMode _browseMode = _RadioBrowseMode.language;
   RadioGenreOption _genre = RadioService.genres.first;
+  List<RadioLanguageOption> _languageOptions = RadioService.languages;
+  List<RadioCountryOption> _countryOptions = RadioService.countries;
   bool _searching = false;
+  bool _loadingDirectory = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDirectoryOptions();
+  }
+
+  Future<void> _loadDirectoryOptions() async {
+    setState(() => _loadingDirectory = true);
+    try {
+      final languages = await _service.loadDirectoryLanguages();
+      final countries = await _service.loadDirectoryCountries();
+      if (!mounted) return;
+      setState(() {
+        _languageOptions = languages.isEmpty ? RadioService.languages : languages;
+        _countryOptions = countries.isEmpty ? RadioService.countries : countries;
+        if (_languageCode != null &&
+            !_languageOptions.any((item) => item.code == _languageCode)) {
+          _languageCode = _languageOptions.first.code;
+        }
+        if (_countryCode != null) {
+          final countryCode = _countryCode!.replaceFirst('country:', '');
+          if (!_countryOptions.any((item) => item.code == countryCode)) {
+            _countryCode = 'country:${_countryOptions.first.code}';
+          }
+        }
+      });
+    } finally {
+      if (mounted) setState(() => _loadingDirectory = false);
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -70,7 +105,10 @@ class _RadioScreenState extends State<RadioScreen> {
         context,
         MaterialPageRoute(
           settings: const RouteSettings(name: '/radio/search_results'),
-          builder: (_) => RadioSearchResultsScreen(results: results),
+          builder: (_) => RadioSearchResultsScreen(
+            results: results,
+            query: _searchController.text,
+          ),
         ),
       );
     } catch (e) {
@@ -92,10 +130,10 @@ class _RadioScreenState extends State<RadioScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final countryItems = RadioService.countries
+    final countryItems = _countryOptions
         .map((country) => MapEntry(
               'country:${country.code}',
-              l10n.radioCountryLabel(country.code),
+              _countryOptionLabel(l10n, country),
             ))
         .toList()
       ..sort((a, b) => a.value.compareTo(b.value));
@@ -122,6 +160,30 @@ class _RadioScreenState extends State<RadioScreen> {
             icon: const Icon(Icons.favorite),
             label: Text(l10n.radioFavoritesButton),
           ),
+          const SizedBox(height: 8),
+          FilledButton.tonal(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+              alignment: Alignment.centerLeft,
+            ),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(name: '/radio/recent'),
+                  builder: (_) => const RecentRadiosScreen(),
+                ),
+              );
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.history),
+                const SizedBox(width: 8),
+                Text(_recentRadiosLabel(l10n.localeName)),
+              ],
+            ),
+          ),
           const SizedBox(height: 16),
           TextField(
             controller: _searchController,
@@ -132,6 +194,10 @@ class _RadioScreenState extends State<RadioScreen> {
             textInputAction: TextInputAction.search,
             onSubmitted: (_) => _search(),
           ),
+          if (_loadingDirectory) ...[
+            const SizedBox(height: 8),
+            Text(_radioDirectoryLoadingLabel(l10n.localeName)),
+          ],
           const SizedBox(height: 8),
           Row(
             children: [
@@ -163,10 +229,10 @@ class _RadioScreenState extends State<RadioScreen> {
             DropdownButtonFormField<String>(
               initialValue: _languageCode,
               decoration: InputDecoration(labelText: l10n.radioLanguage),
-              items: RadioService.languages
+              items: _languageOptions
                   .map((language) => DropdownMenuItem(
                         value: language.code,
-                        child: Text(l10n.radioLanguageLabel(language.code)),
+                        child: Text(_languageOptionLabel(l10n, language)),
                       ))
                   .toList(),
               onChanged: (value) =>
@@ -229,6 +295,57 @@ class _RadioScreenState extends State<RadioScreen> {
     );
   }
 }
+
+
+String _languageOptionLabel(
+  AppLocalizations l10n,
+  RadioLanguageOption option,
+) {
+  final localized = l10n.radioLanguageLabel(option.code);
+  if (localized != option.code) return localized;
+  final label = option.label.trim();
+  if (label.isNotEmpty) return _titleCaseRadioDirectoryLabel(label);
+  return option.code;
+}
+
+String _countryOptionLabel(
+  AppLocalizations l10n,
+  RadioCountryOption option,
+) {
+  final localized = l10n.radioCountryLabel(option.code);
+  if (localized != option.code.toUpperCase()) return localized;
+  final label = option.label.trim();
+  if (label.isNotEmpty) return _titleCaseRadioDirectoryLabel(label);
+  return option.code.toUpperCase();
+}
+
+String _titleCaseRadioDirectoryLabel(String value) {
+  final words = value.trim().split(RegExp(r'\s+'));
+  return words
+      .where((word) => word.isNotEmpty)
+      .map((word) => word.length == 1
+          ? word.toUpperCase()
+          : '${word[0].toUpperCase()}${word.substring(1)}')
+      .join(' ');
+}
+
+String _radioDirectoryLoadingLabel(String localeName) => switch (localeName) {
+      'en' => 'Updating radio countries and languages...',
+      'es' => 'Actualizando países e idiomas de radio...',
+      'fr' => 'Mise à jour des pays et langues radio...',
+      'pt' => 'A atualizar países e idiomas de rádio...',
+      'pl' => 'Aktualizuję kraje i języki radia...',
+      _ => 'Aggiornamento di paesi e lingue radio...',
+    };
+
+String _recentRadiosLabel(String localeName) => switch (localeName) {
+      'en' => 'Recent radios',
+      'es' => 'Radios recientes',
+      'fr' => 'Radios récentes',
+      'pt' => 'Rádios recentes',
+      'pl' => 'Ostatnie radia',
+      _ => 'Radio recenti',
+    };
 
 class _RadioBrowseButton extends StatelessWidget {
   final bool selected;
@@ -297,12 +414,13 @@ class RadioTile extends StatelessWidget {
                   : l10n.radioAddFavorite): onToggleFavorite,
           ...?extraSemanticsActions,
         },
+        label: station.accessibilityLabel,
         child: Card(
           child: ListTile(
             leading: Icon(isPlaying ? Icons.volume_up : Icons.radio),
             title: Text(station.name),
-            subtitle: Text(station.streamUrl,
-                maxLines: 1, overflow: TextOverflow.ellipsis),
+            subtitle: Text(station.detailsText,
+                maxLines: 2, overflow: TextOverflow.ellipsis),
             onTap: onPlay,
             trailing: ExcludeSemantics(
               child: Wrap(

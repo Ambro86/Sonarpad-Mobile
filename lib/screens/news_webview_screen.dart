@@ -41,10 +41,17 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   bool _loading = true;
   String? _readerTitle;
   String? _readerText;
+  // lunghezza testo HTTP; il WebView puo migliorarlo se < _httpShortThreshold
+  int _readerHttpTextLength = 0;
   bool _readerPreparing = true;
   bool _speaking = false;
   bool _ttsPaused = false;
   String? _status;
+
+  // Soglia minima per accettare il testo HTTP come reader mode
+  static const _httpMinLength = 150;
+  // Soglia sotto la quale il WebView puo ancora sostituire il testo HTTP
+  static const _httpShortThreshold = 600;
 
   static const _ttsCommands = MethodChannel('sonarpad/tts_commands');
   static const _ttsEvents = EventChannel('sonarpad/tts_events');
@@ -336,16 +343,17 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       unawaited(AppLogger.log(
         'News reader HTTP: estrazione completata length=${text.length}',
       ));
-      if (text.length < 200) {
+      if (text.length < _httpMinLength) {
         unawaited(AppLogger.log(
           'News reader HTTP: testo troppo corto, resta WebView '
           'length=${text.length}',
         ));
       }
       setState(() {
-        if (text.length >= 200) {
+        if (text.length >= _httpMinLength) {
           _readerTitle = widget.article.title;
           _readerText = text;
+          _readerHttpTextLength = text.length;
         }
         _readerPreparing = false;
       });
@@ -361,9 +369,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     for (int i = 0; i < 4; i++) {
       await Future.delayed(const Duration(milliseconds: 1500));
       if (!mounted) return;
-      if (_readerText != null) {
+      // Salta solo se il testo HTTP è già lungo (non parziale)
+      final httpLen = _readerHttpTextLength;
+      if (_readerText != null && httpLen >= _httpShortThreshold) {
         unawaited(AppLogger.log(
-          'News reader WebView: skip tentativo ${i + 1}, testo già presente',
+          'News reader WebView: skip tentativo ${i + 1}, '
+          'testo HTTP già buono length=$httpLen',
         ));
         return;
       }
@@ -373,19 +384,22 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           'News reader WebView: estrazione visibile tentativo ${i + 1}',
         ));
         final text = await _extractVisibleArticleText();
-        if (!mounted || _readerText != null) return;
+        if (!mounted) return;
 
         unawaited(AppLogger.log(
           'News reader WebView: tentativo ${i + 1} length=${text.length}',
         ));
-        if (text.length >= 400) {
+        // Sostituisce il testo HTTP se il WebView trova qualcosa di più lungo
+        if (text.length >= 400 && text.length > httpLen) {
           setState(() {
             _readerTitle = widget.article.title;
             _readerText = text;
+            _readerHttpTextLength = text.length;
             _readerPreparing = false;
           });
           unawaited(AppLogger.log(
-            'News reader WebView: testo accettato tentativo ${i + 1}',
+            'News reader WebView: testo accettato tentativo ${i + 1} '
+            'length=${text.length} (sostituisce HTTP len=$httpLen)',
           ));
           return;
         }
@@ -409,7 +423,16 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<String> _extractVisibleArticleText() async {
     final result = await _controller.runJavaScriptReturningResult(
-      'document.body ? document.body.innerText : ""',
+      r'''
+        (function() {
+          var el = document.querySelector('article') ||
+                   document.querySelector('main') ||
+                   document.querySelector('[role="main"]') ||
+                   document.querySelector('[role="article"]') ||
+                   document.body;
+          return el ? el.innerText : '';
+        })()
+      ''',
     );
     return _cleanVisibleText(_stringFromJavaScriptResult(result));
   }

@@ -8,8 +8,13 @@ import 'radio_screen.dart'; // Per RadioTile
 
 class RadioSearchResultsScreen extends StatefulWidget {
   final List<RadioStation> results;
+  final String query;
 
-  const RadioSearchResultsScreen({super.key, required this.results});
+  const RadioSearchResultsScreen({
+    super.key,
+    required this.results,
+    this.query = '',
+  });
 
   @override
   State<RadioSearchResultsScreen> createState() =>
@@ -70,7 +75,15 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioSearchResults)),
       body: widget.results.isEmpty
-          ? Center(child: Text(l10n.radioNoResults))
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  _radioNoResultsMessage(l10n.localeName, widget.query),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: widget.results.length,
@@ -92,4 +105,37 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
             ),
     );
   }
+}
+
+
+String _radioNoResultsMessage(String localeName, String query) {
+  final hasQuery = query.trim().isNotEmpty;
+  if (localeName == 'en') {
+    return hasQuery
+        ? 'No radios found. Try only the station name, without genre, or change language/country.'
+        : 'No radios found. Try another language, country, or genre.';
+  }
+  if (localeName == 'es') {
+    return hasQuery
+        ? 'No se encontraron radios. Prueba solo con el nombre de la emisora, sin género, o cambia idioma/país.'
+        : 'No se encontraron radios. Prueba con otro idioma, país o género.';
+  }
+  if (localeName == 'fr') {
+    return hasQuery
+        ? 'Aucune radio trouvée. Essayez seulement le nom de la station, sans genre, ou changez langue/pays.'
+        : 'Aucune radio trouvée. Essayez une autre langue, un autre pays ou un autre genre.';
+  }
+  if (localeName == 'pt') {
+    return hasQuery
+        ? 'Nenhuma rádio encontrada. Tente só o nome da estação, sem gênero, ou mude idioma/país.'
+        : 'Nenhuma rádio encontrada. Tente outro idioma, país ou gênero.';
+  }
+  if (localeName == 'pl') {
+    return hasQuery
+        ? 'Nie znaleziono stacji. Spróbuj wpisać tylko nazwę stacji, bez gatunku, albo zmień język/kraj.'
+        : 'Nie znaleziono stacji. Spróbuj innego języka, kraju albo gatunku.';
+  }
+  return hasQuery
+      ? 'Nessuna radio trovata. Prova solo con il nome della stazione, senza genere, oppure cambia lingua o nazione.'
+      : 'Nessuna radio trovata. Prova con un’altra lingua, nazione o genere.';
 }

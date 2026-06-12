@@ -10,23 +10,39 @@ class TvChannel {
   final String name;
   final String url;
   final String category;
+  final String? streamResolver;
+  final String? resolverEndpoint;
+  final String? resolverRealm;
+  final String? resolverChannelId;
 
   TvChannel({
     required this.name,
     required this.url,
     required this.category,
+    this.streamResolver,
+    this.resolverEndpoint,
+    this.resolverRealm,
+    this.resolverChannelId,
   });
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'url': url,
         'category': category,
+        'stream_resolver': streamResolver,
+        'resolver_endpoint': resolverEndpoint,
+        'resolver_realm': resolverRealm,
+        'resolver_channel_id': resolverChannelId,
       };
 
   factory TvChannel.fromJson(Map<String, dynamic> json) => TvChannel(
         name: json['name'] as String,
         url: json['url'] as String,
         category: json['category'] as String? ?? 'Altri',
+        streamResolver: json['stream_resolver'] as String?,
+        resolverEndpoint: json['resolver_endpoint'] as String?,
+        resolverRealm: json['resolver_realm'] as String?,
+        resolverChannelId: json['resolver_channel_id'] as String?,
       );
 }
 
@@ -145,6 +161,10 @@ class TvService {
             name: name,
             url: url,
             category: _tvCategory(name),
+            streamResolver: ch['stream_resolver'] as String?,
+            resolverEndpoint: ch['resolver_endpoint'] as String?,
+            resolverRealm: ch['resolver_realm'] as String?,
+            resolverChannelId: ch['resolver_channel_id'] as String?,
           ));
         }
       }
@@ -316,6 +336,71 @@ class TvService {
     var resolvedUrl = channel.url;
     await AppLogger.log(
         'Inizio risoluzione stream per: ${channel.name} (URL base: $resolvedUrl)');
+    if (channel.streamResolver == 'aurora_channel') {
+      try {
+        final endpoint =
+            channel.resolverEndpoint ?? 'https://public.aurora.enhanced.live';
+        final realm = channel.resolverRealm ?? 'it';
+        final channelId = channel.resolverChannelId;
+        if (channelId != null) {
+          final tokenUrl =
+              '$endpoint/token?realm=${Uri.encodeComponent(realm)}';
+          final baseHeaders = {
+            'Accept': 'application/json,text/plain,*/*',
+            'Content-Type': 'application/json',
+            'Origin': 'https://nove.tv',
+            'Referer': channel.url,
+            'User-Agent':
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+            'X-disco-client': 'WEB:UNKNOWN:wbdatv:2.1.9',
+            'X-disco-params': 'realm=$realm',
+            'X-Device-Info': 'STONEJS/1 (Unknown/Unknown; Windows/10; Unknown)'
+          };
+          final tokenResp =
+              await http.get(Uri.parse(tokenUrl), headers: baseHeaders);
+          if (tokenResp.statusCode == 200) {
+            final tokenJson = jsonDecode(tokenResp.body);
+            final token = tokenJson['data']?['attributes']?['token'];
+            if (token != null) {
+              final pbUrl = '$endpoint/playback/v3/channelPlaybackInfo';
+              final pbHeaders = Map<String, String>.from(baseHeaders);
+              pbHeaders['Authorization'] = 'Bearer $token';
+              final pbBody = jsonEncode({
+                'channelId': channelId,
+                'deviceInfo': {
+                  'adBlocker': false,
+                  'drmSupported': true,
+                  'hdrCapabilities': ['SDR'],
+                  'hwDecodingCapabilities': [],
+                  'soundCapabilities': ['STEREO'],
+                },
+                'wisteriaProperties': {
+                  'device': {
+                    'browser': {'name': 'chrome', 'version': '136'},
+                    'type': 'desktop',
+                  },
+                  'platform': 'desktop',
+                },
+              });
+              final pbResp = await http.post(Uri.parse(pbUrl),
+                  headers: pbHeaders, body: pbBody);
+              if (pbResp.statusCode == 200) {
+                final match = RegExp(
+                        'https?://[^\\\\s"\\\'<>\\\\\\\\]+?\\\\.m3u8[^\\\\s"\\\'<>\\\\\\\\]*')
+                    .firstMatch(pbResp.body);
+                if (match != null) {
+                  final m3u8Url = match.group(0)!.replaceAll('\\/', '/');
+                  await AppLogger.log('Aurora risolto: $m3u8Url');
+                  return m3u8Url;
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        await AppLogger.log('Errore resolver aurora: $e');
+      }
+    }
 
     if (resolvedUrl.contains('/relinker/relinkerServlet')) {
       final uri = Uri.parse(resolvedUrl);

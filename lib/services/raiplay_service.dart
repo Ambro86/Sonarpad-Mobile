@@ -226,18 +226,15 @@ class RaiPlayService {
     final rawTitle = _stringField(section, 'name');
     if (rawTitle == null) return null;
 
-    String title = rawTitle;
-    if (title.toLowerCase() == 'cerca' || title.toLowerCase() == 'esplora cerca') {
-      title = 'Esplora';
-    }
+    String title = _menuLabel(rawTitle);
 
     if (title.toLowerCase() == 'altro') return null;
     final elements = section['elements'];
     if (elements is List && elements.isNotEmpty) {
-      String desc = _stringField(section, 'title') ?? _stringField(section, 'menu_type') ?? '';
-      if (desc.toLowerCase() == 'cerca' || desc.toLowerCase() == 'esplora cerca') {
-        desc = 'Esplora';
-      }
+      final desc = _sectionDescription(
+        title,
+        _stringField(section, 'title') ?? _stringField(section, 'menu_type'),
+      );
       return RaiPlayItem(
         id: 'page|root|$title',
         title: title,
@@ -250,10 +247,7 @@ class RaiPlayService {
 
     final pathId = _stringField(section, 'path_id');
     if (pathId != null && _isSupportedInternalTarget(pathId)) {
-      String desc = _stringField(section, 'menu_type') ?? '';
-      if (desc.toLowerCase() == 'cerca' || desc.toLowerCase() == 'esplora cerca') {
-        desc = 'Esplora';
-      }
+      final desc = _sectionDescription(title, _stringField(section, 'menu_type'));
       return RaiPlayItem(
         id: 'page|$pathId',
         title: title,
@@ -265,6 +259,20 @@ class RaiPlayService {
     }
 
     return null;
+  }
+
+  String _menuLabel(String value) {
+    final trimmed = value.trim();
+    final lower = trimmed.toLowerCase();
+    if (lower == 'cerca' || lower == 'esplora cerca') {
+      return 'Esplora';
+    }
+    return trimmed;
+  }
+
+  String _sectionDescription(String title, String? description) {
+    final desc = description == null ? '' : _menuLabel(description);
+    return desc.toLowerCase() == title.toLowerCase() ? '' : desc;
   }
 
   Future<RaiPlayPage> _loadMenuSectionPage(
@@ -291,10 +299,7 @@ class RaiPlayService {
       if (entry is! Map<String, dynamic>) continue;
       final name = _stringField(entry, 'name');
       
-      String? title = name;
-      if (title != null && (title.toLowerCase() == 'cerca' || title.toLowerCase() == 'esplora cerca')) {
-        title = 'Esplora';
-      }
+      final title = name == null ? null : _menuLabel(name);
 
       if (title != null && title.toLowerCase() == sectionName.toLowerCase()) {
         section = entry;

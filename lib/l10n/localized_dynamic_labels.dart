@@ -4,6 +4,7 @@ extension LocalizedDynamicLabels on AppLocalizations {
   String radioLanguageLabel(String code) => switch (code) {
         'it' => radioLanguageIt,
         'en' => radioLanguageEn,
+        'tr' => _turkishLanguageLabel(localeName),
         'de' => radioLanguageDe,
         'es' => radioLanguageEs,
         'pt' => radioLanguagePt,
@@ -25,6 +26,7 @@ extension LocalizedDynamicLabels on AppLocalizations {
         'it' => radioCountryOptionIt,
         'us' => radioCountryOptionUs,
         'gb' => radioCountryOptionGb,
+        'tr' => _turkeyCountryLabel(localeName),
         'fr' => radioCountryOptionFr,
         'es' => radioCountryOptionEs,
         'de' => radioCountryOptionDe,
@@ -76,6 +78,7 @@ extension LocalizedDynamicLabels on AppLocalizations {
   String radioCommunityLanguageLabel(String value) => switch (value) {
         'italian' => radioCommunityLanguageItalian,
         'english' => radioCommunityLanguageEnglish,
+        'turkish' => _turkishLanguageLabel(localeName),
         'spanish' => radioCommunityLanguageSpanish,
         'french' => radioCommunityLanguageFrench,
         'german' => radioCommunityLanguageGerman,
@@ -91,6 +94,25 @@ extension LocalizedDynamicLabels on AppLocalizations {
         'chinese' => radioCommunityLanguageChinese,
         'hindi' => radioCommunityLanguageHindi,
         _ => value,
+      };
+
+
+  String _turkishLanguageLabel(String localeName) => switch (localeName) {
+        'en' => 'Turkish',
+        'es' => 'Turco',
+        'fr' => 'Turc',
+        'pt' => 'Turco',
+        'pl' => 'Turecki',
+        _ => 'Turco',
+      };
+
+  String _turkeyCountryLabel(String localeName) => switch (localeName) {
+        'en' => 'Turkey',
+        'es' => 'Turquía',
+        'fr' => 'Turquie',
+        'pt' => 'Turquia',
+        'pl' => 'Turcja',
+        _ => 'Turchia',
       };
 
   String formatDistance(double meters) {

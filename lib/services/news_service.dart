@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
@@ -249,18 +251,24 @@ class NewsService {
       return fetchSourceNews(source);
     }
 
+    final sources = await getOrderedSources(language);
     final articles = <NewsArticle>[];
-    for (final source in language.rssSources) {
+    for (final src in sources) {
       try {
-        articles.addAll(await _fetchRssSource(source));
-      } catch (_) {}
+        articles.addAll(await _fetchRssSource(src, language: language));
+      } catch (e) {
+        debugPrint('Sonarpad news: errore fetch ${src.name}: $e');
+      }
     }
     _sortNewestFirst(articles);
     return articles.take(40).toList();
   }
 
-  Future<List<NewsArticle>> fetchSourceNews(NewsRssSource source) async {
-    final articles = await _fetchRssSource(source);
+  Future<List<NewsArticle>> fetchSourceNews(
+    NewsRssSource source, {
+    NewsLanguage? language,
+  }) async {
+    final articles = await _fetchRssSource(source, language: language);
     _sortNewestFirst(articles);
     return articles.take(40).toList();
   }
@@ -315,12 +323,13 @@ class NewsService {
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
       return NewsArticleContent(text: article.summary, url: article.link);
     }
+    final langHeader = _acceptLanguageHeader(language);
     final fetch = await _browserGetWithFallback(
       Uri.parse(resolvedUrl),
-      headers: const {
+      headers: {
         'User-Agent':
             'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
-        'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Accept-Language': langHeader,
       },
     );
     final response = fetch.response;
@@ -343,10 +352,10 @@ class NewsService {
       final iphoneResponse = await _browserGetWithProfile(
         _BrowserFetchProfile.iphone,
         Uri.parse(resolvedUrl),
-        headers: const {
+        headers: {
           'User-Agent':
               'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
-          'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+          'Accept-Language': langHeader,
         },
       );
       if (iphoneResponse.statusCode >= 200 && iphoneResponse.statusCode < 300) {
@@ -385,13 +394,19 @@ class NewsService {
     );
   }
 
-  Future<List<NewsArticle>> _fetchRssSource(NewsRssSource rssSource) async {
+  Future<List<NewsArticle>> _fetchRssSource(
+    NewsRssSource rssSource, {
+    NewsLanguage? language,
+  }) async {
+    final langHeader = language != null
+        ? _acceptLanguageHeader(language)
+        : 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7';
     final fetch = await _browserGetWithFallback(
       _normalizedRssUri(rssSource.uri),
-      headers: const {
+      headers: {
         'User-Agent':
             'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
-        'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Accept-Language': langHeader,
       },
     );
     final response = fetch.response;
@@ -738,6 +753,18 @@ class NewsService {
     return _cleanHtml(description ?? '');
   }
 
+  /// Costruisce l'header Accept-Language corretto per la lingua selezionata.
+  static String _acceptLanguageHeader(NewsLanguage language) {
+    return switch (language) {
+      NewsLanguage.italian => 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+      NewsLanguage.english => 'en-US,en;q=0.9',
+      NewsLanguage.french => 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+      NewsLanguage.spanish => 'es-ES,es;q=0.9,en-US;q=0.8,en;q=0.7',
+      NewsLanguage.portuguese => 'pt-PT,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+      NewsLanguage.polish => 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
+    };
+  }
+
   bool _isWeakArticleText(
     String text,
     String fallbackDescription, {
@@ -747,7 +774,7 @@ class NewsService {
     return trimmed.isEmpty ||
         trimmed.length < 80 ||
         (includeTruncated &&
-            trimmed.length < 700 &&
+            trimmed.length < 1200 &&
             _looksLikeTruncatedArticleText(trimmed)) ||
         trimmed == fallbackDescription.trim();
   }

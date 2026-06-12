@@ -497,8 +497,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _edgeVoices,
       _languageCode,
     );
-    final showItalianOnlySettings = _appLanguage == 'it' &&
-        Localizations.localeOf(context).languageCode == 'it';
+    final showItalianOnlySettings = _appLanguage == 'it';
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
