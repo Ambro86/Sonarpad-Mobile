@@ -488,6 +488,7 @@ class _PodcastEpisodePlayerScreenState
               if (widget.isVideoSupported) ...[
                 const SizedBox(height: 16),
                 SwitchListTile(
+                  key: const ValueKey('podcast_video_toggle'),
                   title: Text(l10n.enableVideo),
                   value: _isVideoEnabled,
                   onChanged: _toggleVideo,
@@ -498,6 +499,7 @@ class _PodcastEpisodePlayerScreenState
                 const SizedBox(height: 24),
                 if (_videoUsesExternalAudio)
                   Semantics(
+                    key: const ValueKey('podcast_video_external_audio'),
                     label: l10n.nowPlayingTitle(widget.episode.title),
                     value: _videoController!.value.isPlaying
                         ? l10n.pause
@@ -509,6 +511,7 @@ class _PodcastEpisodePlayerScreenState
                   )
                 else
                   AspectRatio(
+                    key: const ValueKey('podcast_video_inline_audio'),
                     aspectRatio: _videoController!.value.aspectRatio,
                     child: VideoPlayer(_videoController!),
                   ),
@@ -528,6 +531,7 @@ class _PodcastEpisodePlayerScreenState
                     ),
                   if (_videoController != null)
                     FilledButton.icon(
+                      key: const ValueKey('podcast_video_play_pause'),
                       onPressed: _loading ? null : _toggleVideoPlayback,
                       icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
                       label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
@@ -568,7 +572,7 @@ class _PodcastEpisodePlayerScreenState
                   seekStep: _seekStep,
                   logSubject: _logSubject,
                 ),
-              if (_videoController == null) ...[
+              if (_videoController == null || _videoUsesExternalAudio) ...[
                 const SizedBox(height: 24),
                 VolumeSlider(audioPlayer: _audio),
               ],

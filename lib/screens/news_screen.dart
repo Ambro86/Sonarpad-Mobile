@@ -245,11 +245,12 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     final cat = widget.source.categories
         ?.where((c) => c.uri == _currentUri)
         .firstOrNull;
+    final categorySourceName = widget.title ?? widget.source.name;
     if (cat != null && cat.isLocal) {
-      return _fetchLocalCategory();
+      return _fetchLocalCategory(categorySourceName);
     }
     return _service.fetchSourceNews(NewsRssSource(
-      name: widget.source.name,
+      name: categorySourceName,
       uri: _currentUri,
     ));
   }
@@ -273,7 +274,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     setState(_fetch);
   }
 
-  Future<List<NewsArticle>> _fetchLocalCategory() async {
+  Future<List<NewsArticle>> _fetchLocalCategory(String categorySourceName) async {
     final lang = AppLocalizations.of(context).localeName;
     final savedCity = await _settings.getNewsLocalCity();
     final loc = await _service.getUserLocationData();
@@ -291,11 +292,11 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
       final searchUri = Uri.parse(
           'https://news.google.com/rss/search?q=${Uri.encodeComponent(city)}&hl=$lang&gl=$country&ceid=$country:$lang');
       return _service.fetchSourceNews(
-          NewsRssSource(name: widget.source.name, uri: searchUri));
+          NewsRssSource(name: categorySourceName, uri: searchUri));
     }
     // Fallback to top news if location fails
     return _service.fetchSourceNews(
-        NewsRssSource(name: widget.source.name, uri: widget.source.uri));
+        NewsRssSource(name: categorySourceName, uri: widget.source.uri));
   }
 
   String _defaultCountryCode(NewsLanguage language) => switch (language) {
@@ -400,7 +401,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
               child: _NewsArticleList(
                 future: _future,
                 language: widget.language,
-                sourceName: widget.source.name,
+                sourceName: widget.title ?? widget.source.name,
               ),
             ),
           ),
