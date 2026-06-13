@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 
 class GutendexPage {
@@ -88,12 +89,11 @@ class GutendexService {
     final response = await _client.get(
       Uri.parse(url),
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
-    );
+    ).timeout(const Duration(seconds: 30));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore download ${response.statusCode}');
     }
-    final text = utf8.decode(response.bodyBytes, allowMalformed: true);
-    return _cleanGutenbergText(text);
+    return _cleanGutenbergText(_decodeDownloadedText(response.bodyBytes, url));
   }
 
   GutendexBook _bookFromJson(Map<String, dynamic> json) {
@@ -147,6 +147,49 @@ class GutendexService {
       }
     }
     return null;
+  }
+
+  String _decodeDownloadedText(List<int> bytes, String sourceUrl) {
+    if (_isZipUrl(sourceUrl) || _looksLikeZip(bytes)) {
+      return _decodeTextFromZip(bytes);
+    }
+    return utf8.decode(bytes, allowMalformed: true);
+  }
+
+  bool _isZipUrl(String value) {
+    final uri = Uri.tryParse(value);
+    final path = (uri?.path ?? value).toLowerCase();
+    return path.endsWith('.zip');
+  }
+
+  bool _looksLikeZip(List<int> bytes) {
+    return bytes.length >= 4 &&
+        bytes[0] == 0x50 &&
+        bytes[1] == 0x4b &&
+        bytes[2] == 0x03 &&
+        bytes[3] == 0x04;
+  }
+
+  String _decodeTextFromZip(List<int> bytes) {
+    final archive = ZipDecoder().decodeBytes(bytes);
+    final files = archive.files.where((file) => file.isFile).toList()
+      ..sort((a, b) {
+        final aName = a.name.toLowerCase();
+        final bName = b.name.toLowerCase();
+        final aText = aName.endsWith('.txt') ? 0 : 1;
+        final bText = bName.endsWith('.txt') ? 0 : 1;
+        if (aText != bText) return aText.compareTo(bText);
+        return aName.compareTo(bName);
+      });
+
+    for (final file in files) {
+      final content = file.content;
+      if (content is! List<int>) continue;
+      final text = utf8.decode(content, allowMalformed: true).trim();
+      if (text.isNotEmpty) return text;
+    }
+
+    throw Exception('Archivio ZIP Gutenberg senza file di testo leggibile.');
   }
 
   List<String> _stringList(Object? value) {

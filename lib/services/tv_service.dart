@@ -73,6 +73,8 @@ class TvService {
   static const _staticKeyParts = ['sonar', 'pad-', 'SonarSecure-'];
   static const _la7StreamUrl =
       'https://d1chghleocc9sm.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-evfku205gqrtf/Live.m3u8';
+  static const _la7CinemaDashUrl =
+      'https://d15umi5iaezxgx.cloudfront.net/HBBTV/LA7D/DASH/Live.mpd';
 
   static const _oggiInTvGuideUrlPayloadJson =
       r'''{"payload_b64":"csAxIXZQMnhMMiawFTr6bjtEskCkzkNJJ+Zweyc6I0xoq5wAQq2me+nsGOl55vyuggHwBZyk/4KnTrP2iV7rNEEN7i90j4pqQXbXPAgPICMLN0By","algorithm":"gzip-xor-base64-v1"}''';
@@ -150,6 +152,9 @@ class TvService {
               .trim();
           var url = (ch['url'] as String).trim();
           if (name == 'La7') url = _la7StreamUrl;
+          if (name == 'La7 Cinema' || name == 'La7D' || name == 'LA7D') {
+            url = _la7CinemaDashUrl;
+          }
           if (name.isNotEmpty && url.isNotEmpty) {
               final gt = ch['group_title'] as String?;
               final cat = (gt == null || gt.trim().isEmpty) ? 'Altri' : gt.trim();
@@ -480,6 +485,12 @@ class TvService {
     }
 
     return resolvedUrl;
+  }
+
+  static bool isDashStreamUrl(String url) {
+    final parsed = Uri.tryParse(url);
+    final path = (parsed?.path ?? url).toLowerCase();
+    return path.endsWith('.mpd');
   }
 
   /// Per i canali RAI con audiodescrizione, scarica il master playlist HLS

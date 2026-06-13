@@ -55,6 +55,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
+      if (_requiresVideoPlayback) {
+        _isVideoEnabled = true;
+      }
       _isFavorite = await _loadIsFavorite();
       if (widget.tvChannel == null) {
         unawaited(RadioService().addRecentRadio(widget.station));
@@ -83,6 +86,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     });
     try {
       if (widget.isVideoSupported && _isVideoEnabled) {
+        if (Platform.isIOS && _requiresVideoPlayback) {
+          throw Exception(
+            'Questo canale usa MPEG-DASH (.mpd), non supportato dal player iOS integrato.',
+          );
+        }
         await _audio.stop();
         _videoController?.dispose();
         _videoController = VideoPlayerController.networkUrl(
@@ -155,6 +163,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   void _toggleVideo(bool enable) {
+    if (_requiresVideoPlayback && !enable) return;
     setState(() => _isVideoEnabled = enable);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _isVideoEnabled != enable) return;
@@ -212,6 +221,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       ),
     );
   }
+
+  bool get _requiresVideoPlayback =>
+      widget.isVideoSupported && TvService.isDashStreamUrl(widget.station.streamUrl);
 
   @override
   void dispose() {

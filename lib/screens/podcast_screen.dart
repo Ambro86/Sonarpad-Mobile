@@ -31,7 +31,9 @@ class _PodcastScreenState extends State<PodcastScreen> {
   List<PodcastSubscription> _subscriptions = [];
   List<File> _localAudioFiles = [];
   String _country = 'it';
+  PodcastCategory _category = PodcastService.categories.first;
   bool _countryLoaded = false;
+  bool _categoryLoaded = false;
 
   static const _localAudioExtensions = {
     '.mp3',
@@ -51,6 +53,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
   Future<void> _load() async {
     final appLanguage = await _settings.loadAppLanguage();
     final savedCountry = await _settings.loadPodcastCountry();
+    final savedCategoryGenreId = await _settings.loadPodcastCategoryGenreId();
     final subs = await _service.loadSubscriptions();
     final localAudioFiles = await _scanLocalAudioFiles();
     if (!mounted) return;
@@ -65,6 +68,13 @@ class _PodcastScreenState extends State<PodcastScreen> {
           _settings.savePodcastCountry(_country);
         }
         _countryLoaded = true;
+      }
+      if (!_categoryLoaded) {
+        _category = PodcastService.categories.firstWhere(
+          (category) => category.genreId == savedCategoryGenreId,
+          orElse: () => PodcastService.categories.first,
+        );
+        _categoryLoaded = true;
       }
     });
   }
@@ -115,7 +125,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
         builder: (_) => _PodcastSearchResultsScreen(
           query: query,
           country: _country,
-          category: PodcastService.categories.first,
+          category: _category,
         ),
       ),
     ).then((feedUrl) async {
@@ -133,7 +143,14 @@ class _PodcastScreenState extends State<PodcastScreen> {
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/podcasts/categories'),
-        builder: (_) => _PodcastCategoryBrowserScreen(country: _country),
+        builder: (_) => _PodcastCategoryBrowserScreen(
+          country: _country,
+          selectedGenreId: _category.genreId,
+          onCategorySelected: (category) async {
+            if (mounted) setState(() => _category = category);
+            await _settings.savePodcastCategoryGenreId(category.genreId);
+          },
+        ),
       ),
     );
     if (!mounted || feedUrl == null) return;
@@ -330,6 +347,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
+            key: ValueKey('podcast_country_$_country'),
             initialValue: _country,
             decoration: InputDecoration(labelText: l10n.searchCountry),
             items: PodcastService.countries
@@ -342,6 +360,23 @@ class _PodcastScreenState extends State<PodcastScreen> {
               final newCountry = value ?? 'it';
               setState(() => _country = newCountry);
               await _settings.savePodcastCountry(newCountry);
+            },
+          ),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<PodcastCategory>(
+            key: ValueKey('podcast_category_${_category.genreId ?? 0}'),
+            initialValue: _category,
+            decoration: InputDecoration(labelText: l10n.podcastCategory),
+            items: PodcastService.categories
+                .map((category) => DropdownMenuItem(
+                      value: category,
+                      child: Text(category.nameForLanguage(l10n.localeName)),
+                    ))
+                .toList(),
+            onChanged: (value) async {
+              final newCategory = value ?? PodcastService.categories.first;
+              setState(() => _category = newCategory);
+              await _settings.savePodcastCategoryGenreId(newCategory.genreId);
             },
           ),
           const SizedBox(height: 8),
@@ -558,11 +593,19 @@ class _PodcastPositionSliderDialogState
 
 class _PodcastCategoryBrowserScreen extends StatelessWidget {
   final String country;
+  final int? selectedGenreId;
+  final Future<void> Function(PodcastCategory category) onCategorySelected;
 
-  const _PodcastCategoryBrowserScreen({required this.country});
+  const _PodcastCategoryBrowserScreen({
+    required this.country,
+    required this.selectedGenreId,
+    required this.onCategorySelected,
+  });
 
   Future<void> _openCategory(
       BuildContext context, PodcastCategory category) async {
+    await onCategorySelected(category);
+    if (!context.mounted) return;
     final feedUrl = await Navigator.push<String>(
       context,
       MaterialPageRoute(
@@ -591,9 +634,10 @@ class _PodcastCategoryBrowserScreen extends StatelessWidget {
         separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final category = categories[index];
+          final selected = category.genreId == selectedGenreId;
           return ListTile(
             key: ValueKey('podcast_category_${category.genreId}'),
-            leading: const Icon(Icons.category),
+            leading: Icon(selected ? Icons.check : Icons.category),
             title: Text(category.nameForLanguage(l10n.localeName)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _openCategory(context, category),

@@ -182,6 +182,17 @@ class AppSettingsService {
     await prefs.setString('sonarpad_podcast_country', country);
   }
 
+  Future<int?> loadPodcastCategoryGenreId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getInt('sonarpad_podcast_category_genre_id');
+    return saved == null || saved <= 0 ? null : saved;
+  }
+
+  Future<void> savePodcastCategoryGenreId(int? genreId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('sonarpad_podcast_category_genre_id', genreId ?? 0);
+  }
+
   Future<SonarpadThemeMode> loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_themeModeKey);

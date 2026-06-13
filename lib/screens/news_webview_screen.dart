@@ -20,10 +20,14 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
   const NewsWebViewScreen(
-      {super.key, required this.article, required this.language});
+      {super.key,
+      required this.article,
+      required this.language,
+      this.readSourceName});
 
   final NewsArticle article;
   final NewsLanguage language;
+  final String? readSourceName;
 
   @override
   State<NewsWebViewScreen> createState() => _NewsWebViewScreenState();
@@ -122,7 +126,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     ));
     unawaited(_newsService.addReadArticle(
       widget.language,
-      widget.article.source,
+      widget.readSourceName ?? widget.article.source,
       widget.article,
     ));
     _controller = WebViewController()

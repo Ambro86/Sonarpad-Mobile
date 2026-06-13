@@ -723,6 +723,16 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                 overflow: TextOverflow.ellipsis,
               ),
               onTap: () async {
+                await _service.addReadArticle(
+                  widget.language,
+                  widget.sourceName,
+                  article,
+                );
+                if (mounted) {
+                  setState(() {
+                    _readUris = {..._readUris, article.id};
+                  });
+                }
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -730,10 +740,11 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                     builder: (_) => NewsWebViewScreen(
                       article: article,
                       language: widget.language,
+                      readSourceName: widget.sourceName,
                     ),
                   ),
                 );
-                _loadReadArticles();
+                await _loadReadArticles();
               },
             );
           },
@@ -847,6 +858,7 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
                           builder: (_) => NewsWebViewScreen(
                             article: article,
                             language: widget.language,
+                            readSourceName: widget.sourceName,
                           ),
                         ),
                       ),
