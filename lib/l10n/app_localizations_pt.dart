@@ -2027,4 +2027,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get concertsBuyTickets => 'Comprar ou ver detalhes no Ticketmaster';
+
+  @override
+  String get podcastPlayedEpisodes => 'Episódios ouvidos';
+
+  @override
+  String get podcastUnplayed => 'Não reproduzido';
 }

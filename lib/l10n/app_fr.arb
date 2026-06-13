@@ -612,5 +612,7 @@
   "concertsVenue": "Lieu du concert :",
   "concertsBuyTickets": "Acheter ou voir les détails sur Ticketmaster",
   "newsReadArticles": "Articles lus",
-  "weatherRecentCities": "Villes récentes"
+  "weatherRecentCities": "Villes récentes",
+  "podcastPlayedEpisodes": "Épisodes écoutés",
+  "podcastUnplayed": "Non écouté"
 }

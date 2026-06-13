@@ -254,6 +254,7 @@ class _PodcastEpisodePlayerScreenState
       setState(() {});
     } else {
       await _audio.pause();
+      await _audio.saveCurrentBookmark();
     }
   }
 
@@ -407,6 +408,12 @@ class _PodcastEpisodePlayerScreenState
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
+      _saveVideoBookmark();
+      _audio.saveCurrentBookmark();
+    }
     _lastLifecycleState = state;
     AppLogger.log(
       'PodcastPlayer: lifecycle state=$state mounted=$mounted '

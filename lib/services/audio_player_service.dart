@@ -59,7 +59,7 @@ class AudioPlayerService {
       AppLogger.log('Sonarpad audio: playerStateStream emitted $state');
       if (state.processingState == ProcessingState.completed ||
           !state.playing) {
-        _saveCurrentBookmark();
+        saveCurrentBookmark();
       }
     }, onError: (Object error, StackTrace stackTrace) {
       AppLogger.log('Sonarpad audio: playerStateStream error: $error');
@@ -76,7 +76,7 @@ class AudioPlayerService {
             _lastSavedBookmarkSecond = currentSecond;
             AppLogger.log(
                 'Sonarpad audio: background auto-save at $currentSecond sec');
-            await _saveCurrentBookmark();
+            await saveCurrentBookmark();
           }
         }
       }
@@ -87,7 +87,7 @@ class AudioPlayerService {
     });
   }
 
-  Future<void> _saveCurrentBookmark() async {
+  Future<void> saveCurrentBookmark() async {
     if (_currentMediaId == null ||
         _currentSessionType != AudioSessionType.playback) {
       return;
@@ -99,7 +99,7 @@ class AudioPlayerService {
     }
 
     AppLogger.log(
-        'Sonarpad audio: _saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration?.inSeconds}s');
+        'Sonarpad audio: saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration?.inSeconds}s');
 
     if (await _settings.isAutoBookmarkEnabled()) {
       bool isFinished = false;
@@ -121,11 +121,11 @@ class AudioPlayerService {
 
       if (isFinished) {
         AppLogger.log(
-            'Sonarpad audio: _saveCurrentBookmark() saving 0 (finished)');
+            'Sonarpad audio: saveCurrentBookmark() saving 0 (finished)');
         await _settings.saveMediaBookmark(_currentMediaId!, 0);
       } else {
         AppLogger.log(
-            'Sonarpad audio: _saveCurrentBookmark() saving ${pos.inSeconds}');
+            'Sonarpad audio: saveCurrentBookmark() saving ${pos.inSeconds}');
         await _settings.saveMediaBookmark(_currentMediaId!, pos.inSeconds);
       }
     }
@@ -366,7 +366,7 @@ class AudioPlayerService {
     AppLogger.log('Sonarpad audio: pause');
     await _player.pause();
     await _disableWakelock();
-    await _saveCurrentBookmark();
+    await saveCurrentBookmark();
   }
 
   Future<void> togglePlayPause() async {
@@ -632,7 +632,7 @@ class AudioPlayerService {
   Future<void> stop() async {
     _stopRequested = true;
     AppLogger.log('Sonarpad audio: stop requested');
-    await _saveCurrentBookmark();
+    await saveCurrentBookmark();
     await _player.stop();
     await _player.setLoopMode(LoopMode.off);
     await _player.setVolume(1);
@@ -646,7 +646,7 @@ class AudioPlayerService {
     try {
       _stopRequested = true;
       AppLogger.log('Sonarpad audio: stopAndDispose requested');
-      await _saveCurrentBookmark();
+      await saveCurrentBookmark();
       await _player.stop();
       await _disableWakelock();
       await _player.dispose();
@@ -673,7 +673,7 @@ class AudioPlayerService {
     final completer = Completer<void>();
     _pendingDispose = completer.future;
 
-    await _saveCurrentBookmark();
+    await saveCurrentBookmark();
     await _disableWakelock();
     try {
       await _player.dispose();

@@ -2022,4 +2022,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get concertsBuyTickets => 'Kup lub zobacz szczegóły w Ticketmaster';
+
+  @override
+  String get podcastPlayedEpisodes => 'Odtworzone odcinki';
+
+  @override
+  String get podcastUnplayed => 'Nieodtworzone';
 }

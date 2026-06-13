@@ -140,7 +140,25 @@ class _RadioScreenState extends State<RadioScreen> {
               _countryOptionLabel(l10n, country),
             ))
         .toList()
-      ..sort((a, b) => a.value.compareTo(b.value));
+      ..sort((a, b) {
+        if (a.key == _countryCode) return -1;
+        if (b.key == _countryCode) return 1;
+        return a.value.compareTo(b.value);
+      });
+
+    final languageItems = List.of(_languageOptions)
+      ..sort((a, b) {
+        if (a.code == _languageCode) return -1;
+        if (b.code == _languageCode) return 1;
+        return _languageOptionLabel(l10n, a).compareTo(_languageOptionLabel(l10n, b));
+      });
+
+    final genreItems = List.of(RadioService.genres)
+      ..sort((a, b) {
+        if (a.value == _genre.value) return -1;
+        if (b.value == _genre.value) return 1;
+        return l10n.radioGenreLabel(a.value).compareTo(l10n.radioGenreLabel(b.value));
+      });
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioTitle)),
@@ -214,7 +232,7 @@ class _RadioScreenState extends State<RadioScreen> {
                 MaterialPageRoute(
                   builder: (_) => _RadioOptionPickerScreen<RadioLanguageOption>(
                     title: l10n.radioBrowseByLanguage,
-                    options: _languageOptions,
+                    options: languageItems,
                     labelBuilder: (o) => _languageOptionLabel(l10n, o),
                   ),
                 ),
@@ -224,6 +242,7 @@ class _RadioScreenState extends State<RadioScreen> {
                   _languageCode = result.code;
                   _browseMode = _RadioBrowseMode.language;
                 });
+                _search();
               }
             },
           ),
@@ -248,6 +267,7 @@ class _RadioScreenState extends State<RadioScreen> {
                   _countryCode = result.key;
                   _browseMode = _RadioBrowseMode.country;
                 });
+                _search();
               }
             },
           ),
@@ -301,13 +321,14 @@ class _RadioScreenState extends State<RadioScreen> {
                 MaterialPageRoute(
                   builder: (_) => _RadioOptionPickerScreen<RadioGenreOption>(
                     title: l10n.radioGenre,
-                    options: RadioService.genres,
+                    options: genreItems,
                     labelBuilder: (o) => l10n.radioGenreLabel(o.value),
                   ),
                 ),
               );
               if (result != null) {
                 setState(() => _genre = result);
+                _search();
               }
             },
           ),

@@ -580,6 +580,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       builder: (ctx) => SimpleDialog(
         title: Text(l10n.importExternalSourcesTitle),
         children: [
+          if (Platform.isIOS)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, 'itunes'),
+              child: ListTile(
+                leading: const Icon(Icons.apple),
+                title: Text(l10n.importDocumentsFromITunes),
+              ),
+            ),
           SimpleDialogOption(
             onPressed: () => Navigator.pop(ctx, 'dropbox'),
             child: ListTile(
@@ -621,7 +629,13 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     if (!mounted || source == null) return;
 
-    if (source == 'dropbox') {
+    if (source == 'itunes') {
+      await _importSharedDocuments();
+      if (mounted) {
+        await _load();
+        setState(() {});
+      }
+    } else if (source == 'dropbox') {
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => DropboxBrowserScreen(documentService: _service),
@@ -738,19 +752,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 }
               } else if (value == 'external_sources') {
                 await _openExternalSources();
-              } else if (value == 'itunes') {
-                await _importSharedDocuments();
               }
             },
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'new_folder',
                 child: Text(AppLocalizations.of(context).createNewFolder),
-              ),
-              PopupMenuItem(
-                value: 'itunes',
-                child: Text(
-                    AppLocalizations.of(context).importDocumentsFromITunes),
               ),
               PopupMenuItem(
                 value: 'external_sources',

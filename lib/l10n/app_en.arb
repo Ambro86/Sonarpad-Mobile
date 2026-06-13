@@ -273,7 +273,7 @@
   "settingsAutoBookmarkHint": "Resume documents, podcasts, and media from where you left off.",
   "settingsSeekStep": "Rewind / fast-forward step for media",
   "aiChatIntro": "I’m Sonarpad AI. How can I help you?",
-  "cinemaOverviewLabel": "Plot:",
+  "cinemaOverviewLabel": "Overview:",
   "cinemaUpcomingReleases": "Upcoming releases",
   "cinemaWillRelease": "Will be released on: {date}",
   "meteoTitle": "Weather",
@@ -602,7 +602,6 @@
   "cinemaNoMovies": "No movies found at the moment.",
   "cinemaError": "Error loading movies.",
   "cinemaReleased": "Released on: {date}",
-  "cinemaOverviewLabel": "Overview:",
   "cinemaOpenTrailer": "Open trailer",
   "concertsTitle": "Concerts & Events",
   "concertsSearchHint": "Enter a city (e.g. London, New York)",
@@ -613,5 +612,7 @@
   "concertsVenue": "Concert venue:",
   "concertsBuyTickets": "Buy or see details on Ticketmaster",
   "newsReadArticles": "Read articles",
-  "weatherRecentCities": "Recent cities"
+  "weatherRecentCities": "Recent cities",
+  "podcastPlayedEpisodes": "Played episodes",
+  "podcastUnplayed": "Unplayed"
 }

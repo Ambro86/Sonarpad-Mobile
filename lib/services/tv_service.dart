@@ -71,28 +71,7 @@ class TvService {
   static const _oggiInTvTimelineUrlPayloadJson =
       r'''{"payload_b64":"csAxIXZQMnhMMuhZfR1S+OWXPRn4oJR5K4nkpYbgWGup/jgB+m6jPWForBe9oLtOwaBOreEeoqetOYbKLTxeLIC4fDkh4S9vy3U4I3E=","algorithm":"gzip-xor-base64-v1"}''';
 
-  String _tvCategory(String name) {
-    final n = normalizeChannelName(name);
-    if (n.startsWith('rai')) return 'Rai';
-    if (n == 'rete4' ||
-        n == 'canale5' ||
-        n == 'italia1' ||
-        n == 'italia2' ||
-        n == 'tgcom24' ||
-        n == 'iris' ||
-        n == 'la5' ||
-        n == '20' ||
-        n == '27' ||
-        n == 'cine34' ||
-        n == 'topcrime' ||
-        n == 'focus' ||
-        n == 'mediasetextra' ||
-        n == 'boing' ||
-        n == 'cartoonito') {
-      return 'Mediaset';
-    }
-    return 'Altri';
-  }
+
 
   bool isRaiAudioDescriptionChannel(TvChannel channel) {
     return (channel.name == 'Rai 1' ||
@@ -163,10 +142,13 @@ class TvService {
           var url = (ch['url'] as String).trim();
           if (name == 'La7') url = _la7StreamUrl;
           if (name.isNotEmpty && url.isNotEmpty) {
-            channels.add(TvChannel(
+              final gt = ch['group_title'] as String?;
+              final cat = (gt == null || gt.trim().isEmpty) ? 'Altri' : gt.trim();
+              
+              channels.add(TvChannel(
               name: name,
               url: url,
-              category: ch['group_title'] as String? ?? _tvCategory(name),
+              category: cat,
               streamResolver: ch['stream_resolver'] as String?,
               resolverEndpoint: ch['resolver_endpoint'] as String?,
               resolverRealm: ch['resolver_realm'] as String?,
@@ -328,12 +310,35 @@ class TvService {
     var resolvedUrl = channel.url;
     await AppLogger.log(
         'Inizio risoluzione stream per: ${channel.name} (URL base: $resolvedUrl)');
-    if (channel.streamResolver == 'aurora_channel') {
+    // --- AUTORESOLVER DISCOVERY ---
+    var effResolver = channel.streamResolver;
+    var effChannelId = channel.resolverChannelId;
+    
+    final normName = normalizeChannelName(channel.name);
+    final discoveryIds = {
+      'realtime': '2',
+      'nove': '3',
+      'la9': '3',
+      '9': '3',
+      'dmax': '4',
+      'foodnetwork': '6',
+      'motortrend': '11',
+      'discoverychannel': '12',
+      'hgtv': '13'
+    };
+    
+    if (discoveryIds.containsKey(normName)) {
+      effResolver = 'aurora_channel';
+      effChannelId ??= discoveryIds[normName];
+    }
+    // ------------------------------
+
+    if (effResolver == 'aurora_channel') {
       try {
         final endpoint =
             channel.resolverEndpoint ?? 'https://public.aurora.enhanced.live';
         final realm = channel.resolverRealm ?? 'it';
-        final channelId = channel.resolverChannelId;
+        final channelId = effChannelId;
         if (channelId != null) {
           final tokenUrl =
               '$endpoint/token?realm=${Uri.encodeComponent(realm)}';

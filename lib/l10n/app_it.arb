@@ -2755,5 +2755,6 @@
   "concertsEmpty": "Nessun concerto trovato in questa città.",
   "concertsVenue": "Luogo del concerto:",
   "concertsBuyTickets": "Acquista o vedi dettagli su Ticketmaster",
-  "weatherRecentCities": "Città recenti"
+  "podcastPlayedEpisodes": "Episodi ascoltati",
+  "podcastUnplayed": "Non ascoltato"
 }

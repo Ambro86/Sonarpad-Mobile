@@ -2016,4 +2016,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get concertsBuyTickets => 'Buy or see details on Ticketmaster';
+
+  @override
+  String get podcastPlayedEpisodes => 'Played episodes';
+
+  @override
+  String get podcastUnplayed => 'Unplayed';
 }

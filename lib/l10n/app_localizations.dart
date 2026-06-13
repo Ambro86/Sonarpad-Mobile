@@ -3784,6 +3784,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Acquista o vedi dettagli su Ticketmaster'**
   String get concertsBuyTickets;
+
+  /// No description provided for @podcastPlayedEpisodes.
+  ///
+  /// In it, this message translates to:
+  /// **'Episodi ascoltati'**
+  String get podcastPlayedEpisodes;
+
+  /// No description provided for @podcastUnplayed.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ascoltato'**
+  String get podcastUnplayed;
 }
 
 class _AppLocalizationsDelegate

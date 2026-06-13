@@ -12,6 +12,57 @@ import '../models/podcast.dart';
 import 'raiplay_sound_service.dart';
 
 class PodcastService {
+  String _getPlayedEpisodesKey(String feedUrl) => 'sonarpad_played_episodes_$feedUrl';
+
+  Future<List<PodcastEpisode>> getPlayedEpisodes(String feedUrl) async {
+    final prefs = await SharedPreferences.getInstance();
+    final listStr = prefs.getStringList(_getPlayedEpisodesKey(feedUrl)) ?? [];
+    final list = <PodcastEpisode>[];
+    for (final str in listStr) {
+      try {
+        final decoded = jsonDecode(str) as Map<String, dynamic>;
+        list.add(PodcastEpisode(
+          title: decoded['title'] ?? '',
+          description: decoded['description'] ?? '',
+          audioUrl: decoded['audioUrl'] ?? '',
+          publishedAt: decoded['publishedAt'] != null ? DateTime.parse(decoded['publishedAt']) : null,
+        ));
+      } catch (_) {}
+    }
+    return list;
+  }
+
+  Future<void> markEpisodeAsPlayed(String feedUrl, PodcastEpisode episode) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = _getPlayedEpisodesKey(feedUrl);
+    var current = await getPlayedEpisodes(feedUrl);
+    
+    // Rimuovi se c'è già
+    current.removeWhere((e) => e.audioUrl == episode.audioUrl);
+    
+    // Aggiungi in cima
+    current.insert(0, episode);
+    
+    // Tieni massimo 100
+    if (current.length > 100) {
+      current = current.sublist(0, 100);
+    }
+    
+    final encoded = current.map((e) => jsonEncode({
+      'title': e.title,
+      'description': e.description,
+      'audioUrl': e.audioUrl,
+      'publishedAt': e.publishedAt?.toIso8601String(),
+    })).toList();
+    
+    await prefs.setStringList(key, encoded);
+  }
+
+  Future<void> clearPlayedEpisodes(String feedUrl) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_getPlayedEpisodesKey(feedUrl));
+  }
+
   static const _prefsKey = 'sonarpad_podcast_subscriptions';
   static const countries = [
     PodcastCountry('ae', 'Emirati Arabi Uniti'),
