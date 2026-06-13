@@ -98,7 +98,7 @@ class _TvScreenState extends State<TvScreen> {
       map.putIfAbsent(ch.category, () => []).add(ch);
     }
 
-    final categories = ['Rai', 'Mediaset', 'Regionali', 'Altri'];
+    final categories = map.keys.toList()..sort();
 
     final listChildren = <Widget>[
       Padding(

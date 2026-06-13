@@ -129,6 +129,7 @@ class TvService {
         headers: {
           'X-Sonarpad-TV-Token':
               '__SONARPAD_ROUTE_CLIENT_TOKEN__',
+          'X-Sonarpad-Route-Token': const String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN'),
           'User-Agent': 'Sonarpad TV/1.0',
         },
       ).timeout(const Duration(seconds: 10));
