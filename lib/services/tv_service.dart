@@ -325,7 +325,11 @@ class TvService {
       'foodnetwork': '6',
       'motortrend': '11',
       'discoverychannel': '12',
-      'hgtv': '13'
+      'hgtv': '13',
+      'k2': '24',
+      'frisbee': '26',
+      'giallo': '27',
+      'giallotv': '27',
     };
     
     if (discoveryIds.containsKey(normName)) {
@@ -384,7 +388,7 @@ class TvService {
                   headers: pbHeaders, body: pbBody);
               if (pbResp.statusCode == 200) {
                 final match = RegExp(
-                        'https?://[^\\\\s"\\\'<>\\\\\\\\]+?\\\\.m3u8[^\\\\s"\\\'<>\\\\\\\\]*')
+                        'https?://[^\\s"\\\'<>\\\\]+?\\.m3u8[^\\s"\\\'<>\\\\]*')
                     .firstMatch(pbResp.body);
                 if (match != null) {
                   final m3u8Url = match.group(0)!.replaceAll('\\/', '/');
