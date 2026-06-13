@@ -1058,12 +1058,24 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
         (collapsedMatchIndex < 0 ? 0 : collapsedMatchIndex)
             .clamp(0, collapsed.length)
             .toInt();
-    final start = (safeMatchIndex - 70).clamp(0, collapsed.length).toInt();
+    
+    int start = (safeMatchIndex - 70).clamp(0, collapsed.length).toInt();
     final end =
         (safeMatchIndex + query.length + 90).clamp(0, collapsed.length).toInt();
-    final prefix = start > 0 ? '... ' : '';
+    
+    final initialWords = collapsed.split(' ').take(3).join(' ');
+    String prefix = '';
+    
+    if (start > 0) {
+      if (start <= initialWords.length + 15) {
+        start = 0;
+      } else {
+        prefix = '$initialWords ... ';
+      }
+    }
+    
     final suffix = end < collapsed.length ? ' ...' : '';
-    return '$prefix${collapsed.substring(start, end)}$suffix';
+    return '$prefix${collapsed.substring(start, end).trimLeft()}$suffix';
   }
 
   @override

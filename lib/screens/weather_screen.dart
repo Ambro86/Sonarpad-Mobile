@@ -22,10 +22,32 @@ class _WeatherScreenState extends State<WeatherScreen> {
   _WeatherError? _error;
   int _selectedDay = 0;
 
+  bool _hasRecentCities = false;
+
   @override
   void initState() {
     super.initState();
+    _checkRecentCities();
     _loadSavedCity();
+  }
+
+  Future<void> _checkRecentCities() async {
+    final cities = await _settings.getWeatherRecentCities();
+    if (mounted) setState(() => _hasRecentCities = cities.isNotEmpty);
+  }
+
+  Future<void> _openRecentCities() async {
+    final city = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const _WeatherRecentCitiesScreen(),
+      ),
+    );
+    _checkRecentCities();
+    if (city != null && city.isNotEmpty) {
+      _searchCtrl.text = city;
+      _fetchWeather();
+    }
   }
 
   @override
@@ -121,6 +143,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
       return;
     }
     await _settings.setWeatherCity(savedCity);
+    await _settings.addWeatherRecentCity(savedCity);
+    _checkRecentCities();
     if (mounted) {
       setState(() {
         _forecast = forecast;
@@ -162,6 +186,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
               ],
             ),
           ),
+          if (_hasRecentCities && !_isLoading && _cityResults.isEmpty)
+            ListTile(
+              leading: const Icon(Icons.history),
+              title: Text(l10n.weatherRecentCities),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: _openRecentCities,
+            ),
           if (_isLoading)
             Expanded(
               child: Center(
@@ -594,5 +625,93 @@ enum _WeatherError {
       _WeatherError.cityNotFound => l10n.weatherCityNotFound,
       _WeatherError.searchError => l10n.weatherSearchError,
     };
+  }
+}
+
+class _WeatherRecentCitiesScreen extends StatefulWidget {
+  const _WeatherRecentCitiesScreen();
+
+  @override
+  State<_WeatherRecentCitiesScreen> createState() =>
+      _WeatherRecentCitiesScreenState();
+}
+
+class _WeatherRecentCitiesScreenState
+    extends State<_WeatherRecentCitiesScreen> {
+  final _settings = AppSettingsService();
+  List<String> _cities = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final cities = await _settings.getWeatherRecentCities();
+    if (!mounted) return;
+    setState(() {
+      _cities = cities;
+      _loading = false;
+    });
+  }
+
+  Future<void> _clearHistory() async {
+    final l10n = AppLocalizations.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.clearHistory),
+        content: Text(l10n.confirmClearHistory),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.clearHistory),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    await _settings.clearWeatherRecentCities();
+    _load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.weatherRecentCities),
+        actions: [
+          if (_cities.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.delete_sweep),
+              tooltip: l10n.clearHistory,
+              onPressed: _clearHistory,
+            ),
+        ],
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _cities.isEmpty
+              ? Center(child: Text(l10n.weatherCityNotFound)) // Or another localized string
+              : ListView.separated(
+                  itemCount: _cities.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final city = _cities[index];
+                    return ListTile(
+                      title: Text(city),
+                      onTap: () => Navigator.pop(context, city),
+                    );
+                  },
+                ),
+    );
   }
 }

@@ -120,6 +120,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       'News: apertura articolo title="${widget.article.title}" '
       'url=${widget.article.link}',
     ));
+    unawaited(_newsService.addReadArticle(
+      widget.language,
+      widget.article.source,
+      widget.article,
+    ));
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(

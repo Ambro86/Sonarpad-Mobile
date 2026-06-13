@@ -7,12 +7,12 @@ import 'radio_player_screen.dart';
 import 'radio_screen.dart'; // Per RadioTile
 
 class RadioSearchResultsScreen extends StatefulWidget {
-  final List<RadioStation> results;
+  final Future<List<RadioStation>> resultsFuture;
   final String query;
 
   const RadioSearchResultsScreen({
     super.key,
-    required this.results,
+    required this.resultsFuture,
     this.query = '',
   });
 
@@ -74,8 +74,36 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioSearchResults)),
-      body: widget.results.isEmpty
-          ? Center(
+      body: FutureBuilder<List<RadioStation>>(
+        future: widget.resultsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(l10n.radioSearching),
+                ],
+              ),
+            );
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  l10n.radioSearchError(snapshot.error.toString()),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
+            );
+          }
+          final results = snapshot.data ?? [];
+          if (results.isEmpty) {
+            return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
@@ -83,26 +111,29 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
                   textAlign: TextAlign.center,
                 ),
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: widget.results.length,
-              itemBuilder: (context, index) {
-                final station = widget.results[index];
-                final isFavorite = _favorites
-                    .any((item) => item.streamUrl == station.streamUrl);
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: RadioTile(
-                    station: station,
-                    isFavorite: isFavorite,
-                    isPlaying: false,
-                    onPlay: () => _play(station),
-                    onToggleFavorite: () => _toggleFavorite(station),
-                  ),
-                );
-              },
-            ),
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: results.length,
+            itemBuilder: (context, index) {
+              final station = results[index];
+              final isFavorite = _favorites
+                  .any((item) => item.streamUrl == station.streamUrl);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: RadioTile(
+                  station: station,
+                  isFavorite: isFavorite,
+                  isPlaying: false,
+                  onPlay: () => _play(station),
+                  onToggleFavorite: () => _toggleFavorite(station),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

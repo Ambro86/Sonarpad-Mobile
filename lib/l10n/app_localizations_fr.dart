@@ -453,6 +453,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchInProgress => 'Recherche en cours...';
 
   @override
+  String get newsReadArticles => 'Articles lus';
+
+  @override
+  String get weatherRecentCities => 'Villes récentes';
+
+  @override
   String podcastResultsFound(int count) {
     return '$count podcasts trouvés';
   }
@@ -837,8 +843,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get documentSearchEmptyQuery => 'Saisissez le texte à rechercher.';
 
   @override
-  String get documentSearchResultsTitle =>
-      'Résultats de recherche du document';
+  String get documentSearchResultsTitle => 'Résultats de recherche du document';
 
   @override
   String noDocumentSearchResults(String query) {
@@ -1178,8 +1183,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noLibrivoxAudiobooksFound => 'Aucun livre audio trouvé.';
 
   @override
-  String get librivoxAudiobookSaved =>
-      'Livre audio enregistré dans Documents.';
+  String get librivoxAudiobookSaved => 'Livre audio enregistré dans Documents.';
 
   @override
   String get librivoxSaveAudiobook =>

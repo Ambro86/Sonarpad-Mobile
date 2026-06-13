@@ -9,8 +9,8 @@ import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 import 'app_localizations_fr.dart';
 import 'app_localizations_it.dart';
-import 'app_localizations_pt.dart';
 import 'app_localizations_pl.dart';
+import 'app_localizations_pt.dart';
 
 // ignore_for_file: type=lint
 
@@ -102,8 +102,8 @@ abstract class AppLocalizations {
     Locale('en'),
     Locale('es'),
     Locale('fr'),
-    Locale('pt'),
-    Locale('pl')
+    Locale('pl'),
+    Locale('pt')
   ];
 
   /// Localized text for appTitle.
@@ -915,6 +915,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Ricerca in corso...'**
   String get searchInProgress;
+
+  /// No description provided for @newsReadArticles.
+  ///
+  /// In it, this message translates to:
+  /// **'Articoli letti'**
+  String get newsReadArticles;
+
+  /// No description provided for @weatherRecentCities.
+  ///
+  /// In it, this message translates to:
+  /// **'Città recenti'**
+  String get weatherRecentCities;
 
   /// Localized text for podcastResultsFound.
   ///
@@ -2066,109 +2078,211 @@ abstract class AppLocalizations {
   /// Localized text for projectGutenbergImportUnavailable.
   ///
   /// In it, this message translates to:
-  /// **'L'importazione da Project Gutenberg non è ancora disponibile.'**
+  /// **'L\'importazione da Project Gutenberg non è ancora disponibile.'**
   String get projectGutenbergImportUnavailable;
 
   /// Localized text for importFromInternetArchive.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa da Internet Archive'**
   String get importFromInternetArchive;
 
   /// Localized text for internetArchiveTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Internet Archive'**
   String get internetArchiveTitle;
 
   /// Localized text for internetArchiveSearchLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca audio'**
   String get internetArchiveSearchLabel;
 
   /// Localized text for internetArchiveSourceLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Fonte'**
   String get internetArchiveSourceLabel;
 
   /// Localized text for internetArchiveOldTimeRadio.
+  ///
+  /// In it, this message translates to:
+  /// **'Old Time Radio'**
   String get internetArchiveOldTimeRadio;
 
   /// Localized text for internetArchiveSpeeches.
+  ///
+  /// In it, this message translates to:
+  /// **'Discorsi storici'**
   String get internetArchiveSpeeches;
 
   /// Localized text for internetArchiveLiveMusic.
+  ///
+  /// In it, this message translates to:
+  /// **'Live Music Archive'**
   String get internetArchiveLiveMusic;
 
   /// Localized text for internetArchiveNoItemsFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun elemento audio trovato.'**
   String get internetArchiveNoItemsFound;
 
   /// Localized text for saveAudioInDocuments.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva audio nei Documenti'**
   String get saveAudioInDocuments;
 
   /// Localized text for audioSavedInDocuments.
+  ///
+  /// In it, this message translates to:
+  /// **'Audio salvato nei Documenti.'**
   String get audioSavedInDocuments;
 
   /// Localized text for noAudioTracksAvailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna traccia audio disponibile.'**
   String get noAudioTracksAvailable;
 
   /// Localized text for importFromLibriVox.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa da LibriVox'**
   String get importFromLibriVox;
 
   /// Localized text for gutenbergSearchLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca libro o autore'**
   String get gutenbergSearchLabel;
 
   /// Localized text for sourceLanguageLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua'**
   String get sourceLanguageLabel;
 
   /// Localized text for noGutenbergBooksFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun libro trovato.'**
   String get noGutenbergBooksFound;
 
   /// Localized text for loadMore.
+  ///
+  /// In it, this message translates to:
+  /// **'Carica altri'**
   String get loadMore;
 
   /// Localized text for sourceLanguageValue.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua: {language}'**
   String sourceLanguageValue(String language);
 
   /// Localized text for gutenbergImportAndRead.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa e leggi'**
   String get gutenbergImportAndRead;
 
   /// Localized text for gutenbergImporting.
+  ///
+  /// In it, this message translates to:
+  /// **'Importazione...'**
   String get gutenbergImporting;
 
   /// Localized text for librivoxSearchLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca audiolibro'**
   String get librivoxSearchLabel;
 
   /// Localized text for noLibrivoxAudiobooksFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun audiolibro trovato.'**
   String get noLibrivoxAudiobooksFound;
 
   /// Localized text for librivoxAudiobookSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiolibro salvato nei Documenti.'**
   String get librivoxAudiobookSaved;
 
   /// Localized text for librivoxSaveAudiobook.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva audiolibro nei Documenti'**
   String get librivoxSaveAudiobook;
 
   /// Localized text for librivoxSaving.
+  ///
+  /// In it, this message translates to:
+  /// **'Salvataggio...'**
   String get librivoxSaving;
 
   /// Localized text for librivoxNoAudioTracks.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna traccia audio disponibile.'**
   String get librivoxNoAudioTracks;
 
   /// Localized text for librivoxNotTextExportable.
+  ///
+  /// In it, this message translates to:
+  /// **'Gli audiolibri LibriVox non sono esportabili come testo.'**
   String get librivoxNotTextExportable;
 
   /// Localized text for sourceDurationValue.
+  ///
+  /// In it, this message translates to:
+  /// **'Durata: {duration}'**
   String sourceDurationValue(String duration);
 
   /// Localized text for importFromPoetryDb.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa da PoetryDB'**
   String get importFromPoetryDb;
 
   /// Localized text for poetryDbSearchLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca poesia'**
   String get poetryDbSearchLabel;
 
   /// Localized text for poetryDbSearchBy.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca per'**
   String get poetryDbSearchBy;
 
   /// Localized text for poetryDbSearchByTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo'**
   String get poetryDbSearchByTitle;
 
   /// Localized text for poetryDbSearchByAuthor.
+  ///
+  /// In it, this message translates to:
+  /// **'Autore'**
   String get poetryDbSearchByAuthor;
 
   /// Localized text for poetryDbNoPoemsFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna poesia trovata.'**
   String get poetryDbNoPoemsFound;
 
   /// Localized text for poetryDbLineCount.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} versi'**
   String poetryDbLineCount(int count);
 
   /// Localized text for moveDocument.
@@ -2753,12 +2867,28 @@ abstract class AppLocalizations {
   /// **'Lingua'**
   String get radioLanguage;
 
+  /// No description provided for @radioBrowseBy.
+  ///
+  /// In it, this message translates to:
+  /// **'Sfoglia per'**
   String get radioBrowseBy;
 
+  /// No description provided for @radioBrowseByLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Sfoglia per lingua'**
   String get radioBrowseByLanguage;
 
+  /// No description provided for @radioBrowseByCountry.
+  ///
+  /// In it, this message translates to:
+  /// **'Sfoglia per nazione'**
   String get radioBrowseByCountry;
 
+  /// No description provided for @radioCountry.
+  ///
+  /// In it, this message translates to:
+  /// **'Nazione'**
   String get radioCountry;
 
   /// Localized text for radioGenre.
@@ -3175,44 +3305,124 @@ abstract class AppLocalizations {
   /// **'Cinese'**
   String get radioLanguageZh;
 
+  /// No description provided for @radioCountryOptionIt.
+  ///
+  /// In it, this message translates to:
+  /// **'Italia'**
   String get radioCountryOptionIt;
 
+  /// No description provided for @radioCountryOptionUs.
+  ///
+  /// In it, this message translates to:
+  /// **'Stati Uniti'**
   String get radioCountryOptionUs;
 
+  /// No description provided for @radioCountryOptionGb.
+  ///
+  /// In it, this message translates to:
+  /// **'Regno Unito'**
   String get radioCountryOptionGb;
 
+  /// No description provided for @radioCountryOptionFr.
+  ///
+  /// In it, this message translates to:
+  /// **'Francia'**
   String get radioCountryOptionFr;
 
+  /// No description provided for @radioCountryOptionEs.
+  ///
+  /// In it, this message translates to:
+  /// **'Spagna'**
   String get radioCountryOptionEs;
 
+  /// No description provided for @radioCountryOptionDe.
+  ///
+  /// In it, this message translates to:
+  /// **'Germania'**
   String get radioCountryOptionDe;
 
+  /// No description provided for @radioCountryOptionCh.
+  ///
+  /// In it, this message translates to:
+  /// **'Svizzera'**
   String get radioCountryOptionCh;
 
+  /// No description provided for @radioCountryOptionAt.
+  ///
+  /// In it, this message translates to:
+  /// **'Austria'**
   String get radioCountryOptionAt;
 
+  /// No description provided for @radioCountryOptionBe.
+  ///
+  /// In it, this message translates to:
+  /// **'Belgio'**
   String get radioCountryOptionBe;
 
+  /// No description provided for @radioCountryOptionNl.
+  ///
+  /// In it, this message translates to:
+  /// **'Paesi Bassi'**
   String get radioCountryOptionNl;
 
+  /// No description provided for @radioCountryOptionPt.
+  ///
+  /// In it, this message translates to:
+  /// **'Portogallo'**
   String get radioCountryOptionPt;
 
+  /// No description provided for @radioCountryOptionBr.
+  ///
+  /// In it, this message translates to:
+  /// **'Brasile'**
   String get radioCountryOptionBr;
 
+  /// No description provided for @radioCountryOptionAr.
+  ///
+  /// In it, this message translates to:
+  /// **'Argentina'**
   String get radioCountryOptionAr;
 
+  /// No description provided for @radioCountryOptionMx.
+  ///
+  /// In it, this message translates to:
+  /// **'Messico'**
   String get radioCountryOptionMx;
 
+  /// No description provided for @radioCountryOptionCa.
+  ///
+  /// In it, this message translates to:
+  /// **'Canada'**
   String get radioCountryOptionCa;
 
+  /// No description provided for @radioCountryOptionAu.
+  ///
+  /// In it, this message translates to:
+  /// **'Australia'**
   String get radioCountryOptionAu;
 
+  /// No description provided for @radioCountryOptionIe.
+  ///
+  /// In it, this message translates to:
+  /// **'Irlanda'**
   String get radioCountryOptionIe;
 
+  /// No description provided for @radioCountryOptionSe.
+  ///
+  /// In it, this message translates to:
+  /// **'Svezia'**
   String get radioCountryOptionSe;
 
+  /// No description provided for @radioCountryOptionPl.
+  ///
+  /// In it, this message translates to:
+  /// **'Polonia'**
   String get radioCountryOptionPl;
 
+  /// No description provided for @radioCountryOptionJp.
+  ///
+  /// In it, this message translates to:
+  /// **'Giappone'**
   String get radioCountryOptionJp;
 
   /// Localized text for radioGenreOptionAll.
@@ -3586,8 +3796,14 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'es', 'fr', 'it', 'pt', 'pl'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+        'en',
+        'es',
+        'fr',
+        'it',
+        'pl',
+        'pt'
+      ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -3604,10 +3820,10 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsFr();
     case 'it':
       return AppLocalizationsIt();
-    case 'pt':
-      return AppLocalizationsPt();
     case 'pl':
       return AppLocalizationsPl();
+    case 'pt':
+      return AppLocalizationsPt();
   }
 
   throw FlutterError(

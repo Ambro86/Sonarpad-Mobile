@@ -132,14 +132,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get convertMediaNoImage => 'Selecione uma imagem para o vídeo.';
 
   @override
-  String get convertMediaSamePath => 'O ficheiro convertido deve ser diferente do ficheiro de origem.';
+  String get convertMediaSamePath =>
+      'O ficheiro convertido deve ser diferente do ficheiro de origem.';
 
   @override
-  String get convertMediaInvalidBitrate => 'Introduza um bitrate válido entre 64 e 320 kbps.';
+  String get convertMediaInvalidBitrate =>
+      'Introduza um bitrate válido entre 64 e 320 kbps.';
 
   @override
   String convertMediaFailed(Object error) {
-    return 'A conversão falhou: ${error}';
+    return 'A conversão falhou: $error';
   }
 
   @override
@@ -170,31 +172,38 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarpadCodeValidTitle => 'Código válido';
 
   @override
-  String get sonarpadCodeValidMessage => 'El código Sonarpad es correcto. Ajustes guardados.';
+  String get sonarpadCodeValidMessage =>
+      'El código Sonarpad es correcto. Ajustes guardados.';
 
   @override
   String get sonarpadCodeInvalidTitle => 'Código inválido';
 
   @override
-  String get sonarpadCodeInvalidMessage => 'O código Sonarpad não é válido. Comprueba que lo hayas copiado sin espacios adicionales.';
+  String get sonarpadCodeInvalidMessage =>
+      'O código Sonarpad não é válido. Comprueba que lo hayas copiado sin espacios adicionales.';
 
   @override
-  String get infoDescription => 'Sonarpad é uma aplicação simples com muitas funções. Pensada para ser acessível com VoiceOver para pessoas cegas ou com deficiência visual, permite ouvir notícias, pesquisar e subscrever podcasts, importar artigos da Wikipédia, adicionar documentos à biblioteca, guardá-los e editá-los. Sonarpad é atualizado constantemente e cada função foi pensada para facilitar a vida diária.';
+  String get infoDescription =>
+      'Sonarpad é uma aplicação simples com muitas funções. Pensada para ser acessível com VoiceOver para pessoas cegas ou com deficiência visual, permite ouvir notícias, pesquisar e subscrever podcasts, importar artigos da Wikipédia, adicionar documentos à biblioteca, guardá-los e editá-los. Sonarpad é atualizado constantemente e cada função foi pensada para facilitar a vida diária.';
 
   @override
   String get infoAuthor => 'Autor: Ambrogio Riili';
 
   @override
-  String get donationsIntro => 'Sonarpad foi criado inicialmente para responder a necessidades pessoais, mas com o tempo tornou-se uma aplicação mais completa. O seu desenvolvimento exige trabalho constante: melhorar funções, corrigir erros, explorar novas ideias e testar cuidadosamente cada função.\n\nSe o Sonarpad lhe for útil e quiser apoiar o seu desenvolvimento, pode fazer um donativo.';
+  String get donationsIntro =>
+      'Sonarpad foi criado inicialmente para responder a necessidades pessoais, mas com o tempo tornou-se uma aplicação mais completa. O seu desenvolvimento exige trabalho constante: melhorar funções, corrigir erros, explorar novas ideias e testar cuidadosamente cada função.\n\nSe o Sonarpad lhe for útil e quiser apoiar o seu desenvolvimento, pode fazer um donativo.';
 
   @override
-  String get donationsPaypalDesc => 'Puedes donar a través de PayPal usando este enlace:\nhttps://www.paypal.me/ambrogio86\nPor favor, si es posible, añade "Sonarpad" como nota de pago.';
+  String get donationsPaypalDesc =>
+      'Puedes donar a través de PayPal usando este enlace:\nhttps://www.paypal.me/ambrogio86\nPor favor, si es posible, añade \"Sonarpad\" como nota de pago.';
 
   @override
-  String get donationsBankDesc => 'Também pode fazer um donativo por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.';
+  String get donationsBankDesc =>
+      'Também pode fazer um donativo por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.';
 
   @override
-  String get donationsThanks => 'Quem apoiar o projeto será mencionado na aplicação e no repositório GitHub, salvo se preferir ficar anónimo ou usar um pseudónimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução vietnamita, obrigado a Anh Đức Nguyễn.\nPela tradução checa, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.\nPela tradução sérvia, obrigado a Mila Kuran.\nPela tradução ucraniana, obrigado a Ivan Shtefuriak.';
+  String get donationsThanks =>
+      'Quem apoiar o projeto será mencionado na aplicação e no repositório GitHub, salvo se preferir ficar anónimo ou usar um pseudónimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução vietnamita, obrigado a Anh Đức Nguyễn.\nPela tradução checa, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.\nPela tradução sérvia, obrigado a Mila Kuran.\nPela tradução ucraniana, obrigado a Ivan Shtefuriak.';
 
   @override
   String get news => 'Notícias';
@@ -206,22 +215,26 @@ class AppLocalizationsPt extends AppLocalizations {
   String get podcasts => 'Podcasts';
 
   @override
-  String get podcastsHint => 'Suscríbete a podcasts, reproduce o descarga episodios';
+  String get podcastsHint =>
+      'Suscríbete a podcasts, reproduce o descarga episodios';
 
   @override
   String get importFromWikipedia => 'Wikipedia';
 
   @override
-  String get wikipediaHint => 'Pesquisar um artigo da Wikipédia e importar o texto';
+  String get wikipediaHint =>
+      'Pesquisar um artigo da Wikipédia e importar o texto';
 
   @override
   String get newsCategoryTop => 'Titulares';
 
   @override
-  String get settingsHomeGrouping => 'Agrupar os ícones da página inicial em categorias';
+  String get settingsHomeGrouping =>
+      'Agrupar os ícones da página inicial em categorias';
 
   @override
-  String get settingsHomeGroupingHint => 'Se desativado, os ícones principais aparecem numa única lista sem subpastas.';
+  String get settingsHomeGroupingHint =>
+      'Se desativado, os ícones principais aparecem numa única lista sem subpastas.';
 
   @override
   String get newsCategoryMyCity => 'A minha cidade';
@@ -249,7 +262,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String positionLabel(int position, String targetName) {
-    return 'Posição ${position}: antes de ${targetName}';
+    return 'Posição $position: antes de $targetName';
   }
 
   @override
@@ -265,7 +278,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newsSourceName => 'Nome da fonte ou do site';
 
   @override
-  String get newsSourceUrlOrSearch => 'URL do site, feed RSS ou palavra de pesquisa';
+  String get newsSourceUrlOrSearch =>
+      'URL do site, feed RSS ou palavra de pesquisa';
 
   @override
   String get deleteNewsSource => 'Eliminar fonte';
@@ -281,7 +295,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String error(Object error) {
-    return 'Erro: ${error}';
+    return 'Erro: $error';
   }
 
   @override
@@ -291,7 +305,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loadingArticle => 'A carregar artigo';
 
   @override
-  String get noFullArticleFound => 'Artigo completo indisponível. A mostrar o resumo do feed.';
+  String get noFullArticleFound =>
+      'Artigo completo indisponível. A mostrar o resumo do feed.';
 
   @override
   String get italian => 'Italiano';
@@ -321,11 +336,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get extractingReaderArticleText => 'A extrair texto em modo leitor...';
 
   @override
-  String get extractingVisibleArticleText => 'A extrair texto visível da página...';
+  String get extractingVisibleArticleText =>
+      'A extrair texto visível da página...';
 
   @override
   String source(String source) {
-    return 'Fonte: ${source}';
+    return 'Fonte: $source';
   }
 
   @override
@@ -339,17 +355,17 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String chunkCreated(int index, int total) {
-    return 'Bloco ${index} de ${total} creado. Leitura em curso...';
+    return 'Bloco $index de $total creado. Leitura em curso...';
   }
 
   @override
   String playingChunk(int index, int total, int size) {
-    return 'A reproduzir bloque ${index} de ${total} (${size} bytes)...';
+    return 'A reproduzir bloque $index de $total ($size bytes)...';
   }
 
   @override
   String readingFinished(int readyChunks, int totalChunks, String libraryPath) {
-    return 'Leitura concluída. Blocos criados: ${readyChunks}/${totalChunks}. Biblioteca: ${libraryPath}';
+    return 'Leitura concluída. Blocos criados: $readyChunks/$totalChunks. Biblioteca: $libraryPath';
   }
 
   @override
@@ -360,12 +376,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String edgeTtsError(Object error) {
-    return 'Erro de Edge TTS: ${error}';
+    return 'Erro de Edge TTS: $error';
   }
 
   @override
   String audioChunksReady(int readyChunks, int totalChunks) {
-    return 'Blocos de áudio listos: ${readyChunks} / ${totalChunks}';
+    return 'Blocos de áudio listos: $readyChunks / $totalChunks';
   }
 
   @override
@@ -396,7 +412,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get podcastName => 'Nome do podcast';
 
   @override
-  String get podcastSearchHint => 'Exemplo: tecnologia, história, nome do podcast...';
+  String get podcastSearchHint =>
+      'Exemplo: tecnologia, história, nome do podcast...';
 
   @override
   String get searchCountry => 'País da pesquisa';
@@ -432,28 +449,34 @@ class AppLocalizationsPt extends AppLocalizations {
   String get searchInProgress => 'Pesquisa em curso...';
 
   @override
+  String get newsReadArticles => 'Artigos lidos';
+
+  @override
+  String get weatherRecentCities => 'Cidades recentes';
+
+  @override
   String podcastResultsFound(int count) {
-    return '${count} podcasts encontrados';
+    return '$count podcasts encontrados';
   }
 
   @override
   String podcastSearchError(Object error) {
-    return 'Erro na pesquisa de podcasts: ${error}';
+    return 'Erro na pesquisa de podcasts: $error';
   }
 
   @override
   String subscribedTo(String title) {
-    return 'Subscrito a ${title}';
+    return 'Subscrito a $title';
   }
 
   @override
   String subscriptionError(Object error) {
-    return 'Erro de subscrição: ${error}';
+    return 'Erro de subscrição: $error';
   }
 
   @override
   String podcastSubscriptionError(Object error) {
-    return 'Erro de subscrição de podcast: ${error}';
+    return 'Erro de subscrição de podcast: $error';
   }
 
   @override
@@ -496,7 +519,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get subscribedPodcasts => 'Podcasts subscritos';
 
   @override
-  String get noSubscribedPodcasts => 'Não tem podcasts subscritos. Pesquise um podcast e toque num resultado para subscrever.';
+  String get noSubscribedPodcasts =>
+      'Não tem podcasts subscritos. Pesquise um podcast e toque num resultado para subscrever.';
 
   @override
   String get localAudioFiles => 'Ficheiros de áudio locais';
@@ -505,11 +529,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get noLocalAudioFiles => 'Nenhum ficheiro de áudio local encontrado.';
 
   @override
-  String get importAudioFromITunes => 'Importar áudio do iTunes / Apple Devices';
+  String get importAudioFromITunes =>
+      'Importar áudio do iTunes / Apple Devices';
 
   @override
   String localAudioFilesFound(int count) {
-    return 'Ficheiros de áudio locais encontrados: ${count}';
+    return 'Ficheiros de áudio locais encontrados: $count';
   }
 
   @override
@@ -520,12 +545,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String podcastImportComplete(int count) {
-    return 'Podcasts importados: ${count}';
+    return 'Podcasts importados: $count';
   }
 
   @override
   String podcastImportError(Object error) {
-    return 'Erro al importar podcasts: ${error}';
+    return 'Erro al importar podcasts: $error';
   }
 
   @override
@@ -533,14 +558,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String podcastExportError(Object error) {
-    return 'Erro al exportar podcasts: ${error}';
+    return 'Erro al exportar podcasts: $error';
   }
 
   @override
   String get loadingEpisodes => 'A carregar episodios';
 
   @override
-  String get noAudioEpisodesFound => 'Nenhum episódio de áudio encontrado no feed.';
+  String get noAudioEpisodesFound =>
+      'Nenhum episódio de áudio encontrado no feed.';
 
   @override
   String get episodes => 'Episódios';
@@ -550,12 +576,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String downloaded(String path) {
-    return 'Descarregado: ${path}';
+    return 'Descarregado: $path';
   }
 
   @override
   String episodeError(Object error) {
-    return 'Erro do episódio: ${error}';
+    return 'Erro do episódio: $error';
   }
 
   @override
@@ -581,7 +607,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String nowPlayingTitle(String title) {
-    return 'A reproduzir: ${title}';
+    return 'A reproduzir: $title';
   }
 
   @override
@@ -592,7 +618,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String playbackPositionValue(String position, String duration) {
-    return '${position} de ${duration}';
+    return '$position de $duration';
   }
 
   @override
@@ -600,7 +626,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String volumeValue(int percentage) {
-    return 'Volume: ${percentage}%';
+    return 'Volume: $percentage%';
   }
 
   @override
@@ -643,7 +669,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addToLibrary => 'Adicionar à biblioteca';
 
   @override
-  String get documentImportSelectionMode => 'Quer selecionar um documento ou vários documentos?';
+  String get documentImportSelectionMode =>
+      'Quer selecionar um documento ou vários documentos?';
 
   @override
   String get documentImportSingle => 'Um documento';
@@ -664,21 +691,22 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentsAdded => 'Documentos adicionados';
 
   @override
-  String get importDocumentsFromITunes => 'Importar documentos do iTunes / Apple Devices';
+  String get importDocumentsFromITunes =>
+      'Importar documentos do iTunes / Apple Devices';
 
   @override
   String sharedDocumentsImportComplete(int count) {
-    return 'Documentos importados do iTunes / Apple Devices: ${count}';
+    return 'Documentos importados do iTunes / Apple Devices: $count';
   }
 
   @override
   String libraryLoadError(Object error) {
-    return 'Erro ao carregar a biblioteca: ${error}';
+    return 'Erro ao carregar a biblioteca: $error';
   }
 
   @override
   String fileOpenError(Object error) {
-    return 'Erro ao abrir o ficheiro: ${error}';
+    return 'Erro ao abrir o ficheiro: $error';
   }
 
   @override
@@ -686,24 +714,25 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String fileInaccessible(String name) {
-    return 'Ficheiro inacessível: ${name}';
+    return 'Ficheiro inacessível: $name';
   }
 
   @override
   String documentAddError(Object error) {
-    return 'Erro ao adicionar o documento: ${error}';
+    return 'Erro ao adicionar o documento: $error';
   }
 
   @override
   String documentRemoveError(Object error) {
-    return 'Erro al eliminar: ${error}';
+    return 'Erro al eliminar: $error';
   }
 
   @override
   String get noExportableTextFound => 'Nenhum texto exportável encontrado.';
 
   @override
-  String get modifiedDocumentNoExportableText => 'O documento modificado não contém texto exportável.';
+  String get modifiedDocumentNoExportableText =>
+      'O documento modificado não contém texto exportável.';
 
   @override
   String get documentRemoved => 'Documento eliminado';
@@ -721,7 +750,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get writeNewDocument => 'Escribir nuevo documento';
 
   @override
-  String get addDocumentToLibraryHint => 'Adicionar documento à biblioteca. Procura os ficheiros do dispositivo e adiciona-os.';
+  String get addDocumentToLibraryHint =>
+      'Adicionar documento à biblioteca. Procura os ficheiros do dispositivo e adiciona-os.';
 
   @override
   String get documentTypeLabel => 'Documento';
@@ -734,23 +764,24 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String documentAddedOn(String date) {
-    return 'adicionado em ${date}';
+    return 'adicionado em $date';
   }
 
   @override
   String documentTypeDescription(String extension) {
-    return 'tipo ${extension}';
+    return 'tipo $extension';
   }
 
   @override
   String get openFolderHint => 'Toque duas vezes para abrir a pasta';
 
   @override
-  String get openDocumentHint => 'Toque duas vezes para abrir e ler o documento';
+  String get openDocumentHint =>
+      'Toque duas vezes para abrir e ler o documento';
 
   @override
   String removeItem(String name) {
-    return 'Eliminar ${name}';
+    return 'Eliminar $name';
   }
 
   @override
@@ -769,16 +800,20 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentReaderTitle => 'Lector de documentos';
 
   @override
-  String get documentReaderEditHint => 'Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.';
+  String get documentReaderEditHint =>
+      'Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.';
 
   @override
-  String get documentBookmarkHintSet => 'Deslize para cima ou para baixo para definir um marcador.';
+  String get documentBookmarkHintSet =>
+      'Deslize para cima ou para baixo para definir um marcador.';
 
   @override
-  String get documentEditParagraphActionHint => 'Toca dos veces para editar este párrafo. ';
+  String get documentEditParagraphActionHint =>
+      'Toca dos veces para editar este párrafo. ';
 
   @override
-  String get documentBookmarkHintReplace => 'Deslize para cima ou para baixo para eliminar o marcador existente ou substituí-lo por este parágrafo.';
+  String get documentBookmarkHintReplace =>
+      'Deslize para cima ou para baixo para eliminar o marcador existente ou substituí-lo por este parágrafo.';
 
   @override
   String get documentSetBookmarkAction => 'Adicionar nuevo marcador';
@@ -787,7 +822,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentRemoveBookmarkAction => 'Eliminar marcador';
 
   @override
-  String get documentReplaceBookmarkAction => 'Eliminar e adicionar um novo marcador';
+  String get documentReplaceBookmarkAction =>
+      'Eliminar e adicionar um novo marcador';
 
   @override
   String get searchInDocument => 'Pesquisar no documento';
@@ -799,19 +835,21 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentSearchFieldHint => 'Palabra o frase para buscar';
 
   @override
-  String get documentSearchEmptyQuery => 'Introduza o texto que quer pesquisar.';
+  String get documentSearchEmptyQuery =>
+      'Introduza o texto que quer pesquisar.';
 
   @override
-  String get documentSearchResultsTitle => 'Resultados da pesquisa no documento';
+  String get documentSearchResultsTitle =>
+      'Resultados da pesquisa no documento';
 
   @override
   String noDocumentSearchResults(String query) {
-    return 'Não foram encontrados resultados para ${query}.';
+    return 'Não foram encontrados resultados para $query.';
   }
 
   @override
   String documentSearchResultParagraph(int number) {
-    return 'Parágrafo ${number}';
+    return 'Parágrafo $number';
   }
 
   @override
@@ -860,23 +898,25 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsTestingVoice => 'A testar...';
 
   @override
-  String get settingsVoiceTestText => 'Olá, este é um teste de leitura do Sonarpad.';
+  String get settingsVoiceTestText =>
+      'Olá, este é um teste de leitura do Sonarpad.';
 
   @override
   String settingsVoiceTestError(Object error) {
-    return 'Erro no teste da voz: ${error}';
+    return 'Erro no teste da voz: $error';
   }
 
   @override
   String settingsVoiceSaveError(Object error) {
-    return 'Erro ao guardar a voz TTS: ${error}';
+    return 'Erro ao guardar a voz TTS: $error';
   }
 
   @override
   String get settingsUnsavedTitle => 'Alterações não guardadas';
 
   @override
-  String get settingsUnsavedMessage => 'Tem alterações não guardadas. Quer guardá-las antes de sair?';
+  String get settingsUnsavedMessage =>
+      'Tem alterações não guardadas. Quer guardá-las antes de sair?';
 
   @override
   String get settingsExitWithoutSaving => 'Sair sem guardar';
@@ -891,13 +931,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsAutoBookmark => 'Ativar marcador automático em multimédia';
 
   @override
-  String get settingsAutoBookmarkHint => 'O áudio ou vídeo continuará a partir do ponto onde ficou.';
+  String get settingsAutoBookmarkHint =>
+      'O áudio ou vídeo continuará a partir do ponto onde ficou.';
 
   @override
   String get settingsSeekStep => 'Passo de avanço/recuo';
 
   @override
-  String get aiChatIntro => 'Sou a inteligência artificial do Sonarpad. Como posso ajudar?';
+  String get aiChatIntro =>
+      'Sou a inteligência artificial do Sonarpad. Como posso ajudar?';
 
   @override
   String get meteoTitle => 'Meteorologia';
@@ -978,8 +1020,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsOperatingSystem => 'Sistema operativo';
 
   @override
-  String settingsCodeRequestBody(String name, String surname, String email, String os) {
-    return 'Nome: ${name}; Apelido: ${surname}; E-mail: ${email}; Sistema operativo: ${os}';
+  String settingsCodeRequestBody(
+      String name, String surname, String email, String os) {
+    return 'Nome: $name; Apelido: $surname; E-mail: $email; Sistema operativo: $os';
   }
 
   @override
@@ -996,7 +1039,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String settingsMailOpenError(Object error) {
-    return 'Erro ao abrir o e-mail: ${error}';
+    return 'Erro ao abrir o e-mail: $error';
   }
 
   @override
@@ -1018,7 +1061,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get annulla => 'Cancelar';
 
   @override
-  String get compilaTuttiICampiPerRichiedereIlCodice => 'Preencha todos os campos para solicitar o código.';
+  String get compilaTuttiICampiPerRichiedereIlCodice =>
+      'Preencha todos os campos para solicitar o código.';
 
   @override
   String get selectFolder => 'Selecionar pasta';
@@ -1063,7 +1107,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get importFromProjectGutenberg => 'Importar do Project Gutenberg';
 
   @override
-  String get projectGutenbergImportUnavailable => 'A importação do Project Gutenberg ainda não está disponível.';
+  String get projectGutenbergImportUnavailable =>
+      'A importação do Project Gutenberg ainda não está disponível.';
 
   @override
   String get importFromInternetArchive => 'Importar do Internet Archive';
@@ -1115,7 +1160,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String sourceLanguageValue(String language) {
-    return 'Idioma: ${language}';
+    return 'Idioma: $language';
   }
 
   @override
@@ -1143,11 +1188,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get librivoxNoAudioTracks => 'No hay pistas de áudio disponibles.';
 
   @override
-  String get librivoxNotTextExportable => 'Os audiolivros do LibriVox não podem ser exportados como texto.';
+  String get librivoxNotTextExportable =>
+      'Os audiolivros do LibriVox não podem ser exportados como texto.';
 
   @override
   String sourceDurationValue(String duration) {
-    return 'Duração: ${duration}';
+    return 'Duração: $duration';
   }
 
   @override
@@ -1170,7 +1216,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String poetryDbLineCount(int count) {
-    return '${count} versos';
+    return '$count versos';
   }
 
   @override
@@ -1201,7 +1247,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get applyAndSave => 'Aplicar e guardar';
 
   @override
-  String get textEditedAndSaved => 'Texto editado e guardado no documento atual.';
+  String get textEditedAndSaved =>
+      'Texto editado e guardado no documento atual.';
 
   @override
   String get saveError => 'Erro ao guardar';
@@ -1219,11 +1266,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get modifiedInSonarpad => 'Modificado no Sonarpad';
 
   @override
-  String get noTextAvailableForDocument => 'Não há texto disponível para este documento.';
+  String get noTextAvailableForDocument =>
+      'Não há texto disponível para este documento.';
 
   @override
   String bookmarkSet(int index) {
-    return 'Marcador definido no parágrafo ${index}.';
+    return 'Marcador definido no parágrafo $index.';
   }
 
   @override
@@ -1270,7 +1318,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String versionBuild(String version, String buildNumber) {
-    return 'Versão ${version} (Build ${buildNumber})';
+    return 'Versão $version (Build $buildNumber)';
   }
 
   @override
@@ -1278,12 +1326,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String whatIsNewInVersion(String version) {
-    return 'Novidades da versão ${version}';
+    return 'Novidades da versão $version';
   }
 
   @override
   String changelogLoadError(Object error) {
-    return 'Erro ao carregar as novidades: ${error}';
+    return 'Erro ao carregar as novidades: $error';
   }
 
   @override
@@ -1291,7 +1339,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String visitSonarpadSiteWithUrl(String url) {
-    return 'Visitar o site do Sonarpad: ${url}';
+    return 'Visitar o site do Sonarpad: $url';
   }
 
   @override
@@ -1302,11 +1350,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String importZipError(Object error) {
-    return 'Erro al importar ZIP: ${error}';
+    return 'Erro al importar ZIP: $error';
   }
 
   @override
-  String get dropboxLoginPrompt => 'Inicie sessão no Dropbox para importar os seus documentos.';
+  String get dropboxLoginPrompt =>
+      'Inicie sessão no Dropbox para importar os seus documentos.';
 
   @override
   String get loginToDropbox => 'Iniciar sessão no Dropbox';
@@ -1319,12 +1368,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String dropboxLoadFolderError(Object error) {
-    return 'Erro ao carregar a pasta: ${error}';
+    return 'Erro ao carregar a pasta: $error';
   }
 
   @override
   String dropboxImportError(Object error) {
-    return 'Erro de importação: ${error}';
+    return 'Erro de importação: $error';
   }
 
   @override
@@ -1334,7 +1383,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get goBack => '.. Voltar';
 
   @override
-  String get noSupportedFilesInFolder => 'Não há ficheiros compatíveis nesta pasta.';
+  String get noSupportedFilesInFolder =>
+      'Não há ficheiros compatíveis nesta pasta.';
 
   @override
   String get articleNotFound => 'Artigo não encontrado.';
@@ -1349,7 +1399,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get clearHistory => 'Limpar histórico';
 
   @override
-  String get confirmClearHistory => 'Quer mesmo limpar todas as pesquisas recentes?';
+  String get confirmClearHistory =>
+      'Quer mesmo limpar todas as pesquisas recentes?';
 
   @override
   String get clear => 'Limpar';
@@ -1382,7 +1433,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get calendar => 'Calendário';
 
   @override
-  String get calendarHint => 'Abrir o calendário com santos, feriados e lembretes';
+  String get calendarHint =>
+      'Abrir o calendário com santos, feriados e lembretes';
 
   @override
   String get saintOfTheDay => 'Santo do dia';
@@ -1431,7 +1483,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String reminderSaved(int count) {
-    return '${count} lembretes';
+    return '$count lembretes';
   }
 
   @override
@@ -1462,7 +1514,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radio => 'Rádio';
 
   @override
-  String get radioHint => 'Busca estações de rádio, escucha transmisiones y gestiona favoritos';
+  String get radioHint =>
+      'Busca estações de rádio, escucha transmisiones y gestiona favoritos';
 
   @override
   String get radioTitle => 'Estações de rádio de todo o mundo';
@@ -1511,22 +1564,22 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String radioResultsFound(int count) {
-    return '${count} estações encontradas';
+    return '$count estações encontradas';
   }
 
   @override
   String radioSearchError(Object error) {
-    return 'Erro na pesquisa de rádio: ${error}';
+    return 'Erro na pesquisa de rádio: $error';
   }
 
   @override
   String radioNowPlaying(String name) {
-    return 'A reproduzir ${name}';
+    return 'A reproduzir $name';
   }
 
   @override
   String radioPlayError(Object error) {
-    return 'Erro na transmissão de rádio: ${error}';
+    return 'Erro na transmissão de rádio: $error';
   }
 
   @override
@@ -1537,12 +1590,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String radioFavoriteAdded(String name) {
-    return '${name} adicionada aos favoritos.';
+    return '$name adicionada aos favoritos.';
   }
 
   @override
   String radioFavoriteRemoved(String name) {
-    return '${name} removida dos favoritos.';
+    return '$name removida dos favoritos.';
   }
 
   @override
@@ -1558,14 +1611,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radioAddSubmit => 'Verificar e adicionar';
 
   @override
-  String get radioAddMissingFields => 'Introduza o nome da rádio e o endereço da transmissão.';
+  String get radioAddMissingFields =>
+      'Introduza o nome da rádio e o endereço da transmissão.';
 
   @override
-  String get radioCommunityAdded => 'Rádio adicionada com sucesso à comunidade Sonarpad.';
+  String get radioCommunityAdded =>
+      'Rádio adicionada com sucesso à comunidade Sonarpad.';
 
   @override
   String radioCommunityAddError(Object error) {
-    return 'Erro ao adicionar a rádio: ${error}';
+    return 'Erro ao adicionar a rádio: $error';
   }
 
   @override
@@ -1635,13 +1690,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get routeCancel => 'Cancelar';
 
   @override
-  String get routeErrorMissingFields => 'Introduza o ponto de partida e o destino';
+  String get routeErrorMissingFields =>
+      'Introduza o ponto de partida e o destino';
 
   @override
-  String get routeErrorFromNotFound => 'Nenhum resultado encontrado para o endereço de partida';
+  String get routeErrorFromNotFound =>
+      'Nenhum resultado encontrado para o endereço de partida';
 
   @override
-  String get routeErrorToNotFound => 'Nenhum resultado encontrado para o endereço de destino';
+  String get routeErrorToNotFound =>
+      'Nenhum resultado encontrado para o endereço de destino';
 
   @override
   String get routeResultsTitle => 'Percursos disponibles';
@@ -1663,7 +1721,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String routeError(Object error) {
-    return 'Erro: ${error}';
+    return 'Erro: $error';
   }
 
   @override
@@ -1899,17 +1957,17 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String routeDistanceMeters(int meters) {
-    return '${meters} m';
+    return '$meters m';
   }
 
   @override
   String routeDistanceKilometers(String kilometers) {
-    return '${kilometers} km';
+    return '$kilometers km';
   }
 
   @override
   String routeDurationMinutes(int minutes) {
-    return '${minutes} min';
+    return '$minutes min';
   }
 
   @override
@@ -1928,7 +1986,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String cinemaReleased(String date) {
-    return 'Estreno: ${date}';
+    return 'Estreno: $date';
   }
 
   @override
@@ -1939,7 +1997,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String cinemaWillRelease(String date) {
-    return 'Estreará em: ${date}';
+    return 'Estreará em: $date';
   }
 
   @override
@@ -1958,7 +2016,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get concertsSearchTooltip => 'Pesquisar';
 
   @override
-  String get concertsInitialText => 'Escreva acima o nome da sua cidade para ver os concertos musicais programados.';
+  String get concertsInitialText =>
+      'Escreva acima o nome da sua cidade para ver os concertos musicais programados.';
 
   @override
   String get concertsEmpty => 'Nenhum concerto encontrado nesta cidade.';
@@ -1968,5 +2027,4 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get concertsBuyTickets => 'Comprar ou ver detalhes no Ticketmaster';
-
 }

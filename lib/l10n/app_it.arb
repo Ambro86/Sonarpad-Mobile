@@ -616,6 +616,8 @@
     "description": "Localized text for countryFrance."
   },
   "searchInProgress": "Ricerca in corso...",
+  "newsReadArticles": "Articoli letti",
+  "weatherRecentCities": "Città recenti",
   "@searchInProgress": {
     "description": "Localized text for searchInProgress."
   },
@@ -2752,5 +2754,6 @@
   "concertsInitialText": "Scrivi il nome della tua città in alto per vedere i concerti musicali in programma.",
   "concertsEmpty": "Nessun concerto trovato in questa città.",
   "concertsVenue": "Luogo del concerto:",
-  "concertsBuyTickets": "Acquista o vedi dettagli su Ticketmaster"
+  "concertsBuyTickets": "Acquista o vedi dettagli su Ticketmaster",
+  "weatherRecentCities": "Città recenti"
 }

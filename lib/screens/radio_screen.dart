@@ -10,7 +10,25 @@ import 'favorite_radios_screen.dart';
 import 'radio_search_results_screen.dart';
 import 'recent_radios_screen.dart';
 
-enum _RadioBrowseMode { language, country }
+enum _RadioBrowseMode { language, country, city }
+
+String _cityLabel(String localeName) => switch (localeName) {
+      'en' => 'Browse by city',
+      'es' => 'Explorar por ciudad',
+      'fr' => 'Parcourir par ville',
+      'pt' => 'Explorar por cidade',
+      'pl' => 'Przeglądaj według miasta',
+      _ => 'Sfoglia per città',
+    };
+
+String _cityInputHint(String localeName) => switch (localeName) {
+      'en' => 'Enter city name...',
+      'es' => 'Introduce la ciudad...',
+      'fr' => 'Entrez le nom de la ville...',
+      'pt' => 'Digite a cidade...',
+      'pl' => 'Wpisz miasto...',
+      _ => 'Inserisci il nome della città...',
+    };
 
 class RadioScreen extends StatefulWidget {
   const RadioScreen({super.key});
@@ -25,11 +43,11 @@ class _RadioScreenState extends State<RadioScreen> {
 
   String? _languageCode;
   String? _countryCode;
+  String? _cityCode;
   _RadioBrowseMode _browseMode = _RadioBrowseMode.language;
   RadioGenreOption _genre = RadioService.genres.first;
   List<RadioLanguageOption> _languageOptions = RadioService.languages;
   List<RadioCountryOption> _countryOptions = RadioService.countries;
-  bool _searching = false;
   bool _loadingDirectory = false;
 
   @override
@@ -87,38 +105,24 @@ class _RadioScreenState extends State<RadioScreen> {
     }
   }
 
-  Future<void> _search() async {
-    final l10n = AppLocalizations.of(context);
-    setState(() {
-      _searching = true;
-    });
-    try {
-      final results = await _service.searchRadios(
-        languageCode: _browseMode == _RadioBrowseMode.language
-            ? _languageCode!
-            : _countryCode!,
-        genre: _genre,
-        query: _searchController.text,
-      );
-      if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/radio/search_results'),
-          builder: (_) => RadioSearchResultsScreen(
-            results: results,
-            query: _searchController.text,
-          ),
+  void _search() {
+    final resultsFuture = _service.searchRadios(
+      languageCode: _browseMode == _RadioBrowseMode.language
+          ? _languageCode!
+          : (_browseMode == _RadioBrowseMode.country ? _countryCode! : 'city:${_cityCode ?? ""}'),
+      genre: _genre,
+      query: _searchController.text,
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/radio/search_results'),
+        builder: (_) => RadioSearchResultsScreen(
+          resultsFuture: resultsFuture,
+          query: _searchController.text,
         ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.radioSearchError(e))),
-      );
-    } finally {
-      if (mounted) setState(() => _searching = false);
-    }
+      ),
+    );
   }
 
   @override
@@ -199,77 +203,119 @@ class _RadioScreenState extends State<RadioScreen> {
             Text(_radioDirectoryLoadingLabel(l10n.localeName)),
           ],
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _RadioBrowseButton(
-                  selected: _browseMode == _RadioBrowseMode.language,
-                  icon: Icons.language,
-                  label: l10n.radioBrowseByLanguage,
-                  onPressed: () => setState(
-                    () => _browseMode = _RadioBrowseMode.language,
+          ListTile(
+            title: Text(l10n.radioBrowseByLanguage),
+            subtitle: Text(_languageOptionLabel(l10n, _languageOptions.firstWhere((e) => e.code == _languageCode, orElse: () => _languageOptions.first))),
+            trailing: const Icon(Icons.chevron_right),
+            selected: _browseMode == _RadioBrowseMode.language,
+            onTap: () async {
+              final result = await Navigator.push<RadioLanguageOption>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => _RadioOptionPickerScreen<RadioLanguageOption>(
+                    title: l10n.radioBrowseByLanguage,
+                    options: _languageOptions,
+                    labelBuilder: (o) => _languageOptionLabel(l10n, o),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _RadioBrowseButton(
-                  selected: _browseMode == _RadioBrowseMode.country,
-                  icon: Icons.public,
-                  label: l10n.radioBrowseByCountry,
-                  onPressed: () => setState(
-                    () => _browseMode = _RadioBrowseMode.country,
+              );
+              if (result != null) {
+                setState(() {
+                  _languageCode = result.code;
+                  _browseMode = _RadioBrowseMode.language;
+                });
+              }
+            },
+          ),
+          ListTile(
+            title: Text(l10n.radioBrowseByCountry),
+            subtitle: Text(countryItems.firstWhere((e) => e.key == _countryCode, orElse: () => countryItems.first).value),
+            trailing: const Icon(Icons.chevron_right),
+            selected: _browseMode == _RadioBrowseMode.country,
+            onTap: () async {
+              final result = await Navigator.push<MapEntry<String, String>>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => _RadioOptionPickerScreen<MapEntry<String, String>>(
+                    title: l10n.radioBrowseByCountry,
+                    options: countryItems,
+                    labelBuilder: (o) => o.value,
                   ),
                 ),
-              ),
-            ],
+              );
+              if (result != null) {
+                setState(() {
+                  _countryCode = result.key;
+                  _browseMode = _RadioBrowseMode.country;
+                });
+              }
+            },
           ),
-          const SizedBox(height: 8),
-          if (_browseMode == _RadioBrowseMode.language)
-            DropdownButtonFormField<String>(
-              initialValue: _languageCode,
-              decoration: InputDecoration(labelText: l10n.radioLanguage),
-              items: _languageOptions
-                  .map((language) => DropdownMenuItem(
-                        value: language.code,
-                        child: Text(_languageOptionLabel(l10n, language)),
-                      ))
-                  .toList(),
-              onChanged: (value) =>
-                  setState(() => _languageCode = value ?? 'it'),
-            )
-          else ...[
-            DropdownButtonFormField<String>(
-              initialValue: _countryCode,
-              decoration: InputDecoration(labelText: l10n.radioCountry),
-              items: countryItems
-                  .map((country) => DropdownMenuItem(
-                        value: country.key,
-                        child: Text(country.value),
-                      ))
-                  .toList(),
-              onChanged: (value) =>
-                  setState(() => _countryCode = value ?? 'country:it'),
-            ),
-          ],
-          const SizedBox(height: 8),
-          DropdownButtonFormField<RadioGenreOption>(
-            initialValue: _genre,
-            decoration: InputDecoration(labelText: l10n.radioGenre),
-            items: RadioService.genres
-                .map((genre) => DropdownMenuItem(
-                      value: genre,
-                      child: Text(l10n.radioGenreLabel(genre.value)),
-                    ))
-                .toList(),
-            onChanged: (value) =>
-                setState(() => _genre = value ?? RadioService.genres.first),
+          ListTile(
+            title: Text(_cityLabel(l10n.localeName)),
+            subtitle: Text(_browseMode == _RadioBrowseMode.city ? (_cityCode ?? '---') : '---'),
+            trailing: const Icon(Icons.chevron_right),
+            selected: _browseMode == _RadioBrowseMode.city,
+            onTap: () async {
+              final result = await showDialog<String>(
+                context: context,
+                builder: (context) {
+                  final controller = TextEditingController(text: _cityCode);
+                  return AlertDialog(
+                    title: Text(_cityLabel(l10n.localeName)),
+                    content: TextField(
+                      controller: controller,
+                      autofocus: true,
+                      decoration: InputDecoration(hintText: _cityInputHint(l10n.localeName)),
+                      onSubmitted: (v) => Navigator.pop(context, v),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, controller.text),
+                        child: Text(MaterialLocalizations.of(context).okButtonLabel),
+                      ),
+                    ],
+                  );
+                },
+              );
+              if (result != null && result.trim().isNotEmpty) {
+                setState(() {
+                  _cityCode = result.trim();
+                  _browseMode = _RadioBrowseMode.city;
+                });
+                _search();
+              }
+            },
           ),
-          const SizedBox(height: 8),
+          ListTile(
+            title: Text(l10n.radioGenre),
+            subtitle: Text(l10n.radioGenreLabel(_genre.value)),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () async {
+              final result = await Navigator.push<RadioGenreOption>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => _RadioOptionPickerScreen<RadioGenreOption>(
+                    title: l10n.radioGenre,
+                    options: RadioService.genres,
+                    labelBuilder: (o) => l10n.radioGenreLabel(o.value),
+                  ),
+                ),
+              );
+              if (result != null) {
+                setState(() => _genre = result);
+              }
+            },
+          ),
+          const SizedBox(height: 16),
           FilledButton.icon(
-            onPressed: _searching ? null : _search,
+            onPressed: _search,
             icon: const Icon(Icons.radio),
-            label: Text(_searching ? l10n.radioSearching : l10n.radioSearch),
+            label: Text(l10n.radioSearch),
           ),
           // I risultati vengono ora aperti in un'altra schermata tramite Navigator.push
           const Divider(height: 32),
@@ -347,39 +393,31 @@ String _recentRadiosLabel(String localeName) => switch (localeName) {
       _ => 'Radio recenti',
     };
 
-class _RadioBrowseButton extends StatelessWidget {
-  final bool selected;
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
+class _RadioOptionPickerScreen<T> extends StatelessWidget {
+  final String title;
+  final List<T> options;
+  final String Function(T) labelBuilder;
 
-  const _RadioBrowseButton({
-    required this.selected,
-    required this.icon,
-    required this.label,
-    required this.onPressed,
+  const _RadioOptionPickerScreen({
+    required this.title,
+    required this.options,
+    required this.labelBuilder,
   });
 
   @override
   Widget build(BuildContext context) {
-    final child = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon),
-        const SizedBox(width: 8),
-        Flexible(child: Text(label, textAlign: TextAlign.center)),
-      ],
-    );
-    if (selected) {
-      return FilledButton(
-        onPressed: onPressed,
-        child: child,
-      );
-    }
-    return OutlinedButton(
-      onPressed: onPressed,
-      child: child,
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: ListView.builder(
+        itemCount: options.length,
+        itemBuilder: (context, index) {
+          final option = options[index];
+          return ListTile(
+            title: Text(labelBuilder(option)),
+            onTap: () => Navigator.pop(context, option),
+          );
+        },
+      ),
     );
   }
 }
@@ -418,9 +456,11 @@ class RadioTile extends StatelessWidget {
         child: Card(
           child: ListTile(
             leading: Icon(isPlaying ? Icons.volume_up : Icons.radio),
-            title: Text(station.name),
-            subtitle: Text(station.detailsText,
-                maxLines: 2, overflow: TextOverflow.ellipsis),
+            title: ExcludeSemantics(child: Text(station.name)),
+            subtitle: ExcludeSemantics(
+              child: Text(station.detailsText,
+                  maxLines: 2, overflow: TextOverflow.ellipsis),
+            ),
             onTap: onPlay,
             trailing: ExcludeSemantics(
               child: Wrap(

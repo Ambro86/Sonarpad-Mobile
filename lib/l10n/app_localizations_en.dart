@@ -447,6 +447,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchInProgress => 'Search in progress...';
 
   @override
+  String get newsReadArticles => 'Read articles';
+
+  @override
+  String get weatherRecentCities => 'Recent cities';
+
+  @override
   String podcastResultsFound(int count) {
     return 'Found $count podcasts';
   }

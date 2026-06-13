@@ -61,12 +61,12 @@ class GutendexService {
     final response = await _client.get(
       uri,
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
-    );
+    ).timeout(const Duration(seconds: 30));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore Gutendex ${response.statusCode}');
     }
 
-    final decoded = jsonDecode(utf8.decode(response.bodyBytes))
+    final decoded = jsonDecode(utf8.decode(response.bodyBytes, allowMalformed: true))
         as Map<String, dynamic>;
     final results = (decoded['results'] as List<dynamic>? ?? const [])
         .whereType<Map<String, dynamic>>()

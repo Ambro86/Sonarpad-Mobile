@@ -271,7 +271,7 @@ class RaiPlayService {
   }
 
   String _sectionDescription(String title, String? description) {
-    final desc = description == null ? '' : _menuLabel(description);
+    final desc = description == null ? '' : _menuLabel(description).trim();
     return desc.toLowerCase() == title.toLowerCase() ? '' : desc;
   }
 
@@ -406,11 +406,16 @@ class RaiPlayService {
     final title = _preferredTitle(card);
     if (title == null) return null;
 
+    var description = _preferredDescription(card) ?? '';
+    if (description.trim().toLowerCase() == title.trim().toLowerCase()) {
+      description = '';
+    }
+
     if (mediaUrl != null) {
       return RaiPlayItem(
         id: 'media|$mediaUrl|${rawPathId ?? ''}',
         title: title,
-        description: _preferredDescription(card) ?? '',
+        description: description,
         kind: RaiPlayItemKind.media,
         pathId: '',
         mediaUrl: mediaUrl,
@@ -421,7 +426,7 @@ class RaiPlayService {
       return RaiPlayItem(
         id: 'page|$pathId',
         title: title,
-        description: _preferredDescription(card) ?? '',
+        description: description,
         kind: RaiPlayItemKind.page,
         pathId: pathId,
         mediaUrl: '',

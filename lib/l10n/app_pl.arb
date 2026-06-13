@@ -2752,5 +2752,7 @@
   "concertsInitialText": "Wpisz u góry nazwę swojego miasta, aby zobaczyć zaplanowane koncerty muzyczne.",
   "concertsEmpty": "Nie znaleziono koncertów w tym mieście.",
   "concertsVenue": "Miejsce koncertu:",
-  "concertsBuyTickets": "Kup lub zobacz szczegóły w Ticketmaster"
+  "concertsBuyTickets": "Kup lub zobacz szczegóły w Ticketmaster",
+  "newsReadArticles": "Przeczytane artykuły",
+  "weatherRecentCities": "Ostatnie miasta"
 }

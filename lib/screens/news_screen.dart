@@ -400,6 +400,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
               child: _NewsArticleList(
                 future: _future,
                 language: widget.language,
+                sourceName: widget.source.name,
               ),
             ),
           ),
@@ -611,22 +612,60 @@ class _PositionSliderDialogState extends State<_PositionSliderDialog> {
   }
 }
 
-class _NewsArticleList extends StatelessWidget {
+class _NewsArticleList extends StatefulWidget {
   const _NewsArticleList({
     required this.future,
     required this.language,
+    required this.sourceName,
   });
 
   final Future<List<NewsArticle>> future;
   final NewsLanguage language;
+  final String sourceName;
+
+  @override
+  State<_NewsArticleList> createState() => _NewsArticleListState();
+}
+
+class _NewsArticleListState extends State<_NewsArticleList> {
+  final _service = NewsService();
+  Set<String> _readUris = {};
+  bool _loadingRead = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadReadArticles();
+  }
+
+  Future<void> _loadReadArticles() async {
+    final list = await _service.getReadArticles(widget.language, widget.sourceName);
+    if (!mounted) return;
+    setState(() {
+      _readUris = list.map((e) => e.id).toSet();
+      _loadingRead = false;
+    });
+  }
+
+  void _openReadArticles() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _ReadArticlesScreen(
+          language: widget.language,
+          sourceName: widget.sourceName,
+        ),
+      ),
+    ).then((_) => _loadReadArticles());
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return FutureBuilder<List<NewsArticle>>(
-      future: future,
+      future: widget.future,
       builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
+        if (snapshot.connectionState != ConnectionState.done || _loadingRead) {
           return Center(
             child: CircularProgressIndicator(
               semanticsLabel: l10n.loadingNews,
@@ -636,34 +675,175 @@ class _NewsArticleList extends StatelessWidget {
         if (snapshot.hasError) {
           return Center(child: Text(l10n.error(snapshot.error!)));
         }
-        final articles = snapshot.data ?? const [];
-        if (articles.isEmpty) {
+        final allArticles = snapshot.data ?? const [];
+        final articles = allArticles.where((a) => !_readUris.contains(a.id)).toList();
+        final itemCount = articles.length + (_readUris.isNotEmpty ? 1 : 0);
+
+        if (itemCount == 0) {
           return Center(child: Text(l10n.noNewsFound));
         }
+
         return ListView.separated(
-          itemCount: articles.length,
+          itemCount: itemCount,
           separatorBuilder: (_, __) => const Divider(height: 1),
           itemBuilder: (context, index) {
-            final article = articles[index];
+            if (_readUris.isNotEmpty && index == 0) {
+              return ListTile(
+                leading: const Icon(Icons.history),
+                title: Text(l10n.newsReadArticles),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _openReadArticles,
+              );
+            }
+            final articleIndex = _readUris.isNotEmpty ? index - 1 : index;
+            final article = articles[articleIndex];
+            final summaryTrimmed = article.summary.trim();
+            final titleTrimmed = article.title.trim();
+            final isSummaryDuplicate = summaryTrimmed.isNotEmpty &&
+                (summaryTrimmed == titleTrimmed ||
+                 summaryTrimmed.contains(titleTrimmed) ||
+                 titleTrimmed.contains(summaryTrimmed));
+            final subtitleText = isSummaryDuplicate
+                ? article.source
+                : '${article.source}. ${article.summary}';
+
             return ListTile(
               title: Text(article.title),
               subtitle: Text(
-                '${article.source}. ${article.summary}',
+                subtitleText,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  settings: const RouteSettings(name: '/news/article'),
-                  builder: (_) =>
-                      NewsWebViewScreen(article: article, language: language),
-                ),
-              ),
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    settings: const RouteSettings(name: '/news/article'),
+                    builder: (_) => NewsWebViewScreen(
+                      article: article,
+                      language: widget.language,
+                    ),
+                  ),
+                );
+                _loadReadArticles();
+              },
             );
           },
         );
       },
+    );
+  }
+}
+
+class _ReadArticlesScreen extends StatefulWidget {
+  final NewsLanguage language;
+  final String sourceName;
+
+  const _ReadArticlesScreen({required this.language, required this.sourceName});
+
+  @override
+  State<_ReadArticlesScreen> createState() => _ReadArticlesScreenState();
+}
+
+class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
+  final _service = NewsService();
+  List<NewsArticle> _articles = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final list = await _service.getReadArticles(widget.language, widget.sourceName);
+    if (!mounted) return;
+    setState(() {
+      _articles = list;
+      _loading = false;
+    });
+  }
+
+  Future<void> _clearHistory() async {
+    final l10n = AppLocalizations.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.clearHistory),
+        content: Text(l10n.confirmClearHistory),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.clearHistory),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    await _service.clearReadArticles(widget.language, widget.sourceName);
+    _load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.newsReadArticles),
+        actions: [
+          if (_articles.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.delete_sweep),
+              tooltip: l10n.clearHistory,
+              onPressed: _clearHistory,
+            ),
+        ],
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _articles.isEmpty
+              ? Center(child: Text(l10n.noNewsFound))
+              : ListView.separated(
+                  itemCount: _articles.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final article = _articles[index];
+                    final summaryTrimmed = article.summary.trim();
+                    final titleTrimmed = article.title.trim();
+                    final isSummaryDuplicate = summaryTrimmed.isNotEmpty &&
+                        (summaryTrimmed == titleTrimmed ||
+                         summaryTrimmed.contains(titleTrimmed) ||
+                         titleTrimmed.contains(summaryTrimmed));
+                    final subtitleText = isSummaryDuplicate
+                        ? article.source
+                        : '${article.source}. ${article.summary}';
+
+                    return ListTile(
+                      title: Text(article.title),
+                      subtitle: Text(
+                        subtitleText,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          settings: const RouteSettings(name: '/news/article'),
+                          builder: (_) => NewsWebViewScreen(
+                            article: article,
+                            language: widget.language,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
     );
   }
 }

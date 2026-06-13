@@ -610,5 +610,7 @@
   "concertsInitialText": "Escreva acima o nome da sua cidade para ver os concertos musicais programados.",
   "concertsEmpty": "Nenhum concerto encontrado nesta cidade.",
   "concertsVenue": "Local do concerto:",
-  "concertsBuyTickets": "Comprar ou ver detalhes no Ticketmaster"
+  "concertsBuyTickets": "Comprar ou ver detalhes no Ticketmaster",
+  "newsReadArticles": "Artigos lidos",
+  "weatherRecentCities": "Cidades recentes"
 }

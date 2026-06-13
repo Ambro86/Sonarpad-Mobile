@@ -450,6 +450,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get searchInProgress => 'Ricerca in corso...';
 
   @override
+  String get newsReadArticles => 'Articoli letti';
+
+  @override
+  String get weatherRecentCities => 'Città recenti';
+
+  @override
   String podcastResultsFound(int count) {
     return 'Trovati $count podcast';
   }
@@ -524,8 +530,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get noLocalAudioFiles => 'Nessun file audio locale trovato.';
 
   @override
-  String get importAudioFromITunes =>
-      'Importa audio da iTunes / Apple Devices';
+  String get importAudioFromITunes => 'Importa audio da iTunes / Apple Devices';
 
   @override
   String localAudioFilesFound(int count) {

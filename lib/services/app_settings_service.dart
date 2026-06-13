@@ -236,6 +236,29 @@ class AppSettingsService {
     await prefs.setString(_weatherCityKey, value);
   }
 
+  static const _weatherRecentCitiesKey = 'sonarpad_weather_recent_cities';
+
+  Future<List<String>> getWeatherRecentCities() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(_weatherRecentCitiesKey) ?? [];
+  }
+
+  Future<void> addWeatherRecentCity(String city) async {
+    final prefs = await SharedPreferences.getInstance();
+    var current = await getWeatherRecentCities();
+    current.removeWhere((c) => c.toLowerCase() == city.toLowerCase());
+    current.insert(0, city);
+    if (current.length > 50) {
+      current = current.take(50).toList();
+    }
+    await prefs.setStringList(_weatherRecentCitiesKey, current);
+  }
+
+  Future<void> clearWeatherRecentCities() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_weatherRecentCitiesKey);
+  }
+
   Future<String> getNewsLocalCity() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_newsLocalCityKey) ?? '';

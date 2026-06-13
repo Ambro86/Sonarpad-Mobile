@@ -476,6 +476,8 @@ class RadioService {
         if (genreTag != null && genreTag.trim().isNotEmpty) 'tag': genreTag,
         if (!globalSearch && _isCountryCode(languageCode))
           'countrycode': _countryCode(languageCode)
+        else if (!globalSearch && _isCityCode(languageCode))
+          'state': _cityCode(languageCode)
         else if (!globalSearch) ...{
           'language': _radioBrowserLanguageName(languageCode),
           'languageExact': 'true',
@@ -675,6 +677,11 @@ class RadioService {
 
   String _countryCode(String code) =>
       code.substring('country:'.length).toUpperCase();
+
+  bool _isCityCode(String code) => code.startsWith('city:');
+
+  String _cityCode(String code) =>
+      code.substring('city:'.length);
 
   String? _communityLanguageFromRadioCode(String code) => switch (code) {
         'it' || 'country:it' => 'italian',

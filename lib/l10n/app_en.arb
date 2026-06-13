@@ -611,5 +611,7 @@
   "concertsInitialText": "Enter the name of your city above to see upcoming music concerts.",
   "concertsEmpty": "No concerts found in this city.",
   "concertsVenue": "Concert venue:",
-  "concertsBuyTickets": "Buy or see details on Ticketmaster"
+  "concertsBuyTickets": "Buy or see details on Ticketmaster",
+  "newsReadArticles": "Read articles",
+  "weatherRecentCities": "Recent cities"
 }

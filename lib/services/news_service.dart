@@ -87,6 +87,53 @@ class NewsService {
       'news_sources_hidden_${language.name}';
   String _getCustomPrefsKey(NewsLanguage language) =>
       'news_custom_sources_${language.name}';
+  String _getReadArticlesKey(NewsLanguage language, String sourceName) =>
+      'news_read_articles_${language.name}_$sourceName';
+
+  Future<List<NewsArticle>> getReadArticles(NewsLanguage language, String sourceName) async {
+    final prefs = await SharedPreferences.getInstance();
+    final listStr = prefs.getStringList(_getReadArticlesKey(language, sourceName)) ?? [];
+    return listStr.map((s) {
+      try {
+        final map = jsonDecode(s);
+        return NewsArticle(
+          id: map['id'],
+          title: map['title'],
+          link: map['link'],
+          summary: map['summary'],
+          source: map['source'],
+          publishedAt: map['publishedAt'] != null ? DateTime.parse(map['publishedAt']) : null,
+        );
+      } catch (_) {
+        return null;
+      }
+    }).whereType<NewsArticle>().toList();
+  }
+
+  Future<void> addReadArticle(NewsLanguage language, String sourceName, NewsArticle article) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = _getReadArticlesKey(language, sourceName);
+    var current = await getReadArticles(language, sourceName);
+    current.removeWhere((a) => a.id == article.id);
+    current.insert(0, article);
+    if (current.length > 50) {
+      current = current.take(50).toList(); // Maximum 50 read articles per source
+    }
+    final listStr = current.map((a) => jsonEncode({
+      'id': a.id,
+      'title': a.title,
+      'link': a.link,
+      'summary': a.summary,
+      'source': a.source,
+      'publishedAt': a.publishedAt?.toIso8601String(),
+    })).toList();
+    await prefs.setStringList(key, listStr);
+  }
+
+  Future<void> clearReadArticles(NewsLanguage language, String sourceName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_getReadArticlesKey(language, sourceName));
+  }
 
   Future<List<NewsRssSource>> getCustomSources(NewsLanguage language) async {
     final prefs = await SharedPreferences.getInstance();

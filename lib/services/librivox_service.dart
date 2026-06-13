@@ -134,7 +134,11 @@ class LibrivoxService {
     final response = await _client.get(
       uri,
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
-    );
+    ).timeout(const Duration(seconds: 30));
+    
+    if (response.statusCode == 404) {
+      return const LibrivoxPage(books: [], hasMore: false);
+    }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore LibriVox ${response.statusCode}');
     }
@@ -156,7 +160,11 @@ class LibrivoxService {
     final response = await _client.get(
       uri,
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
-    );
+    ).timeout(const Duration(seconds: 30));
+    
+    if (response.statusCode == 404) {
+      throw Exception('Audiolibro non trovato.');
+    }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore LibriVox ${response.statusCode}');
     }
@@ -169,7 +177,7 @@ class LibrivoxService {
   }
 
   List<LibrivoxBook> _booksFromResponse(List<int> bodyBytes) {
-    final decoded = jsonDecode(utf8.decode(bodyBytes)) as Map<String, dynamic>;
+    final decoded = jsonDecode(utf8.decode(bodyBytes, allowMalformed: true)) as Map<String, dynamic>;
     final rawBooks = decoded['books'];
     if (rawBooks is! List) return const [];
     return rawBooks

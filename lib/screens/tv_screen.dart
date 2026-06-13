@@ -32,7 +32,7 @@ class _TvScreenState extends State<TvScreen> {
   Future<void> _load() async {
     final code = await _settings.getTvSecretCode();
     try {
-      final channels = _service.loadChannels(code);
+      final channels = await _service.loadChannels(code);
       final currentPrograms = await _service.loadCurrentPrograms(code);
       if (!mounted) return;
       setState(() {
@@ -43,7 +43,7 @@ class _TvScreenState extends State<TvScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Errore durante la decodifica dei canali: $e';
+        _error = e.toString().replaceAll('Exception: ', '');
         _loading = false;
       });
     }

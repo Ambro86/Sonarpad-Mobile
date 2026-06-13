@@ -52,12 +52,12 @@ class PoetryDbService {
     final response = await _client.get(
       uri,
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
-    );
+    ).timeout(const Duration(seconds: 30));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore PoetryDB ${response.statusCode}');
     }
 
-    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+    final decoded = jsonDecode(utf8.decode(response.bodyBytes, allowMalformed: true));
     if (decoded is Map<String, dynamic>) {
       final status = decoded['status'];
       if (status is int && status == 404) return const [];
