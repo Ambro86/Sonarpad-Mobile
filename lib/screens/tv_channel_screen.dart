@@ -41,7 +41,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     try {
       final code = await _settings.getTvSecretCode();
       final guide = await _service.loadChannelGuide(
-        widget.channel.name,
+        _service.guideChannelName(widget.channel),
         code,
         targetDate: _selectedDate,
       );

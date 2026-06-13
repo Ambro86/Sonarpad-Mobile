@@ -121,8 +121,10 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               final isFavorite = _favorites
                   .any((item) => item.streamUrl == station.streamUrl);
               return Padding(
+                key: ValueKey('radio_search_result_row_${station.streamUrl}'),
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: RadioTile(
+                  key: ValueKey('radio_search_result_tile_${station.streamUrl}'),
                   station: station,
                   isFavorite: isFavorite,
                   isPlaying: false,

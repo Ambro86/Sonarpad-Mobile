@@ -535,6 +535,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             value: 'pt', child: Text(l10n.radioLanguagePt)),
                         DropdownMenuItem(
                             value: 'pl', child: Text(l10n.radioLanguagePl)),
+                        DropdownMenuItem(
+                            value: 'cs', child: Text(l10n.radioLanguageCs)),
                       ],
                       onChanged: (value) {
                         if (value == null || value == _appLanguage) return;

@@ -121,8 +121,10 @@ class _RecentRadiosScreenState extends State<RecentRadiosScreen> {
                     final isFavorite = _favorites
                         .any((item) => item.streamUrl == station.streamUrl);
                     return Padding(
+                      key: ValueKey('recent_radio_row_${station.streamUrl}'),
                       padding: const EdgeInsets.only(bottom: 8),
                       child: RadioTile(
+                        key: ValueKey('recent_radio_tile_${station.streamUrl}'),
                         station: station,
                         isFavorite: isFavorite,
                         isPlaying: false,

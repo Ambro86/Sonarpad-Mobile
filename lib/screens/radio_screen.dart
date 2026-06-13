@@ -434,6 +434,7 @@ class _RadioOptionPickerScreen<T> extends StatelessWidget {
         itemBuilder: (context, index) {
           final option = options[index];
           return ListTile(
+            key: ValueKey('radio_option_${labelBuilder(option)}'),
             title: Text(labelBuilder(option)),
             onTap: () => Navigator.pop(context, option),
           );
@@ -466,6 +467,8 @@ class RadioTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return MergeSemantics(
       child: Semantics(
+        key: ValueKey('radio_tile_semantics_${station.streamUrl}'),
+        container: true,
         customSemanticsActions: {
           CustomSemanticsAction(
               label: isFavorite

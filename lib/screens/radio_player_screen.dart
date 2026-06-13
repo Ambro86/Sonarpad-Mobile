@@ -229,6 +229,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     AppLogger.log(
         'RadioPlayer: build() called. loading=$_loading, error=$_error, videoEnabled=$_isVideoEnabled, videoControllerInit=${_videoController?.value.isInitialized}');
     final l10n = AppLocalizations.of(context);
+    final showStationDetails =
+        widget.tvChannel == null && widget.station.detailsText.trim().isNotEmpty;
     return Scaffold(
       appBar: AppBar(
         title: Text('${l10n.nowPlaying}: ${widget.station.name}'),
@@ -242,7 +244,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             style: Theme.of(context).textTheme.headlineSmall,
             textAlign: TextAlign.center,
           ),
-          if (widget.station.detailsText.trim().isNotEmpty) ...[
+          if (showStationDetails) ...[
             const SizedBox(height: 8),
             Text(
               widget.station.detailsText,

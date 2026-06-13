@@ -232,7 +232,9 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                           final isMedia = item.kind == RaiPlayItemKind.media;
 
                           return Card(
+                            key: ValueKey('raiplay_item_${item.id}'),
                             child: ListTile(
+                              key: ValueKey('raiplay_item_tile_${item.id}'),
                               leading: Icon(isMedia
                                   ? Icons.play_circle_filled
                                   : Icons.folder),

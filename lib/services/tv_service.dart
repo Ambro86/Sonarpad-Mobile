@@ -14,6 +14,8 @@ class TvChannel {
   final String? resolverEndpoint;
   final String? resolverRealm;
   final String? resolverChannelId;
+  final String tvgId;
+  final String tvgName;
 
   TvChannel({
     required this.name,
@@ -23,6 +25,8 @@ class TvChannel {
     this.resolverEndpoint,
     this.resolverRealm,
     this.resolverChannelId,
+    this.tvgId = '',
+    this.tvgName = '',
   });
 
   Map<String, dynamic> toJson() => {
@@ -33,6 +37,8 @@ class TvChannel {
         'resolver_endpoint': resolverEndpoint,
         'resolver_realm': resolverRealm,
         'resolver_channel_id': resolverChannelId,
+        'tvg_id': tvgId,
+        'tvg_name': tvgName,
       };
 
   factory TvChannel.fromJson(Map<String, dynamic> json) => TvChannel(
@@ -43,6 +49,8 @@ class TvChannel {
         resolverEndpoint: json['resolver_endpoint'] as String?,
         resolverRealm: json['resolver_realm'] as String?,
         resolverChannelId: json['resolver_channel_id'] as String?,
+        tvgId: json['tvg_id']?.toString() ?? '',
+        tvgName: json['tvg_name']?.toString() ?? '',
       );
 }
 
@@ -154,6 +162,8 @@ class TvService {
               resolverEndpoint: ch['resolver_endpoint'] as String?,
               resolverRealm: ch['resolver_realm'] as String?,
               resolverChannelId: ch['resolver_channel_id'] as String?,
+              tvgId: ch['tvg_id']?.toString() ?? '',
+              tvgName: ch['tvg_name']?.toString() ?? '',
             ));
           }
         }
@@ -305,6 +315,30 @@ class TvService {
     final prefs = await SharedPreferences.getInstance();
     final jsonList = favorites.map((ch) => ch.toJson()).toList();
     await prefs.setString(_prefsKey, jsonEncode(jsonList));
+  }
+
+  List<String> guideLookupKeys(TvChannel channel) {
+    final keys = <String>[];
+    void add(String value) {
+      final normalized = normalizeChannelName(value);
+      if (normalized.isNotEmpty && !keys.contains(normalized)) {
+        keys.add(normalized);
+      }
+    }
+
+    add(channel.name);
+    add(channel.tvgName);
+    add(channel.tvgId);
+    if (channel.tvgId.toLowerCase().endsWith('.it')) {
+      add(channel.tvgId.substring(0, channel.tvgId.length - 3));
+    }
+    return keys;
+  }
+
+  String guideChannelName(TvChannel channel) {
+    final tvgName = channel.tvgName.trim();
+    if (tvgName.isNotEmpty) return tvgName;
+    return channel.name;
   }
 
   Future<String> resolveStreamUrl(TvChannel channel) async {
@@ -561,6 +595,7 @@ class TvService {
   String normalizeChannelName(String name) {
     var normalized = name
         .toLowerCase()
+        .replaceFirst(RegExp(r'^\s*\[\d+\]\s*'), '')
         .replaceAll('(dtt)', '')
         .replaceAll(' dtt', '')
         .replaceAll(' hd', '')

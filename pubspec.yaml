@@ -74,4 +74,5 @@ flutter:
     - assets/aifa_cache_seed.db
     - assets/changelog.json
     - assets/data/edge_voices.json
+    - assets/rss/feed_cs.txt
     - assets/images/

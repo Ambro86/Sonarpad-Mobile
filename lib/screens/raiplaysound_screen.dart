@@ -281,7 +281,11 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                               item.kind == RaiPlaySoundItemKind.audio;
 
                           return Card(
+                            key: ValueKey('raiplaysound_item_${item.id}'),
                             child: Semantics(
+                              key: ValueKey(
+                                  'raiplaysound_item_semantics_${item.id}'),
+                              container: true,
                               customSemanticsActions: {
                                 if (isAudio && _canSubscribeCurrentPage)
                                   const CustomSemanticsAction(
@@ -291,6 +295,8 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                                       ),
                               },
                               child: ListTile(
+                                key: ValueKey(
+                                    'raiplaysound_item_tile_${item.id}'),
                                 leading: Icon(
                                   isAudio ? Icons.audiotrack : Icons.folder,
                                 ),

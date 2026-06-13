@@ -31,6 +31,7 @@ class _NewsScreenState extends State<NewsScreen> {
         'es' => NewsLanguage.spanish,
         'pt' => NewsLanguage.portuguese,
         'pl' => NewsLanguage.polish,
+        'cs' => NewsLanguage.czech,
         _ => NewsLanguage.italian,
       };
       _loadSources();
@@ -275,7 +276,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   }
 
   Future<List<NewsArticle>> _fetchLocalCategory(String categorySourceName) async {
-    final lang = AppLocalizations.of(context).localeName;
+    final lang = widget.language.code;
     final savedCity = await _settings.getNewsLocalCity();
     final loc = await _service.getUserLocationData();
     final detectedCity = loc?['city'] ?? '';
@@ -305,6 +306,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         NewsLanguage.spanish => 'ES',
         NewsLanguage.portuguese => 'PT',
         NewsLanguage.polish => 'PL',
+        NewsLanguage.czech => 'CZ',
         NewsLanguage.italian => 'IT',
       };
 
@@ -489,6 +491,8 @@ class _NewsSourceList extends StatelessWidget {
 
         return MergeSemantics(
           child: Semantics(
+            key: ValueKey('news_source_semantics_${source.name}'),
+            container: true,
             customSemanticsActions: {
               if (!isFirst)
                 CustomSemanticsAction(label: l10n.moveUp): () =>
@@ -506,6 +510,7 @@ class _NewsSourceList extends StatelessWidget {
                     _handleAction(context, _NewsSourceAction.delete, index),
             },
             child: ListTile(
+              key: ValueKey('news_source_${source.name}'),
               title: Text(source.name),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => onSourceSelected(source),
@@ -690,6 +695,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           itemBuilder: (context, index) {
             if (_readUris.isNotEmpty && index == 0) {
               return ListTile(
+                key: const ValueKey('news_read_articles'),
                 leading: const Icon(Icons.history),
                 title: Text(l10n.newsReadArticles),
                 trailing: const Icon(Icons.chevron_right),
@@ -709,6 +715,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                 : '${article.source}. ${article.summary}';
 
             return ListTile(
+              key: ValueKey('news_article_${article.id}'),
               title: Text(article.title),
               subtitle: Text(
                 subtitleText,
@@ -826,6 +833,7 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
                         : '${article.source}. ${article.summary}';
 
                     return ListTile(
+                      key: ValueKey('news_read_article_${article.id}'),
                       title: Text(article.title),
                       subtitle: Text(
                         subtitleText,

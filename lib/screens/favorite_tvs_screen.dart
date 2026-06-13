@@ -23,10 +23,11 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
   bool _loading = true;
 
   TvProgram? _currentProgramFor(TvChannel channel) {
-    final normalizedName = _service.normalizeChannelName(channel.name);
-    return widget.currentPrograms[normalizedName] ??
-        widget.currentPrograms[channel.name] ??
-        widget.currentPrograms[channel.name.trim().toLowerCase()];
+    for (final key in _service.guideLookupKeys(channel)) {
+      final program = widget.currentPrograms[key];
+      if (program != null) return program;
+    }
+    return null;
   }
 
   String _channelLabel(TvChannel channel, TvProgram? currentProgram) {
@@ -90,9 +91,13 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                     );
 
                     return Padding(
+                      key: ValueKey('favorite_tv_channel_row_${channel.name}'),
                       padding: const EdgeInsets.only(bottom: 8),
                       child: MergeSemantics(
                         child: Semantics(
+                          key: ValueKey(
+                              'favorite_tv_channel_semantics_${channel.name}'),
+                          container: true,
                           button: true,
                           enabled: true,
                           label: semanticsLabel,

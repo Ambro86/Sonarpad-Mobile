@@ -105,6 +105,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                   if (_playedAudioUrls.isNotEmpty && index == 0) {
                     return Card(
                       child: ListTile(
+                        key: const ValueKey('podcast_played_episodes'),
                         leading: const Icon(Icons.history),
                         title: Text(l10n.podcastPlayedEpisodes),
                         trailing: const Icon(Icons.chevron_right),
@@ -117,7 +118,9 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                   final episode = unplayedEpisodes[epIndex];
                   
                   return Card(
+                    key: ValueKey('podcast_episode_${episode.id}'),
                     child: ListTile(
+                      key: ValueKey('podcast_episode_tile_${episode.id}'),
                       title: Text(episode.title),
                       subtitle: Text(
                         episode.description,
@@ -217,7 +220,10 @@ class _PlayedEpisodesScreenState extends State<_PlayedEpisodesScreen> {
                   itemBuilder: (context, index) {
                     final episode = _episodes[index];
                     return Card(
+                      key: ValueKey('played_podcast_episode_${episode.id}'),
                       child: ListTile(
+                        key: ValueKey(
+                            'played_podcast_episode_tile_${episode.id}'),
                         title: Text(episode.title),
                         subtitle: Text(
                           episode.description,

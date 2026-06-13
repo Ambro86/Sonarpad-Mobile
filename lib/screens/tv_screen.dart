@@ -15,6 +15,8 @@ class TvScreen extends StatefulWidget {
 }
 
 class _TvScreenState extends State<TvScreen> {
+  static const _regionalCategoryPrefix = 'Regionali - ';
+
   final _settings = AppSettingsService();
   final _service = TvService();
 
@@ -74,6 +76,22 @@ class _TvScreenState extends State<TvScreen> {
     );
   }
 
+  Future<void> _openRegionalCategories(
+    Map<String, List<TvChannel>> regions,
+  ) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/tv/regional'),
+        builder: (_) => _TvRegionalScreen(
+          regions: regions,
+          currentPrograms: _currentPrograms,
+          onOpenChannel: _openChannel,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,14 +112,21 @@ class _TvScreenState extends State<TvScreen> {
     }
 
     final map = <String, List<TvChannel>>{};
+    final regionalMap = <String, List<TvChannel>>{};
     for (var ch in _channels) {
-      map.putIfAbsent(ch.category, () => []).add(ch);
+      if (ch.category.startsWith(_regionalCategoryPrefix)) {
+        final region = ch.category.substring(_regionalCategoryPrefix.length);
+        regionalMap.putIfAbsent(region, () => []).add(ch);
+      } else {
+        map.putIfAbsent(ch.category, () => []).add(ch);
+      }
     }
 
-    final categories = map.keys.toList()..sort();
+    final categories = map.keys.toList();
 
     final listChildren = <Widget>[
       Padding(
+        key: const ValueKey('tv_favorites_category'),
         padding: const EdgeInsets.only(bottom: 12),
         child: FilledButton.icon(
           style: FilledButton.styleFrom(
@@ -130,6 +155,7 @@ class _TvScreenState extends State<TvScreen> {
     listChildren.addAll(categories.where((c) => map.containsKey(c)).map((c) {
       final channels = map[c]!;
       return Padding(
+        key: ValueKey('tv_category_$c'),
         padding: const EdgeInsets.only(bottom: 12),
         child: FilledButton.icon(
           style: FilledButton.styleFrom(
@@ -146,9 +172,89 @@ class _TvScreenState extends State<TvScreen> {
       );
     }));
 
+    if (regionalMap.isNotEmpty) {
+      listChildren.add(
+        Padding(
+          key: const ValueKey('tv_category_regionali'),
+          padding: const EdgeInsets.only(bottom: 12),
+          child: FilledButton.icon(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+              alignment: Alignment.centerLeft,
+            ),
+            onPressed: () => _openRegionalCategories(regionalMap),
+            icon: const Icon(Icons.folder_open),
+            label: const Text(
+              'Regionali',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ),
+      );
+    }
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: listChildren,
+    );
+  }
+}
+
+class _TvRegionalScreen extends StatelessWidget {
+  const _TvRegionalScreen({
+    required this.regions,
+    required this.currentPrograms,
+    required this.onOpenChannel,
+  });
+
+  final Map<String, List<TvChannel>> regions;
+  final Map<String, TvProgram> currentPrograms;
+  final ValueChanged<TvChannel> onOpenChannel;
+
+  void _openRegion(BuildContext context, String region) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/tv/regional/category'),
+        builder: (_) => _TvCategoryScreen(
+          category: region,
+          channels: regions[region] ?? const [],
+          currentPrograms: currentPrograms,
+          onOpenChannel: onOpenChannel,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final regionNames = regions.keys.toList();
+    return Scaffold(
+      appBar: AppBar(title: const Text('Regionali')),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: regionNames.length,
+        itemBuilder: (context, index) {
+          final region = regionNames[index];
+          return Padding(
+            key: ValueKey('tv_region_row_$region'),
+            padding: const EdgeInsets.only(bottom: 12),
+            child: FilledButton.icon(
+              key: ValueKey('tv_region_button_$region'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(56),
+                alignment: Alignment.centerLeft,
+              ),
+              onPressed: () => _openRegion(context, region),
+              icon: const Icon(Icons.folder_open),
+              label: Text(
+                region,
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -187,10 +293,11 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
   }
 
   TvProgram? _currentProgramFor(TvChannel channel) {
-    final normalizedName = _service.normalizeChannelName(channel.name);
-    return widget.currentPrograms[normalizedName] ??
-        widget.currentPrograms[channel.name] ??
-        widget.currentPrograms[channel.name.trim().toLowerCase()];
+    for (final key in _service.guideLookupKeys(channel)) {
+      final program = widget.currentPrograms[key];
+      if (program != null) return program;
+    }
+    return null;
   }
 
   String _channelLabel(TvChannel channel, TvProgram? currentProgram) {
@@ -241,9 +348,12 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
           final isFavorite = _isFavorite(channel);
 
           return Padding(
+            key: ValueKey('tv_channel_row_${channel.name}'),
             padding: const EdgeInsets.only(bottom: 8),
             child: MergeSemantics(
               child: Semantics(
+                key: ValueKey('tv_channel_semantics_${channel.name}'),
+                container: true,
                 button: true,
                 enabled: true,
                 label: semanticsLabel,

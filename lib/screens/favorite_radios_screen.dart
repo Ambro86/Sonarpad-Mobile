@@ -113,8 +113,10 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                     final isLast = index == _favorites.length - 1;
 
                     return Padding(
+                      key: ValueKey('favorite_radio_row_${station.streamUrl}'),
                       padding: const EdgeInsets.only(bottom: 8),
                       child: RadioTile(
+                        key: ValueKey('favorite_radio_tile_${station.streamUrl}'),
                         station: station,
                         isFavorite: true,
                         isPlaying: false,

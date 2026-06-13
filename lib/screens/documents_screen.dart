@@ -303,6 +303,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: folders
                       .map((f) => ListTile(
+                            key: ValueKey('move_folder_${f.id}'),
                             leading:
                                 const Icon(Icons.folder, color: Colors.amber),
                             title: Text(f.name),
@@ -575,53 +576,59 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Future<void> _openExternalSources() async {
     final l10n = AppLocalizations.of(context);
+    SimpleDialogOption sourceOption({
+      required String value,
+      required IconData icon,
+      required String title,
+    }) {
+      return SimpleDialogOption(
+        key: ValueKey('external_source_$value'),
+        onPressed: () => Navigator.pop(context, value),
+        child: Row(
+          children: [
+            Icon(icon),
+            const SizedBox(width: 16),
+            Expanded(child: Text(title)),
+          ],
+        ),
+      );
+    }
+
     final source = await showDialog<String>(
       context: context,
       builder: (ctx) => SimpleDialog(
         title: Text(l10n.importExternalSourcesTitle),
         children: [
           if (Platform.isIOS)
-            SimpleDialogOption(
-              onPressed: () => Navigator.pop(ctx, 'itunes'),
-              child: ListTile(
-                leading: const Icon(Icons.apple),
-                title: Text(l10n.importDocumentsFromITunes),
-              ),
+            sourceOption(
+              value: 'itunes',
+              icon: Icons.apple,
+              title: l10n.importDocumentsFromITunes,
             ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(ctx, 'dropbox'),
-            child: ListTile(
-              leading: const Icon(Icons.cloud_outlined),
-              title: Text(l10n.importFromDropbox),
-            ),
+          sourceOption(
+            value: 'dropbox',
+            icon: Icons.cloud_outlined,
+            title: l10n.importFromDropbox,
           ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(ctx, 'gutenberg'),
-            child: ListTile(
-              leading: const Icon(Icons.public),
-              title: Text(l10n.importFromProjectGutenberg),
-            ),
+          sourceOption(
+            value: 'gutenberg',
+            icon: Icons.public,
+            title: l10n.importFromProjectGutenberg,
           ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(ctx, 'internet_archive'),
-            child: ListTile(
-              leading: const Icon(Icons.archive_outlined),
-              title: Text(l10n.importFromInternetArchive),
-            ),
+          sourceOption(
+            value: 'internet_archive',
+            icon: Icons.archive_outlined,
+            title: l10n.importFromInternetArchive,
           ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(ctx, 'librivox'),
-            child: ListTile(
-              leading: const Icon(Icons.headphones),
-              title: Text(l10n.importFromLibriVox),
-            ),
+          sourceOption(
+            value: 'librivox',
+            icon: Icons.headphones,
+            title: l10n.importFromLibriVox,
           ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(ctx, 'poetrydb'),
-            child: ListTile(
-              leading: const Icon(Icons.format_quote),
-              title: Text(l10n.importFromPoetryDb),
-            ),
+          sourceOption(
+            value: 'poetrydb',
+            icon: Icons.format_quote,
+            title: l10n.importFromPoetryDb,
           ),
         ],
       ),
@@ -873,6 +880,8 @@ class _DocumentTile extends StatelessWidget {
 
     return MergeSemantics(
       child: Semantics(
+        key: ValueKey('document_item_semantics_${doc.id}'),
+        container: true,
         customSemanticsActions: {
           CustomSemanticsAction(
               label: doc.isFolder
@@ -893,6 +902,7 @@ class _DocumentTile extends StatelessWidget {
             '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} $displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}',
         hint: doc.isFolder ? l10n.openFolderHint : l10n.openDocumentHint,
         child: Card(
+          key: ValueKey('document_item_card_${doc.id}'),
           elevation: 2,
           clipBehavior: Clip.antiAlias,
           child: InkWell(

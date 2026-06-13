@@ -385,9 +385,13 @@ class _PodcastScreenState extends State<PodcastScreen> {
               final isLast = index == _subscriptions.length - 1;
 
               return Padding(
+                key: ValueKey('podcast_subscription_row_${subscription.feedUrl}'),
                 padding: const EdgeInsets.only(bottom: 8),
                 child: MergeSemantics(
                   child: Semantics(
+                    key: ValueKey(
+                        'podcast_subscription_semantics_${subscription.feedUrl}'),
+                    container: true,
                     customSemanticsActions: {
                       CustomSemanticsAction(label: l10n.removePodcast): () =>
                           _removeSubscription(subscription),
@@ -428,8 +432,10 @@ class _PodcastScreenState extends State<PodcastScreen> {
             ..._localAudioFiles.map((file) {
               final basename = p.basename(file.path);
               return Padding(
+                key: ValueKey('local_audio_row_${file.path}'),
                 padding: const EdgeInsets.only(bottom: 8),
                 child: FilledButton.icon(
+                  key: ValueKey('local_audio_button_${file.path}'),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(56),
                     alignment: Alignment.centerLeft,
@@ -586,6 +592,7 @@ class _PodcastCategoryBrowserScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final category = categories[index];
           return ListTile(
+            key: ValueKey('podcast_category_${category.genreId}'),
             leading: const Icon(Icons.category),
             title: Text(category.nameForLanguage(l10n.localeName)),
             trailing: const Icon(Icons.chevron_right),
@@ -669,6 +676,7 @@ class _PodcastSearchResultsScreenState
             itemBuilder: (context, index) {
               final result = results[index];
               return ListTile(
+                key: ValueKey('podcast_search_result_${result.feedUrl}'),
                 leading: ExcludeSemantics(
                   child: result.artworkUrl == null
                       ? const Icon(Icons.podcasts)

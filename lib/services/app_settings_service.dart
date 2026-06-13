@@ -36,7 +36,7 @@ enum SonarpadThemeMode {
 }
 
 class AppSettingsService {
-  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pl'};
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pl', 'cs'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -53,6 +53,7 @@ class AppSettingsService {
     TtsVoiceLanguage('fr', 'Francese'),
     TtsVoiceLanguage('pt', 'Portoghese'),
     TtsVoiceLanguage('pl', 'Polski'),
+    TtsVoiceLanguage('cs', 'Čeština'),
     TtsVoiceLanguage('de', 'Tedesco'),
   ];
 
@@ -126,6 +127,16 @@ class AppSettingsService {
       languageCode: 'pl',
       voice: 'pl-PL-MarekNeural',
       label: 'Marek',
+    ),
+    TtsVoiceOption(
+      languageCode: 'cs',
+      voice: 'cs-CZ-VlastaNeural',
+      label: 'Vlasta',
+    ),
+    TtsVoiceOption(
+      languageCode: 'cs',
+      voice: 'cs-CZ-AntoninNeural',
+      label: 'Antonín',
     ),
     TtsVoiceOption(
       languageCode: 'de',
@@ -460,6 +471,7 @@ class AppSettingsService {
       'pt' || 'pt-PT' => 'pt-PT-RaquelNeural',
       'pt-BR' => 'pt-BR-FranciscaNeural',
       'pl' || 'pl-PL' => 'pl-PL-ZofiaNeural',
+      'cs' || 'cs-CZ' => 'cs-CZ-VlastaNeural',
       'de' || 'de-DE' => 'de-DE-KatjaNeural',
       _ => '',
     };

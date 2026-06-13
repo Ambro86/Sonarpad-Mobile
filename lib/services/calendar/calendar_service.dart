@@ -110,6 +110,22 @@ class CalendarService {
     final day = date.day;
     final month = date.month;
 
+
+    if (lang == 'cs') {
+      if (day == 1 && month == 1) return "Nový rok";
+      if (day == 1 && month == 5) return "Svátek práce";
+      if (day == 8 && month == 5) return "Den vítězství";
+      if (day == 5 && month == 7) return "Den slovanských věrozvěstů Cyrila a Metoděje";
+      if (day == 6 && month == 7) return "Den upálení mistra Jana Husa";
+      if (day == 28 && month == 9) return "Den české státnosti";
+      if (day == 28 && month == 10) return "Den vzniku samostatného československého státu";
+      if (day == 17 && month == 11) return "Den boje za svobodu a demokracii";
+      if (day == 24 && month == 12) return "Štědrý den";
+      if (day == 25 && month == 12) return "1. svátek vánoční";
+      if (day == 26 && month == 12) return "2. svátek vánoční";
+      return null;
+    }
+
     if (lang == 'pl') {
       if (day == 1 && month == 1) return "Nowy Rok";
       if (day == 6 && month == 1) return "Święto Trzech Króli";
@@ -203,6 +219,7 @@ class CalendarService {
 
     if (lang == 'pt') return "Não disponível";
     if (lang == 'pl') return "Niedostępne";
+    if (lang == 'cs') return "Není dostupné";
 
     // 3. Per le altre lingue, se il dizionario non ha dati restituisce null
     return null;
@@ -301,6 +318,17 @@ class CalendarService {
       "A única forma de fazer um grande trabalho é amar o que fazes. - Steve Jobs",
       "Cada dia é uma nova oportunidade para mudar a tua vida. - Anónimo",
     ];
+
+    final quotesCs = [
+      "Štěstí nespočívá v tom mít, co chceme, ale chtít to, co máme. - Oscar Wilde",
+      "Úspěch je součet malých úsilí opakovaných den za dnem. - Robert Collier",
+      "Nikdy není pozdě stát se tím, kým jsme mohli být. - George Eliot",
+      "Život je to, co se děje, když jsme zaneprázdněni jinými plány. - John Lennon",
+      "Nejlepší způsob, jak předpovědět budoucnost, je vytvořit ji. - Alan Kay",
+      "Buď změnou, kterou chceš vidět ve světě. - Mahatma Gandhi",
+      "Jediný způsob, jak dělat skvělou práci, je milovat to, co děláš. - Steve Jobs",
+      "Každý den je nová příležitost změnit svůj život. - Anonym",
+    ];
     final quotesPl = [
       "Szczęście nie polega na posiadaniu tego, czego się pragnie, lecz na pragnieniu tego, co się ma. - Oscar Wilde",
       "Sukces jest sumą małych wysiłków powtarzanych dzień po dniu. - Robert Collier",
@@ -328,6 +356,9 @@ class CalendarService {
         break;
       case 'pl':
         list = quotesPl;
+        break;
+      case 'cs':
+        list = quotesCs;
         break;
       default:
         list = quotesEn;

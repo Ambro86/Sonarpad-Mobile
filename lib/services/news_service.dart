@@ -19,8 +19,9 @@ import 'news_sources/french_news_sources.dart';
 import 'news_sources/spanish_news_sources.dart';
 import 'news_sources/portuguese_news_sources.dart';
 import 'news_sources/polish_news_sources.dart';
+import 'news_sources/czech_news_sources.dart';
 
-enum NewsLanguage { italian, english, french, spanish, portuguese, polish }
+enum NewsLanguage { italian, english, french, spanish, portuguese, polish, czech }
 
 extension NewsLanguageInfo on NewsLanguage {
   String get code => switch (this) {
@@ -30,6 +31,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.spanish => 'es',
         NewsLanguage.portuguese => 'pt',
         NewsLanguage.polish => 'pl',
+        NewsLanguage.czech => 'cs',
       };
 
   String label(AppLocalizations l10n) => switch (this) {
@@ -39,6 +41,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.spanish => l10n.spanish,
         NewsLanguage.portuguese => l10n.radioLanguagePt,
         NewsLanguage.polish => l10n.radioLanguagePl,
+        NewsLanguage.czech => l10n.radioLanguageCs,
       };
 
   List<NewsRssSource> get rssSources => switch (this) {
@@ -48,6 +51,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.spanish => spanishNewsSources,
         NewsLanguage.portuguese => portugueseNewsSources,
         NewsLanguage.polish => polishNewsSources,
+        NewsLanguage.czech => czechNewsSources,
       };
 }
 
@@ -194,6 +198,11 @@ class NewsService {
             hl = 'pl';
             gl = 'PL';
             ceid = 'PL:pl';
+            break;
+          case NewsLanguage.czech:
+            hl = 'cs';
+            gl = 'CZ';
+            ceid = 'CZ:cs';
             break;
         }
         finalUrl =
@@ -809,6 +818,7 @@ class NewsService {
       NewsLanguage.spanish => 'es-ES,es;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.portuguese => 'pt-PT,pt;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.polish => 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
+      NewsLanguage.czech => 'cs-CZ,cs;q=0.9,en-US;q=0.8,en;q=0.7',
     };
   }
 
@@ -1044,7 +1054,10 @@ class NewsService {
       case _BrowserFetchProfile.chrome:
         result['User-Agent'] =
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36';
-        result['Accept-Language'] = 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7';
+        result.putIfAbsent(
+          'Accept-Language',
+          () => 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+        );
         if (navigation) {
           result['Accept'] =
               'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7';
@@ -1063,7 +1076,10 @@ class NewsService {
       case _BrowserFetchProfile.iphone:
         result['User-Agent'] =
             'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1';
-        result['Accept-Language'] = 'it-IT,it;q=0.9,en-US;q=0.8';
+        result.putIfAbsent(
+          'Accept-Language',
+          () => 'it-IT,it;q=0.9,en-US;q=0.8',
+        );
         if (navigation) {
           result['Accept'] =
               'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';

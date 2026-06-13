@@ -50,31 +50,32 @@ class GutendexService {
     String? pageUrl,
   }) async {
     final uri = pageUrl != null
-        ? Uri.parse(pageUrl)
-        : Uri.https('gutendex.com', '/books', {
-            if (query.trim().isNotEmpty) 'search': query.trim(),
+        ? _sonarpadPageUri(pageUrl)
+        : Uri.https('sonarpad.com', '/api/gutenberg/search.php', {
+            if (query.trim().isNotEmpty) 'q': query.trim(),
             if (language != null && language.trim().isNotEmpty)
-              'languages': language.trim(),
-            'copyright': 'false',
-            'mime_type': 'text/plain',
+              'lang': language.trim(),
+            'page_size': '20',
           });
     final response = await _client.get(
       uri,
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
-    ).timeout(const Duration(seconds: 30));
+    ).timeout(const Duration(seconds: 15));
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Errore Gutendex ${response.statusCode}');
+      throw Exception('Errore Gutenberg ${response.statusCode}');
     }
 
-    final decoded = jsonDecode(utf8.decode(response.bodyBytes, allowMalformed: true))
+    final decoded = jsonDecode(
+            utf8.decode(response.bodyBytes, allowMalformed: true))
         as Map<String, dynamic>;
     final results = (decoded['results'] as List<dynamic>? ?? const [])
         .whereType<Map<String, dynamic>>()
         .map(_bookFromJson)
         .toList();
+    final next = decoded['next'] as String?;
     return GutendexPage(
       count: decoded['count'] as int? ?? results.length,
-      next: decoded['next'] as String?,
+      next: next == null ? null : _sonarpadPageUri(next).toString(),
       books: results,
     );
   }
@@ -126,6 +127,12 @@ class GutendexService {
     );
   }
 
+  Uri _sonarpadPageUri(String value) {
+    final uri = Uri.parse(value);
+    if (uri.hasScheme) return uri;
+    return Uri.parse('https://sonarpad.com').resolve(value);
+  }
+
   String? _plainTextUrl(GutendexBook book) {
     for (final entry in book.formats.entries) {
       final key = entry.key.toLowerCase();
@@ -140,6 +147,18 @@ class GutendexService {
       }
     }
     return null;
+  }
+
+  List<String> _stringList(Object? value) {
+    if (value is List) {
+      return value
+          .whereType<String>()
+          .map((item) => item.trim())
+          .where((item) => item.isNotEmpty)
+          .toList();
+    }
+    final single = _stringValue(value);
+    return single.isEmpty ? const [] : [single];
   }
 
   String _cleanGutenbergText(String raw) {
@@ -179,4 +198,9 @@ class GutendexService {
     }
     return out.toString().trim();
   }
+}
+
+String _stringValue(Object? value, {String fallback = ''}) {
+  if (value is String && value.trim().isNotEmpty) return value.trim();
+  return fallback;
 }
