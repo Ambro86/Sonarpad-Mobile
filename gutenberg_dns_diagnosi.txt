@@ -1,0 +1,76 @@
+Problema Gutenberg import Sonarpad
+
+Contesto:
+- La ricerca Gutenberg tramite server Sonarpad e' veloce.
+- Esempio ricerca:
+  https://sonarpad.com/api/gutenberg/search.php?q=leopardi&lang=it&page_size=5
+- Il problema e' nell'import/download del file EPUB/TXT da www.gutenberg.org.
+
+Libro test:
+- ID Gutenberg: 62813
+- Titolo: Foscolo, Manzoni, Leopardi: saggi
+- URL EPUB corretto:
+  https://www.gutenberg.org/cache/epub/62813/pg62813-images.epub
+
+Sintomo:
+- Da browser Chrome il download dell'EPUB e' istantaneo.
+- Da Python/Flutter/curl/PowerShell il download va in timeout o non raggiunge Gutenberg.
+- Quindi non sembra un problema di URL sbagliato o di Gutenberg lento.
+
+Scoperta DNS:
+- Il DNS di sistema risolve www.gutenberg.org a:
+  83.103.74.20
+- Questo IP va in timeout sulla porta 443.
+- Nel risultato DNS compariva anche:
+  inibizioni.rpz
+- Questo fa pensare a DNS filtrato/bloccato o risoluzione alterata.
+
+Chrome invece nel NetLog risolveva www.gutenberg.org cosi':
+- www.gutenberg.org -> gutenberg.org
+- IPv4 vero:
+  152.19.134.47
+- IPv6 vero:
+  2610:28:3090:3000:0:bad:cafe:47
+
+Test confermato:
+- Forzando nello script Python l'IP 152.19.134.47 per host www.gutenberg.org, il download funziona.
+- Comando usato:
+  python tools/test_gutenberg_import.py leopardi --lang it --timeout 30 --gutenberg-ip 152.19.134.47
+- Risultato:
+  EPUB_DOWNLOAD status=200 seconds=1.01 bytes=574095 type=application/epub+zip
+
+Conclusione:
+- L'URL corretto e' quello cache/epub:
+  https://www.gutenberg.org/cache/epub/62813/pg62813-images.epub
+- Ma l'app non puo' risolvere il problema solo cambiando URL se il DNS del sistema punta a un IP bloccato.
+- Chrome probabilmente usa DNS sicuro/proprio o una risoluzione diversa, quindi ottiene l'IP corretto.
+
+Soluzione consigliata:
+- Creare su sonarpad.com un endpoint PHP on-demand, non una copia di tutti i libri.
+- Esempio:
+  https://sonarpad.com/api/gutenberg/download.php?id=62813&format=epub
+
+Come dovrebbe funzionare:
+1. Il PHP riceve id e format.
+2. Valida che id sia numerico.
+3. Costruisce l'URL Gutenberg:
+   https://www.gutenberg.org/cache/epub/{id}/pg{id}-images.epub
+4. Scarica il file al momento della richiesta.
+5. Lo restituisce all'app con Content-Type application/epub+zip.
+6. Opzionale: salva cache temporanea solo dei libri richiesti, per esempio 7 giorni.
+
+Nota importante:
+- Non conviene hardcodare 152.19.134.47 nell'app.
+- L'IP puo' cambiare e HTTPS richiede comunque host/SNI/certificato www.gutenberg.org.
+- Meglio fare la risoluzione/scaricamento lato server Sonarpad, dove si puo' usare DNS corretto o forzare una risoluzione in modo controllato.
+
+Possibile approccio PHP:
+- Usare cURL con CURLOPT_RESOLVE per forzare temporaneamente:
+  www.gutenberg.org:443:152.19.134.47
+- Oppure configurare il server con DNS affidabile, per esempio Cloudflare/Google, e lasciare cURL normale.
+- CURLOPT_RESOLVE e' utile se anche il server ha DNS filtrato.
+
+Fallback:
+- Se EPUB fallisce, provare testo:
+  https://www.gutenberg.org/ebooks/{id}.txt.utf-8
+- Ma per Sonarpad e' meglio EPUB quando disponibile, per preservare struttura del libro.

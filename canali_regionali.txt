@@ -1,0 +1,137 @@
+=== Abruzzo ===
+TV1 Sulmona
+Rete 8
+Rete 8 Sport
+
+=== Basilicata ===
+Cronache Lucane Tv
+Tele  Norba
+TG Norba 24
+
+=== Calabria ===
+Enjoy Tv
+La C Tv Calabria
+L'Altro Corriere Tv
+RTI Calabria
+Reggio Tv
+
+=== Campania ===
+Tele A1
+Radio Caserta Tv
+Italia2 Tv
+Minformo Tv
+Canale Uno Tivù
+Stile Tv
+Tele A Campania
+VideoNola
+Canale21
+Televomero
+Lira TV
+
+=== Emilia Romagna ===
+E'Tv Rete7
+Icaro Tv
+Telestense
+
+=== Friuli Venezia Giulia ===
+Telequattro Nordest
+
+=== Lazio ===
+Tu Day
+Canale 10 Lazio
+Esperia TV
+Lazio Tv
+Rieti Channel
+TR 118
+TeleTusciaSabina 2000
+
+=== Liguria ===
+PrimAntenna
+Tele Nord
+Primo Canale
+
+=== Lombardia ===
+TT-TTELETUTTO
+TT-TTELETUTTO 2
+TT-TTELETUTTO 24
+Più Valli TV
+Teleboario
+Rete55 Varese
+Telemantova
+Tele Pavia
+Bergamo Tv
+Cremona 1
+Telecolor
+Antenna 2
+Elive Brescia TV
+Telelombardia
+Antenna 3
+Top Calcio 24
+Milanow
+Telenova
+Telecity Lombardia
+Super TV
+Tele Leonessa
+Espansione TV
+
+=== Marche ===
+Fm Tv 75 Marche
+Rossini TV
+
+=== Molise ===
+Telemolise
+Tlt Molise
+
+=== Piemonte ===
+PrimAntenna
+Telecity Piemonte
+Telecupole
+Grp TV
+
+=== Puglia ===
+Tele  Norba
+Tele Bari
+TG Norba 24
+TeleRama
+
+=== Sardegna ===
+Videolina
+Sardegna1
+Nora TV
+
+=== Sicilia ===
+La3 Marsala
+Rtp Sicilia
+TGS tele giornale di Sicilia
+Radio Etna Espresso
+Antenna Sicilia
+
+=== Ticino ===
+TeleTicino
+
+=== Toscana ===
+Extra Tv
+Rete Mia
+TelegranducatoTv
+Teletruria
+
+=== Trentino ===
+Alto Adige TV
+Peer.tv Sudtirol
+Telepace Trento
+TV 33
+
+=== Umbria ===
+Umbria TV HD
+Retesole HD
+
+=== Valle D'Aosta ===
+Telecity Valle d'Aosta
+
+=== Veneto ===
+TVA Vicenza
+Telechiara
+Tele Arena
+Rete Veneta
+Canale Italia
+
