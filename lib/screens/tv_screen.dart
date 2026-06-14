@@ -6,6 +6,7 @@ import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
 import 'favorite_tvs_screen.dart';
 import 'tv_channel_screen.dart';
+import 'tv_recordings_screen.dart';
 
 class TvScreen extends StatefulWidget {
   const TvScreen({super.key});
@@ -148,6 +149,30 @@ class _TvScreenState extends State<TvScreen> {
           },
           icon: const Icon(Icons.favorite),
           label: const Text('TV preferite', style: TextStyle(fontSize: 20)),
+        ),
+      ),
+      Padding(
+        key: const ValueKey('tv_recordings_category'),
+        padding: const EdgeInsets.only(bottom: 12),
+        child: FilledButton.icon(
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(56),
+            alignment: Alignment.centerLeft,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                settings: const RouteSettings(name: '/tv/recordings'),
+                builder: (_) => const TvRecordingsScreen(),
+              ),
+            );
+          },
+          icon: const Icon(Icons.videocam),
+          label: Text(
+            AppLocalizations.of(context).recordings,
+            style: const TextStyle(fontSize: 20),
+          ),
         ),
       ),
     ];

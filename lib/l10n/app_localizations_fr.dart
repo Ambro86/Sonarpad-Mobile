@@ -1636,6 +1636,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get radioPlay => 'Lire';
 
   @override
+  String get startRecording => 'Démarrer l\'enregistrement';
+
+  @override
+  String get stopRecording => 'Arrêter l\'enregistrement';
+
+  @override
+  String get recordings => 'Enregistrements';
+
+  @override
+  String get noRecordings => 'Aucun enregistrement.';
+
+  @override
+  String get recordingStarted => 'Enregistrement démarré.';
+
+  @override
+  String recordingSaved(Object path) {
+    return 'Enregistrement sauvegardé : $path';
+  }
+
+  @override
+  String recordingError(Object error) {
+    return 'Erreur d\'enregistrement : $error';
+  }
+
+  @override
   String get routeTitle => 'Itinéraires';
 
   @override

@@ -2285,6 +2285,27 @@
   "@radioPlay": {
     "description": "Localized text for radioPlay."
   },
+  "startRecording": "Avvia registrazione",
+  "stopRecording": "Ferma registrazione",
+  "recordings": "Registrazioni",
+  "noRecordings": "Nessuna registrazione.",
+  "recordingStarted": "Registrazione avviata.",
+  "recordingSaved": "Registrazione salvata: {path}",
+  "@recordingSaved": {
+    "placeholders": {
+      "path": {
+        "type": "Object"
+      }
+    }
+  },
+  "recordingError": "Errore registrazione: {error}",
+  "@recordingError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "routeTitle": "Percorsi",
   "@routeTitle": {
     "description": "Localized text for routeTitle."

@@ -2283,6 +2283,27 @@
   "@radioPlay": {
     "description": "Localized text for radioPlay."
   },
+  "startRecording": "Rozpocznij nagrywanie",
+  "stopRecording": "Zatrzymaj nagrywanie",
+  "recordings": "Nagrania",
+  "noRecordings": "Brak nagrań.",
+  "recordingStarted": "Nagrywanie rozpoczęte.",
+  "recordingSaved": "Nagranie zapisane: {path}",
+  "@recordingSaved": {
+    "placeholders": {
+      "path": {
+        "type": "Object"
+      }
+    }
+  },
+  "recordingError": "Błąd nagrywania: {error}",
+  "@recordingError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "routeTitle": "Trasy",
   "@routeTitle": {
     "description": "Localized text for routeTitle."

@@ -26,10 +26,12 @@ import 'screens/news_screen.dart';
 import 'screens/cinema_screen.dart';
 import 'screens/podcast_screen.dart';
 import 'screens/radio_screen.dart';
+import 'screens/radio_recordings_screen.dart';
 import 'screens/raiplay_screen.dart';
 import 'screens/raiplaysound_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/tv_screen.dart';
+import 'screens/tv_recordings_screen.dart';
 import 'screens/aifa_search_screen.dart';
 import 'screens/wikipedia_screen.dart';
 import 'screens/weather_screen.dart';
@@ -388,7 +390,9 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/podcasts': (_) => const PodcastScreen(),
         '/convert_media': (_) => const ConvertMediaScreen(),
         '/radio': (_) => const RadioScreen(),
+        '/radio/recordings': (_) => const RadioRecordingsScreen(),
         '/tv': (_) => const TvScreen(),
+        '/tv/recordings': (_) => const TvRecordingsScreen(),
         '/raiplaysound': (_) => const RaiPlaySoundScreen(),
         '/raiplay': (_) => const RaiPlayScreen(),
         '/wikipedia': (_) => const WikipediaScreen(),

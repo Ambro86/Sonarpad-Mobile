@@ -1616,6 +1616,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radioPlay => 'Play';
 
   @override
+  String get startRecording => 'Start recording';
+
+  @override
+  String get stopRecording => 'Stop recording';
+
+  @override
+  String get recordings => 'Recordings';
+
+  @override
+  String get noRecordings => 'No recordings.';
+
+  @override
+  String get recordingStarted => 'Recording started.';
+
+  @override
+  String recordingSaved(Object path) {
+    return 'Recording saved: $path';
+  }
+
+  @override
+  String recordingError(Object error) {
+    return 'Recording error: $error';
+  }
+
+  @override
   String get routeTitle => 'Routes';
 
   @override

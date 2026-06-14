@@ -486,6 +486,27 @@
   "radioCommunityAdded": "Radio successfully added to Sonarpad community.",
   "radioCommunityAddError": "Error adding radio: {error}",
   "radioPlay": "Play",
+  "startRecording": "Start recording",
+  "stopRecording": "Stop recording",
+  "recordings": "Recordings",
+  "noRecordings": "No recordings.",
+  "recordingStarted": "Recording started.",
+  "recordingSaved": "Recording saved: {path}",
+  "@recordingSaved": {
+    "placeholders": {
+      "path": {
+        "type": "Object"
+      }
+    }
+  },
+  "recordingError": "Recording error: {error}",
+  "@recordingError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "routeTitle": "Routes",
   "routeFrom": "From",
   "routeTo": "To",

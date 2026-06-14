@@ -7,6 +7,7 @@ import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
+import 'radio_recordings_screen.dart';
 import 'radio_search_results_screen.dart';
 import 'recent_radios_screen.dart';
 
@@ -203,6 +204,30 @@ class _RadioScreenState extends State<RadioScreen> {
                 const Icon(Icons.history),
                 const SizedBox(width: 8),
                 Text(_recentRadiosLabel(l10n.localeName)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          FilledButton.tonal(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(56),
+              alignment: Alignment.centerLeft,
+            ),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(name: '/radio/recordings'),
+                  builder: (_) => const RadioRecordingsScreen(),
+                ),
+              );
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.mic),
+                const SizedBox(width: 8),
+                Text(l10n.recordings),
               ],
             ),
           ),

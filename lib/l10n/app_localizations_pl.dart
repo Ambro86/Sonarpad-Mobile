@@ -1623,6 +1623,31 @@ class AppLocalizationsPl extends AppLocalizations {
   String get radioPlay => 'Odtwórz';
 
   @override
+  String get startRecording => 'Rozpocznij nagrywanie';
+
+  @override
+  String get stopRecording => 'Zatrzymaj nagrywanie';
+
+  @override
+  String get recordings => 'Nagrania';
+
+  @override
+  String get noRecordings => 'Brak nagrań.';
+
+  @override
+  String get recordingStarted => 'Nagrywanie rozpoczęte.';
+
+  @override
+  String recordingSaved(Object path) {
+    return 'Nagranie zapisane: $path';
+  }
+
+  @override
+  String recordingError(Object error) {
+    return 'Błąd nagrywania: $error';
+  }
+
+  @override
   String get routeTitle => 'Trasy';
 
   @override

@@ -3019,6 +3019,20 @@ abstract class AppLocalizations {
   /// **'Riproduci'**
   String get radioPlay;
 
+  String get startRecording;
+
+  String get stopRecording;
+
+  String get recordings;
+
+  String get noRecordings;
+
+  String get recordingStarted;
+
+  String recordingSaved(Object path);
+
+  String recordingError(Object error);
+
   /// Localized text for routeTitle.
   ///
   /// In it, this message translates to:

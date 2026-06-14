@@ -483,6 +483,27 @@
   "radioCommunityAdded": "Rádio adicionada com sucesso à comunidade Sonarpad.",
   "radioCommunityAddError": "Erro ao adicionar a rádio: {error}",
   "radioPlay": "Reproduzir",
+  "startRecording": "Iniciar gravação",
+  "stopRecording": "Parar gravação",
+  "recordings": "Gravações",
+  "noRecordings": "Nenhuma gravação.",
+  "recordingStarted": "Gravação iniciada.",
+  "recordingSaved": "Gravação guardada: {path}",
+  "@recordingSaved": {
+    "placeholders": {
+      "path": {
+        "type": "Object"
+      }
+    }
+  },
+  "recordingError": "Erro de gravação: {error}",
+  "@recordingError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "routeTitle": "Percursos",
   "routeFrom": "De",
   "routeTo": "A",

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
+import '../services/radio_recording_service.dart';
 import '../services/radio_service.dart';
 import '../services/tv_service.dart';
 import '../widgets/volume_slider.dart';
@@ -33,11 +34,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
+  late final RadioRecordingService _recordingService;
   StreamSubscription<dynamic>? _mediaEventsSubscription;
 
   VideoPlayerController? _videoController;
   bool _isVideoEnabled = false;
   bool _isFavorite = false;
+  bool _recording = false;
+  File? _recordingOutput;
 
   bool _loading = false;
   String? _error;
@@ -45,6 +49,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   @override
   void initState() {
     super.initState();
+    _recordingService = RadioRecordingService(
+      directoryName:
+          widget.tvChannel == null ? 'Radio Registrazioni' : 'TV Registrazioni',
+      includeVideo: widget.tvChannel != null,
+    );
     if (Platform.isIOS) {
       _mediaEventsSubscription =
           _mediaEvents.receiveBroadcastStream().listen((event) {
@@ -222,8 +231,46 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
+  Future<void> _toggleRecording() async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      if (_recording) {
+        final file = await _recordingService.stop();
+        if (!mounted) return;
+        setState(() {
+          _recording = false;
+          _recordingOutput = file;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.recordingSaved(file?.path ?? ''))),
+        );
+        return;
+      }
+
+      final file = await _recordingService.start(
+        stationName: widget.station.name,
+        streamUrl: widget.station.streamUrl,
+      );
+      if (!mounted) return;
+      setState(() {
+        _recording = true;
+        _recordingOutput = file;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.recordingStarted)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.recordingError(error))),
+      );
+    }
+  }
+
   bool get _requiresVideoPlayback =>
       widget.isVideoSupported && TvService.isDashStreamUrl(widget.station.streamUrl);
+
+  bool get _canRecordStream => widget.tvChannel == null || !_requiresVideoPlayback;
 
   @override
   void dispose() {
@@ -231,6 +278,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
     }
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
+    if (_recordingService.isRecording) {
+      unawaited(_recordingService.stop().catchError((error) {
+        AppLogger.log('RadioPlayer: recording stop during dispose failed: $error');
+        return null;
+      }));
+    }
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());
     super.dispose();
@@ -319,8 +372,23 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                     );
                   },
                 ),
+              if (_canRecordStream)
+                FilledButton.icon(
+                  onPressed: _loading ? null : _toggleRecording,
+                  icon: Icon(_recording ? Icons.stop : Icons.fiber_manual_record),
+                  label: Text(_recording
+                      ? l10n.stopRecording
+                      : l10n.startRecording),
+                ),
             ],
           ),
+          if (_recordingOutput != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              _recordingOutput!.path,
+              textAlign: TextAlign.center,
+            ),
+          ],
           if (_videoController == null) ...[
             const SizedBox(height: 24),
             VolumeSlider(audioPlayer: _audio),

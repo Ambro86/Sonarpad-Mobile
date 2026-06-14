@@ -1628,6 +1628,31 @@ class AppLocalizationsIt extends AppLocalizations {
   String get radioPlay => 'Riproduci';
 
   @override
+  String get startRecording => 'Avvia registrazione';
+
+  @override
+  String get stopRecording => 'Ferma registrazione';
+
+  @override
+  String get recordings => 'Registrazioni';
+
+  @override
+  String get noRecordings => 'Nessuna registrazione.';
+
+  @override
+  String get recordingStarted => 'Registrazione avviata.';
+
+  @override
+  String recordingSaved(Object path) {
+    return 'Registrazione salvata: $path';
+  }
+
+  @override
+  String recordingError(Object error) {
+    return 'Errore registrazione: $error';
+  }
+
+  @override
   String get routeTitle => 'Percorsi';
 
   @override
