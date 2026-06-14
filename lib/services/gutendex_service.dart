@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:archive/archive.dart';
@@ -38,6 +39,30 @@ class GutendexBook {
       authors.isEmpty ? 'Autore sconosciuto' : authors.join(', ');
 
   String get languageLabel => languages.join(', ');
+}
+
+class GutendexDownload {
+  final String fileName;
+  final List<int>? bytes;
+  final String? text;
+
+  const GutendexDownload._({
+    required this.fileName,
+    this.bytes,
+    this.text,
+  });
+
+  const GutendexDownload.file({
+    required String fileName,
+    required List<int> bytes,
+  }) : this._(fileName: fileName, bytes: bytes);
+
+  const GutendexDownload.text({
+    required String fileName,
+    required String text,
+  }) : this._(fileName: fileName, text: text);
+
+  bool get isFile => bytes != null;
 }
 
 class GutendexService {
@@ -86,14 +111,46 @@ class GutendexService {
     if (url == null) {
       throw Exception('Nessun formato testo disponibile per questo libro.');
     }
-    final response = await _client.get(
-      Uri.parse(url),
-      headers: {'User-Agent': 'SonarpadMobile/0.1'},
-    ).timeout(const Duration(seconds: 30));
+    final response = await _download(url);
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore download ${response.statusCode}');
     }
     return _cleanGutenbergText(_decodeDownloadedText(response.bodyBytes, url));
+  }
+
+  Future<GutendexDownload> downloadForImport(GutendexBook book) async {
+    Object? epubError;
+    for (final epubUrl in _epubUrls(book)) {
+      try {
+        final response = await _download(epubUrl);
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          return GutendexDownload.file(
+            fileName: '${book.title}.epub',
+            bytes: response.bodyBytes,
+          );
+        }
+        epubError = 'EPUB $epubUrl: HTTP ${response.statusCode}';
+      } catch (error) {
+        epubError = error;
+        continue;
+      }
+    }
+
+    final String text;
+    try {
+      text = await downloadPlainText(book);
+    } catch (error) {
+      if (epubError != null) {
+        throw Exception(
+          'Download Gutenberg fallito. EPUB: $epubError. Testo: $error',
+        );
+      }
+      rethrow;
+    }
+    return GutendexDownload.text(
+      fileName: '${book.title}.txt',
+      text: '${book.title}\n\n$text',
+    );
   }
 
   GutendexBook _bookFromJson(Map<String, dynamic> json) {
@@ -136,8 +193,7 @@ class GutendexService {
   String? _plainTextUrl(GutendexBook book) {
     for (final entry in book.formats.entries) {
       final key = entry.key.toLowerCase();
-      final url = entry.value.toLowerCase();
-      if (key.startsWith('text/plain') && !url.endsWith('.zip')) {
+      if (key.startsWith('text/plain') && !_isZipUrl(entry.value)) {
         return entry.value;
       }
     }
@@ -147,6 +203,49 @@ class GutendexService {
       }
     }
     return null;
+  }
+
+  List<String> _epubUrls(GutendexBook book) {
+    final urls = <String>[];
+    if (book.id > 0) {
+      urls.add(
+        'https://www.gutenberg.org/cache/epub/${book.id}/pg${book.id}-images.epub',
+      );
+    }
+    for (final entry in book.formats.entries) {
+      final key = entry.key.toLowerCase();
+      final url = entry.value.toLowerCase();
+      if ((key.contains('epub') || url.contains('.epub')) &&
+          !url.contains('.noimages')) {
+        if (!urls.contains(entry.value)) urls.add(entry.value);
+      }
+    }
+    for (final entry in book.formats.entries) {
+      final key = entry.key.toLowerCase();
+      final url = entry.value.toLowerCase();
+      if (key.contains('epub') || url.contains('.epub')) {
+        if (!urls.contains(entry.value)) urls.add(entry.value);
+      }
+    }
+    if (book.id > 0) {
+      final fallback =
+          'https://www.gutenberg.org/ebooks/${book.id}.epub3.images';
+      if (!urls.contains(fallback)) urls.add(fallback);
+    }
+    return urls;
+  }
+
+  Future<http.Response> _download(String url) async {
+    try {
+      return await _client.get(
+        Uri.parse(url),
+        headers: {'User-Agent': 'SonarpadMobile/0.1'},
+      ).timeout(const Duration(seconds: 120));
+    } on TimeoutException {
+      throw Exception(
+        'Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.',
+      );
+    }
   }
 
   String _decodeDownloadedText(List<int> bytes, String sourceUrl) {

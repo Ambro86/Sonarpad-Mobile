@@ -29,20 +29,37 @@ class RadioRecordingService {
 
   Future<List<File>> listRecordings() async {
     final dir = await recordingsDirectory();
-    if (!await dir.exists()) return const [];
+    await AppLogger.log(
+      'Radio recording: list directory="${dir.path}" includeVideo=$includeVideo',
+    );
+    if (!await dir.exists()) {
+      await AppLogger.log('Radio recording: list directory missing');
+      return const [];
+    }
 
     final files = <File>[];
     await for (final entity in dir.list(followLinks: false)) {
-      if (entity is! File) continue;
+      if (entity is! File) {
+        await AppLogger.log('Radio recording: ignored non-file "${entity.path}"');
+        continue;
+      }
       final ext = p.extension(entity.path).toLowerCase();
       final allowed = includeVideo
           ? const ['.mp4', '.ts', '.mkv']
           : const ['.mp3', '.m4a', '.aac'];
       if (allowed.contains(ext)) {
+        await AppLogger.log(
+          'Radio recording: found file="${entity.path}" size=${await entity.length()}',
+        );
         files.add(entity);
+      } else {
+        await AppLogger.log(
+          'Radio recording: ignored file="${entity.path}" extension="$ext"',
+        );
       }
     }
     files.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
+    await AppLogger.log('Radio recording: list count=${files.length}');
     return files;
   }
 
@@ -56,33 +73,37 @@ class RadioRecordingService {
 
     final dir = await recordingsDirectory();
     await dir.create(recursive: true);
-    final ext = _recordingExtension(streamUrl);
+    final ext = _recordingExtension();
     final file = File(p.join(
       dir.path,
       '${_safeFileName(stationName)} - ${_timestamp()}$ext',
     ));
-    final arguments = [
-      '-y',
-      '-i',
-      streamUrl,
-      if (!includeVideo) '-vn',
-      '-c',
-      'copy',
-      file.path,
-    ];
+    final arguments = _recordingArguments(
+      streamUrl: streamUrl,
+      outputPath: file.path,
+    );
 
     await AppLogger.log(
       'Radio recording: start station="$stationName" output="${file.path}"',
     );
+    await AppLogger.log('Radio recording: ffmpeg args=${arguments.join(' ')}');
     _outputFile = file;
     _session = await FFmpegKit.executeWithArgumentsAsync(
       arguments,
       (session) async {
         final returnCode = await session.getReturnCode();
+        final exists = await file.exists();
+        final size = exists ? await file.length() : 0;
         await AppLogger.log(
           'Radio recording: finished output="${file.path}" '
-          'returnCode=${returnCode?.getValue()}',
+          'returnCode=${returnCode?.getValue()} exists=$exists size=$size',
         );
+      },
+      (log) async {
+        final message = log.getMessage().trim();
+        if (message.isNotEmpty) {
+          await AppLogger.log('Radio recording ffmpeg: $message');
+        }
       },
     );
     return file;
@@ -95,20 +116,58 @@ class RadioRecordingService {
 
     await AppLogger.log('Radio recording: stop output="${file?.path}"');
     await FFmpegKit.cancel(session.getSessionId());
+    if (file != null) {
+      await _waitForFile(file);
+      final exists = await file.exists();
+      final size = exists ? await file.length() : 0;
+      await AppLogger.log(
+        'Radio recording: stopped output="${file.path}" exists=$exists size=$size',
+      );
+    }
     _session = null;
     _outputFile = null;
     return file;
   }
 
-  String _recordingExtension(String streamUrl) {
-    final path = Uri.tryParse(streamUrl)?.path.toLowerCase() ??
-        streamUrl.toLowerCase();
+  Future<void> _waitForFile(File file) async {
+    for (var attempt = 0; attempt < 10; attempt += 1) {
+      if (await file.exists() && await file.length() > 0) return;
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+    }
+  }
+
+  String _recordingExtension() {
     if (includeVideo) {
       return '.mp4';
     }
-    if (path.endsWith('.m3u8')) return '.m4a';
-    if (path.endsWith('.aac')) return '.aac';
-    return '.mp3';
+    return '.m4a';
+  }
+
+  List<String> _recordingArguments({
+    required String streamUrl,
+    required String outputPath,
+  }) {
+    if (includeVideo) {
+      return [
+        '-y',
+        '-i',
+        streamUrl,
+        '-c',
+        'copy',
+        outputPath,
+      ];
+    }
+    return [
+      '-y',
+      '-i',
+      streamUrl,
+      '-vn',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      outputPath,
+    ];
   }
 
   String _safeFileName(String value) {

@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../models/document_item.dart';
 import '../services/document_library_service.dart';
 import '../services/gutendex_service.dart';
 import 'document_reader_screen.dart';
@@ -258,15 +263,16 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
     if (_importing) return;
     setState(() => _importing = true);
     try {
-      final text = await _service.downloadPlainText(widget.book);
+      final download = await _service.downloadForImport(widget.book);
       final library = DocumentLibraryService();
       await library.load();
-      final content = '${widget.book.title}\n\n$text';
-      final doc = await library.createTextDocument(
-        name: '${widget.book.title}.txt',
-        content: content,
-        parentId: widget.parentId,
-      );
+      final doc = download.isFile
+          ? await _importDownloadedFile(library, download)
+          : await library.createTextDocument(
+              name: download.fileName,
+              content: download.text ?? '',
+              parentId: widget.parentId,
+            );
       await library.add(doc);
       if (!mounted) return;
       Navigator.of(context).push(
@@ -285,6 +291,28 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
         setState(() => _importing = false);
       }
     }
+  }
+
+  Future<DocumentItem> _importDownloadedFile(
+    DocumentLibraryService library,
+    GutendexDownload download,
+  ) async {
+    final tempDir = await getTemporaryDirectory();
+    final ext = p.extension(download.fileName).isEmpty
+        ? '.epub'
+        : p.extension(download.fileName);
+    final tempFile = File(
+      p.join(
+        tempDir.path,
+        'gutenberg_${DateTime.now().microsecondsSinceEpoch}$ext',
+      ),
+    );
+    await tempFile.writeAsBytes(download.bytes!);
+    return library.importFile(
+      tempFile,
+      originalName: download.fileName,
+      parentId: widget.parentId,
+    );
   }
 
   @override
