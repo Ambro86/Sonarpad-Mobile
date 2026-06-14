@@ -161,11 +161,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await _disposeMediaKitPlayer();
 
     final isDash = TvService.isDashStreamUrl(widget.station.streamUrl);
-    final player = mk.Player(
-      configuration: const mk.PlayerConfiguration(
-        bufferSize: 32 * 1024 * 1024,
-      ),
-    );
+    final player = mk.Player();
     final controller = mkv.VideoController(player);
     _mediaKitPlayer = player;
     _mediaKitController = controller;
@@ -198,8 +194,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         },
       ),
     );
-    
-    await player.setVideoTrack(_isVideoEnabled ? mk.VideoTrack.auto() : mk.VideoTrack.no());
   }
 
   Future<void> _stop() async {
@@ -247,7 +241,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (!mounted || _isVideoEnabled != enable) return;
       if (_requiresVideoPlayback) {
         _settings.setVideoEnabled(enable);
-        _mediaKitPlayer?.setVideoTrack(enable ? mk.VideoTrack.auto() : mk.VideoTrack.no());
       } else {
         unawaited(_applyVideoSetting(enable));
       }
