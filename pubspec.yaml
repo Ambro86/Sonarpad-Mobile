@@ -57,6 +57,8 @@ dependencies:
   ffmpeg_kit_flutter_new: ^4.1.0
 
 dependency_overrides:
+  epubx:
+    path: third_party/epubx
   image: ^4.0.17
   rhttp_plus:
     path: third_party/rhttp_plus
