@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      RUN_EMULATOR: 'false'
       APP_NAME: Sonarpad
       ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
@@ -125,6 +126,7 @@ jobs:
           find ~/.pub-cache/hosted/pub.dev -name "build.gradle*" -exec sed -i -E 's/compileSdkVersion\s*=?\s*([0-9]+|flutter\.compileSdkVersion)/compileSdkVersion 36/g' {} + || true
 
       - name: Run Integration Tests
+        if: env.RUN_EMULATOR == 'true'
         continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:

@@ -152,10 +152,14 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
       return item.showDistance ? '${item.instruction} ($distanceStr)' : item.instruction;
     }).join('\n\n');
 
-    await DocumentLibraryService().createTextDocument(
-      name: '${l10n.routeNavigation} - ${DateTime.now().toIso8601String().split('T').first}',
+    final lib = DocumentLibraryService();
+    final doc = await lib.createTextDocument(
+      name: '${l10n.routeNavigation} - ${DateTime.now().toIso8601String().split('T').first}.txt',
       content: text,
+      isTemporary: false,
     );
+    await lib.load();
+    await lib.add(doc);
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
