@@ -2043,7 +2043,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get concertsBuyTickets => 'Buy or see details on Ticketmaster';
 
   @override
-  String get podcastPlayedEpisodes => 'Played episodes';
+  String get podcastPlayedEpisodes => 'Unplayed';
 
   @override
   String get podcastUnplayed => 'Unplayed';

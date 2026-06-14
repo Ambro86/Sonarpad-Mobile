@@ -2049,7 +2049,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get concertsBuyTickets => 'Kup lub zobacz szczegóły w Ticketmaster';
 
   @override
-  String get podcastPlayedEpisodes => 'Odtworzone odcinki';
+  String get podcastPlayedEpisodes => 'Nieodtworzone';
 
   @override
   String get podcastUnplayed => 'Nieodtworzone';

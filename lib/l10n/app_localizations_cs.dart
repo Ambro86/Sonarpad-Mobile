@@ -277,7 +277,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get newsSourceName => 'Název zdroje nebo webu';
 
   @override
-  String get newsSourceUrlOrSearch => 'Adresa webu, RSS kanál nebo hledané slovo';
+  String get newsSourceUrlOrSearch =>
+      'Adresa webu, RSS kanál nebo hledané slovo';
 
   @override
   String get deleteNewsSource => 'Smazat zdroj';
@@ -563,7 +564,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get loadingEpisodes => 'Načítání epizod';
 
   @override
-  String get noAudioEpisodesFound => 'V kanálu nebyly nalezeny žádné zvukové epizody.';
+  String get noAudioEpisodesFound =>
+      'V kanálu nebyly nalezeny žádné zvukové epizody.';
 
   @override
   String get episodes => 'Epizody';
@@ -645,7 +647,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get wikipediaImporting => 'Import z Wikipedie';
 
   @override
-  String get noWikipediaResults => 'Nebyly nalezeny žádné výsledky na Wikipedii';
+  String get noWikipediaResults =>
+      'Nebyly nalezeny žádné výsledky na Wikipedii';
 
   @override
   String get wikipediaImportMode => 'Režim importu';
@@ -725,7 +728,8 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get noExportableTextFound => 'Nebyl nalezen žádný exportovatelný text.';
+  String get noExportableTextFound =>
+      'Nebyl nalezen žádný exportovatelný text.';
 
   @override
   String get modifiedDocumentNoExportableText =>
@@ -773,7 +777,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get openFolderHint => 'Dvojitým klepnutím otevřete složku';
 
   @override
-  String get openDocumentHint => 'Dvojitým klepnutím otevřete a přečtete dokument';
+  String get openDocumentHint =>
+      'Dvojitým klepnutím otevřete a přečtete dokument';
 
   @override
   String removeItem(String name) {
@@ -800,7 +805,8 @@ class AppLocalizationsCs extends AppLocalizations {
       'Klepnutím na odstavec ho upravíte. Přejetím nahoru nebo dolů přidáte záložku.';
 
   @override
-  String get documentBookmarkHintSet => 'Přejetím nahoru nebo dolů nastavíte záložku.';
+  String get documentBookmarkHintSet =>
+      'Přejetím nahoru nebo dolů nastavíte záložku.';
 
   @override
   String get documentEditParagraphActionHint =>
@@ -995,7 +1001,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsSend => 'Odeslat';
 
   @override
-  String get settingsFillFieldsCode => 'Vyplňte všechna pole pro vyžádání kódu.';
+  String get settingsFillFieldsCode =>
+      'Vyplňte všechna pole pro vyžádání kódu.';
 
   @override
   String get settingsName => 'Jméno';
@@ -1503,8 +1510,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get radio => 'Rádio';
 
   @override
-  String get radioHint =>
-      'Poslouchat rádia a spravovat stanice';
+  String get radioHint => 'Poslouchat rádia a spravovat stanice';
 
   @override
   String get radioTitle => 'Radio stations from around the world';
@@ -2043,7 +2049,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get concertsBuyTickets => 'Buy or see details on Ticketmaster';
 
   @override
-  String get podcastPlayedEpisodes => 'Played episodes';
+  String get podcastPlayedEpisodes => 'Unplayed';
 
   @override
   String get podcastUnplayed => 'Unplayed';

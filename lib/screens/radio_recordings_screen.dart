@@ -59,10 +59,10 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
   }
 
   Future<void> _shareRecording(File file) async {
-    await Share.shareXFiles(
-      [XFile(file.path)],
+    await SharePlus.instance.share(ShareParams(
+      files: [XFile(file.path)],
       subject: p.basenameWithoutExtension(file.path),
-    );
+    ));
   }
 
   String _openLabel(String localeName) => switch (localeName) {

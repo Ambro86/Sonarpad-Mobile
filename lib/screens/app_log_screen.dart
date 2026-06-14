@@ -51,6 +51,12 @@ class _AppLogScreenState extends State<AppLogScreen> {
       _logContent.split('\n').where((line) => line.trim().isNotEmpty).toList();
 
   @override
+  void dispose() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
@@ -79,7 +85,7 @@ class _AppLogScreenState extends State<AppLogScreen> {
               separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final line = _logLines[index];
-                return SelectableText(
+                return Text(
                   line,
                   style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
                 );

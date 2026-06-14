@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 
+import '../utils/app_logger.dart';
+
 class GutendexPage {
   final int count;
   final String? next;
@@ -107,10 +109,7 @@ class GutendexService {
   }
 
   Future<String> downloadPlainText(GutendexBook book) async {
-    final url = _plainTextUrl(book);
-    if (url == null) {
-      throw Exception('Nessun formato testo disponibile per questo libro.');
-    }
+    final url = _sonarpadDownloadUrl(book, 'txt');
     final response = await _download(url);
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore download ${response.statusCode}');
@@ -119,38 +118,19 @@ class GutendexService {
   }
 
   Future<GutendexDownload> downloadForImport(GutendexBook book) async {
-    Object? epubError;
-    for (final epubUrl in _epubUrls(book)) {
-      try {
-        final response = await _download(epubUrl);
-        if (response.statusCode >= 200 && response.statusCode < 300) {
-          return GutendexDownload.file(
-            fileName: '${book.title}.epub',
-            bytes: response.bodyBytes,
-          );
-        }
-        epubError = 'EPUB $epubUrl: HTTP ${response.statusCode}';
-      } catch (error) {
-        epubError = error;
-        continue;
-      }
-    }
-
-    final String text;
-    try {
-      text = await downloadPlainText(book);
-    } catch (error) {
-      if (epubError != null) {
-        throw Exception(
-          'Download Gutenberg fallito. EPUB: $epubError. Testo: $error',
-        );
-      }
-      rethrow;
-    }
-    return GutendexDownload.text(
-      fileName: '${book.title}.txt',
-      text: '${book.title}\n\n$text',
+    final url = _sonarpadDownloadUrl(book, 'epub');
+    await AppLogger.log('Gutenberg download: Sonarpad EPUB $url');
+    final response = await _download(url);
+    await AppLogger.log(
+      'Gutenberg download: Sonarpad EPUB status=${response.statusCode} bytes=${response.bodyBytes.length}',
     );
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return GutendexDownload.file(
+        fileName: '${book.title}.epub',
+        bytes: response.bodyBytes,
+      );
+    }
+    throw Exception('Errore download EPUB ${response.statusCode}');
   }
 
   GutendexBook _bookFromJson(Map<String, dynamic> json) {
@@ -190,53 +170,19 @@ class GutendexService {
     return Uri.parse('https://sonarpad.com').resolve(value);
   }
 
-  String? _plainTextUrl(GutendexBook book) {
-    for (final entry in book.formats.entries) {
-      final key = entry.key.toLowerCase();
-      if (key.startsWith('text/plain') && !_isZipUrl(entry.value)) {
-        return entry.value;
-      }
+  String _sonarpadDownloadUrl(GutendexBook book, String format) {
+    if (book.id <= 0) {
+      throw Exception('ID Gutenberg non valido.');
     }
-    for (final entry in book.formats.entries) {
-      if (entry.key.toLowerCase().startsWith('text/plain')) {
-        return entry.value;
-      }
-    }
-    return null;
-  }
-
-  List<String> _epubUrls(GutendexBook book) {
-    final urls = <String>[];
-    if (book.id > 0) {
-      urls.add(
-        'https://www.gutenberg.org/cache/epub/${book.id}/pg${book.id}-images.epub',
-      );
-    }
-    for (final entry in book.formats.entries) {
-      final key = entry.key.toLowerCase();
-      final url = entry.value.toLowerCase();
-      if ((key.contains('epub') || url.contains('.epub')) &&
-          !url.contains('.noimages')) {
-        if (!urls.contains(entry.value)) urls.add(entry.value);
-      }
-    }
-    for (final entry in book.formats.entries) {
-      final key = entry.key.toLowerCase();
-      final url = entry.value.toLowerCase();
-      if (key.contains('epub') || url.contains('.epub')) {
-        if (!urls.contains(entry.value)) urls.add(entry.value);
-      }
-    }
-    if (book.id > 0) {
-      final fallback =
-          'https://www.gutenberg.org/ebooks/${book.id}.epub3.images';
-      if (!urls.contains(fallback)) urls.add(fallback);
-    }
-    return urls;
+    return Uri.https('sonarpad.com', '/api/gutenberg/download.php', {
+      'id': book.id.toString(),
+      'format': format,
+    }).toString();
   }
 
   Future<http.Response> _download(String url) async {
     try {
+      await AppLogger.log('Gutenberg download: GET $url');
       return await _client.get(
         Uri.parse(url),
         headers: {'User-Agent': 'SonarpadMobile/0.1'},
@@ -291,18 +237,6 @@ class GutendexService {
     throw Exception('Archivio ZIP Gutenberg senza file di testo leggibile.');
   }
 
-  List<String> _stringList(Object? value) {
-    if (value is List) {
-      return value
-          .whereType<String>()
-          .map((item) => item.trim())
-          .where((item) => item.isNotEmpty)
-          .toList();
-    }
-    final single = _stringValue(value);
-    return single.isEmpty ? const [] : [single];
-  }
-
   String _cleanGutenbergText(String raw) {
     final normalized = raw.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
     final lines = normalized.split('\n');
@@ -340,9 +274,4 @@ class GutendexService {
     }
     return out.toString().trim();
   }
-}
-
-String _stringValue(Object? value, {String fallback = ''}) {
-  if (value is String && value.trim().isNotEmpty) return value.trim();
-  return fallback;
 }

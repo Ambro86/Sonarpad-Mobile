@@ -8,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
 import '../services/gutendex_service.dart';
+import '../utils/app_logger.dart';
 import 'document_reader_screen.dart';
 
 class GutenbergScreen extends StatefulWidget {
@@ -263,7 +264,15 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
     if (_importing) return;
     setState(() => _importing = true);
     try {
+      await AppLogger.log(
+        'Gutenberg import: start id=${widget.book.id} title="${widget.book.title}"',
+      );
       final download = await _service.downloadForImport(widget.book);
+      await AppLogger.log(
+        'Gutenberg import: download ready fileName="${download.fileName}" '
+        'isFile=${download.isFile} bytes=${download.bytes?.length ?? 0} '
+        'textLength=${download.text?.length ?? 0}',
+      );
       final library = DocumentLibraryService();
       await library.load();
       final doc = download.isFile
@@ -274,6 +283,9 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
               parentId: widget.parentId,
             );
       await library.add(doc);
+      await AppLogger.log(
+        'Gutenberg import: saved document id="${doc.id}" name="${doc.name}" path="${doc.path}"',
+      );
       if (!mounted) return;
       Navigator.of(context).push(
         MaterialPageRoute<void>(
@@ -282,6 +294,7 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
         ),
       );
     } catch (error) {
+      await AppLogger.log('Gutenberg import: error $error');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).error(error))),
@@ -308,6 +321,9 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
       ),
     );
     await tempFile.writeAsBytes(download.bytes!);
+    await AppLogger.log(
+      'Gutenberg import: temp file="${tempFile.path}" size=${await tempFile.length()}',
+    );
     return library.importFile(
       tempFile,
       originalName: download.fileName,

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:path/path.dart' as p;
 import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
 
@@ -122,6 +123,7 @@ ThemeMode _materialThemeMode(SonarpadThemeMode mode) => switch (mode) {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
   await AppLogger.log(
     'Sonarpad bootstrap start platform=${Platform.operatingSystem} '
     'version=${Platform.operatingSystemVersion} pid=$pid',

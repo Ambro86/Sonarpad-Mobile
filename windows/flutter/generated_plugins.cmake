@@ -7,6 +7,8 @@ list(APPEND FLUTTER_PLUGIN_LIST
   desktop_webview_window
   flutter_tts
   just_audio_windows
+  media_kit_libs_windows_video
+  media_kit_video
   pdfx
   permission_handler_windows
   share_plus

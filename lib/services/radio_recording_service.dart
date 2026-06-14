@@ -8,11 +8,16 @@ import 'package:path_provider/path_provider.dart';
 import '../utils/app_logger.dart';
 
 class RadioRecordingService {
+  static const _ffmpegUserAgent =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) '
+      'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
+
   final String directoryName;
   final bool includeVideo;
 
   FFmpegSession? _session;
   File? _outputFile;
+  int _ffmpegLogLines = 0;
 
   RadioRecordingService({
     this.directoryName = 'Radio Registrazioni',
@@ -88,6 +93,7 @@ class RadioRecordingService {
     );
     await AppLogger.log('Radio recording: ffmpeg args=${arguments.join(' ')}');
     _outputFile = file;
+    _ffmpegLogLines = 0;
     _session = await FFmpegKit.executeWithArgumentsAsync(
       arguments,
       (session) async {
@@ -101,11 +107,27 @@ class RadioRecordingService {
       },
       (log) async {
         final message = log.getMessage().trim();
-        if (message.isNotEmpty) {
+        if (message.isNotEmpty && _shouldLogFfmpegLine(message)) {
+          _ffmpegLogLines += 1;
           await AppLogger.log('Radio recording ffmpeg: $message');
         }
       },
     );
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    final earlyReturnCode = await _session?.getReturnCode();
+    if (earlyReturnCode != null) {
+      final exists = await file.exists();
+      final size = exists ? await file.length() : 0;
+      await AppLogger.log(
+        'Radio recording: early finish output="${file.path}" '
+        'returnCode=${earlyReturnCode.getValue()} exists=$exists size=$size',
+      );
+      if (!exists || size == 0) {
+        _session = null;
+        _outputFile = null;
+        throw Exception('Registrazione non creata dallo stream.');
+      }
+    }
     return file;
   }
 
@@ -123,10 +145,16 @@ class RadioRecordingService {
       await AppLogger.log(
         'Radio recording: stopped output="${file.path}" exists=$exists size=$size',
       );
+      _session = null;
+      _outputFile = null;
+      if (!exists || size == 0) {
+        throw Exception('Registrazione non creata dallo stream.');
+      }
+      return file;
     }
     _session = null;
     _outputFile = null;
-    return file;
+    return null;
   }
 
   Future<void> _waitForFile(File file) async {
@@ -150,6 +178,8 @@ class RadioRecordingService {
     if (includeVideo) {
       return [
         '-y',
+        '-user_agent',
+        _ffmpegUserAgent,
         '-i',
         streamUrl,
         '-c',
@@ -159,6 +189,8 @@ class RadioRecordingService {
     }
     return [
       '-y',
+      '-user_agent',
+      _ffmpegUserAgent,
       '-i',
       streamUrl,
       '-vn',
@@ -168,6 +200,19 @@ class RadioRecordingService {
       '128k',
       outputPath,
     ];
+  }
+
+  bool _shouldLogFfmpegLine(String message) {
+    if (_ffmpegLogLines >= 40) return false;
+    final lower = message.toLowerCase();
+    return lower.contains('error') ||
+        lower.contains('forbidden') ||
+        lower.contains('failed') ||
+        lower.contains('invalid') ||
+        lower.contains('server returned') ||
+        lower.contains('not found') ||
+        lower.contains('timed out') ||
+        lower.contains('unable');
   }
 
   String _safeFileName(String value) {

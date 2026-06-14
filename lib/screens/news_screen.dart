@@ -723,18 +723,17 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                 overflow: TextOverflow.ellipsis,
               ),
               onTap: () async {
+                final navigator = Navigator.of(context);
                 await _service.addReadArticle(
                   widget.language,
                   widget.sourceName,
                   article,
                 );
-                if (mounted) {
-                  setState(() {
-                    _readUris = {..._readUris, article.id};
-                  });
-                }
-                await Navigator.push(
-                  context,
+                if (!mounted) return;
+                setState(() {
+                  _readUris = {..._readUris, article.id};
+                });
+                await navigator.push(
                   MaterialPageRoute(
                     settings: const RouteSettings(name: '/news/article'),
                     builder: (_) => NewsWebViewScreen(
@@ -744,6 +743,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                     ),
                   ),
                 );
+                if (!mounted) return;
                 await _loadReadArticles();
               },
             );

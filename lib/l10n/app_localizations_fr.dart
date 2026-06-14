@@ -2064,7 +2064,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Acheter ou voir les détails sur Ticketmaster';
 
   @override
-  String get podcastPlayedEpisodes => 'Épisodes écoutés';
+  String get podcastPlayedEpisodes => 'Non écouté';
 
   @override
   String get podcastUnplayed => 'Non écouté';

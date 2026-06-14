@@ -99,8 +99,8 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
-    Locale('cs'),
     Locale('it'),
+    Locale('cs'),
     Locale('en'),
     Locale('es'),
     Locale('fr'),
@@ -3019,18 +3019,46 @@ abstract class AppLocalizations {
   /// **'Riproduci'**
   String get radioPlay;
 
+  /// No description provided for @startRecording.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvia registrazione'**
   String get startRecording;
 
+  /// No description provided for @stopRecording.
+  ///
+  /// In it, this message translates to:
+  /// **'Ferma registrazione'**
   String get stopRecording;
 
+  /// No description provided for @recordings.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazioni'**
   String get recordings;
 
+  /// No description provided for @noRecordings.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna registrazione.'**
   String get noRecordings;
 
+  /// No description provided for @recordingStarted.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione avviata.'**
   String get recordingStarted;
 
+  /// No description provided for @recordingSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione salvata: {path}'**
   String recordingSaved(Object path);
 
+  /// No description provided for @recordingError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore registrazione: {error}'**
   String recordingError(Object error);
 
   /// Localized text for routeTitle.

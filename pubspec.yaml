@@ -49,11 +49,15 @@ dependencies:
   google_mlkit_object_detection: ^0.15.1
   flutter_web_auth_2: ^5.0.2
   video_player: ^2.11.1
+  media_kit: ^1.2.6
+  media_kit_video: ^2.0.1
+  media_kit_libs_video: ^1.0.7
   device_calendar: ^4.3.3
   timezone: ^0.9.4
   ffmpeg_kit_flutter_new: ^4.1.0
 
 dependency_overrides:
+  image: ^4.0.17
   rhttp_plus:
     path: third_party/rhttp_plus
 

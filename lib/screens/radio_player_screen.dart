@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:media_kit/media_kit.dart' as mk;
+import 'package:media_kit_video/media_kit_video.dart' as mkv;
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
@@ -36,10 +38,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   final _settings = AppSettingsService();
   late final RadioRecordingService _recordingService;
   StreamSubscription<dynamic>? _mediaEventsSubscription;
+  StreamSubscription<bool>? _mediaKitPlayingSubscription;
+  StreamSubscription<String>? _mediaKitErrorSubscription;
 
   VideoPlayerController? _videoController;
+  mk.Player? _mediaKitPlayer;
+  mkv.VideoController? _mediaKitController;
   bool _isVideoEnabled = false;
   bool _isFavorite = false;
+  bool _mediaKitPlaying = false;
   bool _recording = false;
   File? _recordingOutput;
 
@@ -57,7 +64,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     if (Platform.isIOS) {
       _mediaEventsSubscription =
           _mediaEvents.receiveBroadcastStream().listen((event) {
-        if (event == 'toggle' && mounted && _videoController != null) {
+        if (event == 'toggle' &&
+            mounted &&
+            (_videoController != null || _mediaKitPlayer != null)) {
           unawaited(_toggleVideoPlayback());
         }
       });
@@ -95,12 +104,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     });
     try {
       if (widget.isVideoSupported && _isVideoEnabled) {
-        if (Platform.isIOS && _requiresVideoPlayback) {
-          throw Exception(
-            'Questo canale usa MPEG-DASH (.mpd), non supportato dal player iOS integrato.',
-          );
+        if (_requiresVideoPlayback) {
+          await _playMediaKitVideo();
+          return;
         }
         await _audio.stop();
+        await _disposeMediaKitPlayer();
         _videoController?.dispose();
         _videoController = VideoPlayerController.networkUrl(
           Uri.parse(widget.station.streamUrl),
@@ -121,6 +130,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         if (Platform.isIOS && _videoController != null) {
           await _mediaCommands.invokeMethod('clearMagicTap');
         }
+        await _disposeMediaKitPlayer();
         _videoController?.pause();
         _videoController?.dispose();
         _videoController = null;
@@ -145,8 +155,53 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
   }
 
+  Future<void> _playMediaKitVideo() async {
+    await _audio.stop();
+    _videoController?.pause();
+    _videoController?.dispose();
+    _videoController = null;
+    await _disposeMediaKitPlayer();
+
+    final player = mk.Player();
+    final controller = mkv.VideoController(player);
+    _mediaKitPlayer = player;
+    _mediaKitController = controller;
+    _mediaKitPlaying = false;
+    _mediaKitPlayingSubscription = player.stream.playing.listen((playing) {
+      if (!mounted) return;
+      setState(() => _mediaKitPlaying = playing);
+      if (Platform.isIOS) {
+        unawaited(_mediaCommands.invokeMethod('setMagicTapPlaying', playing));
+      }
+    });
+    _mediaKitErrorSubscription = player.stream.error.listen((error) {
+      AppLogger.log('RadioPlayer media_kit error: $error');
+      if (!mounted) return;
+      setState(() => _error = error);
+    });
+
+    if (Platform.isIOS) {
+      await _mediaCommands.invokeMethod(
+        'setupMagicTap',
+        widget.station.name,
+      );
+    }
+    await player.open(
+      mk.Media(
+        widget.station.streamUrl,
+        httpHeaders: const {
+          'User-Agent':
+              'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+        },
+      ),
+    );
+  }
+
   Future<void> _stop() async {
-    if (_videoController != null) {
+    if (_mediaKitPlayer != null) {
+      await _mediaKitPlayer!.pause();
+      if (mounted) setState(() {});
+    } else if (_videoController != null) {
       await _videoController!.pause();
       setState(() {});
     } else {
@@ -155,6 +210,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _toggleVideoPlayback() async {
+    final mediaKitPlayer = _mediaKitPlayer;
+    if (mediaKitPlayer != null) {
+      if (_mediaKitPlaying) {
+        await mediaKitPlayer.pause();
+      } else {
+        await mediaKitPlayer.play();
+      }
+      return;
+    }
+
     final controller = _videoController;
     if (controller == null || !controller.value.isInitialized) return;
     if (controller.value.isPlaying) {
@@ -241,6 +306,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           _recording = false;
           _recordingOutput = file;
         });
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.recordingSaved(file?.path ?? ''))),
         );
@@ -256,11 +322,17 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         _recording = true;
         _recordingOutput = file;
       });
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.recordingStarted)),
       );
     } catch (error) {
       if (!mounted) return;
+      setState(() {
+        _recording = false;
+        _recordingOutput = null;
+      });
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.recordingError(error))),
       );
@@ -270,14 +342,20 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool get _requiresVideoPlayback =>
       widget.isVideoSupported && TvService.isDashStreamUrl(widget.station.streamUrl);
 
+  bool get _isVideoPlaying =>
+      _mediaKitPlayer != null ? _mediaKitPlaying : (_videoController?.value.isPlaying ?? false);
+
   bool get _canRecordStream => widget.tvChannel == null || !_requiresVideoPlayback;
 
   @override
   void dispose() {
-    if (Platform.isIOS && _videoController != null) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (Platform.isIOS &&
+        (_videoController != null || _mediaKitPlayer != null)) {
       unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
     }
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
+    unawaited(_disposeMediaKitPlayer());
     if (_recordingService.isRecording) {
       unawaited(_recordingService.stop().catchError((error) {
         AppLogger.log('RadioPlayer: recording stop during dispose failed: $error');
@@ -287,6 +365,20 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());
     super.dispose();
+  }
+
+  Future<void> _disposeMediaKitPlayer() async {
+    await _mediaKitPlayingSubscription?.cancel();
+    await _mediaKitErrorSubscription?.cancel();
+    _mediaKitPlayingSubscription = null;
+    _mediaKitErrorSubscription = null;
+    final player = _mediaKitPlayer;
+    _mediaKitPlayer = null;
+    _mediaKitController = null;
+    _mediaKitPlaying = false;
+    if (player != null) {
+      await player.dispose();
+    }
   }
 
   @override
@@ -299,7 +391,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('${l10n.nowPlaying}: ${widget.station.name}'),
-        leading: BackButton(onPressed: () => Navigator.pop(context)),
+        leading: BackButton(
+          onPressed: () {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -344,21 +441,27 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               child: VideoPlayer(_videoController!),
             ),
           ],
+          if (_mediaKitController != null) ...[
+            const SizedBox(height: 24),
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: mkv.Video(
+                controller: _mediaKitController!,
+                controls: mkv.AdaptiveVideoControls,
+              ),
+            ),
+          ],
           const SizedBox(height: 24),
           Wrap(
             spacing: 12,
             runSpacing: 12,
             alignment: WrapAlignment.center,
             children: [
-              if (_videoController != null)
+              if (_mediaKitPlayer != null || _videoController != null)
                 FilledButton.icon(
                   onPressed: _loading ? null : _toggleVideoPlayback,
-                  icon: Icon(_videoController!.value.isPlaying
-                      ? Icons.pause
-                      : Icons.play_arrow),
-                  label: Text(_videoController!.value.isPlaying
-                      ? l10n.pause
-                      : l10n.play),
+                  icon: Icon(_isVideoPlaying ? Icons.pause : Icons.play_arrow),
+                  label: Text(_isVideoPlaying ? l10n.pause : l10n.play),
                 )
               else
                 StreamBuilder<bool>(
@@ -389,7 +492,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               textAlign: TextAlign.center,
             ),
           ],
-          if (_videoController == null) ...[
+          if (_videoController == null && _mediaKitPlayer == null) ...[
             const SizedBox(height: 24),
             VolumeSlider(audioPlayer: _audio),
           ],

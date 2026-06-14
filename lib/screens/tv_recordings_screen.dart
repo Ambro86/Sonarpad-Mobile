@@ -61,10 +61,10 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
   }
 
   Future<void> _shareRecording(File file) async {
-    await Share.shareXFiles(
-      [XFile(file.path)],
+    await SharePlus.instance.share(ShareParams(
+      files: [XFile(file.path)],
       subject: p.basenameWithoutExtension(file.path),
-    );
+    ));
   }
 
   Future<void> _deleteRecording(File file) async {
