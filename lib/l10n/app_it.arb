@@ -2778,4 +2778,17 @@
   "concertsBuyTickets": "Acquista o vedi dettagli su Ticketmaster",
   "podcastPlayedEpisodes": "Episodi ascoltati",
   "podcastUnplayed": "Non ascoltato"
+,
+  "routeReadAction": "Leggi percorso",
+  "@routeReadAction": {
+  "description": "Localized text for routeReadAction."
+},
+  "routeSaveAction": "Salva nei documenti",
+  "@routeSaveAction": {
+  "description": "Localized text for routeSaveAction."
+},
+  "routeSaveSuccess": "Percorso salvato nei documenti",
+  "@routeSaveSuccess": {
+  "description": "Localized text for routeSaveSuccess."
+}
 }

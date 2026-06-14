@@ -636,4 +636,8 @@
   "weatherRecentCities": "Recent cities",
   "podcastPlayedEpisodes": "Unplayed",
   "podcastUnplayed": "Unplayed"
+,
+  "routeReadAction": "Read route",
+  "routeSaveAction": "Save to documents",
+  "routeSaveSuccess": "Route saved to documents"
 }

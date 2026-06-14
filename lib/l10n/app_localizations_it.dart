@@ -2059,4 +2059,13 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get podcastUnplayed => 'Non ascoltato';
+
+  @override
+  String get routeReadAction => 'Leggi percorso';
+
+  @override
+  String get routeSaveAction => 'Salva nei documenti';
+
+  @override
+  String get routeSaveSuccess => 'Percorso salvato nei documenti';
 }

@@ -2053,4 +2053,13 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get podcastUnplayed => 'Nieodtworzone';
+
+  @override
+  String get routeReadAction => 'Przeczytaj trasę';
+
+  @override
+  String get routeSaveAction => 'Zapisz w dokumentach';
+
+  @override
+  String get routeSaveSuccess => 'Trasa zapisana w dokumentach';
 }

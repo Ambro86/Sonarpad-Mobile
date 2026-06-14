@@ -2778,4 +2778,17 @@
   "weatherRecentCities": "Ostatnie miasta",
   "podcastPlayedEpisodes": "Nieodtworzone",
   "podcastUnplayed": "Nieodtworzone"
+,
+  "routeReadAction": "Przeczytaj trasę",
+  "@routeReadAction": {
+  "description": "Localized text for routeReadAction."
+},
+  "routeSaveAction": "Zapisz w dokumentach",
+  "@routeSaveAction": {
+  "description": "Localized text for routeSaveAction."
+},
+  "routeSaveSuccess": "Trasa zapisana w dokumentach",
+  "@routeSaveSuccess": {
+  "description": "Localized text for routeSaveSuccess."
+}
 }

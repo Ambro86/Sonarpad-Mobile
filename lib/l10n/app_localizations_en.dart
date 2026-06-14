@@ -2047,4 +2047,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get podcastUnplayed => 'Unplayed';
+
+  @override
+  String get routeReadAction => 'Read route';
+
+  @override
+  String get routeSaveAction => 'Save to documents';
+
+  @override
+  String get routeSaveSuccess => 'Route saved to documents';
 }

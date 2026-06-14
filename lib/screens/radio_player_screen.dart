@@ -73,9 +73,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
-      if (_requiresVideoPlayback) {
-        _isVideoEnabled = true;
-      }
       _isFavorite = await _loadIsFavorite();
       if (widget.tvChannel == null) {
         unawaited(RadioService().addRecentRadio(widget.station));
@@ -103,11 +100,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _error = null;
     });
     try {
+      if (_requiresVideoPlayback) {
+        await _playMediaKitVideo();
+        return;
+      }
+
       if (widget.isVideoSupported && _isVideoEnabled) {
-        if (_requiresVideoPlayback) {
-          await _playMediaKitVideo();
-          return;
-        }
         await _audio.stop();
         await _disposeMediaKitPlayer();
         _videoController?.dispose();
@@ -162,7 +160,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _videoController = null;
     await _disposeMediaKitPlayer();
 
-    final player = mk.Player();
+    final isDash = TvService.isDashStreamUrl(widget.station.streamUrl);
+    final player = mk.Player(
+      configuration: mk.PlayerConfiguration(
+        bufferSize: isDash ? 1024 * 1024 : 32 * 1024 * 1024,
+      ),
+    );
     final controller = mkv.VideoController(player);
     _mediaKitPlayer = player;
     _mediaKitController = controller;
@@ -237,11 +240,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   void _toggleVideo(bool enable) {
-    if (_requiresVideoPlayback && !enable) return;
     setState(() => _isVideoEnabled = enable);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _isVideoEnabled != enable) return;
-      unawaited(_applyVideoSetting(enable));
+      if (_requiresVideoPlayback) {
+        _settings.setVideoEnabled(enable);
+      } else {
+        unawaited(_applyVideoSetting(enable));
+      }
     });
   }
 
@@ -345,7 +351,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool get _isVideoPlaying =>
       _mediaKitPlayer != null ? _mediaKitPlaying : (_videoController?.value.isPlaying ?? false);
 
-  bool get _canRecordStream => widget.tvChannel == null || !_requiresVideoPlayback;
+  bool get _canRecordStream => true;
 
   @override
   void dispose() {
@@ -441,7 +447,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               child: VideoPlayer(_videoController!),
             ),
           ],
-          if (_mediaKitController != null) ...[
+          if (_mediaKitController != null && _isVideoEnabled) ...[
             const SizedBox(height: 24),
             AspectRatio(
               aspectRatio: 16 / 9,

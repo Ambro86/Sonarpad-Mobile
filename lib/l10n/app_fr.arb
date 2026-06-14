@@ -636,4 +636,8 @@
   "weatherRecentCities": "Villes récentes",
   "podcastPlayedEpisodes": "Non écouté",
   "podcastUnplayed": "Non écouté"
+,
+  "routeReadAction": "Lire l'itinéraire",
+  "routeSaveAction": "Enregistrer dans les documents",
+  "routeSaveSuccess": "Itinéraire enregistré dans les documents"
 }

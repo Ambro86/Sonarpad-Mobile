@@ -2053,4 +2053,13 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get podcastUnplayed => 'Unplayed';
+
+  @override
+  String get routeReadAction => 'Přečíst trasu';
+
+  @override
+  String get routeSaveAction => 'Uložit do dokumentů';
+
+  @override
+  String get routeSaveSuccess => 'Trasa uložena do dokumentů';
 }

@@ -1,9 +1,20 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/news/weather_service.dart';
 import '../utils/text_input_normalizer.dart';
+
+WeatherGeocodingResult? _deserializeCity(String data) {
+  try {
+    final map = jsonDecode(data);
+    if (map is Map<String, dynamic> && map.containsKey('latitude')) {
+      return WeatherGeocodingResult.fromJson(map);
+    }
+  } catch (_) {}
+  return null;
+}
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
@@ -37,16 +48,22 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Future<void> _openRecentCities() async {
-    final city = await Navigator.push<String>(
+    final cityData = await Navigator.push<String>(
       context,
       MaterialPageRoute(
         builder: (_) => const _WeatherRecentCitiesScreen(),
       ),
     );
     _checkRecentCities();
-    if (city != null && city.isNotEmpty) {
-      _searchCtrl.text = city;
-      _fetchWeather();
+    if (cityData != null && cityData.isNotEmpty) {
+      final cityObj = _deserializeCity(cityData);
+      if (cityObj != null) {
+        _searchCtrl.text = cityObj.name;
+        _fetchForecastFor(cityObj, cityData, skipSave: true);
+      } else {
+        _searchCtrl.text = cityData;
+        _fetchWeather(autoSelectFirst: true);
+      }
     }
   }
 
@@ -57,15 +74,24 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Future<void> _loadSavedCity() async {
-    final city = await _settings.getWeatherCity();
+    final savedData = await _settings.getWeatherCity();
     if (!mounted) return;
-    final shouldIgnoreOldDefault = city.trim().toLowerCase() == 'roma';
-    if (shouldIgnoreOldDefault || city.isEmpty) return;
-    _searchCtrl.text = city;
-    await _fetchWeather();
+    if (savedData.isEmpty) return;
+    
+    final cityObj = _deserializeCity(savedData);
+    if (cityObj != null) {
+      _searchCtrl.text = cityObj.name;
+      await _fetchForecastFor(cityObj, savedData, skipSave: true);
+      return;
+    }
+
+    final shouldIgnoreOldDefault = savedData.trim().toLowerCase() == 'roma';
+    if (shouldIgnoreOldDefault) return;
+    _searchCtrl.text = savedData;
+    await _fetchWeather(autoSelectFirst: true);
   }
 
-  Future<void> _fetchWeather() async {
+  Future<void> _fetchWeather({bool autoSelectFirst = false}) async {
     final city = normalizeSearchInput(_searchCtrl.text);
     if (city.isEmpty) return;
     if (_searchCtrl.text != city) {
@@ -84,7 +110,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     try {
       final cities = await _weatherService.searchCity(city);
       if (cities.isNotEmpty) {
-        if (cities.length > 1) {
+        if (cities.length > 1 && !autoSelectFirst) {
           if (mounted) {
             setState(() {
               _cityResults = cities;
@@ -127,8 +153,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   Future<void> _fetchForecastFor(
     WeatherGeocodingResult city,
-    String savedCity,
-  ) async {
+    String savedCity, {
+    bool skipSave = false,
+  }) async {
     final forecast = await _weatherService.getForecast(
       city.latitude,
       city.longitude,
@@ -142,9 +169,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
       }
       return;
     }
-    await _settings.setWeatherCity(savedCity);
-    await _settings.addWeatherRecentCity(savedCity);
-    _checkRecentCities();
+    
+    if (!skipSave) {
+      final dataToSave = jsonEncode(city.toJson());
+      await _settings.setWeatherCity(dataToSave);
+      await _settings.addWeatherRecentCity(dataToSave);
+      _checkRecentCities();
+    }
+    
     if (mounted) {
       setState(() {
         _forecast = forecast;
@@ -705,10 +737,19 @@ class _WeatherRecentCitiesScreenState
                   itemCount: _cities.length,
                   separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
-                    final city = _cities[index];
+                    final cityData = _cities[index];
+                    final cityObj = _deserializeCity(cityData);
+                    final displayName = cityObj != null ? cityObj.name : cityData;
+                    String? subtitle;
+                    if (cityObj != null) {
+                      final parts = [cityObj.admin1, cityObj.country].whereType<String>().where((p) => p.isNotEmpty).toList();
+                      if (parts.isNotEmpty) subtitle = parts.join(', ');
+                    }
+                    
                     return ListTile(
-                      title: Text(city),
-                      onTap: () => Navigator.pop(context, city),
+                      title: Text(displayName),
+                      subtitle: subtitle != null ? Text(subtitle) : null,
+                      onTap: () => Navigator.pop(context, cityData),
                     );
                   },
                 ),

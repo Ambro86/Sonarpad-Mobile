@@ -20,12 +20,22 @@ class WeatherGeocodingResult {
 
   factory WeatherGeocodingResult.fromJson(Map<String, dynamic> json) {
     return WeatherGeocodingResult(
-      latitude: json['latitude'] as double,
-      longitude: json['longitude'] as double,
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
       name: json['name'] as String,
       admin1: json['admin1'] as String?,
       country: json['country'] as String?,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+      'name': name,
+      if (admin1 != null) 'admin1': admin1,
+      if (country != null) 'country': country,
+    };
   }
 }
 

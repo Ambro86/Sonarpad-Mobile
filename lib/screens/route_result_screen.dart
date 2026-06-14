@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
+import '../services/app_settings_service.dart';
+import '../services/audio_player_service.dart';
+import '../services/document_library_service.dart';
 import '../services/route_service.dart';
+import '../tts/edge_tts_bridge.dart';
 
 class RouteResultScreen extends StatelessWidget {
   final RouteResult result;
@@ -44,23 +49,145 @@ class RouteResultScreen extends StatelessWidget {
   }
 }
 
-class RouteStepsScreen extends StatelessWidget {
+class RouteStepsScreen extends StatefulWidget {
   final RoutePath path;
 
   const RouteStepsScreen({super.key, required this.path});
 
   @override
+  State<RouteStepsScreen> createState() => _RouteStepsScreenState();
+}
+
+class _RouteStepsScreenState extends State<RouteStepsScreen> {
+  final AppSettingsService _settings = AppSettingsService();
+  final EdgeTtsBridge _edgeTts = EdgeTtsBridge();
+  final AudioPlayerService _audio = AudioPlayerService();
+  final FlutterTts _flutterTts = FlutterTts();
+  bool _speaking = false;
+  late final List<_RouteStepItem> _items;
+
+  @override
+  void initState() {
+    super.initState();
+    _flutterTts.setCompletionHandler(() {
+      if (mounted) setState(() => _speaking = false);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context);
+    _items = _routeStepItems(widget.path, l10n);
+  }
+
+  @override
+  void dispose() {
+    _flutterTts.stop();
+    _audio.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleSpeech() async {
+    if (_speaking) {
+      await _flutterTts.stop();
+      await _audio.stop();
+      if (mounted) setState(() => _speaking = false);
+    } else {
+      final l10n = AppLocalizations.of(context);
+      final text = _items.map((item) {
+        final distanceStr = l10n.formatDistance(item.distanceMeters);
+        return item.showDistance ? '${item.instruction}. $distanceStr.' : item.instruction;
+      }).join('\n');
+      
+      if (mounted) setState(() => _speaking = true);
+      
+      try {
+        final engine = await _settings.loadTtsEngine();
+        if (engine == 'system') {
+          final speed = await _settings.loadTtsSpeed();
+          final pitch = await _settings.loadTtsPitch();
+          final sysLang = await _settings.loadSystemTtsLanguage();
+          final sysVoice = await _settings.loadSystemTtsVoice();
+          
+          await _flutterTts.setSpeechRate(speed * 0.5);
+          await _flutterTts.setPitch(pitch);
+          
+          if (Theme.of(context).platform == TargetPlatform.iOS) {
+            await _flutterTts.setIosAudioCategory(
+                IosTextToSpeechAudioCategory.playback,
+                [
+                  IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+                  IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+                  IosTextToSpeechAudioCategoryOptions.mixWithOthers,
+                ]);
+          }
+          
+          if (sysVoice != null) {
+            await _flutterTts.setVoice({
+              "name": sysVoice,
+              "locale": sysLang,
+            });
+          } else {
+            await _flutterTts.setLanguage(sysLang);
+          }
+          
+          await _flutterTts.speak(text);
+        } else {
+          final voice = await _settings.loadTtsVoice();
+          final file = await _edgeTts.speakToFile(text: text, voice: voice);
+          await _audio.playFile(file);
+          if (mounted) setState(() => _speaking = false);
+        }
+      } catch (e) {
+        if (mounted) setState(() => _speaking = false);
+      }
+    }
+  }
+
+  Future<void> _saveAsDocument() async {
+    final l10n = AppLocalizations.of(context);
+    final text = _items.map((item) {
+      final distanceStr = l10n.formatDistance(item.distanceMeters);
+      return item.showDistance ? '${item.instruction} ($distanceStr)' : item.instruction;
+    }).join('\n\n');
+
+    await DocumentLibraryService().createTextDocument(
+      name: '${l10n.routeNavigation} - ${DateTime.now().toIso8601String().split('T').first}',
+      content: text,
+    );
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.routeSaveSuccess)),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final items = _routeStepItems(path, l10n);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.routeNavigation)),
+      appBar: AppBar(
+        title: Text(l10n.routeNavigation),
+        actions: [
+          IconButton(
+            icon: Icon(_speaking ? Icons.stop : Icons.volume_up),
+            tooltip: l10n.routeReadAction,
+            onPressed: _toggleSpeech,
+          ),
+          IconButton(
+            icon: const Icon(Icons.save),
+            tooltip: l10n.routeSaveAction,
+            onPressed: _saveAsDocument,
+          ),
+        ],
+      ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: items.length,
+        itemCount: _items.length,
         itemBuilder: (context, index) {
-          final item = items[index];
+          final item = _items[index];
           final distanceStr = l10n.formatDistance(item.distanceMeters);
 
           return Padding(

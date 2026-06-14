@@ -636,4 +636,8 @@
   "weatherRecentCities": "Recent cities",
   "podcastPlayedEpisodes": "Unplayed",
   "podcastUnplayed": "Unplayed"
+,
+  "routeReadAction": "Přečíst trasu",
+  "routeSaveAction": "Uložit do dokumentů",
+  "routeSaveSuccess": "Trasa uložena do dokumentů"
 }

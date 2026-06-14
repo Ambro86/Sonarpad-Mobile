@@ -3840,6 +3840,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Non ascoltato'**
   String get podcastUnplayed;
+
+  /// Localized text for routeReadAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Leggi percorso'**
+  String get routeReadAction;
+
+  /// Localized text for routeSaveAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva nei documenti'**
+  String get routeSaveAction;
+
+  /// Localized text for routeSaveSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Percorso salvato nei documenti'**
+  String get routeSaveSuccess;
 }
 
 class _AppLocalizationsDelegate

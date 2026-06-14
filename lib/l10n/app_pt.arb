@@ -636,4 +636,8 @@
   "weatherRecentCities": "Cidades recentes",
   "podcastPlayedEpisodes": "Não reproduzido",
   "podcastUnplayed": "Não reproduzido"
+,
+  "routeReadAction": "Ler percurso",
+  "routeSaveAction": "Guardar nos documentos",
+  "routeSaveSuccess": "Percurso guardado nos documentos"
 }
