@@ -774,7 +774,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           for (var i = 0; i < chunks.length; i++) {
             if (!mounted || !_speaking || readingToken != _readingToken) break;
             final textToSpeak =
-                _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+                _voiceDictionary.applyToText(chunks[i], dictionaryEntries).trim();
+            if (textToSpeak.isEmpty) continue;
             final file =
                 await _tts.speakToFile(text: textToSpeak, voice: voice);
             final size = await file.length();
@@ -797,13 +798,14 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           if (!controller.isClosed) await controller.close();
         });
 
-        await _audio.playFileStreamSequentially(
-          controller.stream,
-          sessionType: AudioSessionType.speech,
-          title: widget.article.title,
-          initialBufferCount: 2,
-          isPaused: () => _ttsPaused,
-        );
+        await for (final file in controller.stream) {
+          while (_ttsPaused) {
+            if (!mounted || !_speaking || readingToken != _readingToken) break;
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
+          if (!mounted || !_speaking || readingToken != _readingToken) break;
+          await _audio.playFilesSequentially([file]);
+        }
 
         await generation;
         if (_edgeFileController == controller) {

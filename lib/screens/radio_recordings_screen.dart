@@ -134,7 +134,6 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
                   key: ValueKey('radio_recording_${file.path}'),
                   leading: const Icon(Icons.mic),
                   title: Text(name),
-                  subtitle: Text(file.path),
                   trailing: PopupMenuButton<_RecordingAction>(
                     onSelected: (action) {
                       switch (action) {

@@ -145,7 +145,6 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                   key: ValueKey('tv_recording_${file.path}'),
                   leading: const Icon(Icons.videocam),
                   title: Text(name),
-                  subtitle: Text(file.path),
                   trailing: PopupMenuButton<_RecordingAction>(
                     onSelected: (action) {
                       switch (action) {

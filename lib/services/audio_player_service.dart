@@ -276,7 +276,7 @@ class AudioPlayerService {
     final source = AudioSource.uri(
       Uri.parse(url),
       tag: MediaItem(
-        id: url,
+        id: mediaId ?? url,
         album: 'Sonarpad',
         title: itemTitle,
       ),

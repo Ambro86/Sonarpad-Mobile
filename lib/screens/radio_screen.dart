@@ -50,11 +50,19 @@ class _RadioScreenState extends State<RadioScreen> {
   List<RadioLanguageOption> _languageOptions = RadioService.languages;
   List<RadioCountryOption> _countryOptions = RadioService.countries;
   bool _loadingDirectory = false;
+  bool _hasSearchText = false;
 
   @override
   void initState() {
     super.initState();
+    _searchController.addListener(_handleSearchTextChanged);
     _loadDirectoryOptions();
+  }
+
+  void _handleSearchTextChanged() {
+    final hasSearchText = _searchController.text.trim().isNotEmpty;
+    if (hasSearchText == _hasSearchText) return;
+    setState(() => _hasSearchText = hasSearchText);
   }
 
   Future<void> _loadDirectoryOptions() async {
@@ -208,30 +216,33 @@ class _RadioScreenState extends State<RadioScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          FilledButton.tonal(
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(56),
-              alignment: Alignment.centerLeft,
+          if (!_hasSearchText) ...[
+            FilledButton.tonal(
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(56),
+                alignment: Alignment.centerLeft,
+              ),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    settings: const RouteSettings(name: '/radio/recordings'),
+                    builder: (_) => const RadioRecordingsScreen(),
+                  ),
+                );
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.mic),
+                  const SizedBox(width: 8),
+                  Text(l10n.recordings),
+                ],
+              ),
             ),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  settings: const RouteSettings(name: '/radio/recordings'),
-                  builder: (_) => const RadioRecordingsScreen(),
-                ),
-              );
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.mic),
-                const SizedBox(width: 8),
-                Text(l10n.recordings),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ] else
+            const SizedBox(height: 8),
           TextField(
             controller: _searchController,
             decoration: InputDecoration(

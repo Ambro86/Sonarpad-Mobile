@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart' as mkv;
+import 'package:path/path.dart' as p;
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
@@ -332,7 +333,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         });
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.recordingSaved(file?.path ?? ''))),
+          SnackBar(
+            content: Text(
+              l10n.recordingSaved(
+                file == null ? '' : p.basenameWithoutExtension(file.path),
+              ),
+            ),
+          ),
         );
         return;
       }
@@ -512,7 +519,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           if (_recordingOutput != null) ...[
             const SizedBox(height: 12),
             Text(
-              _recordingOutput!.path,
+              p.basenameWithoutExtension(_recordingOutput!.path),
               textAlign: TextAlign.center,
             ),
           ],
