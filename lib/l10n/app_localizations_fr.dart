@@ -1488,6 +1488,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get share => 'Partager';
 
   @override
+  String get shareCalendarDayOptions => 'Options de partage';
+
+  @override
+  String get shareCalendarDayOnly => 'Partager uniquement la journée';
+
+  @override
+  String get shareCalendarDayWithReminder =>
+      'Partager la journée et le rappel';
+
+  @override
   String get listenToAll => 'Tout écouter';
 
   @override

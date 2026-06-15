@@ -2761,6 +2761,24 @@ abstract class AppLocalizations {
   /// **'Condividi'**
   String get share;
 
+  /// Localized text for shareCalendarDayOptions.
+  ///
+  /// In it, this message translates to:
+  /// **'Opzioni di condivisione'**
+  String get shareCalendarDayOptions;
+
+  /// Localized text for shareCalendarDayOnly.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi solo il giorno'**
+  String get shareCalendarDayOnly;
+
+  /// Localized text for shareCalendarDayWithReminder.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi giorno e promemoria'**
+  String get shareCalendarDayWithReminder;
+
   /// Localized text for listenToAll.
   ///
   /// In it, this message translates to:

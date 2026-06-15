@@ -2078,6 +2078,18 @@
   "@share": {
     "description": "Localized text for share."
   },
+  "shareCalendarDayOptions": "Opcje udostępniania",
+  "@shareCalendarDayOptions": {
+    "description": "Localized text for shareCalendarDayOptions."
+  },
+  "shareCalendarDayOnly": "Udostępnij tylko dzień",
+  "@shareCalendarDayOnly": {
+    "description": "Localized text for shareCalendarDayOnly."
+  },
+  "shareCalendarDayWithReminder": "Udostępnij dzień i przypomnienie",
+  "@shareCalendarDayWithReminder": {
+    "description": "Localized text for shareCalendarDayWithReminder."
+  },
   "listenToAll": "Posłuchaj wszystkiego",
   "@listenToAll": {
     "description": "Localized text for listenToAll."

@@ -1468,6 +1468,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get share => 'Share';
 
   @override
+  String get shareCalendarDayOptions => 'Share options';
+
+  @override
+  String get shareCalendarDayOnly => 'Share day only';
+
+  @override
+  String get shareCalendarDayWithReminder => 'Share day and reminder';
+
+  @override
   String get listenToAll => 'Listen to all';
 
   @override

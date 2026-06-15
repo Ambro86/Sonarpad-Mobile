@@ -167,6 +167,70 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     setState(() => _speaking = false);
   }
 
+  String _shareText({
+    required String title,
+    required String? holiday,
+    required String? saint,
+    required String quote,
+    required AppLocalizations l10n,
+    required bool includeReminders,
+  }) {
+    final buffer = StringBuffer()..writeln(title);
+    if (holiday != null) buffer.writeln('\n$holiday');
+    if (saint != null) {
+      buffer.writeln('\n${l10n.saintOfTheDay}: $saint');
+    }
+    if (includeReminders && _events.isNotEmpty) {
+      buffer.writeln('\n${l10n.reminders}');
+      for (final event in _events) {
+        buffer.writeln(event.text);
+      }
+    }
+    buffer.writeln('\n"$quote"');
+    return buffer.toString().trim();
+  }
+
+  Future<void> _shareDay({
+    required String title,
+    required String? holiday,
+    required String? saint,
+    required String quote,
+    required AppLocalizations l10n,
+  }) async {
+    var includeReminders = false;
+    if (_events.isNotEmpty) {
+      final choice = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(l10n.shareCalendarDayOptions),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.shareCalendarDayOnly),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.shareCalendarDayWithReminder),
+            ),
+          ],
+        ),
+      );
+      if (choice == null) return;
+      includeReminders = choice;
+    }
+
+    final shareText = _shareText(
+      title: title,
+      holiday: holiday,
+      saint: saint,
+      quote: quote,
+      l10n: l10n,
+      includeReminders: includeReminders,
+    );
+    // ignore: deprecated_member_use
+    await Share.share(shareText);
+  }
+
   @override
   void dispose() {
     _flutterTts.stop();
@@ -193,12 +257,13 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
           IconButton(
             icon: const Icon(Icons.share),
             tooltip: l10n.share,
-            onPressed: () {
-              final shareText =
-                  '$capTitle\n\n${holiday != null ? '$holiday\n' : ''}${_saint != null ? '${l10n.saintOfTheDay}: $_saint\n\n' : ''}"$quote"';
-              // ignore: deprecated_member_use
-              Share.share(shareText);
-            },
+            onPressed: () => _shareDay(
+              title: capTitle,
+              holiday: holiday,
+              saint: _saint,
+              quote: quote,
+              l10n: l10n,
+            ),
           ),
         ],
       ),

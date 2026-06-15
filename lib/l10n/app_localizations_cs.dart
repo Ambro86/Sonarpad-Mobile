@@ -1475,6 +1475,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get share => 'Sdílet';
 
   @override
+  String get shareCalendarDayOptions => 'Možnosti sdílení';
+
+  @override
+  String get shareCalendarDayOnly => 'Sdílet pouze den';
+
+  @override
+  String get shareCalendarDayWithReminder => 'Sdílet den a připomínku';
+
+  @override
   String get listenToAll => 'Přečíst vše';
 
   @override

@@ -6,7 +6,7 @@ The project is designed around practical reading and listening workflows, with p
 
 > **License Notice**
 > This project is **source-available but NOT open source** and **NOT freeware**.
-> Commercial use, redistribution, and derivative works are prohibited unless explicitly authorized in writing.
+> Commercial use, redistribution, store publication, and derivative works are prohibited unless explicitly authorized in writing.
 
 ---
 
@@ -107,10 +107,13 @@ For iOS release builds, use macOS with Xcode.
 
 This repository is published for transparency, evaluation, and personal use only.
 
+Sonarpad Mobile is source-available, but it is not open source in the OSI sense and it is not freeware.
+
 ### You may
 
 - View and study the source code.
 - Build and run the software for personal or evaluation purposes.
+- Submit contributions to the original project, if accepted by the author.
 
 ### You may not
 
@@ -119,6 +122,11 @@ This repository is published for transparency, evaluation, and personal use only
 - Fork this repository for redistribution.
 - Include this software in other products or projects.
 - Create or distribute derivative works without written permission.
+- Publish this software, modified versions, or derivative applications on the App Store, Google Play, Microsoft Store, Mac App Store, or any other software store.
+- Use the Sonarpad name, logo, branding, interface, or identity in another app or project.
+- Copy substantial parts of this project to create a competing application.
+
+Any commercial use, redistribution, store publication, or derivative work requires prior written permission from the author.
 
 Refer to the `LICENSE` file for full terms.
 
@@ -127,3 +135,6 @@ Refer to the `LICENSE` file for full terms.
 ## Author
 
 **Ambrogio Riili**
+
+Copyright © Ambrogio Riili. All rights reserved.
+

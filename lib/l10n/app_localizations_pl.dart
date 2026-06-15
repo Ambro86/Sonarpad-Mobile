@@ -1476,6 +1476,16 @@ class AppLocalizationsPl extends AppLocalizations {
   String get share => 'Udostępnij';
 
   @override
+  String get shareCalendarDayOptions => 'Opcje udostępniania';
+
+  @override
+  String get shareCalendarDayOnly => 'Udostępnij tylko dzień';
+
+  @override
+  String get shareCalendarDayWithReminder =>
+      'Udostępnij dzień i przypomnienie';
+
+  @override
   String get listenToAll => 'Posłuchaj wszystkiego';
 
   @override
