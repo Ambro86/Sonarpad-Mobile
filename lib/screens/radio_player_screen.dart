@@ -167,8 +167,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitController = controller;
     _mediaKitPlaying = false;
     _mediaKitVolume = await _settings.loadMediaVolume();
-    await player.setVolume(_mediaKitVolume * 100);
+    var initialVolumeApplied = false;
     _mediaKitPlayingSubscription = player.stream.playing.listen((playing) {
+      if (playing && !initialVolumeApplied) {
+        initialVolumeApplied = true;
+        unawaited(player.setVolume(_mediaKitVolume * 100).catchError((error) {
+          AppLogger.log(
+            'RadioPlayer: failed to apply MediaKit volume after start: $error',
+          );
+        }));
+      }
       if (!mounted) return;
       setState(() => _mediaKitPlaying = playing);
       if (Platform.isIOS) {
@@ -214,7 +222,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final clamped = value.clamp(0.0, 1.0).toDouble();
     setState(() => _mediaKitVolume = clamped);
     unawaited(_settings.saveMediaVolume(clamped));
-    unawaited(_mediaKitPlayer?.setVolume(clamped * 100));
+    final player = _mediaKitPlayer;
+    if (player != null) {
+      unawaited(player.setVolume(clamped * 100).catchError((error) {
+        AppLogger.log('RadioPlayer: failed to set MediaKit volume: $error');
+      }));
+    }
   }
 
   Future<void> _toggleVideoPlayback() async {
