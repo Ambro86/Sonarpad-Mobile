@@ -39,12 +39,13 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
   void _openRecording(File file) {
     final basename = p.basename(file.path);
     final uri = file.uri.toString();
+    final isAudioOnly = p.extension(file.path).toLowerCase() == '.m4a';
     final episode = PodcastEpisode(
       id: basename,
       title: p.basenameWithoutExtension(basename),
       description: '',
       audioUrl: uri,
-      videoUrl: uri,
+      videoUrl: isAudioOnly ? null : uri,
       publishedAt: file.lastModifiedSync(),
     );
     Navigator.push(
@@ -53,8 +54,8 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
         settings: const RouteSettings(name: '/tv/recordings/player'),
         builder: (_) => PodcastEpisodePlayerScreen(
           episode: episode,
-          isVideoSupported: true,
-          startWithVideo: true,
+          isVideoSupported: !isAudioOnly,
+          startWithVideo: !isAudioOnly,
         ),
       ),
     );

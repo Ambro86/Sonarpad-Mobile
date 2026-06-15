@@ -50,6 +50,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   bool _readerPreparing = true;
   bool _speaking = false;
   bool _ttsPaused = false;
+  int _readingToken = 0;
+  StreamController<File>? _edgeFileController;
   String? _status;
 
   // Soglia minima per accettare il testo HTTP come reader mode
@@ -327,6 +329,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   @override
   void dispose() {
+    _readingToken += 1;
+    final edgeController = _edgeFileController;
+    _edgeFileController = null;
+    if (edgeController != null && !edgeController.isClosed) {
+      unawaited(edgeController.close());
+    }
     if (Platform.isIOS) {
       _ttsCommands.invokeMethod('clearMagicTap').catchError((_) {});
     }
@@ -687,6 +695,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     final l10n = AppLocalizations.of(context);
     await _audio.stop();
     await _flutterTts.stop();
+    final readingToken = ++_readingToken;
 
     setState(() {
       _speaking = true;
@@ -740,12 +749,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         }
 
         for (var i = 0; i < chunks.length; i++) {
-          if (!mounted || !_speaking) break;
+          if (!mounted || !_speaking || readingToken != _readingToken) break;
           while (_ttsPaused) {
-            if (!mounted || !_speaking) break;
+            if (!mounted || !_speaking || readingToken != _readingToken) break;
             await Future.delayed(const Duration(milliseconds: 100));
           }
-          if (!mounted || !_speaking) break;
+          if (!mounted || !_speaking || readingToken != _readingToken) break;
           final textToSpeak =
               _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
           await _flutterTts.speak(textToSpeak);
@@ -756,11 +765,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         }
       } else {
         final controller = StreamController<File>();
+        _edgeFileController = controller;
         var generationDone = false;
         Object? generationError;
 
         final generation = Future<void>(() async {
           for (var i = 0; i < chunks.length; i++) {
+            if (!mounted || !_speaking || readingToken != _readingToken) break;
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
             final file =
@@ -770,26 +781,35 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               'Sonarpad TTS: web chunk ${i + 1}/${chunks.length} ready '
               'path=${file.path} size=$size',
             );
-            controller.add(file);
+            if (!controller.isClosed &&
+                mounted &&
+                _speaking &&
+                readingToken == _readingToken) {
+              controller.add(file);
+            }
           }
           generationDone = true;
-          await controller.close();
+          if (!controller.isClosed) await controller.close();
         }).catchError((e) async {
           generationError = e;
           generationDone = true;
-          await controller.close();
+          if (!controller.isClosed) await controller.close();
         });
 
         await for (final file in controller.stream) {
           while (_ttsPaused) {
-            if (!mounted || !_speaking) break;
+            if (!mounted || !_speaking || readingToken != _readingToken) break;
             await Future.delayed(const Duration(milliseconds: 100));
           }
-          if (!mounted || !_speaking) break;
+          if (!mounted || !_speaking || readingToken != _readingToken) break;
           await _audio.playFilesSequentially([file]);
         }
 
         await generation;
+        if (_edgeFileController == controller) {
+          _edgeFileController = null;
+        }
+        if (readingToken != _readingToken) return;
         if (generationError != null) throw Exception(generationError);
 
         if (!mounted) return;
@@ -800,18 +820,30 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     } catch (e) {
       debugPrint('Sonarpad TTS: web article reading error=$e');
       if (!mounted) return;
+      if (readingToken != _readingToken) return;
       setState(() => _status = l10n.edgeTtsError(e));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.edgeTtsError(e))),
       );
     } finally {
-      if (mounted) setState(() => _speaking = false);
+      if (mounted && readingToken == _readingToken) {
+        setState(() => _speaking = false);
+      }
     }
   }
 
   Future<void> _stopReading() async {
-    await _audio.stop();
-    await _flutterTts.stop();
+    if (!_speaking) return;
+    _readingToken += 1;
+    final edgeController = _edgeFileController;
+    _edgeFileController = null;
+    final stopAudio = _audio.stop();
+    final stopTts = _flutterTts.stop();
+    if (edgeController != null && !edgeController.isClosed) {
+      await edgeController.close();
+    }
+    await stopAudio;
+    await stopTts;
     if (!mounted) return;
     setState(() {
       _speaking = false;
