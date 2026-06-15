@@ -797,14 +797,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           if (!controller.isClosed) await controller.close();
         });
 
-        await for (final file in controller.stream) {
-          while (_ttsPaused) {
-            if (!mounted || !_speaking || readingToken != _readingToken) break;
-            await Future.delayed(const Duration(milliseconds: 100));
-          }
-          if (!mounted || !_speaking || readingToken != _readingToken) break;
-          await _audio.playFilesSequentially([file]);
-        }
+        await _audio.playFileStreamSequentially(
+          controller.stream,
+          sessionType: AudioSessionType.speech,
+          title: widget.article.title,
+          initialBufferCount: 2,
+          isPaused: () => _ttsPaused,
+        );
 
         await generation;
         if (_edgeFileController == controller) {
@@ -1054,7 +1053,9 @@ String _sanitizeNewsTextForEdge(String text) {
       .map((line) => line.trim())
       .where((line) => line.isNotEmpty)
       .toList();
-  return _dedupeConsecutiveParagraphs(paragraphs).join('\n\n').trim();
+  return _ensureTerminalPunctuation(
+    _dedupeConsecutiveParagraphs(paragraphs).join('\n\n').trim(),
+  );
 }
 
 List<String> _dedupeConsecutiveParagraphs(List<String> paragraphs) {
@@ -1067,6 +1068,13 @@ List<String> _dedupeConsecutiveParagraphs(List<String> paragraphs) {
     previous = normalized;
   }
   return result;
+}
+
+String _ensureTerminalPunctuation(String text) {
+  if (text.isEmpty) return text;
+  const terminalPunctuation = '.!?';
+  final last = text[text.length - 1];
+  return terminalPunctuation.contains(last) ? text : '$text.';
 }
 
 bool _sameNewsText(String a, String b) =>

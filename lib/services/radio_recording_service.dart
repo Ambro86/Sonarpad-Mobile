@@ -50,7 +50,7 @@ class RadioRecordingService {
       }
       final ext = p.extension(entity.path).toLowerCase();
       final allowed = includeVideo
-          ? const ['.mp4', '.ts', '.mkv', '.m4a']
+          ? const ['.mp4', '.ts', '.mkv', '.m4a', '.aac']
           : const ['.mp3', '.m4a', '.aac'];
       if (allowed.contains(ext)) {
         await AppLogger.log(
@@ -167,7 +167,7 @@ class RadioRecordingService {
   String _recordingExtension(String streamUrl) {
     if (includeVideo) {
       if (_isDashStream(streamUrl)) {
-        return '.m4a';
+        return '.aac';
       }
       return '.mp4';
     }
@@ -191,6 +191,8 @@ class RadioRecordingService {
           'aac',
           '-b:a',
           '128k',
+          '-f',
+          'adts',
           outputPath,
         ];
       }

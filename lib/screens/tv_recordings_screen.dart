@@ -39,7 +39,8 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
   void _openRecording(File file) {
     final basename = p.basename(file.path);
     final uri = file.uri.toString();
-    final isAudioOnly = p.extension(file.path).toLowerCase() == '.m4a';
+    final extension = p.extension(file.path).toLowerCase();
+    final isAudioOnly = extension == '.m4a' || extension == '.aac';
     final episode = PodcastEpisode(
       id: basename,
       title: p.basenameWithoutExtension(basename),
