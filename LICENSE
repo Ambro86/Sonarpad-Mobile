@@ -1,0 +1,72 @@
+Sonarpad Mobile Source-Available License
+Version 1.0
+
+Copyright © Ambrogio Riili. All rights reserved.
+
+This license applies to the Sonarpad Mobile source code and related project files, unless a different license is explicitly stated for a specific file or third-party component.
+
+1. Source-available notice
+
+Sonarpad Mobile is source-available, but it is not open source in the OSI sense, it is not freeware, and it is not public domain.
+
+The source code is made available only for transparency, personal evaluation, study, accessibility research, and possible contributions to the original project.
+
+2. Permitted uses
+
+You may:
+
+- view and study the source code;
+- build and run the software for personal, private, non-commercial, or evaluation purposes;
+- test the software for accessibility, compatibility, and research purposes;
+- submit issues, feedback, or contributions to the original Sonarpad Mobile project.
+
+3. Prohibited uses
+
+You may not, without prior written permission from the copyright holder:
+
+- use the software or source code for commercial purposes;
+- redistribute the source code, modified source code, binaries, installers, packages, or compiled applications;
+- publish this software, modified versions, or derivative applications on the App Store, Google Play, Microsoft Store, Mac App Store, or any other software store;
+- fork this repository for the purpose of redistribution or publication of a competing or derivative application;
+- include this software, in whole or in part, in another product, service, application, or project;
+- create, distribute, sell, or publish derivative works based on this software;
+- copy substantial parts of the code, architecture, interface, workflows, text, or project structure to create a competing application;
+- use the Sonarpad name, logo, branding, interface identity, or any confusingly similar name or branding;
+- remove or alter copyright notices, license notices, or author attribution.
+
+4. Contributions
+
+If you submit a contribution to the original Sonarpad Mobile project, you grant the copyright holder a perpetual, worldwide, royalty-free right to use, modify, reproduce, distribute, and include that contribution in Sonarpad Mobile and related Sonarpad projects.
+
+Submitting a contribution does not give you ownership of the project, the Sonarpad name, or the right to redistribute or publish the software independently.
+
+5. Third-party components
+
+This license applies only to the original Sonarpad Mobile code and project materials created by Ambrogio Riili.
+
+Third-party libraries, frameworks, packages, assets, and dependencies remain subject to their own respective licenses. Nothing in this license changes the terms of those third-party licenses.
+
+6. Store publication
+
+Publication of Sonarpad Mobile, modified versions of Sonarpad Mobile, or derivative applications based on this project on any software store or distribution platform is strictly prohibited without prior written permission from the copyright holder.
+
+This includes, but is not limited to, the App Store, Google Play, Microsoft Store, Mac App Store, F-Droid, alternative app stores, package repositories, and direct commercial distribution channels.
+
+7. No warranty
+
+The software is provided "as is", without warranty of any kind, express or implied.
+
+The copyright holder is not liable for any claim, damage, data loss, service interruption, accessibility issue, or other liability arising from the use, testing, building, or inability to use the software.
+
+8. Termination
+
+Any rights granted by this license terminate automatically if you violate its terms.
+
+Upon termination, you must stop using the software and delete any copies of the source code, binaries, modified versions, or derivative works in your possession or control.
+
+9. Permission requests
+
+For commercial use, redistribution, store publication, derivative works, or any other use not expressly permitted by this license, written permission from the copyright holder is required.
+
+Author and copyright holder:
+Ambrogio Riili

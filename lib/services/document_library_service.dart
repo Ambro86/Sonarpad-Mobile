@@ -258,6 +258,7 @@ class DocumentLibraryService {
       dev.log('DocumentLibraryService: errore decodifica libreria: $e');
       _documents = [];
     }
+    await _removeMissingLocalDocuments();
   }
 
   /// Aggiunge un documento e salva la libreria aggiornata.
@@ -377,6 +378,46 @@ class DocumentLibraryService {
     final ok = await prefs.setString(_key, raw);
     if (!ok) {
       dev.log('DocumentLibraryService: impossibile salvare la libreria.');
+    }
+  }
+
+  Future<void> _removeMissingLocalDocuments() async {
+    final kept = <DocumentItem>[];
+    var changed = false;
+
+    for (final doc in _documents) {
+      if (doc.isFolder ||
+          doc.extension == 'librivox' ||
+          doc.extension == 'archiveaudio') {
+        kept.add(doc);
+        continue;
+      }
+
+      final resolvedPath = await resolveFilePath(doc);
+      final fileExists = await File(resolvedPath).exists();
+      if (fileExists) {
+        kept.add(doc);
+        continue;
+      }
+
+      final editedPath = await resolveEditedFilePath(doc);
+      final editedExists =
+          editedPath != null && await File(editedPath).exists();
+      if (editedExists) {
+        kept.add(doc);
+        continue;
+      }
+
+      changed = true;
+      await AppLogger.log(
+        'DocumentLibraryService: rimosso documento orfano '
+        'name="${doc.name}" path="${doc.path}"',
+      );
+    }
+
+    if (changed) {
+      _documents = kept;
+      await _save();
     }
   }
 
