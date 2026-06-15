@@ -47,6 +47,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _isVideoEnabled = false;
   bool _isFavorite = false;
   bool _mediaKitPlaying = false;
+  double _mediaKitVolume = 1.0;
   bool _recording = false;
   File? _recordingOutput;
 
@@ -165,6 +166,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitPlayer = player;
     _mediaKitController = controller;
     _mediaKitPlaying = false;
+    _mediaKitVolume = await _settings.loadMediaVolume();
+    await player.setVolume(_mediaKitVolume * 100);
     _mediaKitPlayingSubscription = player.stream.playing.listen((playing) {
       if (!mounted) return;
       setState(() => _mediaKitPlaying = playing);
@@ -205,6 +208,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     } else {
       await _audio.stop();
     }
+  }
+
+  void _setMediaKitVolume(double value) {
+    final clamped = value.clamp(0.0, 1.0).toDouble();
+    setState(() => _mediaKitVolume = clamped);
+    unawaited(_settings.saveMediaVolume(clamped));
+    unawaited(_mediaKitPlayer?.setVolume(clamped * 100));
   }
 
   Future<void> _toggleVideoPlayback() async {
@@ -497,6 +507,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             const SizedBox(height: 24),
             VolumeSlider(audioPlayer: _audio),
           ],
+          if (_mediaKitPlayer != null) ...[
+            const SizedBox(height: 24),
+            _MediaKitVolumeSlider(
+              volume: _mediaKitVolume,
+              onChanged: _setMediaKitVolume,
+            ),
+          ],
           const SizedBox(height: 24),
           OutlinedButton.icon(
             onPressed: _toggleFavorite,
@@ -507,6 +524,58 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _MediaKitVolumeSlider extends StatelessWidget {
+  const _MediaKitVolumeSlider({
+    required this.volume,
+    required this.onChanged,
+  });
+
+  final double volume;
+  final ValueChanged<double> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final percentage = (volume * 100).round();
+    final label = l10n.volumeValue(percentage);
+    final increased = ((volume + 0.1).clamp(0.0, 1.0) * 100).round();
+    final decreased = ((volume - 0.1).clamp(0.0, 1.0) * 100).round();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ExcludeSemantics(
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Semantics(
+          key: const ValueKey('mediakit_volume_slider_semantics'),
+          slider: true,
+          label: l10n.adjustVolume,
+          value: '$percentage%',
+          increasedValue: '$increased%',
+          decreasedValue: '$decreased%',
+          onIncrease: () =>
+              onChanged((volume + 0.1).clamp(0.0, 1.0).toDouble()),
+          onDecrease: () =>
+              onChanged((volume - 0.1).clamp(0.0, 1.0).toDouble()),
+          child: ExcludeSemantics(
+            child: Slider(
+              value: volume,
+              min: 0.0,
+              max: 1.0,
+              divisions: 10,
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

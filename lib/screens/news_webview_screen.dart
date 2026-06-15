@@ -687,7 +687,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     );
     return [
       if (title.isNotEmpty) title,
-      ...paragraphs,
+      ..._dedupeConsecutiveParagraphs(paragraphs),
     ].join('\n\n').trim();
   }
 
@@ -708,15 +708,16 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final voice = await _voice();
       final engine = await _settings.loadTtsEngine();
       final dictionaryEntries = await _voiceDictionary.loadEntries();
-      final chunks = _tts.splitTextForStreaming(text, maxChunkChars: 650);
+      final textForChunks = _sanitizeNewsTextForEdge(text);
+      final chunks = _tts.splitTextForStreaming(textForChunks, maxChunkChars: 650);
       unawaited(AppLogger.log(
         'News TTS: lettura avviata engine=$engine voice=$voice '
-        'textLength=${text.length} chunks=${chunks.length}',
+        'textLength=${textForChunks.length} chunks=${chunks.length}',
       ));
       debugPrint(
         'Sonarpad TTS: web article read requested '
         'title="${widget.article.title}" voice=$voice '
-        'textLength=${text.length} chunks=${chunks.length}',
+        'textLength=${textForChunks.length} chunks=${chunks.length}',
       );
       if (chunks.isEmpty) throw Exception(l10n.noTextToRead);
 
@@ -1037,6 +1038,35 @@ List<String> _dropLeadingDuplicateTitle(
   if (title.trim().isEmpty || paragraphs.isEmpty) return paragraphs;
   if (!_sameNewsText(title, paragraphs.first)) return paragraphs;
   return paragraphs.skip(1).toList();
+}
+
+String _sanitizeNewsTextForEdge(String text) {
+  final paragraphs = text
+      .replaceAll('\u00a0', ' ')
+      .replaceAll('\u200b', '')
+      .replaceAll('\u200c', '')
+      .replaceAll('\u200d', '')
+      .replaceAll('\ufeff', '')
+      .replaceAll('\u2028', '\n')
+      .replaceAll('\u2029', '\n')
+      .replaceAll('\r', '\n')
+      .split('\n')
+      .map((line) => line.trim())
+      .where((line) => line.isNotEmpty)
+      .toList();
+  return _dedupeConsecutiveParagraphs(paragraphs).join('\n\n').trim();
+}
+
+List<String> _dedupeConsecutiveParagraphs(List<String> paragraphs) {
+  final result = <String>[];
+  String? previous;
+  for (final paragraph in paragraphs) {
+    final normalized = _normalizeNewsText(paragraph);
+    if (normalized.isEmpty || normalized == previous) continue;
+    result.add(paragraph);
+    previous = normalized;
+  }
+  return result;
 }
 
 bool _sameNewsText(String a, String b) =>
