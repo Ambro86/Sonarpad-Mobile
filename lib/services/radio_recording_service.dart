@@ -78,7 +78,7 @@ class RadioRecordingService {
 
     final dir = await recordingsDirectory();
     await dir.create(recursive: true);
-    final ext = _recordingExtension();
+    final ext = _recordingExtension(streamUrl);
     final file = File(p.join(
       dir.path,
       '${_safeFileName(stationName)} - ${_timestamp()}$ext',
@@ -164,8 +164,11 @@ class RadioRecordingService {
     }
   }
 
-  String _recordingExtension() {
+  String _recordingExtension(String streamUrl) {
     if (includeVideo) {
+      if (_isDashStream(streamUrl)) {
+        return '.ts';
+      }
       return '.mp4';
     }
     return '.m4a';
@@ -176,6 +179,20 @@ class RadioRecordingService {
     required String outputPath,
   }) {
     if (includeVideo) {
+      if (_isDashStream(streamUrl)) {
+        return [
+          '-y',
+          '-user_agent',
+          _ffmpegUserAgent,
+          '-i',
+          streamUrl,
+          '-c',
+          'copy',
+          '-f',
+          'mpegts',
+          outputPath,
+        ];
+      }
       return [
         '-y',
         '-user_agent',
@@ -200,6 +217,12 @@ class RadioRecordingService {
       '128k',
       outputPath,
     ];
+  }
+
+  bool _isDashStream(String streamUrl) {
+    final path = Uri.tryParse(streamUrl)?.path.toLowerCase() ??
+        streamUrl.toLowerCase();
+    return path.endsWith('.mpd');
   }
 
   bool _shouldLogFfmpegLine(String message) {

@@ -160,12 +160,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _videoController = null;
     await _disposeMediaKitPlayer();
 
-    final isDash = TvService.isDashStreamUrl(widget.station.streamUrl);
-    final player = mk.Player(
-      configuration: mk.PlayerConfiguration(
-        bufferSize: isDash ? 1024 * 1024 : 32 * 1024 * 1024,
-      ),
-    );
+    final player = mk.Player();
     final controller = mkv.VideoController(player);
     _mediaKitPlayer = player;
     _mediaKitController = controller;
@@ -198,20 +193,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         },
       ),
     );
-    if (!_isVideoEnabled) {
-      try {
-        AppLogger.log(
-          'RadioPlayer: disabling MediaKit video track for MPD/DASH, '
-          'url=${widget.station.streamUrl}',
-        );
-        await player.setVideoTrack(mk.VideoTrack.no());
-      } catch (e, st) {
-        AppLogger.log(
-          'RadioPlayer: failed to disable MediaKit video track, falling back '
-          'to hidden video: $e\n$st',
-        );
-      }
-    }
   }
 
   Future<void> _stop() async {
@@ -258,7 +239,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _isVideoEnabled != enable) return;
       if (_requiresVideoPlayback) {
-        unawaited(_applyVideoSetting(enable));
+        _settings.setVideoEnabled(enable);
       } else {
         unawaited(_applyVideoSetting(enable));
       }
