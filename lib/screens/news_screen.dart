@@ -14,7 +14,16 @@ import '../services/news_sources/news_rss_source.dart';
 import 'news_webview_screen.dart';
 
 class NewsScreen extends StatefulWidget {
-  const NewsScreen({super.key});
+  final String? folderId;
+  final String? title;
+  final NewsLanguage? initialLanguage;
+
+  const NewsScreen({
+    super.key,
+    this.folderId,
+    this.title,
+    this.initialLanguage,
+  });
 
   @override
   State<NewsScreen> createState() => _NewsScreenState();
@@ -30,7 +39,7 @@ class _NewsScreenState extends State<NewsScreen> {
     super.didChangeDependencies();
     if (_language == null) {
       final code = AppLocalizations.of(context).localeName;
-      _language = switch (code) {
+      _language = widget.initialLanguage ?? switch (code) {
         'en' => NewsLanguage.english,
         'fr' => NewsLanguage.french,
         'es' => NewsLanguage.spanish,
@@ -45,7 +54,10 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Future<void> _loadSources() async {
     if (_language == null) return;
-    final sources = await _service.getOrderedSources(_language!);
+    final sources = await _service.getOrderedSources(
+      _language!,
+      folderId: widget.folderId,
+    );
     if (mounted) {
       setState(() {
         _sources = sources;
@@ -54,6 +66,21 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   void _openSource(NewsRssSource source) {
+    if (source.isFolder && source.folderId != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/news/folder'),
+          builder: (_) => NewsScreen(
+            folderId: source.folderId,
+            title: source.name,
+            initialLanguage: _language!,
+          ),
+        ),
+      ).then((_) => _loadSources());
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -120,7 +147,12 @@ class _NewsScreenState extends State<NewsScreen> {
     if (name.isEmpty || url.isEmpty) return;
 
     try {
-      await _service.addCustomSource(_language!, name, url);
+      await _service.addCustomSource(
+        _language!,
+        name,
+        url,
+        parentFolderId: widget.folderId,
+      );
       await _loadSources();
     } catch (e) {
       if (!mounted) return;
@@ -129,6 +161,38 @@ class _NewsScreenState extends State<NewsScreen> {
             content: Text('${AppLocalizations.of(context).errorPrefix}: $e')),
       );
     }
+  }
+
+  Future<void> _createFolder() async {
+    if (_language == null || widget.folderId != null) return;
+    final ctrl = TextEditingController();
+    final name = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(AppLocalizations.of(context).newFolder),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          decoration: InputDecoration(
+            hintText: AppLocalizations.of(context).folderNameHint,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppLocalizations.of(context).cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, ctrl.text),
+            child: Text(AppLocalizations.of(context).create),
+          ),
+        ],
+      ),
+    );
+    final cleanName = name?.trim();
+    if (cleanName == null || cleanName.isEmpty) return;
+    await _service.createFolder(_language!, cleanName);
+    await _loadSources();
   }
 
   Future<void> _importRssFromOpml() async {
@@ -149,6 +213,7 @@ class _NewsScreenState extends State<NewsScreen> {
       final added = await _service.importCustomSourcesFromOpml(
         language,
         File(path),
+        parentFolderId: widget.folderId,
       );
       await _loadSources();
       if (!mounted) return;
@@ -197,7 +262,7 @@ class _NewsScreenState extends State<NewsScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.news),
+        title: Text(widget.title ?? l10n.news),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -223,39 +288,43 @@ class _NewsScreenState extends State<NewsScreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: DropdownButtonFormField<NewsLanguage>(
-              initialValue: _language,
-              isExpanded: true,
-              decoration: InputDecoration(labelText: l10n.newsLanguage),
-              items: NewsLanguage.values
-                  .map(
-                    (lang) => DropdownMenuItem(
-                      value: lang,
-                      child: Text(lang.label(l10n)),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  _language = value;
-                  _sources = null;
-                });
-                _loadSources();
-              },
+          if (widget.folderId == null)
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: DropdownButtonFormField<NewsLanguage>(
+                initialValue: _language,
+                isExpanded: true,
+                decoration: InputDecoration(labelText: l10n.newsLanguage),
+                items: NewsLanguage.values
+                    .map(
+                      (lang) => DropdownMenuItem(
+                        value: lang,
+                        child: Text(lang.label(l10n)),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() {
+                    _language = value;
+                    _sources = null;
+                  });
+                  _loadSources();
+                },
+              ),
             ),
-          ),
           Expanded(
             child: _sources == null
                 ? const Center(child: CircularProgressIndicator())
                 : _NewsSourceList(
                     sources: _sources!,
                     language: _language!,
+                    currentFolderId: widget.folderId,
                     service: _service,
                     onSourceSelected: _openSource,
                     onSourcesChanged: _loadSources,
+                    onCreateFolder:
+                        widget.folderId == null ? _createFolder : null,
                   ),
           ),
         ],
@@ -489,34 +558,109 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   }
 }
 
-enum _NewsSourceAction { moveUp, moveDown, moveToPosition, hide, delete }
+enum _NewsSourceAction {
+  moveUp,
+  moveDown,
+  moveToPosition,
+  hide,
+  delete,
+  moveToFolder,
+  moveOutOfFolder,
+}
 
 class _NewsSourceList extends StatelessWidget {
   const _NewsSourceList({
     required this.sources,
     required this.language,
+    required this.currentFolderId,
     required this.service,
     required this.onSourceSelected,
     required this.onSourcesChanged,
+    this.onCreateFolder,
   });
 
   final List<NewsRssSource> sources;
   final NewsLanguage language;
+  final String? currentFolderId;
   final NewsService service;
   final ValueChanged<NewsRssSource> onSourceSelected;
   final VoidCallback onSourcesChanged;
+  final Future<void> Function()? onCreateFolder;
+
+  Future<String?> _selectTargetFolder(
+    BuildContext context,
+    NewsRssSource source,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final folders = (await service.getFolders(language))
+        .where((folder) => folder.id != currentFolderId)
+        .toList();
+    if (!context.mounted || folders.isEmpty) return null;
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.selectFolder),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: folders
+                .map(
+                  (folder) => ListTile(
+                    key: ValueKey('news_move_folder_${folder.id}'),
+                    leading: const Icon(Icons.folder, color: Colors.amber),
+                    title: Text(folder.name),
+                    onTap: () => Navigator.pop(ctx, folder.id),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _handleAction(
       BuildContext context, _NewsSourceAction action, int index) async {
+    final source = sources[index];
     try {
-      if (action == _NewsSourceAction.hide) {
-        await service.hideSource(language, sources[index]);
+      if (action == _NewsSourceAction.hide && !source.isFolder) {
+        await service.hideSource(language, source);
         onSourcesChanged();
         return;
       }
       if (action == _NewsSourceAction.delete) {
-        await service.removeCustomSource(language, sources[index].name);
+        if (source.isFolder && source.folderId != null) {
+          await service.removeFolder(language, source.folderId!);
+        } else if (source.isCustom) {
+          await service.removeCustomSource(language, source.name);
+        }
         onSourcesChanged();
+        return;
+      }
+      if (action == _NewsSourceAction.moveOutOfFolder && !source.isFolder) {
+        await service.moveSourceToFolder(language, source, null);
+        onSourcesChanged();
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).documentMoved)),
+        );
+        return;
+      }
+      if (action == _NewsSourceAction.moveToFolder && !source.isFolder) {
+        final folderId = await _selectTargetFolder(context, source);
+        if (folderId == null) return;
+        await service.moveSourceToFolder(language, source, folderId);
+        onSourcesChanged();
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).documentMoved)),
+        );
         return;
       }
 
@@ -525,11 +669,19 @@ class _NewsSourceList extends StatelessWidget {
 
       if (action == _NewsSourceAction.moveUp && index > 0) {
         list.insert(index - 1, item);
-        await service.saveSourcesOrder(language, list);
+        await service.saveSourcesOrder(
+          language,
+          list,
+          folderId: currentFolderId,
+        );
         onSourcesChanged();
       } else if (action == _NewsSourceAction.moveDown && index < list.length) {
         list.insert(index + 1, item);
-        await service.saveSourcesOrder(language, list);
+        await service.saveSourcesOrder(
+          language,
+          list,
+          folderId: currentFolderId,
+        );
         onSourcesChanged();
       } else if (action == _NewsSourceAction.moveToPosition) {
         final newPos = await showDialog<int>(
@@ -541,7 +693,11 @@ class _NewsSourceList extends StatelessWidget {
         );
         if (newPos != null && newPos != index) {
           list.insert(newPos, item);
-          await service.saveSourcesOrder(language, list);
+          await service.saveSourcesOrder(
+            language,
+            list,
+            folderId: currentFolderId,
+          );
           onSourcesChanged();
         }
       }
@@ -570,6 +726,10 @@ class _NewsSourceList extends StatelessWidget {
             key: ValueKey('news_source_semantics_${source.name}'),
             container: true,
             customSemanticsActions: {
+              if (onCreateFolder != null)
+                CustomSemanticsAction(label: l10n.createNewFolder): () {
+                  onCreateFolder!();
+                },
               if (!isFirst)
                 CustomSemanticsAction(label: l10n.moveUp): () =>
                     _handleAction(context, _NewsSourceAction.moveUp, index),
@@ -579,14 +739,26 @@ class _NewsSourceList extends StatelessWidget {
               CustomSemanticsAction(label: l10n.moveToPosition): () =>
                   _handleAction(
                       context, _NewsSourceAction.moveToPosition, index),
-              CustomSemanticsAction(label: l10n.hide): () =>
-                  _handleAction(context, _NewsSourceAction.hide, index),
-              if (source.isCustom)
+              if (!source.isFolder && currentFolderId != null)
+                CustomSemanticsAction(label: l10n.outOfFolder): () =>
+                    _handleAction(
+                        context, _NewsSourceAction.moveOutOfFolder, index),
+              if (!source.isFolder)
+                CustomSemanticsAction(label: l10n.moveToAnotherFolder): () =>
+                    _handleAction(context, _NewsSourceAction.moveToFolder, index),
+              if (!source.isFolder)
+                CustomSemanticsAction(label: l10n.hide): () =>
+                    _handleAction(context, _NewsSourceAction.hide, index),
+              if (source.isFolder)
+                CustomSemanticsAction(label: l10n.removeFolder): () =>
+                    _handleAction(context, _NewsSourceAction.delete, index),
+              if (source.isCustom && !source.isFolder)
                 CustomSemanticsAction(label: l10n.deleteNewsSource): () =>
                     _handleAction(context, _NewsSourceAction.delete, index),
             },
             child: ListTile(
-              key: ValueKey('news_source_${source.name}'),
+              key: ValueKey('news_source_${source.isFolder ? source.folderId : source.name}'),
+              leading: Icon(source.isFolder ? Icons.folder : Icons.rss_feed),
               title: Text(source.name),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => onSourceSelected(source),

@@ -92,6 +92,14 @@ class NewsService {
       'news_sources_hidden_${language.name}';
   String _getCustomPrefsKey(NewsLanguage language) =>
       'news_custom_sources_${language.name}';
+  String _getFoldersPrefsKey(NewsLanguage language) =>
+      'news_source_folders_${language.name}';
+  String _getSourceFoldersPrefsKey(NewsLanguage language) =>
+      'news_source_folder_assignments_${language.name}';
+  String _getFolderOrderPrefsKey(NewsLanguage language, String? folderId) =>
+      folderId == null
+          ? _getPrefsKey(language)
+          : 'news_sources_order_${language.name}_folder_$folderId';
   String _getReadArticlesKey(NewsLanguage language, String sourceName) =>
       'news_read_articles_${language.name}_$sourceName';
 
@@ -166,8 +174,147 @@ class NewsService {
         .toList();
   }
 
+
+  Future<List<NewsSourceFolder>> getFolders(NewsLanguage language) async {
+    final prefs = await SharedPreferences.getInstance();
+    final listStr = prefs.getStringList(_getFoldersPrefsKey(language)) ?? [];
+    return listStr
+        .map((s) {
+          try {
+            final folder = NewsSourceFolder.fromJson(jsonDecode(s));
+            if (folder.id.trim().isEmpty || folder.name.trim().isEmpty) {
+              return null;
+            }
+            return folder;
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<NewsSourceFolder>()
+        .toList();
+  }
+
+  Future<void> _saveFolders(
+    NewsLanguage language,
+    List<NewsSourceFolder> folders,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      _getFoldersPrefsKey(language),
+      folders.map((folder) => jsonEncode(folder.toJson())).toList(),
+    );
+  }
+
+  Future<Map<String, String>> _getSourceFolderAssignments(
+      NewsLanguage language) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonText = prefs.getString(_getSourceFoldersPrefsKey(language));
+    if (jsonText == null || jsonText.trim().isEmpty) return {};
+    try {
+      final decoded = jsonDecode(jsonText);
+      if (decoded is! Map) return {};
+      return decoded.map((key, value) => MapEntry(key.toString(), value.toString()));
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> _saveSourceFolderAssignments(
+    NewsLanguage language,
+    Map<String, String> assignments,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _getSourceFoldersPrefsKey(language),
+      jsonEncode(assignments),
+    );
+  }
+
+  Future<NewsSourceFolder> createFolder(
+    NewsLanguage language,
+    String name,
+  ) async {
+    final folders = await getFolders(language);
+    final knownNames = folders.map((folder) => folder.name).toSet();
+    final folder = NewsSourceFolder(
+      id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
+      name: _uniqueSourceName(name, knownNames),
+    );
+    folders.add(folder);
+    await _saveFolders(language, folders);
+    return folder;
+  }
+
+  Future<void> removeFolder(NewsLanguage language, String folderId) async {
+    final folders = await getFolders(language);
+    folders.removeWhere((folder) => folder.id == folderId);
+    await _saveFolders(language, folders);
+
+    final customSources = await getCustomSources(language);
+    final updatedCustomSources = customSources
+        .map((source) => source.parentFolderId == folderId
+            ? source.copyWith(clearParentFolderId: true)
+            : source)
+        .toList();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      _getCustomPrefsKey(language),
+      updatedCustomSources.map((source) => jsonEncode(source.toJson())).toList(),
+    );
+
+    final assignments = await _getSourceFolderAssignments(language);
+    assignments.removeWhere((_, value) => value == folderId);
+    await _saveSourceFolderAssignments(language, assignments);
+    await prefs.remove(_getFolderOrderPrefsKey(language, folderId));
+  }
+
+  Future<void> moveSourceToFolder(
+    NewsLanguage language,
+    NewsRssSource source,
+    String? folderId,
+  ) async {
+    if (source.isFolder) return;
+    final prefs = await SharedPreferences.getInstance();
+
+    if (source.isCustom) {
+      final customSources = await getCustomSources(language);
+      final updated = customSources.map((customSource) {
+        if (customSource.name != source.name || customSource.uri != source.uri) {
+          return customSource;
+        }
+        return folderId == null
+            ? customSource.copyWith(clearParentFolderId: true)
+            : customSource.copyWith(parentFolderId: folderId);
+      }).toList();
+      await prefs.setStringList(
+        _getCustomPrefsKey(language),
+        updated.map((item) => jsonEncode(item.toJson())).toList(),
+      );
+    }
+
+    final assignments = await _getSourceFolderAssignments(language);
+    if (folderId == null) {
+      assignments.remove(source.name);
+    } else {
+      assignments[source.name] = folderId;
+    }
+    await _saveSourceFolderAssignments(language, assignments);
+
+    for (final key in prefs.getKeys().where(
+        (key) => key.startsWith('news_sources_order_${language.name}'))) {
+      final order = prefs.getStringList(key) ?? [];
+      if (order.remove(_itemOrderKey(source)) || order.remove(source.name)) {
+        await prefs.setStringList(key, order);
+      }
+    }
+  }
+
   Future<void> addCustomSource(
-      NewsLanguage language, String name, String urlOrSearch) async {
+    NewsLanguage language,
+    String name,
+    String urlOrSearch, {
+    String? parentFolderId,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final customSources = await getCustomSources(language);
 
@@ -230,6 +377,7 @@ class NewsService {
       name: name,
       uri: Uri.parse(finalUrl),
       isCustom: true,
+      parentFolderId: parentFolderId,
     );
 
     customSources.add(newSource);
@@ -252,19 +400,31 @@ class NewsService {
     if (hiddenNames.remove(name)) {
       await prefs.setStringList(_getHiddenPrefsKey(language), hiddenNames);
     }
-    final order = prefs.getStringList(_getPrefsKey(language)) ?? [];
-    if (order.remove(name)) {
-      await prefs.setStringList(_getPrefsKey(language), order);
+    final assignments = await _getSourceFolderAssignments(language);
+    if (assignments.remove(name) != null) {
+      await _saveSourceFolderAssignments(language, assignments);
+    }
+    for (final key in prefs.getKeys().where(
+        (key) => key.startsWith('news_sources_order_${language.name}'))) {
+      final order = prefs.getStringList(key) ?? [];
+      if (order.remove('source:$name') || order.remove(name)) {
+        await prefs.setStringList(key, order);
+      }
     }
   }
 
   Future<int> importCustomSourcesFromOpml(
     NewsLanguage language,
-    File file,
-  ) async {
+    File file, {
+    String? parentFolderId,
+  }) async {
     final text = await file.readAsString();
     final document = XmlDocument.parse(text);
     final currentCustomSources = await getCustomSources(language);
+    final folders = await getFolders(language);
+    final folderByName = {
+      for (final folder in folders) folder.name.trim().toLowerCase(): folder,
+    };
     final knownUrls = <String>{
       ...language.rssSources.map((source) => source.uri.toString().trim().toLowerCase()),
       ...currentCustomSources.map((source) => source.uri.toString().trim().toLowerCase()),
@@ -273,32 +433,82 @@ class NewsService {
       ...language.rssSources.map((source) => source.name),
       ...currentCustomSources.map((source) => source.name),
     };
+    final knownFolderNames = folders.map((folder) => folder.name).toSet();
     final toAdd = <NewsRssSource>[];
 
-    for (final outline in document.findAllElements('outline')) {
+    NewsSourceFolder ensureFolder(String name) {
+      final cleanName = name.trim().isEmpty ? 'RSS' : name.trim();
+      final key = cleanName.toLowerCase();
+      final existing = folderByName[key];
+      if (existing != null) return existing;
+      final folder = NewsSourceFolder(
+        id: 'folder_${DateTime.now().microsecondsSinceEpoch}_${folderByName.length}',
+        name: _uniqueSourceName(cleanName, knownFolderNames),
+      );
+      folderByName[folder.name.trim().toLowerCase()] = folder;
+      folders.add(folder);
+      return folder;
+    }
+
+    void importOutline(XmlElement outline, String? currentFolderId,
+        List<String> folderPath) {
       final feedUrl = (_opmlAttribute(outline, 'xmlUrl') ??
               _opmlAttribute(outline, 'url'))
           ?.trim();
-      if (feedUrl == null || feedUrl.isEmpty) continue;
-      final uri = Uri.tryParse(feedUrl);
-      if (uri == null || !uri.hasScheme || uri.host.isEmpty) continue;
-      final normalizedUrl = uri.toString().trim().toLowerCase();
-      if (!knownUrls.add(normalizedUrl)) continue;
+      if (feedUrl != null && feedUrl.isNotEmpty) {
+        final uri = Uri.tryParse(feedUrl);
+        if (uri == null || !uri.hasScheme || uri.host.isEmpty) return;
+        final normalizedUrl = uri.toString().trim().toLowerCase();
+        if (!knownUrls.add(normalizedUrl)) return;
+
+        final titleAttr = _opmlAttribute(outline, 'title')?.trim();
+        final textAttr = _opmlAttribute(outline, 'text')?.trim();
+        final fallbackName = uri.host.isEmpty ? feedUrl : uri.host;
+        final baseName = titleAttr?.isNotEmpty == true
+            ? titleAttr!
+            : textAttr?.isNotEmpty == true
+                ? textAttr!
+                : fallbackName;
+
+        toAdd.add(NewsRssSource(
+          name: _uniqueSourceName(baseName, knownNames),
+          uri: uri,
+          isCustom: true,
+          parentFolderId: currentFolderId ?? parentFolderId,
+        ));
+        return;
+      }
+
+      final childOutlines = outline.findElements('outline').toList();
+      if (childOutlines.isEmpty) return;
+      final hasFeedChildren = childOutlines.any((child) =>
+          (_opmlAttribute(child, 'xmlUrl') ?? _opmlAttribute(child, 'url'))
+                  ?.trim()
+                  .isNotEmpty ==
+              true ||
+          child.findAllElements('outline').isNotEmpty);
+      if (!hasFeedChildren) return;
 
       final titleAttr = _opmlAttribute(outline, 'title')?.trim();
       final textAttr = _opmlAttribute(outline, 'text')?.trim();
-      final fallbackName = uri.host.isEmpty ? feedUrl : uri.host;
-      final baseName = titleAttr?.isNotEmpty == true
+      final groupName = titleAttr?.isNotEmpty == true
           ? titleAttr!
           : textAttr?.isNotEmpty == true
               ? textAttr!
-              : fallbackName;
+              : 'RSS';
+      final nextPath = [...folderPath, groupName];
+      final folder = ensureFolder(nextPath.join(' / '));
+      for (final child in childOutlines) {
+        importOutline(child, folder.id, nextPath);
+      }
+    }
 
-      toAdd.add(NewsRssSource(
-        name: _uniqueSourceName(baseName, knownNames),
-        uri: uri,
-        isCustom: true,
-      ));
+    final body = document.findAllElements('body').firstOrNull;
+    final topOutlines = body != null
+        ? body.findElements('outline').toList()
+        : document.findAllElements('outline').toList();
+    for (final outline in topOutlines) {
+      importOutline(outline, parentFolderId, const []);
     }
 
     if (toAdd.isEmpty) return 0;
@@ -309,11 +519,21 @@ class NewsService {
       _getCustomPrefsKey(language),
       updated.map((source) => jsonEncode(source.toJson())).toList(),
     );
+    await _saveFolders(language, folders);
     return toAdd.length;
   }
 
   Future<String> exportCustomSourcesToOpml(NewsLanguage language) async {
     final customSources = await getCustomSources(language);
+    final folders = await getFolders(language);
+    final folderById = {for (final folder in folders) folder.id: folder};
+    final sourcesByFolder = <String?, List<NewsRssSource>>{};
+    for (final source in customSources) {
+      sourcesByFolder.putIfAbsent(source.parentFolderId, () => []).add(source);
+    }
+    final hasFolders = customSources.any((source) =>
+        source.parentFolderId != null && folderById.containsKey(source.parentFolderId));
+
     final buffer = StringBuffer()
       ..writeln('<?xml version="1.0" encoding="UTF-8"?>')
       ..writeln('<opml version="1.0">')
@@ -322,12 +542,37 @@ class NewsService {
       ..writeln('</head>')
       ..writeln('<body>');
 
-    for (final source in customSources) {
+    void writeSource(NewsRssSource source, String indent) {
       final title = _escapeOpmlAttribute(source.name);
       final url = _escapeOpmlAttribute(source.uri.toString());
       buffer.writeln(
-        '  <outline text="$title" title="$title" type="rss" xmlUrl="$url" />',
+        '$indent<outline text="$title" title="$title" type="rss" xmlUrl="$url" />',
       );
+    }
+
+    if (!hasFolders) {
+      for (final source in customSources) {
+        writeSource(source, '  ');
+      }
+    } else {
+      for (final source in sourcesByFolder[null] ?? const <NewsRssSource>[]) {
+        writeSource(source, '  ');
+      }
+      for (final folder in folders) {
+        final folderSources = sourcesByFolder[folder.id] ?? const <NewsRssSource>[];
+        if (folderSources.isEmpty) continue;
+        final name = _escapeOpmlAttribute(folder.name);
+        buffer.writeln('  <outline text="$name" title="$name">');
+        for (final source in folderSources) {
+          writeSource(source, '    ');
+        }
+        buffer.writeln('  </outline>');
+      }
+      final unknownFolderSources = customSources.where((source) =>
+          source.parentFolderId != null && !folderById.containsKey(source.parentFolderId));
+      for (final source in unknownFolderSources) {
+        writeSource(source, '  ');
+      }
     }
 
     buffer
@@ -366,29 +611,50 @@ class NewsService {
         .replaceAll("'", '&apos;');
   }
 
-  Future<List<NewsRssSource>> getOrderedSources(NewsLanguage language) async {
+  Future<List<NewsRssSource>> getOrderedSources(
+    NewsLanguage language, {
+    String? folderId,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
+    final folders = folderId == null ? await getFolders(language) : <NewsSourceFolder>[];
     final defaultSources = language.rssSources;
     final customSources = await getCustomSources(language);
+    final assignments = await _getSourceFolderAssignments(language);
 
-    final allSources = [...defaultSources, ...customSources];
+    final allSources = [
+      ...folders.map(NewsRssSource.folder),
+      ...defaultSources.map((source) => source.copyWith(
+            parentFolderId: assignments[source.name],
+          )),
+      ...customSources.map((source) => source.copyWith(
+            parentFolderId: assignments[source.name] ?? source.parentFolderId,
+          )),
+    ];
     final hiddenNames = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
 
-    final savedOrder = prefs.getStringList(_getPrefsKey(language));
+    final visibleSources = allSources.where((source) {
+      if (!source.isFolder && hiddenNames.contains(source.name)) return false;
+      if (source.isFolder) return folderId == null;
+      return source.parentFolderId == folderId;
+    }).toList();
+
+    final savedOrder = prefs.getStringList(_getFolderOrderPrefsKey(language, folderId));
     if (savedOrder == null || savedOrder.isEmpty) {
-      return allSources.where((s) => !hiddenNames.contains(s.name)).toList();
+      return visibleSources;
     }
 
     final ordered = <NewsRssSource>[];
-    for (final name in savedOrder) {
-      if (hiddenNames.contains(name)) continue;
-      final source = allSources.where((s) => s.name == name).firstOrNull;
-      if (source != null) ordered.add(source);
+    for (final key in savedOrder) {
+      final source = visibleSources
+          .where((source) => _itemOrderKey(source) == key || source.name == key)
+          .firstOrNull;
+      if (source != null && !ordered.any((s) => _itemOrderKey(s) == _itemOrderKey(source))) {
+        ordered.add(source);
+      }
     }
 
-    for (final source in allSources) {
-      if (!hiddenNames.contains(source.name) &&
-          !ordered.any((s) => s.name == source.name)) {
+    for (final source in visibleSources) {
+      if (!ordered.any((s) => _itemOrderKey(s) == _itemOrderKey(source))) {
         ordered.add(source);
       }
     }
@@ -396,11 +662,19 @@ class NewsService {
   }
 
   Future<void> saveSourcesOrder(
-      NewsLanguage language, List<NewsRssSource> sources) async {
+    NewsLanguage language,
+    List<NewsRssSource> sources, {
+    String? folderId,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
-        _getPrefsKey(language), sources.map((s) => s.name).toList());
+      _getFolderOrderPrefsKey(language, folderId),
+      sources.map(_itemOrderKey).toList(),
+    );
   }
+
+  String _itemOrderKey(NewsRssSource source) =>
+      source.isFolder ? 'folder:${source.folderId}' : 'source:${source.name}';
 
   Future<void> hideSource(NewsLanguage language, NewsRssSource source) async {
     final prefs = await SharedPreferences.getInstance();
@@ -428,7 +702,7 @@ class NewsService {
 
     final sources = await getOrderedSources(language);
     final articles = <NewsArticle>[];
-    for (final src in sources) {
+    for (final src in sources.where((source) => !source.isFolder)) {
       try {
         articles.addAll(await _fetchRssSource(src, language: language));
       } catch (e) {

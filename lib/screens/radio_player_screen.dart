@@ -247,9 +247,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   Future<void> _applyMpdVideoSetting(bool enable) async {
     await _settings.setVideoEnabled(enable);
-    final player = _mediaKitPlayer;
-    if (player == null || !_mediaKitVideoSettingApplied) return;
-    await _applyMediaKitVideoEnabled(player, enable);
+    if (!mounted) return;
+    AppLogger.log(
+      'RadioPlayer: MPD video setting changed to $enable; restarting DASH stream to apply cleanly',
+    );
+    await _play();
   }
 
   void _setMediaKitVolume(double value) {
