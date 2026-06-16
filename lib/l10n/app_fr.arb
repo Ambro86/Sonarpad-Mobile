@@ -781,5 +781,15 @@
   "audiobookExportFinalizing": "Finalisation...",
   "@audiobookExportFinalizing": {
     "description": "Progress text shown while finalizing audiobook export."
+  },
+  "routeRecentRoutes": "Itinéraires récents",
+  "routeRecentRoutesEmpty": "Aucun itinéraire récent",
+  "routeNavigationFromTo": "Détails de navigation de {from} à {to} - {date}",
+  "@routeNavigationFromTo": {
+    "placeholders": {
+      "from": {},
+      "to": {},
+      "date": {}
+    }
   }
 }

@@ -2139,4 +2139,16 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   @override
   String get routeSaveSuccess => '''Percurso guardado nos documentos''';
 
+
+  @override
+  String get routeRecentRoutes => '''Rotas recentes''';
+
+  @override
+  String get routeRecentRoutesEmpty => '''Nenhuma rota recente''';
+
+  @override
+  String routeNavigationFromTo(Object from, Object to, Object date) {
+    return '''Detalhes de navegação de ${from} para ${to} - ${date}''';
+  }
+
 }

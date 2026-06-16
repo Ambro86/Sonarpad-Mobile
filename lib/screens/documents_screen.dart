@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:io';
-import 'dart:math' as math;
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -636,7 +633,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         value: 0,
       ),
     );
-    final progressTonePlayer = _AudiobookProgressTonePlayer();
 
     Future<void>? dialogFuture;
     if (mounted) {
@@ -676,8 +672,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       );
       await Future<void>.delayed(const Duration(milliseconds: 80));
     }
-    unawaited(progressTonePlayer.playForProgress(0, force: true));
-
     try {
       final file = await AudiobookExportService().export(
         text: text,
@@ -689,10 +683,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             message: _audiobookExportProgressMessage(l10n, progress),
             value: progress.value,
           );
-          if (progress.stage == AudiobookExportProgressStage.generating &&
-              progress.value != null) {
-            unawaited(progressTonePlayer.playForProgress(progress.value));
-          }
         },
       );
       return file.path;
@@ -701,7 +691,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         Navigator.of(context, rootNavigator: true).pop();
         await dialogFuture.catchError((_) {});
       }
-      await progressTonePlayer.dispose();
       progressNotifier.dispose();
     }
   }
@@ -1298,104 +1287,6 @@ class _DocumentTile extends StatelessWidget {
   }
 }
 
-
-class _AudiobookProgressTonePlayer {
-  _AudiobookProgressTonePlayer();
-
-  final AudioPlayer _player = AudioPlayer();
-  int _lastBucket = -1;
-  bool _isPlaying = false;
-  bool _disposed = false;
-
-  Future<void> playForProgress(double? progress, {bool force = false}) async {
-    if (_disposed) return;
-    final normalized = (progress ?? 0).clamp(0.0, 1.0).toDouble();
-    final bucket = (normalized * 20).floor();
-    if (!force && bucket <= _lastBucket) return;
-    _lastBucket = bucket;
-    if (_isPlaying) return;
-
-    _isPlaying = true;
-    try {
-      final frequency = 180 + (normalized * 720);
-      final file = await _writeToneFile(frequency);
-      if (_disposed) return;
-      await _player.setFilePath(file.path);
-      await _player.setVolume(0.65);
-      unawaited(_player.play());
-      await Future<void>.delayed(const Duration(milliseconds: 350));
-      if (!_disposed) {
-        await _player.stop();
-      }
-      final parent = file.parent;
-      unawaited(
-        parent.delete(recursive: true).then<void>((_) {}, onError: (_) {}),
-      );
-    } catch (error) {
-      await AppLogger.log('Audiobook export progress tone failed: $error');
-    } finally {
-      _isPlaying = false;
-    }
-  }
-
-  Future<void> dispose() async {
-    _disposed = true;
-    await _player.dispose();
-  }
-
-  Future<File> _writeToneFile(double frequency) async {
-    final directory = Directory.systemTemp.createTempSync('sonarpad_tone_');
-    final path = '${directory.path}/progress_tone.wav';
-    final file = File(path);
-    await file.writeAsBytes(_buildToneWav(frequency), flush: true);
-    return file;
-  }
-
-  Uint8List _buildToneWav(double frequency) {
-    const sampleRate = 44100;
-    const durationMs = 260;
-    const channels = 1;
-    const bitsPerSample = 16;
-    final sampleCount = (sampleRate * durationMs / 1000).round();
-    final dataSize = sampleCount * channels * bitsPerSample ~/ 8;
-    final bytes = ByteData(44 + dataSize);
-
-    void writeAscii(int offset, String value) {
-      final codes = value.codeUnits;
-      for (var i = 0; i < codes.length; i++) {
-        bytes.setUint8(offset + i, codes[i]);
-      }
-    }
-
-    writeAscii(0, 'RIFF');
-    bytes.setUint32(4, 36 + dataSize, Endian.little);
-    writeAscii(8, 'WAVE');
-    writeAscii(12, 'fmt ');
-    bytes.setUint32(16, 16, Endian.little);
-    bytes.setUint16(20, 1, Endian.little);
-    bytes.setUint16(22, channels, Endian.little);
-    bytes.setUint32(24, sampleRate, Endian.little);
-    bytes.setUint32(28, sampleRate * channels * bitsPerSample ~/ 8, Endian.little);
-    bytes.setUint16(32, channels * bitsPerSample ~/ 8, Endian.little);
-    bytes.setUint16(34, bitsPerSample, Endian.little);
-    writeAscii(36, 'data');
-    bytes.setUint32(40, dataSize, Endian.little);
-
-    final maxAmplitude = (32767 * 0.55).round();
-    for (var i = 0; i < sampleCount; i++) {
-      final t = i / sampleRate;
-      final fadeIn = math.min(1.0, i / (sampleRate * 0.01));
-      final fadeOut = math.min(1.0, (sampleCount - i) / (sampleRate * 0.02));
-      final envelope = math.min(fadeIn, fadeOut);
-      final sample = math.sin(2 * math.pi * frequency * t) *
-          maxAmplitude *
-          envelope;
-      bytes.setInt16(44 + i * 2, sample.round(), Endian.little);
-    }
-
-    return bytes.buffer.asUint8List();
-  }
-}
 
 class _AudiobookExportProgressUi {
   const _AudiobookExportProgressUi({

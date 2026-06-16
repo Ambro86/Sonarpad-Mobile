@@ -2139,4 +2139,16 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   @override
   String get routeSaveSuccess => '''Trasa uložena do dokumentů''';
 
+
+  @override
+  String get routeRecentRoutes => '''Nedávné trasy''';
+
+  @override
+  String get routeRecentRoutesEmpty => '''Žádné nedávné trasy''';
+
+  @override
+  String routeNavigationFromTo(Object from, Object to, Object date) {
+    return '''Podrobnosti navigace z ${from} do ${to} - ${date}''';
+  }
+
 }

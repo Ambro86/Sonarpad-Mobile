@@ -244,13 +244,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         }
 
         for (var i = startIndex; i < _chunks.length; i++) {
-          if (!mounted || !_speaking) break;
+          if (!mounted || !_speaking || readingToken != _readingToken) break;
 
           while (_ttsPaused) {
-            await Future.delayed(const Duration(milliseconds: 200));
-            if (!mounted || !_speaking) break;
+            await Future.delayed(const Duration(milliseconds: 100));
+            if (!mounted || !_speaking || readingToken != _readingToken) break;
           }
-          if (!mounted || !_speaking) break;
+          if (!mounted || !_speaking || readingToken != _readingToken) break;
 
           final textToSpeak =
               _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
@@ -550,6 +550,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } else {
       await _audio.pause();
     }
+    await _saveAutomaticBookmarkFromPlayback();
   }
 
   Future<void> _resumeReading() async {

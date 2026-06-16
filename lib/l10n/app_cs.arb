@@ -781,5 +781,15 @@
   "audiobookExportFinalizing": "Dokončování...",
   "@audiobookExportFinalizing": {
     "description": "Progress text shown while finalizing audiobook export."
+  },
+  "routeRecentRoutes": "Nedávné trasy",
+  "routeRecentRoutesEmpty": "Žádné nedávné trasy",
+  "routeNavigationFromTo": "Podrobnosti navigace z {from} do {to} - {date}",
+  "@routeNavigationFromTo": {
+    "placeholders": {
+      "from": {},
+      "to": {},
+      "date": {}
+    }
   }
 }

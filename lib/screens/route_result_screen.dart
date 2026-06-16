@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import '../l10n/app_localizations.dart';
@@ -7,6 +11,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
 import '../services/route_service.dart';
+import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 
 class RouteResultScreen extends StatelessWidget {
@@ -38,7 +43,11 @@ class RouteResultScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   settings: const RouteSettings(name: '/route/steps'),
-                  builder: (_) => RouteStepsScreen(path: path),
+                  builder: (_) => RouteStepsScreen(
+                    path: path,
+                    fromLabel: result.from.displayLabel,
+                    toLabel: result.to.displayLabel,
+                  ),
                 ),
               );
             },
@@ -51,8 +60,15 @@ class RouteResultScreen extends StatelessWidget {
 
 class RouteStepsScreen extends StatefulWidget {
   final RoutePath path;
+  final String fromLabel;
+  final String toLabel;
 
-  const RouteStepsScreen({super.key, required this.path});
+  const RouteStepsScreen({
+    super.key,
+    required this.path,
+    required this.fromLabel,
+    required this.toLabel,
+  });
 
   @override
   State<RouteStepsScreen> createState() => _RouteStepsScreenState();
@@ -63,14 +79,30 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
   final EdgeTtsBridge _edgeTts = EdgeTtsBridge();
   final AudioPlayerService _audio = AudioPlayerService();
   final FlutterTts _flutterTts = FlutterTts();
+  final VoiceDictionaryService _voiceDictionary = VoiceDictionaryService();
   bool _speaking = false;
+  bool _ttsPaused = false;
+  int _readingToken = 0;
+  StreamController<File>? _edgeFileController;
   late final List<_RouteStepItem> _items;
+
+  static const _ttsCommands = MethodChannel('sonarpad/tts_commands');
+  static const _ttsEvents = EventChannel('sonarpad/tts_events');
+  StreamSubscription? _ttsEventsSub;
 
   @override
   void initState() {
     super.initState();
-    _flutterTts.setCompletionHandler(() {
-      if (mounted) setState(() => _speaking = false);
+    _ttsEventsSub = _ttsEvents.receiveBroadcastStream().listen((event) {
+      if (event == 'toggle' && mounted) {
+        _togglePlayPause();
+      }
+    });
+    _flutterTts.setPauseHandler(() {
+      if (mounted && _speaking) setState(() => _ttsPaused = true);
+    });
+    _flutterTts.setContinueHandler(() {
+      if (mounted && _speaking) setState(() => _ttsPaused = false);
     });
   }
 
@@ -83,65 +115,193 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
 
   @override
   void dispose() {
+    _readingToken += 1;
+    final edgeController = _edgeFileController;
+    _edgeFileController = null;
+    if (edgeController != null && !edgeController.isClosed) {
+      unawaited(edgeController.close());
+    }
+    if (Platform.isIOS) {
+      _ttsCommands.invokeMethod('clearMagicTap').catchError((_) {});
+    }
+    _ttsEventsSub?.cancel();
     _flutterTts.stop();
-    _audio.stop();
+    _audio.dispose();
     super.dispose();
+  }
+
+  Future<void> _togglePlayPause() async {
+    if (!_speaking) return;
+    if (_ttsPaused) {
+      if (mounted) setState(() => _ttsPaused = false);
+      unawaited(_flutterTts.speak('').catchError((_) => null));
+      await _audio.play();
+    } else {
+      if (mounted) setState(() => _ttsPaused = true);
+      await _flutterTts.pause();
+      await _audio.pause();
+    }
   }
 
   Future<void> _toggleSpeech() async {
     if (_speaking) {
-      await _flutterTts.stop();
-      await _audio.stop();
-      if (mounted) setState(() => _speaking = false);
-    } else {
-      final l10n = AppLocalizations.of(context);
-      final platform = Theme.of(context).platform;
-      final text = _items.map((item) {
-        final distanceStr = l10n.formatDistance(item.distanceMeters);
-        return item.showDistance ? '${item.instruction}. $distanceStr.' : item.instruction;
-      }).join('\n');
-      
-      if (mounted) setState(() => _speaking = true);
-      
+      await _stopReading();
+      return;
+    }
+    await _startReading();
+  }
+
+  Future<void> _stopReading() async {
+    _readingToken += 1;
+    final edgeController = _edgeFileController;
+    _edgeFileController = null;
+    if (mounted) {
+      setState(() {
+        _speaking = false;
+        _ttsPaused = false;
+      });
+    }
+    final stopAudio = _audio.stop();
+    final stopTts = _flutterTts.stop();
+    if (edgeController != null && !edgeController.isClosed) {
+      await edgeController.close();
+    }
+    await stopAudio;
+    await stopTts;
+    if (Platform.isIOS) {
       try {
-        final engine = await _settings.loadTtsEngine();
-        if (engine == 'system') {
-          final speed = await _settings.loadTtsSpeed();
-          final pitch = await _settings.loadTtsPitch();
-          final sysLang = await _settings.loadSystemTtsLanguage();
-          final sysVoice = await _settings.loadSystemTtsVoice();
-          
-          await _flutterTts.setSpeechRate(speed * 0.5);
-          await _flutterTts.setPitch(pitch);
-          
-          if (platform == TargetPlatform.iOS) {
-            await _flutterTts.setIosAudioCategory(
-                IosTextToSpeechAudioCategory.playback,
-                [
-                  IosTextToSpeechAudioCategoryOptions.allowBluetooth,
-                  IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
-                  IosTextToSpeechAudioCategoryOptions.mixWithOthers,
-                ]);
-          }
-          
-          if (sysVoice != null) {
-            await _flutterTts.setVoice({
-              "name": sysVoice,
-              "locale": sysLang,
-            });
-          } else {
-            await _flutterTts.setLanguage(sysLang);
-          }
-          
-          await _flutterTts.speak(text);
-        } else {
-          final voice = await _settings.loadTtsVoice();
-          final file = await _edgeTts.speakToFile(text: text, voice: voice);
-          await _audio.playFile(file);
-          if (mounted) setState(() => _speaking = false);
+        await _ttsCommands.invokeMethod('clearMagicTap');
+      } catch (_) {}
+    }
+  }
+
+  Future<String> _voice() async {
+    final configured = await _settings.loadTtsVoice();
+    if (configured.trim().isNotEmpty) return configured;
+    return 'it-IT-IsabellaNeural';
+  }
+
+  Future<void> _startReading() async {
+    final l10n = AppLocalizations.of(context);
+    final text = _speechText(l10n);
+    final chunks = _edgeTts.splitTextForStreaming(text, maxChunkChars: 650);
+    if (chunks.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.noTextToRead)),
+      );
+      return;
+    }
+
+    final readingToken = ++_readingToken;
+    await _audio.stop();
+    await _flutterTts.stop();
+    if (mounted) {
+      setState(() {
+        _speaking = true;
+        _ttsPaused = false;
+      });
+    }
+
+    try {
+      final engine = await _settings.loadTtsEngine();
+      final dictionaryEntries = await _voiceDictionary.loadEntries();
+
+      if (engine == 'system') {
+        if (Platform.isIOS) {
+          try {
+            await _ttsCommands.invokeMethod('setupMagicTap', l10n.routeNavigation);
+          } catch (_) {}
         }
-      } catch (e) {
-        if (mounted) setState(() => _speaking = false);
+        await _flutterTts.awaitSpeakCompletion(true);
+        if (Platform.isIOS) {
+          await _flutterTts.setSharedInstance(true);
+          await _flutterTts.autoStopSharedSession(false);
+        }
+        final speed = await _settings.loadTtsSpeed();
+        final pitch = await _settings.loadTtsPitch();
+        await _flutterTts.setSpeechRate(speed * 0.5);
+        await _flutterTts.setPitch(pitch);
+
+        final sysLang = await _settings.loadSystemTtsLanguage();
+        final sysVoice = await _settings.loadSystemTtsVoice();
+
+        if (sysVoice != null) {
+          await _flutterTts.setVoice({'name': sysVoice, 'locale': sysLang});
+        } else {
+          await _flutterTts.setLanguage(sysLang);
+        }
+
+        for (var i = 0; i < chunks.length; i++) {
+          if (!mounted || !_speaking || readingToken != _readingToken) break;
+          while (_ttsPaused) {
+            if (!mounted || !_speaking || readingToken != _readingToken) break;
+            await Future<void>.delayed(const Duration(milliseconds: 100));
+          }
+          if (!mounted || !_speaking || readingToken != _readingToken) break;
+          final textToSpeak =
+              _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+          await _flutterTts.speak(textToSpeak);
+        }
+      } else {
+        final voice = await _voice();
+        final controller = StreamController<File>();
+        _edgeFileController = controller;
+        Object? generationError;
+        const initialBufferChunks = 2;
+
+        final generation = Future<void>(() async {
+          for (var i = 0; i < chunks.length; i++) {
+            if (!mounted || !_speaking || readingToken != _readingToken) break;
+            while (_ttsPaused) {
+              if (!mounted || !_speaking || readingToken != _readingToken) break;
+              await Future<void>.delayed(const Duration(milliseconds: 100));
+            }
+            if (!mounted || !_speaking || readingToken != _readingToken) break;
+            final textToSpeak =
+                _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+            final file = await _edgeTts.speakToFile(
+              text: textToSpeak,
+              voice: voice,
+            );
+            if (!controller.isClosed &&
+                mounted &&
+                _speaking &&
+                readingToken == _readingToken) {
+              controller.add(file);
+            }
+          }
+          if (!controller.isClosed) await controller.close();
+        }).catchError((e) async {
+          generationError = e;
+          if (!controller.isClosed) await controller.close();
+        });
+
+        await _audio.playFileStreamSequentially(
+          controller.stream,
+          sessionType: AudioSessionType.playback,
+          title: l10n.routeNavigation,
+          initialBufferCount: initialBufferChunks,
+          isPaused: () => _ttsPaused,
+        );
+        if (!controller.isClosed) await controller.close();
+        await generation;
+        if (_edgeFileController == controller) {
+          _edgeFileController = null;
+        }
+        if (readingToken != _readingToken) return;
+        if (generationError != null) throw Exception(generationError);
+      }
+    } catch (e) {
+      if (!mounted || readingToken != _readingToken) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.edgeTtsError(e))),
+      );
+    } finally {
+      if (mounted && readingToken == _readingToken) {
+        setState(() {
+          _speaking = false;
+          _ttsPaused = false;
+        });
       }
     }
   }
@@ -155,7 +315,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
 
     final lib = DocumentLibraryService();
     final doc = await lib.createTextDocument(
-      name: '${l10n.routeNavigation} - ${DateTime.now().toIso8601String().split('T').first}.txt',
+      name: _documentFileName(l10n),
       content: text,
       isTemporary: false,
     );
@@ -166,6 +326,26 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.routeSaveSuccess)),
     );
+  }
+
+  String _speechText(AppLocalizations l10n) {
+    return _items.map((item) {
+      final distanceStr = l10n.formatDistance(item.distanceMeters);
+      return item.showDistance
+          ? '${item.instruction}. $distanceStr.'
+          : item.instruction;
+    }).join('\n');
+  }
+
+  String _documentFileName(AppLocalizations l10n) {
+    final date = DateTime.now().toIso8601String().split('T').first;
+    return '${l10n.routeNavigationFromTo(_shortAddress(widget.fromLabel), _shortAddress(widget.toLabel), date)}.txt';
+  }
+
+  String _shortAddress(String value) {
+    final trimmed = value.trim().replaceAll(RegExp(r'\s+'), ' ');
+    if (trimmed.length <= 80) return trimmed;
+    return '${trimmed.substring(0, 77)}...';
   }
 
   @override

@@ -2139,4 +2139,16 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   @override
   String get routeSaveSuccess => '''Itinéraire enregistré dans les documents''';
 
+
+  @override
+  String get routeRecentRoutes => '''Itinéraires récents''';
+
+  @override
+  String get routeRecentRoutesEmpty => '''Aucun itinéraire récent''';
+
+  @override
+  String routeNavigationFromTo(Object from, Object to, Object date) {
+    return '''Détails de navigation de ${from} à ${to} - ${date}''';
+  }
+
 }

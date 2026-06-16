@@ -4057,6 +4057,16 @@ abstract class AppLocalizations {
   /// **'Salva nei documenti'**
   String get routeSaveAction;
 
+
+  /// Localized text for routeRecentRoutes.
+  String get routeRecentRoutes;
+
+  /// Localized text for routeRecentRoutesEmpty.
+  String get routeRecentRoutesEmpty;
+
+  /// Localized text for routeNavigationFromTo.
+  String routeNavigationFromTo(Object from, Object to, Object date);
+
   /// Localized text for routeSaveSuccess.
   ///
   /// In it, this message translates to:

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/recent_routes_service.dart';
 import '../services/route_service.dart';
 import 'route_result_screen.dart';
 
@@ -13,6 +15,7 @@ class RouteScreen extends StatefulWidget {
 
 class _RouteScreenState extends State<RouteScreen> {
   final _service = RouteService();
+  final _recentRoutes = RecentRoutesService();
   final _fromController = TextEditingController();
   final _toController = TextEditingController();
 
@@ -37,6 +40,16 @@ class _RouteScreenState extends State<RouteScreen> {
   RoutePreference _preference = RoutePreference.fastest;
   bool _includeMunicipalities = false;
   bool _calculating = false;
+
+  Future<void> _openRecentRoutes() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/route/recent'),
+        builder: (_) => const _RecentRoutesScreen(),
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -83,6 +96,15 @@ class _RouteScreenState extends State<RouteScreen> {
         includeMunicipalities: _includeMunicipalities,
         language: l10n.localeName,
         countryCode: _countryCode!,
+      );
+
+      await _recentRoutes.addRecentRoute(
+        RecentRouteItem.fromResult(
+          result: result,
+          language: l10n.localeName,
+          countryCode: _countryCode!,
+          includeMunicipalities: _includeMunicipalities,
+        ),
       );
 
       if (!mounted) return;
@@ -250,8 +272,149 @@ class _RouteScreenState extends State<RouteScreen> {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
           ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _calculating ? null : _openRecentRoutes,
+            icon: const Icon(Icons.history),
+            label: Text(l10n.routeRecentRoutes),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
+class _RecentRoutesScreen extends StatefulWidget {
+  const _RecentRoutesScreen();
+
+  @override
+  State<_RecentRoutesScreen> createState() => _RecentRoutesScreenState();
+}
+
+class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
+  final RecentRoutesService _recentRoutes = RecentRoutesService();
+  final RouteService _routeService = RouteService();
+  late Future<List<RecentRouteItem>> _future;
+  bool _calculating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _recentRoutes.loadRecentRoutes();
+  }
+
+  void _reload() {
+    setState(() {
+      _future = _recentRoutes.loadRecentRoutes();
+    });
+  }
+
+  Future<void> _clearHistory() async {
+    await _recentRoutes.clearRecentRoutes();
+    if (!mounted) return;
+    _reload();
+  }
+
+  Future<void> _deleteRoute(RecentRouteItem item) async {
+    await _recentRoutes.removeRecentRoute(item.id);
+    if (!mounted) return;
+    _reload();
+  }
+
+  Future<void> _openRoute(RecentRouteItem item) async {
+    final l10n = AppLocalizations.of(context);
+    setState(() => _calculating = true);
+    try {
+      final result = await _routeService.calculateRoute(
+        from: item.fromCandidate,
+        to: item.toCandidate,
+        profile: item.profile,
+        preference: item.preference,
+        includeMunicipalities: item.includeMunicipalities,
+        language: item.language,
+        countryCode: item.countryCode,
+      );
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/route/results'),
+          builder: (_) => RouteResultScreen(result: result),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.routeError(e))),
+      );
+    } finally {
+      if (mounted) setState(() => _calculating = false);
+    }
+  }
+
+  String _formattedDate(DateTime dt) {
+    return '${dt.day.toString().padLeft(2, '0')}/'
+        '${dt.month.toString().padLeft(2, '0')}/'
+        '${dt.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.routeRecentRoutes),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_sweep),
+            tooltip: l10n.clearHistory,
+            onPressed: _calculating ? null : _clearHistory,
+          ),
+        ],
+      ),
+      body: FutureBuilder<List<RecentRouteItem>>(
+        future: _future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Center(child: Text(l10n.loading));
+          }
+          final routes = snapshot.data ?? const <RecentRouteItem>[];
+          if (routes.isEmpty) {
+            return Center(child: Text(l10n.routeRecentRoutesEmpty));
+          }
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: routes.length,
+            separatorBuilder: (_, __) => const Divider(),
+            itemBuilder: (context, index) {
+              final item = routes[index];
+              final title = '${item.fromDisplayLabel} → ${item.toDisplayLabel}';
+              final subtitle = _formattedDate(item.createdAt);
+              return Semantics(
+                customSemanticsActions: {
+                  CustomSemanticsAction(label: l10n.deleteItem): () =>
+                      _deleteRoute(item),
+                },
+                child: ListTile(
+                  title: Text(title),
+                  subtitle: Text(subtitle),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    tooltip: l10n.deleteItem,
+                    onPressed: _calculating ? null : () => _deleteRoute(item),
+                  ),
+                  onTap: _calculating ? null : () => _openRoute(item),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
