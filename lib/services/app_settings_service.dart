@@ -276,6 +276,14 @@ class AppSettingsService {
     await prefs.setStringList(_weatherRecentCitiesKey, current);
   }
 
+
+  Future<void> removeWeatherRecentCity(String city) async {
+    final prefs = await SharedPreferences.getInstance();
+    final current = await getWeatherRecentCities();
+    current.removeWhere((c) => c.toLowerCase() == city.toLowerCase());
+    await prefs.setStringList(_weatherRecentCitiesKey, current);
+  }
+
   Future<void> clearWeatherRecentCities() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_weatherRecentCitiesKey);

@@ -478,6 +478,50 @@
   "radioRemoveFavorite": "Remover dos favoritos",
   "radioFavoriteAdded": "{name} adicionada aos favoritos.",
   "radioFavoriteRemoved": "{name} removida dos favoritos.",
+  "tvSearchFieldLabel": "Pesquisar canais de TV",
+  "@tvSearchFieldLabel": {
+    "description": "Localized text for tvSearchFieldLabel."
+  },
+  "tvSearchFieldHint": "Nome do canal...",
+  "@tvSearchFieldHint": {
+    "description": "Localized text for tvSearchFieldHint."
+  },
+  "tvSearchButton": "Pesquisar",
+  "@tvSearchButton": {
+    "description": "Localized text for tvSearchButton."
+  },
+  "tvSearchResults": "Resultados de canais de TV",
+  "@tvSearchResults": {
+    "description": "Localized text for tvSearchResults."
+  },
+  "tvSearchEmptyQuery": "Introduza o nome de um canal de TV para pesquisar.",
+  "@tvSearchEmptyQuery": {
+    "description": "Localized text for tvSearchEmptyQuery."
+  },
+  "tvSearchNoResults": "Nenhum canal de TV encontrado para {query}.",
+  "@tvSearchNoResults": {
+    "description": "Localized text for tvSearchNoResults.",
+    "placeholders": {
+      "query": {
+        "example": "Rai",
+        "type": "String"
+      }
+    }
+  },
+  "tvOpenChannelHint": "Toque para reproduzir o canal de TV",
+  "@tvOpenChannelHint": {
+    "description": "Localized text for tvOpenChannelHint."
+  },
+  "tvNowOnAir": "No ar agora: {title}",
+  "@tvNowOnAir": {
+    "description": "Localized text for tvNowOnAir.",
+    "placeholders": {
+      "title": {
+        "example": "Telegiornale",
+        "type": "String"
+      }
+    }
+  },
   "radioAddCommunity": "Adicionar rádio à comunidade Sonarpad",
   "radioAddName": "Nome da rádio",
   "radioAddUrl": "Endereço da transmissão",
@@ -538,7 +582,7 @@
   "routeStartMunicipality": "Municipio de salida",
   "routeEnterMunicipality": "Entra no município de",
   "routeError": "Erro: {error}",
-  "radioLanguageIt": "Itáliano",
+  "radioLanguageIt": "Italiano",
   "radioLanguageEn": "Inglês",
   "radioLanguageDe": "Alemão",
   "radioLanguageCountryCh": "Suíça",
@@ -599,7 +643,7 @@
   "radioGenreOptionOldies": "Años 70 / 80 / 90",
   "radioGenreOptionKids": "Infantil",
   "radioGenreOptionAmbient": "Ambient",
-  "radioCommunityLanguageItalian": "Itáliano",
+  "radioCommunityLanguageItalian": "Italiano",
   "radioCommunityLanguageEnglish": "Inglês",
   "radioCommunityLanguageSpanish": "Espanhol",
   "radioCommunityLanguageFrench": "Francês",
@@ -622,8 +666,8 @@
   "cinemaTitle": "Filmes no cinema",
   "cinemaNoMovies": "Nenhum filme encontrado neste momento.",
   "cinemaError": "Erro ao carregar filmes.",
-  "cinemaReleased": "Estreno: {date}",
-  "cinemaOverviewLabel": "Trama:",
+  "cinemaReleased": "Estreia: {date}",
+  "cinemaOverviewLabel": "Sinopse:",
   "cinemaUpcomingReleases": "Próximas estreias",
   "cinemaWillRelease": "Estreará em: {date}",
   "cinemaOpenTrailer": "Abrir trailer",
@@ -637,10 +681,13 @@
   "concertsBuyTickets": "Comprar ou ver detalhes no Ticketmaster",
   "newsReadArticles": "Artigos lidos",
   "weatherRecentCities": "Cidades recentes",
-  "podcastPlayedEpisodes": "Não reproduzido",
-  "podcastUnplayed": "Não reproduzido"
-,
+  "podcastPlayedEpisodes": "Episódios reproduzidos",
+  "podcastUnplayed": "Episódios não reproduzidos",
   "routeReadAction": "Ler percurso",
   "routeSaveAction": "Guardar nos documentos",
-  "routeSaveSuccess": "Percurso guardado nos documentos"
+  "routeSaveSuccess": "Percurso guardado nos documentos",
+  "deleteItem": "Eliminar",
+  "@deleteItem": {
+    "description": "Localized text for deleteItem."
+  }
 }

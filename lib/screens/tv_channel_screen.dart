@@ -9,8 +9,13 @@ import 'radio_player_screen.dart';
 
 class TvChannelScreen extends StatefulWidget {
   final TvChannel channel;
+  final bool autoPlay;
 
-  const TvChannelScreen({super.key, required this.channel});
+  const TvChannelScreen({
+    super.key,
+    required this.channel,
+    this.autoPlay = false,
+  });
 
   @override
   State<TvChannelScreen> createState() => _TvChannelScreenState();
@@ -31,6 +36,11 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     final now = DateTime.now();
     _selectedDate = DateTime(now.year, now.month, now.day);
     _loadGuide();
+    if (widget.autoPlay) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _play();
+      });
+    }
   }
 
   Future<void> _loadGuide() async {

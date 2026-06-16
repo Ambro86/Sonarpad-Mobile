@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:intl/intl.dart';
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
@@ -689,6 +690,11 @@ class _WeatherRecentCitiesScreenState
     });
   }
 
+  Future<void> _deleteCity(String cityData) async {
+    await _settings.removeWeatherRecentCity(cityData);
+    await _load();
+  }
+
   Future<void> _clearHistory() async {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
@@ -746,10 +752,23 @@ class _WeatherRecentCitiesScreenState
                       if (parts.isNotEmpty) subtitle = parts.join(', ');
                     }
                     
-                    return ListTile(
-                      title: Text(displayName),
-                      subtitle: subtitle != null ? Text(subtitle) : null,
-                      onTap: () => Navigator.pop(context, cityData),
+                    return Semantics(
+                      key: ValueKey('weather_recent_city_semantics_$cityData'),
+                      container: true,
+                      customSemanticsActions: {
+                        CustomSemanticsAction(label: l10n.deleteItem): () =>
+                            _deleteCity(cityData),
+                      },
+                      child: ListTile(
+                        title: Text(displayName),
+                        subtitle: subtitle != null ? Text(subtitle) : null,
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          tooltip: l10n.deleteItem,
+                          onPressed: () => _deleteCity(cityData),
+                        ),
+                        onTap: () => Navigator.pop(context, cityData),
+                      ),
                     );
                   },
                 ),

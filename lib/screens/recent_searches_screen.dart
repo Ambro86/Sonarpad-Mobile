@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import '../l10n/app_localizations.dart';
 import '../services/recent_searches_service.dart';
 
@@ -34,6 +35,11 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
       _searches = searches;
       _loading = false;
     });
+  }
+
+  Future<void> _deleteSearch(String query) async {
+    await _service.removeSearch(widget.domain, query);
+    await _loadSearches();
   }
 
   Future<void> _clearAll() async {
@@ -85,11 +91,25 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
                   itemCount: _searches.length,
                   itemBuilder: (context, index) {
                     final query = _searches[index];
-                    return ListTile(
-                      title: Text(query),
-                      onTap: () {
-                        Navigator.of(context).pop(query);
+                    return Semantics(
+                      key: ValueKey('recent_search_semantics_${widget.domain}_$query'),
+                      container: true,
+                      customSemanticsActions: {
+                        CustomSemanticsAction(
+                          label: AppLocalizations.of(context).deleteItem,
+                        ): () => _deleteSearch(query),
                       },
+                      child: ListTile(
+                        title: Text(query),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          tooltip: AppLocalizations.of(context).deleteItem,
+                          onPressed: () => _deleteSearch(query),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop(query);
+                        },
+                      ),
                     );
                   },
                 ),

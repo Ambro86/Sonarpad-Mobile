@@ -396,7 +396,7 @@
   "@italian": {
     "description": "Localized text for italian."
   },
-  "english": "English",
+  "english": "Inglese",
   "@english": {
     "description": "Localized text for english."
   },
@@ -2251,6 +2251,50 @@
     }
   },
   "radioFavoriteRemoved": "{name} rimossa dai preferiti.",
+  "tvSearchFieldLabel": "Cerca canali TV",
+  "@tvSearchFieldLabel": {
+    "description": "Localized text for tvSearchFieldLabel."
+  },
+  "tvSearchFieldHint": "Nome del canale...",
+  "@tvSearchFieldHint": {
+    "description": "Localized text for tvSearchFieldHint."
+  },
+  "tvSearchButton": "Cerca",
+  "@tvSearchButton": {
+    "description": "Localized text for tvSearchButton."
+  },
+  "tvSearchResults": "Risultati canali TV",
+  "@tvSearchResults": {
+    "description": "Localized text for tvSearchResults."
+  },
+  "tvSearchEmptyQuery": "Inserisci il nome di un canale TV da cercare.",
+  "@tvSearchEmptyQuery": {
+    "description": "Localized text for tvSearchEmptyQuery."
+  },
+  "tvSearchNoResults": "Nessun canale TV trovato per {query}.",
+  "@tvSearchNoResults": {
+    "description": "Localized text for tvSearchNoResults.",
+    "placeholders": {
+      "query": {
+        "example": "Rai",
+        "type": "String"
+      }
+    }
+  },
+  "tvOpenChannelHint": "Tocca per riprodurre il canale TV",
+  "@tvOpenChannelHint": {
+    "description": "Localized text for tvOpenChannelHint."
+  },
+  "tvNowOnAir": "Ora in onda: {title}",
+  "@tvNowOnAir": {
+    "description": "Localized text for tvNowOnAir.",
+    "placeholders": {
+      "title": {
+        "example": "Telegiornale",
+        "type": "String"
+      }
+    }
+  },
   "@radioFavoriteRemoved": {
     "description": "Localized text for radioFavoriteRemoved.",
     "placeholders": {
@@ -2451,7 +2495,7 @@
   "@radioLanguageIt": {
     "description": "Localized text for radioLanguageIt."
   },
-  "radioLanguageEn": "English",
+  "radioLanguageEn": "Inglese",
   "@radioLanguageEn": {
     "description": "Localized text for radioLanguageEn."
   },
@@ -2487,7 +2531,7 @@
   "@radioLanguagePl": {
     "description": "Localized text for radioLanguagePl."
   },
-  "radioLanguageFr": "Français",
+  "radioLanguageFr": "Francese",
   "@radioLanguageFr": {
     "description": "Localized text for radioLanguageFr."
   },
@@ -2739,7 +2783,7 @@
       }
     }
   },
-  "cinemaTitle": "Film al Cinema",
+  "cinemaTitle": "Film al cinema",
   "@cinemaTitle": {
     "description": "Titolo della schermata dei film al cinema"
   },
@@ -2780,7 +2824,7 @@
   "@cinemaOpenTrailer": {
     "description": "Label per aprire il trailer"
   },
-  "concertsTitle": "Concerti ed Eventi",
+  "concertsTitle": "Concerti ed eventi",
   "concertsSearchHint": "Inserisci una città (es. Milano, Roma)",
   "concertsSearchLabel": "Cerca concerti per città",
   "concertsSearchTooltip": "Cerca",
@@ -2789,18 +2833,21 @@
   "concertsVenue": "Luogo del concerto:",
   "concertsBuyTickets": "Acquista o vedi dettagli su Ticketmaster",
   "podcastPlayedEpisodes": "Episodi ascoltati",
-  "podcastUnplayed": "Non ascoltato"
-,
+  "podcastUnplayed": "Episodi non ascoltati",
   "routeReadAction": "Leggi percorso",
   "@routeReadAction": {
-  "description": "Localized text for routeReadAction."
-},
+    "description": "Localized text for routeReadAction."
+  },
   "routeSaveAction": "Salva nei documenti",
   "@routeSaveAction": {
-  "description": "Localized text for routeSaveAction."
-},
+    "description": "Localized text for routeSaveAction."
+  },
   "routeSaveSuccess": "Percorso salvato nei documenti",
   "@routeSaveSuccess": {
-  "description": "Localized text for routeSaveSuccess."
-}
+    "description": "Localized text for routeSaveSuccess."
+  },
+  "deleteItem": "Elimina",
+  "@deleteItem": {
+    "description": "Localized text for deleteItem."
+  }
 }

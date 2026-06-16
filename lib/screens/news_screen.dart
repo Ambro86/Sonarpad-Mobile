@@ -784,6 +784,15 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
     });
   }
 
+  Future<void> _deleteArticle(NewsArticle article) async {
+    await _service.removeReadArticle(
+      widget.language,
+      widget.sourceName,
+      article.id,
+    );
+    await _load();
+  }
+
   Future<void> _clearHistory() async {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
@@ -843,22 +852,35 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
                         ? article.source
                         : '${article.source}. ${article.summary}';
 
-                    return ListTile(
-                      key: ValueKey('news_read_article_${article.id}'),
-                      title: Text(article.title),
-                      subtitle: Text(
-                        subtitleText,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          settings: const RouteSettings(name: '/news/article'),
-                          builder: (_) => NewsWebViewScreen(
-                            article: article,
-                            language: widget.language,
-                            readSourceName: widget.sourceName,
+                    return Semantics(
+                      key: ValueKey('news_read_article_semantics_${article.id}'),
+                      container: true,
+                      customSemanticsActions: {
+                        CustomSemanticsAction(label: l10n.deleteItem): () =>
+                            _deleteArticle(article),
+                      },
+                      child: ListTile(
+                        key: ValueKey('news_read_article_${article.id}'),
+                        title: Text(article.title),
+                        subtitle: Text(
+                          subtitleText,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          tooltip: l10n.deleteItem,
+                          onPressed: () => _deleteArticle(article),
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            settings: const RouteSettings(name: '/news/article'),
+                            builder: (_) => NewsWebViewScreen(
+                              article: article,
+                              language: widget.language,
+                              readSourceName: widget.sourceName,
+                            ),
                           ),
                         ),
                       ),

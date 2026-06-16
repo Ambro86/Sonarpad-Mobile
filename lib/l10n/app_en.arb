@@ -481,6 +481,50 @@
   "radioRemoveFavorite": "Remove from favorites",
   "radioFavoriteAdded": "{name} added to favorites.",
   "radioFavoriteRemoved": "{name} removed from favorites.",
+  "tvSearchFieldLabel": "Search TV channels",
+  "@tvSearchFieldLabel": {
+    "description": "Localized text for tvSearchFieldLabel."
+  },
+  "tvSearchFieldHint": "Channel name...",
+  "@tvSearchFieldHint": {
+    "description": "Localized text for tvSearchFieldHint."
+  },
+  "tvSearchButton": "Search",
+  "@tvSearchButton": {
+    "description": "Localized text for tvSearchButton."
+  },
+  "tvSearchResults": "TV channel results",
+  "@tvSearchResults": {
+    "description": "Localized text for tvSearchResults."
+  },
+  "tvSearchEmptyQuery": "Enter the name of a TV channel to search for.",
+  "@tvSearchEmptyQuery": {
+    "description": "Localized text for tvSearchEmptyQuery."
+  },
+  "tvSearchNoResults": "No TV channels found for {query}.",
+  "@tvSearchNoResults": {
+    "description": "Localized text for tvSearchNoResults.",
+    "placeholders": {
+      "query": {
+        "example": "Rai",
+        "type": "String"
+      }
+    }
+  },
+  "tvOpenChannelHint": "Tap to play the TV channel",
+  "@tvOpenChannelHint": {
+    "description": "Localized text for tvOpenChannelHint."
+  },
+  "tvNowOnAir": "Now on air: {title}",
+  "@tvNowOnAir": {
+    "description": "Localized text for tvNowOnAir.",
+    "placeholders": {
+      "title": {
+        "example": "Telegiornale",
+        "type": "String"
+      }
+    }
+  },
   "radioAddCommunity": "Add radio to Sonarpad community",
   "radioAddName": "Radio name",
   "radioAddUrl": "Stream address",
@@ -637,10 +681,13 @@
   "concertsBuyTickets": "Buy or see details on Ticketmaster",
   "newsReadArticles": "Read articles",
   "weatherRecentCities": "Recent cities",
-  "podcastPlayedEpisodes": "Unplayed",
-  "podcastUnplayed": "Unplayed"
-,
+  "podcastPlayedEpisodes": "Played episodes",
+  "podcastUnplayed": "Unplayed episodes",
   "routeReadAction": "Read route",
   "routeSaveAction": "Save to documents",
-  "routeSaveSuccess": "Route saved to documents"
+  "routeSaveSuccess": "Route saved to documents",
+  "deleteItem": "Delete",
+  "@deleteItem": {
+    "description": "Localized text for deleteItem."
+  }
 }

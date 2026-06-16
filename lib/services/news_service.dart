@@ -94,6 +94,15 @@ class NewsService {
   String _getReadArticlesKey(NewsLanguage language, String sourceName) =>
       'news_read_articles_${language.name}_$sourceName';
 
+  String _encodeReadArticle(NewsArticle article) => jsonEncode({
+        'id': article.id,
+        'title': article.title,
+        'link': article.link,
+        'summary': article.summary,
+        'source': article.source,
+        'publishedAt': article.publishedAt?.toIso8601String(),
+      });
+
   Future<List<NewsArticle>> getReadArticles(NewsLanguage language, String sourceName) async {
     final prefs = await SharedPreferences.getInstance();
     final listStr = prefs.getStringList(_getReadArticlesKey(language, sourceName)) ?? [];
@@ -123,15 +132,16 @@ class NewsService {
     if (current.length > 50) {
       current = current.take(50).toList(); // Maximum 50 read articles per source
     }
-    final listStr = current.map((a) => jsonEncode({
-      'id': a.id,
-      'title': a.title,
-      'link': a.link,
-      'summary': a.summary,
-      'source': a.source,
-      'publishedAt': a.publishedAt?.toIso8601String(),
-    })).toList();
+    final listStr = current.map(_encodeReadArticle).toList();
     await prefs.setStringList(key, listStr);
+  }
+
+  Future<void> removeReadArticle(NewsLanguage language, String sourceName, String articleId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = _getReadArticlesKey(language, sourceName);
+    final current = await getReadArticles(language, sourceName);
+    current.removeWhere((a) => a.id == articleId);
+    await prefs.setStringList(key, current.map(_encodeReadArticle).toList());
   }
 
   Future<void> clearReadArticles(NewsLanguage language, String sourceName) async {

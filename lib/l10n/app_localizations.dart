@@ -624,6 +624,12 @@ abstract class AppLocalizations {
   /// **'Elimina sorgente'**
   String get deleteNewsSource;
 
+  /// Localized text for deleteItem.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get deleteItem;
+
   /// Localized text for articleTextSemantics.
   ///
   /// In it, this message translates to:
@@ -2988,6 +2994,54 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{name} rimossa dai preferiti.'**
   String radioFavoriteRemoved(String name);
+
+  /// Localized text for tvSearchFieldLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca canali TV'**
+  String get tvSearchFieldLabel;
+
+  /// Localized text for tvSearchFieldHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome del canale...'**
+  String get tvSearchFieldHint;
+
+  /// Localized text for tvSearchButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca'**
+  String get tvSearchButton;
+
+  /// Localized text for tvSearchResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultati canali TV'**
+  String get tvSearchResults;
+
+  /// Localized text for tvSearchEmptyQuery.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci il nome di un canale TV da cercare.'**
+  String get tvSearchEmptyQuery;
+
+  /// Localized text for tvSearchNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun canale TV trovato per {query}.'**
+  String tvSearchNoResults(String query);
+
+  /// Localized text for tvOpenChannelHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca per riprodurre il canale TV'**
+  String get tvOpenChannelHint;
+
+  /// Localized text for tvNowOnAir.
+  ///
+  /// In it, this message translates to:
+  /// **'Ora in onda: {title}'**
+  String tvNowOnAir(String title);
 
   /// Localized text for radioAddCommunity.
   ///

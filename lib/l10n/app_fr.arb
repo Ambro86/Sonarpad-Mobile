@@ -478,6 +478,50 @@
   "radioRemoveFavorite": "Retirer des favoris",
   "radioFavoriteAdded": "{name} ajoutée aux favoris.",
   "radioFavoriteRemoved": "{name} retirée des favoris.",
+  "tvSearchFieldLabel": "Rechercher des chaînes TV",
+  "@tvSearchFieldLabel": {
+    "description": "Localized text for tvSearchFieldLabel."
+  },
+  "tvSearchFieldHint": "Nom de la chaîne...",
+  "@tvSearchFieldHint": {
+    "description": "Localized text for tvSearchFieldHint."
+  },
+  "tvSearchButton": "Rechercher",
+  "@tvSearchButton": {
+    "description": "Localized text for tvSearchButton."
+  },
+  "tvSearchResults": "Résultats des chaînes TV",
+  "@tvSearchResults": {
+    "description": "Localized text for tvSearchResults."
+  },
+  "tvSearchEmptyQuery": "Saisissez le nom d’une chaîne TV à rechercher.",
+  "@tvSearchEmptyQuery": {
+    "description": "Localized text for tvSearchEmptyQuery."
+  },
+  "tvSearchNoResults": "Aucune chaîne TV trouvée pour {query}.",
+  "@tvSearchNoResults": {
+    "description": "Localized text for tvSearchNoResults.",
+    "placeholders": {
+      "query": {
+        "example": "Rai",
+        "type": "String"
+      }
+    }
+  },
+  "tvOpenChannelHint": "Touchez pour lire la chaîne TV",
+  "@tvOpenChannelHint": {
+    "description": "Localized text for tvOpenChannelHint."
+  },
+  "tvNowOnAir": "En ce moment : {title}",
+  "@tvNowOnAir": {
+    "description": "Localized text for tvNowOnAir.",
+    "placeholders": {
+      "title": {
+        "example": "Telegiornale",
+        "type": "String"
+      }
+    }
+  },
   "radioAddCommunity": "Ajouter une radio à la communauté Sonarpad",
   "radioAddName": "Nom de la radio",
   "radioAddUrl": "Adresse du flux",
@@ -627,7 +671,7 @@
   "cinemaUpcomingReleases": "Prochaines sorties",
   "cinemaWillRelease": "Sortira le : {date}",
   "cinemaOpenTrailer": "Ouvrir la bande-annonce",
-  "concertsTitle": "Concerts et Événements",
+  "concertsTitle": "Concerts et événements",
   "concertsSearchHint": "Entrez une ville (ex. Paris, Lyon)",
   "concertsSearchLabel": "Rechercher des concerts par ville",
   "concertsSearchTooltip": "Rechercher",
@@ -637,10 +681,13 @@
   "concertsBuyTickets": "Acheter ou voir les détails sur Ticketmaster",
   "newsReadArticles": "Articles lus",
   "weatherRecentCities": "Villes récentes",
-  "podcastPlayedEpisodes": "Non écouté",
-  "podcastUnplayed": "Non écouté"
-,
+  "podcastPlayedEpisodes": "Épisodes écoutés",
+  "podcastUnplayed": "Épisodes non écoutés",
   "routeReadAction": "Lire l'itinéraire",
   "routeSaveAction": "Enregistrer dans les documents",
-  "routeSaveSuccess": "Itinéraire enregistré dans les documents"
+  "routeSaveSuccess": "Itinéraire enregistré dans les documents",
+  "deleteItem": "Supprimer",
+  "@deleteItem": {
+    "description": "Localized text for deleteItem."
+  }
 }

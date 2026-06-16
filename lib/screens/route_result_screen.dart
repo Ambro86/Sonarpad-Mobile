@@ -95,6 +95,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
       if (mounted) setState(() => _speaking = false);
     } else {
       final l10n = AppLocalizations.of(context);
+      final platform = Theme.of(context).platform;
       final text = _items.map((item) {
         final distanceStr = l10n.formatDistance(item.distanceMeters);
         return item.showDistance ? '${item.instruction}. $distanceStr.' : item.instruction;
@@ -113,7 +114,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
           await _flutterTts.setSpeechRate(speed * 0.5);
           await _flutterTts.setPitch(pitch);
           
-          if (Theme.of(context).platform == TargetPlatform.iOS) {
+          if (platform == TargetPlatform.iOS) {
             await _flutterTts.setIosAudioCategory(
                 IosTextToSpeechAudioCategory.playback,
                 [

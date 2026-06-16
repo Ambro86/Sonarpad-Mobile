@@ -33,6 +33,17 @@ class RecentSearchesService {
     await prefs.setString('$_keyPrefix$domain', jsonEncode(searches));
   }
 
+
+  Future<void> removeSearch(String domain, String query) async {
+    final q = query.trim();
+    if (q.isEmpty) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final searches = await getRecentSearches(domain);
+    searches.removeWhere((item) => item.toLowerCase() == q.toLowerCase());
+    await prefs.setString('$_keyPrefix$domain', jsonEncode(searches));
+  }
+
   Future<void> clearSearches(String domain) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('$_keyPrefix$domain');

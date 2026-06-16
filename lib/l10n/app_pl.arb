@@ -2249,6 +2249,50 @@
     }
   },
   "radioFavoriteRemoved": "{name} usunięto z ulubionych.",
+  "tvSearchFieldLabel": "Szukaj kanałów TV",
+  "@tvSearchFieldLabel": {
+    "description": "Localized text for tvSearchFieldLabel."
+  },
+  "tvSearchFieldHint": "Nazwa kanału...",
+  "@tvSearchFieldHint": {
+    "description": "Localized text for tvSearchFieldHint."
+  },
+  "tvSearchButton": "Szukaj",
+  "@tvSearchButton": {
+    "description": "Localized text for tvSearchButton."
+  },
+  "tvSearchResults": "Wyniki kanałów TV",
+  "@tvSearchResults": {
+    "description": "Localized text for tvSearchResults."
+  },
+  "tvSearchEmptyQuery": "Wpisz nazwę kanału TV do wyszukania.",
+  "@tvSearchEmptyQuery": {
+    "description": "Localized text for tvSearchEmptyQuery."
+  },
+  "tvSearchNoResults": "Nie znaleziono kanałów TV dla {query}.",
+  "@tvSearchNoResults": {
+    "description": "Localized text for tvSearchNoResults.",
+    "placeholders": {
+      "query": {
+        "example": "Rai",
+        "type": "String"
+      }
+    }
+  },
+  "tvOpenChannelHint": "Dotknij, aby odtworzyć kanał TV",
+  "@tvOpenChannelHint": {
+    "description": "Localized text for tvOpenChannelHint."
+  },
+  "tvNowOnAir": "Teraz na antenie: {title}",
+  "@tvNowOnAir": {
+    "description": "Localized text for tvNowOnAir.",
+    "placeholders": {
+      "title": {
+        "example": "Telegiornale",
+        "type": "String"
+      }
+    }
+  },
   "@radioFavoriteRemoved": {
     "description": "Localized text for radioFavoriteRemoved.",
     "placeholders": {
@@ -2788,19 +2832,22 @@
   "concertsBuyTickets": "Kup lub zobacz szczegóły w Ticketmaster",
   "newsReadArticles": "Przeczytane artykuły",
   "weatherRecentCities": "Ostatnie miasta",
-  "podcastPlayedEpisodes": "Nieodtworzone",
-  "podcastUnplayed": "Nieodtworzone"
-,
+  "podcastPlayedEpisodes": "Odtworzone odcinki",
+  "podcastUnplayed": "Nieodtworzone odcinki",
   "routeReadAction": "Przeczytaj trasę",
   "@routeReadAction": {
-  "description": "Localized text for routeReadAction."
-},
+    "description": "Localized text for routeReadAction."
+  },
   "routeSaveAction": "Zapisz w dokumentach",
   "@routeSaveAction": {
-  "description": "Localized text for routeSaveAction."
-},
+    "description": "Localized text for routeSaveAction."
+  },
   "routeSaveSuccess": "Trasa zapisana w dokumentach",
   "@routeSaveSuccess": {
-  "description": "Localized text for routeSaveSuccess."
-}
+    "description": "Localized text for routeSaveSuccess."
+  },
+  "deleteItem": "Usuń",
+  "@deleteItem": {
+    "description": "Localized text for deleteItem."
+  }
 }
