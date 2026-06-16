@@ -64,6 +64,9 @@ class AudiobookExportService {
 
   static const int _maxChunkChars = 650;
   static const int _bitrateKbps = 64;
+  static const int _edgeChunkMaxAttempts = 10;
+  static const int _systemChunkMaxAttempts = 5;
+
 
   Future<File> export({
     required String text,
@@ -243,11 +246,23 @@ class AudiobookExportService {
       await AppLogger.log(
         'Audiobook export Edge: chunk ${i + 1}/${chunks.length} textLength=${textToSpeak.length}',
       );
-      final file = await _edgeTts.speakToFile(text: textToSpeak, voice: voice);
-      await file.copy(target.path);
-      final size = await target.length();
-      await AppLogger.log(
-        'Audiobook export Edge: chunk ${i + 1}/${chunks.length} file="${target.path}" bytes=$size',
+      await _retryChunk(
+        label: 'Edge chunk ${i + 1}/${chunks.length}',
+        maxAttempts: _edgeChunkMaxAttempts,
+        action: () async {
+          if (await target.exists()) {
+            await target.delete();
+          }
+          final file = await _edgeTts.speakToFile(text: textToSpeak, voice: voice);
+          await file.copy(target.path);
+          final size = await target.length();
+          if (size < 512) {
+            throw Exception('File Edge troppo piccolo: $size byte');
+          }
+          await AppLogger.log(
+            'Audiobook export Edge: chunk ${i + 1}/${chunks.length} file="${target.path}" bytes=$size',
+          );
+        },
       );
       files.add(target);
       await _notifyProgress(
@@ -331,18 +346,25 @@ class AudiobookExportService {
         'Audiobook export system: synth chunk ${i + 1}/${chunks.length} '
         'textLength=${textToSpeak.length} path="$path"',
       );
-      await _synthesizeSystemChunkToFile(textToSpeak, file);
+      await _retryChunk(
+        label: 'system chunk ${i + 1}/${chunks.length}',
+        maxAttempts: _systemChunkMaxAttempts,
+        action: () async {
+          if (await file.exists()) await file.delete();
+          await _synthesizeSystemChunkToFile(textToSpeak, file);
 
-      final exists = await file.exists();
-      final size = exists ? await file.length() : 0;
-      await AppLogger.log(
-        'Audiobook export system: chunk ${i + 1}/${chunks.length} exists=$exists bytes=$size',
+          final exists = await file.exists();
+          final size = exists ? await file.length() : 0;
+          await AppLogger.log(
+            'Audiobook export system: chunk ${i + 1}/${chunks.length} exists=$exists bytes=$size',
+          );
+          if (!exists || size < 512) {
+            throw Exception(
+              'La voce di sistema non ha generato un file audio valido per il blocco ${i + 1}: $size byte',
+            );
+          }
+        },
       );
-      if (!exists || size < 512) {
-        throw Exception(
-          'La voce di sistema non ha generato un file audio valido per il blocco ${i + 1}: $size byte',
-        );
-      }
       files.add(file);
       await _notifyProgress(
         onProgress,
@@ -356,6 +378,57 @@ class AudiobookExportService {
     }
 
     return files;
+  }
+
+  Future<void> _retryChunk({
+    required String label,
+    required int maxAttempts,
+    required Future<void> Function() action,
+  }) async {
+    Object? lastError;
+    StackTrace? lastStack;
+
+    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        if (attempt > 1) {
+          await AppLogger.log(
+            'Audiobook export retry: $label attempt $attempt/$maxAttempts',
+          );
+        }
+        await action();
+        if (attempt > 1) {
+          await AppLogger.log(
+            'Audiobook export retry: $label succeeded on attempt $attempt/$maxAttempts',
+          );
+        }
+        return;
+      } catch (error, stack) {
+        lastError = error;
+        lastStack = stack;
+        await AppLogger.log(
+          'Audiobook export retry: $label failed attempt $attempt/$maxAttempts: $error',
+        );
+        if (attempt >= maxAttempts) break;
+        await Future.delayed(_retryDelay(attempt));
+      }
+    }
+
+    await AppLogger.log(
+      'Audiobook export retry: $label giving up after $maxAttempts attempts',
+    );
+    if (lastStack != null) {
+      Error.throwWithStackTrace(
+        Exception('Errore durante $label dopo $maxAttempts tentativi. Ultimo errore: $lastError'),
+        lastStack,
+      );
+    }
+    throw Exception('Errore durante $label dopo $maxAttempts tentativi. Ultimo errore: $lastError');
+  }
+
+  Duration _retryDelay(int failedAttempt) {
+    const delays = <int>[2, 4, 8, 15, 30, 45, 60, 60, 60];
+    final index = (failedAttempt - 1).clamp(0, delays.length - 1).toInt();
+    return Duration(seconds: delays[index]);
   }
 
   Future<void> _synthesizeSystemChunkToFile(String text, File output) async {

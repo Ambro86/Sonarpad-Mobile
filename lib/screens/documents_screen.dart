@@ -1321,9 +1321,9 @@ class _AudiobookProgressTonePlayer {
       final file = await _writeToneFile(frequency);
       if (_disposed) return;
       await _player.setFilePath(file.path);
-      await _player.setVolume(0.18);
+      await _player.setVolume(0.65);
       unawaited(_player.play());
-      await Future<void>.delayed(const Duration(milliseconds: 120));
+      await Future<void>.delayed(const Duration(milliseconds: 350));
       if (!_disposed) {
         await _player.stop();
       }
@@ -1353,7 +1353,7 @@ class _AudiobookProgressTonePlayer {
 
   Uint8List _buildToneWav(double frequency) {
     const sampleRate = 44100;
-    const durationMs = 90;
+    const durationMs = 260;
     const channels = 1;
     const bitsPerSample = 16;
     final sampleCount = (sampleRate * durationMs / 1000).round();
@@ -1381,7 +1381,7 @@ class _AudiobookProgressTonePlayer {
     writeAscii(36, 'data');
     bytes.setUint32(40, dataSize, Endian.little);
 
-    final maxAmplitude = (32767 * 0.28).round();
+    final maxAmplitude = (32767 * 0.55).round();
     for (var i = 0; i < sampleCount; i++) {
       final t = i / sampleRate;
       final fadeIn = math.min(1.0, i / (sampleRate * 0.01));
