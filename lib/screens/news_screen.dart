@@ -1115,10 +1115,12 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          tooltip: l10n.deleteItem,
-                          onPressed: () => _deleteArticle(article),
+                        trailing: ExcludeSemantics(
+                          child: IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            tooltip: l10n.deleteItem,
+                            onPressed: () => _deleteArticle(article),
+                          ),
                         ),
                         onTap: () => Navigator.push(
                           context,

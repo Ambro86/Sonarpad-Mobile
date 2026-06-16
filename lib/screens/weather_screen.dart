@@ -762,10 +762,12 @@ class _WeatherRecentCitiesScreenState
                       child: ListTile(
                         title: Text(displayName),
                         subtitle: subtitle != null ? Text(subtitle) : null,
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          tooltip: l10n.deleteItem,
-                          onPressed: () => _deleteCity(cityData),
+                        trailing: ExcludeSemantics(
+                          child: IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            tooltip: l10n.deleteItem,
+                            onPressed: () => _deleteCity(cityData),
+                          ),
                         ),
                         onTap: () => Navigator.pop(context, cityData),
                       ),

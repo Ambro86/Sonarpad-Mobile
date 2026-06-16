@@ -101,10 +101,12 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
                       },
                       child: ListTile(
                         title: Text(query),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          tooltip: AppLocalizations.of(context).deleteItem,
-                          onPressed: () => _deleteSearch(query),
+                        trailing: ExcludeSemantics(
+                          child: IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            tooltip: AppLocalizations.of(context).deleteItem,
+                            onPressed: () => _deleteSearch(query),
+                          ),
                         ),
                         onTap: () {
                           Navigator.of(context).pop(query);

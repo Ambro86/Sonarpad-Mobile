@@ -17,7 +17,7 @@ class ChangelogEntry {
 
   factory ChangelogEntry.fromJson(Map<String, dynamic> json) {
     final changesByLanguage = <String, List<String>>{};
-    for (final language in const ['it', 'en', 'fr', 'es', 'pt', 'pl']) {
+    for (final language in const ['it', 'en', 'fr', 'es', 'pt', 'pl', 'cs']) {
       final rawChanges = json[language];
       if (rawChanges is List) {
         changesByLanguage[language] =

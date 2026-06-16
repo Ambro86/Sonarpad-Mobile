@@ -402,10 +402,12 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
                 child: ListTile(
                   title: Text(title),
                   subtitle: Text(subtitle),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    tooltip: l10n.deleteItem,
-                    onPressed: _calculating ? null : () => _deleteRoute(item),
+                  trailing: ExcludeSemantics(
+                    child: IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      tooltip: l10n.deleteItem,
+                      onPressed: _calculating ? null : () => _deleteRoute(item),
+                    ),
                   ),
                   onTap: _calculating ? null : () => _openRoute(item),
                 ),

@@ -183,8 +183,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
 
   Future<void> _startReading() async {
     final l10n = AppLocalizations.of(context);
-    final text = _speechText(l10n);
-    final chunks = _edgeTts.splitTextForStreaming(text, maxChunkChars: 650);
+    final chunks = _speechChunks(l10n);
     if (chunks.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.noTextToRead)),
@@ -247,6 +246,9 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
         final controller = StreamController<File>();
         _edgeFileController = controller;
         Object? generationError;
+        // Manteniamo un piccolo buffer iniziale: serve a evitare micro-interruzioni
+        // e aiuta la lettura a continuare meglio anche se lo schermo viene bloccato.
+        // I blocchi restano comunque piccoli: una indicazione del percorso per volta.
         const initialBufferChunks = 2;
 
         final generation = Future<void>(() async {
@@ -328,13 +330,34 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
     );
   }
 
-  String _speechText(AppLocalizations l10n) {
-    return _items.map((item) {
+  List<String> _speechChunks(AppLocalizations l10n) {
+    final chunks = <String>[];
+
+    for (final item in _items) {
       final distanceStr = l10n.formatDistance(item.distanceMeters);
-      return item.showDistance
+      final text = item.showDistance
           ? '${item.instruction}. $distanceStr.'
           : item.instruction;
-    }).join('\n');
+      final cleaned = text.trim();
+      if (cleaned.isEmpty) continue;
+
+      // Ogni indicazione del percorso diventa un segmento autonomo.
+      // Se un'istruzione è molto lunga, la dividiamo comunque in sotto-blocchi
+      // sicuri, ma normalmente una riga corrisponde a un comando vocale.
+      final safeChunks = _edgeTts.splitTextForStreaming(
+        cleaned,
+        maxChunkChars: 420,
+      );
+      if (safeChunks.isEmpty) {
+        chunks.add(cleaned);
+      } else {
+        chunks.addAll(safeChunks.map((chunk) => chunk.trim()).where(
+              (chunk) => chunk.isNotEmpty,
+            ));
+      }
+    }
+
+    return chunks;
   }
 
   String _documentFileName(AppLocalizations l10n) {
