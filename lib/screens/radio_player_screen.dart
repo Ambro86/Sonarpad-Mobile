@@ -48,6 +48,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _isVideoEnabled = false;
   bool _isFavorite = false;
   bool _mediaKitPlaying = false;
+  bool _mediaKitVideoSettingApplied = false;
   double _mediaKitVolume = 1.0;
   bool _recording = false;
   File? _recordingOutput;
@@ -167,16 +168,23 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitPlayer = player;
     _mediaKitController = controller;
     _mediaKitPlaying = false;
+    _mediaKitVideoSettingApplied = false;
     _mediaKitVolume = await _settings.loadMediaVolume();
     var initialVolumeApplied = false;
     _mediaKitPlayingSubscription = player.stream.playing.listen((playing) {
-      if (playing && !initialVolumeApplied) {
-        initialVolumeApplied = true;
-        unawaited(player.setVolume(_mediaKitVolume * 100).catchError((error) {
-          AppLogger.log(
-            'RadioPlayer: failed to apply MediaKit volume after start: $error',
-          );
-        }));
+      if (playing) {
+        if (!initialVolumeApplied) {
+          initialVolumeApplied = true;
+          unawaited(player.setVolume(_mediaKitVolume * 100).catchError((error) {
+            AppLogger.log(
+              'RadioPlayer: failed to apply MediaKit volume after start: $error',
+            );
+          }));
+        }
+        if (!_mediaKitVideoSettingApplied) {
+          _mediaKitVideoSettingApplied = true;
+          unawaited(_applyMediaKitVideoEnabled(player, _isVideoEnabled));
+        }
       }
       if (!mounted) return;
       setState(() => _mediaKitPlaying = playing);
@@ -217,6 +225,31 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     } else {
       await _audio.stop();
     }
+  }
+
+  Future<void> _applyMediaKitVideoEnabled(
+    mk.Player player,
+    bool enable,
+  ) async {
+    try {
+      await player.setVideoTrack(
+        enable ? mk.VideoTrack.auto() : mk.VideoTrack.no(),
+      );
+      AppLogger.log(
+        'RadioPlayer: MediaKit video ${enable ? 'enabled' : 'disabled'} after start',
+      );
+    } catch (error) {
+      AppLogger.log(
+        'RadioPlayer: failed to apply MediaKit video setting after start: $error',
+      );
+    }
+  }
+
+  Future<void> _applyMpdVideoSetting(bool enable) async {
+    await _settings.setVideoEnabled(enable);
+    final player = _mediaKitPlayer;
+    if (player == null || !_mediaKitVideoSettingApplied) return;
+    await _applyMediaKitVideoEnabled(player, enable);
   }
 
   void _setMediaKitVolume(double value) {
@@ -263,7 +296,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _isVideoEnabled != enable) return;
       if (_requiresVideoPlayback) {
-        _settings.setVideoEnabled(enable);
+        unawaited(_applyMpdVideoSetting(enable));
       } else {
         unawaited(_applyVideoSetting(enable));
       }
@@ -407,6 +440,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitPlayer = null;
     _mediaKitController = null;
     _mediaKitPlaying = false;
+    _mediaKitVideoSettingApplied = false;
     if (player != null) {
       await player.dispose();
     }

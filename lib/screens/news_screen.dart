@@ -1,3 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
@@ -126,6 +131,67 @@ class _NewsScreenState extends State<NewsScreen> {
     }
   }
 
+  Future<void> _importRssFromOpml() async {
+    if (_language == null) return;
+    final language = _language!;
+    final l10n = AppLocalizations.of(context);
+
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['opml', 'xml'],
+      );
+      final path = result == null || result.files.isEmpty
+          ? null
+          : result.files.first.path;
+      if (path == null || path.isEmpty) return;
+
+      final added = await _service.importCustomSourcesFromOpml(
+        language,
+        File(path),
+      );
+      await _loadSources();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.rssImportComplete(added))),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.rssImportError(e))),
+      );
+    }
+  }
+
+  Future<void> _exportRssToOpml() async {
+    if (_language == null) return;
+    final language = _language!;
+    final l10n = AppLocalizations.of(context);
+
+    try {
+      final opml = await _service.exportCustomSourcesToOpml(language);
+      final bytes = utf8.encode(opml);
+      final path = await FilePicker.saveFile(
+        dialogTitle: l10n.exportRssSourcesToOpml,
+        fileName: 'Sonarpad RSS.opml',
+        type: FileType.custom,
+        allowedExtensions: const ['opml'],
+        bytes: Uint8List.fromList(bytes),
+      );
+      if (path == null || path.isEmpty) return;
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.rssExportComplete)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.rssExportError(e))),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -137,6 +203,16 @@ class _NewsScreenState extends State<NewsScreen> {
             icon: const Icon(Icons.add),
             tooltip: l10n.addCustomNewsSource,
             onPressed: _addCustomSource,
+          ),
+          IconButton(
+            icon: const Icon(Icons.upload_file),
+            tooltip: l10n.importRssSourcesFromOpml,
+            onPressed: _importRssFromOpml,
+          ),
+          IconButton(
+            icon: const Icon(Icons.download),
+            tooltip: l10n.exportRssSourcesToOpml,
+            onPressed: _exportRssToOpml,
           ),
           IconButton(
             icon: const Icon(Icons.restore),

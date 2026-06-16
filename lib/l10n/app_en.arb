@@ -86,6 +86,46 @@
   "newsSourceName": "Source or site name",
   "newsSourceUrlOrSearch": "Website URL, RSS feed or search word",
   "deleteNewsSource": "Delete source",
+  "importRssSourcesFromOpml": "Import RSS sources from OPML",
+  "@importRssSourcesFromOpml": {
+    "description": "Localized text for importRssSourcesFromOpml."
+  },
+  "exportRssSourcesToOpml": "Export RSS sources to OPML",
+  "@exportRssSourcesToOpml": {
+    "description": "Localized text for exportRssSourcesToOpml."
+  },
+  "rssImportComplete": "Imported RSS sources: {count}",
+  "@rssImportComplete": {
+    "description": "Localized text for rssImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "rssImportError": "RSS import error: {error}",
+  "@rssImportError": {
+    "description": "Localized text for rssImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "rssExportComplete": "RSS sources exported",
+  "@rssExportComplete": {
+    "description": "Localized text for rssExportComplete."
+  },
+  "rssExportError": "RSS export error: {error}",
+  "@rssExportError": {
+    "description": "Localized text for rssExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
   "articleTextSemantics": "Article text",
   "newsLanguage": "News Language",
   "loadingNews": "Loading news",

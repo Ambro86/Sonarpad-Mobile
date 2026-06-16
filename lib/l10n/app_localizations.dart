@@ -624,6 +624,42 @@ abstract class AppLocalizations {
   /// **'Elimina sorgente'**
   String get deleteNewsSource;
 
+  /// Localized text for importRssSourcesFromOpml.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa sorgenti RSS da OPML'**
+  String get importRssSourcesFromOpml;
+
+  /// Localized text for exportRssSourcesToOpml.
+  ///
+  /// In it, this message translates to:
+  /// **'Esporta sorgenti RSS in OPML'**
+  String get exportRssSourcesToOpml;
+
+  /// Localized text for rssImportComplete.
+  ///
+  /// In it, this message translates to:
+  /// **'Sorgenti RSS importate: {count}'**
+  String rssImportComplete(int count);
+
+  /// Localized text for rssImportError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore importazione RSS: {error}'**
+  String rssImportError(Object error);
+
+  /// Localized text for rssExportComplete.
+  ///
+  /// In it, this message translates to:
+  /// **'Sorgenti RSS esportate'**
+  String get rssExportComplete;
+
+  /// Localized text for rssExportError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore esportazione RSS: {error}'**
+  String rssExportError(Object error);
+
   /// Localized text for deleteItem.
   ///
   /// In it, this message translates to:

@@ -284,6 +284,30 @@ Por la traducción al ucraniano, gracias a Ivan Shtefuriak.''';
   String get deleteNewsSource => '''Eliminar fuente''';
 
   @override
+  String get importRssSourcesFromOpml => '''Importar fuentes RSS desde OPML''';
+
+  @override
+  String get exportRssSourcesToOpml => '''Exportar fuentes RSS a OPML''';
+
+  @override
+  String rssImportComplete(int count) {
+    return '''Fuentes RSS importadas: ${count}''';
+  }
+
+  @override
+  String rssImportError(Object error) {
+    return '''Error al importar RSS: ${error}''';
+  }
+
+  @override
+  String get rssExportComplete => '''Fuentes RSS exportadas''';
+
+  @override
+  String rssExportError(Object error) {
+    return '''Error al exportar RSS: ${error}''';
+  }
+
+  @override
   String get deleteItem => '''Eliminar''';
 
   @override

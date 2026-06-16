@@ -284,6 +284,30 @@ Za ukrajinský překlad děkujeme Ivanu Shtefuriakovi.''';
   String get deleteNewsSource => '''Smazat zdroj''';
 
   @override
+  String get importRssSourcesFromOpml => '''Importovat zdroje RSS z OPML''';
+
+  @override
+  String get exportRssSourcesToOpml => '''Exportovat zdroje RSS do OPML''';
+
+  @override
+  String rssImportComplete(int count) {
+    return '''Importované zdroje RSS: ${count}''';
+  }
+
+  @override
+  String rssImportError(Object error) {
+    return '''Chyba importu RSS: ${error}''';
+  }
+
+  @override
+  String get rssExportComplete => '''Zdroje RSS byly exportovány''';
+
+  @override
+  String rssExportError(Object error) {
+    return '''Chyba exportu RSS: ${error}''';
+  }
+
+  @override
   String get deleteItem => '''Smazat''';
 
   @override

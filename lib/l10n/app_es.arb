@@ -86,6 +86,46 @@
   "newsSourceName": "Nombre de la fuente o del sitio",
   "newsSourceUrlOrSearch": "URL del sitio, feed RSS o palabra de búsqueda",
   "deleteNewsSource": "Eliminar fuente",
+  "importRssSourcesFromOpml": "Importar fuentes RSS desde OPML",
+  "@importRssSourcesFromOpml": {
+    "description": "Localized text for importRssSourcesFromOpml."
+  },
+  "exportRssSourcesToOpml": "Exportar fuentes RSS a OPML",
+  "@exportRssSourcesToOpml": {
+    "description": "Localized text for exportRssSourcesToOpml."
+  },
+  "rssImportComplete": "Fuentes RSS importadas: {count}",
+  "@rssImportComplete": {
+    "description": "Localized text for rssImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "rssImportError": "Error al importar RSS: {error}",
+  "@rssImportError": {
+    "description": "Localized text for rssImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "rssExportComplete": "Fuentes RSS exportadas",
+  "@rssExportComplete": {
+    "description": "Localized text for rssExportComplete."
+  },
+  "rssExportError": "Error al exportar RSS: {error}",
+  "@rssExportError": {
+    "description": "Localized text for rssExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
   "articleTextSemantics": "Texto del artículo",
   "newsLanguage": "Idioma de las noticias",
   "loadingNews": "Cargando noticias",

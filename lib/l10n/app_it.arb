@@ -359,6 +359,46 @@
   "@deleteNewsSource": {
     "description": "Localized text for deleteNewsSource."
   },
+  "importRssSourcesFromOpml": "Importa sorgenti RSS da OPML",
+  "@importRssSourcesFromOpml": {
+    "description": "Localized text for importRssSourcesFromOpml."
+  },
+  "exportRssSourcesToOpml": "Esporta sorgenti RSS in OPML",
+  "@exportRssSourcesToOpml": {
+    "description": "Localized text for exportRssSourcesToOpml."
+  },
+  "rssImportComplete": "Sorgenti RSS importate: {count}",
+  "@rssImportComplete": {
+    "description": "Localized text for rssImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "rssImportError": "Errore importazione RSS: {error}",
+  "@rssImportError": {
+    "description": "Localized text for rssImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "rssExportComplete": "Sorgenti RSS esportate",
+  "@rssExportComplete": {
+    "description": "Localized text for rssExportComplete."
+  },
+  "rssExportError": "Errore esportazione RSS: {error}",
+  "@rssExportError": {
+    "description": "Localized text for rssExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
   "articleTextSemantics": "Testo articolo",
   "@articleTextSemantics": {
     "description": "Localized text for articleTextSemantics."

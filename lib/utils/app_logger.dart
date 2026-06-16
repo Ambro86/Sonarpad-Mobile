@@ -26,7 +26,7 @@ class AppLogger {
       final file = await _logFile;
       if (await file.exists()) {
         final size = await file.length();
-        if (size > 100 * 1024) {
+        if (size > 1024 * 1024) {
           await file.writeAsString('', mode: FileMode.write);
         }
       }

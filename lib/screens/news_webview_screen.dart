@@ -691,6 +691,40 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     ].join('\n\n').trim();
   }
 
+  String _newsTtsDebugSnippet(String value, {int maxChars = 180}) {
+    final compact = value
+        .replaceAll('\r', ' ')
+        .replaceAll('\n', ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    if (compact.length <= maxChars) return compact;
+    return compact.substring(compact.length - maxChars);
+  }
+
+  Future<void> _logNewsTtsChunkPlan({
+    required int readingToken,
+    required String engine,
+    required String voice,
+    required String textForChunks,
+    required List<String> chunks,
+  }) async {
+    await AppLogger.log(
+      'News Edge TTS debug [$readingToken]: piano lettura veloce ' 
+      'engine=$engine voice=$voice title="${widget.article.title}" ' 
+      'url=${widget.article.link} textLength=${textForChunks.length} ' 
+      'textHash=${textForChunks.hashCode} chunks=${chunks.length} ' 
+      'lastText="${_newsTtsDebugSnippet(textForChunks)}"',
+    );
+    for (var i = 0; i < chunks.length; i++) {
+      final chunk = chunks[i];
+      await AppLogger.log(
+        'News Edge TTS debug [$readingToken]: chunk ${i + 1}/${chunks.length} ' 
+        'len=${chunk.length} hash=${chunk.hashCode} ' 
+        'tail="${_newsTtsDebugSnippet(chunk, maxChars: 140)}"',
+      );
+    }
+  }
+
   Future<void> _readArticle() async {
     final l10n = AppLocalizations.of(context);
     await _audio.stop();
@@ -710,10 +744,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final dictionaryEntries = await _voiceDictionary.loadEntries();
       final textForChunks = _sanitizeNewsTextForEdge(text);
       final chunks = _tts.splitTextForStreaming(textForChunks, maxChunkChars: 650);
-      unawaited(AppLogger.log(
-        'News TTS: lettura avviata engine=$engine voice=$voice '
-        'textLength=${textForChunks.length} chunks=${chunks.length}',
-      ));
+      await _logNewsTtsChunkPlan(
+        readingToken: readingToken,
+        engine: engine,
+        voice: voice,
+        textForChunks: textForChunks,
+        chunks: chunks,
+      );
       debugPrint(
         'Sonarpad TTS: web article read requested '
         'title="${widget.article.title}" voice=$voice '
@@ -769,42 +806,124 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         _edgeFileController = controller;
         var generationDone = false;
         Object? generationError;
+        var generatedCount = 0;
+        var queuedCount = 0;
+        var playedCount = 0;
+        final queuedFilePaths = <String>{};
+
+        await AppLogger.log(
+          'News Edge TTS debug [$readingToken]: avvio ramo Edge veloce, '
+          'controller=${identityHashCode(controller)}',
+        );
 
         final generation = Future<void>(() async {
           for (var i = 0; i < chunks.length; i++) {
-            if (!mounted || !_speaking || readingToken != _readingToken) break;
+            if (!mounted || !_speaking || readingToken != _readingToken) {
+              await AppLogger.log(
+                'News Edge TTS debug [$readingToken]: generazione interrotta '
+                'prima del chunk ${i + 1}; mounted=$mounted speaking=$_speaking '
+                'currentToken=$_readingToken',
+              );
+              break;
+            }
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries).trim();
-            if (textToSpeak.isEmpty) continue;
+            if (textToSpeak.isEmpty) {
+              await AppLogger.log(
+                'News Edge TTS debug [$readingToken]: chunk ${i + 1}/${chunks.length} '
+                'saltato perché vuoto dopo dizionario',
+              );
+              continue;
+            }
+            await AppLogger.log(
+              'News Edge TTS debug [$readingToken]: sintesi chunk ${i + 1}/${chunks.length} '
+              'len=${textToSpeak.length} hash=${textToSpeak.hashCode} '
+              'tail="${_newsTtsDebugSnippet(textToSpeak, maxChars: 140)}"',
+            );
             final file =
                 await _tts.speakToFile(text: textToSpeak, voice: voice);
+            generatedCount += 1;
             final size = await file.length();
             debugPrint(
               'Sonarpad TTS: web chunk ${i + 1}/${chunks.length} ready '
+              'path=${file.path} size=$size',
+            );
+            await AppLogger.log(
+              'News Edge TTS debug [$readingToken]: file pronto '
+              'chunk=${i + 1}/${chunks.length} generated=$generatedCount '
               'path=${file.path} size=$size',
             );
             if (!controller.isClosed &&
                 mounted &&
                 _speaking &&
                 readingToken == _readingToken) {
+              if (!queuedFilePaths.add(file.path)) {
+                await AppLogger.log(
+                  'News Edge TTS debug [$readingToken]: DUPLICATO BLOCCATO '
+                  'path già accodato ${file.path}',
+                );
+                continue;
+              }
+              queuedCount += 1;
               controller.add(file);
+              await AppLogger.log(
+                'News Edge TTS debug [$readingToken]: file accodato allo stream '
+                'chunk=${i + 1}/${chunks.length} queued=$queuedCount '
+                'path=${file.path}',
+              );
+            } else {
+              await AppLogger.log(
+                'News Edge TTS debug [$readingToken]: file NON accodato '
+                'controllerClosed=${controller.isClosed} mounted=$mounted '
+                'speaking=$_speaking currentToken=$_readingToken',
+              );
             }
           }
           generationDone = true;
+          await AppLogger.log(
+            'News Edge TTS debug [$readingToken]: generazione completata '
+            'generated=$generatedCount queued=$queuedCount',
+          );
           if (!controller.isClosed) await controller.close();
         }).catchError((e) async {
           generationError = e;
           generationDone = true;
+          await AppLogger.log(
+            'News Edge TTS debug [$readingToken]: ERRORE generazione $e',
+          );
           if (!controller.isClosed) await controller.close();
         });
 
+        await AppLogger.log(
+          'News Edge TTS debug [$readingToken]: riproduzione veloce a chunk singoli, '
+          'resetAfterCompletion=false',
+        );
         await for (final file in controller.stream) {
           while (_ttsPaused) {
             if (!mounted || !_speaking || readingToken != _readingToken) break;
             await Future.delayed(const Duration(milliseconds: 100));
           }
           if (!mounted || !_speaking || readingToken != _readingToken) break;
-          await _audio.playFilesSequentially([file]);
+          playedCount += 1;
+          await AppLogger.log(
+            'News Edge TTS debug [$readingToken]: riproduzione chunk START '
+            'played=$playedCount queued=$queuedCount path=${file.path}',
+          );
+          await _audio.playFilesSequentially(
+            [file],
+            title: widget.article.title,
+            resetAfterCompletion: false,
+            onChunkStarted: (index, startedFile) {
+              unawaited(AppLogger.log(
+                'News Edge TTS debug [$readingToken]: AudioPlayer onChunkStarted '
+                'index=${index + 1} path=${startedFile.path}',
+              ));
+            },
+          );
+          await AppLogger.log(
+            'News Edge TTS debug [$readingToken]: riproduzione chunk END '
+            'played=$playedCount path=${file.path}',
+          );
         }
 
         await generation;
@@ -814,6 +933,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         if (readingToken != _readingToken) return;
         if (generationError != null) throw Exception(generationError);
 
+        await AppLogger.log(
+          'News Edge TTS debug [$readingToken]: lettura Edge conclusa '
+          'generationDone=$generationDone generated=$generatedCount '
+          'queued=$queuedCount played=$playedCount',
+        );
+
         if (!mounted) return;
         if (!generationDone) {
           setState(() => _status = l10n.readingStopped);
@@ -821,6 +946,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       }
     } catch (e) {
       debugPrint('Sonarpad TTS: web article reading error=$e');
+      unawaited(AppLogger.log(
+        'News Edge TTS debug [$readingToken]: ERRORE lettura $e',
+      ));
       if (!mounted) return;
       if (readingToken != _readingToken) return;
       setState(() => _status = l10n.edgeTtsError(e));
@@ -828,6 +956,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         SnackBar(content: Text(l10n.edgeTtsError(e))),
       );
     } finally {
+      unawaited(AppLogger.log(
+        'News Edge TTS debug [$readingToken]: finally '
+        'mounted=$mounted currentToken=$_readingToken speaking=$_speaking',
+      ));
       if (mounted && readingToken == _readingToken) {
         setState(() => _speaking = false);
       }
@@ -836,7 +968,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<void> _stopReading() async {
     if (!_speaking) return;
+    final previousToken = _readingToken;
     _readingToken += 1;
+    unawaited(AppLogger.log(
+      'News Edge TTS debug [$previousToken]: stop richiesto, '
+      'nuovoToken=$_readingToken',
+    ));
     final edgeController = _edgeFileController;
     _edgeFileController = null;
     final stopAudio = _audio.stop();

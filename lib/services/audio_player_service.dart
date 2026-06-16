@@ -420,6 +420,7 @@ class AudioPlayerService {
     void Function(int index, File file)? onChunkStarted,
     AudioSessionType sessionType = AudioSessionType.speech,
     String title = 'Lettura Documento',
+    bool resetAfterCompletion = true,
   }) async {
     _stopRequested = false;
     if (files.isEmpty) return;
@@ -462,7 +463,7 @@ class AudioPlayerService {
         );
         AppLogger.log(
           'Sonarpad audio: playlist duration=$duration chunks=${files.length} '
-          'sessionType=$sessionType',
+          'sessionType=$sessionType resetAfterCompletion=$resetAfterCompletion',
         );
         if (lastNotifiedIndex != 0) {
           lastNotifiedIndex = 0;
@@ -484,12 +485,16 @@ class AudioPlayerService {
         );
       } finally {
         await indexSub.cancel();
-        if (!_stopRequested) {
+        if (!_stopRequested && resetAfterCompletion) {
           try {
             await _player.seek(Duration.zero, index: 0);
           } catch (e) {
             AppLogger.log('Sonarpad audio: playlist reset error: $e');
           }
+        } else if (!resetAfterCompletion) {
+          AppLogger.log(
+            'Sonarpad audio: playlist reset skipped after completion',
+          );
         }
       }
     } finally {

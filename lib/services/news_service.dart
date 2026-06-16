@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
@@ -255,6 +256,114 @@ class NewsService {
     if (order.remove(name)) {
       await prefs.setStringList(_getPrefsKey(language), order);
     }
+  }
+
+  Future<int> importCustomSourcesFromOpml(
+    NewsLanguage language,
+    File file,
+  ) async {
+    final text = await file.readAsString();
+    final document = XmlDocument.parse(text);
+    final currentCustomSources = await getCustomSources(language);
+    final knownUrls = <String>{
+      ...language.rssSources.map((source) => source.uri.toString().trim().toLowerCase()),
+      ...currentCustomSources.map((source) => source.uri.toString().trim().toLowerCase()),
+    };
+    final knownNames = <String>{
+      ...language.rssSources.map((source) => source.name),
+      ...currentCustomSources.map((source) => source.name),
+    };
+    final toAdd = <NewsRssSource>[];
+
+    for (final outline in document.findAllElements('outline')) {
+      final feedUrl = (_opmlAttribute(outline, 'xmlUrl') ??
+              _opmlAttribute(outline, 'url'))
+          ?.trim();
+      if (feedUrl == null || feedUrl.isEmpty) continue;
+      final uri = Uri.tryParse(feedUrl);
+      if (uri == null || !uri.hasScheme || uri.host.isEmpty) continue;
+      final normalizedUrl = uri.toString().trim().toLowerCase();
+      if (!knownUrls.add(normalizedUrl)) continue;
+
+      final titleAttr = _opmlAttribute(outline, 'title')?.trim();
+      final textAttr = _opmlAttribute(outline, 'text')?.trim();
+      final fallbackName = uri.host.isEmpty ? feedUrl : uri.host;
+      final baseName = titleAttr?.isNotEmpty == true
+          ? titleAttr!
+          : textAttr?.isNotEmpty == true
+              ? textAttr!
+              : fallbackName;
+
+      toAdd.add(NewsRssSource(
+        name: _uniqueSourceName(baseName, knownNames),
+        uri: uri,
+        isCustom: true,
+      ));
+    }
+
+    if (toAdd.isEmpty) return 0;
+
+    final updated = [...currentCustomSources, ...toAdd];
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      _getCustomPrefsKey(language),
+      updated.map((source) => jsonEncode(source.toJson())).toList(),
+    );
+    return toAdd.length;
+  }
+
+  Future<String> exportCustomSourcesToOpml(NewsLanguage language) async {
+    final customSources = await getCustomSources(language);
+    final buffer = StringBuffer()
+      ..writeln('<?xml version="1.0" encoding="UTF-8"?>')
+      ..writeln('<opml version="1.0">')
+      ..writeln('<head>')
+      ..writeln('<title>Sonarpad RSS</title>')
+      ..writeln('</head>')
+      ..writeln('<body>');
+
+    for (final source in customSources) {
+      final title = _escapeOpmlAttribute(source.name);
+      final url = _escapeOpmlAttribute(source.uri.toString());
+      buffer.writeln(
+        '  <outline text="$title" title="$title" type="rss" xmlUrl="$url" />',
+      );
+    }
+
+    buffer
+      ..writeln('</body>')
+      ..writeln('</opml>');
+    return buffer.toString();
+  }
+
+  String? _opmlAttribute(XmlElement element, String name) {
+    for (final attribute in element.attributes) {
+      if (attribute.name.local.toLowerCase() == name.toLowerCase()) {
+        return attribute.value;
+      }
+    }
+    return null;
+  }
+
+  String _uniqueSourceName(String baseName, Set<String> knownNames) {
+    final cleanBaseName = baseName.trim().isEmpty ? 'RSS' : baseName.trim();
+    var candidate = cleanBaseName;
+    var suffix = 2;
+    while (knownNames.contains(candidate)) {
+      candidate = '$cleanBaseName ($suffix)';
+      suffix++;
+    }
+    knownNames.add(candidate);
+    return candidate;
+  }
+
+  String _escapeOpmlAttribute(String value) {
+    return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('"', '&quot;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll("'", '&apos;');
   }
 
   Future<List<NewsRssSource>> getOrderedSources(NewsLanguage language) async {

@@ -86,6 +86,46 @@
   "newsSourceName": "Název zdroje nebo webu",
   "newsSourceUrlOrSearch": "Adresa webu, RSS kanál nebo hledané slovo",
   "deleteNewsSource": "Smazat zdroj",
+  "importRssSourcesFromOpml": "Importovat zdroje RSS z OPML",
+  "@importRssSourcesFromOpml": {
+    "description": "Localized text for importRssSourcesFromOpml."
+  },
+  "exportRssSourcesToOpml": "Exportovat zdroje RSS do OPML",
+  "@exportRssSourcesToOpml": {
+    "description": "Localized text for exportRssSourcesToOpml."
+  },
+  "rssImportComplete": "Importované zdroje RSS: {count}",
+  "@rssImportComplete": {
+    "description": "Localized text for rssImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "rssImportError": "Chyba importu RSS: {error}",
+  "@rssImportError": {
+    "description": "Localized text for rssImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "rssExportComplete": "Zdroje RSS byly exportovány",
+  "@rssExportComplete": {
+    "description": "Localized text for rssExportComplete."
+  },
+  "rssExportError": "Chyba exportu RSS: {error}",
+  "@rssExportError": {
+    "description": "Localized text for rssExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
   "articleTextSemantics": "Text článku",
   "newsLanguage": "Jazyk zpráv",
   "loadingNews": "Načítání zpráv",
