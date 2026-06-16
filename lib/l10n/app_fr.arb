@@ -742,8 +742,44 @@
   "@audiobookMp3Format": {
     "description": "Export format label for audiobook MP3."
   },
-  "audiobookM4bFormat": "Livre audio M4B (.m4b, expérimental)",
+  "audiobookM4bFormat": "Livre audio M4B (.m4b)",
   "@audiobookM4bFormat": {
     "description": "Export format label for audiobook M4B."
+  },
+  "exportCompleteTitle": "Exportation terminée",
+  "@exportCompleteTitle": {
+    "description": "Localized text for exportCompleteTitle."
+  },
+  "exportCompleteMessage": "Le fichier a été créé correctement. Voulez-vous l’enregistrer dans Sonarpad ou le partager ?",
+  "@exportCompleteMessage": {
+    "description": "Localized text for exportCompleteMessage."
+  },
+  "saveInSonarpad": "Enregistrer dans Sonarpad",
+  "@saveInSonarpad": {
+    "description": "Localized text for saveInSonarpad."
+  },
+  "exportSavedInSonarpad": "Fichier enregistré dans les Documents de Sonarpad.",
+  "@exportSavedInSonarpad": {
+    "description": "Localized text for exportSavedInSonarpad."
+  },
+  "audiobookExportProgressTitle": "Création du livre audio",
+  "@audiobookExportProgressTitle": {
+    "description": "Title shown while exporting an audiobook."
+  },
+  "audiobookExportPreparing": "Préparation du livre audio...",
+  "@audiobookExportPreparing": {
+    "description": "Progress text shown while preparing audiobook export."
+  },
+  "audiobookExportGeneratingAudio": "Génération de l’audio",
+  "@audiobookExportGeneratingAudio": {
+    "description": "Progress text shown while generating audiobook chunks."
+  },
+  "audiobookExportConvertingAudio": "Conversion finale du fichier audio...",
+  "@audiobookExportConvertingAudio": {
+    "description": "Progress text shown while converting/merging audiobook audio."
+  },
+  "audiobookExportFinalizing": "Finalisation...",
+  "@audiobookExportFinalizing": {
+    "description": "Progress text shown while finalizing audiobook export."
   }
 }

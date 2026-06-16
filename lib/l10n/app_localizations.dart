@@ -2104,8 +2104,62 @@ abstract class AppLocalizations {
   /// Export format label for audiobook M4B.
   ///
   /// In it, this message translates to:
-  /// **'Audiolibro M4B (.m4b, sperimentale)'**
+  /// **'Audiolibro M4B (.m4b)'**
   String get audiobookM4bFormat;
+
+  /// Localized text for exportCompleteTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Esportazione completata'**
+  String get exportCompleteTitle;
+
+  /// Localized text for exportCompleteMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Il file è stato creato correttamente. Vuoi salvarlo in Sonarpad o condividerlo?'**
+  String get exportCompleteMessage;
+
+  /// Localized text for saveInSonarpad.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva in Sonarpad'**
+  String get saveInSonarpad;
+
+  /// Localized text for exportSavedInSonarpad.
+  ///
+  /// In it, this message translates to:
+  /// **'File salvato nei Documenti di Sonarpad.'**
+  String get exportSavedInSonarpad;
+
+  /// Title shown while exporting an audiobook.
+  ///
+  /// In it, this message translates to:
+  /// **'Creazione audiolibro'**
+  String get audiobookExportProgressTitle;
+
+  /// Progress text shown while preparing audiobook export.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione dell’audiolibro...'**
+  String get audiobookExportPreparing;
+
+  /// Progress text shown while generating audiobook chunks.
+  ///
+  /// In it, this message translates to:
+  /// **'Generazione audio'**
+  String get audiobookExportGeneratingAudio;
+
+  /// Progress text shown while converting/merging audiobook audio.
+  ///
+  /// In it, this message translates to:
+  /// **'Conversione finale del file audio...'**
+  String get audiobookExportConvertingAudio;
+
+  /// Progress text shown while finalizing audiobook export.
+  ///
+  /// In it, this message translates to:
+  /// **'Finalizzazione...'**
+  String get audiobookExportFinalizing;
 
   /// Localized text for exportError.
   ///

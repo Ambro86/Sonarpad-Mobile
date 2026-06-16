@@ -1100,7 +1100,36 @@ Pela tradução ucraniana, obrigado a Ivan Shtefuriak.''';
   String get audiobookMp3Format => '''Audiolivro MP3 (.mp3)''';
 
   @override
-  String get audiobookM4bFormat => '''Audiolivro M4B (.m4b, experimental)''';
+  String get audiobookM4bFormat => '''Audiolivro M4B (.m4b)''';
+
+  @override
+  String get exportCompleteTitle => '''Exportação concluída''';
+
+  @override
+  String get exportCompleteMessage => '''O ficheiro foi criado corretamente. Quer guardá-lo no Sonarpad ou partilhá-lo?''';
+
+  @override
+  String get saveInSonarpad => '''Guardar no Sonarpad''';
+
+  @override
+  String get exportSavedInSonarpad => '''Ficheiro guardado nos Documentos do Sonarpad.''';
+
+
+  @override
+  String get audiobookExportProgressTitle => '''Criação do audiolivro''';
+
+  @override
+  String get audiobookExportPreparing => '''Preparando o audiolivro...''';
+
+  @override
+  String get audiobookExportGeneratingAudio => '''Gerando áudio''';
+
+  @override
+  String get audiobookExportConvertingAudio => '''Conversão final do arquivo de áudio...''';
+
+  @override
+  String get audiobookExportFinalizing => '''Finalizando...''';
+
 
   @override
   String get exportError => '''Erro de exportação''';

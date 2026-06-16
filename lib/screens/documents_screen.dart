@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:io';
 
@@ -11,6 +12,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
+import '../models/podcast.dart';
 import '../services/audiobook_export_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
@@ -26,6 +28,17 @@ import 'gutenberg_screen.dart';
 import 'internet_archive_screen.dart';
 import 'librivox_screen.dart';
 import 'poetrydb_screen.dart';
+import 'podcast_episode_player_screen.dart';
+
+const Set<String> _audioDocumentExtensions = {
+  'mp3',
+  'm4a',
+  'm4b',
+  'aac',
+  'wav',
+  'ogg',
+  'flac',
+};
 
 /// Schermata libreria documenti.
 /// Permette di aggiungere file dal dispositivo (PDF, DOCX, EPUB, TXT, ecc.)
@@ -46,6 +59,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   List<DocumentItem> get _displayedDocs =>
       _service.documents.where((d) => d.parentId == widget.folderId).toList();
 
+
   static const _allowedExtensions = [
     'pdf',
     'docx',
@@ -58,6 +72,13 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     'html',
     'htm',
     'zip',
+    'mp3',
+    'm4a',
+    'm4b',
+    'aac',
+    'wav',
+    'ogg',
+    'flac',
   ];
 
   @override
@@ -414,84 +435,54 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
       final appDir = await getTemporaryDirectory();
       final baseName = doc.displayName;
+      String? path;
+      String? saveName;
 
       if (format == 'txt') {
-        final path = '${appDir.path}/${baseName}_export.txt';
+        path = '${appDir.path}/${_safeExportBaseName(baseName)}_export.txt';
+        saveName = _exportLibraryFileName(baseName, 'txt');
         await AppLogger.log('Scrittura file txt in: $path');
         await File(path).writeAsString(text);
-        await AppLogger.log('File txt scritto, avvio condivisione');
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(path)],
-            text: p.basename(path),
-          ),
-        );
-        await AppLogger.log('Condivisione file txt completata o chiusa');
+        await AppLogger.log('File txt scritto');
       } else if (format == 'pdf') {
         await AppLogger.log('Inizio generazione PDF');
-        final path = await _generatePdf(baseName, text, appDir.path);
-        await AppLogger.log('PDF generato in: $path, avvio condivisione');
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(path)],
-            text: p.basename(path),
-          ),
-        );
-        await AppLogger.log('Condivisione PDF completata o chiusa');
+        path = await _generatePdf(baseName, text, appDir.path);
+        saveName = _exportLibraryFileName(baseName, 'pdf');
+        await AppLogger.log('PDF generato in: $path');
       } else if (format == 'docx') {
         await AppLogger.log('Inizio generazione DOCX Unicode');
-        final path = await _generateDocx(baseName, text, appDir.path);
-        await AppLogger.log('DOCX generato in: $path, avvio condivisione');
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(path)],
-            text: p.basename(path),
-          ),
-        );
-        await AppLogger.log('Condivisione DOCX completata o chiusa');
+        path = await _generateDocx(baseName, text, appDir.path);
+        saveName = _exportLibraryFileName(baseName, 'docx');
+        await AppLogger.log('DOCX generato in: $path');
       } else if (format == 'epub') {
         await AppLogger.log('Inizio generazione EPUB Unicode');
-        final path = await _generateEpub(baseName, text, appDir.path);
-        await AppLogger.log('EPUB generato in: $path, avvio condivisione');
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(path)],
-            text: p.basename(path),
-          ),
-        );
-        await AppLogger.log('Condivisione EPUB completata o chiusa');
+        path = await _generateEpub(baseName, text, appDir.path);
+        saveName = _exportLibraryFileName(baseName, 'epub');
+        await AppLogger.log('EPUB generato in: $path');
       } else if (format == 'audiobook_mp3') {
         await AppLogger.log('Inizio generazione audiolibro MP3');
-        final path = await _generateAudiobook(
+        path = await _generateAudiobook(
           baseName,
           text,
           appDir.path,
           AudiobookExportFormat.mp3,
         );
-        await AppLogger.log('Audiolibro MP3 generato in: $path, avvio condivisione');
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(path)],
-            text: p.basename(path),
-          ),
-        );
-        await AppLogger.log('Condivisione audiolibro MP3 completata o chiusa');
+        saveName = _exportLibraryFileName(baseName, 'mp3', audiobook: true);
+        await AppLogger.log('Audiolibro MP3 generato in: $path');
       } else if (format == 'audiobook_m4b') {
-        await AppLogger.log('Inizio generazione audiolibro M4B sperimentale');
-        final path = await _generateAudiobook(
+        await AppLogger.log('Inizio generazione audiolibro M4B');
+        path = await _generateAudiobook(
           baseName,
           text,
           appDir.path,
           AudiobookExportFormat.m4b,
         );
-        await AppLogger.log('Audiolibro M4B generato in: $path, avvio condivisione');
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(path)],
-            text: p.basename(path),
-          ),
-        );
-        await AppLogger.log('Condivisione audiolibro M4B completata o chiusa');
+        saveName = _exportLibraryFileName(baseName, 'm4b', audiobook: true);
+        await AppLogger.log('Audiolibro M4B generato in: $path');
+      }
+
+      if (path != null && saveName != null && mounted) {
+        await _handleExportedFile(path, saveName);
       }
     } catch (e) {
       dev.log('Errore durante l\'esportazione: $e');
@@ -503,6 +494,65 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         );
       }
     }
+  }
+
+  Future<void> _handleExportedFile(String path, String saveName) async {
+    final l10n = AppLocalizations.of(context);
+    final action = await showDialog<_ExportAction>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.exportCompleteTitle),
+        content: Text(l10n.exportCompleteMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, _ExportAction.saveInSonarpad),
+            child: Text(l10n.saveInSonarpad),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, _ExportAction.share),
+            child: Text(l10n.share),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, _ExportAction.close),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted || action == null || action == _ExportAction.close) {
+      await AppLogger.log('Esportazione completata: nessuna azione successiva');
+      return;
+    }
+
+    if (action == _ExportAction.share) {
+      await AppLogger.log('Avvio condivisione file esportato: $path');
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(path)],
+          text: p.basename(path),
+        ),
+      );
+      await AppLogger.log('Condivisione file esportato completata o chiusa');
+      return;
+    }
+
+    await AppLogger.log('Salvataggio file esportato in Sonarpad: $path');
+    final doc = await _service.importFile(
+      File(path),
+      originalName: saveName,
+      parentId: widget.folderId,
+    );
+    await _service.add(doc);
+    await _load();
+    if (!mounted) return;
+    setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.exportSavedInSonarpad)),
+    );
+    await AppLogger.log(
+      'File esportato salvato nei Documenti: name=${doc.name} path=${doc.path}',
+    );
   }
 
   Future<String> _exportTextForDocument(DocumentItem doc) async {
@@ -575,14 +625,93 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     String outDir,
     AudiobookExportFormat format,
   ) async {
+    final l10n = AppLocalizations.of(context);
     final safeBaseName = _safeExportBaseName(baseName);
-    final file = await AudiobookExportService().export(
-      text: text,
-      title: safeBaseName,
-      outputDirectory: outDir,
-      format: format,
+    final progressNotifier = ValueNotifier<_AudiobookExportProgressUi>(
+      _AudiobookExportProgressUi(
+        message: l10n.audiobookExportPreparing,
+        value: 0,
+      ),
     );
-    return file.path;
+
+    Future<void>? dialogFuture;
+    if (mounted) {
+      dialogFuture = showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: Text(AppLocalizations.of(ctx).audiobookExportProgressTitle),
+            content: ValueListenableBuilder<_AudiobookExportProgressUi>(
+              valueListenable: progressNotifier,
+              builder: (context, progress, _) {
+                final percent = progress.value == null
+                    ? null
+                    : (progress.value!.clamp(0.0, 1.0) * 100).round();
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Semantics(
+                      liveRegion: true,
+                      child: Text(progress.message),
+                    ),
+                    const SizedBox(height: 16),
+                    LinearProgressIndicator(value: progress.value),
+                    if (percent != null) ...[
+                      const SizedBox(height: 8),
+                      Text('$percent%'),
+                    ],
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+    }
+
+    try {
+      final file = await AudiobookExportService().export(
+        text: text,
+        title: safeBaseName,
+        outputDirectory: outDir,
+        format: format,
+        onProgress: (progress) {
+          progressNotifier.value = _AudiobookExportProgressUi(
+            message: _audiobookExportProgressMessage(l10n, progress),
+            value: progress.value,
+          );
+        },
+      );
+      return file.path;
+    } finally {
+      if (mounted && dialogFuture != null) {
+        Navigator.of(context, rootNavigator: true).pop();
+        await dialogFuture.catchError((_) {});
+      }
+      progressNotifier.dispose();
+    }
+  }
+
+  String _audiobookExportProgressMessage(
+    AppLocalizations l10n,
+    AudiobookExportProgress progress,
+  ) {
+    switch (progress.stage) {
+      case AudiobookExportProgressStage.preparing:
+        return l10n.audiobookExportPreparing;
+      case AudiobookExportProgressStage.generating:
+        final total = progress.total <= 0 ? 1 : progress.total;
+        final current = progress.current.clamp(0, total);
+        return '${l10n.audiobookExportGeneratingAudio} $current/$total';
+      case AudiobookExportProgressStage.converting:
+        return l10n.audiobookExportConvertingAudio;
+      case AudiobookExportProgressStage.finalizing:
+        return l10n.audiobookExportFinalizing;
+    }
   }
 
   String _safeExportBaseName(String value) {
@@ -601,6 +730,16 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         .join(' ')
         .trim();
     return cleaned.isEmpty ? 'Documento' : cleaned;
+  }
+
+  String _exportLibraryFileName(
+    String baseName,
+    String extension, {
+    bool audiobook = false,
+  }) {
+    final safeBaseName = _safeExportBaseName(baseName);
+    if (audiobook) return '$safeBaseName - audiolibro.$extension';
+    return '$safeBaseName.$extension';
   }
 
   Future<String> _generatePdf(
@@ -669,6 +808,28 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           MaterialPageRoute<void>(
             settings: const RouteSettings(name: '/internet_archive/saved'),
             builder: (_) => InternetArchiveSavedItemScreen(item: item),
+          ),
+        );
+      } catch (e) {
+        if (mounted) _showSnack(AppLocalizations.of(context).error(e));
+      }
+      return;
+    }
+
+    if (_isLocalAudioDocument(doc)) {
+      try {
+        final resolvedPath = await _service.resolveFilePath(doc);
+        if (!mounted) return;
+        final episode = PodcastEpisode(
+          title: doc.displayName,
+          description: doc.displayName,
+          audioUrl: Uri.file(resolvedPath).toString(),
+          id: 'document_audio:${doc.id}',
+        );
+        await Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: '/documents/audio_player'),
+            builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
           ),
         );
       } catch (e) {
@@ -834,6 +995,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   bool _isRemoteAudioDocument(DocumentItem doc) =>
       _isLibrivoxDocument(doc) || _isInternetArchiveDocument(doc);
 
+  bool _isLocalAudioDocument(DocumentItem doc) {
+    final ext = doc.extension.toLowerCase();
+    return _audioDocumentExtensions.contains(ext);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -987,6 +1153,9 @@ class _DocumentTile extends StatelessWidget {
         return Colors.indigo.shade700;
       case 'archiveaudio':
         return Colors.deepPurple.shade700;
+      case 'mp3':
+      case 'm4b':
+        return Colors.teal.shade700;
       default:
         return Colors.purple.shade700;
     }
@@ -1014,7 +1183,10 @@ class _DocumentTile extends StatelessWidget {
               label: doc.isFolder
                   ? l10n.removeFolder
                   : l10n.removeDocument): onRemove,
-          if (doc.extension != 'librivox' && doc.extension != 'archiveaudio')
+          if (doc.extension != 'librivox' &&
+              doc.extension != 'archiveaudio' &&
+              doc.extension != 'mp3' &&
+              doc.extension != 'm4b')
             CustomSemanticsAction(label: l10n.exportDocument): onExport,
           if (!isFirst)
             CustomSemanticsAction(label: l10n.moveUp): () =>
@@ -1052,7 +1224,9 @@ class _DocumentTile extends StatelessWidget {
                           ? const Icon(Icons.folder,
                               color: Colors.white, size: 28)
                           : doc.extension == 'librivox' ||
-                                  doc.extension == 'archiveaudio'
+                                  doc.extension == 'archiveaudio' ||
+                                  _audioDocumentExtensions
+                                      .contains(doc.extension.toLowerCase())
                               ? const Icon(Icons.headphones,
                                   color: Colors.white, size: 28)
                               : Text(
@@ -1114,7 +1288,19 @@ class _DocumentTile extends StatelessWidget {
   }
 }
 
+class _AudiobookExportProgressUi {
+  const _AudiobookExportProgressUi({
+    required this.message,
+    required this.value,
+  });
+
+  final String message;
+  final double? value;
+}
+
 enum _DocumentAction { moveUp, moveDown, moveToPosition }
+
+enum _ExportAction { saveInSonarpad, share, close }
 
 class _DocumentPositionSliderDialog extends StatefulWidget {
   final int currentIndex;

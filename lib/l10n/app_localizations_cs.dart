@@ -1100,7 +1100,36 @@ Za ukrajinský překlad děkujeme Ivanu Shtefuriakovi.''';
   String get audiobookMp3Format => '''Audiokniha MP3 (.mp3)''';
 
   @override
-  String get audiobookM4bFormat => '''Audiokniha M4B (.m4b, experimentální)''';
+  String get audiobookM4bFormat => '''Audiokniha M4B (.m4b)''';
+
+  @override
+  String get exportCompleteTitle => '''Export dokončen''';
+
+  @override
+  String get exportCompleteMessage => '''Soubor byl úspěšně vytvořen. Chcete ho uložit do Sonarpadu nebo sdílet?''';
+
+  @override
+  String get saveInSonarpad => '''Uložit do Sonarpadu''';
+
+  @override
+  String get exportSavedInSonarpad => '''Soubor uložen do Dokumentů Sonarpadu.''';
+
+
+  @override
+  String get audiobookExportProgressTitle => '''Vytváření audioknihy''';
+
+  @override
+  String get audiobookExportPreparing => '''Příprava audioknihy...''';
+
+  @override
+  String get audiobookExportGeneratingAudio => '''Generování zvuku''';
+
+  @override
+  String get audiobookExportConvertingAudio => '''Konečný převod zvukového souboru...''';
+
+  @override
+  String get audiobookExportFinalizing => '''Dokončování...''';
+
 
   @override
   String get exportError => '''Chyba exportu''';

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -10,6 +11,7 @@ import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import '../services/audio_player_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../utils/app_logger.dart';
 import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -175,12 +177,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
     final rawCode = _tvSecretCodeController.text.trim();
     final codeChanged = rawCode != _savedTvSecretCode;
+    final appLanguageChanged = _appLanguage != _savedAppLanguage;
+    final themeChanged = _themeMode != _savedThemeMode;
+    final autoBookmarkChanged = _autoBookmark != _savedAutoBookmark;
+    final homeGroupingChanged = _homeGroupingEnabled != _savedHomeGroupingEnabled;
+    final seekSliderStepChanged = _seekSliderStep != _savedSeekSliderStep;
+    final ttsEngineChanged = _ttsEngine != _savedTtsEngine;
+    final ttsSettingsChanged = ttsEngineChanged ||
+        _languageCode != _savedLanguageCode ||
+        _voice != _savedVoice ||
+        _systemTtsLanguage != _savedSystemTtsLanguage ||
+        _systemTtsVoice != _savedSystemTtsVoice ||
+        _ttsSpeed != _savedTtsSpeed ||
+        _ttsPitch != _savedTtsPitch;
+    final anySettingsChanged = codeChanged ||
+        appLanguageChanged ||
+        themeChanged ||
+        autoBookmarkChanged ||
+        homeGroupingChanged ||
+        seekSliderStepChanged ||
+        ttsSettingsChanged;
+    final savedMessage = codeChanged && rawCode.isNotEmpty
+        ? l10n.sonarpadCodeValidMessage
+        : l10n.settingsSaved;
+
+    await AppLogger.log(
+      'Settings: save start anySettingsChanged=$anySettingsChanged '
+      'appLanguageChanged=$appLanguageChanged themeChanged=$themeChanged '
+      'codeChanged=$codeChanged autoBookmarkChanged=$autoBookmarkChanged '
+      'homeGroupingChanged=$homeGroupingChanged '
+      'seekSliderStepChanged=$seekSliderStepChanged '
+      'ttsEngine=$_ttsEngine previous=$_savedTtsEngine '
+      'ttsSettingsChanged=$ttsSettingsChanged voice=$_voice savedVoice=$_savedVoice '
+      'systemVoice=$_systemTtsVoice savedSystemVoice=$_savedSystemTtsVoice',
+    );
 
     if (codeChanged && rawCode.isNotEmpty) {
       try {
         await AudiodescriptionService().fetchRecentCatalog(rawCode);
       } catch (e) {
         setState(() => _isSaving = false);
+        await AppLogger.log('Settings: save failed invalid Sonarpad code: $e');
         if (!mounted) return;
         await _showSaveResultDialog(
           title: l10n.sonarpadCodeInvalidTitle,
@@ -191,6 +228,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     await _saveTtsSelection();
+    if (anySettingsChanged) {
+      await _stabilizeAccessibilityAfterSettingsChange(
+        ttsSettingsChanged: ttsSettingsChanged,
+        engineChanged: ttsEngineChanged,
+      );
+    }
     await _settings.saveAppLanguage(_appLanguage);
     await _settings.saveThemeMode(_themeMode);
     await _settings.saveTtsSpeed(_ttsSpeed);
@@ -201,18 +244,77 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.saveSeekSliderStep(_seekSliderStep);
     _markSaved(rawCode);
 
-    setState(() => _isSaving = false);
     if (!mounted) return;
-    widget.onThemeModeChanged?.call(_themeMode);
+    setState(() => _isSaving = false);
+
+    // Evita di ricostruire inutilmente tutto il MaterialApp quando l'utente
+    // salva solo il motore/voce TTS. Su iOS questa ricostruzione può far
+    // perdere temporaneamente il focus e l'albero semantico a VoiceOver.
+    if (themeChanged) {
+      widget.onThemeModeChanged?.call(_themeMode);
+    }
+
+    final direction = Directionality.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          codeChanged && rawCode.isNotEmpty
-              ? l10n.sonarpadCodeValidMessage
-              : l10n.settingsSaved,
-        ),
-      ),
+      SnackBar(content: Text(savedMessage)),
     );
+    unawaited(AppLogger.log('Settings: save completed'));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Non togliamo il focus dopo il salvataggio: su iOS/VoiceOver può
+      // lasciare temporaneamente la schermata senza un elemento semantico
+      // agganciato. Se nessun controllo ha più il focus, agganciamo almeno
+      // il contenitore principale e annunciamo il salvataggio.
+      if (FocusManager.instance.primaryFocus == null &&
+          !_screenFocusNode.hasFocus) {
+        _screenFocusNode.requestFocus();
+      }
+      SemanticsService.sendAnnouncement(
+        View.of(context),
+        savedMessage,
+        direction,
+      );
+    });
+  }
+
+  Future<void> _stabilizeAccessibilityAfterSettingsChange({
+    required bool ttsSettingsChanged,
+    required bool engineChanged,
+  }) async {
+    try {
+      await AppLogger.log(
+        'Settings: settings changed, stabilizing accessibility '
+        'ttsSettingsChanged=$ttsSettingsChanged engineChanged=$engineChanged '
+        'savedEngine=$_savedTtsEngine newEngine=$_ttsEngine '
+        'savedEdgeVoice=$_savedVoice newEdgeVoice=$_voice '
+        'savedSystemVoice=$_savedSystemTtsVoice newSystemVoice=$_systemTtsVoice',
+      );
+
+      // Qualunque impostazione venga salvata può lasciare attive sessioni
+      // audio di prova o una sessione TTS inizializzata mentre l'utente era
+      // nella schermata impostazioni. Prima di restituire il focus a
+      // VoiceOver/TalkBack le fermiamo sempre.
+      await _audio.stop();
+      await _flutterTts.stop();
+
+      // La parte più delicata è iOS: se il motore finale è Edge, il TTS di
+      // sistema non deve restare con una shared session attiva. La protezione
+      // viene applicata anche se è cambiata una qualsiasi altra impostazione,
+      // non solo quando cambia voce o motore TTS.
+      if (Platform.isIOS && _ttsEngine == 'edge') {
+        await _flutterTts.autoStopSharedSession(true);
+        await _flutterTts.setSharedInstance(false);
+      }
+
+      // Piccolo respiro per lasciare al framework il tempo di chiudere le
+      // sessioni native prima dello SnackBar/annuncio semantico.
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+
+      await AppLogger.log('Settings: accessibility stabilization completed');
+    } catch (error) {
+      await AppLogger.log('Settings: accessibility stabilization failed: $error');
+    }
   }
 
   Future<void> _showSaveResultDialog({

@@ -12,6 +12,31 @@ import '../utils/app_logger.dart';
 import 'app_settings_service.dart';
 import 'voice_dictionary_service.dart';
 
+typedef AudiobookExportProgressCallback = FutureOr<void> Function(
+  AudiobookExportProgress progress,
+);
+
+class AudiobookExportProgress {
+  const AudiobookExportProgress({
+    required this.stage,
+    required this.current,
+    required this.total,
+    this.value,
+  });
+
+  final AudiobookExportProgressStage stage;
+  final int current;
+  final int total;
+  final double? value;
+}
+
+enum AudiobookExportProgressStage {
+  preparing,
+  generating,
+  converting,
+  finalizing,
+}
+
 /// Esporta un documento testuale come audiolibro usando il motore TTS scelto
 /// nelle impostazioni di Sonarpad.
 ///
@@ -44,6 +69,7 @@ class AudiobookExportService {
     required String title,
     required String outputDirectory,
     required AudiobookExportFormat format,
+    AudiobookExportProgressCallback? onProgress,
   }) async {
     final cleanTitle = _safeBaseName(title);
     final extension = format.extension;
@@ -77,6 +103,15 @@ class AudiobookExportService {
       'Audiobook export: settings engine=$engine speed=$speed pitch=$pitch '
       'chunks=${chunks.length} maxChunkChars=$_maxChunkChars',
     );
+    await _notifyProgress(
+      onProgress,
+      AudiobookExportProgress(
+        stage: AudiobookExportProgressStage.preparing,
+        current: 0,
+        total: chunks.length,
+        value: 0,
+      ),
+    );
 
     final tempDir = await _createTempDirectory();
     final generatedFiles = <File>[];
@@ -89,6 +124,7 @@ class AudiobookExportService {
             tempDir: tempDir,
             speed: speed,
             pitch: pitch,
+            onProgress: onProgress,
           ),
         );
       } else {
@@ -97,6 +133,7 @@ class AudiobookExportService {
             chunks: chunks,
             dictionaryEntries: dictionaryEntries,
             tempDir: tempDir,
+            onProgress: onProgress,
           ),
         );
       }
@@ -109,6 +146,17 @@ class AudiobookExportService {
         output: output,
         title: cleanTitle,
         format: format,
+        onProgress: onProgress,
+      );
+
+      await _notifyProgress(
+        onProgress,
+        AudiobookExportProgress(
+          stage: AudiobookExportProgressStage.finalizing,
+          current: chunks.length,
+          total: chunks.length,
+          value: 1,
+        ),
       );
 
       final exists = await output.exists();
@@ -138,12 +186,22 @@ class AudiobookExportService {
     required List<String> chunks,
     required List<VoiceDictionaryEntry> dictionaryEntries,
     required Directory tempDir,
+    AudiobookExportProgressCallback? onProgress,
   }) async {
     final voice = await _settings.loadTtsVoice();
     await AppLogger.log('Audiobook export Edge: voice=$voice');
     final files = <File>[];
 
     for (var i = 0; i < chunks.length; i++) {
+      await _notifyProgress(
+        onProgress,
+        AudiobookExportProgress(
+          stage: AudiobookExportProgressStage.generating,
+          current: i,
+          total: chunks.length,
+          value: chunks.isEmpty ? null : (i / chunks.length) * 0.85,
+        ),
+      );
       final textToSpeak = _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
       await AppLogger.log(
         'Audiobook export Edge: chunk ${i + 1}/${chunks.length} textLength=${textToSpeak.length}',
@@ -156,6 +214,15 @@ class AudiobookExportService {
         'Audiobook export Edge: chunk ${i + 1}/${chunks.length} file="${target.path}" bytes=$size',
       );
       files.add(target);
+      await _notifyProgress(
+        onProgress,
+        AudiobookExportProgress(
+          stage: AudiobookExportProgressStage.generating,
+          current: i + 1,
+          total: chunks.length,
+          value: ((i + 1) / chunks.length) * 0.85,
+        ),
+      );
     }
 
     return files;
@@ -167,6 +234,7 @@ class AudiobookExportService {
     required Directory tempDir,
     required double speed,
     required double pitch,
+    AudiobookExportProgressCallback? onProgress,
   }) async {
     final language = await _settings.loadSystemTtsLanguage();
     final voice = await _settings.loadSystemTtsVoice();
@@ -189,6 +257,15 @@ class AudiobookExportService {
     final tempExtension = Platform.isIOS ? 'caf' : 'wav';
 
     for (var i = 0; i < chunks.length; i++) {
+      await _notifyProgress(
+        onProgress,
+        AudiobookExportProgress(
+          stage: AudiobookExportProgressStage.generating,
+          current: i,
+          total: chunks.length,
+          value: chunks.isEmpty ? null : (i / chunks.length) * 0.85,
+        ),
+      );
       final textToSpeak = _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
       final path = p.join(
         tempDir.path,
@@ -214,6 +291,15 @@ class AudiobookExportService {
         );
       }
       files.add(file);
+      await _notifyProgress(
+        onProgress,
+        AudiobookExportProgress(
+          stage: AudiobookExportProgressStage.generating,
+          current: i + 1,
+          total: chunks.length,
+          value: ((i + 1) / chunks.length) * 0.85,
+        ),
+      );
     }
 
     return files;
@@ -290,6 +376,7 @@ class AudiobookExportService {
     required File output,
     required String title,
     required AudiobookExportFormat format,
+    AudiobookExportProgressCallback? onProgress,
   }) async {
     if (inputFiles.isEmpty) {
       throw Exception('Nessun file audio da unire.');
@@ -331,6 +418,15 @@ class AudiobookExportService {
       output.path,
     ];
 
+    await _notifyProgress(
+      onProgress,
+      AudiobookExportProgress(
+        stage: AudiobookExportProgressStage.converting,
+        current: inputFiles.length,
+        total: inputFiles.length,
+        value: null,
+      ),
+    );
     await AppLogger.log('Audiobook export ffmpeg: args=${args.map(_quoteLogArg).join(" ")}');
     final session = await FFmpegKit.executeWithArguments(args);
     final returnCode = await session.getReturnCode();
@@ -346,6 +442,14 @@ class AudiobookExportService {
     await AppLogger.log(
       'Audiobook export ffmpeg: success returnCode=${returnCode?.getValue()} logs="${_compact(logs)}"',
     );
+  }
+
+  Future<void> _notifyProgress(
+    AudiobookExportProgressCallback? callback,
+    AudiobookExportProgress progress,
+  ) async {
+    if (callback == null) return;
+    await callback(progress);
   }
 
   Future<Directory> _createTempDirectory() async {
