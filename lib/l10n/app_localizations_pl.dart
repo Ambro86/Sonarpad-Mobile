@@ -442,6 +442,12 @@ Za tłumaczenie na ukraiński dziękuję Ivanowi Shtefuriakowi.''';
   String get searchCountry => '''Kraj wyszukiwania''';
 
   @override
+  String get browsePodcastCountries => '''Przeglądaj według kraju''';
+
+  @override
+  String get podcastCountries => '''Kraje podcastów''';
+
+  @override
   String get podcastCategory => '''Kategoria podcastu''';
 
   @override
@@ -449,6 +455,9 @@ Za tłumaczenie na ukraiński dziękuję Ivanowi Shtefuriakowi.''';
 
   @override
   String get selectedPodcastCategory => '''Wybrana kategoria''';
+
+  @override
+  String get selectedRecently => '''ostatni wybór''';
 
   @override
   String get podcastCategories => '''Kategorie podcastów''';

@@ -442,6 +442,12 @@ Za ukrajinský překlad děkujeme Ivanu Shtefuriakovi.''';
   String get searchCountry => '''Země hledání''';
 
   @override
+  String get browsePodcastCountries => '''Procházet podle země''';
+
+  @override
+  String get podcastCountries => '''Země podcastů''';
+
+  @override
   String get podcastCategory => '''Kategorie podcastu''';
 
   @override
@@ -449,6 +455,9 @@ Za ukrajinský překlad děkujeme Ivanu Shtefuriakovi.''';
 
   @override
   String get selectedPodcastCategory => '''Vybraná kategorie''';
+
+  @override
+  String get selectedRecently => '''poslední volba''';
 
   @override
   String get podcastCategories => '''Kategorie podcastů''';

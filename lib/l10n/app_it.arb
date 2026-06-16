@@ -619,6 +619,14 @@
   "@searchCountry": {
     "description": "Localized text for searchCountry."
   },
+  "browsePodcastCountries": "Sfoglia per nazione",
+  "@browsePodcastCountries": {
+    "description": "Localized text for browsePodcastCountries."
+  },
+  "podcastCountries": "Nazioni podcast",
+  "@podcastCountries": {
+    "description": "Localized text for podcastCountries."
+  },
   "podcastCategory": "Categoria podcast",
   "@podcastCategory": {
     "description": "Localized text for podcastCategory."
@@ -630,6 +638,10 @@
   "selectedPodcastCategory": "Categoria selezionata",
   "@selectedPodcastCategory": {
     "description": "Localized text for selectedPodcastCategory."
+  },
+  "selectedRecently": "scelta recente",
+  "@selectedRecently": {
+    "description": "Label appended to the most recently selected podcast country or category."
   },
   "podcastCategories": "Categorie podcast",
   "@podcastCategories": {

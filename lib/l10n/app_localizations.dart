@@ -900,6 +900,18 @@ abstract class AppLocalizations {
   /// **'Paese di ricerca'**
   String get searchCountry;
 
+  /// Localized text for browsePodcastCountries.
+  ///
+  /// In it, this message translates to:
+  /// **'Sfoglia per nazione'**
+  String get browsePodcastCountries;
+
+  /// Localized text for podcastCountries.
+  ///
+  /// In it, this message translates to:
+  /// **'Nazioni podcast'**
+  String get podcastCountries;
+
   /// Localized text for podcastCategory.
   ///
   /// In it, this message translates to:
@@ -917,6 +929,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Categoria selezionata'**
   String get selectedPodcastCategory;
+
+  /// Label appended to the most recently selected podcast country or category.
+  ///
+  /// In it, this message translates to:
+  /// **'scelta recente'**
+  String get selectedRecently;
 
   /// Localized text for podcastCategories.
   ///

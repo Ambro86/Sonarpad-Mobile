@@ -168,6 +168,10 @@
   "podcastCategory": "Catégorie de podcast",
   "browsePodcastCategories": "Parcourir les catégories",
   "selectedPodcastCategory": "Catégorie sélectionnée",
+  "selectedRecently": "choix récent",
+  "@selectedRecently": {
+    "description": "Label appended to the most recently selected podcast country or category."
+  },
   "podcastCategories": "Catégories de podcasts",
   "countryItaly": "Italie",
   "countryUnitedStatesEnglish": "États-Unis / Anglais",
@@ -729,5 +733,7 @@
   "deleteItem": "Supprimer",
   "@deleteItem": {
     "description": "Localized text for deleteItem."
-  }
+  },
+  "browsePodcastCountries": "Parcourir par pays",
+  "podcastCountries": "Pays des podcasts"
 }

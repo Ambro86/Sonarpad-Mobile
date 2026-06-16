@@ -778,14 +778,14 @@ class PodcastService {
   }
 
   Future<List<PodcastSearchResult>> searchPodcasts(String query,
-      {String country = 'it', PodcastCategory? category}) async {
+      {String? country = 'it', PodcastCategory? category}) async {
     final q = query.trim();
-    if (q.isEmpty && category?.genreId == null) return const [];
     final genreId = category?.genreId;
+    final topCountry = country ?? 'us';
     final appleParams = {
       'media': 'podcast',
       'entity': 'podcast',
-      'country': country,
+      if (country != null) 'country': country,
       'limit': '25',
       if (q.isNotEmpty) 'term': q,
       if (genreId != null) 'genreId': '$genreId',
@@ -793,18 +793,24 @@ class PodcastService {
     final results = <PodcastSearchResult>[];
     final errors = <Object>[];
     Object? topByGenreError;
-    if (q.isEmpty && genreId != null) {
+    if (q.isEmpty) {
       try {
-        results.addAll(await _searchAppleTopByGenre(genreId, country));
+        results.addAll(genreId == null
+            ? await _searchAppleTopByCountry(topCountry)
+            : await _searchAppleTopByGenre(genreId, topCountry));
       } catch (e) {
         topByGenreError = e;
       }
     }
-    try {
-      results.addAll(await _searchApple(appleParams));
-    } catch (e) {
-      if (topByGenreError != null) errors.add(topByGenreError);
-      errors.add(e);
+    if (q.isNotEmpty || genreId != null) {
+      try {
+        results.addAll(await _searchApple(appleParams));
+      } catch (e) {
+        if (topByGenreError != null) errors.add(topByGenreError);
+        errors.add(e);
+      }
+    } else if (topByGenreError != null) {
+      errors.add(topByGenreError);
     }
     if (q.isNotEmpty) {
       try {
@@ -856,6 +862,47 @@ class PodcastService {
         })
         .whereType<PodcastSearchResult>()
         .toList();
+  }
+
+  Future<List<PodcastSearchResult>> _searchAppleTopByCountry(
+      String country) async {
+    final uri = Uri.parse('https://itunes.apple.com/$country/rss/toppodcasts/'
+        'limit=50/json');
+    final response = await _client.get(uri, headers: const {
+      'User-Agent': 'SonarpadMobile/0.1',
+      'Accept': 'application/json',
+    });
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+          'Podcast per nazione non raggiungibili: ${response.statusCode}');
+    }
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final feed = decoded['feed'] as Map<String, dynamic>? ?? const {};
+    final rawEntries = feed['entry'];
+    final entries = rawEntries is List
+        ? rawEntries
+        : rawEntries == null
+            ? const []
+            : [rawEntries];
+    final ids = entries
+        .map((raw) {
+          final entry = raw as Map<String, dynamic>;
+          final id = entry['id'] as Map<String, dynamic>? ?? const {};
+          final attributes =
+              id['attributes'] as Map<String, dynamic>? ?? const {};
+          return attributes['im:id']?.toString();
+        })
+        .whereType<String>()
+        .where((id) => id.isNotEmpty)
+        .toList();
+    if (ids.isEmpty) return const [];
+    final lookupUri = Uri.https('itunes.apple.com', '/lookup', {
+      'id': ids.join(','),
+      'country': country,
+    });
+    final lookup =
+        await _fetchAppleItems(lookupUri, 'Lookup podcast non riuscito');
+    return _appleItemsToResults(lookup);
   }
 
   Future<List<PodcastSearchResult>> _searchAppleTopByGenre(

@@ -50,6 +50,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _mediaKitPlaying = false;
   bool _mediaKitVideoSettingApplied = false;
   double _mediaKitVolume = 1.0;
+  double _videoPlayerVolume = 1.0;
   bool _recording = false;
   File? _recordingOutput;
 
@@ -112,11 +113,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         await _audio.stop();
         await _disposeMediaKitPlayer();
         _videoController?.dispose();
+        _videoPlayerVolume = await _settings.loadMediaVolume();
         _videoController = VideoPlayerController.networkUrl(
           Uri.parse(widget.station.streamUrl),
           videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
         );
         await _videoController!.initialize();
+        await _videoController!.setVolume(_videoPlayerVolume);
+        AppLogger.log(
+          'RadioPlayer: video_player volume applied after initialize volume=$_videoPlayerVolume',
+        );
         if (Platform.isIOS) {
           await _mediaCommands.invokeMethod(
             'setupMagicTap',
@@ -262,6 +268,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     if (player != null) {
       unawaited(player.setVolume(clamped * 100).catchError((error) {
         AppLogger.log('RadioPlayer: failed to set MediaKit volume: $error');
+      }));
+    }
+  }
+
+  void _setVideoPlayerVolume(double value) {
+    final clamped = value.clamp(0.0, 1.0).toDouble();
+    setState(() => _videoPlayerVolume = clamped);
+    unawaited(_settings.saveMediaVolume(clamped));
+    final controller = _videoController;
+    if (controller != null) {
+      unawaited(controller.setVolume(clamped).catchError((error) {
+        AppLogger.log('RadioPlayer: failed to set video_player volume: $error');
       }));
     }
   }
@@ -585,9 +603,17 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             const SizedBox(height: 24),
             VolumeSlider(audioPlayer: _audio),
           ],
+          if (_videoController != null &&
+              _videoController!.value.isInitialized) ...[
+            const SizedBox(height: 24),
+            _PlayerVolumeSlider(
+              volume: _videoPlayerVolume,
+              onChanged: _setVideoPlayerVolume,
+            ),
+          ],
           if (_mediaKitPlayer != null) ...[
             const SizedBox(height: 24),
-            _MediaKitVolumeSlider(
+            _PlayerVolumeSlider(
               volume: _mediaKitVolume,
               onChanged: _setMediaKitVolume,
             ),
@@ -606,8 +632,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 }
 
-class _MediaKitVolumeSlider extends StatelessWidget {
-  const _MediaKitVolumeSlider({
+class _PlayerVolumeSlider extends StatelessWidget {
+  const _PlayerVolumeSlider({
     required this.volume,
     required this.onChanged,
   });

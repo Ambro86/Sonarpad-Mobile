@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
+import '../services/app_settings_service.dart';
 import '../services/radio_service.dart';
 import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
@@ -39,6 +40,7 @@ class RadioScreen extends StatefulWidget {
 }
 
 class _RadioScreenState extends State<RadioScreen> {
+  final _settings = AppSettingsService();
   final _service = RadioService();
   final _searchController = TextEditingController();
 
@@ -56,7 +58,30 @@ class _RadioScreenState extends State<RadioScreen> {
   void initState() {
     super.initState();
     _searchController.addListener(_handleSearchTextChanged);
+    _loadSavedBrowseChoices();
     _loadDirectoryOptions();
+  }
+
+  Future<void> _loadSavedBrowseChoices() async {
+    final savedLanguage = await _settings.loadRadioLanguage();
+    final savedCountry = await _settings.loadRadioCountry();
+    final savedGenre = await _settings.loadRadioGenre();
+    if (!mounted) return;
+    setState(() {
+      if (savedLanguage != null && savedLanguage.trim().isNotEmpty) {
+        _languageCode = savedLanguage.trim();
+      }
+      if (savedCountry != null && savedCountry.trim().isNotEmpty) {
+        final countryCode = savedCountry.trim().replaceFirst('country:', '');
+        _countryCode = 'country:$countryCode';
+      }
+      if (savedGenre != null && savedGenre.trim().isNotEmpty) {
+        _genre = RadioService.genres.firstWhere(
+          (item) => item.value == savedGenre.trim(),
+          orElse: () => _genre,
+        );
+      }
+    });
   }
 
   void _handleSearchTextChanged() {
@@ -270,16 +295,19 @@ class _RadioScreenState extends State<RadioScreen> {
                     title: l10n.radioBrowseByLanguage,
                     options: languageItems,
                     labelBuilder: (o) => _languageOptionLabel(l10n, o),
+                    selectedBuilder: (o) => o.code == _languageCode,
+                    selectedLabel: l10n.selectedRecently,
                   ),
                 ),
               );
-              if (result != null) {
-                setState(() {
-                  _languageCode = result.code;
+              if (!mounted || result == null) return;
+              setState(() {
+                _languageCode = result.code;
                   _browseMode = _RadioBrowseMode.language;
-                });
-                _search();
-              }
+              });
+              await _settings.saveRadioLanguage(result.code);
+              if (!mounted) return;
+              _search();
             },
           ),
           ListTile(
@@ -295,16 +323,21 @@ class _RadioScreenState extends State<RadioScreen> {
                     title: l10n.radioBrowseByCountry,
                     options: countryItems,
                     labelBuilder: (o) => o.value,
+                    selectedBuilder: (o) => o.key == _countryCode,
+                    selectedLabel: l10n.selectedRecently,
                   ),
                 ),
               );
-              if (result != null) {
-                setState(() {
-                  _countryCode = result.key;
+              if (!mounted || result == null) return;
+              setState(() {
+                _countryCode = result.key;
                   _browseMode = _RadioBrowseMode.country;
-                });
-                _search();
-              }
+              });
+              await _settings.saveRadioCountry(
+                result.key.replaceFirst('country:', ''),
+              );
+              if (!mounted) return;
+              _search();
             },
           ),
           ListTile(
@@ -359,13 +392,16 @@ class _RadioScreenState extends State<RadioScreen> {
                     title: l10n.radioGenre,
                     options: genreItems,
                     labelBuilder: (o) => l10n.radioGenreLabel(o.value),
+                    selectedBuilder: (o) => o.value == _genre.value,
+                    selectedLabel: l10n.selectedRecently,
                   ),
                 ),
               );
-              if (result != null) {
-                setState(() => _genre = result);
-                _search();
-              }
+              if (!mounted || result == null) return;
+              setState(() => _genre = result);
+              await _settings.saveRadioGenre(result.value);
+              if (!mounted) return;
+              _search();
             },
           ),
           const SizedBox(height: 16),
@@ -454,24 +490,36 @@ class _RadioOptionPickerScreen<T> extends StatelessWidget {
   final String title;
   final List<T> options;
   final String Function(T) labelBuilder;
+  final bool Function(T)? selectedBuilder;
+  final String? selectedLabel;
 
   const _RadioOptionPickerScreen({
     required this.title,
     required this.options,
     required this.labelBuilder,
+    this.selectedBuilder,
+    this.selectedLabel,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: ListView.builder(
+      body: ListView.separated(
         itemCount: options.length,
+        separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final option = options[index];
+          final selected = selectedBuilder?.call(option) ?? false;
+          final label = labelBuilder(option);
+          final displayLabel = selected && selectedLabel != null
+              ? '$label, $selectedLabel'
+              : label;
           return ListTile(
-            key: ValueKey('radio_option_${labelBuilder(option)}'),
-            title: Text(labelBuilder(option)),
+            key: ValueKey('radio_option_$label'),
+            leading: Icon(selected ? Icons.check : Icons.radio),
+            title: Text(displayLabel),
+            trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.pop(context, option),
           );
         },

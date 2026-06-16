@@ -168,6 +168,10 @@
   "podcastCategory": "Kategorie podcastu",
   "browsePodcastCategories": "Procházet kategorie",
   "selectedPodcastCategory": "Vybraná kategorie",
+  "selectedRecently": "poslední volba",
+  "@selectedRecently": {
+    "description": "Label appended to the most recently selected podcast country or category."
+  },
   "podcastCategories": "Kategorie podcastů",
   "countryItaly": "Itálie",
   "countryUnitedStatesEnglish": "Spojené státy / angličtina",
@@ -729,5 +733,7 @@
   "deleteItem": "Smazat",
   "@deleteItem": {
     "description": "Localized text for deleteItem."
-  }
+  },
+  "browsePodcastCountries": "Procházet podle země",
+  "podcastCountries": "Země podcastů"
 }

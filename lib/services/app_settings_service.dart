@@ -45,6 +45,9 @@ class AppSettingsService {
   static const _weatherCityKey = 'sonarpad_weather_city';
   static const _newsLocalCityKey = 'sonarpad_news_local_city';
   static const _themeModeKey = 'sonarpad_theme_mode';
+  static const _radioLanguageKey = 'sonarpad_radio_language';
+  static const _radioCountryKey = 'sonarpad_radio_country';
+  static const _radioGenreKey = 'sonarpad_radio_genre';
 
   static const ttsLanguages = [
     TtsVoiceLanguage('it', 'Italiano'),
@@ -191,6 +194,36 @@ class AppSettingsService {
   Future<void> savePodcastCategoryGenreId(int? genreId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('sonarpad_podcast_category_genre_id', genreId ?? 0);
+  }
+
+  Future<String?> loadRadioLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_radioLanguageKey);
+  }
+
+  Future<void> saveRadioLanguage(String languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_radioLanguageKey, languageCode);
+  }
+
+  Future<String?> loadRadioCountry() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_radioCountryKey);
+  }
+
+  Future<void> saveRadioCountry(String countryCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_radioCountryKey, countryCode);
+  }
+
+  Future<String?> loadRadioGenre() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_radioGenreKey);
+  }
+
+  Future<void> saveRadioGenre(String genreValue) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_radioGenreKey, genreValue);
   }
 
   Future<SonarpadThemeMode> loadThemeMode() async {

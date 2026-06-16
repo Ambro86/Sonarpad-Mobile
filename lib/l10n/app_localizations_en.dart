@@ -442,6 +442,12 @@ For the Ukrainian translation, thanks to Ivan Shtefuriak.''';
   String get searchCountry => '''Search country''';
 
   @override
+  String get browsePodcastCountries => '''Browse by country''';
+
+  @override
+  String get podcastCountries => '''Podcast countries''';
+
+  @override
   String get podcastCategory => '''Podcast category''';
 
   @override
@@ -449,6 +455,9 @@ For the Ukrainian translation, thanks to Ivan Shtefuriak.''';
 
   @override
   String get selectedPodcastCategory => '''Selected category''';
+
+  @override
+  String get selectedRecently => '''recent choice''';
 
   @override
   String get podcastCategories => '''Podcast categories''';
