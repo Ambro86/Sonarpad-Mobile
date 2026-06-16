@@ -61,7 +61,7 @@
   "donationsIntro": "Sonarpad was initially created to meet personal needs, but over time it has grown into a broader app. Its development requires constant work: improving features, fixing bugs, exploring new ideas, and carefully testing every function.\n\nIf you find Sonarpad useful and want to support its development, you can make a donation.",
   "donationsPaypalDesc": "You can donate via PayPal using this link:\nhttps://www.paypal.me/ambrogio86\nPlease, if possible, add “Sonarpad” as the payment note.",
   "donationsBankDesc": "You can also donate via bank transfer to the bank account in the name of Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nPlease, if possible, use a clear payment reason, for example “Sonarpad”.",
-  "donationsThanks": "Anyone who supports the project will be mentioned in the program and on the GitHub repository, unless they prefer to stay anonymous or use a nickname.\n\nThanks to Jiri Holzinger and Paola Vagata for their contribution.\nFor the Vietnamese translation, thanks to Anh Đức Nguyễn.\nFor the Czech translation, thanks to Radek Žalud and Jiri Holzinger.\nFor the Spanish translation, thanks to Arturo Fernandez Rivas.\nFor the Serbian translation, thanks to Mila Kuran.\nFor the Ukrainian translation, thanks to Ivan Shtefuriak.",
+  "donationsThanks": "Anyone who supports the project will be mentioned in the app and on the GitHub repository, unless they prefer to stay anonymous or use a nickname.\n\nThanks to Jiri Holzinger and Paola Vagata for their contribution.\nFor the Czech translation, thanks to Radek Žalud and Jiri Holzinger.\nFor the Spanish translation, thanks to Arturo Fernandez Rivas.",
   "news": "News",
   "newsHint": "Open news from Google News RSS",
   "podcasts": "Podcasts",

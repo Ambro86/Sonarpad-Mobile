@@ -44,16 +44,18 @@ jobs:
 
             final Directory baseDir =
                 Directory.systemTemp.createTempSync('sonarpad_screenshots_');
-            final String tempPath = Directory('${baseDir.path}/temp')
-              ..createSync(recursive: true);
-            final String docsPath = Directory('${baseDir.path}/documents')
-              ..createSync(recursive: true);
-            final String supportPath = Directory('${baseDir.path}/support')
-              ..createSync(recursive: true);
-            final String cachePath = Directory('${baseDir.path}/cache')
-              ..createSync(recursive: true);
-            final String downloadsPath = Directory('${baseDir.path}/downloads')
-              ..createSync(recursive: true);
+
+            String ensureDirectory(String name) {
+              final Directory directory = Directory('${baseDir.path}/$name');
+              directory.createSync(recursive: true);
+              return directory.path;
+            }
+
+            final String tempPath = ensureDirectory('temp');
+            final String docsPath = ensureDirectory('documents');
+            final String supportPath = ensureDirectory('support');
+            final String cachePath = ensureDirectory('cache');
+            final String downloadsPath = ensureDirectory('downloads');
 
             const MethodChannel pathProviderChannel =
                 MethodChannel('plugins.flutter.io/path_provider');
@@ -99,6 +101,53 @@ jobs:
                   'buildSignature': '',
                   'installerStore': null,
                 };
+              }
+              return null;
+            });
+
+            const MethodChannel wakelockChannel =
+                MethodChannel('wakelock_plus');
+
+            TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+                .setMockMethodCallHandler(wakelockChannel,
+                    (MethodCall methodCall) async {
+              switch (methodCall.method) {
+                case 'toggle':
+                case 'enable':
+                case 'disable':
+                  return null;
+                case 'isEnabled':
+                  return false;
+              }
+              return null;
+            });
+
+            const MethodChannel flutterTtsChannel = MethodChannel('flutter_tts');
+
+            TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+                .setMockMethodCallHandler(flutterTtsChannel,
+                    (MethodCall methodCall) async {
+              switch (methodCall.method) {
+                case 'getLanguages':
+                  return <String>['it-IT', 'en-US'];
+                case 'getVoices':
+                  return <Map<String, String>>[
+                    <String, String>{'name': 'Test Voice', 'locale': 'it-IT'},
+                  ];
+                case 'getDefaultVoice':
+                  return <String, String>{
+                    'name': 'Test Voice',
+                    'locale': 'it-IT',
+                  };
+                case 'isLanguageAvailable':
+                case 'setLanguage':
+                case 'setVoice':
+                case 'setSpeechRate':
+                case 'setPitch':
+                case 'setVolume':
+                case 'stop':
+                case 'speak':
+                  return 1;
               }
               return null;
             });

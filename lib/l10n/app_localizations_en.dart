@@ -200,14 +200,11 @@ IBAN: IT77W0306901020100000064149
 Please, if possible, use a clear payment reason, for example “Sonarpad”.''';
 
   @override
-  String get donationsThanks => '''Anyone who supports the project will be mentioned in the program and on the GitHub repository, unless they prefer to stay anonymous or use a nickname.
+  String get donationsThanks => '''Anyone who supports the project will be mentioned in the app and on the GitHub repository, unless they prefer to stay anonymous or use a nickname.
 
 Thanks to Jiri Holzinger and Paola Vagata for their contribution.
-For the Vietnamese translation, thanks to Anh Đức Nguyễn.
 For the Czech translation, thanks to Radek Žalud and Jiri Holzinger.
-For the Spanish translation, thanks to Arturo Fernandez Rivas.
-For the Serbian translation, thanks to Mila Kuran.
-For the Ukrainian translation, thanks to Ivan Shtefuriak.''';
+For the Spanish translation, thanks to Arturo Fernandez Rivas.''';
 
   @override
   String get news => '''News''';

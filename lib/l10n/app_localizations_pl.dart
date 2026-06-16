@@ -203,11 +203,8 @@ Jeśli to możliwe, podaj jasny tytuł płatności, na przykład „Sonarpad”.
   String get donationsThanks => '''Każda osoba wspierająca projekt zostanie wymieniona w aplikacji i w repozytorium GitHub w sekcji wspierających, chyba że poprosi o anonimowość lub użycie pseudonimu.
 
 Dziękuję Jiriemu Holzingerowi i Paoli Vagata za ich wkład.
-Za tłumaczenie na wietnamski dziękuję Anh Đức Nguyễn.
 Za tłumaczenie na czeski dziękuję Radkowi Žaludowi i Jiriemu Holzingerowi.
-Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.
-Za tłumaczenie na serbski dziękuję Mili Kuran.
-Za tłumaczenie na ukraiński dziękuję Ivanowi Shtefuriakowi.''';
+Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
 
   @override
   String get news => '''Wiadomości''';

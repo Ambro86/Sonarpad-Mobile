@@ -203,11 +203,8 @@ Se possível, use uma descrição clara, por exemplo “Sonarpad”.''';
   String get donationsThanks => '''Quem apoiar o projeto será mencionado na aplicação e no repositório GitHub, salvo se preferir ficar anónimo ou usar um pseudónimo.
 
 Obrigado a Jiri Holzinger e Paola Vagata pela contribuição.
-Pela tradução vietnamita, obrigado a Anh Đức Nguyễn.
 Pela tradução checa, obrigado a Radek Žalud e Jiri Holzinger.
-Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.
-Pela tradução sérvia, obrigado a Mila Kuran.
-Pela tradução ucraniana, obrigado a Ivan Shtefuriak.''';
+Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
 
   @override
   String get news => '''Notícias''';

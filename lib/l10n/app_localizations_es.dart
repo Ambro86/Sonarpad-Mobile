@@ -203,11 +203,8 @@ Por favor, si es posible, usa un motivo de pago claro, por ejemplo, "Sonarpad".'
   String get donationsThanks => '''Toda persona que apoye el proyecto será mencionada en la aplicación y en el repositorio de GitHub, salvo que prefiera permanecer en el anonimato o usar un seudónimo.
 
 Gracias a Jiri Holzinger y Paola Vagata por su contribución.
-Por la traducción al vietnamita, gracias a Anh Đức Nguyễn.
 Por la traducción al checo, gracias a Radek Žalud y Jiri Holzinger.
-Por la traducción al español, gracias a Arturo Fernandez Rivas.
-Por la traducción al serbio, gracias a Mila Kuran.
-Por la traducción al ucraniano, gracias a Ivan Shtefuriak.''';
+Por la traducción al español, gracias a Arturo Fernandez Rivas.''';
 
   @override
   String get news => '''Noticias''';

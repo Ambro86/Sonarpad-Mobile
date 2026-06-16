@@ -249,7 +249,7 @@
   "@donationsBankDesc": {
     "description": "Localized text for donationsBankDesc."
   },
-  "donationsThanks": "Każda osoba wspierająca projekt zostanie wymieniona w aplikacji i w repozytorium GitHub w sekcji wspierających, chyba że poprosi o anonimowość lub użycie pseudonimu.\n\nDziękuję Jiriemu Holzingerowi i Paoli Vagata za ich wkład.\nZa tłumaczenie na wietnamski dziękuję Anh Đức Nguyễn.\nZa tłumaczenie na czeski dziękuję Radkowi Žaludowi i Jiriemu Holzingerowi.\nZa tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.\nZa tłumaczenie na serbski dziękuję Mili Kuran.\nZa tłumaczenie na ukraiński dziękuję Ivanowi Shtefuriakowi.",
+  "donationsThanks": "Każda osoba wspierająca projekt zostanie wymieniona w aplikacji i w repozytorium GitHub w sekcji wspierających, chyba że poprosi o anonimowość lub użycie pseudonimu.\n\nDziękuję Jiriemu Holzingerowi i Paoli Vagata za ich wkład.\nZa tłumaczenie na czeski dziękuję Radkowi Žaludowi i Jiriemu Holzingerowi.\nZa tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.",
   "@donationsThanks": {
     "description": "Localized text for donationsThanks."
   },
