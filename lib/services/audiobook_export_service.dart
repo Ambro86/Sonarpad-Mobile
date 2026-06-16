@@ -6,6 +6,7 @@ import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
@@ -113,15 +114,31 @@ class AudiobookExportService {
       ),
     );
 
-    final tempDir = await _createTempDirectory();
+    final voiceSignature = await _voiceSignature(
+      engine: engine,
+      speed: speed,
+      pitch: pitch,
+      dictionaryEntries: dictionaryEntries,
+    );
+    final jobDir = await _createPersistentJobDirectory(
+      cleanTitle: cleanTitle,
+      format: format,
+      engine: engine,
+      voiceSignature: voiceSignature,
+      text: normalizedText,
+      chunks: chunks.length,
+    );
     final generatedFiles = <File>[];
+    var wakelockEnabled = false;
     try {
+      await _enableExportWakelock();
+      wakelockEnabled = true;
       if (engine == 'system') {
         generatedFiles.addAll(
           await _generateSystemChunks(
             chunks: chunks,
             dictionaryEntries: dictionaryEntries,
-            tempDir: tempDir,
+            tempDir: jobDir,
             speed: speed,
             pitch: pitch,
             onProgress: onProgress,
@@ -132,7 +149,7 @@ class AudiobookExportService {
           await _generateEdgeChunks(
             chunks: chunks,
             dictionaryEntries: dictionaryEntries,
-            tempDir: tempDir,
+            tempDir: jobDir,
             onProgress: onProgress,
           ),
         );
@@ -167,17 +184,18 @@ class AudiobookExportService {
       if (!exists || size < 1024) {
         throw Exception('File audiolibro non creato o troppo piccolo: $size byte');
       }
+      await _deleteJobDirectory(jobDir);
       return output;
     } catch (error, stack) {
       await AppLogger.log('Audiobook export: ERROR $error');
       await AppLogger.log('Audiobook export: stack ${_compact(stack.toString())}');
+      await AppLogger.log(
+        'Audiobook export: job kept for resume at "${jobDir.path}"',
+      );
       rethrow;
     } finally {
-      try {
-        await tempDir.delete(recursive: true);
-        await AppLogger.log('Audiobook export: temp deleted "${tempDir.path}"');
-      } catch (error) {
-        await AppLogger.log('Audiobook export: temp delete failed $error');
+      if (wakelockEnabled) {
+        await _disableExportWakelock();
       }
     }
   }
@@ -203,11 +221,29 @@ class AudiobookExportService {
         ),
       );
       final textToSpeak = _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+      final target = File(p.join(tempDir.path, 'chunk_${i.toString().padLeft(5, '0')}.mp3'));
+      final existingSize = await _validAudioSize(target);
+      if (existingSize != null) {
+        await AppLogger.log(
+          'Audiobook export Edge: resume chunk ${i + 1}/${chunks.length} already exists file="${target.path}" bytes=$existingSize',
+        );
+        files.add(target);
+        await _notifyProgress(
+          onProgress,
+          AudiobookExportProgress(
+            stage: AudiobookExportProgressStage.generating,
+            current: i + 1,
+            total: chunks.length,
+            value: ((i + 1) / chunks.length) * 0.85,
+          ),
+        );
+        continue;
+      }
+
       await AppLogger.log(
         'Audiobook export Edge: chunk ${i + 1}/${chunks.length} textLength=${textToSpeak.length}',
       );
       final file = await _edgeTts.speakToFile(text: textToSpeak, voice: voice);
-      final target = File(p.join(tempDir.path, 'chunk_${i.toString().padLeft(5, '0')}.mp3'));
       await file.copy(target.path);
       final size = await target.length();
       await AppLogger.log(
@@ -272,6 +308,23 @@ class AudiobookExportService {
         'system_chunk_${i.toString().padLeft(5, '0')}.$tempExtension',
       );
       final file = File(path);
+      final existingSize = await _validAudioSize(file);
+      if (existingSize != null) {
+        await AppLogger.log(
+          'Audiobook export system: resume chunk ${i + 1}/${chunks.length} already exists path="$path" bytes=$existingSize',
+        );
+        files.add(file);
+        await _notifyProgress(
+          onProgress,
+          AudiobookExportProgress(
+            stage: AudiobookExportProgressStage.generating,
+            current: i + 1,
+            total: chunks.length,
+            value: ((i + 1) / chunks.length) * 0.85,
+          ),
+        );
+        continue;
+      }
       if (await file.exists()) await file.delete();
 
       await AppLogger.log(
@@ -452,14 +505,139 @@ class AudiobookExportService {
     await callback(progress);
   }
 
-  Future<Directory> _createTempDirectory() async {
-    final base = await getTemporaryDirectory();
-    final dir = Directory(
-      p.join(base.path, 'sonarpad_audiobook_${DateTime.now().millisecondsSinceEpoch}'),
+  Future<Directory> _createPersistentJobDirectory({
+    required String cleanTitle,
+    required AudiobookExportFormat format,
+    required String engine,
+    required String voiceSignature,
+    required String text,
+    required int chunks,
+  }) async {
+    final base = await getApplicationSupportDirectory();
+    final root = Directory(p.join(base.path, 'sonarpad_audiobook_exports'));
+    await root.create(recursive: true);
+    await _cleanupOldJobs(root);
+
+    final jobId = _jobId(
+      cleanTitle: cleanTitle,
+      format: format,
+      engine: engine,
+      voiceSignature: voiceSignature,
+      text: text,
+      chunks: chunks,
     );
+    final dir = Directory(p.join(root.path, jobId));
+    final existed = await dir.exists();
     await dir.create(recursive: true);
-    await AppLogger.log('Audiobook export: temp="${dir.path}"');
+    await AppLogger.log(
+      'Audiobook export: persistent job dir="${dir.path}" existed=$existed',
+    );
     return dir;
+  }
+
+  Future<void> _deleteJobDirectory(Directory dir) async {
+    try {
+      if (await dir.exists()) {
+        await dir.delete(recursive: true);
+      }
+      await AppLogger.log('Audiobook export: job deleted "${dir.path}"');
+    } catch (error) {
+      await AppLogger.log('Audiobook export: job delete failed $error');
+    }
+  }
+
+  Future<void> _cleanupOldJobs(Directory root) async {
+    try {
+      if (!await root.exists()) return;
+      final now = DateTime.now();
+      await for (final entity in root.list()) {
+        if (entity is! Directory) continue;
+        final stat = await entity.stat();
+        if (now.difference(stat.modified).inDays >= 3) {
+          await entity.delete(recursive: true);
+          await AppLogger.log(
+            'Audiobook export: removed old job dir "${entity.path}"',
+          );
+        }
+      }
+    } catch (error) {
+      await AppLogger.log('Audiobook export: cleanup old jobs failed $error');
+    }
+  }
+
+  Future<int?> _validAudioSize(File file) async {
+    if (!await file.exists()) return null;
+    final size = await file.length();
+    return size >= 512 ? size : null;
+  }
+
+  Future<void> _enableExportWakelock() async {
+    if (!(Platform.isIOS || Platform.isAndroid)) return;
+    try {
+      await WakelockPlus.enable();
+      await AppLogger.log('Audiobook export: wakelock enabled');
+    } catch (error) {
+      await AppLogger.log('Audiobook export: wakelock enable failed $error');
+    }
+  }
+
+  Future<void> _disableExportWakelock() async {
+    if (!(Platform.isIOS || Platform.isAndroid)) return;
+    try {
+      await WakelockPlus.disable();
+      await AppLogger.log('Audiobook export: wakelock disabled');
+    } catch (error) {
+      await AppLogger.log('Audiobook export: wakelock disable failed $error');
+    }
+  }
+
+  Future<String> _voiceSignature({
+    required String engine,
+    required double speed,
+    required double pitch,
+    required List<VoiceDictionaryEntry> dictionaryEntries,
+  }) async {
+    String voicePart;
+    if (engine == 'system') {
+      final language = await _settings.loadSystemTtsLanguage();
+      final voice = await _settings.loadSystemTtsVoice();
+      voicePart = 'system|$language|${voice ?? 'default'}';
+    } else {
+      final voice = await _settings.loadTtsVoice();
+      voicePart = 'edge|$voice';
+    }
+    final dictionaryPart = dictionaryEntries
+        .map((entry) => '${entry.original}\t${entry.replacement}\t${entry.matchCase}')
+        .join('\n');
+    return '$voicePart|speed=$speed|pitch=$pitch|dict=${_stableHash(dictionaryPart)}';
+  }
+
+  String _jobId({
+    required String cleanTitle,
+    required AudiobookExportFormat format,
+    required String engine,
+    required String voiceSignature,
+    required String text,
+    required int chunks,
+  }) {
+    final base = _safeBaseName(cleanTitle)
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+        .replaceAll(RegExp(r'_+'), '_')
+        .replaceAll(RegExp(r'^_|_$'), '');
+    final compactBase = base.isEmpty
+        ? 'documento'
+        : (base.length > 48 ? base.substring(0, 48) : base);
+    return '${compactBase}_${format.extension}_${engine}_${_stableHash(voiceSignature)}_${chunks}_${_stableHash(text)}';
+  }
+
+  String _stableHash(String value) {
+    var hash = 0x811c9dc5;
+    for (final unit in value.codeUnits) {
+      hash ^= unit;
+      hash = (hash * 0x01000193) & 0xffffffff;
+    }
+    return hash.toRadixString(16).padLeft(8, '0');
   }
 
   String _normalizeText(String text) {

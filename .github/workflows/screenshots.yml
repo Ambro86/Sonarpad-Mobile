@@ -5,26 +5,120 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: stable
+          cache: true
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Generate Screenshots
-        run: flutter test test/screenshots_test.dart --update-goldens --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+      - name: Create widget-test plugin mocks
+        shell: bash
+        run: |
+          cat > test/flutter_test_config.dart <<'DART'
+          import 'dart:async';
+          import 'dart:io';
 
-      - name: Upload Screenshots
+          import 'package:flutter/services.dart';
+          import 'package:flutter_test/flutter_test.dart';
+          import 'package:shared_preferences/shared_preferences.dart';
+
+          Future<void> testExecutable(FutureOr<void> Function() testMain) async {
+            TestWidgetsFlutterBinding.ensureInitialized();
+
+            SharedPreferences.setMockInitialValues(<String, Object>{});
+
+            final Directory baseDir =
+                Directory.systemTemp.createTempSync('sonarpad_screenshots_');
+            final String tempPath = Directory('${baseDir.path}/temp')
+              ..createSync(recursive: true);
+            final String docsPath = Directory('${baseDir.path}/documents')
+              ..createSync(recursive: true);
+            final String supportPath = Directory('${baseDir.path}/support')
+              ..createSync(recursive: true);
+            final String cachePath = Directory('${baseDir.path}/cache')
+              ..createSync(recursive: true);
+            final String downloadsPath = Directory('${baseDir.path}/downloads')
+              ..createSync(recursive: true);
+
+            const MethodChannel pathProviderChannel =
+                MethodChannel('plugins.flutter.io/path_provider');
+
+            TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+                .setMockMethodCallHandler(pathProviderChannel,
+                    (MethodCall methodCall) async {
+              switch (methodCall.method) {
+                case 'getTemporaryDirectory':
+                  return tempPath;
+                case 'getApplicationDocumentsDirectory':
+                  return docsPath;
+                case 'getApplicationSupportDirectory':
+                  return supportPath;
+                case 'getApplicationCacheDirectory':
+                  return cachePath;
+                case 'getLibraryDirectory':
+                  return supportPath;
+                case 'getDownloadsDirectory':
+                  return downloadsPath;
+                case 'getExternalStorageDirectory':
+                  return docsPath;
+                case 'getExternalCacheDirectories':
+                  return <String>[cachePath];
+                case 'getExternalStorageDirectories':
+                  return <String>[docsPath];
+              }
+              return null;
+            });
+
+            const MethodChannel packageInfoChannel =
+                MethodChannel('dev.fluttercommunity.plus/package_info');
+
+            TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+                .setMockMethodCallHandler(packageInfoChannel,
+                    (MethodCall methodCall) async {
+              if (methodCall.method == 'getAll') {
+                return <String, dynamic>{
+                  'appName': 'Sonarpad',
+                  'packageName': 'com.ambro86.sonarpad',
+                  'version': '0.0.0',
+                  'buildNumber': '0',
+                  'buildSignature': '',
+                  'installerStore': null,
+                };
+              }
+              return null;
+            });
+
+            await testMain();
+          }
+          DART
+
+      - name: Generate screenshots
+        run: >
+          flutter test test/screenshots_test.dart
+          --update-goldens
+          --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+
+      - name: Upload screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: home-screenshots
-          path: test/goldens/
+          name: sonarpad-screenshots
+          if-no-files-found: warn
+          path: |
+            test/goldens/
+            test/failures/
