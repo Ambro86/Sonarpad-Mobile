@@ -54,6 +54,19 @@ class TvChannel {
       );
 }
 
+
+class RaiAudioDescriptionStreams {
+  final String videoUrl;
+  final String audioUrl;
+  final bool hasAudioDescription;
+
+  const RaiAudioDescriptionStreams({
+    required this.videoUrl,
+    required this.audioUrl,
+    required this.hasAudioDescription,
+  });
+}
+
 class TvProgram {
   final String title;
   final String hour;
@@ -84,10 +97,10 @@ class TvService {
 
 
   bool isRaiAudioDescriptionChannel(TvChannel channel) {
-    return (channel.name == 'Rai 1' ||
-            channel.name == 'Rai 2' ||
-            channel.name == 'Rai 3') &&
-        channel.url.contains('mediapolis.rai.it/relinker/');
+    final name = channel.name.trim().toLowerCase();
+    final isRaiChannel = name.startsWith('rai');
+    final usesRaiRelinker = channel.url.contains('mediapolis.rai.it/relinker/');
+    return isRaiChannel && usesRaiRelinker;
   }
 
   String _decodePayload(String jsonStr, String secretKey) {
@@ -494,8 +507,10 @@ class TvService {
   }
 
   /// Per i canali RAI con audiodescrizione, scarica il master playlist HLS
-  /// e restituisce l'URI della traccia AD se presente, altrimenti l'URL principale.
-  Future<String> resolveAudioDescriptionStreamUrl(TvChannel channel) async {
+  /// e restituisce sia il video normale sia la traccia audio AD, se presente.
+  Future<RaiAudioDescriptionStreams> resolveAudioDescriptionStreams(
+    TvChannel channel,
+  ) async {
     final masterUrl = await resolveStreamUrl(channel);
     await AppLogger.log('Cerco traccia AD nel master URL: $masterUrl');
 
@@ -508,12 +523,20 @@ class TvService {
       if (response.statusCode != 200) {
         await AppLogger.log(
             'Errore HTTP ${response.statusCode} scaricando master playlist.');
-        return masterUrl;
+        return RaiAudioDescriptionStreams(
+          videoUrl: masterUrl,
+          audioUrl: masterUrl,
+          hasAudioDescription: false,
+        );
       }
 
       final body = response.body;
       if (!body.trimLeft().startsWith('#EXTM3U')) {
-        return masterUrl;
+        return RaiAudioDescriptionStreams(
+          videoUrl: masterUrl,
+          audioUrl: masterUrl,
+          hasAudioDescription: false,
+        );
       }
 
       final finalMasterUrl = response.request?.url.toString() ?? masterUrl;
@@ -538,7 +561,7 @@ class TvService {
 
         final language = (attrs['LANGUAGE'] ?? '').toLowerCase();
         final name = (attrs['NAME'] ?? '').toLowerCase();
-        final characteristics = attrs['CHARACTERISTICS'] ?? '';
+        final characteristics = (attrs['CHARACTERISTICS'] ?? '').toLowerCase();
 
         final isAudioDescription = language == 'des' ||
             name.contains('audiodescri') ||
@@ -557,12 +580,31 @@ class TvService {
         }
       }
 
-      return adUrl ?? itaUrl ?? masterUrl;
+      final audioUrl = adUrl ?? itaUrl ?? finalMasterUrl;
+      await AppLogger.log(
+        'RAI AD streams resolved: videoUrl=$finalMasterUrl audioUrl=$audioUrl hasAD=${adUrl != null}',
+      );
+      return RaiAudioDescriptionStreams(
+        videoUrl: finalMasterUrl,
+        audioUrl: audioUrl,
+        hasAudioDescription: adUrl != null,
+      );
     } catch (e) {
       dev.log('TvService: errore ricerca traccia AD: $e');
       await AppLogger.log('Errore durante la ricerca della traccia AD: $e');
-      return masterUrl;
+      return RaiAudioDescriptionStreams(
+        videoUrl: masterUrl,
+        audioUrl: masterUrl,
+        hasAudioDescription: false,
+      );
     }
+  }
+
+  /// Per la riproduzione resta compatibile: restituisce l'audio AD se presente,
+  /// altrimenti il master principale.
+  Future<String> resolveAudioDescriptionStreamUrl(TvChannel channel) async {
+    final streams = await resolveAudioDescriptionStreams(channel);
+    return streams.audioUrl;
   }
 
   /// Risolve l'URI del manifest audio mantenendo i parametri query del master

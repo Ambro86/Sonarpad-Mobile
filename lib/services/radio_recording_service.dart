@@ -71,6 +71,8 @@ class RadioRecordingService {
   Future<File> start({
     required String stationName,
     required String streamUrl,
+    String? videoStreamUrl,
+    String? audioStreamUrl,
   }) async {
     if (_session != null) {
       throw StateError('Registrazione gia in corso.');
@@ -78,19 +80,34 @@ class RadioRecordingService {
 
     final dir = await recordingsDirectory();
     await dir.create(recursive: true);
-    final ext = _recordingExtension(streamUrl);
+    final isRaiAudioDescriptionRecording =
+        videoStreamUrl != null && audioStreamUrl != null;
+    final ext = isRaiAudioDescriptionRecording
+        ? '.mp4'
+        : _recordingExtension(streamUrl);
     final file = File(p.join(
       dir.path,
       '${_safeFileName(stationName)} - ${_timestamp()}$ext',
     ));
-    final arguments = _recordingArguments(
-      streamUrl: streamUrl,
-      outputPath: file.path,
-    );
+    final arguments = isRaiAudioDescriptionRecording
+        ? _raiAudioDescriptionRecordingArguments(
+            videoUrl: videoStreamUrl!,
+            audioUrl: audioStreamUrl!,
+            outputPath: file.path,
+          )
+        : _recordingArguments(
+            streamUrl: streamUrl,
+            outputPath: file.path,
+          );
 
     await AppLogger.log(
       'Radio recording: start station="$stationName" output="${file.path}"',
     );
+    if (isRaiAudioDescriptionRecording) {
+      await AppLogger.log(
+        'Radio recording: RAI AD mode videoUrl=$videoStreamUrl audioUrl=$audioStreamUrl',
+      );
+    }
     await AppLogger.log('Radio recording: ffmpeg args=${arguments.join(' ')}');
     _outputFile = file;
     _ffmpegLogLines = 0;
@@ -218,6 +235,37 @@ class RadioRecordingService {
       'aac',
       '-b:a',
       '128k',
+      outputPath,
+    ];
+  }
+
+
+  List<String> _raiAudioDescriptionRecordingArguments({
+    required String videoUrl,
+    required String audioUrl,
+    required String outputPath,
+  }) {
+    return [
+      '-y',
+      '-user_agent',
+      _ffmpegUserAgent,
+      '-i',
+      videoUrl,
+      '-user_agent',
+      _ffmpegUserAgent,
+      '-i',
+      audioUrl,
+      '-map',
+      '0:v:0?',
+      '-map',
+      '1:a:0?',
+      '-c:v',
+      'copy',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-shortest',
       outputPath,
     ];
   }

@@ -379,9 +379,31 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
+      String? recordingVideoUrl;
+      String? recordingAudioUrl;
+      final tvChannel = widget.tvChannel;
+      if (tvChannel != null &&
+          TvService().isRaiAudioDescriptionChannel(tvChannel) &&
+          !TvService.isDashStreamUrl(widget.station.streamUrl)) {
+        final streams = await TvService().resolveAudioDescriptionStreams(tvChannel);
+        if (streams.hasAudioDescription && streams.videoUrl != streams.audioUrl) {
+          recordingVideoUrl = streams.videoUrl;
+          recordingAudioUrl = streams.audioUrl;
+          await AppLogger.log(
+            'RadioPlayer: RAI AD recording requested videoUrl=$recordingVideoUrl audioUrl=$recordingAudioUrl',
+          );
+        } else {
+          await AppLogger.log(
+            'RadioPlayer: RAI AD recording fallback to normal stream hasAD=${streams.hasAudioDescription}',
+          );
+        }
+      }
+
       final file = await _recordingService.start(
         stationName: widget.station.name,
         streamUrl: widget.station.streamUrl,
+        videoStreamUrl: recordingVideoUrl,
+        audioStreamUrl: recordingAudioUrl,
       );
       if (!mounted) return;
       setState(() {
