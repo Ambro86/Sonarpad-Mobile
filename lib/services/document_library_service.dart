@@ -475,6 +475,10 @@ class DocumentLibraryService {
     return lower == 'sonarpad_database.json' ||
         lower.endsWith('_export.txt') ||
         lower.endsWith('_export.pdf') ||
+        lower.endsWith('_export.docx') ||
+        lower.endsWith('_export.epub') ||
+        lower.endsWith('_audiobook.mp3') ||
+        lower.endsWith('_audiobook.m4b') ||
         lower.startsWith('.');
   }
 

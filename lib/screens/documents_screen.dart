@@ -11,8 +11,11 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
+import '../services/audiobook_export_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
+import '../services/docx_export_service.dart';
+import '../services/epub_export_service.dart';
 import '../services/internet_archive_service.dart';
 import '../services/librivox_service.dart';
 import '../utils/app_logger.dart';
@@ -381,6 +384,22 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             onPressed: () => Navigator.pop(ctx, 'pdf'),
             child: Text(AppLocalizations.of(context).pdfFormat),
           ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, 'docx'),
+            child: Text(AppLocalizations.of(context).docxFormat),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, 'epub'),
+            child: Text(AppLocalizations.of(context).epubFormat),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, 'audiobook_mp3'),
+            child: Text(AppLocalizations.of(context).audiobookMp3Format),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, 'audiobook_m4b'),
+            child: Text(AppLocalizations.of(context).audiobookM4bFormat),
+          ),
         ],
       ),
     );
@@ -419,6 +438,60 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           ),
         );
         await AppLogger.log('Condivisione PDF completata o chiusa');
+      } else if (format == 'docx') {
+        await AppLogger.log('Inizio generazione DOCX Unicode');
+        final path = await _generateDocx(baseName, text, appDir.path);
+        await AppLogger.log('DOCX generato in: $path, avvio condivisione');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(path)],
+            text: p.basename(path),
+          ),
+        );
+        await AppLogger.log('Condivisione DOCX completata o chiusa');
+      } else if (format == 'epub') {
+        await AppLogger.log('Inizio generazione EPUB Unicode');
+        final path = await _generateEpub(baseName, text, appDir.path);
+        await AppLogger.log('EPUB generato in: $path, avvio condivisione');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(path)],
+            text: p.basename(path),
+          ),
+        );
+        await AppLogger.log('Condivisione EPUB completata o chiusa');
+      } else if (format == 'audiobook_mp3') {
+        await AppLogger.log('Inizio generazione audiolibro MP3');
+        final path = await _generateAudiobook(
+          baseName,
+          text,
+          appDir.path,
+          AudiobookExportFormat.mp3,
+        );
+        await AppLogger.log('Audiolibro MP3 generato in: $path, avvio condivisione');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(path)],
+            text: p.basename(path),
+          ),
+        );
+        await AppLogger.log('Condivisione audiolibro MP3 completata o chiusa');
+      } else if (format == 'audiobook_m4b') {
+        await AppLogger.log('Inizio generazione audiolibro M4B sperimentale');
+        final path = await _generateAudiobook(
+          baseName,
+          text,
+          appDir.path,
+          AudiobookExportFormat.m4b,
+        );
+        await AppLogger.log('Audiolibro M4B generato in: $path, avvio condivisione');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(path)],
+            text: p.basename(path),
+          ),
+        );
+        await AppLogger.log('Condivisione audiolibro M4B completata o chiusa');
       }
     } catch (e) {
       dev.log('Errore durante l\'esportazione: $e');
@@ -474,6 +547,60 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     // PdfStandardFont supporta solo caratteri 0-255 (WinAnsi)
     return sanitized.replaceAllMapped(RegExp(r'[^\x00-\xFF]'), (match) => '?');
+  }
+
+
+
+  Future<String> _generateDocx(
+      String baseName, String text, String outDir) async {
+    final safeBaseName = _safeExportBaseName(baseName);
+    final path = '$outDir/${safeBaseName}_export.docx';
+    final bytes = DocxExportService().buildDocx(text);
+    await File(path).writeAsBytes(bytes, flush: true);
+    return path;
+  }
+
+  Future<String> _generateEpub(
+      String baseName, String text, String outDir) async {
+    final safeBaseName = _safeExportBaseName(baseName);
+    final path = '$outDir/${safeBaseName}_export.epub';
+    final bytes = EpubExportService().buildEpub(text, title: safeBaseName);
+    await File(path).writeAsBytes(bytes, flush: true);
+    return path;
+  }
+
+  Future<String> _generateAudiobook(
+    String baseName,
+    String text,
+    String outDir,
+    AudiobookExportFormat format,
+  ) async {
+    final safeBaseName = _safeExportBaseName(baseName);
+    final file = await AudiobookExportService().export(
+      text: text,
+      title: safeBaseName,
+      outputDirectory: outDir,
+      format: format,
+    );
+    return file.path;
+  }
+
+  String _safeExportBaseName(String value) {
+    final cleaned = value
+        .replaceAll('/', ' ')
+        .replaceAll('\\', ' ')
+        .replaceAll(':', ' ')
+        .replaceAll('*', ' ')
+        .replaceAll('?', ' ')
+        .replaceAll('"', ' ')
+        .replaceAll('<', ' ')
+        .replaceAll('>', ' ')
+        .replaceAll('|', ' ')
+        .split(' ')
+        .where((part) => part.trim().isNotEmpty)
+        .join(' ')
+        .trim();
+    return cleaned.isEmpty ? 'Documento' : cleaned;
   }
 
   Future<String> _generatePdf(

@@ -38,6 +38,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
   static const _localAudioExtensions = {
     '.mp3',
     '.m4a',
+    '.m4b',
     '.aac',
     '.wav',
     '.ogg',

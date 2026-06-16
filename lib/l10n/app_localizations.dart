@@ -2083,6 +2083,30 @@ abstract class AppLocalizations {
   /// **'PDF (.pdf)'**
   String get pdfFormat;
 
+  /// Localized text for docxFormat.
+  ///
+  /// In it, this message translates to:
+  /// **'DOCX (.docx)'**
+  String get docxFormat;
+
+  /// Localized text for epubFormat.
+  ///
+  /// In it, this message translates to:
+  /// **'EPUB (.epub)'**
+  String get epubFormat;
+
+  /// Export format label for audiobook MP3.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiolibro MP3 (.mp3)'**
+  String get audiobookMp3Format;
+
+  /// Export format label for audiobook M4B.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiolibro M4B (.m4b, sperimentale)'**
+  String get audiobookM4bFormat;
+
   /// Localized text for exportError.
   ///
   /// In it, this message translates to:

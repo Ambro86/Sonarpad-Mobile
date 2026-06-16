@@ -1091,6 +1091,18 @@ Za ukrajinský překlad děkujeme Ivanu Shtefuriakovi.''';
   String get pdfFormat => '''PDF (.pdf)''';
 
   @override
+  String get docxFormat => '''DOCX (.docx)''';
+
+  @override
+  String get epubFormat => '''EPUB (.epub)''';
+
+  @override
+  String get audiobookMp3Format => '''Audiokniha MP3 (.mp3)''';
+
+  @override
+  String get audiobookM4bFormat => '''Audiokniha M4B (.m4b, experimentální)''';
+
+  @override
   String get exportError => '''Chyba exportu''';
 
   @override

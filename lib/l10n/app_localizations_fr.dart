@@ -1091,6 +1091,18 @@ Pour la traduction en ukrainien, merci à Ivan Shtefuriak.''';
   String get pdfFormat => '''PDF (.pdf)''';
 
   @override
+  String get docxFormat => '''DOCX (.docx)''';
+
+  @override
+  String get epubFormat => '''EPUB (.epub)''';
+
+  @override
+  String get audiobookMp3Format => '''Livre audio MP3 (.mp3)''';
+
+  @override
+  String get audiobookM4bFormat => '''Livre audio M4B (.m4b, expérimental)''';
+
+  @override
   String get exportError => '''Erreur d'exportation''';
 
   @override

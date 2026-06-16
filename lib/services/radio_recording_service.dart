@@ -80,8 +80,10 @@ class RadioRecordingService {
 
     final dir = await recordingsDirectory();
     await dir.create(recursive: true);
+    final raiVideoUrl = videoStreamUrl;
+    final raiAudioUrl = audioStreamUrl;
     final isRaiAudioDescriptionRecording =
-        videoStreamUrl != null && audioStreamUrl != null;
+        raiVideoUrl != null && raiAudioUrl != null;
     final ext = isRaiAudioDescriptionRecording
         ? '.mp4'
         : _recordingExtension(streamUrl);
@@ -89,16 +91,19 @@ class RadioRecordingService {
       dir.path,
       '${_safeFileName(stationName)} - ${_timestamp()}$ext',
     ));
-    final arguments = isRaiAudioDescriptionRecording
-        ? _raiAudioDescriptionRecordingArguments(
-            videoUrl: videoStreamUrl!,
-            audioUrl: audioStreamUrl!,
-            outputPath: file.path,
-          )
-        : _recordingArguments(
-            streamUrl: streamUrl,
-            outputPath: file.path,
-          );
+    final List<String> arguments;
+    if (raiVideoUrl != null && raiAudioUrl != null) {
+      arguments = _raiAudioDescriptionRecordingArguments(
+        videoUrl: raiVideoUrl,
+        audioUrl: raiAudioUrl,
+        outputPath: file.path,
+      );
+    } else {
+      arguments = _recordingArguments(
+        streamUrl: streamUrl,
+        outputPath: file.path,
+      );
+    }
 
     await AppLogger.log(
       'Radio recording: start station="$stationName" output="${file.path}"',

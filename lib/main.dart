@@ -275,7 +275,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
       final displayName = _sharedMediaDisplayName(basename);
       final ext = p.extension(originalFile.path).toLowerCase();
       final isAudio =
-          ['.mp3', '.m4a', '.wav', '.ogg', '.flac', '.aac'].contains(ext);
+          ['.mp3', '.m4a', '.m4b', '.wav', '.ogg', '.flac', '.aac'].contains(ext);
       final isVideo = ['.mp4', '.avi', '.mov', '.mkv'].contains(ext);
       final navigator = _navigatorKey.currentState;
       if (navigator == null) {

@@ -1091,6 +1091,18 @@ For the Ukrainian translation, thanks to Ivan Shtefuriak.''';
   String get pdfFormat => '''PDF (.pdf)''';
 
   @override
+  String get docxFormat => '''DOCX (.docx)''';
+
+  @override
+  String get epubFormat => '''EPUB (.epub)''';
+
+  @override
+  String get audiobookMp3Format => '''Audiobook MP3 (.mp3)''';
+
+  @override
+  String get audiobookM4bFormat => '''Audiobook M4B (.m4b, experimental)''';
+
+  @override
   String get exportError => '''Export error''';
 
   @override
