@@ -833,9 +833,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         actions[CustomSemanticsAction(label: l10n.documentSetBookmarkAction)] =
             () => _setBookmark(i);
       }
-      actions[CustomSemanticsAction(label: l10n.searchInDocument)] =
-          () => unawaited(_openDocumentSearch());
-
       widgets.add(
         AutoScrollTag(
           key: ValueKey(i),
