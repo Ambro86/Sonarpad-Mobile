@@ -51,6 +51,24 @@ class _AudiodescriptionScheduledScreenState
     }
   }
 
+  String _programVoiceLabel(AudiodescriptionScheduledProgram program) {
+    final parts = <String>[];
+    if (program.time.isNotEmpty) {
+      parts.add('Alle ${program.time}');
+    }
+    if (program.channel.isNotEmpty) {
+      parts.add(program.channel);
+    }
+    if (program.title.isNotEmpty) {
+      parts.add(program.title);
+    }
+    if (parts.isEmpty) {
+      return program.voiceText;
+    }
+    final text = parts.join(', ');
+    return text.endsWith('.') ? text : '$text.';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -94,15 +112,20 @@ class _AudiodescriptionScheduledScreenState
                               Padding(
                                 padding:
                                     const EdgeInsets.only(top: 8, bottom: 8),
-                                child: Text(
-                                  day.label,
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                child: Semantics(
+                                  header: true,
+                                  child: Text(
+                                    day.label,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium,
+                                  ),
                                 ),
                               ),
                               ...day.programs.map((program) {
                                 return Card(
                                   child: Semantics(
-                                    label: program.voiceText,
+                                    label: _programVoiceLabel(program),
                                     child: ExcludeSemantics(
                                       child: ListTile(
                                         leading:
