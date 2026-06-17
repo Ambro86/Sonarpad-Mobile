@@ -186,6 +186,15 @@ class _RouteScreenState extends State<RouteScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          OutlinedButton.icon(
+            onPressed: _calculating ? null : _openRecentRoutes,
+            icon: const Icon(Icons.history),
+            label: Text(l10n.routeRecentRoutes),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          ),
+          const SizedBox(height: 16),
           TextField(
             controller: _fromController,
             decoration: InputDecoration(labelText: l10n.routeFrom),
@@ -269,15 +278,6 @@ class _RouteScreenState extends State<RouteScreen> {
             label: Text(
                 _calculating ? l10n.routeCalculating : l10n.routeCalculate),
             style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: _calculating ? null : _openRecentRoutes,
-            icon: const Icon(Icons.history),
-            label: Text(l10n.routeRecentRoutes),
-            style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
           ),
