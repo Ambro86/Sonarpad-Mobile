@@ -1545,6 +1545,8 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   @override
   String get audiodescriptionAll => '''Wszystkie audiodeskrypcje''';
 
+
+
   @override
   String get audiodescriptionFilm => '''Filmy''';
 

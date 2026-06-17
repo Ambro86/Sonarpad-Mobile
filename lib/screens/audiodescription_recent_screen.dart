@@ -4,8 +4,11 @@ import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import 'audiodescription_all_screen.dart';
+import 'audiodescription_scheduled_screen.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
+
+const _scheduledAudiodescriptionsTitle = 'Audiodescrizioni in programma';
 
 class AudiodescriptionRecentScreen extends StatefulWidget {
   const AudiodescriptionRecentScreen({super.key});
@@ -132,15 +135,36 @@ class _AudiodescriptionRecentScreenState
               ? Center(child: Text('${l10n.audiodescriptionError}: $_error'))
               : ListView.separated(
                   padding: const EdgeInsets.all(16),
-                  itemCount: _filteredItems.length + 1,
+                  itemCount: _filteredItems.length + 2,
                   separatorBuilder: (_, __) => const Divider(),
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return ListTile(
+                        leading: const Icon(Icons.event_available),
+                        title: const Text(_scheduledAudiodescriptionsTitle,
+                            style:
+                                TextStyle(fontWeight: FontWeight.bold)),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              settings: const RouteSettings(
+                                  name: '/audiodescriptions/scheduled'),
+                              builder: (_) =>
+                                  const AudiodescriptionScheduledScreen(),
+                            ),
+                          );
+                        },
+                      );
+                    }
+
+                    if (index == 1) {
+                      return ListTile(
                         leading: const Icon(Icons.list),
                         title: Text(l10n.audiodescriptionAll,
                             style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
+                                TextStyle(fontWeight: FontWeight.bold)),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {
                           Navigator.push(
@@ -155,7 +179,7 @@ class _AudiodescriptionRecentScreenState
                       );
                     }
 
-                    final item = _filteredItems[index - 1];
+                    final item = _filteredItems[index - 2];
                     return ListTile(
                       title: Text(item.title),
                       subtitle: Text('${item.date} ${item.description}'.trim()),

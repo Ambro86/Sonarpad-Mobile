@@ -75,12 +75,80 @@ class AudiodescriptionGroup {
   }
 }
 
+
+class AudiodescriptionScheduledProgram {
+  final String dayLabel;
+  final String time;
+  final String channel;
+  final String title;
+  final String voiceText;
+  final String dateTime;
+
+  AudiodescriptionScheduledProgram({
+    required this.dayLabel,
+    required this.time,
+    required this.channel,
+    required this.title,
+    required this.voiceText,
+    required this.dateTime,
+  });
+
+  factory AudiodescriptionScheduledProgram.fromJson(
+    Map<String, dynamic> json,
+    String fallbackDayLabel,
+  ) {
+    final dayLabel = (json['giorno_label'] ?? fallbackDayLabel).toString().trim();
+    final time = (json['orario'] ?? '').toString().trim();
+    final channel = (json['canale'] ?? '').toString().trim();
+    final title = (json['titolo'] ?? '').toString().trim();
+    final voiceText = (json['testo_voce'] ?? '').toString().trim();
+    final dateTime = (json['datetime'] ?? '').toString().trim();
+
+    return AudiodescriptionScheduledProgram(
+      dayLabel: dayLabel,
+      time: time,
+      channel: channel,
+      title: title,
+      voiceText: voiceText.isNotEmpty
+          ? voiceText
+          : '$dayLabel alle $time, $channel, $title.'.trim(),
+      dateTime: dateTime,
+    );
+  }
+}
+
+class AudiodescriptionScheduledDay {
+  final String label;
+  final List<AudiodescriptionScheduledProgram> programs;
+
+  AudiodescriptionScheduledDay({
+    required this.label,
+    required this.programs,
+  });
+
+  factory AudiodescriptionScheduledDay.fromJson(Map<String, dynamic> json) {
+    final label = (json['giorno_label'] ?? json['data_estesa'] ?? '')
+        .toString()
+        .trim();
+    final rawPrograms = json['programmi'] as List<dynamic>? ?? const [];
+    final programs = rawPrograms
+        .whereType<Map<String, dynamic>>()
+        .map((e) => AudiodescriptionScheduledProgram.fromJson(e, label))
+        .where((e) => e.title.isNotEmpty || e.voiceText.isNotEmpty)
+        .toList();
+
+    return AudiodescriptionScheduledDay(label: label, programs: programs);
+  }
+}
+
 class AudiodescriptionService {
   static const _listUrlB64 =
       "GhUdXRJPS0YdExZHSggBDBwNBxIMXwIaCh0KHBVHTg4YSygCEBMGFVdaNwYBExMZTAVYMAYAHhJGXwQTF0YHFwANXk4YBQABXQYMQwQHBR0KFk4FWAIQSQUGARVHSA8WSgMcHQ8=";
   static const _catalogUrlB64 =
       "GhUdXRJPS0YdExZHSggBDBwNBxIMXwIaCh0KHBVHTg4YSygCEBMGFVdaNwYBExMZTAVYMAYAHhJGXwQTF0YHFwANXk4YBQABXQYMQwQHBR0KFk4FWAIQSQoOBgAFQgYAAUcKHAJHRxIaCg==";
   static const _urlKey = "rai-audio";
+  static const _scheduledUrl =
+      "https://sonarpad.com/api/audiodescrizioni/prossime_audiodescrizioni.php?mode=json";
 
   final http.Client _client;
 
@@ -179,6 +247,38 @@ class AudiodescriptionService {
         .toList();
     result.sort((a, b) => a.title.compareTo(b.title));
     return result;
+  }
+
+
+  Future<List<AudiodescriptionScheduledDay>> fetchScheduledCatalog() async {
+    final resp = await _client.get(Uri.parse(_scheduledUrl), headers: {
+      'User-Agent': 'SonarpadMobile/0.3',
+      'Accept': 'application/json',
+    });
+    if (resp.statusCode != 200) {
+      throw Exception('Errore di rete: ${resp.statusCode}');
+    }
+
+    final decoded = jsonDecode(resp.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw Exception('Risposta audiodescrizioni non valida.');
+    }
+
+    final root = decoded['dati'] is Map<String, dynamic>
+        ? decoded['dati'] as Map<String, dynamic>
+        : decoded;
+    if (root['ok'] == false) {
+      final message = (root['messaggio'] ?? root['error'] ?? 'Servizio non disponibile')
+          .toString();
+      throw Exception(message);
+    }
+
+    final rawDays = root['giorni'] as List<dynamic>? ?? const [];
+    return rawDays
+        .whereType<Map<String, dynamic>>()
+        .map(AudiodescriptionScheduledDay.fromJson)
+        .where((day) => day.programs.isNotEmpty)
+        .toList();
   }
 
   Future<String> resolveAudioUrl(String audioUrl) async {

@@ -2947,6 +2947,8 @@ abstract class AppLocalizations {
   /// **'Tutte le audiodescrizioni'**
   String get audiodescriptionAll;
 
+
+
   /// Localized text for audiodescriptionFilm.
   ///
   /// In it, this message translates to:
