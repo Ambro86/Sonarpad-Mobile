@@ -310,10 +310,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
 
   Future<void> _saveAsDocument() async {
     final l10n = AppLocalizations.of(context);
-    final text = _items.map((item) {
-      final distanceStr = l10n.formatDistance(item.distanceMeters);
-      return item.showDistance ? '${item.instruction} ($distanceStr)' : item.instruction;
-    }).join('\n\n');
+    final text = _routeDocumentText(l10n);
 
     final lib = DocumentLibraryService();
     final doc = await lib.createTextDocument(
@@ -330,20 +327,46 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
     );
   }
 
+  String _routeDocumentText(AppLocalizations l10n) {
+    final rawText = _items.map((item) {
+      final distanceStr = l10n.formatDistance(item.distanceMeters);
+      return item.showDistance
+          ? '${item.instruction} ($distanceStr)'
+          : item.instruction;
+    }).join('\n');
+
+    return _normalizeParagraphBreaks(rawText);
+  }
+
+  // Stesso criterio usato dalla creazione manuale dei Documenti:
+  // ogni riga non vuota diventa un paragrafo separato da doppio invio.
+  // Così i percorsi salvati nei Documenti si comportano come i testi
+  // scritti dall'utente quando preme Invio tra un paragrafo e l'altro.
+  String _normalizeParagraphBreaks(String text) {
+    final normalized = text.trim().replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+    final paragraphs = normalized
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty);
+    return paragraphs.join('\n\n');
+  }
+
   List<String> _speechChunks(AppLocalizations l10n) {
     final chunks = <String>[];
-
-    for (final item in _items) {
+    final speechText = _normalizeParagraphBreaks(_items.map((item) {
       final distanceStr = l10n.formatDistance(item.distanceMeters);
-      final text = item.showDistance
+      return item.showDistance
           ? '${item.instruction}. $distanceStr.'
           : item.instruction;
-      final cleaned = text.trim();
+    }).join('\n'));
+
+    for (final paragraph in speechText.split(RegExp(r'\n{2,}'))) {
+      final cleaned = paragraph.trim();
       if (cleaned.isEmpty) continue;
 
-      // Ogni indicazione del percorso diventa un segmento autonomo.
-      // Se un'istruzione è molto lunga, la dividiamo comunque in sotto-blocchi
-      // sicuri, ma normalmente una riga corrisponde a un comando vocale.
+      // La separazione base è la stessa dei Documenti: ogni riga/indicazione
+      // diventa un paragrafo. Solo se un paragrafo è troppo lungo viene diviso
+      // in sotto-blocchi tecnici per Edge TTS.
       final safeChunks = _edgeTts.splitTextForStreaming(
         cleaned,
         maxChunkChars: 420,

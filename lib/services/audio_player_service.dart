@@ -527,14 +527,49 @@ class AudioPlayerService {
       var started = false;
       final pendingSources = <AudioSource>[];
       Future<void> startPlayback(List<AudioSource> sources) async {
-        final duration = await _player.setAudioSources(
-          sources,
-          initialIndex: 0,
-          initialPosition: Duration.zero,
-        );
+        final safeSources = List<AudioSource>.of(sources);
+        if (safeSources.isEmpty) return;
+
+        // Just Audio può conservare per pochi istanti il currentIndex della playlist
+        // precedente. Se la nuova playlist è più corta, su iOS può comparire:
+        // RangeError: Invalid value: Not in inclusive range 0..1: 2.
+        // Prima di caricare la nuova sequenza riportiamo quindi il player a un
+        // indice sicuramente valido; se il reset non è possibile, proseguiamo e
+        // usiamo comunque il fallback sotto.
+        try {
+          await _player.stop();
+          if (_player.sequence.isNotEmpty) {
+            await _player.seek(Duration.zero, index: 0);
+          }
+        } catch (e) {
+          AppLogger.log('Sonarpad audio: stream playlist pre-reset ignored: $e');
+        }
+
+        Duration? duration;
+        try {
+          duration = await _player.setAudioSources(
+            safeSources,
+            initialIndex: 0,
+            initialPosition: Duration.zero,
+          );
+        } catch (e) {
+          AppLogger.log(
+            'Sonarpad audio: stream playlist setAudioSources failed, '
+            'fallback to single source + append. error=$e sources=${safeSources.length}',
+          );
+          await _player.setAudioSource(
+            safeSources.first,
+            initialPosition: Duration.zero,
+          );
+          for (final extraSource in safeSources.skip(1)) {
+            await _player.addAudioSource(extraSource);
+          }
+          duration = _player.duration;
+        }
+
         AppLogger.log(
           'Sonarpad audio: stream playlist start duration=$duration '
-          'initialSources=${sources.length} sessionType=$sessionType',
+          'initialSources=${safeSources.length} sessionType=$sessionType',
         );
         lastNotifiedIndex = 0;
         onChunkStarted?.call(0, queuedFiles[0]);
