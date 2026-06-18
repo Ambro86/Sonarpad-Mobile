@@ -318,10 +318,15 @@ class NewsService {
     final prefs = await SharedPreferences.getInstance();
     final customSources = await getCustomSources(language);
 
-    String finalUrl = urlOrSearch.trim();
-    if (!finalUrl.toLowerCase().startsWith('http://') &&
-        !finalUrl.toLowerCase().startsWith('https://')) {
-      if (finalUrl.contains('.') && !finalUrl.contains(' ')) {
+    final originalInput = urlOrSearch.trim();
+    String finalUrl = originalInput;
+    final lowerInput = originalInput.toLowerCase();
+    final isExplicitUrl =
+        lowerInput.startsWith('http://') || lowerInput.startsWith('https://');
+    final looksLikeDomain = originalInput.contains('.') && !originalInput.contains(' ');
+
+    if (!isExplicitUrl) {
+      if (looksLikeDomain) {
         finalUrl = 'https://$finalUrl';
       } else {
         final query = Uri.encodeComponent(finalUrl);
@@ -373,9 +378,29 @@ class NewsService {
       throw Exception('Sorgente già presente');
     }
 
+    final uri = Uri.parse(finalUrl);
+    var finalName = name.trim();
+    if (finalName.isEmpty) {
+      if (isExplicitUrl || looksLikeDomain) {
+        finalName = await _fetchRssFeedTitle(uri, language: language) ?? '';
+      }
+      if (finalName.isEmpty) {
+        finalName = (isExplicitUrl || looksLikeDomain) && uri.host.isNotEmpty
+            ? uri.host
+            : originalInput.isNotEmpty
+                ? originalInput
+                : 'RSS';
+      }
+      final knownNames = <String>{
+        ...language.rssSources.map((source) => source.name),
+        ...customSources.map((source) => source.name),
+      };
+      finalName = _uniqueSourceName(finalName, knownNames);
+    }
+
     final newSource = NewsRssSource(
-      name: name,
-      uri: Uri.parse(finalUrl),
+      name: finalName,
+      uri: uri,
       isCustom: true,
       parentFolderId: parentFolderId,
     );
@@ -385,6 +410,53 @@ class NewsService {
         customSources.map((s) => jsonEncode(s.toJson())).toList();
     await prefs.setStringList(_getCustomPrefsKey(language), stringList);
   }
+
+  Future<String?> _fetchRssFeedTitle(
+    Uri uri, {
+    required NewsLanguage language,
+  }) async {
+    try {
+      final fetch = await _browserGetWithFallback(
+        _normalizedRssUri(uri),
+        headers: {
+          'User-Agent':
+              'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+          'Accept-Language': _acceptLanguageHeader(language),
+        },
+      );
+      final response = fetch.response;
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        return null;
+      }
+      final body = utf8.decode(response.bodyBytes, allowMalformed: true);
+      try {
+        final doc = XmlDocument.parse(body);
+        final channel = doc.findAllElements('channel').firstOrNull;
+        final channelTitle = channel == null ? null : _text(channel, 'title');
+        if (channelTitle != null && channelTitle.trim().isNotEmpty) {
+          return _cleanFeedTitle(channelTitle);
+        }
+        final feed = doc.findAllElements('feed').firstOrNull;
+        final feedTitle = feed == null ? null : _text(feed, 'title');
+        if (feedTitle != null && feedTitle.trim().isNotEmpty) {
+          return _cleanFeedTitle(feedTitle);
+        }
+        final title = doc.findAllElements('title').firstOrNull?.innerText.trim();
+        if (title != null && title.isNotEmpty) {
+          return _cleanFeedTitle(title);
+        }
+      } catch (_) {
+        final title = html_parser.parse(body).querySelector('title')?.text.trim();
+        if (title != null && title.isNotEmpty) {
+          return _cleanFeedTitle(title);
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  String _cleanFeedTitle(String value) =>
+      _cleanHtml(value).replaceAll(RegExp(r'\s+'), ' ').trim();
 
   Future<void> removeCustomSource(NewsLanguage language, String name) async {
     final prefs = await SharedPreferences.getInstance();

@@ -129,6 +129,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get convertMediaNoOutput => '''Wybierz folder zapisu.''';
 
   @override
+  String get convertMediaOutputNotWritable => '''Wybrany folder nie jest bezpośrednio dostępny. Plik zostanie zapisany w wewnętrznym folderze Sonarpad; po zakończeniu konwersji możesz go udostępnić lub zapisać w aplikacji Pliki.''';
+
+  @override
   String get convertMediaNoImage => '''Wybierz obraz dla filmu.''';
 
   @override

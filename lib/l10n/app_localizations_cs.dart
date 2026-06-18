@@ -129,6 +129,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get convertMediaNoOutput => '''Vyberte výstupní soubor.''';
 
   @override
+  String get convertMediaOutputNotWritable => '''Vybraná složka není přímo přístupná. Soubor bude uložen do interní složky Sonarpadu; po dokončení převodu jej můžete sdílet nebo uložit v aplikaci Soubory.''';
+
+  @override
   String get convertMediaNoImage => '''Vyberte obrázek pro video.''';
 
   @override

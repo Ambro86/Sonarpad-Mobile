@@ -5,13 +5,10 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repository
@@ -26,11 +23,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Create widget-test plugin mocks
+      - name: Create widget-test plugin mocks and demo data
         shell: bash
         run: |
           cat > test/flutter_test_config.dart <<'DART'
           import 'dart:async';
+          import 'dart:convert';
           import 'dart:io';
 
           import 'package:flutter/services.dart';
@@ -39,8 +37,6 @@ jobs:
 
           Future<void> testExecutable(FutureOr<void> Function() testMain) async {
             TestWidgetsFlutterBinding.ensureInitialized();
-
-            SharedPreferences.setMockInitialValues(<String, Object>{});
 
             final Directory baseDir =
                 Directory.systemTemp.createTempSync('sonarpad_screenshots_');
@@ -56,6 +52,62 @@ jobs:
             final String supportPath = ensureDirectory('support');
             final String cachePath = ensureDirectory('cache');
             final String downloadsPath = ensureDirectory('downloads');
+
+            // Demo data for screenshots: keeps the Italian App Store set coherent
+            // and prevents empty Documents screenshots.
+            final Directory sonarpadDocsDir = Directory('$docsPath/Documenti');
+            sonarpadDocsDir.createSync(recursive: true);
+
+            final DateTime demoDate = DateTime(2026, 6, 19, 10, 30);
+            final File demoText = File('${sonarpadDocsDir.path}/Esempio Sonarpad.txt')
+              ..writeAsStringSync(
+                'Questo è un documento dimostrativo di Sonarpad.\n\n'
+                'La lettura può essere interrotta e ripresa dal paragrafo corretto.\n\n'
+                'È possibile cercare nel documento ed esportare in vari formati.',
+              );
+            final File demoRoute = File('${sonarpadDocsDir.path}/Dettagli navigazione demo.txt')
+              ..writeAsStringSync(
+                'Avanti dritto per 80 metri.\n\n'
+                'Svolta a destra in via Roma.\n\n'
+                'Continua per 200 metri fino alla destinazione.',
+              );
+
+            final List<Map<String, Object?>> demoDocuments = <Map<String, Object?>>[
+              <String, Object?>{
+                'id': 'screenshot_doc_1',
+                'name': demoText.uri.pathSegments.last,
+                'path': 'Documenti/${demoText.uri.pathSegments.last}',
+                'extension': 'txt',
+                'addedAt': demoDate.toIso8601String(),
+                'bookmarkIndex': 0,
+                'isTemporary': false,
+                'isFolder': false,
+              },
+              <String, Object?>{
+                'id': 'screenshot_doc_2',
+                'name': demoRoute.uri.pathSegments.last,
+                'path': 'Documenti/${demoRoute.uri.pathSegments.last}',
+                'extension': 'txt',
+                'addedAt': demoDate.toIso8601String(),
+                'bookmarkIndex': 0,
+                'isTemporary': false,
+                'isFolder': false,
+              },
+            ];
+
+            SharedPreferences.setMockInitialValues(<String, Object>{
+              // Force Italian screenshots for the Italian App Store page.
+              'sonarpad_app_language': 'it',
+
+              // Avoid the changelog dialog appearing on top of screenshots.
+              'sonarpad_last_seen_changelog_version': '0.3.1',
+
+              // Keep Home layout stable.
+              'sonarpad_home_grouping_enabled': true,
+
+              // Make Documents non-empty in widget screenshots.
+              'document_library_v1': jsonEncode(demoDocuments),
+            });
 
             const MethodChannel pathProviderChannel =
                 MethodChannel('plugins.flutter.io/path_provider');
@@ -96,8 +148,8 @@ jobs:
                 return <String, dynamic>{
                   'appName': 'Sonarpad',
                   'packageName': 'com.ambro86.sonarpad',
-                  'version': '0.0.0',
-                  'buildNumber': '0',
+                  'version': '0.3.1',
+                  'buildNumber': '5',
                   'buildSignature': '',
                   'installerStore': null,
                 };
@@ -132,11 +184,12 @@ jobs:
                   return <String>['it-IT', 'en-US'];
                 case 'getVoices':
                   return <Map<String, String>>[
-                    <String, String>{'name': 'Test Voice', 'locale': 'it-IT'},
+                    <String, String>{'name': 'Luca (test)', 'locale': 'it-IT'},
+                    <String, String>{'name': 'Alice (test)', 'locale': 'it-IT'},
                   ];
                 case 'getDefaultVoice':
                   return <String, String>{
-                    'name': 'Test Voice',
+                    'name': 'Luca (test)',
                     'locale': 'it-IT',
                   };
                 case 'isLanguageAvailable':
@@ -156,17 +209,110 @@ jobs:
           }
           DART
 
-      - name: Generate screenshots
+      - name: Generate raw screenshots
         run: >
           flutter test test/screenshots_test.dart
           --update-goldens
           --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
 
-      - name: Upload screenshots
+      - name: Install screenshot post-processing tools
+        run: python3 -m pip install --user pillow
+
+      - name: Build App Store screenshot artifact
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import sys
+
+          source = Path('test/goldens')
+          target = Path('app_store_screenshots')
+          target.mkdir(parents=True, exist_ok=True)
+
+          if not source.exists():
+              raise SystemExit('test/goldens was not created')
+
+          # 414x896 scaled by 3 becomes 1242x2688, a standard 6.5-inch
+          # App Store screenshot size.
+          app_store_size = (1242, 2688)
+          skip = {'home_screen.png'}
+          problems = []
+          exported = []
+
+          for path in sorted(source.glob('*.png')):
+              if path.name in skip:
+                  continue
+
+              image = Image.open(path).convert('RGB')
+
+              # Detect screenshots that are probably still loading. This fails the
+              # workflow instead of uploading bad App Store assets.
+              if path.name in {'02_settings_screen.png', '03_documents_screen.png'}:
+                  pixels = image.getdata()
+                  non_background = sum(
+                      1 for r, g, b in pixels
+                      if not (r > 245 and g > 245 and b > 245)
+                  )
+                  ratio = non_background / (image.width * image.height)
+                  if ratio < 0.08:
+                      problems.append(
+                          f'{path.name} still looks empty/loading '
+                          f'({ratio:.1%} non-background pixels). '
+                          'Add a wait/pumpAndSettle in test/screenshots_test.dart.'
+                      )
+
+              if image.size == (414, 896):
+                  output = image.resize(app_store_size, Image.Resampling.LANCZOS)
+              elif image.size == app_store_size:
+                  output = image
+              else:
+                  # Fallback: contain image inside the App Store canvas.
+                  canvas = Image.new('RGB', app_store_size, 'white')
+                  scale = min(
+                      app_store_size[0] / image.width,
+                      app_store_size[1] / image.height,
+                  )
+                  new_size = (
+                      max(1, round(image.width * scale)),
+                      max(1, round(image.height * scale)),
+                  )
+                  resized = image.resize(new_size, Image.Resampling.LANCZOS)
+                  offset = (
+                      (app_store_size[0] - new_size[0]) // 2,
+                      (app_store_size[1] - new_size[1]) // 2,
+                  )
+                  canvas.paste(resized, offset)
+                  output = canvas
+
+              output_path = target / path.name
+              output.save(output_path, optimize=True)
+              exported.append(output_path)
+
+          if not exported:
+              problems.append('No screenshots were exported from test/goldens.')
+
+          if problems:
+              print('\n'.join(problems))
+              sys.exit(1)
+
+          print('Exported App Store screenshots:')
+          for output_path in exported:
+              print(f'- {output_path}')
+          PY
+
+      - name: Upload App Store screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarpad-app-store-screenshots
+          if-no-files-found: error
+          path: app_store_screenshots/
+
+      - name: Upload raw screenshot diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sonarpad-screenshots
+          name: sonarpad-raw-screenshot-diagnostics
           if-no-files-found: warn
           path: |
             test/goldens/

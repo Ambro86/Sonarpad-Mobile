@@ -144,7 +144,7 @@ class _NewsScreenState extends State<NewsScreen> {
 
     final name = nameCtrl.text.trim();
     final url = urlCtrl.text.trim();
-    if (name.isEmpty || url.isEmpty) return;
+    if (url.isEmpty) return;
 
     try {
       await _service.addCustomSource(

@@ -348,6 +348,12 @@ abstract class AppLocalizations {
   /// **'Scegli una cartella di salvataggio.'**
   String get convertMediaNoOutput;
 
+  /// Localized text for convertMediaOutputNotWritable.
+  ///
+  /// In it, this message translates to:
+  /// **'La cartella scelta non è accessibile direttamente. Il file verrà salvato nella cartella interna di Sonarpad; al termine potrai condividerlo o salvarlo nell’app File.'**
+  String get convertMediaOutputNotWritable;
+
   /// Localized text for convertMediaNoImage.
   ///
   /// In it, this message translates to:

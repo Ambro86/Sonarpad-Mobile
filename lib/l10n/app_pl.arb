@@ -160,6 +160,10 @@
   "@convertMediaNoOutput": {
     "description": "Localized text for convertMediaNoOutput."
   },
+  "convertMediaOutputNotWritable": "Wybrany folder nie jest bezpośrednio dostępny. Plik zostanie zapisany w wewnętrznym folderze Sonarpad; po zakończeniu konwersji możesz go udostępnić lub zapisać w aplikacji Pliki.",
+  "@convertMediaOutputNotWritable": {
+    "description": "Localized text for convertMediaOutputNotWritable."
+  },
   "convertMediaNoImage": "Wybierz obraz dla filmu.",
   "@convertMediaNoImage": {
     "description": "Localized text for convertMediaNoImage."

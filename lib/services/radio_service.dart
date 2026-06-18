@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/radio_station.dart';
+import '../utils/app_logger.dart';
 
 class RadioService {
   static const _favoritesPrefsKey = 'sonarpad_radio_favorites';
@@ -499,9 +500,14 @@ class RadioService {
             .toList();
       } catch (e) {
         lastError = e;
+        unawaited(AppLogger.log(
+          'Radio Browser search mirror failed mirror=$mirror params=$params error=$e',
+        ));
       }
     }
-    throw Exception(lastError ?? 'Radio Browser non raggiungibile');
+    final error = lastError ?? 'Radio Browser non raggiungibile';
+    unawaited(AppLogger.log('Radio Browser search failed: $error'));
+    throw Exception(error);
   }
 
   Future<List<RadioStation>> _fetchCommunityStations({

@@ -125,7 +125,7 @@ class _TvScreenState extends State<TvScreen> {
     );
 
     if (!mounted || selectedChannel == null) return;
-    await _openChannel(selectedChannel, autoPlay: true);
+    await _openChannel(selectedChannel);
   }
 
   bool _matchesTvSearch(TvChannel channel, String normalizedQuery) {

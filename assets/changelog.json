@@ -1,5 +1,38 @@
 [
   {
+    "version": "0.3.1",
+    "date": "2026-06-19",
+    "it": [
+      "Quando la ricerca radio non restituisce risultati a causa di problemi di connessione, Sonarpad mostra ora un messaggio più chiaro per l’utente, invece di un errore tecnico.",
+      "Corretto il salvataggio nel convertitore file: quando Sonarpad non può salvare direttamente nel percorso scelto, usa la condivisione di sistema per permettere all’utente di salvare il file nella destinazione desiderata.",
+      "Piccola correzione per la ricerca dei canali TV: ora toccando un risultato non parte subito la riproduzione, ma si apre la normale schermata del canale, da cui si può avviare la diretta o leggere la guida TV quando disponibile."
+    ],
+    "en": [
+      "When radio search cannot return results because of connection problems, Sonarpad now shows a clearer message to the user instead of a technical error.",
+      "Fixed saving in the file converter: when Sonarpad cannot save directly to the selected destination, it uses the system share sheet so the user can save the file where they want."
+    ],
+    "fr": [
+      "Lorsque la recherche radio ne peut pas afficher de résultats à cause de problèmes de connexion, Sonarpad affiche désormais un message plus clair pour l’utilisateur au lieu d’une erreur technique.",
+      "Correction de l’enregistrement dans le convertisseur de fichiers : lorsque Sonarpad ne peut pas enregistrer directement dans l’emplacement choisi, il utilise le partage système afin de permettre à l’utilisateur d’enregistrer le fichier à l’endroit souhaité."
+    ],
+    "es": [
+      "Cuando la búsqueda de radios no puede mostrar resultados por problemas de conexión, Sonarpad ahora muestra un mensaje más claro para el usuario en lugar de un error técnico.",
+      "Corregido el guardado en el convertidor de archivos: cuando Sonarpad no puede guardar directamente en la ubicación elegida, usa la hoja de compartir del sistema para que el usuario pueda guardar el archivo donde quiera."
+    ],
+    "pt": [
+      "Quando a pesquisa de rádios não consegue devolver resultados devido a problemas de ligação, o Sonarpad agora mostra uma mensagem mais clara ao utilizador, em vez de um erro técnico.",
+      "Corrigida a gravação no conversor de ficheiros: quando o Sonarpad não consegue guardar diretamente no destino escolhido, usa a partilha do sistema para permitir que o utilizador guarde o ficheiro onde quiser."
+    ],
+    "pl": [
+      "Gdy wyszukiwanie radia nie może zwrócić wyników z powodu problemów z połączeniem, Sonarpad pokazuje teraz użytkownikowi jaśniejszy komunikat zamiast błędu technicznego.",
+      "Naprawiono zapisywanie w konwerterze plików: gdy Sonarpad nie może zapisać bezpośrednio w wybranej lokalizacji, używa systemowego udostępniania, aby użytkownik mógł zapisać plik tam, gdzie chce."
+    ],
+    "cs": [
+      "Když vyhledávání rádií nemůže vrátit výsledky kvůli problémům s připojením, Sonarpad nyní zobrazí uživateli srozumitelnější zprávu místo technické chyby.",
+      "Opraveno ukládání v převodníku souborů: když Sonarpad nemůže uložit soubor přímo do zvoleného umístění, použije systémové sdílení, aby si uživatel mohl soubor uložit tam, kam chce."
+    ]
+  },
+  {
     "version": "0.3.0",
     "date": "2026-06-17",
     "it": [

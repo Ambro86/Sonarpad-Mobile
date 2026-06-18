@@ -94,7 +94,10 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  l10n.radioSearchError(snapshot.error.toString()),
+                  _radioSearchErrorMessage(
+                    l10n.localeName,
+                    snapshot.error,
+                  ),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
@@ -171,4 +174,50 @@ String _radioNoResultsMessage(String localeName, String query) {
   return hasQuery
       ? 'Nessuna radio trovata. Prova solo con il nome della stazione, senza genere, oppure cambia lingua o nazione.'
       : 'Nessuna radio trovata. Prova con un’altra lingua, nazione o genere.';
+}
+
+String _radioSearchErrorMessage(String localeName, Object? error) {
+  final raw = error.toString();
+  final normalized = raw.toLowerCase();
+  final isRadioBrowserConnectionError =
+      normalized.contains('failed host lookup') ||
+          normalized.contains('socketexception') ||
+          normalized.contains('clientexception') ||
+          normalized.contains('timeoutexception') ||
+          normalized.contains('connection') ||
+          normalized.contains('nodename nor servname') ||
+          normalized.contains('radio browser non raggiungibile') ||
+          normalized.contains('http 502') ||
+          normalized.contains('http 503') ||
+          normalized.contains('http 504');
+
+  if (!isRadioBrowserConnectionError) {
+    if (localeName == 'en') return 'Radio search error: $raw';
+    if (localeName == 'es') return 'Error en la búsqueda de radio: $raw';
+    if (localeName == 'fr') return 'Erreur de recherche radio : $raw';
+    if (localeName == 'pt') return 'Erro na pesquisa de rádio: $raw';
+    if (localeName == 'pl') return 'Błąd wyszukiwania radia: $raw';
+    if (localeName == 'cs') return 'Chyba při hledání rádia: $raw';
+    return 'Errore ricerca radio: $raw';
+  }
+
+  if (localeName == 'en') {
+    return 'Connection error with Radio Browser. Please try again later.';
+  }
+  if (localeName == 'es') {
+    return 'Error de conexión con Radio Browser. Inténtalo de nuevo más tarde.';
+  }
+  if (localeName == 'fr') {
+    return 'Erreur de connexion à Radio Browser. Réessayez plus tard.';
+  }
+  if (localeName == 'pt') {
+    return 'Erro de ligação ao Radio Browser. Tente novamente mais tarde.';
+  }
+  if (localeName == 'pl') {
+    return 'Błąd połączenia z Radio Browser. Spróbuj ponownie później.';
+  }
+  if (localeName == 'cs') {
+    return 'Chyba připojení k Radio Browseru. Zkuste to prosím později.';
+  }
+  return 'Errore di connessione a Radio Browser. Riprova più tardi.';
 }

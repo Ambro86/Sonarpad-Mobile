@@ -160,6 +160,10 @@
   "@convertMediaNoOutput": {
     "description": "Localized text for convertMediaNoOutput."
   },
+  "convertMediaOutputNotWritable": "La cartella scelta non è accessibile direttamente. Il file verrà salvato nella cartella interna di Sonarpad; al termine potrai condividerlo o salvarlo nell’app File.",
+  "@convertMediaOutputNotWritable": {
+    "description": "Localized text for convertMediaOutputNotWritable."
+  },
   "convertMediaNoImage": "Seleziona un'immagine per il video.",
   "@convertMediaNoImage": {
     "description": "Localized text for convertMediaNoImage."

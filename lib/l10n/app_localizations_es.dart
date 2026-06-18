@@ -129,6 +129,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get convertMediaNoOutput => '''Selecciona una carpeta de guardado.''';
 
   @override
+  String get convertMediaOutputNotWritable => '''La carpeta elegida no es accesible directamente. El archivo se guardará en la carpeta interna de Sonarpad; cuando termine la conversión, podrás compartirlo o guardarlo en la app Archivos.''';
+
+  @override
   String get convertMediaNoImage => '''Selecciona una imagen para el vídeo.''';
 
   @override
