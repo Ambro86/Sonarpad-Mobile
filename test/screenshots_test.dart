@@ -25,6 +25,23 @@ late String _supportPath;
 late String _cachePath;
 late String _downloadsPath;
 
+const String _screenshotDevice = String.fromEnvironment(
+  'SONARPAD_SCREENSHOT_DEVICE',
+  defaultValue: 'iphone',
+);
+
+Size _screenshotSurfaceSize() {
+  switch (_screenshotDevice) {
+    case 'ipad':
+      // Same aspect ratio as the 12.9/13-inch iPad App Store screenshots.
+      // The workflow later exports this to 2048 x 2732.
+      return const Size(1024, 1366);
+    case 'iphone':
+    default:
+      return const Size(414, 896);
+  }
+}
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +67,7 @@ void main() {
     debugPrint('SCREENSHOT_START $name');
     await tester.pumpWidgetBuilder(
       _wrapScreen(screen),
-      surfaceSize: const Size(414, 896),
+      surfaceSize: _screenshotSurfaceSize(),
       wrapper: (child) => child,
     );
 

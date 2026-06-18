@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repository
@@ -23,11 +23,34 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Generate raw screenshots
+      - name: Generate raw iPhone screenshots
         run: >
           flutter test test/screenshots_test.dart
           --update-goldens
+          --dart-define=SONARPAD_SCREENSHOT_DEVICE=iphone
           --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+
+      - name: Save raw iPhone screenshots
+        if: success()
+        shell: bash
+        run: |
+          mkdir -p raw_screenshots/iphone
+          find test/goldens -name '*.png' -exec cp {} raw_screenshots/iphone/ \;
+          rm -rf test/goldens test/failures
+
+      - name: Generate raw iPad screenshots
+        run: >
+          flutter test test/screenshots_test.dart
+          --update-goldens
+          --dart-define=SONARPAD_SCREENSHOT_DEVICE=ipad
+          --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+
+      - name: Save raw iPad screenshots
+        if: success()
+        shell: bash
+        run: |
+          mkdir -p raw_screenshots/ipad
+          find test/goldens -name '*.png' -exec cp {} raw_screenshots/ipad/ \;
 
       - name: Prepare App Store screenshots
         if: success()
@@ -37,10 +60,6 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           from PIL import Image, ImageOps
-
-          source = Path('test/goldens')
-          target = Path('app_store_screenshots')
-          target.mkdir(exist_ok=True)
 
           wanted = [
               '01_home_screen.png',
@@ -53,31 +72,36 @@ jobs:
               '08_route_screen.png',
           ]
 
-          missing = []
-          for name in wanted:
-              matches = list(source.rglob(name))
-              if not matches:
-                  missing.append(name)
-                  continue
-              img = Image.open(matches[0]).convert('RGB')
-              # iPhone 6.5-inch App Store screenshot size.
-              canvas_size = (1242, 2688)
-              img = ImageOps.contain(img, canvas_size)
-              canvas = Image.new('RGB', canvas_size, 'white')
-              x = (canvas_size[0] - img.width) // 2
-              y = (canvas_size[1] - img.height) // 2
-              canvas.paste(img, (x, y))
-              canvas.save(target / name, quality=95)
+          jobs = [
+              ('iphone', Path('raw_screenshots/iphone'), Path('app_store_screenshots/iphone_6_5'), (1242, 2688)),
+              # iPad 12.9/13-inch accepted App Store size, portrait.
+              ('ipad', Path('raw_screenshots/ipad'), Path('app_store_screenshots/ipad_13'), (2048, 2732)),
+          ]
 
-          if missing:
-              raise SystemExit('Screenshot mancanti: ' + ', '.join(missing))
+          for label, source, target, canvas_size in jobs:
+              target.mkdir(parents=True, exist_ok=True)
+              missing = []
+              for name in wanted:
+                  path = source / name
+                  if not path.exists():
+                      missing.append(name)
+                      continue
+                  img = Image.open(path).convert('RGB')
+                  img = ImageOps.contain(img, canvas_size)
+                  canvas = Image.new('RGB', canvas_size, 'white')
+                  x = (canvas_size[0] - img.width) // 2
+                  y = (canvas_size[1] - img.height) // 2
+                  canvas.paste(img, (x, y))
+                  canvas.save(target / name, quality=95)
+              if missing:
+                  raise SystemExit(f'Screenshot mancanti per {label}: ' + ', '.join(missing))
           PY
 
       - name: Upload App Store screenshots
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: sonarpad-app-store-screenshots
+          name: sonarpad-app-store-screenshots-iphone-ipad
           if-no-files-found: error
           path: app_store_screenshots/
 
@@ -88,5 +112,6 @@ jobs:
           name: sonarpad-raw-screenshot-diagnostics
           if-no-files-found: warn
           path: |
+            raw_screenshots/
             test/goldens/
             test/failures/
