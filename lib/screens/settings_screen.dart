@@ -623,6 +623,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   padding: const EdgeInsets.all(16),
                   children: [
                     DropdownButtonFormField<String>(
+                      isExpanded: true,
                       initialValue: _appLanguage,
                       decoration: InputDecoration(labelText: l10n.appLanguage),
                       items: [
@@ -647,6 +648,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<SonarpadThemeMode>(
+                      isExpanded: true,
                       initialValue: _themeMode,
                       decoration: InputDecoration(labelText: l10n.settingsTheme),
                       items: [
@@ -670,6 +672,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
+                      isExpanded: true,
                       initialValue: _ttsEngine,
                       decoration: InputDecoration(
                           labelText: l10n.settingsReadingEngine),
@@ -689,13 +692,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 12),
                     if (_ttsEngine == 'edge') ...[
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue: _languageCode,
                         decoration:
                             InputDecoration(labelText: l10n.ttsVoiceLanguage),
                         items: _edgeLanguages
                             .map((language) => DropdownMenuItem(
                                   value: language.code,
-                                  child: Text(language.label),
+                                  child: Text(
+                                    language.label,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ))
                             .toList(),
                         onChanged: (value) {
@@ -712,13 +720,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue: _voice,
                         decoration: InputDecoration(labelText: l10n.ttsVoice),
                         items: voices
                             .map((voice) => DropdownMenuItem(
                                   value: voice.voice,
-                                  child:
-                                      Text('${voice.label} (${voice.voice})'),
+                                  child: Text(
+                                    '${voice.label} (${voice.voice})',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ))
                             .toList(),
                         onChanged: (value) {
@@ -754,6 +766,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               DropdownButtonFormField<String>(
+                                isExpanded: true,
                                 initialValue:
                                     locales.contains(_systemTtsLanguage)
                                         ? _systemTtsLanguage
@@ -763,7 +776,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 items: locales
                                     .map((l) => DropdownMenuItem(
                                           value: l,
-                                          child: Text(l),
+                                          child: Text(
+                                            l,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ))
                                     .toList(),
                                 onChanged: (value) {
@@ -776,22 +793,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                               const SizedBox(height: 12),
                               DropdownButtonFormField<String?>(
+                                isExpanded: true,
                                 initialValue: availableVoices.any(
                                         (v) => v['name'] == _systemTtsVoice)
                                     ? _systemTtsVoice
                                     : null,
                                 decoration: InputDecoration(
                                     labelText: l10n.settingsSystemVoice),
-                                hint: Text(l10n.settingsDefaultVoiceHint),
+                                hint: Text(
+                                  l10n.settingsDefaultVoiceHint,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                                 items: [
                                   DropdownMenuItem<String?>(
                                     value: null,
-                                    child: Text(l10n.settingsDefaultVoice),
+                                    child: Text(
+                                      l10n.settingsDefaultVoice,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                   ...availableVoices
                                       .map((v) => DropdownMenuItem<String?>(
                                             value: v['name'],
-                                            child: Text(v['name'] ?? ''),
+                                            child: Text(
+                                              v['name'] ?? '',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           )),
                                 ],
                                 onChanged: (value) {
