@@ -54,15 +54,11 @@ void main() {
       wrapper: (child) => child,
     );
 
-    await _pumpFixed(tester, const Duration(seconds: 3));
-
-    if (mustNotShowSpinner) {
-      expect(
-        find.byType(CircularProgressIndicator),
-        findsNothing,
-        reason: '$name è ancora in caricamento: screenshot non valido.',
-      );
-    }
+    await _waitForScreenReady(
+      tester,
+      mustNotShowSpinner: mustNotShowSpinner,
+      screenName: name,
+    );
 
     await screenMatchesGolden(
       tester,
@@ -142,6 +138,48 @@ Future<void> _pumpFixed(WidgetTester tester, Duration duration) async {
   final ticks = (duration.inMilliseconds / 100).ceil().clamp(1, 200);
   for (var i = 0; i < ticks; i += 1) {
     await tester.pump(const Duration(milliseconds: 100));
+  }
+}
+
+Future<void> _waitForScreenReady(
+  WidgetTester tester, {
+  required bool mustNotShowSpinner,
+  required String screenName,
+}) async {
+  // Some screens, especially Settings and Documents, perform real async work
+  // such as SharedPreferences, path_provider and file-system access. A normal
+  // pump advances Flutter's fake test clock, but it does not always give real
+  // async I/O enough time to complete on GitHub Actions. Alternate real waiting
+  // with Flutter pumps until the first stable frame is ready.
+  final deadline = DateTime.now().add(const Duration(seconds: 12));
+  Object? lastError;
+
+  while (DateTime.now().isBefore(deadline)) {
+    try {
+      await tester.runAsync(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+      });
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final spinnerCount = find.byType(CircularProgressIndicator).evaluate().length;
+      if (!mustNotShowSpinner || spinnerCount == 0) {
+        await _pumpFixed(tester, const Duration(milliseconds: 500));
+        return;
+      }
+    } catch (error) {
+      lastError = error;
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+  }
+
+  if (mustNotShowSpinner) {
+    expect(
+      find.byType(CircularProgressIndicator),
+      findsNothing,
+      reason: lastError == null
+          ? '$screenName è ancora in caricamento: screenshot non valido.'
+          : '$screenName è ancora in caricamento: screenshot non valido. Ultimo errore: $lastError',
+    );
   }
 }
 
