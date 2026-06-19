@@ -61,6 +61,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Duration? _mediaKitLastDuration;
   DateTime? _mediaKitLastProgressAt;
   DateTime? _mediaKitLastPositionLogAt;
+  DateTime? _mediaKitLastAutoRecoveryAt;
+  bool _mediaKitAutoRecoveryInProgress = false;
   double _mediaKitVolume = 1.0;
   double _videoPlayerVolume = 1.0;
   bool _recording = false;
@@ -193,6 +195,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitLastDuration = null;
     _mediaKitLastProgressAt = DateTime.now();
     _mediaKitLastPositionLogAt = null;
+    _mediaKitAutoRecoveryInProgress = false;
     _mediaKitVolume = await _settings.loadMediaVolume();
     var initialVolumeApplied = false;
     var postStartStabilizationScheduled = false;
@@ -254,6 +257,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           'RadioPlayer: MediaKit position position=$position duration=$_mediaKitLastDuration playing=$_mediaKitPlaying buffering=$_mediaKitBuffering completed=$_mediaKitCompleted',
         );
       }
+      if (_shouldPreemptivelyRefreshMediaKitDashLiveWindow(player)) {
+        unawaited(_refreshMediaKitDashLiveWindow(player, reason: 'preemptive'));
+      }
     });
     _mediaKitDurationSubscription = player.stream.duration.listen((duration) {
       _mediaKitLastDuration = duration;
@@ -309,7 +315,98 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       AppLogger.log(
         'RadioPlayer: MediaKit heartbeat station="${widget.station.name}" playing=$_mediaKitPlaying buffering=$_mediaKitBuffering completed=$_mediaKitCompleted position=$_mediaKitLastPosition duration=$_mediaKitLastDuration stalledFor=$stallText videoEnabled=$_isVideoEnabled videoApplied=$_mediaKitVideoSettingApplied volume=$_mediaKitVolume',
       );
+      if (_shouldRecoverMediaKitDashStall(player)) {
+        unawaited(_recoverMediaKitDashStall(player));
+      }
     });
+  }
+
+  bool _shouldPreemptivelyRefreshMediaKitDashLiveWindow(mk.Player player) {
+    if (!_requiresVideoPlayback || _mediaKitPlayer != player) return false;
+    if (_mediaKitAutoRecoveryInProgress) return false;
+    if (!_mediaKitPlaying || _mediaKitCompleted) return false;
+    if (_mediaKitBuffering) return false;
+
+    final position = _mediaKitLastPosition;
+    final duration = _mediaKitLastDuration;
+    if (position == null || duration == null) return false;
+
+    // DASH/HBBTV live streams such as La7 Cinema can expose a short finite
+    // window of about 36 seconds. Refresh just before the end of that window,
+    // while playback is still alive, so the user should hear much less of the
+    // stall than with a recovery after buffering has already started.
+    if (duration < const Duration(seconds: 20)) return false;
+    if (position < const Duration(seconds: 10)) return false;
+
+    final remaining = duration - position;
+    if (remaining > const Duration(seconds: 3)) return false;
+
+    final lastRecovery = _mediaKitLastAutoRecoveryAt;
+    if (lastRecovery != null &&
+        DateTime.now().difference(lastRecovery) < const Duration(seconds: 20)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool _shouldRecoverMediaKitDashStall(mk.Player player) {
+    if (!_requiresVideoPlayback || _mediaKitPlayer != player) return false;
+    if (_mediaKitAutoRecoveryInProgress) return false;
+    if (!_mediaKitPlaying || !_mediaKitBuffering || _mediaKitCompleted) return false;
+
+    final position = _mediaKitLastPosition;
+    final duration = _mediaKitLastDuration;
+    final lastProgress = _mediaKitLastProgressAt;
+    if (position == null || duration == null || lastProgress == null) return false;
+
+    final stalledFor = DateTime.now().difference(lastProgress);
+    if (stalledFor < const Duration(seconds: 7)) return false;
+
+    // La7 Cinema and similar HBBTV DASH live streams can expose a short
+    // moving window as a finite duration. On iOS/MediaKit the stream may
+    // reach the end of that window, keep reporting playing=true, then stay
+    // buffering forever until the MPD is reopened. Recover only when we are
+    // clearly stalled near the end of the current window.
+    final nearLiveWindowEnd =
+        duration > Duration.zero && duration - position <= const Duration(seconds: 2);
+    if (!nearLiveWindowEnd) return false;
+
+    final lastRecovery = _mediaKitLastAutoRecoveryAt;
+    if (lastRecovery != null &&
+        DateTime.now().difference(lastRecovery) < const Duration(seconds: 20)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<void> _recoverMediaKitDashStall(mk.Player player) async {
+    await _refreshMediaKitDashLiveWindow(player, reason: 'stalled');
+  }
+
+  Future<void> _refreshMediaKitDashLiveWindow(
+    mk.Player player, {
+    required String reason,
+  }) async {
+    if (_mediaKitAutoRecoveryInProgress || _mediaKitPlayer != player) return;
+    _mediaKitAutoRecoveryInProgress = true;
+    _mediaKitLastAutoRecoveryAt = DateTime.now();
+    final remaining = (_mediaKitLastDuration != null && _mediaKitLastPosition != null)
+        ? _mediaKitLastDuration! - _mediaKitLastPosition!
+        : null;
+    AppLogger.log(
+      'RadioPlayer: MediaKit DASH live window refresh reason=$reason station="${widget.station.name}" position=$_mediaKitLastPosition duration=$_mediaKitLastDuration remaining=$remaining buffering=$_mediaKitBuffering playing=$_mediaKitPlaying videoEnabled=$_isVideoEnabled',
+    );
+    try {
+      await _play();
+    } catch (error) {
+      AppLogger.log(
+        'RadioPlayer: MediaKit DASH live window refresh failed reason=$reason error=$error',
+      );
+    } finally {
+      _mediaKitAutoRecoveryInProgress = false;
+    }
   }
 
   Future<void> _stabilizeMediaKitAfterStart(mk.Player player) async {
@@ -597,6 +694,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitLastDuration = null;
     _mediaKitLastProgressAt = null;
     _mediaKitLastPositionLogAt = null;
+    _mediaKitAutoRecoveryInProgress = false;
     if (player != null) {
       await player.dispose();
       AppLogger.log('RadioPlayer: MediaKit dispose completed');
