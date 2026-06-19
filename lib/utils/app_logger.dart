@@ -8,8 +8,40 @@ class AppLogger {
   static Future<void> _writeQueue = Future.value();
 
   static Future<File> get _logFile async {
-    final dir = await getApplicationDocumentsDirectory();
+    final dir = await getApplicationSupportDirectory();
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
     return File(p.join(dir.path, _logFileName));
+  }
+
+  /// Rimuove i vecchi file tecnici che alcune versioni salvavano nella
+  /// cartella Documenti visibile tramite File/iTunes. Il log resta disponibile
+  /// dal pulsante "Copia log", ma viene salvato in Application Support.
+  static Future<void> cleanupVisibleDebugArtifacts() async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      // Elimina solo file tecnici con nomi univoci di Sonarpad.
+      // Non rimuovere nomi generici come log.txt, debug log.txt o
+      // debug_log.txt: un utente potrebbe averli importati o creati
+      // volontariamente come normali documenti.
+      final candidates = <File>[
+        File(p.join(appDir.path, _logFileName)),
+        File(p.join(appDir.path, 'debug_parser_html.txt')),
+        File(p.join(appDir.path, 'debug_parser_text.txt')),
+        File(p.join(appDir.path, 'Documenti', _logFileName)),
+        File(p.join(appDir.path, 'Documenti', 'debug_parser_html.txt')),
+        File(p.join(appDir.path, 'Documenti', 'debug_parser_text.txt')),
+      ];
+
+      for (final file in candidates) {
+        if (await file.exists()) {
+          await file.delete();
+        }
+      }
+    } catch (e) {
+      dev.log('AppLogger: Impossibile pulire i vecchi log visibili: $e');
+    }
   }
 
   static Future<void> log(String message) async {

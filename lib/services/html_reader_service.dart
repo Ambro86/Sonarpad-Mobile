@@ -1,7 +1,5 @@
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 
 class ArticleContent {
   final String title;
@@ -1011,16 +1009,9 @@ class HtmlReaderService {
       }
     }
 
-    // Save debug information asynchronously
-    Future.microtask(() async {
-      try {
-        final dir = await getApplicationDocumentsDirectory();
-        await File('${dir.path}/debug_parser_html.txt')
-            .writeAsString(htmlContent);
-        await File('${dir.path}/debug_parser_text.txt')
-            .writeAsString(finalContent);
-      } catch (_) {}
-    });
+    // Non salviamo più file debug nella cartella Documenti visibile
+    // all'utente. I log diagnostici restano disponibili da Impostazioni >
+    // Copia log tramite AppLogger.
 
     return ArticleContent(title: title, content: finalContent);
   }

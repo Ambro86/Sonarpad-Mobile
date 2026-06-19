@@ -44,6 +44,10 @@
   "convertMediaSamePath": "Le fichier converti doit être différent du fichier source.",
   "convertMediaInvalidBitrate": "Entrez un débit valide entre 64 et 320 kbps.",
   "convertMediaFailed": "Échec de la conversion : {error}",
+  "convertMediaOutputNotWritable": "Le dossier choisi n’est pas directement accessible. Le fichier sera enregistré dans le dossier interne de Sonarpad ; une fois la conversion terminée, vous pourrez le partager ou l’enregistrer dans l’app Fichiers.",
+  "@convertMediaOutputNotWritable": {
+    "description": "Localized text for convertMediaOutputNotWritable."
+  },
   "donations": "Dons",
   "donationsHint": "Soutenir le développement de Sonarpad",
   "loading": "Chargement",
@@ -512,6 +516,10 @@
   "radioBrowseByCountry": "Parcourir par pays",
   "radioCountry": "Pays",
   "radioGenre": "Genre",
+  "radioActiveFilters": "Filtres actifs",
+  "radioResetFilters": "Réinitialiser les filtres",
+  "radioFiltersReset": "Filtres réinitialisés.",
+  "radioCity": "Ville",
   "radioSearch": "Recherche",
   "radioSearching": "Chargement des radios...",
   "radioSearchResults": "Résultats radio",

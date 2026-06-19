@@ -12,6 +12,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   http: ^1.2.2
+  l10n_countries: ^2.0.2
+  sealed_countries: ^3.2.0
   rhttp_plus: ^0.11.7
   xml: ^6.5.0
   html: ^0.15.4

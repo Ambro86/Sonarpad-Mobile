@@ -124,6 +124,7 @@ ThemeMode _materialThemeMode(SonarpadThemeMode mode) => switch (mode) {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
+  await AppLogger.cleanupVisibleDebugArtifacts();
   await AppLogger.log(
     'Sonarpad bootstrap start platform=${Platform.operatingSystem} '
     'version=${Platform.operatingSystemVersion} pid=$pid',

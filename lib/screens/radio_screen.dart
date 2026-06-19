@@ -6,6 +6,7 @@ import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/radio_service.dart';
+import '../utils/country_name_helper.dart';
 import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
 import 'radio_recordings_screen.dart';
@@ -20,6 +21,7 @@ String _cityLabel(String localeName) => switch (localeName) {
       'fr' => 'Parcourir par ville',
       'pt' => 'Explorar por cidade',
       'pl' => 'Przeglądaj według miasta',
+      'cs' => 'Procházet podle města',
       _ => 'Sfoglia per città',
     };
 
@@ -29,6 +31,7 @@ String _cityInputHint(String localeName) => switch (localeName) {
       'fr' => 'Entrez le nom de la ville...',
       'pt' => 'Digite a cidade...',
       'pl' => 'Wpisz miasto...',
+      'cs' => 'Zadejte město...',
       _ => 'Inserisci il nome della città...',
     };
 
@@ -111,24 +114,66 @@ class _RadioScreenState extends State<RadioScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_languageCode == null) {
-      final code = AppLocalizations.of(context).localeName;
-      _languageCode = switch (code) {
-        'en' => 'en',
-        'es' => 'es',
-        'fr' => 'fr',
-        'pt' => 'pt',
-        'pl' => 'pl',
-        _ => 'it',
-      };
-      _countryCode = switch (code) {
-        'en' => 'country:us',
-        'es' => 'country:es',
-        'fr' => 'country:fr',
-        'pt' => 'country:pt',
-        'pl' => 'country:pl',
-        _ => 'country:it',
-      };
+      final localeName = AppLocalizations.of(context).localeName;
+      _languageCode = _defaultRadioLanguageForLocale(localeName);
+      _countryCode = 'country:${_defaultRadioCountryForLocale(localeName)}';
     }
+  }
+
+  Future<void> _resetFilters() async {
+    final localeName = AppLocalizations.of(context).localeName;
+    final defaultLanguage = _defaultRadioLanguageForLocale(localeName);
+    final defaultCountry = _defaultRadioCountryForLocale(localeName);
+    final defaultGenre = RadioService.genres.first;
+
+    _searchController.clear();
+    setState(() {
+      _languageCode = defaultLanguage;
+      _countryCode = 'country:$defaultCountry';
+      _cityCode = null;
+      _browseMode = _RadioBrowseMode.language;
+      _genre = defaultGenre;
+    });
+
+    await _settings.saveRadioLanguage(defaultLanguage);
+    await _settings.saveRadioCountry(defaultCountry);
+    await _settings.saveRadioGenre(defaultGenre.value);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context).radioFiltersReset)),
+    );
+  }
+
+  String _activeFiltersSummary(AppLocalizations l10n) {
+    final parts = <String>[];
+
+    switch (_browseMode) {
+      case _RadioBrowseMode.language:
+        final selectedLanguage = _languageOptions.firstWhere(
+          (item) => item.code == _languageCode,
+          orElse: () => _languageOptions.first,
+        );
+        parts.add('${l10n.radioLanguage}: ${_languageOptionLabel(l10n, selectedLanguage)}');
+        break;
+      case _RadioBrowseMode.country:
+        final selectedCountryCode = (_countryCode ?? '').replaceFirst('country:', '');
+        final selectedCountry = _countryOptions.firstWhere(
+          (item) => item.code == selectedCountryCode,
+          orElse: () => _countryOptions.first,
+        );
+        parts.add('${l10n.radioCountry}: ${_countryOptionLabel(l10n, selectedCountry)}');
+        break;
+      case _RadioBrowseMode.city:
+        final city = (_cityCode ?? '').trim();
+        if (city.isNotEmpty) {
+          parts.add('${l10n.radioCity}: $city');
+        }
+        break;
+    }
+
+    parts.add('${l10n.radioGenre}: ${l10n.radioGenreLabel(_genre.value)}');
+    return parts.join('; ');
   }
 
   void _search() {
@@ -273,6 +318,24 @@ class _RadioScreenState extends State<RadioScreen> {
             const SizedBox(height: 8),
             Text(_radioDirectoryLoadingLabel(l10n.localeName)),
           ],
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.filter_alt),
+              title: Text(l10n.radioActiveFilters),
+              subtitle: Text(_activeFiltersSummary(l10n)),
+            ),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+              alignment: Alignment.centerLeft,
+            ),
+            onPressed: _resetFilters,
+            icon: const Icon(Icons.restart_alt),
+            label: Text(l10n.radioResetFilters),
+          ),
           const SizedBox(height: 8),
           ListTile(
             title: Text(l10n.radioBrowseByLanguage),
@@ -443,11 +506,16 @@ String _countryOptionLabel(
   AppLocalizations l10n,
   RadioCountryOption option,
 ) {
-  final localized = l10n.radioCountryLabel(option.code);
-  if (localized != option.code.toUpperCase()) return localized;
-  final label = option.label.trim();
-  if (label.isNotEmpty) return _titleCaseRadioDirectoryLabel(label);
-  return option.code.toUpperCase();
+  final code = option.code.trim().toUpperCase();
+  final appFallback = l10n.radioCountryLabel(option.code);
+  final radioBrowserFallback = option.label.trim();
+  final fallback = appFallback != code ? appFallback : radioBrowserFallback;
+
+  return countryDisplayNameWithCode(
+    code,
+    localeName: l10n.localeName,
+    fallbackLabel: fallback,
+  );
 }
 
 String _titleCaseRadioDirectoryLabel(String value) {
@@ -466,6 +534,7 @@ String _radioDirectoryLoadingLabel(String localeName) => switch (localeName) {
       'fr' => 'Mise à jour des pays et langues radio...',
       'pt' => 'A atualizar países e idiomas de rádio...',
       'pl' => 'Aktualizuję kraje i języki radia...',
+      'cs' => 'Aktualizuji země a jazyky rádia...',
       _ => 'Aggiornamento di paesi e lingue radio...',
     };
 
@@ -475,7 +544,28 @@ String _recentRadiosLabel(String localeName) => switch (localeName) {
       'fr' => 'Radios récentes',
       'pt' => 'Rádios recentes',
       'pl' => 'Ostatnie radia',
+      'cs' => 'Nedávná rádia',
       _ => 'Radio recenti',
+    };
+
+String _defaultRadioLanguageForLocale(String localeName) => switch (localeName) {
+      'en' => 'en',
+      'es' => 'es',
+      'fr' => 'fr',
+      'pt' => 'pt',
+      'pl' => 'pl',
+      'cs' => 'cs',
+      _ => 'it',
+    };
+
+String _defaultRadioCountryForLocale(String localeName) => switch (localeName) {
+      'en' => 'us',
+      'es' => 'es',
+      'fr' => 'fr',
+      'pt' => 'pt',
+      'pl' => 'pl',
+      'cs' => 'cz',
+      _ => 'it',
     };
 
 class _RadioOptionPickerScreen<T> extends StatelessWidget {

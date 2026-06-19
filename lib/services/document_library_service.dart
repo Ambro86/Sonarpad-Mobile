@@ -590,6 +590,9 @@ class DocumentLibraryService {
   bool _shouldSkipRecoveryFile(String basename) {
     final lower = basename.toLowerCase();
     return lower == 'sonarpad_database.json' ||
+        lower == 'app_debug_log.txt' ||
+        lower == 'debug_parser_html.txt' ||
+        lower == 'debug_parser_text.txt' ||
         lower.endsWith('_export.txt') ||
         lower.endsWith('_export.pdf') ||
         lower.endsWith('_export.docx') ||

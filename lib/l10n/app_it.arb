@@ -2233,6 +2233,10 @@
   "radioBrowseByCountry": "Sfoglia per nazione",
   "radioCountry": "Nazione",
   "radioGenre": "Genere",
+  "radioActiveFilters": "Filtri attivi",
+  "radioResetFilters": "Reimposta filtri",
+  "radioFiltersReset": "Filtri reimpostati.",
+  "radioCity": "Città",
   "@radioGenre": {
     "description": "Localized text for radioGenre."
   },
