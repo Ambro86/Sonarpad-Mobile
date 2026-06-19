@@ -685,6 +685,7 @@ class _PodcastSearchResultsScreen extends StatefulWidget {
 class _PodcastSearchResultsScreenState
     extends State<_PodcastSearchResultsScreen> {
   final _service = PodcastService();
+  final Set<String> _subscribedFeedUrls = <String>{};
   late final Future<List<PodcastSearchResult>> _results;
 
   @override
@@ -695,6 +696,45 @@ class _PodcastSearchResultsScreenState
       country: widget.country,
       category: widget.category,
     );
+    _loadSubscribedFeedUrls();
+  }
+
+  String _feedKey(String feedUrl) => feedUrl.trim().toLowerCase();
+
+  Future<void> _loadSubscribedFeedUrls() async {
+    final subscriptions = await _service.loadSubscriptions();
+    if (!mounted) return;
+    setState(() {
+      _subscribedFeedUrls
+        ..clear()
+        ..addAll(subscriptions.map((subscription) =>
+            _feedKey(subscription.feedUrl)));
+    });
+  }
+
+  bool _isSubscribed(PodcastSearchResult result) {
+    return _subscribedFeedUrls.contains(_feedKey(result.feedUrl));
+  }
+
+  Future<void> _subscribeFromResult(PodcastSearchResult result) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      await _service.addSearchResult(result);
+      if (!mounted) return;
+      setState(() => _subscribedFeedUrls.add(_feedKey(result.feedUrl)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.subscribedTo(result.title))),
+      );
+      Navigator.pop(context, result.feedUrl);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.subscriptionError(e))));
+    }
+  }
+
+  void _openSubscribedResult(PodcastSearchResult result) {
+    Navigator.pop(context, result.feedUrl);
   }
 
   Future<void> _openResult(PodcastSearchResult result) async {
@@ -737,23 +777,39 @@ class _PodcastSearchResultsScreenState
             separatorBuilder: (_, __) => const Divider(height: 1),
             itemBuilder: (context, index) {
               final result = results[index];
-              return ListTile(
-                key: ValueKey('podcast_search_result_${result.feedUrl}'),
-                leading: ExcludeSemantics(
-                  child: result.artworkUrl == null
-                      ? const Icon(Icons.podcasts)
-                      : Image.network(
-                          result.artworkUrl!,
-                          width: 48,
-                          height: 48,
-                        ),
+              final isSubscribed = _isSubscribed(result);
+              final secondaryActionLabel =
+                  isSubscribed ? l10n.openPodcast : l10n.subscribe;
+              return Semantics(
+                key: ValueKey('podcast_search_result_semantics_${result.feedUrl}'),
+                container: true,
+                customSemanticsActions: {
+                  CustomSemanticsAction(label: secondaryActionLabel): () {
+                    if (isSubscribed) {
+                      _openSubscribedResult(result);
+                    } else {
+                      _subscribeFromResult(result);
+                    }
+                  },
+                },
+                child: ListTile(
+                  key: ValueKey('podcast_search_result_${result.feedUrl}'),
+                  leading: ExcludeSemantics(
+                    child: result.artworkUrl == null
+                        ? const Icon(Icons.podcasts)
+                        : Image.network(
+                            result.artworkUrl!,
+                            width: 48,
+                            height: 48,
+                          ),
+                  ),
+                  title: Text(result.title),
+                  subtitle: Text(
+                    result.author.isEmpty ? result.feedUrl : result.author,
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _openResult(result),
                 ),
-                title: Text(result.title),
-                subtitle: Text(
-                  result.author.isEmpty ? result.feedUrl : result.author,
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _openResult(result),
               );
             },
           );

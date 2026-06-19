@@ -175,6 +175,9 @@ class RouteService {
         return 'PRT';
       case 'pl':
         return 'POL';
+      case 'cz':
+      case 'cs':
+        return 'CZE';
       case 'us':
         return 'USA';
       case 'gb':

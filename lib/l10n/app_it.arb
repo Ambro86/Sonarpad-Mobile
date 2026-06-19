@@ -736,6 +736,10 @@
   "@subscribe": {
     "description": "Localized text for subscribe."
   },
+  "openPodcast": "Apri podcast",
+  "@openPodcast": {
+    "description": "Localized text for openPodcast."
+  },
   "viewEpisodes": "Vedi episodi",
   "@viewEpisodes": {
     "description": "Localized text for viewEpisodes."
@@ -2451,6 +2455,10 @@
   "routeCountrySpain": "Spagna",
   "@routeCountrySpain": {
     "description": "Localized text for routeCountrySpain."
+  },
+  "routeCountryCzechRepublic": "Repubblica Ceca",
+  "@routeCountryCzechRepublic": {
+    "description": "Localized text for routeCountryCzechRepublic."
   },
   "routeVehicle": "Mezzo di trasporto",
   "@routeVehicle": {

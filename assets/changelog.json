@@ -9,7 +9,11 @@
       "Piccola correzione per la ricerca dei canali TV: ora toccando un risultato non parte subito la riproduzione, ma si apre la normale schermata del canale, da cui si può avviare la diretta o leggere la guida TV quando disponibile.",
       "Diverse correzioni per tutte le localizzazioni.",
       "Corretto l’errore per cui, nella ricerca radio, dopo aver digitato il primo carattere bisognava tornare nel campo di testo.",
-      "Migliorata l’importazione da iTunes / Apple Devices: Sonarpad ora preserva anche la struttura di cartelle e sottocartelle importate."
+      "Migliorata l’importazione da iTunes / Apple Devices: Sonarpad ora preserva anche la struttura di cartelle e sottocartelle importate.",
+      "Migliorata la ricerca radio: i Paesi vengono ora mostrati con il nome completo e il codice, per esempio “Turchia (TR)”, invece della sola sigla.",
+      "Aggiunto un riepilogo dei filtri attivi nella ricerca radio, così è più facile capire quali criteri sono in uso.",
+      "Aggiunto il pulsante per reimpostare i filtri radio e iniziare una nuova ricerca pulita.",
+      "Nei risultati di ricerca podcast è stata aggiunta un’azione secondaria per iscriversi direttamente; se il podcast è già presente, l’azione apre il podcast."
     ],
     "en": [
       "First public release of Sonarpad Mobile on the App Store. It includes the main features already available: reading and organizing documents, imports from Project Gutenberg, LibriVox, PoetryDB, Internet Archive and iTunes / Apple Devices, export to DOCX, EPUB, MP3 and M4B, News with RSS, OPML and folders, podcasts, radio, routes, weather, calendar, and light, dark or automatic theme selection.",
@@ -17,7 +21,11 @@
       "Fixed saving in the file converter: when Sonarpad cannot save directly to the selected destination, it uses the system share sheet so the user can save the file where they want.",
       "Several fixes for all localizations.",
       "Fixed an issue in radio search where, after typing the first character, the user had to return to the text field to continue typing.",
-      "Improved import from iTunes / Apple Devices: Sonarpad now also preserves the structure of imported folders and subfolders."
+      "Improved import from iTunes / Apple Devices: Sonarpad now also preserves the structure of imported folders and subfolders.",
+      "Improved radio search: countries are now shown with their full name and code, for example “Turkey (TR)”, instead of only the code.",
+      "Added a summary of active filters in radio search, so it is easier to understand which criteria are currently being used.",
+      "Added a button to reset radio filters and start a clean new search.",
+      "Podcast search results now include a secondary action to subscribe directly; if the podcast is already present, the action opens the podcast."
     ],
     "fr": [
       "Première version publique de Sonarpad Mobile sur l’App Store. Elle inclut les principales fonctions déjà disponibles : lecture et organisation des documents, importations depuis Project Gutenberg, LibriVox, PoetryDB, Internet Archive et iTunes / Apple Devices, exportation en DOCX, EPUB, MP3 et M4B, Actualités avec RSS, OPML et dossiers, podcasts, radio, itinéraires, météo, calendrier et choix du thème clair, sombre ou automatique.",
@@ -25,7 +33,11 @@
       "Correction de l’enregistrement dans le convertisseur de fichiers : lorsque Sonarpad ne peut pas enregistrer directement dans l’emplacement choisi, il utilise le partage système afin de permettre à l’utilisateur d’enregistrer le fichier à l’endroit souhaité.",
       "Plusieurs corrections pour toutes les localisations.",
       "Correction d’un problème dans la recherche radio : après avoir saisi le premier caractère, l’utilisateur devait revenir dans le champ de texte pour continuer la saisie.",
-      "Amélioration de l’importation depuis iTunes / Apple Devices : Sonarpad conserve désormais aussi la structure des dossiers et sous-dossiers importés."
+      "Amélioration de l’importation depuis iTunes / Apple Devices : Sonarpad conserve désormais aussi la structure des dossiers et sous-dossiers importés.",
+      "Amélioration de la recherche radio : les pays sont désormais affichés avec leur nom complet et leur code, par exemple « Turquie (TR) », au lieu du seul code.",
+      "Ajout d’un résumé des filtres actifs dans la recherche radio, afin de mieux comprendre les critères actuellement utilisés.",
+      "Ajout d’un bouton pour réinitialiser les filtres radio et commencer une nouvelle recherche propre.",
+      "Les résultats de recherche de podcasts incluent désormais une action secondaire pour s’abonner directement ; si le podcast est déjà présent, l’action ouvre le podcast."
     ],
     "es": [
       "Primera versión pública de Sonarpad Mobile en App Store. Incluye las principales funciones ya disponibles: lectura y organización de documentos, importaciones desde Project Gutenberg, LibriVox, PoetryDB, Internet Archive e iTunes / Apple Devices, exportación a DOCX, EPUB, MP3 y M4B, Noticias con RSS, OPML y carpetas, podcasts, radio, rutas, tiempo, calendario y selección de tema claro, oscuro o automático.",
@@ -33,7 +45,11 @@
       "Corregido el guardado en el convertidor de archivos: cuando Sonarpad no puede guardar directamente en la ubicación elegida, usa la hoja de compartir del sistema para que el usuario pueda guardar el archivo donde quiera.",
       "Varias correcciones para todas las localizaciones.",
       "Corregido un problema en la búsqueda de radio: después de escribir el primer carácter, el usuario tenía que volver al campo de texto para seguir escribiendo.",
-      "Mejorada la importación desde iTunes / Apple Devices: Sonarpad ahora también conserva la estructura de carpetas y subcarpetas importadas."
+      "Mejorada la importación desde iTunes / Apple Devices: Sonarpad ahora también conserva la estructura de carpetas y subcarpetas importadas.",
+      "Mejorada la búsqueda de radio: los países ahora se muestran con el nombre completo y el código, por ejemplo “Turquía (TR)”, en lugar de solo el código.",
+      "Añadido un resumen de los filtros activos en la búsqueda de radio, para entender mejor qué criterios se están usando.",
+      "Añadido un botón para restablecer los filtros de radio y empezar una nueva búsqueda limpia.",
+      "Los resultados de búsqueda de podcasts ahora incluyen una acción secundaria para suscribirse directamente; si el podcast ya está presente, la acción abre el podcast."
     ],
     "pt": [
       "Primeira versão pública do Sonarpad Mobile na App Store. Inclui as principais funcionalidades já disponíveis: leitura e organização de documentos, importações do Project Gutenberg, LibriVox, PoetryDB, Internet Archive e iTunes / Apple Devices, exportação para DOCX, EPUB, MP3 e M4B, Notícias com RSS, OPML e pastas, podcasts, rádio, rotas, meteorologia, calendário e escolha de tema claro, escuro ou automático.",
@@ -41,7 +57,11 @@
       "Corrigida a gravação no conversor de ficheiros: quando o Sonarpad não consegue guardar diretamente no destino escolhido, usa a partilha do sistema para permitir que o utilizador guarde o ficheiro onde quiser.",
       "Várias correções para todas as localizações.",
       "Corrigido um problema na pesquisa de rádio: depois de escrever o primeiro caráter, o utilizador tinha de voltar ao campo de texto para continuar a escrever.",
-      "Melhorada a importação a partir do iTunes / Apple Devices: o Sonarpad agora também preserva a estrutura das pastas e subpastas importadas."
+      "Melhorada a importação a partir do iTunes / Apple Devices: o Sonarpad agora também preserva a estrutura das pastas e subpastas importadas.",
+      "Melhorada a pesquisa de rádio: os países agora são apresentados com o nome completo e o código, por exemplo “Turquia (TR)”, em vez de apenas o código.",
+      "Adicionado um resumo dos filtros ativos na pesquisa de rádio, para ser mais fácil perceber quais os critérios em uso.",
+      "Adicionado um botão para repor os filtros de rádio e iniciar uma nova pesquisa limpa.",
+      "Os resultados da pesquisa de podcasts incluem agora uma ação secundária para subscrever diretamente; se o podcast já estiver presente, a ação abre o podcast."
     ],
     "pl": [
       "Pierwsza publiczna wersja Sonarpad Mobile w App Store. Zawiera główne dostępne funkcje: czytanie i organizowanie dokumentów, import z Project Gutenberg, LibriVox, PoetryDB, Internet Archive oraz iTunes / Apple Devices, eksport do DOCX, EPUB, MP3 i M4B, Wiadomości z RSS, OPML i folderami, podcasty, radio, trasy, pogodę, kalendarz oraz wybór motywu jasnego, ciemnego lub automatycznego.",
@@ -49,7 +69,11 @@
       "Naprawiono zapisywanie w konwerterze plików: gdy Sonarpad nie może zapisać bezpośrednio w wybranej lokalizacji, używa systemowego udostępniania, aby użytkownik mógł zapisać plik tam, gdzie chce.",
       "Wprowadzono różne poprawki we wszystkich lokalizacjach.",
       "Naprawiono problem w wyszukiwaniu radia: po wpisaniu pierwszego znaku użytkownik musiał wrócić do pola tekstowego, aby kontynuować pisanie.",
-      "Ulepszono import z iTunes / Apple Devices: Sonarpad zachowuje teraz także strukturę importowanych folderów i podfolderów."
+      "Ulepszono import z iTunes / Apple Devices: Sonarpad zachowuje teraz także strukturę importowanych folderów i podfolderów.",
+      "Ulepszono wyszukiwanie radia: kraje są teraz wyświetlane z pełną nazwą i kodem, na przykład „Turcja (TR)”, zamiast samego kodu.",
+      "Dodano podsumowanie aktywnych filtrów w wyszukiwaniu radia, aby łatwiej było zrozumieć, jakie kryteria są używane.",
+      "Dodano przycisk do resetowania filtrów radia i rozpoczęcia nowego czystego wyszukiwania.",
+      "Wyniki wyszukiwania podcastów zawierają teraz akcję dodatkową pozwalającą od razu subskrybować; jeśli podcast jest już obecny, akcja otwiera podcast."
     ],
     "cs": [
       "První veřejná verze Sonarpad Mobile v App Storu. Obsahuje hlavní dostupné funkce: čtení a organizaci dokumentů, import z Project Gutenberg, LibriVox, PoetryDB, Internet Archive a iTunes / Apple Devices, export do DOCX, EPUB, MP3 a M4B, Zprávy s RSS, OPML a složkami, podcasty, rádio, trasy, počasí, kalendář a volbu světlého, tmavého nebo automatického motivu.",
@@ -57,7 +81,11 @@
       "Opraveno ukládání v převodníku souborů: když Sonarpad nemůže uložit soubor přímo do zvoleného umístění, použije systémové sdílení, aby si uživatel mohl soubor uložit tam, kam chce.",
       "Provedeny různé opravy ve všech lokalizacích.",
       "Opraven problém ve vyhledávání rádia: po zadání prvního znaku se uživatel musel vrátit do textového pole, aby mohl pokračovat v psaní.",
-      "Vylepšen import z iTunes / Apple Devices: Sonarpad nyní zachovává také strukturu importovaných složek a podsložek."
+      "Vylepšen import z iTunes / Apple Devices: Sonarpad nyní zachovává také strukturu importovaných složek a podsložek.",
+      "Vylepšeno vyhledávání rádií: země se nyní zobrazují s celým názvem a kódem, například „Turecko (TR)“, místo samotného kódu.",
+      "Přidán souhrn aktivních filtrů ve vyhledávání rádií, aby bylo snazší poznat, jaká kritéria se právě používají.",
+      "Přidáno tlačítko pro resetování filtrů rádia a zahájení nového čistého vyhledávání.",
+      "Výsledky vyhledávání podcastů nyní obsahují sekundární akci pro přímé přihlášení k odběru; pokud je podcast již přítomen, akce podcast otevře."
     ]
   },
   {

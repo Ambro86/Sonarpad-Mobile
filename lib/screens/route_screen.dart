@@ -32,6 +32,7 @@ class _RouteScreenState extends State<RouteScreen> {
         'fr' => 'fr',
         'pt' => 'pt',
         'pl' => 'pl',
+        'cs' => 'cz',
         _ => 'it',
       };
     }
@@ -222,6 +223,8 @@ class _RouteScreenState extends State<RouteScreen> {
                   value: 'pt', child: Text(l10n.radioCountryOptionPt)),
               DropdownMenuItem(
                   value: 'pl', child: Text(l10n.radioCountryOptionPl)),
+              DropdownMenuItem(
+                  value: 'cz', child: Text(l10n.routeCountryCzechRepublic)),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _countryCode = val);

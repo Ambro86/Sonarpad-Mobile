@@ -483,7 +483,7 @@ abstract class AppLocalizations {
   /// Localized text for donationsThanks.
   ///
   /// In it, this message translates to:
-  /// **'Chiunque decida di sostenere il progetto verrà ringraziato nell’app e nel repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nRingrazio Jiri Holzinger e Paola Vagata per il loro contributo.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.'**
+  /// **'Chiunque decida di sostenere il progetto verrà ringraziato nell’app e nel repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nRingrazio Jiri Holzinger e Paola Vagata per il loro contributo.\nPer la traduzione in vietnamita ringrazio Anh Đức Nguyễn.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.\nPer la traduzione in serbo ringrazio Mila Kuran.\nPer la traduzione in ucraino ringrazio Ivan Shtefuriak.'**
   String get donationsThanks;
 
   /// Localized text for news.
@@ -666,6 +666,12 @@ abstract class AppLocalizations {
   /// **'Errore esportazione RSS: {error}'**
   String rssExportError(Object error);
 
+  /// Localized text for deleteItem.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get deleteItem;
+
   /// Localized text for articleTextSemantics.
   ///
   /// In it, this message translates to:
@@ -717,7 +723,7 @@ abstract class AppLocalizations {
   /// Localized text for english.
   ///
   /// In it, this message translates to:
-  /// **'Inglese'**
+  /// **'English'**
   String get english;
 
   /// Localized text for french.
@@ -1037,6 +1043,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Iscriviti'**
   String get subscribe;
+
+  /// Localized text for openPodcast.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri podcast'**
+  String get openPodcast;
 
   /// Localized text for viewEpisodes.
   ///
@@ -2083,17 +2095,83 @@ abstract class AppLocalizations {
   /// **'PDF (.pdf)'**
   String get pdfFormat;
 
-  /// No description provided for @docxFormat.
+  /// Localized text for docxFormat.
   ///
   /// In it, this message translates to:
   /// **'DOCX (.docx)'**
   String get docxFormat;
 
-  /// No description provided for @epubFormat.
+  /// Localized text for epubFormat.
   ///
   /// In it, this message translates to:
   /// **'EPUB (.epub)'**
   String get epubFormat;
+
+  /// Export format label for audiobook MP3.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiolibro MP3 (.mp3)'**
+  String get audiobookMp3Format;
+
+  /// Export format label for audiobook M4B.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiolibro M4B (.m4b)'**
+  String get audiobookM4bFormat;
+
+  /// Localized text for exportCompleteTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Esportazione completata'**
+  String get exportCompleteTitle;
+
+  /// Localized text for exportCompleteMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Il file è stato creato correttamente. Vuoi salvarlo in Sonarpad o condividerlo?'**
+  String get exportCompleteMessage;
+
+  /// Localized text for saveInSonarpad.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva in Sonarpad'**
+  String get saveInSonarpad;
+
+  /// Localized text for exportSavedInSonarpad.
+  ///
+  /// In it, this message translates to:
+  /// **'File salvato nei Documenti di Sonarpad.'**
+  String get exportSavedInSonarpad;
+
+  /// Title shown while exporting an audiobook.
+  ///
+  /// In it, this message translates to:
+  /// **'Creazione audiolibro'**
+  String get audiobookExportProgressTitle;
+
+  /// Progress text shown while preparing audiobook export.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione dell’audiolibro...'**
+  String get audiobookExportPreparing;
+
+  /// Progress text shown while generating audiobook chunks.
+  ///
+  /// In it, this message translates to:
+  /// **'Generazione audio'**
+  String get audiobookExportGeneratingAudio;
+
+  /// Progress text shown while converting/merging audiobook audio.
+  ///
+  /// In it, this message translates to:
+  /// **'Conversione finale del file audio...'**
+  String get audiobookExportConvertingAudio;
+
+  /// Progress text shown while finalizing audiobook export.
+  ///
+  /// In it, this message translates to:
+  /// **'Finalizzazione...'**
+  String get audiobookExportFinalizing;
 
   /// Localized text for exportError.
   ///
@@ -2881,6 +2959,8 @@ abstract class AppLocalizations {
   /// **'Tutte le audiodescrizioni'**
   String get audiodescriptionAll;
 
+
+
   /// Localized text for audiodescriptionFilm.
   ///
   /// In it, this message translates to:
@@ -2989,25 +3069,25 @@ abstract class AppLocalizations {
   /// **'Genere'**
   String get radioGenre;
 
-  /// No description provided for @radioActiveFilters.
+  /// Localized text for radioActiveFilters.
   ///
   /// In it, this message translates to:
   /// **'Filtri attivi'**
   String get radioActiveFilters;
 
-  /// No description provided for @radioResetFilters.
+  /// Localized text for radioResetFilters.
   ///
   /// In it, this message translates to:
   /// **'Reimposta filtri'**
   String get radioResetFilters;
 
-  /// No description provided for @radioFiltersReset.
+  /// Localized text for radioFiltersReset.
   ///
   /// In it, this message translates to:
   /// **'Filtri reimpostati.'**
   String get radioFiltersReset;
 
-  /// No description provided for @radioCity.
+  /// Localized text for radioCity.
   ///
   /// In it, this message translates to:
   /// **'Città'**
@@ -3265,6 +3345,12 @@ abstract class AppLocalizations {
   /// **'Spagna'**
   String get routeCountrySpain;
 
+  /// Localized text for routeCountryCzechRepublic.
+  ///
+  /// In it, this message translates to:
+  /// **'Repubblica Ceca'**
+  String get routeCountryCzechRepublic;
+
   /// Localized text for routeVehicle.
   ///
   /// In it, this message translates to:
@@ -3418,7 +3504,7 @@ abstract class AppLocalizations {
   /// Localized text for radioLanguageEn.
   ///
   /// In it, this message translates to:
-  /// **'Inglese'**
+  /// **'English'**
   String get radioLanguageEn;
 
   /// Localized text for radioLanguageDe.
@@ -3472,7 +3558,7 @@ abstract class AppLocalizations {
   /// Localized text for radioLanguageFr.
   ///
   /// In it, this message translates to:
-  /// **'Francese'**
+  /// **'Français'**
   String get radioLanguageFr;
 
   /// Localized text for radioLanguageSr.
@@ -3898,7 +3984,7 @@ abstract class AppLocalizations {
   /// Titolo della schermata dei film al cinema
   ///
   /// In it, this message translates to:
-  /// **'Film al cinema'**
+  /// **'Film al Cinema'**
   String get cinemaTitle;
 
   /// Testo quando non ci sono film
@@ -3946,7 +4032,7 @@ abstract class AppLocalizations {
   /// No description provided for @concertsTitle.
   ///
   /// In it, this message translates to:
-  /// **'Concerti ed eventi'**
+  /// **'Concerti ed Eventi'**
   String get concertsTitle;
 
   /// No description provided for @concertsSearchHint.
@@ -4000,7 +4086,7 @@ abstract class AppLocalizations {
   /// No description provided for @podcastUnplayed.
   ///
   /// In it, this message translates to:
-  /// **'Episodi non ascoltati'**
+  /// **'Non ascoltato'**
   String get podcastUnplayed;
 
   /// Localized text for routeReadAction.
@@ -4015,101 +4101,21 @@ abstract class AppLocalizations {
   /// **'Salva nei documenti'**
   String get routeSaveAction;
 
+
+  /// Localized text for routeRecentRoutes.
+  String get routeRecentRoutes;
+
+  /// Localized text for routeRecentRoutesEmpty.
+  String get routeRecentRoutesEmpty;
+
+  /// Localized text for routeNavigationFromTo.
+  String routeNavigationFromTo(Object from, Object to, Object date);
+
   /// Localized text for routeSaveSuccess.
   ///
   /// In it, this message translates to:
   /// **'Percorso salvato nei documenti'**
   String get routeSaveSuccess;
-
-  /// Localized text for deleteItem.
-  ///
-  /// In it, this message translates to:
-  /// **'Elimina'**
-  String get deleteItem;
-
-  /// Export format label for audiobook MP3.
-  ///
-  /// In it, this message translates to:
-  /// **'Audiolibro MP3 (.mp3)'**
-  String get audiobookMp3Format;
-
-  /// Export format label for audiobook M4B.
-  ///
-  /// In it, this message translates to:
-  /// **'Audiolibro M4B (.m4b)'**
-  String get audiobookM4bFormat;
-
-  /// Localized text for exportCompleteTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Esportazione completata'**
-  String get exportCompleteTitle;
-
-  /// Localized text for exportCompleteMessage.
-  ///
-  /// In it, this message translates to:
-  /// **'Il file è stato creato correttamente. Vuoi salvarlo in Sonarpad o condividerlo?'**
-  String get exportCompleteMessage;
-
-  /// Localized text for saveInSonarpad.
-  ///
-  /// In it, this message translates to:
-  /// **'Salva in Sonarpad'**
-  String get saveInSonarpad;
-
-  /// Localized text for exportSavedInSonarpad.
-  ///
-  /// In it, this message translates to:
-  /// **'File salvato nei Documenti di Sonarpad.'**
-  String get exportSavedInSonarpad;
-
-  /// Title shown while exporting an audiobook.
-  ///
-  /// In it, this message translates to:
-  /// **'Creazione audiolibro'**
-  String get audiobookExportProgressTitle;
-
-  /// Progress text shown while preparing audiobook export.
-  ///
-  /// In it, this message translates to:
-  /// **'Preparazione dell’audiolibro...'**
-  String get audiobookExportPreparing;
-
-  /// Progress text shown while generating audiobook chunks.
-  ///
-  /// In it, this message translates to:
-  /// **'Generazione audio'**
-  String get audiobookExportGeneratingAudio;
-
-  /// Progress text shown while converting/merging audiobook audio.
-  ///
-  /// In it, this message translates to:
-  /// **'Conversione finale del file audio...'**
-  String get audiobookExportConvertingAudio;
-
-  /// Progress text shown while finalizing audiobook export.
-  ///
-  /// In it, this message translates to:
-  /// **'Finalizzazione...'**
-  String get audiobookExportFinalizing;
-
-  /// No description provided for @routeRecentRoutes.
-  ///
-  /// In it, this message translates to:
-  /// **'Percorsi recenti'**
-  String get routeRecentRoutes;
-
-  /// No description provided for @routeRecentRoutesEmpty.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun percorso recente'**
-  String get routeRecentRoutesEmpty;
-
-  /// No description provided for @routeNavigationFromTo.
-  ///
-  /// In it, this message translates to:
-  /// **'Dettagli navigazione da {from} a {to} - {date}'**
-  String routeNavigationFromTo(Object from, Object to, Object date);
 }
 
 class _AppLocalizationsDelegate
