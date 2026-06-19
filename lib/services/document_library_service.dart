@@ -123,42 +123,159 @@ class DocumentLibraryService {
     final appDir = await getApplicationDocumentsDirectory();
     final docsDir = await documentsFolder();
     final allowed = allowedExtensions.map((e) => e.toLowerCase()).toSet();
-    final existingKeys = <String>{};
+
+    final existingPathKeys = <String>{};
+    final existingPlacementKeys = <String>{};
     for (final doc in _documents) {
-      existingKeys.add(_documentKey(doc.path));
-      existingKeys.add(_documentKey(doc.name));
+      if (doc.path.trim().isNotEmpty) {
+        existingPathKeys.add(_documentKey(doc.path));
+      }
+      existingPathKeys.add(_documentKey(doc.name));
+      existingPlacementKeys.add(
+        _placementKey(doc.parentId, doc.displayName, isFolder: doc.isFolder),
+      );
     }
 
     final recovered = <DocumentItem>[];
-    for (final dir in [docsDir, appDir]) {
-      if (!await dir.exists()) continue;
-      await for (final entity
-          in dir.list(recursive: false, followLinks: false)) {
-        if (entity is! File) continue;
-        final basename = p.basename(entity.path);
-        if (_shouldSkipRecoveryFile(basename)) continue;
-        final ext = p.extension(basename).replaceFirst('.', '').toLowerCase();
-        if (!allowed.contains(ext)) continue;
 
-        final relativePath = p.relative(entity.path, from: appDir.path);
-        final displayName = _legacyDisplayName(basename);
-        final key = _documentKey(relativePath);
-        if (existingKeys.contains(key) ||
-            existingKeys.contains(_documentKey(displayName))) {
-          continue;
+    DocumentItem? existingFolderFor({
+      required String name,
+      required String relativePath,
+      required String? parentId,
+    }) {
+      final pathKey = _documentKey(relativePath);
+      final placementKey = _placementKey(parentId, name, isFolder: true);
+      for (final doc in [...recovered, ..._documents]) {
+        if (!doc.isFolder) continue;
+        if (doc.path.trim().isNotEmpty && _documentKey(doc.path) == pathKey) {
+          return doc;
         }
+        if (_placementKey(doc.parentId, doc.displayName, isFolder: true) ==
+            placementKey) {
+          return doc;
+        }
+      }
+      return null;
+    }
 
-        recovered.add(
-          DocumentItem(
-            id: '${DateTime.now().microsecondsSinceEpoch}_${recovered.length}_$displayName',
-            name: displayName,
-            path: relativePath,
-            extension: ext,
-            addedAt: DateTime.now(),
-          ),
+    Future<void> recoverFile(File entity, {String? parentId}) async {
+      final basename = p.basename(entity.path);
+      if (_shouldSkipRecoveryFile(basename)) return;
+      final ext = p.extension(basename).replaceFirst('.', '').toLowerCase();
+      if (!allowed.contains(ext)) return;
+
+      final relativePath = p.relative(entity.path, from: appDir.path);
+      final displayName = _legacyDisplayName(basename);
+      final pathKey = _documentKey(relativePath);
+      final placementKey =
+          _placementKey(parentId, displayName, isFolder: false);
+      if (existingPathKeys.contains(pathKey) ||
+          existingPlacementKeys.contains(placementKey)) {
+        return;
+      }
+
+      recovered.add(
+        DocumentItem(
+          id: '${DateTime.now().microsecondsSinceEpoch}_${recovered.length}_$displayName',
+          name: displayName,
+          path: relativePath,
+          extension: ext,
+          addedAt: DateTime.now(),
+          parentId: parentId,
+        ),
+      );
+      existingPathKeys.add(pathKey);
+      existingPathKeys.add(_documentKey(displayName));
+      existingPlacementKeys.add(placementKey);
+      await AppLogger.log(
+        'DocumentLibraryService: recuperato file condiviso '
+        'name="$displayName" path="$relativePath" parentId="$parentId"',
+      );
+    }
+
+    Future<bool> recoverImportedDirectory(
+      Directory dir, {
+      String? parentId,
+    }) async {
+      final basename = p.basename(dir.path);
+      if (_shouldSkipRecoveryDirectory(basename)) return false;
+
+      final relativePath = p.relative(dir.path, from: appDir.path);
+      final existingFolder = existingFolderFor(
+        name: basename,
+        relativePath: relativePath,
+        parentId: parentId,
+      );
+      DocumentItem? folder = existingFolder;
+      final childrenToAdd = <DocumentItem>[];
+      final beforeCount = recovered.length;
+      var hasSupportedContent = false;
+
+      if (folder == null) {
+        folder = DocumentItem(
+          id: 'folder_${DateTime.now().microsecondsSinceEpoch}_${recovered.length}',
+          name: basename,
+          path: relativePath,
+          extension: 'folder',
+          addedAt: DateTime.now(),
+          isFolder: true,
+          parentId: parentId,
         );
-        existingKeys.add(key);
-        existingKeys.add(_documentKey(displayName));
+        childrenToAdd.add(folder);
+      }
+
+      await for (final entity in dir.list(recursive: false, followLinks: false)) {
+        if (entity is Directory) {
+          final childHasContent = await recoverImportedDirectory(
+            entity,
+            parentId: folder.id,
+          );
+          hasSupportedContent = hasSupportedContent || childHasContent;
+        } else if (entity is File) {
+          final childName = p.basename(entity.path);
+          final ext = p.extension(childName).replaceFirst('.', '').toLowerCase();
+          if (!_shouldSkipRecoveryFile(childName) && allowed.contains(ext)) {
+            await recoverFile(entity, parentId: folder.id);
+            hasSupportedContent = true;
+          }
+        }
+      }
+
+      if (childrenToAdd.isNotEmpty && hasSupportedContent) {
+        recovered.insertAll(beforeCount, childrenToAdd);
+        existingPathKeys.add(_documentKey(relativePath));
+        existingPlacementKeys.add(
+          _placementKey(parentId, basename, isFolder: true),
+        );
+        await AppLogger.log(
+          'DocumentLibraryService: recuperata cartella condivisa '
+          'name="$basename" path="$relativePath" parentId="$parentId"',
+        );
+      }
+      return hasSupportedContent;
+    }
+
+    // Recupero dei file già presenti nella cartella interna di Sonarpad.
+    if (await docsDir.exists()) {
+      await for (final entity in docsDir.list(recursive: false, followLinks: false)) {
+        if (entity is File) {
+          await recoverFile(entity);
+        }
+      }
+    }
+
+    // Recupero dei file e delle cartelle copiati nella root tramite iTunes /
+    // Apple Devices File Sharing. Qui serve la scansione delle directory, perché
+    // iTunes può copiare una cartella intera mantenendo la struttura.
+    if (await appDir.exists()) {
+      await for (final entity in appDir.list(recursive: false, followLinks: false)) {
+        final basename = p.basename(entity.path);
+        if (_shouldSkipRecoveryDirectory(basename)) continue;
+        if (entity is File) {
+          await recoverFile(entity);
+        } else if (entity is Directory && basename != documentsFolderName) {
+          await recoverImportedDirectory(entity);
+        }
       }
     }
 
@@ -480,6 +597,19 @@ class DocumentLibraryService {
         lower.endsWith('_audiobook.mp3') ||
         lower.endsWith('_audiobook.m4b') ||
         lower.startsWith('.');
+  }
+
+  bool _shouldSkipRecoveryDirectory(String basename) {
+    final lower = basename.toLowerCase();
+    return lower.isEmpty ||
+        lower.startsWith('.') ||
+        lower == '__macosx';
+  }
+
+  String _placementKey(String? parentId, String name, {required bool isFolder}) {
+    final parent = parentId ?? 'root';
+    final kind = isFolder ? 'folder' : 'file';
+    return '$kind|$parent|${_documentKey(name)}';
   }
 
   String _legacyDisplayName(String basename) {
