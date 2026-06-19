@@ -216,7 +216,7 @@ class TvService {
     final root = jsonDecode(response.body);
     if (root is! List) return {};
 
-    final currentPrograms = <String, TvProgram>{};
+    final programsByChannel = <String, List<TvProgram>>{};
     final nowSec = nowTime.millisecondsSinceEpoch ~/ 1000;
 
     for (final group in root) {
@@ -229,19 +229,63 @@ class TvService {
 
         final startTime = _readInt(item, 'startTime', 'start_time');
         final endTime = _readInt(item, 'endTime', 'end_time');
+        if (startTime <= 0 || endTime <= 0) continue;
 
-        if (startTime <= nowSec && endTime > nowSec) {
-          final target = normalizeChannelName(guideChannel);
-          currentPrograms[target] = TvProgram(
-            title: title,
-            hour: item['hour']?.toString().trim() ?? '',
-            startTime: startTime,
-            endTime: endTime,
-          );
-        }
+        final target = normalizeChannelName(guideChannel);
+        if (target.isEmpty) continue;
+        programsByChannel.putIfAbsent(target, () => <TvProgram>[]).add(
+              TvProgram(
+                title: title,
+                hour: item['hour']?.toString().trim() ?? '',
+                startTime: startTime,
+                endTime: endTime,
+              ),
+            );
       }
     }
+
+    final currentPrograms = <String, TvProgram>{};
+    for (final entry in programsByChannel.entries) {
+      final programs = entry.value;
+      programs.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      final exact = programs.cast<TvProgram?>().firstWhere(
+            (program) =>
+                program != null &&
+                program.startTime <= nowSec &&
+                program.endTime > nowSec,
+            orElse: () => null,
+          );
+
+      final fallback = exact ?? _latestStartedProgram(programs, nowSec);
+      if (fallback != null) {
+        currentPrograms[entry.key] = fallback;
+      }
+    }
+
     return currentPrograms;
+  }
+
+
+  TvProgram? _latestStartedProgram(List<TvProgram> programs, int nowSec) {
+    TvProgram? latest;
+    for (final program in programs) {
+      if (program.startTime > nowSec) continue;
+      if (latest == null || program.startTime > latest.startTime) {
+        latest = program;
+      }
+    }
+
+    if (latest == null) return null;
+    // Alcune guide non aggiornano sempre correttamente l'orario di fine
+    // per tutti i canali. In quel caso, come nella versione Mac, mostriamo
+    // comunque l'ultimo programma iniziato da poco, evitando di lasciare
+    // vuoto "Ora in onda" su canali come Rai 2, Rai Scuola o Rai Premium.
+    const maxFallbackAgeSeconds = 6 * 60 * 60;
+    if (nowSec - latest.startTime <= maxFallbackAgeSeconds) {
+      return latest;
+    }
+    return null;
   }
 
   Future<List<TvProgram>> loadChannelGuide(String channel, String secretKey,
