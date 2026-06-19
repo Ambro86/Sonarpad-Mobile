@@ -22,11 +22,19 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
   void _showReadingOptions(AifaConfezione conf) {
     showModalBottomSheet(
       context: context,
+      barrierLabel: 'Chiudi opzioni farmaco',
+      routeSettings: const RouteSettings(name: '/aifa/reading_options'),
       builder: (context) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              ListTile(
+                leading: const Icon(Icons.arrow_back),
+                title: const Text('Indietro'),
+                onTap: () => Navigator.pop(context),
+              ),
+              const Divider(),
               ListTile(
                 title: Text(conf.name,
                     style: const TextStyle(fontWeight: FontWeight.bold)),
