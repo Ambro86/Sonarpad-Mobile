@@ -6,37 +6,58 @@
       "Prima versione pubblica di Sonarpad Mobile su App Store. Include le principali funzioni già disponibili: lettura e organizzazione dei documenti, importazioni da Project Gutenberg, LibriVox, PoetryDB, Internet Archive e iTunes / Apple Devices, esportazione in DOCX, EPUB, MP3 e M4B, Notizie con RSS, OPML e cartelle, podcast, radio, percorsi, meteo, calendario e scelta del tema chiaro, scuro o automatico.",
       "Quando la ricerca radio non restituisce risultati a causa di problemi di connessione, Sonarpad mostra ora un messaggio più chiaro per l’utente, invece di un errore tecnico.",
       "Corretto il salvataggio nel convertitore file: quando Sonarpad non può salvare direttamente nel percorso scelto, usa la condivisione di sistema per permettere all’utente di salvare il file nella destinazione desiderata.",
-      "Piccola correzione per la ricerca dei canali TV: ora toccando un risultato non parte subito la riproduzione, ma si apre la normale schermata del canale, da cui si può avviare la diretta o leggere la guida TV quando disponibile."
+      "Piccola correzione per la ricerca dei canali TV: ora toccando un risultato non parte subito la riproduzione, ma si apre la normale schermata del canale, da cui si può avviare la diretta o leggere la guida TV quando disponibile.",
+      "Diverse correzioni per tutte le localizzazioni.",
+      "Corretto l’errore per cui, nella ricerca radio, dopo aver digitato il primo carattere bisognava tornare nel campo di testo.",
+      "Migliorata l’importazione da iTunes / Apple Devices: Sonarpad ora preserva anche la struttura di cartelle e sottocartelle importate."
     ],
     "en": [
       "First public release of Sonarpad Mobile on the App Store. It includes the main features already available: reading and organizing documents, imports from Project Gutenberg, LibriVox, PoetryDB, Internet Archive and iTunes / Apple Devices, export to DOCX, EPUB, MP3 and M4B, News with RSS, OPML and folders, podcasts, radio, routes, weather, calendar, and light, dark or automatic theme selection.",
       "When radio search cannot return results because of connection problems, Sonarpad now shows a clearer message to the user instead of a technical error.",
-      "Fixed saving in the file converter: when Sonarpad cannot save directly to the selected destination, it uses the system share sheet so the user can save the file where they want."
+      "Fixed saving in the file converter: when Sonarpad cannot save directly to the selected destination, it uses the system share sheet so the user can save the file where they want.",
+      "Several fixes for all localizations.",
+      "Fixed an issue in radio search where, after typing the first character, the user had to return to the text field to continue typing.",
+      "Improved import from iTunes / Apple Devices: Sonarpad now also preserves the structure of imported folders and subfolders."
     ],
     "fr": [
       "Première version publique de Sonarpad Mobile sur l’App Store. Elle inclut les principales fonctions déjà disponibles : lecture et organisation des documents, importations depuis Project Gutenberg, LibriVox, PoetryDB, Internet Archive et iTunes / Apple Devices, exportation en DOCX, EPUB, MP3 et M4B, Actualités avec RSS, OPML et dossiers, podcasts, radio, itinéraires, météo, calendrier et choix du thème clair, sombre ou automatique.",
       "Lorsque la recherche radio ne peut pas afficher de résultats à cause de problèmes de connexion, Sonarpad affiche désormais un message plus clair pour l’utilisateur au lieu d’une erreur technique.",
-      "Correction de l’enregistrement dans le convertisseur de fichiers : lorsque Sonarpad ne peut pas enregistrer directement dans l’emplacement choisi, il utilise le partage système afin de permettre à l’utilisateur d’enregistrer le fichier à l’endroit souhaité."
+      "Correction de l’enregistrement dans le convertisseur de fichiers : lorsque Sonarpad ne peut pas enregistrer directement dans l’emplacement choisi, il utilise le partage système afin de permettre à l’utilisateur d’enregistrer le fichier à l’endroit souhaité.",
+      "Plusieurs corrections pour toutes les localisations.",
+      "Correction d’un problème dans la recherche radio : après avoir saisi le premier caractère, l’utilisateur devait revenir dans le champ de texte pour continuer la saisie.",
+      "Amélioration de l’importation depuis iTunes / Apple Devices : Sonarpad conserve désormais aussi la structure des dossiers et sous-dossiers importés."
     ],
     "es": [
       "Primera versión pública de Sonarpad Mobile en App Store. Incluye las principales funciones ya disponibles: lectura y organización de documentos, importaciones desde Project Gutenberg, LibriVox, PoetryDB, Internet Archive e iTunes / Apple Devices, exportación a DOCX, EPUB, MP3 y M4B, Noticias con RSS, OPML y carpetas, podcasts, radio, rutas, tiempo, calendario y selección de tema claro, oscuro o automático.",
       "Cuando la búsqueda de radios no puede mostrar resultados por problemas de conexión, Sonarpad ahora muestra un mensaje más claro para el usuario en lugar de un error técnico.",
-      "Corregido el guardado en el convertidor de archivos: cuando Sonarpad no puede guardar directamente en la ubicación elegida, usa la hoja de compartir del sistema para que el usuario pueda guardar el archivo donde quiera."
+      "Corregido el guardado en el convertidor de archivos: cuando Sonarpad no puede guardar directamente en la ubicación elegida, usa la hoja de compartir del sistema para que el usuario pueda guardar el archivo donde quiera.",
+      "Varias correcciones para todas las localizaciones.",
+      "Corregido un problema en la búsqueda de radio: después de escribir el primer carácter, el usuario tenía que volver al campo de texto para seguir escribiendo.",
+      "Mejorada la importación desde iTunes / Apple Devices: Sonarpad ahora también conserva la estructura de carpetas y subcarpetas importadas."
     ],
     "pt": [
       "Primeira versão pública do Sonarpad Mobile na App Store. Inclui as principais funcionalidades já disponíveis: leitura e organização de documentos, importações do Project Gutenberg, LibriVox, PoetryDB, Internet Archive e iTunes / Apple Devices, exportação para DOCX, EPUB, MP3 e M4B, Notícias com RSS, OPML e pastas, podcasts, rádio, rotas, meteorologia, calendário e escolha de tema claro, escuro ou automático.",
       "Quando a pesquisa de rádios não consegue devolver resultados devido a problemas de ligação, o Sonarpad agora mostra uma mensagem mais clara ao utilizador, em vez de um erro técnico.",
-      "Corrigida a gravação no conversor de ficheiros: quando o Sonarpad não consegue guardar diretamente no destino escolhido, usa a partilha do sistema para permitir que o utilizador guarde o ficheiro onde quiser."
+      "Corrigida a gravação no conversor de ficheiros: quando o Sonarpad não consegue guardar diretamente no destino escolhido, usa a partilha do sistema para permitir que o utilizador guarde o ficheiro onde quiser.",
+      "Várias correções para todas as localizações.",
+      "Corrigido um problema na pesquisa de rádio: depois de escrever o primeiro caráter, o utilizador tinha de voltar ao campo de texto para continuar a escrever.",
+      "Melhorada a importação a partir do iTunes / Apple Devices: o Sonarpad agora também preserva a estrutura das pastas e subpastas importadas."
     ],
     "pl": [
       "Pierwsza publiczna wersja Sonarpad Mobile w App Store. Zawiera główne dostępne funkcje: czytanie i organizowanie dokumentów, import z Project Gutenberg, LibriVox, PoetryDB, Internet Archive oraz iTunes / Apple Devices, eksport do DOCX, EPUB, MP3 i M4B, Wiadomości z RSS, OPML i folderami, podcasty, radio, trasy, pogodę, kalendarz oraz wybór motywu jasnego, ciemnego lub automatycznego.",
       "Gdy wyszukiwanie radia nie może zwrócić wyników z powodu problemów z połączeniem, Sonarpad pokazuje teraz użytkownikowi jaśniejszy komunikat zamiast błędu technicznego.",
-      "Naprawiono zapisywanie w konwerterze plików: gdy Sonarpad nie może zapisać bezpośrednio w wybranej lokalizacji, używa systemowego udostępniania, aby użytkownik mógł zapisać plik tam, gdzie chce."
+      "Naprawiono zapisywanie w konwerterze plików: gdy Sonarpad nie może zapisać bezpośrednio w wybranej lokalizacji, używa systemowego udostępniania, aby użytkownik mógł zapisać plik tam, gdzie chce.",
+      "Wprowadzono różne poprawki we wszystkich lokalizacjach.",
+      "Naprawiono problem w wyszukiwaniu radia: po wpisaniu pierwszego znaku użytkownik musiał wrócić do pola tekstowego, aby kontynuować pisanie.",
+      "Ulepszono import z iTunes / Apple Devices: Sonarpad zachowuje teraz także strukturę importowanych folderów i podfolderów."
     ],
     "cs": [
       "První veřejná verze Sonarpad Mobile v App Storu. Obsahuje hlavní dostupné funkce: čtení a organizaci dokumentů, import z Project Gutenberg, LibriVox, PoetryDB, Internet Archive a iTunes / Apple Devices, export do DOCX, EPUB, MP3 a M4B, Zprávy s RSS, OPML a složkami, podcasty, rádio, trasy, počasí, kalendář a volbu světlého, tmavého nebo automatického motivu.",
       "Když vyhledávání rádií nemůže vrátit výsledky kvůli problémům s připojením, Sonarpad nyní zobrazí uživateli srozumitelnější zprávu místo technické chyby.",
-      "Opraveno ukládání v převodníku souborů: když Sonarpad nemůže uložit soubor přímo do zvoleného umístění, použije systémové sdílení, aby si uživatel mohl soubor uložit tam, kam chce."
+      "Opraveno ukládání v převodníku souborů: když Sonarpad nemůže uložit soubor přímo do zvoleného umístění, použije systémové sdílení, aby si uživatel mohl soubor uložit tam, kam chce.",
+      "Provedeny různé opravy ve všech lokalizacích.",
+      "Opraven problém ve vyhledávání rádia: po zadání prvního znaku se uživatel musel vrátit do textového pole, aby mohl pokračovat v psaní.",
+      "Vylepšen import z iTunes / Apple Devices: Sonarpad nyní zachovává také strukturu importovaných složek a podsložek."
     ]
   },
   {

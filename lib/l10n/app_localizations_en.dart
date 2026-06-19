@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => '''Sonarpad''';
 
   @override
-  String get appLanguage => '''App Language''';
+  String get appLanguage => '''App language''';
 
   @override
   String get settingsTheme => '''App theme''';
@@ -57,13 +57,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voiceDictionaryAdd => '''Add entries to dictionary''';
 
   @override
-  String get voiceDictionaryOriginalWord => '''Original Word''';
+  String get voiceDictionaryOriginalWord => '''Original word''';
 
   @override
-  String get voiceDictionaryReplacementWord => '''Replacement Word''';
+  String get voiceDictionaryReplacementWord => '''Replacement word''';
 
   @override
-  String get voiceDictionaryMatchCase => '''Match Case''';
+  String get voiceDictionaryMatchCase => '''Match case''';
 
   @override
   String get voiceDictionaryIgnoreCase => '''Ignore case''';
@@ -75,13 +75,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voiceDictionaryEmpty => '''No dictionary entries.''';
 
   @override
-  String get voiceDictionaryRemove => '''Remove Selected Entry''';
+  String get voiceDictionaryRemove => '''Remove selected entry''';
 
   @override
   String get voiceDictionaryOriginalRequired => '''Enter the original word.''';
 
   @override
-  String get convertMediaTitle => '''Convert Media''';
+  String get convertMediaTitle => '''Convert media''';
 
   @override
   String get convertMediaInput => '''File to convert''';
@@ -120,7 +120,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get convertMediaDone => '''Conversion completed.''';
 
   @override
-  String get convertMediaButton => '''Convert Media''';
+  String get convertMediaButton => '''Convert media''';
 
   @override
   String get convertMediaNoInput => '''Select a file to convert.''';
@@ -314,7 +314,7 @@ For the Spanish translation, thanks to Arturo Fernandez Rivas.''';
   String get articleTextSemantics => '''Article text''';
 
   @override
-  String get newsLanguage => '''News Language''';
+  String get newsLanguage => '''News language''';
 
   @override
   String get loadingNews => '''Loading news''';
@@ -400,7 +400,7 @@ For the Spanish translation, thanks to Arturo Fernandez Rivas.''';
 
   @override
   String edgeTtsError(Object error) {
-    return '''Edge TTS Error: ${error}''';
+    return '''Edge TTS error: ${error}''';
   }
 
   @override
@@ -436,7 +436,7 @@ For the Spanish translation, thanks to Arturo Fernandez Rivas.''';
   String get podcastName => '''Podcast name''';
 
   @override
-  String get podcastSearchHint => '''Example: technology, history, the podcast name...''';
+  String get podcastSearchHint => '''Example: technology, history, podcast name...''';
 
   @override
   String get searchCountry => '''Search country''';
@@ -879,10 +879,10 @@ For the Spanish translation, thanks to Arturo Fernandez Rivas.''';
   String get cancel => '''Cancel''';
 
   @override
-  String get settingsReadingEngine => '''Reading Engine''';
+  String get settingsReadingEngine => '''Reading engine''';
 
   @override
-  String get settingsEdgeTtsQuality => '''Edge TTS (High quality online)''';
+  String get settingsEdgeTtsQuality => '''Edge TTS (high-quality online)''';
 
   @override
   String get settingsSystemVoices => '''System Voices (VoiceOver / Google)''';
@@ -1061,10 +1061,10 @@ For the Spanish translation, thanks to Arturo Fernandez Rivas.''';
   String get invia => '''Send''';
 
   @override
-  String get saveArticle => '''Save Article''';
+  String get saveArticle => '''Save article''';
 
   @override
-  String get shareArticle => '''Share Article''';
+  String get shareArticle => '''Share article''';
 
   @override
   String get articleSavedSuccess => '''Article saved to Documents''';
@@ -1356,7 +1356,7 @@ For the Spanish translation, thanks to Arturo Fernandez Rivas.''';
   String get saveDocument => '''Save document''';
 
   @override
-  String get addRssSource => '''Add RSS Source''';
+  String get addRssSource => '''Add RSS source''';
 
   @override
   String get add => '''Add''';
@@ -1427,7 +1427,7 @@ For the Spanish translation, thanks to Arturo Fernandez Rivas.''';
   String get retry => '''Retry''';
 
   @override
-  String get goBack => '''.. Go back''';
+  String get goBack => '''Go back''';
 
   @override
   String get noSupportedFilesInFolder => '''No supported files in this folder.''';
@@ -2078,7 +2078,7 @@ For the Spanish translation, thanks to Arturo Fernandez Rivas.''';
   }
 
   @override
-  String get cinemaTitle => '''Movies in Theaters''';
+  String get cinemaTitle => '''Movies in theaters''';
 
   @override
   String get cinemaNoMovies => '''No movies found at the moment.''';

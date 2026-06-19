@@ -68,13 +68,16 @@ class OpenMeteoWeatherService {
 
   final Map<String, _CacheEntry> _cache = {};
 
-  Future<List<WeatherGeocodingResult>> searchCity(String query) async {
+  Future<List<WeatherGeocodingResult>> searchCity(
+    String query, {
+    String? localeName,
+  }) async {
     final normalizedQuery = normalizeSearchInput(query);
     if (normalizedQuery.isEmpty) return const [];
     final uri = Uri.parse(_geocodeEndpoint).replace(queryParameters: {
       'name': normalizedQuery,
       'count': '5',
-      'language': 'it',
+      'language': _geocodingLanguageForLocale(localeName),
       'format': 'json',
     });
     final res = await http.get(uri).timeout(const Duration(seconds: 10));
@@ -88,6 +91,23 @@ class OpenMeteoWeatherService {
       }
     }
     return [];
+  }
+
+
+  String _geocodingLanguageForLocale(String? localeName) {
+    final code = (localeName ?? '').toLowerCase().replaceAll('_', '-');
+    final languageCode = code.split('-').first;
+
+    return switch (languageCode) {
+      'cs' => 'cs',
+      'en' => 'en',
+      'es' => 'es',
+      'fr' => 'fr',
+      'it' => 'it',
+      'pl' => 'pl',
+      'pt' => 'pt',
+      _ => 'en',
+    };
   }
 
   Future<WeatherForecast?> getForecast(double lat, double lon) async {

@@ -54,7 +54,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get voiceDictionaryTitle => '''Słownik głosowy''';
 
   @override
-  String get voiceDictionaryAdd => '''Dodaj wpisy do słownika''';
+  String get voiceDictionaryAdd => '''Dodaj wpis do słownika''';
 
   @override
   String get voiceDictionaryOriginalWord => '''Oryginalne słowo''';
@@ -99,7 +99,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get convertMediaFormat => '''Format''';
 
   @override
-  String get convertMediaBitrate => '''Bitrate (kbps)''';
+  String get convertMediaBitrate => '''Przepływność (kbps)''';
 
   @override
   String get convertMediaOggQuality => '''Jakość (q)''';
@@ -138,7 +138,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get convertMediaSamePath => '''Plik po konwersji musi być inny niż plik źródłowy.''';
 
   @override
-  String get convertMediaInvalidBitrate => '''Nieprawidłowy bitrate. Wpisz wartość od 64 do 320 kbps.''';
+  String get convertMediaInvalidBitrate => '''Nieprawidłowa przepływność. Wpisz wartość od 64 do 320 kbps.''';
 
   @override
   String convertMediaFailed(Object error) {
@@ -255,7 +255,7 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   String get moveDown => '''Przenieś w dół''';
 
   @override
-  String get hide => '''Usuń''';
+  String get hide => '''Ukryj''';
 
   @override
   String get moveToPosition => '''Przenieś na pozycję''';
@@ -269,7 +269,7 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   String get positionLabelLast => '''Ostatnia pozycja''';
 
   @override
-  String get restoreHiddenSources => '''Przywróć usunięte źródła''';
+  String get restoreHiddenSources => '''Przywróć ukryte źródła''';
 
   @override
   String get addCustomNewsSource => '''Dodaj własne źródło RSS''';
@@ -457,7 +457,7 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   String get selectedPodcastCategory => '''Wybrana kategoria''';
 
   @override
-  String get selectedRecently => '''ostatni wybór''';
+  String get selectedRecently => '''ostatnio wybrane''';
 
   @override
   String get podcastCategories => '''Kategorie podcastów''';
@@ -640,7 +640,7 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   }
 
   @override
-  String get loadingEpisodeAudio => '''Ładowanie audio odcinka''';
+  String get loadingEpisodeAudio => '''Ładowanie dźwięku odcinka''';
 
   @override
   String get playbackPosition => '''Pozycja''';
@@ -1186,10 +1186,10 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   String get internetArchiveNoItemsFound => '''Nie znaleziono elementów audio.''';
 
   @override
-  String get saveAudioInDocuments => '''Zapisz audio w Dokumentach''';
+  String get saveAudioInDocuments => '''Zapisz dźwięk w Dokumentach''';
 
   @override
-  String get audioSavedInDocuments => '''Audio zapisane w Dokumentach.''';
+  String get audioSavedInDocuments => '''Dźwięk zapisany w Dokumentach.''';
 
   @override
   String get noAudioTracksAvailable => '''Brak dostępnych ścieżek audio.''';
@@ -1427,7 +1427,7 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   String get retry => '''Spróbuj ponownie''';
 
   @override
-  String get goBack => '''.. Wróć''';
+  String get goBack => '''Wróć''';
 
   @override
   String get noSupportedFilesInFolder => '''Brak obsługiwanych plików w tym folderze.''';
@@ -1581,7 +1581,7 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   String get radioNoFavorites => '''Brak ulubionych stacji radiowych.''';
 
   @override
-  String get radioSearchText => '''Szukaj radia''';
+  String get radioSearchText => '''Szukaj stacji radiowej''';
 
   @override
   String get radioSearchHint => '''Nazwa stacji radiowej albo miasto...''';
@@ -1611,7 +1611,7 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   String get radioSearching => '''Ładowanie stacji radiowych...''';
 
   @override
-  String get radioSearchResults => '''Wyniki radia''';
+  String get radioSearchResults => '''Wyniki wyszukiwania radia''';
 
   @override
   String get radioNoResults => '''Nie znaleziono stacji radiowych.''';
@@ -1681,7 +1681,7 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   }
 
   @override
-  String get radioAddCommunity => '''Dodaj radio do społeczności Sonarpad''';
+  String get radioAddCommunity => '''Dodaj stację radiową do społeczności Sonarpad''';
 
   @override
   String get radioAddName => '''Nazwa radia''';
@@ -1696,7 +1696,7 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   String get radioAddMissingFields => '''Wpisz nazwę radia i adres strumienia.''';
 
   @override
-  String get radioCommunityAdded => '''Radio zostało poprawnie dodane do społeczności Sonarpad.''';
+  String get radioCommunityAdded => '''Stacja radiowa została poprawnie dodana do społeczności Sonarpad.''';
 
   @override
   String radioCommunityAddError(Object error) {
@@ -2139,10 +2139,10 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   String get routeReadAction => '''Przeczytaj trasę''';
 
   @override
-  String get routeSaveAction => '''Zapisz w dokumentach''';
+  String get routeSaveAction => '''Zapisz w Dokumentach''';
 
   @override
-  String get routeSaveSuccess => '''Trasa zapisana w dokumentach''';
+  String get routeSaveSuccess => '''Trasa zapisana w Dokumentach''';
 
 
   @override

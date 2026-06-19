@@ -173,7 +173,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarpadCodeValidTitle => '''Código válido''';
 
   @override
-  String get sonarpadCodeValidMessage => '''El código Sonarpad es correcto. Ajustes guardados.''';
+  String get sonarpadCodeValidMessage => '''O código Sonarpad está correto. Definições guardadas.''';
 
   @override
   String get sonarpadCodeInvalidTitle => '''Código inválido''';
@@ -193,9 +193,9 @@ class AppLocalizationsPt extends AppLocalizations {
 Se o Sonarpad lhe for útil e quiser apoiar o seu desenvolvimento, pode fazer um donativo.''';
 
   @override
-  String get donationsPaypalDesc => '''Puedes donar a través de PayPal usando este enlace:
+  String get donationsPaypalDesc => '''Pode doar através do PayPal usando este link:
 https://www.paypal.me/ambrogio86
-Por favor, si es posible, añade "Sonarpad" como nota de pago.''';
+Por favor, se possível, adicione "Sonarpad" como nota de pagamento.''';
 
   @override
   String get donationsBankDesc => '''Também pode fazer um donativo por transferência bancária para a conta em nome de Ambrogio Riili.
@@ -580,7 +580,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
 
   @override
   String podcastImportError(Object error) {
-    return '''Erro al importar podcasts: ${error}''';
+    return '''Erro ao importar podcasts: ${error}''';
   }
 
   @override
@@ -588,7 +588,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
 
   @override
   String podcastExportError(Object error) {
-    return '''Erro al exportar podcasts: ${error}''';
+    return '''Erro ao exportar podcasts: ${error}''';
   }
 
   @override
@@ -751,7 +751,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
 
   @override
   String documentRemoveError(Object error) {
-    return '''Erro al eliminar: ${error}''';
+    return '''Erro ao eliminar: ${error}''';
   }
 
   @override
@@ -773,7 +773,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get removeDocument => '''Eliminar documento''';
 
   @override
-  String get writeNewDocument => '''Escribir nuevo documento''';
+  String get writeNewDocument => '''Escrever novo documento''';
 
   @override
   String get addDocumentToLibraryHint => '''Adicionar documento à biblioteca. Procura os ficheiros do dispositivo e adiciona-os.''';
@@ -818,7 +818,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get documentPickerError => '''Erro ao abrir o ficheiro''';
 
   @override
-  String get readDocument => '''Leer documento''';
+  String get readDocument => '''Ler documento''';
 
   @override
   String get documentReaderTitle => '''Lector de documentos''';
@@ -830,13 +830,13 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get documentBookmarkHintSet => '''Deslize para cima ou para baixo para definir um marcador.''';
 
   @override
-  String get documentEditParagraphActionHint => '''Toca dos veces para editar este párrafo. ''';
+  String get documentEditParagraphActionHint => '''Toque duas vezes para editar este parágrafo. ''';
 
   @override
   String get documentBookmarkHintReplace => '''Deslize para cima ou para baixo para eliminar o marcador existente ou substituí-lo por este parágrafo.''';
 
   @override
-  String get documentSetBookmarkAction => '''Adicionar nuevo marcador''';
+  String get documentSetBookmarkAction => '''Adicionar novo marcador''';
 
   @override
   String get documentRemoveBookmarkAction => '''Eliminar marcador''';
@@ -851,7 +851,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get documentSearchFieldLabel => '''Texto de pesquisa''';
 
   @override
-  String get documentSearchFieldHint => '''Palabra o frase para buscar''';
+  String get documentSearchFieldHint => '''Palavra ou frase para pesquisar''';
 
   @override
   String get documentSearchEmptyQuery => '''Introduza o texto que quer pesquisar.''';
@@ -1141,10 +1141,10 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get folderNameHint => '''Nome da pasta''';
 
   @override
-  String get create => '''Crear''';
+  String get create => '''Criar''';
 
   @override
-  String get createNewFolder => '''Crear nueva pasta''';
+  String get createNewFolder => '''Criar nova pasta''';
 
   @override
   String get importExternalSources => '''Importar de fontes externas''';
@@ -1192,7 +1192,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get audioSavedInDocuments => '''Áudio guardado em Documentos.''';
 
   @override
-  String get noAudioTracksAvailable => '''No hay pistas de áudio disponibles.''';
+  String get noAudioTracksAvailable => '''Não há faixas de áudio disponíveis.''';
 
   @override
   String get importFromLibriVox => '''Importar do LibriVox''';
@@ -1215,7 +1215,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   }
 
   @override
-  String get gutenbergImportAndRead => '''Importar y leer''';
+  String get gutenbergImportAndRead => '''Importar e ler''';
 
   @override
   String get gutenbergImporting => '''Importando...''';
@@ -1236,7 +1236,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get librivoxSaving => '''A guardar...''';
 
   @override
-  String get librivoxNoAudioTracks => '''No hay pistas de áudio disponibles.''';
+  String get librivoxNoAudioTracks => '''Não há faixas de áudio disponíveis.''';
 
   @override
   String get librivoxNotTextExportable => '''Os audiolivros do LibriVox não podem ser exportados como texto.''';
@@ -1347,7 +1347,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get documentTextHint => '''Comece a escrever aqui...''';
 
   @override
-  String get newDocumentDefaultName => '''Nuevo_Documento''';
+  String get newDocumentDefaultName => '''Novo_Documento''';
 
   @override
   String get saving => '''A guardar...''';
@@ -1398,7 +1398,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
 
   @override
   String importZipError(Object error) {
-    return '''Erro al importar ZIP: ${error}''';
+    return '''Erro ao importar ZIP: ${error}''';
   }
 
   @override
@@ -1439,7 +1439,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get errorOpening => '''Erro ao abrir''';
 
   @override
-  String get recentArticles => '''Artigos recientes''';
+  String get recentArticles => '''Artigos recentes''';
 
   @override
   String get clearHistory => '''Limpar histórico''';
@@ -1569,19 +1569,19 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get radio => '''Rádio''';
 
   @override
-  String get radioHint => '''Busca estações de rádio, escucha transmisiones y gestiona favoritos''';
+  String get radioHint => '''Procura estações de rádio, escuta transmissões e gere favoritos''';
 
   @override
   String get radioTitle => '''Estações de rádio de todo o mundo''';
 
   @override
-  String get radioFavoritesButton => '''Emisoras favoritas''';
+  String get radioFavoritesButton => '''Estações favoritas''';
 
   @override
-  String get radioNoFavorites => '''No hay emisoras favoritas.''';
+  String get radioNoFavorites => '''Não há estações favoritas.''';
 
   @override
-  String get radioSearchText => '''Pesquisar emisoras''';
+  String get radioSearchText => '''Pesquisar estações''';
 
   @override
   String get radioSearchHint => '''Nome da estação ou cidade...''';
@@ -1804,7 +1804,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get routeErrorToNotFound => '''Nenhum resultado encontrado para o endereço de destino''';
 
   @override
-  String get routeResultsTitle => '''Percursos disponibles''';
+  String get routeResultsTitle => '''Percursos disponíveis''';
 
   @override
   String get routeDistance => '''Distância''';
@@ -2001,7 +2001,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get radioGenreOptionCulture => '''Cultura''';
 
   @override
-  String get radioGenreOptionOldies => '''Años 70 / 80 / 90''';
+  String get radioGenreOptionOldies => '''Anos 70 / 80 / 90''';
 
   @override
   String get radioGenreOptionKids => '''Infantil''';

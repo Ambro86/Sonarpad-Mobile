@@ -54,7 +54,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get voiceDictionaryTitle => '''Hlasový slovník''';
 
   @override
-  String get voiceDictionaryAdd => '''Přidat položky do slovníku''';
+  String get voiceDictionaryAdd => '''Přidat položku do slovníku''';
 
   @override
   String get voiceDictionaryOriginalWord => '''Původní slovo''';
@@ -222,7 +222,7 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get podcastsHint => '''Odebírat podcasty, přehrávat nebo stahovat epizody''';
 
   @override
-  String get importFromWikipedia => '''Wikipedia''';
+  String get importFromWikipedia => '''Wikipedie''';
 
   @override
   String get wikipediaHint => '''Vyhledejte článek na Wikipedii a importujte text''';
@@ -255,7 +255,7 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get moveDown => '''Přesunout dolů''';
 
   @override
-  String get hide => '''Smazat''';
+  String get hide => '''Skrýt''';
 
   @override
   String get moveToPosition => '''Přesunout na pozici''';
@@ -269,7 +269,7 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get positionLabelLast => '''Poslední pozice''';
 
   @override
-  String get restoreHiddenSources => '''Obnovit smazané zdroje''';
+  String get restoreHiddenSources => '''Obnovit skryté zdroje''';
 
   @override
   String get addCustomNewsSource => '''Přidat vlastní RSS zdroj''';
@@ -457,7 +457,7 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get selectedPodcastCategory => '''Vybraná kategorie''';
 
   @override
-  String get selectedRecently => '''poslední volba''';
+  String get selectedRecently => '''Naposledy vybrané''';
 
   @override
   String get podcastCategories => '''Kategorie podcastů''';
@@ -882,7 +882,7 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get settingsReadingEngine => '''Modul čtení''';
 
   @override
-  String get settingsEdgeTtsQuality => '''Edge TTS (vysoká online kvalita)''';
+  String get settingsEdgeTtsQuality => '''Edge TTS (vysoká kvalita online)''';
 
   @override
   String get settingsSystemVoices => '''Systémové hlasy (VoiceOver / Google)''';
@@ -1581,10 +1581,10 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get radioNoFavorites => '''Žádná oblíbená rádia.''';
 
   @override
-  String get radioSearchText => '''Hledat rádia''';
+  String get radioSearchText => '''Hledat stanice''';
 
   @override
-  String get radioSearchHint => '''Název rádia nebo město...''';
+  String get radioSearchHint => '''Název stanice nebo město...''';
 
   @override
   String get radioLanguage => '''Jazyk''';
@@ -1611,19 +1611,19 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get radioSearching => '''Načítám rádia...''';
 
   @override
-  String get radioSearchResults => '''Výsledky rádií''';
+  String get radioSearchResults => '''Výsledky hledání rádia''';
 
   @override
-  String get radioNoResults => '''Nebylo nalezeno žádné rádio.''';
+  String get radioNoResults => '''Nebyly nalezeny žádné stanice.''';
 
   @override
   String radioResultsFound(int count) {
-    return '''Nalezeno rádií: ${count}''';
+    return '''Nalezeno stanic: ${count}''';
   }
 
   @override
   String radioSearchError(Object error) {
-    return '''Chyba při hledání rádia: ${error}''';
+    return '''Chyba při hledání stanic: ${error}''';
   }
 
   @override
@@ -1644,12 +1644,12 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
 
   @override
   String radioFavoriteAdded(String name) {
-    return '''${name} přidáno do oblíbených.''';
+    return '''Stanice ${name} byla přidána do oblíbených.''';
   }
 
   @override
   String radioFavoriteRemoved(String name) {
-    return '''${name} odebráno z oblíbených.''';
+    return '''Stanice ${name} byla odebrána z oblíbených.''';
   }
 
   @override
@@ -1681,10 +1681,10 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   }
 
   @override
-  String get radioAddCommunity => '''Přidat rádio do komunity Sonarpad''';
+  String get radioAddCommunity => '''Přidat stanici do komunity Sonarpad''';
 
   @override
-  String get radioAddName => '''Název rádia''';
+  String get radioAddName => '''Název stanice''';
 
   @override
   String get radioAddUrl => '''Adresa streamu''';
@@ -1693,14 +1693,14 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get radioAddSubmit => '''Ověřit a přidat''';
 
   @override
-  String get radioAddMissingFields => '''Zadejte název rádia a adresu streamu.''';
+  String get radioAddMissingFields => '''Zadejte název stanice a adresu streamu.''';
 
   @override
-  String get radioCommunityAdded => '''Rádio bylo úspěšně přidáno do komunity Sonarpad.''';
+  String get radioCommunityAdded => '''Stanice byla úspěšně přidána do komunity Sonarpad.''';
 
   @override
   String radioCommunityAddError(Object error) {
-    return '''Chyba při přidávání rádia: ${error}''';
+    return '''Chyba při přidávání stanice: ${error}''';
   }
 
   @override
@@ -1965,13 +1965,13 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get radioGenreOptionJazz => '''Jazz''';
 
   @override
-  String get radioGenreOptionDance => '''Dance''';
+  String get radioGenreOptionDance => '''Dance / elektronika''';
 
   @override
   String get radioGenreOptionBlues => '''Blues''';
 
   @override
-  String get radioGenreOptionCountry => '''Country''';
+  String get radioGenreOptionCountry => '''Country / folk''';
 
   @override
   String get radioGenreOptionHiphop => '''Hip hop''';
@@ -2139,10 +2139,10 @@ Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
   String get routeReadAction => '''Přečíst trasu''';
 
   @override
-  String get routeSaveAction => '''Uložit do dokumentů''';
+  String get routeSaveAction => '''Uložit do Dokumentů''';
 
   @override
-  String get routeSaveSuccess => '''Trasa uložena do dokumentů''';
+  String get routeSaveSuccess => '''Trasa uložena do Dokumentů''';
 
 
   @override

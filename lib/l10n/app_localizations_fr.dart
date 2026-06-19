@@ -99,7 +99,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get convertMediaFormat => '''Format''';
 
   @override
-  String get convertMediaBitrate => '''Bitrate (kbps)''';
+  String get convertMediaBitrate => '''Débit (kbps)''';
 
   @override
   String get convertMediaOggQuality => '''Qualité (q)''';
@@ -161,19 +161,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ttsVoice => '''Voix TTS''';
 
   @override
-  String get saveSettings => '''Sauvegarder les paramètres''';
+  String get saveSettings => '''Enregistrer les paramètres''';
 
   @override
-  String get settingsSaved => '''Paramètres sauvegardés.''';
+  String get settingsSaved => '''Paramètres enregistrés.''';
 
   @override
-  String get settingsSavedTitle => '''Paramètres sauvegardés''';
+  String get settingsSavedTitle => '''Paramètres enregistrés''';
 
   @override
   String get sonarpadCodeValidTitle => '''Code valide''';
 
   @override
-  String get sonarpadCodeValidMessage => '''Le code Sonarpad est correct. Paramètres sauvegardés.''';
+  String get sonarpadCodeValidMessage => '''Le code Sonarpad est correct. Paramètres enregistrés.''';
 
   @override
   String get sonarpadCodeInvalidTitle => '''Code invalide''';
@@ -193,7 +193,7 @@ class AppLocalizationsFr extends AppLocalizations {
 Si vous trouvez Sonarpad utile et souhaitez soutenir son développement, vous pouvez faire un don.''';
 
   @override
-  String get donationsPaypalDesc => '''Vous pouvez faire un don via PayPal via ce lien :
+  String get donationsPaypalDesc => '''Vous pouvez faire un don avec PayPal en utilisant ce lien :
 https://www.paypal.me/ambrogio86
 Veuillez, si possible, ajouter "Sonarpad" comme note de paiement.''';
 
@@ -222,10 +222,10 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   String get podcastsHint => '''S'abonner aux podcasts, lire ou télécharger des épisodes''';
 
   @override
-  String get importFromWikipedia => '''Wikipedia''';
+  String get importFromWikipedia => '''Wikipédia''';
 
   @override
-  String get wikipediaHint => '''Rechercher un article Wikipedia et importer le texte''';
+  String get wikipediaHint => '''Rechercher un article Wikipédia et importer le texte''';
 
   @override
   String get newsCategoryTop => '''À la une''';
@@ -255,7 +255,7 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   String get moveDown => '''Déplacer vers le bas''';
 
   @override
-  String get hide => '''Supprimer''';
+  String get hide => '''Masquer''';
 
   @override
   String get moveToPosition => '''Déplacer à la position''';
@@ -269,7 +269,7 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   String get positionLabelLast => '''Dernière position''';
 
   @override
-  String get restoreHiddenSources => '''Restaurer les sources supprimées''';
+  String get restoreHiddenSources => '''Restaurer les sources masquées''';
 
   @override
   String get addCustomNewsSource => '''Ajouter une source RSS personnalisée''';
@@ -626,7 +626,7 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   String get forward15s => '''Avancer de 15s''';
 
   @override
-  String get stop => '''Stop''';
+  String get stop => '''Arrêter''';
 
   @override
   String get back => '''Retour''';
@@ -967,7 +967,7 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   String get weatherCityNotFound => '''Ville introuvable''';
 
   @override
-  String get weatherSearchError => '''Erreur pendant la recherche''';
+  String get weatherSearchError => '''Erreur lors de la recherche''';
 
   @override
   String get weatherToday => '''Aujourd'hui''';
@@ -1427,7 +1427,7 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   String get retry => '''Réessayer''';
 
   @override
-  String get goBack => '''.. Retour''';
+  String get goBack => '''Retour''';
 
   @override
   String get noSupportedFilesInFolder => '''Aucun fichier pris en charge dans ce dossier.''';
@@ -1543,7 +1543,7 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   String get audiodescriptionTitle => '''Audiodescriptions Rai''';
 
   @override
-  String get audiodescriptionRecent => '''Récents''';
+  String get audiodescriptionRecent => '''Récentes''';
 
   @override
   String get audiodescriptionAll => '''Toutes les audiodescriptions''';
@@ -1965,13 +1965,13 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   String get radioGenreOptionJazz => '''Jazz''';
 
   @override
-  String get radioGenreOptionDance => '''Dance''';
+  String get radioGenreOptionDance => '''Dance / électro''';
 
   @override
   String get radioGenreOptionBlues => '''Blues''';
 
   @override
-  String get radioGenreOptionCountry => '''Country''';
+  String get radioGenreOptionCountry => '''Country / folk''';
 
   @override
   String get radioGenreOptionHiphop => '''Hip hop''';
@@ -2007,7 +2007,7 @@ Pour la traduction en espagnol, merci à Arturo Fernandez Rivas.''';
   String get radioGenreOptionKids => '''Enfants''';
 
   @override
-  String get radioGenreOptionAmbient => '''Ambient''';
+  String get radioGenreOptionAmbient => '''Ambient / relax''';
 
   @override
   String get radioCommunityLanguageItalian => '''Italien''';

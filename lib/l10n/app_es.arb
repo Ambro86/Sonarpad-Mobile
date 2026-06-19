@@ -40,6 +40,10 @@
   "convertMediaButton": "Convertir",
   "convertMediaNoInput": "Selecciona un archivo para convertir.",
   "convertMediaNoOutput": "Selecciona una carpeta de guardado.",
+  "convertMediaOutputNotWritable": "La carpeta elegida no es accesible directamente. El archivo se guardará en la carpeta interna de Sonarpad; cuando termine la conversión, podrás compartirlo o guardarlo en la app Archivos.",
+  "@convertMediaOutputNotWritable": {
+    "description": "Localized text for convertMediaOutputNotWritable."
+  },
   "convertMediaNoImage": "Selecciona una imagen para el vídeo.",
   "convertMediaSamePath": "El archivo convertido debe ser diferente del archivo de origen.",
   "convertMediaInvalidBitrate": "Introduce un bitrate válido entre 64 y 320 kbps.",
@@ -168,7 +172,7 @@
   "podcastCategory": "Categoría de podcast",
   "browsePodcastCategories": "Explorar categorías",
   "selectedPodcastCategory": "Categoría seleccionada",
-  "selectedRecently": "elección reciente",
+  "selectedRecently": "selección reciente",
   "@selectedRecently": {
     "description": "Label appended to the most recently selected podcast country or category."
   },
@@ -218,7 +222,7 @@
   "pause": "Pausar",
   "rewind15s": "Retroceder 15s",
   "forward15s": "Avanzar 15s",
-  "stop": "Stop",
+  "stop": "Detener",
   "back": "Atrás",
   "episodePlayer": "Reproductor de episodios",
   "nowPlayingTitle": "Reproduciendo: {title}",
@@ -294,7 +298,7 @@
   "save": "Guardar",
   "cancel": "Cancelar",
   "settingsReadingEngine": "Motor de lectura",
-  "settingsEdgeTtsQuality": "Edge TTS (Alta calidad en línea)",
+  "settingsEdgeTtsQuality": "Edge TTS (alta calidad en línea)",
   "settingsSystemVoices": "Voces del sistema (VoiceOver / Google)",
   "settingsNoSystemVoices": "No hay voces del sistema disponibles.",
   "settingsDefaultVoiceHint": "Voz predeterminada",
@@ -674,7 +678,7 @@
   "radioGenreOptionRock": "Rock",
   "radioGenreOptionClassical": "Clásica",
   "radioGenreOptionJazz": "Jazz",
-  "radioGenreOptionDance": "Dance",
+  "radioGenreOptionDance": "Dance / electrónica",
   "radioGenreOptionBlues": "Blues",
   "radioGenreOptionCountry": "Country",
   "radioGenreOptionHiphop": "Hip hop",
@@ -688,7 +692,7 @@
   "radioGenreOptionCulture": "Cultura",
   "radioGenreOptionOldies": "Años 70 / 80 / 90",
   "radioGenreOptionKids": "Infantil",
-  "radioGenreOptionAmbient": "Ambient",
+  "radioGenreOptionAmbient": "Ambient / relajación",
   "radioCommunityLanguageItalian": "Italiano",
   "radioCommunityLanguageEnglish": "Inglés",
   "radioCommunityLanguageSpanish": "Español",
@@ -730,8 +734,8 @@
   "podcastPlayedEpisodes": "Episodios reproducidos",
   "podcastUnplayed": "Episodios no reproducidos",
   "routeReadAction": "Leer ruta",
-  "routeSaveAction": "Guardar en documentos",
-  "routeSaveSuccess": "Ruta guardada en documentos",
+  "routeSaveAction": "Guardar en Documentos",
+  "routeSaveSuccess": "Ruta guardada en Documentos",
   "deleteItem": "Eliminar",
   "@deleteItem": {
     "description": "Localized text for deleteItem."

@@ -457,7 +457,7 @@ Por la traducción al español, gracias a Arturo Fernandez Rivas.''';
   String get selectedPodcastCategory => '''Categoría seleccionada''';
 
   @override
-  String get selectedRecently => '''elección reciente''';
+  String get selectedRecently => '''selección reciente''';
 
   @override
   String get podcastCategories => '''Categorías de podcasts''';
@@ -626,7 +626,7 @@ Por la traducción al español, gracias a Arturo Fernandez Rivas.''';
   String get forward15s => '''Avanzar 15s''';
 
   @override
-  String get stop => '''Stop''';
+  String get stop => '''Detener''';
 
   @override
   String get back => '''Atrás''';
@@ -882,7 +882,7 @@ Por la traducción al español, gracias a Arturo Fernandez Rivas.''';
   String get settingsReadingEngine => '''Motor de lectura''';
 
   @override
-  String get settingsEdgeTtsQuality => '''Edge TTS (Alta calidad en línea)''';
+  String get settingsEdgeTtsQuality => '''Edge TTS (alta calidad en línea)''';
 
   @override
   String get settingsSystemVoices => '''Voces del sistema (VoiceOver / Google)''';
@@ -1965,7 +1965,7 @@ Por la traducción al español, gracias a Arturo Fernandez Rivas.''';
   String get radioGenreOptionJazz => '''Jazz''';
 
   @override
-  String get radioGenreOptionDance => '''Dance''';
+  String get radioGenreOptionDance => '''Dance / electrónica''';
 
   @override
   String get radioGenreOptionBlues => '''Blues''';
@@ -2007,7 +2007,7 @@ Por la traducción al español, gracias a Arturo Fernandez Rivas.''';
   String get radioGenreOptionKids => '''Infantil''';
 
   @override
-  String get radioGenreOptionAmbient => '''Ambient''';
+  String get radioGenreOptionAmbient => '''Ambient / relajación''';
 
   @override
   String get radioCommunityLanguageItalian => '''Italiano''';
@@ -2139,10 +2139,10 @@ Por la traducción al español, gracias a Arturo Fernandez Rivas.''';
   String get routeReadAction => '''Leer ruta''';
 
   @override
-  String get routeSaveAction => '''Guardar en documentos''';
+  String get routeSaveAction => '''Guardar en Documentos''';
 
   @override
-  String get routeSaveSuccess => '''Ruta guardada en documentos''';
+  String get routeSaveSuccess => '''Ruta guardada en Documentos''';
 
 
   @override

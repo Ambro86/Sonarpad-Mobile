@@ -109,7 +109,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
     });
 
     try {
-      final cities = await _weatherService.searchCity(city);
+      final cities = await _weatherService.searchCity(
+        city,
+        localeName: AppLocalizations.of(context).localeName,
+      );
       if (cities.isNotEmpty) {
         if (cities.length > 1 && !autoSelectFirst) {
           if (mounted) {

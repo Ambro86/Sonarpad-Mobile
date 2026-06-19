@@ -60,7 +60,7 @@
   "@voiceDictionaryTitle": {
     "description": "Localized text for voiceDictionaryTitle."
   },
-  "voiceDictionaryAdd": "Dodaj wpisy do słownika",
+  "voiceDictionaryAdd": "Dodaj wpis do słownika",
   "@voiceDictionaryAdd": {
     "description": "Localized text for voiceDictionaryAdd."
   },
@@ -120,7 +120,7 @@
   "@convertMediaFormat": {
     "description": "Localized text for convertMediaFormat."
   },
-  "convertMediaBitrate": "Bitrate (kbps)",
+  "convertMediaBitrate": "Przepływność (kbps)",
   "@convertMediaBitrate": {
     "description": "Localized text for convertMediaBitrate."
   },
@@ -172,7 +172,7 @@
   "@convertMediaSamePath": {
     "description": "Localized text for convertMediaSamePath."
   },
-  "convertMediaInvalidBitrate": "Nieprawidłowy bitrate. Wpisz wartość od 64 do 320 kbps.",
+  "convertMediaInvalidBitrate": "Nieprawidłowa przepływność. Wpisz wartość od 64 do 320 kbps.",
   "@convertMediaInvalidBitrate": {
     "description": "Localized text for convertMediaInvalidBitrate."
   },
@@ -317,7 +317,7 @@
   "@moveDown": {
     "description": "Localized text for moveDown."
   },
-  "hide": "Usuń",
+  "hide": "Ukryj",
   "@hide": {
     "description": "Localized text for hide."
   },
@@ -343,7 +343,7 @@
   "@positionLabelLast": {
     "description": "Localized text for positionLabelLast."
   },
-  "restoreHiddenSources": "Przywróć usunięte źródła",
+  "restoreHiddenSources": "Przywróć ukryte źródła",
   "@restoreHiddenSources": {
     "description": "Localized text for restoreHiddenSources."
   },
@@ -643,7 +643,7 @@
   "@selectedPodcastCategory": {
     "description": "Localized text for selectedPodcastCategory."
   },
-  "selectedRecently": "ostatni wybór",
+  "selectedRecently": "ostatnio wybrane",
   "@selectedRecently": {
     "description": "Label appended to the most recently selected podcast country or category."
   },
@@ -913,7 +913,7 @@
       }
     }
   },
-  "loadingEpisodeAudio": "Ładowanie audio odcinka",
+  "loadingEpisodeAudio": "Ładowanie dźwięku odcinka",
   "@loadingEpisodeAudio": {
     "description": "Localized text for loadingEpisodeAudio."
   },
@@ -1654,11 +1654,11 @@
   "@internetArchiveNoItemsFound": {
     "description": "Localized text for internetArchiveNoItemsFound."
   },
-  "saveAudioInDocuments": "Zapisz audio w Dokumentach",
+  "saveAudioInDocuments": "Zapisz dźwięk w Dokumentach",
   "@saveAudioInDocuments": {
     "description": "Localized text for saveAudioInDocuments."
   },
-  "audioSavedInDocuments": "Audio zapisane w Dokumentach.",
+  "audioSavedInDocuments": "Dźwięk zapisany w Dokumentach.",
   "@audioSavedInDocuments": {
     "description": "Localized text for audioSavedInDocuments."
   },
@@ -2008,7 +2008,7 @@
   "@retry": {
     "description": "Localized text for retry."
   },
-  "goBack": ".. Wróć",
+  "goBack": "Wróć",
   "@goBack": {
     "description": "Localized text for goBack."
   },
@@ -2214,7 +2214,7 @@
   "@radioNoFavorites": {
     "description": "Localized text for radioNoFavorites."
   },
-  "radioSearchText": "Szukaj radia",
+  "radioSearchText": "Szukaj stacji radiowej",
   "@radioSearchText": {
     "description": "Localized text for radioSearchText."
   },
@@ -2242,7 +2242,7 @@
   "@radioSearching": {
     "description": "Localized text for radioSearching."
   },
-  "radioSearchResults": "Wyniki radia",
+  "radioSearchResults": "Wyniki wyszukiwania radia",
   "@radioSearchResults": {
     "description": "Localized text for radioSearchResults."
   },
@@ -2360,7 +2360,7 @@
       }
     }
   },
-  "radioAddCommunity": "Dodaj radio do społeczności Sonarpad",
+  "radioAddCommunity": "Dodaj stację radiową do społeczności Sonarpad",
   "@radioAddCommunity": {
     "description": "Localized text for radioAddCommunity."
   },
@@ -2380,7 +2380,7 @@
   "@radioAddMissingFields": {
     "description": "Localized text for radioAddMissingFields."
   },
-  "radioCommunityAdded": "Radio zostało poprawnie dodane do społeczności Sonarpad.",
+  "radioCommunityAdded": "Stacja radiowa została poprawnie dodana do społeczności Sonarpad.",
   "@radioCommunityAdded": {
     "description": "Localized text for radioCommunityAdded."
   },
@@ -2896,11 +2896,11 @@
   "@routeReadAction": {
     "description": "Localized text for routeReadAction."
   },
-  "routeSaveAction": "Zapisz w dokumentach",
+  "routeSaveAction": "Zapisz w Dokumentach",
   "@routeSaveAction": {
     "description": "Localized text for routeSaveAction."
   },
-  "routeSaveSuccess": "Trasa zapisana w dokumentach",
+  "routeSaveSuccess": "Trasa zapisana w Dokumentach",
   "@routeSaveSuccess": {
     "description": "Localized text for routeSaveSuccess."
   },
