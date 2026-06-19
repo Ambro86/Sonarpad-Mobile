@@ -35,6 +35,16 @@ enum SonarpadThemeMode {
   final String value;
 }
 
+
+enum WeatherTemperatureUnit {
+  celsius('celsius'),
+  fahrenheit('fahrenheit');
+
+  const WeatherTemperatureUnit(this.value);
+
+  final String value;
+}
+
 class AppSettingsService {
   static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pl', 'cs'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
@@ -43,6 +53,7 @@ class AppSettingsService {
   static const _bdciechiUsernameKey = 'bdciechiUsername';
   static const _bdciechiPasswordKey = 'bdciechiPassword';
   static const _weatherCityKey = 'sonarpad_weather_city';
+  static const _weatherTemperatureUnitKey = 'sonarpad_weather_temperature_unit';
   static const _newsLocalCityKey = 'sonarpad_news_local_city';
   static const _themeModeKey = 'sonarpad_theme_mode';
   static const _radioLanguageKey = 'sonarpad_radio_language';
@@ -289,6 +300,20 @@ class AppSettingsService {
   Future<void> setWeatherCity(String value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_weatherCityKey, value);
+  }
+
+  Future<WeatherTemperatureUnit> loadWeatherTemperatureUnit() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString(_weatherTemperatureUnitKey);
+    return WeatherTemperatureUnit.values.firstWhere(
+      (unit) => unit.value == saved,
+      orElse: () => WeatherTemperatureUnit.celsius,
+    );
+  }
+
+  Future<void> saveWeatherTemperatureUnit(WeatherTemperatureUnit unit) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_weatherTemperatureUnitKey, unit.value);
   }
 
   static const _weatherRecentCitiesKey = 'sonarpad_weather_recent_cities';

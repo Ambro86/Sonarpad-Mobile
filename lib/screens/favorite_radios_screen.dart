@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
-import 'package:flutter/semantics.dart';
+import '../utils/status_message.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart'; // Per RadioTile
 
@@ -44,11 +45,7 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
 
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
-    SemanticsService.sendAnnouncement(
-      View.of(context),
-      l10n.radioFavoriteRemoved(station.name),
-      TextDirection.ltr,
-    );
+    showStatusMessage(context, l10n.radioFavoriteRemoved(station.name));
   }
 
   Future<void> _play(RadioStation station) async {

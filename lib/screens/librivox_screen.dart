@@ -6,6 +6,7 @@ import '../models/podcast.dart';
 import '../services/document_library_service.dart';
 import '../services/librivox_service.dart';
 import 'podcast_episode_player_screen.dart';
+import '../utils/status_message.dart';
 
 class LibrivoxScreen extends StatefulWidget {
   final String? parentId;
@@ -265,16 +266,10 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
       );
       await service.add(doc);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).librivoxAudiobookSaved),
-        ),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).librivoxAudiobookSaved);
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).error(error))),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).error(error));
     } finally {
       if (mounted) setState(() => _saving = false);
     }

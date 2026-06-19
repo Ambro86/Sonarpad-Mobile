@@ -27,6 +27,16 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsThemeDark => '''Tmavý''';
 
   @override
+  String get settingsWeatherTemperatureUnit => '''Jednotka teploty počasí''';
+
+  @override
+  String get weatherTemperatureCelsius => '''Celsius (°C)''';
+
+  @override
+  String get weatherTemperatureFahrenheit => '''Fahrenheit (°F)''';
+
+
+  @override
   String get homeSemanticsLabel => '''Sonarpad, hlavní obrazovka''';
 
   @override

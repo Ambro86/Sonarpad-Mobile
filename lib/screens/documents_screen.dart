@@ -29,6 +29,7 @@ import 'internet_archive_screen.dart';
 import 'librivox_screen.dart';
 import 'poetrydb_screen.dart';
 import 'podcast_episode_player_screen.dart';
+import '../utils/status_message.dart';
 
 const Set<String> _audioDocumentExtensions = {
   'mp3',
@@ -365,9 +366,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   void _showSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+        showStatusMessage(context, message);
   }
 
   Future<void> _showImportCompleteDialog(String message) async {
@@ -488,10 +487,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       dev.log('Errore durante l\'esportazione: $e');
       await AppLogger.log('Errore esportazione: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('${AppLocalizations.of(context).exportError}: $e')),
-        );
+                showStatusMessage(context, '${AppLocalizations.of(context).exportError}: $e');
       }
     }
   }
@@ -547,9 +543,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     await _load();
     if (!mounted) return;
     setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.exportSavedInSonarpad)),
-    );
+        showStatusMessage(context, l10n.exportSavedInSonarpad);
     await AppLogger.log(
       'File esportato salvato nei Documenti: name=${doc.name} path=${doc.path}',
     );

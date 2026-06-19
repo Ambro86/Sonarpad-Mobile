@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/document_library_service.dart';
+import '../utils/status_message.dart';
 
 class DocumentEditorScreen extends StatefulWidget {
   final DocumentLibraryService service;
@@ -29,9 +30,7 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
     final content = _normalizeParagraphBreaks(_contentController.text);
 
     if (content.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).docEmpty)),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).docEmpty);
       return;
     }
 
@@ -49,17 +48,11 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
 
       await widget.service.add(doc);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(AppLocalizations.of(context).docSavedSuccessfully)),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).docSavedSuccessfully);
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('${AppLocalizations.of(context).saveError}: $e')),
-      );
+            showStatusMessage(context, '${AppLocalizations.of(context).saveError}: $e');
     } finally {
       if (mounted) setState(() => _saving = false);
     }

@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../services/recent_routes_service.dart';
 import '../services/route_service.dart';
 import 'route_result_screen.dart';
+import '../utils/status_message.dart';
 
 class RouteScreen extends StatefulWidget {
   const RouteScreen({super.key});
@@ -66,9 +67,7 @@ class _RouteScreenState extends State<RouteScreen> {
     final toAddress = _toController.text.trim();
 
     if (fromAddress.isEmpty || toAddress.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.routeErrorMissingFields)),
-      );
+            showStatusMessage(context, l10n.routeErrorMissingFields);
       return;
     }
 
@@ -119,9 +118,7 @@ class _RouteScreenState extends State<RouteScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.routeError(e))),
-      );
+            showStatusMessage(context, l10n.routeError(e));
     } finally {
       if (mounted) setState(() => _calculating = false);
     }
@@ -350,9 +347,7 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.routeError(e))),
-      );
+            showStatusMessage(context, l10n.routeError(e));
     } finally {
       if (mounted) setState(() => _calculating = false);
     }

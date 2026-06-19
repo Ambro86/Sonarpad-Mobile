@@ -15,6 +15,7 @@ import '../widgets/volume_slider.dart';
 import 'package:video_player/video_player.dart';
 import '../services/app_settings_service.dart';
 import '../utils/app_logger.dart';
+import '../utils/status_message.dart';
 
 class RadioPlayerScreen extends StatefulWidget {
   final RadioStation station;
@@ -41,6 +42,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   StreamSubscription<dynamic>? _mediaEventsSubscription;
   StreamSubscription<bool>? _mediaKitPlayingSubscription;
   StreamSubscription<String>? _mediaKitErrorSubscription;
+  StreamSubscription<dynamic>? _mediaKitPositionSubscription;
+  StreamSubscription<dynamic>? _mediaKitDurationSubscription;
+  StreamSubscription<dynamic>? _mediaKitBufferingSubscription;
+  StreamSubscription<dynamic>? _mediaKitCompletedSubscription;
+  Timer? _mediaKitDiagnosticsTimer;
 
   VideoPlayerController? _videoController;
   mk.Player? _mediaKitPlayer;
@@ -49,6 +55,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _isFavorite = false;
   bool _mediaKitPlaying = false;
   bool _mediaKitVideoSettingApplied = false;
+  bool _mediaKitBuffering = false;
+  bool _mediaKitCompleted = false;
+  Duration? _mediaKitLastPosition;
+  Duration? _mediaKitLastDuration;
+  DateTime? _mediaKitLastProgressAt;
+  DateTime? _mediaKitLastPositionLogAt;
   double _mediaKitVolume = 1.0;
   double _videoPlayerVolume = 1.0;
   bool _recording = false;
@@ -175,13 +187,32 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitController = controller;
     _mediaKitPlaying = false;
     _mediaKitVideoSettingApplied = false;
+    _mediaKitBuffering = false;
+    _mediaKitCompleted = false;
+    _mediaKitLastPosition = null;
+    _mediaKitLastDuration = null;
+    _mediaKitLastProgressAt = DateTime.now();
+    _mediaKitLastPositionLogAt = null;
     _mediaKitVolume = await _settings.loadMediaVolume();
     var initialVolumeApplied = false;
+    var postStartStabilizationScheduled = false;
+
+    AppLogger.log(
+      'RadioPlayer: MediaKit DASH open start station="${widget.station.name}" url=${widget.station.streamUrl} videoEnabled=$_isVideoEnabled volume=$_mediaKitVolume',
+    );
+
     _mediaKitPlayingSubscription = player.stream.playing.listen((playing) {
+      AppLogger.log(
+        'RadioPlayer: MediaKit playing emitted playing=$playing buffering=$_mediaKitBuffering completed=$_mediaKitCompleted position=$_mediaKitLastPosition duration=$_mediaKitLastDuration videoEnabled=$_isVideoEnabled videoApplied=$_mediaKitVideoSettingApplied',
+      );
       if (playing) {
         if (!initialVolumeApplied) {
           initialVolumeApplied = true;
-          unawaited(player.setVolume(_mediaKitVolume * 100).catchError((error) {
+          unawaited(player.setVolume(_mediaKitVolume * 100).then((_) {
+            AppLogger.log(
+              'RadioPlayer: MediaKit volume applied after start volume=$_mediaKitVolume',
+            );
+          }).catchError((error) {
             AppLogger.log(
               'RadioPlayer: failed to apply MediaKit volume after start: $error',
             );
@@ -191,6 +222,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           _mediaKitVideoSettingApplied = true;
           unawaited(_applyMediaKitVideoEnabled(player, _isVideoEnabled));
         }
+        if (!postStartStabilizationScheduled) {
+          postStartStabilizationScheduled = true;
+          unawaited(_stabilizeMediaKitAfterStart(player));
+        }
       }
       if (!mounted) return;
       setState(() => _mediaKitPlaying = playing);
@@ -199,10 +234,46 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
     });
     _mediaKitErrorSubscription = player.stream.error.listen((error) {
-      AppLogger.log('RadioPlayer media_kit error: $error');
+      AppLogger.log(
+        'RadioPlayer: MediaKit error station="${widget.station.name}" error=$error position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
+      );
       if (!mounted) return;
       setState(() => _error = error);
     });
+    _mediaKitPositionSubscription = player.stream.position.listen((position) {
+      final previous = _mediaKitLastPosition;
+      _mediaKitLastPosition = position;
+      if (previous == null || position > previous) {
+        _mediaKitLastProgressAt = DateTime.now();
+      }
+      final now = DateTime.now();
+      final lastLog = _mediaKitLastPositionLogAt;
+      if (lastLog == null || now.difference(lastLog) >= const Duration(seconds: 5)) {
+        _mediaKitLastPositionLogAt = now;
+        AppLogger.log(
+          'RadioPlayer: MediaKit position position=$position duration=$_mediaKitLastDuration playing=$_mediaKitPlaying buffering=$_mediaKitBuffering completed=$_mediaKitCompleted',
+        );
+      }
+    });
+    _mediaKitDurationSubscription = player.stream.duration.listen((duration) {
+      _mediaKitLastDuration = duration;
+      AppLogger.log(
+        'RadioPlayer: MediaKit duration emitted duration=$duration station="${widget.station.name}"',
+      );
+    });
+    _mediaKitBufferingSubscription = player.stream.buffering.listen((buffering) {
+      _mediaKitBuffering = buffering;
+      AppLogger.log(
+        'RadioPlayer: MediaKit buffering emitted buffering=$buffering playing=$_mediaKitPlaying position=$_mediaKitLastPosition duration=$_mediaKitLastDuration',
+      );
+    });
+    _mediaKitCompletedSubscription = player.stream.completed.listen((completed) {
+      _mediaKitCompleted = completed;
+      AppLogger.log(
+        'RadioPlayer: MediaKit completed emitted completed=$completed playing=$_mediaKitPlaying position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering',
+      );
+    });
+    _startMediaKitDiagnostics(player);
 
     if (Platform.isIOS) {
       await _mediaCommands.invokeMethod(
@@ -219,6 +290,48 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         },
       ),
     );
+    AppLogger.log(
+      'RadioPlayer: MediaKit DASH open completed station="${widget.station.name}" playing=$_mediaKitPlaying buffering=$_mediaKitBuffering position=$_mediaKitLastPosition duration=$_mediaKitLastDuration',
+    );
+  }
+
+  void _startMediaKitDiagnostics(mk.Player player) {
+    _mediaKitDiagnosticsTimer?.cancel();
+    _mediaKitDiagnosticsTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!mounted || _mediaKitPlayer != player) {
+        timer.cancel();
+        return;
+      }
+      final lastProgress = _mediaKitLastProgressAt;
+      final stallText = lastProgress == null
+          ? 'unknown'
+          : '${DateTime.now().difference(lastProgress).inSeconds}s';
+      AppLogger.log(
+        'RadioPlayer: MediaKit heartbeat station="${widget.station.name}" playing=$_mediaKitPlaying buffering=$_mediaKitBuffering completed=$_mediaKitCompleted position=$_mediaKitLastPosition duration=$_mediaKitLastDuration stalledFor=$stallText videoEnabled=$_isVideoEnabled videoApplied=$_mediaKitVideoSettingApplied volume=$_mediaKitVolume',
+      );
+    });
+  }
+
+  Future<void> _stabilizeMediaKitAfterStart(mk.Player player) async {
+    // Some DASH/MPD HBBTV streams on iOS need the stream to start before
+    // applying playback parameters. Do not select tracks before play here:
+    // that can break some channels. This only reapplies the volume shortly
+    // after startup, which is safe and helps streams that become silent while
+    // still reporting a playing state.
+    for (final delay in const [Duration(seconds: 2), Duration(seconds: 6)]) {
+      await Future.delayed(delay);
+      if (!mounted || _mediaKitPlayer != player || !_mediaKitPlaying) return;
+      try {
+        await player.setVolume(_mediaKitVolume * 100);
+        AppLogger.log(
+          'RadioPlayer: MediaKit volume re-applied after start volume=$_mediaKitVolume delay=${delay.inSeconds}s',
+        );
+      } catch (error) {
+        AppLogger.log(
+          'RadioPlayer: failed to re-apply MediaKit volume after start: $error',
+        );
+      }
+    }
   }
 
   Future<void> _stop() async {
@@ -255,7 +368,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await _settings.setVideoEnabled(enable);
     if (!mounted) return;
     AppLogger.log(
-      'RadioPlayer: MPD video setting changed to $enable; restarting DASH stream to apply cleanly',
+      'RadioPlayer: MPD video setting changed to $enable; restarting DASH stream to apply cleanly position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
     );
     await _play();
   }
@@ -312,6 +425,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   void _toggleVideo(bool enable) {
+    AppLogger.log(
+      'RadioPlayer: enable video switch changed enable=$enable requiresVideoPlayback=$_requiresVideoPlayback position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
+    );
     setState(() => _isVideoEnabled = enable);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _isVideoEnabled != enable) return;
@@ -342,13 +458,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       await service.saveFavorites(next);
       if (!mounted) return;
       setState(() => _isFavorite = !alreadyFavorite);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(alreadyFavorite
+            showStatusMessage(context, alreadyFavorite
               ? l10n.radioFavoriteRemoved(channel.name)
-              : l10n.radioFavoriteAdded(channel.name)),
-        ),
-      );
+              : l10n.radioFavoriteAdded(channel.name));
       return;
     }
 
@@ -365,13 +477,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await service.saveFavorites(next);
     if (!mounted) return;
     setState(() => _isFavorite = !alreadyFavorite);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(alreadyFavorite
+        showStatusMessage(context, alreadyFavorite
             ? l10n.radioFavoriteRemoved(widget.station.name)
-            : l10n.radioFavoriteAdded(widget.station.name)),
-      ),
-    );
+            : l10n.radioFavoriteAdded(widget.station.name));
   }
 
   Future<void> _toggleRecording() async {
@@ -384,16 +492,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           _recording = false;
           _recordingOutput = file;
         });
-        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              l10n.recordingSaved(
+                showStatusMessage(context, l10n.recordingSaved(
                 file == null ? '' : p.basenameWithoutExtension(file.path),
-              ),
-            ),
-          ),
-        );
+              ));
         return;
       }
 
@@ -428,20 +529,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         _recording = true;
         _recordingOutput = file;
       });
-      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.recordingStarted)),
-      );
+            showStatusMessage(context, l10n.recordingStarted);
     } catch (error) {
       if (!mounted) return;
       setState(() {
         _recording = false;
         _recordingOutput = null;
       });
-      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.recordingError(error))),
-      );
+            showStatusMessage(context, l10n.recordingError(error));
     }
   }
 
@@ -474,17 +569,37 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _disposeMediaKitPlayer() async {
+    _mediaKitDiagnosticsTimer?.cancel();
+    _mediaKitDiagnosticsTimer = null;
     await _mediaKitPlayingSubscription?.cancel();
     await _mediaKitErrorSubscription?.cancel();
+    await _mediaKitPositionSubscription?.cancel();
+    await _mediaKitDurationSubscription?.cancel();
+    await _mediaKitBufferingSubscription?.cancel();
+    await _mediaKitCompletedSubscription?.cancel();
     _mediaKitPlayingSubscription = null;
     _mediaKitErrorSubscription = null;
+    _mediaKitPositionSubscription = null;
+    _mediaKitDurationSubscription = null;
+    _mediaKitBufferingSubscription = null;
+    _mediaKitCompletedSubscription = null;
     final player = _mediaKitPlayer;
+    AppLogger.log(
+      'RadioPlayer: MediaKit dispose start playerPresent=${player != null} position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying completed=$_mediaKitCompleted',
+    );
     _mediaKitPlayer = null;
     _mediaKitController = null;
     _mediaKitPlaying = false;
     _mediaKitVideoSettingApplied = false;
+    _mediaKitBuffering = false;
+    _mediaKitCompleted = false;
+    _mediaKitLastPosition = null;
+    _mediaKitLastDuration = null;
+    _mediaKitLastProgressAt = null;
+    _mediaKitLastPositionLogAt = null;
     if (player != null) {
       await player.dispose();
+      AppLogger.log('RadioPlayer: MediaKit dispose completed');
     }
   }
 
@@ -500,8 +615,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         title: Text('${l10n.nowPlaying}: ${widget.station.name}'),
         leading: BackButton(
           onPressed: () {
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            Navigator.pop(context);
+                Navigator.pop(context);
           },
         ),
       ),

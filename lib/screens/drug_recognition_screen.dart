@@ -20,6 +20,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/aifa_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../utils/status_message.dart';
 
 class DrugRecognitionScreen extends StatefulWidget {
   const DrugRecognitionScreen({super.key});
@@ -642,9 +643,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content:
-                Text('Impossibile leggere le informazioni del database.')));
+                showStatusMessage(context, 'Impossibile leggere le informazioni del database.');
       }
     }
   }

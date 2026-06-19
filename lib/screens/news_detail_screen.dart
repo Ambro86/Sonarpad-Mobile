@@ -15,6 +15,7 @@ import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'news_webview_screen.dart';
+import '../utils/status_message.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsArticle article;
@@ -254,9 +255,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       if (!mounted) return;
       if (readingToken != _readingToken) return;
       setState(() => _status = l10n.edgeTtsError(e));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.edgeTtsError(e))),
-      );
+            showStatusMessage(context, l10n.edgeTtsError(e));
     } finally {
       if (mounted && readingToken == _readingToken) {
         setState(() => _speaking = false);

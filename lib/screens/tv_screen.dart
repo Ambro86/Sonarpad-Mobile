@@ -7,6 +7,7 @@ import '../services/tv_service.dart';
 import 'favorite_tvs_screen.dart';
 import 'tv_channel_screen.dart';
 import 'tv_recordings_screen.dart';
+import '../utils/status_message.dart';
 
 class TvScreen extends StatefulWidget {
   const TvScreen({super.key});
@@ -415,14 +416,7 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
     final message = wasFavorite
         ? l10n.radioFavoriteRemoved(channel.name)
         : l10n.radioFavoriteAdded(channel.name);
-    SemanticsService.sendAnnouncement(
-      View.of(context),
-      message,
-      TextDirection.ltr,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    showStatusMessage(context, message);
   }
 
   @override
@@ -498,14 +492,7 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
     final message = wasFavorite
         ? l10n.radioFavoriteRemoved(channel.name)
         : l10n.radioFavoriteAdded(channel.name);
-    SemanticsService.sendAnnouncement(
-      View.of(context),
-      message,
-      TextDirection.ltr,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    showStatusMessage(context, message);
   }
 
   Widget _buildContent(BuildContext context) {

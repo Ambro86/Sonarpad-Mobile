@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../services/document_library_service.dart';
 import '../services/poetrydb_service.dart';
 import 'document_reader_screen.dart';
+import '../utils/status_message.dart';
 
 class PoetryDbScreen extends StatefulWidget {
   final String? parentId;
@@ -128,9 +129,7 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).error(error))),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).error(error));
     }
   }
 

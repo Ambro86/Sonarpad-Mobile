@@ -6,6 +6,7 @@ import '../models/podcast.dart';
 import '../services/document_library_service.dart';
 import '../services/internet_archive_service.dart';
 import 'podcast_episode_player_screen.dart';
+import '../utils/status_message.dart';
 
 class InternetArchiveScreen extends StatefulWidget {
   final String? parentId;
@@ -301,16 +302,10 @@ class _InternetArchiveItemScreenState
       );
       await library.add(doc);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).audioSavedInDocuments),
-        ),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).audioSavedInDocuments);
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).error(error))),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).error(error));
     } finally {
       if (mounted) setState(() => _saving = false);
     }

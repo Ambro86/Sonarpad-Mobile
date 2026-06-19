@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
+import '../utils/status_message.dart';
 
 class AddRadioScreen extends StatefulWidget {
   const AddRadioScreen({super.key});
@@ -26,9 +27,7 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
     final name = _addNameController.text.trim();
     final url = _addUrlController.text.trim();
     if (name.isEmpty || url.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.radioAddMissingFields)),
-      );
+            showStatusMessage(context, l10n.radioAddMissingFields);
       return;
     }
     setState(() => _addingCommunity = true);
@@ -42,19 +41,13 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
       if (!mounted) return;
       _addNameController.clear();
       _addUrlController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message.trim().isEmpty
+            showStatusMessage(context, message.trim().isEmpty
               ? l10n.radioCommunityAdded
-              : message.trim()),
-        ),
-      );
+              : message.trim());
       Navigator.pop(context); // Chiude la finestra dopo il successo
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.radioCommunityAddError(e))),
-      );
+            showStatusMessage(context, l10n.radioCommunityAddError(e));
     } finally {
       if (mounted) setState(() => _addingCommunity = false);
     }

@@ -10,6 +10,7 @@ import '../services/document_library_service.dart';
 import '../services/gutendex_service.dart';
 import '../utils/app_logger.dart';
 import 'document_reader_screen.dart';
+import '../utils/status_message.dart';
 
 class GutenbergScreen extends StatefulWidget {
   final String? parentId;
@@ -296,9 +297,7 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
     } catch (error) {
       await AppLogger.log('Gutenberg import: error $error');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).error(error))),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).error(error));
     } finally {
       if (mounted) {
         setState(() => _importing = false);

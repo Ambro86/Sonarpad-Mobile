@@ -5,6 +5,7 @@ import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import 'audiodescription_film_screen.dart';
 import 'audiodescription_series_screen.dart';
+import '../utils/status_message.dart';
 
 class AudiodescriptionAllScreen extends StatefulWidget {
   const AudiodescriptionAllScreen({super.key});
@@ -131,10 +132,7 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
                                 ),
                               );
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content:
-                                          Text(l10n.audiodescriptionEmpty)));
+                                                            showStatusMessage(context, l10n.audiodescriptionEmpty);
                             }
                           },
                         ),

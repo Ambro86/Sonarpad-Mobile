@@ -10,6 +10,7 @@ import '../services/raiplay_sound_service.dart';
 import '../services/recent_searches_service.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
+import '../utils/status_message.dart';
 
 class RaiPlaySoundScreen extends StatefulWidget {
   final String? url;
@@ -187,21 +188,15 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
           subscription.feedUrl.trim().toLowerCase() ==
           page.source.trim().toLowerCase())) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Podcast già presente')),
-        );
+                showStatusMessage(context, 'Podcast già presente');
         return;
       }
       await _podcastService.addSubscription(page.source);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Podcast aggiunto: ${page.title}')),
-      );
+            showStatusMessage(context, 'Podcast aggiunto: ${page.title}');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore iscrizione podcast: $e')),
-      );
+            showStatusMessage(context, 'Errore iscrizione podcast: $e');
     }
   }
 

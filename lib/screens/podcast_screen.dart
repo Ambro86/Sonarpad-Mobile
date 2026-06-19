@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -14,6 +14,7 @@ import '../services/app_settings_service.dart';
 import '../services/podcast_service.dart';
 import 'podcast_episode_player_screen.dart';
 import 'podcast_episodes_screen.dart';
+import '../utils/status_message.dart';
 
 class PodcastScreen extends StatefulWidget {
   const PodcastScreen({super.key});
@@ -247,9 +248,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
     final files = await _scanLocalAudioFiles();
     if (!mounted) return;
     setState(() => _localAudioFiles = files);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.localAudioFilesFound(files.length))),
-    );
+        showStatusMessage(context, l10n.localAudioFilesFound(files.length));
   }
 
   Future<void> _addByUrl() async {
@@ -266,8 +265,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
       } catch (_) {}
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.podcastSubscriptionError(e))));
+            showStatusMessage(context, l10n.podcastSubscriptionError(e));
     }
   }
 
@@ -286,14 +284,10 @@ class _PodcastScreenState extends State<PodcastScreen> {
       final added = await _service.importSubscriptionsFromOpml(File(path));
       await _load();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.podcastImportComplete(added))),
-      );
+            showStatusMessage(context, l10n.podcastImportComplete(added));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.podcastImportError(e))),
-      );
+            showStatusMessage(context, l10n.podcastImportError(e));
     }
   }
 
@@ -312,14 +306,10 @@ class _PodcastScreenState extends State<PodcastScreen> {
       if (path == null || path.isEmpty) return;
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.podcastExportComplete)),
-      );
+            showStatusMessage(context, l10n.podcastExportComplete);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.podcastExportError(e))),
-      );
+            showStatusMessage(context, l10n.podcastExportError(e));
     }
   }
 
@@ -329,15 +319,10 @@ class _PodcastScreenState extends State<PodcastScreen> {
       await _service.removeSubscription(subscription);
       await _load();
       if (!mounted) return;
-      SemanticsService.sendAnnouncement(
-        View.of(context),
-        l10n.podcastRemoved,
-        TextDirection.ltr,
-      );
+      showStatusMessage(context, l10n.podcastRemoved);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('${AppLocalizations.of(context).errorPrefix}: $e')));
+            showStatusMessage(context, '${AppLocalizations.of(context).errorPrefix}: $e');
     }
   }
 
@@ -722,14 +707,11 @@ class _PodcastSearchResultsScreenState
       await _service.addSearchResult(result);
       if (!mounted) return;
       setState(() => _subscribedFeedUrls.add(_feedKey(result.feedUrl)));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.subscribedTo(result.title))),
-      );
+            showStatusMessage(context, l10n.subscribedTo(result.title));
       Navigator.pop(context, result.feedUrl);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.subscriptionError(e))));
+            showStatusMessage(context, l10n.subscriptionError(e));
     }
   }
 
@@ -845,14 +827,11 @@ class _PodcastSearchDetailScreenState
     try {
       await _service.addSearchResult(widget.result);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.subscribedTo(widget.result.title))),
-      );
+            showStatusMessage(context, l10n.subscribedTo(widget.result.title));
       Navigator.pop(context, widget.result.feedUrl);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.subscriptionError(e))));
+            showStatusMessage(context, l10n.subscriptionError(e));
     }
   }
 

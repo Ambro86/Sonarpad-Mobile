@@ -6,6 +6,7 @@ import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
 import 'radio_player_screen.dart';
+import '../utils/status_message.dart';
 
 class TvChannelScreen extends StatefulWidget {
   final TvChannel channel;
@@ -176,9 +177,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Impossibile avviare la diretta: $e')),
-      );
+            showStatusMessage(context, 'Impossibile avviare la diretta: $e');
     }
   }
 

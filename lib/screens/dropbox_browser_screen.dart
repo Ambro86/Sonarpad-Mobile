@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import '../l10n/app_localizations.dart';
 import '../services/dropbox_service.dart';
 import '../services/document_library_service.dart';
+import '../utils/status_message.dart';
 
 class DropboxBrowserScreen extends StatefulWidget {
   final DocumentLibraryService documentService;
@@ -126,8 +127,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       await widget.documentService.add(doc);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.fileImported}: $name')));
+                showStatusMessage(context, '${l10n.fileImported}: $name');
         setState(() {
           _loading = false;
         });

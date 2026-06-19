@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/italiaonline_service.dart';
 import 'italiaonline_detail_screen.dart';
+import '../utils/status_message.dart';
 
 class ItaliaOnlineScreen extends StatefulWidget {
   const ItaliaOnlineScreen({super.key});
@@ -207,9 +208,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
     } catch (e) {
       if (mounted) {
         Navigator.of(context).pop(); // Chiudi loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore: $e')),
-        );
+                showStatusMessage(context, 'Errore: $e');
       }
     }
   }

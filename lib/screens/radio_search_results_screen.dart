@@ -5,6 +5,7 @@ import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart'; // Per RadioTile
+import '../utils/status_message.dart';
 
 class RadioSearchResultsScreen extends StatefulWidget {
   final Future<List<RadioStation>> resultsFuture;
@@ -60,13 +61,9 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
     await _service.saveFavorites(next);
     if (!mounted) return;
     setState(() => _favorites = next);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(exists
+        showStatusMessage(context, exists
             ? l10n.radioFavoriteRemoved(station.name)
-            : l10n.radioFavoriteAdded(station.name)),
-      ),
-    );
+            : l10n.radioFavoriteAdded(station.name));
   }
 
   @override

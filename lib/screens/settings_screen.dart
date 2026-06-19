@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,6 +13,7 @@ import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import '../utils/status_message.dart';
 
 class SettingsScreen extends StatefulWidget {
   final ValueChanged<SonarpadThemeMode>? onThemeModeChanged;
@@ -32,6 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _screenFocusNode = FocusNode();
   String _appLanguage = 'it';
   SonarpadThemeMode _themeMode = SonarpadThemeMode.system;
+  WeatherTemperatureUnit _weatherTemperatureUnit = WeatherTemperatureUnit.celsius;
   String _languageCode = 'it';
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
   List<TtsVoiceLanguage> _edgeLanguages = AppSettingsService.ttsLanguages;
@@ -55,6 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _savedTvSecretCode = '';
   String _savedAppLanguage = 'it';
   SonarpadThemeMode _savedThemeMode = SonarpadThemeMode.system;
+  WeatherTemperatureUnit _savedWeatherTemperatureUnit = WeatherTemperatureUnit.celsius;
   String _savedLanguageCode = 'it';
   String _savedVoice = AppSettingsService.defaultVoiceForLanguage('it');
   String _savedTtsEngine = 'edge';
@@ -94,6 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _load() async {
     final appLang = await _settings.loadAppLanguage();
     final themeMode = await _settings.loadThemeMode();
+    final weatherTemperatureUnit = await _settings.loadWeatherTemperatureUnit();
     final language = await _settings.loadTtsLanguage();
     final voice = await _settings.loadTtsVoice();
     final speed = await _settings.loadTtsSpeed();
@@ -123,6 +126,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedAppLanguage = appLang;
       _themeMode = themeMode;
       _savedThemeMode = themeMode;
+      _weatherTemperatureUnit = weatherTemperatureUnit;
+      _savedWeatherTemperatureUnit = weatherTemperatureUnit;
       _edgeLanguages = edgeLanguages;
       _edgeVoices = edgeVoices;
       _languageCode = normalizedLanguage;
@@ -179,6 +184,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final codeChanged = rawCode != _savedTvSecretCode;
     final appLanguageChanged = _appLanguage != _savedAppLanguage;
     final themeChanged = _themeMode != _savedThemeMode;
+    final weatherTemperatureUnitChanged =
+        _weatherTemperatureUnit != _savedWeatherTemperatureUnit;
     final autoBookmarkChanged = _autoBookmark != _savedAutoBookmark;
     final homeGroupingChanged = _homeGroupingEnabled != _savedHomeGroupingEnabled;
     final seekSliderStepChanged = _seekSliderStep != _savedSeekSliderStep;
@@ -193,6 +200,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final anySettingsChanged = codeChanged ||
         appLanguageChanged ||
         themeChanged ||
+        weatherTemperatureUnitChanged ||
         autoBookmarkChanged ||
         homeGroupingChanged ||
         seekSliderStepChanged ||
@@ -204,6 +212,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await AppLogger.log(
       'Settings: save start anySettingsChanged=$anySettingsChanged '
       'appLanguageChanged=$appLanguageChanged themeChanged=$themeChanged '
+      'weatherTemperatureUnitChanged=$weatherTemperatureUnitChanged '
       'codeChanged=$codeChanged autoBookmarkChanged=$autoBookmarkChanged '
       'homeGroupingChanged=$homeGroupingChanged '
       'seekSliderStepChanged=$seekSliderStepChanged '
@@ -236,6 +245,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
     await _settings.saveAppLanguage(_appLanguage);
     await _settings.saveThemeMode(_themeMode);
+    await _settings.saveWeatherTemperatureUnit(_weatherTemperatureUnit);
     await _settings.saveTtsSpeed(_ttsSpeed);
     await _settings.saveTtsPitch(_ttsPitch);
     await _settings.setTvSecretCode(rawCode);
@@ -254,27 +264,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       widget.onThemeModeChanged?.call(_themeMode);
     }
 
-    final direction = Directionality.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(savedMessage)),
-    );
     unawaited(AppLogger.log('Settings: save completed'));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      // Non togliamo il focus dopo il salvataggio: su iOS/VoiceOver può
-      // lasciare temporaneamente la schermata senza un elemento semantico
-      // agganciato. Se nessun controllo ha più il focus, agganciamo almeno
-      // il contenitore principale e annunciamo il salvataggio.
       if (FocusManager.instance.primaryFocus == null &&
           !_screenFocusNode.hasFocus) {
         _screenFocusNode.requestFocus();
       }
-      SemanticsService.sendAnnouncement(
-        View.of(context),
-        savedMessage,
-        direction,
-      );
+      showStatusMessage(context, savedMessage);
     });
   }
 
@@ -343,6 +341,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _markSaved(String rawCode) {
     _savedAppLanguage = _appLanguage;
     _savedThemeMode = _themeMode;
+    _savedWeatherTemperatureUnit = _weatherTemperatureUnit;
     _savedLanguageCode = _languageCode;
     _savedVoice = _voice;
     _savedTtsEngine = _ttsEngine;
@@ -360,6 +359,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (_loading) return false;
     return _appLanguage != _savedAppLanguage ||
         _themeMode != _savedThemeMode ||
+        _weatherTemperatureUnit != _savedWeatherTemperatureUnit ||
         _languageCode != _savedLanguageCode ||
         _voice != _savedVoice ||
         _ttsEngine != _savedTtsEngine ||
@@ -436,9 +436,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.settingsVoiceTestError(e))),
-      );
+            showStatusMessage(context, l10n.settingsVoiceTestError(e));
     } finally {
       if (mounted) {
         setState(() => _testingVoice = false);
@@ -533,9 +531,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (name.isEmpty || surname.isEmpty || email.isEmpty) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.settingsFillFieldsCode)),
-        );
+                showStatusMessage(context, l10n.settingsFillFieldsCode);
         return;
       }
 
@@ -575,9 +571,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await launchUrl(url);
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.settingsMailOpenError(e))),
-        );
+                showStatusMessage(context, l10n.settingsMailOpenError(e));
       }
     }
   }
@@ -607,7 +601,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (didPop) return;
         final shouldLeave = await _confirmLeaveSettings();
         if (!context.mounted || !shouldLeave) return;
-        FocusManager.instance.primaryFocus?.unfocus();
+        // Non forziamo unfocus prima di uscire: su iOS/VoiceOver può
+        // contribuire a lasciare momentaneamente l'app senza un nodo
+        // semantico agganciato nella schermata precedente.
         await Future<void>.delayed(Duration.zero);
         if (!context.mounted) return;
         Navigator.of(context).pop(_appLanguage);
@@ -668,6 +664,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onChanged: (value) {
                         if (value == null) return;
                         setState(() => _themeMode = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<WeatherTemperatureUnit>(
+                      isExpanded: true,
+                      initialValue: _weatherTemperatureUnit,
+                      decoration: InputDecoration(
+                        labelText: l10n.settingsWeatherTemperatureUnit,
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: WeatherTemperatureUnit.celsius,
+                          child: Text(l10n.weatherTemperatureCelsius),
+                        ),
+                        DropdownMenuItem(
+                          value: WeatherTemperatureUnit.fahrenheit,
+                          child: Text(l10n.weatherTemperatureFahrenheit),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _weatherTemperatureUnit = value);
                       },
                     ),
                     const SizedBox(height: 12),

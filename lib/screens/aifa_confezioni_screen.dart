@@ -4,6 +4,7 @@ import '../models/document_item.dart';
 import '../services/aifa_pdf_parser.dart';
 import '../services/aifa_service.dart';
 import 'document_reader_screen.dart';
+import '../utils/status_message.dart';
 
 class AifaConfezioniScreen extends StatefulWidget {
   final AifaDrugResult drugGroup;
@@ -160,9 +161,7 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = 'Errore apertura PDF: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore download PDF: $e')),
-      );
+            showStatusMessage(context, 'Errore download PDF: $e');
     } finally {
       if (mounted) {
         setState(() => _downloadingConf = null);

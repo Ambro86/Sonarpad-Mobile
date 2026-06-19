@@ -33,14 +33,21 @@ class _WeatherScreenState extends State<WeatherScreen> {
   bool _isLoading = false;
   _WeatherError? _error;
   int _selectedDay = 0;
+  WeatherTemperatureUnit _temperatureUnit = WeatherTemperatureUnit.celsius;
 
   bool _hasRecentCities = false;
 
   @override
   void initState() {
     super.initState();
+    _loadTemperatureUnit();
     _checkRecentCities();
     _loadSavedCity();
+  }
+
+  Future<void> _loadTemperatureUnit() async {
+    final unit = await _settings.loadWeatherTemperatureUnit();
+    if (mounted) setState(() => _temperatureUnit = unit);
   }
 
   Future<void> _checkRecentCities() async {
@@ -248,6 +255,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
             _WeatherForecastView(
               forecast: _forecast!,
               selectedDay: _selectedDay,
+              temperatureUnit: _temperatureUnit,
               onDayChanged: (value) {
                 setState(() {
                   _selectedDay = value;
@@ -308,11 +316,13 @@ class _WeatherForecastView extends StatelessWidget {
   const _WeatherForecastView({
     required this.forecast,
     required this.selectedDay,
+    required this.temperatureUnit,
     required this.onDayChanged,
   });
 
   final WeatherForecast forecast;
   final int selectedDay;
+  final WeatherTemperatureUnit temperatureUnit;
   final ValueChanged<int> onDayChanged;
 
   List<dynamic> _dailyValues(String key) {
@@ -326,6 +336,41 @@ class _WeatherForecastView extends StatelessWidget {
     final value = values[day];
     if (value == null) return '-';
     return '$value $unit';
+  }
+
+  double? _asDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '');
+  }
+
+  String _temperatureSymbol() {
+    return switch (temperatureUnit) {
+      WeatherTemperatureUnit.celsius => '°C',
+      WeatherTemperatureUnit.fahrenheit => '°F',
+    };
+  }
+
+  String _formatNumber(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toStringAsFixed(0);
+    }
+    return value.toStringAsFixed(1);
+  }
+
+  String _formatTemperature(dynamic value) {
+    final celsius = _asDouble(value);
+    if (celsius == null) return '-';
+    final converted = switch (temperatureUnit) {
+      WeatherTemperatureUnit.celsius => celsius,
+      WeatherTemperatureUnit.fahrenheit => (celsius * 9 / 5) + 32,
+    };
+    return '${_formatNumber(converted)} ${_temperatureSymbol()}';
+  }
+
+  String _temperatureValue(String key, int day) {
+    final values = _dailyValues(key);
+    if (day < 0 || day >= values.length) return '-';
+    return _formatTemperature(values[day]);
   }
 
   String _dayLabel(AppLocalizations l10n, int day) {
@@ -414,7 +459,7 @@ class _WeatherForecastView extends StatelessWidget {
               child: ListTile(
                 title: Text(l10n.weatherCurrentTemperature),
                 trailing: Text(
-                  '${forecast.current['temperature_2m']} °C',
+                  _formatTemperature(forecast.current['temperature_2m']),
                   style: const TextStyle(fontSize: 24),
                 ),
               ),
@@ -423,7 +468,7 @@ class _WeatherForecastView extends StatelessWidget {
             child: ListTile(
               title: Text(l10n.weatherMaxTemperature),
               trailing: Text(
-                _value('temperature_2m_max', day, '°C'),
+                _temperatureValue('temperature_2m_max', day),
                 style: const TextStyle(fontSize: 24),
               ),
             ),
@@ -431,7 +476,7 @@ class _WeatherForecastView extends StatelessWidget {
           Card(
             child: ListTile(
               title: Text(l10n.weatherMinTemperature),
-              trailing: Text(_value('temperature_2m_min', day, '°C')),
+              trailing: Text(_temperatureValue('temperature_2m_min', day)),
             ),
           ),
           Card(

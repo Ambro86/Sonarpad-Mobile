@@ -144,6 +144,25 @@ abstract class AppLocalizations {
   /// **'Scuro'**
   String get settingsThemeDark;
 
+
+  /// Localized text for settingsWeatherTemperatureUnit.
+  ///
+  /// In it, this message translates to:
+  /// **'Unità temperatura meteo'**
+  String get settingsWeatherTemperatureUnit;
+
+  /// Localized text for weatherTemperatureCelsius.
+  ///
+  /// In it, this message translates to:
+  /// **'Celsius (°C)'**
+  String get weatherTemperatureCelsius;
+
+  /// Localized text for weatherTemperatureFahrenheit.
+  ///
+  /// In it, this message translates to:
+  /// **'Fahrenheit (°F)'**
+  String get weatherTemperatureFahrenheit;
+
   /// Localized text for homeSemanticsLabel.
   ///
   /// In it, this message translates to:

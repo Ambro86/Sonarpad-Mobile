@@ -12,6 +12,7 @@ import 'favorite_radios_screen.dart';
 import 'radio_recordings_screen.dart';
 import 'radio_search_results_screen.dart';
 import 'recent_radios_screen.dart';
+import '../utils/status_message.dart';
 
 enum _RadioBrowseMode { language, country, city }
 
@@ -140,9 +141,7 @@ class _RadioScreenState extends State<RadioScreen> {
     await _settings.saveRadioGenre(defaultGenre.value);
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context).radioFiltersReset)),
-    );
+        showStatusMessage(context, AppLocalizations.of(context).radioFiltersReset);
   }
 
   String _activeFiltersSummary(AppLocalizations l10n) {

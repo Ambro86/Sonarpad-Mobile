@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../services/audiodescription_service.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
+import '../utils/status_message.dart';
 
 class AudiodescriptionFilmScreen extends StatefulWidget {
   final AudiodescriptionGroup filmGroup;
@@ -64,8 +65,7 @@ class _AudiodescriptionFilmScreenState
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
+                showStatusMessage(context, e.toString());
       }
     }
   }

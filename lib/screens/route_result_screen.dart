@@ -13,6 +13,7 @@ import '../services/document_library_service.dart';
 import '../services/route_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../utils/status_message.dart';
 
 class RouteResultScreen extends StatelessWidget {
   final RouteResult result;
@@ -185,9 +186,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
     final l10n = AppLocalizations.of(context);
     final chunks = _speechChunks(l10n);
     if (chunks.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.noTextToRead)),
-      );
+            showStatusMessage(context, l10n.noTextToRead);
       return;
     }
 
@@ -295,9 +294,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
       }
     } catch (e) {
       if (!mounted || readingToken != _readingToken) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.edgeTtsError(e))),
-      );
+            showStatusMessage(context, l10n.edgeTtsError(e));
     } finally {
       if (mounted && readingToken == _readingToken) {
         setState(() {
@@ -322,9 +319,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
     await lib.add(doc);
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.routeSaveSuccess)),
-    );
+        showStatusMessage(context, l10n.routeSaveSuccess);
   }
 
   String _routeDocumentText(AppLocalizations l10n) {

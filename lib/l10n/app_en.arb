@@ -801,5 +801,17 @@
       "to": {},
       "date": {}
     }
+  },
+  "settingsWeatherTemperatureUnit": "Weather temperature unit",
+  "@settingsWeatherTemperatureUnit": {
+    "description": "Localized text for settingsWeatherTemperatureUnit."
+  },
+  "weatherTemperatureCelsius": "Celsius (°C)",
+  "@weatherTemperatureCelsius": {
+    "description": "Localized text for weatherTemperatureCelsius."
+  },
+  "weatherTemperatureFahrenheit": "Fahrenheit (°F)",
+  "@weatherTemperatureFahrenheit": {
+    "description": "Localized text for weatherTemperatureFahrenheit."
   }
 }

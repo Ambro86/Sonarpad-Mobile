@@ -27,6 +27,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsThemeDark => '''Scuro''';
 
   @override
+  String get settingsWeatherTemperatureUnit => '''Unità temperatura meteo''';
+
+  @override
+  String get weatherTemperatureCelsius => '''Celsius (°C)''';
+
+  @override
+  String get weatherTemperatureFahrenheit => '''Fahrenheit (°F)''';
+
+
+  @override
   String get homeSemanticsLabel => '''Sonarpad, schermata principale''';
 
   @override

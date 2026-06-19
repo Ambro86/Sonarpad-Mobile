@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../services/tv_service.dart';
+import '../utils/status_message.dart';
 
 class FavoriteTvsScreen extends StatefulWidget {
   const FavoriteTvsScreen({
@@ -58,11 +59,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
     favs.removeWhere((c) => c.name == channel.name);
     await _service.saveFavorites(favs);
     if (!mounted) return;
-    SemanticsService.sendAnnouncement(
-      View.of(context),
-      '${channel.name} rimosso dai preferiti',
-      TextDirection.ltr,
-    );
+    showStatusMessage(context, '${channel.name} rimosso dai preferiti');
     _load();
   }
 

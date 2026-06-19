@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
 import 'trailer_screen.dart';
+import '../utils/status_message.dart';
 
 class CinemaDetailScreen extends StatefulWidget {
   final TmdbMovie movie;
@@ -61,15 +62,11 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
         );
       } else {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nessun trailer disponibile per questo film')),
-        );
+                showStatusMessage(context, 'Nessun trailer disponibile per questo film');
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore: $e')),
-      );
+            showStatusMessage(context, 'Errore: $e');
     }
   }
 

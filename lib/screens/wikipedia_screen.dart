@@ -6,6 +6,7 @@ import '../services/document_library_service.dart';
 import '../services/recent_searches_service.dart';
 import 'document_reader_screen.dart';
 import 'recent_searches_screen.dart';
+import '../utils/status_message.dart';
 
 class WikipediaScreen extends StatefulWidget {
   const WikipediaScreen({super.key});
@@ -104,16 +105,12 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.articleNotFound)),
-        );
+                showStatusMessage(context, l10n.articleNotFound);
       }
     } catch (e) {
       if (mounted) Navigator.of(context).pop();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${l10n.errorOpening}: $e")),
-        );
+                showStatusMessage(context, "${l10n.errorOpening}: $e");
       }
     }
   }
@@ -404,10 +401,7 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('${AppLocalizations.of(context).saveError}: $e')),
-        );
+                showStatusMessage(context, '${AppLocalizations.of(context).saveError}: $e');
       }
     }
   }

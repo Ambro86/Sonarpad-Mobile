@@ -17,6 +17,7 @@ import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import '../utils/status_message.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
   const NewsWebViewScreen(
@@ -952,9 +953,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       if (!mounted) return;
       if (readingToken != _readingToken) return;
       setState(() => _status = l10n.edgeTtsError(e));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.edgeTtsError(e))),
-      );
+            showStatusMessage(context, l10n.edgeTtsError(e));
     } finally {
       unawaited(AppLogger.log(
         'News Edge TTS debug [$readingToken]: finally '

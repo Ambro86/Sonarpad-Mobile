@@ -17,6 +17,7 @@ import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import '../utils/status_message.dart';
 
 /// Schermata di lettura/ascolto di un documento della libreria.
 ///
@@ -195,9 +196,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   Future<void> _startReading() async {
     if (_chunks.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).noTextToRead)),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).noTextToRead);
       return;
     }
 
@@ -345,9 +344,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _ttsStatus = '${AppLocalizations.of(context).ttsError}: $e';
         _activeTtsEngine = null;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${AppLocalizations.of(context).ttsError}: $e')),
-      );
+            showStatusMessage(context, '${AppLocalizations.of(context).ttsError}: $e');
     } finally {
       if (mounted && readingToken == _readingToken) {
         setState(() => _speaking = false);
@@ -512,18 +509,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       });
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).textEditedAndSaved),
-        ),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).textEditedAndSaved);
     } catch (e) {
       dev.log('DocumentReaderScreen: Errore fatale durante il salvataggio: $e');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('${AppLocalizations.of(context).saveError}: $e')),
-      );
+            showStatusMessage(context, '${AppLocalizations.of(context).saveError}: $e');
     }
   }
 
@@ -639,9 +629,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   _currentDoc = newDoc;
                 });
                 if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.docSavedInLibrary)),
-                );
+                                showStatusMessage(context, l10n.docSavedInLibrary);
               },
             ),
         ],
@@ -902,10 +890,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<void> _setBookmark(int index) async {
     await _saveBookmark(index, showSnack: false);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(AppLocalizations.of(context).bookmarkSet(index + 1))),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).bookmarkSet(index + 1));
     }
   }
 
@@ -937,10 +922,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
 
     if (showSnack && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(AppLocalizations.of(context).bookmarkSet(index + 1))),
-      );
+            showStatusMessage(context, AppLocalizations.of(context).bookmarkSet(index + 1));
     }
   }
 }

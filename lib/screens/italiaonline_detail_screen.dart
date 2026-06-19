@@ -10,6 +10,7 @@ import '../services/italiaonline_service.dart';
 import '../services/document_library_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../utils/status_message.dart';
 
 class ItaliaOnlineDetailScreen extends StatefulWidget {
   final DetailResponse detail;
@@ -90,9 +91,7 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
     } catch (e) {
       debugPrint('ItaliaOnline TTS error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore durante la lettura: $e')),
-        );
+                showStatusMessage(context, 'Errore durante la lettura: $e');
       }
     } finally {
       if (mounted) setState(() => _isPlaying = false);
@@ -151,15 +150,11 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
                 await lib.load();
                 await lib.add(doc);
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Salvato nei documenti!')),
-                  );
+                                    showStatusMessage(context, 'Salvato nei documenti!');
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Errore durante il salvataggio: $e')),
-                  );
+                                    showStatusMessage(context, 'Errore durante il salvataggio: $e');
                 }
               }
             },

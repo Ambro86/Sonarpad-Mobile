@@ -4,6 +4,7 @@ import '../services/bdciechi_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/document_library_service.dart';
 import 'document_reader_screen.dart';
+import '../utils/status_message.dart';
 
 class BdCiechiDashboardScreen extends StatefulWidget {
   final String username;
@@ -94,10 +95,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   Future<void> _handleAction(String record, bool preview) async {
     final index = _extractIndex(record);
     if (index.isEmpty || index == '-1') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Impossibile estrarre l\'indice del libro.')),
-      );
+            showStatusMessage(context, 'Impossibile estrarre l\'indice del libro.');
       return;
     }
 
@@ -133,9 +131,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
       if (mounted) Navigator.pop(context);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore download: $e')),
-        );
+                showStatusMessage(context, 'Errore download: $e');
       }
     }
   }
@@ -170,11 +166,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
       await lib.add(doc);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text(
-                  'Libro importato nella libreria e salvato in documenti.')),
-        );
+                showStatusMessage(context, 'Libro importato nella libreria e salvato in documenti.');
         Navigator.of(context).push(
           MaterialPageRoute(
             settings: const RouteSettings(name: '/documents/reader'),
@@ -184,9 +176,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Errore salvataggio: $e')),
-        );
+                showStatusMessage(context, 'Errore salvataggio: $e');
       }
     }
   }
@@ -228,10 +218,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
 
   void _performSearch(String query) {
     if (_isLoadingCatalog) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Attendere il caricamento del catalogo completo.')),
-      );
+            showStatusMessage(context, 'Attendere il caricamento del catalogo completo.');
       return;
     }
     final queryLower = _normalize(query);
@@ -322,10 +309,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
               FilledButton.icon(
                 onPressed: () {
                   if (_isLoadingCatalog) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Caricamento catalogo in corso...')),
-                    );
+                                        showStatusMessage(context, 'Caricamento catalogo in corso...');
                     return;
                   }
                   Navigator.push(

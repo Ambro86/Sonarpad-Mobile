@@ -7,6 +7,7 @@ import 'audiodescription_all_screen.dart';
 import 'audiodescription_scheduled_screen.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
+import '../utils/status_message.dart';
 
 const _scheduledAudiodescriptionsTitle = 'Audiodescrizioni in programma';
 
@@ -90,8 +91,7 @@ class _AudiodescriptionRecentScreenState
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.toString())));
+                showStatusMessage(context, e.toString());
       }
     }
   }

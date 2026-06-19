@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
+import '../utils/status_message.dart';
 
 enum _MediaFormat {
   mp3('mp3', 'MP3'),
@@ -606,9 +607,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   }
 
   void _showSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+        showStatusMessage(context, message);
   }
 
   @override

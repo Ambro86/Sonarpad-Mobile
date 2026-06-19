@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
+import '../utils/status_message.dart';
 
 class AppLogScreen extends StatefulWidget {
   const AppLogScreen({super.key});
@@ -32,14 +33,10 @@ class _AppLogScreenState extends State<AppLogScreen> {
 
   Future<void> _copyLog() async {
     final logs = await AppLogger.readLogs();
-    if (!mounted) return;
-    setState(() => _logContent = logs);
     await Clipboard.setData(ClipboardData(text: logs));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: Text(AppLocalizations.of(context).logCopiedToClipboard)),
-    );
+
+    showStatusMessage(context, AppLocalizations.of(context).logCopiedToClipboard);
   }
 
   Future<void> _clearLog() async {
@@ -52,7 +49,9 @@ class _AppLogScreenState extends State<AppLogScreen> {
 
   @override
   void dispose() {
-    FocusManager.instance.primaryFocus?.unfocus();
+    // Non togliamo forzatamente il focus quando si lascia questa schermata:
+    // su iOS/VoiceOver può contribuire alla perdita temporanea dei semantics
+    // nella schermata precedente.
     super.dispose();
   }
 

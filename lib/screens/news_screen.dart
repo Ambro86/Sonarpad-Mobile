@@ -12,6 +12,7 @@ import '../services/app_settings_service.dart';
 import '../services/news_service.dart';
 import '../services/news_sources/news_rss_source.dart';
 import 'news_webview_screen.dart';
+import '../utils/status_message.dart';
 
 class NewsScreen extends StatefulWidget {
   final String? folderId;
@@ -156,10 +157,7 @@ class _NewsScreenState extends State<NewsScreen> {
       await _loadSources();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('${AppLocalizations.of(context).errorPrefix}: $e')),
-      );
+            showStatusMessage(context, '${AppLocalizations.of(context).errorPrefix}: $e');
     }
   }
 
@@ -217,14 +215,10 @@ class _NewsScreenState extends State<NewsScreen> {
       );
       await _loadSources();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.rssImportComplete(added))),
-      );
+            showStatusMessage(context, l10n.rssImportComplete(added));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.rssImportError(e))),
-      );
+            showStatusMessage(context, l10n.rssImportError(e));
     }
   }
 
@@ -246,14 +240,10 @@ class _NewsScreenState extends State<NewsScreen> {
       if (path == null || path.isEmpty) return;
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.rssExportComplete)),
-      );
+            showStatusMessage(context, l10n.rssExportComplete);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.rssExportError(e))),
-      );
+            showStatusMessage(context, l10n.rssExportError(e));
     }
   }
 
@@ -647,9 +637,7 @@ class _NewsSourceList extends StatelessWidget {
         await service.moveSourceToFolder(language, source, null);
         onSourcesChanged();
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).documentMoved)),
-        );
+                showStatusMessage(context, AppLocalizations.of(context).documentMoved);
         return;
       }
       if (action == _NewsSourceAction.moveToFolder && !source.isFolder) {
@@ -658,9 +646,7 @@ class _NewsSourceList extends StatelessWidget {
         await service.moveSourceToFolder(language, source, folderId);
         onSourcesChanged();
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).documentMoved)),
-        );
+                showStatusMessage(context, AppLocalizations.of(context).documentMoved);
         return;
       }
 
@@ -703,10 +689,7 @@ class _NewsSourceList extends StatelessWidget {
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('${AppLocalizations.of(context).errorPrefix}: $e')),
-      );
+            showStatusMessage(context, '${AppLocalizations.of(context).errorPrefix}: $e');
     }
   }
 

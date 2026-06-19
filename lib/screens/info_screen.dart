@@ -7,6 +7,7 @@ import 'changelog_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/changelog_service.dart';
+import '../utils/status_message.dart';
 
 class InfoScreen extends StatelessWidget {
   const InfoScreen({super.key});
@@ -28,9 +29,7 @@ class InfoScreen extends StatelessWidget {
     } catch (error) {
       if (!context.mounted) return;
       final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.changelogLoadError(error))),
-      );
+            showStatusMessage(context, l10n.changelogLoadError(error));
     }
   }
 

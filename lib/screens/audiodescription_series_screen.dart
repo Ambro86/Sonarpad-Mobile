@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/audiodescription_service.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
+import '../utils/status_message.dart';
 
 class AudiodescriptionSeriesScreen extends StatefulWidget {
   final AudiodescriptionGroup group;
@@ -50,9 +51,7 @@ class _AudiodescriptionSeriesScreenState
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+                showStatusMessage(context, e.toString());
       }
     }
   }

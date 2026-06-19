@@ -88,11 +88,13 @@ class WikipediaService {
 
   String _parseArticleHtmlToText(String html) {
     final document = html_parser.parseFragment(html);
-    final container = document.querySelector('div.mw-parser-output');
+    final container = document.querySelector('.mw-parser-output');
     if (container == null) {
+      _removeUnwantedElements(document);
       return _normalizeTextBlock(document.text ?? '');
     }
 
+    _removeUnwantedElements(container);
     final blocks = <String>[];
     for (final child in container.children) {
       if (_shouldSkipElement(child)) continue;
@@ -142,6 +144,26 @@ class WikipediaService {
     'h6',
   };
 
+  void _removeUnwantedElements(dom.Node root) {
+    final elements = root is dom.DocumentFragment
+        ? root.querySelectorAll(_unwantedSelector)
+        : root is dom.Element
+            ? root.querySelectorAll(_unwantedSelector)
+            : const <dom.Element>[];
+    for (final element in elements) {
+      element.remove();
+    }
+  }
+
+  static const _unwantedSelector =
+      'style, script, noscript, table, figure, figcaption, sup.reference, '
+      '.mw-editsection, .reference, .reflist, .navbox, .vertical-navbox, '
+      '.authority-control, .metadata, .infobox, .sinottico, .thumb, .tright, '
+      '.tleft, .toc, .hatnote, .ambox, .ombox, .mbox, .avviso, '
+      '.sistersitebox, .mw-empty-elt, .noprint, .printfooter, .catlinks, '
+      '.portal, .portalbox, .CdA, .itwiki-template-occhiello, '
+      '.itwiki-template-occhiello-progetto';
+
   bool _shouldSkipElement(dom.Element element) {
     final name = element.localName;
     if (name == 'table' ||
@@ -169,7 +191,18 @@ class WikipediaService {
       'toc',
       'hatnote',
       'ambox',
+      'ombox',
+      'mbox',
+      'avviso',
       'sistersitebox',
+      'noprint',
+      'printfooter',
+      'catlinks',
+      'portal',
+      'portalbox',
+      'CdA',
+      'itwiki-template-occhiello',
+      'itwiki-template-occhiello-progetto',
       'mw-empty-elt',
     };
     return element.classes.any(skippedClasses.contains);
@@ -226,6 +259,9 @@ class WikipediaService {
     var blankRun = 0;
     for (final line in text.split('\n')) {
       final trimmed = line.trim();
+      if (_looksLikeCssOrTemplateNoise(trimmed)) {
+        continue;
+      }
       if (trimmed.isEmpty) {
         blankRun += 1;
         if (blankRun <= 1 && out.isNotEmpty) {
@@ -240,6 +276,41 @@ class WikipediaService {
       out.write(trimmed);
     }
     return out.toString().trim();
+  }
+
+  bool _looksLikeCssOrTemplateNoise(String line) {
+    if (line.isEmpty) return false;
+    if (line.startsWith('.mw-parser-output') ||
+        line.startsWith('body.skin-') ||
+        line.startsWith('html.skin-') ||
+        line.startsWith('html:not(') ||
+        line.startsWith('@media ') ||
+        line.startsWith('}@media ') ||
+        line.startsWith('/*') ||
+        line.startsWith('*/')) {
+      return true;
+    }
+    final cssMarkers = <String>[
+      '{',
+      '}',
+      'font-size:',
+      'background:',
+      'background-color:',
+      'border:',
+      'display:',
+      'margin:',
+      'padding:',
+      'width:',
+      'text-align:',
+    ];
+    final hasSelectorStart = line.startsWith('.') ||
+        line.startsWith('#') ||
+        line.startsWith('body.') ||
+        line.startsWith('html.');
+    if (hasSelectorStart && cssMarkers.any(line.contains)) {
+      return true;
+    }
+    return false;
   }
 
   List<WikipediaArticleSection> _extractArticleSections(String text) {

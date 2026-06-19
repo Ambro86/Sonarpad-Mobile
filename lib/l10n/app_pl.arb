@@ -24,6 +24,18 @@
   "@settingsThemeDark": {
     "description": "Localized text for settingsThemeDark."
   },
+  "settingsWeatherTemperatureUnit": "Jednostka temperatury pogody",
+  "@settingsWeatherTemperatureUnit": {
+    "description": "Localized text for settingsWeatherTemperatureUnit."
+  },
+  "weatherTemperatureCelsius": "Celsjusz (°C)",
+  "@weatherTemperatureCelsius": {
+    "description": "Localized text for weatherTemperatureCelsius."
+  },
+  "weatherTemperatureFahrenheit": "Fahrenheit (°F)",
+  "@weatherTemperatureFahrenheit": {
+    "description": "Localized text for weatherTemperatureFahrenheit."
+  },
   "homeSemanticsLabel": "Sonarpad, ekran główny",
   "@homeSemanticsLabel": {
     "description": "Localized text for homeSemanticsLabel."
