@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
 
@@ -469,6 +471,107 @@ class HtmlReaderService {
     return best.length >= 40 ? best : null;
   }
 
+
+  static ArticleContent? extractStructuredDataArticle(
+    Document document,
+    String fallbackTitle,
+    String languageCode,
+  ) {
+    final scripts = document.querySelectorAll("script[type='application/ld+json']");
+    for (final script in scripts) {
+      final raw = script.text.trim();
+      if (raw.isEmpty) continue;
+
+      for (final node in _jsonLdArticleNodes(raw)) {
+        final bodyCandidates = <String>[
+          _jsonStringValue(node['articleBody']),
+          _jsonStringValue(node['text']),
+          _jsonStringValue(node['description']),
+        ].where((value) => value.trim().isNotEmpty).toList();
+
+        bodyCandidates.sort((a, b) => b.length.compareTo(a.length));
+        for (final candidate in bodyCandidates) {
+          final cleaned = collapseBlankLines(cleanText(candidate)).trim();
+          if (cleaned.length < 300) continue;
+          if (countSentences(cleaned) < 2) continue;
+          if (looksLikeUiChrome(cleaned)) continue;
+
+          final title = _jsonStringValue(node['headline']).trim().isNotEmpty
+              ? _jsonStringValue(node['headline']).trim()
+              : _jsonStringValue(node['name']).trim().isNotEmpty
+                  ? _jsonStringValue(node['name']).trim()
+                  : fallbackTitle;
+
+          return ArticleContent(title: title, content: cleaned);
+        }
+      }
+    }
+    return null;
+  }
+
+  static Iterable<Map<String, dynamic>> _jsonLdArticleNodes(String rawJson) sync* {
+    Object? decoded;
+    try {
+      decoded = jsonDecode(rawJson);
+    } catch (_) {
+      return;
+    }
+
+    Iterable<Object?> walk(Object? value) sync* {
+      if (value is List) {
+        for (final item in value) {
+          yield* walk(item);
+        }
+        return;
+      }
+      if (value is Map) {
+        yield value;
+        final graph = value['@graph'];
+        if (graph != null) {
+          yield* walk(graph);
+        }
+        final mainEntity = value['mainEntity'];
+        if (mainEntity != null) {
+          yield* walk(mainEntity);
+        }
+      }
+    }
+
+    for (final item in walk(decoded)) {
+      if (item is! Map) continue;
+      final node = <String, dynamic>{};
+      item.forEach((key, value) => node[key.toString()] = value);
+      final hasArticleText = _jsonStringValue(node['articleBody']).trim().isNotEmpty ||
+          _jsonStringValue(node['text']).trim().isNotEmpty;
+      if (hasArticleText && _isArticleJsonLdType(node['@type'])) {
+        yield node;
+      }
+    }
+  }
+
+  static bool _isArticleJsonLdType(Object? type) {
+    if (type == null) return true;
+    if (type is List) return type.any(_isArticleJsonLdType);
+    final text = type.toString().toLowerCase();
+    return text.contains('article') ||
+        text.contains('newsarticle') ||
+        text.contains('blogposting') ||
+        text.contains('reportage');
+  }
+
+  static String _jsonStringValue(Object? value) {
+    if (value == null) return '';
+    if (value is String) return value;
+    if (value is List) {
+      return value.map(_jsonStringValue).where((part) => part.trim().isNotEmpty).join('\n\n');
+    }
+    if (value is Map) {
+      final text = value['text'] ?? value['value'] ?? value['name'];
+      return _jsonStringValue(text);
+    }
+    return value.toString();
+  }
+
   static String? pickRedditLinkPostUrl(Document document) {
     final elements = document.querySelectorAll(
         "shreddit-post[post-type='link'] div[slot='post-media-container'] a[href]");
@@ -648,8 +751,16 @@ class HtmlReaderService {
     }
 
     final document = html_parser.parse(htmlContent);
-    cleanDomBeforeExtraction(document);
     final title = pickTitle(document, languageCode);
+    final structuredDataArticle = extractStructuredDataArticle(
+      document,
+      title,
+      languageCode,
+    );
+    if (structuredDataArticle != null) {
+      return structuredDataArticle;
+    }
+    cleanDomBeforeExtraction(document);
 
     StringBuffer bodyAcc = StringBuffer();
     String authorInfo = '';

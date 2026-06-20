@@ -145,7 +145,7 @@ class LibrivoxService {
     // documented path form first, then fall back to a local scan of the
     // catalogue so searches like "wilde" or "importance" still work.
     for (final term in apiTerms) {
-      final titleMatches = await _fetchBooks(
+      final titleMatches = await _fetchBooksOrEmpty(
         limit: _searchCandidateLimit,
         offset: 0,
         searchField: 'title',
@@ -155,7 +155,7 @@ class LibrivoxService {
         candidates[book.id] = book;
       }
 
-      final authorMatches = await _fetchBooks(
+      final authorMatches = await _fetchBooksOrEmpty(
         limit: _searchCandidateLimit,
         offset: 0,
         searchField: 'author',
@@ -215,7 +215,7 @@ class LibrivoxService {
     var reachedEnd = false;
 
     while (scanOffset < _fallbackMaxScanBooks) {
-      final books = await _fetchBooks(
+      final books = await _fetchBooksOrEmpty(
         limit: _fallbackPageLimit,
         offset: scanOffset,
       );
@@ -244,6 +244,7 @@ class LibrivoxService {
         break;
       }
       if (scanned >= _fallbackMaxScanBooks) {
+        reachedEnd = true;
         break;
       }
     }
@@ -286,7 +287,7 @@ class LibrivoxService {
     final response = await _client.get(
       uri,
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
-    ).timeout(const Duration(seconds: 30));
+    ).timeout(_requestTimeout);
 
     if (response.statusCode == 404) {
       return const [];
@@ -296,6 +297,28 @@ class LibrivoxService {
     }
 
     return _booksFromResponse(response.bodyBytes);
+  }
+
+  Future<List<LibrivoxBook>> _fetchBooksOrEmpty({
+    required int limit,
+    required int offset,
+    String? searchField,
+    String? searchValue,
+  }) async {
+    try {
+      return await _fetchBooks(
+        limit: limit,
+        offset: offset,
+        searchField: searchField,
+        searchValue: searchValue,
+      );
+    } catch (_) {
+      // The public LibriVox API can occasionally close the connection or time
+      // out while Sonarpad is scanning the catalogue.  Search results should
+      // not stay blocked or show technical socket errors to the user: keep any
+      // results already found and stop the fragile fallback silently.
+      return const [];
+    }
   }
 
   List<String> _searchTerms(String query) {
@@ -354,7 +377,8 @@ class LibrivoxService {
 
   static const int _searchCandidateLimit = 100;
   static const int _fallbackPageLimit = 500;
-  static const int _fallbackMaxScanBooks = 20000;
+  static const int _fallbackMaxScanBooks = 2000;
+  static const Duration _requestTimeout = Duration(seconds: 12);
 
   static const Set<String> _ignoredSearchTerms = {
     'a',
