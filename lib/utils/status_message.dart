@@ -7,6 +7,8 @@ import 'package:flutter/semantics.dart';
 /// the accessibility focus tree, and announces the same message to VoiceOver.
 ///
 /// This replaces ordinary SnackBars for transient success/info/error feedback.
+/// Announcements are delayed slightly so VoiceOver can finish the action label
+/// that triggered the status update before the new message is spoken.
 /// SnackBars are visually useful, but on iOS/VoiceOver they can sometimes become
 /// focusable temporary nodes and destabilize semantics after navigation or
 /// language changes.
@@ -14,22 +16,33 @@ void showStatusMessage(
   BuildContext context,
   String message, {
   Duration duration = const Duration(seconds: 2),
+  Duration announcementDelay = const Duration(milliseconds: 300),
 }) {
   final trimmedMessage = message.trim();
   if (trimmedMessage.isEmpty) return;
 
   final direction = Directionality.maybeOf(context) ?? TextDirection.ltr;
-  try {
-    if (MediaQuery.supportsAnnounceOf(context)) {
+  final view = View.maybeOf(context);
+
+  void announce() {
+    final capturedView = view;
+    if (capturedView == null) return;
+    try {
       SemanticsService.sendAnnouncement(
-        View.of(context),
+        capturedView,
         trimmedMessage,
         direction,
       );
+    } catch (_) {
+      // Accessibility announcements are best-effort. The visual toast below
+      // still provides feedback when a view is not available anymore.
     }
-  } catch (_) {
-    // Accessibility announcements are best-effort. The visual toast below still
-    // provides feedback when a view or MediaQuery is not available.
+  }
+
+  if (announcementDelay == Duration.zero) {
+    announce();
+  } else {
+    Timer(announcementDelay, announce);
   }
 
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
