@@ -1183,6 +1183,12 @@ abstract class AppLocalizations {
   /// **'Errore importazione podcast: {error}'**
   String podcastImportError(Object error);
 
+  /// Shown when the selected podcast import file is not an OPML or XML file.
+  ///
+  /// In it, this message translates to:
+  /// **'File non valido. Seleziona un file OPML o XML.'**
+  String get podcastInvalidOpmlFile;
+
   /// Localized text for podcastExportComplete.
   ///
   /// In it, this message translates to:

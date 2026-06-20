@@ -280,7 +280,7 @@
   "podcastRemoved": "Podcast eliminado",
   "documentPickerError": "Erro ao abrir o ficheiro",
   "readDocument": "Ler documento",
-  "documentReaderTitle": "Lector de documentos",
+  "documentReaderTitle": "Leitor de documentos",
   "documentReaderEditHint": "Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.",
   "documentBookmarkHintSet": "Deslize para cima ou para baixo para definir um marcador.",
   "documentEditParagraphActionHint": "Toque duas vezes para editar este parágrafo. ",
@@ -396,7 +396,7 @@
   "loadMore": "Carregar mais",
   "sourceLanguageValue": "Idioma: {language}",
   "gutenbergImportAndRead": "Importar e ler",
-  "gutenbergImporting": "Importando...",
+  "gutenbergImporting": "A importar...",
   "librivoxSearchLabel": "Pesquisar audiolibro",
   "noLibrivoxAudiobooksFound": "Nenhum audiolivro encontrado.",
   "librivoxAudiobookSaved": "Audiolivro guardado em Documentos.",
@@ -813,5 +813,9 @@
   "weatherTemperatureFahrenheit": "Fahrenheit (°F)",
   "@weatherTemperatureFahrenheit": {
     "description": "Localized text for weatherTemperatureFahrenheit."
+  },
+  "podcastInvalidOpmlFile": "Ficheiro inválido. Selecione um ficheiro OPML ou XML.",
+  "@podcastInvalidOpmlFile": {
+    "description": "Shown when the selected podcast import file is not an OPML or XML file."
   }
 }

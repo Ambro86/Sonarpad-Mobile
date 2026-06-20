@@ -597,6 +597,9 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   }
 
   @override
+  String get podcastInvalidOpmlFile => '''Ficheiro inválido. Selecione um ficheiro OPML ou XML.''';
+
+  @override
   String get podcastExportComplete => '''Podcasts exportados''';
 
   @override
@@ -834,7 +837,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get readDocument => '''Ler documento''';
 
   @override
-  String get documentReaderTitle => '''Lector de documentos''';
+  String get documentReaderTitle => '''Leitor de documentos''';
 
   @override
   String get documentReaderEditHint => '''Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.''';
@@ -1231,7 +1234,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get gutenbergImportAndRead => '''Importar e ler''';
 
   @override
-  String get gutenbergImporting => '''Importando...''';
+  String get gutenbergImporting => '''A importar...''';
 
   @override
   String get librivoxSearchLabel => '''Pesquisar audiolibro''';

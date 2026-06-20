@@ -845,6 +845,10 @@
       }
     }
   },
+  "podcastInvalidOpmlFile": "File non valido. Seleziona un file OPML o XML.",
+  "@podcastInvalidOpmlFile": {
+    "description": "Shown when the selected podcast import file is not an OPML or XML file."
+  },
   "podcastExportComplete": "Podcast esportati",
   "@podcastExportComplete": {
     "description": "Localized text for podcastExportComplete."

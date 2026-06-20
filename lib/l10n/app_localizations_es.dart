@@ -597,6 +597,9 @@ Por la traducción al español, gracias a Arturo Fernandez Rivas.''';
   }
 
   @override
+  String get podcastInvalidOpmlFile => '''Archivo no válido. Selecciona un archivo OPML o XML.''';
+
+  @override
   String get podcastExportComplete => '''Podcasts exportados''';
 
   @override

@@ -810,5 +810,9 @@
   "weatherTemperatureFahrenheit": "Fahrenheit (°F)",
   "@weatherTemperatureFahrenheit": {
     "description": "Localized text for weatherTemperatureFahrenheit."
+  },
+  "podcastInvalidOpmlFile": "Neplatný soubor. Vyberte soubor OPML nebo XML.",
+  "@podcastInvalidOpmlFile": {
+    "description": "Shown when the selected podcast import file is not an OPML or XML file."
   }
 }

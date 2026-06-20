@@ -14,6 +14,7 @@ import '../services/app_settings_service.dart';
 import '../services/podcast_service.dart';
 import 'podcast_episode_player_screen.dart';
 import 'podcast_episodes_screen.dart';
+import '../utils/country_name_helper.dart';
 import '../utils/status_message.dart';
 
 class PodcastScreen extends StatefulWidget {
@@ -111,10 +112,27 @@ class _PodcastScreenState extends State<PodcastScreen> {
         return 'pt';
       case 'pl':
         return 'pl';
+      case 'cs':
+        return 'cz';
       case 'it':
       default:
         return 'it';
     }
+  }
+
+  String _podcastCountryLabel(PodcastCountry country, AppLocalizations l10n) {
+    return localizedCountryDisplayName(
+      country.code,
+      localeName: l10n.localeName,
+      fallbackLabel: country.name,
+    );
+  }
+
+  PodcastCountry _selectedPodcastCountry() {
+    return PodcastService.countries.firstWhere(
+      (country) => country.code == _country,
+      orElse: () => PodcastService.countries.first,
+    );
   }
 
   void _search({bool allowEmptyQuery = false}) {
@@ -156,7 +174,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
       ..sort((a, b) {
         if (a.code == _country) return -1;
         if (b.code == _country) return 1;
-        return a.name.compareTo(b.name);
+        return _podcastCountryLabel(a, l10n)
+            .compareTo(_podcastCountryLabel(b, l10n));
       });
 
     final result = await Navigator.push<PodcastCountry>(
@@ -166,7 +185,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
         builder: (_) => _PodcastOptionPickerScreen<PodcastCountry>(
           title: l10n.podcastCountries,
           options: countries,
-          labelBuilder: (country) => country.name,
+          labelBuilder: (country) => _podcastCountryLabel(country, l10n),
           selectedBuilder: (country) => country.code == _country,
           selectedLabel: l10n.selectedRecently,
         ),
@@ -176,7 +195,11 @@ class _PodcastScreenState extends State<PodcastScreen> {
     setState(() => _country = result.code);
     await _settings.savePodcastCountry(result.code);
     if (!mounted) return;
-    _openSearchResults(query: '', country: result.code, title: result.name);
+    _openSearchResults(
+      query: '',
+      country: result.code,
+      title: _podcastCountryLabel(result, l10n),
+    );
   }
 
   Future<void> _openCategories() async {
@@ -272,14 +295,20 @@ class _PodcastScreenState extends State<PodcastScreen> {
   Future<void> _importFromFile() async {
     final l10n = AppLocalizations.of(context);
     try {
-      final result = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: const ['opml', 'xml'],
-      );
+      // On iOS, some providers mark .opml files as disabled when the
+      // picker is restricted to custom extensions. Let the user select any
+      // file, then validate the extension here.
+      final result = await FilePicker.pickFiles(type: FileType.any);
       final path = result == null || result.files.isEmpty
           ? null
           : result.files.first.path;
       if (path == null || path.isEmpty) return;
+      final ext = p.extension(path).toLowerCase();
+      if (ext != '.opml' && ext != '.xml') {
+        if (!mounted) return;
+        showStatusMessage(context, l10n.podcastInvalidOpmlFile);
+        return;
+      }
 
       final added = await _service.importSubscriptionsFromOpml(File(path));
       await _load();
@@ -386,12 +415,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
           const SizedBox(height: 8),
           ListTile(
             title: Text(l10n.browsePodcastCountries),
-            subtitle: Text(PodcastService.countries
-                .firstWhere(
-                  (country) => country.code == _country,
-                  orElse: () => PodcastService.countries.first,
-                )
-                .name),
+            subtitle: Text(_podcastCountryLabel(_selectedPodcastCountry(), l10n)),
             trailing: const Icon(Icons.chevron_right),
             onTap: _openCountries,
           ),

@@ -597,6 +597,9 @@ Za tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.''';
   }
 
   @override
+  String get podcastInvalidOpmlFile => '''Nieprawidłowy plik. Wybierz plik OPML lub XML.''';
+
+  @override
   String get podcastExportComplete => '''Podcasty wyeksportowane''';
 
   @override
