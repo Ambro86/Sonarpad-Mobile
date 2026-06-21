@@ -13,6 +13,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
 import '../services/document_library_service.dart';
+import '../services/html_reader_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
@@ -443,6 +444,52 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     final result = await _controller.runJavaScriptReturningResult(
       r'''
         (function() {
+          function asText(value) {
+            if (!value) return '';
+            if (typeof value === 'string') return value;
+            if (Array.isArray(value)) return value.map(asText).join('\n\n');
+            if (typeof value === 'object') return asText(value.text || value.value || value.name || '');
+            return String(value);
+          }
+          function isArticleType(type) {
+            if (!type) return true;
+            if (Array.isArray(type)) return type.some(isArticleType);
+            var t = String(type).toLowerCase();
+            return t.indexOf('article') >= 0 ||
+                   t.indexOf('newsarticle') >= 0 ||
+                   t.indexOf('blogposting') >= 0 ||
+                   t.indexOf('reportage') >= 0;
+          }
+          function walk(value, out) {
+            if (!value) return;
+            if (Array.isArray(value)) {
+              value.forEach(function(item) { walk(item, out); });
+              return;
+            }
+            if (typeof value === 'object') {
+              out.push(value);
+              if (value['@graph']) walk(value['@graph'], out);
+              if (value.mainEntity) walk(value.mainEntity, out);
+            }
+          }
+          var scripts = document.querySelectorAll('script[type*="ld+json"]');
+          for (var s = 0; s < scripts.length; s++) {
+            try {
+              var raw = scripts[s].textContent || scripts[s].innerText || '';
+              if (!raw.trim()) continue;
+              var decoded = JSON.parse(raw);
+              var nodes = [];
+              walk(decoded, nodes);
+              var best = '';
+              for (var i = 0; i < nodes.length; i++) {
+                var node = nodes[i];
+                if (!isArticleType(node['@type'])) continue;
+                var candidate = asText(node.articleBody || node.text || node.description || '').trim();
+                if (candidate.length > best.length) best = candidate;
+              }
+              if (best.length >= 300) return best;
+            } catch (e) {}
+          }
           var el = document.querySelector('article') ||
                    document.querySelector('main') ||
                    document.querySelector('[role="main"]') ||
@@ -478,9 +525,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   String _cleanVisibleText(String value) {
     final seen = <String>{};
-    final lines = value
+    final cleanedValue = HtmlReaderService.cleanText(value)
         .replaceAll('\u00a0', ' ')
-        .replaceAll('\r', '\n')
+        .replaceAll('\r', '\n');
+    final lines = cleanedValue
         .split('\n')
         .map((line) => line.replaceAll(RegExp(r'\s+'), ' ').trim())
         .where(_isReadableArticleLine)
@@ -1178,7 +1226,7 @@ List<String> _dropLeadingDuplicateTitle(
 }
 
 String _sanitizeNewsTextForEdge(String text) {
-  final paragraphs = text
+  final cleanedText = HtmlReaderService.cleanText(text)
       .replaceAll('\u00a0', ' ')
       .replaceAll('\u200b', '')
       .replaceAll('\u200c', '')
@@ -1186,7 +1234,8 @@ String _sanitizeNewsTextForEdge(String text) {
       .replaceAll('\ufeff', '')
       .replaceAll('\u2028', '\n')
       .replaceAll('\u2029', '\n')
-      .replaceAll('\r', '\n')
+      .replaceAll('\r', '\n');
+  final paragraphs = cleanedText
       .split('\n')
       .map((line) => line.trim())
       .where((line) => line.isNotEmpty)

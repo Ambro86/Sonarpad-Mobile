@@ -72,8 +72,161 @@ class HtmlReaderService {
 
   static String decodeHtmlEntities(String input) {
     if (input.trim().isEmpty) return '';
-    final text = html_parser.parseFragment(input).text;
-    return text ?? input;
+    var current = input;
+    // Alcuni feed consegnano entità una o due volte codificate, per esempio
+    // &amp;ograve; oppure &amp;#39;. Decodifichiamo più passaggi, ma con limite
+    // basso per evitare loop strani.
+    for (var i = 0; i < 3; i += 1) {
+      final decoded = html_parser.parseFragment(current).text ?? current;
+      if (decoded == current) break;
+      current = decoded;
+    }
+    return _decodeLooseHtmlEntities(current);
+  }
+
+  static String _decodeLooseHtmlEntities(String input) {
+    if (input.isEmpty) return input;
+
+    final named = <String, String>{
+      // Entità base e spazi.
+      'nbsp': ' ',
+      'ensp': ' ',
+      'emsp': ' ',
+      'thinsp': ' ',
+      'apos': "'",
+      'quot': '"',
+      'amp': '&',
+      'lt': '<',
+      'gt': '>',
+
+      // Punteggiatura tipografica spesso presente nei feed RSS.
+      'hellip': '…',
+      'rsquo': '’',
+      'lsquo': '‘',
+      'sbquo': '‚',
+      'ldquo': '“',
+      'rdquo': '”',
+      'bdquo': '„',
+      'lsaquo': '‹',
+      'rsaquo': '›',
+      'laquo': '«',
+      'raquo': '»',
+      'ndash': '–',
+      'mdash': '—',
+      'bull': '•',
+      'middot': '·',
+      'copy': '©',
+      'reg': '®',
+      'trade': '™',
+      'euro': '€',
+      'pound': '£',
+      'yen': '¥',
+      'deg': '°',
+      'ordm': 'º',
+      'ordf': 'ª',
+      'iquest': '¿',
+      'iexcl': '¡',
+
+      // Vocali accentate e caratteri usati in italiano, francese, spagnolo,
+      // portoghese, tedesco e altre lingue europee. Queste servono anche
+      // quando il feed perde la &, per esempio egrave; o ntilde;.
+      'agrave': 'à',
+      'aacute': 'á',
+      'acirc': 'â',
+      'atilde': 'ã',
+      'auml': 'ä',
+      'aring': 'å',
+      'aelig': 'æ',
+      'ccedil': 'ç',
+      'egrave': 'è',
+      'eacute': 'é',
+      'ecirc': 'ê',
+      'euml': 'ë',
+      'igrave': 'ì',
+      'iacute': 'í',
+      'icirc': 'î',
+      'iuml': 'ï',
+      'ntilde': 'ñ',
+      'ograve': 'ò',
+      'oacute': 'ó',
+      'ocirc': 'ô',
+      'otilde': 'õ',
+      'ouml': 'ö',
+      'oslash': 'ø',
+      'oelig': 'œ',
+      'ugrave': 'ù',
+      'uacute': 'ú',
+      'ucirc': 'û',
+      'uuml': 'ü',
+      'yacute': 'ý',
+      'yuml': 'ÿ',
+      'szlig': 'ß',
+
+      'Agrave': 'À',
+      'Aacute': 'Á',
+      'Acirc': 'Â',
+      'Atilde': 'Ã',
+      'Auml': 'Ä',
+      'Aring': 'Å',
+      'AElig': 'Æ',
+      'Ccedil': 'Ç',
+      'Egrave': 'È',
+      'Eacute': 'É',
+      'Ecirc': 'Ê',
+      'Euml': 'Ë',
+      'Igrave': 'Ì',
+      'Iacute': 'Í',
+      'Icirc': 'Î',
+      'Iuml': 'Ï',
+      'Ntilde': 'Ñ',
+      'Ograve': 'Ò',
+      'Oacute': 'Ó',
+      'Ocirc': 'Ô',
+      'Otilde': 'Õ',
+      'Ouml': 'Ö',
+      'Oslash': 'Ø',
+      'OElig': 'Œ',
+      'Ugrave': 'Ù',
+      'Uacute': 'Ú',
+      'Ucirc': 'Û',
+      'Uuml': 'Ü',
+      'Yacute': 'Ý',
+    };
+
+    String decodeToken(String token) {
+      final bare = token.startsWith('&') ? token.substring(1) : token;
+      final withoutSemicolon = bare.endsWith(';')
+          ? bare.substring(0, bare.length - 1)
+          : bare;
+      if (withoutSemicolon.startsWith('#x') ||
+          withoutSemicolon.startsWith('#X')) {
+        final hex = withoutSemicolon.substring(2);
+        final code = int.tryParse(hex, radix: 16);
+        if (code != null) return String.fromCharCode(code);
+        return token;
+      }
+      if (withoutSemicolon.startsWith('#')) {
+        final code = int.tryParse(withoutSemicolon.substring(1));
+        if (code != null) return String.fromCharCode(code);
+        return token;
+      }
+      return named[withoutSemicolon] ?? token;
+    }
+
+    var out = input;
+    // Entità corrette o residue, es. &ograve;, &#39;, &nbsp;.
+    out = out.replaceAllMapped(
+      RegExp(r'&(#x[0-9a-fA-F]+|#\d+|[A-Za-z][A-Za-z0-9]+);'),
+      (match) => decodeToken(match.group(0)!),
+    );
+    // Alcuni testi arrivano già privati della &, es. ograve; oppure #39;.
+    // Evitiamo lookbehind per compatibilità: conserviamo il prefisso.
+    final looseNames = named.keys.map(RegExp.escape).join('|');
+    out = out.replaceAllMapped(
+      RegExp('(^|[^A-Za-z0-9&])(#x[0-9a-fA-F]+|#\\d+|$looseNames);'),
+      (match) => '${match.group(1)!}${decodeToken(match.group(2)!)}',
+    );
+    return out;
   }
 
   static int clampToCharBoundary(String s, int idx) {
@@ -188,28 +341,26 @@ class HtmlReaderService {
   }
 
   static String cleanText(String input) {
-    final decoded = decodeHtmlEntities(decodeUnicode(input));
-    var text = decoded
-        .replaceAll('ÃƒÂ¨', 'Ã¨')
-        .replaceAll('ÃƒÂ ', 'Ã ')
-        .replaceAll('ÃƒÂ¹', 'Ã¹')
-        .replaceAll('ÃƒÂ²', 'Ã²')
-        .replaceAll('ÃƒÂ¬', 'Ã¬')
+    var text = decodeHtmlEntities(decodeUnicode(input))
+        .replaceAll('ÃƒÂ¨', 'è')
+        .replaceAll('ÃƒÂ ', 'à')
+        .replaceAll('ÃƒÂ¹', 'ù')
+        .replaceAll('ÃƒÂ²', 'ò')
+        .replaceAll('ÃƒÂ¬', 'ì')
         .replaceAll('Ã‚Â ', ' ')
-        .replaceAll('ÃƒÂ©', 'Ã©')
+        .replaceAll('ÃƒÂ©', 'é')
         .replaceAll('Ã‚', '');
 
-    text = text
-        .replaceAll('&nbsp;', ' ')
-        .replaceAll('&#160;', ' ')
+    text = decodeHtmlEntities(text)
         .replaceAll('\u00a0', ' ')
+        .replaceAll('\"', '"')
         .replaceAll('\\"', '"')
         .replaceAll('\\n', '\n')
         .replaceAll('\\/', '/');
 
-    StringBuffer cleaned = StringBuffer();
-    bool inTag = false;
-    for (int i = 0; i < text.length; i++) {
+    final cleaned = StringBuffer();
+    var inTag = false;
+    for (var i = 0; i < text.length; i += 1) {
       if (text[i] == '<') {
         inTag = true;
       } else if (text[i] == '>') {
@@ -219,7 +370,23 @@ class HtmlReaderService {
         cleaned.write(text[i]);
       }
     }
-    return cleaned.toString();
+
+    return _stripLooseHtmlTagMarkers(
+      decodeHtmlEntities(cleaned.toString()),
+    );
+  }
+
+  static String _stripLooseHtmlTagMarkers(String input) {
+    if (input.isEmpty) return input;
+    var text = input;
+    // Se un feed trasforma i tag in testo, possono restare righe/parole come
+    // "h1", "/h1", "p" o "br". Li togliamo solo quando sono token isolati,
+    // così non tocchiamo parole normali.
+    text = text.replaceAll(
+      RegExp(r'(^|\s)/?(?:h[1-6]|p|br|strong|em|span|div)(?=\s|$)', caseSensitive: false),
+      ' ',
+    );
+    return text;
   }
 
   static String collapseBlankLines(String s) {
@@ -472,39 +639,82 @@ class HtmlReaderService {
   }
 
 
+  static ArticleContent? extractStructuredDataArticleFromRawHtml(
+    String htmlContent,
+    String fallbackTitle,
+    String languageCode,
+  ) {
+    final scriptRe = RegExp(
+      r'''<script\b[^>]*type=["\']application/ld\+json["\'][^>]*>([\s\S]*?)</script>''',
+      caseSensitive: false,
+    );
+
+    for (final match in scriptRe.allMatches(htmlContent)) {
+      final raw = match.group(1)?.trim();
+      if (raw == null || raw.isEmpty) continue;
+      final article = _articleContentFromJsonLd(raw, fallbackTitle);
+      if (article != null) return article;
+    }
+
+    // Alcuni siti espongono articleBody in modo valido ma con attributi o
+    // formattazioni che possono sfuggire al selettore DOM. Come ultima rete
+    // di sicurezza leggiamo direttamente i campi testuali dal sorgente HTML.
+    final rawBody = pickBestJsonArticleText(htmlContent) ??
+        pickTeaserJsonArticleText(htmlContent);
+    if (rawBody != null) {
+      final cleaned = collapseBlankLines(cleanText(rawBody)).trim();
+      if (cleaned.length >= 300 && countSentences(cleaned) >= 2) {
+        return ArticleContent(title: fallbackTitle, content: cleaned);
+      }
+    }
+
+    return null;
+  }
+
+  static ArticleContent? _articleContentFromJsonLd(
+    String rawJson,
+    String fallbackTitle,
+  ) {
+    for (final node in _jsonLdArticleNodes(rawJson)) {
+      final bodyCandidates = <String>[
+        _jsonStringValue(node['articleBody']),
+        _jsonStringValue(node['text']),
+        _jsonStringValue(node['description']),
+      ].where((value) => value.trim().isNotEmpty).toList();
+
+      bodyCandidates.sort((a, b) => b.length.compareTo(a.length));
+      for (final candidate in bodyCandidates) {
+        final cleaned = collapseBlankLines(cleanText(candidate)).trim();
+        if (cleaned.length < 300) continue;
+        if (countSentences(cleaned) < 2) continue;
+        if (looksLikeUiChrome(cleaned)) continue;
+
+        final headline = _jsonStringValue(node['headline']).trim();
+        final name = _jsonStringValue(node['name']).trim();
+        final title = headline.isNotEmpty
+            ? headline
+            : name.isNotEmpty
+                ? name
+                : fallbackTitle;
+
+        return ArticleContent(title: title, content: cleaned);
+      }
+    }
+    return null;
+  }
+
+
   static ArticleContent? extractStructuredDataArticle(
     Document document,
     String fallbackTitle,
     String languageCode,
   ) {
-    final scripts = document.querySelectorAll("script[type='application/ld+json']");
+    final scripts = document.querySelectorAll("script[type*='ld+json']");
     for (final script in scripts) {
       final raw = script.text.trim();
       if (raw.isEmpty) continue;
-
-      for (final node in _jsonLdArticleNodes(raw)) {
-        final bodyCandidates = <String>[
-          _jsonStringValue(node['articleBody']),
-          _jsonStringValue(node['text']),
-          _jsonStringValue(node['description']),
-        ].where((value) => value.trim().isNotEmpty).toList();
-
-        bodyCandidates.sort((a, b) => b.length.compareTo(a.length));
-        for (final candidate in bodyCandidates) {
-          final cleaned = collapseBlankLines(cleanText(candidate)).trim();
-          if (cleaned.length < 300) continue;
-          if (countSentences(cleaned) < 2) continue;
-          if (looksLikeUiChrome(cleaned)) continue;
-
-          final title = _jsonStringValue(node['headline']).trim().isNotEmpty
-              ? _jsonStringValue(node['headline']).trim()
-              : _jsonStringValue(node['name']).trim().isNotEmpty
-                  ? _jsonStringValue(node['name']).trim()
-                  : fallbackTitle;
-
-          return ArticleContent(title: title, content: cleaned);
-        }
-      }
+      final article = _articleContentFromJsonLd(raw, fallbackTitle);
+      if (article != null) return article;
     }
     return null;
   }
@@ -752,6 +962,15 @@ class HtmlReaderService {
 
     final document = html_parser.parse(htmlContent);
     final title = pickTitle(document, languageCode);
+    final rawStructuredDataArticle = extractStructuredDataArticleFromRawHtml(
+      htmlContent,
+      title,
+      languageCode,
+    );
+    if (rawStructuredDataArticle != null) {
+      return rawStructuredDataArticle;
+    }
+
     final structuredDataArticle = extractStructuredDataArticle(
       document,
       title,

@@ -956,7 +956,7 @@ class NewsService {
           title: _cleanGoogleTitle(title),
           link: link,
           summary: description,
-          source: source,
+          source: _cleanFeedText(source),
           publishedAt:
               DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
         );
@@ -996,7 +996,7 @@ class NewsService {
       final updatedRaw = _text(entry, 'updated');
       return NewsArticle(
         id: '${rssSource.name}_atom_$index',
-        title: title.trim(),
+        title: _cleanGoogleTitle(title),
         link: link,
         summary: summary,
         source: rssSource.name,
@@ -1037,7 +1037,7 @@ class NewsService {
         continue;
       }
 
-      final text = link.text.trim();
+      final text = _cleanFeedText(link.text);
       if (text.length < 30) {
         continue;
       }
@@ -1051,7 +1051,7 @@ class NewsService {
       index++;
       articles.add(NewsArticle(
         id: '${rssSource.name}_html_$index',
-        title: text.replaceAll(RegExp(r'\s+'), ' '),
+        title: text,
         link: fullUrl,
         summary: '',
         source: rssSource.name,
@@ -1104,17 +1104,21 @@ class NewsService {
   }
 
   String _cleanGoogleTitle(String title) {
-    final idx = title.lastIndexOf(' - ');
-    if (idx > 0) return title.substring(0, idx).trim();
-    return title.trim();
+    final cleaned = _cleanFeedText(title);
+    final idx = cleaned.lastIndexOf(' - ');
+    if (idx > 0) return cleaned.substring(0, idx).trim();
+    return cleaned.trim();
   }
 
   String _cleanHtml(String value) {
+    return _cleanFeedText(value);
+  }
+
+  String _cleanFeedText(String value) {
     if (value.trim().isEmpty) return '';
-    final text = html_parser.parse(value).body?.text ?? value;
-    return text
+    final parsedText = html_parser.parse(value).body?.text ?? value;
+    return HtmlReaderService.cleanText(parsedText)
         .replaceAll(RegExp(r'\s+'), ' ')
-        .replaceAll('&nbsp;', ' ')
         .trim();
   }
 
