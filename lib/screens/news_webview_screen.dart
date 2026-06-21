@@ -320,10 +320,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         if (!mounted) return;
       }
       try {
-        final encodedPageUrl = jsonEncode(pageUrl);
         await _controller.runJavaScript('''
           (function () {
-            var pageUrl = $encodedPageUrl.toLowerCase();
+            var pageUrl = ''' + jsonEncode(pageUrl) + '''.toLowerCase();
             var isTorinoCronaca = pageUrl.indexOf('torinocronaca.it') !== -1;
             var removed = 0;
 
@@ -331,7 +330,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               return String(
                 (el.innerText || el.textContent || el.value ||
                  el.getAttribute('aria-label') || el.getAttribute('title') || '')
-              ).toLowerCase().replace(/\\s+/g, ' ').trim();
+              ).toLowerCase().replace(/\s+/g, ' ').trim();
             }
 
             function attrText(el) {
@@ -672,56 +671,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               if (value.mainEntity) walk(value.mainEntity, out);
             }
           }
-          function decodeJsonStringLiteral(raw) {
-            if (!raw) return '';
-            try {
-              return JSON.parse('"' + raw + '"');
-            } catch (e) {}
-            return String(raw)
-              .replace(/\\u([0-9a-fA-F]{4})/g, function(_, hex) {
-                return String.fromCharCode(parseInt(hex, 16));
-              })
-              .replace(/\\n/g, '\n')
-              .replace(/\\r/g, '\n')
-              .replace(/\\t/g, ' ')
-              .replace(/\\\\/g, '\\')
-              .replace(/\\"/g, '"')
-              .replace(/\\'/g, "'");
-          }
-          function decodeHtmlEntities(text) {
-            var area = document.createElement('textarea');
-            area.innerHTML = text;
-            return area.value;
-          }
-          function bestRawArticleBody(raw) {
-            if (!raw) return '';
-            var best = '';
-            function consider(value) {
-              value = decodeHtmlEntities(decodeJsonStringLiteral(value)).trim();
-              if (value.length > best.length) best = value;
-            }
-            var patterns = [
-              /"articleBody"\s*:\s*"((?:\\.|[^"\\])*)"/g,
-              /'articleBody'\s*:\s*'((?:\\.|[^'\\])*)'/g,
-              /&quot;articleBody&quot;\s*:\s*&quot;([\s\S]*?)&quot;/g,
-              /"text"\s*:\s*"((?:\\.|[^"\\])*)"/g
-            ];
-            for (var p = 0; p < patterns.length; p++) {
-              var re = patterns[p];
-              var match;
-              while ((match = re.exec(raw)) !== null) {
-                consider(match[1]);
-              }
-            }
-            return best;
-          }
-
-          var scripts = document.querySelectorAll('script[type*="ld+json"], script[type*="json"]');
-          var rawScripts = '';
+          var scripts = document.querySelectorAll('script[type*="ld+json"]');
           for (var s = 0; s < scripts.length; s++) {
             try {
               var raw = scripts[s].textContent || scripts[s].innerText || '';
-              rawScripts += '\n' + raw;
               if (!raw.trim()) continue;
               var decoded = JSON.parse(raw);
               var nodes = [];
@@ -736,12 +689,6 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               if (best.length >= 300) return best;
             } catch (e) {}
           }
-          var rawBest = bestRawArticleBody(rawScripts);
-          if (rawBest.length < 300 && document.documentElement) {
-            rawBest = bestRawArticleBody(document.documentElement.outerHTML || '');
-          }
-          if (rawBest.length >= 300) return rawBest;
-
           var el = document.querySelector('article') ||
                    document.querySelector('main') ||
                    document.querySelector('[role="main"]') ||
