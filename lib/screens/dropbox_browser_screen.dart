@@ -96,6 +96,17 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           _isAuthenticating = false;
         });
       }
+    } on DropboxAuthRequiredException {
+      await _dropbox.logout();
+      if (mounted) {
+        setState(() {
+          _entries = [];
+          _currentPath = "";
+          _error = l10n.dropboxLoginPrompt;
+          _loading = false;
+          _isAuthenticating = false;
+        });
+      }
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -127,8 +138,18 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       await widget.documentService.add(doc);
 
       if (mounted) {
-                showStatusMessage(context, '${l10n.fileImported}: $name');
+        showStatusMessage(context, '${l10n.fileImported}: $name');
         setState(() {
+          _loading = false;
+        });
+      }
+    } on DropboxAuthRequiredException {
+      await _dropbox.logout();
+      if (mounted) {
+        setState(() {
+          _entries = [];
+          _currentPath = "";
+          _error = l10n.dropboxLoginPrompt;
           _loading = false;
         });
       }

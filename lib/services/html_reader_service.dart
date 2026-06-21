@@ -353,7 +353,6 @@ class HtmlReaderService {
 
     text = decodeHtmlEntities(text)
         .replaceAll('\u00a0', ' ')
-        .replaceAll('\"', '"')
         .replaceAll('\\"', '"')
         .replaceAll('\\n', '\n')
         .replaceAll('\\/', '/');

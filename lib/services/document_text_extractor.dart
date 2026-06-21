@@ -485,18 +485,64 @@ class DocumentTextExtractor {
   Future<ExtractionResult> _extractPdf(String path) async {
     final bytes = await File(path).readAsBytes();
     final document = PdfDocument(inputBytes: bytes);
-    final String text;
+    String text;
     try {
       // extractText() senza parametri estrae tutto il documento.
       text = PdfTextExtractor(document).extractText().trim();
     } finally {
       document.dispose();
     }
+    text = _repairPdfTextExtractionArtifacts(text).trim();
     if (text.isEmpty) {
       dev.log('Nessun testo estratto. Tento fallback OCR...');
       return await _extractPdfOcr(path);
     }
     return ExtractionResult(text: text);
+  }
+
+  String _repairPdfTextExtractionArtifacts(String text) {
+    if (!_looksLikeSevenPrefixPdfArtifact(text)) return text;
+
+    var repaired = text;
+
+    // Alcuni PDF con font embedded/encoding non standard vengono estratti da
+    // Syncfusion con artefatti ricorrenti: la lettera b diventa 7b, la y
+    // diventa 7y e il numero 7 può diventare varianti come 77yTb o 77yi.bl.
+    // Il PDF è testuale, quindi non va mandato in OCR: ripariamo solo questo
+    // pattern molto riconoscibile e solo quando è dominante nel documento.
+    const replacements = <String, String>{
+      '77yi.bl': '7l',
+      '77yi.b': '7',
+      '77yTbl': '7l',
+      '77yTb': '7',
+      '77yiTb': '7',
+      '77yNb': '7',
+    };
+
+    for (final entry in replacements.entries) {
+      repaired = repaired.replaceAll(entry.key, entry.value);
+    }
+
+    repaired = repaired.replaceAllMapped(
+      RegExp(r'7([bByY])'),
+      (match) => match.group(1)!,
+    );
+
+    dev.log('DocumentTextExtractor: riparati artefatti di estrazione PDF');
+    return repaired;
+  }
+
+  bool _looksLikeSevenPrefixPdfArtifact(String text) {
+    if (text.length < 500) return false;
+
+    final sevenBeforeLetters = RegExp(r'7[bByY]').allMatches(text).length;
+    if (sevenBeforeLetters < 20) return false;
+
+    final plainSevenCount = RegExp(r'7').allMatches(text).length;
+    if (plainSevenCount == 0) return false;
+
+    final ratio = sevenBeforeLetters / plainSevenCount;
+    return ratio >= 0.20;
   }
 
   Future<ExtractionResult> _extractPdfOcr(String path) async {
