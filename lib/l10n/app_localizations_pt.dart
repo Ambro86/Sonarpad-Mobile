@@ -130,7 +130,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get convertMediaDone => '''Conversão concluída.''';
 
   @override
-  String get convertMediaButton => '''Convertir''';
+  String get convertMediaButton => '''Converter''';
 
   @override
   String get convertMediaNoInput => '''Selecione um ficheiro para converter.''';
@@ -189,7 +189,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarpadCodeInvalidTitle => '''Código inválido''';
 
   @override
-  String get sonarpadCodeInvalidMessage => '''O código Sonarpad não é válido. Comprueba que lo hayas copiado sin espacios adicionales.''';
+  String get sonarpadCodeInvalidMessage => '''O código Sonarpad não é válido. Verifique se o copiou sem espaços adicionais.''';
 
   @override
   String get infoDescription => '''Sonarpad é uma aplicação simples com muitas funções. Pensada para ser acessível com VoiceOver para pessoas cegas ou com deficiência visual, permite ouvir notícias, pesquisar e subscrever podcasts, importar artigos da Wikipédia, adicionar documentos à biblioteca, guardá-los e editá-los. Sonarpad é atualizado constantemente e cada função foi pensada para facilitar a vida diária.''';
@@ -229,7 +229,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get podcasts => '''Podcasts''';
 
   @override
-  String get podcastsHint => '''Suscríbete a podcasts, reproduce o descarga episodios''';
+  String get podcastsHint => '''Subscreva podcasts, reproduza ou descarregue episódios''';
 
   @override
   String get importFromWikipedia => '''Wikipedia''';
@@ -238,7 +238,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get wikipediaHint => '''Pesquisar um artigo da Wikipédia e importar o texto''';
 
   @override
-  String get newsCategoryTop => '''Titulares''';
+  String get newsCategoryTop => '''Destaques''';
 
   @override
   String get settingsHomeGrouping => '''Agrupar os ícones da página inicial em categorias''';
@@ -259,10 +259,10 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get update => '''Atualizar''';
 
   @override
-  String get moveUp => '''Mover hacia arriba''';
+  String get moveUp => '''Mover para cima''';
 
   @override
-  String get moveDown => '''Mover hacia abajo''';
+  String get moveDown => '''Mover para baixo''';
 
   @override
   String get hide => '''Eliminar''';
@@ -608,7 +608,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   }
 
   @override
-  String get loadingEpisodes => '''A carregar episodios''';
+  String get loadingEpisodes => '''A carregar episódios''';
 
   @override
   String get noAudioEpisodesFound => '''Nenhum episódio de áudio encontrado no feed.''';
@@ -636,10 +636,10 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get pause => '''Pausar''';
 
   @override
-  String get rewind15s => '''Retroceder 15s''';
+  String get rewind15s => '''Recuar 15s''';
 
   @override
-  String get forward15s => '''Avanzar 15s''';
+  String get forward15s => '''Avançar 15s''';
 
   @override
   String get stop => '''Parar''';
@@ -910,19 +910,19 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get settingsDefaultVoiceHint => '''Voz predefinida''';
 
   @override
-  String get settingsDefaultVoice => '''Predeterminada''';
+  String get settingsDefaultVoice => '''Predefinida''';
 
   @override
-  String get settingsVoiceSpeed => '''Velocidad: ''';
+  String get settingsVoiceSpeed => '''Velocidade: ''';
 
   @override
-  String get settingsVoicePitch => '''Tono: ''';
+  String get settingsVoicePitch => '''Tom: ''';
 
   @override
-  String get settingsVoiceSpeedLabel => '''Velocidad de leitura''';
+  String get settingsVoiceSpeedLabel => '''Velocidade de leitura''';
 
   @override
-  String get settingsVoicePitchLabel => '''Tono''';
+  String get settingsVoicePitchLabel => '''Tom''';
 
   @override
   String get settingsTestVoice => '''Testar voz''';
@@ -989,7 +989,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get weatherToday => '''Hoje''';
 
   @override
-  String get weatherCurrentSituation => '''Situación actual''';
+  String get weatherCurrentSituation => '''Situação atual''';
 
   @override
   String get weatherTomorrow => '''Amanhã''';
@@ -998,7 +998,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get weatherChooseDay => '''Escolher dia''';
 
   @override
-  String get weatherCurrentTemperature => '''Temperatura actual''';
+  String get weatherCurrentTemperature => '''Temperatura atual''';
 
   @override
   String get weatherMaxTemperature => '''Temperatura máxima''';
@@ -1007,16 +1007,16 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get weatherMinTemperature => '''Temperatura mínima''';
 
   @override
-  String get weatherPrecipitation => '''Precipitaciones''';
+  String get weatherPrecipitation => '''Precipitação''';
 
   @override
-  String get weatherPrecipitationProbability => '''Probabilidad de precipitación''';
+  String get weatherPrecipitationProbability => '''Probabilidade de precipitação''';
 
   @override
-  String get weatherWind => '''Viento''';
+  String get weatherWind => '''Vento''';
 
   @override
-  String get weatherRelativeHumidity => '''Humedad relativa''';
+  String get weatherRelativeHumidity => '''Humidade relativa''';
 
   @override
   String get settingsSecretCode => '''Código secreto Sonarpad''';
@@ -1144,7 +1144,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get audiobookExportConvertingAudio => '''Conversão final do arquivo de áudio...''';
 
   @override
-  String get audiobookExportFinalizing => '''Finalizando...''';
+  String get audiobookExportFinalizing => '''A finalizar...''';
 
 
   @override
@@ -1166,7 +1166,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get importExternalSources => '''Importar de fontes externas''';
 
   @override
-  String get importExternalSourcesTitle => '''Fuentes externas''';
+  String get importExternalSourcesTitle => '''Fontes externas''';
 
   @override
   String get importFromDropbox => '''Importar documentos do Dropbox''';
@@ -1289,7 +1289,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get moveDocument => '''Mover documento''';
 
   @override
-  String get documentMoved => '''Movido correctamente''';
+  String get documentMoved => '''Movido com sucesso''';
 
   @override
   String get outOfFolder => '''Fora da pasta''';
@@ -1470,13 +1470,13 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get noRecentSearches => '''Não há pesquisas recentes.''';
 
   @override
-  String get logCopiedToClipboard => '''Registro copiado al portapapeles''';
+  String get logCopiedToClipboard => '''Registo copiado para a área de transferência''';
 
   @override
   String get systemLog => '''Registo do sistema''';
 
   @override
-  String get clearSystemLog => '''Vaciar registro''';
+  String get clearSystemLog => '''Limpar registo''';
 
   @override
   String get copySystemLog => '''Copiar registo''';
@@ -1784,7 +1784,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get routeCountryCzechRepublic => '''Chéquia''';
 
   @override
-  String get routeVehicle => '''Medio de transporte''';
+  String get routeVehicle => '''Meio de transporte''';
 
   @override
   String get routeType => '''Tipo''';
@@ -1793,16 +1793,16 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get routeIncludeMunicipalities => '''Incluir os municípios atravessados''';
 
   @override
-  String get routeWalking => '''Caminando''';
+  String get routeWalking => '''A pé''';
 
   @override
-  String get routeCycling => '''En bicicleta''';
+  String get routeCycling => '''De bicicleta''';
 
   @override
-  String get routeDriving => '''En coche''';
+  String get routeDriving => '''De carro''';
 
   @override
-  String get routeWheelchair => '''En silla de ruedas''';
+  String get routeWheelchair => '''Em cadeira de rodas''';
 
   @override
   String get routeFastest => '''Mais rápido''';
@@ -1847,7 +1847,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get routeNavigation => '''Detalhes de navegação''';
 
   @override
-  String get routeStartMunicipality => '''Municipio de salida''';
+  String get routeStartMunicipality => '''Município de partida''';
 
   @override
   String get routeEnterMunicipality => '''Entra no município de''';
@@ -1981,7 +1981,7 @@ Pela tradução espanhola, obrigado a Arturo Fernandez Rivas.''';
   String get radioGenreOptionSport => '''Desporto''';
 
   @override
-  String get radioGenreOptionTalk => '''Charlas y análisis''';
+  String get radioGenreOptionTalk => '''Conversas e análises''';
 
   @override
   String get radioGenreOptionPop => '''Pop''';
