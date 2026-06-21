@@ -55,6 +55,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   int _readingToken = 0;
   StreamController<File>? _edgeFileController;
   String? _status;
+  String? _resolvedArticleUrlForReader;
+  String? _lastFinalReaderFetchUrl;
 
   // Soglia minima per accettare il testo HTTP come reader mode
   static const _httpMinLength = 150;
@@ -149,33 +151,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             unawaited(AppLogger.log('News WebView: caricamento completato url=$url'));
             if (mounted) setState(() => _loading = false);
             unawaited(_acceptCookieConsentIfPresent());
-            _controller.runJavaScript('''
-              var videos = document.querySelectorAll("video");
-              for (var i = 0; i < videos.length; i++) {
-                videos[i].pause();
-                videos[i].remove();
-              }
-              var iframes = document.querySelectorAll("iframe");
-              for (var i = 0; i < iframes.length; i++) {
-                var src = iframes[i].src || "";
-                if (src.includes("video") || src.includes("player") || src.includes("youtube") || src.includes("mediaset.it/player") || src.includes("dailymotion")) {
-                  iframes[i].remove();
-                }
-              }
-            ''').catchError((e) {
-              unawaited(AppLogger.log(
-                'News WebView: rimozione contenuti media fallita: $e',
-              ));
-            });
+            unawaited(_loadReaderArticleFromFinalUrl(url));
+            unawaited(_neutralizeEmbeddedSiteMedia(url));
             unawaited(_loadVisibleReaderArticleFromWebView());
           },
           onNavigationRequest: (NavigationRequest request) {
-            final url = request.url.toLowerCase();
-            if ((url.contains('player') && !url.contains('multiplayer.it')) ||
-                url.contains('video') ||
-                url.contains('youtube.com/embed') ||
-                url.contains('mediaset.it/player') ||
-                url.contains('dailymotion.com/embed')) {
+            if (_shouldBlockEmbeddedMediaNavigation(request.url)) {
               unawaited(AppLogger.log(
                 'News WebView: navigazione bloccata per contenuto media '
                 'url=${request.url}',
@@ -329,6 +310,136 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     }
   }
 
+  Future<void> _neutralizeEmbeddedSiteMedia(String pageUrl) async {
+    // Protezione mirata per la WebView dei siti di notizie: il lettore di
+    // Sonarpad resta quello dell'app, mentre player audio/video del sito
+    // vengono fermati o nascosti per non interferire con VoiceOver e iOS.
+    for (final delay in const [0, 800, 2000, 4000]) {
+      if (delay > 0) {
+        await Future.delayed(Duration(milliseconds: delay));
+        if (!mounted) return;
+      }
+      try {
+        await _controller.runJavaScript('''
+          (function () {
+            var pageUrl = ''' + jsonEncode(pageUrl) + '''.toLowerCase();
+            var isTorinoCronaca = pageUrl.indexOf('torinocronaca.it') !== -1;
+            var removed = 0;
+
+            function textOf(el) {
+              return String(
+                (el.innerText || el.textContent || el.value ||
+                 el.getAttribute('aria-label') || el.getAttribute('title') || '')
+              ).toLowerCase().replace(/\s+/g, ' ').trim();
+            }
+
+            function attrText(el) {
+              var values = [
+                el.id || '',
+                el.className || '',
+                el.getAttribute('href') || '',
+                el.getAttribute('src') || '',
+                el.getAttribute('data-src') || '',
+                el.getAttribute('data-url') || '',
+                el.getAttribute('aria-label') || '',
+                el.getAttribute('title') || ''
+              ];
+              return values.join(' ').toLowerCase();
+            }
+
+            function hide(el) {
+              if (!el || !el.parentNode) return;
+              try {
+                if (typeof el.pause === 'function') el.pause();
+                if (el.removeAttribute) {
+                  el.removeAttribute('src');
+                  el.removeAttribute('autoplay');
+                  el.removeAttribute('controls');
+                }
+                if (typeof el.load === 'function') el.load();
+              } catch (e) {}
+              try {
+                el.setAttribute('aria-hidden', 'true');
+                el.style.display = 'none';
+                el.remove();
+                removed += 1;
+              } catch (e) {}
+            }
+
+            var media = document.querySelectorAll('audio, video, source, track');
+            for (var i = 0; i < media.length; i++) hide(media[i]);
+
+            var embedded = document.querySelectorAll('iframe, embed, object');
+            for (var j = 0; j < embedded.length; j++) {
+              var blob = attrText(embedded[j]);
+              if (blob.indexOf('player') !== -1 ||
+                  blob.indexOf('audio') !== -1 ||
+                  blob.indexOf('video') !== -1 ||
+                  blob.indexOf('youtube') !== -1 ||
+                  blob.indexOf('dailymotion') !== -1 ||
+                  blob.indexOf('jwplayer') !== -1 ||
+                  blob.indexOf('soundcloud') !== -1 ||
+                  blob.indexOf('spotify') !== -1) {
+                hide(embedded[j]);
+              }
+            }
+
+            // Torino Cronaca inserisce un proprio pulsante "Ascolta l'articolo"
+            // che apre un player del sito/iOS. Lo togliamo solo lì, senza toccare
+            // i pulsanti Flutter di Sonarpad.
+            if (isTorinoCronaca) {
+              var candidates = document.querySelectorAll(
+                'button, a, [role="button"], div, section, aside'
+              );
+              for (var k = 0; k < candidates.length; k++) {
+                var el = candidates[k];
+                var text = textOf(el);
+                var attrs = attrText(el);
+                var looksLikeListen =
+                  text.indexOf('ascolta') !== -1 ||
+                  text.indexOf('leggi articolo') !== -1 ||
+                  text.indexOf("leggi l'articolo") !== -1 ||
+                  attrs.indexOf('ascolta') !== -1 ||
+                  attrs.indexOf('listen') !== -1 ||
+                  attrs.indexOf('audio') !== -1 ||
+                  attrs.indexOf('player') !== -1 ||
+                  attrs.indexOf('podcast') !== -1;
+                if (looksLikeListen) hide(el);
+              }
+            }
+
+            return removed;
+          })();
+        ''');
+      } catch (e) {
+        unawaited(AppLogger.log(
+          'News WebView: rimozione contenuti media fallita: $e',
+        ));
+      }
+    }
+  }
+
+  bool _shouldBlockEmbeddedMediaNavigation(String requestUrl) {
+    final url = requestUrl.toLowerCase();
+    if (url.contains('multiplayer.it')) return false;
+    final mediaFragments = [
+      'player',
+      '/audio',
+      'audio=',
+      'listen',
+      'ascolta',
+      'podcast',
+      'jwplayer',
+      'soundcloud',
+      'spotify',
+      'youtube.com/embed',
+      'dailymotion.com/embed',
+      'mediaset.it/player',
+    ];
+    if (mediaFragments.any(url.contains)) return true;
+    return RegExp(r'\.(mp3|m4a|aac|wav|ogg|m3u8|mpd)(\?|$)').hasMatch(url);
+  }
+
   @override
   void dispose() {
     _readingToken += 1;
@@ -352,11 +463,99 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return 'it-IT-IsabellaNeural';
   }
 
+  bool _isGoogleNewsUrl(String url) {
+    final uri = Uri.tryParse(url.trim());
+    if (uri == null) return false;
+    return uri.host.toLowerCase() == 'news.google.com';
+  }
+
+  bool _isHttpArticleUrl(String url) {
+    final uri = Uri.tryParse(url.trim());
+    if (uri == null) return false;
+    final scheme = uri.scheme.toLowerCase();
+    return (scheme == 'http' || scheme == 'https') && uri.host.isNotEmpty;
+  }
+
+  bool _sameNormalizedUrl(String a, String b) {
+    final au = Uri.tryParse(a.trim());
+    final bu = Uri.tryParse(b.trim());
+    if (au == null || bu == null) return a.trim() == b.trim();
+    return au.removeFragment().toString() == bu.removeFragment().toString();
+  }
+
+  NewsArticle _articleForReaderUrl(String url) {
+    return NewsArticle(
+      id: widget.article.id,
+      title: widget.article.title,
+      link: url,
+      summary: widget.article.summary,
+      source: widget.article.source,
+      publishedAt: widget.article.publishedAt,
+    );
+  }
+
+  Future<NewsArticleContent> _fetchReaderContent({String? url}) {
+    final article = url == null ? widget.article : _articleForReaderUrl(url);
+    return _newsService.fetchArticleContent(article, language: widget.language);
+  }
+
+  Future<void> _loadReaderArticleFromFinalUrl(String url) async {
+    final finalUrl = url.trim();
+    if (!_isHttpArticleUrl(finalUrl) || _isGoogleNewsUrl(finalUrl)) return;
+    if (_sameNormalizedUrl(finalUrl, widget.article.link)) return;
+    if (_lastFinalReaderFetchUrl != null &&
+        _sameNormalizedUrl(_lastFinalReaderFetchUrl!, finalUrl)) {
+      return;
+    }
+
+    final currentLen = _readerText?.trim().length ?? 0;
+    if (currentLen >= _httpShortThreshold) return;
+
+    _lastFinalReaderFetchUrl = finalUrl;
+    _resolvedArticleUrlForReader = finalUrl;
+    unawaited(AppLogger.log(
+      'News reader final URL HTTP: estrazione avviata url=$finalUrl',
+    ));
+    if (mounted && _readerText == null) {
+      setState(() => _readerPreparing = true);
+    }
+
+    try {
+      final content = await _fetchReaderContent(url: finalUrl);
+      if (!mounted) return;
+      final text = _cleanVisibleText(content.text);
+      final existingLen = _readerText?.trim().length ?? 0;
+      unawaited(AppLogger.log(
+        'News reader final URL HTTP: estrazione completata ' 
+        'length=${text.length} existingLength=$existingLen url=$finalUrl',
+      ));
+      if (text.length >= _httpMinLength && text.length > existingLen) {
+        setState(() {
+          _readerTitle = widget.article.title;
+          _readerText = text;
+          _readerHttpTextLength = text.length;
+          _readerPreparing = false;
+        });
+        unawaited(AppLogger.log(
+          'News reader final URL HTTP: testo accettato length=${text.length}',
+        ));
+        return;
+      }
+    } catch (e) {
+      unawaited(AppLogger.log(
+        'News reader final URL HTTP: estrazione fallita url=$finalUrl: $e',
+      ));
+    }
+
+    if (mounted && _readerText == null) {
+      setState(() => _readerPreparing = false);
+    }
+  }
+
   Future<void> _loadReaderArticle() async {
     unawaited(AppLogger.log('News reader HTTP: estrazione avviata'));
     try {
-      final content = await _newsService.fetchArticleContent(widget.article,
-          language: widget.language);
+      final content = await _fetchReaderContent();
       if (!mounted) return;
       final text = content.text.trim();
       unawaited(AppLogger.log(
@@ -503,8 +702,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<String?> _extractReaderArticleText() async {
-    final content = await _newsService.fetchArticleContent(widget.article,
-        language: widget.language);
+    final content = await _fetchReaderContent(
+      url: _resolvedArticleUrlForReader,
+    );
     final text = _cleanVisibleText(content.text);
     return text.length >= 400 ? text : null;
   }
