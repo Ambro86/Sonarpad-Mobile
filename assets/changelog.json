@@ -100,9 +100,7 @@
     "date": "2026-06-17",
     "it": [
       "Aggiunte le localizzazioni in polacco, portoghese e ceco.",
-      "Aggiunta la registrazione delle radio, con salvataggio nella nuova sezione Registrazioni radio.",
       "Migliorata la ricerca delle radio: ora è possibile cercare per lingua, nazione, città e genere, con salvataggio delle scelte più recenti.",
-      "Aggiunta la registrazione dei canali TV nella sezione Registrazioni TV, con molti canali in più, riorganizzazione dell’elenco e nuovi canali regionali.",
       "Aggiunto un pulsante, nella sezione Audiodescrizioni, per mostrare quali sono le audiodescrizioni in programma, in modo tale che se altre app che fornivano questo servizio smettono di funzionare, con Sonarpad potrete trovarle senza cercare dal sito Rai.",
       "Nei Documenti sono state aggiunte le importazioni da Project Gutenberg, LibriVox, PoetryDB e Internet Archive, oltre all’importazione dei documenti aggiunti tramite iTunes sui dispositivi Apple.",
       "Migliorato il convertitore multimediale con più opzioni di conversione e la scelta della cartella in cui salvare il file convertito.",
@@ -126,7 +124,6 @@
     ],
     "en": [
       "Added Polish, Portuguese, and Czech localizations.",
-      "Added radio recording, with recordings saved in the new Radio recordings section.",
       "Improved radio search: you can now search by language, country, city, and genre, with the most recent choices saved.",
       "In Documents, added import from Project Gutenberg, LibriVox, PoetryDB, and Internet Archive, as well as importing documents added through iTunes on Apple devices.",
       "Improved the media converter with more conversion options and the ability to choose the folder where the converted file is saved.",
@@ -150,7 +147,6 @@
     ],
     "fr": [
       "Ajout des localisations en polonais, portugais et tchèque.",
-      "Ajout de l’enregistrement des radios, avec sauvegarde dans la nouvelle section Enregistrements radio.",
       "Amélioration de la recherche des radios : il est maintenant possible de chercher par langue, pays, ville et genre, avec sauvegarde des derniers choix.",
       "Dans Documents, ajout de l’importation depuis Project Gutenberg, LibriVox, PoetryDB et Internet Archive, ainsi que de l’importation des documents ajoutés via iTunes sur les appareils Apple.",
       "Amélioration du convertisseur multimédia avec davantage d’options de conversion et le choix du dossier où enregistrer le fichier converti.",
@@ -174,7 +170,6 @@
     ],
     "es": [
       "Agregadas las localizaciones en polaco, portugués y checo.",
-      "Agregada la grabación de radios, con guardado en la nueva sección Grabaciones de radio.",
       "Mejorada la búsqueda de radios: ahora se puede buscar por idioma, país, ciudad y género, con guardado de las elecciones recientes.",
       "En Documentos, agregada la importación desde Project Gutenberg, LibriVox, PoetryDB e Internet Archive, además de la importación de documentos añadidos mediante iTunes en dispositivos Apple.",
       "Mejorado el convertidor multimedia con más opciones de conversión y la posibilidad de elegir la carpeta donde guardar el archivo convertido.",
@@ -198,8 +193,7 @@
     ],
     "pt": [
       "Adicionadas as localizações em polaco, português e checo.",
-      "Adicionada a gravação de rádios, com gravações guardadas na nova secção Gravações de rádio.",
-      "Melhorada a pesquisa de rádios: agora é possível pesquisar por idioma, país, cidade e género, com gravação das escolhas recentes.",
+      "Melhorada a pesquisa de rádios: agora é possível pesquisar por idioma, país, cidade e género, com as escolhas recentes guardadas.",
       "Em Documentos, adicionada a importação a partir do Project Gutenberg, LibriVox, PoetryDB e Internet Archive, além da importação de documentos adicionados através do iTunes em dispositivos Apple.",
       "Melhorado o conversor multimédia com mais opções de conversão e a possibilidade de escolher a pasta onde guardar o ficheiro convertido.",
       "Adicionada a pesquisa nos documentos: os resultados mostram o início do parágrafo encontrado e, com duplo toque, abrem diretamente o parágrafo que contém o texto pesquisado.",
@@ -222,7 +216,6 @@
     ],
     "pl": [
       "Dodano lokalizacje w języku polskim, portugalskim i czeskim.",
-      "Dodano nagrywanie radia, z zapisem nagrań w nowej sekcji Nagrania radiowe.",
       "Ulepszono wyszukiwanie radia: można teraz wyszukiwać według języka, kraju, miasta i gatunku, a ostatnie wybory są zapisywane.",
       "W Dokumentach dodano import z Project Gutenberg, LibriVox, PoetryDB i Internet Archive, a także import dokumentów dodanych przez iTunes na urządzeniach Apple.",
       "Ulepszono konwerter multimediów, dodając więcej opcji konwersji oraz możliwość wyboru folderu zapisu przekonwertowanego pliku.",
@@ -246,7 +239,6 @@
     ],
     "cs": [
       "Přidány lokalizace do polštiny, portugalštiny a češtiny.",
-      "Přidáno nahrávání rádií, se ukládáním nahrávek do nové sekce Nahrávky rádia.",
       "Vylepšeno vyhledávání rádií: nyní lze vyhledávat podle jazyka, země, města a žánru a poslední volby se ukládají.",
       "V Dokumentech byl přidán import z Project Gutenberg, LibriVox, PoetryDB a Internet Archive a také import dokumentů přidaných přes iTunes na zařízeních Apple.",
       "Vylepšen multimediální konvertor: přibylo více možností převodu a volba složky, do které se uloží převedený soubor.",

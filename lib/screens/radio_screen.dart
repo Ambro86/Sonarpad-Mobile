@@ -6,6 +6,9 @@ import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/radio_service.dart';
+import '../services/raiplay_service.dart';
+import '../services/raiplay_sound_service.dart';
+import '../services/tv_service.dart';
 import '../utils/country_name_helper.dart';
 import 'add_radio_screen.dart';
 import 'favorite_radios_screen.dart';
@@ -56,12 +59,14 @@ class _RadioScreenState extends State<RadioScreen> {
   List<RadioLanguageOption> _languageOptions = RadioService.languages;
   List<RadioCountryOption> _countryOptions = RadioService.countries;
   bool _loadingDirectory = false;
+  bool _isRecordingFeatureUnlocked = false;
 
   @override
   void initState() {
     super.initState();
     _loadSavedBrowseChoices();
     _loadDirectoryOptions();
+    _loadRecordingFeatureAccess();
   }
 
   Future<void> _loadSavedBrowseChoices() async {
@@ -119,6 +124,22 @@ class _RadioScreenState extends State<RadioScreen> {
       _languageCode = _defaultRadioLanguageForLocale(localeName);
       _countryCode = 'country:${_defaultRadioCountryForLocale(localeName)}';
     }
+  }
+
+
+  Future<void> _loadRecordingFeatureAccess() async {
+    final code = await _settings.getTvSecretCode();
+    final isUnlocked = _isSonarpadExtraCodeValid(code);
+    if (!mounted) return;
+    setState(() => _isRecordingFeatureUnlocked = isUnlocked);
+  }
+
+  bool _isSonarpadExtraCodeValid(String code) {
+    final trimmed = code.trim();
+    if (trimmed.isEmpty) return false;
+    return TvService().isSecretCodeValid(trimmed) ||
+        RaiPlayService().isSecretCodeValid(trimmed) ||
+        RaiPlaySoundService().isSecretCodeValid(trimmed);
   }
 
   Future<void> _resetFilters() async {
@@ -276,33 +297,35 @@ class _RadioScreenState extends State<RadioScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 8),
-          // Non nascondere questo pulsante quando l'utente inizia a digitare.
-          // In iOS con VoiceOver, la rimozione del blocco sopra il campo
-          // causava la perdita del focus dopo la prima lettera nella ricerca radio.
-          FilledButton.tonal(
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(56),
-              alignment: Alignment.centerLeft,
+          if (_isRecordingFeatureUnlocked) ...[
+            const SizedBox(height: 8),
+            // Non nascondere questo pulsante quando l'utente inizia a digitare.
+            // In iOS con VoiceOver, la rimozione del blocco sopra il campo
+            // causava la perdita del focus dopo la prima lettera nella ricerca radio.
+            FilledButton.tonal(
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(56),
+                alignment: Alignment.centerLeft,
+              ),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    settings: const RouteSettings(name: '/radio/recordings'),
+                    builder: (_) => const RadioRecordingsScreen(),
+                  ),
+                );
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.mic),
+                  const SizedBox(width: 8),
+                  Text(l10n.recordings),
+                ],
+              ),
             ),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  settings: const RouteSettings(name: '/radio/recordings'),
-                  builder: (_) => const RadioRecordingsScreen(),
-                ),
-              );
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.mic),
-                const SizedBox(width: 8),
-                Text(l10n.recordings),
-              ],
-            ),
-          ),
+          ],
           const SizedBox(height: 16),
           TextField(
             controller: _searchController,

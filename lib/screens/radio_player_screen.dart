@@ -10,6 +10,8 @@ import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
 import '../services/radio_recording_service.dart';
 import '../services/radio_service.dart';
+import '../services/raiplay_service.dart';
+import '../services/raiplay_sound_service.dart';
 import '../services/tv_service.dart';
 import '../widgets/volume_slider.dart';
 import 'package:video_player/video_player.dart';
@@ -66,6 +68,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   double _mediaKitVolume = 1.0;
   double _videoPlayerVolume = 1.0;
   bool _recording = false;
+  bool _isRecordingFeatureUnlocked = false;
   File? _recordingOutput;
 
   bool _loading = false;
@@ -92,6 +95,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
       _isFavorite = await _loadIsFavorite();
+      _isRecordingFeatureUnlocked = await _loadRecordingFeatureAccess();
       if (widget.tvChannel == null) {
         unawaited(RadioService().addRecentRadio(widget.station));
         unawaited(RadioService().recordRadioBrowserClick(widget.station));
@@ -100,6 +104,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       setState(() {});
       _play();
     });
+  }
+
+
+  Future<bool> _loadRecordingFeatureAccess() async {
+    final code = await _settings.getTvSecretCode();
+    final trimmed = code.trim();
+    if (trimmed.isEmpty) return false;
+    return TvService().isSecretCodeValid(trimmed) ||
+        RaiPlayService().isSecretCodeValid(trimmed) ||
+        RaiPlaySoundService().isSecretCodeValid(trimmed);
   }
 
   Future<bool> _loadIsFavorite() async {
@@ -643,7 +657,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool get _isVideoPlaying =>
       _mediaKitPlayer != null ? _mediaKitPlaying : (_videoController?.value.isPlaying ?? false);
 
-  bool get _canRecordStream => true;
+  bool get _canRecordStream => _isRecordingFeatureUnlocked;
 
   @override
   void dispose() {

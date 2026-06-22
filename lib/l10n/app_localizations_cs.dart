@@ -9,2182 +9,2221 @@ class AppLocalizationsCs extends AppLocalizations {
   AppLocalizationsCs([String locale = 'cs']) : super(locale);
 
   @override
-  String get appTitle => '''Sonarpad''';
+  String get appTitle => 'Sonarpad';
 
   @override
-  String get appLanguage => '''Jazyk aplikace''';
+  String get appLanguage => 'Jazyk aplikace';
 
   @override
-  String get settingsTheme => '''Vzhled aplikace''';
+  String get settingsTheme => 'Vzhled aplikace';
 
   @override
-  String get settingsThemeSystem => '''Podle systému''';
+  String get settingsThemeSystem => 'Podle systému';
 
   @override
-  String get settingsThemeLight => '''Světlý''';
+  String get settingsThemeLight => 'Světlý';
 
   @override
-  String get settingsThemeDark => '''Tmavý''';
+  String get settingsThemeDark => 'Tmavý';
 
   @override
-  String get settingsWeatherTemperatureUnit => '''Jednotka teploty počasí''';
+  String get settingsWeatherTemperatureUnit => 'Jednotka teploty počasí';
 
   @override
-  String get weatherTemperatureCelsius => '''Celsius (°C)''';
+  String get weatherTemperatureCelsius => 'Celsius (°C)';
 
   @override
-  String get weatherTemperatureFahrenheit => '''Fahrenheit (°F)''';
-
-
-  @override
-  String get homeSemanticsLabel => '''Sonarpad, hlavní obrazovka''';
+  String get weatherTemperatureFahrenheit => 'Fahrenheit (°F)';
 
   @override
-  String get settings => '''Nastavení''';
+  String get homeSemanticsLabel => 'Sonarpad, hlavní obrazovka';
 
   @override
-  String get settingsHint => '''Otevřít nastavení''';
+  String get settings => 'Nastavení';
 
   @override
-  String get info => '''Informace''';
+  String get settingsHint => 'Otevřít nastavení';
 
   @override
-  String get infoHint => '''Otevřít informace o aplikaci''';
+  String get info => 'Informace';
 
   @override
-  String get categoryReading => '''Čtení a dokumenty''';
+  String get infoHint => 'Otevřít informace o aplikaci';
 
   @override
-  String get categoryMedia => '''Média a zábava''';
+  String get categoryReading => 'Čtení a dokumenty';
 
   @override
-  String get categoryUtilities => '''Vyhledávání a nástroje''';
+  String get categoryMedia => 'Média a zábava';
 
   @override
-  String get voiceDictionaryTitle => '''Hlasový slovník''';
+  String get categoryUtilities => 'Vyhledávání a nástroje';
 
   @override
-  String get voiceDictionaryAdd => '''Přidat položku do slovníku''';
+  String get voiceDictionaryTitle => 'Hlasový slovník';
 
   @override
-  String get voiceDictionaryOriginalWord => '''Původní slovo''';
+  String get voiceDictionaryAdd => 'Přidat položku do slovníku';
 
   @override
-  String get voiceDictionaryReplacementWord => '''Náhradní slovo''';
+  String get voiceDictionaryOriginalWord => 'Původní slovo';
 
   @override
-  String get voiceDictionaryMatchCase => '''Rozlišovat velikost písmen''';
+  String get voiceDictionaryReplacementWord => 'Náhradní slovo';
 
   @override
-  String get voiceDictionaryIgnoreCase => '''Nerozlišovat velikost písmen''';
+  String get voiceDictionaryMatchCase => 'Rozlišovat velikost písmen';
 
   @override
-  String get voiceDictionaryEntries => '''Položky slovníku''';
+  String get voiceDictionaryIgnoreCase => 'Nerozlišovat velikost písmen';
 
   @override
-  String get voiceDictionaryEmpty => '''Žádné položky ve slovníku.''';
+  String get voiceDictionaryEntries => 'Položky slovníku';
 
   @override
-  String get voiceDictionaryRemove => '''Odebrat vybranou položku''';
+  String get voiceDictionaryEmpty => 'Žádné položky ve slovníku.';
 
   @override
-  String get voiceDictionaryOriginalRequired => '''Zadejte původní slovo.''';
+  String get voiceDictionaryRemove => 'Odebrat vybranou položku';
 
   @override
-  String get convertMediaTitle => '''Převést média''';
+  String get voiceDictionaryOriginalRequired => 'Zadejte původní slovo.';
 
   @override
-  String get convertMediaInput => '''Vstupní soubor''';
+  String get convertMediaTitle => 'Převést média';
 
   @override
-  String get convertMediaOutput => '''Výstupní soubor''';
+  String get convertMediaInput => 'Vstupní soubor';
 
   @override
-  String get convertMediaImage => '''Obrázek''';
+  String get convertMediaOutput => 'Výstupní soubor';
 
   @override
-  String get convertMediaBrowse => '''Procházet...''';
+  String get convertMediaImage => 'Obrázek';
 
   @override
-  String get convertMediaFormat => '''Formát''';
+  String get convertMediaBrowse => 'Procházet...';
 
   @override
-  String get convertMediaBitrate => '''Datový tok (kb/s)''';
+  String get convertMediaFormat => 'Formát';
 
   @override
-  String get convertMediaOggQuality => '''Kvalita (q)''';
+  String get convertMediaBitrate => 'Datový tok (kb/s)';
 
   @override
-  String get convertMediaFlacCompression => '''Úroveň komprese''';
+  String get convertMediaOggQuality => 'Kvalita (q)';
 
   @override
-  String get convertMediaWavBitDepth => '''Bitová hloubka WAV''';
+  String get convertMediaFlacCompression => 'Úroveň komprese';
 
   @override
-  String get convertMediaReady => '''Připraveno.''';
+  String get convertMediaWavBitDepth => 'Bitová hloubka WAV';
 
   @override
-  String get convertMediaRunning => '''Převádím...''';
+  String get convertMediaReady => 'Připraveno.';
 
   @override
-  String get convertMediaDone => '''Převod dokončen.''';
+  String get convertMediaRunning => 'Převádím...';
 
   @override
-  String get convertMediaButton => '''Převést média''';
+  String get convertMediaDone => 'Převod dokončen.';
 
   @override
-  String get convertMediaNoInput => '''Vyberte vstupní soubor.''';
+  String get convertMediaButton => 'Převést média';
 
   @override
-  String get convertMediaNoOutput => '''Vyberte výstupní soubor.''';
+  String get convertMediaNoInput => 'Vyberte vstupní soubor.';
 
   @override
-  String get convertMediaOutputNotWritable => '''Vybraná složka není přímo přístupná. Soubor bude uložen do interní složky Sonarpadu; po dokončení převodu jej můžete sdílet nebo uložit v aplikaci Soubory.''';
+  String get convertMediaNoOutput => 'Vyberte výstupní soubor.';
 
   @override
-  String get convertMediaNoImage => '''Vyberte obrázek pro video.''';
+  String get convertMediaOutputNotWritable =>
+      'Vybraná složka není přímo přístupná. Soubor bude uložen do interní složky Sonarpadu; po dokončení převodu jej můžete sdílet nebo uložit v aplikaci Soubory.';
 
   @override
-  String get convertMediaSamePath => '''Výstupní soubor musí být jiný než vstupní.''';
+  String get convertMediaNoImage => 'Vyberte obrázek pro video.';
 
   @override
-  String get convertMediaInvalidBitrate => '''Neplatný datový tok. Zadejte hodnotu mezi 64 a 320 kb/s.''';
+  String get convertMediaSamePath =>
+      'Výstupní soubor musí být jiný než vstupní.';
+
+  @override
+  String get convertMediaInvalidBitrate =>
+      'Neplatný datový tok. Zadejte hodnotu mezi 64 a 320 kb/s.';
 
   @override
   String convertMediaFailed(Object error) {
-    return '''Převod se nezdařil: ${error}''';
+    return 'Převod se nezdařil: $error';
   }
 
   @override
-  String get donations => '''Dary''';
+  String get donations => 'Dary';
 
   @override
-  String get donationsHint => '''Podpořit vývoj Sonarpadu''';
+  String get donationsHint => 'Podpořit vývoj Sonarpadu';
 
   @override
-  String get loading => '''Načítání''';
+  String get loading => 'Načítání';
 
   @override
-  String get ttsVoiceLanguage => '''Jazyk hlasu TTS''';
+  String get ttsVoiceLanguage => 'Jazyk hlasu TTS';
 
   @override
-  String get ttsVoice => '''Hlas TTS''';
+  String get ttsVoice => 'Hlas TTS';
 
   @override
-  String get saveSettings => '''Uložit nastavení''';
+  String get saveSettings => 'Uložit nastavení';
 
   @override
-  String get settingsSaved => '''Nastavení uloženo.''';
+  String get settingsSaved => 'Nastavení uloženo.';
 
   @override
-  String get settingsSavedTitle => '''Nastavení uloženo''';
+  String get settingsSavedTitle => 'Nastavení uloženo';
 
   @override
-  String get sonarpadCodeValidTitle => '''Platný kód''';
+  String get sonarpadCodeValidTitle => 'Platný kód';
 
   @override
-  String get sonarpadCodeValidMessage => '''Kód Sonarpadu je správný. Nastavení uloženo.''';
+  String get sonarpadCodeValidMessage =>
+      'Kód Sonarpadu je správný. Nastavení uloženo.';
 
   @override
-  String get sonarpadCodeInvalidTitle => '''Neplatný kód''';
+  String get sonarpadCodeInvalidTitle => 'Neplatný kód';
 
   @override
-  String get sonarpadCodeInvalidMessage => '''Kód Sonarpadu není platný. Zkontrolujte, zda jste ho zkopírovali bez mezer navíc.''';
+  String get sonarpadCodeInvalidMessage =>
+      'Kód Sonarpadu není platný. Zkontrolujte, zda jste ho zkopírovali bez mezer navíc.';
 
   @override
-  String get infoDescription => '''Sonarpad je jednoduchá aplikace s mnoha funkcemi. Je navržena tak, aby byla přístupná s VoiceOverem pro nevidomé a slabozraké uživatele. Umožňuje poslouchat zprávy, vyhledávat a odebírat podcasty, importovat články z Wikipedie, přidávat dokumenty do knihovny, ukládat je a upravovat. Sonarpad je průběžně aktualizován a každá funkce je navržena tak, aby usnadnila každodenní používání.''';
+  String get infoDescription =>
+      'Sonarpad je jednoduchá aplikace s mnoha funkcemi. Je navržena tak, aby byla přístupná s VoiceOverem pro nevidomé a slabozraké uživatele. Umožňuje poslouchat zprávy, vyhledávat a odebírat podcasty, importovat články z Wikipedie, přidávat dokumenty do knihovny, ukládat je a upravovat. Sonarpad je průběžně aktualizován a každá funkce je navržena tak, aby usnadnila každodenní používání.';
 
   @override
-  String get infoAuthor => '''Autor: Ambrogio Riili''';
+  String get infoAuthor => 'Autor: Ambrogio Riili';
 
   @override
-  String get donationsIntro => '''Sonarpad vznikl původně pro osobní potřeby, ale postupně se rozrostl v širší aplikaci. Jeho vývoj vyžaduje stálou práci: zlepšování funkcí, opravy chyb, hledání nových nápadů a pečlivé testování každé části.
-
-Pokud je pro vás Sonarpad užitečný a chcete podpořit jeho vývoj, můžete přispět darem.''';
-
-  @override
-  String get donationsPaypalDesc => '''Dar můžete poslat přes PayPal pomocí tohoto odkazu:
-https://www.paypal.me/ambrogio86
-Pokud je to možné, přidejte do poznámky platby slovo „Sonarpad“.''';
+  String get donationsIntro =>
+      'Sonarpad vznikl původně pro osobní potřeby, ale postupně se rozrostl v širší aplikaci. Jeho vývoj vyžaduje stálou práci: zlepšování funkcí, opravy chyb, hledání nových nápadů a pečlivé testování každé části.\n\nPokud je pro vás Sonarpad užitečný a chcete podpořit jeho vývoj, můžete přispět darem.';
 
   @override
-  String get donationsBankDesc => '''Dar můžete poslat také bankovním převodem na účet vedený na jméno Ambrogio Riili.
-IBAN: IT77W0306901020100000064149
-Pokud je to možné, použijte jasný důvod platby, například „Sonarpad“.''';
+  String get donationsPaypalDesc =>
+      'Dar můžete poslat přes PayPal pomocí tohoto odkazu:\nhttps://www.paypal.me/ambrogio86\nPokud je to možné, přidejte do poznámky platby slovo „Sonarpad“.';
 
   @override
-  String get donationsThanks => '''Každý, kdo projekt podpoří, bude uveden v programu a v repozitáři GitHub, pokud si nepřeje zůstat anonymní nebo použít přezdívku.
-
-Děkujeme Jirimu Holzingerovi a Paole Vagatě za jejich příspěvek.
-Za český překlad děkujeme Radku Žaludovi a Jirimu Holzingerovi.
-Za španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.''';
+  String get donationsBankDesc =>
+      'Dar můžete poslat také bankovním převodem na účet vedený na jméno Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nPokud je to možné, použijte jasný důvod platby, například „Sonarpad“.';
 
   @override
-  String get news => '''Zprávy''';
+  String get donationsThanks =>
+      'Každý, kdo projekt podpoří, bude uveden v programu a v repozitáři GitHub, pokud si nepřeje zůstat anonymní nebo použít přezdívku.\n\nDěkujeme Jirimu Holzingerovi a Paole Vagatě za jejich příspěvek.\nZa český překlad děkujeme Radku Žaludovi a Jirimu Holzingerovi.\nZa španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.';
 
   @override
-  String get newsHint => '''Otevřít zprávy z RSS a Google News''';
+  String get news => 'Zprávy';
 
   @override
-  String get podcasts => '''Podcasty''';
+  String get newsHint => 'Otevřít zprávy z RSS a Google News';
 
   @override
-  String get podcastsHint => '''Odebírat podcasty, přehrávat nebo stahovat epizody''';
+  String get podcasts => 'Podcasty';
 
   @override
-  String get importFromWikipedia => '''Wikipedie''';
+  String get podcastsHint =>
+      'Odebírat podcasty, přehrávat nebo stahovat epizody';
 
   @override
-  String get wikipediaHint => '''Vyhledejte článek na Wikipedii a importujte text''';
+  String get importFromWikipedia => 'Wikipedie';
 
   @override
-  String get newsCategoryTop => '''Hlavní zprávy''';
+  String get wikipediaHint =>
+      'Vyhledejte článek na Wikipedii a importujte text';
 
   @override
-  String get settingsHomeGrouping => '''Seskupovat ikony domovské obrazovky do kategorií''';
+  String get newsCategoryTop => 'Hlavní zprávy';
 
   @override
-  String get settingsHomeGroupingHint => '''Pokud je vypnuto, hlavní ikony se zobrazí jako jeden seznam bez složek''';
+  String get settingsHomeGrouping =>
+      'Seskupovat ikony domovské obrazovky do kategorií';
 
   @override
-  String get newsCategoryMyCity => '''Moje město''';
+  String get settingsHomeGroupingHint =>
+      'Pokud je vypnuto, hlavní ikony se zobrazí jako jeden seznam bez složek';
 
   @override
-  String get newsLocalCityLabel => '''Zadejte město''';
+  String get newsCategoryMyCity => 'Moje město';
 
   @override
-  String get newsLocalCityHint => '''Upravte město použité pro místní zprávy''';
+  String get newsLocalCityLabel => 'Zadejte město';
 
   @override
-  String get update => '''Aktualizovat''';
+  String get newsLocalCityHint => 'Upravte město použité pro místní zprávy';
 
   @override
-  String get moveUp => '''Přesunout nahoru''';
+  String get update => 'Aktualizovat';
 
   @override
-  String get moveDown => '''Přesunout dolů''';
+  String get moveUp => 'Přesunout nahoru';
 
   @override
-  String get hide => '''Skrýt''';
+  String get moveDown => 'Přesunout dolů';
 
   @override
-  String get moveToPosition => '''Přesunout na pozici''';
+  String get hide => 'Skrýt';
+
+  @override
+  String get moveToPosition => 'Přesunout na pozici';
 
   @override
   String positionLabel(int position, String targetName) {
-    return '''Pozice ${position}: před ${targetName}''';
+    return 'Pozice $position: před $targetName';
   }
 
   @override
-  String get positionLabelLast => '''Poslední pozice''';
+  String get positionLabelLast => 'Poslední pozice';
 
   @override
-  String get restoreHiddenSources => '''Obnovit skryté zdroje''';
+  String get restoreHiddenSources => 'Obnovit skryté zdroje';
 
   @override
-  String get addCustomNewsSource => '''Přidat vlastní RSS zdroj''';
+  String get addCustomNewsSource => 'Přidat vlastní RSS zdroj';
 
   @override
-  String get newsSourceName => '''Název zdroje nebo webu''';
+  String get newsSourceName => 'Název zdroje nebo webu';
 
   @override
-  String get newsSourceUrlOrSearch => '''Adresa webu, RSS kanál nebo hledané slovo''';
+  String get newsSourceUrlOrSearch =>
+      'Adresa webu, RSS kanál nebo hledané slovo';
 
   @override
-  String get deleteNewsSource => '''Smazat zdroj''';
+  String get deleteNewsSource => 'Smazat zdroj';
 
   @override
-  String get importRssSourcesFromOpml => '''Importovat zdroje RSS z OPML''';
+  String get importRssSourcesFromOpml => 'Importovat zdroje RSS z OPML';
 
   @override
-  String get exportRssSourcesToOpml => '''Exportovat zdroje RSS do OPML''';
+  String get exportRssSourcesToOpml => 'Exportovat zdroje RSS do OPML';
 
   @override
   String rssImportComplete(int count) {
-    return '''Importované zdroje RSS: ${count}''';
+    return 'Importované zdroje RSS: $count';
   }
 
   @override
   String rssImportError(Object error) {
-    return '''Chyba importu RSS: ${error}''';
+    return 'Chyba importu RSS: $error';
   }
 
   @override
-  String get rssExportComplete => '''Zdroje RSS byly exportovány''';
+  String get rssExportComplete => 'Zdroje RSS byly exportovány';
 
   @override
   String rssExportError(Object error) {
-    return '''Chyba exportu RSS: ${error}''';
+    return 'Chyba exportu RSS: $error';
   }
 
   @override
-  String get deleteItem => '''Smazat''';
+  String get articleTextSemantics => 'Text článku';
 
   @override
-  String get articleTextSemantics => '''Text článku''';
+  String get newsLanguage => 'Jazyk zpráv';
 
   @override
-  String get newsLanguage => '''Jazyk zpráv''';
-
-  @override
-  String get loadingNews => '''Načítání zpráv''';
+  String get loadingNews => 'Načítání zpráv';
 
   @override
   String error(Object error) {
-    return '''Chyba: ${error}''';
+    return 'Chyba: $error';
   }
 
   @override
-  String get noNewsFound => '''Nebyly nalezeny žádné zprávy''';
+  String get noNewsFound => 'Nebyly nalezeny žádné zprávy';
 
   @override
-  String get loadingArticle => '''Načítání článku''';
+  String get loadingArticle => 'Načítání článku';
 
   @override
-  String get noFullArticleFound => '''Celý článek není k dispozici. Zobrazuje se souhrn z kanálu.''';
+  String get noFullArticleFound =>
+      'Celý článek není k dispozici. Zobrazuje se souhrn z kanálu.';
 
   @override
-  String get italian => '''Italština''';
+  String get italian => 'Italština';
 
   @override
-  String get english => '''Angličtina''';
+  String get english => 'Angličtina';
 
   @override
-  String get french => '''Francouzština''';
+  String get french => 'Francouzština';
 
   @override
-  String get spanish => '''Španělština''';
+  String get spanish => 'Španělština';
 
   @override
-  String get newsSource => '''Zdroj zpráv''';
+  String get newsSource => 'Zdroj zpráv';
 
   @override
-  String get article => '''Článek''';
+  String get article => 'Článek';
 
   @override
-  String get articlePreview => '''Náhled článku''';
+  String get articlePreview => 'Náhled článku';
 
   @override
-  String get readFullArticle => '''Přečíst celý článek''';
+  String get readFullArticle => 'Přečíst celý článek';
 
   @override
-  String get extractingReaderArticleText => '''Načítám text v režimu čtení...''';
+  String get extractingReaderArticleText => 'Načítám text v režimu čtení...';
 
   @override
-  String get extractingVisibleArticleText => '''Načítám viditelný text ze stránky...''';
+  String get extractingVisibleArticleText =>
+      'Načítám viditelný text ze stránky...';
 
   @override
   String source(String source) {
-    return '''Zdroj: ${source}''';
+    return 'Zdroj: $source';
   }
 
   @override
-  String get readyStatus => '''Připraveno.''';
+  String get readyStatus => 'Připraveno.';
 
   @override
-  String get preparingEdgeTts => '''Připravuji čtení Edge TTS po blocích...''';
+  String get preparingEdgeTts => 'Připravuji čtení Edge TTS po blocích...';
 
   @override
-  String get noTextToRead => '''Není žádný text ke čtení.''';
+  String get noTextToRead => 'Není žádný text ke čtení.';
 
   @override
   String chunkCreated(int index, int total) {
-    return '''Blok ${index} z ${total} vytvořen. Čtení probíhá...''';
+    return 'Blok $index z $total vytvořen. Čtení probíhá...';
   }
 
   @override
   String playingChunk(int index, int total, int size) {
-    return '''Přehrávám blok ${index} z ${total} (${size} bajtů)...''';
+    return 'Přehrávám blok $index z $total ($size bajtů)...';
   }
 
   @override
   String readingFinished(int readyChunks, int totalChunks, String libraryPath) {
-    return '''Čtení dokončeno. Vytvořené bloky: ${readyChunks}/${totalChunks}. Knihovna: ${libraryPath}''';
+    return 'Čtení dokončeno. Vytvořené bloky: $readyChunks/$totalChunks. Knihovna: $libraryPath';
   }
 
   @override
-  String get libraryNotSpecified => '''není zadáno''';
+  String get libraryNotSpecified => 'není zadáno';
 
   @override
-  String get readingStopped => '''Čtení zastaveno.''';
+  String get readingStopped => 'Čtení zastaveno.';
 
   @override
   String edgeTtsError(Object error) {
-    return '''Chyba Edge TTS: ${error}''';
+    return 'Chyba Edge TTS: $error';
   }
 
   @override
   String audioChunksReady(int readyChunks, int totalChunks) {
-    return '''Zvukové bloky připraveny: ${readyChunks} / ${totalChunks}''';
+    return 'Zvukové bloky připraveny: $readyChunks / $totalChunks';
   }
 
   @override
-  String get readingInProgress => '''Čtení probíhá...''';
+  String get readingInProgress => 'Čtení probíhá...';
 
   @override
-  String get readWithEdgeTts => '''Spustit čtení''';
+  String get readWithEdgeTts => 'Spustit čtení';
 
   @override
-  String get stopReading => '''Zastavit čtení''';
+  String get stopReading => 'Zastavit čtení';
 
   @override
-  String get startReading => '''Spustit čtení''';
+  String get startReading => 'Spustit čtení';
 
   @override
-  String get resumeReading => '''Pokračovat ve čtení''';
+  String get resumeReading => 'Pokračovat ve čtení';
 
   @override
-  String get pauseReading => '''Pozastavit čtení''';
+  String get pauseReading => 'Pozastavit čtení';
 
   @override
-  String get openOriginalArticle => '''Otevřít původní článek''';
+  String get openOriginalArticle => 'Otevřít původní článek';
 
   @override
-  String get searchPodcasts => '''Hledat podcasty''';
+  String get searchPodcasts => 'Hledat podcasty';
 
   @override
-  String get podcastName => '''Název podcastu''';
+  String get podcastName => 'Název podcastu';
 
   @override
-  String get podcastSearchHint => '''Příklad: technologie, historie, název podcastu...''';
+  String get podcastSearchHint =>
+      'Příklad: technologie, historie, název podcastu...';
 
   @override
-  String get searchCountry => '''Země hledání''';
+  String get searchCountry => 'Země hledání';
 
   @override
-  String get browsePodcastCountries => '''Procházet podle země''';
+  String get browsePodcastCountries => 'Procházet podle země';
 
   @override
-  String get podcastCountries => '''Země podcastů''';
+  String get podcastCountries => 'Země podcastů';
 
   @override
-  String get podcastCategory => '''Kategorie podcastu''';
+  String get podcastCategory => 'Kategorie podcastu';
 
   @override
-  String get browsePodcastCategories => '''Procházet kategorie''';
+  String get browsePodcastCategories => 'Procházet kategorie';
 
   @override
-  String get selectedPodcastCategory => '''Vybraná kategorie''';
+  String get selectedPodcastCategory => 'Vybraná kategorie';
 
   @override
-  String get selectedRecently => '''Naposledy vybrané''';
+  String get selectedRecently => 'Naposledy vybrané';
 
   @override
-  String get podcastCategories => '''Kategorie podcastů''';
+  String get podcastCategories => 'Kategorie podcastů';
 
   @override
-  String get countryItaly => '''Itálie''';
+  String get countryItaly => 'Itálie';
 
   @override
-  String get countryUnitedStatesEnglish => '''Spojené státy / angličtina''';
+  String get countryUnitedStatesEnglish => 'Spojené státy / angličtina';
 
   @override
-  String get countryUnitedKingdom => '''Spojené království''';
+  String get countryUnitedKingdom => 'Spojené království';
 
   @override
-  String get countrySpain => '''Španělsko''';
+  String get countrySpain => 'Španělsko';
 
   @override
-  String get countryFrance => '''Francie''';
+  String get countryFrance => 'Francie';
 
   @override
-  String get searchInProgress => '''Vyhledávání probíhá...''';
+  String get searchInProgress => 'Vyhledávání probíhá...';
 
   @override
-  String get newsReadArticles => '''Přečtené články''';
+  String get newsReadArticles => 'Přečtené články';
 
   @override
-  String get weatherRecentCities => '''Nedávná města''';
+  String get weatherRecentCities => 'Nedávná města';
 
   @override
   String podcastResultsFound(int count) {
-    return '''Nalezeno podcastů: ${count}''';
+    return 'Nalezeno podcastů: $count';
   }
 
   @override
   String podcastSearchError(Object error) {
-    return '''Chyba vyhledávání podcastů: ${error}''';
+    return 'Chyba vyhledávání podcastů: $error';
   }
 
   @override
   String subscribedTo(String title) {
-    return '''Odebíráno: ${title}''';
+    return 'Odebíráno: $title';
   }
 
   @override
   String subscriptionError(Object error) {
-    return '''Chyba odběru: ${error}''';
+    return 'Chyba odběru: $error';
   }
 
   @override
   String podcastSubscriptionError(Object error) {
-    return '''Chyba odběru podcastu: ${error}''';
+    return 'Chyba odběru podcastu: $error';
   }
 
   @override
-  String get searchResults => '''Výsledky hledání''';
+  String get searchResults => 'Výsledky hledání';
 
   @override
-  String get podcastInfo => '''Informace o podcastu''';
+  String get podcastInfo => 'Informace o podcastu';
 
   @override
-  String get subscribe => '''Odebírat''';
+  String get subscribe => 'Odebírat';
 
   @override
-  String get openPodcast => '''Otevřít podcast''';
+  String get openPodcast => 'Otevřít podcast';
 
   @override
-  String get viewEpisodes => '''Zobrazit epizody''';
+  String get viewEpisodes => 'Zobrazit epizody';
 
   @override
-  String get podcastAuthor => '''Autor''';
+  String get podcastAuthor => 'Autor';
 
   @override
-  String get noPodcastDescription => '''Popis není k dispozici.''';
+  String get noPodcastDescription => 'Popis není k dispozici.';
 
   @override
-  String get noPodcastResults => '''Nebyly nalezeny žádné podcasty.''';
+  String get noPodcastResults => 'Nebyly nalezeny žádné podcasty.';
 
   @override
-  String get loadingPodcastInfo => '''Načítání informací o podcastu''';
+  String get loadingPodcastInfo => 'Načítání informací o podcastu';
 
   @override
-  String get podcastArtwork => '''Obrázek podcastu''';
+  String get podcastArtwork => 'Obrázek podcastu';
 
   @override
-  String get addFeedUrlManually => '''Přidat adresu RSS kanálu ručně''';
+  String get addFeedUrlManually => 'Přidat adresu RSS kanálu ručně';
 
   @override
-  String get podcastFeedUrl => '''RSS adresa podcastu''';
+  String get podcastFeedUrl => 'RSS adresa podcastu';
 
   @override
-  String get subscribeFromUrl => '''Odebírat z adresy''';
+  String get subscribeFromUrl => 'Odebírat z adresy';
 
   @override
-  String get subscribedPodcasts => '''Odebírané podcasty''';
+  String get subscribedPodcasts => 'Odebírané podcasty';
 
   @override
-  String get noSubscribedPodcasts => '''Žádné odebírané podcasty. Vyhledejte podcast a klepnutím na výsledek ho začněte odebírat.''';
+  String get noSubscribedPodcasts =>
+      'Žádné odebírané podcasty. Vyhledejte podcast a klepnutím na výsledek ho začněte odebírat.';
 
   @override
-  String get localAudioFiles => '''Místní audio soubory''';
+  String get localAudioFiles => 'Místní audio soubory';
 
   @override
-  String get noLocalAudioFiles => '''Nebyly nalezeny žádné místní audio soubory.''';
+  String get noLocalAudioFiles => 'Nebyly nalezeny žádné místní audio soubory.';
 
   @override
-  String get importAudioFromITunes => '''Importovat audio z iTunes / Apple Devices''';
+  String get importAudioFromITunes =>
+      'Importovat audio z iTunes / Apple Devices';
 
   @override
   String localAudioFilesFound(int count) {
-    return '''Nalezené místní audio soubory: ${count}''';
+    return 'Nalezené místní audio soubory: $count';
   }
 
   @override
-  String get importPodcastsFromFile => '''Importovat podcasty ze souboru''';
+  String get importPodcastsFromFile => 'Importovat podcasty ze souboru';
 
   @override
-  String get exportPodcastsToFile => '''Exportovat podcasty do souboru OPML''';
+  String get exportPodcastsToFile => 'Exportovat podcasty do souboru OPML';
 
   @override
   String podcastImportComplete(int count) {
-    return '''Importované podcasty: ${count}''';
+    return 'Importované podcasty: $count';
   }
 
   @override
   String podcastImportError(Object error) {
-    return '''Chyba importu podcastů: ${error}''';
+    return 'Chyba importu podcastů: $error';
   }
 
   @override
-  String get podcastInvalidOpmlFile => '''Neplatný soubor. Vyberte soubor OPML nebo XML.''';
+  String get podcastInvalidOpmlFile =>
+      'Neplatný soubor. Vyberte soubor OPML nebo XML.';
 
   @override
-  String get podcastExportComplete => '''Podcasty exportovány''';
+  String get podcastExportComplete => 'Podcasty exportovány';
 
   @override
   String podcastExportError(Object error) {
-    return '''Chyba exportu podcastů: ${error}''';
+    return 'Chyba exportu podcastů: $error';
   }
 
   @override
-  String get loadingEpisodes => '''Načítání epizod''';
+  String get loadingEpisodes => 'Načítání epizod';
 
   @override
-  String get noAudioEpisodesFound => '''V kanálu nebyly nalezeny žádné zvukové epizody.''';
+  String get noAudioEpisodesFound =>
+      'V kanálu nebyly nalezeny žádné zvukové epizody.';
 
   @override
-  String get episodes => '''Epizody''';
+  String get episodes => 'Epizody';
 
   @override
-  String get episodeActions => '''Akce epizody''';
+  String get episodeActions => 'Akce epizody';
 
   @override
   String downloaded(String path) {
-    return '''Staženo: ${path}''';
+    return 'Staženo: $path';
   }
 
   @override
   String episodeError(Object error) {
-    return '''Chyba epizody: ${error}''';
+    return 'Chyba epizody: $error';
   }
 
   @override
-  String get play => '''Přehrát''';
+  String get play => 'Přehrát';
 
   @override
-  String get pause => '''Pozastavit''';
+  String get pause => 'Pozastavit';
 
   @override
-  String get rewind15s => '''Zpět o 15 s''';
+  String get rewind15s => 'Zpět o 15 s';
 
   @override
-  String get forward15s => '''Vpřed o 15 s''';
+  String get forward15s => 'Vpřed o 15 s';
 
   @override
-  String get stop => '''Zastavit''';
+  String get stop => 'Zastavit';
 
   @override
-  String get back => '''Zpět''';
+  String get back => 'Zpět';
 
   @override
-  String get episodePlayer => '''Přehrávač epizody''';
+  String get episodePlayer => 'Přehrávač epizody';
 
   @override
   String nowPlayingTitle(String title) {
-    return '''Nyní se přehrává: ${title}''';
+    return 'Nyní se přehrává: $title';
   }
 
   @override
-  String get loadingEpisodeAudio => '''Načítání zvuku epizody''';
+  String get loadingEpisodeAudio => 'Načítání zvuku epizody';
 
   @override
-  String get playbackPosition => '''Pozice''';
+  String get playbackPosition => 'Pozice';
 
   @override
   String playbackPositionValue(String position, String duration) {
-    return '''${position} z ${duration}''';
+    return '$position z $duration';
   }
 
   @override
-  String get adjustVolume => '''Upravit hlasitost''';
+  String get adjustVolume => 'Upravit hlasitost';
 
   @override
   String volumeValue(int percentage) {
-    return '''Hlasitost: ${percentage}%''';
+    return 'Hlasitost: $percentage%';
   }
 
   @override
-  String get download => '''Stáhnout''';
+  String get download => 'Stáhnout';
 
   @override
-  String get searchWikipedia => '''Hledat na Wikipedii''';
+  String get searchWikipedia => 'Hledat na Wikipedii';
 
   @override
-  String get wikipediaLanguage => '''Jazyk Wikipedie''';
+  String get wikipediaLanguage => 'Jazyk Wikipedie';
 
   @override
-  String get search => '''Hledat''';
+  String get search => 'Hledat';
 
   @override
-  String get wikipediaSearch => '''Vyhledávání na Wikipedii''';
+  String get wikipediaSearch => 'Vyhledávání na Wikipedii';
 
   @override
-  String get wikipediaImporting => '''Import z Wikipedie''';
+  String get wikipediaImporting => 'Import z Wikipedie';
 
   @override
-  String get noWikipediaResults => '''Nebyly nalezeny žádné výsledky na Wikipedii''';
+  String get noWikipediaResults =>
+      'Nebyly nalezeny žádné výsledky na Wikipedii';
 
   @override
-  String get wikipediaImportMode => '''Režim importu''';
+  String get wikipediaImportMode => 'Režim importu';
 
   @override
-  String get wikipediaImportWholeArticle => '''Celý článek''';
+  String get wikipediaImportWholeArticle => 'Celý článek';
 
   @override
-  String get documents => '''Dokumenty''';
+  String get documents => 'Dokumenty';
 
   @override
-  String get documentsHint => '''Otevřít knihovnu dokumentů''';
+  String get documentsHint => 'Otevřít knihovnu dokumentů';
 
   @override
-  String get documentLibrary => '''Knihovna dokumentů''';
+  String get documentLibrary => 'Knihovna dokumentů';
 
   @override
-  String get addToLibrary => '''Přidat do knihovny''';
+  String get addToLibrary => 'Přidat do knihovny';
 
   @override
-  String get documentImportSelectionMode => '''Chcete vybrat jeden dokument, nebo více dokumentů?''';
+  String get documentImportSelectionMode =>
+      'Chcete vybrat jeden dokument, nebo více dokumentů?';
 
   @override
-  String get documentImportSingle => '''Jeden dokument''';
+  String get documentImportSingle => 'Jeden dokument';
 
   @override
-  String get documentImportMultiple => '''Více dokumentů''';
+  String get documentImportMultiple => 'Více dokumentů';
 
   @override
-  String get noDocuments => '''Žádné dokumenty. Přidejte soubor.''';
+  String get noDocuments => 'Žádné dokumenty. Přidejte soubor.';
 
   @override
-  String get noDocumentsInLibrary => '''V knihovně nejsou žádné dokumenty.''';
+  String get noDocumentsInLibrary => 'V knihovně nejsou žádné dokumenty.';
 
   @override
-  String get documentAdded => '''Dokument přidán''';
+  String get documentAdded => 'Dokument přidán';
 
   @override
-  String get documentsAdded => '''Dokumenty přidány''';
+  String get documentsAdded => 'Dokumenty přidány';
 
   @override
-  String get importDocumentsFromITunes => '''Importovat dokumenty z iTunes / Apple Devices''';
+  String get importDocumentsFromITunes =>
+      'Importovat dokumenty z iTunes / Apple Devices';
 
   @override
   String sharedDocumentsImportComplete(int count) {
-    return '''Dokumenty importované z iTunes / Apple Devices: ${count}''';
+    return 'Dokumenty importované z iTunes / Apple Devices: $count';
   }
 
   @override
   String libraryLoadError(Object error) {
-    return '''Chyba načítání knihovny: ${error}''';
+    return 'Chyba načítání knihovny: $error';
   }
 
   @override
   String fileOpenError(Object error) {
-    return '''Chyba otevření souboru: ${error}''';
+    return 'Chyba otevření souboru: $error';
   }
 
   @override
-  String get filePathUnavailable => '''Cesta k souboru není k dispozici.''';
+  String get filePathUnavailable => 'Cesta k souboru není k dispozici.';
 
   @override
   String fileInaccessible(String name) {
-    return '''Soubor není přístupný: ${name}''';
+    return 'Soubor není přístupný: $name';
   }
 
   @override
   String documentAddError(Object error) {
-    return '''Chyba přidání dokumentu: ${error}''';
+    return 'Chyba přidání dokumentu: $error';
   }
 
   @override
   String documentRemoveError(Object error) {
-    return '''Chyba odebrání: ${error}''';
+    return 'Chyba odebrání: $error';
   }
 
   @override
-  String get noExportableTextFound => '''Nebyl nalezen žádný exportovatelný text.''';
+  String get noExportableTextFound =>
+      'Nebyl nalezen žádný exportovatelný text.';
 
   @override
-  String get modifiedDocumentNoExportableText => '''Upravený dokument neobsahuje žádný exportovatelný text.''';
+  String get modifiedDocumentNoExportableText =>
+      'Upravený dokument neobsahuje žádný exportovatelný text.';
 
   @override
-  String get documentRemoved => '''Dokument odebrán''';
+  String get documentRemoved => 'Dokument odebrán';
 
   @override
-  String get folderRemoved => '''Složka odebrána''';
+  String get folderRemoved => 'Složka odebrána';
 
   @override
-  String get removeFolder => '''Odebrat složku''';
+  String get removeFolder => 'Odebrat složku';
 
   @override
-  String get removeDocument => '''Odebrat dokument''';
+  String get removeDocument => 'Odebrat dokument';
 
   @override
-  String get writeNewDocument => '''Napsat nový dokument''';
+  String get writeNewDocument => 'Napsat nový dokument';
 
   @override
-  String get addDocumentToLibraryHint => '''Přidat dokument do knihovny. Procházejte soubory v zařízení a přidejte je.''';
+  String get addDocumentToLibraryHint =>
+      'Přidat dokument do knihovny. Procházejte soubory v zařízení a přidejte je.';
 
   @override
-  String get documentTypeLabel => '''Dokument''';
+  String get documentTypeLabel => 'Dokument';
 
   @override
-  String get documentPosition => '''Pozice dokumentu''';
+  String get documentPosition => 'Pozice dokumentu';
 
   @override
-  String get folderTypeLabel => '''Složka''';
+  String get folderTypeLabel => 'Složka';
 
   @override
   String documentAddedOn(String date) {
-    return '''přidáno dne ${date}''';
+    return 'přidáno dne $date';
   }
 
   @override
   String documentTypeDescription(String extension) {
-    return '''typ ${extension}''';
+    return 'typ $extension';
   }
 
   @override
-  String get openFolderHint => '''Dvojitým klepnutím otevřete složku''';
+  String get openFolderHint => 'Dvojitým klepnutím otevřete složku';
 
   @override
-  String get openDocumentHint => '''Dvojitým klepnutím otevřete a přečtete dokument''';
+  String get openDocumentHint =>
+      'Dvojitým klepnutím otevřete a přečtete dokument';
 
   @override
   String removeItem(String name) {
-    return '''Odebrat ${name}''';
+    return 'Odebrat $name';
   }
 
   @override
-  String get removePodcast => '''Odebrat podcast''';
+  String get removePodcast => 'Odebrat podcast';
 
   @override
-  String get podcastRemoved => '''Podcast odebrán''';
+  String get podcastRemoved => 'Podcast odebrán';
 
   @override
-  String get documentPickerError => '''Chyba při otevírání souboru''';
+  String get documentPickerError => 'Chyba při otevírání souboru';
 
   @override
-  String get readDocument => '''Číst dokument''';
+  String get readDocument => 'Číst dokument';
 
   @override
-  String get documentReaderTitle => '''Čtečka dokumentů''';
+  String get documentReaderTitle => 'Čtečka dokumentů';
 
   @override
-  String get documentReaderEditHint => '''Klepnutím na odstavec ho upravíte. Přejetím nahoru nebo dolů přidáte záložku.''';
+  String get documentReaderEditHint =>
+      'Klepnutím na odstavec ho upravíte. Přejetím nahoru nebo dolů přidáte záložku.';
 
   @override
-  String get documentBookmarkHintSet => '''Přejetím nahoru nebo dolů nastavíte záložku.''';
+  String get documentBookmarkHintSet =>
+      'Přejetím nahoru nebo dolů nastavíte záložku.';
 
   @override
-  String get documentEditParagraphActionHint => '''Dvojitým klepnutím upravíte tento odstavec. ''';
+  String get documentEditParagraphActionHint =>
+      'Dvojitým klepnutím upravíte tento odstavec. ';
 
   @override
-  String get documentBookmarkHintReplace => '''Přejetím nahoru nebo dolů odeberete stávající záložku nebo ji nahradíte tímto odstavcem.''';
+  String get documentBookmarkHintReplace =>
+      'Přejetím nahoru nebo dolů odeberete stávající záložku nebo ji nahradíte tímto odstavcem.';
 
   @override
-  String get documentSetBookmarkAction => '''Nastavit záložku''';
+  String get documentSetBookmarkAction => 'Nastavit záložku';
 
   @override
-  String get documentRemoveBookmarkAction => '''Odebrat záložku''';
+  String get documentRemoveBookmarkAction => 'Odebrat záložku';
 
   @override
-  String get documentReplaceBookmarkAction => '''Odebrat a přidat novou záložku''';
+  String get documentReplaceBookmarkAction => 'Odebrat a přidat novou záložku';
 
   @override
-  String get searchInDocument => '''Hledat v dokumentu''';
+  String get searchInDocument => 'Hledat v dokumentu';
 
   @override
-  String get documentSearchFieldLabel => '''Hledat text''';
+  String get documentSearchFieldLabel => 'Hledat text';
 
   @override
-  String get documentSearchFieldHint => '''Slovo nebo fráze k vyhledání''';
+  String get documentSearchFieldHint => 'Slovo nebo fráze k vyhledání';
 
   @override
-  String get documentSearchEmptyQuery => '''Zadejte text k vyhledání.''';
+  String get documentSearchEmptyQuery => 'Zadejte text k vyhledání.';
 
   @override
-  String get documentSearchResultsTitle => '''Výsledky hledání v dokumentu''';
+  String get documentSearchResultsTitle => 'Výsledky hledání v dokumentu';
 
   @override
   String noDocumentSearchResults(String query) {
-    return '''Pro ${query} nebyly nalezeny žádné výsledky.''';
+    return 'Pro $query nebyly nalezeny žádné výsledky.';
   }
 
   @override
   String documentSearchResultParagraph(int number) {
-    return '''Odstavec ${number}''';
+    return 'Odstavec $number';
   }
 
   @override
-  String get edit => '''Upravit''';
+  String get edit => 'Upravit';
 
   @override
-  String get save => '''Uložit''';
+  String get save => 'Uložit';
 
   @override
-  String get cancel => '''Zrušit''';
+  String get cancel => 'Zrušit';
 
   @override
-  String get settingsReadingEngine => '''Modul čtení''';
+  String get settingsReadingEngine => 'Modul čtení';
 
   @override
-  String get settingsEdgeTtsQuality => '''Edge TTS (vysoká kvalita online)''';
+  String get settingsEdgeTtsQuality => 'Edge TTS (vysoká kvalita online)';
 
   @override
-  String get settingsSystemVoices => '''Systémové hlasy (VoiceOver / Google)''';
+  String get settingsSystemVoices => 'Systémové hlasy (VoiceOver / Google)';
 
   @override
-  String get settingsNoSystemVoices => '''Nejsou dostupné žádné systémové hlasy.''';
+  String get settingsNoSystemVoices => 'Nejsou dostupné žádné systémové hlasy.';
 
   @override
-  String get settingsDefaultVoiceHint => '''Výchozí hlas''';
+  String get settingsDefaultVoiceHint => 'Výchozí hlas';
 
   @override
-  String get settingsDefaultVoice => '''Výchozí''';
+  String get settingsDefaultVoice => 'Výchozí';
 
   @override
-  String get settingsVoiceSpeed => '''Rychlost: ''';
+  String get settingsVoiceSpeed => 'Rychlost: ';
 
   @override
-  String get settingsVoicePitch => '''Výška: ''';
+  String get settingsVoicePitch => 'Výška: ';
 
   @override
-  String get settingsVoiceSpeedLabel => '''Rychlost čtení''';
+  String get settingsVoiceSpeedLabel => 'Rychlost čtení';
 
   @override
-  String get settingsVoicePitchLabel => '''Výška hlasu''';
+  String get settingsVoicePitchLabel => 'Výška hlasu';
 
   @override
-  String get settingsTestVoice => '''Otestovat hlas''';
+  String get settingsTestVoice => 'Otestovat hlas';
 
   @override
-  String get settingsTestingVoice => '''Přehrávání...''';
+  String get settingsTestingVoice => 'Přehrávání...';
 
   @override
-  String get settingsVoiceTestText => '''Toto je test vybraného hlasu.''';
+  String get settingsVoiceTestText => 'Toto je test vybraného hlasu.';
 
   @override
   String settingsVoiceTestError(Object error) {
-    return '''Chyba testu hlasu: ${error}''';
+    return 'Chyba testu hlasu: $error';
   }
 
   @override
   String settingsVoiceSaveError(Object error) {
-    return '''Chyba uložení hlasu TTS: ${error}''';
+    return 'Chyba uložení hlasu TTS: $error';
   }
 
   @override
-  String get settingsUnsavedTitle => '''Neuložené změny''';
+  String get settingsUnsavedTitle => 'Neuložené změny';
 
   @override
-  String get settingsUnsavedMessage => '''Chcete před odchodem z nastavení uložit změny?''';
+  String get settingsUnsavedMessage =>
+      'Chcete před odchodem z nastavení uložit změny?';
 
   @override
-  String get settingsExitWithoutSaving => '''Odejít bez uložení''';
+  String get settingsExitWithoutSaving => 'Odejít bez uložení';
 
   @override
-  String get settingsSystemLanguage => '''Jazyk systému''';
+  String get settingsSystemLanguage => 'Jazyk systému';
 
   @override
-  String get settingsSystemVoice => '''Systémový hlas''';
+  String get settingsSystemVoice => 'Systémový hlas';
 
   @override
-  String get settingsAutoBookmark => '''Automatická záložka''';
+  String get settingsAutoBookmark => 'Automatická záložka';
 
   @override
-  String get settingsAutoBookmarkHint => '''Pokračovat v dokumentech, podcastech, RaiPlay a audiopopisech tam, kde jste skončili.''';
+  String get settingsAutoBookmarkHint =>
+      'Pokračovat v dokumentech, podcastech, RaiPlay a audiopopisech tam, kde jste skončili.';
 
   @override
-  String get settingsSeekStep => '''Krok zpět / vpřed pro média''';
+  String get settingsSeekStep => 'Krok zpět / vpřed pro média';
 
   @override
-  String get aiChatIntro => '''Jsem Sonarpad AI. Jak vám mohu pomoci?''';
+  String get aiChatIntro => 'Jsem Sonarpad AI. Jak vám mohu pomoci?';
 
   @override
-  String get meteoTitle => '''Počasí''';
+  String get meteoTitle => 'Počasí';
 
   @override
-  String get weatherCity => '''Město''';
+  String get weatherCity => 'Město';
 
   @override
-  String get weatherCityHint => '''Příklad: Praha''';
+  String get weatherCityHint => 'Příklad: Praha';
 
   @override
-  String get weatherCityNotFound => '''Město nebylo nalezeno''';
+  String get weatherCityNotFound => 'Město nebylo nalezeno';
 
   @override
-  String get weatherSearchError => '''Chyba při hledání''';
+  String get weatherSearchError => 'Chyba při hledání';
 
   @override
-  String get weatherToday => '''Dnes''';
+  String get weatherToday => 'Dnes';
 
   @override
-  String get weatherCurrentSituation => '''Aktuální situace''';
+  String get weatherCurrentSituation => 'Aktuální situace';
 
   @override
-  String get weatherTomorrow => '''Zítra''';
+  String get weatherTomorrow => 'Zítra';
 
   @override
-  String get weatherChooseDay => '''Vyberte den''';
+  String get weatherChooseDay => 'Vyberte den';
 
   @override
-  String get weatherCurrentTemperature => '''Aktuální teplota''';
+  String get weatherCurrentTemperature => 'Aktuální teplota';
 
   @override
-  String get weatherMaxTemperature => '''Maximální teplota''';
+  String get weatherMaxTemperature => 'Maximální teplota';
 
   @override
-  String get weatherMinTemperature => '''Minimální teplota''';
+  String get weatherMinTemperature => 'Minimální teplota';
 
   @override
-  String get weatherPrecipitation => '''Srážky''';
+  String get weatherPrecipitation => 'Srážky';
 
   @override
-  String get weatherPrecipitationProbability => '''Pravděpodobnost srážek''';
+  String get weatherPrecipitationProbability => 'Pravděpodobnost srážek';
 
   @override
-  String get weatherWind => '''Vítr''';
+  String get weatherWind => 'Vítr';
 
   @override
-  String get weatherRelativeHumidity => '''Relativní vlhkost''';
+  String get weatherRelativeHumidity => 'Relativní vlhkost';
 
   @override
-  String get settingsSecretCode => '''Kód Sonarpadu pro další funkce''';
+  String get settingsSecretCode => 'Kód Sonarpadu pro další funkce';
 
   @override
-  String get settingsRequestCode => '''Vyžádat kód od autora''';
+  String get settingsRequestCode => 'Vyžádat kód od autora';
 
   @override
-  String get settingsPasteCode => '''Vložit kód''';
+  String get settingsPasteCode => 'Vložit kód';
 
   @override
-  String get settingsCancel => '''Zrušit''';
+  String get settingsCancel => 'Zrušit';
 
   @override
-  String get settingsSend => '''Odeslat''';
+  String get settingsSend => 'Odeslat';
 
   @override
-  String get settingsFillFieldsCode => '''Vyplňte všechna pole pro vyžádání kódu.''';
+  String get settingsFillFieldsCode =>
+      'Vyplňte všechna pole pro vyžádání kódu.';
 
   @override
-  String get settingsName => '''Jméno''';
+  String get settingsName => 'Jméno';
 
   @override
-  String get settingsSurname => '''Příjmení''';
+  String get settingsSurname => 'Příjmení';
 
   @override
-  String get settingsEmail => '''E-mail''';
+  String get settingsEmail => 'E-mail';
 
   @override
-  String get settingsOperatingSystem => '''Operační systém''';
+  String get settingsOperatingSystem => 'Operační systém';
 
   @override
-  String settingsCodeRequestBody(String name, String surname, String email, String os) {
-    return '''Jméno: ${name}; Příjmení: ${surname}; E-mail: ${email}; Operační systém: ${os}''';
+  String settingsCodeRequestBody(
+      String name, String surname, String email, String os) {
+    return 'Jméno: $name; Příjmení: $surname; E-mail: $email; Operační systém: $os';
   }
 
   @override
-  String get settingsNameOptional => '''Jméno (volitelné)''';
+  String get settingsNameOptional => 'Jméno (volitelné)';
 
   @override
-  String get settingsMessageOptional => '''Zpráva (volitelná)''';
+  String get settingsMessageOptional => 'Zpráva (volitelná)';
 
   @override
-  String get settingsVerifyCodeAndSave => '''Ověřuji kód a ukládám...''';
+  String get settingsVerifyCodeAndSave => 'Ověřuji kód a ukládám...';
 
   @override
-  String get settingsViewSysLog => '''Zobrazit systémový protokol''';
+  String get settingsViewSysLog => 'Zobrazit systémový protokol';
 
   @override
   String settingsMailOpenError(Object error) {
-    return '''Chyba při otevírání e-mailu: ${error}''';
+    return 'Chyba při otevírání e-mailu: $error';
   }
 
   @override
-  String get ok => '''OK''';
+  String get ok => 'OK';
 
   @override
-  String get invia => '''Odeslat''';
+  String get invia => 'Odeslat';
 
   @override
-  String get saveArticle => '''Uložit článek''';
+  String get saveArticle => 'Uložit článek';
 
   @override
-  String get shareArticle => '''Sdílet článek''';
+  String get shareArticle => 'Sdílet článek';
 
   @override
-  String get articleSavedSuccess => '''Článek uložen do Dokumentů''';
+  String get articleSavedSuccess => 'Článek uložen do Dokumentů';
 
   @override
-  String get annulla => '''Zrušit''';
+  String get annulla => 'Zrušit';
 
   @override
-  String get compilaTuttiICampiPerRichiedereIlCodice => '''Vyplňte všechna pole pro vyžádání kódu.''';
+  String get compilaTuttiICampiPerRichiedereIlCodice =>
+      'Vyplňte všechna pole pro vyžádání kódu.';
 
   @override
-  String get selectFolder => '''Vybrat složku''';
+  String get selectFolder => 'Vybrat složku';
 
   @override
-  String get exportDocument => '''Exportovat dokument''';
+  String get exportDocument => 'Exportovat dokument';
 
   @override
-  String get exportFormatPrompt => '''V jakém formátu chcete dokument exportovat?''';
+  String get exportFormatPrompt =>
+      'V jakém formátu chcete dokument exportovat?';
 
   @override
-  String get textFormat => '''Text (.txt)''';
+  String get textFormat => 'Text (.txt)';
 
   @override
-  String get pdfFormat => '''PDF (.pdf)''';
+  String get pdfFormat => 'PDF (.pdf)';
 
   @override
-  String get docxFormat => '''DOCX (.docx)''';
+  String get docxFormat => 'DOCX (.docx)';
 
   @override
-  String get epubFormat => '''EPUB (.epub)''';
+  String get epubFormat => 'EPUB (.epub)';
 
   @override
-  String get audiobookMp3Format => '''Audiokniha MP3 (.mp3)''';
+  String get exportError => 'Chyba exportu';
 
   @override
-  String get audiobookM4bFormat => '''Audiokniha M4B (.m4b)''';
+  String get newFolder => 'Nová složka';
 
   @override
-  String get exportCompleteTitle => '''Export dokončen''';
+  String get folderNameHint => 'Název složky';
 
   @override
-  String get exportCompleteMessage => '''Soubor byl úspěšně vytvořen. Chcete ho uložit do Sonarpadu nebo sdílet?''';
+  String get create => 'Vytvořit';
 
   @override
-  String get saveInSonarpad => '''Uložit do Sonarpadu''';
+  String get createNewFolder => 'Vytvořit novou složku';
 
   @override
-  String get exportSavedInSonarpad => '''Soubor uložen do Dokumentů Sonarpadu.''';
-
-
-  @override
-  String get audiobookExportProgressTitle => '''Vytváření audioknihy''';
+  String get importExternalSources => 'Import z externích zdrojů';
 
   @override
-  String get audiobookExportPreparing => '''Příprava audioknihy...''';
+  String get importExternalSourcesTitle => 'Externí zdroje';
 
   @override
-  String get audiobookExportGeneratingAudio => '''Generování zvuku''';
+  String get importFromDropbox => 'Importovat dokumenty z Dropboxu';
 
   @override
-  String get audiobookExportConvertingAudio => '''Konečný převod zvukového souboru...''';
+  String get importFromProjectGutenberg => 'Import z Project Gutenberg';
 
   @override
-  String get audiobookExportFinalizing => '''Dokončování...''';
-
-
-  @override
-  String get exportError => '''Chyba exportu''';
+  String get projectGutenbergImportUnavailable =>
+      'Import z Project Gutenberg zatím není k dispozici.';
 
   @override
-  String get newFolder => '''Nová složka''';
+  String get importFromInternetArchive => 'Import z Internet Archive';
 
   @override
-  String get folderNameHint => '''Název složky''';
+  String get internetArchiveTitle => 'Internet Archive';
 
   @override
-  String get create => '''Vytvořit''';
+  String get internetArchiveSearchLabel => 'Hledat audio';
 
   @override
-  String get createNewFolder => '''Vytvořit novou složku''';
+  String get internetArchiveSourceLabel => 'Zdroj';
 
   @override
-  String get importExternalSources => '''Import z externích zdrojů''';
+  String get internetArchiveOldTimeRadio => 'Staré rozhlasové pořady';
 
   @override
-  String get importExternalSourcesTitle => '''Externí zdroje''';
+  String get internetArchiveSpeeches => 'Historické projevy';
 
   @override
-  String get importFromDropbox => '''Importovat dokumenty z Dropboxu''';
+  String get internetArchiveLiveMusic => 'Live Music Archive';
 
   @override
-  String get importFromProjectGutenberg => '''Import z Project Gutenberg''';
+  String get internetArchiveNoItemsFound =>
+      'Nebyly nalezeny žádné zvukové položky.';
 
   @override
-  String get projectGutenbergImportUnavailable => '''Import z Project Gutenberg zatím není k dispozici.''';
+  String get saveAudioInDocuments => 'Uložit audio do Dokumentů';
 
   @override
-  String get importFromInternetArchive => '''Import z Internet Archive''';
+  String get audioSavedInDocuments => 'Audio bylo uloženo do Dokumentů.';
 
   @override
-  String get internetArchiveTitle => '''Internet Archive''';
+  String get noAudioTracksAvailable => 'Nejsou k dispozici žádné audio stopy.';
 
   @override
-  String get internetArchiveSearchLabel => '''Hledat audio''';
+  String get importFromLibriVox => 'Import z LibriVox';
 
   @override
-  String get internetArchiveSourceLabel => '''Zdroj''';
+  String get gutenbergSearchLabel => 'Hledat knihu nebo autora';
 
   @override
-  String get internetArchiveOldTimeRadio => '''Staré rozhlasové pořady''';
+  String get sourceLanguageLabel => 'Jazyk';
 
   @override
-  String get internetArchiveSpeeches => '''Historické projevy''';
+  String get noGutenbergBooksFound => 'Nebyly nalezeny žádné knihy.';
 
   @override
-  String get internetArchiveLiveMusic => '''Live Music Archive''';
-
-  @override
-  String get internetArchiveNoItemsFound => '''Nebyly nalezeny žádné zvukové položky.''';
-
-  @override
-  String get saveAudioInDocuments => '''Uložit audio do Dokumentů''';
-
-  @override
-  String get audioSavedInDocuments => '''Audio bylo uloženo do Dokumentů.''';
-
-  @override
-  String get noAudioTracksAvailable => '''Nejsou k dispozici žádné audio stopy.''';
-
-  @override
-  String get importFromLibriVox => '''Import z LibriVox''';
-
-  @override
-  String get gutenbergSearchLabel => '''Hledat knihu nebo autora''';
-
-  @override
-  String get sourceLanguageLabel => '''Jazyk''';
-
-  @override
-  String get noGutenbergBooksFound => '''Nebyly nalezeny žádné knihy.''';
-
-  @override
-  String get loadMore => '''Načíst další''';
+  String get loadMore => 'Načíst další';
 
   @override
   String sourceLanguageValue(String language) {
-    return '''Jazyk: ${language}''';
+    return 'Jazyk: $language';
   }
 
   @override
-  String get gutenbergImportAndRead => '''Importovat a číst''';
+  String get gutenbergImportAndRead => 'Importovat a číst';
 
   @override
-  String get gutenbergImporting => '''Importuji...''';
+  String get gutenbergImporting => 'Importuji...';
 
   @override
-  String get librivoxSearchLabel => '''Hledat audioknihu''';
+  String get librivoxSearchLabel => 'Hledat audioknihu';
 
   @override
-  String get noLibrivoxAudiobooksFound => '''Nebyly nalezeny žádné audioknihy.''';
+  String get noLibrivoxAudiobooksFound => 'Nebyly nalezeny žádné audioknihy.';
 
   @override
-  String get librivoxAudiobookSaved => '''Audiokniha byla uložena do Dokumentů.''';
+  String get librivoxAudiobookSaved => 'Audiokniha byla uložena do Dokumentů.';
 
   @override
-  String get librivoxSaveAudiobook => '''Uložit audioknihu do Dokumentů''';
+  String get librivoxSaveAudiobook => 'Uložit audioknihu do Dokumentů';
 
   @override
-  String get librivoxSaving => '''Ukládám...''';
+  String get librivoxSaving => 'Ukládám...';
 
   @override
-  String get librivoxNoAudioTracks => '''Nejsou k dispozici žádné audio stopy.''';
+  String get librivoxNoAudioTracks => 'Nejsou k dispozici žádné audio stopy.';
 
   @override
-  String get librivoxNotTextExportable => '''Audioknihy LibriVox nelze exportovat jako text.''';
+  String get librivoxNotTextExportable =>
+      'Audioknihy LibriVox nelze exportovat jako text.';
 
   @override
   String sourceDurationValue(String duration) {
-    return '''Délka: ${duration}''';
+    return 'Délka: $duration';
   }
 
   @override
-  String get importFromPoetryDb => '''Import z PoetryDB''';
+  String get importFromPoetryDb => 'Import z PoetryDB';
 
   @override
-  String get poetryDbSearchLabel => '''Hledat báseň''';
+  String get poetryDbSearchLabel => 'Hledat báseň';
 
   @override
-  String get poetryDbSearchBy => '''Hledat podle''';
+  String get poetryDbSearchBy => 'Hledat podle';
 
   @override
-  String get poetryDbSearchByTitle => '''Název''';
+  String get poetryDbSearchByTitle => 'Název';
 
   @override
-  String get poetryDbSearchByAuthor => '''Autor''';
+  String get poetryDbSearchByAuthor => 'Autor';
 
   @override
-  String get poetryDbNoPoemsFound => '''Nebyly nalezeny žádné básně.''';
+  String get poetryDbNoPoemsFound => 'Nebyly nalezeny žádné básně.';
 
   @override
   String poetryDbLineCount(int count) {
-    return '''${count} řádků''';
+    return '$count řádků';
   }
 
   @override
-  String get moveDocument => '''Přesunout dokument''';
+  String get moveDocument => 'Přesunout dokument';
 
   @override
-  String get documentMoved => '''Úspěšně přesunuto''';
+  String get documentMoved => 'Úspěšně přesunuto';
 
   @override
-  String get outOfFolder => '''Mimo složku''';
+  String get outOfFolder => 'Mimo složku';
 
   @override
-  String get moveToAnotherFolder => '''Přesunout do jiné složky...''';
+  String get moveToAnotherFolder => 'Přesunout do jiné složky...';
 
   @override
-  String get ttsError => '''Chyba TTS''';
+  String get ttsError => 'Chyba TTS';
 
   @override
-  String get editParagraph => '''Upravit odstavec''';
+  String get editParagraph => 'Upravit odstavec';
 
   @override
-  String get editParagraphTextField => '''Textové pole pro úpravu odstavce''';
+  String get editParagraphTextField => 'Textové pole pro úpravu odstavce';
 
   @override
-  String get editParagraphHint => '''Upravte text odstavce''';
+  String get editParagraphHint => 'Upravte text odstavce';
 
   @override
-  String get applyAndSave => '''Použít a uložit''';
+  String get applyAndSave => 'Použít a uložit';
 
   @override
-  String get textEditedAndSaved => '''Text byl upraven a uložen v aktuálním dokumentu.''';
+  String get textEditedAndSaved =>
+      'Text byl upraven a uložen v aktuálním dokumentu.';
 
   @override
-  String get saveError => '''Chyba při ukládání''';
+  String get saveError => 'Chyba při ukládání';
 
   @override
-  String get docSavedInLibrary => '''Dokument byl uložen do knihovny''';
+  String get docSavedInLibrary => 'Dokument byl uložen do knihovny';
 
   @override
-  String get saveInLibrary => '''Uložit do knihovny''';
+  String get saveInLibrary => 'Uložit do knihovny';
 
   @override
-  String get documentTextLabel => '''Text dokumentu''';
+  String get documentTextLabel => 'Text dokumentu';
 
   @override
-  String get modifiedInSonarpad => '''Upraveno v Sonarpadu''';
+  String get modifiedInSonarpad => 'Upraveno v Sonarpadu';
 
   @override
-  String get noTextAvailableForDocument => '''Pro tento dokument není k dispozici žádný text.''';
+  String get noTextAvailableForDocument =>
+      'Pro tento dokument není k dispozici žádný text.';
 
   @override
   String bookmarkSet(int index) {
-    return '''Záložka nastavena na odstavec ${index}.''';
+    return 'Záložka nastavena na odstavec $index.';
   }
 
   @override
-  String get bookmarkRemoved => '''Záložka odstraněna.''';
+  String get bookmarkRemoved => 'Záložka odstraněna.';
 
   @override
-  String get docEmpty => '''Dokument je prázdný''';
+  String get docEmpty => 'Dokument je prázdný';
 
   @override
-  String get docSavedSuccessfully => '''Dokument byl úspěšně uložen!''';
+  String get docSavedSuccessfully => 'Dokument byl úspěšně uložen!';
 
   @override
-  String get writeDocument => '''Napsat dokument''';
+  String get writeDocument => 'Napsat dokument';
 
   @override
-  String get documentTitleOptional => '''Název (volitelný)''';
+  String get documentTitleOptional => 'Název (volitelný)';
 
   @override
-  String get documentTitleHint => '''Příklad: Nákupní poznámky''';
+  String get documentTitleHint => 'Příklad: Nákupní poznámky';
 
   @override
-  String get documentTextField => '''Text dokumentu''';
+  String get documentTextField => 'Text dokumentu';
 
   @override
-  String get documentTextHint => '''Začněte psát zde...''';
+  String get documentTextHint => 'Začněte psát zde...';
 
   @override
-  String get newDocumentDefaultName => '''Nový_dokument''';
+  String get newDocumentDefaultName => 'Nový_dokument';
 
   @override
-  String get saving => '''Ukládám...''';
+  String get saving => 'Ukládám...';
 
   @override
-  String get saveDocument => '''Uložit dokument''';
+  String get saveDocument => 'Uložit dokument';
 
   @override
-  String get addRssSource => '''Přidat RSS zdroj''';
+  String get addRssSource => 'Přidat RSS zdroj';
 
   @override
-  String get add => '''Přidat''';
+  String get add => 'Přidat';
 
   @override
-  String get errorPrefix => '''Chyba''';
+  String get errorPrefix => 'Chyba';
 
   @override
   String versionBuild(String version, String buildNumber) {
-    return '''Verze ${version} (sestavení ${buildNumber})''';
+    return 'Verze $version (sestavení $buildNumber)';
   }
 
   @override
-  String get whatIsNew => '''Co je nového''';
+  String get whatIsNew => 'Co je nového';
 
   @override
   String whatIsNewInVersion(String version) {
-    return '''Co je nového ve verzi ${version}''';
+    return 'Co je nového ve verzi $version';
   }
 
   @override
   String changelogLoadError(Object error) {
-    return '''Chyba při načítání novinek: ${error}''';
+    return 'Chyba při načítání novinek: $error';
   }
 
   @override
-  String get visitSonarpadSite => '''Navštívit web Sonarpad''';
+  String get visitSonarpadSite => 'Navštívit web Sonarpad';
 
   @override
   String visitSonarpadSiteWithUrl(String url) {
-    return '''Navštívit web Sonarpad: ${url}''';
+    return 'Navštívit web Sonarpad: $url';
   }
 
   @override
-  String get nowPlaying => '''Právě se přehrává''';
+  String get nowPlaying => 'Právě se přehrává';
 
   @override
-  String get fileImported => '''Soubor importován''';
+  String get fileImported => 'Soubor importován';
 
   @override
   String importZipError(Object error) {
-    return '''Chyba importu ZIP: ${error}''';
+    return 'Chyba importu ZIP: $error';
   }
 
   @override
-  String get dropboxLoginPrompt => '''Přihlaste se k Dropboxu, abyste mohli importovat dokumenty.''';
+  String get dropboxLoginPrompt =>
+      'Přihlaste se k Dropboxu, abyste mohli importovat dokumenty.';
 
   @override
-  String get loginToDropbox => '''Přihlásit se k Dropboxu''';
+  String get loginToDropbox => 'Přihlásit se k Dropboxu';
 
   @override
-  String get logoutFromDropbox => '''Odhlásit se''';
+  String get logoutFromDropbox => 'Odhlásit se';
 
   @override
-  String get dropboxLoginFailed => '''Přihlášení se nezdařilo nebo bylo zrušeno''';
+  String get dropboxLoginFailed => 'Přihlášení se nezdařilo nebo bylo zrušeno';
 
   @override
   String dropboxLoadFolderError(Object error) {
-    return '''Chyba při načítání složky: ${error}''';
+    return 'Chyba při načítání složky: $error';
   }
 
   @override
   String dropboxImportError(Object error) {
-    return '''Chyba importu: ${error}''';
+    return 'Chyba importu: $error';
   }
 
   @override
-  String get retry => '''Zkusit znovu''';
+  String get retry => 'Zkusit znovu';
 
   @override
-  String get goBack => '''Zpět''';
+  String get goBack => 'Zpět';
 
   @override
-  String get noSupportedFilesInFolder => '''V této složce nejsou žádné podporované soubory.''';
+  String get noSupportedFilesInFolder =>
+      'V této složce nejsou žádné podporované soubory.';
 
   @override
-  String get articleNotFound => '''Článek nebyl nalezen.''';
+  String get articleNotFound => 'Článek nebyl nalezen.';
 
   @override
-  String get errorOpening => '''Chyba při otevírání''';
+  String get errorOpening => 'Chyba při otevírání';
 
   @override
-  String get recentArticles => '''Nedávné články''';
+  String get recentArticles => 'Nedávné články';
 
   @override
-  String get clearHistory => '''Vymazat historii''';
+  String get clearHistory => 'Vymazat historii';
 
   @override
-  String get confirmClearHistory => '''Opravdu chcete vymazat všechny nedávné položky?''';
+  String get confirmClearHistory =>
+      'Opravdu chcete vymazat všechny nedávné položky?';
 
   @override
-  String get clear => '''Vymazat''';
+  String get clear => 'Vymazat';
 
   @override
-  String get noRecentSearches => '''Žádná nedávná hledání.''';
+  String get noRecentSearches => 'Žádná nedávná hledání.';
 
   @override
-  String get logCopiedToClipboard => '''Protokol byl zkopírován do schránky''';
+  String get logCopiedToClipboard => 'Protokol byl zkopírován do schránky';
 
   @override
-  String get systemLog => '''Systémový protokol''';
+  String get systemLog => 'Systémový protokol';
 
   @override
-  String get clearSystemLog => '''Vymazat protokol''';
+  String get clearSystemLog => 'Vymazat protokol';
 
   @override
-  String get copySystemLog => '''Kopírovat protokol''';
+  String get copySystemLog => 'Kopírovat protokol';
 
   @override
-  String get donateWithPaypal => '''Darovat přes PayPal''';
+  String get donateWithPaypal => 'Darovat přes PayPal';
 
   @override
-  String get bankTransferTitle => '''Bankovní převod''';
+  String get bankTransferTitle => 'Bankovní převod';
 
   @override
-  String get enableVideo => '''Povolit video''';
+  String get enableVideo => 'Povolit video';
 
   @override
-  String get calendar => '''Kalendář''';
+  String get calendar => 'Kalendář';
 
   @override
-  String get calendarHint => '''Otevřít kalendář se svátky, světcem dne a připomínkami''';
+  String get calendarHint =>
+      'Otevřít kalendář se svátky, světcem dne a připomínkami';
 
   @override
-  String get saintOfTheDay => '''Světec dne''';
+  String get saintOfTheDay => 'Světec dne';
 
   @override
-  String get quoteOfTheDay => '''Citát dne''';
+  String get quoteOfTheDay => 'Citát dne';
 
   @override
-  String get reminders => '''Připomínky''';
+  String get reminders => 'Připomínky';
 
   @override
-  String get addReminder => '''Přidat připomínku''';
+  String get addReminder => 'Přidat připomínku';
 
   @override
-  String get removeReminder => '''Odstranit připomínku''';
+  String get removeReminder => 'Odstranit připomínku';
 
   @override
-  String get noReminders => '''Žádné připomínky''';
+  String get noReminders => 'Žádné připomínky';
 
   @override
-  String get writeReminder => '''Sem napište připomínku...''';
+  String get writeReminder => 'Sem napište připomínku...';
 
   @override
-  String get saveReminder => '''Uložit''';
+  String get saveReminder => 'Uložit';
 
   @override
-  String get cancelReminder => '''Zrušit''';
+  String get cancelReminder => 'Zrušit';
 
   @override
-  String get backToToday => '''Zpět na dnešek''';
+  String get backToToday => 'Zpět na dnešek';
 
   @override
-  String get calendarToday => '''Dnes''';
+  String get calendarToday => 'Dnes';
 
   @override
-  String get calendarTomorrow => '''Zítra''';
+  String get calendarTomorrow => 'Zítra';
 
   @override
-  String get calendarYesterday => '''Včera''';
+  String get calendarYesterday => 'Včera';
 
   @override
-  String get share => '''Sdílet''';
+  String get share => 'Sdílet';
 
   @override
-  String get shareCalendarDayOptions => '''Možnosti sdílení''';
+  String get shareCalendarDayOptions => 'Možnosti sdílení';
 
   @override
-  String get shareCalendarDayOnly => '''Sdílet pouze den''';
+  String get shareCalendarDayOnly => 'Sdílet pouze den';
 
   @override
-  String get shareCalendarDayWithReminder => '''Sdílet den a připomínku''';
+  String get shareCalendarDayWithReminder => 'Sdílet den a připomínku';
 
   @override
-  String get listenToAll => '''Přečíst vše''';
+  String get listenToAll => 'Přečíst vše';
 
   @override
   String reminderSaved(int count) {
-    return '''${count} připomínek''';
+    return '$count připomínek';
   }
 
   @override
-  String get audiodescriptionTitle => '''Audiopopisy''';
+  String get audiodescriptionTitle => 'Audiopopisy';
 
   @override
-  String get audiodescriptionRecent => '''Nedávné''';
+  String get audiodescriptionRecent => 'Nedávné';
 
   @override
-  String get audiodescriptionAll => '''Všechny audiopopisy''';
-
-
+  String get audiodescriptionAll => 'Všechny audiopopisy';
 
   @override
-  String get audiodescriptionFilm => '''Filmy''';
+  String get audiodescriptionFilm => 'Filmy';
 
   @override
-  String get audiodescriptionSearch => '''Hledat...''';
+  String get audiodescriptionSearch => 'Hledat...';
 
   @override
-  String get audiodescriptionLoading => '''Načítám...''';
+  String get audiodescriptionLoading => 'Načítám...';
 
   @override
-  String get audiodescriptionError => '''Chyba při načítání katalogu''';
+  String get audiodescriptionError => 'Chyba při načítání katalogu';
 
   @override
-  String get audiodescriptionEmpty => '''Nebyly nalezeny žádné položky''';
+  String get audiodescriptionEmpty => 'Nebyly nalezeny žádné položky';
 
   @override
-  String get radio => '''Rádio''';
+  String get radio => 'Rádio';
 
   @override
-  String get radioHint => '''Poslouchat rádia a spravovat stanice''';
+  String get radioHint => 'Poslouchat rádia a spravovat stanice';
 
   @override
-  String get radioTitle => '''Rádia z celého světa''';
+  String get radioTitle => 'Rádia z celého světa';
 
   @override
-  String get radioFavoritesButton => '''Oblíbená rádia''';
+  String get radioFavoritesButton => 'Oblíbená rádia';
 
   @override
-  String get radioNoFavorites => '''Žádná oblíbená rádia.''';
+  String get radioNoFavorites => 'Žádná oblíbená rádia.';
 
   @override
-  String get radioSearchText => '''Hledat stanice''';
+  String get radioSearchText => 'Hledat stanice';
 
   @override
-  String get radioSearchHint => '''Název stanice nebo město...''';
+  String get radioSearchHint => 'Název stanice nebo město...';
 
   @override
-  String get radioLanguage => '''Jazyk''';
+  String get radioLanguage => 'Jazyk';
 
   @override
-  String get radioBrowseBy => '''Procházet podle''';
+  String get radioBrowseBy => 'Procházet podle';
 
   @override
-  String get radioBrowseByLanguage => '''Procházet podle jazyka''';
+  String get radioBrowseByLanguage => 'Procházet podle jazyka';
 
   @override
-  String get radioBrowseByCountry => '''Procházet podle země''';
+  String get radioBrowseByCountry => 'Procházet podle země';
 
   @override
-  String get radioCountry => '''Země''';
+  String get radioCountry => 'Země';
 
   @override
-  String get radioGenre => '''Žánr''';
-
-
-  @override
-  String get radioActiveFilters => '''Aktivní filtry''';
+  String get radioGenre => 'Žánr';
 
   @override
-  String get radioResetFilters => '''Obnovit filtry''';
+  String get radioActiveFilters => 'Aktivní filtry';
 
   @override
-  String get radioFiltersReset => '''Filtry obnoveny.''';
+  String get radioResetFilters => 'Obnovit filtry';
 
   @override
-  String get radioCity => '''Město''';
-  @override
-  String get radioSearch => '''Hledat''';
+  String get radioFiltersReset => 'Filtry obnoveny.';
 
   @override
-  String get radioSearching => '''Načítám rádia...''';
+  String get radioCity => 'Město';
 
   @override
-  String get radioSearchResults => '''Výsledky hledání rádia''';
+  String get radioSearch => 'Hledat';
 
   @override
-  String get radioNoResults => '''Nebyly nalezeny žádné stanice.''';
+  String get radioSearching => 'Načítám rádia...';
+
+  @override
+  String get radioSearchResults => 'Výsledky hledání rádia';
+
+  @override
+  String get radioNoResults => 'Nebyly nalezeny žádné stanice.';
 
   @override
   String radioResultsFound(int count) {
-    return '''Nalezeno stanic: ${count}''';
+    return 'Nalezeno stanic: $count';
   }
 
   @override
   String radioSearchError(Object error) {
-    return '''Chyba při hledání stanic: ${error}''';
+    return 'Chyba při hledání stanic: $error';
   }
 
   @override
   String radioNowPlaying(String name) {
-    return '''Přehrává se ${name}''';
+    return 'Přehrává se $name';
   }
 
   @override
   String radioPlayError(Object error) {
-    return '''Chyba streamu rádia: ${error}''';
+    return 'Chyba streamu rádia: $error';
   }
 
   @override
-  String get radioAddFavorite => '''Přidat do oblíbených''';
+  String get radioAddFavorite => 'Přidat do oblíbených';
 
   @override
-  String get radioRemoveFavorite => '''Odebrat z oblíbených''';
+  String get radioRemoveFavorite => 'Odebrat z oblíbených';
 
   @override
   String radioFavoriteAdded(String name) {
-    return '''Stanice ${name} byla přidána do oblíbených.''';
+    return 'Stanice $name byla přidána do oblíbených.';
   }
 
   @override
   String radioFavoriteRemoved(String name) {
-    return '''Stanice ${name} byla odebrána z oblíbených.''';
+    return 'Stanice $name byla odebrána z oblíbených.';
   }
 
   @override
-  String get tvSearchFieldLabel => '''Hledat TV kanály''';
+  String get tvSearchFieldLabel => 'Hledat TV kanály';
 
   @override
-  String get tvSearchFieldHint => '''Název kanálu...''';
+  String get tvSearchFieldHint => 'Název kanálu...';
 
   @override
-  String get tvSearchButton => '''Hledat''';
+  String get tvSearchButton => 'Hledat';
 
   @override
-  String get tvSearchResults => '''Výsledky TV kanálů''';
+  String get tvSearchResults => 'Výsledky TV kanálů';
 
   @override
-  String get tvSearchEmptyQuery => '''Zadejte název TV kanálu, který chcete hledat.''';
+  String get tvSearchEmptyQuery =>
+      'Zadejte název TV kanálu, který chcete hledat.';
 
   @override
   String tvSearchNoResults(String query) {
-    return '''Pro ${query} nebyly nalezeny žádné TV kanály.''';
+    return 'Pro $query nebyly nalezeny žádné TV kanály.';
   }
 
   @override
-  String get tvOpenChannelHint => '''Klepnutím přehrajete TV kanál''';
+  String get tvOpenChannelHint => 'Klepnutím přehrajete TV kanál';
 
   @override
   String tvNowOnAir(String title) {
-    return '''Právě vysílá: ${title}''';
+    return 'Právě vysílá: $title';
   }
 
   @override
-  String get radioAddCommunity => '''Přidat stanici do komunity Sonarpad''';
+  String get radioAddCommunity => 'Přidat stanici do komunity Sonarpad';
 
   @override
-  String get radioAddName => '''Název stanice''';
+  String get radioAddName => 'Název stanice';
 
   @override
-  String get radioAddUrl => '''Adresa streamu''';
+  String get radioAddUrl => 'Adresa streamu';
 
   @override
-  String get radioAddSubmit => '''Ověřit a přidat''';
+  String get radioAddSubmit => 'Ověřit a přidat';
 
   @override
-  String get radioAddMissingFields => '''Zadejte název stanice a adresu streamu.''';
+  String get radioAddMissingFields => 'Zadejte název stanice a adresu streamu.';
 
   @override
-  String get radioCommunityAdded => '''Stanice byla úspěšně přidána do komunity Sonarpad.''';
+  String get radioCommunityAdded =>
+      'Stanice byla úspěšně přidána do komunity Sonarpad.';
 
   @override
   String radioCommunityAddError(Object error) {
-    return '''Chyba při přidávání stanice: ${error}''';
+    return 'Chyba při přidávání stanice: $error';
   }
 
   @override
-  String get radioPlay => '''Přehrát''';
+  String get radioPlay => 'Přehrát';
 
   @override
-  String get startRecording => '''Spustit nahrávání''';
+  String get startRecording => 'Spustit nahrávání';
 
   @override
-  String get stopRecording => '''Zastavit nahrávání''';
+  String get stopRecording => 'Zastavit nahrávání';
 
   @override
-  String get recordings => '''Nahrávky''';
+  String get recordings => 'Nahrávky';
 
   @override
-  String get noRecordings => '''Žádné nahrávky.''';
+  String get noRecordings => 'Žádné nahrávky.';
 
   @override
-  String get recordingStarted => '''Nahrávání spuštěno.''';
+  String get recordingStarted => 'Nahrávání spuštěno.';
 
   @override
   String recordingSaved(Object path) {
-    return '''Nahrávka uložena: ${path}''';
+    return 'Nahrávka uložena: $path';
   }
 
   @override
   String recordingError(Object error) {
-    return '''Chyba nahrávání: ${error}''';
+    return 'Chyba nahrávání: $error';
   }
 
   @override
-  String get routeTitle => '''Trasy''';
+  String get routeTitle => 'Trasy';
 
   @override
-  String get routeFrom => '''Odkud''';
+  String get routeFrom => 'Odkud';
 
   @override
-  String get routeTo => '''Kam''';
+  String get routeTo => 'Kam';
 
   @override
-  String get routeCountry => '''Země''';
+  String get routeCountry => 'Země';
 
   @override
-  String get routeCountryItaly => '''Itálie''';
+  String get routeCountryItaly => 'Itálie';
 
   @override
-  String get routeCountryFrance => '''Francie''';
+  String get routeCountryFrance => 'Francie';
 
   @override
-  String get routeCountrySpain => '''Španělsko''';
+  String get routeCountrySpain => 'Španělsko';
 
   @override
-  String get routeCountryCzechRepublic => '''Česko''';
+  String get routeCountryCzechRepublic => 'Česko';
 
   @override
-  String get routeVehicle => '''Způsob dopravy''';
+  String get routeVehicle => 'Způsob dopravy';
 
   @override
-  String get routeType => '''Typ''';
+  String get routeType => 'Typ';
 
   @override
-  String get routeIncludeMunicipalities => '''Zahrnout obce na trase''';
+  String get routeIncludeMunicipalities => 'Zahrnout obce na trase';
 
   @override
-  String get routeWalking => '''Pěšky''';
+  String get routeWalking => 'Pěšky';
 
   @override
-  String get routeCycling => '''Na kole''';
+  String get routeCycling => 'Na kole';
 
   @override
-  String get routeDriving => '''Autem''';
+  String get routeDriving => 'Autem';
 
   @override
-  String get routeWheelchair => '''Vozík''';
+  String get routeWheelchair => 'Vozík';
 
   @override
-  String get routeFastest => '''Nejrychlejší''';
+  String get routeFastest => 'Nejrychlejší';
 
   @override
-  String get routeShortest => '''Nejkratší''';
+  String get routeShortest => 'Nejkratší';
 
   @override
-  String get routeCalculate => '''Vypočítat trasu''';
+  String get routeCalculate => 'Vypočítat trasu';
 
   @override
-  String get routeCalculating => '''Počítám...''';
+  String get routeCalculating => 'Počítám...';
 
   @override
-  String get routeChooseFrom => '''Vyberte výchozí bod''';
+  String get routeChooseFrom => 'Vyberte výchozí bod';
 
   @override
-  String get routeChooseTo => '''Vyberte cíl''';
+  String get routeChooseTo => 'Vyberte cíl';
 
   @override
-  String get routeCancel => '''Zrušit''';
+  String get routeCancel => 'Zrušit';
 
   @override
-  String get routeErrorMissingFields => '''Zadejte výchozí bod a cíl''';
+  String get routeErrorMissingFields => 'Zadejte výchozí bod a cíl';
 
   @override
-  String get routeErrorFromNotFound => '''Pro výchozí adresu nebyl nalezen žádný výsledek''';
+  String get routeErrorFromNotFound =>
+      'Pro výchozí adresu nebyl nalezen žádný výsledek';
 
   @override
-  String get routeErrorToNotFound => '''Pro cílovou adresu nebyl nalezen žádný výsledek''';
+  String get routeErrorToNotFound =>
+      'Pro cílovou adresu nebyl nalezen žádný výsledek';
 
   @override
-  String get routeResultsTitle => '''Dostupné trasy''';
+  String get routeResultsTitle => 'Dostupné trasy';
 
   @override
-  String get routeDistance => '''Vzdálenost''';
+  String get routeDistance => 'Vzdálenost';
 
   @override
-  String get routeDuration => '''Doba trvání''';
+  String get routeDuration => 'Doba trvání';
 
   @override
-  String get routeNavigation => '''Podrobnosti navigace''';
+  String get routeNavigation => 'Podrobnosti navigace';
 
   @override
-  String get routeStartMunicipality => '''Výchozí obec''';
+  String get routeStartMunicipality => 'Výchozí obec';
 
   @override
-  String get routeEnterMunicipality => '''Vstupujete do obce''';
+  String get routeEnterMunicipality => 'Vstupujete do obce';
 
   @override
   String routeError(Object error) {
-    return '''Chyba: ${error}''';
+    return 'Chyba: $error';
   }
 
   @override
-  String get radioLanguageIt => '''Italština''';
+  String get radioLanguageIt => 'Italština';
 
   @override
-  String get radioLanguageEn => '''Angličtina''';
+  String get radioLanguageEn => 'Angličtina';
 
   @override
-  String get radioLanguageDe => '''Němčina''';
+  String get radioLanguageDe => 'Němčina';
 
   @override
-  String get radioLanguageCountryCh => '''Švýcarsko''';
+  String get radioLanguageCountryCh => 'Švýcarsko';
 
   @override
-  String get radioLanguageEs => '''Španělština''';
+  String get radioLanguageEs => 'Španělština';
 
   @override
-  String get radioLanguagePt => '''Portugalština''';
+  String get radioLanguagePt => 'Portugalština';
 
   @override
-  String get radioLanguageSv => '''Švédština''';
+  String get radioLanguageSv => 'Švédština';
 
   @override
-  String get radioLanguageVi => '''Vietnamština''';
+  String get radioLanguageVi => 'Vietnamština';
 
   @override
-  String get radioLanguageCs => '''Čeština''';
+  String get radioLanguageCs => 'Čeština';
 
   @override
-  String get radioLanguagePl => '''Polština''';
+  String get radioLanguagePl => 'Polština';
 
   @override
-  String get radioLanguageFr => '''Francouzština''';
+  String get radioLanguageFr => 'Francouzština';
 
   @override
-  String get radioLanguageSr => '''Srbština''';
+  String get radioLanguageSr => 'Srbština';
 
   @override
-  String get radioLanguageUk => '''Ukrajinština''';
+  String get radioLanguageUk => 'Ukrajinština';
 
   @override
-  String get radioLanguageHi => '''Hindština''';
+  String get radioLanguageHi => 'Hindština';
 
   @override
-  String get radioLanguageLt => '''Litevština''';
+  String get radioLanguageLt => 'Litevština';
 
   @override
-  String get radioLanguageRu => '''Ruština''';
+  String get radioLanguageRu => 'Ruština';
 
   @override
-  String get radioLanguageZh => '''Čínština''';
+  String get radioLanguageZh => 'Čínština';
 
   @override
-  String get radioCountryOptionIt => '''Itálie''';
+  String get radioCountryOptionIt => 'Itálie';
 
   @override
-  String get radioCountryOptionUs => '''Spojené státy''';
+  String get radioCountryOptionUs => 'Spojené státy';
 
   @override
-  String get radioCountryOptionGb => '''Spojené království''';
+  String get radioCountryOptionGb => 'Spojené království';
 
   @override
-  String get radioCountryOptionFr => '''Francie''';
+  String get radioCountryOptionFr => 'Francie';
 
   @override
-  String get radioCountryOptionEs => '''Španělsko''';
+  String get radioCountryOptionEs => 'Španělsko';
 
   @override
-  String get radioCountryOptionDe => '''Německo''';
+  String get radioCountryOptionDe => 'Německo';
 
   @override
-  String get radioCountryOptionCh => '''Švýcarsko''';
+  String get radioCountryOptionCh => 'Švýcarsko';
 
   @override
-  String get radioCountryOptionAt => '''Rakousko''';
+  String get radioCountryOptionAt => 'Rakousko';
 
   @override
-  String get radioCountryOptionBe => '''Belgie''';
+  String get radioCountryOptionBe => 'Belgie';
 
   @override
-  String get radioCountryOptionNl => '''Nizozemsko''';
+  String get radioCountryOptionNl => 'Nizozemsko';
 
   @override
-  String get radioCountryOptionPt => '''Portugalsko''';
+  String get radioCountryOptionPt => 'Portugalsko';
 
   @override
-  String get radioCountryOptionBr => '''Brazílie''';
+  String get radioCountryOptionBr => 'Brazílie';
 
   @override
-  String get radioCountryOptionAr => '''Argentina''';
+  String get radioCountryOptionAr => 'Argentina';
 
   @override
-  String get radioCountryOptionMx => '''Mexiko''';
+  String get radioCountryOptionMx => 'Mexiko';
 
   @override
-  String get radioCountryOptionCa => '''Kanada''';
+  String get radioCountryOptionCa => 'Kanada';
 
   @override
-  String get radioCountryOptionAu => '''Austrálie''';
+  String get radioCountryOptionAu => 'Austrálie';
 
   @override
-  String get radioCountryOptionIe => '''Irsko''';
+  String get radioCountryOptionIe => 'Irsko';
 
   @override
-  String get radioCountryOptionSe => '''Švédsko''';
+  String get radioCountryOptionSe => 'Švédsko';
 
   @override
-  String get radioCountryOptionPl => '''Polsko''';
+  String get radioCountryOptionPl => 'Polsko';
 
   @override
-  String get radioCountryOptionJp => '''Japonsko''';
+  String get radioCountryOptionJp => 'Japonsko';
 
   @override
-  String get radioGenreOptionAll => '''Všechny žánry''';
+  String get radioGenreOptionAll => 'Všechny žánry';
 
   @override
-  String get radioGenreOptionNews => '''Zprávy''';
+  String get radioGenreOptionNews => 'Zprávy';
 
   @override
-  String get radioGenreOptionMusic => '''Hudba''';
+  String get radioGenreOptionMusic => 'Hudba';
 
   @override
-  String get radioGenreOptionSport => '''Sport''';
+  String get radioGenreOptionSport => 'Sport';
 
   @override
-  String get radioGenreOptionTalk => '''Mluvené slovo''';
+  String get radioGenreOptionTalk => 'Mluvené slovo';
 
   @override
-  String get radioGenreOptionPop => '''Pop''';
+  String get radioGenreOptionPop => 'Pop';
 
   @override
-  String get radioGenreOptionRock => '''Rock''';
+  String get radioGenreOptionRock => 'Rock';
 
   @override
-  String get radioGenreOptionClassical => '''Klasická hudba''';
+  String get radioGenreOptionClassical => 'Klasická hudba';
 
   @override
-  String get radioGenreOptionJazz => '''Jazz''';
+  String get radioGenreOptionJazz => 'Jazz';
 
   @override
-  String get radioGenreOptionDance => '''Dance / elektronika''';
+  String get radioGenreOptionDance => 'Dance / elektronika';
 
   @override
-  String get radioGenreOptionBlues => '''Blues''';
+  String get radioGenreOptionBlues => 'Blues';
 
   @override
-  String get radioGenreOptionCountry => '''Country / folk''';
+  String get radioGenreOptionCountry => 'Country / folk';
 
   @override
-  String get radioGenreOptionHiphop => '''Hip hop''';
+  String get radioGenreOptionHiphop => 'Hip hop';
 
   @override
-  String get radioGenreOptionElectronic => '''Elektronická hudba''';
+  String get radioGenreOptionElectronic => 'Elektronická hudba';
 
   @override
-  String get radioGenreOptionLatin => '''Latinská hudba''';
+  String get radioGenreOptionLatin => 'Latinská hudba';
 
   @override
-  String get radioGenreOptionReggae => '''Reggae''';
+  String get radioGenreOptionReggae => 'Reggae';
 
   @override
-  String get radioGenreOptionMetal => '''Metal''';
+  String get radioGenreOptionMetal => 'Metal';
 
   @override
-  String get radioGenreOptionFolk => '''Folk''';
+  String get radioGenreOptionFolk => 'Folk';
 
   @override
-  String get radioGenreOptionReligion => '''Náboženství''';
+  String get radioGenreOptionReligion => 'Náboženství';
 
   @override
-  String get radioGenreOptionLocal => '''Místní''';
+  String get radioGenreOptionLocal => 'Místní';
 
   @override
-  String get radioGenreOptionCulture => '''Kultura''';
+  String get radioGenreOptionCulture => 'Kultura';
 
   @override
-  String get radioGenreOptionOldies => '''70. / 80. / 90. léta''';
+  String get radioGenreOptionOldies => '70. / 80. / 90. léta';
 
   @override
-  String get radioGenreOptionKids => '''Pro děti''';
+  String get radioGenreOptionKids => 'Pro děti';
 
   @override
-  String get radioGenreOptionAmbient => '''Ambientní hudba''';
+  String get radioGenreOptionAmbient => 'Ambientní hudba';
 
   @override
-  String get radioCommunityLanguageItalian => '''Italština''';
+  String get radioCommunityLanguageItalian => 'Italština';
 
   @override
-  String get radioCommunityLanguageEnglish => '''Angličtina''';
+  String get radioCommunityLanguageEnglish => 'Angličtina';
 
   @override
-  String get radioCommunityLanguageSpanish => '''Španělština''';
+  String get radioCommunityLanguageSpanish => 'Španělština';
 
   @override
-  String get radioCommunityLanguageFrench => '''Francouzština''';
+  String get radioCommunityLanguageFrench => 'Francouzština';
 
   @override
-  String get radioCommunityLanguageGerman => '''Němčina''';
+  String get radioCommunityLanguageGerman => 'Němčina';
 
   @override
-  String get radioCommunityLanguagePortuguese => '''Portugalština''';
+  String get radioCommunityLanguagePortuguese => 'Portugalština';
 
   @override
-  String get radioCommunityLanguageSwedish => '''Švédština''';
+  String get radioCommunityLanguageSwedish => 'Švédština';
 
   @override
-  String get radioCommunityLanguageVietnamese => '''Vietnamština''';
+  String get radioCommunityLanguageVietnamese => 'Vietnamština';
 
   @override
-  String get radioCommunityLanguageCzech => '''Čeština''';
+  String get radioCommunityLanguageCzech => 'Čeština';
 
   @override
-  String get radioCommunityLanguagePolish => '''Polština''';
+  String get radioCommunityLanguagePolish => 'Polština';
 
   @override
-  String get radioCommunityLanguageSerbian => '''Srbština''';
+  String get radioCommunityLanguageSerbian => 'Srbština';
 
   @override
-  String get radioCommunityLanguageUkrainian => '''Ukrajinština''';
+  String get radioCommunityLanguageUkrainian => 'Ukrajinština';
 
   @override
-  String get radioCommunityLanguageLithuanian => '''Litevština''';
+  String get radioCommunityLanguageLithuanian => 'Litevština';
 
   @override
-  String get radioCommunityLanguageRussian => '''Ruština''';
+  String get radioCommunityLanguageRussian => 'Ruština';
 
   @override
-  String get radioCommunityLanguageChinese => '''Čínština''';
+  String get radioCommunityLanguageChinese => 'Čínština';
 
   @override
-  String get radioCommunityLanguageHindi => '''Hindština''';
+  String get radioCommunityLanguageHindi => 'Hindština';
 
   @override
   String routeDistanceMeters(int meters) {
-    return '''${meters} m''';
+    return '$meters m';
   }
 
   @override
   String routeDistanceKilometers(String kilometers) {
-    return '''${kilometers} km''';
+    return '$kilometers km';
   }
 
   @override
   String routeDurationMinutes(int minutes) {
-    return '''${minutes} min''';
+    return '$minutes min';
   }
 
   @override
   String routeDurationHoursMinutes(int hours, int minutes) {
-    return '''${hours}h ${minutes}m''';
+    return '${hours}h ${minutes}m';
   }
 
   @override
-  String get cinemaTitle => '''Filmy v kinech''';
+  String get cinemaTitle => 'Filmy v kinech';
 
   @override
-  String get cinemaNoMovies => '''Momentálně nebyly nalezeny žádné filmy.''';
+  String get cinemaNoMovies => 'Momentálně nebyly nalezeny žádné filmy.';
 
   @override
-  String get cinemaError => '''Chyba při načítání filmů.''';
+  String get cinemaError => 'Chyba při načítání filmů.';
 
   @override
   String cinemaReleased(String date) {
-    return '''Premiéra: ${date}''';
+    return 'Premiéra: $date';
   }
 
   @override
-  String get cinemaOverviewLabel => '''Obsah:''';
+  String get cinemaOverviewLabel => 'Obsah:';
 
   @override
-  String get cinemaUpcomingReleases => '''Připravované premiéry''';
+  String get cinemaUpcomingReleases => 'Připravované premiéry';
 
   @override
   String cinemaWillRelease(String date) {
-    return '''Bude uvedeno: ${date}''';
+    return 'Bude uvedeno: $date';
   }
 
   @override
-  String get cinemaOpenTrailer => '''Otevřít trailer''';
+  String get cinemaOpenTrailer => 'Otevřít trailer';
 
   @override
-  String get concertsTitle => '''Koncerty a události''';
+  String get concertsTitle => 'Koncerty a události';
 
   @override
-  String get concertsSearchHint => '''Zadejte město (např. Praha, Brno)''';
+  String get concertsSearchHint => 'Zadejte město (např. Praha, Brno)';
 
   @override
-  String get concertsSearchLabel => '''Hledat koncerty podle města''';
+  String get concertsSearchLabel => 'Hledat koncerty podle města';
 
   @override
-  String get concertsSearchTooltip => '''Hledat''';
+  String get concertsSearchTooltip => 'Hledat';
 
   @override
-  String get concertsInitialText => '''Zadejte nahoře název města, abyste viděli nadcházející hudební koncerty.''';
+  String get concertsInitialText =>
+      'Zadejte nahoře název města, abyste viděli nadcházející hudební koncerty.';
 
   @override
-  String get concertsEmpty => '''V tomto městě nebyly nalezeny žádné koncerty.''';
+  String get concertsEmpty => 'V tomto městě nebyly nalezeny žádné koncerty.';
 
   @override
-  String get concertsVenue => '''Místo koncertu:''';
+  String get concertsVenue => 'Místo koncertu:';
 
   @override
-  String get concertsBuyTickets => '''Koupit nebo zobrazit podrobnosti na Ticketmasteru''';
+  String get concertsBuyTickets =>
+      'Koupit nebo zobrazit podrobnosti na Ticketmasteru';
 
   @override
-  String get podcastPlayedEpisodes => '''Přehrané epizody''';
+  String get podcastPlayedEpisodes => 'Přehrané epizody';
 
   @override
-  String get podcastUnplayed => '''Nepřehrané epizody''';
+  String get podcastUnplayed => 'Nepřehrané epizody';
 
   @override
-  String get routeReadAction => '''Přečíst trasu''';
+  String get routeReadAction => 'Přečíst trasu';
 
   @override
-  String get routeSaveAction => '''Uložit do Dokumentů''';
+  String get routeSaveAction => 'Uložit do Dokumentů';
 
   @override
-  String get routeSaveSuccess => '''Trasa uložena do Dokumentů''';
-
-
-  @override
-  String get routeRecentRoutes => '''Nedávné trasy''';
+  String get routeSaveSuccess => 'Trasa uložena do Dokumentů';
 
   @override
-  String get routeRecentRoutesEmpty => '''Žádné nedávné trasy''';
+  String get deleteItem => 'Smazat';
+
+  @override
+  String get audiobookMp3Format => 'Audiokniha MP3 (.mp3)';
+
+  @override
+  String get audiobookM4bFormat => 'Audiokniha M4B (.m4b)';
+
+  @override
+  String get exportCompleteTitle => 'Export dokončen';
+
+  @override
+  String get exportCompleteMessage =>
+      'Soubor byl úspěšně vytvořen. Chcete ho uložit do Sonarpadu nebo sdílet?';
+
+  @override
+  String get saveInSonarpad => 'Uložit do Sonarpadu';
+
+  @override
+  String get exportSavedInSonarpad => 'Soubor uložen do Dokumentů Sonarpadu.';
+
+  @override
+  String get audiobookExportProgressTitle => 'Vytváření audioknihy';
+
+  @override
+  String get audiobookExportPreparing => 'Příprava audioknihy...';
+
+  @override
+  String get audiobookExportGeneratingAudio => 'Generování zvuku';
+
+  @override
+  String get audiobookExportConvertingAudio =>
+      'Konečný převod zvukového souboru...';
+
+  @override
+  String get audiobookExportFinalizing => 'Dokončování...';
+
+  @override
+  String get routeRecentRoutes => 'Nedávné trasy';
+
+  @override
+  String get routeRecentRoutesEmpty => 'Žádné nedávné trasy';
 
   @override
   String routeNavigationFromTo(Object from, Object to, Object date) {
-    return '''Podrobnosti navigace z ${from} do ${to} - ${date}''';
+    return 'Podrobnosti navigace z $from do $to - $date';
   }
-
 }

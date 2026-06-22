@@ -8,6 +8,10 @@ import 'package:share_plus/share_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/radio_recording_service.dart';
+import '../services/app_settings_service.dart';
+import '../services/raiplay_service.dart';
+import '../services/raiplay_sound_service.dart';
+import '../services/tv_service.dart';
 import 'podcast_episode_player_screen.dart';
 
 class RadioRecordingsScreen extends StatefulWidget {
@@ -19,17 +23,37 @@ class RadioRecordingsScreen extends StatefulWidget {
 
 class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
   final _service = RadioRecordingService();
+  final _settings = AppSettingsService();
   late Future<List<File>> _future;
+  bool _isAccessChecked = false;
+  bool _isAccessAllowed = false;
 
   @override
   void initState() {
     super.initState();
     _future = _service.listRecordings();
+    _checkAccess();
+  }
+
+
+  Future<void> _checkAccess() async {
+    final code = await _settings.getTvSecretCode();
+    final trimmed = code.trim();
+    final isAllowed = trimmed.isNotEmpty &&
+        (TvService().isSecretCodeValid(trimmed) ||
+            RaiPlayService().isSecretCodeValid(trimmed) ||
+            RaiPlaySoundService().isSecretCodeValid(trimmed));
+    if (!mounted) return;
+    setState(() {
+      _isAccessAllowed = isAllowed;
+      _isAccessChecked = true;
+    });
   }
 
   void _reload() {
     setState(() {
       _future = _service.listRecordings();
+    _checkAccess();
     });
   }
 
@@ -97,7 +121,11 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<List<File>>(
+      body: !_isAccessChecked
+          ? Center(child: CircularProgressIndicator(semanticsLabel: l10n.loading))
+          : !_isAccessAllowed
+              ? Center(child: Text(l10n.noRecordings))
+              : FutureBuilder<List<File>>(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
