@@ -1,7 +1,7 @@
 [
   {
     "version": "0.3.1",
-    "date": "2026-06-19",
+    "date": "2026-06-22",
     "it": [
       "Prima versione pubblica di Sonarpad Mobile su App Store. Include le principali funzioni già disponibili: lettura e organizzazione dei documenti, importazioni da Project Gutenberg, LibriVox, PoetryDB, Internet Archive e iTunes / Apple Devices, esportazione in DOCX, EPUB, MP3 e M4B, Notizie con RSS, OPML e cartelle, podcast, radio, percorsi, meteo, calendario e scelta del tema chiaro, scuro o automatico.",
       "Quando la ricerca radio non restituisce risultati a causa di problemi di connessione, Sonarpad mostra ora un messaggio più chiaro per l’utente, invece di un errore tecnico.",
