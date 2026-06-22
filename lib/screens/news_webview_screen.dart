@@ -320,9 +320,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         if (!mounted) return;
       }
       try {
+        final encodedPageUrl = jsonEncode(pageUrl);
         await _controller.runJavaScript('''
           (function () {
-            var pageUrl = ''' + jsonEncode(pageUrl) + '''.toLowerCase();
+            var pageUrl = $encodedPageUrl.toLowerCase();
             var isTorinoCronaca = pageUrl.indexOf('torinocronaca.it') !== -1;
             var removed = 0;
 
@@ -330,7 +331,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               return String(
                 (el.innerText || el.textContent || el.value ||
                  el.getAttribute('aria-label') || el.getAttribute('title') || '')
-              ).toLowerCase().replace(/\s+/g, ' ').trim();
+              ).toLowerCase().replace(/\\s+/g, ' ').trim();
             }
 
             function attrText(el) {

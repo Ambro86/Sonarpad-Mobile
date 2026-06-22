@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/voice_dictionary_service.dart';
@@ -73,18 +74,28 @@ class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
             else
               ...List.generate(_entries.length, (index) {
                 final entry = _entries[index];
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text('${entry.original} -> ${entry.replacement}'),
-                  subtitle: Text(
-                    entry.matchCase
-                        ? l10n.voiceDictionaryMatchCase
-                        : l10n.voiceDictionaryIgnoreCase,
-                  ),
-                  trailing: IconButton(
-                    tooltip: l10n.voiceDictionaryRemove,
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _removeEntry(index),
+                return Semantics(
+                  container: true,
+                  customSemanticsActions: {
+                    CustomSemanticsAction(
+                      label: l10n.voiceDictionaryRemove,
+                    ): () => _removeEntry(index),
+                  },
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('${entry.original} -> ${entry.replacement}'),
+                    subtitle: Text(
+                      entry.matchCase
+                          ? l10n.voiceDictionaryMatchCase
+                          : l10n.voiceDictionaryIgnoreCase,
+                    ),
+                    trailing: ExcludeSemantics(
+                      child: IconButton(
+                        tooltip: l10n.voiceDictionaryRemove,
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => _removeEntry(index),
+                      ),
+                    ),
                   ),
                 );
               }),
