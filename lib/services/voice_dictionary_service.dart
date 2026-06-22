@@ -34,15 +34,15 @@ class VoiceDictionaryService {
   Future<List<VoiceDictionaryEntry>> loadEntries() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_entriesKey);
-    if (raw == null || raw.isEmpty) return const [];
+    if (raw == null || raw.isEmpty) return <VoiceDictionaryEntry>[];
 
     Object? decoded;
     try {
       decoded = jsonDecode(raw);
     } catch (_) {
-      return const [];
+      return <VoiceDictionaryEntry>[];
     }
-    if (decoded is! List) return const [];
+    if (decoded is! List) return <VoiceDictionaryEntry>[];
 
     return decoded
         .whereType<Map>()
@@ -61,7 +61,7 @@ class VoiceDictionaryService {
     );
     if (normalized.original.isEmpty) return;
 
-    final entries = await loadEntries();
+    final entries = List<VoiceDictionaryEntry>.of(await loadEntries());
     entries.removeWhere(
       (item) =>
           item.original == normalized.original &&
@@ -72,7 +72,7 @@ class VoiceDictionaryService {
   }
 
   Future<void> removeAt(int index) async {
-    final entries = await loadEntries();
+    final entries = List<VoiceDictionaryEntry>.of(await loadEntries());
     if (index < 0 || index >= entries.length) return;
     entries.removeAt(index);
     await saveEntries(entries);
