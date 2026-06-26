@@ -82,6 +82,11 @@ final italianNewsSources = [
     uri: Uri.parse('https://www.open.online/feed/'),
   ),
   NewsRssSource(
+    name: 'Avvenire',
+    uri: Uri.parse(
+        'https://news.google.com/rss/search?q=site%3Aavvenire.it&hl=it&gl=IT&ceid=IT:it'),
+  ),
+  NewsRssSource(
     name: 'Il Post',
     uri: Uri.parse(
         'https://news.google.com/rss/search?q=site%3Ailpost.it&hl=it&gl=IT&ceid=IT:it'),
@@ -90,6 +95,22 @@ final italianNewsSources = [
     name: 'Internazionale',
     uri: Uri.parse(
         'https://news.google.com/rss/search?q=site%3Ainternazionale.it%20-inurl%3Aultime-notizie-reuters&hl=it&gl=IT&ceid=IT:it'),
+  ),
+  NewsRssSource(
+    name: 'Il Manifesto',
+    uri: Uri.parse('https://ilmanifesto.it/feed'),
+  ),
+  NewsRssSource(
+    name: 'Micromega',
+    uri: Uri.parse('https://www.micromega.net/feed/'),
+  ),
+  NewsRssSource(
+    name: 'L\'Espresso',
+    uri: Uri.parse('https://lespresso.it/feed'),
+  ),
+  NewsRssSource(
+    name: 'Il Domani',
+    uri: Uri.parse('https://www.editorialedomani.it/rss'),
   ),
   NewsRssSource(
     name: 'Affaritaliani',
@@ -110,6 +131,10 @@ final italianNewsSources = [
   NewsRssSource(
     name: 'HWUpgrade',
     uri: Uri.parse('https://www.hwupgrade.it/rss/news.xml'),
+  ),
+  NewsRssSource(
+    name: 'iPhone Italia',
+    uri: Uri.parse('https://www.iphoneitalia.com/feed'),
   ),
   NewsRssSource(
     name: 'Tom\'s Hardware Italia',

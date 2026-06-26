@@ -77,6 +77,37 @@ void main() {
       );
     });
 
+    test('keeps additional Italian news feeds enabled', () {
+      final avvenire = italianNewsSources.firstWhere(
+        (source) => source.name == 'Avvenire',
+      );
+      final ilManifesto = italianNewsSources.firstWhere(
+        (source) => source.name == 'Il Manifesto',
+      );
+      final micromega = italianNewsSources.firstWhere(
+        (source) => source.name == 'Micromega',
+      );
+      final espresso = italianNewsSources.firstWhere(
+        (source) => source.name == 'L\'Espresso',
+      );
+      final ilDomani = italianNewsSources.firstWhere(
+        (source) => source.name == 'Il Domani',
+      );
+      final iphoneItalia = italianNewsSources.firstWhere(
+        (source) => source.name == 'iPhone Italia',
+      );
+
+      expect(
+        avvenire.uri.toString(),
+        'https://news.google.com/rss/search?q=site%3Aavvenire.it&hl=it&gl=IT&ceid=IT:it',
+      );
+      expect(ilManifesto.uri.toString(), 'https://ilmanifesto.it/feed');
+      expect(micromega.uri.toString(), 'https://www.micromega.net/feed/');
+      expect(espresso.uri.toString(), 'https://lespresso.it/feed');
+      expect(ilDomani.uri.toString(), 'https://www.editorialedomani.it/rss');
+      expect(iphoneItalia.uri.toString(), 'https://www.iphoneitalia.com/feed');
+    });
+
     test('uses The Atlantic canonical all articles feed', () {
       final theAtlantic = englishNewsSources.firstWhere(
         (source) => source.name == 'The Atlantic – All Articles',
