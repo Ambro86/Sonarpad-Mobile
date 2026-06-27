@@ -46,6 +46,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   StreamSubscription<String>? _mediaKitErrorSubscription;
   StreamSubscription<dynamic>? _mediaKitPositionSubscription;
   StreamSubscription<dynamic>? _mediaKitDurationSubscription;
+  StreamSubscription<dynamic>? _mediaKitTracksSubscription;
   StreamSubscription<dynamic>? _mediaKitBufferingSubscription;
   StreamSubscription<dynamic>? _mediaKitCompletedSubscription;
   Timer? _mediaKitDiagnosticsTimer;
@@ -57,6 +58,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _isFavorite = false;
   bool _mediaKitPlaying = false;
   bool _mediaKitVideoSettingApplied = false;
+  bool _mediaKitRaiAudioTrackApplied = false;
   bool _mediaKitBuffering = false;
   bool _mediaKitCompleted = false;
   Duration? _mediaKitLastPosition;
@@ -137,6 +139,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
+      if (_requiresRaiAudioDescriptionVideoPlayback) {
+        final tvChannel = widget.tvChannel!;
+        final streams = await TvService().resolveAudioDescriptionStreams(tvChannel);
+        await _playMediaKitVideo(
+          streamUrl: streams.videoUrl,
+          preferRaiAudioDescription: streams.hasAudioDescription,
+        );
+        return;
+      }
+
       if (widget.isVideoSupported && _isVideoEnabled) {
         await _audio.stop();
         await _disposeMediaKitPlayer();
@@ -185,12 +197,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (mounted) {
         setState(() => _loading = false);
         AppLogger.log(
-            'RadioPlayer: _play complete. loading=false, isVideo=${_videoController != null}');
+            'RadioPlayer: _play complete. loading=false, isVideo=${_videoController != null || _mediaKitPlayer != null}');
       }
     }
   }
 
-  Future<void> _playMediaKitVideo() async {
+  Future<void> _playMediaKitVideo({
+    String? streamUrl,
+    bool preferRaiAudioDescription = false,
+  }) async {
+    final playbackUrl = streamUrl ?? widget.station.streamUrl;
     await _audio.stop();
     _videoController?.pause();
     _videoController?.dispose();
@@ -203,6 +219,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitController = controller;
     _mediaKitPlaying = false;
     _mediaKitVideoSettingApplied = false;
+    _mediaKitRaiAudioTrackApplied = false;
     _mediaKitBuffering = false;
     _mediaKitCompleted = false;
     _mediaKitLastPosition = null;
@@ -215,7 +232,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     var postStartStabilizationScheduled = false;
 
     AppLogger.log(
-      'RadioPlayer: MediaKit DASH open start station="${widget.station.name}" url=${widget.station.streamUrl} videoEnabled=$_isVideoEnabled volume=$_mediaKitVolume',
+      'RadioPlayer: MediaKit open start station="${widget.station.name}" url=$playbackUrl videoEnabled=$_isVideoEnabled volume=$_mediaKitVolume preferRaiAD=$preferRaiAudioDescription',
     );
 
     _mediaKitPlayingSubscription = player.stream.playing.listen((playing) {
@@ -295,6 +312,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     });
     _startMediaKitDiagnostics(player);
 
+    if (preferRaiAudioDescription) {
+      _mediaKitTracksSubscription = player.stream.tracks.listen((tracks) {
+        unawaited(_selectMediaKitRaiAudioDescriptionTrack(player, tracks));
+      });
+      unawaited(_retrySelectMediaKitRaiAudioDescriptionTrack(player));
+    }
+
     if (Platform.isIOS) {
       await _mediaCommands.invokeMethod(
         'setupMagicTap',
@@ -303,7 +327,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     await player.open(
       mk.Media(
-        widget.station.streamUrl,
+        playbackUrl,
         httpHeaders: const {
           'User-Agent':
               'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
@@ -311,8 +335,95 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       ),
     );
     AppLogger.log(
-      'RadioPlayer: MediaKit DASH open completed station="${widget.station.name}" playing=$_mediaKitPlaying buffering=$_mediaKitBuffering position=$_mediaKitLastPosition duration=$_mediaKitLastDuration',
+      'RadioPlayer: MediaKit open completed station="${widget.station.name}" playing=$_mediaKitPlaying buffering=$_mediaKitBuffering position=$_mediaKitLastPosition duration=$_mediaKitLastDuration preferRaiAD=$preferRaiAudioDescription',
     );
+  }
+
+
+  Future<void> _retrySelectMediaKitRaiAudioDescriptionTrack(
+    mk.Player player,
+  ) async {
+    for (final delay in const [
+      Duration(milliseconds: 500),
+      Duration(seconds: 1),
+      Duration(seconds: 2),
+      Duration(seconds: 4),
+    ]) {
+      await Future.delayed(delay);
+      if (!mounted || _mediaKitPlayer != player || _mediaKitRaiAudioTrackApplied) {
+        return;
+      }
+      try {
+        final tracks = (player.state as dynamic).tracks;
+        await _selectMediaKitRaiAudioDescriptionTrack(player, tracks);
+      } catch (error) {
+        AppLogger.log(
+          'RadioPlayer: RAI AD track retry not ready yet: $error',
+        );
+      }
+    }
+  }
+
+  Future<void> _selectMediaKitRaiAudioDescriptionTrack(
+    mk.Player player,
+    dynamic tracks,
+  ) async {
+    if (!mounted || _mediaKitPlayer != player || _mediaKitRaiAudioTrackApplied) {
+      return;
+    }
+
+    try {
+      final audioTracks = List<dynamic>.from((tracks as dynamic).audio as Iterable);
+      if (audioTracks.isEmpty) return;
+
+      dynamic describedTrack;
+      dynamic italianTrack;
+      for (final track in audioTracks) {
+        final language = _mediaKitTrackField(track, 'language').toLowerCase();
+        final title = _mediaKitTrackField(track, 'title').toLowerCase();
+        final id = _mediaKitTrackField(track, 'id');
+        AppLogger.log(
+          'RadioPlayer: MediaKit audio track candidate id=$id language=$language title=$title',
+        );
+
+        if (language == 'des' ||
+            title.contains('audiodescri') ||
+            title.contains('audio descri')) {
+          describedTrack = track;
+          break;
+        }
+        if (italianTrack == null && language == 'ita') {
+          italianTrack = track;
+        }
+      }
+
+      final selectedTrack = describedTrack ?? italianTrack;
+      if (selectedTrack == null) return;
+
+      await player.setAudioTrack(selectedTrack);
+      _mediaKitRaiAudioTrackApplied = true;
+      await AppLogger.log(
+        'RadioPlayer: MediaKit selected RAI preferred audio track id=${_mediaKitTrackField(selectedTrack, 'id')} language=${_mediaKitTrackField(selectedTrack, 'language')} title=${_mediaKitTrackField(selectedTrack, 'title')}',
+      );
+    } catch (error) {
+      AppLogger.log(
+        'RadioPlayer: failed to select RAI audiodescription audio track: $error',
+      );
+    }
+  }
+
+  String _mediaKitTrackField(dynamic track, String fieldName) {
+    try {
+      final value = switch (fieldName) {
+        'id' => (track as dynamic).id,
+        'language' => (track as dynamic).language,
+        'title' => (track as dynamic).title,
+        _ => null,
+      };
+      return value?.toString() ?? '';
+    } catch (_) {
+      return '';
+    }
   }
 
   void _startMediaKitDiagnostics(mk.Player player) {
@@ -537,7 +648,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   void _toggleVideo(bool enable) {
     AppLogger.log(
-      'RadioPlayer: enable video switch changed enable=$enable requiresVideoPlayback=$_requiresVideoPlayback position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
+      'RadioPlayer: enable video switch changed enable=$enable requiresVideoPlayback=$_requiresVideoPlayback requiresRaiADVideo=$_requiresRaiAudioDescriptionVideoPlayback position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
     );
     setState(() => _isVideoEnabled = enable);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -651,6 +762,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
   }
 
+  bool get _requiresRaiAudioDescriptionVideoPlayback =>
+      widget.isVideoSupported &&
+      _isVideoEnabled &&
+      widget.tvChannel != null &&
+      TvService().isRaiAudioDescriptionChannel(widget.tvChannel!);
+
   bool get _requiresVideoPlayback =>
       widget.isVideoSupported && TvService.isDashStreamUrl(widget.station.streamUrl);
 
@@ -686,12 +803,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await _mediaKitErrorSubscription?.cancel();
     await _mediaKitPositionSubscription?.cancel();
     await _mediaKitDurationSubscription?.cancel();
+    await _mediaKitTracksSubscription?.cancel();
     await _mediaKitBufferingSubscription?.cancel();
     await _mediaKitCompletedSubscription?.cancel();
     _mediaKitPlayingSubscription = null;
     _mediaKitErrorSubscription = null;
     _mediaKitPositionSubscription = null;
     _mediaKitDurationSubscription = null;
+    _mediaKitTracksSubscription = null;
     _mediaKitBufferingSubscription = null;
     _mediaKitCompletedSubscription = null;
     final player = _mediaKitPlayer;
@@ -702,6 +821,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitController = null;
     _mediaKitPlaying = false;
     _mediaKitVideoSettingApplied = false;
+    _mediaKitRaiAudioTrackApplied = false;
     _mediaKitBuffering = false;
     _mediaKitCompleted = false;
     _mediaKitLastPosition = null;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
@@ -17,6 +18,8 @@ class PodcastEpisodesScreen extends StatefulWidget {
 
 class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
   final _service = PodcastService();
+  final _scrollController = ScrollController();
+  final Map<String, GlobalKey> _episodeKeys = {};
   late Future<List<PodcastEpisode>> _episodes;
   Set<String> _playedAudioUrls = {};
 
@@ -25,6 +28,12 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
     super.initState();
     _episodes = _service.fetchEpisodes(widget.subscription);
     _loadPlayedEpisodes();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadPlayedEpisodes() async {
@@ -66,6 +75,63 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
     _loadPlayedEpisodes();
   }
 
+  Future<void> _openDateSelector(List<PodcastEpisode> episodes) async {
+    final selectedEpisode = await Navigator.push<PodcastEpisode>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _PodcastDateSelectorScreen(episodes: episodes),
+      ),
+    );
+    if (selectedEpisode == null || !mounted) return;
+
+    final visibleEpisodes = episodes
+        .where((e) => !_playedAudioUrls.contains(e.audioUrl))
+        .toList();
+    final episodeIndex = visibleEpisodes.indexWhere(
+      (e) => e.audioUrl == selectedEpisode.audioUrl,
+    );
+    if (episodeIndex < 0) return;
+
+    final hasDateButton = _hasDatedEpisodes(visibleEpisodes);
+    final listIndex = episodeIndex +
+        (_playedAudioUrls.isNotEmpty ? 1 : 0) +
+        (hasDateButton ? 1 : 0);
+
+    if (_scrollController.hasClients) {
+      final position = _scrollController.position;
+      final targetOffset = (listIndex * 96.0)
+          .clamp(position.minScrollExtent, position.maxScrollExtent)
+          .toDouble();
+      await _scrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final key = _episodeKeys[_episodeKey(selectedEpisode)];
+      final currentContext = key?.currentContext;
+      if (currentContext != null) {
+        Scrollable.ensureVisible(
+          currentContext,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          alignment: 0.1,
+        );
+      }
+    });
+  }
+
+  bool _hasDatedEpisodes(List<PodcastEpisode> episodes) =>
+      episodes.any((episode) => episode.publishedAt != null);
+
+  String _episodeKey(PodcastEpisode episode) =>
+      episode.id ?? episode.audioUrl;
+
+  GlobalKey _keyForEpisode(PodcastEpisode episode) =>
+      _episodeKeys.putIfAbsent(_episodeKey(episode), () => GlobalKey());
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -89,8 +155,10 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
             final unplayedEpisodes = allEpisodes
                 .where((e) => !_playedAudioUrls.contains(e.audioUrl))
                 .toList();
-            
-            final itemCount = unplayedEpisodes.length + (_playedAudioUrls.isNotEmpty ? 1 : 0);
+            final hasDateButton = _hasDatedEpisodes(unplayedEpisodes);
+            final itemCount = unplayedEpisodes.length +
+                (_playedAudioUrls.isNotEmpty ? 1 : 0) +
+                (hasDateButton ? 1 : 0);
 
             if (itemCount == 0) {
               return Center(child: Text(l10n.noAudioEpisodesFound));
@@ -98,11 +166,14 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
             return RefreshIndicator(
               onRefresh: _refresh,
               child: ListView.separated(
+                controller: _scrollController,
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                 itemCount: itemCount,
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
-                  if (_playedAudioUrls.isNotEmpty && index == 0) {
+                  var currentIndex = index;
+
+                  if (_playedAudioUrls.isNotEmpty && currentIndex == 0) {
                     return Card(
                       child: ListTile(
                         key: const ValueKey('podcast_played_episodes'),
@@ -113,14 +184,33 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                       ),
                     );
                   }
-                  
-                  final epIndex = _playedAudioUrls.isNotEmpty ? index - 1 : index;
-                  final episode = unplayedEpisodes[epIndex];
-                  
+
+                  if (_playedAudioUrls.isNotEmpty) {
+                    currentIndex -= 1;
+                  }
+
+                  if (hasDateButton && currentIndex == 0) {
+                    return Card(
+                      child: ListTile(
+                        key: const ValueKey('podcast_select_date'),
+                        leading: const Icon(Icons.event),
+                        title: Text(l10n.podcastSelectDate),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _openDateSelector(unplayedEpisodes),
+                      ),
+                    );
+                  }
+
+                  if (hasDateButton) {
+                    currentIndex -= 1;
+                  }
+
+                  final episode = unplayedEpisodes[currentIndex];
+
                   return Card(
-                    key: ValueKey('podcast_episode_${episode.id}'),
+                    key: _keyForEpisode(episode),
                     child: ListTile(
-                      key: ValueKey('podcast_episode_tile_${episode.id}'),
+                      key: ValueKey('podcast_episode_tile_${episode.id ?? episode.audioUrl}'),
                       title: Text(episode.title),
                       subtitle: Text(
                         episode.description,
@@ -138,6 +228,61 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
       ),
     );
   }
+}
+
+class _PodcastDateSelectorScreen extends StatelessWidget {
+  const _PodcastDateSelectorScreen({required this.episodes});
+
+  final List<PodcastEpisode> episodes;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final formatter = DateFormat.yMMMMd(l10n.localeName);
+    final dateEpisodes = <_PodcastDateEpisode>[];
+    final seenDates = <String>{};
+
+    for (final episode in episodes) {
+      final publishedAt = episode.publishedAt;
+      if (publishedAt == null) continue;
+      final localDate = publishedAt.toLocal();
+      final dateKey = '${localDate.year.toString().padLeft(4, '0')}-'
+          '${localDate.month.toString().padLeft(2, '0')}-'
+          '${localDate.day.toString().padLeft(2, '0')}';
+      if (seenDates.add(dateKey)) {
+        dateEpisodes.add(_PodcastDateEpisode(localDate, episode));
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.podcastSelectDate)),
+      body: SafeArea(
+        child: dateEpisodes.isEmpty
+            ? Center(child: Text(l10n.podcastNoDatesAvailable))
+            : ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: dateEpisodes.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                itemBuilder: (context, index) {
+                  final item = dateEpisodes[index];
+                  return Card(
+                    child: ListTile(
+                      title: Text(formatter.format(item.date)),
+                      onTap: () => Navigator.pop(context, item.episode),
+                    ),
+                  );
+                },
+              ),
+      ),
+    );
+  }
+}
+
+class _PodcastDateEpisode {
+  const _PodcastDateEpisode(this.date, this.episode);
+
+  final DateTime date;
+  final PodcastEpisode episode;
 }
 
 class _PlayedEpisodesScreen extends StatefulWidget {

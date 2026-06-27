@@ -16,6 +16,7 @@ import '../services/document_text_extractor.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
+import '../utils/document_unicode_normalizer.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
 
@@ -120,12 +121,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       final editedPath =
           await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
       if (editedPath != null && await File(editedPath).exists()) {
-        _documentText = await File(editedPath).readAsString();
+        _documentText = normalizeDocumentUnicode(
+          await File(editedPath).readAsString(),
+        );
       } else {
         final path =
             await DocumentLibraryService().resolveFilePath(_currentDoc);
         final result = await _extractor.extract(path: path, extension: ext);
-        _documentText = result.text;
+        _documentText = normalizeDocumentUnicode(result.text);
         _loadError = result.error;
       }
 

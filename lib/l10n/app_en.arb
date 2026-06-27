@@ -205,7 +205,7 @@
   "noSubscribedPodcasts": "No subscribed podcasts. Search for a podcast and tap a result to subscribe.",
   "localAudioFiles": "Local audio files",
   "noLocalAudioFiles": "No local audio files found.",
-  "importAudioFromITunes": "Import audio from iTunes / Apple Devices",
+  "importAudioFromITunes": "Import local audio files",
   "localAudioFilesFound": "Local audio files found: {count}",
   "importPodcastsFromFile": "Import podcasts from file",
   "exportPodcastsToFile": "Export podcasts to OPML file",
@@ -738,6 +738,22 @@
   "newsReadArticles": "Read articles",
   "weatherRecentCities": "Recent cities",
   "podcastPlayedEpisodes": "Played episodes",
+  "podcastSelectDate": "Select date",
+  "@podcastSelectDate": {
+    "description": "Button that opens the podcast date selector."
+  },
+  "podcastNoDatesAvailable": "No dates available for these episodes.",
+  "podcastChapters": "Chapters",
+  "@podcastChapters": {
+    "description": "Button and screen title for the podcast chapter list."
+  },
+  "podcastChaptersUnavailable": "No chapters available for this episode.",
+  "@podcastChaptersUnavailable": {
+    "description": "Shown when no podcast chapters are available for an episode."
+  },
+  "@podcastNoDatesAvailable": {
+    "description": "Shown when a podcast feed has no publication dates to choose from."
+  },
   "podcastUnplayed": "Unplayed episodes",
   "routeReadAction": "Read route",
   "routeSaveAction": "Save to documents",
@@ -817,5 +833,21 @@
   "podcastInvalidOpmlFile": "Invalid file. Select an OPML or XML file.",
   "@podcastInvalidOpmlFile": {
     "description": "Shown when the selected podcast import file is not an OPML or XML file."
+  },
+  "sortPodcastsAlphabetically": "Sort podcasts alphabetically",
+  "@sortPodcastsAlphabetically": {
+    "description": "Button that sorts the subscribed podcasts alphabetically."
+  },
+  "sortRadioFavoritesAlphabetically": "Sort favorites alphabetically",
+  "@sortRadioFavoritesAlphabetically": {
+    "description": "Button that sorts radio favorites alphabetically."
+  },
+  "podcastsSortedAlphabetically": "Podcasts sorted alphabetically.",
+  "@podcastsSortedAlphabetically": {
+    "description": "Status message shown after podcasts have been sorted alphabetically."
+  },
+  "radioFavoritesSortedAlphabetically": "Radio favorites sorted alphabetically.",
+  "@radioFavoritesSortedAlphabetically": {
+    "description": "Status message shown after radio favorites have been sorted alphabetically."
   }
 }

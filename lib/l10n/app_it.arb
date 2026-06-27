@@ -804,7 +804,7 @@
   "@noLocalAudioFiles": {
     "description": "Localized text for noLocalAudioFiles."
   },
-  "importAudioFromITunes": "Importa audio da iTunes / Apple Devices",
+  "importAudioFromITunes": "Importa file audio locali",
   "@importAudioFromITunes": {
     "description": "Localized text for importAudioFromITunes."
   },
@@ -2919,6 +2919,22 @@
   "concertsVenue": "Luogo del concerto:",
   "concertsBuyTickets": "Acquista o vedi dettagli su Ticketmaster",
   "podcastPlayedEpisodes": "Episodi ascoltati",
+  "podcastSelectDate": "Seleziona data",
+  "@podcastSelectDate": {
+    "description": "Button that opens the podcast date selector."
+  },
+  "podcastNoDatesAvailable": "Nessuna data disponibile per questi episodi.",
+  "podcastChapters": "Capitoli",
+  "@podcastChapters": {
+    "description": "Button and screen title for the podcast chapter list."
+  },
+  "podcastChaptersUnavailable": "Capitoli non disponibili per questo episodio.",
+  "@podcastChaptersUnavailable": {
+    "description": "Shown when no podcast chapters are available for an episode."
+  },
+  "@podcastNoDatesAvailable": {
+    "description": "Shown when a podcast feed has no publication dates to choose from."
+  },
   "podcastUnplayed": "Episodi non ascoltati",
   "routeReadAction": "Leggi percorso",
   "@routeReadAction": {
@@ -2989,5 +3005,21 @@
       "to": {},
       "date": {}
     }
+  },
+  "sortPodcastsAlphabetically": "Ordina podcast alfabeticamente",
+  "@sortPodcastsAlphabetically": {
+    "description": "Button that sorts the subscribed podcasts alphabetically."
+  },
+  "sortRadioFavoritesAlphabetically": "Ordina preferite alfabeticamente",
+  "@sortRadioFavoritesAlphabetically": {
+    "description": "Button that sorts radio favorites alphabetically."
+  },
+  "podcastsSortedAlphabetically": "Podcast ordinati alfabeticamente.",
+  "@podcastsSortedAlphabetically": {
+    "description": "Status message shown after podcasts have been sorted alphabetically."
+  },
+  "radioFavoritesSortedAlphabetically": "Radio preferite ordinate alfabeticamente.",
+  "@radioFavoritesSortedAlphabetically": {
+    "description": "Status message shown after radio favorites have been sorted alphabetically."
   }
 }

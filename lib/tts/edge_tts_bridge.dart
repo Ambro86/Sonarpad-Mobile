@@ -19,6 +19,8 @@ class EdgeTtsBridge {
   Future<File> speakToFile({
     required String text,
     String voice = 'it-IT-IsabellaNeural',
+    double? speed,
+    double? pitch,
   }) async {
     final dir = await getTemporaryDirectory();
     final outPath = p.join(
@@ -30,15 +32,26 @@ class EdgeTtsBridge {
     final logFile = File('$outPath.log.txt');
     await logFile.writeAsString('start voice=$voice text_len=${text.length}\n');
 
-    // Recupera impostazioni velocità e tono
+    // Recupera impostazioni velocità e tono. Quando il chiamante passa
+    // valori espliciti, per esempio dal pulsante "Test voce" delle
+    // impostazioni, usiamo quelli subito senza aspettare il salvataggio.
     final prefs = await SharedPreferences.getInstance();
-    final speed = prefs.getDouble('sonarpad_tts_speed') ?? 1.0;
-    final pitch = prefs.getDouble('sonarpad_tts_pitch') ?? 1.0;
+    final effectiveSpeed = (speed ?? prefs.getDouble('sonarpad_tts_speed') ?? 1.0)
+        .clamp(0.5, 2.0)
+        .toDouble();
+    final effectivePitch = (pitch ?? prefs.getDouble('sonarpad_tts_pitch') ?? 1.0)
+        .clamp(0.5, 2.0)
+        .toDouble();
 
-    final ratePercent = ((speed - 1.0) * 100).round();
+    await logFile.writeAsString(
+      'params speed=$effectiveSpeed pitch=$effectivePitch\n',
+      mode: FileMode.append,
+    );
+
+    final ratePercent = ((effectiveSpeed - 1.0) * 100).round();
     final rateStr = ratePercent >= 0 ? '+$ratePercent%' : '$ratePercent%';
 
-    final pitchPercent = ((pitch - 1.0) * 100).round();
+    final pitchPercent = ((effectivePitch - 1.0) * 100).round();
     final pitchStr = pitchPercent >= 0 ? '+$pitchPercent%' : '$pitchPercent%';
 
     try {

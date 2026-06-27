@@ -1,5 +1,86 @@
 [
   {
+    "version": "0.3.2",
+    "date": "2026-06-27",
+    "it": [
+      "Corretto un problema nei documenti: Sonarpad ora normalizza gli accenti Unicode in forma combinante, evitando che VoiceOver possa unire o leggere male più caratteri muovendosi carattere per carattere.",
+      "Corretto il test voce nelle impostazioni: modificando velocità o tono, il pulsante Test voce usa subito i nuovi valori senza dover prima salvare le impostazioni.",
+      "Aggiunto nei podcast il pulsante Seleziona data: apre una schermata pulita con le date disponibili e, scegliendone una, torna direttamente all’episodio corrispondente.",
+      "Migliorato il ritorno dalla lettura delle notizie: quando un articolo appena letto viene spostato negli Articoli letti, Sonarpad prova a riportare il focus sull’articolo successivo della lista invece che sul pulsante Indietro.",
+      "Aggiunti pulsanti localizzati per ordinare alfabeticamente i podcast sottoscritti e le radio preferite.",
+      "Chiarita l’etichetta del pulsante nei Podcast per l’importazione: ora si chiama “Importa file audio locali”, così non viene confusa con l’importazione dei podcast.",
+      "Aggiunto un pulsante localizzato Seleziona lettera nelle liste alfabetiche lunghe, come paesi, lingue e categorie, per saltare rapidamente alla lettera desiderata con VoiceOver.",
+      "Aggiunti nuovi paesi selezionabili nei Percorsi: Australia, Canada, Germania, Regno Unito e Stati Uniti.",
+      "Aggiunta una prima versione dei capitoli nei podcast: quando il feed fornisce un file capitoli JSON, oppure per alcuni episodi Buzzsprout compatibili, il player mostra il pulsante Capitoli e permette di saltare direttamente al punto scelto."
+    ],
+    "en": [
+      "Fixed a document reading issue: Sonarpad now normalizes Unicode combining accents, preventing VoiceOver from joining or misreading characters when moving character by character.",
+      "Fixed the voice test in Settings: when changing speed or pitch, the Test voice button now uses the new values immediately without requiring settings to be saved first.",
+      "Added a Select date button to podcast episodes: it opens a clean screen with available dates and jumps back to the corresponding episode after choosing one.",
+      "Improved returning from news reading: when the article just read is moved to Read articles, Sonarpad now tries to restore focus to the next article in the list instead of the Back button.",
+      "Added localized buttons to sort subscribed podcasts and radio favorites alphabetically.",
+      "Clarified the import button label in Podcasts: it now says “Import local audio files”, so it is not confused with podcast import.",
+      "Added a localized Select letter button to long alphabetical lists, such as countries, languages and categories, to quickly jump to the desired letter with VoiceOver.",
+      "Added new selectable countries in Routes: Australia, Canada, Germany, United Kingdom and United States.",
+      "Added a first version of podcast chapters: when the feed provides a JSON chapters file, or for some compatible Buzzsprout episodes, the player shows a Chapters button and lets you jump directly to the selected point."
+    ],
+    "fr": [
+      "Correction d’un problème dans les documents : Sonarpad normalise désormais les accents Unicode combinants, afin d’éviter que VoiceOver regroupe ou lise mal plusieurs caractères lors du déplacement caractère par caractère.",
+      "Correction du test vocal dans les réglages : lorsque la vitesse ou la hauteur est modifiée, le bouton Tester la voix utilise immédiatement les nouvelles valeurs sans devoir enregistrer d’abord les réglages.",
+      "Ajout d’un bouton Sélectionner une date dans les épisodes de podcast : il ouvre un écran simple avec les dates disponibles et revient directement à l’épisode correspondant après sélection.",
+      "Amélioration du retour après la lecture des actualités : lorsqu’un article lu est déplacé dans les articles lus, Sonarpad essaie maintenant de replacer le focus sur l’article suivant de la liste au lieu du bouton Retour.",
+      "Ajout de boutons localisés pour trier alphabétiquement les podcasts abonnés et les radios favorites.",
+      "Libellé du bouton d’importation clarifié dans les Podcasts : il s’appelle désormais « Importer des fichiers audio locaux », afin de ne pas le confondre avec l’importation de podcasts.",
+      "Ajout d’un bouton localisé Sélectionner une lettre dans les longues listes alphabétiques, comme les pays, les langues et les catégories, afin de rejoindre rapidement la lettre souhaitée avec VoiceOver.",
+      "Ajout de nouveaux pays sélectionnables dans les Itinéraires : Australie, Canada, Allemagne, Royaume-Uni et États-Unis.",
+      "Ajout d’une première version des chapitres de podcast : lorsque le flux fournit un fichier JSON de chapitres, ou pour certains épisodes Buzzsprout compatibles, le lecteur affiche le bouton Chapitres et permet d’aller directement au point choisi."
+    ],
+    "es": [
+      "Corregido un problema en los documentos: Sonarpad ahora normaliza los acentos Unicode combinantes, evitando que VoiceOver una o lea mal varios caracteres al moverse carácter por carácter.",
+      "Corregida la prueba de voz en Ajustes: al cambiar la velocidad o el tono, el botón Probar voz usa inmediatamente los nuevos valores sin tener que guardar antes los ajustes.",
+      "Añadido en los podcasts el botón Seleccionar fecha: abre una pantalla limpia con las fechas disponibles y vuelve directamente al episodio correspondiente tras elegir una.",
+      "Mejorado el retorno desde la lectura de noticias: cuando el artículo recién leído pasa a Artículos leídos, Sonarpad intenta devolver el foco al siguiente artículo de la lista en lugar del botón Atrás.",
+      "Añadidos botones localizados para ordenar alfabéticamente los podcasts suscritos y las radios favoritas.",
+      "Aclarada la etiqueta del botón de importación en Podcasts: ahora se llama «Importar archivos de audio locales», para no confundirlo con la importación de podcasts.",
+      "Añadido un botón localizado Seleccionar letra en las listas alfabéticas largas, como países, idiomas y categorías, para saltar rápidamente a la letra deseada con VoiceOver.",
+      "Añadidos nuevos países seleccionables en Rutas: Australia, Canadá, Alemania, Reino Unido y Estados Unidos.",
+      "Añadida una primera versión de capítulos en podcasts: cuando el feed proporciona un archivo JSON de capítulos, o en algunos episodios compatibles de Buzzsprout, el reproductor muestra el botón Capítulos y permite saltar directamente al punto elegido."
+    ],
+    "pt": [
+      "Corrigido um problema nos documentos: o Sonarpad agora normaliza os acentos Unicode combinantes, evitando que o VoiceOver junte ou leia mal vários caracteres ao navegar carácter a carácter.",
+      "Corrigido o teste de voz nas definições: ao alterar a velocidade ou o tom, o botão Testar voz usa imediatamente os novos valores sem ser necessário guardar primeiro as definições.",
+      "Adicionado nos podcasts o botão Selecionar data: abre um ecrã simples com as datas disponíveis e volta diretamente ao episódio correspondente depois de escolher uma.",
+      "Melhorado o regresso da leitura de notícias: quando o artigo acabado de ler é movido para Artigos lidos, o Sonarpad tenta agora repor o foco no artigo seguinte da lista em vez do botão Voltar.",
+      "Adicionados botões localizados para ordenar alfabeticamente os podcasts subscritos e as rádios favoritas.",
+      "Clarificada a etiqueta do botão de importação nos Podcasts: agora chama-se “Importar ficheiros de áudio locais”, para não ser confundida com a importação de podcasts.",
+      "Adicionado um botão localizado Selecionar letra nas listas alfabéticas longas, como países, idiomas e categorias, para saltar rapidamente para a letra pretendida com o VoiceOver.",
+      "Adicionados novos países selecionáveis nos Percursos: Austrália, Canadá, Alemanha, Reino Unido e Estados Unidos.",
+      "Adicionada uma primeira versão dos capítulos nos podcasts: quando o feed fornece um ficheiro JSON de capítulos, ou em alguns episódios Buzzsprout compatíveis, o leitor mostra o botão Capítulos e permite saltar diretamente para o ponto escolhido."
+    ],
+    "pl": [
+      "Naprawiono problem w dokumentach: Sonarpad normalizuje teraz łączące znaki akcentów Unicode, aby VoiceOver nie łączył ani nie odczytywał błędnie znaków podczas poruszania się znak po znaku.",
+      "Naprawiono test głosu w ustawieniach: po zmianie szybkości lub tonu przycisk Test głosu od razu używa nowych wartości, bez konieczności wcześniejszego zapisywania ustawień.",
+      "Dodano w podcastach przycisk Wybierz datę: otwiera czysty ekran z dostępnymi datami i po wybraniu wraca bezpośrednio do odpowiedniego odcinka.",
+      "Ulepszono powrót z czytania wiadomości: gdy właśnie przeczytany artykuł trafia do Przeczytanych artykułów, Sonarpad próbuje teraz przywrócić fokus na następny artykuł na liście zamiast na przycisk Wstecz.",
+      "Dodano zlokalizowane przyciski do alfabetycznego sortowania subskrybowanych podcastów i ulubionych stacji radiowych.",
+      "Doprecyzowano etykietę przycisku importu w Podcastach: teraz brzmi „Importuj lokalne pliki audio”, aby nie mylić jej z importem podcastów.",
+      "Dodano zlokalizowany przycisk Wybierz literę na długich listach alfabetycznych, takich jak kraje, języki i kategorie, aby szybko przejść do wybranej litery z VoiceOver.",
+      "Dodano nowe kraje do wyboru w Trasach: Australię, Kanadę, Niemcy, Wielką Brytanię i Stany Zjednoczone.",
+      "Dodano pierwszą wersję rozdziałów w podcastach: gdy kanał udostępnia plik JSON z rozdziałami albo w niektórych zgodnych odcinkach Buzzsprout, odtwarzacz pokazuje przycisk Rozdziały i pozwala przejść bezpośrednio do wybranego miejsca."
+    ],
+    "cs": [
+      "Opraven problém v dokumentech: Sonarpad nyní normalizuje kombinované akcenty Unicode, aby VoiceOver při pohybu po znacích nespojoval ani nečetl znaky nesprávně.",
+      "Opraven test hlasu v nastavení: po změně rychlosti nebo výšky tlačítko Test hlasu okamžitě použije nové hodnoty bez nutnosti nejprve uložit nastavení.",
+      "Do podcastů bylo přidáno tlačítko Vybrat datum: otevře čistou obrazovku s dostupnými daty a po výběru se vrátí přímo k odpovídající epizodě.",
+      "Vylepšen návrat ze čtení zpráv: když se právě přečtený článek přesune mezi přečtené články, Sonarpad se nyní pokusí vrátit fokus na další článek v seznamu místo na tlačítko Zpět.",
+      "Přidána lokalizovaná tlačítka pro abecední řazení odebíraných podcastů a oblíbených rádií.",
+      "Upřesněn popisek tlačítka importu v Podcastech: nyní se jmenuje „Importovat místní audio soubory“, aby se nepletl s importem podcastů.",
+      "Přidáno lokalizované tlačítko Vybrat písmeno v dlouhých abecedních seznamech, například u zemí, jazyků a kategorií, pro rychlý přesun na požadované písmeno s VoiceOverem.",
+      "Do Tras byly přidány nové volitelné země: Austrálie, Kanada, Německo, Spojené království a Spojené státy.",
+      "Přidána první verze kapitol v podcastech: když kanál poskytuje soubor kapitol JSON nebo u některých kompatibilních epizod Buzzsprout, přehrávač zobrazí tlačítko Kapitoly a umožní přejít přímo na vybrané místo."
+    ]
+  },
+  {
     "version": "0.3.1",
     "date": "2026-06-22",
     "it": [

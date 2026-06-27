@@ -274,6 +274,18 @@ class AppLocalizationsCs extends AppLocalizations {
   String get moveToPosition => 'Přesunout na pozici';
 
   @override
+  String get sortPodcastsAlphabetically => 'Seřadit podcasty abecedně';
+
+  @override
+  String get sortRadioFavoritesAlphabetically => 'Seřadit oblíbené abecedně';
+
+  @override
+  String get podcastsSortedAlphabetically => 'Podcasty seřazeny abecedně.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically => 'Oblíbené stanice seřazeny abecedně.';
+
+  @override
   String positionLabel(int position, String targetName) {
     return 'Pozice $position: před $targetName';
   }
@@ -578,8 +590,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get noLocalAudioFiles => 'Nebyly nalezeny žádné místní audio soubory.';
 
   @override
-  String get importAudioFromITunes =>
-      'Importovat audio z iTunes / Apple Devices';
+  String get importAudioFromITunes => 'Importovat místní audio soubory';
 
   @override
   String localAudioFilesFound(int count) {
@@ -2165,6 +2176,18 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get podcastPlayedEpisodes => 'Přehrané epizody';
+
+  @override
+  String get podcastSelectDate => 'Vybrat datum';
+
+  @override
+  String get podcastNoDatesAvailable => 'Pro tyto epizody nejsou k dispozici žádná data.';
+
+  @override
+  String get podcastChapters => 'Kapitoly';
+
+  @override
+  String get podcastChaptersUnavailable => 'Pro tuto epizodu nejsou dostupné žádné kapitoly.';
 
   @override
   String get podcastUnplayed => 'Nepřehrané epizody';

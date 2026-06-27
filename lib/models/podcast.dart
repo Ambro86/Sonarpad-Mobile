@@ -92,6 +92,21 @@ class PodcastCategory {
       };
 }
 
+
+class PodcastChapter {
+  final Duration start;
+  final String title;
+  final String? url;
+  final String? imageUrl;
+
+  const PodcastChapter({
+    required this.start,
+    required this.title,
+    this.url,
+    this.imageUrl,
+  });
+}
+
 class PodcastEpisode {
   final String title;
   final String description;
@@ -99,6 +114,8 @@ class PodcastEpisode {
   final String? videoUrl;
   final DateTime? publishedAt;
   final String? id;
+  final String? chaptersUrl;
+  final String? chaptersType;
 
   const PodcastEpisode({
     required this.title,
@@ -107,5 +124,7 @@ class PodcastEpisode {
     this.videoUrl,
     this.publishedAt,
     this.id,
+    this.chaptersUrl,
+    this.chaptersType,
   });
 }

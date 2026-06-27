@@ -9,9 +9,11 @@ import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
+import '../services/podcast_service.dart';
 import '../widgets/volume_slider.dart';
 import 'package:video_player/video_player.dart';
 import '../utils/app_logger.dart';
+import 'podcast_chapters_screen.dart';
 
 class PodcastEpisodePlayerScreen extends StatefulWidget {
   const PodcastEpisodePlayerScreen({
@@ -37,6 +39,7 @@ class _PodcastEpisodePlayerScreenState
 
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
+  final _podcastService = PodcastService();
   StreamSubscription<dynamic>? _mediaEventsSubscription;
 
   VideoPlayerController? _videoController;
@@ -315,6 +318,32 @@ class _PodcastEpisodePlayerScreenState
     await _audio.seekForward();
   }
 
+
+  Future<void> _openChapters() async {
+    AppLogger.log('PodcastPlayer: open chapters, $_logSubject');
+    final position = await Navigator.push<Duration>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/podcasts/chapters'),
+        builder: (_) => PodcastChaptersScreen(episode: widget.episode),
+      ),
+    );
+    if (position == null || !mounted) return;
+    AppLogger.log(
+      'PodcastPlayer: selected chapter position=${position.inMilliseconds}ms, '
+      'video=${_videoController != null}, $_logSubject',
+    );
+    if (_videoController != null) {
+      await _videoController!.seekTo(position);
+      if (_videoUsesExternalAudio) {
+        await _audio.seek(position);
+      }
+      if (mounted) setState(() {});
+    } else {
+      await _audio.seek(position);
+    }
+  }
+
   void _toggleVideo(bool enable) {
     AppLogger.log('PodcastPlayer: _toggleVideo enable=$enable, $_logSubject');
     setState(() => _isVideoEnabled = enable);
@@ -483,6 +512,17 @@ class _PodcastEpisodePlayerScreenState
                   _error!,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                   textAlign: TextAlign.center,
+                ),
+              ],
+              if (_podcastService.hasChapterSource(widget.episode)) ...[
+                const SizedBox(height: 16),
+                Center(
+                  child: OutlinedButton.icon(
+                    key: const ValueKey('podcast_chapters_button'),
+                    onPressed: _openChapters,
+                    icon: const Icon(Icons.list),
+                    label: Text(l10n.podcastChapters),
+                  ),
                 ),
               ],
               if (widget.isVideoSupported) ...[

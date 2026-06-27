@@ -150,12 +150,13 @@ class RadioService {
     final raw = prefs.getStringList(_favoritesPrefsKey) ?? const [];
     return _normalizeStations(
       raw.map((item) => RadioStation.fromJson(jsonDecode(item))).toList(),
+      sortByName: false,
     );
   }
 
   Future<void> saveFavorites(List<RadioStation> favorites) async {
     final prefs = await SharedPreferences.getInstance();
-    final normalized = _normalizeStations(favorites);
+    final normalized = _normalizeStations(favorites, sortByName: false);
     await prefs.setStringList(
       _favoritesPrefsKey,
       normalized.map((item) => jsonEncode(item.toJson())).toList(),

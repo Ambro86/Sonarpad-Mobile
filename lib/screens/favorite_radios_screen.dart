@@ -36,6 +36,19 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
     });
   }
 
+  String _sortKey(String value) => value.trim().toLowerCase();
+
+  Future<void> _sortFavoritesAlphabetically() async {
+    if (_favorites.length < 2) return;
+    final l10n = AppLocalizations.of(context);
+    final sorted = List<RadioStation>.from(_favorites)
+      ..sort((a, b) => _sortKey(a.name).compareTo(_sortKey(b.name)));
+    await _service.saveFavorites(sorted);
+    if (!mounted) return;
+    setState(() => _favorites = sorted);
+    showStatusMessage(context, l10n.radioFavoritesSortedAlphabetically);
+  }
+
   Future<void> _toggleFavorite(RadioStation station) async {
     final next = _favorites
         .where((item) => item.streamUrl != station.streamUrl)
@@ -101,38 +114,48 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
               child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : _favorites.isEmpty
               ? Center(child: Text(l10n.radioNoFavorites))
-              : ListView.builder(
+              : ListView(
                   padding: const EdgeInsets.all(16),
-                  itemCount: _favorites.length,
-                  itemBuilder: (context, index) {
-                    final station = _favorites[index];
-                    final isFirst = index == 0;
-                    final isLast = index == _favorites.length - 1;
-
-                    return Padding(
-                      key: ValueKey('favorite_radio_row_${station.streamUrl}'),
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: RadioTile(
-                        key: ValueKey('favorite_radio_tile_${station.streamUrl}'),
-                        station: station,
-                        isFavorite: true,
-                        isPlaying: false,
-                        onPlay: () => _play(station),
-                        onToggleFavorite: () => _toggleFavorite(station),
-                        extraSemanticsActions: {
-                          if (!isFirst)
-                            CustomSemanticsAction(label: l10n.moveUp): () =>
-                                _handleAction(_RadioAction.moveUp, index),
-                          if (!isLast)
-                            CustomSemanticsAction(label: l10n.moveDown): () =>
-                                _handleAction(_RadioAction.moveDown, index),
-                          CustomSemanticsAction(label: l10n.moveToPosition):
-                              () => _handleAction(
-                                  _RadioAction.moveToPosition, index),
-                        },
+                  children: [
+                    if (_favorites.length > 1) ...[
+                      FilledButton.icon(
+                        onPressed: _sortFavoritesAlphabetically,
+                        icon: const Icon(Icons.sort_by_alpha),
+                        label: Text(l10n.sortRadioFavoritesAlphabetically),
                       ),
-                    );
-                  },
+                      const SizedBox(height: 8),
+                    ],
+                    ..._favorites.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final station = entry.value;
+                      final isFirst = index == 0;
+                      final isLast = index == _favorites.length - 1;
+
+                      return Padding(
+                        key: ValueKey('favorite_radio_row_${station.streamUrl}'),
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: RadioTile(
+                          key: ValueKey('favorite_radio_tile_${station.streamUrl}'),
+                          station: station,
+                          isFavorite: true,
+                          isPlaying: false,
+                          onPlay: () => _play(station),
+                          onToggleFavorite: () => _toggleFavorite(station),
+                          extraSemanticsActions: {
+                            if (!isFirst)
+                              CustomSemanticsAction(label: l10n.moveUp): () =>
+                                  _handleAction(_RadioAction.moveUp, index),
+                            if (!isLast)
+                              CustomSemanticsAction(label: l10n.moveDown): () =>
+                                  _handleAction(_RadioAction.moveDown, index),
+                            CustomSemanticsAction(label: l10n.moveToPosition):
+                                () => _handleAction(
+                                    _RadioAction.moveToPosition, index),
+                          },
+                        ),
+                      );
+                    }),
+                  ],
                 ),
     );
   }

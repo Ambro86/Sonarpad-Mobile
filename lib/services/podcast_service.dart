@@ -26,6 +26,8 @@ class PodcastService {
           description: decoded['description'] ?? '',
           audioUrl: decoded['audioUrl'] ?? '',
           publishedAt: decoded['publishedAt'] != null ? DateTime.parse(decoded['publishedAt']) : null,
+          chaptersUrl: decoded['chaptersUrl'] as String?,
+          chaptersType: decoded['chaptersType'] as String?,
         ));
       } catch (_) {}
     }
@@ -53,6 +55,8 @@ class PodcastService {
       'description': e.description,
       'audioUrl': e.audioUrl,
       'publishedAt': e.publishedAt?.toIso8601String(),
+      'chaptersUrl': e.chaptersUrl,
+      'chaptersType': e.chaptersType,
     })).toList();
     
     await prefs.setStringList(key, encoded);
@@ -1354,13 +1358,20 @@ class PodcastService {
           final audioUrl = enclosure?.getAttribute('url') ??
               mediaContent?.getAttribute('url') ??
               '';
+          final chaptersLink = _extractPodcastChaptersLink(
+            item,
+            subscription.feedUrl,
+          );
           return PodcastEpisode(
             title: item.findElements('title').firstOrNull?.innerText.trim() ??
                 'Episodio senza titolo',
             description: _cleanHtml(
                 item.findElements('description').firstOrNull?.innerText ?? ''),
             audioUrl: audioUrl,
-            publishedAt: null,
+            publishedAt: _parsePodcastDate(
+                item.findElements('pubDate').firstOrNull?.innerText ?? ''),
+            chaptersUrl: chaptersLink?.url,
+            chaptersType: chaptersLink?.type,
           );
         })
         .where((e) => e.audioUrl.isNotEmpty)
@@ -1393,6 +1404,248 @@ class PodcastService {
     return url.trim().toLowerCase().contains('raiplaysound.it');
   }
 
+  DateTime? _parsePodcastDate(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return null;
+    try {
+      return HttpDate.parse(trimmed).toLocal();
+    } catch (_) {}
+
+    final rfc822Match = RegExp(
+      r'^(?:[A-Za-z]{3},\s*)?(\d{1,2})\s+'
+      r'([A-Za-z]{3})\s+'
+      r'(\d{4})\s+'
+      r'(\d{1,2}):(\d{2})(?::(\d{2}))?\s+'
+      r'([A-Za-z]{1,5}|[+-]\d{4})',
+      caseSensitive: false,
+    ).firstMatch(trimmed);
+    if (rfc822Match != null) {
+      final months = {
+        'jan': 1,
+        'feb': 2,
+        'mar': 3,
+        'apr': 4,
+        'may': 5,
+        'jun': 6,
+        'jul': 7,
+        'aug': 8,
+        'sep': 9,
+        'oct': 10,
+        'nov': 11,
+        'dec': 12,
+      };
+      final month = months[rfc822Match.group(2)!.toLowerCase()];
+      if (month != null) {
+        final localLikeUtc = DateTime.utc(
+          int.parse(rfc822Match.group(3)!),
+          month,
+          int.parse(rfc822Match.group(1)!),
+          int.parse(rfc822Match.group(4)!),
+          int.parse(rfc822Match.group(5)!),
+          int.parse(rfc822Match.group(6) ?? '0'),
+        );
+        final zone = rfc822Match.group(7)!.toUpperCase();
+        var offset = Duration.zero;
+        final numericZone = RegExp(r'^([+-])(\d{2})(\d{2})$').firstMatch(zone);
+        if (numericZone != null) {
+          final minutes = int.parse(numericZone.group(2)!) * 60 +
+              int.parse(numericZone.group(3)!);
+          offset = Duration(
+            minutes: numericZone.group(1) == '+' ? minutes : -minutes,
+          );
+        }
+        return localLikeUtc.subtract(offset).toLocal();
+      }
+    }
+
+    try {
+      return DateTime.parse(trimmed).toLocal();
+    } catch (_) {}
+    return null;
+  }
+
+
+  Future<List<PodcastChapter>> fetchEpisodeChapters(PodcastEpisode episode) async {
+    final candidates = <String>[];
+    void addCandidate(String? url) {
+      final trimmed = url?.trim();
+      if (trimmed == null || trimmed.isEmpty) return;
+      if (!candidates.any((candidate) => candidate == trimmed)) {
+        candidates.add(trimmed);
+      }
+    }
+
+    addCandidate(episode.chaptersUrl);
+    addCandidate(extractEmbeddedChaptersUrl(episode.audioUrl));
+    addCandidate(extractBuzzsproutChaptersUrl(episode.audioUrl));
+
+    for (final url in candidates) {
+      try {
+        final response = await _client.get(Uri.parse(url));
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+          continue;
+        }
+        final chapters = _parsePodcastChaptersJson(response.bodyBytes);
+        if (chapters.isNotEmpty) {
+          return chapters;
+        }
+      } catch (_) {
+        // Prova il candidato successivo. Alcuni feed dichiarano link capitoli
+        // non sempre raggiungibili o protetti da CDN.
+      }
+    }
+    return const [];
+  }
+
+  bool hasChapterSource(PodcastEpisode episode) {
+    return (episode.chaptersUrl?.trim().isNotEmpty ?? false) ||
+        extractEmbeddedChaptersUrl(episode.audioUrl) != null ||
+        extractBuzzsproutChaptersUrl(episode.audioUrl) != null;
+  }
+
+  String? extractEmbeddedChaptersUrl(String url) {
+    const marker = '/chapters/';
+    final idx = url.lastIndexOf(marker);
+    if (idx < 0) return null;
+    final tail = url.substring(idx + marker.length);
+    if (tail.startsWith('http://') || tail.startsWith('https://')) {
+      return tail;
+    }
+    return null;
+  }
+
+  String? extractBuzzsproutChaptersUrl(String url) {
+    // Supporta URL Buzzsprout diretti e URL wrappati, come op3.dev/.../www.buzzsprout.com/...
+    const marker = '/episodes/';
+    final episodeIdx = url.indexOf(marker);
+    if (episodeIdx < 0) return null;
+    final before = url.substring(0, episodeIdx);
+    String? showId;
+    for (final segment in before.split('/').reversed) {
+      if (segment.isNotEmpty && RegExp(r'^[0-9]+$').hasMatch(segment)) {
+        showId = segment;
+        break;
+      }
+    }
+    if (showId == null) return null;
+    final after = url.substring(episodeIdx + marker.length);
+    final match = RegExp(r'^[0-9]+').firstMatch(after);
+    final episodeId = match?.group(0);
+    if (episodeId == null || episodeId.isEmpty) return null;
+    return 'https://www.buzzsprout.com/$showId/$episodeId/chapters.json';
+  }
+
+  _PodcastChaptersLink? _extractPodcastChaptersLink(
+    XmlElement item,
+    String feedUrl,
+  ) {
+    for (final element in item.findAllElements('chapters', namespace: '*')) {
+      final url = element.getAttribute('url') ?? element.getAttribute('href');
+      final resolved = _resolvePodcastUrl(feedUrl, url);
+      if (resolved != null) {
+        return _PodcastChaptersLink(
+          resolved,
+          element.getAttribute('type'),
+        );
+      }
+    }
+
+    for (final link in item.findAllElements('link', namespace: '*')) {
+      final href = link.getAttribute('href');
+      if (href == null || href.trim().isEmpty) continue;
+      final rel = (link.getAttribute('rel') ?? '').toLowerCase();
+      final type = link.getAttribute('type');
+      final hrefLower = href.toLowerCase();
+      final typeLower = (type ?? '').toLowerCase();
+      final looksLikeChapters = rel.contains('chapter') ||
+          hrefLower.contains('/chapters/') ||
+          hrefLower.contains('chapters.json') ||
+          hrefLower.contains('chapter') ||
+          (typeLower.contains('json') &&
+              (rel.contains('podcast') || hrefLower.contains('chapter')));
+      if (!looksLikeChapters) continue;
+      final resolved = _resolvePodcastUrl(feedUrl, href);
+      if (resolved != null) {
+        return _PodcastChaptersLink(resolved, type);
+      }
+    }
+
+    return null;
+  }
+
+  String? _resolvePodcastUrl(String feedUrl, String? url) {
+    final trimmed = url?.trim();
+    if (trimmed == null || trimmed.isEmpty) return null;
+    try {
+      return Uri.parse(feedUrl).resolve(trimmed).toString();
+    } catch (_) {
+      return trimmed;
+    }
+  }
+
+  List<PodcastChapter> _parsePodcastChaptersJson(List<int> bytes) {
+    final decoded = jsonDecode(utf8.decode(bytes));
+    if (decoded is! Map<String, dynamic>) return const [];
+    final rawChapters = decoded['chapters'];
+    if (rawChapters is! List) return const [];
+    final chapters = <PodcastChapter>[];
+    for (final raw in rawChapters) {
+      if (raw is! Map) continue;
+      final start = _parseChapterStartTime(raw['startTime']);
+      if (start == null || start < Duration.zero) continue;
+      final title = raw['title']?.toString().trim();
+      if (title == null || title.isEmpty) continue;
+      final url = raw['url']?.toString().trim();
+      final image = (raw['img'] ?? raw['image'])?.toString().trim();
+      chapters.add(PodcastChapter(
+        start: start,
+        title: title,
+        url: url == null || url.isEmpty ? null : url,
+        imageUrl: image == null || image.isEmpty ? null : image,
+      ));
+    }
+    chapters.sort((a, b) => a.start.compareTo(b.start));
+    final deduped = <PodcastChapter>[];
+    Duration? lastStart;
+    for (final chapter in chapters) {
+      if (lastStart != null && chapter.start == lastStart) continue;
+      deduped.add(chapter);
+      lastStart = chapter.start;
+    }
+    return deduped;
+  }
+
+  Duration? _parseChapterStartTime(dynamic value) {
+    try {
+      if (value is num) {
+        if (value < 0) return null;
+        return Duration(milliseconds: (value * 1000).floor());
+      }
+      if (value is String) {
+        final trimmed = value.trim();
+        if (trimmed.isEmpty) return null;
+        final parts = trimmed.split(':');
+        double totalSeconds;
+        if (parts.length == 1) {
+          totalSeconds = double.parse(parts[0]);
+        } else if (parts.length == 2) {
+          totalSeconds = double.parse(parts[0]) * 60 + double.parse(parts[1]);
+        } else if (parts.length == 3) {
+          totalSeconds = double.parse(parts[0]) * 3600 +
+              double.parse(parts[1]) * 60 +
+              double.parse(parts[2]);
+        } else {
+          return null;
+        }
+        if (totalSeconds < 0) return null;
+        return Duration(milliseconds: (totalSeconds * 1000).floor());
+      }
+    } catch (_) {
+      return null;
+    }
+    return null;
+  }
+
   Future<File> downloadEpisode(PodcastEpisode episode) async {
     final dir = await getApplicationDocumentsDirectory();
     final safeTitle =
@@ -1415,6 +1668,13 @@ class PodcastService {
     final text = html_parser.parse(value).body?.text ?? value;
     return text.replaceAll(RegExp(r'\s+'), ' ').trim();
   }
+}
+
+class _PodcastChaptersLink {
+  const _PodcastChaptersLink(this.url, this.type);
+
+  final String url;
+  final String? type;
 }
 
 extension FirstOrNullXml on Iterable<XmlElement> {

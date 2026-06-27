@@ -412,10 +412,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
     setState(() => _testingVoice = true);
     try {
+      await _audio.stop();
+      await _flutterTts.stop();
+
+      final previewSpeed = _ttsSpeed.clamp(0.5, 2.0).toDouble();
+      final previewPitch = _ttsPitch.clamp(0.5, 2.0).toDouble();
+
       if (_ttsEngine == 'system') {
         await _flutterTts
-            .setSpeechRate(_ttsSpeed * 0.5); // flutter_tts usa range 0-1
-        await _flutterTts.setPitch(_ttsPitch);
+            .setSpeechRate(previewSpeed * 0.5); // flutter_tts usa range 0-1
+        await _flutterTts.setPitch(previewPitch);
         if (_systemTtsVoice != null) {
           await _flutterTts.setVoice(
               {"name": _systemTtsVoice!, "locale": _systemTtsLanguage});
@@ -430,13 +436,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final file = await tts.speakToFile(
           text: l10n.settingsVoiceTestText,
           voice: _voice,
+          speed: previewSpeed,
+          pitch: previewPitch,
         );
         if (!mounted) return;
         await _audio.playFile(file);
       }
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.settingsVoiceTestError(e));
+      showStatusMessage(context, l10n.settingsVoiceTestError(e));
     } finally {
       if (mounted) {
         setState(() => _testingVoice = false);

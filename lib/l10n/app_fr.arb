@@ -205,7 +205,7 @@
   "noSubscribedPodcasts": "Aucun abonnement aux podcasts. Recherchez un podcast et touchez un résultat pour vous abonner.",
   "localAudioFiles": "Fichiers audio locaux",
   "noLocalAudioFiles": "Aucun fichier audio local trouvé.",
-  "importAudioFromITunes": "Importer l'audio depuis iTunes / Apple Devices",
+  "importAudioFromITunes": "Importer des fichiers audio locaux",
   "localAudioFilesFound": "Fichiers audio locaux trouvés : {count}",
   "importPodcastsFromFile": "Importer des podcasts depuis un fichier",
   "exportPodcastsToFile": "Exporter les podcasts vers un fichier OPML",
@@ -738,6 +738,22 @@
   "newsReadArticles": "Articles lus",
   "weatherRecentCities": "Villes récentes",
   "podcastPlayedEpisodes": "Épisodes écoutés",
+  "podcastSelectDate": "Sélectionner une date",
+  "@podcastSelectDate": {
+    "description": "Button that opens the podcast date selector."
+  },
+  "podcastNoDatesAvailable": "Aucune date disponible pour ces épisodes.",
+  "podcastChapters": "Chapitres",
+  "@podcastChapters": {
+    "description": "Button and screen title for the podcast chapter list."
+  },
+  "podcastChaptersUnavailable": "Aucun chapitre disponible pour cet épisode.",
+  "@podcastChaptersUnavailable": {
+    "description": "Shown when no podcast chapters are available for an episode."
+  },
+  "@podcastNoDatesAvailable": {
+    "description": "Shown when a podcast feed has no publication dates to choose from."
+  },
   "podcastUnplayed": "Épisodes non écoutés",
   "routeReadAction": "Lire l'itinéraire",
   "routeSaveAction": "Enregistrer dans les documents",
@@ -817,5 +833,21 @@
   "podcastInvalidOpmlFile": "Fichier non valide. Sélectionnez un fichier OPML ou XML.",
   "@podcastInvalidOpmlFile": {
     "description": "Shown when the selected podcast import file is not an OPML or XML file."
+  },
+  "sortPodcastsAlphabetically": "Trier les podcasts alphabétiquement",
+  "@sortPodcastsAlphabetically": {
+    "description": "Button that sorts the subscribed podcasts alphabetically."
+  },
+  "sortRadioFavoritesAlphabetically": "Trier les favoris radio alphabétiquement",
+  "@sortRadioFavoritesAlphabetically": {
+    "description": "Button that sorts radio favorites alphabetically."
+  },
+  "podcastsSortedAlphabetically": "Podcasts triés par ordre alphabétique.",
+  "@podcastsSortedAlphabetically": {
+    "description": "Status message shown after podcasts have been sorted alphabetically."
+  },
+  "radioFavoritesSortedAlphabetically": "Radios favorites triées par ordre alphabétique.",
+  "@radioFavoritesSortedAlphabetically": {
+    "description": "Status message shown after radio favorites have been sorted alphabetically."
   }
 }

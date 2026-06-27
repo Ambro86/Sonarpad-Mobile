@@ -21,6 +21,7 @@ import '../services/epub_export_service.dart';
 import '../services/internet_archive_service.dart';
 import '../services/librivox_service.dart';
 import '../utils/app_logger.dart';
+import '../utils/document_unicode_normalizer.dart';
 import 'document_editor_screen.dart';
 import 'document_reader_screen.dart';
 import 'dropbox_browser_screen.dart';
@@ -441,7 +442,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         path = '${appDir.path}/${_safeExportBaseName(baseName)}_export.txt';
         saveName = _exportLibraryFileName(baseName, 'txt');
         await AppLogger.log('Scrittura file txt in: $path');
-        await File(path).writeAsString(text);
+        await File(path).writeAsString(normalizeDocumentUnicode(text));
         await AppLogger.log('File txt scritto');
       } else if (format == 'pdf') {
         await AppLogger.log('Inizio generazione PDF');
@@ -555,7 +556,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final editedPath = await _service.resolveEditedFilePath(doc);
     if (editedPath != null && await File(editedPath).exists()) {
       await AppLogger.log('Trovato file modificato, lettura...');
-      final text = await File(editedPath).readAsString();
+      final text = normalizeDocumentUnicode(
+        await File(editedPath).readAsString(),
+      );
       if (text.trim().isNotEmpty) return text;
       throw Exception(l10n.modifiedDocumentNoExportableText);
     }

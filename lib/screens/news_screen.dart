@@ -866,13 +866,135 @@ class _NewsArticleList extends StatefulWidget {
 
 class _NewsArticleListState extends State<_NewsArticleList> {
   final _service = NewsService();
+  final _scrollController = ScrollController();
+  final Map<String, GlobalKey> _articleKeys = {};
+  final Map<String, FocusNode> _articleFocusNodes = {};
   Set<String> _readUris = {};
   bool _loadingRead = true;
+  String? _pendingFocusArticleId;
 
   @override
   void initState() {
     super.initState();
     _loadReadArticles();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    for (final node in _articleFocusNodes.values) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  GlobalKey _keyForArticle(NewsArticle article) =>
+      _articleKeys.putIfAbsent(article.id, () => GlobalKey());
+
+  FocusNode _focusNodeForArticle(NewsArticle article) =>
+      _articleFocusNodes.putIfAbsent(
+        article.id,
+        () => FocusNode(debugLabel: 'news_article_${article.id}'),
+      );
+
+  NewsArticle? _articleToFocusAfterOpening(
+    List<NewsArticle> visibleArticles,
+    int openedIndex,
+  ) {
+    if (openedIndex + 1 < visibleArticles.length) {
+      return visibleArticles[openedIndex + 1];
+    }
+    if (openedIndex > 0) {
+      return visibleArticles[openedIndex - 1];
+    }
+    return null;
+  }
+
+  void _scheduleArticleFocusRestore({
+    String? fallbackAnnouncement,
+    int attempt = 0,
+  }) {
+    final articleId = _pendingFocusArticleId;
+    if (articleId == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || _pendingFocusArticleId != articleId) return;
+      final targetContext = _articleKeys[articleId]?.currentContext;
+      if (targetContext == null) {
+        if (attempt >= 8) {
+          _pendingFocusArticleId = null;
+          return;
+        }
+        _scheduleArticleFocusRestore(
+          fallbackAnnouncement: fallbackAnnouncement,
+          attempt: attempt + 1,
+        );
+        return;
+      }
+
+      final semanticsView = View.of(context);
+      final textDirection = Directionality.of(context);
+      await Scrollable.ensureVisible(
+        targetContext,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+        alignment: 0.12,
+      );
+      if (!mounted || _pendingFocusArticleId != articleId) return;
+
+      final focusNode = _articleFocusNodes[articleId];
+      if (focusNode != null && focusNode.canRequestFocus) {
+        focusNode.requestFocus();
+      }
+      if (fallbackAnnouncement != null && fallbackAnnouncement.trim().isNotEmpty) {
+        SemanticsService.sendAnnouncement(
+          semanticsView,
+          fallbackAnnouncement,
+          textDirection,
+        );
+      }
+      _pendingFocusArticleId = null;
+    });
+  }
+
+  Future<void> _openArticle({
+    required List<NewsArticle> visibleArticles,
+    required int articleIndex,
+    required NewsArticle article,
+  }) async {
+    final navigator = Navigator.of(context);
+    final nextArticle = _articleToFocusAfterOpening(
+      visibleArticles,
+      articleIndex,
+    );
+    _pendingFocusArticleId = nextArticle?.id;
+
+    await _service.addReadArticle(
+      widget.language,
+      widget.sourceName,
+      article,
+    );
+    if (!mounted) return;
+    setState(() {
+      _readUris = {..._readUris, article.id};
+    });
+
+    await navigator.push(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/article'),
+        builder: (_) => NewsWebViewScreen(
+          article: article,
+          language: widget.language,
+          readSourceName: widget.sourceName,
+        ),
+      ),
+    );
+    if (!mounted) return;
+    await _loadReadArticles();
+    if (!mounted) return;
+    _scheduleArticleFocusRestore(
+      fallbackAnnouncement: nextArticle?.title,
+    );
   }
 
   Future<void> _loadReadArticles() async {
@@ -921,6 +1043,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
         }
 
         return ListView.separated(
+          controller: _scrollController,
           itemCount: itemCount,
           separatorBuilder: (_, __) => const Divider(height: 1),
           itemBuilder: (context, index) {
@@ -945,38 +1068,23 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                 ? article.source
                 : '${article.source}. ${article.summary}';
 
-            return ListTile(
-              key: ValueKey('news_article_${article.id}'),
-              title: Text(article.title),
-              subtitle: Text(
-                subtitleText,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+            return KeyedSubtree(
+              key: _keyForArticle(article),
+              child: ListTile(
+                key: ValueKey('news_article_${article.id}'),
+                focusNode: _focusNodeForArticle(article),
+                title: Text(article.title),
+                subtitle: Text(
+                  subtitleText,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () => _openArticle(
+                  visibleArticles: articles,
+                  articleIndex: articleIndex,
+                  article: article,
+                ),
               ),
-              onTap: () async {
-                final navigator = Navigator.of(context);
-                await _service.addReadArticle(
-                  widget.language,
-                  widget.sourceName,
-                  article,
-                );
-                if (!mounted) return;
-                setState(() {
-                  _readUris = {..._readUris, article.id};
-                });
-                await navigator.push(
-                  MaterialPageRoute(
-                    settings: const RouteSettings(name: '/news/article'),
-                    builder: (_) => NewsWebViewScreen(
-                      article: article,
-                      language: widget.language,
-                      readSourceName: widget.sourceName,
-                    ),
-                  ),
-                );
-                if (!mounted) return;
-                await _loadReadArticles();
-              },
             );
           },
         );

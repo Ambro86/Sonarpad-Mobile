@@ -16,6 +16,7 @@ import 'radio_recordings_screen.dart';
 import 'radio_search_results_screen.dart';
 import 'recent_radios_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/letter_jump_option_picker_screen.dart';
 
 enum _RadioBrowseMode { language, country, city }
 
@@ -368,12 +369,15 @@ class _RadioScreenState extends State<RadioScreen> {
               final result = await Navigator.push<RadioLanguageOption>(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => _RadioOptionPickerScreen<RadioLanguageOption>(
+                  builder: (_) => LetterJumpOptionPickerScreen<RadioLanguageOption>(
                     title: l10n.radioBrowseByLanguage,
                     options: languageItems,
                     labelBuilder: (o) => _languageOptionLabel(l10n, o),
                     selectedBuilder: (o) => o.code == _languageCode,
                     selectedLabel: l10n.selectedRecently,
+                    leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.language),
+                    selectLetterLabel: _selectLetterLabel(l10n.localeName),
+                    selectLetterTitle: _selectLetterTitle(l10n.localeName),
                   ),
                 ),
               );
@@ -396,12 +400,15 @@ class _RadioScreenState extends State<RadioScreen> {
               final result = await Navigator.push<MapEntry<String, String>>(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => _RadioOptionPickerScreen<MapEntry<String, String>>(
+                  builder: (_) => LetterJumpOptionPickerScreen<MapEntry<String, String>>(
                     title: l10n.radioBrowseByCountry,
                     options: countryItems,
                     labelBuilder: (o) => o.value,
                     selectedBuilder: (o) => o.key == _countryCode,
                     selectedLabel: l10n.selectedRecently,
+                    leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.public),
+                    selectLetterLabel: _selectLetterLabel(l10n.localeName),
+                    selectLetterTitle: _selectLetterTitle(l10n.localeName),
                   ),
                 ),
               );
@@ -465,12 +472,15 @@ class _RadioScreenState extends State<RadioScreen> {
               final result = await Navigator.push<RadioGenreOption>(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => _RadioOptionPickerScreen<RadioGenreOption>(
+                  builder: (_) => LetterJumpOptionPickerScreen<RadioGenreOption>(
                     title: l10n.radioGenre,
                     options: genreItems,
                     labelBuilder: (o) => l10n.radioGenreLabel(o.value),
                     selectedBuilder: (o) => o.value == _genre.value,
                     selectedLabel: l10n.selectedRecently,
+                    leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.category),
+                    selectLetterLabel: _selectLetterLabel(l10n.localeName),
+                    selectLetterTitle: _selectLetterTitle(l10n.localeName),
                   ),
                 ),
               );
@@ -570,6 +580,27 @@ String _recentRadiosLabel(String localeName) => switch (localeName) {
       _ => 'Radio recenti',
     };
 
+
+String _selectLetterLabel(String localeName) => switch (localeName) {
+      'en' => 'Select letter',
+      'es' => 'Seleccionar letra',
+      'fr' => 'Sélectionner une lettre',
+      'pt' => 'Selecionar letra',
+      'pl' => 'Wybierz literę',
+      'cs' => 'Vybrat písmeno',
+      _ => 'Seleziona lettera',
+    };
+
+String _selectLetterTitle(String localeName) => switch (localeName) {
+      'en' => 'Select letter',
+      'es' => 'Seleccionar letra',
+      'fr' => 'Sélectionner une lettre',
+      'pt' => 'Selecionar letra',
+      'pl' => 'Wybierz literę',
+      'cs' => 'Vybrat písmeno',
+      _ => 'Seleziona lettera',
+    };
+
 String _defaultRadioLanguageForLocale(String localeName) => switch (localeName) {
       'en' => 'en',
       'es' => 'es',
@@ -589,48 +620,6 @@ String _defaultRadioCountryForLocale(String localeName) => switch (localeName) {
       'cs' => 'cz',
       _ => 'it',
     };
-
-class _RadioOptionPickerScreen<T> extends StatelessWidget {
-  final String title;
-  final List<T> options;
-  final String Function(T) labelBuilder;
-  final bool Function(T)? selectedBuilder;
-  final String? selectedLabel;
-
-  const _RadioOptionPickerScreen({
-    required this.title,
-    required this.options,
-    required this.labelBuilder,
-    this.selectedBuilder,
-    this.selectedLabel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: ListView.separated(
-        itemCount: options.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final option = options[index];
-          final selected = selectedBuilder?.call(option) ?? false;
-          final label = labelBuilder(option);
-          final displayLabel = selected && selectedLabel != null
-              ? '$label, $selectedLabel'
-              : label;
-          return ListTile(
-            key: ValueKey('radio_option_$label'),
-            leading: Icon(selected ? Icons.check : Icons.radio),
-            title: Text(displayLabel),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.pop(context, option),
-          );
-        },
-      ),
-    );
-  }
-}
 
 class RadioTile extends StatelessWidget {
   final RadioStation station;

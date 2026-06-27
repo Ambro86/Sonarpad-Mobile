@@ -222,6 +222,16 @@ class _RouteScreenState extends State<RouteScreen> {
                   value: 'pl', child: Text(l10n.radioCountryOptionPl)),
               DropdownMenuItem(
                   value: 'cz', child: Text(l10n.routeCountryCzechRepublic)),
+              DropdownMenuItem(
+                  value: 'au', child: Text(l10n.radioCountryOptionAu)),
+              DropdownMenuItem(
+                  value: 'ca', child: Text(l10n.radioCountryOptionCa)),
+              DropdownMenuItem(
+                  value: 'de', child: Text(l10n.radioCountryOptionDe)),
+              DropdownMenuItem(
+                  value: 'gb', child: Text(l10n.radioCountryOptionGb)),
+              DropdownMenuItem(
+                  value: 'us', child: Text(l10n.radioCountryOptionUs)),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _countryCode = val);

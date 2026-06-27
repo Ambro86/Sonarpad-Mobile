@@ -606,6 +606,30 @@ abstract class AppLocalizations {
   /// **'Sposta alla posizione'**
   String get moveToPosition;
 
+  /// Button that sorts the subscribed podcasts alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina podcast alfabeticamente'**
+  String get sortPodcastsAlphabetically;
+
+  /// Button that sorts radio favorites alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina preferite alfabeticamente'**
+  String get sortRadioFavoritesAlphabetically;
+
+  /// Status message shown after podcasts have been sorted alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Podcast ordinati alfabeticamente.'**
+  String get podcastsSortedAlphabetically;
+
+  /// Status message shown after radio favorites have been sorted alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Radio preferite ordinate alfabeticamente.'**
+  String get radioFavoritesSortedAlphabetically;
+
   /// Localized text for positionLabel.
   ///
   /// In it, this message translates to:
@@ -1143,7 +1167,7 @@ abstract class AppLocalizations {
   /// Localized text for importAudioFromITunes.
   ///
   /// In it, this message translates to:
-  /// **'Importa audio da iTunes / Apple Devices'**
+  /// **'Importa file audio locali'**
   String get importAudioFromITunes;
 
   /// Localized text for localAudioFilesFound.
@@ -4032,6 +4056,30 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Episodi ascoltati'**
   String get podcastPlayedEpisodes;
+
+  /// Button that opens the podcast date selector.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona data'**
+  String get podcastSelectDate;
+
+  /// Shown when a podcast feed has no publication dates to choose from.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna data disponibile per questi episodi.'**
+  String get podcastNoDatesAvailable;
+
+  /// Button and screen title for the podcast chapter list.
+  ///
+  /// In it, this message translates to:
+  /// **'Capitoli'**
+  String get podcastChapters;
+
+  /// Shown when no podcast chapters are available for an episode.
+  ///
+  /// In it, this message translates to:
+  /// **'Capitoli non disponibili per questo episodio.'**
+  String get podcastChaptersUnavailable;
 
   /// No description provided for @podcastUnplayed.
   ///

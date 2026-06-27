@@ -8,6 +8,7 @@ import 'package:archive/archive_io.dart';
 
 import '../models/document_item.dart';
 import '../utils/app_logger.dart';
+import '../utils/document_unicode_normalizer.dart';
 
 /// Gestisce la persistenza della libreria documenti tramite SharedPreferences.
 class DocumentLibraryService {
@@ -106,7 +107,7 @@ class DocumentLibraryService {
     final fileName = await _uniqueFileName(dir, name);
     final relativePath = p.join(documentsFolderName, fileName);
     final file = File(p.join(dir.path, fileName));
-    await file.writeAsString(content);
+    await file.writeAsString(normalizeDocumentUnicode(content));
 
     return DocumentItem(
       id: '${DateTime.now().microsecondsSinceEpoch}_$fileName',
@@ -552,7 +553,7 @@ class DocumentLibraryService {
     );
     final relativePath = p.join(documentsFolderName, editedFileName);
     final file = File(p.join(dir.path, editedFileName));
-    await file.writeAsString(text);
+    await file.writeAsString(normalizeDocumentUnicode(text));
     return relativePath;
   }
 

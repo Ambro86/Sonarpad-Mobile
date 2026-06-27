@@ -167,6 +167,10 @@ class RouteService {
         return 'ITA';
       case 'fr':
         return 'FRA';
+      case 'au':
+        return 'AUS';
+      case 'ca':
+        return 'CAN';
       case 'de':
         return 'DEU';
       case 'es':
@@ -181,6 +185,7 @@ class RouteService {
       case 'us':
         return 'USA';
       case 'gb':
+      case 'uk':
         return 'GBR';
       default:
         return 'ITA';

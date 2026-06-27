@@ -12,6 +12,8 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
+import '../utils/document_unicode_normalizer.dart';
+
 /// Risultato dell'estrazione testo da un documento.
 class ExtractionResult {
   /// Testo estratto. Vuoto se l'estrazione non è riuscita.
@@ -39,28 +41,38 @@ class DocumentTextExtractor {
 
   static String decodeDocumentTextBytes(List<int> bytes) {
     if (_startsWith(bytes, const [0xEF, 0xBB, 0xBF])) {
-      return _repairUtf8Mojibake(utf8.decode(bytes.sublist(3)));
+      return normalizeDocumentUnicode(
+        _repairUtf8Mojibake(utf8.decode(bytes.sublist(3))),
+      );
     }
     if (_startsWith(bytes, const [0xFF, 0xFE, 0x00, 0x00])) {
-      return _decodeUtf32(bytes.sublist(4), Endian.little);
+      return normalizeDocumentUnicode(
+        _decodeUtf32(bytes.sublist(4), Endian.little),
+      );
     }
     if (_startsWith(bytes, const [0x00, 0x00, 0xFE, 0xFF])) {
-      return _decodeUtf32(bytes.sublist(4), Endian.big);
+      return normalizeDocumentUnicode(
+        _decodeUtf32(bytes.sublist(4), Endian.big),
+      );
     }
     if (_startsWith(bytes, const [0xFF, 0xFE])) {
-      return _decodeUtf16(bytes.sublist(2), Endian.little);
+      return normalizeDocumentUnicode(
+        _decodeUtf16(bytes.sublist(2), Endian.little),
+      );
     }
     if (_startsWith(bytes, const [0xFE, 0xFF])) {
-      return _decodeUtf16(bytes.sublist(2), Endian.big);
+      return normalizeDocumentUnicode(
+        _decodeUtf16(bytes.sublist(2), Endian.big),
+      );
     }
     final utf16Guess = _tryDecodeUtf16WithoutBom(bytes);
-    if (utf16Guess != null) return utf16Guess;
+    if (utf16Guess != null) return normalizeDocumentUnicode(utf16Guess);
 
     try {
-      return _repairUtf8Mojibake(utf8.decode(bytes));
+      return normalizeDocumentUnicode(_repairUtf8Mojibake(utf8.decode(bytes)));
     } on FormatException {
       dev.log('Fallback ANSI best-effort per documento testuale');
-      return _chooseAnsiDecoding(bytes);
+      return normalizeDocumentUnicode(_chooseAnsiDecoding(bytes));
     }
   }
 
@@ -450,7 +462,9 @@ class DocumentTextExtractor {
         case 'html':
         case 'htm':
           final raw = await _readTextFileSafe(path);
-          return ExtractionResult(text: _stripHtml(raw));
+          return ExtractionResult(
+            text: normalizeDocumentUnicode(_stripHtml(raw)),
+          );
 
         case 'pdf':
           return await _extractPdf(path);
@@ -497,7 +511,7 @@ class DocumentTextExtractor {
       dev.log('Nessun testo estratto. Tento fallback OCR...');
       return await _extractPdfOcr(path);
     }
-    return ExtractionResult(text: text);
+    return ExtractionResult(text: normalizeDocumentUnicode(text));
   }
 
   String _repairPdfTextExtractionArtifacts(String text) {
@@ -591,7 +605,7 @@ class DocumentTextExtractor {
               'Nessun testo trovato nel documento, neanche tramite scansione visiva OCR.',
         );
       }
-      return ExtractionResult(text: ocrText);
+      return ExtractionResult(text: normalizeDocumentUnicode(ocrText));
     } catch (e) {
       return ExtractionResult(
         text: '',
@@ -640,7 +654,7 @@ class DocumentTextExtractor {
         error: 'Nessun testo trovato nel documento DOCX.',
       );
     }
-    return ExtractionResult(text: text);
+    return ExtractionResult(text: normalizeDocumentUnicode(text));
   }
 
   // ---------------------------------------------------------------------------
@@ -675,7 +689,7 @@ class DocumentTextExtractor {
         error: "Nessun testo trovato nell'EPUB.",
       );
     }
-    return ExtractionResult(text: text);
+    return ExtractionResult(text: normalizeDocumentUnicode(text));
   }
 
   void _appendChapter(EpubChapter chapter, StringBuffer buffer) {

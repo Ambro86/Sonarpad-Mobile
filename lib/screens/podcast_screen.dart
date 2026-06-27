@@ -16,6 +16,7 @@ import 'podcast_episode_player_screen.dart';
 import 'podcast_episodes_screen.dart';
 import '../utils/country_name_helper.dart';
 import '../utils/status_message.dart';
+import '../widgets/letter_jump_option_picker_screen.dart';
 
 class PodcastScreen extends StatefulWidget {
   const PodcastScreen({super.key});
@@ -182,12 +183,15 @@ class _PodcastScreenState extends State<PodcastScreen> {
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/podcasts/countries'),
-        builder: (_) => _PodcastOptionPickerScreen<PodcastCountry>(
+        builder: (_) => LetterJumpOptionPickerScreen<PodcastCountry>(
           title: l10n.podcastCountries,
           options: countries,
           labelBuilder: (country) => _podcastCountryLabel(country, l10n),
           selectedBuilder: (country) => country.code == _country,
           selectedLabel: l10n.selectedRecently,
+          leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.public),
+          selectLetterLabel: _selectLetterLabel(l10n.localeName),
+          selectLetterTitle: _selectLetterTitle(l10n.localeName),
         ),
       ),
     );
@@ -217,12 +221,15 @@ class _PodcastScreenState extends State<PodcastScreen> {
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/podcasts/categories'),
-        builder: (_) => _PodcastOptionPickerScreen<PodcastCategory>(
+        builder: (_) => LetterJumpOptionPickerScreen<PodcastCategory>(
           title: l10n.podcastCategories,
           options: categories,
           labelBuilder: (category) => category.nameForLanguage(l10n.localeName),
           selectedBuilder: (category) => category.genreId == _category.genreId,
           selectedLabel: l10n.selectedRecently,
+          leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.category),
+          selectLetterLabel: _selectLetterLabel(l10n.localeName),
+          selectLetterTitle: _selectLetterTitle(l10n.localeName),
         ),
       ),
     );
@@ -342,6 +349,19 @@ class _PodcastScreenState extends State<PodcastScreen> {
     }
   }
 
+  String _sortKey(String value) => value.trim().toLowerCase();
+
+  Future<void> _sortSubscriptionsAlphabetically() async {
+    if (_subscriptions.length < 2) return;
+    final l10n = AppLocalizations.of(context);
+    final sorted = List<PodcastSubscription>.from(_subscriptions)
+      ..sort((a, b) => _sortKey(a.title).compareTo(_sortKey(b.title)));
+    await _service.saveSubscriptions(sorted);
+    if (!mounted) return;
+    setState(() => _subscriptions = sorted);
+    showStatusMessage(context, l10n.podcastsSortedAlphabetically);
+  }
+
   Future<void> _removeSubscription(PodcastSubscription subscription) async {
     final l10n = AppLocalizations.of(context);
     try {
@@ -452,6 +472,14 @@ class _PodcastScreenState extends State<PodcastScreen> {
           Text(l10n.subscribedPodcasts,
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
+          if (_subscriptions.length > 1) ...[
+            FilledButton.icon(
+              onPressed: _sortSubscriptionsAlphabetically,
+              icon: const Icon(Icons.sort_by_alpha),
+              label: Text(l10n.sortPodcastsAlphabetically),
+            ),
+            const SizedBox(height: 8),
+          ],
           if (_subscriptions.isNotEmpty) ...[
             ..._subscriptions.asMap().entries.map((entry) {
               final index = entry.key;
@@ -552,6 +580,27 @@ class _PodcastScreenState extends State<PodcastScreen> {
   }
 }
 
+
+String _selectLetterLabel(String localeName) => switch (localeName) {
+      'en' => 'Select letter',
+      'es' => 'Seleccionar letra',
+      'fr' => 'Sélectionner une lettre',
+      'pt' => 'Selecionar letra',
+      'pl' => 'Wybierz literę',
+      'cs' => 'Vybrat písmeno',
+      _ => 'Seleziona lettera',
+    };
+
+String _selectLetterTitle(String localeName) => switch (localeName) {
+      'en' => 'Select letter',
+      'es' => 'Seleccionar letra',
+      'fr' => 'Sélectionner une lettre',
+      'pt' => 'Selecionar letra',
+      'pl' => 'Wybierz literę',
+      'cs' => 'Vybrat písmeno',
+      _ => 'Seleziona lettera',
+    };
+
 enum _PodcastAction { moveUp, moveDown, moveToPosition }
 
 class _PodcastPositionSliderDialog extends StatefulWidget {
@@ -627,48 +676,6 @@ class _PodcastPositionSliderDialogState
           child: Text(AppLocalizations.of(context).ok),
         ),
       ],
-    );
-  }
-}
-
-class _PodcastOptionPickerScreen<T> extends StatelessWidget {
-  final String title;
-  final List<T> options;
-  final String Function(T) labelBuilder;
-  final bool Function(T)? selectedBuilder;
-  final String? selectedLabel;
-
-  const _PodcastOptionPickerScreen({
-    required this.title,
-    required this.options,
-    required this.labelBuilder,
-    this.selectedBuilder,
-    this.selectedLabel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: ListView.separated(
-        itemCount: options.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final option = options[index];
-          final selected = selectedBuilder?.call(option) ?? false;
-          final label = labelBuilder(option);
-          final displayLabel = selected && selectedLabel != null
-              ? '$label, $selectedLabel'
-              : label;
-          return ListTile(
-            key: ValueKey('podcast_option_$label'),
-            leading: Icon(selected ? Icons.check : Icons.podcasts),
-            title: Text(displayLabel),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.pop(context, option),
-          );
-        },
-      ),
     );
   }
 }

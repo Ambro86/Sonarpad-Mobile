@@ -276,6 +276,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get moveToPosition => 'Déplacer à la position';
 
   @override
+  String get sortPodcastsAlphabetically => 'Trier les podcasts alphabétiquement';
+
+  @override
+  String get sortRadioFavoritesAlphabetically => 'Trier les favoris radio alphabétiquement';
+
+  @override
+  String get podcastsSortedAlphabetically => 'Podcasts triés par ordre alphabétique.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically => 'Radios favorites triées par ordre alphabétique.';
+
+  @override
   String positionLabel(int position, String targetName) {
     return 'Position $position: avant $targetName';
   }
@@ -584,8 +596,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noLocalAudioFiles => 'Aucun fichier audio local trouvé.';
 
   @override
-  String get importAudioFromITunes =>
-      'Importer l\'audio depuis iTunes / Apple Devices';
+  String get importAudioFromITunes => 'Importer des fichiers audio locaux';
 
   @override
   String localAudioFilesFound(int count) {
@@ -2179,6 +2190,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get podcastPlayedEpisodes => 'Épisodes écoutés';
+
+  @override
+  String get podcastSelectDate => 'Sélectionner une date';
+
+  @override
+  String get podcastNoDatesAvailable => 'Aucune date disponible pour ces épisodes.';
+
+  @override
+  String get podcastChapters => 'Chapitres';
+
+  @override
+  String get podcastChaptersUnavailable => 'Aucun chapitre disponible pour cet épisode.';
 
   @override
   String get podcastUnplayed => 'Épisodes non écoutés';
