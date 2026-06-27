@@ -869,6 +869,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
   final _scrollController = ScrollController();
   final Map<String, GlobalKey> _articleKeys = {};
   final Map<String, FocusNode> _articleFocusNodes = {};
+  String? _semanticFocusedArticleId;
   Set<String> _readUris = {};
   bool _loadingRead = true;
   String? _pendingFocusArticleId;
@@ -934,12 +935,20 @@ class _NewsArticleListState extends State<_NewsArticleList> {
 
       final semanticsView = View.of(context);
       final textDirection = Directionality.of(context);
-      await Scrollable.ensureVisible(
-        targetContext,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-        alignment: 0.12,
-      );
+      setState(() => _semanticFocusedArticleId = articleId);
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted || _pendingFocusArticleId != articleId) return;
+
+      final stableTargetContext = _articleKeys[articleId]?.currentContext;
+      if (stableTargetContext != null && stableTargetContext.mounted) {
+        await Scrollable.ensureVisible(
+          stableTargetContext,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          alignment: 0.12,
+        );
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 220));
       if (!mounted || _pendingFocusArticleId != articleId) return;
 
       final focusNode = _articleFocusNodes[articleId];
@@ -1070,19 +1079,22 @@ class _NewsArticleListState extends State<_NewsArticleList> {
 
             return KeyedSubtree(
               key: _keyForArticle(article),
-              child: ListTile(
-                key: ValueKey('news_article_${article.id}'),
-                focusNode: _focusNodeForArticle(article),
-                title: Text(article.title),
-                subtitle: Text(
-                  subtitleText,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onTap: () => _openArticle(
-                  visibleArticles: articles,
-                  articleIndex: articleIndex,
-                  article: article,
+              child: Semantics(
+                focused: _semanticFocusedArticleId == article.id,
+                child: ListTile(
+                  key: ValueKey('news_article_${article.id}'),
+                  focusNode: _focusNodeForArticle(article),
+                  title: Text(article.title),
+                  subtitle: Text(
+                    subtitleText,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () => _openArticle(
+                    visibleArticles: articles,
+                    articleIndex: articleIndex,
+                    article: article,
+                  ),
                 ),
               ),
             );

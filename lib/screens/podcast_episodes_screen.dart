@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
@@ -20,6 +21,8 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
   final _service = PodcastService();
   final _scrollController = ScrollController();
   final Map<String, GlobalKey> _episodeKeys = {};
+  final Map<String, FocusNode> _episodeFocusNodes = {};
+  String? _semanticFocusedEpisodeKey;
   late Future<List<PodcastEpisode>> _episodes;
   Set<String> _playedAudioUrls = {};
 
@@ -32,6 +35,9 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
 
   @override
   void dispose() {
+    for (final node in _episodeFocusNodes.values) {
+      node.dispose();
+    }
     _scrollController.dispose();
     super.dispose();
   }
@@ -109,18 +115,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
       );
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final key = _episodeKeys[_episodeKey(selectedEpisode)];
-      final currentContext = key?.currentContext;
-      if (currentContext != null) {
-        Scrollable.ensureVisible(
-          currentContext,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-          alignment: 0.1,
-        );
-      }
-    });
+    _scheduleEpisodeFocusRestore(selectedEpisode);
   }
 
   bool _hasDatedEpisodes(List<PodcastEpisode> episodes) =>
@@ -131,6 +126,57 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
 
   GlobalKey _keyForEpisode(PodcastEpisode episode) =>
       _episodeKeys.putIfAbsent(_episodeKey(episode), () => GlobalKey());
+
+  FocusNode _focusNodeForEpisode(PodcastEpisode episode) =>
+      _episodeFocusNodes.putIfAbsent(
+        _episodeKey(episode),
+        () => FocusNode(debugLabel: 'podcast_episode_${_episodeKey(episode)}'),
+      );
+
+  void _scheduleEpisodeFocusRestore(PodcastEpisode episode, {int attempt = 0}) {
+    final targetKey = _episodeKey(episode);
+    final semanticsView = View.of(context);
+    final textDirection = Directionality.of(context);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted) return;
+
+      final itemContext = _episodeKeys[targetKey]?.currentContext;
+      if (itemContext == null) {
+        if (attempt < 8) {
+          _scheduleEpisodeFocusRestore(episode, attempt: attempt + 1);
+        }
+        return;
+      }
+
+      setState(() => _semanticFocusedEpisodeKey = targetKey);
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+
+      if (itemContext.mounted) {
+        await Scrollable.ensureVisible(
+          itemContext,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          alignment: 0.1,
+        );
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 220));
+      if (!mounted) return;
+
+      final focusNode = _episodeFocusNodes[targetKey];
+      if (focusNode != null && focusNode.canRequestFocus) {
+        focusNode.requestFocus();
+      }
+      SemanticsService.sendAnnouncement(
+        semanticsView,
+        episode.title,
+        textDirection,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -207,17 +253,24 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
 
                   final episode = unplayedEpisodes[currentIndex];
 
-                  return Card(
-                    key: _keyForEpisode(episode),
-                    child: ListTile(
-                      key: ValueKey('podcast_episode_tile_${episode.id ?? episode.audioUrl}'),
-                      title: Text(episode.title),
-                      subtitle: Text(
-                        episode.description,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                  final episodeKey = _episodeKey(episode);
+                  return Semantics(
+                    focused: _semanticFocusedEpisodeKey == episodeKey,
+                    child: Focus(
+                      focusNode: _focusNodeForEpisode(episode),
+                      child: Card(
+                        key: _keyForEpisode(episode),
+                        child: ListTile(
+                          key: ValueKey('podcast_episode_tile_${episode.id ?? episode.audioUrl}'),
+                          title: Text(episode.title),
+                          subtitle: Text(
+                            episode.description,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onTap: () => _openEpisode(episode),
+                        ),
                       ),
-                      onTap: () => _openEpisode(episode),
                     ),
                   );
                 },

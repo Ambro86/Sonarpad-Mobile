@@ -35,6 +35,7 @@ class _LetterJumpOptionPickerScreenState<T>
   final _scrollController = ScrollController();
   late final List<GlobalKey> _itemKeys;
   late final List<FocusNode> _focusNodes;
+  int? _semanticFocusedIndex;
 
   bool get _showLetterPicker =>
       widget.options.length >= widget.minimumItemsForLetterPicker &&
@@ -102,7 +103,11 @@ class _LetterJumpOptionPickerScreenState<T>
 
     final semanticsView = View.of(context);
     final textDirection = Directionality.of(context);
-    await Future<void>.delayed(const Duration(milliseconds: 120));
+    await Future<void>.delayed(const Duration(milliseconds: 180));
+    if (!mounted || index >= _itemKeys.length || index >= widget.options.length) return;
+
+    setState(() => _semanticFocusedIndex = index);
+    await WidgetsBinding.instance.endOfFrame;
     if (!mounted || index >= _itemKeys.length || index >= widget.options.length) return;
 
     final itemContext = _itemKeys[index].currentContext;
@@ -114,7 +119,9 @@ class _LetterJumpOptionPickerScreenState<T>
         curve: Curves.easeOut,
       );
     }
+    await Future<void>.delayed(const Duration(milliseconds: 220));
     if (!mounted || index >= _focusNodes.length || index >= widget.options.length) return;
+
     _focusNodes[index].requestFocus();
     SemanticsService.sendAnnouncement(
       semanticsView,
@@ -149,15 +156,18 @@ class _LetterJumpOptionPickerScreenState<T>
           final displayLabel = selected && widget.selectedLabel != null
               ? '$label, ${widget.selectedLabel}'
               : label;
-          return Focus(
-            focusNode: _focusNodes[optionIndex],
-            child: ListTile(
-              key: _itemKeys[optionIndex],
-              leading: widget.leadingBuilder?.call(selected) ??
-                  Icon(selected ? Icons.check : Icons.radio),
-              title: Text(displayLabel),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.pop(context, option),
+          return Semantics(
+            focused: _semanticFocusedIndex == optionIndex,
+            child: Focus(
+              focusNode: _focusNodes[optionIndex],
+              child: ListTile(
+                key: _itemKeys[optionIndex],
+                leading: widget.leadingBuilder?.call(selected) ??
+                    Icon(selected ? Icons.check : Icons.radio),
+                title: Text(displayLabel),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pop(context, option),
+              ),
             ),
           );
         },
