@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:path_provider/path_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
@@ -49,6 +51,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   String? _loadError;
   List<String> _chunks = [];
   List<DocumentTableOfContentsEntry> _documentIndex = [];
+  String? _epubIndexSourcePath;
+  bool _documentIndexLoading = false;
 
   // TTS state
   bool _speaking = false;
@@ -65,6 +69,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   StreamSubscription<bool>? _playingSub;
 
   static const int _maxChunkChars = 650;
+  static const int _epubIndexCacheVersion = 1;
 
   late DocumentItem _currentDoc;
 
@@ -156,10 +161,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           !usesEditedText &&
           originalPath != null &&
           _chunks.isNotEmpty) {
-        _documentIndex = await _extractor.extractEpubTableOfContents(
-          path: originalPath,
-          chunks: _chunks,
-        );
+        // Non calcoliamo qui l'indice EPUB: su alcuni libri grandi l'analisi
+        // NCX/nav/ancore interne rallenta l'apertura. Salviamo solo il path e
+        // carichiamo l'indice al tap sul pulsante Indice.
+        _epubIndexSourcePath = originalPath;
       }
     } catch (e) {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
@@ -203,7 +208,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
 
   Future<void> _openDocumentIndex() async {
-    if (_documentIndex.isEmpty) return;
+    if (_chunks.isEmpty || _documentIndexLoading) return;
+
+    if (_documentIndex.isEmpty) {
+      final sourcePath = _epubIndexSourcePath;
+      if (sourcePath == null) return;
+      await _loadEpubIndex(sourcePath);
+      if (!mounted || _documentIndex.isEmpty) return;
+    }
+
     final selectedIndex = await Navigator.of(context).push<int>(
       MaterialPageRoute(
         settings: const RouteSettings(name: '/documents/index'),
@@ -212,6 +225,208 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     );
     if (selectedIndex == null || !mounted) return;
     _openChunkAt(selectedIndex);
+  }
+
+  Future<void> _loadEpubIndex(String sourcePath) async {
+    final cachedEntries = await _readCachedEpubIndex(sourcePath);
+    if (!mounted) return;
+    if (cachedEntries != null) {
+      setState(() {
+        _documentIndex = cachedEntries;
+      });
+      return;
+    }
+
+    BuildContext? dialogContext;
+    setState(() => _documentIndexLoading = true);
+
+    unawaited(
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) {
+          dialogContext = ctx;
+          return _DocumentIndexLoadingDialog(
+            message: _documentIndexLoadingMessage(ctx),
+          );
+        },
+      ),
+    );
+
+    try {
+      // Lascia tempo a Flutter di mostrare il dialog prima dell'analisi EPUB.
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      final entries = await _extractor.extractEpubTableOfContents(
+        path: sourcePath,
+        chunks: _chunks,
+      );
+      if (!mounted) return;
+      setState(() {
+        _documentIndex = entries;
+      });
+      if (entries.isEmpty) {
+        showStatusMessage(context, _documentIndexUnavailableMessage(context));
+      } else {
+        unawaited(_writeCachedEpubIndex(sourcePath, entries));
+      }
+    } catch (e, st) {
+      dev.log(
+        'DocumentReaderScreen: indice EPUB non disponibile',
+        error: e,
+        stackTrace: st,
+      );
+      if (mounted) {
+        showStatusMessage(context, _documentIndexUnavailableMessage(context));
+      }
+    } finally {
+      final activeDialogContext = dialogContext;
+      if (activeDialogContext != null && activeDialogContext.mounted) {
+        try {
+          Navigator.of(activeDialogContext).pop();
+        } catch (_) {}
+      }
+      if (mounted) {
+        setState(() => _documentIndexLoading = false);
+      }
+    }
+  }
+
+  Future<List<DocumentTableOfContentsEntry>?> _readCachedEpubIndex(
+    String sourcePath,
+  ) async {
+    try {
+      final cacheFile = await _epubIndexCacheFile(sourcePath);
+      if (!await cacheFile.exists()) return null;
+      final decoded = jsonDecode(await cacheFile.readAsString());
+      if (decoded is! Map<String, dynamic>) return null;
+      if (decoded['cacheVersion'] != _epubIndexCacheVersion) return null;
+      if (decoded['chunksLength'] != _chunks.length) return null;
+      if (decoded['documentTextLength'] != _documentText.length) return null;
+      final rawEntries = decoded['entries'];
+      if (rawEntries is! List) return null;
+
+      final entries = <DocumentTableOfContentsEntry>[];
+      for (final rawEntry in rawEntries) {
+        if (rawEntry is! Map) continue;
+        final title = rawEntry['title'];
+        final chunkIndex = rawEntry['chunkIndex'];
+        final level = rawEntry['level'];
+        if (title is! String || chunkIndex is! num) continue;
+        final normalizedIndex = chunkIndex.toInt();
+        if (normalizedIndex < 0 || normalizedIndex >= _chunks.length) continue;
+        entries.add(
+          DocumentTableOfContentsEntry(
+            title: title,
+            chunkIndex: normalizedIndex,
+            level: level is num ? level.toInt() : 0,
+          ),
+        );
+      }
+      return entries.isEmpty ? null : entries;
+    } catch (e) {
+      dev.log('DocumentReaderScreen: cache indice EPUB ignorata: $e');
+      return null;
+    }
+  }
+
+  Future<void> _writeCachedEpubIndex(
+    String sourcePath,
+    List<DocumentTableOfContentsEntry> entries,
+  ) async {
+    try {
+      final cacheFile = await _epubIndexCacheFile(sourcePath);
+      final payload = <String, dynamic>{
+        'cacheVersion': _epubIndexCacheVersion,
+        'chunksLength': _chunks.length,
+        'documentTextLength': _documentText.length,
+        'entries': entries
+            .map(
+              (entry) => <String, dynamic>{
+                'title': entry.title,
+                'chunkIndex': entry.chunkIndex,
+                'level': entry.level,
+              },
+            )
+            .toList(),
+      };
+      await cacheFile.writeAsString(jsonEncode(payload), flush: true);
+    } catch (e) {
+      dev.log('DocumentReaderScreen: impossibile salvare cache indice EPUB: $e');
+    }
+  }
+
+  Future<File> _epubIndexCacheFile(String sourcePath) async {
+    final sourceFile = File(sourcePath);
+    final stat = await sourceFile.stat();
+    final cacheKey = _stableCacheKey(
+      [
+        sourceFile.absolute.path,
+        stat.size.toString(),
+        stat.modified.millisecondsSinceEpoch.toString(),
+        _documentText.length.toString(),
+        _chunks.length.toString(),
+        _maxChunkChars.toString(),
+        _epubIndexCacheVersion.toString(),
+      ].join('|'),
+    );
+    final supportDir = await getApplicationSupportDirectory();
+    final cacheDir = Directory('${supportDir.path}/epub_index_cache');
+    if (!await cacheDir.exists()) {
+      await cacheDir.create(recursive: true);
+    }
+    return File('${cacheDir.path}/$cacheKey.json');
+  }
+
+  String _stableCacheKey(String value) {
+    const fnvPrime = 16777619;
+    var hash = 2166136261;
+    for (final unit in utf8.encode(value)) {
+      hash ^= unit;
+      hash = (hash * fnvPrime) & 0xFFFFFFFF;
+    }
+    return hash.toRadixString(16).padLeft(8, '0');
+  }
+
+  String _documentIndexLoadingMessage(BuildContext context) {
+    final lang = Localizations.localeOf(context).languageCode.toLowerCase();
+    switch (lang) {
+      case 'fr':
+        return 'Chargement de l’indice en cours... Veuillez patienter.';
+      case 'es':
+        return 'Cargando índice... Espera, por favor.';
+      case 'pt':
+        return 'A carregar índice... Aguarde.';
+      case 'pl':
+        return 'Ładowanie spisu treści... Proszę czekać.';
+      case 'cs':
+        return 'Načítání obsahu... Čekejte prosím.';
+      case 'en':
+        return 'Loading table of contents... Please wait.';
+      case 'it':
+      default:
+        return 'Caricamento indice in corso... Attendere.';
+    }
+  }
+
+  String _documentIndexUnavailableMessage(BuildContext context) {
+    final lang = Localizations.localeOf(context).languageCode.toLowerCase();
+    switch (lang) {
+      case 'fr':
+        return 'Indice non disponible pour cet EPUB.';
+      case 'es':
+        return 'Índice no disponible para este EPUB.';
+      case 'pt':
+        return 'Índice não disponível para este EPUB.';
+      case 'pl':
+        return 'Spis treści nie jest dostępny dla tego EPUB-a.';
+      case 'cs':
+        return 'Obsah není pro tento EPUB dostupný.';
+      case 'en':
+        return 'Table of contents not available for this EPUB.';
+      case 'it':
+      default:
+        return 'Indice non disponibile per questo EPUB.';
+    }
   }
 
   void _openChunkAt(int index) {
@@ -645,11 +860,20 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 ? null
                 : () => unawaited(_openDocumentSearch()),
           ),
-          if (_documentIndex.isNotEmpty)
+          if (_documentIndex.isNotEmpty ||
+              (_epubIndexSourcePath != null && _chunks.isNotEmpty))
             IconButton(
-              icon: const Icon(Icons.list_alt),
+              icon: _documentIndexLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.list_alt),
               tooltip: l10n.documentIndex,
-              onPressed: () => unawaited(_openDocumentIndex()),
+              onPressed: _documentIndexLoading
+                  ? null
+                  : () => unawaited(_openDocumentIndex()),
             ),
           if (doc.isTemporary)
             IconButton(
@@ -1044,6 +1268,31 @@ class _DocumentIndexScreen extends StatelessWidget {
             onTap: () => Navigator.of(context).pop(entry.chunkIndex),
           );
         },
+      ),
+    );
+  }
+}
+
+
+class _DocumentIndexLoadingDialog extends StatelessWidget {
+  final String message;
+
+  const _DocumentIndexLoadingDialog({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: Semantics(
+        liveRegion: true,
+        container: true,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(width: 20),
+            Expanded(child: Text(message)),
+          ],
+        ),
       ),
     );
   }

@@ -963,17 +963,60 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     final listIndex = articleIndex + (_readUris.isNotEmpty ? 1 : 0);
     _pendingArticleScrollScheduled = true;
 
-    Future<void>.delayed(const Duration(milliseconds: 300), () async {
+    Future<void>.delayed(const Duration(milliseconds: 350), () {
+      _tryScrollToPendingArticle(listIndex);
+    });
+  }
+
+  Future<void> _tryScrollToPendingArticle(int listIndex, {int attempt = 0}) async {
+    if (!mounted) return;
+
+    if (!_scrollController.hasClients) {
+      if (attempt < 3) {
+        Future<void>.delayed(
+          Duration(milliseconds: 250 + (attempt * 150)),
+          () => _tryScrollToPendingArticle(listIndex, attempt: attempt + 1),
+        );
+      } else {
+        _pendingArticleScrollId = null;
+        _pendingArticleScrollScheduled = false;
+      }
+      return;
+    }
+
+    try {
+      await _scrollController.scrollToIndex(
+        listIndex,
+        preferPosition: AutoScrollPosition.begin,
+        duration: const Duration(milliseconds: 300),
+      );
+
+      // Primo rientro da una fonte: a volte la lista e l'albero semantico iOS
+      // arrivano un attimo dopo il primo scroll. Un secondo scroll leggero,
+      // senza forzare il focus VoiceOver, rende più stabile il posizionamento.
+      await Future<void>.delayed(const Duration(milliseconds: 180));
       if (!mounted || !_scrollController.hasClients) return;
       await _scrollController.scrollToIndex(
         listIndex,
         preferPosition: AutoScrollPosition.begin,
-        duration: const Duration(milliseconds: 350),
+        duration: const Duration(milliseconds: 120),
       );
+
       if (!mounted) return;
       _pendingArticleScrollId = null;
       _pendingArticleScrollScheduled = false;
-    });
+    } catch (_) {
+      if (!mounted) return;
+      if (attempt < 3) {
+        Future<void>.delayed(
+          Duration(milliseconds: 300 + (attempt * 200)),
+          () => _tryScrollToPendingArticle(listIndex, attempt: attempt + 1),
+        );
+      } else {
+        _pendingArticleScrollId = null;
+        _pendingArticleScrollScheduled = false;
+      }
+    }
   }
 
   @override

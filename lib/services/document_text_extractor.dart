@@ -1681,8 +1681,25 @@ class DocumentTextExtractor {
 
   String _stripHtml(String html) {
     return html
-        .replaceAll(RegExp(r'<style[^>]*>.*?</style>', dotAll: true), ' ')
-        .replaceAll(RegExp(r'<script[^>]*>.*?</script>', dotAll: true), ' ')
+        // Molti EPUB ripetono <title>Nome opera</title> nell'head di ogni
+        // file XHTML. Se non rimuoviamo l'head, quel titolo viene letto prima
+        // di ogni capitolo, ad esempio "Decameron 1 Ser Cepparello".
+        .replaceAll(
+          RegExp(r'<head[^>]*>.*?</head>', dotAll: true, caseSensitive: false),
+          ' ',
+        )
+        .replaceAll(
+          RegExp(r'<title[^>]*>.*?</title>', dotAll: true, caseSensitive: false),
+          ' ',
+        )
+        .replaceAll(
+          RegExp(r'<style[^>]*>.*?</style>', dotAll: true, caseSensitive: false),
+          ' ',
+        )
+        .replaceAll(
+          RegExp(r'<script[^>]*>.*?</script>', dotAll: true, caseSensitive: false),
+          ' ',
+        )
         .replaceAll(RegExp(r'<[^>]+>'), ' ')
         .replaceAll('&amp;', '&')
         .replaceAll('&lt;', '<')

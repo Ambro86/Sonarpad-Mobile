@@ -73,14 +73,71 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
     return s
         .toLowerCase()
         .replaceAll('à', 'a')
+        .replaceAll('á', 'a')
+        .replaceAll('â', 'a')
+        .replaceAll('ä', 'a')
+        .replaceAll('ã', 'a')
+        .replaceAll('å', 'a')
         .replaceAll('è', 'e')
         .replaceAll('é', 'e')
+        .replaceAll('ê', 'e')
+        .replaceAll('ë', 'e')
         .replaceAll('ì', 'i')
+        .replaceAll('í', 'i')
+        .replaceAll('î', 'i')
+        .replaceAll('ï', 'i')
         .replaceAll('ò', 'o')
+        .replaceAll('ó', 'o')
+        .replaceAll('ô', 'o')
+        .replaceAll('ö', 'o')
+        .replaceAll('õ', 'o')
         .replaceAll('ù', 'u')
-        .replaceAll(',', ' ')
+        .replaceAll('ú', 'u')
+        .replaceAll('û', 'u')
+        .replaceAll('ü', 'u')
+        .replaceAll('ç', 'c')
+        .replaceAll('ñ', 'n')
+        .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
+  }
+
+  List<String> _searchTokens(String query) {
+    final normalized = _normalize(query);
+    if (normalized.isEmpty) return const [];
+    return normalized
+        .split(' ')
+        .where((token) => token.trim().isNotEmpty)
+        .toList(growable: false);
+  }
+
+  bool _matchesFlexibleSearch(String record, String normalizedQuery,
+      List<String> queryTokens) {
+    final normalizedRecord = _normalize(record);
+    if (normalizedRecord.contains(normalizedQuery)) return true;
+    if (queryTokens.isEmpty) return false;
+
+    // Ricerca flessibile: tutte le parole devono comparire nel record,
+    // ma possono essere in qualunque ordine. Esempio: "Ellis Peters"
+    // trova anche le voci del catalogo scritte come "Peters Ellis".
+    return queryTokens.every(normalizedRecord.contains);
+  }
+
+  int _searchScore(String record, String normalizedQuery,
+      List<String> queryTokens) {
+    final normalizedRecord = _normalize(record);
+    if (normalizedRecord.startsWith(normalizedQuery)) return 0;
+    if (normalizedRecord.contains(normalizedQuery)) return 1;
+
+    final positions = queryTokens
+        .map(normalizedRecord.indexOf)
+        .where((position) => position >= 0)
+        .toList(growable: false);
+    if (positions.length != queryTokens.length) return 1000000;
+
+    final first = positions.reduce((a, b) => a < b ? a : b);
+    final last = positions.reduce((a, b) => a > b ? a : b);
+    return 100 + first + (last - first);
   }
 
   String _extractIndex(String record) {
@@ -221,10 +278,22 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
             showStatusMessage(context, 'Attendere il caricamento del catalogo completo.');
       return;
     }
-    final queryLower = _normalize(query);
+    final normalizedQuery = _normalize(query);
+    if (normalizedQuery.isEmpty) {
+      showStatusMessage(context, 'Inserisci almeno una parola da cercare.');
+      return;
+    }
+    final queryTokens = _searchTokens(query);
     final results = _fullCatalog
-        .where((item) => _normalize(item).contains(queryLower))
-        .toList();
+        .where((item) =>
+            _matchesFlexibleSearch(item, normalizedQuery, queryTokens))
+        .toList()
+      ..sort((a, b) {
+        final scoreA = _searchScore(a, normalizedQuery, queryTokens);
+        final scoreB = _searchScore(b, normalizedQuery, queryTokens);
+        if (scoreA != scoreB) return scoreA.compareTo(scoreB);
+        return a.compareTo(b);
+      });
 
     Navigator.push(
       context,

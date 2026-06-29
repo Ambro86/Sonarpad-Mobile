@@ -13,9 +13,10 @@
       "Aggiunti nuovi paesi selezionabili nei Percorsi: Australia, Canada, Germania, Regno Unito e Stati Uniti.",
       "Aggiunta una prima versione dei capitoli nei podcast: quando il feed fornisce un file capitoli JSON, oppure per alcuni episodi Buzzsprout compatibili, il player mostra il pulsante Capitoli e permette di saltare direttamente al punto scelto.",
       "Corretta l’etichetta di alcune voci spagnole nelle impostazioni TTS: le voci es-ES vengono ora mostrate come Spanish (Spain) invece di essere confuse con Colombia.",
-      "Migliorato il pulsante Indice negli EPUB supportati: ora legge meglio gli indici ufficiali NCX/nav e le ancore interne dei capitoli, così funziona con più libri e raccolte complesse.",
+      "Migliorato il pulsante Indice negli EPUB supportati: la prima volta Sonarpad calcola l’indice del libro, poi lo salva in cache per aprirlo più rapidamente nelle letture successive. Inoltre legge meglio gli indici ufficiali NCX/nav e le ancore interne dei capitoli, così funziona con più libri e raccolte complesse.",
       "Aggiunta nelle impostazioni l’opzione “Includi le note a piè di pagina nel testo”: per gli EPUB supportati, le note possono essere lette subito dopo il paragrafo che le richiama.",
-      "Le liste di notizie ed episodi podcast mostrano ora accanto al titolo anche data e ora, con etichette relative come oggi, ieri, domani e dopodomani quando disponibili."
+      "Le liste di notizie ed episodi podcast mostrano ora accanto al titolo anche data e ora, con etichette relative come oggi, ieri, domani e dopodomani quando disponibili.",
+      "Migliorata la ricerca nella Biblioteca Digitale: ora le parole della ricerca possono essere scritte in qualunque ordine, per esempio “Ellis Peters” trova anche le voci catalogate come “Peters Ellis”."
     ],
     "en": [
       "Fixed a document reading issue: Sonarpad now normalizes Unicode combining accents, preventing VoiceOver from joining or misreading characters when moving character by character.",
@@ -27,7 +28,7 @@
       "Added a localized Select letter button to long alphabetical lists, such as countries, languages and categories, to quickly jump to the desired letter.",
       "Added new selectable countries in Routes: Australia, Canada, Germany, United Kingdom and United States.",
       "Added a first version of podcast chapters: when the feed provides a JSON chapters file, or for some compatible Buzzsprout episodes, the player shows a Chapters button and lets you jump directly to the selected point.",
-      "Improved the Table of contents button for supported EPUB files: Sonarpad now reads official NCX/nav indexes and internal chapter anchors more reliably, so it works with more books and complex collections.",
+      "Improved the Table of contents button for supported EPUB files: the first time, Sonarpad builds the book index, then saves it in cache so it can open faster on later readings. It also reads official NCX/nav indexes and internal chapter anchors more reliably, so it works with more books and complex collections.",
       "Fixed the label of some Spanish voices in TTS settings: es-ES voices are now shown as Spanish (Spain) instead of being confused with Colombia.",
       "Added the “Include footnotes in text” option in Settings: for supported EPUB books, notes can be read immediately after the paragraph that references them.",
       "News and podcast episode lists now show date and time next to the title, using relative labels such as today, yesterday, tomorrow and the day after tomorrow when available."
@@ -42,7 +43,7 @@
       "Ajout d’un bouton localisé Sélectionner une lettre dans les longues listes alphabétiques, comme les pays, les langues et les catégories, afin de rejoindre rapidement la lettre souhaitée.",
       "Ajout de nouveaux pays sélectionnables dans les Itinéraires : Australie, Canada, Allemagne, Royaume-Uni et États-Unis.",
       "Ajout d’une première version des chapitres de podcast : lorsque le flux fournit un fichier JSON de chapitres, ou pour certains épisodes Buzzsprout compatibles, le lecteur affiche le bouton Chapitres et permet d’aller directement au point choisi.",
-      "Amélioration du bouton Table des matières pour les fichiers EPUB pris en charge : Sonarpad lit mieux les index officiels NCX/nav et les ancres internes des chapitres, pour fonctionner avec davantage de livres complexes.",
+      "Amélioration du bouton Table des matières pour les fichiers EPUB pris en charge : la première fois, Sonarpad calcule l’index du livre, puis l’enregistre en cache pour l’ouvrir plus rapidement lors des lectures suivantes. Il lit aussi mieux les index officiels NCX/nav et les ancres internes des chapitres, pour fonctionner avec davantage de livres complexes.",
       "Correction du libellé de certaines voix espagnoles dans les réglages TTS : les voix es-ES sont désormais affichées comme Spanish (Spain) au lieu d’être confondues avec Colombia.",
       "Ajout dans les réglages de l’option « Inclure les notes de bas de page dans le texte » : pour les EPUB compatibles, les notes peuvent être lues juste après le paragraphe qui les cite.",
       "Les listes d’actualités et d’épisodes de podcast affichent désormais la date et l’heure à côté du titre, avec des libellés relatifs comme aujourd’hui, hier, demain et après-demain lorsque disponibles."
@@ -57,7 +58,7 @@
       "Añadido un botón localizado Seleccionar letra en las listas alfabéticas largas, como países, idiomas y categorías, para saltar rápidamente a la letra deseada.",
       "Añadidos nuevos países seleccionables en Rutas: Australia, Canadá, Alemania, Reino Unido y Estados Unidos.",
       "Añadida una primera versión de capítulos en podcasts: cuando el feed proporciona un archivo JSON de capítulos, o en algunos episodios compatibles de Buzzsprout, el reproductor muestra el botón Capítulos y permite saltar directamente al punto elegido.",
-      "Mejorado el botón Índice en los archivos EPUB compatibles: Sonarpad ahora lee mejor los índices oficiales NCX/nav y las anclas internas de los capítulos, para funcionar con más libros y colecciones complejas.",
+      "Mejorado el botón Índice en los archivos EPUB compatibles: la primera vez, Sonarpad calcula el índice del libro y luego lo guarda en caché para abrirlo más rápido en lecturas posteriores. También lee mejor los índices oficiales NCX/nav y las anclas internas de los capítulos, para funcionar con más libros y colecciones complejas.",
       "Corregida la etiqueta de algunas voces en español en los ajustes TTS: las voces es-ES ahora se muestran como Spanish (Spain) en lugar de confundirse con Colombia.",
       "Añadida en Ajustes la opción “Incluir las notas a pie de página en el texto”: en los EPUB compatibles, las notas pueden leerse justo después del párrafo que las referencia.",
       "Las listas de noticias y episodios de podcast ahora muestran la fecha y la hora junto al título, con etiquetas relativas como hoy, ayer, mañana y pasado mañana cuando están disponibles."
@@ -72,7 +73,7 @@
       "Adicionado um botão localizado Selecionar letra nas listas alfabéticas longas, como países, idiomas e categorias, para saltar rapidamente para a letra pretendida.",
       "Adicionados novos países selecionáveis nos Percursos: Austrália, Canadá, Alemanha, Reino Unido e Estados Unidos.",
       "Adicionada uma primeira versão dos capítulos nos podcasts: quando o feed fornece um ficheiro JSON de capítulos, ou em alguns episódios Buzzsprout compatíveis, o leitor mostra o botão Capítulos e permite saltar diretamente para o ponto escolhido.",
-      "Melhorado o botão Índice nos ficheiros EPUB suportados: o Sonarpad lê melhor os índices oficiais NCX/nav e as âncoras internas dos capítulos, funcionando com mais livros e coleções complexas.",
+      "Melhorado o botão Índice nos ficheiros EPUB suportados: na primeira vez, o Sonarpad calcula o índice do livro e depois guarda-o em cache para o abrir mais rapidamente nas leituras seguintes. Também lê melhor os índices oficiais NCX/nav e as âncoras internas dos capítulos, funcionando com mais livros e coleções complexas.",
       "Corrigida a etiqueta de algumas vozes espanholas nas definições TTS: as vozes es-ES agora aparecem como Spanish (Spain) em vez de serem confundidas com Colombia.",
       "Adicionada nas definições a opção “Incluir notas de rodapé no texto”: nos EPUB compatíveis, as notas podem ser lidas logo após o parágrafo que as referencia.",
       "As listas de notícias e episódios de podcast agora mostram data e hora junto ao título, com etiquetas relativas como hoje, ontem, amanhã e depois de amanhã quando disponíveis."
@@ -89,7 +90,7 @@
       "Dodano pierwszą wersję rozdziałów w podcastach: gdy kanał udostępnia plik JSON z rozdziałami albo w niektórych zgodnych odcinkach Buzzsprout, odtwarzacz pokazuje przycisk Rozdziały i pozwala przejść bezpośrednio do wybranego miejsca.",
       "Dodano przycisk Spis treści dla obsługiwanych plików EPUB: gdy książka zawiera rozpoznawalne rozdziały, otwiera listę rozdziałów i pozwala przejść bezpośrednio do wybranej części.",
       "Poprawiono etykietę niektórych głosów hiszpańskich w ustawieniach TTS: głosy es-ES są teraz pokazywane jako Spanish (Spain), zamiast być mylone z Colombia.",
-      "Ulepszono przycisk spisu treści w obsługiwanych plikach EPUB: Sonarpad lepiej odczytuje oficjalne indeksy NCX/nav oraz wewnętrzne kotwice rozdziałów, dzięki czemu działa z większą liczbą książek i złożonych zbiorów.",
+      "Ulepszono przycisk spisu treści w obsługiwanych plikach EPUB: przy pierwszym użyciu Sonarpad tworzy indeks książki, a następnie zapisuje go w pamięci podręcznej, aby kolejne otwarcia były szybsze. Lepiej odczytuje też oficjalne indeksy NCX/nav oraz wewnętrzne kotwice rozdziałów, dzięki czemu działa z większą liczbą książek i złożonych zbiorów.",
       "Dodano w ustawieniach opcję „Uwzględniaj przypisy dolne w tekście”: w obsługiwanych plikach EPUB przypisy mogą być czytane zaraz po akapicie, który się do nich odwołuje.",
       "Listy wiadomości i odcinków podcastów pokazują teraz przy tytule datę i godzinę, używając w razie potrzeby etykiet względnych, takich jak dzisiaj, wczoraj, jutro i pojutrze."
     ],
@@ -103,7 +104,7 @@
       "Přidáno lokalizované tlačítko Vybrat písmeno v dlouhých abecedních seznamech, například u zemí, jazyků a kategorií, pro rychlý přesun na požadované písmeno.",
       "Do Tras byly přidány nové volitelné země: Austrálie, Kanada, Německo, Spojené království a Spojené státy.",
       "Přidána první verze kapitol v podcastech: když kanál poskytuje soubor kapitol JSON nebo u některých kompatibilních epizod Buzzsprout, přehrávač zobrazí tlačítko Kapitoly a umožní přejít přímo na vybrané místo.",
-      "Vylepšeno tlačítko obsahu u podporovaných souborů EPUB: Sonarpad nyní lépe čte oficiální indexy NCX/nav a vnitřní kotvy kapitol, takže funguje s více knihami a složitějšími sbírkami.",
+      "Vylepšeno tlačítko obsahu u podporovaných souborů EPUB: při prvním použití Sonarpad vytvoří index knihy a potom jej uloží do mezipaměti, aby se při dalším čtení otevíral rychleji. Také lépe čte oficiální indexy NCX/nav a vnitřní kotvy kapitol, takže funguje s více knihami a složitějšími sbírkami.",
       "Opraven popisek některých španělských hlasů v nastavení TTS: hlasy es-ES se nyní zobrazují jako Spanish (Spain) místo záměny s Colombia.",
       "Do nastavení byla přidána volba „Zahrnout poznámky pod čarou do textu“: u podporovaných knih EPUB lze poznámky číst hned za odstavcem, který na ně odkazuje.",
       "Seznamy zpráv a epizod podcastů nyní u názvu zobrazují také datum a čas, případně s relativními popisky jako dnes, včera, zítra a pozítří."
