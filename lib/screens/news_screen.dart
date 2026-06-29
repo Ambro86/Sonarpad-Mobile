@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../l10n/app_localizations.dart';

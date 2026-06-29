@@ -971,7 +971,7 @@ class DocumentTextExtractor {
       if (variant.isEmpty) continue;
       final escaped = RegExp.escape(variant);
       final attrRegex = RegExp(
-        '(?:id|name)\\s*=\\s*(["\\'])$escaped\\1',
+        "(?:id|name)\\s*=\\s*([\"'])$escaped\\1",
         caseSensitive: false,
       );
       final match = attrRegex.firstMatch(html);
