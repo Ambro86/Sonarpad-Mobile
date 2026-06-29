@@ -568,11 +568,44 @@ class AppSettingsService {
   }
 
   static String _edgeLanguageLabel(String locale, String friendlyName) {
+    final labelFromLocale = _edgeLocaleDisplayName(locale);
+    if (labelFromLocale != null) {
+      return '$labelFromLocale ($locale)';
+    }
+
     final separatorIndex = friendlyName.lastIndexOf(' - ');
     if (separatorIndex == -1) return locale;
 
     final label = friendlyName.substring(separatorIndex + 3).trim();
     return label.isEmpty ? locale : '$label ($locale)';
+  }
+
+  static String? _edgeLocaleDisplayName(String locale) {
+    return switch (locale) {
+      'es-ES' => 'Spanish (Spain)',
+      'es-AR' => 'Spanish (Argentina)',
+      'es-BO' => 'Spanish (Bolivia)',
+      'es-CL' => 'Spanish (Chile)',
+      'es-CO' => 'Spanish (Colombia)',
+      'es-CR' => 'Spanish (Costa Rica)',
+      'es-CU' => 'Spanish (Cuba)',
+      'es-DO' => 'Spanish (Dominican Republic)',
+      'es-EC' => 'Spanish (Ecuador)',
+      'es-SV' => 'Spanish (El Salvador)',
+      'es-GQ' => 'Spanish (Equatorial Guinea)',
+      'es-GT' => 'Spanish (Guatemala)',
+      'es-HN' => 'Spanish (Honduras)',
+      'es-MX' => 'Spanish (Mexico)',
+      'es-NI' => 'Spanish (Nicaragua)',
+      'es-PA' => 'Spanish (Panama)',
+      'es-PY' => 'Spanish (Paraguay)',
+      'es-PE' => 'Spanish (Peru)',
+      'es-PR' => 'Spanish (Puerto Rico)',
+      'es-US' => 'Spanish (United States)',
+      'es-UY' => 'Spanish (Uruguay)',
+      'es-VE' => 'Spanish (Venezuela)',
+      _ => null,
+    };
   }
 
   // --- Segnalibro Automatico Media ---
