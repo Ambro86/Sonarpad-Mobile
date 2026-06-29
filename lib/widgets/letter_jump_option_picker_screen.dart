@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
   final String title;
@@ -32,33 +32,15 @@ class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
 
 class _LetterJumpOptionPickerScreenState<T>
     extends State<LetterJumpOptionPickerScreen<T>> {
-  final _scrollController = ScrollController();
-  late final List<GlobalKey> _itemKeys;
-  late final List<FocusNode> _focusNodes;
-  int? _semanticFocusedIndex;
+  final _scrollController = AutoScrollController();
 
   bool get _showLetterPicker =>
       widget.options.length >= widget.minimumItemsForLetterPicker &&
       _availableLetters().length > 1;
 
-  @override
-  void initState() {
-    super.initState();
-    _itemKeys = List<GlobalKey>.generate(
-      widget.options.length,
-      (_) => GlobalKey(),
-    );
-    _focusNodes = List<FocusNode>.generate(
-      widget.options.length,
-      (_) => FocusNode(),
-    );
-  }
 
   @override
   void dispose() {
-    for (final node in _focusNodes) {
-      node.dispose();
-    }
     _scrollController.dispose();
     super.dispose();
   }
@@ -101,32 +83,14 @@ class _LetterJumpOptionPickerScreenState<T>
     final index = _firstIndexForLetter(letter);
     if (index == null || index < 0 || index >= widget.options.length) return;
 
-    final semanticsView = View.of(context);
-    final textDirection = Directionality.of(context);
-    await Future<void>.delayed(const Duration(milliseconds: 180));
-    if (!mounted || index >= _itemKeys.length || index >= widget.options.length) return;
+    final listIndex = index + (_showLetterPicker ? 1 : 0);
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    if (!mounted || !_scrollController.hasClients) return;
 
-    setState(() => _semanticFocusedIndex = index);
-    await WidgetsBinding.instance.endOfFrame;
-    if (!mounted || index >= _itemKeys.length || index >= widget.options.length) return;
-
-    final itemContext = _itemKeys[index].currentContext;
-    if (itemContext != null && itemContext.mounted) {
-      await Scrollable.ensureVisible(
-        itemContext,
-        alignment: 0.05,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-      );
-    }
-    await Future<void>.delayed(const Duration(milliseconds: 220));
-    if (!mounted || index >= _focusNodes.length || index >= widget.options.length) return;
-
-    _focusNodes[index].requestFocus();
-    SemanticsService.sendAnnouncement(
-      semanticsView,
-      widget.labelBuilder(widget.options[index]),
-      textDirection,
+    await _scrollController.scrollToIndex(
+      listIndex,
+      preferPosition: AutoScrollPosition.begin,
+      duration: const Duration(milliseconds: 350),
     );
   }
 
@@ -156,18 +120,16 @@ class _LetterJumpOptionPickerScreenState<T>
           final displayLabel = selected && widget.selectedLabel != null
               ? '$label, ${widget.selectedLabel}'
               : label;
-          return Semantics(
-            focused: _semanticFocusedIndex == optionIndex,
-            child: Focus(
-              focusNode: _focusNodes[optionIndex],
-              child: ListTile(
-                key: _itemKeys[optionIndex],
-                leading: widget.leadingBuilder?.call(selected) ??
-                    Icon(selected ? Icons.check : Icons.radio),
-                title: Text(displayLabel),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.pop(context, option),
-              ),
+          return AutoScrollTag(
+            key: ValueKey('letter_option_$index'),
+            controller: _scrollController,
+            index: index,
+            child: ListTile(
+              leading: widget.leadingBuilder?.call(selected) ??
+                  Icon(selected ? Icons.check : Icons.radio),
+              title: Text(displayLabel),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.pop(context, option),
             ),
           );
         },

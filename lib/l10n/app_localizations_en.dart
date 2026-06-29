@@ -887,6 +887,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchInDocument => 'Search in document';
 
   @override
+  String get documentIndex => 'Table of contents';
+
+  @override
+  String get documentFootnoteLabel => 'Footnote';
+
+  @override
   String get documentSearchFieldLabel => 'Search text';
 
   @override
@@ -988,6 +994,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsAutoBookmarkHint =>
       'Resume documents, podcasts, and media from where you left off.';
+
+  @override
+  String get settingsIncludeFootnotesInText => 'Include footnotes in text';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'For supported EPUB books, show each note immediately after the paragraph that references it.';
 
   @override
   String get settingsSeekStep => 'Rewind / fast-forward step for media';

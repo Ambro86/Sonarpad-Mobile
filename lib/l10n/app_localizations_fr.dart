@@ -900,6 +900,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchInDocument => 'Rechercher dans le document';
 
   @override
+  String get documentIndex => 'Table des matières';
+
+  @override
+  String get documentFootnoteLabel => 'Note de bas de page';
+
+  @override
   String get documentSearchFieldLabel => 'Texte à rechercher';
 
   @override
@@ -1002,6 +1008,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settingsAutoBookmarkHint =>
       'Reprenez les documents, les podcasts et les contenus multimédias là où vous les aviez laissés.';
+
+  @override
+  String get settingsIncludeFootnotesInText => 'Inclure les notes de bas de page dans le texte';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'Pour les EPUB compatibles, affiche le texte de la note juste après le paragraphe qui la cite.';
 
   @override
   String get settingsSeekStep =>

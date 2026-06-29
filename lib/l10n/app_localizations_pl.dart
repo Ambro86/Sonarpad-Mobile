@@ -892,6 +892,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get searchInDocument => 'Szukaj w dokumencie';
 
   @override
+  String get documentIndex => 'Spis treści';
+
+  @override
+  String get documentFootnoteLabel => 'Przypis dolny';
+
+  @override
   String get documentSearchFieldLabel => 'Szukany tekst';
 
   @override
@@ -993,6 +999,13 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get settingsAutoBookmarkHint =>
       'Wznawiaj dokumenty, podcasty i multimedia od miejsca przerwania.';
+
+  @override
+  String get settingsIncludeFootnotesInText => 'Uwzględniaj przypisy dolne w tekście';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'W obsługiwanych plikach EPUB pokazuje przypis zaraz po akapicie, który się do niego odwołuje.';
 
   @override
   String get settingsSeekStep =>

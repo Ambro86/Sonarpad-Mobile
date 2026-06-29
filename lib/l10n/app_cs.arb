@@ -286,6 +286,10 @@
   "documentRemoveBookmarkAction": "Odebrat záložku",
   "documentReplaceBookmarkAction": "Odebrat a přidat novou záložku",
   "searchInDocument": "Hledat v dokumentu",
+  "documentIndex": "Obsah",
+  "@documentIndex": {
+    "description": "Localized text for documentIndex."
+  },
   "documentSearchFieldLabel": "Hledat text",
   "documentSearchFieldHint": "Slovo nebo fráze k vyhledání",
   "documentSearchEmptyQuery": "Zadejte text k vyhledání.",
@@ -846,5 +850,17 @@
   "radioFavoritesSortedAlphabetically": "Oblíbené stanice seřazeny abecedně.",
   "@radioFavoritesSortedAlphabetically": {
     "description": "Status message shown after radio favorites have been sorted alphabetically."
+  },
+  "settingsIncludeFootnotesInText": "Zahrnout poznámky pod čarou do textu",
+  "@settingsIncludeFootnotesInText": {
+    "description": "Localized text for settingsIncludeFootnotesInText."
+  },
+  "settingsIncludeFootnotesInTextHint": "U podporovaných knih EPUB zobrazí poznámku hned za odstavcem, který na ni odkazuje.",
+  "@settingsIncludeFootnotesInTextHint": {
+    "description": "Localized text for settingsIncludeFootnotesInTextHint."
+  },
+  "documentFootnoteLabel": "Poznámka pod čarou",
+  "@documentFootnoteLabel": {
+    "description": "Localized text for documentFootnoteLabel."
   }
 }

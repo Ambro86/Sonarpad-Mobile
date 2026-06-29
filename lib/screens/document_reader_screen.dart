@@ -48,6 +48,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   String _documentText = '';
   String? _loadError;
   List<String> _chunks = [];
+  List<DocumentTableOfContentsEntry> _documentIndex = [];
 
   // TTS state
   bool _speaking = false;
@@ -117,17 +118,28 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<void> _extractText() async {
     final l10n = AppLocalizations.of(context);
     final ext = _currentDoc.extension.toLowerCase();
+    String? originalPath;
+    var usesEditedText = false;
     try {
       final editedPath =
           await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
       if (editedPath != null && await File(editedPath).exists()) {
+        usesEditedText = true;
         _documentText = normalizeDocumentUnicode(
           await File(editedPath).readAsString(),
         );
       } else {
         final path =
             await DocumentLibraryService().resolveFilePath(_currentDoc);
-        final result = await _extractor.extract(path: path, extension: ext);
+        originalPath = path;
+        final includeFootnotes = ext == 'epub' &&
+            await _settings.includeEpubFootnotesInText();
+        final result = await _extractor.extract(
+          path: path,
+          extension: ext,
+          includeEpubFootnotesInText: includeFootnotes,
+          footnoteLabel: l10n.documentFootnoteLabel,
+        );
         _documentText = normalizeDocumentUnicode(result.text);
         _loadError = result.error;
       }
@@ -138,6 +150,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           maxChunkChars: _maxChunkChars,
         );
         // Le chiavi vengono gestite da AutoScrollTag
+      }
+
+      if (ext == 'epub' &&
+          !usesEditedText &&
+          originalPath != null &&
+          _chunks.isNotEmpty) {
+        _documentIndex = await _extractor.extractEpubTableOfContents(
+          path: originalPath,
+          chunks: _chunks,
+        );
       }
     } catch (e) {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
@@ -173,6 +195,19 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       MaterialPageRoute(
         settings: const RouteSettings(name: '/documents/search'),
         builder: (_) => _DocumentSearchScreen(chunks: _chunks),
+      ),
+    );
+    if (selectedIndex == null || !mounted) return;
+    _openChunkAt(selectedIndex);
+  }
+
+
+  Future<void> _openDocumentIndex() async {
+    if (_documentIndex.isEmpty) return;
+    final selectedIndex = await Navigator.of(context).push<int>(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/documents/index'),
+        builder: (_) => _DocumentIndexScreen(entries: _documentIndex),
       ),
     );
     if (selectedIndex == null || !mounted) return;
@@ -610,6 +645,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 ? null
                 : () => unawaited(_openDocumentSearch()),
           ),
+          if (_documentIndex.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.list_alt),
+              tooltip: l10n.documentIndex,
+              onPressed: () => unawaited(_openDocumentIndex()),
+            ),
           if (doc.isTemporary)
             IconButton(
               icon: const Icon(Icons.save),
@@ -972,6 +1013,37 @@ class _ExtBadge extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.bold,
         ),
+      ),
+    );
+  }
+}
+
+
+class _DocumentIndexScreen extends StatelessWidget {
+  const _DocumentIndexScreen({required this.entries});
+
+  final List<DocumentTableOfContentsEntry> entries;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.documentIndex)),
+      body: ListView.separated(
+        itemCount: entries.length,
+        separatorBuilder: (_, __) => const Divider(height: 1),
+        itemBuilder: (context, index) {
+          final entry = entries[index];
+          return ListTile(
+            contentPadding: EdgeInsetsDirectional.only(
+              start: 16.0 + entry.level * 20.0,
+              end: 16,
+            ),
+            title: Text(entry.title),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).pop(entry.chunkIndex),
+          );
+        },
       ),
     );
   }

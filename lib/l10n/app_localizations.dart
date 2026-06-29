@@ -1674,6 +1674,19 @@ abstract class AppLocalizations {
   /// **'Cerca nel documento'**
   String get searchInDocument;
 
+
+  /// Localized text for documentIndex.
+  ///
+  /// In it, this message translates to:
+  /// **'Indice'**
+  String get documentIndex;
+
+  /// Localized text for documentFootnoteLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Nota a piè di pagina'**
+  String get documentFootnoteLabel;
+
   /// Localized text for documentSearchFieldLabel.
   ///
   /// In it, this message translates to:
@@ -1859,6 +1872,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'**
   String get settingsAutoBookmarkHint;
+
+  /// Localized text for settingsIncludeFootnotesInText.
+  ///
+  /// In it, this message translates to:
+  /// **'Includi le note a piè di pagina nel testo'**
+  String get settingsIncludeFootnotesInText;
+
+  /// Localized text for settingsIncludeFootnotesInTextHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Per gli EPUB supportati, mostra il testo della nota subito dopo il paragrafo che la richiama.'**
+  String get settingsIncludeFootnotesInTextHint;
 
   /// Localized text for settingsSeekStep.
   ///

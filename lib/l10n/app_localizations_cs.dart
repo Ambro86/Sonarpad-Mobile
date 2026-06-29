@@ -894,6 +894,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get searchInDocument => 'Hledat v dokumentu';
 
   @override
+  String get documentIndex => 'Obsah';
+
+  @override
+  String get documentFootnoteLabel => 'Poznámka pod čarou';
+
+  @override
   String get documentSearchFieldLabel => 'Hledat text';
 
   @override
@@ -995,6 +1001,13 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get settingsAutoBookmarkHint =>
       'Pokračovat v dokumentech, podcastech, RaiPlay a audiopopisech tam, kde jste skončili.';
+
+  @override
+  String get settingsIncludeFootnotesInText => 'Zahrnout poznámky pod čarou do textu';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'U podporovaných knih EPUB zobrazí poznámku hned za odstavcem, který na ni odkazuje.';
 
   @override
   String get settingsSeekStep => 'Krok zpět / vpřed pro média';

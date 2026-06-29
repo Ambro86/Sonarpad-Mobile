@@ -25,6 +25,19 @@ class ExtractionResult {
   const ExtractionResult({required this.text, this.error});
 }
 
+/// Voce dell'indice di un documento EPUB collegata al blocco di lettura.
+class DocumentTableOfContentsEntry {
+  final String title;
+  final int chunkIndex;
+  final int level;
+
+  const DocumentTableOfContentsEntry({
+    required this.title,
+    required this.chunkIndex,
+    this.level = 0,
+  });
+}
+
 /// Servizio che estrae il testo da documenti di vari formati.
 ///
 /// Formati con estrazione completa:
@@ -451,6 +464,8 @@ class DocumentTextExtractor {
   Future<ExtractionResult> extract({
     required String path,
     required String extension,
+    bool includeEpubFootnotesInText = false,
+    String footnoteLabel = 'Nota a piè di pagina',
   }) async {
     try {
       switch (extension) {
@@ -474,7 +489,11 @@ class DocumentTextExtractor {
           return await _extractDocx(path);
 
         case 'epub':
-          return await _extractEpub(path);
+          return await _extractEpub(
+            path,
+            includeFootnotesInText: includeEpubFootnotesInText,
+            footnoteLabel: footnoteLabel,
+          );
 
         default:
           return ExtractionResult(
@@ -657,15 +676,510 @@ class DocumentTextExtractor {
     return ExtractionResult(text: normalizeDocumentUnicode(text));
   }
 
+
+  Future<List<DocumentTableOfContentsEntry>> extractEpubTableOfContents({
+    required String path,
+    required List<String> chunks,
+  }) async {
+    if (chunks.isEmpty) return const [];
+    final bytes = await File(path).readAsBytes();
+    final book = await EpubReader.readBook(bytes);
+    final entries = <DocumentTableOfContentsEntry>[];
+
+    // Prima leggiamo direttamente l'indice EPUB ufficiale (NCX/nav HTML).
+    // Alcuni EPUB usano ancore interne come file.xhtml#title23: epubx espone
+    // spesso il titolo, ma non sempre abbastanza contesto per ritrovare il
+    // punto corretto nel testo estratto. La lettura diretta dell'archivio ZIP
+    // permette di usare href + frammento e funziona meglio con indici lunghi.
+    _collectEpubArchiveIndex(bytes, chunks, entries);
+
+    final chapters = book.Chapters;
+    if (chapters != null) {
+      for (final chapter in chapters) {
+        _collectEpubChapterIndex(chapter, chunks, entries, 0);
+      }
+    }
+
+    if (entries.isEmpty) {
+      _collectEpubHeadingIndex(book, chunks, entries);
+    }
+
+    final seen = <String>{};
+    final deduped = <DocumentTableOfContentsEntry>[];
+    for (final entry in entries) {
+      final key = '${entry.chunkIndex}|${entry.title.toLowerCase()}';
+      if (seen.add(key)) deduped.add(entry);
+    }
+    return deduped;
+  }
+
   // ---------------------------------------------------------------------------
   // EPUB — epubx
   // ---------------------------------------------------------------------------
 
-  Future<ExtractionResult> _extractEpub(String path) async {
+
+  void _collectEpubArchiveIndex(
+    List<int> bytes,
+    List<String> chunks,
+    List<DocumentTableOfContentsEntry> entries,
+  ) {
+    try {
+      final archive = ZipDecoder().decodeBytes(bytes);
+      final opfPath = _findEpubOpfPath(archive);
+      if (opfPath == null || opfPath.isEmpty) return;
+
+      final opfText = _readArchiveText(archive, opfPath);
+      if (opfText == null || opfText.trim().isEmpty) return;
+      final opf = xml_pkg.XmlDocument.parse(opfText);
+
+      final manifestItems = <String, String>{};
+      final mediaTypes = <String, String>{};
+      final properties = <String, String>{};
+      for (final item in opf.findAllElements('item')) {
+        final id = item.getAttribute('id');
+        final href = item.getAttribute('href');
+        if (id == null || id.isEmpty || href == null || href.isEmpty) {
+          continue;
+        }
+        final resolved = _resolveEpubPath(opfPath, href);
+        manifestItems[id] = resolved;
+        mediaTypes[id] = item.getAttribute('media-type') ?? '';
+        properties[id] = item.getAttribute('properties') ?? '';
+      }
+
+      final ncxPaths = <String>{};
+      for (final spine in opf.findAllElements('spine')) {
+        final tocId = spine.getAttribute('toc');
+        final tocPath = tocId == null ? null : manifestItems[tocId];
+        if (tocPath != null && tocPath.isNotEmpty) ncxPaths.add(tocPath);
+      }
+      for (final entry in manifestItems.entries) {
+        final id = entry.key;
+        final path = entry.value;
+        final mediaType = mediaTypes[id] ?? '';
+        final lower = path.toLowerCase();
+        if (mediaType == 'application/x-dtbncx+xml' ||
+            lower.endsWith('.ncx')) {
+          ncxPaths.add(path);
+        }
+      }
+
+      for (final ncxPath in ncxPaths) {
+        final ncxText = _readArchiveText(archive, ncxPath);
+        if (ncxText == null || ncxText.trim().isEmpty) continue;
+        _collectEpubNcxIndex(archive, ncxPath, ncxText, chunks, entries);
+      }
+
+      // Se l'NCX ha già prodotto voci valide, manteniamo quell'ordine: è il
+      // più fedele all'indice del libro. La nav HTML viene usata come ripiego.
+      if (entries.isNotEmpty) return;
+
+      final navPaths = <String>{};
+      for (final entry in manifestItems.entries) {
+        final id = entry.key;
+        final path = entry.value;
+        final prop = properties[id] ?? '';
+        final lower = path.toLowerCase();
+        if (prop.split(RegExp(r'\s+')).contains('nav') ||
+            lower.contains('toc') ||
+            lower.contains('indice') ||
+            lower.contains('contents')) {
+          if (lower.endsWith('.xhtml') ||
+              lower.endsWith('.html') ||
+              lower.endsWith('.htm')) {
+            navPaths.add(path);
+          }
+        }
+      }
+      for (final navPath in navPaths) {
+        final navText = _readArchiveText(archive, navPath);
+        if (navText == null || navText.trim().isEmpty) continue;
+        _collectEpubHtmlNavIndex(archive, navPath, navText, chunks, entries);
+      }
+    } catch (e, st) {
+      dev.log(
+        'DocumentTextExtractor: indice EPUB archivio non disponibile',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  String? _findEpubOpfPath(Archive archive) {
+    final containerText = _readArchiveText(archive, 'META-INF/container.xml');
+    if (containerText == null || containerText.trim().isEmpty) return null;
+    final container = xml_pkg.XmlDocument.parse(containerText);
+    for (final rootfile in container.findAllElements('rootfile')) {
+      final path = rootfile.getAttribute('full-path');
+      if (path != null && path.trim().isNotEmpty) {
+        return _normalizeEpubZipPath(Uri.decodeFull(path.trim()));
+      }
+    }
+    return null;
+  }
+
+  void _collectEpubNcxIndex(
+    Archive archive,
+    String ncxPath,
+    String ncxText,
+    List<String> chunks,
+    List<DocumentTableOfContentsEntry> entries,
+  ) {
+    final ncx = xml_pkg.XmlDocument.parse(ncxText);
+    for (final navMap in ncx.findAllElements('navMap')) {
+      for (final navPoint in _childElementsByLocalName(navMap, 'navPoint')) {
+        _collectEpubNcxNavPoint(
+          archive,
+          ncxPath,
+          navPoint,
+          chunks,
+          entries,
+          0,
+        );
+      }
+    }
+  }
+
+  void _collectEpubNcxNavPoint(
+    Archive archive,
+    String ncxPath,
+    xml_pkg.XmlElement navPoint,
+    List<String> chunks,
+    List<DocumentTableOfContentsEntry> entries,
+    int level,
+  ) {
+    final label = _cleanEpubTitle(_readEpubNcxLabel(navPoint));
+    final content = _childElementsByLocalName(navPoint, 'content').firstOrNull;
+    final src = content?.getAttribute('src') ?? '';
+    if (label.isNotEmpty && src.trim().isNotEmpty) {
+      _addEpubIndexEntryForReference(
+        archive: archive,
+        basePath: ncxPath,
+        reference: src,
+        title: label,
+        level: level,
+        chunks: chunks,
+        entries: entries,
+      );
+    }
+
+    for (final child in _childElementsByLocalName(navPoint, 'navPoint')) {
+      _collectEpubNcxNavPoint(
+        archive,
+        ncxPath,
+        child,
+        chunks,
+        entries,
+        level + 1,
+      );
+    }
+  }
+
+  String _readEpubNcxLabel(xml_pkg.XmlElement navPoint) {
+    final navLabel = _childElementsByLocalName(navPoint, 'navLabel').firstOrNull;
+    final text = navLabel == null
+        ? null
+        : _childElementsByLocalName(navLabel, 'text').firstOrNull;
+    return text?.innerText ?? '';
+  }
+
+  void _collectEpubHtmlNavIndex(
+    Archive archive,
+    String navPath,
+    String navText,
+    List<String> chunks,
+    List<DocumentTableOfContentsEntry> entries,
+  ) {
+    final linkRegex = RegExp(
+      r'''<a\b[^>]*href\s*=\s*(["\'])(.*?)\1[^>]*>(.*?)</a>''',
+      caseSensitive: false,
+      dotAll: true,
+    );
+    for (final match in linkRegex.allMatches(navText)) {
+      final href = match.group(2) ?? '';
+      final title = _cleanEpubTitle(_stripHtml(match.group(3) ?? ''));
+      if (title.isEmpty || href.trim().isEmpty) continue;
+      _addEpubIndexEntryForReference(
+        archive: archive,
+        basePath: navPath,
+        reference: href,
+        title: title,
+        level: 0,
+        chunks: chunks,
+        entries: entries,
+      );
+    }
+  }
+
+  void _addEpubIndexEntryForReference({
+    required Archive archive,
+    required String basePath,
+    required String reference,
+    required String title,
+    required int level,
+    required List<String> chunks,
+    required List<DocumentTableOfContentsEntry> entries,
+  }) {
+    final candidates = _epubTocCandidatesForReference(
+      archive: archive,
+      basePath: basePath,
+      reference: reference,
+      title: title,
+    );
+    final chunkIndex = _findChunkIndexForCandidates(chunks, candidates);
+    if (chunkIndex == null) return;
+    entries.add(
+      DocumentTableOfContentsEntry(
+        title: title,
+        chunkIndex: chunkIndex,
+        level: level.clamp(0, 3).toInt(),
+      ),
+    );
+  }
+
+  List<String> _epubTocCandidatesForReference({
+    required Archive archive,
+    required String basePath,
+    required String reference,
+    required String title,
+  }) {
+    final candidates = <String>[];
+    final refParts = reference.split('#');
+    final href = refParts.first.trim();
+    final fragment = refParts.length > 1 ? refParts.sublist(1).join('#') : '';
+    if (href.isNotEmpty) {
+      final htmlPath = _resolveEpubPath(basePath, href);
+      final html = _readArchiveText(archive, htmlPath);
+      if (html != null && html.isNotEmpty) {
+        if (fragment.isNotEmpty) {
+          candidates.addAll(_epubFragmentCandidates(html, fragment));
+        }
+        candidates.addAll(_cleanEpubHtmlLines(html).take(6));
+      }
+    }
+    if (title.isNotEmpty) candidates.add(title);
+    return candidates;
+  }
+
+  List<String> _epubFragmentCandidates(String html, String fragment) {
+    final variants = <String>{
+      fragment,
+      Uri.decodeComponent(fragment),
+      Uri.decodeFull(fragment),
+    };
+    for (final variant in variants) {
+      if (variant.isEmpty) continue;
+      final escaped = RegExp.escape(variant);
+      final attrRegex = RegExp(
+        '(?:id|name)\\s*=\\s*(["\\'])$escaped\\1',
+        caseSensitive: false,
+      );
+      final match = attrRegex.firstMatch(html);
+      if (match == null) continue;
+      final tagStart = html.lastIndexOf('<', match.start);
+      final start = tagStart >= 0 ? tagStart : match.start;
+      final end = (start + 6000).clamp(0, html.length).toInt();
+      final lines = _cleanEpubHtmlLines(html.substring(start, end));
+      if (lines.isNotEmpty) return lines.take(8).toList();
+    }
+    return const [];
+  }
+
+  Iterable<xml_pkg.XmlElement> _childElementsByLocalName(
+    xml_pkg.XmlElement element,
+    String localName,
+  ) {
+    return element.children
+        .whereType<xml_pkg.XmlElement>()
+        .where((child) => child.name.local == localName);
+  }
+
+  String? _readArchiveText(Archive archive, String path) {
+    final file = _findArchiveFile(archive, path);
+    if (file == null || file.isFile == false) return null;
+    final content = file.content;
+    if (content is List<int>) {
+      return utf8.decode(content, allowMalformed: true);
+    }
+    return null;
+  }
+
+  ArchiveFile? _findArchiveFile(Archive archive, String path) {
+    final normalized = _normalizeEpubZipPath(path);
+    for (final file in archive.files) {
+      if (_normalizeEpubZipPath(file.name) == normalized) return file;
+    }
+    final basename = p.url.basename(normalized);
+    for (final file in archive.files) {
+      if (p.url.basename(_normalizeEpubZipPath(file.name)) == basename) {
+        return file;
+      }
+    }
+    return null;
+  }
+
+  String _resolveEpubPath(String basePath, String reference) {
+    final pathOnly = reference.split('#').first.trim();
+    if (pathOnly.isEmpty) return '';
+    final decoded = Uri.decodeFull(pathOnly).replaceAll('\\', '/');
+    final baseDir = p.url.dirname(_normalizeEpubZipPath(basePath));
+    final resolved = baseDir == '.' || baseDir.isEmpty
+        ? decoded
+        : p.url.join(baseDir, decoded);
+    return _normalizeEpubZipPath(p.url.normalize(resolved));
+  }
+
+  String _normalizeEpubZipPath(String path) {
+    var value = path.replaceAll('\\', '/').trim();
+    while (value.startsWith('/')) {
+      value = value.substring(1);
+    }
+    return p.url.normalize(value);
+  }
+
+  void _collectEpubChapterIndex(
+    EpubChapter chapter,
+    List<String> chunks,
+    List<DocumentTableOfContentsEntry> entries,
+    int level,
+  ) {
+    final title = _cleanEpubTitle(chapter.Title ?? '');
+    final lines = _cleanEpubHtmlLines(chapter.HtmlContent ?? '');
+    final candidates = <String>[
+      if (title.isNotEmpty) title,
+      ...lines.where((line) => line.length >= 3).take(3),
+    ];
+    final chunkIndex = _findChunkIndexForCandidates(chunks, candidates);
+    if (title.isNotEmpty && chunkIndex != null) {
+      entries.add(
+        DocumentTableOfContentsEntry(
+          title: title,
+          chunkIndex: chunkIndex,
+          level: level.clamp(0, 3).toInt(),
+        ),
+      );
+    }
+
+    final subChapters = chapter.SubChapters;
+    if (subChapters != null) {
+      for (final sub in subChapters) {
+        _collectEpubChapterIndex(sub, chunks, entries, level + 1);
+      }
+    }
+  }
+
+  void _collectEpubHeadingIndex(
+    EpubBook book,
+    List<String> chunks,
+    List<DocumentTableOfContentsEntry> entries,
+  ) {
+    final content = book.Content?.Html;
+    if (content == null || content.isEmpty) return;
+    final headingRegex = RegExp(
+      r'<h([1-3])[^>]*>(.*?)</h\1>',
+      caseSensitive: false,
+      dotAll: true,
+    );
+
+    for (final html in _orderedEpubHtmlContents(book)) {
+      for (final match in headingRegex.allMatches(html)) {
+        final level = int.tryParse(match.group(1) ?? '1') ?? 1;
+        final title = _cleanEpubTitle(_stripHtml(match.group(2) ?? ''));
+        if (title.isEmpty) continue;
+        final chunkIndex = _findChunkIndexForCandidates(chunks, [title]);
+        if (chunkIndex == null) continue;
+        entries.add(
+          DocumentTableOfContentsEntry(
+            title: title,
+            chunkIndex: chunkIndex,
+            level: (level - 1).clamp(0, 3).toInt(),
+          ),
+        );
+      }
+    }
+  }
+
+  List<String> _orderedEpubHtmlContents(EpubBook book) {
+    final content = book.Content?.Html;
+    if (content == null || content.isEmpty) return const [];
+
+    final manifestItems = book.Schema?.Package?.Manifest?.Items ?? const [];
+    final spineItems = book.Schema?.Package?.Spine?.Items ?? const [];
+    final orderedHrefs = <String>[];
+    for (final spineItem in spineItems) {
+      final idRef = spineItem.IdRef;
+      if (idRef == null || idRef.isEmpty) continue;
+      for (final manifestItem in manifestItems) {
+        if (manifestItem.Id == idRef &&
+            manifestItem.Href != null &&
+            manifestItem.Href!.isNotEmpty) {
+          orderedHrefs.add(manifestItem.Href!);
+          break;
+        }
+      }
+    }
+
+    final seen = <String>{};
+    final htmls = <String>[];
+    final hrefs = orderedHrefs.isEmpty ? content.keys : orderedHrefs;
+    for (final href in hrefs) {
+      final file = content[href] ?? content[p.basename(href)];
+      final html = file?.Content;
+      if (html == null || html.isEmpty || !seen.add(href)) continue;
+      htmls.add(html);
+    }
+    return htmls;
+  }
+
+  int? _findChunkIndexForCandidates(
+    List<String> chunks,
+    Iterable<String> candidates,
+  ) {
+    final normalizedChunks = chunks.map(_normalizeForSearch).toList();
+    for (final candidate in candidates) {
+      final normalized = _normalizeForSearch(candidate);
+      if (normalized.length < 3) continue;
+      final needles = <String>{
+        normalized,
+        if (normalized.length > 140) normalized.substring(0, 140).trim(),
+      };
+      for (final needle in needles) {
+        if (needle.length < 3) continue;
+        for (var i = 0; i < normalizedChunks.length; i++) {
+          if (normalizedChunks[i].contains(needle)) return i;
+        }
+      }
+    }
+    return null;
+  }
+
+  String _normalizeForSearch(String value) =>
+      _collapseWhitespace(normalizeDocumentUnicode(value)).toLowerCase();
+
+  String _cleanEpubTitle(String value) {
+    final title = _collapseWhitespace(normalizeDocumentUnicode(value));
+    if (title.isEmpty || _isEpubMetadataNoiseLine(title)) return '';
+    return title;
+  }
+
+  Future<ExtractionResult> _extractEpub(
+    String path, {
+    required bool includeFootnotesInText,
+    required String footnoteLabel,
+  }) async {
     final bytes = await File(path).readAsBytes();
     final book = await EpubReader.readBook(bytes);
     final body = StringBuffer();
-    _appendEpubSpineContent(book, body);
+    if (includeFootnotesInText) {
+      _appendEpubArchiveSpineContent(
+        bytes,
+        body,
+        footnoteLabel: footnoteLabel,
+      );
+    }
+    if (body.toString().trim().isEmpty) {
+      _appendEpubSpineContent(book, body);
+    }
 
     final chapters = book.Chapters;
     if (body.toString().trim().isEmpty && chapters != null) {
@@ -736,8 +1250,395 @@ class DocumentTextExtractor {
   }
 
   void _appendCleanEpubHtml(String html, StringBuffer buffer) {
-    final text = _stripHtml(html);
     var wrote = false;
+    for (final line in _cleanEpubHtmlLines(html)) {
+      buffer.writeln(line);
+      wrote = true;
+    }
+    if (wrote) buffer.writeln();
+  }
+
+  void _appendEpubArchiveSpineContent(
+    List<int> bytes,
+    StringBuffer buffer, {
+    required String footnoteLabel,
+  }) {
+    try {
+      final archive = ZipDecoder().decodeBytes(bytes);
+      final opfPath = _findEpubOpfPath(archive);
+      if (opfPath == null || opfPath.isEmpty) return;
+
+      final opfText = _readArchiveText(archive, opfPath);
+      if (opfText == null || opfText.trim().isEmpty) return;
+      final opf = xml_pkg.XmlDocument.parse(opfText);
+
+      final manifestItems = <String, String>{};
+      final mediaTypes = <String, String>{};
+      for (final item in opf.findAllElements('item')) {
+        final id = item.getAttribute('id');
+        final href = item.getAttribute('href');
+        if (id == null || id.isEmpty || href == null || href.isEmpty) {
+          continue;
+        }
+        manifestItems[id] = _resolveEpubPath(opfPath, href);
+        mediaTypes[id] = item.getAttribute('media-type') ?? '';
+      }
+
+      final orderedPaths = <String>[];
+      for (final itemref in opf.findAllElements('itemref')) {
+        final idRef = itemref.getAttribute('idref');
+        if (idRef == null || idRef.isEmpty) continue;
+        final path = manifestItems[idRef];
+        if (path == null || path.isEmpty) continue;
+        final mediaType = mediaTypes[idRef] ?? '';
+        final lower = path.toLowerCase();
+        if (mediaType.contains('html') ||
+            lower.endsWith('.xhtml') ||
+            lower.endsWith('.html') ||
+            lower.endsWith('.htm')) {
+          orderedPaths.add(path);
+        }
+      }
+
+      final seen = <String>{};
+      final cache = <String, Map<String, String>>{};
+      for (final htmlPath in orderedPaths) {
+        if (!seen.add(_normalizeEpubZipPath(htmlPath))) continue;
+        final html = _readArchiveText(archive, htmlPath);
+        if (html == null || html.trim().isEmpty) continue;
+        _appendCleanEpubHtmlWithFootnotes(
+          html,
+          buffer,
+          archive: archive,
+          htmlPath: htmlPath,
+          footnoteLabel: footnoteLabel,
+          footnoteCache: cache,
+        );
+      }
+    } catch (e, st) {
+      dev.log(
+        'DocumentTextExtractor: note EPUB inline non disponibili',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  void _appendCleanEpubHtmlWithFootnotes(
+    String html,
+    StringBuffer buffer, {
+    required Archive archive,
+    required String htmlPath,
+    required String footnoteLabel,
+    required Map<String, Map<String, String>> footnoteCache,
+  }) {
+    final lines = _cleanEpubHtmlLinesWithFootnotes(
+      html,
+      archive: archive,
+      htmlPath: htmlPath,
+      footnoteLabel: footnoteLabel,
+      footnoteCache: footnoteCache,
+    );
+    var wrote = false;
+    for (final line in lines) {
+      buffer.writeln(line);
+      wrote = true;
+    }
+    if (wrote) buffer.writeln();
+  }
+
+  List<String> _cleanEpubHtmlLinesWithFootnotes(
+    String html, {
+    required Archive archive,
+    required String htmlPath,
+    required String footnoteLabel,
+    required Map<String, Map<String, String>> footnoteCache,
+  }) {
+    try {
+      final document = xml_pkg.XmlDocument.parse(html);
+      final footnotes = _epubFootnotesForHtml(
+        archive: archive,
+        htmlPath: htmlPath,
+        html: html,
+        cache: footnoteCache,
+      );
+      final lines = <String>[];
+      final blockTags = {
+        'p',
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'li',
+        'blockquote',
+      };
+      for (final element in document.descendants.whereType<xml_pkg.XmlElement>()) {
+        final local = element.name.local.toLowerCase();
+        if (!blockTags.contains(local)) continue;
+        if (_isInsideEpubHeadOrFootnotes(element)) continue;
+        final blockHtml = element.toXmlString();
+        final text = _cleanEpubTextLine(_stripHtml(blockHtml));
+        if (text.isEmpty) continue;
+        lines.add(text);
+
+        final seenRefs = <String>{};
+        for (final ref in _extractEpubFootnoteReferences(blockHtml)) {
+          final note = _lookupEpubFootnote(
+            ref,
+            archive: archive,
+            currentHtmlPath: htmlPath,
+            localFootnotes: footnotes,
+            cache: footnoteCache,
+          );
+          if (note == null || note.text.isEmpty) continue;
+          final key = '${note.id}|${note.text}';
+          if (!seenRefs.add(key)) continue;
+          final label = note.number.isEmpty
+              ? footnoteLabel
+              : '$footnoteLabel ${note.number}';
+          lines.add('$label: ${note.text}');
+        }
+      }
+      if (lines.isNotEmpty) return lines;
+    } catch (_) {
+      // Alcuni EPUB contengono HTML non perfettamente XML: in quel caso si
+      // usa il parser testuale storico senza note inline.
+    }
+    return _cleanEpubHtmlLines(html);
+  }
+
+  String _cleanEpubTextLine(String line) {
+    final trimmed = line.trim();
+    if (trimmed.isEmpty ||
+        _isEpubMetadataNoiseLine(trimmed) ||
+        (trimmed.startsWith('part') && trimmed.length <= 12)) {
+      return '';
+    }
+    return trimmed;
+  }
+
+  bool _isInsideEpubHeadOrFootnotes(xml_pkg.XmlElement element) {
+    xml_pkg.XmlElement? current = element;
+    while (current != null) {
+      final local = current.name.local.toLowerCase();
+      if (local == 'head') return true;
+      if (_isEpubFootnoteContainer(current)) return true;
+      final parent = current.parent;
+      current = parent is xml_pkg.XmlElement ? parent : null;
+    }
+    return false;
+  }
+
+  Map<String, String> _epubFootnotesForHtml({
+    required Archive archive,
+    required String htmlPath,
+    required String html,
+    required Map<String, Map<String, String>> cache,
+  }) {
+    final normalizedPath = _normalizeEpubZipPath(htmlPath);
+    final cached = cache[normalizedPath];
+    if (cached != null) return cached;
+    final parsed = _extractEpubFootnotesFromHtml(html);
+    cache[normalizedPath] = parsed;
+    return parsed;
+  }
+
+  Map<String, String> _extractEpubFootnotesFromHtml(String html) {
+    final result = <String, String>{};
+    try {
+      final document = xml_pkg.XmlDocument.parse(html);
+      for (final element in document.descendants.whereType<xml_pkg.XmlElement>()) {
+        if (_isSpecificEpubFootnoteDefinition(element)) {
+          _addEpubFootnoteDefinition(result, element);
+          continue;
+        }
+
+        // Alcuni EPUB, come Decameron Einaudi, hanno un contenitore
+        // <div id="footnotes"> con dentro semplici <p> senza class="footnote".
+        // Non dobbiamo associare l'intero contenitore a ogni nota: leggiamo
+        // ogni blocco figlio separatamente.
+        if (_isGenericEpubFootnoteContainer(element)) {
+          for (final child in _childElementsByLocalName(element, 'p')) {
+            _addEpubFootnoteDefinition(result, child);
+          }
+          for (final child in _childElementsByLocalName(element, 'div')) {
+            _addEpubFootnoteDefinition(result, child);
+          }
+        }
+      }
+    } catch (_) {
+      _extractEpubFootnotesWithRegex(html, result);
+    }
+    return result;
+  }
+
+  void _addEpubFootnoteDefinition(
+    Map<String, String> result,
+    xml_pkg.XmlElement element,
+  ) {
+    final ids = _epubFootnoteIdsForElement(element);
+    if (ids.isEmpty) return;
+    final text = _cleanEpubFootnoteText(_stripHtml(element.toXmlString()));
+    if (text.isEmpty) return;
+    for (final id in ids) {
+      result[id] = text;
+    }
+  }
+
+  bool _isEpubFootnoteContainer(xml_pkg.XmlElement element) {
+    return _isGenericEpubFootnoteContainer(element) ||
+        _isSpecificEpubFootnoteDefinition(element);
+  }
+
+  bool _isGenericEpubFootnoteContainer(xml_pkg.XmlElement element) {
+    final id = (element.getAttribute('id') ?? '').toLowerCase();
+    final clazz = (element.getAttribute('class') ?? '').toLowerCase();
+    final epubType = (element.getAttribute('epub:type') ??
+            element.getAttribute('type') ??
+            '')
+        .toLowerCase();
+    return id == 'footnotes' ||
+        id == 'notes' ||
+        clazz.split(RegExp(r'\s+')).contains('footnotes') ||
+        epubType.split(RegExp(r'\s+')).contains('footnotes');
+  }
+
+  bool _isSpecificEpubFootnoteDefinition(xml_pkg.XmlElement element) {
+    final id = (element.getAttribute('id') ?? '').toLowerCase();
+    final clazz = (element.getAttribute('class') ?? '').toLowerCase();
+    final epubType = (element.getAttribute('epub:type') ??
+            element.getAttribute('type') ??
+            '')
+        .toLowerCase();
+    if (_isGenericEpubFootnoteContainer(element)) return false;
+    final classTokens = clazz.split(RegExp(r'\s+'));
+    final typeTokens = epubType.split(RegExp(r'\s+'));
+    return classTokens.contains('footnote') ||
+        classTokens.contains('endnote') ||
+        typeTokens.contains('footnote') ||
+        typeTokens.contains('endnote') ||
+        id.startsWith('fn') ||
+        id.startsWith('ftn') ||
+        id.contains('footnote') ||
+        id.contains('endnote');
+  }
+
+  List<String> _epubFootnoteIdsForElement(xml_pkg.XmlElement element) {
+    final ids = <String>[];
+    void addId(String? id) {
+      if (id == null || id.trim().isEmpty) return;
+      final value = id.trim();
+      final lower = value.toLowerCase();
+      if (lower.startsWith('ref_') || lower.startsWith('rfn')) return;
+      if (lower.startsWith('ffn')) return;
+      if (lower == 'footnotes' || lower == 'notes') return;
+      if (!ids.contains(value)) ids.add(value);
+    }
+
+    addId(element.getAttribute('id'));
+    for (final child in element.descendants.whereType<xml_pkg.XmlElement>()) {
+      final local = child.name.local.toLowerCase();
+      if (local != 'a') continue;
+      addId(child.getAttribute('id'));
+      addId(child.getAttribute('name'));
+    }
+    return ids;
+  }
+
+  void _extractEpubFootnotesWithRegex(
+    String html,
+    Map<String, String> result,
+  ) {
+    final regex = RegExp(
+      r'''<(?:div|p|aside|section)\b[^>]*(?:class|epub:type|id)\s*=\s*(["\'])[^"\']*(?:footnote|endnote|fn)[^"\']*\1[^>]*>(.*?)</(?:div|p|aside|section)>''',
+      caseSensitive: false,
+      dotAll: true,
+    );
+    for (final match in regex.allMatches(html)) {
+      final block = match.group(0) ?? '';
+      final idMatch = RegExp(
+        r'''\b(?:id|name)\s*=\s*(["\'])([^"\']+)\1''',
+        caseSensitive: false,
+      ).firstMatch(block);
+      final id = idMatch?.group(2)?.trim();
+      if (id == null || id.isEmpty) continue;
+      final text = _cleanEpubFootnoteText(_stripHtml(block));
+      if (text.isNotEmpty) result[id] = text;
+    }
+  }
+
+  String _cleanEpubFootnoteText(String value) {
+    var text = _collapseWhitespace(normalizeDocumentUnicode(value));
+    text = text.replaceFirst(RegExp(r'^\s*[\*\d]+\s*[\.)]?\s*'), '');
+    return text.trim();
+  }
+
+  List<_EpubFootnoteReference> _extractEpubFootnoteReferences(String html) {
+    final refs = <_EpubFootnoteReference>[];
+    final linkRegex = RegExp(
+      r'''<a\b[^>]*href\s*=\s*(["\'])(.*?)\1[^>]*>(.*?)</a>''',
+      caseSensitive: false,
+      dotAll: true,
+    );
+    for (final match in linkRegex.allMatches(html)) {
+      final href = match.group(2)?.trim() ?? '';
+      if (!href.contains('#')) continue;
+      final number = _collapseWhitespace(_stripHtml(match.group(3) ?? ''));
+      refs.add(_EpubFootnoteReference(href: href, number: number));
+    }
+    return refs;
+  }
+
+  _ResolvedEpubFootnote? _lookupEpubFootnote(
+    _EpubFootnoteReference ref, {
+    required Archive archive,
+    required String currentHtmlPath,
+    required Map<String, String> localFootnotes,
+    required Map<String, Map<String, String>> cache,
+  }) {
+    final parts = ref.href.split('#');
+    final hrefPath = parts.first.trim();
+    final rawFragment = parts.length > 1 ? parts.sublist(1).join('#') : '';
+    if (rawFragment.isEmpty) return null;
+    final fragmentVariants = <String>{
+      rawFragment,
+      Uri.decodeComponent(rawFragment),
+      Uri.decodeFull(rawFragment),
+    };
+
+    Map<String, String> footnotes;
+    if (hrefPath.isEmpty) {
+      footnotes = localFootnotes;
+    } else {
+      final externalPath = _resolveEpubPath(currentHtmlPath, hrefPath);
+      final externalHtml = _readArchiveText(archive, externalPath);
+      if (externalHtml == null || externalHtml.trim().isEmpty) return null;
+      footnotes = _epubFootnotesForHtml(
+        archive: archive,
+        htmlPath: externalPath,
+        html: externalHtml,
+        cache: cache,
+      );
+    }
+
+    for (final fragment in fragmentVariants) {
+      final text = footnotes[fragment];
+      if (text != null && text.trim().isNotEmpty) {
+        return _ResolvedEpubFootnote(
+          id: fragment,
+          number: ref.number,
+          text: text.trim(),
+        );
+      }
+    }
+    return null;
+  }
+
+  List<String> _cleanEpubHtmlLines(String html) {
+    final text = _stripHtml(html);
+    final lines = <String>[];
     for (final line in text.split('\n')) {
       final trimmed = line.trim();
       if (trimmed.isEmpty ||
@@ -745,10 +1646,9 @@ class DocumentTextExtractor {
           (trimmed.startsWith('part') && trimmed.length <= 12)) {
         continue;
       }
-      buffer.writeln(trimmed);
-      wrote = true;
+      lines.add(trimmed);
     }
-    if (wrote) buffer.writeln();
+    return lines;
   }
 
   bool _isEpubMetadataNoiseLine(String line) {
@@ -793,6 +1693,28 @@ class DocumentTextExtractor {
         .replaceAll(RegExp(r'\s{2,}'), ' ')
         .trim();
   }
+}
+
+class _EpubFootnoteReference {
+  final String href;
+  final String number;
+
+  const _EpubFootnoteReference({
+    required this.href,
+    required this.number,
+  });
+}
+
+class _ResolvedEpubFootnote {
+  final String id;
+  final String number;
+  final String text;
+
+  const _ResolvedEpubFootnote({
+    required this.id,
+    required this.number,
+    required this.text,
+  });
 }
 
 class _DecodedCandidate {

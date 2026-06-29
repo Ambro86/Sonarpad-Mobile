@@ -50,6 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late TextEditingController _tvSecretCodeController;
   bool _testingVoice = false;
   bool _autoBookmark = true;
+  bool _includeEpubFootnotesInText = false;
   bool _homeGroupingEnabled = false;
   int _seekSliderStep = 60;
   final _audio = AudioPlayerService();
@@ -65,6 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _savedTtsSpeed = 1.0;
   double _savedTtsPitch = 1.0;
   bool _savedAutoBookmark = true;
+  bool _savedIncludeEpubFootnotesInText = false;
   bool _savedHomeGroupingEnabled = false;
   int _savedSeekSliderStep = 60;
 
@@ -107,6 +109,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
+    final includeEpubFootnotesInText =
+        await _settings.includeEpubFootnotesInText();
     final homeGrouping = await _settings.isHomeGroupingEnabled();
     final seekSliderStep = await _settings.loadSeekSliderStep();
     final edgeVoices = await AppSettingsService.loadEdgeVoices();
@@ -148,6 +152,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedSystemTtsVoice = sysVoice;
       _autoBookmark = autoBookmark;
       _savedAutoBookmark = autoBookmark;
+      _includeEpubFootnotesInText = includeEpubFootnotesInText;
+      _savedIncludeEpubFootnotesInText = includeEpubFootnotesInText;
       _homeGroupingEnabled = homeGrouping;
       _savedHomeGroupingEnabled = homeGrouping;
       _seekSliderStep = seekSliderStep;
@@ -187,6 +193,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final weatherTemperatureUnitChanged =
         _weatherTemperatureUnit != _savedWeatherTemperatureUnit;
     final autoBookmarkChanged = _autoBookmark != _savedAutoBookmark;
+    final includeEpubFootnotesChanged = _includeEpubFootnotesInText !=
+        _savedIncludeEpubFootnotesInText;
     final homeGroupingChanged = _homeGroupingEnabled != _savedHomeGroupingEnabled;
     final seekSliderStepChanged = _seekSliderStep != _savedSeekSliderStep;
     final ttsEngineChanged = _ttsEngine != _savedTtsEngine;
@@ -202,6 +210,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         themeChanged ||
         weatherTemperatureUnitChanged ||
         autoBookmarkChanged ||
+        includeEpubFootnotesChanged ||
         homeGroupingChanged ||
         seekSliderStepChanged ||
         ttsSettingsChanged;
@@ -214,6 +223,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'appLanguageChanged=$appLanguageChanged themeChanged=$themeChanged '
       'weatherTemperatureUnitChanged=$weatherTemperatureUnitChanged '
       'codeChanged=$codeChanged autoBookmarkChanged=$autoBookmarkChanged '
+      'includeEpubFootnotesChanged=$includeEpubFootnotesChanged '
       'homeGroupingChanged=$homeGroupingChanged '
       'seekSliderStepChanged=$seekSliderStepChanged '
       'ttsEngine=$_ttsEngine previous=$_savedTtsEngine '
@@ -250,6 +260,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.saveTtsPitch(_ttsPitch);
     await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
+    await _settings.setIncludeEpubFootnotesInText(_includeEpubFootnotesInText);
     await _settings.setHomeGroupingEnabled(_homeGroupingEnabled);
     await _settings.saveSeekSliderStep(_seekSliderStep);
     _markSaved(rawCode);
@@ -351,6 +362,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedTtsPitch = _ttsPitch;
     _savedTvSecretCode = rawCode;
     _savedAutoBookmark = _autoBookmark;
+    _savedIncludeEpubFootnotesInText = _includeEpubFootnotesInText;
     _savedHomeGroupingEnabled = _homeGroupingEnabled;
     _savedSeekSliderStep = _seekSliderStep;
   }
@@ -369,6 +381,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _ttsPitch != _savedTtsPitch ||
         _tvSecretCodeController.text.trim() != _savedTvSecretCode ||
         _autoBookmark != _savedAutoBookmark ||
+        _includeEpubFootnotesInText != _savedIncludeEpubFootnotesInText ||
         _homeGroupingEnabled != _savedHomeGroupingEnabled ||
         _seekSliderStep != _savedSeekSliderStep;
   }
@@ -954,6 +967,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       subtitle: Text(l10n.settingsAutoBookmarkHint),
                       value: _autoBookmark,
                       onChanged: (val) => setState(() => _autoBookmark = val),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    SwitchListTile(
+                      title: Text(l10n.settingsIncludeFootnotesInText),
+                      subtitle: Text(l10n.settingsIncludeFootnotesInTextHint),
+                      value: _includeEpubFootnotesInText,
+                      onChanged: (val) => setState(
+                        () => _includeEpubFootnotesInText = val,
+                      ),
                       contentPadding: EdgeInsets.zero,
                     ),
                     if (showItalianOnlySettings) ...[

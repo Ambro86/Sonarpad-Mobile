@@ -59,6 +59,8 @@ class AppSettingsService {
   static const _radioLanguageKey = 'sonarpad_radio_language';
   static const _radioCountryKey = 'sonarpad_radio_country';
   static const _radioGenreKey = 'sonarpad_radio_genre';
+  static const _includeEpubFootnotesInTextKey =
+      'sonarpad_include_epub_footnotes_in_text';
 
   static const ttsLanguages = [
     TtsVoiceLanguage('it', 'Italiano'),
@@ -235,6 +237,17 @@ class AppSettingsService {
   Future<void> saveRadioGenre(String genreValue) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_radioGenreKey, genreValue);
+  }
+
+
+  Future<bool> includeEpubFootnotesInText() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_includeEpubFootnotesInTextKey) ?? false;
+  }
+
+  Future<void> setIncludeEpubFootnotesInText(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_includeEpubFootnotesInTextKey, enabled);
   }
 
   Future<SonarpadThemeMode> loadThemeMode() async {

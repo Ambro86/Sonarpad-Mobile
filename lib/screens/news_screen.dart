@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
@@ -13,6 +13,7 @@ import '../services/news_service.dart';
 import '../services/news_sources/news_rss_source.dart';
 import 'news_webview_screen.dart';
 import '../utils/status_message.dart';
+import '../utils/list_timestamp_formatter.dart';
 
 class NewsScreen extends StatefulWidget {
   final String? folderId;
@@ -866,13 +867,11 @@ class _NewsArticleList extends StatefulWidget {
 
 class _NewsArticleListState extends State<_NewsArticleList> {
   final _service = NewsService();
-  final _scrollController = ScrollController();
-  final Map<String, GlobalKey> _articleKeys = {};
-  final Map<String, FocusNode> _articleFocusNodes = {};
-  String? _semanticFocusedArticleId;
+  final _scrollController = AutoScrollController();
   Set<String> _readUris = {};
   bool _loadingRead = true;
-  String? _pendingFocusArticleId;
+  String? _pendingArticleScrollId;
+  bool _pendingArticleScrollScheduled = false;
 
   @override
   void initState() {
@@ -883,100 +882,26 @@ class _NewsArticleListState extends State<_NewsArticleList> {
   @override
   void dispose() {
     _scrollController.dispose();
-    for (final node in _articleFocusNodes.values) {
-      node.dispose();
-    }
     super.dispose();
   }
 
-  GlobalKey _keyForArticle(NewsArticle article) =>
-      _articleKeys.putIfAbsent(article.id, () => GlobalKey());
-
-  FocusNode _focusNodeForArticle(NewsArticle article) =>
-      _articleFocusNodes.putIfAbsent(
-        article.id,
-        () => FocusNode(debugLabel: 'news_article_${article.id}'),
-      );
-
-  NewsArticle? _articleToFocusAfterOpening(
+  Future<void> _openArticle(
+    NewsArticle article,
     List<NewsArticle> visibleArticles,
-    int openedIndex,
-  ) {
-    if (openedIndex + 1 < visibleArticles.length) {
-      return visibleArticles[openedIndex + 1];
-    }
-    if (openedIndex > 0) {
-      return visibleArticles[openedIndex - 1];
-    }
-    return null;
-  }
-
-  void _scheduleArticleFocusRestore({
-    String? fallbackAnnouncement,
-    int attempt = 0,
-  }) {
-    final articleId = _pendingFocusArticleId;
-    if (articleId == null) return;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted || _pendingFocusArticleId != articleId) return;
-      final targetContext = _articleKeys[articleId]?.currentContext;
-      if (targetContext == null) {
-        if (attempt >= 8) {
-          _pendingFocusArticleId = null;
-          return;
-        }
-        _scheduleArticleFocusRestore(
-          fallbackAnnouncement: fallbackAnnouncement,
-          attempt: attempt + 1,
-        );
-        return;
-      }
-
-      final semanticsView = View.of(context);
-      final textDirection = Directionality.of(context);
-      setState(() => _semanticFocusedArticleId = articleId);
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted || _pendingFocusArticleId != articleId) return;
-
-      final stableTargetContext = _articleKeys[articleId]?.currentContext;
-      if (stableTargetContext != null && stableTargetContext.mounted) {
-        await Scrollable.ensureVisible(
-          stableTargetContext,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-          alignment: 0.12,
-        );
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 220));
-      if (!mounted || _pendingFocusArticleId != articleId) return;
-
-      final focusNode = _articleFocusNodes[articleId];
-      if (focusNode != null && focusNode.canRequestFocus) {
-        focusNode.requestFocus();
-      }
-      if (fallbackAnnouncement != null && fallbackAnnouncement.trim().isNotEmpty) {
-        SemanticsService.sendAnnouncement(
-          semanticsView,
-          fallbackAnnouncement,
-          textDirection,
-        );
-      }
-      _pendingFocusArticleId = null;
-    });
-  }
-
-  Future<void> _openArticle({
-    required List<NewsArticle> visibleArticles,
-    required int articleIndex,
-    required NewsArticle article,
-  }) async {
+  ) async {
     final navigator = Navigator.of(context);
-    final nextArticle = _articleToFocusAfterOpening(
-      visibleArticles,
-      articleIndex,
-    );
-    _pendingFocusArticleId = nextArticle?.id;
+    final currentIndex = visibleArticles.indexWhere((a) => a.id == article.id);
+    NewsArticle? scrollTarget;
+    if (currentIndex >= 0) {
+      if (currentIndex + 1 < visibleArticles.length) {
+        scrollTarget = visibleArticles[currentIndex + 1];
+      } else if (currentIndex - 1 >= 0) {
+        scrollTarget = visibleArticles[currentIndex - 1];
+      }
+    }
+
+    _pendingArticleScrollId = scrollTarget?.id;
+    _pendingArticleScrollScheduled = false;
 
     await _service.addReadArticle(
       widget.language,
@@ -1000,10 +925,6 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     );
     if (!mounted) return;
     await _loadReadArticles();
-    if (!mounted) return;
-    _scheduleArticleFocusRestore(
-      fallbackAnnouncement: nextArticle?.title,
-    );
   }
 
   Future<void> _loadReadArticles() async {
@@ -1027,6 +948,33 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     ).then((_) => _loadReadArticles());
   }
 
+  void _schedulePendingArticleScroll(List<NewsArticle> articles) {
+    final pendingId = _pendingArticleScrollId;
+    if (pendingId == null || _pendingArticleScrollScheduled) return;
+
+    final articleIndex = articles.indexWhere((a) => a.id == pendingId);
+    if (articleIndex < 0) {
+      _pendingArticleScrollId = null;
+      _pendingArticleScrollScheduled = false;
+      return;
+    }
+
+    final listIndex = articleIndex + (_readUris.isNotEmpty ? 1 : 0);
+    _pendingArticleScrollScheduled = true;
+
+    Future<void>.delayed(const Duration(milliseconds: 300), () async {
+      if (!mounted || !_scrollController.hasClients) return;
+      await _scrollController.scrollToIndex(
+        listIndex,
+        preferPosition: AutoScrollPosition.begin,
+        duration: const Duration(milliseconds: 350),
+      );
+      if (!mounted) return;
+      _pendingArticleScrollId = null;
+      _pendingArticleScrollScheduled = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -1047,6 +995,8 @@ class _NewsArticleListState extends State<_NewsArticleList> {
         final articles = allArticles.where((a) => !_readUris.contains(a.id)).toList();
         final itemCount = articles.length + (_readUris.isNotEmpty ? 1 : 0);
 
+        _schedulePendingArticleScroll(articles);
+
         if (itemCount == 0) {
           return Center(child: Text(l10n.noNewsFound));
         }
@@ -1057,12 +1007,17 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           separatorBuilder: (_, __) => const Divider(height: 1),
           itemBuilder: (context, index) {
             if (_readUris.isNotEmpty && index == 0) {
-              return ListTile(
-                key: const ValueKey('news_read_articles'),
-                leading: const Icon(Icons.history),
-                title: Text(l10n.newsReadArticles),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: _openReadArticles,
+              return AutoScrollTag(
+                key: const ValueKey('news_read_articles_scroll'),
+                controller: _scrollController,
+                index: index,
+                child: ListTile(
+                  key: const ValueKey('news_read_articles'),
+                  leading: const Icon(Icons.history),
+                  title: Text(l10n.newsReadArticles),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _openReadArticles,
+                ),
               );
             }
             final articleIndex = _readUris.isNotEmpty ? index - 1 : index;
@@ -1077,25 +1032,23 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                 ? article.source
                 : '${article.source}. ${article.summary}';
 
-            return KeyedSubtree(
-              key: _keyForArticle(article),
-              child: Semantics(
-                focused: _semanticFocusedArticleId == article.id,
-                child: ListTile(
-                  key: ValueKey('news_article_${article.id}'),
-                  focusNode: _focusNodeForArticle(article),
-                  title: Text(article.title),
-                  subtitle: Text(
-                    subtitleText,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  onTap: () => _openArticle(
-                    visibleArticles: articles,
-                    articleIndex: articleIndex,
-                    article: article,
-                  ),
+            return AutoScrollTag(
+              key: ValueKey('news_article_scroll_$index'),
+              controller: _scrollController,
+              index: index,
+              child: ListTile(
+                key: ValueKey('news_article_${article.id}'),
+                title: Text(titleWithListTimestamp(
+                  article.title,
+                  article.publishedAt,
+                  l10n.localeName,
+                )),
+                subtitle: Text(
+                  subtitleText,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                onTap: () => _openArticle(article, articles),
               ),
             );
           },
@@ -1212,7 +1165,11 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
                       },
                       child: ListTile(
                         key: ValueKey('news_read_article_${article.id}'),
-                        title: Text(article.title),
+                        title: Text(titleWithListTimestamp(
+                          article.title,
+                          article.publishedAt,
+                          l10n.localeName,
+                        )),
                         subtitle: Text(
                           subtitleText,
                           maxLines: 3,

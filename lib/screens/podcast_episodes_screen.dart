@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:intl/intl.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/podcast_service.dart';
+import '../utils/list_timestamp_formatter.dart';
 import 'podcast_episode_player_screen.dart';
 
 /// Schermata che mostra gli episodi di un singolo podcast iscritto.
@@ -19,10 +20,7 @@ class PodcastEpisodesScreen extends StatefulWidget {
 
 class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
   final _service = PodcastService();
-  final _scrollController = ScrollController();
-  final Map<String, GlobalKey> _episodeKeys = {};
-  final Map<String, FocusNode> _episodeFocusNodes = {};
-  String? _semanticFocusedEpisodeKey;
+  final _scrollController = AutoScrollController();
   late Future<List<PodcastEpisode>> _episodes;
   Set<String> _playedAudioUrls = {};
 
@@ -35,9 +33,6 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
 
   @override
   void dispose() {
-    for (final node in _episodeFocusNodes.values) {
-      node.dispose();
-    }
     _scrollController.dispose();
     super.dispose();
   }
@@ -103,80 +98,18 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
         (_playedAudioUrls.isNotEmpty ? 1 : 0) +
         (hasDateButton ? 1 : 0);
 
-    if (_scrollController.hasClients) {
-      final position = _scrollController.position;
-      final targetOffset = (listIndex * 96.0)
-          .clamp(position.minScrollExtent, position.maxScrollExtent)
-          .toDouble();
-      await _scrollController.animateTo(
-        targetOffset,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-      );
-    }
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    if (!mounted || !_scrollController.hasClients) return;
 
-    _scheduleEpisodeFocusRestore(selectedEpisode);
+    await _scrollController.scrollToIndex(
+      listIndex,
+      preferPosition: AutoScrollPosition.begin,
+      duration: const Duration(milliseconds: 350),
+    );
   }
 
   bool _hasDatedEpisodes(List<PodcastEpisode> episodes) =>
       episodes.any((episode) => episode.publishedAt != null);
-
-  String _episodeKey(PodcastEpisode episode) =>
-      episode.id ?? episode.audioUrl;
-
-  GlobalKey _keyForEpisode(PodcastEpisode episode) =>
-      _episodeKeys.putIfAbsent(_episodeKey(episode), () => GlobalKey());
-
-  FocusNode _focusNodeForEpisode(PodcastEpisode episode) =>
-      _episodeFocusNodes.putIfAbsent(
-        _episodeKey(episode),
-        () => FocusNode(debugLabel: 'podcast_episode_${_episodeKey(episode)}'),
-      );
-
-  void _scheduleEpisodeFocusRestore(PodcastEpisode episode, {int attempt = 0}) {
-    final targetKey = _episodeKey(episode);
-    final semanticsView = View.of(context);
-    final textDirection = Directionality.of(context);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      await Future<void>.delayed(const Duration(milliseconds: 180));
-      if (!mounted) return;
-
-      final itemContext = _episodeKeys[targetKey]?.currentContext;
-      if (itemContext == null) {
-        if (attempt < 8) {
-          _scheduleEpisodeFocusRestore(episode, attempt: attempt + 1);
-        }
-        return;
-      }
-
-      setState(() => _semanticFocusedEpisodeKey = targetKey);
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted) return;
-
-      if (itemContext.mounted) {
-        await Scrollable.ensureVisible(
-          itemContext,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-          alignment: 0.1,
-        );
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 220));
-      if (!mounted) return;
-
-      final focusNode = _episodeFocusNodes[targetKey];
-      if (focusNode != null && focusNode.canRequestFocus) {
-        focusNode.requestFocus();
-      }
-      SemanticsService.sendAnnouncement(
-        semanticsView,
-        episode.title,
-        textDirection,
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,13 +153,18 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                   var currentIndex = index;
 
                   if (_playedAudioUrls.isNotEmpty && currentIndex == 0) {
-                    return Card(
-                      child: ListTile(
-                        key: const ValueKey('podcast_played_episodes'),
-                        leading: const Icon(Icons.history),
-                        title: Text(l10n.podcastPlayedEpisodes),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: _openPlayedEpisodes,
+                    return AutoScrollTag(
+                      key: const ValueKey('podcast_played_episodes_scroll'),
+                      controller: _scrollController,
+                      index: index,
+                      child: Card(
+                        child: ListTile(
+                          key: const ValueKey('podcast_played_episodes'),
+                          leading: const Icon(Icons.history),
+                          title: Text(l10n.podcastPlayedEpisodes),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: _openPlayedEpisodes,
+                        ),
                       ),
                     );
                   }
@@ -236,13 +174,18 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                   }
 
                   if (hasDateButton && currentIndex == 0) {
-                    return Card(
-                      child: ListTile(
-                        key: const ValueKey('podcast_select_date'),
-                        leading: const Icon(Icons.event),
-                        title: Text(l10n.podcastSelectDate),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => _openDateSelector(unplayedEpisodes),
+                    return AutoScrollTag(
+                      key: const ValueKey('podcast_select_date_scroll'),
+                      controller: _scrollController,
+                      index: index,
+                      child: Card(
+                        child: ListTile(
+                          key: const ValueKey('podcast_select_date'),
+                          leading: const Icon(Icons.event),
+                          title: Text(l10n.podcastSelectDate),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () => _openDateSelector(unplayedEpisodes),
+                        ),
                       ),
                     );
                   }
@@ -253,23 +196,24 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
 
                   final episode = unplayedEpisodes[currentIndex];
 
-                  final episodeKey = _episodeKey(episode);
-                  return Semantics(
-                    focused: _semanticFocusedEpisodeKey == episodeKey,
-                    child: Focus(
-                      focusNode: _focusNodeForEpisode(episode),
-                      child: Card(
-                        key: _keyForEpisode(episode),
-                        child: ListTile(
-                          key: ValueKey('podcast_episode_tile_${episode.id ?? episode.audioUrl}'),
-                          title: Text(episode.title),
-                          subtitle: Text(
-                            episode.description,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          onTap: () => _openEpisode(episode),
+                  return AutoScrollTag(
+                    key: ValueKey('podcast_episode_scroll_$index'),
+                    controller: _scrollController,
+                    index: index,
+                    child: Card(
+                      child: ListTile(
+                        key: ValueKey('podcast_episode_tile_${episode.id ?? episode.audioUrl}'),
+                        title: Text(titleWithListTimestamp(
+                          episode.title,
+                          episode.publishedAt,
+                          l10n.localeName,
+                        )),
+                        subtitle: Text(
+                          episode.description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        onTap: () => _openEpisode(episode),
                       ),
                     ),
                   );
@@ -422,7 +366,11 @@ class _PlayedEpisodesScreenState extends State<_PlayedEpisodesScreen> {
                       child: ListTile(
                         key: ValueKey(
                             'played_podcast_episode_tile_${episode.id}'),
-                        title: Text(episode.title),
+                        title: Text(titleWithListTimestamp(
+                          episode.title,
+                          episode.publishedAt,
+                          l10n.localeName,
+                        )),
                         subtitle: Text(
                           episode.description,
                           maxLines: 2,

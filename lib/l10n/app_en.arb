@@ -289,6 +289,10 @@
   "documentRemoveBookmarkAction": "Remove bookmark",
   "documentReplaceBookmarkAction": "Remove and add a new bookmark",
   "searchInDocument": "Search in document",
+  "documentIndex": "Table of contents",
+  "@documentIndex": {
+    "description": "Localized text for documentIndex."
+  },
   "documentSearchFieldLabel": "Search text",
   "documentSearchFieldHint": "Word or phrase to find",
   "documentSearchEmptyQuery": "Enter text to search for.",
@@ -849,5 +853,17 @@
   "radioFavoritesSortedAlphabetically": "Radio favorites sorted alphabetically.",
   "@radioFavoritesSortedAlphabetically": {
     "description": "Status message shown after radio favorites have been sorted alphabetically."
+  },
+  "settingsIncludeFootnotesInText": "Include footnotes in text",
+  "@settingsIncludeFootnotesInText": {
+    "description": "Localized text for settingsIncludeFootnotesInText."
+  },
+  "settingsIncludeFootnotesInTextHint": "For supported EPUB books, show each note immediately after the paragraph that references it.",
+  "@settingsIncludeFootnotesInTextHint": {
+    "description": "Localized text for settingsIncludeFootnotesInTextHint."
+  },
+  "documentFootnoteLabel": "Footnote",
+  "@documentFootnoteLabel": {
+    "description": "Localized text for documentFootnoteLabel."
   }
 }

@@ -898,6 +898,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get searchInDocument => 'Buscar en el documento';
 
   @override
+  String get documentIndex => 'Índice';
+
+  @override
+  String get documentFootnoteLabel => 'Nota a pie de página';
+
+  @override
   String get documentSearchFieldLabel => 'Texto de búsqueda';
 
   @override
@@ -1002,6 +1008,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsAutoBookmarkHint =>
       'Reanuda documentos, podcasts y contenido multimedia desde donde lo dejaste.';
+
+  @override
+  String get settingsIncludeFootnotesInText => 'Incluir las notas a pie de página en el texto';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'En los EPUB compatibles, muestra la nota justo después del párrafo que la referencia.';
 
   @override
   String get settingsSeekStep =>

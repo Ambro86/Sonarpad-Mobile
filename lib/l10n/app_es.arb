@@ -289,6 +289,10 @@
   "documentRemoveBookmarkAction": "Eliminar marcador",
   "documentReplaceBookmarkAction": "Eliminar y añadir un nuevo marcador",
   "searchInDocument": "Buscar en el documento",
+  "documentIndex": "Índice",
+  "@documentIndex": {
+    "description": "Localized text for documentIndex."
+  },
   "documentSearchFieldLabel": "Texto de búsqueda",
   "documentSearchFieldHint": "Palabra o frase para buscar",
   "documentSearchEmptyQuery": "Introduce el texto que quieres buscar.",
@@ -849,5 +853,17 @@
   "radioFavoritesSortedAlphabetically": "Radios favoritas ordenadas alfabéticamente.",
   "@radioFavoritesSortedAlphabetically": {
     "description": "Status message shown after radio favorites have been sorted alphabetically."
+  },
+  "settingsIncludeFootnotesInText": "Incluir las notas a pie de página en el texto",
+  "@settingsIncludeFootnotesInText": {
+    "description": "Localized text for settingsIncludeFootnotesInText."
+  },
+  "settingsIncludeFootnotesInTextHint": "En los EPUB compatibles, muestra la nota justo después del párrafo que la referencia.",
+  "@settingsIncludeFootnotesInTextHint": {
+    "description": "Localized text for settingsIncludeFootnotesInTextHint."
+  },
+  "documentFootnoteLabel": "Nota a pie de página",
+  "@documentFootnoteLabel": {
+    "description": "Localized text for documentFootnoteLabel."
   }
 }

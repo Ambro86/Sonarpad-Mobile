@@ -13,6 +13,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../models/podcast.dart';
+import '../services/app_settings_service.dart';
 import '../services/audiobook_export_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
@@ -567,9 +568,13 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final resolvedPath = await _service.resolveFilePath(doc);
     await AppLogger.log(
         'Estrazione testo da file originale (estensione: ${doc.extension})');
+    final includeFootnotes = doc.extension.toLowerCase() == 'epub' &&
+        await AppSettingsService().includeEpubFootnotesInText();
     final result = await DocumentTextExtractor().extract(
       path: resolvedPath,
       extension: doc.extension,
+      includeEpubFootnotesInText: includeFootnotes,
+      footnoteLabel: l10n.documentFootnoteLabel,
     );
     if (result.text.trim().isEmpty) {
       throw Exception(result.error ?? l10n.noExportableTextFound);

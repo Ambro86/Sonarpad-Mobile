@@ -1246,6 +1246,10 @@
     "description": "Localized text for documentReplaceBookmarkAction."
   },
   "searchInDocument": "Cerca nel documento",
+  "documentIndex": "Indice",
+  "@documentIndex": {
+    "description": "Localized text for documentIndex."
+  },
   "@searchInDocument": {
     "description": "Localized text for searchInDocument."
   },
@@ -3021,5 +3025,17 @@
   "radioFavoritesSortedAlphabetically": "Radio preferite ordinate alfabeticamente.",
   "@radioFavoritesSortedAlphabetically": {
     "description": "Status message shown after radio favorites have been sorted alphabetically."
+  },
+  "settingsIncludeFootnotesInText": "Includi le note a piè di pagina nel testo",
+  "@settingsIncludeFootnotesInText": {
+    "description": "Localized text for settingsIncludeFootnotesInText."
+  },
+  "settingsIncludeFootnotesInTextHint": "Per gli EPUB supportati, mostra il testo della nota subito dopo il paragrafo che la richiama.",
+  "@settingsIncludeFootnotesInTextHint": {
+    "description": "Localized text for settingsIncludeFootnotesInTextHint."
+  },
+  "documentFootnoteLabel": "Nota a piè di pagina",
+  "@documentFootnoteLabel": {
+    "description": "Localized text for documentFootnoteLabel."
   }
 }

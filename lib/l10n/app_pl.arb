@@ -1244,6 +1244,10 @@
     "description": "Localized text for documentReplaceBookmarkAction."
   },
   "searchInDocument": "Szukaj w dokumencie",
+  "documentIndex": "Spis treści",
+  "@documentIndex": {
+    "description": "Localized text for documentIndex."
+  },
   "@searchInDocument": {
     "description": "Localized text for searchInDocument."
   },
@@ -3021,5 +3025,17 @@
   "radioFavoritesSortedAlphabetically": "Ulubione stacje radiowe posortowane alfabetycznie.",
   "@radioFavoritesSortedAlphabetically": {
     "description": "Status message shown after radio favorites have been sorted alphabetically."
+  },
+  "settingsIncludeFootnotesInText": "Uwzględniaj przypisy dolne w tekście",
+  "@settingsIncludeFootnotesInText": {
+    "description": "Localized text for settingsIncludeFootnotesInText."
+  },
+  "settingsIncludeFootnotesInTextHint": "W obsługiwanych plikach EPUB pokazuje przypis zaraz po akapicie, który się do niego odwołuje.",
+  "@settingsIncludeFootnotesInTextHint": {
+    "description": "Localized text for settingsIncludeFootnotesInTextHint."
+  },
+  "documentFootnoteLabel": "Przypis dolny",
+  "@documentFootnoteLabel": {
+    "description": "Localized text for documentFootnoteLabel."
   }
 }
