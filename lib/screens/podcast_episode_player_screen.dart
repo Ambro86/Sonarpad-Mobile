@@ -454,6 +454,12 @@ class _PodcastEpisodePlayerScreenState
     );
   }
 
+  bool get _usePortraitFullscreenVideo =>
+      _displayVideoInPortrait &&
+      _isVideoEnabled &&
+      _videoController != null &&
+      _videoController!.value.isInitialized;
+
   @override
   void dispose() {
     AppLogger.log(
@@ -501,6 +507,157 @@ class _PodcastEpisodePlayerScreenState
     );
   }
 
+  Widget _buildVideoPlayerFullscreenSurface(VideoPlayerController controller) {
+    final aspect = controller.value.aspectRatio > 0
+        ? controller.value.aspectRatio
+        : 16 / 9;
+    return ColoredBox(
+      color: Colors.black,
+      child: ClipRect(
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: aspect >= 1 ? aspect : 1,
+              height: aspect >= 1 ? 1 : 1 / aspect,
+              child: VideoPlayer(controller),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPortraitFullscreenControls(
+    AppLocalizations l10n,
+    bool canSeek,
+  ) {
+    return Material(
+      color: Colors.black54,
+      child: DefaultTextStyle.merge(
+        style: const TextStyle(color: Colors.white),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SwitchListTile(
+              title: Text(
+                l10n.enableVideo,
+                style: const TextStyle(color: Colors.white),
+              ),
+              value: _isVideoEnabled,
+              onChanged: _loading ? null : _toggleVideo,
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+            ),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
+              children: [
+                if (canSeek)
+                  FilledButton.icon(
+                    onPressed: _loading || !_loaded ? null : _seekBackward,
+                    icon: const Icon(Icons.fast_rewind),
+                    label: Text(l10n.rewind15s),
+                  ),
+                FilledButton.icon(
+                  key: const ValueKey('podcast_video_fullscreen_play_pause'),
+                  onPressed: _loading ? null : _toggleVideoPlayback,
+                  icon: Icon(
+                    _videoController!.value.isPlaying
+                        ? Icons.pause
+                        : Icons.play_arrow,
+                  ),
+                  label: Text(
+                    _videoController!.value.isPlaying ? l10n.pause : l10n.play,
+                  ),
+                ),
+                if (canSeek)
+                  FilledButton.icon(
+                    onPressed: _loading || !_loaded ? null : _seekForward,
+                    icon: const Icon(Icons.fast_forward),
+                    label: Text(l10n.forward15s),
+                  ),
+              ],
+            ),
+            if (canSeek) ...[
+              const SizedBox(height: 12),
+              _VideoPositionControl(
+                controller: _videoController!,
+                audio: _videoUsesExternalAudio ? _audio : null,
+                seekStep: _seekStep,
+                logSubject: _logSubject,
+              ),
+            ],
+            if (_videoUsesExternalAudio) ...[
+              const SizedBox(height: 12),
+              VolumeSlider(audioPlayer: _audio),
+            ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPortraitFullscreenScaffold(
+    AppLocalizations l10n,
+    bool canSeek,
+  ) {
+    final surface = _videoUsesExternalAudio
+        ? Semantics(
+            key: const ValueKey('podcast_video_fullscreen_external_audio'),
+            label: l10n.nowPlayingTitle(widget.episode.title),
+            value: _videoController!.value.isPlaying ? l10n.pause : l10n.play,
+            child: _buildVideoPlayerFullscreenSurface(_videoController!),
+          )
+        : KeyedSubtree(
+            key: const ValueKey('podcast_video_fullscreen_inline_audio'),
+            child: _buildVideoPlayerFullscreenSurface(_videoController!),
+          );
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Positioned.fill(child: surface),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Material(
+                  color: Colors.black54,
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    color: Colors.white,
+                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      AppLogger.log(
+                        'PodcastPlayer: fullscreen back pressed, $_logSubject',
+                      );
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: _buildPortraitFullscreenControls(l10n, canSeek),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLogger.log(
@@ -513,6 +670,9 @@ class _PodcastEpisodePlayerScreenState
     final canSeek = _videoController == null ||
         (_videoController!.value.isInitialized &&
             _videoController!.value.duration > Duration.zero);
+    if (_usePortraitFullscreenVideo) {
+      return _buildPortraitFullscreenScaffold(l10n, canSeek);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.nowPlayingTitle(widget.episode.title)),

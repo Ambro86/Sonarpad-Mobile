@@ -67,6 +67,7 @@ class AppSettingsService {
       'sonarpad_document_slider_step_percent';
 
   static const documentSliderStepPercentOptions = <int>[2, 5, 10, 15, 20, 30];
+  static const defaultDocumentSliderStepPercent = 10;
 
   static const ttsLanguages = [
     TtsVoiceLanguage('it', 'Italiano'),
@@ -701,7 +702,8 @@ class AppSettingsService {
 
   Future<int> loadDocumentSliderStepPercent() async {
     final prefs = await SharedPreferences.getInstance();
-    final value = prefs.getInt(_documentSliderStepPercentKey) ?? 15;
+    final value = prefs.getInt(_documentSliderStepPercentKey) ??
+        defaultDocumentSliderStepPercent;
     return _normalizeDocumentSliderStepPercent(value);
   }
 

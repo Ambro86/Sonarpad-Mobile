@@ -778,6 +778,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   bool get _canRecordStream => _isRecordingFeatureUnlocked;
 
+  bool get _usePortraitFullscreenVideo =>
+      _displayVideoInPortrait &&
+      _isVideoEnabled &&
+      ((_videoController != null && _videoController!.value.isInitialized) ||
+          _mediaKitController != null);
+
   @override
   void dispose() {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -890,6 +896,162 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
+  Widget _buildVideoPlayerFullscreenSurface(VideoPlayerController controller) {
+    final aspect = controller.value.aspectRatio > 0
+        ? controller.value.aspectRatio
+        : 16 / 9;
+    return ColoredBox(
+      color: Colors.black,
+      child: ClipRect(
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: aspect >= 1 ? aspect : 1,
+              height: aspect >= 1 ? 1 : 1 / aspect,
+              child: VideoPlayer(controller),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMediaKitVideoFullscreenSurface() {
+    final video = mkv.Video(
+      controller: _mediaKitController!,
+      controls: mkv.AdaptiveVideoControls,
+    );
+    return ColoredBox(
+      color: Colors.black,
+      child: ClipRect(
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: 16,
+              height: 9,
+              child: video,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPortraitFullscreenControls(AppLocalizations l10n) {
+    return Material(
+      color: Colors.black54,
+      child: DefaultTextStyle.merge(
+        style: const TextStyle(color: Colors.white),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SwitchListTile(
+              title: Text(
+                l10n.enableVideo,
+                style: const TextStyle(color: Colors.white),
+              ),
+              value: _isVideoEnabled,
+              onChanged: _loading ? null : _toggleVideo,
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+            ),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
+              children: [
+                FilledButton.icon(
+                  onPressed: _loading ? null : _toggleVideoPlayback,
+                  icon: Icon(_isVideoPlaying ? Icons.pause : Icons.play_arrow),
+                  label: Text(_isVideoPlaying ? l10n.pause : l10n.play),
+                ),
+                if (_canRecordStream)
+                  FilledButton.icon(
+                    onPressed: _loading ? null : _toggleRecording,
+                    icon: Icon(
+                      _recording ? Icons.stop : Icons.fiber_manual_record,
+                    ),
+                    label: Text(
+                      _recording ? l10n.stopRecording : l10n.startRecording,
+                    ),
+                  ),
+              ],
+            ),
+            if (_recordingOutput != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                p.basenameWithoutExtension(_recordingOutput!.path),
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+            if (_videoController != null &&
+                _videoController!.value.isInitialized) ...[
+              const SizedBox(height: 12),
+              _PlayerVolumeSlider(
+                volume: _videoPlayerVolume,
+                onChanged: _setVideoPlayerVolume,
+              ),
+            ],
+            if (_mediaKitPlayer != null) ...[
+              const SizedBox(height: 12),
+              _PlayerVolumeSlider(
+                volume: _mediaKitVolume,
+                onChanged: _setMediaKitVolume,
+              ),
+            ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPortraitFullscreenScaffold(AppLocalizations l10n) {
+    final videoSurface = _videoController != null &&
+            _videoController!.value.isInitialized
+        ? _buildVideoPlayerFullscreenSurface(_videoController!)
+        : _buildMediaKitVideoFullscreenSurface();
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Positioned.fill(child: videoSurface),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Material(
+                  color: Colors.black54,
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    color: Colors.white,
+                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: _buildPortraitFullscreenControls(l10n),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLogger.log(
@@ -897,6 +1059,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final l10n = AppLocalizations.of(context);
     final showStationDetails =
         widget.tvChannel == null && widget.station.detailsText.trim().isNotEmpty;
+    if (_usePortraitFullscreenVideo) {
+      return _buildPortraitFullscreenScaffold(l10n);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text('${l10n.nowPlaying}: ${widget.station.name}'),

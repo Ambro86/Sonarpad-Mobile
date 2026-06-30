@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 
 import '../models/document_item.dart';
 import '../services/parafarmaco_service.dart';
@@ -16,6 +18,9 @@ class ParafarmacoDetailScreen extends StatefulWidget {
 
 class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
   final _service = ParafarmacoService();
+  final FocusNode _firstSectionFocusNode =
+      FocusNode(debugLabel: 'Parafarmaco first section');
+  final GlobalKey _firstSectionKey = GlobalKey();
   bool _loading = true;
   ParafarmacoDetail? _detail;
   ParafarmacoSectionType? _openingSection;
@@ -35,6 +40,7 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
         _detail = detail;
         _loading = false;
       });
+      _scheduleAccessibilityRefreshAfterLoad();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -42,6 +48,41 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
         _loading = false;
       });
     }
+  }
+
+
+  @override
+  void dispose() {
+    _firstSectionFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _scheduleAccessibilityRefreshAfterLoad() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || _detail == null) return;
+
+      final firstContext = _firstSectionKey.currentContext;
+      if (firstContext != null) {
+        await Scrollable.ensureVisible(
+          firstContext,
+          duration: const Duration(milliseconds: 1),
+          alignment: 0,
+        );
+      }
+
+      if (!mounted) return;
+      _firstSectionFocusNode.requestFocus();
+
+      // Su iOS VoiceOver può rimanere agganciato alla barra di navigazione se
+      // la lista compare dopo un caricamento asincrono. Un breve annuncio live
+      // forza l'aggiornamento della zona leggibile, senza cambiare UI o logica.
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      if (!mounted) return;
+      SemanticsService.announce(
+        'Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.',
+        Directionality.of(context),
+      );
+    });
   }
 
   Future<void> _openSection(ParafarmacoSectionType type) async {
@@ -74,12 +115,15 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
   }
 
   Widget _sectionTile({
+    Key? key,
+    FocusNode? focusNode,
     required IconData icon,
     required ParafarmacoSectionType type,
     required String subtitle,
   }) {
     final loading = _openingSection == type;
-    return ListTile(
+    final tile = ListTile(
+      key: key,
       leading: Icon(icon),
       title: Text(type.label),
       subtitle: Text(subtitle),
@@ -91,6 +135,12 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
             )
           : const Icon(Icons.chevron_right),
       onTap: loading ? null : () => _openSection(type),
+    );
+
+    if (focusNode == null) return tile;
+    return Focus(
+      focusNode: focusNode,
+      child: tile,
     );
   }
 
@@ -169,6 +219,8 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
                         ),
                       ),
                       _sectionTile(
+                        key: _firstSectionKey,
+                        focusNode: _firstSectionFocusNode,
                         icon: Icons.help_outline,
                         type: ParafarmacoSectionType.indications,
                         subtitle: 'Indicazioni, descrizione o a cosa serve.',

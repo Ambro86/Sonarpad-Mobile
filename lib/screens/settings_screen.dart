@@ -55,7 +55,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _displayVideoInPortrait = false;
   bool _homeGroupingEnabled = false;
   int _seekSliderStep = 60;
-  int _documentSliderStepPercent = 15;
+  int _documentSliderStepPercent =
+      AppSettingsService.defaultDocumentSliderStepPercent;
   final _audio = AudioPlayerService();
   String _savedTvSecretCode = '';
   String _savedAppLanguage = 'it';
@@ -74,33 +75,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _savedDisplayVideoInPortrait = false;
   bool _savedHomeGroupingEnabled = false;
   int _savedSeekSliderStep = 60;
-  int _savedDocumentSliderStepPercent = 15;
+  int _savedDocumentSliderStepPercent =
+      AppSettingsService.defaultDocumentSliderStepPercent;
 
   String get _displayVideoInPortraitTitle => switch (_appLanguage) {
-        'it' => 'Visualizza i video in verticale',
-        'es' => 'Mostrar los vídeos en vertical',
-        'fr' => 'Afficher les vidéos en vertical',
-        'pt' => 'Mostrar vídeos na vertical',
-        'pl' => 'Wyświetlaj wideo pionowo',
-        'cs' => 'Zobrazovat videa na výšku',
-        _ => 'Show videos in portrait',
+        'it' => 'Video verticale a schermo intero',
+        'es' => 'Vídeo vertical a pantalla completa',
+        'fr' => 'Vidéo verticale en plein écran',
+        'pt' => 'Vídeo vertical em ecrã inteiro',
+        'pl' => 'Wideo pionowe na pełnym ekranie',
+        'cs' => 'Svislé video přes celou obrazovku',
+        _ => 'Portrait full-screen video',
       };
 
   String get _displayVideoInPortraitHint => switch (_appLanguage) {
         'it' =>
-          'Usa un riquadro verticale per i video. Se disattivato, resta il formato normale.',
+          'Quando attivi il video, lo mostra a schermo intero in formato verticale. Le radio solo audio non cambiano.',
         'es' =>
-          'Usa un área vertical para los vídeos. Si está desactivado, se mantiene el formato normal.',
+          'Cuando activas el vídeo, lo muestra a pantalla completa en formato vertical. Las radios solo audio no cambian.',
         'fr' =>
-          'Utilise un cadre vertical pour les vidéos. Si cette option est désactivée, le format normal est conservé.',
+          'Quand la vidéo est activée, elle s’affiche en plein écran au format vertical. Les radios audio seules ne changent pas.',
         'pt' =>
-          'Usa uma área vertical para os vídeos. Se desativado, mantém o formato normal.',
+          'Quando ativares o vídeo, este é mostrado em ecrã inteiro no formato vertical. As rádios só áudio não mudam.',
         'pl' =>
-          'Używa pionowego obszaru dla wideo. Gdy opcja jest wyłączona, pozostaje zwykły format.',
+          'Po włączeniu wideo pokazuje je na pełnym ekranie w układzie pionowym. Radia tylko audio pozostają bez zmian.',
         'cs' =>
-          'Použije pro videa svislý rámeček. Pokud je vypnuto, zůstane běžný formát.',
+          'Když zapnete video, zobrazí se přes celou obrazovku ve svislém formátu. Rádia pouze se zvukem se nemění.',
         _ =>
-          'Uses a portrait video area. When disabled, videos keep the normal layout.',
+          'When video is enabled, it is shown full-screen in portrait format. Audio-only radios are unchanged.',
       };
 
 

@@ -65,7 +65,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   late bool _hasBookmark;
   List<int> _bookmarkIndexes = const <int>[];
   bool _multipleDocumentBookmarksEnabled = false;
-  int _documentSliderStepPercent = 15;
+  int _documentSliderStepPercent =
+      AppSettingsService.defaultDocumentSliderStepPercent;
 
   bool _ttsPaused = false;
   String? _activeTtsEngine;
