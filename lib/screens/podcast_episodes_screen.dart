@@ -99,13 +99,48 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
         (hasDateButton ? 1 : 0);
 
     await Future<void>.delayed(const Duration(milliseconds: 300));
-    if (!mounted || !_scrollController.hasClients) return;
+    await _tryScrollToEpisodeIndex(listIndex);
+  }
 
-    await _scrollController.scrollToIndex(
-      listIndex,
-      preferPosition: AutoScrollPosition.begin,
-      duration: const Duration(milliseconds: 350),
-    );
+  Future<void> _tryScrollToEpisodeIndex(int listIndex, {int attempt = 0}) async {
+    if (!mounted) return;
+
+    if (!_scrollController.hasClients) {
+      if (attempt < 3) {
+        Future<void>.delayed(
+          Duration(milliseconds: 250 + (attempt * 150)),
+          () => _tryScrollToEpisodeIndex(listIndex, attempt: attempt + 1),
+        );
+      }
+      return;
+    }
+
+    try {
+      await _scrollController.scrollToIndex(
+        listIndex,
+        preferPosition: AutoScrollPosition.begin,
+        duration: const Duration(milliseconds: 300),
+      );
+
+      // Dopo il ritorno dal selettore data, su iOS/VoiceOver a volte
+      // l'albero semantico resta agganciato alla AppBar. Un secondo scroll
+      // leggero stabilizza il posizionamento senza forzare il focus.
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted || !_scrollController.hasClients) return;
+      await _scrollController.scrollToIndex(
+        listIndex,
+        preferPosition: AutoScrollPosition.begin,
+        duration: const Duration(milliseconds: 120),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      if (attempt < 3) {
+        Future<void>.delayed(
+          Duration(milliseconds: 300 + (attempt * 200)),
+          () => _tryScrollToEpisodeIndex(listIndex, attempt: attempt + 1),
+        );
+      }
+    }
   }
 
   bool _hasDatedEpisodes(List<PodcastEpisode> episodes) =>

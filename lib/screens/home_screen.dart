@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       if (isItalian)
         _HomeButton(
-          label: 'Ricerca Farmaci AIFA',
+          label: 'Farmaci e prodotti da farmacia',
           onPressed: () =>
               AccessibilityFeedbackService.goNamed(context, routeName: '/aifa'),
         ),
@@ -277,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   routeName: '/italiaonline')),
         if (isItalian)
           _HomeButton(
-              label: 'Ricerca Farmaci AIFA',
+              label: 'Farmaci e prodotti da farmacia',
               onPressed: () => AccessibilityFeedbackService.goNamed(context,
                   routeName: '/aifa')),
       ];

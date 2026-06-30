@@ -1354,6 +1354,20 @@ class DocumentTextExtractor {
     required String footnoteLabel,
     required Map<String, Map<String, String>> footnoteCache,
   }) {
+    // Prima passata testuale: su alcuni EPUB l'XML è formalmente valido, ma
+    // la serializzazione dei tag vuoti usati come ancora (<a id="..."/>) può
+    // rendere intermittente il collegamento tra richiamo e nota. La passata
+    // regex lavora sull'HTML originale e mantiene l'ordine dei blocchi, quindi
+    // recupera meglio casi come il Decameron BUR 2013.
+    final regexLines = _cleanEpubHtmlLinesWithFootnotesByRegex(
+      html,
+      archive: archive,
+      htmlPath: htmlPath,
+      footnoteLabel: footnoteLabel,
+      footnoteCache: footnoteCache,
+    );
+    if (regexLines.isNotEmpty) return regexLines;
+
     try {
       final document = xml_pkg.XmlDocument.parse(html);
       final footnotes = _epubFootnotesForHtml(
@@ -1407,6 +1421,80 @@ class DocumentTextExtractor {
       // usa il parser testuale storico senza note inline.
     }
     return _cleanEpubHtmlLines(html);
+  }
+
+  List<String> _cleanEpubHtmlLinesWithFootnotesByRegex(
+    String html, {
+    required Archive archive,
+    required String htmlPath,
+    required String footnoteLabel,
+    required Map<String, Map<String, String>> footnoteCache,
+  }) {
+    final footnotes = _epubFootnotesForHtml(
+      archive: archive,
+      htmlPath: htmlPath,
+      html: html,
+      cache: footnoteCache,
+    );
+    final contentHtml = _removeEpubFootnoteBlocksFromHtml(html);
+    final blockRegex = RegExp(
+      r'''<(p|h[1-6]|li|blockquote)\b[^>]*>.*?</\1>''',
+      caseSensitive: false,
+      dotAll: true,
+    );
+    final lines = <String>[];
+    for (final match in blockRegex.allMatches(contentHtml)) {
+      final blockHtml = match.group(0) ?? '';
+      if (_looksLikeEpubFootnoteDefinitionBlock(blockHtml)) continue;
+      final text = _cleanEpubTextLine(_stripHtml(blockHtml));
+      if (text.isEmpty) continue;
+      lines.add(text);
+
+      final seenRefs = <String>{};
+      for (final ref in _extractEpubFootnoteReferences(blockHtml)) {
+        final note = _lookupEpubFootnote(
+          ref,
+          archive: archive,
+          currentHtmlPath: htmlPath,
+          localFootnotes: footnotes,
+          cache: footnoteCache,
+        );
+        if (note == null || note.text.isEmpty) continue;
+        final key = '${note.id}|${note.text}';
+        if (!seenRefs.add(key)) continue;
+        final label = note.number.isEmpty
+            ? footnoteLabel
+            : '$footnoteLabel ${note.number}';
+        lines.add('$label: ${note.text}');
+      }
+    }
+    return lines;
+  }
+
+  String _removeEpubFootnoteBlocksFromHtml(String html) {
+    var cleaned = html;
+    final containerRegex = RegExp(
+      r'''<(?:div|section|aside)\b(?=[^>]*(?:class|epub:type|type|id)\s*=\s*(["\'])[^"\']*(?:footnotes|endnotes|footnote|endnote)[^"\']*\1)[^>]*>.*?</(?:div|section|aside)>''',
+      caseSensitive: false,
+      dotAll: true,
+    );
+    cleaned = cleaned.replaceAll(containerRegex, ' ');
+
+    final paragraphRegex = RegExp(
+      r'''<(?:p|li)\b(?=[^>]*(?:class|epub:type|type|id)\s*=\s*(["\'])[^"\']*(?:footnote|endnote|fn|ftn)[^"\']*\1)[^>]*>.*?</(?:p|li)>''',
+      caseSensitive: false,
+      dotAll: true,
+    );
+    return cleaned.replaceAll(paragraphRegex, ' ');
+  }
+
+  bool _looksLikeEpubFootnoteDefinitionBlock(String html) {
+    final openingTag = RegExp(
+      r'''^\s*<(?:p|li|div|section|aside)\b[^>]*(?:class|epub:type|type|id)\s*=\s*(["\'])[^"\']*(?:footnote|endnote|fn|ftn)[^"\']*\1''',
+      caseSensitive: false,
+      dotAll: true,
+    );
+    return openingTag.hasMatch(html);
   }
 
   String _cleanEpubTextLine(String line) {
@@ -1469,8 +1557,9 @@ class DocumentTextExtractor {
         }
       }
     } catch (_) {
-      _extractEpubFootnotesWithRegex(html, result);
+      // Se il parsing XML fallisce, sotto resta comunque il fallback regex.
     }
+    _extractEpubFootnotesWithRegex(html, result);
     return result;
   }
 
@@ -1507,6 +1596,7 @@ class DocumentTextExtractor {
 
   bool _isSpecificEpubFootnoteDefinition(xml_pkg.XmlElement element) {
     final id = (element.getAttribute('id') ?? '').toLowerCase();
+    final name = (element.getAttribute('name') ?? '').toLowerCase();
     final clazz = (element.getAttribute('class') ?? '').toLowerCase();
     final epubType = (element.getAttribute('epub:type') ??
             element.getAttribute('type') ??
@@ -1519,10 +1609,33 @@ class DocumentTextExtractor {
         classTokens.contains('endnote') ||
         typeTokens.contains('footnote') ||
         typeTokens.contains('endnote') ||
-        id.startsWith('fn') ||
-        id.startsWith('ftn') ||
+        _looksLikeEpubFootnoteId(id) ||
+        _looksLikeEpubFootnoteId(name) ||
         id.contains('footnote') ||
-        id.contains('endnote');
+        id.contains('endnote') ||
+        name.contains('footnote') ||
+        name.contains('endnote');
+  }
+
+  bool _looksLikeEpubFootnoteId(String value) {
+    final lower = value.trim().toLowerCase();
+    if (lower.isEmpty || lower == 'footnotes' || lower == 'notes') {
+      return false;
+    }
+
+    // Formati classici: fn1, ftn2, note3, int-fn4, ref_ftn_fn1423.
+    if (RegExp(r'(^|[-_:.])(fn|ftn|note|endnote|noteref|n)\d+[a-z]?(?:$|[-_:.])')
+        .hasMatch(lower)) {
+      return true;
+    }
+
+    // Formati compatti usati da alcuni EPUB BUR: fm04fn2, p01introfn1.
+    if (RegExp(r'(?:^|[a-z0-9])(fn|ftn|note|endnote)\d+[a-z]?$')
+        .hasMatch(lower)) {
+      return true;
+    }
+
+    return lower.startsWith('fn') || lower.startsWith('ftn');
   }
 
   List<String> _epubFootnoteIdsForElement(xml_pkg.XmlElement element) {
@@ -1534,6 +1647,11 @@ class DocumentTextExtractor {
       if (lower.startsWith('ref_') || lower.startsWith('rfn')) return;
       if (lower.startsWith('ffn')) return;
       if (lower == 'footnotes' || lower == 'notes') return;
+      if (!_looksLikeEpubFootnoteId(lower) &&
+          !lower.contains('footnote') &&
+          !lower.contains('endnote')) {
+        return;
+      }
       if (!ids.contains(value)) ids.add(value);
     }
 
@@ -1563,7 +1681,28 @@ class DocumentTextExtractor {
         caseSensitive: false,
       ).firstMatch(block);
       final id = idMatch?.group(2)?.trim();
-      if (id == null || id.isEmpty) continue;
+      if (id == null || id.isEmpty || !_looksLikeEpubFootnoteId(id)) {
+        continue;
+      }
+      final text = _cleanEpubFootnoteText(_stripHtml(block));
+      if (text.isNotEmpty) result[id] = text;
+    }
+
+    // Seconda passata: alcuni EPUB hanno note compatte tipo
+    // <p class="footnote" id="fm04fn2">...</p>. Se prima è stato
+    // catturato il contenitore esterno, questa passata sovrascrive con il
+    // testo della singola nota, molto più preciso.
+    final singleNoteRegex = RegExp(
+      r'''<(p|li|div|aside|section)\b(?=[^>]*\b(?:id|name)\s*=\s*(["\'])([^"\']+)\2)[^>]*>.*?</\1>''',
+      caseSensitive: false,
+      dotAll: true,
+    );
+    for (final match in singleNoteRegex.allMatches(html)) {
+      final block = match.group(0) ?? '';
+      final id = match.group(3)?.trim();
+      if (id == null || id.isEmpty || !_looksLikeEpubFootnoteId(id)) {
+        continue;
+      }
       final text = _cleanEpubFootnoteText(_stripHtml(block));
       if (text.isNotEmpty) result[id] = text;
     }

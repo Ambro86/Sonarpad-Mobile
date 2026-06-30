@@ -16,7 +16,9 @@
       "Migliorato il pulsante Indice negli EPUB supportati: la prima volta Sonarpad calcola l’indice del libro, poi lo salva in cache per aprirlo più rapidamente nelle letture successive. Inoltre legge meglio gli indici ufficiali NCX/nav e le ancore interne dei capitoli, così funziona con più libri e raccolte complesse.",
       "Aggiunta nelle impostazioni l’opzione “Includi le note a piè di pagina nel testo”: per gli EPUB supportati, le note possono essere lette subito dopo il paragrafo che le richiama.",
       "Le liste di notizie ed episodi podcast mostrano ora accanto al titolo anche data e ora, con etichette relative come oggi, ieri, domani e dopodomani quando disponibili.",
-      "Migliorata la ricerca nella Biblioteca Digitale: ora le parole della ricerca possono essere scritte in qualunque ordine, per esempio “Ellis Peters” trova anche le voci catalogate come “Peters Ellis”."
+      "Migliorata la ricerca nella Biblioteca Digitale: ora le parole della ricerca possono essere scritte in qualunque ordine, per esempio “Ellis Peters” trova anche le voci catalogate come “Peters Ellis”.",
+      "Estesa la ricerca farmaci: la ricerca AIFA/AIC resta invariata, ma ora Sonarpad prova a mostrare anche parafarmaci, integratori e altri prodotti da farmacia quando disponibili, indicando la categoria e aprendo schede con a cosa serve, modalità d’uso o posologia, avvertenze, composizione e scheda completa.",
+      "Aggiornata la sezione Ricerche recenti della ricerca farmaci: ora conserva anche le ricerche che trovano parafarmaci, integratori e altri prodotti da farmacia, non solo medicinali AIFA."
     ],
     "en": [
       "Fixed a document reading issue: Sonarpad now normalizes Unicode combining accents, preventing VoiceOver from joining or misreading characters when moving character by character.",

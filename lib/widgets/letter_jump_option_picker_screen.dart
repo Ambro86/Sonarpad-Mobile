@@ -85,13 +85,48 @@ class _LetterJumpOptionPickerScreenState<T>
 
     final listIndex = index + (_showLetterPicker ? 1 : 0);
     await Future<void>.delayed(const Duration(milliseconds: 300));
-    if (!mounted || !_scrollController.hasClients) return;
+    await _tryScrollToOptionIndex(listIndex);
+  }
 
-    await _scrollController.scrollToIndex(
-      listIndex,
-      preferPosition: AutoScrollPosition.begin,
-      duration: const Duration(milliseconds: 350),
-    );
+  Future<void> _tryScrollToOptionIndex(int listIndex, {int attempt = 0}) async {
+    if (!mounted) return;
+
+    if (!_scrollController.hasClients) {
+      if (attempt < 3) {
+        Future<void>.delayed(
+          Duration(milliseconds: 250 + (attempt * 150)),
+          () => _tryScrollToOptionIndex(listIndex, attempt: attempt + 1),
+        );
+      }
+      return;
+    }
+
+    try {
+      await _scrollController.scrollToIndex(
+        listIndex,
+        preferPosition: AutoScrollPosition.begin,
+        duration: const Duration(milliseconds: 300),
+      );
+
+      // Dopo il ritorno dal selettore lettera, VoiceOver può restare
+      // temporaneamente sulla AppBar. Ripetiamo solo lo scroll, senza
+      // SemanticsService.announce e senza focus forzato.
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted || !_scrollController.hasClients) return;
+      await _scrollController.scrollToIndex(
+        listIndex,
+        preferPosition: AutoScrollPosition.begin,
+        duration: const Duration(milliseconds: 120),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      if (attempt < 3) {
+        Future<void>.delayed(
+          Duration(milliseconds: 300 + (attempt * 200)),
+          () => _tryScrollToOptionIndex(listIndex, attempt: attempt + 1),
+        );
+      }
+    }
   }
 
   @override

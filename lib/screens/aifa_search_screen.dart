@@ -12,6 +12,9 @@ class AifaSearchScreen extends StatefulWidget {
 }
 
 class _AifaSearchScreenState extends State<AifaSearchScreen> {
+  static const _recentSearchesTitle = 'Ricerche recenti';
+  static const _recentSearchesDomain = 'farmaci';
+
   final _controller = TextEditingController();
 
   @override
@@ -35,7 +38,7 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ricerca Farmaci AIFA'),
+        title: const Text('Farmaci, parafarmaci e prodotti da farmacia'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -51,8 +54,8 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                       final q = await Navigator.of(context).push<String>(
                         MaterialPageRoute(
                           builder: (ctx) => const RecentSearchesScreen(
-                            title: 'Farmaci recenti',
-                            domain: 'farmaci',
+                            title: _recentSearchesTitle,
+                            domain: _recentSearchesDomain,
                           ),
                         ),
                       );
@@ -61,7 +64,7 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                         _submitSearch(q);
                       }
                     },
-                    child: const Text('Farmaci recenti'),
+                    child: Text(_recentSearchesTitle),
                   ),
                 ),
               ),
@@ -73,7 +76,7 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                       child: TextField(
                         controller: _controller,
                         decoration: const InputDecoration(
-                          labelText: 'Nome farmaco, p. attivo o codice AIC',
+                          labelText: 'Nome, principio attivo, ingrediente o codice AIC',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.search),
                         ),
