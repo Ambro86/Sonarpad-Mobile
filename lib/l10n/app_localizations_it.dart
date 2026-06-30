@@ -275,6 +275,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get moveToPosition => 'Sposta alla posizione';
 
   @override
+  String get sortPodcastsAlphabetically => 'Ordina podcast alfabeticamente';
+
+  @override
+  String get sortRadioFavoritesAlphabetically => 'Ordina preferite alfabeticamente';
+
+  @override
+  String get podcastsSortedAlphabetically => 'Podcast ordinati alfabeticamente.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically => 'Radio preferite ordinate alfabeticamente.';
+
+  @override
   String positionLabel(int position, String targetName) {
     return 'Posizione $position: prima di $targetName';
   }
@@ -885,6 +897,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get documentIndex => 'Indice';
 
   @override
+  String get documentFootnoteLabel => 'Nota a piè di pagina';
+
+  @override
   String get documentSearchFieldLabel => 'Testo da cercare';
 
   @override
@@ -987,6 +1002,13 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get settingsAutoBookmarkHint =>
       'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.';
+
+  @override
+  String get settingsIncludeFootnotesInText => 'Includi le note a piè di pagina nel testo';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'Per gli EPUB supportati, mostra il testo della nota subito dopo il paragrafo che la richiama.';
 
   @override
   String get settingsDocumentSliderStep => 'Intervallo slider documenti';
@@ -1346,6 +1368,49 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get bookmarkRemoved => 'Segnalibro rimosso.';
+
+
+  @override
+  String get settingsMultipleDocumentBookmarks => 'Permetti segnalibri multipli nei documenti';
+
+  @override
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Se disattivato, resta un solo segnalibro per documento. Se attivato, puoi salvare più segnalibri nello stesso documento.';
+
+  @override
+  String get documentGoToBookmarkAction => 'Vai al segnalibro';
+
+  @override
+  String get documentChooseBookmarkTitle => 'Scegli segnalibro';
+
+  @override
+  String get documentDeleteBookmarkAction => 'Elimina segnalibro';
+
+  @override
+  String get documentKeepBookmarkTitle => 'Quale segnalibro vuoi mantenere?';
+
+  @override
+  String get documentKeepBookmarkMessage =>
+      'I segnalibri multipli sono disattivati. Scegli un segnalibro da mantenere: gli altri verranno eliminati.';
+
+  @override
+  String documentBookmarkChoiceLabel(int order, int paragraph) {
+    return 'Segnalibro {order}, paragrafo {paragraph}'
+        .replaceAll('{order}', '$order')
+        .replaceAll('{paragraph}', '$paragraph');
+  }
+
+  @override
+  String documentBookmarkChoiceLabelWithPreview(
+    int order,
+    int paragraph,
+    String preview,
+  ) {
+    return 'Segnalibro {order}, paragrafo {paragraph}. {preview}'
+        .replaceAll('{order}', '$order')
+        .replaceAll('{paragraph}', '$paragraph')
+        .replaceAll('{preview}', preview);
+  }
 
   @override
   String get docEmpty => 'Il documento è vuoto';
@@ -2183,15 +2248,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get podcastSelectDate => 'Seleziona data';
 
   @override
-  String get podcastNoDatesAvailable =>
-      'Nessuna data disponibile per questi episodi.';
+  String get podcastNoDatesAvailable => 'Nessuna data disponibile per questi episodi.';
 
   @override
   String get podcastChapters => 'Capitoli';
 
   @override
-  String get podcastChaptersUnavailable =>
-      'Capitoli non disponibili per questo episodio.';
+  String get podcastChaptersUnavailable => 'Capitoli non disponibili per questo episodio.';
 
   @override
   String get podcastUnplayed => 'Episodi non ascoltati';
@@ -2252,66 +2315,5 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String routeNavigationFromTo(Object from, Object to, Object date) {
     return 'Dettagli navigazione da $from a $to - $date';
-  }
-
-  @override
-  String get sortPodcastsAlphabetically => 'Ordina podcast alfabeticamente';
-
-  @override
-  String get sortRadioFavoritesAlphabetically =>
-      'Ordina preferite alfabeticamente';
-
-  @override
-  String get podcastsSortedAlphabetically =>
-      'Podcast ordinati alfabeticamente.';
-
-  @override
-  String get radioFavoritesSortedAlphabetically =>
-      'Radio preferite ordinate alfabeticamente.';
-
-  @override
-  String get settingsIncludeFootnotesInText =>
-      'Includi le note a piè di pagina nel testo';
-
-  @override
-  String get settingsIncludeFootnotesInTextHint =>
-      'Per gli EPUB supportati, mostra il testo della nota subito dopo il paragrafo che la richiama.';
-
-  @override
-  String get documentFootnoteLabel => 'Nota a piè di pagina';
-
-  @override
-  String get settingsMultipleDocumentBookmarks =>
-      'Permetti segnalibri multipli nei documenti';
-
-  @override
-  String get settingsMultipleDocumentBookmarksHint =>
-      'Se disattivato, resta un solo segnalibro per documento. Se attivato, puoi salvare più segnalibri nello stesso documento.';
-
-  @override
-  String get documentGoToBookmarkAction => 'Vai al segnalibro';
-
-  @override
-  String get documentChooseBookmarkTitle => 'Scegli segnalibro';
-
-  @override
-  String get documentDeleteBookmarkAction => 'Elimina segnalibro';
-
-  @override
-  String get documentKeepBookmarkTitle => 'Quale segnalibro vuoi mantenere?';
-
-  @override
-  String get documentKeepBookmarkMessage =>
-      'I segnalibri multipli sono disattivati. Scegli un segnalibro da mantenere: gli altri verranno eliminati.';
-
-  @override
-  String documentBookmarkChoiceLabel(int order, int paragraph) {
-    return 'Segnalibro $order, paragrafo $paragraph';
-  }
-
-  @override
-  String documentBookmarkChoiceLabelWithPreview(
-      int order, int paragraph, String preview) {
-    return 'Segnalibro $order, paragrafo $paragraph. $preview';
   }
 }

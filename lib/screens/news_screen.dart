@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 import 'package:flutter/semantics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
@@ -201,14 +202,21 @@ class _NewsScreenState extends State<NewsScreen> {
     final l10n = AppLocalizations.of(context);
 
     try {
-      final result = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: const ['opml', 'xml'],
-      );
+      // On iOS, some document providers/iCloud folders can gray out .opml
+      // files when the picker is restricted to custom extensions. This is
+      // already handled this way in Podcasts: let the user select any file,
+      // then validate OPML/XML here before importing it.
+      final result = await FilePicker.pickFiles(type: FileType.any);
       final path = result == null || result.files.isEmpty
           ? null
           : result.files.first.path;
       if (path == null || path.isEmpty) return;
+      final ext = p.extension(path).toLowerCase();
+      if (ext != '.opml' && ext != '.xml') {
+        if (!mounted) return;
+        showStatusMessage(context, l10n.podcastInvalidOpmlFile);
+        return;
+      }
 
       final added = await _service.importCustomSourcesFromOpml(
         language,

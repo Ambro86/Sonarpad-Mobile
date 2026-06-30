@@ -273,6 +273,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moveToPosition => 'Move to position';
 
   @override
+  String get sortPodcastsAlphabetically => 'Sort podcasts alphabetically';
+
+  @override
+  String get sortRadioFavoritesAlphabetically => 'Sort favorites alphabetically';
+
+  @override
+  String get podcastsSortedAlphabetically => 'Podcasts sorted alphabetically.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically => 'Radio favorites sorted alphabetically.';
+
+  @override
   String positionLabel(int position, String targetName) {
     return 'Position $position: before $targetName';
   }
@@ -878,6 +890,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get documentIndex => 'Table of contents';
 
   @override
+  String get documentFootnoteLabel => 'Footnote';
+
+  @override
   String get documentSearchFieldLabel => 'Search text';
 
   @override
@@ -979,6 +994,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsAutoBookmarkHint =>
       'Resume documents, podcasts, and media from where you left off.';
+
+  @override
+  String get settingsIncludeFootnotesInText => 'Include footnotes in text';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'For supported EPUB books, show each note immediately after the paragraph that references it.';
 
   @override
   String get settingsDocumentSliderStep => 'Document slider step';
@@ -1334,6 +1356,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bookmarkRemoved => 'Bookmark removed.';
+
+
+  @override
+  String get settingsMultipleDocumentBookmarks => 'Allow multiple bookmarks in documents';
+
+  @override
+  String get settingsMultipleDocumentBookmarksHint =>
+      'When disabled, each document keeps one bookmark. When enabled, you can save multiple bookmarks in the same document.';
+
+  @override
+  String get documentGoToBookmarkAction => 'Go to bookmark';
+
+  @override
+  String get documentChooseBookmarkTitle => 'Choose bookmark';
+
+  @override
+  String get documentDeleteBookmarkAction => 'Delete bookmark';
+
+  @override
+  String get documentKeepBookmarkTitle => 'Which bookmark do you want to keep?';
+
+  @override
+  String get documentKeepBookmarkMessage =>
+      'Multiple bookmarks are disabled. Choose one bookmark to keep: the others will be deleted.';
+
+  @override
+  String documentBookmarkChoiceLabel(int order, int paragraph) {
+    return 'Bookmark {order}, paragraph {paragraph}'
+        .replaceAll('{order}', '$order')
+        .replaceAll('{paragraph}', '$paragraph');
+  }
+
+  @override
+  String documentBookmarkChoiceLabelWithPreview(
+    int order,
+    int paragraph,
+    String preview,
+  ) {
+    return 'Bookmark {order}, paragraph {paragraph}. {preview}'
+        .replaceAll('{order}', '$order')
+        .replaceAll('{paragraph}', '$paragraph')
+        .replaceAll('{preview}', preview);
+  }
 
   @override
   String get docEmpty => 'Document is empty';
@@ -2170,15 +2235,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get podcastSelectDate => 'Select date';
 
   @override
-  String get podcastNoDatesAvailable =>
-      'No dates available for these episodes.';
+  String get podcastNoDatesAvailable => 'No dates available for these episodes.';
 
   @override
   String get podcastChapters => 'Chapters';
 
   @override
-  String get podcastChaptersUnavailable =>
-      'No chapters available for this episode.';
+  String get podcastChaptersUnavailable => 'No chapters available for this episode.';
 
   @override
   String get podcastUnplayed => 'Unplayed episodes';
@@ -2238,64 +2301,5 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String routeNavigationFromTo(Object from, Object to, Object date) {
     return 'Navigation details from $from to $to - $date';
-  }
-
-  @override
-  String get sortPodcastsAlphabetically => 'Sort podcasts alphabetically';
-
-  @override
-  String get sortRadioFavoritesAlphabetically =>
-      'Sort favorites alphabetically';
-
-  @override
-  String get podcastsSortedAlphabetically => 'Podcasts sorted alphabetically.';
-
-  @override
-  String get radioFavoritesSortedAlphabetically =>
-      'Radio favorites sorted alphabetically.';
-
-  @override
-  String get settingsIncludeFootnotesInText => 'Include footnotes in text';
-
-  @override
-  String get settingsIncludeFootnotesInTextHint =>
-      'For supported EPUB books, show each note immediately after the paragraph that references it.';
-
-  @override
-  String get documentFootnoteLabel => 'Footnote';
-
-  @override
-  String get settingsMultipleDocumentBookmarks =>
-      'Allow multiple bookmarks in documents';
-
-  @override
-  String get settingsMultipleDocumentBookmarksHint =>
-      'When disabled, each document keeps one bookmark. When enabled, you can save multiple bookmarks in the same document.';
-
-  @override
-  String get documentGoToBookmarkAction => 'Go to bookmark';
-
-  @override
-  String get documentChooseBookmarkTitle => 'Choose bookmark';
-
-  @override
-  String get documentDeleteBookmarkAction => 'Delete bookmark';
-
-  @override
-  String get documentKeepBookmarkTitle => 'Which bookmark do you want to keep?';
-
-  @override
-  String get documentKeepBookmarkMessage =>
-      'Multiple bookmarks are disabled. Choose one bookmark to keep: the others will be deleted.';
-
-  @override
-  String documentBookmarkChoiceLabel(int order, int paragraph) {
-    return 'Bookmark $order, paragraph $paragraph';
-  }
-
-  @override
-  String documentBookmarkChoiceLabelWithPreview(
-      int order, int paragraph, String preview) {
-    return 'Bookmark $order, paragraph $paragraph. $preview';
   }
 }

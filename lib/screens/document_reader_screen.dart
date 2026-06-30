@@ -132,6 +132,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final ext = _currentDoc.extension.toLowerCase();
     String? originalPath;
     var usesEditedText = false;
+    var includeEpubFootnotes = false;
     final multipleDocumentBookmarks =
         await _settings.multipleDocumentBookmarksEnabled();
     final documentSliderStepPercent =
@@ -148,12 +149,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         final path =
             await DocumentLibraryService().resolveFilePath(_currentDoc);
         originalPath = path;
-        final includeFootnotes = ext == 'epub' &&
+        includeEpubFootnotes = ext == 'epub' &&
             await _settings.includeEpubFootnotesInText();
         final result = await _extractor.extract(
           path: path,
           extension: ext,
-          includeEpubFootnotesInText: includeFootnotes,
+          includeEpubFootnotesInText: includeEpubFootnotes,
           footnoteLabel: l10n.documentFootnoteLabel,
         );
         _documentText = normalizeDocumentUnicode(result.text);
@@ -161,9 +162,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
 
       if (_documentText.isNotEmpty) {
-        _chunks = _tts.splitTextForStreaming(
+        _chunks = _splitDocumentTextForDisplay(
           _documentText,
-          maxChunkChars: _maxChunkChars,
+          extension: ext,
+          includeEpubFootnotesInText: includeEpubFootnotes,
+          footnoteLabel: l10n.documentFootnoteLabel,
         );
         _multipleDocumentBookmarksEnabled = multipleDocumentBookmarks;
         _documentSliderStepPercent = documentSliderStepPercent;
@@ -216,6 +219,289 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       preferPosition: AutoScrollPosition.begin,
       duration: const Duration(milliseconds: 350),
     );
+  }
+
+  List<String> _splitTextForDocumentDisplay(String text) {
+    final chunks = _tts.splitTextForStreaming(
+      text,
+      maxChunkChars: _maxChunkChars,
+    );
+    return _mergeOrphanPunctuationChunksForDisplay(chunks);
+  }
+
+  List<String> _mergeOrphanPunctuationParagraphsForDisplay(
+    List<String> paragraphs,
+  ) {
+    if (paragraphs.isEmpty) return const <String>[];
+    final result = <String>[];
+    for (final paragraph in paragraphs) {
+      final cleaned = paragraph.trim();
+      if (cleaned.isEmpty) continue;
+      if (_isOrphanPunctuationFragment(cleaned) && result.isNotEmpty) {
+        result[result.length - 1] = _appendPunctuationFragmentForDisplay(
+          result.last,
+          cleaned,
+        );
+      } else {
+        result.add(cleaned);
+      }
+    }
+    return result;
+  }
+
+  List<String> _mergeOrphanPunctuationChunksForDisplay(List<String> chunks) {
+    if (chunks.isEmpty) return const <String>[];
+    final result = <String>[];
+    for (final chunk in chunks) {
+      final cleaned = chunk.trim();
+      if (cleaned.isEmpty) continue;
+      if (_isOrphanPunctuationFragment(cleaned) && result.isNotEmpty) {
+        result[result.length - 1] = _appendPunctuationFragmentForDisplay(
+          result.last,
+          cleaned,
+        );
+      } else {
+        result.add(cleaned);
+      }
+    }
+    return result;
+  }
+
+  bool _isOrphanPunctuationFragment(String value) {
+    final compact = value.replaceAll(RegExp(r'\s+'), '');
+    if (compact.isEmpty || compact.length > 12) return false;
+
+    // Evita chunk/paragrafi autonomi composti solo da chiusure o punteggiatura,
+    // per esempio ")." o "]". Non include separatori come *** o ---.
+    return RegExp(r'''^[\)\]\}»”’"'.,;:!?…]+$''').hasMatch(compact);
+  }
+
+  String _appendPunctuationFragmentForDisplay(
+    String base,
+    String fragment,
+  ) {
+    final cleanedBase = base.trimRight();
+    final cleanedFragment = fragment.trimLeft();
+    if (cleanedBase.isEmpty) return cleanedFragment;
+    if (cleanedFragment.isEmpty) return cleanedBase;
+    return '$cleanedBase$cleanedFragment';
+  }
+
+  List<String> _splitDocumentTextForDisplay(
+    String text, {
+    required String extension,
+    required bool includeEpubFootnotesInText,
+    required String footnoteLabel,
+  }) {
+    if (extension.toLowerCase() != 'epub' || !includeEpubFootnotesInText) {
+      return _splitTextForDocumentDisplay(text);
+    }
+
+    return _splitEpubTextWithInlineFootnotesForDisplay(
+      text,
+      footnoteLabel: footnoteLabel,
+    );
+  }
+
+  List<String> _splitEpubTextWithInlineFootnotesForDisplay(
+    String text, {
+    required String footnoteLabel,
+  }) {
+    final normalizedText = text.replaceAll('\r\n', '\n');
+    final rawParagraphs = _mergeOrphanPunctuationParagraphsForDisplay(
+      normalizedText
+          .split(RegExp(r'\n{2,}'))
+          .map(_cleanDocumentParagraphForDisplay)
+          .where((paragraph) => paragraph.isNotEmpty)
+          .toList(),
+    );
+    if (rawParagraphs.isEmpty) return const <String>[];
+
+    final chunks = <String>[];
+    var index = 0;
+    while (index < rawParagraphs.length) {
+      final paragraph = rawParagraphs[index];
+      final paragraphNoteNumber =
+          _epubFootnoteNumberFromParagraph(paragraph, footnoteLabel);
+
+      // Se troviamo una nota orfana, la manteniamo dov'è: meglio non
+      // rischiare di spostare una nota senza il suo paragrafo di riferimento.
+      if (paragraphNoteNumber != null) {
+        chunks.addAll(_splitTextForDocumentDisplay(paragraph));
+        index++;
+        continue;
+      }
+
+      final followingFootnotes = <String>[];
+      var next = index + 1;
+      while (next < rawParagraphs.length &&
+          _epubFootnoteNumberFromParagraph(
+                rawParagraphs[next],
+                footnoteLabel,
+              ) !=
+              null) {
+        followingFootnotes.add(rawParagraphs[next]);
+        next++;
+      }
+
+      final paragraphChunks = _splitTextForDocumentDisplay(paragraph);
+      if (paragraphChunks.isEmpty) {
+        index = next;
+        continue;
+      }
+
+      if (followingFootnotes.isEmpty) {
+        chunks.addAll(paragraphChunks);
+        index = next;
+        continue;
+      }
+
+      chunks.addAll(_insertEpubFootnotesAfterReferenceChunks(
+        paragraphChunks,
+        followingFootnotes,
+        footnoteLabel: footnoteLabel,
+      ));
+      index = next;
+    }
+
+    return chunks;
+  }
+
+  List<String> _insertEpubFootnotesAfterReferenceChunks(
+    List<String> paragraphChunks,
+    List<String> footnoteParagraphs, {
+    required String footnoteLabel,
+  }) {
+    final footnotesByChunkIndex = <int, List<String>>{};
+    var lastTargetIndex = 0;
+
+    for (var noteOrder = 0; noteOrder < footnoteParagraphs.length; noteOrder++) {
+      final footnote = footnoteParagraphs[noteOrder];
+      final number = _epubFootnoteNumberFromParagraph(
+            footnote,
+            footnoteLabel,
+          ) ??
+          '';
+      final targetIndex = _findChunkIndexForEpubFootnoteReference(
+        paragraphChunks,
+        number,
+        startIndex: lastTargetIndex,
+        fallbackOrder: noteOrder,
+      );
+      lastTargetIndex = targetIndex;
+      footnotesByChunkIndex
+          .putIfAbsent(targetIndex, () => <String>[])
+          .add(footnote);
+    }
+
+    final result = <String>[];
+    for (var i = 0; i < paragraphChunks.length; i++) {
+      result.add(paragraphChunks[i]);
+      final notes = footnotesByChunkIndex[i];
+      if (notes == null) continue;
+      for (final note in notes) {
+        result.addAll(_splitTextForDocumentDisplay(note));
+      }
+    }
+    return result;
+  }
+
+  int _findChunkIndexForEpubFootnoteReference(
+    List<String> chunks,
+    String number, {
+    required int startIndex,
+    required int fallbackOrder,
+  }) {
+    if (chunks.isEmpty) return 0;
+    final safeStart = startIndex.clamp(0, chunks.length - 1).toInt();
+
+    if (number.trim().isNotEmpty) {
+      for (var i = safeStart; i < chunks.length; i++) {
+        if (_chunkContainsEpubFootnoteReference(chunks[i], number)) return i;
+      }
+      for (var i = 0; i < safeStart; i++) {
+        if (_chunkContainsEpubFootnoteReference(chunks[i], number)) return i;
+      }
+    }
+
+    final fallback = safeStart + fallbackOrder;
+    if (fallback >= chunks.length) return chunks.length - 1;
+    return fallback;
+  }
+
+  bool _chunkContainsEpubFootnoteReference(String chunk, String number) {
+    final trimmedNumber = number.trim();
+    if (trimmedNumber.isEmpty) return false;
+    if (_containsTokenWithDigitBoundaries(chunk, trimmedNumber)) return true;
+
+    final superscript = _toSuperscriptDigits(trimmedNumber);
+    if (superscript != trimmedNumber &&
+        _containsTokenWithDigitBoundaries(chunk, superscript)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool _containsTokenWithDigitBoundaries(String text, String token) {
+    if (token.isEmpty) return false;
+    var start = 0;
+    while (start < text.length) {
+      final index = text.indexOf(token, start);
+      if (index < 0) return false;
+      final before = index == 0 ? null : text.codeUnitAt(index - 1);
+      final afterIndex = index + token.length;
+      final after = afterIndex >= text.length ? null : text.codeUnitAt(afterIndex);
+      if (!_isAsciiDigit(before) && !_isAsciiDigit(after)) return true;
+      start = index + token.length;
+    }
+    return false;
+  }
+
+  bool _isAsciiDigit(int? codeUnit) {
+    if (codeUnit == null) return false;
+    return codeUnit >= 48 && codeUnit <= 57;
+  }
+
+  String _toSuperscriptDigits(String value) {
+    const superscriptDigits = {
+      '0': '⁰',
+      '1': '¹',
+      '2': '²',
+      '3': '³',
+      '4': '⁴',
+      '5': '⁵',
+      '6': '⁶',
+      '7': '⁷',
+      '8': '⁸',
+      '9': '⁹',
+    };
+    final buffer = StringBuffer();
+    for (final unit in value.split('')) {
+      buffer.write(superscriptDigits[unit] ?? unit);
+    }
+    return buffer.toString();
+  }
+
+  String _cleanDocumentParagraphForDisplay(String paragraph) {
+    return paragraph
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .replaceAll('...', '…')
+        .trim();
+  }
+
+  String? _epubFootnoteNumberFromParagraph(
+    String paragraph,
+    String footnoteLabel,
+  ) {
+    final label = footnoteLabel.trim();
+    if (label.isEmpty) return null;
+    final cleaned = _cleanDocumentParagraphForDisplay(paragraph);
+    final match = RegExp(
+      '^${RegExp.escape(label)}(?:\\s+([^:：]+))?\\s*[:：]',
+      caseSensitive: false,
+    ).firstMatch(cleaned);
+    if (match == null) return null;
+    return (match.group(1) ?? '').trim();
   }
 
   List<int> _normalizeBookmarkIndexes(
@@ -323,19 +609,21 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                       leading: const Icon(Icons.bookmark),
                       title: Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
                       onTap: () => Navigator.pop(dialogContext, bookmarkIndex),
-                      trailing: IconButton(
-                        tooltip: _deleteBookmarkActionLabel,
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: () async {
-                          await _deleteMultipleBookmark(bookmarkIndex);
-                          bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
-                          if (!dialogContext.mounted) return;
-                          if (bookmarks.isEmpty) {
-                            Navigator.pop(dialogContext);
-                            return;
-                          }
-                          dialogSetState(() {});
-                        },
+                      trailing: ExcludeSemantics(
+                        child: IconButton(
+                          tooltip: _deleteBookmarkActionLabel,
+                          icon: const Icon(Icons.delete_outline),
+                          onPressed: () async {
+                            await _deleteMultipleBookmark(bookmarkIndex);
+                            bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
+                            if (!dialogContext.mounted) return;
+                            if (bookmarks.isEmpty) {
+                              Navigator.pop(dialogContext);
+                              return;
+                            }
+                            dialogSetState(() {});
+                          },
+                        ),
                       ),
                     ),
                   );
@@ -970,10 +1258,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       // Aggiorna stato: testo e chunk (la lettura riparte dall'inizio se necessario)
       setState(() {
         _documentText = newText;
-        _chunks = _tts.splitTextForStreaming(
-          _documentText,
-          maxChunkChars: _maxChunkChars,
-        );
+        _chunks = _splitTextForDocumentDisplay(_documentText);
         // Chiavi gestite da AutoScrollTag
       });
 
