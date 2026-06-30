@@ -276,18 +276,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get moveToPosition => 'Déplacer à la position';
 
   @override
-  String get sortPodcastsAlphabetically => 'Trier les podcasts alphabétiquement';
-
-  @override
-  String get sortRadioFavoritesAlphabetically => 'Trier les favoris radio alphabétiquement';
-
-  @override
-  String get podcastsSortedAlphabetically => 'Podcasts triés par ordre alphabétique.';
-
-  @override
-  String get radioFavoritesSortedAlphabetically => 'Radios favorites triées par ordre alphabétique.';
-
-  @override
   String positionLabel(int position, String targetName) {
     return 'Position $position: avant $targetName';
   }
@@ -903,9 +891,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get documentIndex => 'Table des matières';
 
   @override
-  String get documentFootnoteLabel => 'Note de bas de page';
-
-  @override
   String get documentSearchFieldLabel => 'Texte à rechercher';
 
   @override
@@ -1010,11 +995,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Reprenez les documents, les podcasts et les contenus multimédias là où vous les aviez laissés.';
 
   @override
-  String get settingsIncludeFootnotesInText => 'Inclure les notes de bas de page dans le texte';
+  String get settingsDocumentSliderStep => 'Pas du curseur des documents';
 
   @override
-  String get settingsIncludeFootnotesInTextHint =>
-      'Pour les EPUB compatibles, affiche le texte de la note juste après le paragraphe qui la cite.';
+  String get settingsDocumentSliderStepHint =>
+      'Règle de combien le curseur de position du document avance ou recule avec un balayage vers le haut ou vers le bas.';
 
   @override
   String get settingsSeekStep =>
@@ -2208,13 +2193,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get podcastSelectDate => 'Sélectionner une date';
 
   @override
-  String get podcastNoDatesAvailable => 'Aucune date disponible pour ces épisodes.';
+  String get podcastNoDatesAvailable =>
+      'Aucune date disponible pour ces épisodes.';
 
   @override
   String get podcastChapters => 'Chapitres';
 
   @override
-  String get podcastChaptersUnavailable => 'Aucun chapitre disponible pour cet épisode.';
+  String get podcastChaptersUnavailable =>
+      'Aucun chapitre disponible pour cet épisode.';
 
   @override
   String get podcastUnplayed => 'Épisodes non écoutés';
@@ -2276,5 +2263,67 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String routeNavigationFromTo(Object from, Object to, Object date) {
     return 'Détails de navigation de $from à $to - $date';
+  }
+
+  @override
+  String get sortPodcastsAlphabetically =>
+      'Trier les podcasts alphabétiquement';
+
+  @override
+  String get sortRadioFavoritesAlphabetically =>
+      'Trier les favoris radio alphabétiquement';
+
+  @override
+  String get podcastsSortedAlphabetically =>
+      'Podcasts triés par ordre alphabétique.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically =>
+      'Radios favorites triées par ordre alphabétique.';
+
+  @override
+  String get settingsIncludeFootnotesInText =>
+      'Inclure les notes de bas de page dans le texte';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'Pour les EPUB compatibles, affiche le texte de la note juste après le paragraphe qui la cite.';
+
+  @override
+  String get documentFootnoteLabel => 'Note de bas de page';
+
+  @override
+  String get settingsMultipleDocumentBookmarks =>
+      'Autoriser plusieurs signets dans les documents';
+
+  @override
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Si cette option est désactivée, un seul signet est conservé par document. Si elle est activée, vous pouvez enregistrer plusieurs signets dans le même document.';
+
+  @override
+  String get documentGoToBookmarkAction => 'Aller au signet';
+
+  @override
+  String get documentChooseBookmarkTitle => 'Choisir un signet';
+
+  @override
+  String get documentDeleteBookmarkAction => 'Supprimer le signet';
+
+  @override
+  String get documentKeepBookmarkTitle => 'Quel signet voulez-vous conserver ?';
+
+  @override
+  String get documentKeepBookmarkMessage =>
+      'Les signets multiples sont désactivés. Choisissez le signet à conserver : les autres seront supprimés.';
+
+  @override
+  String documentBookmarkChoiceLabel(int order, int paragraph) {
+    return 'Signet $order, paragraphe $paragraph';
+  }
+
+  @override
+  String documentBookmarkChoiceLabelWithPreview(
+      int order, int paragraph, String preview) {
+    return 'Signet $order, paragraphe $paragraph. $preview';
   }
 }

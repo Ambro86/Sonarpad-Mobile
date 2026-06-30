@@ -1339,12 +1339,18 @@ class DocumentTextExtractor {
       footnoteLabel: footnoteLabel,
       footnoteCache: footnoteCache,
     );
-    var wrote = false;
     for (final line in lines) {
+      // Quando l'opzione "includi note nel testo" è attiva, ogni blocco
+      // estratto dall'EPUB deve diventare un paragrafo reale per il lettore
+      // documenti e per il TTS. DocumentReaderScreen/EdgeTtsBridge dividono i
+      // paragrafi su doppio a capo: se qui usiamo un solo a capo, il richiamo
+      // e la riga "Nota a piè di pagina N: ..." possono finire nello stesso
+      // chunk del paragrafo precedente o successivo.
+      // La riga vuota dopo ogni blocco è intenzionale: mantiene le note
+      // incluse come paragrafi separati e navigabili, senza unirle al testo.
       buffer.writeln(line);
-      wrote = true;
+      buffer.writeln();
     }
-    if (wrote) buffer.writeln();
   }
 
   List<String> _cleanEpubHtmlLinesWithFootnotes(

@@ -51,8 +51,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _testingVoice = false;
   bool _autoBookmark = true;
   bool _includeEpubFootnotesInText = false;
+  bool _multipleDocumentBookmarks = false;
+  bool _displayVideoInPortrait = false;
   bool _homeGroupingEnabled = false;
   int _seekSliderStep = 60;
+  int _documentSliderStepPercent = 15;
   final _audio = AudioPlayerService();
   String _savedTvSecretCode = '';
   String _savedAppLanguage = 'it';
@@ -67,8 +70,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _savedTtsPitch = 1.0;
   bool _savedAutoBookmark = true;
   bool _savedIncludeEpubFootnotesInText = false;
+  bool _savedMultipleDocumentBookmarks = false;
+  bool _savedDisplayVideoInPortrait = false;
   bool _savedHomeGroupingEnabled = false;
   int _savedSeekSliderStep = 60;
+  int _savedDocumentSliderStepPercent = 15;
+
+  String get _displayVideoInPortraitTitle => switch (_appLanguage) {
+        'it' => 'Visualizza i video in verticale',
+        'es' => 'Mostrar los vídeos en vertical',
+        'fr' => 'Afficher les vidéos en vertical',
+        'pt' => 'Mostrar vídeos na vertical',
+        'pl' => 'Wyświetlaj wideo pionowo',
+        'cs' => 'Zobrazovat videa na výšku',
+        _ => 'Show videos in portrait',
+      };
+
+  String get _displayVideoInPortraitHint => switch (_appLanguage) {
+        'it' =>
+          'Usa un riquadro verticale per i video. Se disattivato, resta il formato normale.',
+        'es' =>
+          'Usa un área vertical para los vídeos. Si está desactivado, se mantiene el formato normal.',
+        'fr' =>
+          'Utilise un cadre vertical pour les vidéos. Si cette option est désactivée, le format normal est conservé.',
+        'pt' =>
+          'Usa uma área vertical para os vídeos. Se desativado, mantém o formato normal.',
+        'pl' =>
+          'Używa pionowego obszaru dla wideo. Gdy opcja jest wyłączona, pozostaje zwykły format.',
+        'cs' =>
+          'Použije pro videa svislý rámeček. Pokud je vypnuto, zůstane běžný formát.',
+        _ =>
+          'Uses a portrait video area. When disabled, videos keep the normal layout.',
+      };
+
+
+  String get _multipleDocumentBookmarksTitle =>
+      AppLocalizations.of(context).settingsMultipleDocumentBookmarks;
+
+  String get _multipleDocumentBookmarksHint =>
+      AppLocalizations.of(context).settingsMultipleDocumentBookmarksHint;
 
   String _formatTime(int totalSeconds) {
     if (totalSeconds < 60) return '$totalSeconds secondi';
@@ -78,6 +118,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
     String secStr = s == 1 ? '1 secondo' : '$s secondi';
     if (s == 0) return minStr;
     return '$minStr e $secStr';
+  }
+
+  String _formatPercent(int value) => '$value%';
+
+  int get _documentSliderStepOptionIndex {
+    final options = AppSettingsService.documentSliderStepPercentOptions;
+    final exact = options.indexOf(_documentSliderStepPercent);
+    if (exact >= 0) return exact;
+    var bestIndex = 0;
+    var bestDistance = (_documentSliderStepPercent - options.first).abs();
+    for (var i = 1; i < options.length; i++) {
+      final distance = (_documentSliderStepPercent - options[i]).abs();
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestIndex = i;
+      }
+    }
+    return bestIndex;
+  }
+
+  int _documentSliderStepAt(int index) {
+    final options = AppSettingsService.documentSliderStepPercentOptions;
+    final clampedIndex = index.clamp(0, options.length - 1).toInt();
+    return options[clampedIndex];
+  }
+
+  void _setDocumentSliderStepByIndex(double value) {
+    setState(() {
+      _documentSliderStepPercent = _documentSliderStepAt(value.round());
+    });
+  }
+
+  void _increaseDocumentSliderStep() {
+    setState(() {
+      _documentSliderStepPercent =
+          _documentSliderStepAt(_documentSliderStepOptionIndex + 1);
+    });
+  }
+
+  void _decreaseDocumentSliderStep() {
+    setState(() {
+      _documentSliderStepPercent =
+          _documentSliderStepAt(_documentSliderStepOptionIndex - 1);
+    });
   }
 
   @override
@@ -111,8 +195,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
     final includeEpubFootnotesInText =
         await _settings.includeEpubFootnotesInText();
+    final multipleDocumentBookmarks =
+        await _settings.multipleDocumentBookmarksEnabled();
+    final displayVideoInPortrait =
+        await _settings.displayVideoInPortrait();
     final homeGrouping = await _settings.isHomeGroupingEnabled();
     final seekSliderStep = await _settings.loadSeekSliderStep();
+    final documentSliderStepPercent =
+        await _settings.loadDocumentSliderStepPercent();
     final edgeVoices = await AppSettingsService.loadEdgeVoices();
     final edgeLanguages = AppSettingsService.languagesForVoices(edgeVoices);
     final normalizedLanguage = AppSettingsService.normalizedTtsLanguageCodeFor(
@@ -154,10 +244,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedAutoBookmark = autoBookmark;
       _includeEpubFootnotesInText = includeEpubFootnotesInText;
       _savedIncludeEpubFootnotesInText = includeEpubFootnotesInText;
+      _multipleDocumentBookmarks = multipleDocumentBookmarks;
+      _savedMultipleDocumentBookmarks = multipleDocumentBookmarks;
+      _displayVideoInPortrait = displayVideoInPortrait;
+      _savedDisplayVideoInPortrait = displayVideoInPortrait;
       _homeGroupingEnabled = homeGrouping;
       _savedHomeGroupingEnabled = homeGrouping;
       _seekSliderStep = seekSliderStep;
       _savedSeekSliderStep = seekSliderStep;
+      _documentSliderStepPercent = documentSliderStepPercent;
+      _savedDocumentSliderStepPercent = documentSliderStepPercent;
       _loading = false;
     });
   }
@@ -195,8 +291,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final autoBookmarkChanged = _autoBookmark != _savedAutoBookmark;
     final includeEpubFootnotesChanged = _includeEpubFootnotesInText !=
         _savedIncludeEpubFootnotesInText;
+    final multipleDocumentBookmarksChanged =
+        _multipleDocumentBookmarks != _savedMultipleDocumentBookmarks;
+    final displayVideoInPortraitChanged =
+        _displayVideoInPortrait != _savedDisplayVideoInPortrait;
     final homeGroupingChanged = _homeGroupingEnabled != _savedHomeGroupingEnabled;
     final seekSliderStepChanged = _seekSliderStep != _savedSeekSliderStep;
+    final documentSliderStepChanged =
+        _documentSliderStepPercent != _savedDocumentSliderStepPercent;
     final ttsEngineChanged = _ttsEngine != _savedTtsEngine;
     final ttsSettingsChanged = ttsEngineChanged ||
         _languageCode != _savedLanguageCode ||
@@ -211,8 +313,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         weatherTemperatureUnitChanged ||
         autoBookmarkChanged ||
         includeEpubFootnotesChanged ||
+        multipleDocumentBookmarksChanged ||
+        displayVideoInPortraitChanged ||
         homeGroupingChanged ||
         seekSliderStepChanged ||
+        documentSliderStepChanged ||
         ttsSettingsChanged;
     final savedMessage = codeChanged && rawCode.isNotEmpty
         ? l10n.sonarpadCodeValidMessage
@@ -224,8 +329,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'weatherTemperatureUnitChanged=$weatherTemperatureUnitChanged '
       'codeChanged=$codeChanged autoBookmarkChanged=$autoBookmarkChanged '
       'includeEpubFootnotesChanged=$includeEpubFootnotesChanged '
+      'multipleDocumentBookmarksChanged=$multipleDocumentBookmarksChanged '
+      'displayVideoInPortraitChanged=$displayVideoInPortraitChanged '
       'homeGroupingChanged=$homeGroupingChanged '
       'seekSliderStepChanged=$seekSliderStepChanged '
+      'documentSliderStepChanged=$documentSliderStepChanged '
       'ttsEngine=$_ttsEngine previous=$_savedTtsEngine '
       'ttsSettingsChanged=$ttsSettingsChanged voice=$_voice savedVoice=$_savedVoice '
       'systemVoice=$_systemTtsVoice savedSystemVoice=$_savedSystemTtsVoice',
@@ -261,8 +369,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.setIncludeEpubFootnotesInText(_includeEpubFootnotesInText);
+    await _settings.setMultipleDocumentBookmarksEnabled(_multipleDocumentBookmarks);
+    await _settings.setDisplayVideoInPortrait(_displayVideoInPortrait);
     await _settings.setHomeGroupingEnabled(_homeGroupingEnabled);
     await _settings.saveSeekSliderStep(_seekSliderStep);
+    await _settings.saveDocumentSliderStepPercent(_documentSliderStepPercent);
     _markSaved(rawCode);
 
     if (!mounted) return;
@@ -363,8 +474,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedTvSecretCode = rawCode;
     _savedAutoBookmark = _autoBookmark;
     _savedIncludeEpubFootnotesInText = _includeEpubFootnotesInText;
+    _savedMultipleDocumentBookmarks = _multipleDocumentBookmarks;
+    _savedDisplayVideoInPortrait = _displayVideoInPortrait;
     _savedHomeGroupingEnabled = _homeGroupingEnabled;
     _savedSeekSliderStep = _seekSliderStep;
+    _savedDocumentSliderStepPercent = _documentSliderStepPercent;
   }
 
   bool get _hasUnsavedChanges {
@@ -382,8 +496,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _tvSecretCodeController.text.trim() != _savedTvSecretCode ||
         _autoBookmark != _savedAutoBookmark ||
         _includeEpubFootnotesInText != _savedIncludeEpubFootnotesInText ||
+        _multipleDocumentBookmarks != _savedMultipleDocumentBookmarks ||
+        _displayVideoInPortrait != _savedDisplayVideoInPortrait ||
         _homeGroupingEnabled != _savedHomeGroupingEnabled ||
-        _seekSliderStep != _savedSeekSliderStep;
+        _seekSliderStep != _savedSeekSliderStep ||
+        _documentSliderStepPercent != _savedDocumentSliderStepPercent;
   }
 
   Future<bool> _confirmLeaveSettings() async {
@@ -975,6 +1092,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       value: _includeEpubFootnotesInText,
                       onChanged: (val) => setState(
                         () => _includeEpubFootnotesInText = val,
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    SwitchListTile(
+                      title: Text(_multipleDocumentBookmarksTitle),
+                      subtitle: Text(_multipleDocumentBookmarksHint),
+                      value: _multipleDocumentBookmarks,
+                      onChanged: (val) => setState(
+                        () => _multipleDocumentBookmarks = val,
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Text(
+                            '${l10n.settingsDocumentSliderStep}: '
+                            '${_formatPercent(_documentSliderStepPercent)}',
+                          ),
+                        ),
+                        Semantics(
+                          slider: true,
+                          label: l10n.settingsDocumentSliderStep,
+                          value: _formatPercent(_documentSliderStepPercent),
+                          increasedValue: _formatPercent(
+                            _documentSliderStepAt(
+                              _documentSliderStepOptionIndex + 1,
+                            ),
+                          ),
+                          decreasedValue: _formatPercent(
+                            _documentSliderStepAt(
+                              _documentSliderStepOptionIndex - 1,
+                            ),
+                          ),
+                          onIncrease: _increaseDocumentSliderStep,
+                          onDecrease: _decreaseDocumentSliderStep,
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: _documentSliderStepOptionIndex.toDouble(),
+                              min: 0,
+                              max: (AppSettingsService
+                                          .documentSliderStepPercentOptions
+                                          .length -
+                                      1)
+                                  .toDouble(),
+                              divisions: AppSettingsService
+                                      .documentSliderStepPercentOptions.length -
+                                  1,
+                              onChanged: _setDocumentSliderStepByIndex,
+                            ),
+                          ),
+                        ),
+                        Text(l10n.settingsDocumentSliderStepHint),
+                      ],
+                    ),
+                    SwitchListTile(
+                      title: Text(_displayVideoInPortraitTitle),
+                      subtitle: Text(_displayVideoInPortraitHint),
+                      value: _displayVideoInPortrait,
+                      onChanged: (val) => setState(
+                        () => _displayVideoInPortrait = val,
                       ),
                       contentPadding: EdgeInsets.zero,
                     ),

@@ -324,6 +324,14 @@
   "settingsSystemVoice": "System voice",
   "settingsAutoBookmark": "Automatic resume",
   "settingsAutoBookmarkHint": "Resume documents, podcasts, and media from where you left off.",
+  "settingsDocumentSliderStep": "Document slider step",
+  "@settingsDocumentSliderStep": {
+    "description": "Localized text for settingsDocumentSliderStep."
+  },
+  "settingsDocumentSliderStepHint": "Controls how far the document position slider moves when swiping up or down.",
+  "@settingsDocumentSliderStepHint": {
+    "description": "Localized text for settingsDocumentSliderStepHint."
+  },
   "settingsSeekStep": "Rewind / fast-forward step for media",
   "aiChatIntro": "I’m Sonarpad AI. How can I help you?",
   "cinemaOverviewLabel": "Overview:",
@@ -865,5 +873,60 @@
   "documentFootnoteLabel": "Footnote",
   "@documentFootnoteLabel": {
     "description": "Localized text for documentFootnoteLabel."
+  },
+  "settingsMultipleDocumentBookmarks": "Allow multiple bookmarks in documents",
+  "@settingsMultipleDocumentBookmarks": {
+    "description": "Title for the setting that enables multiple bookmarks in documents."
+  },
+  "settingsMultipleDocumentBookmarksHint": "When disabled, each document keeps one bookmark. When enabled, you can save multiple bookmarks in the same document.",
+  "@settingsMultipleDocumentBookmarksHint": {
+    "description": "Description for the setting that enables multiple bookmarks in documents."
+  },
+  "documentGoToBookmarkAction": "Go to bookmark",
+  "@documentGoToBookmarkAction": {
+    "description": "Accessibility action and menu entry to open document bookmarks."
+  },
+  "documentChooseBookmarkTitle": "Choose bookmark",
+  "@documentChooseBookmarkTitle": {
+    "description": "Dialog title for choosing a document bookmark."
+  },
+  "documentDeleteBookmarkAction": "Delete bookmark",
+  "@documentDeleteBookmarkAction": {
+    "description": "Action label to delete a document bookmark."
+  },
+  "documentKeepBookmarkTitle": "Which bookmark do you want to keep?",
+  "@documentKeepBookmarkTitle": {
+    "description": "Dialog title asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentKeepBookmarkMessage": "Multiple bookmarks are disabled. Choose one bookmark to keep: the others will be deleted.",
+  "@documentKeepBookmarkMessage": {
+    "description": "Dialog message asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentBookmarkChoiceLabel": "Bookmark {order}, paragraph {paragraph}",
+  "@documentBookmarkChoiceLabel": {
+    "description": "Label for a bookmark in the bookmark chooser.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      }
+    }
+  },
+  "documentBookmarkChoiceLabelWithPreview": "Bookmark {order}, paragraph {paragraph}. {preview}",
+  "@documentBookmarkChoiceLabelWithPreview": {
+    "description": "Label for a bookmark in the bookmark chooser, including a short text preview.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      },
+      "preview": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -1397,6 +1397,14 @@
   "@settingsAutoBookmarkHint": {
     "description": "Localized text for settingsAutoBookmarkHint."
   },
+  "settingsDocumentSliderStep": "Krok suwaka dokumentu",
+  "@settingsDocumentSliderStep": {
+    "description": "Localized text for settingsDocumentSliderStep."
+  },
+  "settingsDocumentSliderStepHint": "Określa, o ile przesuwa się suwak pozycji dokumentu po przesunięciu palcem w górę lub w dół.",
+  "@settingsDocumentSliderStepHint": {
+    "description": "Localized text for settingsDocumentSliderStepHint."
+  },
   "settingsSeekStep": "Krok przewijania wstecz / do przodu dla mediów",
   "@settingsSeekStep": {
     "description": "Localized text for settingsSeekStep."
@@ -3037,5 +3045,60 @@
   "documentFootnoteLabel": "Przypis dolny",
   "@documentFootnoteLabel": {
     "description": "Localized text for documentFootnoteLabel."
+  },
+  "settingsMultipleDocumentBookmarks": "Zezwalaj na wiele zakładek w dokumentach",
+  "@settingsMultipleDocumentBookmarks": {
+    "description": "Title for the setting that enables multiple bookmarks in documents."
+  },
+  "settingsMultipleDocumentBookmarksHint": "Gdy opcja jest wyłączona, każdy dokument ma tylko jedną zakładkę. Gdy jest włączona, możesz zapisać wiele zakładek w tym samym dokumencie.",
+  "@settingsMultipleDocumentBookmarksHint": {
+    "description": "Description for the setting that enables multiple bookmarks in documents."
+  },
+  "documentGoToBookmarkAction": "Przejdź do zakładki",
+  "@documentGoToBookmarkAction": {
+    "description": "Accessibility action and menu entry to open document bookmarks."
+  },
+  "documentChooseBookmarkTitle": "Wybierz zakładkę",
+  "@documentChooseBookmarkTitle": {
+    "description": "Dialog title for choosing a document bookmark."
+  },
+  "documentDeleteBookmarkAction": "Usuń zakładkę",
+  "@documentDeleteBookmarkAction": {
+    "description": "Action label to delete a document bookmark."
+  },
+  "documentKeepBookmarkTitle": "Którą zakładkę chcesz zachować?",
+  "@documentKeepBookmarkTitle": {
+    "description": "Dialog title asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentKeepBookmarkMessage": "Wiele zakładek jest wyłączone. Wybierz zakładkę do zachowania: pozostałe zostaną usunięte.",
+  "@documentKeepBookmarkMessage": {
+    "description": "Dialog message asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentBookmarkChoiceLabel": "Zakładka {order}, akapit {paragraph}",
+  "@documentBookmarkChoiceLabel": {
+    "description": "Label for a bookmark in the bookmark chooser.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      }
+    }
+  },
+  "documentBookmarkChoiceLabelWithPreview": "Zakładka {order}, akapit {paragraph}. {preview}",
+  "@documentBookmarkChoiceLabelWithPreview": {
+    "description": "Label for a bookmark in the bookmark chooser, including a short text preview.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      },
+      "preview": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -324,6 +324,14 @@
   "settingsSystemVoice": "Voz del sistema",
   "settingsAutoBookmark": "Reanudación automática",
   "settingsAutoBookmarkHint": "Reanuda documentos, podcasts y contenido multimedia desde donde lo dejaste.",
+  "settingsDocumentSliderStep": "Intervalo del deslizador de documentos",
+  "@settingsDocumentSliderStep": {
+    "description": "Localized text for settingsDocumentSliderStep."
+  },
+  "settingsDocumentSliderStepHint": "Controla cuánto avanza o retrocede el deslizador de posición del documento al deslizar hacia arriba o hacia abajo.",
+  "@settingsDocumentSliderStepHint": {
+    "description": "Localized text for settingsDocumentSliderStepHint."
+  },
   "settingsSeekStep": "Intervalo de retroceso / avance rápido para multimedia",
   "aiChatIntro": "Soy la inteligencia artificial de Sonarpad. ¿Cómo puedo ayudarte?",
   "meteoTitle": "Tiempo",
@@ -865,5 +873,60 @@
   "documentFootnoteLabel": "Nota a pie de página",
   "@documentFootnoteLabel": {
     "description": "Localized text for documentFootnoteLabel."
+  },
+  "settingsMultipleDocumentBookmarks": "Permitir varios marcadores en los documentos",
+  "@settingsMultipleDocumentBookmarks": {
+    "description": "Title for the setting that enables multiple bookmarks in documents."
+  },
+  "settingsMultipleDocumentBookmarksHint": "Si está desactivado, queda un solo marcador por documento. Si está activado, puedes guardar varios marcadores en el mismo documento.",
+  "@settingsMultipleDocumentBookmarksHint": {
+    "description": "Description for the setting that enables multiple bookmarks in documents."
+  },
+  "documentGoToBookmarkAction": "Ir al marcador",
+  "@documentGoToBookmarkAction": {
+    "description": "Accessibility action and menu entry to open document bookmarks."
+  },
+  "documentChooseBookmarkTitle": "Elegir marcador",
+  "@documentChooseBookmarkTitle": {
+    "description": "Dialog title for choosing a document bookmark."
+  },
+  "documentDeleteBookmarkAction": "Eliminar marcador",
+  "@documentDeleteBookmarkAction": {
+    "description": "Action label to delete a document bookmark."
+  },
+  "documentKeepBookmarkTitle": "¿Qué marcador quieres conservar?",
+  "@documentKeepBookmarkTitle": {
+    "description": "Dialog title asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentKeepBookmarkMessage": "Los marcadores múltiples están desactivados. Elige un marcador para conservar: los demás se eliminarán.",
+  "@documentKeepBookmarkMessage": {
+    "description": "Dialog message asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentBookmarkChoiceLabel": "Marcador {order}, párrafo {paragraph}",
+  "@documentBookmarkChoiceLabel": {
+    "description": "Label for a bookmark in the bookmark chooser.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      }
+    }
+  },
+  "documentBookmarkChoiceLabelWithPreview": "Marcador {order}, párrafo {paragraph}. {preview}",
+  "@documentBookmarkChoiceLabelWithPreview": {
+    "description": "Label for a bookmark in the bookmark chooser, including a short text preview.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      },
+      "preview": {
+        "type": "String"
+      }
+    }
   }
 }

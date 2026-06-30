@@ -21,57 +21,71 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
 
   final _service = AifaService();
   final _parafarmacoService = ParafarmacoService();
-  bool _loading = true;
-  String? _error;
+
+  bool _aifaLoading = true;
+  bool _parafarmacoLoading = true;
+  bool _recentSearchSaved = false;
+  String? _aifaError;
+  String? _parafarmacoError;
   List<AifaDrugResult> _results = [];
   List<ParafarmacoSearchResult> _parafarmacoResults = [];
 
   @override
   void initState() {
     super.initState();
-    _search();
+    _searchAifa();
+    _searchParafarmaci();
   }
 
-  Future<void> _search() async {
-    String? aifaError;
-    String? parafarmacoError;
-    List<AifaDrugResult> aifaResults = [];
-    List<ParafarmacoSearchResult> parafarmacoResults = [];
-
+  Future<void> _searchAifa() async {
     try {
-      aifaResults = await _service.searchDrugs(widget.query);
+      final results = await _service.searchDrugs(widget.query);
+      if (!mounted) return;
+      setState(() {
+        _results = results;
+        _aifaError = null;
+        _aifaLoading = false;
+      });
+      if (results.isNotEmpty) await _saveRecentSearchIfNeeded();
     } catch (e) {
-      aifaError = e.toString();
+      if (!mounted) return;
+      setState(() {
+        _aifaError = e.toString();
+        _aifaLoading = false;
+      });
     }
+  }
 
+  Future<void> _searchParafarmaci() async {
     try {
-      parafarmacoResults =
-          await _parafarmacoService.searchProducts(widget.query);
+      final results = await _parafarmacoService.searchProducts(widget.query);
+      if (!mounted) return;
+      setState(() {
+        _parafarmacoResults = results;
+        _parafarmacoError = null;
+        _parafarmacoLoading = false;
+      });
+      if (results.isNotEmpty) await _saveRecentSearchIfNeeded();
     } catch (e) {
-      parafarmacoError = e.toString();
+      if (!mounted) return;
+      setState(() {
+        _parafarmacoError = e.toString();
+        _parafarmacoLoading = false;
+      });
     }
+  }
 
-    if (aifaResults.isNotEmpty || parafarmacoResults.isNotEmpty) {
-      try {
-        await RecentSearchesService().addSearch(_recentSearchesDomain, widget.query);
-      } catch (e) {
-        debugPrint('Errore salvataggio ricerca farmaci/prodotti recente: $e');
-      }
+  Future<void> _saveRecentSearchIfNeeded() async {
+    if (_recentSearchSaved) return;
+    _recentSearchSaved = true;
+    try {
+      await RecentSearchesService().addSearch(
+        _recentSearchesDomain,
+        widget.query,
+      );
+    } catch (e) {
+      debugPrint('Errore salvataggio ricerca farmaci/prodotti recente: $e');
     }
-
-    if (!mounted) return;
-    setState(() {
-      _results = aifaResults;
-      _parafarmacoResults = parafarmacoResults;
-      _loading = false;
-      if (_results.isEmpty && _parafarmacoResults.isEmpty) {
-        if (aifaError != null && parafarmacoError != null) {
-          _error = 'Nessun risultato trovato. Errore AIFA: $aifaError\nErrore altri prodotti: $parafarmacoError';
-        } else {
-          _error = 'Nessun farmaco o prodotto da farmacia trovato per "${widget.query}"';
-        }
-      }
-    });
   }
 
   void _openDrugGroup(AifaDrugResult group) {
@@ -90,28 +104,34 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
     );
   }
 
-  int get _itemCount {
-    var count = 0;
-    if (_results.isNotEmpty) count += 1 + _results.length;
-    if (_parafarmacoResults.isNotEmpty) {
-      count += 1 + _parafarmacoResults.length;
-    }
-    return count;
-  }
+  List<Widget> _buildResultsChildren() {
+    final children = <Widget>[];
 
-  Widget _buildItem(BuildContext context, int index) {
-    if (_results.isNotEmpty) {
-      if (index == 0) {
-        return const _SectionHeader(
-          title: 'Farmaci AIFA',
-          subtitle: 'Medicinali con dati AIFA e foglio illustrativo ufficiale.',
-        );
-      }
-      if (index <= _results.length) {
-        final group = _results[index - 1];
+    children.add(const _SectionHeader(
+      title: 'Farmaci AIFA',
+      subtitle: 'Medicinali con dati AIFA e foglio illustrativo ufficiale.',
+    ));
+
+    if (_aifaLoading) {
+      children.add(const _StatusTile.loading(
+        title: 'Ricerca farmaci AIFA in corso...',
+        subtitle: 'Sto cercando tra i medicinali AIFA.',
+      ));
+    } else if (_aifaError != null && _results.isEmpty) {
+      children.add(_StatusTile.error(
+        title: 'Errore nella ricerca AIFA',
+        subtitle: _aifaError!,
+      ));
+    } else if (_results.isEmpty) {
+      children.add(const _StatusTile.info(
+        title: 'Nessun farmaco AIFA trovato',
+        subtitle: 'La ricerca negli altri prodotti può comunque dare risultati.',
+      ));
+    } else {
+      for (final group in _results) {
         final title =
             '${group.denominazione} - ${group.principiAttivi} - AIC ${group.aic9}';
-        return ListTile(
+        children.add(ListTile(
           title: Text(
             title,
             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -119,67 +139,62 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
           subtitle: Text('${group.confezioni.length} confezioni associate'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => _openDrugGroup(group),
-        );
+        ));
       }
-      index -= 1 + _results.length;
     }
 
-    if (_parafarmacoResults.isNotEmpty) {
-      if (index == 0) {
-        return const _SectionHeader(
-          title: 'Parafarmaci e altri prodotti',
-          subtitle:
-              'Schede prodotto non AIFA: parafarmaci, integratori o dispositivi quando disponibili.',
-        );
+    children.add(const _SectionHeader(
+      title: 'Parafarmaci, integratori e prodotti da farmacia',
+      subtitle: 'Schede prodotto non AIFA quando disponibili.',
+    ));
+
+    if (_parafarmacoLoading) {
+      children.add(const _StatusTile.loading(
+        title: 'Ricerca prodotti da farmacia in corso...',
+        subtitle: 'Sto cercando parafarmaci, integratori e dispositivi.',
+      ));
+    } else if (_parafarmacoError != null && _parafarmacoResults.isEmpty) {
+      children.add(_StatusTile.error(
+        title: 'Errore nella ricerca prodotti da farmacia',
+        subtitle: _parafarmacoError!,
+      ));
+    } else if (_parafarmacoResults.isEmpty) {
+      children.add(const _StatusTile.info(
+        title: 'Nessun prodotto da farmacia trovato',
+        subtitle: 'Non sono disponibili schede prodotto per questa ricerca.',
+      ));
+    } else {
+      for (final product in _parafarmacoResults) {
+        children.add(ListTile(
+          title: Text(
+            product.name,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text([
+            product.category,
+            if (product.sourceName != 'Codifa/Farmadati') product.sourceName,
+            if (product.snippet != null && product.snippet!.trim().isNotEmpty)
+              product.snippet!.trim(),
+          ].join(' - ')),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => _openParafarmaco(product),
+        ));
       }
-      final product = _parafarmacoResults[index - 1];
-      return ListTile(
-        title: Text(
-          product.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text([
-          product.category,
-          product.sourceName,
-          if (product.snippet != null && product.snippet!.trim().isNotEmpty)
-            product.snippet!.trim(),
-        ].join(' - ')),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () => _openParafarmaco(product),
-      );
     }
 
-    return const SizedBox.shrink();
+    return children;
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Risultati: ${widget.query}'),
       ),
       body: SafeArea(
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : _error != null
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        _error!,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.error,
-                        ),
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _itemCount,
-                    itemBuilder: _buildItem,
-                  ),
+        child: ListView(
+          children: _buildResultsChildren(),
+        ),
       ),
     );
   }
@@ -214,6 +229,62 @@ class _SectionHeader extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _StatusTile extends StatelessWidget {
+  final IconData? icon;
+  final bool loading;
+  final String title;
+  final String subtitle;
+
+  const _StatusTile._({
+    required this.title,
+    required this.subtitle,
+    this.icon,
+    this.loading = false,
+  });
+
+  const _StatusTile.loading({
+    required String title,
+    required String subtitle,
+  }) : this._(
+          title: title,
+          subtitle: subtitle,
+          loading: true,
+        );
+
+  const _StatusTile.info({
+    required String title,
+    required String subtitle,
+  }) : this._(
+          title: title,
+          subtitle: subtitle,
+          icon: Icons.info_outline,
+        );
+
+  const _StatusTile.error({
+    required String title,
+    required String subtitle,
+  }) : this._(
+          title: title,
+          subtitle: subtitle,
+          icon: Icons.warning_amber,
+        );
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: loading
+          ? const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Icon(icon),
+      title: Text(title),
+      subtitle: Text(subtitle),
     );
   }
 }

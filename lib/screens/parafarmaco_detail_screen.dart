@@ -141,11 +141,14 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Fonte: ${detail?.sourceName ?? product.sourceName}',
-                              style: theme.textTheme.bodySmall,
-                            ),
+                            if ((detail?.sourceName ?? product.sourceName) !=
+                                'Codifa/Farmadati') ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                'Fonte: ${detail?.sourceName ?? product.sourceName}',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
                             if ((detail?.code ?? product.code)?.trim().isNotEmpty ?? false)
                               Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
@@ -154,11 +157,14 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
                                   style: theme.textTheme.bodySmall,
                                 ),
                               ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Le informazioni possono provenire da banche dati o schede prodotto non AIFA. Verifica sempre confezione, medico o farmacista.',
-                              style: theme.textTheme.bodySmall,
-                            ),
+                            if ((detail?.sourceName ?? product.sourceName) !=
+                                'Codifa/Farmadati') ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                'Le informazioni possono provenire da schede prodotto non AIFA. Verifica sempre confezione, medico o farmacista.',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
                           ],
                         ),
                       ),

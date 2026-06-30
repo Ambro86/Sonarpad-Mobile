@@ -320,11 +320,13 @@ class ParafarmacoService {
 
     final safeName = _safeFileName('${detail.name}_${type.name}');
     final file = File('${cacheDir.path}/$safeName.txt');
+    final isCodifa = detail.sourceName == 'Codifa/Farmadati';
     final buffer = StringBuffer()
       ..writeln(detail.name)
-      ..writeln(detail.category)
-      ..writeln('Fonte: ${detail.sourceName}')
-      ..writeln('URL: ${detail.sourceUrl}');
+      ..writeln(detail.category);
+    if (!isCodifa) {
+      buffer.writeln('Fonte: ${detail.sourceName}');
+    }
     if (detail.code != null && detail.code!.trim().isNotEmpty) {
       buffer.writeln('Codice: ${detail.code}');
     }
@@ -332,9 +334,12 @@ class ParafarmacoService {
       ..writeln()
       ..writeln(type.label)
       ..writeln()
-      ..writeln(detail.sectionText(type))
-      ..writeln()
-      ..writeln('Avviso: questa scheda può riferirsi a parafarmaci, cosmetici, integratori o dispositivi medici. Le informazioni non sostituiscono medico, farmacista o confezione originale.');
+      ..writeln(detail.sectionText(type));
+    if (!isCodifa) {
+      buffer
+        ..writeln()
+        ..writeln('Nota: verifica sempre confezione, medico o farmacista.');
+    }
 
     await file.writeAsString(buffer.toString(), encoding: utf8);
     return file;
@@ -923,11 +928,13 @@ class ParafarmacoService {
     required String? code,
     required String fullText,
   }) {
+    final isCodifa = sourceName == 'Codifa/Farmadati';
     final buffer = StringBuffer()
       ..writeln(name)
-      ..writeln(category)
-      ..writeln('Fonte: $sourceName')
-      ..writeln('URL: $sourceUrl');
+      ..writeln(category);
+    if (!isCodifa) {
+      buffer.writeln('Fonte: $sourceName');
+    }
     if (code != null && code.trim().isNotEmpty) buffer.writeln('Codice: $code');
     buffer
       ..writeln()

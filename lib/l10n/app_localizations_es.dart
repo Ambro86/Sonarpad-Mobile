@@ -277,18 +277,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get moveToPosition => 'Mover a la posición';
 
   @override
-  String get sortPodcastsAlphabetically => 'Ordenar podcasts alfabéticamente';
-
-  @override
-  String get sortRadioFavoritesAlphabetically => 'Ordenar favoritas alfabéticamente';
-
-  @override
-  String get podcastsSortedAlphabetically => 'Podcasts ordenados alfabéticamente.';
-
-  @override
-  String get radioFavoritesSortedAlphabetically => 'Radios favoritas ordenadas alfabéticamente.';
-
-  @override
   String positionLabel(int position, String targetName) {
     return 'Posición $position: antes de $targetName';
   }
@@ -901,9 +889,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get documentIndex => 'Índice';
 
   @override
-  String get documentFootnoteLabel => 'Nota a pie de página';
-
-  @override
   String get documentSearchFieldLabel => 'Texto de búsqueda';
 
   @override
@@ -1010,11 +995,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Reanuda documentos, podcasts y contenido multimedia desde donde lo dejaste.';
 
   @override
-  String get settingsIncludeFootnotesInText => 'Incluir las notas a pie de página en el texto';
+  String get settingsDocumentSliderStep =>
+      'Intervalo del deslizador de documentos';
 
   @override
-  String get settingsIncludeFootnotesInTextHint =>
-      'En los EPUB compatibles, muestra la nota justo después del párrafo que la referencia.';
+  String get settingsDocumentSliderStepHint =>
+      'Controla cuánto avanza o retrocede el deslizador de posición del documento al deslizar hacia arriba o hacia abajo.';
 
   @override
   String get settingsSeekStep =>
@@ -2205,13 +2191,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get podcastSelectDate => 'Seleccionar fecha';
 
   @override
-  String get podcastNoDatesAvailable => 'No hay fechas disponibles para estos episodios.';
+  String get podcastNoDatesAvailable =>
+      'No hay fechas disponibles para estos episodios.';
 
   @override
   String get podcastChapters => 'Capítulos';
 
   @override
-  String get podcastChaptersUnavailable => 'No hay capítulos disponibles para este episodio.';
+  String get podcastChaptersUnavailable =>
+      'No hay capítulos disponibles para este episodio.';
 
   @override
   String get podcastUnplayed => 'Episodios no reproducidos';
@@ -2273,5 +2261,66 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String routeNavigationFromTo(Object from, Object to, Object date) {
     return 'Detalles de navegación de $from a $to - $date';
+  }
+
+  @override
+  String get sortPodcastsAlphabetically => 'Ordenar podcasts alfabéticamente';
+
+  @override
+  String get sortRadioFavoritesAlphabetically =>
+      'Ordenar favoritas alfabéticamente';
+
+  @override
+  String get podcastsSortedAlphabetically =>
+      'Podcasts ordenados alfabéticamente.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically =>
+      'Radios favoritas ordenadas alfabéticamente.';
+
+  @override
+  String get settingsIncludeFootnotesInText =>
+      'Incluir las notas a pie de página en el texto';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'En los EPUB compatibles, muestra la nota justo después del párrafo que la referencia.';
+
+  @override
+  String get documentFootnoteLabel => 'Nota a pie de página';
+
+  @override
+  String get settingsMultipleDocumentBookmarks =>
+      'Permitir varios marcadores en los documentos';
+
+  @override
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Si está desactivado, queda un solo marcador por documento. Si está activado, puedes guardar varios marcadores en el mismo documento.';
+
+  @override
+  String get documentGoToBookmarkAction => 'Ir al marcador';
+
+  @override
+  String get documentChooseBookmarkTitle => 'Elegir marcador';
+
+  @override
+  String get documentDeleteBookmarkAction => 'Eliminar marcador';
+
+  @override
+  String get documentKeepBookmarkTitle => '¿Qué marcador quieres conservar?';
+
+  @override
+  String get documentKeepBookmarkMessage =>
+      'Los marcadores múltiples están desactivados. Elige un marcador para conservar: los demás se eliminarán.';
+
+  @override
+  String documentBookmarkChoiceLabel(int order, int paragraph) {
+    return 'Marcador $order, párrafo $paragraph';
+  }
+
+  @override
+  String documentBookmarkChoiceLabelWithPreview(
+      int order, int paragraph, String preview) {
+    return 'Marcador $order, párrafo $paragraph. $preview';
   }
 }

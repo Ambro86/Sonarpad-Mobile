@@ -45,6 +45,7 @@ class _PodcastEpisodePlayerScreenState
   VideoPlayerController? _videoController;
   bool _videoUsesExternalAudio = false;
   bool _isVideoEnabled = false;
+  bool _displayVideoInPortrait = false;
 
   bool _loaded = false;
   bool _loading = false;
@@ -413,6 +414,8 @@ class _PodcastEpisodePlayerScreenState
       );
       _isVideoEnabled =
           widget.startWithVideo || await _settings.isVideoEnabled();
+      _displayVideoInPortrait =
+          await _settings.displayVideoInPortrait();
       if (!mounted) return;
       setState(() {});
       AppLogger.log(
@@ -468,6 +471,34 @@ class _PodcastEpisodePlayerScreenState
     unawaited(_audio.stopAndDispose());
     super.dispose();
     AppLogger.log('PodcastPlayer: dispose end, $_logSubject');
+  }
+
+  static const double _portraitVideoAspectRatio = 9 / 16;
+
+  Widget _buildVideoPlayerSurface(VideoPlayerController controller) {
+    final aspect = controller.value.aspectRatio > 0
+        ? controller.value.aspectRatio
+        : 16 / 9;
+    final video = VideoPlayer(controller);
+    if (!_displayVideoInPortrait) {
+      return AspectRatio(
+        aspectRatio: aspect,
+        child: video,
+      );
+    }
+    return AspectRatio(
+      aspectRatio: _portraitVideoAspectRatio,
+      child: ClipRect(
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: aspect >= 1 ? aspect : 1,
+            height: aspect >= 1 ? 1 : 1 / aspect,
+            child: video,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -544,16 +575,12 @@ class _PodcastEpisodePlayerScreenState
                     value: _videoController!.value.isPlaying
                         ? l10n.pause
                         : l10n.play,
-                    child: AspectRatio(
-                      aspectRatio: _videoController!.value.aspectRatio,
-                      child: VideoPlayer(_videoController!),
-                    ),
+                    child: _buildVideoPlayerSurface(_videoController!),
                   )
                 else
-                  AspectRatio(
+                  KeyedSubtree(
                     key: const ValueKey('podcast_video_inline_audio'),
-                    aspectRatio: _videoController!.value.aspectRatio,
-                    child: VideoPlayer(_videoController!),
+                    child: _buildVideoPlayerSurface(_videoController!),
                   ),
               ],
               const SizedBox(height: 24),

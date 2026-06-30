@@ -15,6 +15,9 @@
       "Corretta l’etichetta di alcune voci spagnole nelle impostazioni TTS: le voci es-ES vengono ora mostrate come Spanish (Spain) invece di essere confuse con Colombia.",
       "Migliorato il pulsante Indice negli EPUB supportati: la prima volta Sonarpad calcola l’indice del libro, poi lo salva in cache per aprirlo più rapidamente nelle letture successive. Inoltre legge meglio gli indici ufficiali NCX/nav e le ancore interne dei capitoli, così funziona con più libri e raccolte complesse.",
       "Aggiunta nelle impostazioni l’opzione “Includi le note a piè di pagina nel testo”: per gli EPUB supportati, le note possono essere lette subito dopo il paragrafo che le richiama.",
+      "Aggiunta nelle impostazioni l’opzione “Permetti segnalibri multipli nei documenti”: se attivata, puoi salvare più segnalibri nello stesso documento e scegliere a quale tornare.",
+      "Aggiunta nelle impostazioni l’opzione “Intervallo slider documenti”: permette di scegliere quanto deve avanzare o arretrare lo slider della posizione nei documenti (2%, 5%, 10%, 15%, 20% o 30%), con protezione per non superare inizio o fine documento.",
+      "Aggiunta l’impostazione per visualizzare i video in verticale.",
       "Le liste di notizie ed episodi podcast mostrano ora accanto al titolo anche data e ora, con etichette relative come oggi, ieri, domani e dopodomani quando disponibili.",
       "Migliorata la ricerca nella Biblioteca Digitale: ora le parole della ricerca possono essere scritte in qualunque ordine, per esempio “Ellis Peters” trova anche le voci catalogate come “Peters Ellis”.",
       "Estesa la ricerca farmaci: la ricerca AIFA/AIC resta invariata, ma ora Sonarpad prova a mostrare anche parafarmaci, integratori e altri prodotti da farmacia quando disponibili, indicando la categoria e aprendo schede con a cosa serve, modalità d’uso o posologia, avvertenze, composizione e scheda completa.",
@@ -33,6 +36,9 @@
       "Improved the Table of contents button for supported EPUB files: the first time, Sonarpad builds the book index, then saves it in cache so it can open faster on later readings. It also reads official NCX/nav indexes and internal chapter anchors more reliably, so it works with more books and complex collections.",
       "Fixed the label of some Spanish voices in TTS settings: es-ES voices are now shown as Spanish (Spain) instead of being confused with Colombia.",
       "Added the “Include footnotes in text” option in Settings: for supported EPUB books, notes can be read immediately after the paragraph that references them.",
+      "Added the “Allow multiple bookmarks in documents” setting: when enabled, you can save several bookmarks in the same document and choose which one to return to.",
+      "Added the “Document slider step” setting: you can choose how much the document position slider moves forward or backward (2%, 5%, 10%, 15%, 20% or 30%), with protection so it cannot go before the start or past the end of the document.",
+      "Added a setting to show videos in portrait.",
       "News and podcast episode lists now show date and time next to the title, using relative labels such as today, yesterday, tomorrow and the day after tomorrow when available."
     ],
     "fr": [
@@ -48,6 +54,9 @@
       "Amélioration du bouton Table des matières pour les fichiers EPUB pris en charge : la première fois, Sonarpad calcule l’index du livre, puis l’enregistre en cache pour l’ouvrir plus rapidement lors des lectures suivantes. Il lit aussi mieux les index officiels NCX/nav et les ancres internes des chapitres, pour fonctionner avec davantage de livres complexes.",
       "Correction du libellé de certaines voix espagnoles dans les réglages TTS : les voix es-ES sont désormais affichées comme Spanish (Spain) au lieu d’être confondues avec Colombia.",
       "Ajout dans les réglages de l’option « Inclure les notes de bas de page dans le texte » : pour les EPUB compatibles, les notes peuvent être lues juste après le paragraphe qui les cite.",
+      "Ajout du réglage « Autoriser plusieurs signets dans les documents » : lorsqu’il est activé, vous pouvez enregistrer plusieurs signets dans le même document et choisir auquel revenir.",
+      "Ajout du réglage « Pas du curseur des documents » : il permet de choisir de combien le curseur de position dans les documents avance ou recule (2 %, 5 %, 10 %, 15 %, 20 % ou 30 %), avec une protection pour ne pas dépasser le début ou la fin du document.",
+      "Ajout d’un réglage pour afficher les vidéos en vertical.",
       "Les listes d’actualités et d’épisodes de podcast affichent désormais la date et l’heure à côté du titre, avec des libellés relatifs comme aujourd’hui, hier, demain et après-demain lorsque disponibles."
     ],
     "es": [
@@ -63,7 +72,10 @@
       "Mejorado el botón Índice en los archivos EPUB compatibles: la primera vez, Sonarpad calcula el índice del libro y luego lo guarda en caché para abrirlo más rápido en lecturas posteriores. También lee mejor los índices oficiales NCX/nav y las anclas internas de los capítulos, para funcionar con más libros y colecciones complejas.",
       "Corregida la etiqueta de algunas voces en español en los ajustes TTS: las voces es-ES ahora se muestran como Spanish (Spain) en lugar de confundirse con Colombia.",
       "Añadida en Ajustes la opción “Incluir las notas a pie de página en el texto”: en los EPUB compatibles, las notas pueden leerse justo después del párrafo que las referencia.",
-      "Las listas de noticias y episodios de podcast ahora muestran la fecha y la hora junto al título, con etiquetas relativas como hoy, ayer, mañana y pasado mañana cuando están disponibles."
+      "Añadido el ajuste « Permitir varios marcadores en los documentos »: si está activado, puedes guardar varios marcadores en el mismo documento y elegir a cuál volver.",
+      "Añadido el ajuste «Intervalo del deslizador de documentos»: permite elegir cuánto avanza o retrocede el deslizador de posición en los documentos (2 %, 5 %, 10 %, 15 %, 20 % o 30 %), con protección para no superar el inicio ni el final del documento.",
+      "Las listas de noticias y episodios de podcast ahora muestran la fecha y la hora junto al título, con etiquetas relativas como hoy, ayer, mañana y pasado mañana cuando están disponibles.",
+      "Añadido un ajuste para mostrar los vídeos en vertical."
     ],
     "pt": [
       "Corrigido um problema nos documentos: o Sonarpad agora normaliza os acentos Unicode combinantes, evitando que o VoiceOver junte ou leia mal vários caracteres ao navegar carácter a carácter.",
@@ -78,7 +90,10 @@
       "Melhorado o botão Índice nos ficheiros EPUB suportados: na primeira vez, o Sonarpad calcula o índice do livro e depois guarda-o em cache para o abrir mais rapidamente nas leituras seguintes. Também lê melhor os índices oficiais NCX/nav e as âncoras internas dos capítulos, funcionando com mais livros e coleções complexas.",
       "Corrigida a etiqueta de algumas vozes espanholas nas definições TTS: as vozes es-ES agora aparecem como Spanish (Spain) em vez de serem confundidas com Colombia.",
       "Adicionada nas definições a opção “Incluir notas de rodapé no texto”: nos EPUB compatíveis, as notas podem ser lidas logo após o parágrafo que as referencia.",
-      "As listas de notícias e episódios de podcast agora mostram data e hora junto ao título, com etiquetas relativas como hoje, ontem, amanhã e depois de amanhã quando disponíveis."
+      "Adicionada a definição « Permitir vários marcadores nos documentos »: quando ativada, pode guardar vários marcadores no mesmo documento e escolher a qual voltar.",
+      "Adicionada a definição «Passo do controlo dos documentos»: permite escolher quanto o controlo de posição nos documentos avança ou recua (2%, 5%, 10%, 15%, 20% ou 30%), com proteção para não ultrapassar o início nem o fim do documento.",
+      "As listas de notícias e episódios de podcast agora mostram data e hora junto ao título, com etiquetas relativas como hoje, ontem, amanhã e depois de amanhã quando disponíveis.",
+      "Adicionada uma definição para mostrar vídeos na vertical."
     ],
     "pl": [
       "Naprawiono problem w dokumentach: Sonarpad normalizuje teraz łączące znaki akcentów Unicode, aby VoiceOver nie łączył ani nie odczytywał błędnie znaków podczas poruszania się znak po znaku.",
@@ -94,6 +109,9 @@
       "Poprawiono etykietę niektórych głosów hiszpańskich w ustawieniach TTS: głosy es-ES są teraz pokazywane jako Spanish (Spain), zamiast być mylone z Colombia.",
       "Ulepszono przycisk spisu treści w obsługiwanych plikach EPUB: przy pierwszym użyciu Sonarpad tworzy indeks książki, a następnie zapisuje go w pamięci podręcznej, aby kolejne otwarcia były szybsze. Lepiej odczytuje też oficjalne indeksy NCX/nav oraz wewnętrzne kotwice rozdziałów, dzięki czemu działa z większą liczbą książek i złożonych zbiorów.",
       "Dodano w ustawieniach opcję „Uwzględniaj przypisy dolne w tekście”: w obsługiwanych plikach EPUB przypisy mogą być czytane zaraz po akapicie, który się do nich odwołuje.",
+      "Dodano ustawienie „Zezwalaj na wiele zakładek w dokumentach”: po włączeniu można zapisać kilka zakładek w tym samym dokumencie i wybrać, do której wrócić.",
+      "Dodano ustawienie „Krok suwaka dokumentu”: pozwala wybrać, o ile suwak pozycji w dokumencie ma przechodzić do przodu lub do tyłu (2%, 5%, 10%, 15%, 20% albo 30%), z zabezpieczeniem przed wyjściem poza początek lub koniec dokumentu.",
+      "Dodano ustawienie wyświetlania wideo pionowo.",
       "Listy wiadomości i odcinków podcastów pokazują teraz przy tytule datę i godzinę, używając w razie potrzeby etykiet względnych, takich jak dzisiaj, wczoraj, jutro i pojutrze."
     ],
     "cs": [
@@ -109,6 +127,9 @@
       "Vylepšeno tlačítko obsahu u podporovaných souborů EPUB: při prvním použití Sonarpad vytvoří index knihy a potom jej uloží do mezipaměti, aby se při dalším čtení otevíral rychleji. Také lépe čte oficiální indexy NCX/nav a vnitřní kotvy kapitol, takže funguje s více knihami a složitějšími sbírkami.",
       "Opraven popisek některých španělských hlasů v nastavení TTS: hlasy es-ES se nyní zobrazují jako Spanish (Spain) místo záměny s Colombia.",
       "Do nastavení byla přidána volba „Zahrnout poznámky pod čarou do textu“: u podporovaných knih EPUB lze poznámky číst hned za odstavcem, který na ně odkazuje.",
+      "Přidáno nastavení „Povolit více záložek v dokumentech“: po zapnutí můžete uložit více záložek ve stejném dokumentu a vybrat, ke které se vrátit.",
+      "Přidáno nastavení „Krok posuvníku dokumentu“: umožňuje zvolit, o kolik se má posuvník pozice v dokumentech posunout dopředu nebo dozadu (2 %, 5 %, 10 %, 15 %, 20 % nebo 30 %), s ochranou proti překročení začátku nebo konce dokumentu.",
+      "Přidáno nastavení pro zobrazení videí na výšku.",
       "Seznamy zpráv a epizod podcastů nyní u názvu zobrazují také datum a čas, případně s relativními popisky jako dnes, včera, zítra a pozítří."
     ]
   },

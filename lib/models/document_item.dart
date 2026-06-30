@@ -8,6 +8,7 @@ class DocumentItem {
   final String extension;
   final DateTime addedAt;
   final int bookmarkIndex;
+  final List<int> bookmarkIndexes;
   final String? editedTextPath;
   final bool isTemporary;
   final bool isFolder;
@@ -20,6 +21,7 @@ class DocumentItem {
     required this.extension,
     required this.addedAt,
     this.bookmarkIndex = 0,
+    this.bookmarkIndexes = const <int>[],
     this.editedTextPath,
     this.isTemporary = false,
     this.isFolder = false,
@@ -45,6 +47,7 @@ class DocumentItem {
       extension: extension,
       addedAt: addedAt,
       bookmarkIndex: bookmarkIndex,
+      bookmarkIndexes: List<int>.unmodifiable(bookmarkIndexes),
       editedTextPath: editedTextPath,
       isTemporary: isTemporary,
       isFolder: isFolder,
@@ -59,6 +62,7 @@ class DocumentItem {
         'extension': extension,
         'addedAt': addedAt.toIso8601String(),
         'bookmarkIndex': bookmarkIndex,
+        if (bookmarkIndexes.isNotEmpty) 'bookmarkIndexes': bookmarkIndexes,
         if (editedTextPath != null) 'editedTextPath': editedTextPath,
         'isTemporary': isTemporary,
         'isFolder': isFolder,
@@ -72,6 +76,10 @@ class DocumentItem {
         extension: json['extension'] as String,
         addedAt: DateTime.parse(json['addedAt'] as String),
         bookmarkIndex: json['bookmarkIndex'] as int? ?? 0,
+        bookmarkIndexes: (json['bookmarkIndexes'] as List?)
+                ?.whereType<int>()
+                .toList(growable: false) ??
+            const <int>[],
         editedTextPath: json['editedTextPath'] as String?,
         isTemporary: json['isTemporary'] as bool? ?? false,
         isFolder: json['isFolder'] as bool? ?? false,

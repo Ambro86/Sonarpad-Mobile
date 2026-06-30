@@ -274,18 +274,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get moveToPosition => 'Przenieś na pozycję';
 
   @override
-  String get sortPodcastsAlphabetically => 'Sortuj podcasty alfabetycznie';
-
-  @override
-  String get sortRadioFavoritesAlphabetically => 'Sortuj ulubione alfabetycznie';
-
-  @override
-  String get podcastsSortedAlphabetically => 'Podcasty posortowane alfabetycznie.';
-
-  @override
-  String get radioFavoritesSortedAlphabetically => 'Ulubione stacje radiowe posortowane alfabetycznie.';
-
-  @override
   String positionLabel(int position, String targetName) {
     return 'Pozycja $position: przed $targetName';
   }
@@ -895,9 +883,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get documentIndex => 'Spis treści';
 
   @override
-  String get documentFootnoteLabel => 'Przypis dolny';
-
-  @override
   String get documentSearchFieldLabel => 'Szukany tekst';
 
   @override
@@ -1001,11 +986,11 @@ class AppLocalizationsPl extends AppLocalizations {
       'Wznawiaj dokumenty, podcasty i multimedia od miejsca przerwania.';
 
   @override
-  String get settingsIncludeFootnotesInText => 'Uwzględniaj przypisy dolne w tekście';
+  String get settingsDocumentSliderStep => 'Krok suwaka dokumentu';
 
   @override
-  String get settingsIncludeFootnotesInTextHint =>
-      'W obsługiwanych plikach EPUB pokazuje przypis zaraz po akapicie, który się do niego odwołuje.';
+  String get settingsDocumentSliderStepHint =>
+      'Określa, o ile przesuwa się suwak pozycji dokumentu po przesunięciu palcem w górę lub w dół.';
 
   @override
   String get settingsSeekStep =>
@@ -2192,7 +2177,8 @@ class AppLocalizationsPl extends AppLocalizations {
   String get podcastSelectDate => 'Wybierz datę';
 
   @override
-  String get podcastNoDatesAvailable => 'Brak dostępnych dat dla tych odcinków.';
+  String get podcastNoDatesAvailable =>
+      'Brak dostępnych dat dla tych odcinków.';
 
   @override
   String get podcastChapters => 'Rozdziały';
@@ -2259,5 +2245,66 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String routeNavigationFromTo(Object from, Object to, Object date) {
     return 'Szczegóły nawigacji z $from do $to - $date';
+  }
+
+  @override
+  String get sortPodcastsAlphabetically => 'Sortuj podcasty alfabetycznie';
+
+  @override
+  String get sortRadioFavoritesAlphabetically =>
+      'Sortuj ulubione alfabetycznie';
+
+  @override
+  String get podcastsSortedAlphabetically =>
+      'Podcasty posortowane alfabetycznie.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically =>
+      'Ulubione stacje radiowe posortowane alfabetycznie.';
+
+  @override
+  String get settingsIncludeFootnotesInText =>
+      'Uwzględniaj przypisy dolne w tekście';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'W obsługiwanych plikach EPUB pokazuje przypis zaraz po akapicie, który się do niego odwołuje.';
+
+  @override
+  String get documentFootnoteLabel => 'Przypis dolny';
+
+  @override
+  String get settingsMultipleDocumentBookmarks =>
+      'Zezwalaj na wiele zakładek w dokumentach';
+
+  @override
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Gdy opcja jest wyłączona, każdy dokument ma tylko jedną zakładkę. Gdy jest włączona, możesz zapisać wiele zakładek w tym samym dokumencie.';
+
+  @override
+  String get documentGoToBookmarkAction => 'Przejdź do zakładki';
+
+  @override
+  String get documentChooseBookmarkTitle => 'Wybierz zakładkę';
+
+  @override
+  String get documentDeleteBookmarkAction => 'Usuń zakładkę';
+
+  @override
+  String get documentKeepBookmarkTitle => 'Którą zakładkę chcesz zachować?';
+
+  @override
+  String get documentKeepBookmarkMessage =>
+      'Wiele zakładek jest wyłączone. Wybierz zakładkę do zachowania: pozostałe zostaną usunięte.';
+
+  @override
+  String documentBookmarkChoiceLabel(int order, int paragraph) {
+    return 'Zakładka $order, akapit $paragraph';
+  }
+
+  @override
+  String documentBookmarkChoiceLabelWithPreview(
+      int order, int paragraph, String preview) {
+    return 'Zakładka $order, akapit $paragraph. $preview';
   }
 }

@@ -61,6 +61,12 @@ class AppSettingsService {
   static const _radioGenreKey = 'sonarpad_radio_genre';
   static const _includeEpubFootnotesInTextKey =
       'sonarpad_include_epub_footnotes_in_text';
+  static const _multipleDocumentBookmarksKey =
+      'sonarpad_multiple_document_bookmarks';
+  static const _documentSliderStepPercentKey =
+      'sonarpad_document_slider_step_percent';
+
+  static const documentSliderStepPercentOptions = <int>[2, 5, 10, 15, 20, 30];
 
   static const ttsLanguages = [
     TtsVoiceLanguage('it', 'Italiano'),
@@ -668,6 +674,45 @@ class AppSettingsService {
     await prefs.setInt(_seekSliderStepKey, value);
   }
 
+
+  Future<bool> multipleDocumentBookmarksEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_multipleDocumentBookmarksKey) ?? false;
+  }
+
+  Future<void> setMultipleDocumentBookmarksEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_multipleDocumentBookmarksKey, value);
+  }
+
+  int _normalizeDocumentSliderStepPercent(int value) {
+    if (documentSliderStepPercentOptions.contains(value)) return value;
+    var best = documentSliderStepPercentOptions.first;
+    var bestDistance = (value - best).abs();
+    for (final option in documentSliderStepPercentOptions.skip(1)) {
+      final distance = (value - option).abs();
+      if (distance < bestDistance) {
+        best = option;
+        bestDistance = distance;
+      }
+    }
+    return best;
+  }
+
+  Future<int> loadDocumentSliderStepPercent() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getInt(_documentSliderStepPercentKey) ?? 15;
+    return _normalizeDocumentSliderStepPercent(value);
+  }
+
+  Future<void> saveDocumentSliderStepPercent(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+      _documentSliderStepPercentKey,
+      _normalizeDocumentSliderStepPercent(value),
+    );
+  }
+
   // --- Media Volume ---
 
   static const _mediaVolumeKey = 'sonarpad_media_volume';
@@ -685,6 +730,8 @@ class AppSettingsService {
   // --- Video ---
 
   static const _videoEnabledKey = 'sonarpad_video_enabled';
+  static const _displayVideoInPortraitKey =
+      'sonarpad_display_video_in_portrait';
 
   Future<bool> isVideoEnabled() async {
     final prefs = await SharedPreferences.getInstance();
@@ -694,6 +741,16 @@ class AppSettingsService {
   Future<void> setVideoEnabled(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_videoEnabledKey, value);
+  }
+
+  Future<bool> displayVideoInPortrait() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_displayVideoInPortraitKey) ?? false;
+  }
+
+  Future<void> setDisplayVideoInPortrait(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_displayVideoInPortraitKey, value);
   }
   // --- Grouping Home ---
 

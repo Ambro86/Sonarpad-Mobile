@@ -606,30 +606,6 @@ abstract class AppLocalizations {
   /// **'Sposta alla posizione'**
   String get moveToPosition;
 
-  /// Button that sorts the subscribed podcasts alphabetically.
-  ///
-  /// In it, this message translates to:
-  /// **'Ordina podcast alfabeticamente'**
-  String get sortPodcastsAlphabetically;
-
-  /// Button that sorts radio favorites alphabetically.
-  ///
-  /// In it, this message translates to:
-  /// **'Ordina preferite alfabeticamente'**
-  String get sortRadioFavoritesAlphabetically;
-
-  /// Status message shown after podcasts have been sorted alphabetically.
-  ///
-  /// In it, this message translates to:
-  /// **'Podcast ordinati alfabeticamente.'**
-  String get podcastsSortedAlphabetically;
-
-  /// Status message shown after radio favorites have been sorted alphabetically.
-  ///
-  /// In it, this message translates to:
-  /// **'Radio preferite ordinate alfabeticamente.'**
-  String get radioFavoritesSortedAlphabetically;
-
   /// Localized text for positionLabel.
   ///
   /// In it, this message translates to:
@@ -1674,18 +1650,11 @@ abstract class AppLocalizations {
   /// **'Cerca nel documento'**
   String get searchInDocument;
 
-
   /// Localized text for documentIndex.
   ///
   /// In it, this message translates to:
   /// **'Indice'**
   String get documentIndex;
-
-  /// Localized text for documentFootnoteLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Nota a piè di pagina'**
-  String get documentFootnoteLabel;
 
   /// Localized text for documentSearchFieldLabel.
   ///
@@ -1873,17 +1842,17 @@ abstract class AppLocalizations {
   /// **'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'**
   String get settingsAutoBookmarkHint;
 
-  /// Localized text for settingsIncludeFootnotesInText.
+  /// Localized text for settingsDocumentSliderStep.
   ///
   /// In it, this message translates to:
-  /// **'Includi le note a piè di pagina nel testo'**
-  String get settingsIncludeFootnotesInText;
+  /// **'Intervallo slider documenti'**
+  String get settingsDocumentSliderStep;
 
-  /// Localized text for settingsIncludeFootnotesInTextHint.
+  /// Localized text for settingsDocumentSliderStepHint.
   ///
   /// In it, this message translates to:
-  /// **'Per gli EPUB supportati, mostra il testo della nota subito dopo il paragrafo che la richiama.'**
-  String get settingsIncludeFootnotesInTextHint;
+  /// **'Regola di quanto avanza o arretra il cursore della posizione documento con il flick verso l’alto o verso il basso.'**
+  String get settingsDocumentSliderStepHint;
 
   /// Localized text for settingsSeekStep.
   ///
@@ -4219,6 +4188,103 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Dettagli navigazione da {from} a {to} - {date}'**
   String routeNavigationFromTo(Object from, Object to, Object date);
+
+  /// Button that sorts the subscribed podcasts alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina podcast alfabeticamente'**
+  String get sortPodcastsAlphabetically;
+
+  /// Button that sorts radio favorites alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina preferite alfabeticamente'**
+  String get sortRadioFavoritesAlphabetically;
+
+  /// Status message shown after podcasts have been sorted alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Podcast ordinati alfabeticamente.'**
+  String get podcastsSortedAlphabetically;
+
+  /// Status message shown after radio favorites have been sorted alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Radio preferite ordinate alfabeticamente.'**
+  String get radioFavoritesSortedAlphabetically;
+
+  /// Localized text for settingsIncludeFootnotesInText.
+  ///
+  /// In it, this message translates to:
+  /// **'Includi le note a piè di pagina nel testo'**
+  String get settingsIncludeFootnotesInText;
+
+  /// Localized text for settingsIncludeFootnotesInTextHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Per gli EPUB supportati, mostra il testo della nota subito dopo il paragrafo che la richiama.'**
+  String get settingsIncludeFootnotesInTextHint;
+
+  /// Localized text for documentFootnoteLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Nota a piè di pagina'**
+  String get documentFootnoteLabel;
+
+  /// Title for the setting that enables multiple bookmarks in documents.
+  ///
+  /// In it, this message translates to:
+  /// **'Permetti segnalibri multipli nei documenti'**
+  String get settingsMultipleDocumentBookmarks;
+
+  /// Description for the setting that enables multiple bookmarks in documents.
+  ///
+  /// In it, this message translates to:
+  /// **'Se disattivato, resta un solo segnalibro per documento. Se attivato, puoi salvare più segnalibri nello stesso documento.'**
+  String get settingsMultipleDocumentBookmarksHint;
+
+  /// Accessibility action and menu entry to open document bookmarks.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai al segnalibro'**
+  String get documentGoToBookmarkAction;
+
+  /// Dialog title for choosing a document bookmark.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli segnalibro'**
+  String get documentChooseBookmarkTitle;
+
+  /// Action label to delete a document bookmark.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina segnalibro'**
+  String get documentDeleteBookmarkAction;
+
+  /// Dialog title asking which bookmark to keep when multiple bookmarks are disabled.
+  ///
+  /// In it, this message translates to:
+  /// **'Quale segnalibro vuoi mantenere?'**
+  String get documentKeepBookmarkTitle;
+
+  /// Dialog message asking which bookmark to keep when multiple bookmarks are disabled.
+  ///
+  /// In it, this message translates to:
+  /// **'I segnalibri multipli sono disattivati. Scegli un segnalibro da mantenere: gli altri verranno eliminati.'**
+  String get documentKeepBookmarkMessage;
+
+  /// Label for a bookmark in the bookmark chooser.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalibro {order}, paragrafo {paragraph}'**
+  String documentBookmarkChoiceLabel(int order, int paragraph);
+
+  /// Label for a bookmark in the bookmark chooser, including a short text preview.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalibro {order}, paragrafo {paragraph}. {preview}'**
+  String documentBookmarkChoiceLabelWithPreview(
+      int order, int paragraph, String preview);
 }
 
 class _AppLocalizationsDelegate

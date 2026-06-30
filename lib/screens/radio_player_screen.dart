@@ -55,6 +55,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   mk.Player? _mediaKitPlayer;
   mkv.VideoController? _mediaKitController;
   bool _isVideoEnabled = false;
+  bool _displayVideoInPortrait = false;
   bool _isFavorite = false;
   bool _mediaKitPlaying = false;
   bool _mediaKitVideoSettingApplied = false;
@@ -96,6 +97,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
+      _displayVideoInPortrait = await _settings.displayVideoInPortrait();
       _isFavorite = await _loadIsFavorite();
       _isRecordingFeatureUnlocked = await _loadRecordingFeatureAccess();
       if (widget.tvChannel == null) {
@@ -835,6 +837,59 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
   }
 
+  static const double _portraitVideoAspectRatio = 9 / 16;
+
+  Widget _buildVideoPlayerSurface(VideoPlayerController controller) {
+    final aspect = controller.value.aspectRatio > 0
+        ? controller.value.aspectRatio
+        : 16 / 9;
+    if (!_displayVideoInPortrait) {
+      return AspectRatio(
+        aspectRatio: aspect,
+        child: VideoPlayer(controller),
+      );
+    }
+    return AspectRatio(
+      aspectRatio: _portraitVideoAspectRatio,
+      child: ClipRect(
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: aspect >= 1 ? aspect : 1,
+            height: aspect >= 1 ? 1 : 1 / aspect,
+            child: VideoPlayer(controller),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMediaKitVideoSurface() {
+    final video = mkv.Video(
+      controller: _mediaKitController!,
+      controls: mkv.AdaptiveVideoControls,
+    );
+    if (!_displayVideoInPortrait) {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: video,
+      );
+    }
+    return AspectRatio(
+      aspectRatio: _portraitVideoAspectRatio,
+      child: ClipRect(
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: 16,
+            height: 9,
+            child: video,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLogger.log(
@@ -889,20 +944,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           if (_videoController != null &&
               _videoController!.value.isInitialized) ...[
             const SizedBox(height: 24),
-            AspectRatio(
-              aspectRatio: _videoController!.value.aspectRatio,
-              child: VideoPlayer(_videoController!),
-            ),
+            _buildVideoPlayerSurface(_videoController!),
           ],
           if (_mediaKitController != null && _isVideoEnabled) ...[
             const SizedBox(height: 24),
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: mkv.Video(
-                controller: _mediaKitController!,
-                controls: mkv.AdaptiveVideoControls,
-              ),
-            ),
+            _buildMediaKitVideoSurface(),
           ],
           const SizedBox(height: 24),
           Wrap(

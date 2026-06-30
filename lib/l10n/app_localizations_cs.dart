@@ -274,18 +274,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get moveToPosition => 'Přesunout na pozici';
 
   @override
-  String get sortPodcastsAlphabetically => 'Seřadit podcasty abecedně';
-
-  @override
-  String get sortRadioFavoritesAlphabetically => 'Seřadit oblíbené abecedně';
-
-  @override
-  String get podcastsSortedAlphabetically => 'Podcasty seřazeny abecedně.';
-
-  @override
-  String get radioFavoritesSortedAlphabetically => 'Oblíbené stanice seřazeny abecedně.';
-
-  @override
   String positionLabel(int position, String targetName) {
     return 'Pozice $position: před $targetName';
   }
@@ -897,9 +885,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get documentIndex => 'Obsah';
 
   @override
-  String get documentFootnoteLabel => 'Poznámka pod čarou';
-
-  @override
   String get documentSearchFieldLabel => 'Hledat text';
 
   @override
@@ -1003,11 +988,11 @@ class AppLocalizationsCs extends AppLocalizations {
       'Pokračovat v dokumentech, podcastech, RaiPlay a audiopopisech tam, kde jste skončili.';
 
   @override
-  String get settingsIncludeFootnotesInText => 'Zahrnout poznámky pod čarou do textu';
+  String get settingsDocumentSliderStep => 'Krok posuvníku dokumentu';
 
   @override
-  String get settingsIncludeFootnotesInTextHint =>
-      'U podporovaných knih EPUB zobrazí poznámku hned za odstavcem, který na ni odkazuje.';
+  String get settingsDocumentSliderStepHint =>
+      'Určuje, o kolik se posune posuvník pozice dokumentu při přejetí nahoru nebo dolů.';
 
   @override
   String get settingsSeekStep => 'Krok zpět / vpřed pro média';
@@ -2194,13 +2179,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get podcastSelectDate => 'Vybrat datum';
 
   @override
-  String get podcastNoDatesAvailable => 'Pro tyto epizody nejsou k dispozici žádná data.';
+  String get podcastNoDatesAvailable =>
+      'Pro tyto epizody nejsou k dispozici žádná data.';
 
   @override
   String get podcastChapters => 'Kapitoly';
 
   @override
-  String get podcastChaptersUnavailable => 'Pro tuto epizodu nejsou dostupné žádné kapitoly.';
+  String get podcastChaptersUnavailable =>
+      'Pro tuto epizodu nejsou dostupné žádné kapitoly.';
 
   @override
   String get podcastUnplayed => 'Nepřehrané epizody';
@@ -2261,5 +2248,64 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String routeNavigationFromTo(Object from, Object to, Object date) {
     return 'Podrobnosti navigace z $from do $to - $date';
+  }
+
+  @override
+  String get sortPodcastsAlphabetically => 'Seřadit podcasty abecedně';
+
+  @override
+  String get sortRadioFavoritesAlphabetically => 'Seřadit oblíbené abecedně';
+
+  @override
+  String get podcastsSortedAlphabetically => 'Podcasty seřazeny abecedně.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically =>
+      'Oblíbené stanice seřazeny abecedně.';
+
+  @override
+  String get settingsIncludeFootnotesInText =>
+      'Zahrnout poznámky pod čarou do textu';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'U podporovaných knih EPUB zobrazí poznámku hned za odstavcem, který na ni odkazuje.';
+
+  @override
+  String get documentFootnoteLabel => 'Poznámka pod čarou';
+
+  @override
+  String get settingsMultipleDocumentBookmarks =>
+      'Povolit více záložek v dokumentech';
+
+  @override
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Pokud je vypnuto, každý dokument má jen jednu záložku. Pokud je zapnuto, můžete uložit více záložek ve stejném dokumentu.';
+
+  @override
+  String get documentGoToBookmarkAction => 'Přejít na záložku';
+
+  @override
+  String get documentChooseBookmarkTitle => 'Vyberte záložku';
+
+  @override
+  String get documentDeleteBookmarkAction => 'Smazat záložku';
+
+  @override
+  String get documentKeepBookmarkTitle => 'Kterou záložku chcete ponechat?';
+
+  @override
+  String get documentKeepBookmarkMessage =>
+      'Více záložek je vypnuto. Vyberte záložku, kterou chcete ponechat: ostatní budou odstraněny.';
+
+  @override
+  String documentBookmarkChoiceLabel(int order, int paragraph) {
+    return 'Záložka $order, odstavec $paragraph';
+  }
+
+  @override
+  String documentBookmarkChoiceLabelWithPreview(
+      int order, int paragraph, String preview) {
+    return 'Záložka $order, odstavec $paragraph. $preview';
   }
 }

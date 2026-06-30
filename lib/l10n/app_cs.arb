@@ -321,6 +321,14 @@
   "settingsSystemVoice": "Systémový hlas",
   "settingsAutoBookmark": "Automatická záložka",
   "settingsAutoBookmarkHint": "Pokračovat v dokumentech, podcastech, RaiPlay a audiopopisech tam, kde jste skončili.",
+  "settingsDocumentSliderStep": "Krok posuvníku dokumentu",
+  "@settingsDocumentSliderStep": {
+    "description": "Localized text for settingsDocumentSliderStep."
+  },
+  "settingsDocumentSliderStepHint": "Určuje, o kolik se posune posuvník pozice dokumentu při přejetí nahoru nebo dolů.",
+  "@settingsDocumentSliderStepHint": {
+    "description": "Localized text for settingsDocumentSliderStepHint."
+  },
   "settingsSeekStep": "Krok zpět / vpřed pro média",
   "aiChatIntro": "Jsem Sonarpad AI. Jak vám mohu pomoci?",
   "cinemaOverviewLabel": "Obsah:",
@@ -862,5 +870,60 @@
   "documentFootnoteLabel": "Poznámka pod čarou",
   "@documentFootnoteLabel": {
     "description": "Localized text for documentFootnoteLabel."
+  },
+  "settingsMultipleDocumentBookmarks": "Povolit více záložek v dokumentech",
+  "@settingsMultipleDocumentBookmarks": {
+    "description": "Title for the setting that enables multiple bookmarks in documents."
+  },
+  "settingsMultipleDocumentBookmarksHint": "Pokud je vypnuto, každý dokument má jen jednu záložku. Pokud je zapnuto, můžete uložit více záložek ve stejném dokumentu.",
+  "@settingsMultipleDocumentBookmarksHint": {
+    "description": "Description for the setting that enables multiple bookmarks in documents."
+  },
+  "documentGoToBookmarkAction": "Přejít na záložku",
+  "@documentGoToBookmarkAction": {
+    "description": "Accessibility action and menu entry to open document bookmarks."
+  },
+  "documentChooseBookmarkTitle": "Vyberte záložku",
+  "@documentChooseBookmarkTitle": {
+    "description": "Dialog title for choosing a document bookmark."
+  },
+  "documentDeleteBookmarkAction": "Smazat záložku",
+  "@documentDeleteBookmarkAction": {
+    "description": "Action label to delete a document bookmark."
+  },
+  "documentKeepBookmarkTitle": "Kterou záložku chcete ponechat?",
+  "@documentKeepBookmarkTitle": {
+    "description": "Dialog title asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentKeepBookmarkMessage": "Více záložek je vypnuto. Vyberte záložku, kterou chcete ponechat: ostatní budou odstraněny.",
+  "@documentKeepBookmarkMessage": {
+    "description": "Dialog message asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentBookmarkChoiceLabel": "Záložka {order}, odstavec {paragraph}",
+  "@documentBookmarkChoiceLabel": {
+    "description": "Label for a bookmark in the bookmark chooser.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      }
+    }
+  },
+  "documentBookmarkChoiceLabelWithPreview": "Záložka {order}, odstavec {paragraph}. {preview}",
+  "@documentBookmarkChoiceLabelWithPreview": {
+    "description": "Label for a bookmark in the bookmark chooser, including a short text preview.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      },
+      "preview": {
+        "type": "String"
+      }
+    }
   }
 }

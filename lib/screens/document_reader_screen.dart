@@ -63,6 +63,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // (chunkKeys rimosso, usiamo scroll_to_index)
   late int _bookmarkIndex;
   late bool _hasBookmark;
+  List<int> _bookmarkIndexes = const <int>[];
+  bool _multipleDocumentBookmarksEnabled = false;
+  int _documentSliderStepPercent = 15;
 
   bool _ttsPaused = false;
   String? _activeTtsEngine;
@@ -83,6 +86,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _currentDoc = widget.document;
     _bookmarkIndex = _currentDoc.bookmarkIndex;
     _hasBookmark = _currentDoc.bookmarkIndex > 0;
+    _bookmarkIndexes = _normalizeBookmarkIndexes(
+      _currentDoc.bookmarkIndexes,
+      fallbackIndex: _currentDoc.bookmarkIndex,
+    );
     _playingSub = _audio.playingStream.listen((playing) {
       if (_speaking && _activeTtsEngine != 'system' && mounted) {
         setState(() => _ttsPaused = !playing);
@@ -125,6 +132,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final ext = _currentDoc.extension.toLowerCase();
     String? originalPath;
     var usesEditedText = false;
+    final multipleDocumentBookmarks =
+        await _settings.multipleDocumentBookmarksEnabled();
+    final documentSliderStepPercent =
+        await _settings.loadDocumentSliderStepPercent();
     try {
       final editedPath =
           await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
@@ -154,6 +165,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           _documentText,
           maxChunkChars: _maxChunkChars,
         );
+        _multipleDocumentBookmarksEnabled = multipleDocumentBookmarks;
+        _documentSliderStepPercent = documentSliderStepPercent;
+        _refreshBookmarkStateForCurrentMode();
         // Le chiavi vengono gestite da AutoScrollTag
       }
 
@@ -172,11 +186,21 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } finally {
       if (mounted) {
         setState(() => _loadingText = false);
-        if (_bookmarkIndex > 0 && _bookmarkIndex < _chunks.length) {
+        final shouldScrollToBookmark = _multipleDocumentBookmarksEnabled
+            ? _bookmarkIndexes.isNotEmpty
+            : _bookmarkIndex > 0;
+        if (shouldScrollToBookmark &&
+            _bookmarkIndex >= 0 &&
+            _bookmarkIndex < _chunks.length) {
           Future.delayed(const Duration(milliseconds: 300), () {
             if (mounted) _scrollToChunk(_bookmarkIndex);
           });
         }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            unawaited(_resolveDisabledMultipleBookmarksIfNeeded());
+          }
+        });
       }
     }
   }
@@ -192,6 +216,195 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       preferPosition: AutoScrollPosition.begin,
       duration: const Duration(milliseconds: 350),
     );
+  }
+
+  List<int> _normalizeBookmarkIndexes(
+    List<int> indexes, {
+    int? fallbackIndex,
+  }) {
+    final normalized = <int>[];
+    void addIndex(int value) {
+      if (value < 0) return;
+      if (_chunks.isNotEmpty && value >= _chunks.length) return;
+      if (!normalized.contains(value)) normalized.add(value);
+    }
+
+    for (final index in indexes) {
+      addIndex(index);
+    }
+    if (normalized.isEmpty && fallbackIndex != null) {
+      addIndex(fallbackIndex);
+    }
+    return List<int>.unmodifiable(normalized);
+  }
+
+  void _refreshBookmarkStateForCurrentMode() {
+    final normalized = _normalizeBookmarkIndexes(
+      _currentDoc.bookmarkIndexes,
+      fallbackIndex: _multipleDocumentBookmarksEnabled
+          ? _currentDoc.bookmarkIndex
+          : null,
+    );
+    _bookmarkIndexes = normalized;
+
+    if (_multipleDocumentBookmarksEnabled && normalized.isNotEmpty) {
+      _bookmarkIndex = normalized.last;
+      _hasBookmark = true;
+      return;
+    }
+
+    _bookmarkIndex = _currentDoc.bookmarkIndex;
+    _hasBookmark = _currentDoc.bookmarkIndex > 0;
+  }
+
+  String get _goToBookmarkActionLabel =>
+      AppLocalizations.of(context).documentGoToBookmarkAction;
+
+  String get _bookmarkDialogTitle =>
+      AppLocalizations.of(context).documentChooseBookmarkTitle;
+
+  String get _deleteBookmarkActionLabel =>
+      AppLocalizations.of(context).documentDeleteBookmarkAction;
+
+  String get _keepBookmarkDialogTitle =>
+      AppLocalizations.of(context).documentKeepBookmarkTitle;
+
+  String get _keepBookmarkDialogMessage =>
+      AppLocalizations.of(context).documentKeepBookmarkMessage;
+
+  String _bookmarkChoiceLabel(int index, int order) {
+    final paragraph = index + 1;
+    final raw = (index >= 0 && index < _chunks.length) ? _chunks[index] : '';
+    final preview = raw.replaceAll(RegExp(r'\s+'), ' ').trim();
+    final shortPreview = preview.length > 80 ? '${preview.substring(0, 80)}…' : preview;
+    final l10n = AppLocalizations.of(context);
+    if (shortPreview.isEmpty) {
+      return l10n.documentBookmarkChoiceLabel(order, paragraph);
+    }
+    return l10n.documentBookmarkChoiceLabelWithPreview(
+      order,
+      paragraph,
+      shortPreview,
+    );
+  }
+
+  Future<void> _openBookmarkPicker() async {
+    var bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
+    if (bookmarks.isEmpty || !mounted) return;
+
+    final selected = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, dialogSetState) {
+          return AlertDialog(
+            title: Text(_bookmarkDialogTitle),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: bookmarks.length,
+                itemBuilder: (context, index) {
+                  final bookmarkIndex = bookmarks[index];
+                  return Semantics(
+                    customSemanticsActions: {
+                      CustomSemanticsAction(label: _deleteBookmarkActionLabel):
+                          () async {
+                        await _deleteMultipleBookmark(bookmarkIndex);
+                        bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
+                        if (!dialogContext.mounted) return;
+                        if (bookmarks.isEmpty) {
+                          Navigator.pop(dialogContext);
+                          return;
+                        }
+                        dialogSetState(() {});
+                      },
+                    },
+                    child: ListTile(
+                      leading: const Icon(Icons.bookmark),
+                      title: Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
+                      onTap: () => Navigator.pop(dialogContext, bookmarkIndex),
+                      trailing: IconButton(
+                        tooltip: _deleteBookmarkActionLabel,
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () async {
+                          await _deleteMultipleBookmark(bookmarkIndex);
+                          bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
+                          if (!dialogContext.mounted) return;
+                          if (bookmarks.isEmpty) {
+                            Navigator.pop(dialogContext);
+                            return;
+                          }
+                          dialogSetState(() {});
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(AppLocalizations.of(context).cancel),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    if (selected == null || !mounted) return;
+    _openChunkAt(selected);
+  }
+
+  Future<void> _resolveDisabledMultipleBookmarksIfNeeded() async {
+    if (_multipleDocumentBookmarksEnabled || _chunks.isEmpty) return;
+    final existing = _normalizeBookmarkIndexes(_currentDoc.bookmarkIndexes);
+    if (existing.isEmpty) return;
+
+    if (existing.length == 1) {
+      await _saveSingleBookmark(existing.single, showSnack: false, clearMultiple: true);
+      return;
+    }
+
+    final selected = await showDialog<int>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(_keepBookmarkDialogTitle),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(_keepBookmarkDialogMessage),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 320,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: existing.length,
+                  itemBuilder: (context, index) {
+                    final bookmarkIndex = existing[index];
+                    return ListTile(
+                      leading: const Icon(Icons.bookmark),
+                      title: Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
+                      onTap: () => Navigator.pop(dialogContext, bookmarkIndex),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (selected == null || !mounted) return;
+    await _saveSingleBookmark(selected, showSnack: false, clearMultiple: true);
+    if (!mounted) return;
+    _openChunkAt(selected);
   }
 
   Future<void> _openDocumentSearch() async {
@@ -660,7 +873,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (!await _settings.isAutoBookmarkEnabled()) {
       return;
     }
-    await _saveBookmark(_playingChunkIndex, showSnack: false);
+    await _saveAutomaticBookmark(_playingChunkIndex);
   }
 
   // ---------------------------------------------------------------------------
@@ -735,8 +948,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         extension: _currentDoc.extension,
         addedAt: _currentDoc.addedAt,
         bookmarkIndex: _bookmarkIndex,
+        bookmarkIndexes: _bookmarkIndexes,
         editedTextPath: editedPath,
         isTemporary: _currentDoc.isTemporary,
+        isFolder: _currentDoc.isFolder,
+        parentId: _currentDoc.parentId,
       );
 
       setState(() {
@@ -825,7 +1041,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   void _seekDocumentByPercent(double delta) {
-    _seekDocumentToPercent(_documentProgressPercent + delta);
+    final currentPercent = _documentProgressPercent;
+    final targetPercent = (currentPercent + delta).clamp(0.0, 100.0);
+    if (targetPercent == currentPercent) return;
+    _seekDocumentToPercent(targetPercent);
   }
 
   double get _documentProgressPercent {
@@ -887,8 +1106,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   extension: doc.extension,
                   addedAt: doc.addedAt,
                   bookmarkIndex: doc.bookmarkIndex,
+                  bookmarkIndexes: doc.bookmarkIndexes,
                   editedTextPath: doc.editedTextPath,
                   isTemporary: false,
+                  isFolder: doc.isFolder,
+                  parentId: doc.parentId,
                 );
                 final lib = DocumentLibraryService();
                 await lib.load();
@@ -940,8 +1162,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                             value: _documentProgressPercent,
                             label: l10n.documentPosition,
                             onChanged: _seekDocumentToPercent,
-                            onIncrease: () => _seekDocumentByPercent(10),
-                            onDecrease: () => _seekDocumentByPercent(-10),
+                            stepPercent: _documentSliderStepPercent,
+                            onIncrease: () =>
+                                _seekDocumentByPercent(_documentSliderStepPercent.toDouble()),
+                            onDecrease: () =>
+                                _seekDocumentByPercent(-_documentSliderStepPercent.toDouble()),
                           ),
                         ],
                       ],
@@ -1069,20 +1294,34 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final widgets = <Widget>[];
     for (var i = 0; i < _chunks.length; i++) {
       final isPlaying = i == _playingChunkIndex;
-      final isBookmarked = _hasBookmark && i == _bookmarkIndex;
+      final isBookmarked = _multipleDocumentBookmarksEnabled
+          ? _bookmarkIndexes.contains(i)
+          : (_hasBookmark && i == _bookmarkIndex);
 
       // Durante la lettura TTS il tap è disabilitato per non interferire.
       final canEdit = !_speaking;
 
       String hintText = canEdit ? l10n.documentEditParagraphActionHint : '';
-      if (_hasBookmark) {
+      if (_multipleDocumentBookmarksEnabled) {
+        hintText += l10n.documentBookmarkHintSet;
+        if (_bookmarkIndexes.isNotEmpty) {
+          hintText += ' $_goToBookmarkActionLabel.';
+        }
+      } else if (_hasBookmark) {
         hintText += l10n.documentBookmarkHintReplace;
       } else {
         hintText += l10n.documentBookmarkHintSet;
       }
 
       final Map<CustomSemanticsAction, VoidCallback> actions = {};
-      if (_hasBookmark) {
+      if (_multipleDocumentBookmarksEnabled) {
+        actions[CustomSemanticsAction(label: l10n.documentSetBookmarkAction)] =
+            () => _setBookmark(i);
+        if (_bookmarkIndexes.isNotEmpty) {
+          actions[CustomSemanticsAction(label: _goToBookmarkActionLabel)] =
+              () => unawaited(_openBookmarkPicker());
+        }
+      } else if (_hasBookmark) {
         actions[CustomSemanticsAction(
             label: l10n.documentReplaceBookmarkAction)] = () => _setBookmark(i);
       } else {
@@ -1156,16 +1395,46 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _setBookmark(int index) async {
-    await _saveBookmark(index, showSnack: false);
+    if (_multipleDocumentBookmarksEnabled) {
+      await _addMultipleBookmark(index, showSnack: false);
+    } else {
+      await _saveSingleBookmark(index, showSnack: false);
+    }
     if (mounted) {
-            showStatusMessage(context, AppLocalizations.of(context).bookmarkSet(index + 1));
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).bookmarkSet(index + 1),
+      );
     }
   }
 
-  Future<void> _saveBookmark(int index, {required bool showSnack}) async {
+  Future<void> _saveAutomaticBookmark(int index) async {
+    await _saveSingleBookmark(
+      index,
+      showSnack: false,
+      clearMultiple: false,
+      preserveMultipleState: true,
+    );
+  }
+
+  Future<void> _saveSingleBookmark(
+    int index, {
+    required bool showSnack,
+    bool clearMultiple = false,
+    bool preserveMultipleState = false,
+  }) async {
+    final nextBookmarkIndexes = clearMultiple
+        ? const <int>[]
+        : (preserveMultipleState
+            ? _bookmarkIndexes
+            : (_multipleDocumentBookmarksEnabled
+                ? _bookmarkIndexes
+                : const <int>[]));
+
     setState(() {
       _bookmarkIndex = index;
       _hasBookmark = true;
+      _bookmarkIndexes = List<int>.unmodifiable(nextBookmarkIndexes);
     });
 
     final newDoc = DocumentItem(
@@ -1175,8 +1444,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       extension: _currentDoc.extension,
       addedAt: _currentDoc.addedAt,
       bookmarkIndex: index,
+      bookmarkIndexes: List<int>.unmodifiable(nextBookmarkIndexes),
       editedTextPath: _currentDoc.editedTextPath,
       isTemporary: _currentDoc.isTemporary,
+      isFolder: _currentDoc.isFolder,
+      parentId: _currentDoc.parentId,
     );
 
     setState(() {
@@ -1190,7 +1462,94 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
 
     if (showSnack && mounted) {
-            showStatusMessage(context, AppLocalizations.of(context).bookmarkSet(index + 1));
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).bookmarkSet(index + 1),
+      );
+    }
+  }
+
+  Future<void> _deleteMultipleBookmark(int index) async {
+    final nextBookmarks = List<int>.from(_bookmarkIndexes)..remove(index);
+    final normalized = _normalizeBookmarkIndexes(nextBookmarks);
+    final nextIndex = normalized.isNotEmpty ? normalized.last : 0;
+
+    setState(() {
+      _bookmarkIndexes = normalized;
+      _bookmarkIndex = nextIndex;
+      _hasBookmark = normalized.isNotEmpty;
+    });
+
+    final newDoc = DocumentItem(
+      id: _currentDoc.id,
+      name: _currentDoc.name,
+      path: _currentDoc.path,
+      extension: _currentDoc.extension,
+      addedAt: _currentDoc.addedAt,
+      bookmarkIndex: nextIndex,
+      bookmarkIndexes: normalized,
+      editedTextPath: _currentDoc.editedTextPath,
+      isTemporary: _currentDoc.isTemporary,
+      isFolder: _currentDoc.isFolder,
+      parentId: _currentDoc.parentId,
+    );
+
+    setState(() {
+      _currentDoc = newDoc;
+    });
+
+    if (!_currentDoc.isTemporary) {
+      final lib = DocumentLibraryService();
+      await lib.load();
+      await lib.update(newDoc);
+    }
+
+    if (mounted) {
+      showStatusMessage(context, _deleteBookmarkActionLabel);
+    }
+  }
+
+  Future<void> _addMultipleBookmark(int index, {required bool showSnack}) async {
+    final nextBookmarks = List<int>.from(_bookmarkIndexes);
+    nextBookmarks.remove(index);
+    nextBookmarks.add(index);
+    final normalized = _normalizeBookmarkIndexes(nextBookmarks);
+
+    setState(() {
+      _bookmarkIndex = index;
+      _hasBookmark = true;
+      _bookmarkIndexes = normalized;
+    });
+
+    final newDoc = DocumentItem(
+      id: _currentDoc.id,
+      name: _currentDoc.name,
+      path: _currentDoc.path,
+      extension: _currentDoc.extension,
+      addedAt: _currentDoc.addedAt,
+      bookmarkIndex: index,
+      bookmarkIndexes: normalized,
+      editedTextPath: _currentDoc.editedTextPath,
+      isTemporary: _currentDoc.isTemporary,
+      isFolder: _currentDoc.isFolder,
+      parentId: _currentDoc.parentId,
+    );
+
+    setState(() {
+      _currentDoc = newDoc;
+    });
+
+    if (!_currentDoc.isTemporary) {
+      final lib = DocumentLibraryService();
+      await lib.load();
+      await lib.update(newDoc);
+    }
+
+    if (showSnack && mounted) {
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).bookmarkSet(index + 1),
+      );
     }
   }
 }
@@ -1467,6 +1826,7 @@ class _DocumentPositionSlider extends StatelessWidget {
     required this.value,
     required this.label,
     required this.onChanged,
+    required this.stepPercent,
     required this.onIncrease,
     required this.onDecrease,
   });
@@ -1474,14 +1834,16 @@ class _DocumentPositionSlider extends StatelessWidget {
   final double value;
   final String label;
   final ValueChanged<double> onChanged;
+  final int stepPercent;
   final VoidCallback onIncrease;
   final VoidCallback onDecrease;
 
   @override
   Widget build(BuildContext context) {
     final percent = value.round().clamp(0, 100);
-    final increased = (percent + 10).clamp(0, 100);
-    final decreased = (percent - 10).clamp(0, 100);
+    final step = stepPercent.clamp(1, 100);
+    final increased = (percent + step).clamp(0, 100);
+    final decreased = (percent - step).clamp(0, 100);
 
     return Semantics(
       slider: true,
@@ -1496,7 +1858,7 @@ class _DocumentPositionSlider extends StatelessWidget {
           value: value.clamp(0.0, 100.0).toDouble(),
           min: 0,
           max: 100,
-          divisions: 10,
+          divisions: 100,
           onChanged: onChanged,
         ),
       ),
