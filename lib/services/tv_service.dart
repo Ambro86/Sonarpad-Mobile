@@ -16,6 +16,7 @@ class TvChannel {
   final String? resolverChannelId;
   final String tvgId;
   final String tvgName;
+  final String httpUserAgent;
 
   TvChannel({
     required this.name,
@@ -27,7 +28,15 @@ class TvChannel {
     this.resolverChannelId,
     this.tvgId = '',
     this.tvgName = '',
+    this.httpUserAgent = '',
   });
+
+  Map<String, String> get playbackHeaders => httpUserAgent.trim().isEmpty
+      ? const {}
+      : {'User-Agent': httpUserAgent.trim()};
+
+  String get playbackUserAgent =>
+      httpUserAgent.trim().isEmpty ? 'Sonarpad TV/1.0' : httpUserAgent.trim();
 
   Map<String, dynamic> toJson() => {
         'name': name,
@@ -39,6 +48,7 @@ class TvChannel {
         'resolver_channel_id': resolverChannelId,
         'tvg_id': tvgId,
         'tvg_name': tvgName,
+        'http_user_agent': httpUserAgent,
       };
 
   factory TvChannel.fromJson(Map<String, dynamic> json) => TvChannel(
@@ -51,9 +61,9 @@ class TvChannel {
         resolverChannelId: json['resolver_channel_id'] as String?,
         tvgId: json['tvg_id']?.toString() ?? '',
         tvgName: json['tvg_name']?.toString() ?? '',
+        httpUserAgent: json['http_user_agent']?.toString() ?? '',
       );
 }
-
 
 class RaiAudioDescriptionStreams {
   final String videoUrl;
@@ -93,8 +103,6 @@ class TvService {
       r'''{"payload_b64":"csAxIXZQMnhMMiawFTr6bjtEskCkzkNJJ+Zweyc6I0xoq5wAQq2me+nsGOl55vyuggHwBZyk/4KnTrP2iV7rNEEN7i90j4pqQXbXPAgPICMLN0By","algorithm":"gzip-xor-base64-v1"}''';
   static const _oggiInTvTimelineUrlPayloadJson =
       r'''{"payload_b64":"csAxIXZQMnhMMuhZfR1S+OWXPRn4oJR5K4nkpYbgWGup/jgB+m6jPWForBe9oLtOwaBOreEeoqetOYbKLTxeLIC4fDkh4S9vy3U4I3E=","algorithm":"gzip-xor-base64-v1"}''';
-
-
 
   bool isRaiAudioDescriptionChannel(TvChannel channel) {
     final name = channel.name.trim().toLowerCase();
@@ -152,7 +160,8 @@ class TvService {
         headers: {
           'X-Sonarpad-TV-Token':
               '__SONARPAD_ROUTE_CLIENT_TOKEN__',
-          'X-Sonarpad-Route-Token': const String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN'),
+          'X-Sonarpad-Route-Token':
+              const String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN'),
           'User-Agent': 'Sonarpad TV/1.0',
         },
       ).timeout(const Duration(seconds: 10));
@@ -169,10 +178,10 @@ class TvService {
             url = _la7CinemaDashUrl;
           }
           if (name.isNotEmpty && url.isNotEmpty) {
-              final gt = ch['group_title'] as String?;
-              final cat = (gt == null || gt.trim().isEmpty) ? 'Altri' : gt.trim();
-              
-              channels.add(TvChannel(
+            final gt = ch['group_title'] as String?;
+            final cat = (gt == null || gt.trim().isEmpty) ? 'Altri' : gt.trim();
+
+            channels.add(TvChannel(
               name: name,
               url: url,
               category: cat,
@@ -182,6 +191,7 @@ class TvService {
               resolverChannelId: ch['resolver_channel_id'] as String?,
               tvgId: ch['tvg_id']?.toString() ?? '',
               tvgName: ch['tvg_name']?.toString() ?? '',
+              httpUserAgent: ch['http_user_agent']?.toString() ?? '',
             ));
           }
         }
@@ -190,10 +200,12 @@ class TvService {
           return channels;
         }
       }
-      throw Exception('Nessun canale ricevuto dal server (status: ${response.statusCode})');
+      throw Exception(
+          'Nessun canale ricevuto dal server (status: ${response.statusCode})');
     } catch (e) {
       dev.log('Failed to load channels from network: $e');
-      throw Exception('Impossibile scaricare i canali. Verifica la connessione internet e riprova.');
+      throw Exception(
+          'Impossibile scaricare i canali. Verifica la connessione internet e riprova.');
     }
   }
 
@@ -265,7 +277,6 @@ class TvService {
 
     return currentPrograms;
   }
-
 
   TvProgram? _latestStartedProgram(List<TvProgram> programs, int nowSec) {
     TvProgram? latest;
@@ -410,7 +421,7 @@ class TvService {
     // --- AUTORESOLVER DISCOVERY ---
     var effResolver = channel.streamResolver;
     var effChannelId = channel.resolverChannelId;
-    
+
     final normName = normalizeChannelName(channel.name);
     final discoveryIds = {
       'realtime': '2',
@@ -427,7 +438,7 @@ class TvService {
       'giallo': '27',
       'giallotv': '27',
     };
-    
+
     if (discoveryIds.containsKey(normName)) {
       effResolver = 'aurora_channel';
       effChannelId ??= discoveryIds[normName];
@@ -511,7 +522,7 @@ class TvService {
 
       final response = await http.get(
         Uri.parse(reqUrl),
-        headers: {'User-Agent': 'Sonarpad TV/1.0'},
+        headers: {'User-Agent': channel.playbackUserAgent},
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
@@ -561,7 +572,7 @@ class TvService {
     try {
       final response = await http.get(
         Uri.parse(masterUrl),
-        headers: {'User-Agent': 'Sonarpad TV/1.0'},
+        headers: {'User-Agent': channel.playbackUserAgent},
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {

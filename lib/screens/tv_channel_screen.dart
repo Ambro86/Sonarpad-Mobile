@@ -177,7 +177,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, 'Impossibile avviare la diretta: $e');
+      showStatusMessage(context, 'Impossibile avviare la diretta: $e');
     }
   }
 
@@ -187,7 +187,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   }) async {
     final ffplayArgs = [
       '-user_agent',
-      'Sonarpad TV/1.0',
+      widget.channel.playbackUserAgent,
       if (preferAudioDescription) ...['-ast', 'a:2'],
       '-nodisp',
       '-loglevel',
@@ -214,7 +214,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
         await Process.start(
           path,
           [
-            '--http-user-agent=Sonarpad TV/1.0',
+            '--http-user-agent=${widget.channel.playbackUserAgent}',
             if (preferAudioDescription) '--audio-track=2',
             url,
           ],

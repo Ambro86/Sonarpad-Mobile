@@ -111,7 +111,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     });
   }
 
-
   Future<bool> _loadRecordingFeatureAccess() async {
     final code = await _settings.getTvSecretCode();
     final trimmed = code.trim();
@@ -144,7 +143,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
       if (_requiresRaiAudioDescriptionVideoPlayback) {
         final tvChannel = widget.tvChannel!;
-        final streams = await TvService().resolveAudioDescriptionStreams(tvChannel);
+        final streams =
+            await TvService().resolveAudioDescriptionStreams(tvChannel);
         await _playMediaKitVideo(
           streamUrl: streams.videoUrl,
           preferRaiAudioDescription: streams.hasAudioDescription,
@@ -159,6 +159,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         _videoPlayerVolume = await _settings.loadMediaVolume();
         _videoController = VideoPlayerController.networkUrl(
           Uri.parse(widget.station.streamUrl),
+          httpHeaders: widget.tvChannel?.playbackHeaders ?? const {},
           videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
         );
         await _videoController!.initialize();
@@ -210,6 +211,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     bool preferRaiAudioDescription = false,
   }) async {
     final playbackUrl = streamUrl ?? widget.station.streamUrl;
+    final mediaKitHeaders = _mediaKitHttpHeaders();
     await _audio.stop();
     _videoController?.pause();
     _videoController?.dispose();
@@ -285,7 +287,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
       final now = DateTime.now();
       final lastLog = _mediaKitLastPositionLogAt;
-      if (lastLog == null || now.difference(lastLog) >= const Duration(seconds: 5)) {
+      if (lastLog == null ||
+          now.difference(lastLog) >= const Duration(seconds: 5)) {
         _mediaKitLastPositionLogAt = now;
         AppLogger.log(
           'RadioPlayer: MediaKit position position=$position duration=$_mediaKitLastDuration playing=$_mediaKitPlaying buffering=$_mediaKitBuffering completed=$_mediaKitCompleted',
@@ -301,13 +304,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'RadioPlayer: MediaKit duration emitted duration=$duration station="${widget.station.name}"',
       );
     });
-    _mediaKitBufferingSubscription = player.stream.buffering.listen((buffering) {
+    _mediaKitBufferingSubscription =
+        player.stream.buffering.listen((buffering) {
       _mediaKitBuffering = buffering;
       AppLogger.log(
         'RadioPlayer: MediaKit buffering emitted buffering=$buffering playing=$_mediaKitPlaying position=$_mediaKitLastPosition duration=$_mediaKitLastDuration',
       );
     });
-    _mediaKitCompletedSubscription = player.stream.completed.listen((completed) {
+    _mediaKitCompletedSubscription =
+        player.stream.completed.listen((completed) {
       _mediaKitCompleted = completed;
       AppLogger.log(
         'RadioPlayer: MediaKit completed emitted completed=$completed playing=$_mediaKitPlaying position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering',
@@ -331,10 +336,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await player.open(
       mk.Media(
         playbackUrl,
-        httpHeaders: const {
-          'User-Agent':
-              'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
-        },
+        httpHeaders: mediaKitHeaders,
       ),
     );
     AppLogger.log(
@@ -342,6 +344,17 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
+  Map<String, String> _mediaKitHttpHeaders() {
+    final tvHeaders = widget.tvChannel?.playbackHeaders ?? const {};
+    if (tvHeaders.isNotEmpty) {
+      return tvHeaders;
+    }
+
+    return const {
+      'User-Agent':
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+    };
+  }
 
   Future<void> _retrySelectMediaKitRaiAudioDescriptionTrack(
     mk.Player player,
@@ -353,7 +366,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       Duration(seconds: 4),
     ]) {
       await Future.delayed(delay);
-      if (!mounted || _mediaKitPlayer != player || _mediaKitRaiAudioTrackApplied) {
+      if (!mounted ||
+          _mediaKitPlayer != player ||
+          _mediaKitRaiAudioTrackApplied) {
         return;
       }
       try {
@@ -371,12 +386,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     mk.Player player,
     dynamic tracks,
   ) async {
-    if (!mounted || _mediaKitPlayer != player || _mediaKitRaiAudioTrackApplied) {
+    if (!mounted ||
+        _mediaKitPlayer != player ||
+        _mediaKitRaiAudioTrackApplied) {
       return;
     }
 
     try {
-      final audioTracks = List<dynamic>.from((tracks as dynamic).audio as Iterable);
+      final audioTracks =
+          List<dynamic>.from((tracks as dynamic).audio as Iterable);
       if (audioTracks.isEmpty) return;
 
       dynamic describedTrack;
@@ -431,7 +449,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   void _startMediaKitDiagnostics(mk.Player player) {
     _mediaKitDiagnosticsTimer?.cancel();
-    _mediaKitDiagnosticsTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _mediaKitDiagnosticsTimer =
+        Timer.periodic(const Duration(seconds: 5), (timer) {
       if (!mounted || _mediaKitPlayer != player) {
         timer.cancel();
         return;
@@ -481,12 +500,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _shouldRecoverMediaKitDashStall(mk.Player player) {
     if (!_requiresVideoPlayback || _mediaKitPlayer != player) return false;
     if (_mediaKitAutoRecoveryInProgress) return false;
-    if (!_mediaKitPlaying || !_mediaKitBuffering || _mediaKitCompleted) return false;
+    if (!_mediaKitPlaying || !_mediaKitBuffering || _mediaKitCompleted) {
+      return false;
+    }
 
     final position = _mediaKitLastPosition;
     final duration = _mediaKitLastDuration;
     final lastProgress = _mediaKitLastProgressAt;
-    if (position == null || duration == null || lastProgress == null) return false;
+    if (position == null || duration == null || lastProgress == null) {
+      return false;
+    }
 
     final stalledFor = DateTime.now().difference(lastProgress);
     if (stalledFor < const Duration(seconds: 7)) return false;
@@ -496,8 +519,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     // reach the end of that window, keep reporting playing=true, then stay
     // buffering forever until the MPD is reopened. Recover only when we are
     // clearly stalled near the end of the current window.
-    final nearLiveWindowEnd =
-        duration > Duration.zero && duration - position <= const Duration(seconds: 2);
+    final nearLiveWindowEnd = duration > Duration.zero &&
+        duration - position <= const Duration(seconds: 2);
     if (!nearLiveWindowEnd) return false;
 
     final lastRecovery = _mediaKitLastAutoRecoveryAt;
@@ -520,9 +543,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     if (_mediaKitAutoRecoveryInProgress || _mediaKitPlayer != player) return;
     _mediaKitAutoRecoveryInProgress = true;
     _mediaKitLastAutoRecoveryAt = DateTime.now();
-    final remaining = (_mediaKitLastDuration != null && _mediaKitLastPosition != null)
-        ? _mediaKitLastDuration! - _mediaKitLastPosition!
-        : null;
+    final remaining =
+        (_mediaKitLastDuration != null && _mediaKitLastPosition != null)
+            ? _mediaKitLastDuration! - _mediaKitLastPosition!
+            : null;
     AppLogger.log(
       'RadioPlayer: MediaKit DASH live window refresh reason=$reason station="${widget.station.name}" position=$_mediaKitLastPosition duration=$_mediaKitLastDuration remaining=$remaining buffering=$_mediaKitBuffering playing=$_mediaKitPlaying videoEnabled=$_isVideoEnabled',
     );
@@ -683,7 +707,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       await service.saveFavorites(next);
       if (!mounted) return;
       setState(() => _isFavorite = !alreadyFavorite);
-            showStatusMessage(context, alreadyFavorite
+      showStatusMessage(
+          context,
+          alreadyFavorite
               ? l10n.radioFavoriteRemoved(channel.name)
               : l10n.radioFavoriteAdded(channel.name));
       return;
@@ -702,7 +728,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await service.saveFavorites(next);
     if (!mounted) return;
     setState(() => _isFavorite = !alreadyFavorite);
-        showStatusMessage(context, alreadyFavorite
+    showStatusMessage(
+        context,
+        alreadyFavorite
             ? l10n.radioFavoriteRemoved(widget.station.name)
             : l10n.radioFavoriteAdded(widget.station.name));
   }
@@ -717,9 +745,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           _recording = false;
           _recordingOutput = file;
         });
-                showStatusMessage(context, l10n.recordingSaved(
-                file == null ? '' : p.basenameWithoutExtension(file.path),
-              ));
+        showStatusMessage(
+            context,
+            l10n.recordingSaved(
+              file == null ? '' : p.basenameWithoutExtension(file.path),
+            ));
         return;
       }
 
@@ -729,8 +759,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (tvChannel != null &&
           TvService().isRaiAudioDescriptionChannel(tvChannel) &&
           !TvService.isDashStreamUrl(widget.station.streamUrl)) {
-        final streams = await TvService().resolveAudioDescriptionStreams(tvChannel);
-        if (streams.hasAudioDescription && streams.videoUrl != streams.audioUrl) {
+        final streams =
+            await TvService().resolveAudioDescriptionStreams(tvChannel);
+        if (streams.hasAudioDescription &&
+            streams.videoUrl != streams.audioUrl) {
           recordingVideoUrl = streams.videoUrl;
           recordingAudioUrl = streams.audioUrl;
           await AppLogger.log(
@@ -748,20 +780,21 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         streamUrl: widget.station.streamUrl,
         videoStreamUrl: recordingVideoUrl,
         audioStreamUrl: recordingAudioUrl,
+        httpUserAgent: widget.tvChannel?.httpUserAgent,
       );
       if (!mounted) return;
       setState(() {
         _recording = true;
         _recordingOutput = file;
       });
-            showStatusMessage(context, l10n.recordingStarted);
+      showStatusMessage(context, l10n.recordingStarted);
     } catch (error) {
       if (!mounted) return;
       setState(() {
         _recording = false;
         _recordingOutput = null;
       });
-            showStatusMessage(context, l10n.recordingError(error));
+      showStatusMessage(context, l10n.recordingError(error));
     }
   }
 
@@ -772,10 +805,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       TvService().isRaiAudioDescriptionChannel(widget.tvChannel!);
 
   bool get _requiresVideoPlayback =>
-      widget.isVideoSupported && TvService.isDashStreamUrl(widget.station.streamUrl);
+      widget.isVideoSupported &&
+      TvService.isDashStreamUrl(widget.station.streamUrl);
 
-  bool get _isVideoPlaying =>
-      _mediaKitPlayer != null ? _mediaKitPlaying : (_videoController?.value.isPlaying ?? false);
+  bool get _isVideoPlaying => _mediaKitPlayer != null
+      ? _mediaKitPlaying
+      : (_videoController?.value.isPlaying ?? false);
 
   bool get _canRecordStream => _isRecordingFeatureUnlocked;
 
@@ -795,13 +830,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           DeviceOrientation.landscapeLeft,
           DeviceOrientation.landscapeRight,
         ]));
-        unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
+        unawaited(
+            SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
       } else {
-        unawaited(SystemChrome.setPreferredOrientations(DeviceOrientation.values));
+        unawaited(
+            SystemChrome.setPreferredOrientations(DeviceOrientation.values));
         unawaited(SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: SystemUiOverlay.values,
-    ));
+          SystemUiMode.manual,
+          overlays: SystemUiOverlay.values,
+        ));
       }
     }
   }
@@ -828,7 +865,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     unawaited(_disposeMediaKitPlayer());
     if (_recordingService.isRecording) {
       unawaited(_recordingService.stop().catchError((error) {
-        AppLogger.log('RadioPlayer: recording stop during dispose failed: $error');
+        AppLogger.log(
+            'RadioPlayer: recording stop during dispose failed: $error');
         return null;
       }));
     }
@@ -947,64 +985,65 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SwitchListTile(
-              title: Text(
-                l10n.enableVideo,
-                style: const TextStyle(color: Colors.white),
-              ),
-              value: _isVideoEnabled,
-              onChanged: _loading ? null : _toggleVideo,
-              contentPadding: EdgeInsets.zero,
-              dense: true,
-            ),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
-              children: [
-                FilledButton.icon(
-                  onPressed: _loading ? null : _toggleVideoPlayback,
-                  icon: Icon(_isVideoPlaying ? Icons.pause : Icons.play_arrow),
-                  label: Text(_isVideoPlaying ? l10n.pause : l10n.play),
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SwitchListTile(
+                title: Text(
+                  l10n.enableVideo,
+                  style: const TextStyle(color: Colors.white),
                 ),
-                if (_canRecordStream)
+                value: _isVideoEnabled,
+                onChanged: _loading ? null : _toggleVideo,
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+              ),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.center,
+                children: [
                   FilledButton.icon(
-                    onPressed: _loading ? null : _toggleRecording,
-                    icon: Icon(
-                      _recording ? Icons.stop : Icons.fiber_manual_record,
-                    ),
-                    label: Text(
-                      _recording ? l10n.stopRecording : l10n.startRecording,
-                    ),
+                    onPressed: _loading ? null : _toggleVideoPlayback,
+                    icon:
+                        Icon(_isVideoPlaying ? Icons.pause : Icons.play_arrow),
+                    label: Text(_isVideoPlaying ? l10n.pause : l10n.play),
                   ),
+                  if (_canRecordStream)
+                    FilledButton.icon(
+                      onPressed: _loading ? null : _toggleRecording,
+                      icon: Icon(
+                        _recording ? Icons.stop : Icons.fiber_manual_record,
+                      ),
+                      label: Text(
+                        _recording ? l10n.stopRecording : l10n.startRecording,
+                      ),
+                    ),
+                ],
+              ),
+              if (_recordingOutput != null) ...[
+                const SizedBox(height: 12),
+                Text(
+                  p.basenameWithoutExtension(_recordingOutput!.path),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ],
-            ),
-            if (_recordingOutput != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                p.basenameWithoutExtension(_recordingOutput!.path),
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ],
-            if (_videoController != null &&
-                _videoController!.value.isInitialized) ...[
-              const SizedBox(height: 12),
-              _PlayerVolumeSlider(
-                volume: _videoPlayerVolume,
-                onChanged: _setVideoPlayerVolume,
-              ),
-            ],
-            if (_mediaKitPlayer != null) ...[
-              const SizedBox(height: 12),
-              _PlayerVolumeSlider(
-                volume: _mediaKitVolume,
-                onChanged: _setMediaKitVolume,
-              ),
-            ],
+              if (_videoController != null &&
+                  _videoController!.value.isInitialized) ...[
+                const SizedBox(height: 12),
+                _PlayerVolumeSlider(
+                  volume: _videoPlayerVolume,
+                  onChanged: _setVideoPlayerVolume,
+                ),
+              ],
+              if (_mediaKitPlayer != null) ...[
+                const SizedBox(height: 12),
+                _PlayerVolumeSlider(
+                  volume: _mediaKitVolume,
+                  onChanged: _setMediaKitVolume,
+                ),
+              ],
             ],
           ),
         ),
@@ -1013,10 +1052,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Widget _buildLandscapeFullscreenScaffold(AppLocalizations l10n) {
-    final videoSurface = _videoController != null &&
-            _videoController!.value.isInitialized
-        ? _buildVideoPlayerFullscreenSurface(_videoController!)
-        : _buildMediaKitVideoFullscreenSurface();
+    final videoSurface =
+        _videoController != null && _videoController!.value.isInitialized
+            ? _buildVideoPlayerFullscreenSurface(_videoController!)
+            : _buildMediaKitVideoFullscreenSurface();
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -1033,7 +1072,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   shape: const CircleBorder(),
                   child: IconButton(
                     color: Colors.white,
-                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                    tooltip:
+                        MaterialLocalizations.of(context).backButtonTooltip,
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => Navigator.pop(context),
                   ),
@@ -1058,8 +1098,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'RadioPlayer: build() called. loading=$_loading, error=$_error, videoEnabled=$_isVideoEnabled, videoControllerInit=${_videoController?.value.isInitialized}');
     _syncLandscapeFullscreenOrientation();
     final l10n = AppLocalizations.of(context);
-    final showStationDetails =
-        widget.tvChannel == null && widget.station.detailsText.trim().isNotEmpty;
+    final showStationDetails = widget.tvChannel == null &&
+        widget.station.detailsText.trim().isNotEmpty;
     if (_useLandscapeFullscreenVideo) {
       return _buildLandscapeFullscreenScaffold(l10n);
     }
@@ -1068,7 +1108,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         title: Text('${l10n.nowPlaying}: ${widget.station.name}'),
         leading: BackButton(
           onPressed: () {
-                Navigator.pop(context);
+            Navigator.pop(context);
           },
         ),
       ),
@@ -1143,10 +1183,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               if (_canRecordStream)
                 FilledButton.icon(
                   onPressed: _loading ? null : _toggleRecording,
-                  icon: Icon(_recording ? Icons.stop : Icons.fiber_manual_record),
-                  label: Text(_recording
-                      ? l10n.stopRecording
-                      : l10n.startRecording),
+                  icon:
+                      Icon(_recording ? Icons.stop : Icons.fiber_manual_record),
+                  label: Text(
+                      _recording ? l10n.stopRecording : l10n.startRecording),
                 ),
             ],
           ),

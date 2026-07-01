@@ -45,7 +45,8 @@ class RadioRecordingService {
     final files = <File>[];
     await for (final entity in dir.list(followLinks: false)) {
       if (entity is! File) {
-        await AppLogger.log('Radio recording: ignored non-file "${entity.path}"');
+        await AppLogger.log(
+            'Radio recording: ignored non-file "${entity.path}"');
         continue;
       }
       final ext = p.extension(entity.path).toLowerCase();
@@ -73,6 +74,7 @@ class RadioRecordingService {
     required String streamUrl,
     String? videoStreamUrl,
     String? audioStreamUrl,
+    String? httpUserAgent,
   }) async {
     if (_session != null) {
       throw StateError('Registrazione gia in corso.');
@@ -82,6 +84,7 @@ class RadioRecordingService {
     await dir.create(recursive: true);
     final raiVideoUrl = videoStreamUrl;
     final raiAudioUrl = audioStreamUrl;
+    final effectiveUserAgent = _effectiveUserAgent(httpUserAgent);
     final isRaiAudioDescriptionRecording =
         raiVideoUrl != null && raiAudioUrl != null;
     final ext = isRaiAudioDescriptionRecording
@@ -97,11 +100,13 @@ class RadioRecordingService {
         videoUrl: raiVideoUrl,
         audioUrl: raiAudioUrl,
         outputPath: file.path,
+        userAgent: effectiveUserAgent,
       );
     } else {
       arguments = _recordingArguments(
         streamUrl: streamUrl,
         outputPath: file.path,
+        userAgent: effectiveUserAgent,
       );
     }
 
@@ -199,13 +204,14 @@ class RadioRecordingService {
   List<String> _recordingArguments({
     required String streamUrl,
     required String outputPath,
+    required String userAgent,
   }) {
     if (includeVideo) {
       if (_isDashStream(streamUrl)) {
         return [
           '-y',
           '-user_agent',
-          _ffmpegUserAgent,
+          userAgent,
           '-i',
           streamUrl,
           '-vn',
@@ -221,7 +227,7 @@ class RadioRecordingService {
       return [
         '-y',
         '-user_agent',
-        _ffmpegUserAgent,
+        userAgent,
         '-i',
         streamUrl,
         '-c',
@@ -232,7 +238,7 @@ class RadioRecordingService {
     return [
       '-y',
       '-user_agent',
-      _ffmpegUserAgent,
+      userAgent,
       '-i',
       streamUrl,
       '-vn',
@@ -244,20 +250,20 @@ class RadioRecordingService {
     ];
   }
 
-
   List<String> _raiAudioDescriptionRecordingArguments({
     required String videoUrl,
     required String audioUrl,
     required String outputPath,
+    required String userAgent,
   }) {
     return [
       '-y',
       '-user_agent',
-      _ffmpegUserAgent,
+      userAgent,
       '-i',
       videoUrl,
       '-user_agent',
-      _ffmpegUserAgent,
+      userAgent,
       '-i',
       audioUrl,
       '-map',
@@ -276,9 +282,14 @@ class RadioRecordingService {
   }
 
   bool _isDashStream(String streamUrl) {
-    final path = Uri.tryParse(streamUrl)?.path.toLowerCase() ??
-        streamUrl.toLowerCase();
+    final path =
+        Uri.tryParse(streamUrl)?.path.toLowerCase() ?? streamUrl.toLowerCase();
     return path.endsWith('.mpd');
+  }
+
+  String _effectiveUserAgent(String? httpUserAgent) {
+    final value = httpUserAgent?.trim() ?? '';
+    return value.isEmpty ? _ffmpegUserAgent : value;
   }
 
   bool _shouldLogFfmpegLine(String message) {
