@@ -514,11 +514,13 @@ class TvService {
     if (resolvedUrl.contains('/relinker/relinkerServlet')) {
       final uri = Uri.parse(resolvedUrl);
       final queryParams = Map<String, String>.from(uri.queryParameters);
-      queryParams.remove('forceUserAgent');
       queryParams['output'] = '54'; // Richiede l'URL assoluto in plain text
       final reqUrl = uri.replace(queryParameters: queryParams).toString();
 
-      await AppLogger.log('Interrogo il relinker RAI con output=54: $reqUrl');
+      await AppLogger.log(
+        'Interrogo il relinker RAI con output=54: $reqUrl '
+        'userAgent=${channel.playbackUserAgent}',
+      );
 
       final response = await http.get(
         Uri.parse(reqUrl),
