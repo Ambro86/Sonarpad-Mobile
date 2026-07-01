@@ -3100,5 +3100,13 @@
         "type": "String"
       }
     }
+  },
+  "settingsVideoLandscapeFullscreen": "Video orizzontale a schermo intero",
+  "@settingsVideoLandscapeFullscreen": {
+    "description": "Title for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsVideoLandscapeFullscreenHint": "Quando attivi il video, viene mostrato a schermo intero in orizzontale. Le radio solo audio non cambiano.",
+  "@settingsVideoLandscapeFullscreenHint": {
+    "description": "Description for the setting that shows video full-screen in landscape orientation."
   }
 }

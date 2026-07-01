@@ -928,5 +928,13 @@
         "type": "String"
       }
     }
+  },
+  "settingsVideoLandscapeFullscreen": "Vídeo horizontal a pantalla completa",
+  "@settingsVideoLandscapeFullscreen": {
+    "description": "Title for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsVideoLandscapeFullscreenHint": "Cuando activas el vídeo, se muestra a pantalla completa en orientación horizontal. Las radios solo audio no cambian.",
+  "@settingsVideoLandscapeFullscreenHint": {
+    "description": "Description for the setting that shows video full-screen in landscape orientation."
   }
 }

@@ -1375,6 +1375,14 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsMultipleDocumentBookmarksHint =>
       'Pokud je vypnuto, každý dokument má jen jednu záložku. Pokud je zapnuto, můžete uložit více záložek ve stejném dokumentu.';
 
+
+  @override
+  String get settingsVideoLandscapeFullscreen => 'Vodorovné video přes celou obrazovku';
+
+  @override
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Když zapnete video, zobrazí se přes celou obrazovku na šířku. Rádia pouze se zvukem se nemění.';
+
   @override
   String get documentGoToBookmarkAction => 'Přejít na záložku';
 

@@ -78,34 +78,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _savedDocumentSliderStepPercent =
       AppSettingsService.defaultDocumentSliderStepPercent;
 
-  String get _displayVideoInPortraitTitle => switch (_appLanguage) {
-        'it' => 'Video verticale a schermo intero',
-        'es' => 'Vídeo vertical a pantalla completa',
-        'fr' => 'Vidéo verticale en plein écran',
-        'pt' => 'Vídeo vertical em ecrã inteiro',
-        'pl' => 'Wideo pionowe na pełnym ekranie',
-        'cs' => 'Svislé video přes celou obrazovku',
-        _ => 'Portrait full-screen video',
-      };
-
-  String get _displayVideoInPortraitHint => switch (_appLanguage) {
-        'it' =>
-          'Quando attivi il video, lo mostra a schermo intero in formato verticale. Le radio solo audio non cambiano.',
-        'es' =>
-          'Cuando activas el vídeo, lo muestra a pantalla completa en formato vertical. Las radios solo audio no cambian.',
-        'fr' =>
-          'Quand la vidéo est activée, elle s’affiche en plein écran au format vertical. Les radios audio seules ne changent pas.',
-        'pt' =>
-          'Quando ativares o vídeo, este é mostrado em ecrã inteiro no formato vertical. As rádios só áudio não mudam.',
-        'pl' =>
-          'Po włączeniu wideo pokazuje je na pełnym ekranie w układzie pionowym. Radia tylko audio pozostają bez zmian.',
-        'cs' =>
-          'Když zapnete video, zobrazí se přes celou obrazovku ve svislém formátu. Rádia pouze se zvukem se nemění.',
-        _ =>
-          'When video is enabled, it is shown full-screen in portrait format. Audio-only radios are unchanged.',
-      };
-
-
   String get _multipleDocumentBookmarksTitle =>
       AppLocalizations.of(context).settingsMultipleDocumentBookmarks;
 
@@ -1152,8 +1124,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                     SwitchListTile(
-                      title: Text(_displayVideoInPortraitTitle),
-                      subtitle: Text(_displayVideoInPortraitHint),
+                      title: Text(l10n.settingsVideoLandscapeFullscreen),
+                      subtitle: Text(l10n.settingsVideoLandscapeFullscreenHint),
                       value: _displayVideoInPortrait,
                       onChanged: (val) => setState(
                         () => _displayVideoInPortrait = val,

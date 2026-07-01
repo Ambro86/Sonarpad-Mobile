@@ -925,5 +925,13 @@
         "type": "String"
       }
     }
+  },
+  "settingsVideoLandscapeFullscreen": "Vodorovné video přes celou obrazovku",
+  "@settingsVideoLandscapeFullscreen": {
+    "description": "Title for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsVideoLandscapeFullscreenHint": "Když zapnete video, zobrazí se přes celou obrazovku na šířku. Rádia pouze se zvukem se nemění.",
+  "@settingsVideoLandscapeFullscreenHint": {
+    "description": "Description for the setting that shows video full-screen in landscape orientation."
   }
 }

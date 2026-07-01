@@ -3100,5 +3100,13 @@
         "type": "String"
       }
     }
+  },
+  "settingsVideoLandscapeFullscreen": "Wideo poziome na pełnym ekranie",
+  "@settingsVideoLandscapeFullscreen": {
+    "description": "Title for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsVideoLandscapeFullscreenHint": "Po włączeniu wideo jest ono wyświetlane na pełnym ekranie w orientacji poziomej. Radia tylko audio pozostają bez zmian.",
+  "@settingsVideoLandscapeFullscreenHint": {
+    "description": "Description for the setting that shows video full-screen in landscape orientation."
   }
 }

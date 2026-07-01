@@ -59,6 +59,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _isFavorite = false;
   bool _mediaKitPlaying = false;
   bool _mediaKitVideoSettingApplied = false;
+  bool _landscapeFullscreenApplied = false;
   bool _mediaKitRaiAudioTrackApplied = false;
   bool _mediaKitBuffering = false;
   bool _mediaKitCompleted = false;
@@ -778,11 +779,42 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   bool get _canRecordStream => _isRecordingFeatureUnlocked;
 
-  bool get _usePortraitFullscreenVideo =>
+  bool get _useLandscapeFullscreenVideo =>
       _displayVideoInPortrait &&
       _isVideoEnabled &&
       ((_videoController != null && _videoController!.value.isInitialized) ||
           _mediaKitController != null);
+
+  void _syncLandscapeFullscreenOrientation() {
+    final enable = _useLandscapeFullscreenVideo;
+    if (_landscapeFullscreenApplied == enable) return;
+    _landscapeFullscreenApplied = enable;
+    if (Platform.isIOS || Platform.isAndroid) {
+      if (enable) {
+        unawaited(SystemChrome.setPreferredOrientations(const [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ]));
+        unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
+      } else {
+        unawaited(SystemChrome.setPreferredOrientations(DeviceOrientation.values));
+        unawaited(SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    ));
+      }
+    }
+  }
+
+  void _restoreSystemOrientation() {
+    if (!Platform.isIOS && !Platform.isAndroid) return;
+    _landscapeFullscreenApplied = false;
+    unawaited(SystemChrome.setPreferredOrientations(DeviceOrientation.values));
+    unawaited(SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    ));
+  }
 
   @override
   void dispose() {
@@ -791,6 +823,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         (_videoController != null || _mediaKitPlayer != null)) {
       unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
     }
+    _restoreSystemOrientation();
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     unawaited(_disposeMediaKitPlayer());
     if (_recordingService.isRecording) {
@@ -843,55 +876,22 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
   }
 
-  static const double _portraitVideoAspectRatio = 9 / 16;
-
   Widget _buildVideoPlayerSurface(VideoPlayerController controller) {
     final aspect = controller.value.aspectRatio > 0
         ? controller.value.aspectRatio
         : 16 / 9;
-    if (!_displayVideoInPortrait) {
-      return AspectRatio(
-        aspectRatio: aspect,
-        child: VideoPlayer(controller),
-      );
-    }
     return AspectRatio(
-      aspectRatio: _portraitVideoAspectRatio,
-      child: ClipRect(
-        child: FittedBox(
-          fit: BoxFit.cover,
-          child: SizedBox(
-            width: aspect >= 1 ? aspect : 1,
-            height: aspect >= 1 ? 1 : 1 / aspect,
-            child: VideoPlayer(controller),
-          ),
-        ),
-      ),
+      aspectRatio: aspect,
+      child: VideoPlayer(controller),
     );
   }
 
   Widget _buildMediaKitVideoSurface() {
-    final video = mkv.Video(
-      controller: _mediaKitController!,
-      controls: mkv.AdaptiveVideoControls,
-    );
-    if (!_displayVideoInPortrait) {
-      return AspectRatio(
-        aspectRatio: 16 / 9,
-        child: video,
-      );
-    }
     return AspectRatio(
-      aspectRatio: _portraitVideoAspectRatio,
-      child: ClipRect(
-        child: FittedBox(
-          fit: BoxFit.cover,
-          child: SizedBox(
-            width: 16,
-            height: 9,
-            child: video,
-          ),
-        ),
+      aspectRatio: 16 / 9,
+      child: mkv.Video(
+        controller: _mediaKitController!,
+        controls: mkv.AdaptiveVideoControls,
       ),
     );
   }
@@ -905,7 +905,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       child: ClipRect(
         child: Center(
           child: FittedBox(
-            fit: BoxFit.cover,
+            fit: BoxFit.contain,
             child: SizedBox(
               width: aspect >= 1 ? aspect : 1,
               height: aspect >= 1 ? 1 : 1 / aspect,
@@ -927,7 +927,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       child: ClipRect(
         child: Center(
           child: FittedBox(
-            fit: BoxFit.cover,
+            fit: BoxFit.contain,
             child: SizedBox(
               width: 16,
               height: 9,
@@ -939,7 +939,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
-  Widget _buildPortraitFullscreenControls(AppLocalizations l10n) {
+  Widget _buildLandscapeFullscreenControls(AppLocalizations l10n) {
     return Material(
       color: Colors.black54,
       child: DefaultTextStyle.merge(
@@ -1012,7 +1012,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
-  Widget _buildPortraitFullscreenScaffold(AppLocalizations l10n) {
+  Widget _buildLandscapeFullscreenScaffold(AppLocalizations l10n) {
     final videoSurface = _videoController != null &&
             _videoController!.value.isInitialized
         ? _buildVideoPlayerFullscreenSurface(_videoController!)
@@ -1044,7 +1044,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           SafeArea(
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: _buildPortraitFullscreenControls(l10n),
+              child: _buildLandscapeFullscreenControls(l10n),
             ),
           ),
         ],
@@ -1056,11 +1056,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Widget build(BuildContext context) {
     AppLogger.log(
         'RadioPlayer: build() called. loading=$_loading, error=$_error, videoEnabled=$_isVideoEnabled, videoControllerInit=${_videoController?.value.isInitialized}');
+    _syncLandscapeFullscreenOrientation();
     final l10n = AppLocalizations.of(context);
     final showStationDetails =
         widget.tvChannel == null && widget.station.detailsText.trim().isNotEmpty;
-    if (_usePortraitFullscreenVideo) {
-      return _buildPortraitFullscreenScaffold(l10n);
+    if (_useLandscapeFullscreenVideo) {
+      return _buildLandscapeFullscreenScaffold(l10n);
     }
     return Scaffold(
       appBar: AppBar(

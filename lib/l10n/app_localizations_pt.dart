@@ -1376,6 +1376,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsMultipleDocumentBookmarksHint =>
       'Se estiver desativado, fica apenas um marcador por documento. Se estiver ativado, pode guardar vários marcadores no mesmo documento.';
 
+
+  @override
+  String get settingsVideoLandscapeFullscreen => 'Vídeo horizontal em ecrã inteiro';
+
+  @override
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Quando ativa o vídeo, este é mostrado em ecrã inteiro na orientação horizontal. As rádios só de áudio não mudam.';
+
   @override
   String get documentGoToBookmarkAction => 'Ir para o marcador';
 

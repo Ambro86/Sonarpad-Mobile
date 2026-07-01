@@ -1386,6 +1386,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsMultipleDocumentBookmarksHint =>
       'Si cette option est désactivée, un seul signet est conservé par document. Si elle est activée, vous pouvez enregistrer plusieurs signets dans le même document.';
 
+
+  @override
+  String get settingsVideoLandscapeFullscreen => 'Vidéo horizontale en plein écran';
+
+  @override
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Lorsque vous activez la vidéo, elle s’affiche en plein écran en orientation horizontale. Les radios uniquement audio ne changent pas.';
+
   @override
   String get documentGoToBookmarkAction => 'Aller au signet';
 

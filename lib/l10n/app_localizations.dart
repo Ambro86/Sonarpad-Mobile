@@ -2571,6 +2571,18 @@ abstract class AppLocalizations {
   /// **'Se disattivato, resta un solo segnalibro per documento. Se attivato, puoi salvare più segnalibri nello stesso documento.'**
   String get settingsMultipleDocumentBookmarksHint;
 
+  /// Title for the setting that shows video full-screen in landscape orientation.
+  ///
+  /// In it, this message translates to:
+  /// **'Video orizzontale a schermo intero'**
+  String get settingsVideoLandscapeFullscreen;
+
+  /// Description for the setting that shows video full-screen in landscape orientation.
+  ///
+  /// In it, this message translates to:
+  /// **'Quando attivi il video, viene mostrato a schermo intero in orizzontale. Le radio solo audio non cambiano.'**
+  String get settingsVideoLandscapeFullscreenHint;
+
   /// Accessibility action and menu entry to open document bookmarks.
   ///
   /// In it, this message translates to:

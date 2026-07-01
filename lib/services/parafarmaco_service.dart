@@ -1177,7 +1177,6 @@ class ParafarmacoService {
       'indicazioni',
       'a cosa serve',
       'descrizione',
-      'prodotto',
       'che cos e',
       'che cosè',
     ])) {
@@ -1198,6 +1197,10 @@ class ParafarmacoService {
     if (_containsAny(text, const [
       'avvertenze',
       'controindicazioni',
+      'quando non dev essere usato',
+      'quando non devessere usato',
+      'quando non deve essere usato',
+      'ipersensibilita',
       'precauzioni',
       'effetti collaterali',
       'effetti indesiderati',
@@ -1233,6 +1236,8 @@ class ParafarmacoService {
     String? _extractSectionFromPlainText(String text, ParafarmacoSectionType type) {
       final labels = switch (type) {
         ParafarmacoSectionType.indications => const [
+            'Perché si usa',
+            'Perche si usa',
             'A cosa serve',
             'Indicazioni',
             'Descrizione e caratteristiche',
@@ -1268,6 +1273,8 @@ class ParafarmacoService {
         ParafarmacoSectionType.complete => const <String>[],
       };
       final stopLabels = const [
+        'Perché si usa',
+        'Perche si usa',
         'A cosa serve',
         'Indicazioni',
         'Descrizione e caratteristiche',
@@ -1281,11 +1288,20 @@ class ParafarmacoService {
         'Posologia',
         'Modo d\'uso',
         'Modo d’uso',
+        'Avvertenze speciali e precauzioni di impiego',
         'Avvertenze',
+        "Quando non dev'essere usato",
+        'Quando non dev’essere usato',
         'Controindicazioni',
         'Precauzioni',
         'Effetti collaterali',
         'Effetti indesiderati',
+        'Interazioni con altri medicinali',
+        'Fertilità, gravidanza e allattamento',
+        'Effetti sulla capacità di guidare',
+        'Sovradosaggio',
+        'Scadenza',
+        'Elenco degli eccipienti',
         'Componenti e ingredienti',
         'Principio attivo',
         'Componenti',

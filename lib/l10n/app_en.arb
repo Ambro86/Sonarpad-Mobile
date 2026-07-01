@@ -928,5 +928,13 @@
         "type": "String"
       }
     }
+  },
+  "settingsVideoLandscapeFullscreen": "Landscape full-screen video",
+  "@settingsVideoLandscapeFullscreen": {
+    "description": "Title for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsVideoLandscapeFullscreenHint": "When you enable video, it is shown full-screen in landscape orientation. Audio-only radios are unchanged.",
+  "@settingsVideoLandscapeFullscreenHint": {
+    "description": "Description for the setting that shows video full-screen in landscape orientation."
   }
 }

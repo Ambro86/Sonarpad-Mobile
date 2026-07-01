@@ -1377,6 +1377,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsMultipleDocumentBookmarksHint =>
       'Se disattivato, resta un solo segnalibro per documento. Se attivato, puoi salvare più segnalibri nello stesso documento.';
 
+
+  @override
+  String get settingsVideoLandscapeFullscreen => 'Video orizzontale a schermo intero';
+
+  @override
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Quando attivi il video, viene mostrato a schermo intero in orizzontale. Le radio solo audio non cambiano.';
+
   @override
   String get documentGoToBookmarkAction => 'Vai al segnalibro';
 

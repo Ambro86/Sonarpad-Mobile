@@ -46,6 +46,7 @@ class _PodcastEpisodePlayerScreenState
   bool _videoUsesExternalAudio = false;
   bool _isVideoEnabled = false;
   bool _displayVideoInPortrait = false;
+  bool _landscapeFullscreenApplied = false;
 
   bool _loaded = false;
   bool _loading = false;
@@ -454,11 +455,42 @@ class _PodcastEpisodePlayerScreenState
     );
   }
 
-  bool get _usePortraitFullscreenVideo =>
+  bool get _useLandscapeFullscreenVideo =>
       _displayVideoInPortrait &&
       _isVideoEnabled &&
       _videoController != null &&
       _videoController!.value.isInitialized;
+
+  void _syncLandscapeFullscreenOrientation() {
+    final enable = _useLandscapeFullscreenVideo;
+    if (_landscapeFullscreenApplied == enable) return;
+    _landscapeFullscreenApplied = enable;
+    if (Platform.isIOS || Platform.isAndroid) {
+      if (enable) {
+        unawaited(SystemChrome.setPreferredOrientations(const [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ]));
+        unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
+      } else {
+        unawaited(SystemChrome.setPreferredOrientations(DeviceOrientation.values));
+        unawaited(SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    ));
+      }
+    }
+  }
+
+  void _restoreSystemOrientation() {
+    if (!Platform.isIOS && !Platform.isAndroid) return;
+    _landscapeFullscreenApplied = false;
+    unawaited(SystemChrome.setPreferredOrientations(DeviceOrientation.values));
+    unawaited(SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    ));
+  }
 
   @override
   void dispose() {
@@ -471,6 +503,7 @@ class _PodcastEpisodePlayerScreenState
     if (Platform.isIOS && _videoController != null) {
       unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
     }
+    _restoreSystemOrientation();
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     unawaited(_saveVideoBookmark());
     _videoController?.dispose();
@@ -479,31 +512,13 @@ class _PodcastEpisodePlayerScreenState
     AppLogger.log('PodcastPlayer: dispose end, $_logSubject');
   }
 
-  static const double _portraitVideoAspectRatio = 9 / 16;
-
   Widget _buildVideoPlayerSurface(VideoPlayerController controller) {
     final aspect = controller.value.aspectRatio > 0
         ? controller.value.aspectRatio
         : 16 / 9;
-    final video = VideoPlayer(controller);
-    if (!_displayVideoInPortrait) {
-      return AspectRatio(
-        aspectRatio: aspect,
-        child: video,
-      );
-    }
     return AspectRatio(
-      aspectRatio: _portraitVideoAspectRatio,
-      child: ClipRect(
-        child: FittedBox(
-          fit: BoxFit.cover,
-          child: SizedBox(
-            width: aspect >= 1 ? aspect : 1,
-            height: aspect >= 1 ? 1 : 1 / aspect,
-            child: video,
-          ),
-        ),
-      ),
+      aspectRatio: aspect,
+      child: VideoPlayer(controller),
     );
   }
 
@@ -516,7 +531,7 @@ class _PodcastEpisodePlayerScreenState
       child: ClipRect(
         child: Center(
           child: FittedBox(
-            fit: BoxFit.cover,
+            fit: BoxFit.contain,
             child: SizedBox(
               width: aspect >= 1 ? aspect : 1,
               height: aspect >= 1 ? 1 : 1 / aspect,
@@ -528,7 +543,7 @@ class _PodcastEpisodePlayerScreenState
     );
   }
 
-  Widget _buildPortraitFullscreenControls(
+  Widget _buildLandscapeFullscreenControls(
     AppLocalizations l10n,
     bool canSeek,
   ) {
@@ -603,7 +618,7 @@ class _PodcastEpisodePlayerScreenState
     );
   }
 
-  Widget _buildPortraitFullscreenScaffold(
+  Widget _buildLandscapeFullscreenScaffold(
     AppLocalizations l10n,
     bool canSeek,
   ) {
@@ -650,7 +665,7 @@ class _PodcastEpisodePlayerScreenState
           SafeArea(
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: _buildPortraitFullscreenControls(l10n, canSeek),
+              child: _buildLandscapeFullscreenControls(l10n, canSeek),
             ),
           ),
         ],
@@ -666,12 +681,13 @@ class _PodcastEpisodePlayerScreenState
       'videoControllerInit=${_videoController?.value.isInitialized}, '
       '$_logSubject',
     );
+    _syncLandscapeFullscreenOrientation();
     final l10n = AppLocalizations.of(context);
     final canSeek = _videoController == null ||
         (_videoController!.value.isInitialized &&
             _videoController!.value.duration > Duration.zero);
-    if (_usePortraitFullscreenVideo) {
-      return _buildPortraitFullscreenScaffold(l10n, canSeek);
+    if (_useLandscapeFullscreenVideo) {
+      return _buildLandscapeFullscreenScaffold(l10n, canSeek);
     }
     return Scaffold(
       appBar: AppBar(

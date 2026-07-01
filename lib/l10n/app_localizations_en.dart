@@ -1365,6 +1365,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsMultipleDocumentBookmarksHint =>
       'When disabled, each document keeps one bookmark. When enabled, you can save multiple bookmarks in the same document.';
 
+
+  @override
+  String get settingsVideoLandscapeFullscreen => 'Landscape full-screen video';
+
+  @override
+  String get settingsVideoLandscapeFullscreenHint =>
+      'When you enable video, it is shown full-screen in landscape orientation. Audio-only radios are unchanged.';
+
   @override
   String get documentGoToBookmarkAction => 'Go to bookmark';
 

@@ -54,39 +54,35 @@ class DocumentTextExtractor {
 
   static String decodeDocumentTextBytes(List<int> bytes) {
     if (_startsWith(bytes, const [0xEF, 0xBB, 0xBF])) {
-      return normalizeDocumentUnicode(
-        _repairUtf8Mojibake(utf8.decode(bytes.sublist(3))),
-      );
+      return _normalizeDecodedText(utf8.decode(bytes.sublist(3)));
     }
     if (_startsWith(bytes, const [0xFF, 0xFE, 0x00, 0x00])) {
-      return normalizeDocumentUnicode(
-        _decodeUtf32(bytes.sublist(4), Endian.little),
-      );
+      return _normalizeDecodedText(_decodeUtf32(bytes.sublist(4), Endian.little));
     }
     if (_startsWith(bytes, const [0x00, 0x00, 0xFE, 0xFF])) {
-      return normalizeDocumentUnicode(
-        _decodeUtf32(bytes.sublist(4), Endian.big),
-      );
+      return _normalizeDecodedText(_decodeUtf32(bytes.sublist(4), Endian.big));
     }
     if (_startsWith(bytes, const [0xFF, 0xFE])) {
-      return normalizeDocumentUnicode(
-        _decodeUtf16(bytes.sublist(2), Endian.little),
-      );
+      return _normalizeDecodedText(_decodeUtf16(bytes.sublist(2), Endian.little));
     }
     if (_startsWith(bytes, const [0xFE, 0xFF])) {
-      return normalizeDocumentUnicode(
-        _decodeUtf16(bytes.sublist(2), Endian.big),
-      );
+      return _normalizeDecodedText(_decodeUtf16(bytes.sublist(2), Endian.big));
     }
     final utf16Guess = _tryDecodeUtf16WithoutBom(bytes);
-    if (utf16Guess != null) return normalizeDocumentUnicode(utf16Guess);
+    if (utf16Guess != null) return _normalizeDecodedText(utf16Guess);
 
     try {
-      return normalizeDocumentUnicode(_repairUtf8Mojibake(utf8.decode(bytes)));
+      return _normalizeDecodedText(utf8.decode(bytes));
     } on FormatException {
       dev.log('Fallback ANSI best-effort per documento testuale');
-      return normalizeDocumentUnicode(_chooseAnsiDecoding(bytes));
+      return _normalizeDecodedText(_chooseAnsiDecoding(bytes));
     }
+  }
+
+  static String _normalizeDecodedText(String text) {
+    return normalizeDocumentUnicode(
+      _repairItalianCp1250Mojibake(_repairUtf8Mojibake(text)),
+    );
   }
 
   static bool _startsWith(List<int> bytes, List<int> prefix) {
@@ -135,7 +131,15 @@ class DocumentTextExtractor {
     final cp1252CeScore = _centralEuropeanCharScore(cp1252Text);
 
     String chosen;
-    if (cp1250Score >= 2 && cp1250Score > cp1252CeScore) {
+    if (_looksLikeItalianText(cp1252Text) &&
+        _italianCp1250MojibakeScore(cp1250Text) >= 3) {
+      // Alcuni TXT italiani della Biblioteca Digitale per i Ciechi sono in
+      // Windows-1252. Se li si interpreta come Windows-1250, le vocali
+      // accentate diventano caratteri cechi/polacchi, ad esempio:
+      // sarà -> sarŕ, è -> č, lì -> lě, più -> piů.
+      // In questo caso preferiamo Windows-1252, come fa il percorso BDCiechi.
+      chosen = cp1252Text;
+    } else if (cp1250Score >= 2 && cp1250Score > cp1252CeScore) {
       chosen = cp1250Text;
     } else if (cp1252Score > 0 && cp1250Score == 0) {
       chosen = cp1252Text;
@@ -387,6 +391,69 @@ class DocumentTextExtractor {
       }
     }
     return score;
+  }
+
+  static String _repairItalianCp1250Mojibake(String text) {
+    final score = _italianCp1250MojibakeScore(text);
+    if (score < 3) return text;
+    if (!_looksLikeItalianText(text)) return text;
+
+    return text
+        .replaceAll('Ŕ', 'À')
+        .replaceAll('Č', 'È')
+        .replaceAll('Ě', 'Ì')
+        .replaceAll('Ň', 'Ò')
+        .replaceAll('Ů', 'Ù')
+        .replaceAll('ŕ', 'à')
+        .replaceAll('č', 'è')
+        .replaceAll('ě', 'ì')
+        .replaceAll('ň', 'ò')
+        .replaceAll('ů', 'ù');
+  }
+
+  static int _italianCp1250MojibakeScore(String text) {
+    var score = 0;
+    for (final codeUnit in text.codeUnits) {
+      if (codeUnit == 0x0155 || // ŕ -> à
+          codeUnit == 0x010D || // č -> è
+          codeUnit == 0x011B || // ě -> ì
+          codeUnit == 0x0148 || // ň -> ò
+          codeUnit == 0x016F || // ů -> ù
+          codeUnit == 0x0154 || // Ŕ -> À
+          codeUnit == 0x010C || // Č -> È
+          codeUnit == 0x011A || // Ě -> Ì
+          codeUnit == 0x0147 || // Ň -> Ò
+          codeUnit == 0x016E) { // Ů -> Ù
+        score++;
+      }
+    }
+    return score;
+  }
+
+  static bool _looksLikeItalianText(String text) {
+    final lower = text.toLowerCase();
+    if (lower.contains('biblioteca digitale per i ciechi')) return true;
+
+    var score = 0;
+    const markers = [
+      ' che ',
+      ' non ',
+      ' per ',
+      ' della ',
+      ' delle ',
+      ' degli ',
+      ' alla ',
+      ' nello ',
+      ' sono ',
+      ' aveva ',
+      ' essere ',
+      ' perché',
+      ' pi ',
+    ];
+    for (final marker in markers) {
+      if (lower.contains(marker)) score++;
+    }
+    return score >= 4;
   }
 
   static String _repairUtf8Mojibake(String text) {

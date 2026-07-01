@@ -1372,6 +1372,14 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsMultipleDocumentBookmarksHint =>
       'Gdy opcja jest wyłączona, każdy dokument ma tylko jedną zakładkę. Gdy jest włączona, możesz zapisać wiele zakładek w tym samym dokumencie.';
 
+
+  @override
+  String get settingsVideoLandscapeFullscreen => 'Wideo poziome na pełnym ekranie';
+
+  @override
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Po włączeniu wideo jest ono wyświetlane na pełnym ekranie w orientacji poziomej. Radia tylko audio pozostają bez zmian.';
+
   @override
   String get documentGoToBookmarkAction => 'Przejdź do zakładki';
 
