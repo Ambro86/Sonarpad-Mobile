@@ -92,6 +92,9 @@ class TvProgram {
 }
 
 class TvService {
+  static const _routeClientToken =
+      String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN');
+
   static const _prefsKey = 'sonarpad_tv_favorites';
   static const _staticKeyParts = ['sonar', 'pad-', 'SonarSecure-'];
   static const _la7StreamUrl =
@@ -158,10 +161,8 @@ class TvService {
         Uri.parse(
             'https://sonarpad.com/api/tv_channels_resolver.php?resolve=0'),
         headers: {
-          'X-Sonarpad-TV-Token':
-              '__SONARPAD_ROUTE_CLIENT_TOKEN__',
-          'X-Sonarpad-Route-Token':
-              const String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN'),
+          'X-Sonarpad-TV-Token': _routeClientToken,
+          'X-Sonarpad-Route-Token': _routeClientToken,
           'User-Agent': 'Sonarpad TV/1.0',
         },
       ).timeout(const Duration(seconds: 10));
