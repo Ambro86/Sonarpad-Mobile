@@ -1897,6 +1897,36 @@ abstract class AppLocalizations {
   /// **'Regola di quanto avanza o arretra il cursore della posizione documento con il flick verso l’alto o verso il basso.'**
   String get settingsDocumentSliderStepHint;
 
+  /// Localized text for settingsReadingSleepTimer.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer spegnimento lettura'**
+  String get settingsReadingSleepTimer;
+
+  /// Localized text for settingsReadingSleepTimerOff.
+  ///
+  /// In it, this message translates to:
+  /// **'Disattivo'**
+  String get settingsReadingSleepTimerOff;
+
+  /// Localized text for settingsReadingSleepTimerMinutes.
+  ///
+  /// In it, this message translates to:
+  /// **'{minutes} minuti'**
+  String settingsReadingSleepTimerMinutes(int minutes);
+
+  /// Localized text for settingsReadingSleepTimerHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Ferma automaticamente la lettura del documento dopo il tempo scelto e salva il punto di arresto. Il conteggio riparte ogni volta che avvii la lettura di un documento.'**
+  String get settingsReadingSleepTimerHint;
+
+  /// Localized text for documentReadingSleepTimerStopped.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer di spegnimento: lettura interrotta e punto salvato.'**
+  String get documentReadingSleepTimerStopped;
+
   /// Localized text for settingsSeekStep.
   ///
   /// In it, this message translates to:

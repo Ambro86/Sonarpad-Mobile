@@ -18,12 +18,15 @@
       "Aggiunta l’opzione per includere le note a piè di pagina nel testo degli EPUB supportati, così possono essere lette vicino al punto in cui sono richiamate.",
       "Aggiunta l’opzione per usare più segnalibri nello stesso documento e scegliere a quale tornare.",
       "Aggiunta l’opzione Intervallo slider documenti, per scegliere quanto avanzare o arretrare nella lettura usando lo slider della posizione.",
+      "Quando la lettura di un documento è in corso, spostando lo slider della posizione Sonarpad riallinea subito anche la lettura TTS al nuovo punto scelto.",
       "Aggiunta l’opzione per mostrare i video a schermo intero in orizzontale quando il video è attivo.",
       "Le liste di notizie ed episodi podcast mostrano ora anche data e ora accanto al titolo, con indicazioni come oggi, ieri, domani e dopodomani quando disponibili.",
       "Migliorata la ricerca nella Biblioteca Digitale: le parole possono essere scritte anche in ordine diverso, per esempio “Ellis Peters” trova anche “Peters Ellis”.",
       "Migliorata la ricerca farmaci: oltre ai medicinali AIFA/AIC, Sonarpad può mostrare anche parafarmaci, integratori e altri prodotti farmaceutici quando disponibili.",
       "Le ricerche recenti dei farmaci conservano ora anche le ricerche di parafarmaci, integratori e prodotti farmaceutici.",
-      "Aggiunta nelle impostazioni la possibilità di vedere e svuotare la cache dei podcast. Sonarpad ora la pulisce anche automaticamente quando diventa troppo grande o contiene file vecchi, senza rimuovere abbonamenti o cronologia."
+      "Aggiunta nelle impostazioni la possibilità di vedere e svuotare la cache dei podcast. Sonarpad ora la pulisce anche automaticamente quando diventa troppo grande o contiene file vecchi, senza rimuovere abbonamenti o cronologia.",
+      "Aggiunto nei Documenti il timer di spegnimento della lettura: può fermare automaticamente la lettura del documento dopo il tempo scelto, sia con Edge sia con le voci di sistema, salvando il punto di arresto. Il conteggio riparte quando avvii la lettura di un altro documento.",
+      "Migliorata la pausa/ripresa della lettura documenti con le cuffie: con le voci di sistema, il comando Play/Pausa viene trattato come il tocco magico e la lettura può ripartire senza chiudere e riaprire il libro."
     ],
     "en": [
       "Improved document reading: some texts with unusual accents are now read more reliably, including when moving character by character with VoiceOver.",
@@ -41,9 +44,12 @@
       "Added an option to include footnotes in the text of supported EPUB books, so notes can be read near the point where they are referenced.",
       "Added an option to use multiple bookmarks in the same document and choose which one to return to.",
       "Added the Document slider step option, letting you choose how far to move forward or backward with the document position slider.",
+      "When a document is being read aloud, moving the document position slider now immediately realigns TTS playback to the new selected point.",
       "Added an option to show videos full-screen in landscape when video is enabled.",
       "News and podcast episode lists now show date and time next to the title, using labels such as today, yesterday, tomorrow and the day after tomorrow when available.",
-      "Added a setting to view and clear the podcast cache. Sonarpad now also cleans it automatically when it becomes too large or contains old files, without removing subscriptions or history."
+      "Added a setting to view and clear the podcast cache. Sonarpad now also cleans it automatically when it becomes too large or contains old files, without removing subscriptions or history.",
+      "Added a document reading sleep timer: it can automatically stop reading the current document after the chosen time, with both Edge and system voices, and save the stopping point. The countdown restarts when you start reading another document.",
+      "Improved document reading pause/resume from headphones: with system voices, the Play/Pause command is handled like Magic Tap so reading can resume without closing and reopening the book."
     ],
     "fr": [
       "Amélioration de la lecture des documents : certains textes avec des accents particuliers sont maintenant mieux lus, y compris caractère par caractère avec VoiceOver.",
@@ -61,9 +67,12 @@
       "Ajout d’une option pour inclure les notes de bas de page dans le texte des EPUB compatibles, afin de les lire près du passage qui les appelle.",
       "Ajout d’une option pour utiliser plusieurs signets dans le même document et choisir auquel revenir.",
       "Ajout de l’option Pas du curseur des documents, pour choisir de combien avancer ou reculer avec le curseur de position.",
+      "Pendant la lecture vocale d’un document, déplacer le curseur de position réaligne maintenant immédiatement la lecture TTS sur le nouveau point choisi.",
       "Ajout d’une option pour afficher les vidéos en plein écran horizontal lorsque la vidéo est activée.",
       "Les listes d’actualités et d’épisodes de podcast affichent maintenant la date et l’heure à côté du titre, avec des indications comme aujourd’hui, hier, demain et après-demain lorsque disponibles.",
-      "Ajout d’un réglage pour voir et vider le cache des podcasts. Sonarpad le nettoie aussi automatiquement lorsqu’il devient trop volumineux ou contient d’anciens fichiers, sans supprimer les abonnements ni l’historique."
+      "Ajout d’un réglage pour voir et vider le cache des podcasts. Sonarpad le nettoie aussi automatiquement lorsqu’il devient trop volumineux ou contient d’anciens fichiers, sans supprimer les abonnements ni l’historique.",
+      "Ajout d’un minuteur d’arrêt pour la lecture des documents : il peut arrêter automatiquement la lecture du document en cours après la durée choisie, avec Edge comme avec les voix système, et enregistrer le point d’arrêt. Le compte à rebours redémarre quand vous lancez la lecture d’un autre document.",
+      "Amélioration de la pause/reprise de la lecture des documents avec les écouteurs : avec les voix système, la commande Lecture/Pause est traitée comme le toucher magique et la lecture peut reprendre sans fermer puis rouvrir le livre."
     ],
     "es": [
       "Mejorada la lectura de documentos: algunos textos con acentos especiales ahora se leen mejor, también al moverse carácter por carácter con VoiceOver.",
@@ -81,9 +90,12 @@
       "Añadida una opción para incluir las notas a pie de página en el texto de los EPUB compatibles, de modo que se lean cerca del punto donde se citan.",
       "Añadida una opción para usar varios marcadores en el mismo documento y elegir a cuál volver.",
       "Añadida la opción Intervalo del deslizador de documentos, para elegir cuánto avanzar o retroceder con el deslizador de posición.",
+      "Mientras se lee un documento en voz alta, al mover el deslizador de posición Sonarpad reajusta inmediatamente la lectura TTS al nuevo punto elegido.",
       "Las listas de noticias y episodios de podcast ahora muestran fecha y hora junto al título, con indicaciones como hoy, ayer, mañana y pasado mañana cuando están disponibles.",
       "Añadida una opción para mostrar los vídeos a pantalla completa en horizontal cuando el vídeo está activado.",
-      "Añadida una opción para ver y vaciar la caché de podcasts. Sonarpad ahora también la limpia automáticamente cuando crece demasiado o contiene archivos antiguos, sin eliminar suscripciones ni historial."
+      "Añadida una opción para ver y vaciar la caché de podcasts. Sonarpad ahora también la limpia automáticamente cuando crece demasiado o contiene archivos antiguos, sin eliminar suscripciones ni historial.",
+      "Añadido un temporizador de apagado para la lectura de documentos: puede detener automáticamente la lectura del documento actual tras el tiempo elegido, tanto con Edge como con las voces del sistema, y guardar el punto de parada. La cuenta atrás se reinicia cuando empiezas a leer otro documento.",
+      "Mejorada la pausa/reanudación de la lectura de documentos con auriculares: con las voces del sistema, el comando Reproducir/Pausa se trata como el toque mágico y la lectura puede continuar sin cerrar y volver a abrir el libro."
     ],
     "pt": [
       "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caráter a caráter com o VoiceOver.",
@@ -101,9 +113,12 @@
       "Adicionada uma opção para incluir notas de rodapé no texto dos EPUB suportados, para que sejam lidas perto do ponto onde são referidas.",
       "Adicionada uma opção para usar vários marcadores no mesmo documento e escolher para qual voltar.",
       "Adicionada a opção Passo do controlo dos documentos, para escolher quanto avançar ou recuar com o controlo de posição.",
+      "Durante a leitura de um documento em voz alta, ao mover o controlo de posição o Sonarpad realinha imediatamente a leitura TTS com o novo ponto escolhido.",
       "As listas de notícias e episódios de podcast mostram agora data e hora junto ao título, com indicações como hoje, ontem, amanhã e depois de amanhã quando disponíveis.",
       "Adicionada uma opção para mostrar vídeos em ecrã inteiro horizontal quando o vídeo está ativo.",
-      "Adicionada uma opção para ver e limpar a cache de podcasts. O Sonarpad agora também a limpa automaticamente quando fica demasiado grande ou contém ficheiros antigos, sem remover subscrições nem histórico."
+      "Adicionada uma opção para ver e limpar a cache de podcasts. O Sonarpad agora também a limpa automaticamente quando fica demasiado grande ou contém ficheiros antigos, sem remover subscrições nem histórico.",
+      "Adicionado um temporizador de suspensão para a leitura de documentos: pode parar automaticamente a leitura do documento atual após o tempo escolhido, tanto com Edge como com as vozes do sistema, e guardar o ponto de paragem. A contagem recomeça quando inicia a leitura de outro documento.",
+      "Melhorada a pausa/retoma da leitura de documentos com auscultadores: com as vozes do sistema, o comando Reproduzir/Pausar é tratado como o toque mágico e a leitura pode retomar sem fechar e reabrir o livro."
     ],
     "pl": [
       "Ulepszono czytanie dokumentów: niektóre teksty z nietypowymi akcentami są teraz odczytywane lepiej, także podczas przechodzenia znak po znaku z VoiceOver.",
@@ -122,9 +137,12 @@
       "Dodano opcję uwzględniania przypisów dolnych w tekście obsługiwanych książek EPUB, aby można je było czytać blisko miejsca, do którego się odnoszą.",
       "Dodano opcję używania wielu zakładek w tym samym dokumencie i wybierania, do której wrócić.",
       "Dodano opcję kroku suwaka dokumentu, aby wybrać, o ile przechodzić do przodu lub do tyłu suwakiem pozycji.",
+      "Podczas odczytywania dokumentu przesunięcie suwaka pozycji od razu wyrównuje odczyt TTS z nowo wybranym miejscem.",
       "Dodano opcję wyświetlania wideo na pełnym ekranie w poziomie, gdy wideo jest włączone.",
       "Listy wiadomości i odcinków podcastów pokazują teraz przy tytule datę i godzinę, z etykietami takimi jak dziś, wczoraj, jutro i pojutrze, gdy są dostępne.",
-      "Dodano ustawienie pozwalające sprawdzić i wyczyścić pamięć podręczną podcastów. Sonarpad automatycznie czyści ją także wtedy, gdy jest zbyt duża lub zawiera stare pliki, bez usuwania subskrypcji ani historii."
+      "Dodano ustawienie pozwalające sprawdzić i wyczyścić pamięć podręczną podcastów. Sonarpad automatycznie czyści ją także wtedy, gdy jest zbyt duża lub zawiera stare pliki, bez usuwania subskrypcji ani historii.",
+      "Dodano timer wyłączania czytania dokumentów: może automatycznie zatrzymać czytanie bieżącego dokumentu po wybranym czasie, zarówno z Edge, jak i z głosami systemowymi, oraz zapisać miejsce zatrzymania. Odliczanie zaczyna się od nowa po uruchomieniu czytania innego dokumentu.",
+      "Ulepszono pauzę i wznawianie czytania dokumentów ze słuchawek: przy głosach systemowych polecenie Odtwórz/Pauza działa jak Magic Tap, więc czytanie można wznowić bez zamykania i ponownego otwierania książki."
     ],
     "cs": [
       "Vylepšeno čtení dokumentů: některé texty se zvláštními akcenty se nyní čtou lépe, i při pohybu znak po znaku pomocí VoiceOveru.",
@@ -142,9 +160,12 @@
       "Přidána možnost zahrnout poznámky pod čarou do textu podporovaných EPUB knih, aby se četly poblíž místa, kde jsou zmíněny.",
       "Přidána možnost používat více záložek ve stejném dokumentu a vybrat, ke které se vrátit.",
       "Přidána možnost kroku posuvníku dokumentu, která určuje, o kolik se posunout vpřed nebo zpět pomocí posuvníku pozice.",
+      "Během hlasitého čtení dokumentu nyní posunutí posuvníku pozice okamžitě sladí čtení TTS s nově vybraným místem.",
       "Přidána možnost zobrazit video na celou obrazovku vodorovně, když je video zapnuté.",
       "Seznamy zpráv a epizod podcastů nyní u názvu zobrazují také datum a čas, případně s označeními jako dnes, včera, zítra a pozítří.",
-      "Přidáno nastavení pro zobrazení a vymazání mezipaměti podcastů. Sonarpad ji nyní automaticky čistí také tehdy, když je příliš velká nebo obsahuje staré soubory, bez odstranění odběrů nebo historie."
+      "Přidáno nastavení pro zobrazení a vymazání mezipaměti podcastů. Sonarpad ji nyní automaticky čistí také tehdy, když je příliš velká nebo obsahuje staré soubory, bez odstranění odběrů nebo historie.",
+      "Přidán časovač vypnutí čtení dokumentů: může automaticky zastavit čtení aktuálního dokumentu po zvolené době, s Edge i systémovými hlasy, a uložit místo zastavení. Odpočítávání začne znovu, když spustíte čtení jiného dokumentu.",
+      "Vylepšeno pozastavení a pokračování čtení dokumentů ze sluchátek: u systémových hlasů se příkaz Přehrát/Pauza zpracuje jako Magic Tap, takže čtení lze obnovit bez zavření a opětovného otevření knihy."
     ]
   },
   {

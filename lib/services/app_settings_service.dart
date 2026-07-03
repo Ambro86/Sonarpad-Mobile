@@ -65,9 +65,27 @@ class AppSettingsService {
       'sonarpad_multiple_document_bookmarks';
   static const _documentSliderStepPercentKey =
       'sonarpad_document_slider_step_percent';
+  static const _documentReadingSleepTimerMinutesKey =
+      'sonarpad_document_reading_sleep_timer_minutes';
 
   static const documentSliderStepPercentOptions = <int>[2, 5, 10, 15, 20, 30];
   static const defaultDocumentSliderStepPercent = 10;
+  static const documentReadingSleepTimerMinutesOptions = <int>[
+    0,
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90,
+    100,
+    110,
+    120,
+  ];
+  static const defaultDocumentReadingSleepTimerMinutes = 0;
 
   static const ttsLanguages = [
     TtsVoiceLanguage('it', 'Italiano'),
@@ -712,6 +730,35 @@ class AppSettingsService {
     await prefs.setInt(
       _documentSliderStepPercentKey,
       _normalizeDocumentSliderStepPercent(value),
+    );
+  }
+
+  int _normalizeDocumentReadingSleepTimerMinutes(int value) {
+    if (documentReadingSleepTimerMinutesOptions.contains(value)) return value;
+    var best = documentReadingSleepTimerMinutesOptions.first;
+    var bestDistance = (value - best).abs();
+    for (final option in documentReadingSleepTimerMinutesOptions.skip(1)) {
+      final distance = (value - option).abs();
+      if (distance < bestDistance) {
+        best = option;
+        bestDistance = distance;
+      }
+    }
+    return best;
+  }
+
+  Future<int> loadDocumentReadingSleepTimerMinutes() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getInt(_documentReadingSleepTimerMinutesKey) ??
+        defaultDocumentReadingSleepTimerMinutes;
+    return _normalizeDocumentReadingSleepTimerMinutes(value);
+  }
+
+  Future<void> saveDocumentReadingSleepTimerMinutes(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+      _documentReadingSleepTimerMinutesKey,
+      _normalizeDocumentReadingSleepTimerMinutes(value),
     );
   }
 

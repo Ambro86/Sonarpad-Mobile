@@ -329,6 +329,31 @@
     "description": "Localized text for settingsDocumentSliderStep."
   },
   "settingsDocumentSliderStepHint": "Controla cuánto avanza o retrocede el deslizador de posición del documento al deslizar hacia arriba o hacia abajo.",
+  "settingsReadingSleepTimer": "Temporizador de apagado de lectura",
+  "@settingsReadingSleepTimer": {
+    "description": "Localized text for settingsReadingSleepTimer."
+  },
+  "settingsReadingSleepTimerOff": "Desactivado",
+  "@settingsReadingSleepTimerOff": {
+    "description": "Localized text for settingsReadingSleepTimerOff."
+  },
+  "settingsReadingSleepTimerMinutes": "{minutes} minutos",
+  "@settingsReadingSleepTimerMinutes": {
+    "description": "Localized text for settingsReadingSleepTimerMinutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsReadingSleepTimerHint": "Detiene automáticamente la lectura del documento actual tras el tiempo elegido y guarda el punto de parada. La cuenta atrás se reinicia cada vez que empiezas a leer un documento.",
+  "@settingsReadingSleepTimerHint": {
+    "description": "Localized text for settingsReadingSleepTimerHint."
+  },
+  "documentReadingSleepTimerStopped": "Temporizador de apagado: lectura detenida y posición guardada.",
+  "@documentReadingSleepTimerStopped": {
+    "description": "Localized text for documentReadingSleepTimerStopped."
+  },
   "@settingsDocumentSliderStepHint": {
     "description": "Localized text for settingsDocumentSliderStepHint."
   },

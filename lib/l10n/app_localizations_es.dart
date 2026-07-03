@@ -1024,6 +1024,23 @@ class AppLocalizationsEs extends AppLocalizations {
       'Controla cuánto avanza o retrocede el deslizador de posición del documento al deslizar hacia arriba o hacia abajo.';
 
   @override
+  String get settingsReadingSleepTimer => "Temporizador de apagado de lectura";
+
+  @override
+  String get settingsReadingSleepTimerOff => "Desactivado";
+
+  @override
+  String settingsReadingSleepTimerMinutes(int minutes) {
+    return '$minutes minutos';
+  }
+
+  @override
+  String get settingsReadingSleepTimerHint => "Detiene automáticamente la lectura del documento actual tras el tiempo elegido y guarda el punto de parada. La cuenta atrás se reinicia cada vez que empiezas a leer un documento.";
+
+  @override
+  String get documentReadingSleepTimerStopped => "Temporizador de apagado: lectura detenida y posición guardada.";
+
+  @override
   String get settingsSeekStep =>
       'Intervalo de retroceso / avance rápido para multimedia';
 

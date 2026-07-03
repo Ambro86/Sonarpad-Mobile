@@ -61,6 +61,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _seekSliderStep = 60;
   int _documentSliderStepPercent =
       AppSettingsService.defaultDocumentSliderStepPercent;
+  int _documentReadingSleepTimerMinutes =
+      AppSettingsService.defaultDocumentReadingSleepTimerMinutes;
   final _audio = AudioPlayerService();
   String _savedTvSecretCode = '';
   String _savedAppLanguage = 'it';
@@ -81,6 +83,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _savedSeekSliderStep = 60;
   int _savedDocumentSliderStepPercent =
       AppSettingsService.defaultDocumentSliderStepPercent;
+  int _savedDocumentReadingSleepTimerMinutes =
+      AppSettingsService.defaultDocumentReadingSleepTimerMinutes;
 
   String get _multipleDocumentBookmarksTitle =>
       AppLocalizations.of(context).settingsMultipleDocumentBookmarks;
@@ -99,6 +103,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   String _formatPercent(int value) => '$value%';
+
+  String _formatSleepTimerMinutes(int value) {
+    final l10n = AppLocalizations.of(context);
+    if (value <= 0) return l10n.settingsReadingSleepTimerOff;
+    return l10n.settingsReadingSleepTimerMinutes(value);
+  }
 
   String _formatBytes(int bytes) {
     if (bytes < 1024) return '$bytes B';
@@ -130,6 +140,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final options = AppSettingsService.documentSliderStepPercentOptions;
     final clampedIndex = index.clamp(0, options.length - 1).toInt();
     return options[clampedIndex];
+  }
+
+  int get _documentReadingSleepTimerOptionIndex {
+    final options = AppSettingsService.documentReadingSleepTimerMinutesOptions;
+    final exact = options.indexOf(_documentReadingSleepTimerMinutes);
+    if (exact >= 0) return exact;
+    var bestIndex = 0;
+    var bestDistance = (_documentReadingSleepTimerMinutes - options.first).abs();
+    for (var i = 1; i < options.length; i++) {
+      final distance = (_documentReadingSleepTimerMinutes - options[i]).abs();
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestIndex = i;
+      }
+    }
+    return bestIndex;
+  }
+
+  int _documentReadingSleepTimerAt(int index) {
+    final options = AppSettingsService.documentReadingSleepTimerMinutesOptions;
+    final clampedIndex = index.clamp(0, options.length - 1).toInt();
+    return options[clampedIndex];
+  }
+
+  void _setDocumentReadingSleepTimerByIndex(double value) {
+    setState(() {
+      _documentReadingSleepTimerMinutes =
+          _documentReadingSleepTimerAt(value.round());
+    });
+  }
+
+  void _increaseDocumentReadingSleepTimer() {
+    setState(() {
+      _documentReadingSleepTimerMinutes = _documentReadingSleepTimerAt(
+        _documentReadingSleepTimerOptionIndex + 1,
+      );
+    });
+  }
+
+  void _decreaseDocumentReadingSleepTimer() {
+    setState(() {
+      _documentReadingSleepTimerMinutes = _documentReadingSleepTimerAt(
+        _documentReadingSleepTimerOptionIndex - 1,
+      );
+    });
   }
 
   void _setDocumentSliderStepByIndex(double value) {
@@ -191,6 +246,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final seekSliderStep = await _settings.loadSeekSliderStep();
     final documentSliderStepPercent =
         await _settings.loadDocumentSliderStepPercent();
+    final documentReadingSleepTimerMinutes =
+        await _settings.loadDocumentReadingSleepTimerMinutes();
     await _podcastCache.cleanAutomatically();
     final podcastCacheBytes = await _podcastCache.cacheSizeBytes();
     final edgeVoices = await AppSettingsService.loadEdgeVoices();
@@ -244,6 +301,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedSeekSliderStep = seekSliderStep;
       _documentSliderStepPercent = documentSliderStepPercent;
       _savedDocumentSliderStepPercent = documentSliderStepPercent;
+      _documentReadingSleepTimerMinutes = documentReadingSleepTimerMinutes;
+      _savedDocumentReadingSleepTimerMinutes =
+          documentReadingSleepTimerMinutes;
       _podcastCacheBytes = podcastCacheBytes;
       _loading = false;
     });
@@ -290,6 +350,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final seekSliderStepChanged = _seekSliderStep != _savedSeekSliderStep;
     final documentSliderStepChanged =
         _documentSliderStepPercent != _savedDocumentSliderStepPercent;
+    final documentReadingSleepTimerChanged = _documentReadingSleepTimerMinutes !=
+        _savedDocumentReadingSleepTimerMinutes;
     final ttsEngineChanged = _ttsEngine != _savedTtsEngine;
     final ttsSettingsChanged = ttsEngineChanged ||
         _languageCode != _savedLanguageCode ||
@@ -309,6 +371,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         homeGroupingChanged ||
         seekSliderStepChanged ||
         documentSliderStepChanged ||
+        documentReadingSleepTimerChanged ||
         ttsSettingsChanged;
     final savedMessage = codeChanged && rawCode.isNotEmpty
         ? l10n.sonarpadCodeValidMessage
@@ -325,6 +388,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'homeGroupingChanged=$homeGroupingChanged '
       'seekSliderStepChanged=$seekSliderStepChanged '
       'documentSliderStepChanged=$documentSliderStepChanged '
+      'documentReadingSleepTimerChanged=$documentReadingSleepTimerChanged '
       'ttsEngine=$_ttsEngine previous=$_savedTtsEngine '
       'ttsSettingsChanged=$ttsSettingsChanged voice=$_voice savedVoice=$_savedVoice '
       'systemVoice=$_systemTtsVoice savedSystemVoice=$_savedSystemTtsVoice',
@@ -365,6 +429,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.setHomeGroupingEnabled(_homeGroupingEnabled);
     await _settings.saveSeekSliderStep(_seekSliderStep);
     await _settings.saveDocumentSliderStepPercent(_documentSliderStepPercent);
+    await _settings.saveDocumentReadingSleepTimerMinutes(
+      _documentReadingSleepTimerMinutes,
+    );
     _markSaved(rawCode);
 
     if (!mounted) return;
@@ -470,6 +537,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedHomeGroupingEnabled = _homeGroupingEnabled;
     _savedSeekSliderStep = _seekSliderStep;
     _savedDocumentSliderStepPercent = _documentSliderStepPercent;
+    _savedDocumentReadingSleepTimerMinutes = _documentReadingSleepTimerMinutes;
   }
 
   bool get _hasUnsavedChanges {
@@ -491,7 +559,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _displayVideoInPortrait != _savedDisplayVideoInPortrait ||
         _homeGroupingEnabled != _savedHomeGroupingEnabled ||
         _seekSliderStep != _savedSeekSliderStep ||
-        _documentSliderStepPercent != _savedDocumentSliderStepPercent;
+        _documentSliderStepPercent != _savedDocumentSliderStepPercent ||
+        _documentReadingSleepTimerMinutes !=
+            _savedDocumentReadingSleepTimerMinutes;
   }
 
   Future<bool> _confirmLeaveSettings() async {
@@ -1141,6 +1211,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         () => _multipleDocumentBookmarks = val,
                       ),
                       contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Text(
+                            '${l10n.settingsReadingSleepTimer}: '
+                            '${_formatSleepTimerMinutes(_documentReadingSleepTimerMinutes)}',
+                          ),
+                        ),
+                        Semantics(
+                          slider: true,
+                          label: l10n.settingsReadingSleepTimer,
+                          value: _formatSleepTimerMinutes(
+                            _documentReadingSleepTimerMinutes,
+                          ),
+                          increasedValue: _formatSleepTimerMinutes(
+                            _documentReadingSleepTimerAt(
+                              _documentReadingSleepTimerOptionIndex + 1,
+                            ),
+                          ),
+                          decreasedValue: _formatSleepTimerMinutes(
+                            _documentReadingSleepTimerAt(
+                              _documentReadingSleepTimerOptionIndex - 1,
+                            ),
+                          ),
+                          onIncrease: _increaseDocumentReadingSleepTimer,
+                          onDecrease: _decreaseDocumentReadingSleepTimer,
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: _documentReadingSleepTimerOptionIndex
+                                  .toDouble(),
+                              min: 0,
+                              max: (AppSettingsService
+                                          .documentReadingSleepTimerMinutesOptions
+                                          .length -
+                                      1)
+                                  .toDouble(),
+                              divisions: AppSettingsService
+                                      .documentReadingSleepTimerMinutesOptions
+                                      .length -
+                                  1,
+                              onChanged:
+                                  _setDocumentReadingSleepTimerByIndex,
+                            ),
+                          ),
+                        ),
+                        Text(l10n.settingsReadingSleepTimerHint),
+                      ],
                     ),
                     const SizedBox(height: 12),
                     Column(

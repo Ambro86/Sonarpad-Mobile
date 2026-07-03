@@ -1015,6 +1015,23 @@ class AppLocalizationsPl extends AppLocalizations {
       'Określa, o ile przesuwa się suwak pozycji dokumentu po przesunięciu palcem w górę lub w dół.';
 
   @override
+  String get settingsReadingSleepTimer => "Timer wyłączania czytania";
+
+  @override
+  String get settingsReadingSleepTimerOff => "Wyłączony";
+
+  @override
+  String settingsReadingSleepTimerMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get settingsReadingSleepTimerHint => "Automatycznie zatrzymuje czytanie bieżącego dokumentu po wybranym czasie i zapisuje miejsce zatrzymania. Odliczanie zaczyna się od nowa przy każdym uruchomieniu czytania dokumentu.";
+
+  @override
+  String get documentReadingSleepTimerStopped => "Timer wyłączania: czytanie zatrzymane, a pozycja zapisana.";
+
+  @override
   String get settingsSeekStep =>
       'Krok przewijania wstecz / do przodu dla mediów';
 

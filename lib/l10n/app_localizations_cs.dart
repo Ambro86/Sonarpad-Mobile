@@ -1017,6 +1017,23 @@ class AppLocalizationsCs extends AppLocalizations {
       'Určuje, o kolik se posune posuvník pozice dokumentu při přejetí nahoru nebo dolů.';
 
   @override
+  String get settingsReadingSleepTimer => "Časovač vypnutí čtení";
+
+  @override
+  String get settingsReadingSleepTimerOff => "Vypnuto";
+
+  @override
+  String settingsReadingSleepTimerMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get settingsReadingSleepTimerHint => "Po zvolené době automaticky zastaví čtení aktuálního dokumentu a uloží místo zastavení. Odpočítávání začne znovu při každém spuštění čtení dokumentu.";
+
+  @override
+  String get documentReadingSleepTimerStopped => "Časovač vypnutí: čtení zastaveno a poloha uložena.";
+
+  @override
   String get settingsSeekStep => 'Krok zpět / vpřed pro média';
 
   @override

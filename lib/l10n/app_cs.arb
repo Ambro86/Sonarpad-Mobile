@@ -326,6 +326,31 @@
     "description": "Localized text for settingsDocumentSliderStep."
   },
   "settingsDocumentSliderStepHint": "Určuje, o kolik se posune posuvník pozice dokumentu při přejetí nahoru nebo dolů.",
+  "settingsReadingSleepTimer": "Časovač vypnutí čtení",
+  "@settingsReadingSleepTimer": {
+    "description": "Localized text for settingsReadingSleepTimer."
+  },
+  "settingsReadingSleepTimerOff": "Vypnuto",
+  "@settingsReadingSleepTimerOff": {
+    "description": "Localized text for settingsReadingSleepTimerOff."
+  },
+  "settingsReadingSleepTimerMinutes": "{minutes} min",
+  "@settingsReadingSleepTimerMinutes": {
+    "description": "Localized text for settingsReadingSleepTimerMinutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsReadingSleepTimerHint": "Po zvolené době automaticky zastaví čtení aktuálního dokumentu a uloží místo zastavení. Odpočítávání začne znovu při každém spuštění čtení dokumentu.",
+  "@settingsReadingSleepTimerHint": {
+    "description": "Localized text for settingsReadingSleepTimerHint."
+  },
+  "documentReadingSleepTimerStopped": "Časovač vypnutí: čtení zastaveno a poloha uložena.",
+  "@documentReadingSleepTimerStopped": {
+    "description": "Localized text for documentReadingSleepTimerStopped."
+  },
   "@settingsDocumentSliderStepHint": {
     "description": "Localized text for settingsDocumentSliderStepHint."
   },

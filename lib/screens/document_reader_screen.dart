@@ -57,7 +57,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // TTS state
   bool _speaking = false;
   int _readingToken = 0;
+  int _documentSeekToken = 0;
   String? _ttsStatus;
+  Timer? _readingSleepTimer;
+  int _documentReadingSleepTimerMinutes =
+      AppSettingsService.defaultDocumentReadingSleepTimerMinutes;
   int _playingChunkIndex = -1;
   StreamController<File>? _edgeFileController;
   // (chunkKeys rimosso, usiamo scroll_to_index)
@@ -70,6 +74,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   bool _ttsPaused = false;
   String? _activeTtsEngine;
+  bool _systemTtsResumeInProgress = false;
   StreamSubscription<bool>? _playingSub;
 
   static const int _maxChunkChars = 650;
@@ -87,20 +92,27 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _currentDoc = widget.document;
     _bookmarkIndex = _currentDoc.bookmarkIndex;
     _hasBookmark = _currentDoc.bookmarkIndex > 0;
-    _bookmarkIndexes = _normalizeBookmarkIndexes(
-      _currentDoc.bookmarkIndexes,
-      fallbackIndex: _currentDoc.bookmarkIndex,
-    );
+    _bookmarkIndexes = _normalizeBookmarkIndexes(_currentDoc.bookmarkIndexes);
     _playingSub = _audio.playingStream.listen((playing) {
       if (_speaking && _activeTtsEngine != 'system' && mounted) {
         setState(() => _ttsPaused = !playing);
       }
     });
     _flutterTts.setPauseHandler(() {
-      if (mounted && _speaking) setState(() => _ttsPaused = true);
+      if (!mounted || !_speaking) return;
+      setState(() => _ttsPaused = true);
+      unawaited(_saveAutomaticBookmarkFromPlayback());
+      if (Platform.isIOS && _activeTtsEngine == 'system') {
+        unawaited(_setMagicTapPlaying(false));
+      }
     });
     _flutterTts.setContinueHandler(() {
-      if (mounted && _speaking) setState(() => _ttsPaused = false);
+      if (!mounted || !_speaking) return;
+      if (_activeTtsEngine == 'system') {
+        unawaited(_resumeReading());
+      } else {
+        setState(() => _ttsPaused = false);
+      }
     });
 
     _ttsEventsSub = _ttsEvents.receiveBroadcastStream().listen((event) {
@@ -119,6 +131,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
     _ttsEventsSub?.cancel();
     _playingSub?.cancel();
+    _cancelReadingSleepTimer();
     unawaited(_audio.stopAndDispose());
     _scrollController.dispose();
     super.dispose();
@@ -138,6 +151,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         await _settings.multipleDocumentBookmarksEnabled();
     final documentSliderStepPercent =
         await _settings.loadDocumentSliderStepPercent();
+    final documentReadingSleepTimerMinutes =
+        await _settings.loadDocumentReadingSleepTimerMinutes();
     try {
       final editedPath =
           await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
@@ -171,6 +186,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         );
         _multipleDocumentBookmarksEnabled = multipleDocumentBookmarks;
         _documentSliderStepPercent = documentSliderStepPercent;
+        _documentReadingSleepTimerMinutes = documentReadingSleepTimerMinutes;
         _refreshBookmarkStateForCurrentMode();
         // Le chiavi vengono gestite da AutoScrollTag
       }
@@ -190,12 +206,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } finally {
       if (mounted) {
         setState(() => _loadingText = false);
-        final shouldScrollToBookmark = _multipleDocumentBookmarksEnabled
-            ? _bookmarkIndexes.isNotEmpty
-            : _bookmarkIndex > 0;
-        if (shouldScrollToBookmark &&
-            _bookmarkIndex >= 0 &&
-            _bookmarkIndex < _chunks.length) {
+        final shouldScrollToBookmark =
+            _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length;
+        if (shouldScrollToBookmark) {
           Future.delayed(const Duration(milliseconds: 300), () {
             if (mounted) _scrollToChunk(_bookmarkIndex);
           });
@@ -525,18 +538,44 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     return List<int>.unmodifiable(normalized);
   }
 
+  int _validAutomaticBookmarkIndex(int index) {
+    if (index < 0) return 0;
+    if (_chunks.isNotEmpty && index >= _chunks.length) return 0;
+    return index;
+  }
+
+  int _preferredMultipleBookmarkResumeIndex(
+    List<int> manualBookmarks, {
+    required int automaticIndex,
+  }) {
+    var preferredIndex = _validAutomaticBookmarkIndex(automaticIndex);
+    for (final bookmarkIndex in manualBookmarks) {
+      if (bookmarkIndex > preferredIndex) {
+        preferredIndex = bookmarkIndex;
+      }
+    }
+    return preferredIndex;
+  }
+
+  int _storedAutomaticBookmarkIndexForDocumentSave() {
+    if (!_multipleDocumentBookmarksEnabled) return _bookmarkIndex;
+    return _validAutomaticBookmarkIndex(_currentDoc.bookmarkIndex);
+  }
+
   void _refreshBookmarkStateForCurrentMode() {
-    final normalized = _normalizeBookmarkIndexes(
-      _currentDoc.bookmarkIndexes,
-      fallbackIndex: _multipleDocumentBookmarksEnabled
-          ? _currentDoc.bookmarkIndex
-          : null,
-    );
+    final normalized = _normalizeBookmarkIndexes(_currentDoc.bookmarkIndexes);
     _bookmarkIndexes = normalized;
 
-    if (_multipleDocumentBookmarksEnabled && normalized.isNotEmpty) {
-      _bookmarkIndex = normalized.last;
-      _hasBookmark = true;
+    if (_multipleDocumentBookmarksEnabled) {
+      // Con i segnalibri multipli, bookmarkIndex resta salvato come punto
+      // automatico di ripresa lettura. All'apertura, però, Sonarpad si
+      // posiziona sul punto più avanzato tra ripresa automatica e segnalibri
+      // manuali, senza aggiungere il punto automatico alla lista manuale.
+      _bookmarkIndex = _preferredMultipleBookmarkResumeIndex(
+        normalized,
+        automaticIndex: _currentDoc.bookmarkIndex,
+      );
+      _hasBookmark = _bookmarkIndex > 0;
       return;
     }
 
@@ -949,7 +988,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     return 'it-IT-IsabellaNeural';
   }
 
-  Future<void> _startReading() async {
+  Future<void> _startReading({bool restartSleepTimer = true}) async {
     if (_chunks.isEmpty) {
             showStatusMessage(context, AppLocalizations.of(context).noTextToRead);
       return;
@@ -965,6 +1004,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       final engine = await _settings.loadTtsEngine();
       final dictionaryEntries = await _voiceDictionary.loadEntries();
       _activeTtsEngine = engine;
+      _startReadingSleepTimerIfNeeded(restart: restartSleepTimer);
       final startIndex = _bookmarkIndex < _chunks.length && _bookmarkIndex >= 0
           ? _bookmarkIndex
           : 0;
@@ -976,6 +1016,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           } catch (e) {
             dev.log('DocumentReaderScreen: Errore setupMagicTap $e');
           }
+          await _setMagicTapPlaying(true);
         }
         await _configureSystemTtsAudioSession();
         await _flutterTts.awaitSpeakCompletion(true);
@@ -1082,6 +1123,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
       if (!mounted) return;
       if (readingToken != _readingToken) return;
+      _cancelReadingSleepTimer();
       setState(() {
         _playingChunkIndex = -1;
         _speaking = false;
@@ -1126,8 +1168,50 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     await session.setActive(true);
   }
 
-  Future<void> _stopReading() async {
+  Future<void> _setMagicTapPlaying(bool playing) async {
+    if (!Platform.isIOS) return;
+    try {
+      await _ttsCommands.invokeMethod('setMagicTapPlaying', playing);
+    } catch (e) {
+      dev.log('DocumentReaderScreen: errore setMagicTapPlaying $playing: $e');
+    }
+  }
+
+  void _cancelReadingSleepTimer() {
+    _readingSleepTimer?.cancel();
+    _readingSleepTimer = null;
+  }
+
+  void _startReadingSleepTimerIfNeeded({required bool restart}) {
+    if (!restart) return;
+    _cancelReadingSleepTimer();
+    final minutes = _documentReadingSleepTimerMinutes;
+    if (minutes <= 0) return;
+    _readingSleepTimer = Timer(Duration(minutes: minutes), () {
+      _readingSleepTimer = null;
+      unawaited(_stopReading(fromSleepTimer: true));
+    });
+  }
+
+  int? _currentReadingBookmarkIndex() {
+    final index = _playingChunkIndex >= 0
+        ? _playingChunkIndex
+        : _bookmarkIndex.clamp(0, _chunks.length - 1);
+    if (index < 0 || index >= _chunks.length) return null;
+    return index;
+  }
+
+  Future<void> _saveSleepTimerBookmarkFromPlayback() async {
+    final index = _currentReadingBookmarkIndex();
+    if (index == null) return;
+    await _saveAutomaticBookmark(index);
+  }
+
+  Future<void> _stopReading({bool fromSleepTimer = false}) async {
     _readingToken += 1;
+    if (!fromSleepTimer) {
+      _cancelReadingSleepTimer();
+    }
     final edgeController = _edgeFileController;
     _edgeFileController = null;
     final stopAudio = _audio.stop();
@@ -1135,14 +1219,21 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (edgeController != null && !edgeController.isClosed) {
       await edgeController.close();
     }
+    final statusMessage = fromSleepTimer
+        ? AppLocalizations.of(context).documentReadingSleepTimerStopped
+        : AppLocalizations.of(context).readingStopped;
     setState(() {
       _speaking = false;
       _ttsPaused = false;
-      _ttsStatus = 'Lettura interrotta.';
+      _ttsStatus = statusMessage;
     });
     await stopAudio;
     await stopTts;
-    await _saveAutomaticBookmarkFromPlayback();
+    if (fromSleepTimer) {
+      await _saveSleepTimerBookmarkFromPlayback();
+    } else {
+      await _saveAutomaticBookmarkFromPlayback();
+    }
     if (Platform.isIOS && _activeTtsEngine == 'system') {
       try {
         await _ttsCommands.invokeMethod('clearMagicTap');
@@ -1153,6 +1244,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _activeTtsEngine = null;
       _playingChunkIndex = -1;
     });
+    if (fromSleepTimer && mounted) {
+      showStatusMessage(context, statusMessage);
+    }
   }
 
   Future<void> _saveAutomaticBookmarkFromPlayback() async {
@@ -1236,7 +1330,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         path: _currentDoc.path,
         extension: _currentDoc.extension,
         addedAt: _currentDoc.addedAt,
-        bookmarkIndex: _bookmarkIndex,
+        bookmarkIndex: _storedAutomaticBookmarkIndexForDocumentSave(),
         bookmarkIndexes: _bookmarkIndexes,
         editedTextPath: editedPath,
         isTemporary: _currentDoc.isTemporary,
@@ -1292,6 +1386,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     if (_activeTtsEngine == 'system') {
       await _flutterTts.pause();
+      await _setMagicTapPlaying(false);
     } else {
       await _audio.pause();
     }
@@ -1300,17 +1395,64 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   Future<void> _resumeReading() async {
     if (!_speaking || !_ttsPaused) return;
-    if (mounted) setState(() => _ttsPaused = false);
 
     if (_activeTtsEngine == 'system') {
-      unawaited(
-        _flutterTts.speak('').catchError((Object error) {
-          dev.log('DocumentReaderScreen system TTS resume error: $error');
-          return null;
-        }),
-      );
+      await _resumeSystemTtsFromCurrentChunk();
     } else {
+      if (mounted) setState(() => _ttsPaused = false);
       await _audio.resumeSequentialPlayback();
+    }
+  }
+
+  Future<void> _resumeSystemTtsFromCurrentChunk() async {
+    if (_systemTtsResumeInProgress) return;
+    if (!_speaking || _activeTtsEngine != 'system' || !_ttsPaused) return;
+    final resumeIndex = _currentReadingBookmarkIndex();
+    if (resumeIndex == null) return;
+
+    _systemTtsResumeInProgress = true;
+    final edgeController = _edgeFileController;
+    _edgeFileController = null;
+    _readingToken += 1;
+
+    try {
+      await _flutterTts.stop();
+    } catch (e) {
+      dev.log('DocumentReaderScreen system TTS stop before resume error: $e');
+    }
+
+    try {
+      await _audio.stop();
+    } catch (e) {
+      dev.log('DocumentReaderScreen audio stop before system resume error: $e');
+    }
+
+    if (edgeController != null && !edgeController.isClosed) {
+      try {
+        await edgeController.close();
+      } catch (e) {
+        dev.log('DocumentReaderScreen stream close before system resume error: $e');
+      }
+    }
+
+    if (!mounted) {
+      _systemTtsResumeInProgress = false;
+      return;
+    }
+
+    setState(() {
+      _bookmarkIndex = resumeIndex;
+      _playingChunkIndex = resumeIndex;
+      _speaking = false;
+      _ttsPaused = false;
+      _ttsStatus = null;
+      _activeTtsEngine = null;
+    });
+
+    try {
+      await _startReading(restartSleepTimer: false);
+    } finally {
+      _systemTtsResumeInProgress = false;
     }
   }
 
@@ -1319,11 +1461,82 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final clampedPercent = percent.clamp(0.0, 100.0);
     final maxIndex = _chunks.length - 1;
     final targetIndex = ((clampedPercent / 100) * maxIndex).round();
+    final currentIndex = _playingChunkIndex >= 0
+        ? _playingChunkIndex
+        : _bookmarkIndex.clamp(0, maxIndex);
+    final positionChanged = targetIndex != currentIndex;
+    final shouldRealignReading = _speaking && positionChanged;
+    final shouldResumeReading = _speaking && !_ttsPaused;
+    if (!positionChanged && !_speaking) return;
     setState(() {
       _bookmarkIndex = targetIndex;
       _playingChunkIndex = targetIndex;
     });
     _scrollToChunk(targetIndex);
+    if (shouldRealignReading) {
+      final seekToken = ++_documentSeekToken;
+      unawaited(
+        _realignReadingAfterDocumentSeek(
+          targetIndex,
+          seekToken,
+          resumeReading: shouldResumeReading,
+        ),
+      );
+    }
+  }
+
+  Future<void> _realignReadingAfterDocumentSeek(
+    int targetIndex,
+    int seekToken, {
+    required bool resumeReading,
+  }) async {
+    if (targetIndex < 0 || targetIndex >= _chunks.length) return;
+
+    final activeEngine = _activeTtsEngine;
+    final edgeController = _edgeFileController;
+    _edgeFileController = null;
+    _readingToken += 1;
+
+    try {
+      await _audio.stop();
+    } catch (e) {
+      dev.log('DocumentReaderScreen: errore stop audio dopo slider: $e');
+    }
+
+    try {
+      await _flutterTts.stop();
+    } catch (e) {
+      dev.log('DocumentReaderScreen: errore stop TTS dopo slider: $e');
+    }
+
+    if (edgeController != null && !edgeController.isClosed) {
+      try {
+        await edgeController.close();
+      } catch (e) {
+        dev.log('DocumentReaderScreen: errore chiusura stream Edge dopo slider: $e');
+      }
+    }
+
+    if (Platform.isIOS && activeEngine == 'system') {
+      try {
+        await _ttsCommands.invokeMethod('clearMagicTap');
+      } catch (_) {}
+    }
+
+    if (!mounted || seekToken != _documentSeekToken) return;
+
+    setState(() {
+      _bookmarkIndex = targetIndex;
+      _playingChunkIndex = targetIndex;
+      _speaking = false;
+      _ttsPaused = false;
+      _ttsStatus = null;
+      _activeTtsEngine = null;
+    });
+
+    if (resumeReading && mounted && seekToken == _documentSeekToken) {
+      await _startReading(restartSleepTimer: false);
+    }
   }
 
   void _seekDocumentByPercent(double delta) {
@@ -1438,7 +1651,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                         ),
                         const SizedBox(height: 8),
                         OutlinedButton.icon(
-                          onPressed: _speaking ? _stopReading : null,
+                          onPressed: _speaking ? () => _stopReading() : null,
                           icon: const Icon(Icons.stop),
                           label: Text(l10n.stopReading),
                         ),
@@ -1758,12 +1971,17 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<void> _deleteMultipleBookmark(int index) async {
     final nextBookmarks = List<int>.from(_bookmarkIndexes)..remove(index);
     final normalized = _normalizeBookmarkIndexes(nextBookmarks);
-    final nextIndex = normalized.isNotEmpty ? normalized.last : 0;
+    final automaticIndex =
+        _validAutomaticBookmarkIndex(_currentDoc.bookmarkIndex);
+    final preferredIndex = _preferredMultipleBookmarkResumeIndex(
+      normalized,
+      automaticIndex: automaticIndex,
+    );
 
     setState(() {
       _bookmarkIndexes = normalized;
-      _bookmarkIndex = nextIndex;
-      _hasBookmark = normalized.isNotEmpty;
+      _bookmarkIndex = preferredIndex;
+      _hasBookmark = _bookmarkIndex > 0;
     });
 
     final newDoc = DocumentItem(
@@ -1772,7 +1990,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       path: _currentDoc.path,
       extension: _currentDoc.extension,
       addedAt: _currentDoc.addedAt,
-      bookmarkIndex: nextIndex,
+      bookmarkIndex: automaticIndex,
       bookmarkIndexes: normalized,
       editedTextPath: _currentDoc.editedTextPath,
       isTemporary: _currentDoc.isTemporary,
@@ -1800,10 +2018,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     nextBookmarks.remove(index);
     nextBookmarks.add(index);
     final normalized = _normalizeBookmarkIndexes(nextBookmarks);
+    final automaticIndex =
+        _validAutomaticBookmarkIndex(_currentDoc.bookmarkIndex);
+    final preferredIndex = _preferredMultipleBookmarkResumeIndex(
+      normalized,
+      automaticIndex: automaticIndex,
+    );
 
     setState(() {
-      _bookmarkIndex = index;
-      _hasBookmark = true;
+      _bookmarkIndex = preferredIndex;
+      _hasBookmark = _bookmarkIndex > 0;
       _bookmarkIndexes = normalized;
     });
 
@@ -1813,7 +2037,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       path: _currentDoc.path,
       extension: _currentDoc.extension,
       addedAt: _currentDoc.addedAt,
-      bookmarkIndex: index,
+      bookmarkIndex: automaticIndex,
       bookmarkIndexes: normalized,
       editedTextPath: _currentDoc.editedTextPath,
       isTemporary: _currentDoc.isTemporary,

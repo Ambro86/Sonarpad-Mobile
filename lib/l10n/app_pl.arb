@@ -1402,6 +1402,31 @@
     "description": "Localized text for settingsDocumentSliderStep."
   },
   "settingsDocumentSliderStepHint": "Określa, o ile przesuwa się suwak pozycji dokumentu po przesunięciu palcem w górę lub w dół.",
+  "settingsReadingSleepTimer": "Timer wyłączania czytania",
+  "@settingsReadingSleepTimer": {
+    "description": "Localized text for settingsReadingSleepTimer."
+  },
+  "settingsReadingSleepTimerOff": "Wyłączony",
+  "@settingsReadingSleepTimerOff": {
+    "description": "Localized text for settingsReadingSleepTimerOff."
+  },
+  "settingsReadingSleepTimerMinutes": "{minutes} min",
+  "@settingsReadingSleepTimerMinutes": {
+    "description": "Localized text for settingsReadingSleepTimerMinutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsReadingSleepTimerHint": "Automatycznie zatrzymuje czytanie bieżącego dokumentu po wybranym czasie i zapisuje miejsce zatrzymania. Odliczanie zaczyna się od nowa przy każdym uruchomieniu czytania dokumentu.",
+  "@settingsReadingSleepTimerHint": {
+    "description": "Localized text for settingsReadingSleepTimerHint."
+  },
+  "documentReadingSleepTimerStopped": "Timer wyłączania: czytanie zatrzymane, a pozycja zapisana.",
+  "@documentReadingSleepTimerStopped": {
+    "description": "Localized text for documentReadingSleepTimerStopped."
+  },
   "@settingsDocumentSliderStepHint": {
     "description": "Localized text for settingsDocumentSliderStepHint."
   },

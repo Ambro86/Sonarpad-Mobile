@@ -1010,6 +1010,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Controls how far the document position slider moves when swiping up or down.';
 
   @override
+  String get settingsReadingSleepTimer => "Reading sleep timer";
+
+  @override
+  String get settingsReadingSleepTimerOff => "Off";
+
+  @override
+  String settingsReadingSleepTimerMinutes(int minutes) {
+    return '$minutes minutes';
+  }
+
+  @override
+  String get settingsReadingSleepTimerHint => "Automatically stops reading the current document after the selected time and saves the stopping point. The countdown restarts whenever you start reading a document.";
+
+  @override
+  String get documentReadingSleepTimerStopped => "Sleep timer: reading stopped and position saved.";
+
+  @override
   String get settingsSeekStep => 'Rewind / fast-forward step for media';
 
   @override

@@ -1020,6 +1020,23 @@ class AppLocalizationsPt extends AppLocalizations {
       'Define quanto o controlo da posição do documento avança ou recua ao deslizar para cima ou para baixo.';
 
   @override
+  String get settingsReadingSleepTimer => "Temporizador de suspensão da leitura";
+
+  @override
+  String get settingsReadingSleepTimerOff => "Desativado";
+
+  @override
+  String settingsReadingSleepTimerMinutes(int minutes) {
+    return '$minutes minutos';
+  }
+
+  @override
+  String get settingsReadingSleepTimerHint => "Para automaticamente a leitura do documento atual após o tempo escolhido e guarda o ponto de paragem. A contagem recomeça sempre que inicia a leitura de um documento.";
+
+  @override
+  String get documentReadingSleepTimerStopped => "Temporizador de suspensão: leitura parada e posição guardada.";
+
+  @override
   String get settingsSeekStep => 'Passo de avanço/recuo';
 
   @override

@@ -1018,6 +1018,23 @@ class AppLocalizationsIt extends AppLocalizations {
       'Regola di quanto avanza o arretra il cursore della posizione documento con il flick verso l’alto o verso il basso.';
 
   @override
+  String get settingsReadingSleepTimer => "Timer spegnimento lettura";
+
+  @override
+  String get settingsReadingSleepTimerOff => "Disattivo";
+
+  @override
+  String settingsReadingSleepTimerMinutes(int minutes) {
+    return '$minutes minuti';
+  }
+
+  @override
+  String get settingsReadingSleepTimerHint => "Ferma automaticamente la lettura del documento dopo il tempo scelto e salva il punto di arresto. Il conteggio riparte ogni volta che avvii la lettura di un documento.";
+
+  @override
+  String get documentReadingSleepTimerStopped => "Timer di spegnimento: lettura interrotta e punto salvato.";
+
+  @override
   String get settingsSeekStep => 'Intervallo indietro / avanti nei media';
 
   @override

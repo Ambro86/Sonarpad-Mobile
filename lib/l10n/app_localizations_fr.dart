@@ -1024,6 +1024,23 @@ class AppLocalizationsFr extends AppLocalizations {
       'Règle de combien le curseur de position du document avance ou recule avec un balayage vers le haut ou vers le bas.';
 
   @override
+  String get settingsReadingSleepTimer => "Minuteur d’arrêt de lecture";
+
+  @override
+  String get settingsReadingSleepTimerOff => "Désactivé";
+
+  @override
+  String settingsReadingSleepTimerMinutes(int minutes) {
+    return '$minutes minutes';
+  }
+
+  @override
+  String get settingsReadingSleepTimerHint => "Arrête automatiquement la lecture du document en cours après la durée choisie et enregistre le point d’arrêt. Le compte à rebours redémarre chaque fois que vous lancez la lecture d’un document.";
+
+  @override
+  String get documentReadingSleepTimerStopped => "Minuteur d’arrêt : lecture arrêtée et position enregistrée.";
+
+  @override
   String get settingsSeekStep =>
       'Pas de retour / avance rapide pour les médias';
 
