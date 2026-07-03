@@ -1384,12 +1384,55 @@ class AppLocalizationsEs extends AppLocalizations {
       'Si está desactivado, queda un solo marcador por documento. Si está activado, puedes guardar varios marcadores en el mismo documento.';
 
 
+
+  @override
+  String get pharmacyFeatureTitle => 'Medicamentos, parafarmacia y suplementos';
+
+  @override
+  String get pharmacyProductsSectionTitle => 'Parafarmacia y suplementos';
+
+  @override
+  String get pharmacyProductsLoadingTitle => 'Buscando parafarmacia y suplementos...';
+
+  @override
+  String get pharmacyProductsErrorTitle => 'Error al buscar parafarmacia y suplementos';
+
+  @override
+  String get pharmacyProductsNoResultsTitle => 'No se encontró ningún producto de parafarmacia ni suplemento';
+
   @override
   String get settingsVideoLandscapeFullscreen => 'Vídeo horizontal a pantalla completa';
-
   @override
   String get settingsVideoLandscapeFullscreenHint =>
       'Cuando activas el vídeo, se muestra a pantalla completa en orientación horizontal. Las radios solo audio no cambian.';
+
+  @override
+  String get settingsPodcastCacheTitle => 'Caché de podcasts';
+
+  @override
+  String get settingsPodcastCacheHint => 'Borra los archivos temporales de podcasts sin eliminar suscripciones, historial ni archivos de audio importados. Sonarpad también limpia esta caché automáticamente cuando crece demasiado o contiene archivos antiguos.';
+
+  @override
+  String settingsPodcastCacheSize(String size) {
+    return 'Espacio usado: $size';
+  }
+
+  @override
+  String get clearPodcastCache => 'Vaciar caché de podcasts';
+
+  @override
+  String get confirmClearPodcastCacheTitle => '¿Vaciar la caché de podcasts?';
+
+  @override
+  String get confirmClearPodcastCacheMessage => 'Se eliminarán los archivos temporales de podcasts. Las suscripciones y el historial de episodios no se eliminarán.';
+
+  @override
+  String podcastCacheCleared(String size) {
+    return 'Caché de podcasts vaciada: $size liberados.';
+  }
+
+  @override
+  String get podcastCacheEmpty => 'La caché de podcasts ya está vacía.';
 
   @override
   String get documentGoToBookmarkAction => 'Ir al marcador';

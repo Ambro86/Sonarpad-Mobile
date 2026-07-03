@@ -3108,5 +3108,67 @@
   "settingsVideoLandscapeFullscreenHint": "Po włączeniu wideo jest ono wyświetlane na pełnym ekranie w orientacji poziomej. Radia tylko audio pozostają bez zmian.",
   "@settingsVideoLandscapeFullscreenHint": {
     "description": "Description for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsPodcastCacheTitle": "Pamięć podręczna podcastów",
+  "@settingsPodcastCacheTitle": {
+    "description": "Localized text for settingsPodcastCacheTitle."
+  },
+  "settingsPodcastCacheHint": "Wyczyść tymczasowe pliki podcastów bez usuwania subskrypcji, historii ani zaimportowanych plików audio. Sonarpad automatycznie czyści tę pamięć podręczną, gdy staje się zbyt duża lub zawiera stare pliki.",
+  "@settingsPodcastCacheHint": {
+    "description": "Localized text for settingsPodcastCacheHint."
+  },
+  "settingsPodcastCacheSize": "Zajęte miejsce: {size}",
+  "@settingsPodcastCacheSize": {
+    "description": "Localized text for settingsPodcastCacheSize.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearPodcastCache": "Wyczyść pamięć podręczną podcastów",
+  "@clearPodcastCache": {
+    "description": "Localized text for clearPodcastCache."
+  },
+  "confirmClearPodcastCacheTitle": "Wyczyścić pamięć podręczną podcastów?",
+  "@confirmClearPodcastCacheTitle": {
+    "description": "Localized text for confirmClearPodcastCacheTitle."
+  },
+  "confirmClearPodcastCacheMessage": "Tymczasowe pliki podcastów zostaną usunięte. Subskrypcje i historia odcinków pozostaną bez zmian.",
+  "@confirmClearPodcastCacheMessage": {
+    "description": "Localized text for confirmClearPodcastCacheMessage."
+  },
+  "podcastCacheCleared": "Pamięć podręczna podcastów wyczyszczona: zwolniono {size}.",
+  "@podcastCacheCleared": {
+    "description": "Localized text for podcastCacheCleared.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "podcastCacheEmpty": "Pamięć podręczna podcastów jest już pusta.",
+  "@podcastCacheEmpty": {
+    "description": "Localized text for podcastCacheEmpty."
+  },
+  "pharmacyFeatureTitle": "Leki, parafarmaceutyki i suplementy",
+  "@pharmacyFeatureTitle": {
+    "description": "Title for the medicines, parapharmaceuticals and supplements feature."
+  },
+  "pharmacyProductsSectionTitle": "Parafarmaceutyki i suplementy",
+  "@pharmacyProductsSectionTitle": {
+    "description": "Title for the parapharmaceuticals and supplements results section."
+  },
+  "pharmacyProductsLoadingTitle": "Wyszukiwanie parafarmaceutyków i suplementów...",
+  "@pharmacyProductsLoadingTitle": {
+    "description": "Loading title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsErrorTitle": "Błąd podczas wyszukiwania parafarmaceutyków i suplementów",
+  "@pharmacyProductsErrorTitle": {
+    "description": "Error title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsNoResultsTitle": "Nie znaleziono parafarmaceutyku ani suplementu",
+  "@pharmacyProductsNoResultsTitle": {
+    "description": "Empty state title for parapharmaceuticals and supplements search."
   }
 }

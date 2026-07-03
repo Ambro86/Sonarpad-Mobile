@@ -50,6 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isItalian = l10n.localeName == 'it';
+    // La sezione AIFA/farmaci usa dati italiani: deve rimanere visibile solo
+    // quando l'app è in italiano, come Biblioteca Digitale, RaiPlay e TV.
+    final showItalianPharmacyFeature = isItalian;
 
     final readingItems = [
       _HomeButton(
@@ -155,9 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () => AccessibilityFeedbackService.goNamed(context,
               routeName: '/italiaonline'),
         ),
-      if (isItalian)
+      if (showItalianPharmacyFeature)
         _HomeButton(
-          label: 'Farmaci e prodotti da farmacia',
+          label: l10n.pharmacyFeatureTitle,
           onPressed: () =>
               AccessibilityFeedbackService.goNamed(context, routeName: '/aifa'),
         ),
@@ -275,9 +278,9 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Pagine Bianche e Gialle',
               onPressed: () => AccessibilityFeedbackService.goNamed(context,
                   routeName: '/italiaonline')),
-        if (isItalian)
+        if (showItalianPharmacyFeature)
           _HomeButton(
-              label: 'Farmaci e prodotti da farmacia',
+              label: l10n.pharmacyFeatureTitle,
               onPressed: () => AccessibilityFeedbackService.goNamed(context,
                   routeName: '/aifa')),
       ];

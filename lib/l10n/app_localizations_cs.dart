@@ -1376,12 +1376,55 @@ class AppLocalizationsCs extends AppLocalizations {
       'Pokud je vypnuto, každý dokument má jen jednu záložku. Pokud je zapnuto, můžete uložit více záložek ve stejném dokumentu.';
 
 
+
+  @override
+  String get pharmacyFeatureTitle => 'Léky, parafarmaka a doplňky';
+
+  @override
+  String get pharmacyProductsSectionTitle => 'Parafarmaka a doplňky';
+
+  @override
+  String get pharmacyProductsLoadingTitle => 'Hledají se parafarmaka a doplňky...';
+
+  @override
+  String get pharmacyProductsErrorTitle => 'Chyba při hledání parafarmak a doplňků';
+
+  @override
+  String get pharmacyProductsNoResultsTitle => 'Nebylo nalezeno žádné parafarmakum ani doplněk';
+
   @override
   String get settingsVideoLandscapeFullscreen => 'Vodorovné video přes celou obrazovku';
-
   @override
   String get settingsVideoLandscapeFullscreenHint =>
       'Když zapnete video, zobrazí se přes celou obrazovku na šířku. Rádia pouze se zvukem se nemění.';
+
+  @override
+  String get settingsPodcastCacheTitle => 'Mezipaměť podcastů';
+
+  @override
+  String get settingsPodcastCacheHint => 'Vymaže dočasné soubory podcastů bez odstranění odběrů, historie nebo importovaných zvukových souborů. Sonarpad tuto mezipaměť automaticky čistí, když je příliš velká nebo obsahuje staré soubory.';
+
+  @override
+  String settingsPodcastCacheSize(String size) {
+    return 'Využité místo: $size';
+  }
+
+  @override
+  String get clearPodcastCache => 'Vymazat mezipaměť podcastů';
+
+  @override
+  String get confirmClearPodcastCacheTitle => 'Vymazat mezipaměť podcastů?';
+
+  @override
+  String get confirmClearPodcastCacheMessage => 'Dočasné soubory podcastů budou odstraněny. Odběry a historie epizod zůstanou zachovány.';
+
+  @override
+  String podcastCacheCleared(String size) {
+    return 'Mezipaměť podcastů vymazána: uvolněno $size.';
+  }
+
+  @override
+  String get podcastCacheEmpty => 'Mezipaměť podcastů je už prázdná.';
 
   @override
   String get documentGoToBookmarkAction => 'Přejít na záložku';

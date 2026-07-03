@@ -405,7 +405,13 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/poetrydb': (_) => const PoetryDbScreen(),
         '/bdciechi': (_) => const BdCiechiLoginScreen(),
         '/settings': (_) => SettingsScreen(onThemeModeChanged: setThemeMode),
-        '/aifa': (_) => const AifaSearchScreen(),
+        '/aifa': (context) {
+          final l10n = AppLocalizations.of(context);
+          if (l10n.localeName != 'it') {
+            return const HomeScreen();
+          }
+          return const AifaSearchScreen();
+        },
         '/orari_apertura': (_) => OrariAperturaSearchScreen(),
         '/italiaonline': (_) => const ItaliaOnlineScreen(),
         '/route': (_) => const RouteScreen(),

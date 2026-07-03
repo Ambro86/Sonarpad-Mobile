@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 import '../services/aifa_service.dart';
 import '../services/parafarmaco_service.dart';
 import '../services/recent_searches_service.dart';
@@ -105,6 +107,7 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
   }
 
   List<Widget> _buildResultsChildren() {
+    final l10n = AppLocalizations.of(context);
     final children = <Widget>[];
 
     children.add(const _SectionHeader(
@@ -143,24 +146,24 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
       }
     }
 
-    children.add(const _SectionHeader(
-      title: 'Parafarmaci, integratori e prodotti da farmacia',
+    children.add(_SectionHeader(
+      title: l10n.pharmacyProductsSectionTitle,
       subtitle: 'Schede prodotto non AIFA quando disponibili.',
     ));
 
     if (_parafarmacoLoading) {
-      children.add(const _StatusTile.loading(
-        title: 'Ricerca prodotti da farmacia in corso...',
+      children.add(_StatusTile.loading(
+        title: l10n.pharmacyProductsLoadingTitle,
         subtitle: 'Sto cercando parafarmaci, integratori e dispositivi.',
       ));
     } else if (_parafarmacoError != null && _parafarmacoResults.isEmpty) {
       children.add(_StatusTile.error(
-        title: 'Errore nella ricerca prodotti da farmacia',
+        title: l10n.pharmacyProductsErrorTitle,
         subtitle: _parafarmacoError!,
       ));
     } else if (_parafarmacoResults.isEmpty) {
-      children.add(const _StatusTile.info(
-        title: 'Nessun prodotto da farmacia trovato',
+      children.add(_StatusTile.info(
+        title: l10n.pharmacyProductsNoResultsTitle,
         subtitle: 'Non sono disponibili schede prodotto per questa ricerca.',
       ));
     } else {

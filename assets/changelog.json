@@ -21,8 +21,9 @@
       "Aggiunta l’opzione per mostrare i video a schermo intero in orizzontale quando il video è attivo.",
       "Le liste di notizie ed episodi podcast mostrano ora anche data e ora accanto al titolo, con indicazioni come oggi, ieri, domani e dopodomani quando disponibili.",
       "Migliorata la ricerca nella Biblioteca Digitale: le parole possono essere scritte anche in ordine diverso, per esempio “Ellis Peters” trova anche “Peters Ellis”.",
-      "Migliorata la ricerca farmaci: oltre ai medicinali AIFA/AIC, Sonarpad può mostrare anche parafarmaci, integratori e altri prodotti da farmacia quando disponibili.",
-      "Le ricerche recenti dei farmaci conservano ora anche le ricerche di parafarmaci, integratori e prodotti da farmacia."
+      "Migliorata la ricerca farmaci: oltre ai medicinali AIFA/AIC, Sonarpad può mostrare anche parafarmaci, integratori e altri prodotti farmaceutici quando disponibili.",
+      "Le ricerche recenti dei farmaci conservano ora anche le ricerche di parafarmaci, integratori e prodotti farmaceutici.",
+      "Aggiunta nelle impostazioni la possibilità di vedere e svuotare la cache dei podcast. Sonarpad ora la pulisce anche automaticamente quando diventa troppo grande o contiene file vecchi, senza rimuovere abbonamenti o cronologia."
     ],
     "en": [
       "Improved document reading: some texts with unusual accents are now read more reliably, including when moving character by character with VoiceOver.",
@@ -41,7 +42,8 @@
       "Added an option to use multiple bookmarks in the same document and choose which one to return to.",
       "Added the Document slider step option, letting you choose how far to move forward or backward with the document position slider.",
       "Added an option to show videos full-screen in landscape when video is enabled.",
-      "News and podcast episode lists now show date and time next to the title, using labels such as today, yesterday, tomorrow and the day after tomorrow when available."
+      "News and podcast episode lists now show date and time next to the title, using labels such as today, yesterday, tomorrow and the day after tomorrow when available.",
+      "Added a setting to view and clear the podcast cache. Sonarpad now also cleans it automatically when it becomes too large or contains old files, without removing subscriptions or history."
     ],
     "fr": [
       "Amélioration de la lecture des documents : certains textes avec des accents particuliers sont maintenant mieux lus, y compris caractère par caractère avec VoiceOver.",
@@ -60,7 +62,8 @@
       "Ajout d’une option pour utiliser plusieurs signets dans le même document et choisir auquel revenir.",
       "Ajout de l’option Pas du curseur des documents, pour choisir de combien avancer ou reculer avec le curseur de position.",
       "Ajout d’une option pour afficher les vidéos en plein écran horizontal lorsque la vidéo est activée.",
-      "Les listes d’actualités et d’épisodes de podcast affichent maintenant la date et l’heure à côté du titre, avec des indications comme aujourd’hui, hier, demain et après-demain lorsque disponibles."
+      "Les listes d’actualités et d’épisodes de podcast affichent maintenant la date et l’heure à côté du titre, avec des indications comme aujourd’hui, hier, demain et après-demain lorsque disponibles.",
+      "Ajout d’un réglage pour voir et vider le cache des podcasts. Sonarpad le nettoie aussi automatiquement lorsqu’il devient trop volumineux ou contient d’anciens fichiers, sans supprimer les abonnements ni l’historique."
     ],
     "es": [
       "Mejorada la lectura de documentos: algunos textos con acentos especiales ahora se leen mejor, también al moverse carácter por carácter con VoiceOver.",
@@ -79,7 +82,8 @@
       "Añadida una opción para usar varios marcadores en el mismo documento y elegir a cuál volver.",
       "Añadida la opción Intervalo del deslizador de documentos, para elegir cuánto avanzar o retroceder con el deslizador de posición.",
       "Las listas de noticias y episodios de podcast ahora muestran fecha y hora junto al título, con indicaciones como hoy, ayer, mañana y pasado mañana cuando están disponibles.",
-      "Añadida una opción para mostrar los vídeos a pantalla completa en horizontal cuando el vídeo está activado."
+      "Añadida una opción para mostrar los vídeos a pantalla completa en horizontal cuando el vídeo está activado.",
+      "Añadida una opción para ver y vaciar la caché de podcasts. Sonarpad ahora también la limpia automáticamente cuando crece demasiado o contiene archivos antiguos, sin eliminar suscripciones ni historial."
     ],
     "pt": [
       "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caráter a caráter com o VoiceOver.",
@@ -98,7 +102,8 @@
       "Adicionada uma opção para usar vários marcadores no mesmo documento e escolher para qual voltar.",
       "Adicionada a opção Passo do controlo dos documentos, para escolher quanto avançar ou recuar com o controlo de posição.",
       "As listas de notícias e episódios de podcast mostram agora data e hora junto ao título, com indicações como hoje, ontem, amanhã e depois de amanhã quando disponíveis.",
-      "Adicionada uma opção para mostrar vídeos em ecrã inteiro horizontal quando o vídeo está ativo."
+      "Adicionada uma opção para mostrar vídeos em ecrã inteiro horizontal quando o vídeo está ativo.",
+      "Adicionada uma opção para ver e limpar a cache de podcasts. O Sonarpad agora também a limpa automaticamente quando fica demasiado grande ou contém ficheiros antigos, sem remover subscrições nem histórico."
     ],
     "pl": [
       "Ulepszono czytanie dokumentów: niektóre teksty z nietypowymi akcentami są teraz odczytywane lepiej, także podczas przechodzenia znak po znaku z VoiceOver.",
@@ -118,7 +123,8 @@
       "Dodano opcję używania wielu zakładek w tym samym dokumencie i wybierania, do której wrócić.",
       "Dodano opcję kroku suwaka dokumentu, aby wybrać, o ile przechodzić do przodu lub do tyłu suwakiem pozycji.",
       "Dodano opcję wyświetlania wideo na pełnym ekranie w poziomie, gdy wideo jest włączone.",
-      "Listy wiadomości i odcinków podcastów pokazują teraz przy tytule datę i godzinę, z etykietami takimi jak dziś, wczoraj, jutro i pojutrze, gdy są dostępne."
+      "Listy wiadomości i odcinków podcastów pokazują teraz przy tytule datę i godzinę, z etykietami takimi jak dziś, wczoraj, jutro i pojutrze, gdy są dostępne.",
+      "Dodano ustawienie pozwalające sprawdzić i wyczyścić pamięć podręczną podcastów. Sonarpad automatycznie czyści ją także wtedy, gdy jest zbyt duża lub zawiera stare pliki, bez usuwania subskrypcji ani historii."
     ],
     "cs": [
       "Vylepšeno čtení dokumentů: některé texty se zvláštními akcenty se nyní čtou lépe, i při pohybu znak po znaku pomocí VoiceOveru.",
@@ -137,7 +143,8 @@
       "Přidána možnost používat více záložek ve stejném dokumentu a vybrat, ke které se vrátit.",
       "Přidána možnost kroku posuvníku dokumentu, která určuje, o kolik se posunout vpřed nebo zpět pomocí posuvníku pozice.",
       "Přidána možnost zobrazit video na celou obrazovku vodorovně, když je video zapnuté.",
-      "Seznamy zpráv a epizod podcastů nyní u názvu zobrazují také datum a čas, případně s označeními jako dnes, včera, zítra a pozítří."
+      "Seznamy zpráv a epizod podcastů nyní u názvu zobrazují také datum a čas, případně s označeními jako dnes, včera, zítra a pozítří.",
+      "Přidáno nastavení pro zobrazení a vymazání mezipaměti podcastů. Sonarpad ji nyní automaticky čistí také tehdy, když je příliš velká nebo obsahuje staré soubory, bez odstranění odběrů nebo historie."
     ]
   },
   {

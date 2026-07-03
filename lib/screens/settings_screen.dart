@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import '../services/audio_player_service.dart';
+import '../services/podcast_cache_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'app_log_screen.dart';
@@ -28,6 +29,7 @@ enum _SettingsLeaveAction { save, discard, cancel }
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _settings = AppSettingsService();
+  final _podcastCache = PodcastCacheService();
   final _flutterTts = FlutterTts();
   final _screenFocusNode = FocusNode();
   String _appLanguage = 'it';
@@ -49,6 +51,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isSaving = false;
   late TextEditingController _tvSecretCodeController;
   bool _testingVoice = false;
+  bool _clearingPodcastCache = false;
+  int _podcastCacheBytes = 0;
   bool _autoBookmark = true;
   bool _includeEpubFootnotesInText = false;
   bool _multipleDocumentBookmarks = false;
@@ -95,6 +99,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   String _formatPercent(int value) => '$value%';
+
+  String _formatBytes(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    final kb = bytes / 1024;
+    if (kb < 1024) return '${kb.toStringAsFixed(kb < 10 ? 1 : 0)} KB';
+    final mb = kb / 1024;
+    if (mb < 1024) return '${mb.toStringAsFixed(mb < 10 ? 1 : 0)} MB';
+    final gb = mb / 1024;
+    return '${gb.toStringAsFixed(gb < 10 ? 1 : 0)} GB';
+  }
 
   int get _documentSliderStepOptionIndex {
     final options = AppSettingsService.documentSliderStepPercentOptions;
@@ -177,6 +191,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final seekSliderStep = await _settings.loadSeekSliderStep();
     final documentSliderStepPercent =
         await _settings.loadDocumentSliderStepPercent();
+    await _podcastCache.cleanAutomatically();
+    final podcastCacheBytes = await _podcastCache.cacheSizeBytes();
     final edgeVoices = await AppSettingsService.loadEdgeVoices();
     final edgeLanguages = AppSettingsService.languagesForVoices(edgeVoices);
     final normalizedLanguage = AppSettingsService.normalizedTtsLanguageCodeFor(
@@ -228,6 +244,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedSeekSliderStep = seekSliderStep;
       _documentSliderStepPercent = documentSliderStepPercent;
       _savedDocumentSliderStepPercent = documentSliderStepPercent;
+      _podcastCacheBytes = podcastCacheBytes;
       _loading = false;
     });
   }
@@ -510,6 +527,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return !_hasUnsavedChanges;
     }
     return false;
+  }
+
+  Future<void> _reloadPodcastCacheSize() async {
+    final bytes = await _podcastCache.cacheSizeBytes();
+    if (!mounted) return;
+    setState(() => _podcastCacheBytes = bytes);
+  }
+
+  Future<void> _clearPodcastCache() async {
+    if (_clearingPodcastCache) return;
+    final l10n = AppLocalizations.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.confirmClearPodcastCacheTitle),
+        content: Text(l10n.confirmClearPodcastCacheMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.clearPodcastCache),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    setState(() => _clearingPodcastCache = true);
+    try {
+      final freedBytes = await _podcastCache.clearCache();
+      await _reloadPodcastCacheSize();
+      if (!mounted) return;
+      final message = freedBytes > 0
+          ? l10n.podcastCacheCleared(_formatBytes(freedBytes))
+          : l10n.podcastCacheEmpty;
+      showStatusMessage(context, message);
+    } catch (e) {
+      if (!mounted) return;
+      showStatusMessage(context, l10n.error(e));
+    } finally {
+      if (mounted) {
+        setState(() => _clearingPodcastCache = false);
+      }
+    }
   }
 
   Future<void> _testVoice() async {
@@ -1131,6 +1195,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         () => _displayVideoInPortrait = val,
                       ),
                       contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 12),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              l10n.settingsPodcastCacheTitle,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(l10n.settingsPodcastCacheHint),
+                            const SizedBox(height: 8),
+                            Text(l10n.settingsPodcastCacheSize(
+                                _formatBytes(_podcastCacheBytes))),
+                            const SizedBox(height: 12),
+                            FilledButton.icon(
+                              onPressed: _clearingPodcastCache
+                                  ? null
+                                  : _clearPodcastCache,
+                              icon: _clearingPodcastCache
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Icon(Icons.delete_sweep),
+                              label: Text(_clearingPodcastCache
+                                  ? l10n.loading
+                                  : l10n.clearPodcastCache),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     if (showItalianOnlySettings) ...[
                       const Divider(),

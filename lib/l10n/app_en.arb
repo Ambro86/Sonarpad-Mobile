@@ -936,5 +936,67 @@
   "settingsVideoLandscapeFullscreenHint": "When you enable video, it is shown full-screen in landscape orientation. Audio-only radios are unchanged.",
   "@settingsVideoLandscapeFullscreenHint": {
     "description": "Description for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsPodcastCacheTitle": "Podcast cache",
+  "@settingsPodcastCacheTitle": {
+    "description": "Localized text for settingsPodcastCacheTitle."
+  },
+  "settingsPodcastCacheHint": "Clear temporary podcast files without removing subscriptions, history, or imported audio files. Sonarpad also cleans this cache automatically when it becomes too large or contains old files.",
+  "@settingsPodcastCacheHint": {
+    "description": "Localized text for settingsPodcastCacheHint."
+  },
+  "settingsPodcastCacheSize": "Space used: {size}",
+  "@settingsPodcastCacheSize": {
+    "description": "Localized text for settingsPodcastCacheSize.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearPodcastCache": "Clear podcast cache",
+  "@clearPodcastCache": {
+    "description": "Localized text for clearPodcastCache."
+  },
+  "confirmClearPodcastCacheTitle": "Clear podcast cache?",
+  "@confirmClearPodcastCacheTitle": {
+    "description": "Localized text for confirmClearPodcastCacheTitle."
+  },
+  "confirmClearPodcastCacheMessage": "Temporary podcast files will be deleted. Subscriptions and episode history will not be removed.",
+  "@confirmClearPodcastCacheMessage": {
+    "description": "Localized text for confirmClearPodcastCacheMessage."
+  },
+  "podcastCacheCleared": "Podcast cache cleared: freed {size}.",
+  "@podcastCacheCleared": {
+    "description": "Localized text for podcastCacheCleared.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "podcastCacheEmpty": "The podcast cache is already empty.",
+  "@podcastCacheEmpty": {
+    "description": "Localized text for podcastCacheEmpty."
+  },
+  "pharmacyFeatureTitle": "Medicines, parapharmaceuticals and supplements",
+  "@pharmacyFeatureTitle": {
+    "description": "Title for the medicines, parapharmaceuticals and supplements feature."
+  },
+  "pharmacyProductsSectionTitle": "Parapharmaceuticals and supplements",
+  "@pharmacyProductsSectionTitle": {
+    "description": "Title for the parapharmaceuticals and supplements results section."
+  },
+  "pharmacyProductsLoadingTitle": "Searching parapharmaceuticals and supplements...",
+  "@pharmacyProductsLoadingTitle": {
+    "description": "Loading title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsErrorTitle": "Error searching parapharmaceuticals and supplements",
+  "@pharmacyProductsErrorTitle": {
+    "description": "Error title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsNoResultsTitle": "No parapharmaceutical or supplement found",
+  "@pharmacyProductsNoResultsTitle": {
+    "description": "Empty state title for parapharmaceuticals and supplements search."
   }
 }

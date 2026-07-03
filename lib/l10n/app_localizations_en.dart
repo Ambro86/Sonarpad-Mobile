@@ -1366,12 +1366,55 @@ class AppLocalizationsEn extends AppLocalizations {
       'When disabled, each document keeps one bookmark. When enabled, you can save multiple bookmarks in the same document.';
 
 
+
+  @override
+  String get pharmacyFeatureTitle => 'Medicines, parapharmaceuticals and supplements';
+
+  @override
+  String get pharmacyProductsSectionTitle => 'Parapharmaceuticals and supplements';
+
+  @override
+  String get pharmacyProductsLoadingTitle => 'Searching parapharmaceuticals and supplements...';
+
+  @override
+  String get pharmacyProductsErrorTitle => 'Error searching parapharmaceuticals and supplements';
+
+  @override
+  String get pharmacyProductsNoResultsTitle => 'No parapharmaceutical or supplement found';
+
   @override
   String get settingsVideoLandscapeFullscreen => 'Landscape full-screen video';
-
   @override
   String get settingsVideoLandscapeFullscreenHint =>
       'When you enable video, it is shown full-screen in landscape orientation. Audio-only radios are unchanged.';
+
+  @override
+  String get settingsPodcastCacheTitle => 'Podcast cache';
+
+  @override
+  String get settingsPodcastCacheHint => 'Clear temporary podcast files without removing subscriptions, history, or imported audio files. Sonarpad also cleans this cache automatically when it becomes too large or contains old files.';
+
+  @override
+  String settingsPodcastCacheSize(String size) {
+    return 'Space used: $size';
+  }
+
+  @override
+  String get clearPodcastCache => 'Clear podcast cache';
+
+  @override
+  String get confirmClearPodcastCacheTitle => 'Clear podcast cache?';
+
+  @override
+  String get confirmClearPodcastCacheMessage => 'Temporary podcast files will be deleted. Subscriptions and episode history will not be removed.';
+
+  @override
+  String podcastCacheCleared(String size) {
+    return 'Podcast cache cleared: freed $size.';
+  }
+
+  @override
+  String get podcastCacheEmpty => 'The podcast cache is already empty.';
 
   @override
   String get documentGoToBookmarkAction => 'Go to bookmark';

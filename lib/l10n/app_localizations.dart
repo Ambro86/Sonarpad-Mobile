@@ -2571,6 +2571,37 @@ abstract class AppLocalizations {
   /// **'Se disattivato, resta un solo segnalibro per documento. Se attivato, puoi salvare più segnalibri nello stesso documento.'**
   String get settingsMultipleDocumentBookmarksHint;
 
+
+  /// Title for the medicines, parapharmaceuticals and supplements feature.
+  ///
+  /// In it, this message translates to:
+  /// **'Farmaci, parafarmaci e integratori'**
+  String get pharmacyFeatureTitle;
+
+  /// Title for the parapharmaceuticals and supplements results section.
+  ///
+  /// In it, this message translates to:
+  /// **'Parafarmaci e integratori'**
+  String get pharmacyProductsSectionTitle;
+
+  /// Loading title for parapharmaceuticals and supplements search.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricerca parafarmaci e integratori in corso...'**
+  String get pharmacyProductsLoadingTitle;
+
+  /// Error title for parapharmaceuticals and supplements search.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore nella ricerca parafarmaci e integratori'**
+  String get pharmacyProductsErrorTitle;
+
+  /// Empty state title for parapharmaceuticals and supplements search.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun parafarmaco o integratore trovato'**
+  String get pharmacyProductsNoResultsTitle;
+
   /// Title for the setting that shows video full-screen in landscape orientation.
   ///
   /// In it, this message translates to:
@@ -2582,6 +2613,54 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Quando attivi il video, viene mostrato a schermo intero in orizzontale. Le radio solo audio non cambiano.'**
   String get settingsVideoLandscapeFullscreenHint;
+
+  /// Title for the podcast cache management section in settings.
+  ///
+  /// In it, this message translates to:
+  /// **'Cache podcast'**
+  String get settingsPodcastCacheTitle;
+
+  /// Hint for the podcast cache management section in settings.
+  ///
+  /// In it, this message translates to:
+  /// **'Svuota i file temporanei dei podcast senza rimuovere gli abbonamenti, la cronologia o i file audio importati. Sonarpad pulisce automaticamente la cache quando diventa troppo grande o contiene file vecchi.'**
+  String get settingsPodcastCacheHint;
+
+  /// Shows how much space the podcast cache is using.
+  ///
+  /// In it, this message translates to:
+  /// **'Spazio usato: {size}'**
+  String settingsPodcastCacheSize(String size);
+
+  /// Button that clears the podcast cache.
+  ///
+  /// In it, this message translates to:
+  /// **'Svuota cache podcast'**
+  String get clearPodcastCache;
+
+  /// Confirmation dialog title before clearing podcast cache.
+  ///
+  /// In it, this message translates to:
+  /// **'Svuotare la cache podcast?'**
+  String get confirmClearPodcastCacheTitle;
+
+  /// Confirmation dialog message before clearing podcast cache.
+  ///
+  /// In it, this message translates to:
+  /// **'I file temporanei dei podcast verranno eliminati. Gli abbonamenti e la cronologia degli episodi resteranno invariati.'**
+  String get confirmClearPodcastCacheMessage;
+
+  /// Status message after clearing podcast cache.
+  ///
+  /// In it, this message translates to:
+  /// **'Cache podcast svuotata: liberati {size}.'**
+  String podcastCacheCleared(String size);
+
+  /// Status message when podcast cache is already empty.
+  ///
+  /// In it, this message translates to:
+  /// **'La cache podcast è già vuota.'**
+  String get podcastCacheEmpty;
 
   /// Accessibility action and menu entry to open document bookmarks.
   ///

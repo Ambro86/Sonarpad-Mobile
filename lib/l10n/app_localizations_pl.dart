@@ -1373,12 +1373,55 @@ class AppLocalizationsPl extends AppLocalizations {
       'Gdy opcja jest wyłączona, każdy dokument ma tylko jedną zakładkę. Gdy jest włączona, możesz zapisać wiele zakładek w tym samym dokumencie.';
 
 
+
+  @override
+  String get pharmacyFeatureTitle => 'Leki, parafarmaceutyki i suplementy';
+
+  @override
+  String get pharmacyProductsSectionTitle => 'Parafarmaceutyki i suplementy';
+
+  @override
+  String get pharmacyProductsLoadingTitle => 'Wyszukiwanie parafarmaceutyków i suplementów...';
+
+  @override
+  String get pharmacyProductsErrorTitle => 'Błąd podczas wyszukiwania parafarmaceutyków i suplementów';
+
+  @override
+  String get pharmacyProductsNoResultsTitle => 'Nie znaleziono parafarmaceutyku ani suplementu';
+
   @override
   String get settingsVideoLandscapeFullscreen => 'Wideo poziome na pełnym ekranie';
-
   @override
   String get settingsVideoLandscapeFullscreenHint =>
       'Po włączeniu wideo jest ono wyświetlane na pełnym ekranie w orientacji poziomej. Radia tylko audio pozostają bez zmian.';
+
+  @override
+  String get settingsPodcastCacheTitle => 'Pamięć podręczna podcastów';
+
+  @override
+  String get settingsPodcastCacheHint => 'Wyczyść tymczasowe pliki podcastów bez usuwania subskrypcji, historii ani zaimportowanych plików audio. Sonarpad automatycznie czyści tę pamięć podręczną, gdy staje się zbyt duża lub zawiera stare pliki.';
+
+  @override
+  String settingsPodcastCacheSize(String size) {
+    return 'Zajęte miejsce: $size';
+  }
+
+  @override
+  String get clearPodcastCache => 'Wyczyść pamięć podręczną podcastów';
+
+  @override
+  String get confirmClearPodcastCacheTitle => 'Wyczyścić pamięć podręczną podcastów?';
+
+  @override
+  String get confirmClearPodcastCacheMessage => 'Tymczasowe pliki podcastów zostaną usunięte. Subskrypcje i historia odcinków pozostaną bez zmian.';
+
+  @override
+  String podcastCacheCleared(String size) {
+    return 'Pamięć podręczna podcastów wyczyszczona: zwolniono $size.';
+  }
+
+  @override
+  String get podcastCacheEmpty => 'Pamięć podręczna podcastów jest już pusta.';
 
   @override
   String get documentGoToBookmarkAction => 'Przejdź do zakładki';

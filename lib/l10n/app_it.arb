@@ -3108,5 +3108,67 @@
   "settingsVideoLandscapeFullscreenHint": "Quando attivi il video, viene mostrato a schermo intero in orizzontale. Le radio solo audio non cambiano.",
   "@settingsVideoLandscapeFullscreenHint": {
     "description": "Description for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsPodcastCacheTitle": "Cache podcast",
+  "@settingsPodcastCacheTitle": {
+    "description": "Localized text for settingsPodcastCacheTitle."
+  },
+  "settingsPodcastCacheHint": "Svuota i file temporanei dei podcast senza rimuovere gli abbonamenti, la cronologia o i file audio importati. Sonarpad pulisce automaticamente la cache quando diventa troppo grande o contiene file vecchi.",
+  "@settingsPodcastCacheHint": {
+    "description": "Localized text for settingsPodcastCacheHint."
+  },
+  "settingsPodcastCacheSize": "Spazio usato: {size}",
+  "@settingsPodcastCacheSize": {
+    "description": "Localized text for settingsPodcastCacheSize.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearPodcastCache": "Svuota cache podcast",
+  "@clearPodcastCache": {
+    "description": "Localized text for clearPodcastCache."
+  },
+  "confirmClearPodcastCacheTitle": "Svuotare la cache podcast?",
+  "@confirmClearPodcastCacheTitle": {
+    "description": "Localized text for confirmClearPodcastCacheTitle."
+  },
+  "confirmClearPodcastCacheMessage": "I file temporanei dei podcast verranno eliminati. Gli abbonamenti e la cronologia degli episodi resteranno invariati.",
+  "@confirmClearPodcastCacheMessage": {
+    "description": "Localized text for confirmClearPodcastCacheMessage."
+  },
+  "podcastCacheCleared": "Cache podcast svuotata: liberati {size}.",
+  "@podcastCacheCleared": {
+    "description": "Localized text for podcastCacheCleared.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "podcastCacheEmpty": "La cache podcast è già vuota.",
+  "@podcastCacheEmpty": {
+    "description": "Localized text for podcastCacheEmpty."
+  },
+  "pharmacyFeatureTitle": "Farmaci, parafarmaci e integratori",
+  "@pharmacyFeatureTitle": {
+    "description": "Title for the medicines, parapharmaceuticals and supplements feature."
+  },
+  "pharmacyProductsSectionTitle": "Parafarmaci e integratori",
+  "@pharmacyProductsSectionTitle": {
+    "description": "Title for the parapharmaceuticals and supplements results section."
+  },
+  "pharmacyProductsLoadingTitle": "Ricerca parafarmaci e integratori in corso...",
+  "@pharmacyProductsLoadingTitle": {
+    "description": "Loading title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsErrorTitle": "Errore nella ricerca parafarmaci e integratori",
+  "@pharmacyProductsErrorTitle": {
+    "description": "Error title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsNoResultsTitle": "Nessun parafarmaco o integratore trovato",
+  "@pharmacyProductsNoResultsTitle": {
+    "description": "Empty state title for parapharmaceuticals and supplements search."
   }
 }

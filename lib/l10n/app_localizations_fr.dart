@@ -1387,12 +1387,55 @@ class AppLocalizationsFr extends AppLocalizations {
       'Si cette option est désactivée, un seul signet est conservé par document. Si elle est activée, vous pouvez enregistrer plusieurs signets dans le même document.';
 
 
+
+  @override
+  String get pharmacyFeatureTitle => 'Médicaments, parapharmacie et compléments';
+
+  @override
+  String get pharmacyProductsSectionTitle => 'Parapharmacie et compléments';
+
+  @override
+  String get pharmacyProductsLoadingTitle => 'Recherche de parapharmacie et de compléments...';
+
+  @override
+  String get pharmacyProductsErrorTitle => 'Erreur lors de la recherche de parapharmacie et de compléments';
+
+  @override
+  String get pharmacyProductsNoResultsTitle => 'Aucun produit de parapharmacie ou complément trouvé';
+
   @override
   String get settingsVideoLandscapeFullscreen => 'Vidéo horizontale en plein écran';
-
   @override
   String get settingsVideoLandscapeFullscreenHint =>
       'Lorsque vous activez la vidéo, elle s’affiche en plein écran en orientation horizontale. Les radios uniquement audio ne changent pas.';
+
+  @override
+  String get settingsPodcastCacheTitle => 'Cache des podcasts';
+
+  @override
+  String get settingsPodcastCacheHint => 'Videz les fichiers temporaires des podcasts sans supprimer les abonnements, l’historique ou les fichiers audio importés. Sonarpad nettoie aussi automatiquement ce cache lorsqu’il devient trop volumineux ou contient d’anciens fichiers.';
+
+  @override
+  String settingsPodcastCacheSize(String size) {
+    return 'Espace utilisé : $size';
+  }
+
+  @override
+  String get clearPodcastCache => 'Vider le cache des podcasts';
+
+  @override
+  String get confirmClearPodcastCacheTitle => 'Vider le cache des podcasts ?';
+
+  @override
+  String get confirmClearPodcastCacheMessage => 'Les fichiers temporaires des podcasts seront supprimés. Les abonnements et l’historique des épisodes seront conservés.';
+
+  @override
+  String podcastCacheCleared(String size) {
+    return 'Cache des podcasts vidé : $size libérés.';
+  }
+
+  @override
+  String get podcastCacheEmpty => 'Le cache des podcasts est déjà vide.';
 
   @override
   String get documentGoToBookmarkAction => 'Aller au signet';

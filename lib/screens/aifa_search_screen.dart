@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 import 'recent_searches_screen.dart';
 
 import 'aifa_search_results_screen.dart';
@@ -38,7 +40,7 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Farmaci, parafarmaci e prodotti da farmacia'),
+        title: Text(AppLocalizations.of(context).pharmacyFeatureTitle),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

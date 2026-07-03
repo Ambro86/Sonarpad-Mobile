@@ -1378,12 +1378,55 @@ class AppLocalizationsIt extends AppLocalizations {
       'Se disattivato, resta un solo segnalibro per documento. Se attivato, puoi salvare più segnalibri nello stesso documento.';
 
 
+
+  @override
+  String get pharmacyFeatureTitle => 'Farmaci, parafarmaci e integratori';
+
+  @override
+  String get pharmacyProductsSectionTitle => 'Parafarmaci e integratori';
+
+  @override
+  String get pharmacyProductsLoadingTitle => 'Ricerca parafarmaci e integratori in corso...';
+
+  @override
+  String get pharmacyProductsErrorTitle => 'Errore nella ricerca parafarmaci e integratori';
+
+  @override
+  String get pharmacyProductsNoResultsTitle => 'Nessun parafarmaco o integratore trovato';
+
   @override
   String get settingsVideoLandscapeFullscreen => 'Video orizzontale a schermo intero';
-
   @override
   String get settingsVideoLandscapeFullscreenHint =>
       'Quando attivi il video, viene mostrato a schermo intero in orizzontale. Le radio solo audio non cambiano.';
+
+  @override
+  String get settingsPodcastCacheTitle => 'Cache podcast';
+
+  @override
+  String get settingsPodcastCacheHint => 'Svuota i file temporanei dei podcast senza rimuovere gli abbonamenti, la cronologia o i file audio importati. Sonarpad pulisce automaticamente la cache quando diventa troppo grande o contiene file vecchi.';
+
+  @override
+  String settingsPodcastCacheSize(String size) {
+    return 'Spazio usato: $size';
+  }
+
+  @override
+  String get clearPodcastCache => 'Svuota cache podcast';
+
+  @override
+  String get confirmClearPodcastCacheTitle => 'Svuotare la cache podcast?';
+
+  @override
+  String get confirmClearPodcastCacheMessage => 'I file temporanei dei podcast verranno eliminati. Gli abbonamenti e la cronologia degli episodi resteranno invariati.';
+
+  @override
+  String podcastCacheCleared(String size) {
+    return 'Cache podcast svuotata: liberati $size.';
+  }
+
+  @override
+  String get podcastCacheEmpty => 'La cache podcast è già vuota.';
 
   @override
   String get documentGoToBookmarkAction => 'Vai al segnalibro';

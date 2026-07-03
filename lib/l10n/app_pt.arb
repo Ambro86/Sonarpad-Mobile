@@ -936,5 +936,67 @@
   "settingsVideoLandscapeFullscreenHint": "Quando ativa o vídeo, este é mostrado em ecrã inteiro na orientação horizontal. As rádios só de áudio não mudam.",
   "@settingsVideoLandscapeFullscreenHint": {
     "description": "Description for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsPodcastCacheTitle": "Cache de podcasts",
+  "@settingsPodcastCacheTitle": {
+    "description": "Localized text for settingsPodcastCacheTitle."
+  },
+  "settingsPodcastCacheHint": "Limpa os ficheiros temporários dos podcasts sem remover subscrições, histórico ou ficheiros de áudio importados. O Sonarpad também limpa esta cache automaticamente quando fica demasiado grande ou contém ficheiros antigos.",
+  "@settingsPodcastCacheHint": {
+    "description": "Localized text for settingsPodcastCacheHint."
+  },
+  "settingsPodcastCacheSize": "Espaço usado: {size}",
+  "@settingsPodcastCacheSize": {
+    "description": "Localized text for settingsPodcastCacheSize.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearPodcastCache": "Limpar cache de podcasts",
+  "@clearPodcastCache": {
+    "description": "Localized text for clearPodcastCache."
+  },
+  "confirmClearPodcastCacheTitle": "Limpar a cache de podcasts?",
+  "@confirmClearPodcastCacheTitle": {
+    "description": "Localized text for confirmClearPodcastCacheTitle."
+  },
+  "confirmClearPodcastCacheMessage": "Os ficheiros temporários dos podcasts serão eliminados. As subscrições e o histórico dos episódios não serão removidos.",
+  "@confirmClearPodcastCacheMessage": {
+    "description": "Localized text for confirmClearPodcastCacheMessage."
+  },
+  "podcastCacheCleared": "Cache de podcasts limpa: {size} libertados.",
+  "@podcastCacheCleared": {
+    "description": "Localized text for podcastCacheCleared.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "podcastCacheEmpty": "A cache de podcasts já está vazia.",
+  "@podcastCacheEmpty": {
+    "description": "Localized text for podcastCacheEmpty."
+  },
+  "pharmacyFeatureTitle": "Medicamentos, parafarmácia e suplementos",
+  "@pharmacyFeatureTitle": {
+    "description": "Title for the medicines, parapharmaceuticals and supplements feature."
+  },
+  "pharmacyProductsSectionTitle": "Parafarmácia e suplementos",
+  "@pharmacyProductsSectionTitle": {
+    "description": "Title for the parapharmaceuticals and supplements results section."
+  },
+  "pharmacyProductsLoadingTitle": "A procurar parafarmácia e suplementos...",
+  "@pharmacyProductsLoadingTitle": {
+    "description": "Loading title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsErrorTitle": "Erro ao procurar parafarmácia e suplementos",
+  "@pharmacyProductsErrorTitle": {
+    "description": "Error title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsNoResultsTitle": "Nenhum produto de parafarmácia ou suplemento encontrado",
+  "@pharmacyProductsNoResultsTitle": {
+    "description": "Empty state title for parapharmaceuticals and supplements search."
   }
 }

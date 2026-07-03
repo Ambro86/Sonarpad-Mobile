@@ -933,5 +933,67 @@
   "settingsVideoLandscapeFullscreenHint": "Když zapnete video, zobrazí se přes celou obrazovku na šířku. Rádia pouze se zvukem se nemění.",
   "@settingsVideoLandscapeFullscreenHint": {
     "description": "Description for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsPodcastCacheTitle": "Mezipaměť podcastů",
+  "@settingsPodcastCacheTitle": {
+    "description": "Localized text for settingsPodcastCacheTitle."
+  },
+  "settingsPodcastCacheHint": "Vymaže dočasné soubory podcastů bez odstranění odběrů, historie nebo importovaných zvukových souborů. Sonarpad tuto mezipaměť automaticky čistí, když je příliš velká nebo obsahuje staré soubory.",
+  "@settingsPodcastCacheHint": {
+    "description": "Localized text for settingsPodcastCacheHint."
+  },
+  "settingsPodcastCacheSize": "Využité místo: {size}",
+  "@settingsPodcastCacheSize": {
+    "description": "Localized text for settingsPodcastCacheSize.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearPodcastCache": "Vymazat mezipaměť podcastů",
+  "@clearPodcastCache": {
+    "description": "Localized text for clearPodcastCache."
+  },
+  "confirmClearPodcastCacheTitle": "Vymazat mezipaměť podcastů?",
+  "@confirmClearPodcastCacheTitle": {
+    "description": "Localized text for confirmClearPodcastCacheTitle."
+  },
+  "confirmClearPodcastCacheMessage": "Dočasné soubory podcastů budou odstraněny. Odběry a historie epizod zůstanou zachovány.",
+  "@confirmClearPodcastCacheMessage": {
+    "description": "Localized text for confirmClearPodcastCacheMessage."
+  },
+  "podcastCacheCleared": "Mezipaměť podcastů vymazána: uvolněno {size}.",
+  "@podcastCacheCleared": {
+    "description": "Localized text for podcastCacheCleared.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "podcastCacheEmpty": "Mezipaměť podcastů je už prázdná.",
+  "@podcastCacheEmpty": {
+    "description": "Localized text for podcastCacheEmpty."
+  },
+  "pharmacyFeatureTitle": "Léky, parafarmaka a doplňky",
+  "@pharmacyFeatureTitle": {
+    "description": "Title for the medicines, parapharmaceuticals and supplements feature."
+  },
+  "pharmacyProductsSectionTitle": "Parafarmaka a doplňky",
+  "@pharmacyProductsSectionTitle": {
+    "description": "Title for the parapharmaceuticals and supplements results section."
+  },
+  "pharmacyProductsLoadingTitle": "Hledají se parafarmaka a doplňky...",
+  "@pharmacyProductsLoadingTitle": {
+    "description": "Loading title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsErrorTitle": "Chyba při hledání parafarmak a doplňků",
+  "@pharmacyProductsErrorTitle": {
+    "description": "Error title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsNoResultsTitle": "Nebylo nalezeno žádné parafarmakum ani doplněk",
+  "@pharmacyProductsNoResultsTitle": {
+    "description": "Empty state title for parapharmaceuticals and supplements search."
   }
 }

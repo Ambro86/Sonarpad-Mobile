@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart';
 
 import '../models/podcast.dart';
 import 'raiplay_sound_service.dart';
+import 'podcast_cache_service.dart';
 
 class PodcastService {
   String _getPlayedEpisodesKey(String feedUrl) => 'sonarpad_played_episodes_$feedUrl';
@@ -1647,20 +1647,32 @@ class PodcastService {
   }
 
   Future<File> downloadEpisode(PodcastEpisode episode) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final safeTitle =
-        episode.title.replaceAll(RegExp(r'[^a-zA-Z0-9àèéìòùÀÈÉÌÒÙ _.-]'), '_');
+    final cache = PodcastCacheService();
+    await cache.cleanAutomatically();
+    final dir = await cache.cacheDirectory();
+    final safeTitle = episode.title
+        .replaceAll(RegExp(r'[^a-zA-Z0-9àèéìòùÀÈÉÌÒÙ _.-]'), '_')
+        .trim();
+    final safeBaseName = safeTitle.isEmpty ? 'podcast_episode' : safeTitle;
     final ext = p.extension(Uri.parse(episode.audioUrl).path).isEmpty
         ? '.mp3'
         : p.extension(Uri.parse(episode.audioUrl).path);
-    final file = File(p.join(dir.path, '$safeTitle$ext'));
+    final file = File(p.join(dir.path, '$safeBaseName$ext'));
     final request = http.Request('GET', Uri.parse(episode.audioUrl));
     final response = await _client.send(request);
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Download non riuscito: ${response.statusCode}');
     }
     final sink = file.openWrite();
-    await response.stream.pipe(sink);
+    try {
+      await response.stream.pipe(sink);
+    } catch (_) {
+      try {
+        if (await file.exists()) await file.delete();
+      } catch (_) {}
+      rethrow;
+    }
+    await cache.cleanAutomatically();
     return file;
   }
 
