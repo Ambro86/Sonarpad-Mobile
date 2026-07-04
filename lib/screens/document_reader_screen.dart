@@ -77,7 +77,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   bool _ttsPaused = false;
   String? _activeTtsEngine;
-  bool _systemTtsResumeInProgress = false;
   StreamSubscription<bool>? _playingSub;
 
   static const int _maxChunkChars = 650;
@@ -103,11 +102,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     });
     _flutterTts.setPauseHandler(() {
       if (!mounted || !_speaking) return;
+      if (Platform.isIOS && _activeTtsEngine == 'system') {
+        unawaited(_pauseReading());
+        return;
+      }
       setState(() => _ttsPaused = true);
       unawaited(_saveAutomaticBookmarkFromPlayback());
-      if (Platform.isIOS && _activeTtsEngine == 'system') {
-        unawaited(_setMagicTapPlaying(false));
-      }
     });
     _flutterTts.setContinueHandler(() {
       if (!mounted || !_speaking) return;
@@ -1170,14 +1170,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         if (generationError != null) throw Exception(generationError);
       }
 
+      if (!mounted) return;
+      if (readingToken != _readingToken) return;
+
       if (Platform.isIOS && engine == 'system') {
         try {
           await _ttsCommands.invokeMethod('clearMagicTap');
         } catch (_) {}
       }
 
-      if (!mounted) return;
-      if (readingToken != _readingToken) return;
       _cancelReadingSleepTimer();
       setState(() {
         _playingChunkIndex = -1;
@@ -1438,14 +1439,32 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   Future<void> _pauseReading() async {
     if (!_speaking || _ttsPaused) return;
-    if (mounted) setState(() => _ttsPaused = true);
 
     if (_activeTtsEngine == 'system') {
-      await _flutterTts.pause();
+      final resumeIndex = _currentReadingBookmarkIndex();
+      _readingToken += 1;
+      if (mounted) {
+        setState(() {
+          if (resumeIndex != null) {
+            _bookmarkIndex = resumeIndex;
+            _focusedChunkIndex = resumeIndex;
+            _playingChunkIndex = resumeIndex;
+          }
+          _ttsPaused = true;
+        });
+      }
       await _setMagicTapPlaying(false);
-    } else {
-      await _audio.pause();
+      await _saveAutomaticBookmarkFromPlayback();
+      try {
+        await _flutterTts.stop();
+      } catch (e) {
+        dev.log('DocumentReaderScreen system TTS stop on pause error: $e');
+      }
+      return;
     }
+
+    if (mounted) setState(() => _ttsPaused = true);
+    await _audio.pause();
     await _saveAutomaticBookmarkFromPlayback();
   }
 
@@ -1453,64 +1472,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (!_speaking || !_ttsPaused) return;
 
     if (_activeTtsEngine == 'system') {
-      await _resumeSystemTtsFromCurrentChunk();
-    } else {
       if (mounted) setState(() => _ttsPaused = false);
-      await _audio.resumeSequentialPlayback();
-    }
-  }
-
-  Future<void> _resumeSystemTtsFromCurrentChunk() async {
-    if (_systemTtsResumeInProgress) return;
-    if (!_speaking || _activeTtsEngine != 'system' || !_ttsPaused) return;
-    final resumeIndex = _currentReadingBookmarkIndex();
-    if (resumeIndex == null) return;
-
-    _systemTtsResumeInProgress = true;
-    final edgeController = _edgeFileController;
-    _edgeFileController = null;
-    _readingToken += 1;
-
-    try {
-      await _flutterTts.stop();
-    } catch (e) {
-      dev.log('DocumentReaderScreen system TTS stop before resume error: $e');
-    }
-
-    try {
-      await _audio.stop();
-    } catch (e) {
-      dev.log('DocumentReaderScreen audio stop before system resume error: $e');
-    }
-
-    if (edgeController != null && !edgeController.isClosed) {
-      try {
-        await edgeController.close();
-      } catch (e) {
-        dev.log('DocumentReaderScreen stream close before system resume error: $e');
-      }
-    }
-
-    if (!mounted) {
-      _systemTtsResumeInProgress = false;
+      await _setMagicTapPlaying(true);
+      await _startReading(restartSleepTimer: false);
       return;
     }
 
-    setState(() {
-      _bookmarkIndex = resumeIndex;
-      _focusedChunkIndex = resumeIndex;
-      _playingChunkIndex = resumeIndex;
-      _speaking = false;
-      _ttsPaused = false;
-      _ttsStatus = null;
-      _activeTtsEngine = null;
-    });
-
-    try {
-      await _startReading(restartSleepTimer: false);
-    } finally {
-      _systemTtsResumeInProgress = false;
-    }
+    if (mounted) setState(() => _ttsPaused = false);
+    await _audio.resumeSequentialPlayback();
   }
 
   int get _activeDocumentPositionIndex {
