@@ -270,6 +270,44 @@
   "addDocumentToLibraryHint": "Añadir documento a la biblioteca. Explora los archivos del dispositivo y añádelos.",
   "documentTypeLabel": "Documento",
   "documentPosition": "Posición del documento",
+  "documentRemainingLessThanOneMinute": "menos de 1 minuto restante",
+  "@documentRemainingLessThanOneMinute": {
+    "description": "Localized text for documentRemainingLessThanOneMinute."
+  },
+  "documentRemainingMinutes": "aproximadamente {minutes} minutos restantes",
+  "@documentRemainingMinutes": {
+    "description": "Localized text for documentRemainingMinutes.",
+    "placeholders": {
+      "minutes": {
+        "example": "12",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHours": "aproximadamente {hours} horas restantes",
+  "@documentRemainingHours": {
+    "description": "Localized text for documentRemainingHours.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHoursMinutes": "aproximadamente {hours} horas y {minutes} minutos restantes",
+  "@documentRemainingHoursMinutes": {
+    "description": "Localized text for documentRemainingHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      },
+      "minutes": {
+        "example": "15",
+        "type": "int"
+      }
+    }
+  },
   "folderTypeLabel": "Carpeta",
   "documentAddedOn": "añadido el {date}",
   "documentTypeDescription": "tipo {extension}",

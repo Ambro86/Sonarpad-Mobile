@@ -72,6 +72,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   bool _multipleDocumentBookmarksEnabled = false;
   int _documentSliderStepPercent =
       AppSettingsService.defaultDocumentSliderStepPercent;
+  double _ttsSpeed = 1.0;
+  List<int> _remainingWordsFromChunk = const <int>[];
 
   bool _ttsPaused = false;
   String? _activeTtsEngine;
@@ -154,6 +156,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         await _settings.loadDocumentSliderStepPercent();
     final documentReadingSleepTimerMinutes =
         await _settings.loadDocumentReadingSleepTimerMinutes();
+    final ttsSpeed = await _settings.loadTtsSpeed();
     try {
       final editedPath =
           await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
@@ -188,6 +191,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _multipleDocumentBookmarksEnabled = multipleDocumentBookmarks;
         _documentSliderStepPercent = documentSliderStepPercent;
         _documentReadingSleepTimerMinutes = documentReadingSleepTimerMinutes;
+        _ttsSpeed = ttsSpeed;
+        _rebuildRemainingReadingEstimateCache();
         _focusedChunkIndex = -1;
         _refreshBookmarkStateForCurrentMode();
         // Le chiavi vengono gestite da AutoScrollTag
@@ -1072,6 +1077,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           await _flutterTts.autoStopSharedSession(false);
         }
         final speed = await _settings.loadTtsSpeed();
+        _ttsSpeed = speed;
         final pitch = await _settings.loadTtsPitch();
         await _flutterTts.setSpeechRate(speed * 0.5);
         await _flutterTts.setPitch(pitch);
@@ -1523,6 +1529,56 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     return _bookmarkIndex.clamp(0, _chunks.length - 1).toInt();
   }
 
+  void _rebuildRemainingReadingEstimateCache() {
+    if (_chunks.isEmpty) {
+      _remainingWordsFromChunk = const <int>[];
+      return;
+    }
+
+    final counts = List<int>.filled(_chunks.length, 0);
+    var runningTotal = 0;
+    for (var i = _chunks.length - 1; i >= 0; i--) {
+      runningTotal += _estimatedWordCount(_chunks[i]);
+      counts[i] = runningTotal;
+    }
+    _remainingWordsFromChunk = counts;
+  }
+
+  int _estimatedWordCount(String text) {
+    final matches = RegExp(
+      r"[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*",
+      unicode: true,
+    ).allMatches(text);
+    return matches.length;
+  }
+
+  String? _documentRemainingReadingTimeLabel(AppLocalizations l10n) {
+    if (_chunks.isEmpty || _remainingWordsFromChunk.isEmpty) return null;
+    final index = _activeDocumentPositionIndex.clamp(0, _chunks.length - 1).toInt();
+    if (index < 0 || index >= _remainingWordsFromChunk.length) return null;
+
+    final remainingWords = _remainingWordsFromChunk[index];
+    if (remainingWords <= 0) return null;
+
+    // Stima volutamente semplice: circa 150 parole/minuto a velocità 1.0.
+    // La velocità impostata dall'utente corregge la stima, ma resta una stima:
+    // le voci reali possono variare per lingua, punteggiatura e lunghezza frasi.
+    final speedFactor = _ttsSpeed.clamp(0.25, 3.0).toDouble();
+    final wordsPerMinute = (150 * speedFactor).round().clamp(60, 450);
+    final remainingMinutes = (remainingWords / wordsPerMinute).ceil();
+    return _formatRemainingReadingTime(l10n, remainingMinutes);
+  }
+
+  String _formatRemainingReadingTime(AppLocalizations l10n, int minutes) {
+    if (minutes <= 0) return l10n.documentRemainingLessThanOneMinute;
+    if (minutes < 60) return l10n.documentRemainingMinutes(minutes);
+
+    final hours = minutes ~/ 60;
+    final restMinutes = minutes % 60;
+    if (restMinutes == 0) return l10n.documentRemainingHours(hours);
+    return l10n.documentRemainingHoursMinutes(hours, restMinutes);
+  }
+
   int _indexForDocumentPercent(double percent) {
     if (_chunks.isEmpty) return 0;
     if (_chunks.length == 1) return 0;
@@ -1753,6 +1809,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           _DocumentPositionSlider(
                             value: _documentProgressPercent,
                             label: l10n.documentPosition,
+                            remainingTimeLabel:
+                                _documentRemainingReadingTimeLabel(l10n),
                             onChanged: _seekDocumentToPercent,
                             stepPercent: _documentSliderStepPercent,
                             onIncrease: () =>
@@ -2430,6 +2488,7 @@ class _DocumentPositionSlider extends StatelessWidget {
   const _DocumentPositionSlider({
     required this.value,
     required this.label,
+    this.remainingTimeLabel,
     required this.onChanged,
     required this.stepPercent,
     required this.onIncrease,
@@ -2438,6 +2497,7 @@ class _DocumentPositionSlider extends StatelessWidget {
 
   final double value;
   final String label;
+  final String? remainingTimeLabel;
   final ValueChanged<double> onChanged;
   final int stepPercent;
   final VoidCallback onIncrease;
@@ -2450,21 +2510,35 @@ class _DocumentPositionSlider extends StatelessWidget {
     final increased = (percent + step).clamp(0, 100);
     final decreased = (percent - step).clamp(0, 100);
 
+    final semanticValue = remainingTimeLabel == null
+        ? '$percent%'
+        : '$percent%, $remainingTimeLabel';
+
     return Semantics(
       slider: true,
       label: label,
-      value: '$percent%',
+      value: semanticValue,
       increasedValue: '$increased%',
       decreasedValue: '$decreased%',
       onIncrease: onIncrease,
       onDecrease: onDecrease,
       child: ExcludeSemantics(
-        child: Slider(
-          value: value.clamp(0.0, 100.0).toDouble(),
-          min: 0,
-          max: 100,
-          divisions: 100,
-          onChanged: onChanged,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Slider(
+              value: value.clamp(0.0, 100.0).toDouble(),
+              min: 0,
+              max: 100,
+              divisions: 100,
+              onChanged: onChanged,
+            ),
+            if (remainingTimeLabel != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(remainingTimeLabel!),
+              ),
+          ],
         ),
       ),
     );

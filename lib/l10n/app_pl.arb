@@ -1150,6 +1150,44 @@
     "description": "Localized text for documentTypeLabel."
   },
   "documentPosition": "Pozycja dokumentu",
+  "documentRemainingLessThanOneMinute": "pozostało mniej niż 1 minuta",
+  "@documentRemainingLessThanOneMinute": {
+    "description": "Localized text for documentRemainingLessThanOneMinute."
+  },
+  "documentRemainingMinutes": "pozostało około {minutes} minut",
+  "@documentRemainingMinutes": {
+    "description": "Localized text for documentRemainingMinutes.",
+    "placeholders": {
+      "minutes": {
+        "example": "12",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHours": "pozostało około {hours} godzin",
+  "@documentRemainingHours": {
+    "description": "Localized text for documentRemainingHours.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHoursMinutes": "pozostało około {hours} godz. i {minutes} min",
+  "@documentRemainingHoursMinutes": {
+    "description": "Localized text for documentRemainingHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      },
+      "minutes": {
+        "example": "15",
+        "type": "int"
+      }
+    }
+  },
   "@documentPosition": {
     "description": "Localized text for documentPosition."
   },

@@ -267,6 +267,44 @@
   "addDocumentToLibraryHint": "Přidat dokument do knihovny. Procházejte soubory v zařízení a přidejte je.",
   "documentTypeLabel": "Dokument",
   "documentPosition": "Pozice dokumentu",
+  "documentRemainingLessThanOneMinute": "zbývá méně než 1 minuta",
+  "@documentRemainingLessThanOneMinute": {
+    "description": "Localized text for documentRemainingLessThanOneMinute."
+  },
+  "documentRemainingMinutes": "zbývá přibližně {minutes} minut",
+  "@documentRemainingMinutes": {
+    "description": "Localized text for documentRemainingMinutes.",
+    "placeholders": {
+      "minutes": {
+        "example": "12",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHours": "zbývá přibližně {hours} hodin",
+  "@documentRemainingHours": {
+    "description": "Localized text for documentRemainingHours.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHoursMinutes": "zbývá přibližně {hours} h a {minutes} min",
+  "@documentRemainingHoursMinutes": {
+    "description": "Localized text for documentRemainingHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      },
+      "minutes": {
+        "example": "15",
+        "type": "int"
+      }
+    }
+  },
   "folderTypeLabel": "Složka",
   "documentAddedOn": "přidáno dne {date}",
   "documentTypeDescription": "typ {extension}",

@@ -270,6 +270,44 @@
   "addDocumentToLibraryHint": "Adicionar documento à biblioteca. Procura os ficheiros do dispositivo e adiciona-os.",
   "documentTypeLabel": "Documento",
   "documentPosition": "Posição do documento",
+  "documentRemainingLessThanOneMinute": "menos de 1 minuto restante",
+  "@documentRemainingLessThanOneMinute": {
+    "description": "Localized text for documentRemainingLessThanOneMinute."
+  },
+  "documentRemainingMinutes": "cerca de {minutes} minutos restantes",
+  "@documentRemainingMinutes": {
+    "description": "Localized text for documentRemainingMinutes.",
+    "placeholders": {
+      "minutes": {
+        "example": "12",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHours": "cerca de {hours} horas restantes",
+  "@documentRemainingHours": {
+    "description": "Localized text for documentRemainingHours.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHoursMinutes": "cerca de {hours} horas e {minutes} minutos restantes",
+  "@documentRemainingHoursMinutes": {
+    "description": "Localized text for documentRemainingHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      },
+      "minutes": {
+        "example": "15",
+        "type": "int"
+      }
+    }
+  },
   "folderTypeLabel": "Pasta",
   "documentAddedOn": "adicionado em {date}",
   "documentTypeDescription": "tipo {extension}",

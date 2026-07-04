@@ -822,6 +822,25 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentTypeLabel => 'Documento';
 
   @override
+
+
+  @override
+  String get documentRemainingLessThanOneMinute => 'menos de 1 minuto restante';
+
+  @override
+  String documentRemainingMinutes(Object minutes) {
+    return 'cerca de $minutes minutos restantes';
+  }
+
+  @override
+  String documentRemainingHours(Object hours) {
+    return 'cerca de $hours horas restantes';
+  }
+
+  @override
+  String documentRemainingHoursMinutes(Object hours, Object minutes) {
+    return 'cerca de $hours horas e $minutes minutos restantes';
+  }
   String get documentPosition => 'Posição do documento';
 
   @override

@@ -26,7 +26,8 @@
       "Le ricerche recenti dei farmaci conservano ora anche le ricerche di parafarmaci, integratori e prodotti farmaceutici.",
       "Aggiunta nelle impostazioni la possibilità di vedere e svuotare la cache dei podcast. Sonarpad ora la pulisce anche automaticamente quando diventa troppo grande o contiene file vecchi, senza rimuovere abbonamenti o cronologia.",
       "Aggiunto nei Documenti il timer di spegnimento della lettura: può fermare automaticamente la lettura del documento dopo il tempo scelto, sia con Edge sia con le voci di sistema, salvando il punto di arresto. Il conteggio riparte quando avvii la lettura di un altro documento.",
-      "Migliorata la pausa/ripresa della lettura documenti con le cuffie: con le voci di sistema, il comando Play/Pausa viene trattato come il tocco magico e la lettura può ripartire senza chiudere e riaprire il libro."
+      "Migliorata la pausa/ripresa della lettura documenti con le cuffie: con le voci di sistema, il comando Play/Pausa viene trattato come il tocco magico e la lettura può ripartire senza chiudere e riaprire il libro.",
+      "Lo slider della posizione nei documenti mostra ora anche una stima del tempo rimanente di lettura, calcolata in base al testo ancora da leggere e alla velocità TTS impostata."
     ],
     "en": [
       "Improved document reading: some texts with unusual accents are now read more reliably, including when moving character by character with VoiceOver.",
@@ -49,7 +50,8 @@
       "News and podcast episode lists now show date and time next to the title, using labels such as today, yesterday, tomorrow and the day after tomorrow when available.",
       "Added a setting to view and clear the podcast cache. Sonarpad now also cleans it automatically when it becomes too large or contains old files, without removing subscriptions or history.",
       "Added a document reading sleep timer: it can automatically stop reading the current document after the chosen time, with both Edge and system voices, and save the stopping point. The countdown restarts when you start reading another document.",
-      "Improved document reading pause/resume from headphones: with system voices, the Play/Pause command is handled like Magic Tap so reading can resume without closing and reopening the book."
+      "Improved document reading pause/resume from headphones: with system voices, the Play/Pause command is handled like Magic Tap so reading can resume without closing and reopening the book.",
+      "The document position slider now also shows an estimated remaining reading time, calculated from the text still to read and the selected TTS speed."
     ],
     "fr": [
       "Amélioration de la lecture des documents : certains textes avec des accents particuliers sont maintenant mieux lus, y compris caractère par caractère avec VoiceOver.",
@@ -72,7 +74,8 @@
       "Les listes d’actualités et d’épisodes de podcast affichent maintenant la date et l’heure à côté du titre, avec des indications comme aujourd’hui, hier, demain et après-demain lorsque disponibles.",
       "Ajout d’un réglage pour voir et vider le cache des podcasts. Sonarpad le nettoie aussi automatiquement lorsqu’il devient trop volumineux ou contient d’anciens fichiers, sans supprimer les abonnements ni l’historique.",
       "Ajout d’un minuteur d’arrêt pour la lecture des documents : il peut arrêter automatiquement la lecture du document en cours après la durée choisie, avec Edge comme avec les voix système, et enregistrer le point d’arrêt. Le compte à rebours redémarre quand vous lancez la lecture d’un autre document.",
-      "Amélioration de la pause/reprise de la lecture des documents avec les écouteurs : avec les voix système, la commande Lecture/Pause est traitée comme le toucher magique et la lecture peut reprendre sans fermer puis rouvrir le livre."
+      "Amélioration de la pause/reprise de la lecture des documents avec les écouteurs : avec les voix système, la commande Lecture/Pause est traitée comme le toucher magique et la lecture peut reprendre sans fermer puis rouvrir le livre.",
+      "Le curseur de position des documents affiche maintenant aussi une estimation du temps de lecture restant, calculée d’après le texte encore à lire et la vitesse TTS sélectionnée."
     ],
     "es": [
       "Mejorada la lectura de documentos: algunos textos con acentos especiales ahora se leen mejor, también al moverse carácter por carácter con VoiceOver.",
@@ -95,7 +98,8 @@
       "Añadida una opción para mostrar los vídeos a pantalla completa en horizontal cuando el vídeo está activado.",
       "Añadida una opción para ver y vaciar la caché de podcasts. Sonarpad ahora también la limpia automáticamente cuando crece demasiado o contiene archivos antiguos, sin eliminar suscripciones ni historial.",
       "Añadido un temporizador de apagado para la lectura de documentos: puede detener automáticamente la lectura del documento actual tras el tiempo elegido, tanto con Edge como con las voces del sistema, y guardar el punto de parada. La cuenta atrás se reinicia cuando empiezas a leer otro documento.",
-      "Mejorada la pausa/reanudación de la lectura de documentos con auriculares: con las voces del sistema, el comando Reproducir/Pausa se trata como el toque mágico y la lectura puede continuar sin cerrar y volver a abrir el libro."
+      "Mejorada la pausa/reanudación de la lectura de documentos con auriculares: con las voces del sistema, el comando Reproducir/Pausa se trata como el toque mágico y la lectura puede continuar sin cerrar y volver a abrir el libro.",
+      "El control deslizante de posición del documento ahora también muestra una estimación del tiempo de lectura restante, calculada según el texto que queda por leer y la velocidad TTS seleccionada."
     ],
     "pt": [
       "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caráter a caráter com o VoiceOver.",
@@ -118,7 +122,8 @@
       "Adicionada uma opção para mostrar vídeos em ecrã inteiro horizontal quando o vídeo está ativo.",
       "Adicionada uma opção para ver e limpar a cache de podcasts. O Sonarpad agora também a limpa automaticamente quando fica demasiado grande ou contém ficheiros antigos, sem remover subscrições nem histórico.",
       "Adicionado um temporizador de suspensão para a leitura de documentos: pode parar automaticamente a leitura do documento atual após o tempo escolhido, tanto com Edge como com as vozes do sistema, e guardar o ponto de paragem. A contagem recomeça quando inicia a leitura de outro documento.",
-      "Melhorada a pausa/retoma da leitura de documentos com auscultadores: com as vozes do sistema, o comando Reproduzir/Pausar é tratado como o toque mágico e a leitura pode retomar sem fechar e reabrir o livro."
+      "Melhorada a pausa/retoma da leitura de documentos com auscultadores: com as vozes do sistema, o comando Reproduzir/Pausar é tratado como o toque mágico e a leitura pode retomar sem fechar e reabrir o livro.",
+      "O controlo deslizante de posição dos documentos agora também mostra uma estimativa do tempo de leitura restante, calculada com base no texto ainda por ler e na velocidade TTS escolhida."
     ],
     "pl": [
       "Ulepszono czytanie dokumentów: niektóre teksty z nietypowymi akcentami są teraz odczytywane lepiej, także podczas przechodzenia znak po znaku z VoiceOver.",
@@ -142,7 +147,8 @@
       "Listy wiadomości i odcinków podcastów pokazują teraz przy tytule datę i godzinę, z etykietami takimi jak dziś, wczoraj, jutro i pojutrze, gdy są dostępne.",
       "Dodano ustawienie pozwalające sprawdzić i wyczyścić pamięć podręczną podcastów. Sonarpad automatycznie czyści ją także wtedy, gdy jest zbyt duża lub zawiera stare pliki, bez usuwania subskrypcji ani historii.",
       "Dodano timer wyłączania czytania dokumentów: może automatycznie zatrzymać czytanie bieżącego dokumentu po wybranym czasie, zarówno z Edge, jak i z głosami systemowymi, oraz zapisać miejsce zatrzymania. Odliczanie zaczyna się od nowa po uruchomieniu czytania innego dokumentu.",
-      "Ulepszono pauzę i wznawianie czytania dokumentów ze słuchawek: przy głosach systemowych polecenie Odtwórz/Pauza działa jak Magic Tap, więc czytanie można wznowić bez zamykania i ponownego otwierania książki."
+      "Ulepszono pauzę i wznawianie czytania dokumentów ze słuchawek: przy głosach systemowych polecenie Odtwórz/Pauza działa jak Magic Tap, więc czytanie można wznowić bez zamykania i ponownego otwierania książki.",
+      "Suwak pozycji w dokumentach pokazuje teraz także szacowany pozostały czas czytania, obliczany na podstawie tekstu pozostałego do przeczytania i wybranej szybkości TTS."
     ],
     "cs": [
       "Vylepšeno čtení dokumentů: některé texty se zvláštními akcenty se nyní čtou lépe, i při pohybu znak po znaku pomocí VoiceOveru.",
@@ -165,7 +171,8 @@
       "Seznamy zpráv a epizod podcastů nyní u názvu zobrazují také datum a čas, případně s označeními jako dnes, včera, zítra a pozítří.",
       "Přidáno nastavení pro zobrazení a vymazání mezipaměti podcastů. Sonarpad ji nyní automaticky čistí také tehdy, když je příliš velká nebo obsahuje staré soubory, bez odstranění odběrů nebo historie.",
       "Přidán časovač vypnutí čtení dokumentů: může automaticky zastavit čtení aktuálního dokumentu po zvolené době, s Edge i systémovými hlasy, a uložit místo zastavení. Odpočítávání začne znovu, když spustíte čtení jiného dokumentu.",
-      "Vylepšeno pozastavení a pokračování čtení dokumentů ze sluchátek: u systémových hlasů se příkaz Přehrát/Pauza zpracuje jako Magic Tap, takže čtení lze obnovit bez zavření a opětovného otevření knihy."
+      "Vylepšeno pozastavení a pokračování čtení dokumentů ze sluchátek: u systémových hlasů se příkaz Přehrát/Pauza zpracuje jako Magic Tap, takže čtení lze obnovit bez zavření a opětovného otevření knihy.",
+      "Posuvník pozice v dokumentech nyní zobrazuje také odhad zbývající doby čtení, vypočítaný podle textu zbývajícího ke čtení a zvolené rychlosti TTS."
     ]
   },
   {

@@ -823,6 +823,25 @@ class AppLocalizationsCs extends AppLocalizations {
   String get documentTypeLabel => 'Dokument';
 
   @override
+
+
+  @override
+  String get documentRemainingLessThanOneMinute => 'zbývá méně než 1 minuta';
+
+  @override
+  String documentRemainingMinutes(Object minutes) {
+    return 'zbývá přibližně $minutes minut';
+  }
+
+  @override
+  String documentRemainingHours(Object hours) {
+    return 'zbývá přibližně $hours hodin';
+  }
+
+  @override
+  String documentRemainingHoursMinutes(Object hours, Object minutes) {
+    return 'zbývá přibližně $hours h a $minutes min';
+  }
   String get documentPosition => 'Pozice dokumentu';
 
   @override

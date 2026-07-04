@@ -270,6 +270,44 @@
   "addDocumentToLibraryHint": "Ajouter un document à la bibliothèque. Parcourez les fichiers de l’appareil et ajoutez-les.",
   "documentTypeLabel": "Document",
   "documentPosition": "Position du document",
+  "documentRemainingLessThanOneMinute": "moins de 1 minute restante",
+  "@documentRemainingLessThanOneMinute": {
+    "description": "Localized text for documentRemainingLessThanOneMinute."
+  },
+  "documentRemainingMinutes": "environ {minutes} minutes restantes",
+  "@documentRemainingMinutes": {
+    "description": "Localized text for documentRemainingMinutes.",
+    "placeholders": {
+      "minutes": {
+        "example": "12",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHours": "environ {hours} heures restantes",
+  "@documentRemainingHours": {
+    "description": "Localized text for documentRemainingHours.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHoursMinutes": "environ {hours} heures et {minutes} minutes restantes",
+  "@documentRemainingHoursMinutes": {
+    "description": "Localized text for documentRemainingHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      },
+      "minutes": {
+        "example": "15",
+        "type": "int"
+      }
+    }
+  },
   "folderTypeLabel": "Dossier",
   "documentAddedOn": "ajouté le {date}",
   "documentTypeDescription": "type {extension}",

@@ -1560,6 +1560,30 @@ abstract class AppLocalizations {
   /// **'Posizione documento'**
   String get documentPosition;
 
+  /// Localized text for documentRemainingLessThanOneMinute.
+  ///
+  /// In it, this message translates to:
+  /// **'meno di 1 minuto rimanente'**
+  String get documentRemainingLessThanOneMinute;
+
+  /// Localized text for documentRemainingMinutes.
+  ///
+  /// In it, this message translates to:
+  /// **'circa {minutes} minuti rimanenti'**
+  String documentRemainingMinutes(Object minutes);
+
+  /// Localized text for documentRemainingHours.
+  ///
+  /// In it, this message translates to:
+  /// **'circa {hours} ore rimanenti'**
+  String documentRemainingHours(Object hours);
+
+  /// Localized text for documentRemainingHoursMinutes.
+  ///
+  /// In it, this message translates to:
+  /// **'circa {hours} ore e {minutes} minuti rimanenti'**
+  String documentRemainingHoursMinutes(Object hours, Object minutes);
+
   /// Localized text for folderTypeLabel.
   ///
   /// In it, this message translates to:
