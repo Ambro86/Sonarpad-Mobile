@@ -124,3 +124,34 @@ scripts/ticketmaster.php
 TESTFLIGHT_TESTING_NOTES.txt
 tmp_apk_test/
 tv_channels_resolver.php
+
+# Local notes and generated fix reports
+.claude/
+README_*_FIX*.txt
+README_TEST_*.txt
+
+# Local parser/export test artifacts
+epub_footnote_test_log_*.txt
+epub_footnote_txt_*/
+parafarmaci_parser_test_log_*.txt
+parafarmaci_sezioni_test_*.zip
+parafarmaci_sezioni_test_*/
+
+# Local helper scripts and diagnostics
+canali_regionali.txt
+gutenberg_dns_diagnosi.txt
+installa_apk.bat
+rai1_redirect.php
+run_emulatore.ps1
+run_epub_footnote_test*.bat
+run_parafarmaci_parser_test*.bat
+setup_emulatore*.ps1
+untranslated_messages.json
+
+# Local archives
+bau.zip
+loggo.zip
+sonarpad_mobile_starter.zip
+
+# Ad-hoc test tools
+tools/test_*

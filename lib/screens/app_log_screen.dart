@@ -48,7 +48,7 @@ class _AppLogScreenState extends State<AppLogScreen> {
     await _loadLogs();
     if (!mounted) return;
 
-    showStatusMessage(context, l10n.logCleared);
+    announceStatusMessage(context, l10n.logCleared);
   }
 
   List<String> get _logLines =>

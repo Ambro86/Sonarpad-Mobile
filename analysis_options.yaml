@@ -15,6 +15,7 @@ analyzer:
     - third_party/rhttp_plus/example/**
     - third_party/rhttp_plus/test/**
     - third_party/epubx/**
+    - tools/test_*.dart
 
 linter:
   # The lint rules applied to this project can be customized in the
