@@ -36,6 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _pocketTts = PocketTtsBridge();
   final _pocketTtsModel = PocketTtsModelService();
   final _screenFocusNode = FocusNode();
+  final _viewLogFocusNode = FocusNode();
   String _appLanguage = 'it';
   SonarpadThemeMode _themeMode = SonarpadThemeMode.system;
   WeatherTemperatureUnit _weatherTemperatureUnit = WeatherTemperatureUnit.celsius;
@@ -230,6 +231,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
+    _viewLogFocusNode.dispose();
     _screenFocusNode.dispose();
     _tvSecretCodeController.dispose();
     unawaited(_audio.stop().whenComplete(_audio.dispose));
@@ -1785,18 +1787,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 24),
                     const Divider(),
                     const SizedBox(height: 12),
-                    FilledButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            settings:
-                                const RouteSettings(name: '/settings/app-log'),
-                            builder: (_) => const AppLogScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.description),
-                      label: Text(l10n.settingsViewSysLog),
+                    Focus(
+                      focusNode: _viewLogFocusNode,
+                      child: FilledButton.icon(
+                        onPressed: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              settings: const RouteSettings(
+                                name: '/settings/app-log',
+                              ),
+                              builder: (_) => const AppLogScreen(),
+                            ),
+                          );
+                          if (!context.mounted) return;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!mounted) return;
+                            _viewLogFocusNode.requestFocus();
+                          });
+                        },
+                        icon: const Icon(Icons.description),
+                        label: Text(l10n.settingsViewSysLog),
+                      ),
                     ),
                   ],
                 ),

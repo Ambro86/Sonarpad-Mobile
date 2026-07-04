@@ -44,6 +44,7 @@ unzip -q "$ZIP_FILE" -d "$EXTRACT_DIR"
 
 FRAMEWORK_PATH="$(find "$EXTRACT_DIR" -type d -name 'PocketTTS.xcframework' | head -n 1 || true)"
 BINDING_PATH="$(find "$EXTRACT_DIR" -type f -name 'pocket_tts_ios.swift' | head -n 1 || true)"
+SOURCES_DIR="$(find "$EXTRACT_DIR" -type d -name 'Sources' | head -n 1 || true)"
 
 if [ -z "$FRAMEWORK_PATH" ]; then
   echo "PocketTTS.xcframework non trovato nello ZIP."
@@ -56,8 +57,20 @@ fi
 
 mkdir -p ios/Frameworks ios/Runner
 rm -rf ios/Frameworks/PocketTTS.xcframework
+rm -f ios/Runner/pocket_tts_ios.swift ios/Runner/PocketTTS*.swift
 rsync -a "$FRAMEWORK_PATH/" ios/Frameworks/PocketTTS.xcframework/
 cp "$BINDING_PATH" ios/Runner/pocket_tts_ios.swift
+
+if [ -n "$SOURCES_DIR" ]; then
+  echo "Copio anche i wrapper Swift Pocket TTS dalla cartella Sources."
+  find "$SOURCES_DIR" -type f -name '*.swift' | while IFS= read -r swift_file; do
+    base="$(basename "$swift_file")"
+    if [ "$base" != "pocket_tts_ios.swift" ]; then
+      cp "$swift_file" "ios/Runner/$base"
+      echo "Swift wrapper copiato in ios/Runner/$base"
+    fi
+  done
+fi
 
 echo "PocketTTS.xcframework copiato in ios/Frameworks/PocketTTS.xcframework"
 echo "Binding Swift copiato in ios/Runner/pocket_tts_ios.swift"

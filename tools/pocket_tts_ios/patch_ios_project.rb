@@ -23,22 +23,80 @@ FileUtils.mkdir_p(runner_dir)
 native_ready = Dir.exist?(framework_dir) && File.exist?(bindings_path)
 
 def swift_bridge_source(native_ready)
+  unless native_ready
+    return <<~SWIFT
+      import Foundation
+      import Flutter
+
+      final class SonarpadPocketTtsBridge: NSObject {
+        static let ttsChannelName = "sonarpad/pocket_tts"
+        static let modelChannelName = "sonarpad/pocket_tts_model"
+
+        static func register(with messenger: FlutterBinaryMessenger) {
+          let instance = SonarpadPocketTtsBridge()
+
+          let ttsChannel = FlutterMethodChannel(name: ttsChannelName, binaryMessenger: messenger)
+          ttsChannel.setMethodCallHandler { call, result in
+            instance.handleTts(call, result: result)
+          }
+
+          let modelChannel = FlutterMethodChannel(name: modelChannelName, binaryMessenger: messenger)
+          modelChannel.setMethodCallHandler { call, result in
+            instance.handleModel(call, result: result)
+          }
+        }
+
+        private func handleTts(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+          switch call.method {
+          case "isAvailable":
+            result(false)
+          case "synthesizeToFile":
+            result(FlutterError(
+              code: "pocket_tts_unavailable",
+              message: "Pocket TTS non è collegato in questa build iOS.",
+              details: nil
+            ))
+          default:
+            result(FlutterMethodNotImplemented)
+          }
+        }
+
+        private func handleModel(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+          switch call.method {
+          case "excludeFromBackup":
+            guard let args = call.arguments as? [String: Any],
+                  let path = args["path"] as? String,
+                  !path.isEmpty else {
+              result(FlutterError(code: "invalid_path", message: "Percorso modello non valido.", details: nil))
+              return
+            }
+            var url = URL(fileURLWithPath: path)
+            do {
+              var values = URLResourceValues()
+              values.isExcludedFromBackup = true
+              try url.setResourceValues(values)
+              result(nil)
+            } catch {
+              result(FlutterError(code: "exclude_backup_failed", message: error.localizedDescription, details: nil))
+            }
+          default:
+            result(FlutterMethodNotImplemented)
+          }
+        }
+      }
+    SWIFT
+  end
+
   <<~SWIFT
     import Foundation
     import Flutter
-
-    #if canImport(PocketTTS)
-    import PocketTTS
-    #endif
 
     final class SonarpadPocketTtsBridge: NSObject {
       static let ttsChannelName = "sonarpad/pocket_tts"
       static let modelChannelName = "sonarpad/pocket_tts_model"
 
-      #if canImport(PocketTTS)
       private var engine: PocketTTSEngine?
       private var engineModelPath: String?
-      #endif
 
       static func register(with messenger: FlutterBinaryMessenger) {
         let instance = SonarpadPocketTtsBridge()
@@ -57,24 +115,12 @@ def swift_bridge_source(native_ready)
       private func handleTts(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "isAvailable":
-          #if canImport(PocketTTS)
           let args = call.arguments as? [String: Any]
           let modelPath = (args?["modelPath"] as? String) ?? ""
           result(isUsableModelDirectory(modelPath))
-          #else
-          result(false)
-          #endif
 
         case "synthesizeToFile":
-          #if canImport(PocketTTS)
           synthesizeToFile(call, result: result)
-          #else
-          result(FlutterError(
-            code: "pocket_tts_unavailable",
-            message: "Pocket TTS non è collegato in questa build iOS.",
-            details: nil
-          ))
-          #endif
 
         default:
           result(FlutterMethodNotImplemented)
@@ -105,7 +151,6 @@ def swift_bridge_source(native_ready)
         }
       }
 
-      #if canImport(PocketTTS)
       private func isUsableModelDirectory(_ modelPath: String) -> Bool {
         guard !modelPath.isEmpty else { return false }
         let fm = FileManager.default
@@ -145,6 +190,50 @@ def swift_bridge_source(native_ready)
         return newEngine
       }
 
+      private func appendUInt16LE(_ value: UInt16, to data: inout Data) {
+        data.append(UInt8(value & 0xff))
+        data.append(UInt8((value >> 8) & 0xff))
+      }
+
+      private func appendUInt32LE(_ value: UInt32, to data: inout Data) {
+        data.append(UInt8(value & 0xff))
+        data.append(UInt8((value >> 8) & 0xff))
+        data.append(UInt8((value >> 16) & 0xff))
+        data.append(UInt8((value >> 24) & 0xff))
+      }
+
+      private func wavData(samples: [Float], sampleRate: UInt32) -> Data {
+        let channels: UInt16 = 1
+        let bitsPerSample: UInt16 = 16
+        let bytesPerSample = UInt32(bitsPerSample / 8)
+        let byteRate = sampleRate * UInt32(channels) * bytesPerSample
+        let blockAlign = channels * UInt16(bytesPerSample)
+        let dataSize = UInt32(samples.count) * bytesPerSample
+
+        var data = Data()
+        data.append("RIFF".data(using: .ascii)!)
+        appendUInt32LE(36 + dataSize, to: &data)
+        data.append("WAVE".data(using: .ascii)!)
+        data.append("fmt ".data(using: .ascii)!)
+        appendUInt32LE(16, to: &data)
+        appendUInt16LE(1, to: &data)
+        appendUInt16LE(channels, to: &data)
+        appendUInt32LE(sampleRate, to: &data)
+        appendUInt32LE(byteRate, to: &data)
+        appendUInt16LE(blockAlign, to: &data)
+        appendUInt16LE(bitsPerSample, to: &data)
+        data.append("data".data(using: .ascii)!)
+        appendUInt32LE(dataSize, to: &data)
+
+        for sample in samples {
+          let clamped = max(-1.0, min(1.0, sample))
+          let scaled = Int16(clamped * Float(Int16.max))
+          let raw = UInt16(bitPattern: scaled)
+          appendUInt16LE(raw, to: &data)
+        }
+        return data
+      }
+
       private func synthesizeToFile(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         guard let args = call.arguments as? [String: Any] else {
           result(FlutterError(code: "invalid_args", message: "Argomenti Pocket TTS mancanti.", details: nil))
@@ -174,15 +263,11 @@ def swift_bridge_source(native_ready)
             let config = TTSConfig(
               voiceIndex: self.voiceIndex(for: voice),
               temperature: 0.7,
-              topP: 0.9,
-              speed: Float(max(0.5, min(speed, 2.0))),
-              consistencySteps: 2,
-              useFixedSeed: false,
-              seed: 42
+              speed: Float(max(0.5, min(speed, 2.0)))
             )
             try engine.configure(config: config)
             let synthesis = try engine.synthesize(text: text)
-            let audioData = Data(synthesis.audioData)
+            let audioData = self.wavData(samples: synthesis.samples, sampleRate: UInt32(synthesis.sampleRate))
             guard !audioData.isEmpty else {
               throw NSError(domain: "SonarpadPocketTts", code: 10, userInfo: [NSLocalizedDescriptionKey: "Pocket TTS non ha prodotto audio."])
             }
@@ -195,7 +280,8 @@ def swift_bridge_source(native_ready)
               result([
                 "path": outURL.path,
                 "cachedEngine": hadCachedEngine,
-                "audioSamples": synthesis.audioData.count,
+                "audioSamples": synthesis.samples.count,
+                "sampleRate": synthesis.sampleRate,
                 "language": language
               ])
             }
@@ -206,7 +292,6 @@ def swift_bridge_source(native_ready)
           }
         }
       }
-      #endif
     }
   SWIFT
 end
@@ -250,9 +335,13 @@ end
 
 # Binding Swift UniFFI aggiunto solo quando scaricato dal workflow.
 if native_ready
-  binding_ref = runner_group.files.find { |f| f.path == 'pocket_tts_ios.swift' } || runner_group.new_file('pocket_tts_ios.swift')
-  unless target.source_build_phase.files_references.include?(binding_ref)
-    target.source_build_phase.add_file_reference(binding_ref)
+  swift_files = Dir.glob(File.join(runner_dir, '*.swift')).map { |path| File.basename(path) }
+  swift_files.each do |swift_file|
+    next if swift_file == 'AppDelegate.swift'
+    ref = runner_group.files.find { |f| f.path == swift_file } || runner_group.new_file(swift_file)
+    unless target.source_build_phase.files_references.include?(ref)
+      target.source_build_phase.add_file_reference(ref)
+    end
   end
 
   frameworks_group = project.main_group.find_subpath('Frameworks', true)

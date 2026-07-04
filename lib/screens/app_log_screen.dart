@@ -85,17 +85,27 @@ class _AppLogScreenState extends State<AppLogScreen> {
       body: _loading
           ? Center(
               child: CircularProgressIndicator(semanticsLabel: l10n.loading))
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: _logLines.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final line = _logLines[index];
-                return Text(
-                  line,
-                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
-                );
-              },
+          : Semantics(
+              container: true,
+              label: l10n.systemLog,
+              hint: '${l10n.copySystemLog}. ${l10n.clearSystemLog}.',
+              child: ExcludeSemantics(
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _logLines.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final line = _logLines[index];
+                    return Text(
+                      line,
+                      style: const TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
     );
   }
