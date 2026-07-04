@@ -946,6 +946,101 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsSystemVoices => 'Voix système (VoiceOver / Google)';
 
   @override
+  String get settingsPocketTtsLocal => 'Pocket TTS local (iOS, expérimental)';
+
+  @override
+  String get settingsPocketTtsHint => 'Pocket TTS est un moteur vocal local expérimental pour iOS. Lorsque le composant natif sera disponible, Sonarpad pourra l’utiliser pour lire les documents sans serveur externe.';
+
+  @override
+  String get settingsPocketTtsUnavailable => 'Pocket TTS n’est pas encore disponible sur cet appareil.';
+
+  @override
+  String get settingsPocketTtsManagerTitle => 'Pocket TTS local';
+
+  @override
+  String get settingsPocketTtsManagerHint => 'Télécharge le paquet Pocket TTS seulement si tu veux essayer le moteur vocal local sur iOS. Le téléchargement utilise GitHub et pèse environ 250 Mo.';
+
+  @override
+  String get settingsPocketTtsNotInstalled => 'Modèle non téléchargé.';
+
+  @override
+  String settingsPocketTtsInstalled(String size) {
+    return 'Modèle téléchargé : $size.';
+  }
+
+  @override
+  String get settingsPocketTtsNativeMissing => 'Le modèle est téléchargé, mais le composant natif iOS n’est pas encore connecté : Pocket TTS ne peut pas être sélectionné tant que le bridge natif manque.';
+
+  @override
+  String get settingsPocketTtsDownloading => 'Téléchargement de Pocket TTS...';
+
+  @override
+  String settingsPocketTtsDownloadPercent(int percent) {
+    return 'Téléchargement Pocket TTS : $percent%.';
+  }
+
+  @override
+  String get settingsPocketTtsDownloadButton => 'Télécharger Pocket TTS';
+
+  @override
+  String get settingsPocketTtsDeleteButton => 'Supprimer Pocket TTS';
+
+  @override
+  String get settingsPocketTtsDownloadTitle => 'Télécharger Pocket TTS ?';
+
+  @override
+  String get settingsPocketTtsDownloadConfirm => 'Le paquet sera téléchargé depuis GitHub. Il pèse environ 250 Mo. Veux-tu continuer ?';
+
+  @override
+  String get settingsPocketTtsDownloaded => 'Pocket TTS est téléchargé. Tu peux maintenant le choisir comme moteur de lecture.';
+
+  @override
+  String get settingsPocketTtsDownloadedNativeMissing => 'Pocket TTS est téléchargé. Le modèle est prêt, mais le composant natif iOS n’est pas encore connecté.';
+
+  @override
+  String settingsPocketTtsDownloadError(Object error) {
+    return 'Erreur de téléchargement Pocket TTS : $error';
+  }
+
+  @override
+  String get settingsPocketTtsDeleteTitle => 'Supprimer Pocket TTS ?';
+
+  @override
+  String get settingsPocketTtsDeleteConfirm => 'Le modèle téléchargé sera supprimé de cet appareil. Tu pourras le télécharger à nouveau plus tard.';
+
+  @override
+  String get settingsPocketTtsDeleted => 'Pocket TTS a été supprimé de cet appareil.';
+
+
+  @override
+  String get settingsPocketTtsLanguage => 'Langue Pocket TTS';
+
+  @override
+  String get settingsPocketTtsLanguageAuto => 'Automatique';
+
+  @override
+  String get settingsPocketTtsLanguageItalian => 'Italien';
+
+  @override
+  String get settingsPocketTtsLanguageEnglish => 'Anglais';
+
+  @override
+  String get settingsPocketTtsLanguageFrench => 'Français';
+
+  @override
+  String get settingsPocketTtsLanguageGerman => 'Allemand';
+
+  @override
+  String get settingsPocketTtsLanguageSpanish => 'Espagnol';
+
+  @override
+  String get settingsPocketTtsLanguagePortuguese => 'Portugais';
+
+  @override
+  String get settingsPocketTtsVoice => 'Voix Pocket TTS';
+
+
+  @override
   String get settingsNoSystemVoices => 'Aucune voix système disponible.';
 
   @override

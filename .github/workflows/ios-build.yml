@@ -14,6 +14,8 @@ jobs:
 
     env:
       APP_NAME: Sonarpad
+      SONARPAD_ENABLE_POCKET_TTS_IOS: ${{ vars.SONARPAD_ENABLE_POCKET_TTS_IOS }}
+      IOS_DEPLOYMENT_TARGET: 15.5
 
     steps:
       - name: Checkout
@@ -40,6 +42,29 @@ jobs:
         run: |
           if [ ! -d "ios/Runner.xcodeproj" ]; then
             flutter create --platforms=ios --project-name sonarpad .
+          fi
+
+
+      - name: Resolve iOS deployment target
+        run: |
+          if [ "${SONARPAD_ENABLE_POCKET_TTS_IOS}" = "true" ]; then
+            echo "IOS_DEPLOYMENT_TARGET=17.0" >> "$GITHUB_ENV"
+            echo "Pocket TTS iOS abilitato: deployment target 17.0"
+          else
+            echo "IOS_DEPLOYMENT_TARGET=15.5" >> "$GITHUB_ENV"
+            echo "Pocket TTS iOS disattivato: deployment target 15.5"
+          fi
+
+      - name: Prepare optional Pocket TTS iOS bridge
+        run: |
+          if [ -f "tools/pocket_tts_ios/install_pocket_tts_ios.sh" ]; then
+            bash tools/pocket_tts_ios/install_pocket_tts_ios.sh
+          fi
+          if [ -f "tools/pocket_tts_ios/patch_ios_project.rb" ]; then
+            gem install xcodeproj --no-document --quiet
+            ruby tools/pocket_tts_ios/patch_ios_project.rb
+          else
+            echo "Pocket TTS iOS bridge script not present; skipping."
           fi
 
       - name: Set iOS app name
@@ -109,14 +134,14 @@ jobs:
           puts 'Bundle Identifier cambiato in com.ambro86.sonarpad.altstore'
           RUBY
 
-      - name: Set iOS deployment target to 15.5
+      - name: Set iOS deployment target
         run: |
           if [ -f "ios/Podfile" ]; then
-            sed -i '' -e "s/^# platform :ios.*/platform :ios, '15.5'/" ios/Podfile
-            sed -i '' -e "s/^platform :ios.*/platform :ios, '15.5'/" ios/Podfile
+            sed -i '' -e "s/^# platform :ios.*/platform :ios, '$IOS_DEPLOYMENT_TARGET'/" ios/Podfile
+            sed -i '' -e "s/^platform :ios.*/platform :ios, '$IOS_DEPLOYMENT_TARGET'/" ios/Podfile
           fi
           if [ -d "ios/Runner.xcodeproj" ]; then
-            ruby -e "require 'xcodeproj'; project = Xcodeproj::Project.open('ios/Runner.xcodeproj'); project.build_configurations.each { |c| c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5' }; project.save"
+            ruby -e "require 'xcodeproj'; project = Xcodeproj::Project.open('ios/Runner.xcodeproj'); project.build_configurations.each { |c| c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = ENV.fetch('IOS_DEPLOYMENT_TARGET', '15.5') }; project.targets.each { |t| t.build_configurations.each { |c| c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = ENV.fetch('IOS_DEPLOYMENT_TARGET', '15.5') } }; project.save"
           fi
 
       - name: Install CocoaPods dependencies
