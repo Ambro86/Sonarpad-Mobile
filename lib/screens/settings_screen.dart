@@ -665,7 +665,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
-    if (confirm != true) return false;
+    if (confirm != true) return;
 
     setState(() => _clearingPodcastCache = true);
     try {
@@ -707,9 +707,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
-    if (confirm != true) return false;
+    if (confirm != true) {
+      return false;
+    }
 
-    if (!mounted) return false;
+    if (!mounted) {
+      return false;
+    }
 
     await AppLogger.log('Pocket TTS: settings download confirmed by user');
     setState(() {
@@ -728,7 +732,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'Pocket TTS: settings download installed=${status.installed} '
         'available=$available modelPath=${status.modelPath} bytes=${status.bytes}',
       );
-      if (!mounted) return false;
+      if (!mounted) {
+        return false;
+      }
       setState(() {
         _pocketTtsModelInstalled = status.installed;
         _pocketTtsModelBytes = status.bytes;
@@ -747,7 +753,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return available;
     } catch (e) {
       await AppLogger.log('Pocket TTS: settings download failed error=$e');
-      if (!mounted) return false;
+      if (!mounted) {
+        return false;
+      }
       showStatusMessage(context, l10n.settingsPocketTtsDownloadError(e));
       return false;
     } finally {
