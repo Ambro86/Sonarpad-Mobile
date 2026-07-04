@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/parafarmaco_service.dart';
 import '../utils/status_message.dart';
@@ -77,10 +77,9 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
       // forza l'aggiornamento della zona leggibile, senza cambiare UI o logica.
       await Future<void>.delayed(const Duration(milliseconds: 80));
       if (!mounted) return;
-      await SemanticsService.sendAnnouncement(
-        View.of(context),
-        'Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.',
-        Directionality.of(context),
+      announceStatusMessage(
+        context,
+        AppLocalizations.of(context).parafarmacoDetailReadyAnnouncement,
       );
     });
   }

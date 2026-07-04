@@ -1311,7 +1311,7 @@
   "@settingsSystemVoices": {
     "description": "Localized text for settingsSystemVoices."
   },
-  "settingsPocketTtsLocal": "Lokalny Pocket TTS (iOS, eksperymentalny)",
+  "settingsPocketTtsLocal": "Pocket TTS (iOS, eksperymentalne)",
   "@settingsPocketTtsLocal": {
     "description": "Localized text for settingsPocketTtsLocal."
   },
@@ -2114,6 +2114,14 @@
     "description": "Localized text for noRecentSearches."
   },
   "logCopiedToClipboard": "Log skopiowany do schowka",
+  "logCleared": "Dziennik wyczyszczony",
+  "@logCleared": {
+    "description": "Localized text for logCleared."
+  },
+  "parafarmacoDetailReadyAnnouncement": "Karta produktu wczytana. Przesuń w prawo, aby wybrać sekcje.",
+  "@parafarmacoDetailReadyAnnouncement": {
+    "description": "Announcement spoken after a para-pharmaceutical product detail page has loaded."
+  },
   "@logCopiedToClipboard": {
     "description": "Localized text for logCopiedToClipboard."
   },

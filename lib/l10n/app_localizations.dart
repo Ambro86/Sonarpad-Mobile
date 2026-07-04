@@ -3068,6 +3068,18 @@ abstract class AppLocalizations {
   /// **'Log copiato negli appunti'**
   String get logCopiedToClipboard;
 
+  /// Localized text for logCleared.
+  ///
+  /// In it, this message translates to:
+  /// **'Log svuotato'**
+  String get logCleared;
+
+  /// Localized text for parafarmacoDetailReadyAnnouncement.
+  ///
+  /// In it, this message translates to:
+  /// **'Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.'**
+  String get parafarmacoDetailReadyAnnouncement;
+
   /// Localized text for systemLog.
   ///
   /// In it, this message translates to:

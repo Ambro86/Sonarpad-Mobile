@@ -940,7 +940,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsSystemVoices => 'Voci di sistema (VoiceOver / Google)';
 
   @override
-  String get settingsPocketTtsLocal => 'Pocket TTS locale (iOS, sperimentale)';
+  String get settingsPocketTtsLocal => 'Pocket TTS (iOS, sperimentale)';
 
   @override
   String get settingsPocketTtsHint => 'Pocket TTS è un motore vocale locale sperimentale per iOS. Quando il componente nativo sarà disponibile, Sonarpad potrà usarlo per leggere i documenti senza server esterni.';
@@ -1709,6 +1709,12 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get logCopiedToClipboard => 'Log copiato negli appunti';
 
+  @override
+  String get logCleared => 'Log svuotato';
+
+
+  @override
+  String get parafarmacoDetailReadyAnnouncement => 'Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.';
   @override
   String get systemLog => 'Log di sistema';
 

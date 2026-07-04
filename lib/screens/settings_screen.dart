@@ -665,7 +665,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
-    if (confirm != true) return;
+    if (confirm != true) return false;
 
     setState(() => _clearingPodcastCache = true);
     try {
@@ -687,8 +687,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
 
-  Future<void> _downloadPocketTtsModel() async {
-    if (_pocketTtsDownloading) return;
+  Future<bool> _downloadPocketTtsModel({bool activateAfterInstall = false}) async {
+    if (_pocketTtsDownloading) return false;
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
@@ -707,7 +707,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
-    if (confirm != true) return;
+    if (confirm != true) return false;
+
+    if (!mounted) return false;
 
     await AppLogger.log('Pocket TTS: settings download confirmed by user');
     setState(() {
@@ -726,12 +728,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'Pocket TTS: settings download installed=${status.installed} '
         'available=$available modelPath=${status.modelPath} bytes=${status.bytes}',
       );
-      if (!mounted) return;
+      if (!mounted) return false;
       setState(() {
         _pocketTtsModelInstalled = status.installed;
         _pocketTtsModelBytes = status.bytes;
         _pocketTtsModelPath = status.modelPath;
         _pocketTtsAvailable = available;
+        if (activateAfterInstall && available) {
+          _ttsEngine = 'pocket';
+        }
       });
       showStatusMessage(
         context,
@@ -739,10 +744,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ? l10n.settingsPocketTtsDownloaded
             : l10n.settingsPocketTtsDownloadedNativeMissing,
       );
+      return available;
     } catch (e) {
       await AppLogger.log('Pocket TTS: settings download failed error=$e');
-      if (!mounted) return;
+      if (!mounted) return false;
       showStatusMessage(context, l10n.settingsPocketTtsDownloadError(e));
+      return false;
     } finally {
       if (mounted) {
         setState(() {
@@ -750,6 +757,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _pocketTtsDownloadProgress = null;
         });
       }
+    }
+  }
+
+  Future<void> _changeTtsEngine(String value) async {
+    if (value != 'pocket') {
+      setState(() => _ttsEngine = value);
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context);
+    if (!Platform.isIOS) {
+      showStatusMessage(context, l10n.settingsPocketTtsUnavailable);
+      return;
+    }
+
+    await AppLogger.log(
+      'Pocket TTS: user selected engine installed=$_pocketTtsModelInstalled ' 
+      'available=$_pocketTtsAvailable modelPath=$_pocketTtsModelPath',
+    );
+
+    if (!_pocketTtsModelInstalled) {
+      await _downloadPocketTtsModel(activateAfterInstall: true);
+      return;
+    }
+
+    final available = _pocketTtsAvailable ||
+        await _pocketTts.isAvailable(modelPath: _pocketTtsModelPath);
+    if (!mounted) return;
+    if (available) {
+      setState(() {
+        _pocketTtsAvailable = true;
+        _ttsEngine = 'pocket';
+      });
+    } else {
+      showStatusMessage(context, l10n.settingsPocketTtsDownloadedNativeMissing);
     }
   }
 
@@ -1129,86 +1171,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         DropdownMenuItem(
                             value: 'system',
                             child: Text(l10n.settingsSystemVoices)),
-                        if (_pocketTtsAvailable)
+                        if (Platform.isIOS)
                           DropdownMenuItem(
                               value: 'pocket',
                               child: Text(l10n.settingsPocketTtsLocal)),
                       ],
-                      onChanged: (value) {
-                        if (value == null) return;
-                        setState(() => _ttsEngine = value);
-                      },
+                      onChanged: _pocketTtsDownloading
+                          ? null
+                          : (value) {
+                              if (value == null) return;
+                              unawaited(_changeTtsEngine(value));
+                            },
                     ),
-                    if (Platform.isIOS) ...[
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                l10n.settingsPocketTtsManagerTitle,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(l10n.settingsPocketTtsManagerHint),
-                              const SizedBox(height: 8),
-                              Text(
-                                _pocketTtsModelInstalled
-                                    ? l10n.settingsPocketTtsInstalled(
-                                        _formatBytes(_pocketTtsModelBytes),
-                                      )
-                                    : l10n.settingsPocketTtsNotInstalled,
-                              ),
-                              if (_pocketTtsModelInstalled && !_pocketTtsAvailable) ...[
-                                const SizedBox(height: 8),
-                                Text(l10n.settingsPocketTtsNativeMissing),
-                              ],
-                              if (_pocketTtsDownloading) ...[
-                                const SizedBox(height: 12),
-                                LinearProgressIndicator(
-                                  value: _pocketTtsDownloadProgress,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  _pocketTtsDownloadProgress == null
-                                      ? l10n.settingsPocketTtsDownloading
-                                      : l10n.settingsPocketTtsDownloadPercent(
-                                          (_pocketTtsDownloadProgress! * 100)
-                                              .round(),
-                                        ),
-                                ),
-                              ],
-                              const SizedBox(height: 12),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  if (!_pocketTtsModelInstalled)
-                                    FilledButton(
-                                      onPressed: _pocketTtsDownloading
-                                          ? null
-                                          : _downloadPocketTtsModel,
-                                      child: Text(
-                                        l10n.settingsPocketTtsDownloadButton,
-                                      ),
-                                    )
-                                  else
-                                    OutlinedButton(
-                                      onPressed: _pocketTtsDownloading
-                                          ? null
-                                          : _deletePocketTtsModel,
-                                      child: Text(
-                                        l10n.settingsPocketTtsDeleteButton,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    if (Platform.isIOS && _pocketTtsDownloading) ...[
                       const SizedBox(height: 12),
+                      LinearProgressIndicator(value: _pocketTtsDownloadProgress),
+                      const SizedBox(height: 8),
+                      Text(
+                        _pocketTtsDownloadProgress == null
+                            ? l10n.settingsPocketTtsDownloading
+                            : l10n.settingsPocketTtsDownloadPercent(
+                                (_pocketTtsDownloadProgress! * 100).round(),
+                              ),
+                      ),
                     ],
                     if (_ttsEngine == 'edge') ...[
                       DropdownButtonFormField<String>(
@@ -1410,6 +1395,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           setState(() => _pocketTtsVoice = value);
                         },
                       ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _pocketTtsModelInstalled
+                            ? l10n.settingsPocketTtsInstalled(
+                                _formatBytes(_pocketTtsModelBytes),
+                              )
+                            : l10n.settingsPocketTtsNotInstalled,
+                      ),
+                      if (_pocketTtsModelInstalled && !_pocketTtsAvailable) ...[
+                        const SizedBox(height: 8),
+                        Text(l10n.settingsPocketTtsNativeMissing),
+                      ],
+                      if (_pocketTtsModelInstalled) ...[
+                        const SizedBox(height: 12),
+                        OutlinedButton(
+                          onPressed: _pocketTtsDownloading
+                              ? null
+                              : _deletePocketTtsModel,
+                          child: Text(l10n.settingsPocketTtsDeleteButton),
+                        ),
+                      ],
                       const SizedBox(height: 12),
                       Card(
                         child: Padding(

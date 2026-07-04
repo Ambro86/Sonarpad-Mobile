@@ -940,7 +940,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsSystemVoices => 'Systémové hlasy (VoiceOver / Google)';
 
   @override
-  String get settingsPocketTtsLocal => 'Místní Pocket TTS (iOS, experimentální)';
+  String get settingsPocketTtsLocal => 'Pocket TTS (iOS, experimentální)';
 
   @override
   String get settingsPocketTtsHint => 'Pocket TTS je experimentální místní hlasový modul pro iOS. Jakmile bude nativní komponenta dostupná, Sonarpad jej bude moci používat ke čtení dokumentů bez externích serverů.';
@@ -1707,6 +1707,12 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get logCopiedToClipboard => 'Protokol byl zkopírován do schránky';
 
+  @override
+  String get logCleared => 'Log vymazán';
+
+
+  @override
+  String get parafarmacoDetailReadyAnnouncement => 'Karta produktu byla načtena. Přejetím doprava vyberte sekce.';
   @override
   String get systemLog => 'Systémový protokol';
 

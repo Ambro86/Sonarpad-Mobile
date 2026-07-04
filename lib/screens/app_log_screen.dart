@@ -23,8 +23,11 @@ class _AppLogScreenState extends State<AppLogScreen> {
   }
 
   Future<void> _loadLogs() async {
-    setState(() => _loading = true);
+    if (mounted) {
+      setState(() => _loading = true);
+    }
     final logs = await AppLogger.readLogs();
+    if (!mounted) return;
     setState(() {
       _logContent = logs;
       _loading = false;
@@ -40,8 +43,12 @@ class _AppLogScreenState extends State<AppLogScreen> {
   }
 
   Future<void> _clearLog() async {
+    final l10n = AppLocalizations.of(context);
     await AppLogger.clearLogs();
     await _loadLogs();
+    if (!mounted) return;
+
+    showStatusMessage(context, l10n.logCleared);
   }
 
   List<String> get _logLines =>

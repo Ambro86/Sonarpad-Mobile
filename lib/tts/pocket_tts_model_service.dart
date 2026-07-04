@@ -177,8 +177,14 @@ class PocketTtsModelService {
       );
       final extractedModelDir = await _findModelDirectory(staging);
       if (extractedModelDir == null) {
-        await AppLogger.log('Pocket TTS: model directory $_modelDirectoryName not found after extract');
-        throw Exception('Cartella modello $_modelDirectoryName non trovata.');
+        await _logExtractedModelCandidates(staging);
+        await AppLogger.log(
+          'Pocket TTS: model files not found after extract. ' 
+          'Expected model.safetensors, tokenizer.model and voices/alba.safetensors.',
+        );
+        throw Exception(
+          'File modello Pocket TTS non trovati nel pacchetto scaricato.',
+        );
       }
       await AppLogger.log('Pocket TTS: extracted model directory=${extractedModelDir.path}');
 
@@ -288,12 +294,66 @@ class PocketTtsModelService {
 
   Future<Directory?> _findModelDirectory(Directory root) async {
     if (!await root.exists()) return null;
+
+    if (await _isUsableModelDirectory(root)) {
+      await AppLogger.log('Pocket TTS: model directory found at extract root=${root.path}');
+      return root;
+    }
+
+    final candidates = <Directory>[];
     await for (final entity in root.list(recursive: true, followLinks: false)) {
-      if (entity is Directory && p.basename(entity.path) == _modelDirectoryName) {
+      if (entity is! Directory) continue;
+      final baseName = p.basename(entity.path);
+      final usable = await _isUsableModelDirectory(entity);
+      if (baseName == _modelDirectoryName && usable) {
+        await AppLogger.log(
+          'Pocket TTS: model directory found by expected name=${entity.path}',
+        );
         return entity;
       }
+      if (usable) candidates.add(entity);
     }
+
+    if (candidates.isNotEmpty) {
+      candidates.sort((a, b) => a.path.length.compareTo(b.path.length));
+      await AppLogger.log(
+        'Pocket TTS: model directory found by required files=${candidates.first.path}',
+      );
+      return candidates.first;
+    }
+
     return null;
+  }
+
+  Future<bool> _isUsableModelDirectory(Directory directory) async {
+    final model = File(p.join(directory.path, 'model.safetensors'));
+    final tokenizer = File(p.join(directory.path, 'tokenizer.model'));
+    final voices = Directory(p.join(directory.path, 'voices'));
+    final alba = File(p.join(voices.path, 'alba.safetensors'));
+    return await model.exists() &&
+        await tokenizer.exists() &&
+        await voices.exists() &&
+        await alba.exists();
+  }
+
+  Future<void> _logExtractedModelCandidates(Directory root) async {
+    if (!await root.exists()) return;
+    final interesting = <String>[];
+    await for (final entity in root.list(recursive: true, followLinks: false)) {
+      final name = p.basename(entity.path).toLowerCase();
+      if (entity is Directory && (name == 'models' || name == 'voices')) {
+        interesting.add(entity.path);
+      } else if (entity is File &&
+          (name == 'model.safetensors' ||
+              name == 'tokenizer.model' ||
+              name.endsWith('.safetensors'))) {
+        interesting.add(entity.path);
+      }
+      if (interesting.length >= 40) break;
+    }
+    await AppLogger.log(
+      'Pocket TTS: extracted candidates ${interesting.isEmpty ? 'none' : interesting.join(' | ')}',
+    );
   }
 
   Future<void> _writeManifest(String modelPath) async {

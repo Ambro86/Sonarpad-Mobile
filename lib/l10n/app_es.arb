@@ -506,6 +506,14 @@
   "clear": "Borrar",
   "noRecentSearches": "No hay búsquedas recientes.",
   "logCopiedToClipboard": "Registro copiado al portapapeles",
+  "logCleared": "Registro vaciado",
+  "@logCleared": {
+    "description": "Localized text for logCleared."
+  },
+  "parafarmacoDetailReadyAnnouncement": "Ficha de producto cargada. Desliza hacia la derecha para elegir las secciones.",
+  "@parafarmacoDetailReadyAnnouncement": {
+    "description": "Announcement spoken after a para-pharmaceutical product detail page has loaded."
+  },
   "systemLog": "Registro del sistema",
   "clearSystemLog": "Vaciar registro",
   "copySystemLog": "Copiar registro",
@@ -1024,7 +1032,7 @@
   "@pharmacyProductsNoResultsTitle": {
     "description": "Empty state title for parapharmaceuticals and supplements search."
   },
-  "settingsPocketTtsLocal": "Pocket TTS local (iOS, experimental)",
+  "settingsPocketTtsLocal": "Pocket TTS (iOS, experimental)",
   "@settingsPocketTtsLocal": {
     "description": "Localized text for settingsPocketTtsLocal."
   },

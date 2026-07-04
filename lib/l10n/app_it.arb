@@ -1313,7 +1313,7 @@
   "@settingsSystemVoices": {
     "description": "Localized text for settingsSystemVoices."
   },
-  "settingsPocketTtsLocal": "Pocket TTS locale (iOS, sperimentale)",
+  "settingsPocketTtsLocal": "Pocket TTS (iOS, sperimentale)",
   "@settingsPocketTtsLocal": {
     "description": "Localized text for settingsPocketTtsLocal."
   },
@@ -2116,6 +2116,14 @@
     "description": "Localized text for noRecentSearches."
   },
   "logCopiedToClipboard": "Log copiato negli appunti",
+  "logCleared": "Log svuotato",
+  "@logCleared": {
+    "description": "Localized text for logCleared."
+  },
+  "parafarmacoDetailReadyAnnouncement": "Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.",
+  "@parafarmacoDetailReadyAnnouncement": {
+    "description": "Announcement spoken after a para-pharmaceutical product detail page has loaded."
+  },
   "@logCopiedToClipboard": {
     "description": "Localized text for logCopiedToClipboard."
   },

@@ -506,6 +506,14 @@
   "clear": "Vymazat",
   "noRecentSearches": "Žádná nedávná hledání.",
   "logCopiedToClipboard": "Protokol byl zkopírován do schránky",
+  "logCleared": "Log vymazán",
+  "@logCleared": {
+    "description": "Localized text for logCleared."
+  },
+  "parafarmacoDetailReadyAnnouncement": "Karta produktu byla načtena. Přejetím doprava vyberte sekce.",
+  "@parafarmacoDetailReadyAnnouncement": {
+    "description": "Announcement spoken after a para-pharmaceutical product detail page has loaded."
+  },
   "systemLog": "Systémový protokol",
   "clearSystemLog": "Vymazat protokol",
   "copySystemLog": "Kopírovat protokol",
@@ -1021,7 +1029,7 @@
   "@pharmacyProductsNoResultsTitle": {
     "description": "Empty state title for parapharmaceuticals and supplements search."
   },
-  "settingsPocketTtsLocal": "Místní Pocket TTS (iOS, experimentální)",
+  "settingsPocketTtsLocal": "Pocket TTS (iOS, experimentální)",
   "@settingsPocketTtsLocal": {
     "description": "Localized text for settingsPocketTtsLocal."
   },

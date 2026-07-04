@@ -21,6 +21,36 @@ void showStatusMessage(
   final trimmedMessage = message.trim();
   if (trimmedMessage.isEmpty) return;
 
+  announceStatusMessage(
+    context,
+    trimmedMessage,
+    announcementDelay: announcementDelay,
+  );
+
+  final overlay = Overlay.maybeOf(context, rootOverlay: true);
+  if (overlay == null) return;
+
+  _StatusMessageOverlay.show(
+    overlay: overlay,
+    message: trimmedMessage,
+    duration: duration,
+  );
+}
+
+
+/// Announces a short status message to VoiceOver/TalkBack without adding any
+/// temporary visible widget or semantic node to the UI.
+///
+/// Use this for accessibility-only live updates. Use [showStatusMessage] when
+/// the user should also see a visual toast.
+void announceStatusMessage(
+  BuildContext context,
+  String message, {
+  Duration announcementDelay = Duration.zero,
+}) {
+  final trimmedMessage = message.trim();
+  if (trimmedMessage.isEmpty) return;
+
   final direction = Directionality.maybeOf(context) ?? TextDirection.ltr;
   final view = View.maybeOf(context);
 
@@ -34,8 +64,8 @@ void showStatusMessage(
         direction,
       );
     } catch (_) {
-      // Accessibility announcements are best-effort. The visual toast below
-      // still provides feedback when a view is not available anymore.
+      // Accessibility announcements are best-effort. If the view is gone or
+      // the platform rejects the live announcement, the app must not crash.
     }
   }
 
@@ -44,15 +74,6 @@ void showStatusMessage(
   } else {
     Timer(announcementDelay, announce);
   }
-
-  final overlay = Overlay.maybeOf(context, rootOverlay: true);
-  if (overlay == null) return;
-
-  _StatusMessageOverlay.show(
-    overlay: overlay,
-    message: trimmedMessage,
-    duration: duration,
-  );
 }
 
 class _StatusMessageOverlay {
