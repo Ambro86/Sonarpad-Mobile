@@ -3146,7 +3146,7 @@
   "@settingsPodcastCacheTitle": {
     "description": "Localized text for settingsPodcastCacheTitle."
   },
-  "settingsPodcastCacheHint": "Svuota i file temporanei dei podcast senza rimuovere gli abbonamenti, la cronologia o i file audio importati. Sonarpad pulisce automaticamente la cache quando diventa troppo grande o contiene file vecchi.",
+  "settingsPodcastCacheHint": "Rimuove solo i file temporanei dei podcast. Abbonamenti, cronologia e audio importati restano intatti.",
   "@settingsPodcastCacheHint": {
     "description": "Localized text for settingsPodcastCacheHint."
   },

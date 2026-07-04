@@ -1430,7 +1430,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsPodcastCacheTitle => 'Cache des podcasts';
 
   @override
-  String get settingsPodcastCacheHint => 'Videz les fichiers temporaires des podcasts sans supprimer les abonnements, l’historique ou les fichiers audio importés. Sonarpad nettoie aussi automatiquement ce cache lorsqu’il devient trop volumineux ou contient d’anciens fichiers.';
+  String get settingsPodcastCacheHint => 'Vide uniquement les fichiers temporaires des podcasts. Les abonnements, l’historique et les fichiers audio importés restent intacts.';
 
   @override
   String settingsPodcastCacheSize(String size) {

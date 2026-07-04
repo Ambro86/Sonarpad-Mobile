@@ -971,7 +971,7 @@
   "@settingsPodcastCacheTitle": {
     "description": "Localized text for settingsPodcastCacheTitle."
   },
-  "settingsPodcastCacheHint": "Vymaže dočasné soubory podcastů bez odstranění odběrů, historie nebo importovaných zvukových souborů. Sonarpad tuto mezipaměť automaticky čistí, když je příliš velká nebo obsahuje staré soubory.",
+  "settingsPodcastCacheHint": "Vymaže jen dočasné soubory podcastů. Odběry, historie a importované audio zůstanou zachovány.",
   "@settingsPodcastCacheHint": {
     "description": "Localized text for settingsPodcastCacheHint."
   },

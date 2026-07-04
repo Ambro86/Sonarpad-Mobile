@@ -3146,7 +3146,7 @@
   "@settingsPodcastCacheTitle": {
     "description": "Localized text for settingsPodcastCacheTitle."
   },
-  "settingsPodcastCacheHint": "Wyczyść tymczasowe pliki podcastów bez usuwania subskrypcji, historii ani zaimportowanych plików audio. Sonarpad automatycznie czyści tę pamięć podręczną, gdy staje się zbyt duża lub zawiera stare pliki.",
+  "settingsPodcastCacheHint": "Usuwa tylko tymczasowe pliki podcastów. Subskrypcje, historia i zaimportowane audio pozostają bez zmian.",
   "@settingsPodcastCacheHint": {
     "description": "Localized text for settingsPodcastCacheHint."
   },

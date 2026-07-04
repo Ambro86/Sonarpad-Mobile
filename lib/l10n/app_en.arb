@@ -968,7 +968,7 @@
   "@settingsPodcastCacheTitle": {
     "description": "Localized text for settingsPodcastCacheTitle."
   },
-  "settingsPodcastCacheHint": "Clear temporary podcast files without removing subscriptions, history, or imported audio files. Sonarpad also cleans this cache automatically when it becomes too large or contains old files.",
+  "settingsPodcastCacheHint": "Clears only temporary podcast files. Subscriptions, history, and imported audio stay intact.",
   "@settingsPodcastCacheHint": {
     "description": "Localized text for settingsPodcastCacheHint."
   },

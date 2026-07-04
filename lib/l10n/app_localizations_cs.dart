@@ -1419,7 +1419,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsPodcastCacheTitle => 'Mezipaměť podcastů';
 
   @override
-  String get settingsPodcastCacheHint => 'Vymaže dočasné soubory podcastů bez odstranění odběrů, historie nebo importovaných zvukových souborů. Sonarpad tuto mezipaměť automaticky čistí, když je příliš velká nebo obsahuje staré soubory.';
+  String get settingsPodcastCacheHint => 'Vymaže jen dočasné soubory podcastů. Odběry, historie a importované audio zůstanou zachovány.';
 
   @override
   String settingsPodcastCacheSize(String size) {

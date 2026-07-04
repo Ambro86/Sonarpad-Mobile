@@ -1416,7 +1416,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsPodcastCacheTitle => 'Pamięć podręczna podcastów';
 
   @override
-  String get settingsPodcastCacheHint => 'Wyczyść tymczasowe pliki podcastów bez usuwania subskrypcji, historii ani zaimportowanych plików audio. Sonarpad automatycznie czyści tę pamięć podręczną, gdy staje się zbyt duża lub zawiera stare pliki.';
+  String get settingsPodcastCacheHint => 'Usuwa tylko tymczasowe pliki podcastów. Subskrypcje, historia i zaimportowane audio pozostają bez zmian.';
 
   @override
   String settingsPodcastCacheSize(String size) {

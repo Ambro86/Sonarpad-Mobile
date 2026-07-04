@@ -32,6 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _podcastCache = PodcastCacheService();
   final _flutterTts = FlutterTts();
   final _screenFocusNode = FocusNode();
+  final _viewLogFocusNode = FocusNode();
   String _appLanguage = 'it';
   SonarpadThemeMode _themeMode = SonarpadThemeMode.system;
   WeatherTemperatureUnit _weatherTemperatureUnit = WeatherTemperatureUnit.celsius;
@@ -217,6 +218,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void dispose() {
     _screenFocusNode.dispose();
+    _viewLogFocusNode.dispose();
     _tvSecretCodeController.dispose();
     unawaited(_audio.stop().whenComplete(_audio.dispose));
     super.dispose();
@@ -862,6 +864,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             : Focus(
                 focusNode: _screenFocusNode,
                 child: ListView(
+                  key: const PageStorageKey<String>('settings-list'),
                   padding: const EdgeInsets.all(16),
                   children: [
                     DropdownButtonFormField<String>(
@@ -1240,6 +1243,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           onIncrease: _increaseDocumentReadingSleepTimer,
                           onDecrease: _decreaseDocumentReadingSleepTimer,
+                          hint: l10n.settingsReadingSleepTimerHint,
                           child: ExcludeSemantics(
                             child: Slider(
                               value: _documentReadingSleepTimerOptionIndex
@@ -1259,7 +1263,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ),
                         ),
-                        Text(l10n.settingsReadingSleepTimerHint),
+                        ExcludeSemantics(
+                          child: Text(l10n.settingsReadingSleepTimerHint),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -1288,6 +1294,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           onIncrease: _increaseDocumentSliderStep,
                           onDecrease: _decreaseDocumentSliderStep,
+                          hint: l10n.settingsDocumentSliderStepHint,
                           child: ExcludeSemantics(
                             child: Slider(
                               value: _documentSliderStepOptionIndex.toDouble(),
@@ -1304,10 +1311,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ),
                         ),
-                        Text(l10n.settingsDocumentSliderStepHint),
+                        ExcludeSemantics(
+                          child: Text(l10n.settingsDocumentSliderStepHint),
+                        ),
                       ],
                     ),
                     SwitchListTile(
+                      key: const ValueKey('settings-display-video-in-portrait'),
                       title: Text(l10n.settingsVideoLandscapeFullscreen),
                       subtitle: Text(l10n.settingsVideoLandscapeFullscreenHint),
                       value: _displayVideoInPortrait,
@@ -1317,40 +1327,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       contentPadding: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 12),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              l10n.settingsPodcastCacheTitle,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(l10n.settingsPodcastCacheHint),
-                            const SizedBox(height: 8),
-                            Text(l10n.settingsPodcastCacheSize(
-                                _formatBytes(_podcastCacheBytes))),
-                            const SizedBox(height: 12),
-                            FilledButton.icon(
-                              onPressed: _clearingPodcastCache
-                                  ? null
-                                  : _clearPodcastCache,
-                              icon: _clearingPodcastCache
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
+                    Semantics(
+                      container: true,
+                      button: true,
+                      enabled: !_clearingPodcastCache,
+                      label: _clearingPodcastCache
+                          ? l10n.loading
+                          : l10n.clearPodcastCache,
+                      hint: '${l10n.settingsPodcastCacheHint} '
+                          '${l10n.settingsPodcastCacheSize(_formatBytes(_podcastCacheBytes))}',
+                      onTap: _clearingPodcastCache ? null : _clearPodcastCache,
+                      child: ExcludeSemantics(
+                        child: Card(
+                          child: InkWell(
+                            onTap: _clearingPodcastCache
+                                ? null
+                                : _clearPodcastCache,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    l10n.settingsPodcastCacheTitle,
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(l10n.settingsPodcastCacheHint),
+                                  const SizedBox(height: 8),
+                                  Text(l10n.settingsPodcastCacheSize(
+                                      _formatBytes(_podcastCacheBytes))),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      _clearingPodcastCache
+                                          ? const SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : const Icon(Icons.delete_sweep),
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          _clearingPodcastCache
+                                              ? l10n.loading
+                                              : l10n.clearPodcastCache,
+                                          textAlign: TextAlign.end,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge,
+                                        ),
                                       ),
-                                    )
-                                  : const Icon(Icons.delete_sweep),
-                              label: Text(_clearingPodcastCache
-                                  ? l10n.loading
-                                  : l10n.clearPodcastCache),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -1453,14 +1491,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const Divider(),
                     const SizedBox(height: 12),
                     FilledButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
+                      focusNode: _viewLogFocusNode,
+                      onPressed: () async {
+                        await Navigator.of(context).push(
                           MaterialPageRoute<void>(
                             settings:
                                 const RouteSettings(name: '/settings/app-log'),
                             builder: (_) => const AppLogScreen(),
                           ),
                         );
+                        if (!context.mounted) return;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          _viewLogFocusNode.requestFocus();
+                        });
                       },
                       icon: const Icon(Icons.description),
                       label: Text(l10n.settingsViewSysLog),
