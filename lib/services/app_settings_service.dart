@@ -25,16 +25,6 @@ class TtsVoiceOption {
   });
 }
 
-class PocketTtsLanguageOption {
-  final String code;
-  final String label;
-
-  const PocketTtsLanguageOption({
-    required this.code,
-    required this.label,
-  });
-}
-
 enum SonarpadThemeMode {
   system('system'),
   light('light'),
@@ -77,7 +67,6 @@ class AppSettingsService {
       'sonarpad_document_slider_step_percent';
   static const _documentReadingSleepTimerMinutesKey =
       'sonarpad_document_reading_sleep_timer_minutes';
-  static const _pocketTtsLanguageKey = 'sonarpad_pocket_tts_language';
 
   static const documentSliderStepPercentOptions = <int>[2, 5, 10, 15, 20, 30];
   static const defaultDocumentSliderStepPercent = 10;
@@ -441,95 +430,15 @@ class AppSettingsService {
   static const _ttsEngineKey = 'sonarpad_tts_engine';
   static const _systemTtsLanguageKey = 'sonarpad_system_tts_language';
   static const _systemTtsVoiceKey = 'sonarpad_system_tts_voice';
-  static const _pocketTtsVoiceKey = 'sonarpad_pocket_tts_voice';
-
-
-  static const pocketTtsLanguages = [
-    PocketTtsLanguageOption(code: 'auto', label: 'Auto'),
-    PocketTtsLanguageOption(code: 'it', label: 'Italiano'),
-    PocketTtsLanguageOption(code: 'en', label: 'English'),
-    PocketTtsLanguageOption(code: 'fr', label: 'Français'),
-    PocketTtsLanguageOption(code: 'de', label: 'Deutsch'),
-    PocketTtsLanguageOption(code: 'es', label: 'Español'),
-    PocketTtsLanguageOption(code: 'pt', label: 'Português'),
-  ];
-
-  static String get defaultPocketTtsLanguage => 'auto';
-
-  static const pocketTtsVoices = [
-    TtsVoiceOption(
-      languageCode: 'multi',
-      voice: 'alba',
-      label: 'Alba',
-    ),
-    TtsVoiceOption(
-      languageCode: 'multi',
-      voice: 'marius',
-      label: 'Marius',
-    ),
-    TtsVoiceOption(
-      languageCode: 'multi',
-      voice: 'javert',
-      label: 'Javert',
-    ),
-    TtsVoiceOption(
-      languageCode: 'multi',
-      voice: 'jean',
-      label: 'Jean',
-    ),
-    TtsVoiceOption(
-      languageCode: 'multi',
-      voice: 'fantine',
-      label: 'Fantine',
-    ),
-    TtsVoiceOption(
-      languageCode: 'multi',
-      voice: 'cosette',
-      label: 'Cosette',
-    ),
-    TtsVoiceOption(
-      languageCode: 'multi',
-      voice: 'eponine',
-      label: 'Éponine',
-    ),
-    TtsVoiceOption(
-      languageCode: 'multi',
-      voice: 'azelma',
-      label: 'Azelma',
-    ),
-  ];
-
-  static String get defaultPocketTtsVoice => pocketTtsVoices.first.voice;
-
-  static String pocketTtsVoiceLabel(String voice) {
-    return pocketTtsVoices
-            .where((option) => option.voice == voice)
-            .firstOrNull
-            ?.label ??
-        voice;
-  }
-
-  static bool get pocketTtsSupportedOnCurrentPlatform =>
-      defaultTargetPlatform == TargetPlatform.iOS;
 
   Future<String> loadTtsEngine() async {
     final prefs = await SharedPreferences.getInstance();
-    final engine = prefs.getString(_ttsEngineKey) ?? 'edge';
-    if (engine == 'pocket' && !pocketTtsSupportedOnCurrentPlatform) {
-      return 'edge';
-    }
-    if (engine == 'edge' || engine == 'system' || engine == 'pocket') {
-      return engine;
-    }
-    return 'edge';
+    return prefs.getString(_ttsEngineKey) ?? 'edge';
   }
 
   Future<void> saveTtsEngine(String engine) async {
     final prefs = await SharedPreferences.getInstance();
-    final normalized = engine == 'pocket' && !pocketTtsSupportedOnCurrentPlatform
-        ? 'edge'
-        : engine;
-    await prefs.setString(_ttsEngineKey, normalized);
+    await prefs.setString(_ttsEngineKey, engine);
   }
 
   Future<String> loadSystemTtsLanguage() async {
@@ -554,40 +463,6 @@ class AppSettingsService {
     } else {
       await prefs.setString(_systemTtsVoiceKey, voice);
     }
-  }
-
-  Future<String> loadPocketTtsVoice() async {
-    final prefs = await SharedPreferences.getInstance();
-    final voice = prefs.getString(_pocketTtsVoiceKey);
-    if (pocketTtsVoices.any((option) => option.voice == voice)) {
-      return voice!;
-    }
-    return defaultPocketTtsVoice;
-  }
-
-  Future<void> savePocketTtsVoice(String voice) async {
-    final prefs = await SharedPreferences.getInstance();
-    final normalized = pocketTtsVoices.any((option) => option.voice == voice)
-        ? voice
-        : defaultPocketTtsVoice;
-    await prefs.setString(_pocketTtsVoiceKey, normalized);
-  }
-
-  Future<String> loadPocketTtsLanguage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final language = prefs.getString(_pocketTtsLanguageKey);
-    if (pocketTtsLanguages.any((option) => option.code == language)) {
-      return language!;
-    }
-    return defaultPocketTtsLanguage;
-  }
-
-  Future<void> savePocketTtsLanguage(String language) async {
-    final prefs = await SharedPreferences.getInstance();
-    final normalized = pocketTtsLanguages.any((option) => option.code == language)
-        ? language
-        : defaultPocketTtsLanguage;
-    await prefs.setString(_pocketTtsLanguageKey, normalized);
   }
 
   static Future<List<TtsVoiceOption>> loadEdgeVoices() async {

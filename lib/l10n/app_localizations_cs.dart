@@ -940,101 +940,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsSystemVoices => 'Systémové hlasy (VoiceOver / Google)';
 
   @override
-  String get settingsPocketTtsLocal => 'Pocket TTS (iOS, experimentální)';
-
-  @override
-  String get settingsPocketTtsHint => 'Pocket TTS je experimentální místní hlasový modul pro iOS. Jakmile bude nativní komponenta dostupná, Sonarpad jej bude moci používat ke čtení dokumentů bez externích serverů.';
-
-  @override
-  String get settingsPocketTtsUnavailable => 'Pocket TTS zatím není na tomto zařízení dostupný.';
-
-  @override
-  String get settingsPocketTtsManagerTitle => 'Místní Pocket TTS';
-
-  @override
-  String get settingsPocketTtsManagerHint => 'Stáhni balíček Pocket TTS jen tehdy, když chceš vyzkoušet místní hlasový modul na iOS. Stahování používá GitHub a má asi 250 MB.';
-
-  @override
-  String get settingsPocketTtsNotInstalled => 'Model není stažený.';
-
-  @override
-  String settingsPocketTtsInstalled(String size) {
-    return 'Model stažen: $size.';
-  }
-
-  @override
-  String get settingsPocketTtsNativeMissing => 'Model je stažený, ale nativní komponenta iOS ještě není připojena: Pocket TTS nelze vybrat, dokud nebude dostupný nativní bridge.';
-
-  @override
-  String get settingsPocketTtsDownloading => 'Stahování Pocket TTS...';
-
-  @override
-  String settingsPocketTtsDownloadPercent(int percent) {
-    return 'Stahování Pocket TTS: $percent%.';
-  }
-
-  @override
-  String get settingsPocketTtsDownloadButton => 'Stáhnout Pocket TTS';
-
-  @override
-  String get settingsPocketTtsDeleteButton => 'Odstranit Pocket TTS';
-
-  @override
-  String get settingsPocketTtsDownloadTitle => 'Stáhnout Pocket TTS?';
-
-  @override
-  String get settingsPocketTtsDownloadConfirm => 'Balíček se stáhne z GitHubu. Má asi 250 MB. Chceš pokračovat?';
-
-  @override
-  String get settingsPocketTtsDownloaded => 'Pocket TTS stažen. Nyní ho můžeš vybrat jako modul čtení.';
-
-  @override
-  String get settingsPocketTtsDownloadedNativeMissing => 'Pocket TTS stažen. Model je připraven, ale nativní komponenta iOS ještě není připojena.';
-
-  @override
-  String settingsPocketTtsDownloadError(Object error) {
-    return 'Chyba při stahování Pocket TTS: $error';
-  }
-
-  @override
-  String get settingsPocketTtsDeleteTitle => 'Odstranit Pocket TTS?';
-
-  @override
-  String get settingsPocketTtsDeleteConfirm => 'Stažený model bude odstraněn z tohoto zařízení. Později ho můžeš stáhnout znovu.';
-
-  @override
-  String get settingsPocketTtsDeleted => 'Pocket TTS odstraněn z tohoto zařízení.';
-
-
-  @override
-  String get settingsPocketTtsLanguage => 'Jazyk Pocket TTS';
-
-  @override
-  String get settingsPocketTtsLanguageAuto => 'Automaticky';
-
-  @override
-  String get settingsPocketTtsLanguageItalian => 'Italština';
-
-  @override
-  String get settingsPocketTtsLanguageEnglish => 'Angličtina';
-
-  @override
-  String get settingsPocketTtsLanguageFrench => 'Francouzština';
-
-  @override
-  String get settingsPocketTtsLanguageGerman => 'Němčina';
-
-  @override
-  String get settingsPocketTtsLanguageSpanish => 'Španělština';
-
-  @override
-  String get settingsPocketTtsLanguagePortuguese => 'Portugalština';
-
-  @override
-  String get settingsPocketTtsVoice => 'Hlas Pocket TTS';
-
-
-  @override
   String get settingsNoSystemVoices => 'Nejsou dostupné žádné systémové hlasy.';
 
   @override
@@ -1710,9 +1615,9 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get logCleared => 'Log vymazán';
 
-
   @override
   String get parafarmacoDetailReadyAnnouncement => 'Karta produktu byla načtena. Přejetím doprava vyberte sekce.';
+
   @override
   String get systemLog => 'Systémový protokol';
 

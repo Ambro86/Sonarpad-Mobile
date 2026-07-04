@@ -1313,18 +1313,6 @@
   "@settingsSystemVoices": {
     "description": "Localized text for settingsSystemVoices."
   },
-  "settingsPocketTtsLocal": "Pocket TTS (iOS, sperimentale)",
-  "@settingsPocketTtsLocal": {
-    "description": "Localized text for settingsPocketTtsLocal."
-  },
-  "settingsPocketTtsHint": "Pocket TTS è un motore vocale locale sperimentale per iOS. Quando il componente nativo sarà disponibile, Sonarpad potrà usarlo per leggere i documenti senza server esterni.",
-  "@settingsPocketTtsHint": {
-    "description": "Localized text for settingsPocketTtsHint."
-  },
-  "settingsPocketTtsUnavailable": "Pocket TTS non è ancora disponibile su questo dispositivo.",
-  "@settingsPocketTtsUnavailable": {
-    "description": "Localized text for settingsPocketTtsUnavailable."
-  },
   "settingsNoSystemVoices": "Nessuna voce di sistema disponibile.",
   "@settingsNoSystemVoices": {
     "description": "Localized text for settingsNoSystemVoices."
@@ -2116,6 +2104,9 @@
     "description": "Localized text for noRecentSearches."
   },
   "logCopiedToClipboard": "Log copiato negli appunti",
+  "@logCopiedToClipboard": {
+    "description": "Localized text for logCopiedToClipboard."
+  },
   "logCleared": "Log svuotato",
   "@logCleared": {
     "description": "Localized text for logCleared."
@@ -2123,9 +2114,6 @@
   "parafarmacoDetailReadyAnnouncement": "Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.",
   "@parafarmacoDetailReadyAnnouncement": {
     "description": "Announcement spoken after a para-pharmaceutical product detail page has loaded."
-  },
-  "@logCopiedToClipboard": {
-    "description": "Localized text for logCopiedToClipboard."
   },
   "systemLog": "Log di sistema",
   "@systemLog": {
@@ -3215,124 +3203,5 @@
   "pharmacyProductsNoResultsTitle": "Nessun parafarmaco o integratore trovato",
   "@pharmacyProductsNoResultsTitle": {
     "description": "Empty state title for parapharmaceuticals and supplements search."
-  },
-  "settingsPocketTtsManagerTitle": "Pocket TTS locale",
-  "@settingsPocketTtsManagerTitle": {
-    "description": "Localized text for settingsPocketTtsManagerTitle."
-  },
-  "settingsPocketTtsManagerHint": "Scarica il pacchetto Pocket TTS solo se vuoi provare il motore vocale locale su iOS. Il download usa GitHub e pesa circa 250 MB.",
-  "@settingsPocketTtsManagerHint": {
-    "description": "Localized text for settingsPocketTtsManagerHint."
-  },
-  "settingsPocketTtsNotInstalled": "Modello non scaricato.",
-  "@settingsPocketTtsNotInstalled": {
-    "description": "Localized text for settingsPocketTtsNotInstalled."
-  },
-  "settingsPocketTtsInstalled": "Modello scaricato: {size}.",
-  "@settingsPocketTtsInstalled": {
-    "description": "Localized text for settingsPocketTtsInstalled.",
-    "placeholders": {
-      "size": {
-        "type": "String"
-      }
-    }
-  },
-  "settingsPocketTtsNativeMissing": "Il modello è scaricato, ma il componente nativo iOS non è ancora collegato: Pocket TTS non può essere selezionato finché manca il bridge nativo.",
-  "@settingsPocketTtsNativeMissing": {
-    "description": "Localized text for settingsPocketTtsNativeMissing."
-  },
-  "settingsPocketTtsDownloading": "Download Pocket TTS in corso...",
-  "@settingsPocketTtsDownloading": {
-    "description": "Localized text for settingsPocketTtsDownloading."
-  },
-  "settingsPocketTtsDownloadPercent": "Download Pocket TTS: {percent}%.",
-  "@settingsPocketTtsDownloadPercent": {
-    "description": "Localized text for settingsPocketTtsDownloadPercent.",
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "settingsPocketTtsDownloadButton": "Scarica Pocket TTS",
-  "@settingsPocketTtsDownloadButton": {
-    "description": "Localized text for settingsPocketTtsDownloadButton."
-  },
-  "settingsPocketTtsDeleteButton": "Elimina Pocket TTS",
-  "@settingsPocketTtsDeleteButton": {
-    "description": "Localized text for settingsPocketTtsDeleteButton."
-  },
-  "settingsPocketTtsDownloadTitle": "Scaricare Pocket TTS?",
-  "@settingsPocketTtsDownloadTitle": {
-    "description": "Localized text for settingsPocketTtsDownloadTitle."
-  },
-  "settingsPocketTtsDownloadConfirm": "Il pacchetto verrà scaricato da GitHub. Pesa circa 250 MB. Vuoi continuare?",
-  "@settingsPocketTtsDownloadConfirm": {
-    "description": "Localized text for settingsPocketTtsDownloadConfirm."
-  },
-  "settingsPocketTtsDownloaded": "Pocket TTS scaricato. Ora puoi selezionarlo come motore di lettura.",
-  "@settingsPocketTtsDownloaded": {
-    "description": "Localized text for settingsPocketTtsDownloaded."
-  },
-  "settingsPocketTtsDownloadedNativeMissing": "Pocket TTS scaricato. Il modello è pronto, ma il componente nativo iOS non è ancora collegato.",
-  "@settingsPocketTtsDownloadedNativeMissing": {
-    "description": "Localized text for settingsPocketTtsDownloadedNativeMissing."
-  },
-  "settingsPocketTtsDownloadError": "Errore download Pocket TTS: {error}",
-  "@settingsPocketTtsDownloadError": {
-    "description": "Localized text for settingsPocketTtsDownloadError.",
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
-  "settingsPocketTtsDeleteTitle": "Eliminare Pocket TTS?",
-  "@settingsPocketTtsDeleteTitle": {
-    "description": "Localized text for settingsPocketTtsDeleteTitle."
-  },
-  "settingsPocketTtsDeleteConfirm": "Il modello scaricato verrà eliminato dal dispositivo. Potrai scaricarlo di nuovo in seguito.",
-  "@settingsPocketTtsDeleteConfirm": {
-    "description": "Localized text for settingsPocketTtsDeleteConfirm."
-  },
-  "settingsPocketTtsDeleted": "Pocket TTS eliminato dal dispositivo.",
-  "@settingsPocketTtsDeleted": {
-    "description": "Localized text for settingsPocketTtsDeleted."
-  },
-  "settingsPocketTtsVoice": "Voce Pocket TTS",
-  "@settingsPocketTtsVoice": {
-    "description": "Localized text for settingsPocketTtsVoice."
-  },
-  "settingsPocketTtsLanguage": "Lingua Pocket TTS",
-  "@settingsPocketTtsLanguage": {
-    "description": "Localized text for settingsPocketTtsLanguage."
-  },
-  "settingsPocketTtsLanguageAuto": "Automatica",
-  "@settingsPocketTtsLanguageAuto": {
-    "description": "Localized text for settingsPocketTtsLanguageAuto."
-  },
-  "settingsPocketTtsLanguageItalian": "Italiano",
-  "@settingsPocketTtsLanguageItalian": {
-    "description": "Localized text for settingsPocketTtsLanguageItalian."
-  },
-  "settingsPocketTtsLanguageEnglish": "Inglese",
-  "@settingsPocketTtsLanguageEnglish": {
-    "description": "Localized text for settingsPocketTtsLanguageEnglish."
-  },
-  "settingsPocketTtsLanguageFrench": "Francese",
-  "@settingsPocketTtsLanguageFrench": {
-    "description": "Localized text for settingsPocketTtsLanguageFrench."
-  },
-  "settingsPocketTtsLanguageGerman": "Tedesco",
-  "@settingsPocketTtsLanguageGerman": {
-    "description": "Localized text for settingsPocketTtsLanguageGerman."
-  },
-  "settingsPocketTtsLanguageSpanish": "Spagnolo",
-  "@settingsPocketTtsLanguageSpanish": {
-    "description": "Localized text for settingsPocketTtsLanguageSpanish."
-  },
-  "settingsPocketTtsLanguagePortuguese": "Portoghese",
-  "@settingsPocketTtsLanguagePortuguese": {
-    "description": "Localized text for settingsPocketTtsLanguagePortuguese."
   }
 }

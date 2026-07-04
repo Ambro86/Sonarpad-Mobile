@@ -39,7 +39,8 @@ class _AppLogScreenState extends State<AppLogScreen> {
     await Clipboard.setData(ClipboardData(text: logs));
     if (!mounted) return;
 
-    showStatusMessage(context, AppLocalizations.of(context).logCopiedToClipboard);
+    showStatusMessage(
+        context, AppLocalizations.of(context).logCopiedToClipboard);
   }
 
   Future<void> _clearLog() async {

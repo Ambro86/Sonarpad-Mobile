@@ -938,101 +938,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsSystemVoices => 'Głosy systemowe (VoiceOver / Google)';
 
   @override
-  String get settingsPocketTtsLocal => 'Pocket TTS (iOS, eksperymentalne)';
-
-  @override
-  String get settingsPocketTtsHint => 'Pocket TTS to eksperymentalny lokalny silnik głosowy dla iOS. Gdy komponent natywny będzie dostępny, Sonarpad będzie mógł używać go do czytania dokumentów bez zewnętrznych serwerów.';
-
-  @override
-  String get settingsPocketTtsUnavailable => 'Pocket TTS nie jest jeszcze dostępny na tym urządzeniu.';
-
-  @override
-  String get settingsPocketTtsManagerTitle => 'Lokalny Pocket TTS';
-
-  @override
-  String get settingsPocketTtsManagerHint => 'Pobierz pakiet Pocket TTS tylko wtedy, gdy chcesz wypróbować lokalny silnik głosowy na iOS. Pobieranie odbywa się z GitHuba i ma około 250 MB.';
-
-  @override
-  String get settingsPocketTtsNotInstalled => 'Model nie jest pobrany.';
-
-  @override
-  String settingsPocketTtsInstalled(String size) {
-    return 'Model pobrany: $size.';
-  }
-
-  @override
-  String get settingsPocketTtsNativeMissing => 'Model jest pobrany, ale natywny komponent iOS nie jest jeszcze podłączony: Pocket TTS nie może zostać wybrany, dopóki nie będzie dostępny natywny mostek.';
-
-  @override
-  String get settingsPocketTtsDownloading => 'Pobieranie Pocket TTS...';
-
-  @override
-  String settingsPocketTtsDownloadPercent(int percent) {
-    return 'Pobieranie Pocket TTS: $percent%.';
-  }
-
-  @override
-  String get settingsPocketTtsDownloadButton => 'Pobierz Pocket TTS';
-
-  @override
-  String get settingsPocketTtsDeleteButton => 'Usuń Pocket TTS';
-
-  @override
-  String get settingsPocketTtsDownloadTitle => 'Pobrać Pocket TTS?';
-
-  @override
-  String get settingsPocketTtsDownloadConfirm => 'Pakiet zostanie pobrany z GitHuba. Ma około 250 MB. Czy kontynuować?';
-
-  @override
-  String get settingsPocketTtsDownloaded => 'Pocket TTS pobrany. Możesz teraz wybrać go jako silnik czytania.';
-
-  @override
-  String get settingsPocketTtsDownloadedNativeMissing => 'Pocket TTS pobrany. Model jest gotowy, ale natywny komponent iOS nie jest jeszcze podłączony.';
-
-  @override
-  String settingsPocketTtsDownloadError(Object error) {
-    return 'Błąd pobierania Pocket TTS: $error';
-  }
-
-  @override
-  String get settingsPocketTtsDeleteTitle => 'Usunąć Pocket TTS?';
-
-  @override
-  String get settingsPocketTtsDeleteConfirm => 'Pobrany model zostanie usunięty z tego urządzenia. Będzie można pobrać go ponownie później.';
-
-  @override
-  String get settingsPocketTtsDeleted => 'Pocket TTS usunięty z tego urządzenia.';
-
-
-  @override
-  String get settingsPocketTtsLanguage => 'Język Pocket TTS';
-
-  @override
-  String get settingsPocketTtsLanguageAuto => 'Automatyczny';
-
-  @override
-  String get settingsPocketTtsLanguageItalian => 'Włoski';
-
-  @override
-  String get settingsPocketTtsLanguageEnglish => 'Angielski';
-
-  @override
-  String get settingsPocketTtsLanguageFrench => 'Francuski';
-
-  @override
-  String get settingsPocketTtsLanguageGerman => 'Niemiecki';
-
-  @override
-  String get settingsPocketTtsLanguageSpanish => 'Hiszpański';
-
-  @override
-  String get settingsPocketTtsLanguagePortuguese => 'Portugalski';
-
-  @override
-  String get settingsPocketTtsVoice => 'Głos Pocket TTS';
-
-
-  @override
   String get settingsNoSystemVoices => 'Brak dostępnych głosów systemowych.';
 
   @override
@@ -1708,9 +1613,9 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get logCleared => 'Dziennik wyczyszczony';
 
-
   @override
   String get parafarmacoDetailReadyAnnouncement => 'Karta produktu wczytana. Przesuń w prawo, aby wybrać sekcje.';
+
   @override
   String get systemLog => 'Dziennik systemowy';
 

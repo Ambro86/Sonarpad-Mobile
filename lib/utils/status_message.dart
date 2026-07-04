@@ -37,7 +37,6 @@ void showStatusMessage(
   );
 }
 
-
 /// Announces a short status message to VoiceOver/TalkBack without adding any
 /// temporary visible widget or semantic node to the UI.
 ///

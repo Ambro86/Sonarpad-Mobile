@@ -11,8 +11,6 @@ import '../services/audiodescription_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/podcast_cache_service.dart';
 import '../tts/edge_tts_bridge.dart';
-import '../tts/pocket_tts_bridge.dart';
-import '../tts/pocket_tts_model_service.dart';
 import '../utils/app_logger.dart';
 import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -33,10 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _settings = AppSettingsService();
   final _podcastCache = PodcastCacheService();
   final _flutterTts = FlutterTts();
-  final _pocketTts = PocketTtsBridge();
-  final _pocketTtsModel = PocketTtsModelService();
   final _screenFocusNode = FocusNode();
-  final _viewLogFocusNode = FocusNode();
   String _appLanguage = 'it';
   SonarpadThemeMode _themeMode = SonarpadThemeMode.system;
   WeatherTemperatureUnit _weatherTemperatureUnit = WeatherTemperatureUnit.celsius;
@@ -46,14 +41,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   List<TtsVoiceOption> _edgeVoices = AppSettingsService.ttsVoices;
 
   String _ttsEngine = 'edge';
-  bool _pocketTtsAvailable = false;
-  bool _pocketTtsModelInstalled = false;
-  bool _pocketTtsDownloading = false;
-  double? _pocketTtsDownloadProgress;
-  int _pocketTtsModelBytes = 0;
-  String? _pocketTtsModelPath;
-  String _pocketTtsVoice = AppSettingsService.defaultPocketTtsVoice;
-  String _pocketTtsLanguage = AppSettingsService.defaultPocketTtsLanguage;
   String _systemTtsLanguage = 'it-IT';
   String? _systemTtsVoice;
   List<Map<String, String>> _systemVoices = [];
@@ -84,8 +71,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _savedLanguageCode = 'it';
   String _savedVoice = AppSettingsService.defaultVoiceForLanguage('it');
   String _savedTtsEngine = 'edge';
-  String _savedPocketTtsVoice = AppSettingsService.defaultPocketTtsVoice;
-  String _savedPocketTtsLanguage = AppSettingsService.defaultPocketTtsLanguage;
   String _savedSystemTtsLanguage = 'it-IT';
   String? _savedSystemTtsVoice;
   double _savedTtsSpeed = 1.0;
@@ -231,7 +216,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
-    _viewLogFocusNode.dispose();
     _screenFocusNode.dispose();
     _tvSecretCodeController.dispose();
     unawaited(_audio.stop().whenComplete(_audio.dispose));
@@ -249,16 +233,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final tvSecretCode = await _settings.getTvSecretCode();
 
     final ttsEngine = await _settings.loadTtsEngine();
-    final pocketTtsModelStatus = await _pocketTtsModel.status();
-    final pocketTtsAvailable = pocketTtsModelStatus.installed
-        ? await _pocketTts.isAvailable(
-            modelPath: pocketTtsModelStatus.modelPath,
-          )
-        : false;
-    final effectiveTtsEngine =
-        ttsEngine == 'pocket' && !pocketTtsAvailable ? 'edge' : ttsEngine;
-    final pocketTtsVoice = await _settings.loadPocketTtsVoice();
-    final pocketTtsLanguage = await _settings.loadPocketTtsLanguage();
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
@@ -307,16 +281,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedTtsPitch = pitch;
       _tvSecretCodeController.text = tvSecretCode;
       _savedTvSecretCode = tvSecretCode;
-      _ttsEngine = effectiveTtsEngine;
-      _savedTtsEngine = effectiveTtsEngine;
-      _pocketTtsAvailable = pocketTtsAvailable;
-      _pocketTtsModelInstalled = pocketTtsModelStatus.installed;
-      _pocketTtsModelBytes = pocketTtsModelStatus.bytes;
-      _pocketTtsModelPath = pocketTtsModelStatus.modelPath;
-      _pocketTtsVoice = pocketTtsVoice;
-      _savedPocketTtsVoice = pocketTtsVoice;
-      _pocketTtsLanguage = pocketTtsLanguage;
-      _savedPocketTtsLanguage = pocketTtsLanguage;
+      _ttsEngine = ttsEngine;
+      _savedTtsEngine = ttsEngine;
       _systemTtsLanguage = sysLang;
       _savedSystemTtsLanguage = sysLang;
       _systemTtsVoice = sysVoice;
@@ -390,8 +356,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final ttsSettingsChanged = ttsEngineChanged ||
         _languageCode != _savedLanguageCode ||
         _voice != _savedVoice ||
-        _pocketTtsVoice != _savedPocketTtsVoice ||
-        _pocketTtsLanguage != _savedPocketTtsLanguage ||
         _systemTtsLanguage != _savedSystemTtsLanguage ||
         _systemTtsVoice != _savedSystemTtsVoice ||
         _ttsSpeed != _savedTtsSpeed ||
@@ -427,8 +391,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'documentReadingSleepTimerChanged=$documentReadingSleepTimerChanged '
       'ttsEngine=$_ttsEngine previous=$_savedTtsEngine '
       'ttsSettingsChanged=$ttsSettingsChanged voice=$_voice savedVoice=$_savedVoice '
-      'pocketVoice=$_pocketTtsVoice savedPocketVoice=$_savedPocketTtsVoice '
-      'pocketLanguage=$_pocketTtsLanguage savedPocketLanguage=$_savedPocketTtsLanguage '
       'systemVoice=$_systemTtsVoice savedSystemVoice=$_savedSystemTtsVoice',
     );
 
@@ -518,7 +480,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // sistema non deve restare con una shared session attiva. La protezione
       // viene applicata anche se è cambiata una qualsiasi altra impostazione,
       // non solo quando cambia voce o motore TTS.
-      if (Platform.isIOS && _ttsEngine != 'system') {
+      if (Platform.isIOS && _ttsEngine == 'edge') {
         await _flutterTts.autoStopSharedSession(true);
         await _flutterTts.setSharedInstance(false);
       }
@@ -563,8 +525,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedLanguageCode = _languageCode;
     _savedVoice = _voice;
     _savedTtsEngine = _ttsEngine;
-    _savedPocketTtsVoice = _pocketTtsVoice;
-    _savedPocketTtsLanguage = _pocketTtsLanguage;
     _savedSystemTtsLanguage = _systemTtsLanguage;
     _savedSystemTtsVoice = _systemTtsVoice;
     _savedTtsSpeed = _ttsSpeed;
@@ -588,8 +548,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _languageCode != _savedLanguageCode ||
         _voice != _savedVoice ||
         _ttsEngine != _savedTtsEngine ||
-        _pocketTtsVoice != _savedPocketTtsVoice ||
-        _pocketTtsLanguage != _savedPocketTtsLanguage ||
         _systemTtsLanguage != _savedSystemTtsLanguage ||
         _systemTtsVoice != _savedSystemTtsVoice ||
         _ttsSpeed != _savedTtsSpeed ||
@@ -688,161 +646,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-
-  Future<bool> _downloadPocketTtsModel({bool activateAfterInstall = false}) async {
-    if (_pocketTtsDownloading) return false;
-    final l10n = AppLocalizations.of(context);
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.settingsPocketTtsDownloadTitle),
-        content: Text(l10n.settingsPocketTtsDownloadConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.settingsPocketTtsDownloadButton),
-          ),
-        ],
-      ),
-    );
-    if (confirm != true) {
-      return false;
-    }
-
-    if (!mounted) {
-      return false;
-    }
-
-    await AppLogger.log('Pocket TTS: settings download confirmed by user');
-    setState(() {
-      _pocketTtsDownloading = true;
-      _pocketTtsDownloadProgress = null;
-    });
-    try {
-      final status = await _pocketTtsModel.downloadAndInstall(
-        onProgress: (progress) {
-          if (!mounted) return;
-          setState(() => _pocketTtsDownloadProgress = progress.fraction);
-        },
-      );
-      final available = await _pocketTts.isAvailable(modelPath: status.modelPath);
-      await AppLogger.log(
-        'Pocket TTS: settings download installed=${status.installed} '
-        'available=$available modelPath=${status.modelPath} bytes=${status.bytes}',
-      );
-      if (!mounted) {
-        return false;
-      }
-      setState(() {
-        _pocketTtsModelInstalled = status.installed;
-        _pocketTtsModelBytes = status.bytes;
-        _pocketTtsModelPath = status.modelPath;
-        _pocketTtsAvailable = available;
-        if (activateAfterInstall && available) {
-          _ttsEngine = 'pocket';
-        }
-      });
-      showStatusMessage(
-        context,
-        available
-            ? l10n.settingsPocketTtsDownloaded
-            : l10n.settingsPocketTtsDownloadedNativeMissing,
-      );
-      return available;
-    } catch (e) {
-      await AppLogger.log('Pocket TTS: settings download failed error=$e');
-      if (!mounted) {
-        return false;
-      }
-      showStatusMessage(context, l10n.settingsPocketTtsDownloadError(e));
-      return false;
-    } finally {
-      if (mounted) {
-        setState(() {
-          _pocketTtsDownloading = false;
-          _pocketTtsDownloadProgress = null;
-        });
-      }
-    }
-  }
-
-  Future<void> _changeTtsEngine(String value) async {
-    if (value != 'pocket') {
-      setState(() => _ttsEngine = value);
-      return;
-    }
-
-    final l10n = AppLocalizations.of(context);
-    if (!Platform.isIOS) {
-      showStatusMessage(context, l10n.settingsPocketTtsUnavailable);
-      return;
-    }
-
-    await AppLogger.log(
-      'Pocket TTS: user selected engine installed=$_pocketTtsModelInstalled ' 
-      'available=$_pocketTtsAvailable modelPath=$_pocketTtsModelPath',
-    );
-
-    if (!_pocketTtsModelInstalled) {
-      await _downloadPocketTtsModel(activateAfterInstall: true);
-      return;
-    }
-
-    final available = _pocketTtsAvailable ||
-        await _pocketTts.isAvailable(modelPath: _pocketTtsModelPath);
-    if (!mounted) return;
-    if (available) {
-      setState(() {
-        _pocketTtsAvailable = true;
-        _ttsEngine = 'pocket';
-      });
-    } else {
-      showStatusMessage(context, l10n.settingsPocketTtsDownloadedNativeMissing);
-    }
-  }
-
-  Future<void> _deletePocketTtsModel() async {
-    final l10n = AppLocalizations.of(context);
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.settingsPocketTtsDeleteTitle),
-        content: Text(l10n.settingsPocketTtsDeleteConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.settingsPocketTtsDeleteButton),
-          ),
-        ],
-      ),
-    );
-    if (confirm != true) return;
-
-    try {
-      await _pocketTtsModel.deleteModel();
-      if (!mounted) return;
-      setState(() {
-        _pocketTtsModelInstalled = false;
-        _pocketTtsModelBytes = 0;
-        _pocketTtsModelPath = null;
-        _pocketTtsAvailable = false;
-        if (_ttsEngine == 'pocket') _ttsEngine = 'edge';
-      });
-      showStatusMessage(context, l10n.settingsPocketTtsDeleted);
-    } catch (e) {
-      if (!mounted) return;
-      showStatusMessage(context, l10n.error(e));
-    }
-  }
-
   Future<void> _testVoice() async {
     final l10n = AppLocalizations.of(context);
     setState(() => _testingVoice = true);
@@ -866,20 +669,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await _flutterTts.speak(l10n.settingsVoiceTestText);
         // _flutterTts is asynchronous but we can just wait, or not wait.
         // For simplicity, we just trigger speak.
-      } else if (_ttsEngine == 'pocket') {
-        if (!await _pocketTts.isAvailable()) {
-          throw Exception(l10n.settingsPocketTtsUnavailable);
-        }
-        final file = await _pocketTts.speakToFile(
-          text: l10n.settingsVoiceTestText,
-          voice: _pocketTtsVoice,
-          language: _pocketTtsLanguage,
-          speed: previewSpeed,
-          pitch: previewPitch,
-          modelPath: _pocketTtsModelPath,
-        );
-        if (!mounted) return;
-        await _audio.playFile(file);
       } else {
         final tts = EdgeTtsBridge();
         final file = await tts.speakToFile(
@@ -901,35 +690,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-
-  String _pocketTtsLanguageLabel(AppLocalizations l10n, String code) {
-    switch (code) {
-      case 'it':
-        return l10n.settingsPocketTtsLanguageItalian;
-      case 'en':
-        return l10n.settingsPocketTtsLanguageEnglish;
-      case 'fr':
-        return l10n.settingsPocketTtsLanguageFrench;
-      case 'de':
-        return l10n.settingsPocketTtsLanguageGerman;
-      case 'es':
-        return l10n.settingsPocketTtsLanguageSpanish;
-      case 'pt':
-        return l10n.settingsPocketTtsLanguagePortuguese;
-      case 'auto':
-      default:
-        return l10n.settingsPocketTtsLanguageAuto;
-    }
-  }
-
   Future<void> _saveTtsSelection() async {
     await _settings.saveTtsEngine(_ttsEngine);
     await _settings.saveTtsSettings(
       languageCode: _languageCode,
       voice: _voice,
     );
-    await _settings.savePocketTtsVoice(_pocketTtsVoice);
-    await _settings.savePocketTtsLanguage(_pocketTtsLanguage);
     await _settings.saveSystemTtsLanguage(_systemTtsLanguage);
     await _settings.saveSystemTtsVoice(_systemTtsVoice);
   }
@@ -1181,30 +947,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         DropdownMenuItem(
                             value: 'system',
                             child: Text(l10n.settingsSystemVoices)),
-                        if (Platform.isIOS)
-                          DropdownMenuItem(
-                              value: 'pocket',
-                              child: Text(l10n.settingsPocketTtsLocal)),
                       ],
-                      onChanged: _pocketTtsDownloading
-                          ? null
-                          : (value) {
-                              if (value == null) return;
-                              unawaited(_changeTtsEngine(value));
-                            },
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _ttsEngine = value);
+                      },
                     ),
-                    if (Platform.isIOS && _pocketTtsDownloading) ...[
-                      const SizedBox(height: 12),
-                      LinearProgressIndicator(value: _pocketTtsDownloadProgress),
-                      const SizedBox(height: 8),
-                      Text(
-                        _pocketTtsDownloadProgress == null
-                            ? l10n.settingsPocketTtsDownloading
-                            : l10n.settingsPocketTtsDownloadPercent(
-                                (_pocketTtsDownloadProgress! * 100).round(),
-                              ),
-                      ),
-                    ],
+                    const SizedBox(height: 12),
                     if (_ttsEngine == 'edge') ...[
                       DropdownButtonFormField<String>(
                         isExpanded: true,
@@ -1258,7 +1007,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           );
                         },
                       ),
-                    ] else if (_ttsEngine == 'system') ...[
+                    ] else ...[
                       Builder(
                         builder: (context) {
                           final locales = _systemVoices
@@ -1348,90 +1097,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ],
                           );
                         },
-                      ),
-                    ] else if (_ttsEngine == 'pocket') ...[
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        initialValue: AppSettingsService.pocketTtsLanguages.any(
-                          (language) => language.code == _pocketTtsLanguage,
-                        )
-                            ? _pocketTtsLanguage
-                            : AppSettingsService.defaultPocketTtsLanguage,
-                        decoration: InputDecoration(
-                          labelText: l10n.settingsPocketTtsLanguage,
-                        ),
-                        items: AppSettingsService.pocketTtsLanguages
-                            .map(
-                              (language) => DropdownMenuItem(
-                                value: language.code,
-                                child: Text(
-                                  _pocketTtsLanguageLabel(l10n, language.code),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          if (value == null) return;
-                          setState(() => _pocketTtsLanguage = value);
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        initialValue: AppSettingsService.pocketTtsVoices.any(
-                          (voice) => voice.voice == _pocketTtsVoice,
-                        )
-                            ? _pocketTtsVoice
-                            : AppSettingsService.defaultPocketTtsVoice,
-                        decoration: InputDecoration(
-                          labelText: l10n.settingsPocketTtsVoice,
-                        ),
-                        items: AppSettingsService.pocketTtsVoices
-                            .map(
-                              (voice) => DropdownMenuItem(
-                                value: voice.voice,
-                                child: Text(
-                                  voice.label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          if (value == null) return;
-                          setState(() => _pocketTtsVoice = value);
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        _pocketTtsModelInstalled
-                            ? l10n.settingsPocketTtsInstalled(
-                                _formatBytes(_pocketTtsModelBytes),
-                              )
-                            : l10n.settingsPocketTtsNotInstalled,
-                      ),
-                      if (_pocketTtsModelInstalled && !_pocketTtsAvailable) ...[
-                        const SizedBox(height: 8),
-                        Text(l10n.settingsPocketTtsNativeMissing),
-                      ],
-                      if (_pocketTtsModelInstalled) ...[
-                        const SizedBox(height: 12),
-                        OutlinedButton(
-                          onPressed: _pocketTtsDownloading
-                              ? null
-                              : _deletePocketTtsModel,
-                          child: Text(l10n.settingsPocketTtsDeleteButton),
-                        ),
-                      ],
-                      const SizedBox(height: 12),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(l10n.settingsPocketTtsHint),
-                        ),
                       ),
                     ],
                     const SizedBox(height: 16),
@@ -1787,27 +1452,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 24),
                     const Divider(),
                     const SizedBox(height: 12),
-                    Focus(
-                      focusNode: _viewLogFocusNode,
-                      child: FilledButton.icon(
-                        onPressed: () async {
-                          await Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              settings: const RouteSettings(
-                                name: '/settings/app-log',
-                              ),
-                              builder: (_) => const AppLogScreen(),
-                            ),
-                          );
-                          if (!context.mounted) return;
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (!mounted) return;
-                            _viewLogFocusNode.requestFocus();
-                          });
-                        },
-                        icon: const Icon(Icons.description),
-                        label: Text(l10n.settingsViewSysLog),
-                      ),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            settings:
+                                const RouteSettings(name: '/settings/app-log'),
+                            builder: (_) => const AppLogScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.description),
+                      label: Text(l10n.settingsViewSysLog),
                     ),
                   ],
                 ),

@@ -17,7 +17,6 @@ import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
-import '../tts/pocket_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -41,7 +40,6 @@ class DocumentReaderScreen extends StatefulWidget {
 class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   final _tts = EdgeTtsBridge();
   final _audio = AudioPlayerService();
-  final _pocketTts = PocketTtsBridge();
   final _settings = AppSettingsService();
   final _extractor = DocumentTextExtractor();
   final _voiceDictionary = VoiceDictionaryService();
@@ -1003,23 +1001,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _ttsStatus = null;
 
     try {
-      var engine = await _settings.loadTtsEngine();
-      if (engine == 'pocket' && !await _pocketTts.isAvailable()) {
-        await AppLogger.log(
-          'Pocket TTS non disponibile o modello non scaricato: uso Edge TTS come fallback.',
-        );
-        engine = 'edge';
-      }
-      final pocketVoice = await _settings.loadPocketTtsVoice();
-      final pocketLanguage = await _settings.loadPocketTtsLanguage();
-      final ttsSpeed = await _settings.loadTtsSpeed();
-      final ttsPitch = await _settings.loadTtsPitch();
+      final engine = await _settings.loadTtsEngine();
       final dictionaryEntries = await _voiceDictionary.loadEntries();
-      await AppLogger.log(
-        'DocumentReader: TTS start engine=$engine pocketVoice=$pocketVoice '
-        'pocketLanguage=$pocketLanguage speed=$ttsSpeed pitch=$ttsPitch '
-        'doc="${_currentDoc.name}" chunks=${_chunks.length}',
-      );
       _activeTtsEngine = engine;
       _startReadingSleepTimerIfNeeded(restart: restartSleepTimer);
       final startIndex = _bookmarkIndex < _chunks.length && _bookmarkIndex >= 0
@@ -1041,8 +1024,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           await _flutterTts.setSharedInstance(true);
           await _flutterTts.autoStopSharedSession(false);
         }
-        await _flutterTts.setSpeechRate(ttsSpeed * 0.5);
-        await _flutterTts.setPitch(ttsPitch);
+        final speed = await _settings.loadTtsSpeed();
+        final pitch = await _settings.loadTtsPitch();
+        await _flutterTts.setSpeechRate(speed * 0.5);
+        await _flutterTts.setPitch(pitch);
 
         final sysLang = await _settings.loadSystemTtsLanguage();
         final sysVoice = await _settings.loadSystemTtsVoice();
@@ -1074,70 +1059,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           await speaking;
         }
         await _flutterTts.stop();
-      } else if (engine == 'pocket') {
-        final controller = StreamController<File>();
-        _edgeFileController = controller;
-        Object? generationError;
-        const initialBufferChunks = 1;
-
-        final generation = Future<void>(() async {
-          for (var i = startIndex; i < _chunks.length; i++) {
-            if (!mounted || !_speaking || readingToken != _readingToken) {
-              break; // Ferma la generazione se l'utente preme stop
-            }
-            final textToSpeak =
-                _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
-            await AppLogger.log(
-              'Pocket TTS: document chunk start index=$i chars=${textToSpeak.length}',
-            );
-            final file = await _pocketTts.speakToFile(
-              text: textToSpeak,
-              voice: pocketVoice,
-              language: pocketLanguage,
-              speed: ttsSpeed,
-              pitch: ttsPitch,
-            );
-            if (!controller.isClosed &&
-                mounted &&
-                _speaking &&
-                readingToken == _readingToken) {
-              await AppLogger.log('Pocket TTS: document chunk ready index=$i file=${file.path}');
-              controller.add(file);
-            }
-          }
-          if (!controller.isClosed) await controller.close();
-        }).catchError((e) async {
-          generationError = e;
-          await AppLogger.log('Pocket TTS: document generation error=$e');
-          if (!controller.isClosed) await controller.close();
-        });
-
-        if (mounted && _speaking) {
-          await _audio.playFileStreamSequentially(
-            controller.stream,
-            sessionType: AudioSessionType.playback,
-            title: _currentDoc.name,
-            initialBufferCount: initialBufferChunks,
-            isPaused: () => _ttsPaused,
-            onChunkStarted: (index, file) {
-              final chunkIndex = startIndex + index;
-              if (mounted && readingToken == _readingToken) {
-                unawaited(AppLogger.log('Pocket TTS: playback started chunkIndex=$chunkIndex')); 
-                setState(() {
-                  _playingChunkIndex = chunkIndex;
-                });
-                _scrollToChunk(chunkIndex);
-              }
-            },
-          );
-        }
-        if (!controller.isClosed) await controller.close();
-        await generation;
-        if (_edgeFileController == controller) {
-          _edgeFileController = null;
-        }
-        if (readingToken != _readingToken) return;
-        if (generationError != null) throw Exception(generationError);
       } else {
         final voice = await _voice();
         final controller = StreamController<File>();
@@ -1292,9 +1213,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _cancelReadingSleepTimer();
     }
     final l10n = AppLocalizations.of(context);
-    final statusMessage = fromSleepTimer
-        ? l10n.documentReadingSleepTimerStopped
-        : l10n.readingStopped;
     final edgeController = _edgeFileController;
     _edgeFileController = null;
     final stopAudio = _audio.stop();
@@ -1302,14 +1220,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (edgeController != null && !edgeController.isClosed) {
       await edgeController.close();
     }
-    await stopAudio;
-    await stopTts;
-    if (!mounted) return;
+    final statusMessage = fromSleepTimer
+        ? l10n.documentReadingSleepTimerStopped
+        : l10n.readingStopped;
     setState(() {
       _speaking = false;
       _ttsPaused = false;
       _ttsStatus = statusMessage;
     });
+    await stopAudio;
+    await stopTts;
     if (fromSleepTimer) {
       await _saveSleepTimerBookmarkFromPlayback();
     } else {
@@ -2316,10 +2236,10 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
     int start = (safeMatchIndex - 70).clamp(0, collapsed.length).toInt();
     final end =
         (safeMatchIndex + query.length + 90).clamp(0, collapsed.length).toInt();
-    
+
     final initialWords = collapsed.split(' ').take(3).join(' ');
     String prefix = '';
-    
+
     if (start > 0) {
       if (start <= initialWords.length + 15) {
         start = 0;
@@ -2327,7 +2247,7 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
         prefix = '$initialWords ... ';
       }
     }
-    
+
     final suffix = end < collapsed.length ? ' ...' : '';
     return '$prefix${collapsed.substring(start, end).trimLeft()}$suffix';
   }

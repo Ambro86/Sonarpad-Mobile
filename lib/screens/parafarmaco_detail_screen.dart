@@ -12,7 +12,8 @@ class ParafarmacoDetailScreen extends StatefulWidget {
   const ParafarmacoDetailScreen({super.key, required this.product});
 
   @override
-  State<ParafarmacoDetailScreen> createState() => _ParafarmacoDetailScreenState();
+  State<ParafarmacoDetailScreen> createState() =>
+      _ParafarmacoDetailScreenState();
 }
 
 class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
@@ -48,7 +49,6 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
       });
     }
   }
-
 
   @override
   void dispose() {
@@ -198,7 +198,10 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
                                 style: theme.textTheme.bodySmall,
                               ),
                             ],
-                            if ((detail?.code ?? product.code)?.trim().isNotEmpty ?? false)
+                            if ((detail?.code ?? product.code)
+                                    ?.trim()
+                                    .isNotEmpty ??
+                                false)
                               Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
                                 child: Text(
@@ -227,12 +230,14 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
                       _sectionTile(
                         icon: Icons.medication,
                         type: ParafarmacoSectionType.usage,
-                        subtitle: 'Modalità d’uso, dosaggio o posologia se presenti.',
+                        subtitle:
+                            'Modalità d’uso, dosaggio o posologia se presenti.',
                       ),
                       _sectionTile(
                         icon: Icons.warning_amber,
                         type: ParafarmacoSectionType.warnings,
-                        subtitle: 'Avvertenze, precauzioni o controindicazioni se presenti.',
+                        subtitle:
+                            'Avvertenze, precauzioni o controindicazioni se presenti.',
                       ),
                       _sectionTile(
                         icon: Icons.inventory_2_outlined,
