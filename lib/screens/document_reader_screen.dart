@@ -63,6 +63,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   int _documentReadingSleepTimerMinutes =
       AppSettingsService.defaultDocumentReadingSleepTimerMinutes;
   int _playingChunkIndex = -1;
+  int _focusedChunkIndex = -1;
   StreamController<File>? _edgeFileController;
   // (chunkKeys rimosso, usiamo scroll_to_index)
   late int _bookmarkIndex;
@@ -187,6 +188,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _multipleDocumentBookmarksEnabled = multipleDocumentBookmarks;
         _documentSliderStepPercent = documentSliderStepPercent;
         _documentReadingSleepTimerMinutes = documentReadingSleepTimerMinutes;
+        _focusedChunkIndex = -1;
         _refreshBookmarkStateForCurrentMode();
         // Le chiavi vengono gestite da AutoScrollTag
       }
@@ -246,29 +248,43 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   List<String> _mergeOrphanPunctuationParagraphsForDisplay(
     List<String> paragraphs,
   ) {
-    if (paragraphs.isEmpty) return const <String>[];
-    final result = <String>[];
-    for (final paragraph in paragraphs) {
-      final cleaned = paragraph.trim();
-      if (cleaned.isEmpty) continue;
-      if (_isOrphanPunctuationFragment(cleaned) && result.isNotEmpty) {
-        result[result.length - 1] = _appendPunctuationFragmentForDisplay(
-          result.last,
-          cleaned,
-        );
-      } else {
-        result.add(cleaned);
-      }
-    }
-    return result;
+    return _mergeOrphanDisplayFragments(paragraphs);
   }
 
   List<String> _mergeOrphanPunctuationChunksForDisplay(List<String> chunks) {
-    if (chunks.isEmpty) return const <String>[];
+    return _mergeOrphanDisplayFragments(chunks);
+  }
+
+  List<String> _mergeOrphanDisplayFragments(List<String> fragments) {
+    if (fragments.isEmpty) return const <String>[];
     final result = <String>[];
-    for (final chunk in chunks) {
-      final cleaned = chunk.trim();
+    String? pendingNumberPrefix;
+
+    for (final fragment in fragments) {
+      var cleaned = fragment.trim();
       if (cleaned.isEmpty) continue;
+
+      // Evita chunk/paragrafi autonomi composti solo da un numero elenco,
+      // per esempio "1.", "2 -" o "12-". Questi frammenti causano
+      // pause lunghe nella lettura: li agganciamo al testo successivo.
+      if (_isOrphanNumberPrefixFragment(cleaned)) {
+        pendingNumberPrefix = pendingNumberPrefix == null
+            ? cleaned
+            : _prependNumberPrefixFragmentForDisplay(
+                pendingNumberPrefix,
+                cleaned,
+              );
+        continue;
+      }
+
+      if (pendingNumberPrefix != null) {
+        cleaned = _prependNumberPrefixFragmentForDisplay(
+          pendingNumberPrefix,
+          cleaned,
+        );
+        pendingNumberPrefix = null;
+      }
+
       if (_isOrphanPunctuationFragment(cleaned) && result.isNotEmpty) {
         result[result.length - 1] = _appendPunctuationFragmentForDisplay(
           result.last,
@@ -278,7 +294,28 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         result.add(cleaned);
       }
     }
+
+    if (pendingNumberPrefix != null) {
+      if (result.isNotEmpty) {
+        result[result.length - 1] = _prependNumberPrefixFragmentForDisplay(
+          result.last,
+          pendingNumberPrefix,
+        );
+      } else {
+        result.add(pendingNumberPrefix);
+      }
+    }
+
     return result;
+  }
+
+  bool _isOrphanNumberPrefixFragment(String value) {
+    final compact = value.replaceAll(RegExp(r'\s+'), '');
+    if (compact.isEmpty || compact.length > 8) return false;
+
+    // Esempi protetti: "1.", "1 -", "12-", "3)".
+    // Non tocca numeri dentro frasi o titoli con altro testo.
+    return RegExp(r'^\d{1,4}[\.\)\-–—]$').hasMatch(compact);
   }
 
   bool _isOrphanPunctuationFragment(String value) {
@@ -288,6 +325,17 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     // Evita chunk/paragrafi autonomi composti solo da chiusure o punteggiatura,
     // per esempio ")." o "]". Non include separatori come *** o ---.
     return RegExp(r'''^[\)\]\}»”’"'.,;:!?…]+$''').hasMatch(compact);
+  }
+
+  String _prependNumberPrefixFragmentForDisplay(
+    String prefix,
+    String text,
+  ) {
+    final cleanedPrefix = prefix.trimRight();
+    final cleanedText = text.trimLeft();
+    if (cleanedPrefix.isEmpty) return cleanedText;
+    if (cleanedText.isEmpty) return cleanedPrefix;
+    return '$cleanedPrefix $cleanedText';
   }
 
   String _appendPunctuationFragmentForDisplay(
@@ -973,6 +1021,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   void _openChunkAt(int index) {
     if (index < 0 || index >= _chunks.length) return;
     setState(() {
+      _focusedChunkIndex = index;
       _playingChunkIndex = index;
     });
     _scrollToChunk(index);
@@ -1005,9 +1054,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       final dictionaryEntries = await _voiceDictionary.loadEntries();
       _activeTtsEngine = engine;
       _startReadingSleepTimerIfNeeded(restart: restartSleepTimer);
-      final startIndex = _bookmarkIndex < _chunks.length && _bookmarkIndex >= 0
-          ? _bookmarkIndex
-          : 0;
+      final startIndex = _activeDocumentPositionIndex;
 
       if (engine == 'system') {
         if (Platform.isIOS) {
@@ -1052,6 +1099,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           final speaking = _flutterTts.speak(textToSpeak);
           if (mounted) {
             setState(() {
+              _focusedChunkIndex = i;
               _playingChunkIndex = i;
             });
             _scrollToChunk(i);
@@ -1099,6 +1147,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
               final chunkIndex = startIndex + index;
               if (mounted && readingToken == _readingToken) {
                 setState(() {
+                  _focusedChunkIndex = chunkIndex;
                   _playingChunkIndex = chunkIndex;
                 });
                 _scrollToChunk(chunkIndex);
@@ -1443,6 +1492,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     setState(() {
       _bookmarkIndex = resumeIndex;
+      _focusedChunkIndex = resumeIndex;
       _playingChunkIndex = resumeIndex;
       _speaking = false;
       _ttsPaused = false;
@@ -1457,20 +1507,64 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
+  int get _activeDocumentPositionIndex {
+    if (_chunks.isEmpty) return 0;
+    if (_speaking &&
+        _playingChunkIndex >= 0 &&
+        _playingChunkIndex < _chunks.length) {
+      return _playingChunkIndex;
+    }
+    if (_focusedChunkIndex >= 0 && _focusedChunkIndex < _chunks.length) {
+      return _focusedChunkIndex;
+    }
+    if (_playingChunkIndex >= 0 && _playingChunkIndex < _chunks.length) {
+      return _playingChunkIndex;
+    }
+    return _bookmarkIndex.clamp(0, _chunks.length - 1).toInt();
+  }
+
+  int _indexForDocumentPercent(double percent) {
+    if (_chunks.isEmpty) return 0;
+    if (_chunks.length == 1) return 0;
+    final roundedPercent = percent.round().clamp(0, 100);
+    final maxIndex = _chunks.length - 1;
+    return ((roundedPercent / 100) * maxIndex)
+        .round()
+        .clamp(0, maxIndex)
+        .toInt();
+  }
+
+  double _percentForDocumentIndex(int index) {
+    if (_chunks.isEmpty) return 0;
+    if (_chunks.length == 1) return 100;
+    final maxIndex = _chunks.length - 1;
+    final clampedIndex = index.clamp(0, maxIndex).toInt();
+    return ((clampedIndex / maxIndex) * 100).roundToDouble();
+  }
+
+  void _syncDocumentPositionFromAccessibilityFocus(int index) {
+    if (!mounted || index < 0 || index >= _chunks.length) return;
+    // Durante la lettura attiva lo slider deve seguire il TTS, non il focus VO.
+    // Se la lettura è ferma o in pausa, invece il flick tra paragrafi aggiorna
+    // la posizione corrente e quindi anche lo slider percentuale.
+    if (_speaking && !_ttsPaused) return;
+    if (_focusedChunkIndex == index) return;
+    setState(() {
+      _focusedChunkIndex = index;
+    });
+  }
+
   void _seekDocumentToPercent(double percent) {
     if (_chunks.isEmpty) return;
-    final clampedPercent = percent.clamp(0.0, 100.0);
-    final maxIndex = _chunks.length - 1;
-    final targetIndex = ((clampedPercent / 100) * maxIndex).round();
-    final currentIndex = _playingChunkIndex >= 0
-        ? _playingChunkIndex
-        : _bookmarkIndex.clamp(0, maxIndex);
+    final targetIndex = _indexForDocumentPercent(percent);
+    final currentIndex = _activeDocumentPositionIndex;
     final positionChanged = targetIndex != currentIndex;
     final shouldRealignReading = _speaking && positionChanged;
     final shouldResumeReading = _speaking && !_ttsPaused;
     if (!positionChanged && !_speaking) return;
     setState(() {
       _bookmarkIndex = targetIndex;
+      _focusedChunkIndex = targetIndex;
       _playingChunkIndex = targetIndex;
     });
     _scrollToChunk(targetIndex);
@@ -1528,6 +1622,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     setState(() {
       _bookmarkIndex = targetIndex;
+      _focusedChunkIndex = targetIndex;
       _playingChunkIndex = targetIndex;
       _speaking = false;
       _ttsPaused = false;
@@ -1541,19 +1636,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   void _seekDocumentByPercent(double delta) {
-    final currentPercent = _documentProgressPercent;
-    final targetPercent = (currentPercent + delta).clamp(0.0, 100.0);
+    final currentPercent = _documentProgressPercent.round();
+    final targetPercent =
+        (currentPercent + delta.round()).clamp(0, 100).toInt();
     if (targetPercent == currentPercent) return;
-    _seekDocumentToPercent(targetPercent);
+    _seekDocumentToPercent(targetPercent.toDouble());
   }
 
   double get _documentProgressPercent {
     if (_chunks.isEmpty) return 0;
-    final activeIndex = _playingChunkIndex >= 0
-        ? _playingChunkIndex
-        : _bookmarkIndex.clamp(0, _chunks.length - 1);
-    if (_chunks.length == 1) return 100;
-    return (activeIndex / (_chunks.length - 1)) * 100;
+    return _percentForDocumentIndex(_activeDocumentPositionIndex);
   }
 
   @override
@@ -1836,6 +1928,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           child: Semantics(
             key: ValueKey('document_chunk_semantics_$i'),
             container: true,
+            onDidGainAccessibilityFocus: () =>
+                _syncDocumentPositionFromAccessibilityFocus(i),
             hint: hintText,
             onTap: canEdit ? () => _editParagraph(i) : null,
             customSemanticsActions: actions,
