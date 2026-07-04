@@ -95,7 +95,7 @@ def swift_bridge_source(native_ready)
       static let ttsChannelName = "sonarpad/pocket_tts"
       static let modelChannelName = "sonarpad/pocket_tts_model"
 
-      private var engine: PocketTTSEngine?
+      private var engine: PocketTtsEngine?
       private var engineModelPath: String?
 
       static func register(with messenger: FlutterBinaryMessenger) {
@@ -180,58 +180,14 @@ def swift_bridge_source(native_ready)
         }
       }
 
-      private func cachedEngine(modelPath: String) throws -> PocketTTSEngine {
+      private func cachedEngine(modelPath: String) throws -> PocketTtsEngine {
         if let engine = engine, engineModelPath == modelPath {
           return engine
         }
-        let newEngine = try PocketTTSEngine(modelPath: modelPath)
+        let newEngine = try PocketTtsEngine(modelPath: modelPath)
         engine = newEngine
         engineModelPath = modelPath
         return newEngine
-      }
-
-      private func appendUInt16LE(_ value: UInt16, to data: inout Data) {
-        data.append(UInt8(value & 0xff))
-        data.append(UInt8((value >> 8) & 0xff))
-      }
-
-      private func appendUInt32LE(_ value: UInt32, to data: inout Data) {
-        data.append(UInt8(value & 0xff))
-        data.append(UInt8((value >> 8) & 0xff))
-        data.append(UInt8((value >> 16) & 0xff))
-        data.append(UInt8((value >> 24) & 0xff))
-      }
-
-      private func wavData(samples: [Float], sampleRate: UInt32) -> Data {
-        let channels: UInt16 = 1
-        let bitsPerSample: UInt16 = 16
-        let bytesPerSample = UInt32(bitsPerSample / 8)
-        let byteRate = sampleRate * UInt32(channels) * bytesPerSample
-        let blockAlign = channels * UInt16(bytesPerSample)
-        let dataSize = UInt32(samples.count) * bytesPerSample
-
-        var data = Data()
-        data.append("RIFF".data(using: .ascii)!)
-        appendUInt32LE(36 + dataSize, to: &data)
-        data.append("WAVE".data(using: .ascii)!)
-        data.append("fmt ".data(using: .ascii)!)
-        appendUInt32LE(16, to: &data)
-        appendUInt16LE(1, to: &data)
-        appendUInt16LE(channels, to: &data)
-        appendUInt32LE(sampleRate, to: &data)
-        appendUInt32LE(byteRate, to: &data)
-        appendUInt16LE(blockAlign, to: &data)
-        appendUInt16LE(bitsPerSample, to: &data)
-        data.append("data".data(using: .ascii)!)
-        appendUInt32LE(dataSize, to: &data)
-
-        for sample in samples {
-          let clamped = max(-1.0, min(1.0, sample))
-          let scaled = Int16(clamped * Float(Int16.max))
-          let raw = UInt16(bitPattern: scaled)
-          appendUInt16LE(raw, to: &data)
-        }
-        return data
       }
 
       private func synthesizeToFile(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -260,14 +216,18 @@ def swift_bridge_source(native_ready)
             let hadCachedEngine = self.engine != nil && self.engineModelPath == modelPath
             NSLog("Sonarpad Pocket TTS: synthesize native start chars=%d voice=%@ language=%@ speed=%.2f cachedEngine=%@", text.count, voice ?? "default", language, speed, hadCachedEngine ? "true" : "false")
             let engine = try self.cachedEngine(modelPath: modelPath)
-            let config = TTSConfig(
+            let config = TtsConfig(
               voiceIndex: self.voiceIndex(for: voice),
               temperature: 0.7,
-              speed: Float(max(0.5, min(speed, 2.0)))
+              topP: 0.9,
+              speed: Float(max(0.5, min(speed, 2.0))),
+              consistencySteps: 2,
+              useFixedSeed: false,
+              seed: 42
             )
             try engine.configure(config: config)
             let synthesis = try engine.synthesize(text: text)
-            let audioData = self.wavData(samples: synthesis.samples, sampleRate: UInt32(synthesis.sampleRate))
+            let audioData = Data(synthesis.audioData)
             guard !audioData.isEmpty else {
               throw NSError(domain: "SonarpadPocketTts", code: 10, userInfo: [NSLocalizedDescriptionKey: "Pocket TTS non ha prodotto audio."])
             }
@@ -280,8 +240,9 @@ def swift_bridge_source(native_ready)
               result([
                 "path": outURL.path,
                 "cachedEngine": hadCachedEngine,
-                "audioSamples": synthesis.samples.count,
+                "audioBytes": audioData.count,
                 "sampleRate": synthesis.sampleRate,
+                "durationSeconds": synthesis.durationSeconds,
                 "language": language
               ])
             }
@@ -334,10 +295,11 @@ unless target.source_build_phase.files_references.include?(bridge_ref)
 end
 
 # Binding Swift UniFFI aggiunto solo quando scaricato dal workflow.
+# Non aggiungiamo i wrapper opzionali PocketTTSSwift.swift: il bridge Sonarpad usa
+# direttamente pocket_tts_ios.swift, che espone PocketTtsEngine/TtsConfig.
 if native_ready
-  swift_files = Dir.glob(File.join(runner_dir, '*.swift')).map { |path| File.basename(path) }
+  swift_files = ['SonarpadPocketTtsBridge.swift', 'pocket_tts_ios.swift']
   swift_files.each do |swift_file|
-    next if swift_file == 'AppDelegate.swift'
     ref = runner_group.files.find { |f| f.path == swift_file } || runner_group.new_file(swift_file)
     unless target.source_build_phase.files_references.include?(ref)
       target.source_build_phase.add_file_reference(ref)
@@ -370,7 +332,7 @@ end
 
 project.save
 if native_ready
-  puts 'Pocket TTS iOS collegato: PocketTTS.xcframework + binding Swift aggiunti al target Runner.'
+  puts 'Pocket TTS iOS collegato: PocketTTS.xcframework + binding UniFFI aggiunti al target Runner.'
 else
   puts 'Pocket TTS iOS bridge stub preparato: framework non presente, build sicura.'
 end
