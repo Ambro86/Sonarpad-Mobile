@@ -55,14 +55,19 @@ jobs:
 
       - name: Prepare optional Pocket TTS iOS bridge
         run: |
-          if [ -f "tools/pocket_tts_ios/install_pocket_tts_ios.sh" ]; then
-            bash tools/pocket_tts_ios/install_pocket_tts_ios.sh
-          fi
-          if [ -f "tools/pocket_tts_ios/patch_ios_project.rb" ]; then
-            gem install xcodeproj --no-document --quiet
-            ruby tools/pocket_tts_ios/patch_ios_project.rb
+          if [ "${SONARPAD_ENABLE_POCKET_TTS_IOS}" = "true" ]; then
+            echo "Pocket TTS iOS abilitato: preparo framework e bridge nativo."
+            if [ -f "tools/pocket_tts_ios/install_pocket_tts_ios.sh" ]; then
+              bash tools/pocket_tts_ios/install_pocket_tts_ios.sh
+            fi
+            if [ -f "tools/pocket_tts_ios/patch_ios_project.rb" ]; then
+              gem install xcodeproj --no-document --quiet
+              ruby tools/pocket_tts_ios/patch_ios_project.rb
+            else
+              echo "Pocket TTS iOS bridge script not present; skipping."
+            fi
           else
-            echo "Pocket TTS iOS bridge script not present; skipping."
+            echo "Pocket TTS iOS disattivato: non scarico né collego PocketTTS.xcframework."
           fi
 
       - name: Set iOS app name

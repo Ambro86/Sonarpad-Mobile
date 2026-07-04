@@ -5,11 +5,13 @@ set -euo pipefail
 # Si attiva solo se SONARPAD_ENABLE_POCKET_TTS_IOS=true.
 
 ENABLED="${SONARPAD_ENABLE_POCKET_TTS_IOS:-false}"
-case "${ENABLED,,}" in
+# macOS usa ancora /bin/bash 3.2 nei runner GitHub: evita ${VAR,,}, che richiede Bash 4+.
+ENABLED_NORMALIZED="$(printf '%s' "$ENABLED" | tr '[:upper:]' '[:lower:]')"
+case "$ENABLED_NORMALIZED" in
   true|1|yes|y|on)
     ;;
   *)
-    echo "Pocket TTS iOS disattivato: imposto solo il bridge stub."
+    echo "Pocket TTS iOS disattivato: salto download e collegamento framework."
     exit 0
     ;;
 esac
