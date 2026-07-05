@@ -9,7 +9,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../tts/edge_tts_bridge.dart';
-import '../tts/google_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'app_settings_service.dart';
 import 'voice_dictionary_service.dart';
@@ -51,18 +50,15 @@ class AudiobookExportService {
   AudiobookExportService({
     AppSettingsService? settings,
     EdgeTtsBridge? edgeTts,
-    GoogleTtsBridge? googleTts,
     FlutterTts? flutterTts,
     VoiceDictionaryService? voiceDictionary,
   })  : _settings = settings ?? AppSettingsService(),
         _edgeTts = edgeTts ?? EdgeTtsBridge(),
-        _googleTts = googleTts ?? GoogleTtsBridge.instance,
         _flutterTts = flutterTts ?? FlutterTts(),
         _voiceDictionary = voiceDictionary ?? VoiceDictionaryService();
 
   final AppSettingsService _settings;
   final EdgeTtsBridge _edgeTts;
-  final GoogleTtsBridge _googleTts;
   final FlutterTts _flutterTts;
   final VoiceDictionaryService _voiceDictionary;
 
@@ -70,6 +66,7 @@ class AudiobookExportService {
   static const int _bitrateKbps = 64;
   static const int _edgeChunkMaxAttempts = 10;
   static const int _systemChunkMaxAttempts = 5;
+
 
   Future<File> export({
     required String text,
@@ -80,8 +77,7 @@ class AudiobookExportService {
   }) async {
     final cleanTitle = _safeBaseName(title);
     final extension = format.extension;
-    final output =
-        File(p.join(outputDirectory, '${cleanTitle}_audiobook.$extension'));
+    final output = File(p.join(outputDirectory, '${cleanTitle}_audiobook.$extension'));
 
     await AppLogger.log(
       'Audiobook export: start title="$cleanTitle" format=${format.name} '
@@ -99,8 +95,7 @@ class AudiobookExportService {
       maxChunkChars: _maxChunkChars,
     );
     if (chunks.isEmpty) {
-      await AppLogger.log(
-          'Audiobook export: abort, split produced zero chunks');
+      await AppLogger.log('Audiobook export: abort, split produced zero chunks');
       throw Exception('Nessun blocco audio generabile.');
     }
 
@@ -152,17 +147,6 @@ class AudiobookExportService {
             onProgress: onProgress,
           ),
         );
-      } else if (engine == 'google') {
-        generatedFiles.addAll(
-          await _generateGoogleChunks(
-            chunks: chunks,
-            dictionaryEntries: dictionaryEntries,
-            tempDir: jobDir,
-            speed: speed,
-            pitch: pitch,
-            onProgress: onProgress,
-          ),
-        );
       } else {
         generatedFiles.addAll(
           await _generateEdgeChunks(
@@ -201,15 +185,13 @@ class AudiobookExportService {
         'Audiobook export: completed output="${output.path}" exists=$exists bytes=$size',
       );
       if (!exists || size < 1024) {
-        throw Exception(
-            'File audiolibro non creato o troppo piccolo: $size byte');
+        throw Exception('File audiolibro non creato o troppo piccolo: $size byte');
       }
       await _deleteJobDirectory(jobDir);
       return output;
     } catch (error, stack) {
       await AppLogger.log('Audiobook export: ERROR $error');
-      await AppLogger.log(
-          'Audiobook export: stack ${_compact(stack.toString())}');
+      await AppLogger.log('Audiobook export: stack ${_compact(stack.toString())}');
       await AppLogger.log(
         'Audiobook export: job kept for resume at "${jobDir.path}"',
       );
@@ -241,10 +223,8 @@ class AudiobookExportService {
           value: chunks.isEmpty ? null : (i / chunks.length) * 0.85,
         ),
       );
-      final textToSpeak =
-          _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
-      final target = File(
-          p.join(tempDir.path, 'chunk_${i.toString().padLeft(5, '0')}.mp3'));
+      final textToSpeak = _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+      final target = File(p.join(tempDir.path, 'chunk_${i.toString().padLeft(5, '0')}.mp3'));
       final existingSize = await _validAudioSize(target);
       if (existingSize != null) {
         await AppLogger.log(
@@ -273,8 +253,7 @@ class AudiobookExportService {
           if (await target.exists()) {
             await target.delete();
           }
-          final file =
-              await _edgeTts.speakToFile(text: textToSpeak, voice: voice);
+          final file = await _edgeTts.speakToFile(text: textToSpeak, voice: voice);
           await file.copy(target.path);
           final size = await target.length();
           if (size < 512) {
@@ -282,85 +261,6 @@ class AudiobookExportService {
           }
           await AppLogger.log(
             'Audiobook export Edge: chunk ${i + 1}/${chunks.length} file="${target.path}" bytes=$size',
-          );
-        },
-      );
-      files.add(target);
-      await _notifyProgress(
-        onProgress,
-        AudiobookExportProgress(
-          stage: AudiobookExportProgressStage.generating,
-          current: i + 1,
-          total: chunks.length,
-          value: ((i + 1) / chunks.length) * 0.85,
-        ),
-      );
-    }
-
-    return files;
-  }
-
-  Future<List<File>> _generateGoogleChunks({
-    required List<String> chunks,
-    required List<VoiceDictionaryEntry> dictionaryEntries,
-    required Directory tempDir,
-    required double speed,
-    required double pitch,
-    AudiobookExportProgressCallback? onProgress,
-  }) async {
-    final voice = await _settings.loadTtsVoice();
-    await AppLogger.log('Audiobook export Google TTS: voice=$voice');
-    final files = <File>[];
-
-    for (var i = 0; i < chunks.length; i++) {
-      await _notifyProgress(
-        onProgress,
-        AudiobookExportProgress(
-          stage: AudiobookExportProgressStage.generating,
-          current: i,
-          total: chunks.length,
-          value: chunks.isEmpty ? null : (i / chunks.length) * 0.85,
-        ),
-      );
-      final textToSpeak =
-          _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
-      final target = File(p.join(
-          tempDir.path, 'google_chunk_${i.toString().padLeft(5, '0')}.wav'));
-      final existingSize = await _validAudioSize(target);
-      if (existingSize != null) {
-        files.add(target);
-        await _notifyProgress(
-          onProgress,
-          AudiobookExportProgress(
-            stage: AudiobookExportProgressStage.generating,
-            current: i + 1,
-            total: chunks.length,
-            value: ((i + 1) / chunks.length) * 0.85,
-          ),
-        );
-        continue;
-      }
-
-      await _retryChunk(
-        label: 'Google TTS chunk ${i + 1}/${chunks.length}',
-        maxAttempts: _edgeChunkMaxAttempts,
-        action: () async {
-          if (await target.exists()) {
-            await target.delete();
-          }
-          final file = await _googleTts.speakToFile(
-            text: textToSpeak,
-            voiceId: voice,
-            speed: speed,
-            pitch: pitch,
-          );
-          await file.copy(target.path);
-          final size = await target.length();
-          if (size < 512) {
-            throw Exception('File Google TTS troppo piccolo: $size byte');
-          }
-          await AppLogger.log(
-            'Audiobook export Google TTS: chunk ${i + 1}/${chunks.length} file="${target.path}" bytes=$size',
           );
         },
       );
@@ -417,8 +317,7 @@ class AudiobookExportService {
           value: chunks.isEmpty ? null : (i / chunks.length) * 0.85,
         ),
       );
-      final textToSpeak =
-          _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+      final textToSpeak = _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
       final path = p.join(
         tempDir.path,
         'system_chunk_${i.toString().padLeft(5, '0')}.$tempExtension',
@@ -519,13 +418,11 @@ class AudiobookExportService {
     );
     if (lastStack != null) {
       Error.throwWithStackTrace(
-        Exception(
-            'Errore durante $label dopo $maxAttempts tentativi. Ultimo errore: $lastError'),
+        Exception('Errore durante $label dopo $maxAttempts tentativi. Ultimo errore: $lastError'),
         lastStack,
       );
     }
-    throw Exception(
-        'Errore durante $label dopo $maxAttempts tentativi. Ultimo errore: $lastError');
+    throw Exception('Errore durante $label dopo $maxAttempts tentativi. Ultimo errore: $lastError');
   }
 
   Duration _retryDelay(int failedAttempt) {
@@ -547,8 +444,7 @@ class AudiobookExportService {
     });
 
     try {
-      final result =
-          await _flutterTts.synthesizeToFile(text, output.path, true);
+      final result = await _flutterTts.synthesizeToFile(text, output.path, true);
       await AppLogger.log(
         'Audiobook export system: synthesizeToFile returned ${result ?? "null"}',
       );
@@ -573,8 +469,7 @@ class AudiobookExportService {
       await completer.future.timeout(const Duration(seconds: 5));
     } catch (error) {
       final message = ttsError ?? error;
-      await AppLogger.log(
-          'Audiobook export system: synthesize failed $message');
+      await AppLogger.log('Audiobook export system: synthesize failed $message');
       throw Exception(
         'Esportazione con voce di sistema non riuscita. Dettagli: $message',
       );
@@ -599,8 +494,7 @@ class AudiobookExportService {
       }
       await Future.delayed(const Duration(milliseconds: 250));
     }
-    throw TimeoutException(
-        'Timeout durante la creazione del file TTS di sistema');
+    throw TimeoutException('Timeout durante la creazione del file TTS di sistema');
   }
 
   Future<void> _mergeAudioFiles({
@@ -615,12 +509,9 @@ class AudiobookExportService {
     }
     if (await output.exists()) await output.delete();
 
-    final listFile =
-        File(p.join(p.dirname(inputFiles.first.path), 'concat_list.txt'));
+    final listFile = File(p.join(p.dirname(inputFiles.first.path), 'concat_list.txt'));
     await listFile.writeAsString(
-      inputFiles
-          .map((file) => "file '${_escapeConcatPath(file.path)}'")
-          .join('\n'),
+      inputFiles.map((file) => "file '${_escapeConcatPath(file.path)}'").join('\n'),
       flush: true,
     );
 
@@ -662,8 +553,7 @@ class AudiobookExportService {
         value: null,
       ),
     );
-    await AppLogger.log(
-        'Audiobook export ffmpeg: args=${args.map(_quoteLogArg).join(" ")}');
+    await AppLogger.log('Audiobook export ffmpeg: args=${args.map(_quoteLogArg).join(" ")}');
     final session = await FFmpegKit.executeWithArguments(args);
     final returnCode = await session.getReturnCode();
     final logs = await session.getAllLogsAsString() ?? '';
@@ -672,9 +562,7 @@ class AudiobookExportService {
         'Audiobook export ffmpeg: failed returnCode=${returnCode?.getValue()} logs="${_compact(logs)}"',
       );
       throw Exception(
-        logs.trim().isEmpty
-            ? 'FFmpeg returnCode=${returnCode?.getValue()}'
-            : logs,
+        logs.trim().isEmpty ? 'FFmpeg returnCode=${returnCode?.getValue()}' : logs,
       );
     }
     await AppLogger.log(
@@ -787,16 +675,12 @@ class AudiobookExportService {
       final language = await _settings.loadSystemTtsLanguage();
       final voice = await _settings.loadSystemTtsVoice();
       voicePart = 'system|$language|${voice ?? 'default'}';
-    } else if (engine == 'google') {
-      final voice = await _settings.loadTtsVoice();
-      voicePart = 'google|$voice';
     } else {
       final voice = await _settings.loadTtsVoice();
       voicePart = 'edge|$voice';
     }
     final dictionaryPart = dictionaryEntries
-        .map((entry) =>
-            '${entry.original}\t${entry.replacement}\t${entry.matchCase}')
+        .map((entry) => '${entry.original}\t${entry.replacement}\t${entry.matchCase}')
         .join('\n');
     return '$voicePart|speed=$speed|pitch=$pitch|dict=${_stableHash(dictionaryPart)}';
   }

@@ -11,7 +11,6 @@ import '../services/audiodescription_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/podcast_cache_service.dart';
 import '../tts/edge_tts_bridge.dart';
-import '../tts/google_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -36,14 +35,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _viewLogFocusNode = FocusNode();
   String _appLanguage = 'it';
   SonarpadThemeMode _themeMode = SonarpadThemeMode.system;
-  WeatherTemperatureUnit _weatherTemperatureUnit =
-      WeatherTemperatureUnit.celsius;
+  WeatherTemperatureUnit _weatherTemperatureUnit = WeatherTemperatureUnit.celsius;
   String _languageCode = 'it';
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
   List<TtsVoiceLanguage> _edgeLanguages = AppSettingsService.ttsLanguages;
   List<TtsVoiceOption> _edgeVoices = AppSettingsService.ttsVoices;
-  List<TtsVoiceLanguage> _googleLanguages = const [];
-  List<TtsVoiceOption> _googleVoices = const [];
 
   String _ttsEngine = 'edge';
   String _systemTtsLanguage = 'it-IT';
@@ -56,8 +52,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isSaving = false;
   late TextEditingController _tvSecretCodeController;
   bool _testingVoice = false;
-  bool _downloadingGoogleVoice = false;
-  double? _googleDownloadProgress;
   bool _clearingPodcastCache = false;
   int _podcastCacheBytes = 0;
   bool _autoBookmark = true;
@@ -74,8 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _savedTvSecretCode = '';
   String _savedAppLanguage = 'it';
   SonarpadThemeMode _savedThemeMode = SonarpadThemeMode.system;
-  WeatherTemperatureUnit _savedWeatherTemperatureUnit =
-      WeatherTemperatureUnit.celsius;
+  WeatherTemperatureUnit _savedWeatherTemperatureUnit = WeatherTemperatureUnit.celsius;
   String _savedLanguageCode = 'it';
   String _savedVoice = AppSettingsService.defaultVoiceForLanguage('it');
   String _savedTtsEngine = 'edge';
@@ -155,8 +148,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final exact = options.indexOf(_documentReadingSleepTimerMinutes);
     if (exact >= 0) return exact;
     var bestIndex = 0;
-    var bestDistance =
-        (_documentReadingSleepTimerMinutes - options.first).abs();
+    var bestDistance = (_documentReadingSleepTimerMinutes - options.first).abs();
     for (var i = 1; i < options.length; i++) {
       final distance = (_documentReadingSleepTimerMinutes - options[i]).abs();
       if (distance < bestDistance) {
@@ -250,7 +242,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await _settings.includeEpubFootnotesInText();
     final multipleDocumentBookmarks =
         await _settings.multipleDocumentBookmarksEnabled();
-    final displayVideoInPortrait = await _settings.displayVideoInPortrait();
+    final displayVideoInPortrait =
+        await _settings.displayVideoInPortrait();
     final homeGrouping = await _settings.isHomeGroupingEnabled();
     final seekSliderStep = await _settings.loadSeekSliderStep();
     final documentSliderStepPercent =
@@ -261,33 +254,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final podcastCacheBytes = await _podcastCache.cacheSizeBytes();
     final edgeVoices = await AppSettingsService.loadEdgeVoices();
     final edgeLanguages = AppSettingsService.languagesForVoices(edgeVoices);
-    final googleCatalog = await GoogleTtsBridge.instance.loadCatalog();
-    final googleSpeakers = List<GoogleTtsSpeaker>.from(googleCatalog.speakers)
-      ..sort((a, b) {
-        final languageCompare = a.language.compareTo(b.language);
-        if (languageCompare != 0) return languageCompare;
-        if (a.highQuality != b.highQuality) return a.highQuality ? -1 : 1;
-        return a.name.compareTo(b.name);
-      });
-    final googleVoices = googleSpeakers
-        .map(
-          (speaker) => TtsVoiceOption(
-            languageCode: speaker.language,
-            voice: speaker.id,
-            label: speaker.highQuality
-                ? '${speaker.name} - Alta qualita'
-                : speaker.name,
-            languageLabel: speaker.language,
-          ),
-        )
-        .toList();
-    final googleLanguages = AppSettingsService.languagesForVoices(googleVoices);
-    final activeVoices = ttsEngine == 'google' ? googleVoices : edgeVoices;
-    final activeLanguages =
-        ttsEngine == 'google' ? googleLanguages : edgeLanguages;
     final normalizedLanguage = AppSettingsService.normalizedTtsLanguageCodeFor(
-      activeLanguages,
-      activeVoices,
+      edgeLanguages,
+      edgeVoices,
       language,
       voice,
     );
@@ -304,15 +273,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedWeatherTemperatureUnit = weatherTemperatureUnit;
       _edgeLanguages = edgeLanguages;
       _edgeVoices = edgeVoices;
-      _googleLanguages = googleLanguages;
-      _googleVoices = googleVoices;
       _languageCode = normalizedLanguage;
       _savedLanguageCode = normalizedLanguage;
-      _voice = _validVoiceForLanguageForEngine(
-        normalizedLanguage,
-        voice,
-        ttsEngine,
-      );
+      _voice = _validVoiceForLanguage(normalizedLanguage, voice);
       _savedVoice = _voice;
       _ttsSpeed = speed;
       _savedTtsSpeed = speed;
@@ -341,7 +304,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _documentSliderStepPercent = documentSliderStepPercent;
       _savedDocumentSliderStepPercent = documentSliderStepPercent;
       _documentReadingSleepTimerMinutes = documentReadingSleepTimerMinutes;
-      _savedDocumentReadingSleepTimerMinutes = documentReadingSleepTimerMinutes;
+      _savedDocumentReadingSleepTimerMinutes =
+          documentReadingSleepTimerMinutes;
       _podcastCacheBytes = podcastCacheBytes;
       _loading = false;
     });
@@ -378,20 +342,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final weatherTemperatureUnitChanged =
         _weatherTemperatureUnit != _savedWeatherTemperatureUnit;
     final autoBookmarkChanged = _autoBookmark != _savedAutoBookmark;
-    final includeEpubFootnotesChanged =
-        _includeEpubFootnotesInText != _savedIncludeEpubFootnotesInText;
+    final includeEpubFootnotesChanged = _includeEpubFootnotesInText !=
+        _savedIncludeEpubFootnotesInText;
     final multipleDocumentBookmarksChanged =
         _multipleDocumentBookmarks != _savedMultipleDocumentBookmarks;
     final displayVideoInPortraitChanged =
         _displayVideoInPortrait != _savedDisplayVideoInPortrait;
-    final homeGroupingChanged =
-        _homeGroupingEnabled != _savedHomeGroupingEnabled;
+    final homeGroupingChanged = _homeGroupingEnabled != _savedHomeGroupingEnabled;
     final seekSliderStepChanged = _seekSliderStep != _savedSeekSliderStep;
     final documentSliderStepChanged =
         _documentSliderStepPercent != _savedDocumentSliderStepPercent;
-    final documentReadingSleepTimerChanged =
-        _documentReadingSleepTimerMinutes !=
-            _savedDocumentReadingSleepTimerMinutes;
+    final documentReadingSleepTimerChanged = _documentReadingSleepTimerMinutes !=
+        _savedDocumentReadingSleepTimerMinutes;
     final ttsEngineChanged = _ttsEngine != _savedTtsEngine;
     final ttsSettingsChanged = ttsEngineChanged ||
         _languageCode != _savedLanguageCode ||
@@ -464,8 +426,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.setIncludeEpubFootnotesInText(_includeEpubFootnotesInText);
-    await _settings
-        .setMultipleDocumentBookmarksEnabled(_multipleDocumentBookmarks);
+    await _settings.setMultipleDocumentBookmarksEnabled(_multipleDocumentBookmarks);
     await _settings.setDisplayVideoInPortrait(_displayVideoInPortrait);
     await _settings.setHomeGroupingEnabled(_homeGroupingEnabled);
     await _settings.saveSeekSliderStep(_seekSliderStep);
@@ -532,8 +493,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       await AppLogger.log('Settings: accessibility stabilization completed');
     } catch (error) {
-      await AppLogger.log(
-          'Settings: accessibility stabilization failed: $error');
+      await AppLogger.log('Settings: accessibility stabilization failed: $error');
     }
   }
 
@@ -711,16 +671,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await _flutterTts.speak(l10n.settingsVoiceTestText);
         // _flutterTts is asynchronous but we can just wait, or not wait.
         // For simplicity, we just trigger speak.
-      } else if (_ttsEngine == 'google') {
-        final tts = GoogleTtsBridge.instance;
-        final file = await tts.speakToFile(
-          text: l10n.settingsVoiceTestText,
-          voiceId: _voice,
-          speed: previewSpeed,
-          pitch: previewPitch,
-        );
-        if (!mounted) return;
-        await _audio.playFile(file);
       } else {
         final tts = EdgeTtsBridge();
         final file = await tts.speakToFile(
@@ -742,44 +692,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _downloadGoogleVoicePackage({bool showSuccess = true}) async {
-    if (_downloadingGoogleVoice) return;
-    setState(() {
-      _downloadingGoogleVoice = true;
-      _googleDownloadProgress = 0;
-    });
-    try {
-      final bridge = GoogleTtsBridge.instance;
-      final catalog = await bridge.loadCatalog();
-      final package = catalog.packageForVoice(_voice);
-      await bridge.downloadPackage(
-        package,
-        onProgress: (progress) {
-          if (!mounted) return;
-          setState(() => _googleDownloadProgress = progress);
-        },
-      );
-      if (!mounted) return;
-      if (showSuccess) {
-        showStatusMessage(context, 'Pacchetto Google TTS scaricato.');
-      }
-    } catch (e) {
-      if (!mounted) return;
-      showStatusMessage(context, 'Errore download Google TTS: $e');
-    } finally {
-      if (mounted) {
-        setState(() {
-          _downloadingGoogleVoice = false;
-          _googleDownloadProgress = null;
-        });
-      }
-    }
-  }
-
   Future<void> _saveTtsSelection() async {
-    if (_ttsEngine == 'google') {
-      await _downloadGoogleVoicePackage(showSuccess: false);
-    }
     await _settings.saveTtsEngine(_ttsEngine);
     await _settings.saveTtsSettings(
       languageCode: _languageCode,
@@ -790,31 +703,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   String _validVoiceForLanguage(String languageCode, String voice) {
-    return _validVoiceForLanguageForEngine(languageCode, voice, _ttsEngine);
-  }
-
-  String _validVoiceForLanguageForEngine(
-    String languageCode,
-    String voice,
-    String engine,
-  ) {
-    final voiceOptions = engine == 'google' ? _googleVoices : _edgeVoices;
     final voices = AppSettingsService.voicesForLanguageFrom(
-      voiceOptions,
+      _edgeVoices,
       languageCode,
     );
     if (voices.any((option) => option.voice == voice)) return voice;
     return AppSettingsService.defaultVoiceForLanguageFrom(
-      voiceOptions,
+      _edgeVoices,
       languageCode,
     );
   }
-
-  List<TtsVoiceLanguage> get _activeOnlineLanguages =>
-      _ttsEngine == 'google' ? _googleLanguages : _edgeLanguages;
-
-  List<TtsVoiceOption> get _activeOnlineVoices =>
-      _ttsEngine == 'google' ? _googleVoices : _edgeVoices;
 
   double _sliderStep(double value, double delta) {
     final next = (value + delta).clamp(0.5, 2.0);
@@ -881,7 +779,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (name.isEmpty || surname.isEmpty || email.isEmpty) {
         if (!mounted) return;
-        showStatusMessage(context, l10n.settingsFillFieldsCode);
+                showStatusMessage(context, l10n.settingsFillFieldsCode);
         return;
       }
 
@@ -921,7 +819,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await launchUrl(url);
       } catch (e) {
         if (!mounted) return;
-        showStatusMessage(context, l10n.settingsMailOpenError(e));
+                showStatusMessage(context, l10n.settingsMailOpenError(e));
       }
     }
   }
@@ -940,7 +838,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final voices = AppSettingsService.voicesForLanguageFrom(
-      _activeOnlineVoices,
+      _edgeVoices,
       _languageCode,
     );
     final showItalianOnlySettings = _appLanguage == 'it' &&
@@ -963,733 +861,656 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: _loading
             ? Center(
                 child: CircularProgressIndicator(semanticsLabel: l10n.loading))
-            : Stack(
-                children: [
-                  Focus(
-                    focusNode: _screenFocusNode,
-                    child: ListView(
-                      key: const PageStorageKey<String>('settings-list'),
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        DropdownButtonFormField<String>(
-                          isExpanded: true,
-                          initialValue: _appLanguage,
-                          decoration:
-                              InputDecoration(labelText: l10n.appLanguage),
-                          items: [
-                            DropdownMenuItem(
-                                value: 'it', child: Text(l10n.italian)),
-                            DropdownMenuItem(
-                                value: 'en', child: Text(l10n.english)),
-                            DropdownMenuItem(
-                                value: 'fr', child: Text(l10n.french)),
-                            DropdownMenuItem(
-                                value: 'es', child: Text(l10n.spanish)),
-                            DropdownMenuItem(
-                                value: 'pt', child: Text(l10n.radioLanguagePt)),
-                            DropdownMenuItem(
-                                value: 'pl', child: Text(l10n.radioLanguagePl)),
-                            DropdownMenuItem(
-                                value: 'cs', child: Text(l10n.radioLanguageCs)),
-                          ],
-                          onChanged: (value) {
-                            if (value == null || value == _appLanguage) return;
-                            setState(() => _appLanguage = value);
-                          },
+            : Focus(
+                focusNode: _screenFocusNode,
+                child: ListView(
+                  key: const PageStorageKey<String>('settings-list'),
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      initialValue: _appLanguage,
+                      decoration: InputDecoration(labelText: l10n.appLanguage),
+                      items: [
+                        DropdownMenuItem(
+                            value: 'it', child: Text(l10n.italian)),
+                        DropdownMenuItem(
+                            value: 'en', child: Text(l10n.english)),
+                        DropdownMenuItem(value: 'fr', child: Text(l10n.french)),
+                        DropdownMenuItem(
+                            value: 'es', child: Text(l10n.spanish)),
+                        DropdownMenuItem(
+                            value: 'pt', child: Text(l10n.radioLanguagePt)),
+                        DropdownMenuItem(
+                            value: 'pl', child: Text(l10n.radioLanguagePl)),
+                        DropdownMenuItem(
+                            value: 'cs', child: Text(l10n.radioLanguageCs)),
+                      ],
+                      onChanged: (value) {
+                        if (value == null || value == _appLanguage) return;
+                        setState(() => _appLanguage = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<SonarpadThemeMode>(
+                      isExpanded: true,
+                      initialValue: _themeMode,
+                      decoration: InputDecoration(labelText: l10n.settingsTheme),
+                      items: [
+                        DropdownMenuItem(
+                          value: SonarpadThemeMode.system,
+                          child: Text(l10n.settingsThemeSystem),
                         ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<SonarpadThemeMode>(
-                          isExpanded: true,
-                          initialValue: _themeMode,
-                          decoration:
-                              InputDecoration(labelText: l10n.settingsTheme),
-                          items: [
-                            DropdownMenuItem(
-                              value: SonarpadThemeMode.system,
-                              child: Text(l10n.settingsThemeSystem),
-                            ),
-                            DropdownMenuItem(
-                              value: SonarpadThemeMode.light,
-                              child: Text(l10n.settingsThemeLight),
-                            ),
-                            DropdownMenuItem(
-                              value: SonarpadThemeMode.dark,
-                              child: Text(l10n.settingsThemeDark),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            if (value == null) return;
-                            setState(() => _themeMode = value);
-                          },
+                        DropdownMenuItem(
+                          value: SonarpadThemeMode.light,
+                          child: Text(l10n.settingsThemeLight),
                         ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<WeatherTemperatureUnit>(
-                          isExpanded: true,
-                          initialValue: _weatherTemperatureUnit,
-                          decoration: InputDecoration(
-                            labelText: l10n.settingsWeatherTemperatureUnit,
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              value: WeatherTemperatureUnit.celsius,
-                              child: Text(l10n.weatherTemperatureCelsius),
-                            ),
-                            DropdownMenuItem(
-                              value: WeatherTemperatureUnit.fahrenheit,
-                              child: Text(l10n.weatherTemperatureFahrenheit),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            if (value == null) return;
-                            setState(() => _weatherTemperatureUnit = value);
-                          },
+                        DropdownMenuItem(
+                          value: SonarpadThemeMode.dark,
+                          child: Text(l10n.settingsThemeDark),
                         ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
-                          isExpanded: true,
-                          initialValue: _ttsEngine,
-                          decoration: InputDecoration(
-                              labelText: l10n.settingsReadingEngine),
-                          items: [
-                            DropdownMenuItem(
-                                value: 'edge',
-                                child: Text(l10n.settingsEdgeTtsQuality)),
-                            DropdownMenuItem(
-                                value: 'system',
-                                child: Text(l10n.settingsSystemVoices)),
-                            const DropdownMenuItem(
-                                value: 'google', child: Text('Google TTS')),
-                          ],
-                          onChanged: (value) {
-                            if (value == null) return;
-                            setState(() {
-                              _ttsEngine = value;
-                              if (value != 'system') {
-                                final languages = _activeOnlineLanguages;
-                                if (!languages.any((language) =>
-                                    language.code == _languageCode)) {
-                                  _languageCode = languages.isNotEmpty
-                                      ? languages.first.code
-                                      : 'it';
-                                }
-                                _voice = _validVoiceForLanguage(
-                                    _languageCode, _voice);
-                              }
-                            });
-                            if (value == 'google') {
-                              unawaited(_downloadGoogleVoicePackage());
-                            }
-                          },
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _themeMode = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<WeatherTemperatureUnit>(
+                      isExpanded: true,
+                      initialValue: _weatherTemperatureUnit,
+                      decoration: InputDecoration(
+                        labelText: l10n.settingsWeatherTemperatureUnit,
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: WeatherTemperatureUnit.celsius,
+                          child: Text(l10n.weatherTemperatureCelsius),
                         ),
-                        const SizedBox(height: 12),
-                        if (_ttsEngine != 'system') ...[
-                          DropdownButtonFormField<String>(
-                            isExpanded: true,
-                            initialValue: _languageCode,
-                            decoration: InputDecoration(
-                                labelText: l10n.ttsVoiceLanguage),
-                            items: _activeOnlineLanguages
-                                .map((language) => DropdownMenuItem(
-                                      value: language.code,
-                                      child: Text(
-                                        language.label,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              final next = value ?? 'it';
-                              setState(() {
-                                _languageCode = next;
-                                _voice = AppSettingsService
-                                    .defaultVoiceForLanguageFrom(
-                                  _activeOnlineVoices,
-                                  next,
-                                );
-                              });
-                              if (_ttsEngine == 'google') {
-                                unawaited(_downloadGoogleVoicePackage());
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          DropdownButtonFormField<String>(
-                            isExpanded: true,
-                            initialValue: _voice,
-                            decoration: InputDecoration(
-                              labelText: _ttsEngine == 'google'
-                                  ? 'Modello Google TTS'
-                                  : l10n.ttsVoice,
-                            ),
-                            items: voices
-                                .map((voice) => DropdownMenuItem(
-                                      value: voice.voice,
-                                      child: Text(
-                                        '${voice.label} (${voice.voice})',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              setState(
-                                () => _voice = value ??
-                                    AppSettingsService
-                                        .defaultVoiceForLanguageFrom(
-                                      _activeOnlineVoices,
-                                      _languageCode,
-                                    ),
-                              );
-                              if (_ttsEngine == 'google') {
-                                unawaited(_downloadGoogleVoicePackage());
-                              }
-                            },
-                          ),
-                          if (_ttsEngine == 'google') ...[
-                            const SizedBox(height: 12),
-                            OutlinedButton.icon(
-                              onPressed: _downloadingGoogleVoice
-                                  ? null
-                                  : _downloadGoogleVoicePackage,
-                              icon: const Icon(Icons.download),
-                              label: Text(
-                                _downloadingGoogleVoice
-                                    ? 'Download Google TTS...'
-                                    : 'Scarica pacchetto Google TTS',
-                              ),
-                            ),
-                            if (_googleDownloadProgress != null) ...[
-                              const SizedBox(height: 8),
-                              LinearProgressIndicator(
-                                value: _googleDownloadProgress,
-                              ),
-                            ],
-                          ],
-                        ] else ...[
-                          Builder(
-                            builder: (context) {
-                              final locales = _systemVoices
-                                  .map((v) => v['locale']!)
-                                  .toSet()
-                                  .toList()
-                                ..sort();
-                              if (locales.isEmpty) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(l10n.settingsNoSystemVoices),
-                                );
-                              }
-                              final availableVoices = _systemVoices
-                                  .where(
-                                      (v) => v['locale'] == _systemTtsLanguage)
-                                  .toList();
-
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  DropdownButtonFormField<String>(
-                                    isExpanded: true,
-                                    initialValue:
-                                        locales.contains(_systemTtsLanguage)
-                                            ? _systemTtsLanguage
-                                            : locales.first,
-                                    decoration: InputDecoration(
-                                        labelText: l10n.settingsSystemLanguage),
-                                    items: locales
-                                        .map((l) => DropdownMenuItem(
-                                              value: l,
-                                              child: Text(
-                                                l,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ))
-                                        .toList(),
-                                    onChanged: (value) {
-                                      if (value == null) return;
-                                      setState(() {
-                                        _systemTtsLanguage = value;
-                                        _systemTtsVoice = null;
-                                      });
-                                    },
+                        DropdownMenuItem(
+                          value: WeatherTemperatureUnit.fahrenheit,
+                          child: Text(l10n.weatherTemperatureFahrenheit),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _weatherTemperatureUnit = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      initialValue: _ttsEngine,
+                      decoration: InputDecoration(
+                          labelText: l10n.settingsReadingEngine),
+                      items: [
+                        DropdownMenuItem(
+                            value: 'edge',
+                            child: Text(l10n.settingsEdgeTtsQuality)),
+                        DropdownMenuItem(
+                            value: 'system',
+                            child: Text(l10n.settingsSystemVoices)),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _ttsEngine = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    if (_ttsEngine == 'edge') ...[
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        initialValue: _languageCode,
+                        decoration:
+                            InputDecoration(labelText: l10n.ttsVoiceLanguage),
+                        items: _edgeLanguages
+                            .map((language) => DropdownMenuItem(
+                                  value: language.code,
+                                  child: Text(
+                                    language.label,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 12),
-                                  DropdownButtonFormField<String?>(
-                                    isExpanded: true,
-                                    initialValue: availableVoices.any(
-                                            (v) => v['name'] == _systemTtsVoice)
-                                        ? _systemTtsVoice
-                                        : null,
-                                    decoration: InputDecoration(
-                                        labelText: l10n.settingsSystemVoice),
-                                    hint: Text(
-                                      l10n.settingsDefaultVoiceHint,
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          final next = value ?? 'it';
+                          setState(() {
+                            _languageCode = next;
+                            _voice =
+                                AppSettingsService.defaultVoiceForLanguageFrom(
+                              _edgeVoices,
+                              next,
+                            );
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        initialValue: _voice,
+                        decoration: InputDecoration(labelText: l10n.ttsVoice),
+                        items: voices
+                            .map((voice) => DropdownMenuItem(
+                                  value: voice.voice,
+                                  child: Text(
+                                    '${voice.label} (${voice.voice})',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(
+                            () => _voice = value ??
+                                AppSettingsService.defaultVoiceForLanguageFrom(
+                                  _edgeVoices,
+                                  _languageCode,
+                                ),
+                          );
+                        },
+                      ),
+                    ] else ...[
+                      Builder(
+                        builder: (context) {
+                          final locales = _systemVoices
+                              .map((v) => v['locale']!)
+                              .toSet()
+                              .toList()
+                            ..sort();
+                          if (locales.isEmpty) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(l10n.settingsNoSystemVoices),
+                            );
+                          }
+                          final availableVoices = _systemVoices
+                              .where((v) => v['locale'] == _systemTtsLanguage)
+                              .toList();
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              DropdownButtonFormField<String>(
+                                isExpanded: true,
+                                initialValue:
+                                    locales.contains(_systemTtsLanguage)
+                                        ? _systemTtsLanguage
+                                        : locales.first,
+                                decoration: InputDecoration(
+                                    labelText: l10n.settingsSystemLanguage),
+                                items: locales
+                                    .map((l) => DropdownMenuItem(
+                                          value: l,
+                                          child: Text(
+                                            l,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ))
+                                    .toList(),
+                                onChanged: (value) {
+                                  if (value == null) return;
+                                  setState(() {
+                                    _systemTtsLanguage = value;
+                                    _systemTtsVoice = null;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              DropdownButtonFormField<String?>(
+                                isExpanded: true,
+                                initialValue: availableVoices.any(
+                                        (v) => v['name'] == _systemTtsVoice)
+                                    ? _systemTtsVoice
+                                    : null,
+                                decoration: InputDecoration(
+                                    labelText: l10n.settingsSystemVoice),
+                                hint: Text(
+                                  l10n.settingsDefaultVoiceHint,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                items: [
+                                  DropdownMenuItem<String?>(
+                                    value: null,
+                                    child: Text(
+                                      l10n.settingsDefaultVoice,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    items: [
-                                      DropdownMenuItem<String?>(
-                                        value: null,
-                                        child: Text(
-                                          l10n.settingsDefaultVoice,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      ...availableVoices
-                                          .map((v) => DropdownMenuItem<String?>(
-                                                value: v['name'],
-                                                child: Text(
-                                                  v['name'] ?? '',
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              )),
-                                    ],
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _systemTtsVoice = value;
-                                      });
-                                    },
                                   ),
-                                ],
-                              );
-                            },
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ExcludeSemantics(
-                              child: Text(
-                                  '${l10n.settingsVoiceSpeed}${_ttsSpeed.toStringAsFixed(1)}x'),
-                            ),
-                            Semantics(
-                              slider: true,
-                              label: l10n.settingsVoiceSpeedLabel,
-                              value: '${_ttsSpeed.toStringAsFixed(1)}x',
-                              increasedValue:
-                                  '${_sliderStep(_ttsSpeed, 0.1).toStringAsFixed(1)}x',
-                              decreasedValue:
-                                  '${_sliderStep(_ttsSpeed, -0.1).toStringAsFixed(1)}x',
-                              onIncrease: () => _setTtsSpeed(
-                                _sliderStep(_ttsSpeed, 0.1),
-                              ),
-                              onDecrease: () => _setTtsSpeed(
-                                _sliderStep(_ttsSpeed, -0.1),
-                              ),
-                              child: ExcludeSemantics(
-                                child: Slider(
-                                  value: _ttsSpeed,
-                                  min: 0.5,
-                                  max: 2.0,
-                                  divisions: 15,
-                                  onChanged: _setTtsSpeed,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ExcludeSemantics(
-                              child: Text(
-                                  '${l10n.settingsVoicePitch}${_ttsPitch.toStringAsFixed(1)}x'),
-                            ),
-                            Semantics(
-                              slider: true,
-                              label: l10n.settingsVoicePitchLabel,
-                              value: '${_ttsPitch.toStringAsFixed(1)}x',
-                              increasedValue:
-                                  '${_sliderStep(_ttsPitch, 0.1).toStringAsFixed(1)}x',
-                              decreasedValue:
-                                  '${_sliderStep(_ttsPitch, -0.1).toStringAsFixed(1)}x',
-                              onIncrease: () => _setTtsPitch(
-                                _sliderStep(_ttsPitch, 0.1),
-                              ),
-                              onDecrease: () => _setTtsPitch(
-                                _sliderStep(_ttsPitch, -0.1),
-                              ),
-                              child: ExcludeSemantics(
-                                child: Slider(
-                                  value: _ttsPitch,
-                                  min: 0.5,
-                                  max: 2.0,
-                                  divisions: 15,
-                                  onChanged: _setTtsPitch,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          onPressed: _testingVoice ? null : _testVoice,
-                          icon: _testingVoice
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2))
-                              : const Icon(Icons.volume_up),
-                          label: Text(_testingVoice
-                              ? l10n.settingsTestingVoice
-                              : l10n.settingsTestVoice),
-                          style: FilledButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        const Divider(),
-                        const SizedBox(height: 8),
-                        SwitchListTile(
-                          title: Text(l10n.settingsAutoBookmark),
-                          subtitle: Text(l10n.settingsAutoBookmarkHint),
-                          value: _autoBookmark,
-                          onChanged: (val) =>
-                              setState(() => _autoBookmark = val),
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        SwitchListTile(
-                          title: Text(l10n.settingsIncludeFootnotesInText),
-                          subtitle:
-                              Text(l10n.settingsIncludeFootnotesInTextHint),
-                          value: _includeEpubFootnotesInText,
-                          onChanged: (val) => setState(
-                            () => _includeEpubFootnotesInText = val,
-                          ),
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        SwitchListTile(
-                          title: Text(_multipleDocumentBookmarksTitle),
-                          subtitle: Text(_multipleDocumentBookmarksHint),
-                          value: _multipleDocumentBookmarks,
-                          onChanged: (val) => setState(
-                            () => _multipleDocumentBookmarks = val,
-                          ),
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        const SizedBox(height: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ExcludeSemantics(
-                              child: Text(
-                                '${l10n.settingsReadingSleepTimer}: '
-                                '${_formatSleepTimerMinutes(_documentReadingSleepTimerMinutes)}',
-                              ),
-                            ),
-                            Semantics(
-                              slider: true,
-                              label: l10n.settingsReadingSleepTimer,
-                              value: _formatSleepTimerMinutes(
-                                _documentReadingSleepTimerMinutes,
-                              ),
-                              increasedValue: _formatSleepTimerMinutes(
-                                _documentReadingSleepTimerAt(
-                                  _documentReadingSleepTimerOptionIndex + 1,
-                                ),
-                              ),
-                              decreasedValue: _formatSleepTimerMinutes(
-                                _documentReadingSleepTimerAt(
-                                  _documentReadingSleepTimerOptionIndex - 1,
-                                ),
-                              ),
-                              onIncrease: _increaseDocumentReadingSleepTimer,
-                              onDecrease: _decreaseDocumentReadingSleepTimer,
-                              hint: l10n.settingsReadingSleepTimerHint,
-                              child: ExcludeSemantics(
-                                child: Slider(
-                                  value: _documentReadingSleepTimerOptionIndex
-                                      .toDouble(),
-                                  min: 0,
-                                  max: (AppSettingsService
-                                              .documentReadingSleepTimerMinutesOptions
-                                              .length -
-                                          1)
-                                      .toDouble(),
-                                  divisions: AppSettingsService
-                                          .documentReadingSleepTimerMinutesOptions
-                                          .length -
-                                      1,
-                                  onChanged:
-                                      _setDocumentReadingSleepTimerByIndex,
-                                ),
-                              ),
-                            ),
-                            ExcludeSemantics(
-                              child: Text(l10n.settingsReadingSleepTimerHint),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ExcludeSemantics(
-                              child: Text(
-                                '${l10n.settingsDocumentSliderStep}: '
-                                '${_formatPercent(_documentSliderStepPercent)}',
-                              ),
-                            ),
-                            Semantics(
-                              slider: true,
-                              label: l10n.settingsDocumentSliderStep,
-                              value: _formatPercent(_documentSliderStepPercent),
-                              increasedValue: _formatPercent(
-                                _documentSliderStepAt(
-                                  _documentSliderStepOptionIndex + 1,
-                                ),
-                              ),
-                              decreasedValue: _formatPercent(
-                                _documentSliderStepAt(
-                                  _documentSliderStepOptionIndex - 1,
-                                ),
-                              ),
-                              onIncrease: _increaseDocumentSliderStep,
-                              onDecrease: _decreaseDocumentSliderStep,
-                              hint: l10n.settingsDocumentSliderStepHint,
-                              child: ExcludeSemantics(
-                                child: Slider(
-                                  value:
-                                      _documentSliderStepOptionIndex.toDouble(),
-                                  min: 0,
-                                  max: (AppSettingsService
-                                              .documentSliderStepPercentOptions
-                                              .length -
-                                          1)
-                                      .toDouble(),
-                                  divisions: AppSettingsService
-                                          .documentSliderStepPercentOptions
-                                          .length -
-                                      1,
-                                  onChanged: _setDocumentSliderStepByIndex,
-                                ),
-                              ),
-                            ),
-                            ExcludeSemantics(
-                              child: Text(l10n.settingsDocumentSliderStepHint),
-                            ),
-                          ],
-                        ),
-                        SwitchListTile(
-                          key: const ValueKey(
-                              'settings-display-video-in-portrait'),
-                          title: Text(l10n.settingsVideoLandscapeFullscreen),
-                          subtitle:
-                              Text(l10n.settingsVideoLandscapeFullscreenHint),
-                          value: _displayVideoInPortrait,
-                          onChanged: (val) => setState(
-                            () => _displayVideoInPortrait = val,
-                          ),
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        const SizedBox(height: 12),
-                        Semantics(
-                          container: true,
-                          button: true,
-                          enabled: !_clearingPodcastCache,
-                          label: _clearingPodcastCache
-                              ? l10n.loading
-                              : l10n.clearPodcastCache,
-                          hint: '${l10n.settingsPodcastCacheHint} '
-                              '${l10n.settingsPodcastCacheSize(_formatBytes(_podcastCacheBytes))}',
-                          onTap:
-                              _clearingPodcastCache ? null : _clearPodcastCache,
-                          child: ExcludeSemantics(
-                            child: Card(
-                              child: InkWell(
-                                onTap: _clearingPodcastCache
-                                    ? null
-                                    : _clearPodcastCache,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      Text(
-                                        l10n.settingsPodcastCacheTitle,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(l10n.settingsPodcastCacheHint),
-                                      const SizedBox(height: 8),
-                                      Text(l10n.settingsPodcastCacheSize(
-                                          _formatBytes(_podcastCacheBytes))),
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          _clearingPodcastCache
-                                              ? const SizedBox(
-                                                  width: 20,
-                                                  height: 20,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                  ),
-                                                )
-                                              : const Icon(Icons.delete_sweep),
-                                          const SizedBox(width: 8),
-                                          Flexible(
+                                  ...availableVoices
+                                      .map((v) => DropdownMenuItem<String?>(
+                                            value: v['name'],
                                             child: Text(
-                                              _clearingPodcastCache
-                                                  ? l10n.loading
-                                                  : l10n.clearPodcastCache,
-                                              textAlign: TextAlign.end,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .labelLarge,
+                                              v['name'] ?? '',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (showItalianOnlySettings) ...[
-                          const Divider(),
-                          const SizedBox(height: 8),
-                          SwitchListTile(
-                            title: Text(l10n.settingsHomeGrouping),
-                            subtitle: Text(l10n.settingsHomeGroupingHint),
-                            value: _homeGroupingEnabled,
-                            onChanged: (val) =>
-                                setState(() => _homeGroupingEnabled = val),
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          const Divider(),
-                          const SizedBox(height: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ExcludeSemantics(
-                                child: Text(
-                                    '${l10n.settingsSeekStep}: ${_formatTime(_seekSliderStep)}'),
-                              ),
-                              Semantics(
-                                slider: true,
-                                label: l10n.settingsSeekStep,
-                                value: _formatTime(_seekSliderStep),
-                                increasedValue: _formatTime(
-                                    (_seekSliderStep + 10).clamp(10, 300)),
-                                decreasedValue: _formatTime(
-                                    (_seekSliderStep - 10).clamp(10, 300)),
-                                onIncrease: () {
+                                          )),
+                                ],
+                                onChanged: (value) {
                                   setState(() {
-                                    _seekSliderStep =
-                                        (_seekSliderStep + 10).clamp(10, 300);
+                                    _systemTtsVoice = value;
                                   });
                                 },
-                                onDecrease: () {
-                                  setState(() {
-                                    _seekSliderStep =
-                                        (_seekSliderStep - 10).clamp(10, 300);
-                                  });
-                                },
-                                child: ExcludeSemantics(
-                                  child: Slider(
-                                    value: _seekSliderStep.toDouble(),
-                                    min: 10,
-                                    max: 300,
-                                    divisions: 29,
-                                    onChanged: (val) => setState(
-                                        () => _seekSliderStep = val.toInt()),
-                                  ),
-                                ),
                               ),
                             ],
-                          ),
-                          const Divider(),
-                          const SizedBox(height: 16),
-                          const SizedBox(height: 16),
-                          TextField(
-                            controller: _tvSecretCodeController,
-                            decoration: InputDecoration(
-                              labelText: l10n.settingsSecretCode,
-                              border: const OutlineInputBorder(),
-                            ),
-                            obscureText: true,
-                          ),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              OutlinedButton.icon(
-                                onPressed: _pasteSecretCode,
-                                icon: const Icon(Icons.content_paste),
-                                label: Text(l10n.settingsPasteCode),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: _requestSecretCode,
-                                icon: const Icon(Icons.mail_outline),
-                                label: Text(l10n.settingsRequestCode),
-                              ),
-                            ],
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          onPressed: _isSaving ? null : _save,
-                          icon: _isSaving
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2))
-                              : const Icon(Icons.save),
-                          label: Text(_isSaving
-                              ? l10n.settingsVerifyCodeAndSave
-                              : l10n.saveSettings),
+                          );
+                        },
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Text(
+                              '${l10n.settingsVoiceSpeed}${_ttsSpeed.toStringAsFixed(1)}x'),
                         ),
-                        const SizedBox(height: 24),
-                        const Divider(),
-                        const SizedBox(height: 12),
-                        FilledButton.icon(
-                          focusNode: _viewLogFocusNode,
-                          onPressed: () async {
-                            await Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                settings: const RouteSettings(
-                                    name: '/settings/app-log'),
-                                builder: (_) => const AppLogScreen(),
-                              ),
-                            );
-                            if (!context.mounted) return;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _viewLogFocusNode.requestFocus();
-                            });
-                          },
-                          icon: const Icon(Icons.description),
-                          label: Text(l10n.settingsViewSysLog),
+                        Semantics(
+                          slider: true,
+                          label: l10n.settingsVoiceSpeedLabel,
+                          value: '${_ttsSpeed.toStringAsFixed(1)}x',
+                          increasedValue:
+                              '${_sliderStep(_ttsSpeed, 0.1).toStringAsFixed(1)}x',
+                          decreasedValue:
+                              '${_sliderStep(_ttsSpeed, -0.1).toStringAsFixed(1)}x',
+                          onIncrease: () => _setTtsSpeed(
+                            _sliderStep(_ttsSpeed, 0.1),
+                          ),
+                          onDecrease: () => _setTtsSpeed(
+                            _sliderStep(_ttsSpeed, -0.1),
+                          ),
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: _ttsSpeed,
+                              min: 0.5,
+                              max: 2.0,
+                              divisions: 15,
+                              onChanged: _setTtsSpeed,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  if (_ttsEngine == 'google')
-                    const Positioned(
-                      left: 0,
-                      top: 0,
-                      child: GoogleTtsRuntimeHost(),
+                    const SizedBox(height: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Text(
+                              '${l10n.settingsVoicePitch}${_ttsPitch.toStringAsFixed(1)}x'),
+                        ),
+                        Semantics(
+                          slider: true,
+                          label: l10n.settingsVoicePitchLabel,
+                          value: '${_ttsPitch.toStringAsFixed(1)}x',
+                          increasedValue:
+                              '${_sliderStep(_ttsPitch, 0.1).toStringAsFixed(1)}x',
+                          decreasedValue:
+                              '${_sliderStep(_ttsPitch, -0.1).toStringAsFixed(1)}x',
+                          onIncrease: () => _setTtsPitch(
+                            _sliderStep(_ttsPitch, 0.1),
+                          ),
+                          onDecrease: () => _setTtsPitch(
+                            _sliderStep(_ttsPitch, -0.1),
+                          ),
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: _ttsPitch,
+                              min: 0.5,
+                              max: 2.0,
+                              divisions: 15,
+                              onChanged: _setTtsPitch,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                ],
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: _testingVoice ? null : _testVoice,
+                      icon: _testingVoice
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.volume_up),
+                      label: Text(_testingVoice
+                          ? l10n.settingsTestingVoice
+                          : l10n.settingsTestVoice),
+                      style: FilledButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    SwitchListTile(
+                      title: Text(l10n.settingsAutoBookmark),
+                      subtitle: Text(l10n.settingsAutoBookmarkHint),
+                      value: _autoBookmark,
+                      onChanged: (val) => setState(() => _autoBookmark = val),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    SwitchListTile(
+                      title: Text(l10n.settingsIncludeFootnotesInText),
+                      subtitle: Text(l10n.settingsIncludeFootnotesInTextHint),
+                      value: _includeEpubFootnotesInText,
+                      onChanged: (val) => setState(
+                        () => _includeEpubFootnotesInText = val,
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    SwitchListTile(
+                      title: Text(_multipleDocumentBookmarksTitle),
+                      subtitle: Text(_multipleDocumentBookmarksHint),
+                      value: _multipleDocumentBookmarks,
+                      onChanged: (val) => setState(
+                        () => _multipleDocumentBookmarks = val,
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Text(
+                            '${l10n.settingsReadingSleepTimer}: '
+                            '${_formatSleepTimerMinutes(_documentReadingSleepTimerMinutes)}',
+                          ),
+                        ),
+                        Semantics(
+                          slider: true,
+                          label: l10n.settingsReadingSleepTimer,
+                          value: _formatSleepTimerMinutes(
+                            _documentReadingSleepTimerMinutes,
+                          ),
+                          increasedValue: _formatSleepTimerMinutes(
+                            _documentReadingSleepTimerAt(
+                              _documentReadingSleepTimerOptionIndex + 1,
+                            ),
+                          ),
+                          decreasedValue: _formatSleepTimerMinutes(
+                            _documentReadingSleepTimerAt(
+                              _documentReadingSleepTimerOptionIndex - 1,
+                            ),
+                          ),
+                          onIncrease: _increaseDocumentReadingSleepTimer,
+                          onDecrease: _decreaseDocumentReadingSleepTimer,
+                          hint: l10n.settingsReadingSleepTimerHint,
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: _documentReadingSleepTimerOptionIndex
+                                  .toDouble(),
+                              min: 0,
+                              max: (AppSettingsService
+                                          .documentReadingSleepTimerMinutesOptions
+                                          .length -
+                                      1)
+                                  .toDouble(),
+                              divisions: AppSettingsService
+                                      .documentReadingSleepTimerMinutesOptions
+                                      .length -
+                                  1,
+                              onChanged:
+                                  _setDocumentReadingSleepTimerByIndex,
+                            ),
+                          ),
+                        ),
+                        ExcludeSemantics(
+                          child: Text(l10n.settingsReadingSleepTimerHint),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Text(
+                            '${l10n.settingsDocumentSliderStep}: '
+                            '${_formatPercent(_documentSliderStepPercent)}',
+                          ),
+                        ),
+                        Semantics(
+                          slider: true,
+                          label: l10n.settingsDocumentSliderStep,
+                          value: _formatPercent(_documentSliderStepPercent),
+                          increasedValue: _formatPercent(
+                            _documentSliderStepAt(
+                              _documentSliderStepOptionIndex + 1,
+                            ),
+                          ),
+                          decreasedValue: _formatPercent(
+                            _documentSliderStepAt(
+                              _documentSliderStepOptionIndex - 1,
+                            ),
+                          ),
+                          onIncrease: _increaseDocumentSliderStep,
+                          onDecrease: _decreaseDocumentSliderStep,
+                          hint: l10n.settingsDocumentSliderStepHint,
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: _documentSliderStepOptionIndex.toDouble(),
+                              min: 0,
+                              max: (AppSettingsService
+                                          .documentSliderStepPercentOptions
+                                          .length -
+                                      1)
+                                  .toDouble(),
+                              divisions: AppSettingsService
+                                      .documentSliderStepPercentOptions.length -
+                                  1,
+                              onChanged: _setDocumentSliderStepByIndex,
+                            ),
+                          ),
+                        ),
+                        ExcludeSemantics(
+                          child: Text(l10n.settingsDocumentSliderStepHint),
+                        ),
+                      ],
+                    ),
+                    SwitchListTile(
+                      key: const ValueKey('settings-display-video-in-portrait'),
+                      title: Text(l10n.settingsVideoLandscapeFullscreen),
+                      subtitle: Text(l10n.settingsVideoLandscapeFullscreenHint),
+                      value: _displayVideoInPortrait,
+                      onChanged: (val) => setState(
+                        () => _displayVideoInPortrait = val,
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 12),
+                    Semantics(
+                      container: true,
+                      button: true,
+                      enabled: !_clearingPodcastCache,
+                      label: _clearingPodcastCache
+                          ? l10n.loading
+                          : l10n.clearPodcastCache,
+                      hint: '${l10n.settingsPodcastCacheHint} '
+                          '${l10n.settingsPodcastCacheSize(_formatBytes(_podcastCacheBytes))}',
+                      onTap: _clearingPodcastCache ? null : _clearPodcastCache,
+                      child: ExcludeSemantics(
+                        child: Card(
+                          child: InkWell(
+                            onTap: _clearingPodcastCache
+                                ? null
+                                : _clearPodcastCache,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    l10n.settingsPodcastCacheTitle,
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(l10n.settingsPodcastCacheHint),
+                                  const SizedBox(height: 8),
+                                  Text(l10n.settingsPodcastCacheSize(
+                                      _formatBytes(_podcastCacheBytes))),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      _clearingPodcastCache
+                                          ? const SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : const Icon(Icons.delete_sweep),
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          _clearingPodcastCache
+                                              ? l10n.loading
+                                              : l10n.clearPodcastCache,
+                                          textAlign: TextAlign.end,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (showItalianOnlySettings) ...[
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      SwitchListTile(
+                        title: Text(l10n.settingsHomeGrouping),
+                        subtitle: Text(l10n.settingsHomeGroupingHint),
+                        value: _homeGroupingEnabled,
+                        onChanged: (val) =>
+                            setState(() => _homeGroupingEnabled = val),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      const Divider(),
+                      const SizedBox(height: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ExcludeSemantics(
+                            child: Text(
+                                '${l10n.settingsSeekStep}: ${_formatTime(_seekSliderStep)}'),
+                          ),
+                          Semantics(
+                            slider: true,
+                            label: l10n.settingsSeekStep,
+                            value: _formatTime(_seekSliderStep),
+                            increasedValue: _formatTime(
+                                (_seekSliderStep + 10).clamp(10, 300)),
+                            decreasedValue: _formatTime(
+                                (_seekSliderStep - 10).clamp(10, 300)),
+                            onIncrease: () {
+                              setState(() {
+                                _seekSliderStep =
+                                    (_seekSliderStep + 10).clamp(10, 300);
+                              });
+                            },
+                            onDecrease: () {
+                              setState(() {
+                                _seekSliderStep =
+                                    (_seekSliderStep - 10).clamp(10, 300);
+                              });
+                            },
+                            child: ExcludeSemantics(
+                              child: Slider(
+                                value: _seekSliderStep.toDouble(),
+                                min: 10,
+                                max: 300,
+                                divisions: 29,
+                                onChanged: (val) => setState(
+                                    () => _seekSliderStep = val.toInt()),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Divider(),
+                      const SizedBox(height: 16),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _tvSecretCodeController,
+                        decoration: InputDecoration(
+                          labelText: l10n.settingsSecretCode,
+                          border: const OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: _pasteSecretCode,
+                            icon: const Icon(Icons.content_paste),
+                            label: Text(l10n.settingsPasteCode),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: _requestSecretCode,
+                            icon: const Icon(Icons.mail_outline),
+                            label: Text(l10n.settingsRequestCode),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: _isSaving ? null : _save,
+                      icon: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.save),
+                      label: Text(_isSaving
+                          ? l10n.settingsVerifyCodeAndSave
+                          : l10n.saveSettings),
+                    ),
+                    const SizedBox(height: 24),
+                    const Divider(),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      focusNode: _viewLogFocusNode,
+                      onPressed: () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            settings:
+                                const RouteSettings(name: '/settings/app-log'),
+                            builder: (_) => const AppLogScreen(),
+                          ),
+                        );
+                        if (!context.mounted) return;
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          _viewLogFocusNode.requestFocus();
+                        });
+                      },
+                      icon: const Icon(Icons.description),
+                      label: Text(l10n.settingsViewSysLog),
+                    ),
+                  ],
+                ),
               ),
       ),
     );

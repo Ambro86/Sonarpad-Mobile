@@ -21,7 +21,6 @@ import '../services/docx_export_service.dart';
 import '../services/epub_export_service.dart';
 import '../services/internet_archive_service.dart';
 import '../services/librivox_service.dart';
-import '../tts/google_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'document_editor_screen.dart';
@@ -62,6 +61,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   List<DocumentItem> get _displayedDocs =>
       _service.documents.where((d) => d.parentId == widget.folderId).toList();
+
 
   static const _allowedExtensions = [
     'pdf',
@@ -368,7 +368,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   void _showSnack(String message) {
-    showStatusMessage(context, message);
+        showStatusMessage(context, message);
   }
 
   Future<void> _showImportCompleteDialog(String message) async {
@@ -489,8 +489,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       dev.log('Errore durante l\'esportazione: $e');
       await AppLogger.log('Errore esportazione: $e');
       if (mounted) {
-        showStatusMessage(
-            context, '${AppLocalizations.of(context).exportError}: $e');
+                showStatusMessage(context, '${AppLocalizations.of(context).exportError}: $e');
       }
     }
   }
@@ -546,7 +545,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     await _load();
     if (!mounted) return;
     setState(() {});
-    showStatusMessage(context, l10n.exportSavedInSonarpad);
+        showStatusMessage(context, l10n.exportSavedInSonarpad);
     await AppLogger.log(
       'File esportato salvato nei Documenti: name=${doc.name} path=${doc.path}',
     );
@@ -601,6 +600,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     // PdfStandardFont supporta solo caratteri 0-255 (WinAnsi)
     return sanitized.replaceAllMapped(RegExp(r'[^\x00-\xFF]'), (match) => '?');
   }
+
+
 
   Future<String> _generateDocx(
       String baseName, String text, String outDir) async {
@@ -1061,50 +1062,40 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
               ),
               PopupMenuItem(
                 value: 'external_sources',
-                child: Text(AppLocalizations.of(context).importExternalSources),
+                child:
+                    Text(AppLocalizations.of(context).importExternalSources),
               ),
             ],
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          SafeArea(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _errorMessage != null
-                    ? _ErrorState(message: _errorMessage!)
-                    : docs.isEmpty
-                        ? const _EmptyState()
-                        : ListView.separated(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                            itemCount: docs.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 8),
-                            itemBuilder: (context, index) {
-                              final doc = docs[index];
-                              final isFirst = index == 0;
-                              final isLast = index == docs.length - 1;
+      body: SafeArea(
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage != null
+                ? _ErrorState(message: _errorMessage!)
+                : docs.isEmpty
+                    ? const _EmptyState()
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                        itemCount: docs.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final doc = docs[index];
+                          final isFirst = index == 0;
+                          final isLast = index == docs.length - 1;
 
-                              return _DocumentTile(
-                                doc: doc,
-                                isFirst: isFirst,
-                                isLast: isLast,
-                                onOpen: () => _openDocument(doc),
-                                onRemove: () => _remove(doc.id),
-                                onExport: () => _exportDocument(doc),
-                                onAction: (action) =>
-                                    _handleAction(action, doc),
-                              );
-                            },
-                          ),
-          ),
-          const Positioned(
-            left: 0,
-            top: 0,
-            child: GoogleTtsRuntimeHost(),
-          ),
-        ],
+                          return _DocumentTile(
+                            doc: doc,
+                            isFirst: isFirst,
+                            isLast: isLast,
+                            onOpen: () => _openDocument(doc),
+                            onRemove: () => _remove(doc.id),
+                            onExport: () => _exportDocument(doc),
+                            onAction: (action) => _handleAction(action, doc),
+                          );
+                        },
+                      ),
       ),
       floatingActionButton: Semantics(
         button: true,
@@ -1297,6 +1288,7 @@ class _DocumentTile extends StatelessWidget {
     );
   }
 }
+
 
 class _AudiobookExportProgressUi {
   const _AudiobookExportProgressUi({
