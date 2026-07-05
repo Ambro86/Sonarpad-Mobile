@@ -10,6 +10,8 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../utils/app_logger.dart';
+
 class GoogleTtsVoicePackage {
   const GoogleTtsVoicePackage({
     required this.id,
@@ -221,9 +223,13 @@ class GoogleTtsBridge {
   }) async {
     final target = await packageFile(package);
     if (await isPackageInstalled(package)) {
+      await AppLogger.log(
+          'Google TTS: package already installed id=${package.id}');
       onProgress?.call(1);
       return target;
     }
+    await AppLogger.log(
+        'Google TTS: package download start id=${package.id} url=${package.url}');
     final tmp = File('${target.path}.download');
     if (await tmp.exists()) await tmp.delete();
 
@@ -270,6 +276,8 @@ class GoogleTtsBridge {
     if (await target.exists()) await target.delete();
     await tmp.rename(target.path);
     onProgress?.call(1);
+    await AppLogger.log(
+        'Google TTS: package download complete id=${package.id} bytes=${await target.length()}');
     return target;
   }
 
@@ -300,11 +308,17 @@ class GoogleTtsBridge {
     double speed = 1.0,
     double pitch = 1.0,
   }) async {
+    await AppLogger.log(
+        'Google TTS: speak start voice=$voiceId chars=${text.length} speed=$speed pitch=$pitch');
     final catalog = await loadCatalog();
     final speaker = catalog.speakerForVoice(voiceId);
     final package = catalog.packageForVoice(voiceId);
+    await AppLogger.log(
+        'Google TTS: selected package=${package.id} speaker=${speaker.name}');
     await downloadPackage(package);
+    await AppLogger.log('Google TTS: waiting runtime');
     await _ensureRuntimeReady();
+    await AppLogger.log('Google TTS: runtime ready, synth start');
     final pcm = await _synthesizePcm(
       text: text,
       speaker: speaker,
@@ -323,6 +337,8 @@ class GoogleTtsBridge {
     if (size < 512) {
       throw Exception('File Google TTS troppo piccolo: $size byte');
     }
+    await AppLogger.log(
+        'Google TTS: speak complete wavBytes=$size pcmBytes=${pcm.length}');
     return output;
   }
 
@@ -330,18 +346,29 @@ class GoogleTtsBridge {
     if (_controller == controller && _readyCompleter?.isCompleted == true) {
       return;
     }
+    await AppLogger.log('Google TTS: attach WebView start');
     _controller = controller;
     _readyCompleter = Completer<void>();
     final serverBase = await _ensureServer();
+    await AppLogger.log('Google TTS: runtime server $serverBase');
     await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+    await controller.setOnConsoleMessage((message) {
+      unawaited(AppLogger.log(
+          'Google TTS WebView console [${message.level.name}]: ${message.message}'));
+    });
     await controller.addJavaScriptChannel(
       'googleTtsForNvdaBridge',
       onMessageReceived: (message) => _handleRuntimeMessage(message.message),
     );
     await controller.setNavigationDelegate(
       NavigationDelegate(
-        onPageFinished: (_) => unawaited(_waitForRuntimeReady()),
+        onPageFinished: (url) {
+          unawaited(AppLogger.log('Google TTS: WebView page finished $url'));
+          unawaited(_waitForRuntimeReady());
+        },
         onWebResourceError: (error) {
+          unawaited(AppLogger.log(
+              'Google TTS: WebView resource error code=${error.errorCode} type=${error.errorType} ${error.description}'));
           if (_readyCompleter case final completer?
               when !completer.isCompleted) {
             completer.completeError(error.description);
@@ -362,6 +389,7 @@ class GoogleTtsBridge {
 
   Future<void> _ensureRuntimeReady() async {
     if (_readyCompleter == null) {
+      await AppLogger.log('Google TTS: runtime missing WebView host');
       throw StateError(
           'Runtime Google TTS non inizializzato: host WebView assente.');
     }
@@ -419,6 +447,7 @@ class GoogleTtsBridge {
     _runtimeDir = await _prepareRuntimeDirectory();
     _server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     _server!.listen((request) => unawaited(_handleRequest(request)));
+    await AppLogger.log('Google TTS: local server listening port=${_server!.port}');
     return _serverBaseUri = Uri.parse('http://127.0.0.1:${_server!.port}/');
   }
 
@@ -427,6 +456,7 @@ class GoogleTtsBridge {
     final dir = Directory(p.join(support.path, 'google_tts_runtime'));
     final engineDir = Directory(p.join(dir.path, 'engine'));
     await engineDir.create(recursive: true);
+    await AppLogger.log('Google TTS: prepare runtime dir=${dir.path}');
     await _copyAsset('assets/google_tts/bridgeHarness.js',
         File(p.join(dir.path, 'bridgeHarness.js')));
     await _copyAsset(
@@ -534,18 +564,25 @@ typeof window.googleTtsForNvdaSpeak === "function" &&
 typeof window.googleTtsForNvdaStop === "function"
 ''');
         if (result == true || result.toString() == 'true') {
+          await AppLogger.log('Google TTS: runtime functions detected');
           completer.complete();
           return;
         }
-      } catch (_) {}
+      } catch (error) {
+        if (i == 0 || i == 20 || i == 60) {
+          await AppLogger.log('Google TTS: runtime probe failed $error');
+        }
+      }
       await Future.delayed(const Duration(milliseconds: 100));
     }
     if (!completer.isCompleted) {
+      await AppLogger.log('Google TTS: runtime load timeout');
       completer.completeError('Runtime Google TTS non caricato.');
     }
   }
 
   void _handleRuntimeMessage(String raw) {
+    unawaited(AppLogger.log('Google TTS: runtime message ${raw.length} chars'));
     final decoded = jsonDecode(raw);
     if (decoded is! Map) return;
     if (decoded['sessionId'] != _activeSessionId) return;
