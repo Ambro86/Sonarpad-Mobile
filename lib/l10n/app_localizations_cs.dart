@@ -158,6 +158,112 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String get mediaCutterTitle => 'Oříznout mediální soubor';
+
+  @override
+  String get mediaCutterInstruction1 => 'Otevři zvukový nebo video soubor, přehraj ho a přejdi na místo, kde chceš střihnout.';
+
+  @override
+  String get mediaCutterInstruction2 => 'Pozastavte přehrávání, stiskněte Rozdělit, potom v části Části k uložení odstraňte části, které nechcete, a stiskněte Uložit.';
+
+  @override
+  String get mediaCutterOpenFile => 'Otevřít mediální soubor';
+
+  @override
+  String mediaCutterSelectedFile(String fileName) {
+    return 'Vybraný soubor: $fileName';
+  }
+
+  @override
+  String get mediaCutterPosition => 'Pozice střihu';
+
+  @override
+  String get mediaCutterPositionHint => 'Posouvej se vpřed nebo zpět po jedné sekundě.';
+
+  @override
+  String get mediaCutterSplit => 'Rozdělit';
+
+  @override
+  String get mediaCutterPartsTitle => 'Části k uložení';
+
+  @override
+  String get mediaCutterPartsHint => 'Klepnutím si část poslechnete. Odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a neuloží se.';
+
+  @override
+  String mediaCutterPartLabel(int index) {
+    return 'Část $index';
+  }
+
+  @override
+  String mediaCutterPartRange(String start, String end) {
+    return 'Od $start do $end';
+  }
+
+  @override
+  String get mediaCutterSave => 'Uložit';
+
+  @override
+  String get mediaCutterReady => 'Připraveno.';
+
+  @override
+  String get mediaCutterNoFile => 'Nejprve otevři mediální soubor.';
+
+  @override
+  String get mediaCutterInvalidSplitPoint => 'Vyber místo uvnitř souboru, ne začátek ani konec.';
+
+  @override
+  String get mediaCutterSplitAlreadyExists => 'V tomto místě už rozdělení existuje.';
+
+  @override
+  String mediaCutterSplitAdded(String position) {
+    return 'Rozdělení přidáno v $position.';
+  }
+
+  @override
+  String get mediaCutterSaving => 'Ukládání souboru...';
+
+  @override
+  String mediaCutterSaved(String fileName) {
+    return 'Soubor uložen: $fileName';
+  }
+
+  @override
+  String mediaCutterLoadFailed(Object error) {
+    return 'Soubor nelze otevřít: $error';
+  }
+
+  @override
+  String mediaCutterSaveFailed(Object error) {
+    return 'Uložení se nezdařilo: $error';
+  }
+
+  @override
+  String get mediaCutterNoPartsToSave => 'Před uložením ponechte alespoň jednu část.';
+
+
+  @override
+  String get mediaCutterRestoreDeletedPart => 'Obnovit odstraněnou část';
+
+  @override
+  String get mediaCutterNoDeletedParts => 'Nejsou zde žádné odstraněné části k obnovení.';
+
+  @override
+  String get mediaCutterPartDeleteAction => 'Odstranit';
+
+  @override
+  String get mediaCutterPartTapHint => 'Dvojitým klepnutím si tuto část poslechnete. Akcí Odstranit ji odeberete.';
+
+  @override
+  String mediaCutterPartDeleted(String start, String end) {
+    return 'Část od $start do $end byla odstraněna.';
+  }
+
+  @override
+  String mediaCutterPartRestored(String start, String end) {
+    return 'Část od $start do $end byla obnovena.';
+  }
+
+  @override
   String get donations => 'Dary';
 
   @override

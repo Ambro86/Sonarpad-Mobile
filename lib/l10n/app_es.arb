@@ -1069,5 +1069,108 @@
   "pharmacyProductsNoResultsTitle": "No se encontró ningún producto de parafarmacia ni suplemento",
   "@pharmacyProductsNoResultsTitle": {
     "description": "Empty state title for parapharmaceuticals and supplements search."
+  },
+  "mediaCutterTitle": "Cortar archivo multimedia",
+  "mediaCutterInstruction1": "Abre un archivo de audio o vídeo, reprodúcelo y ve al punto donde quieres cortar.",
+  "mediaCutterInstruction2": "Pausa, pulsa Dividir, luego elimina las partes que no quieras en la sección Partes para guardar y pulsa Guardar.",
+  "mediaCutterOpenFile": "Abrir archivo multimedia",
+  "mediaCutterSelectedFile": "Archivo seleccionado: {fileName}",
+  "@mediaCutterSelectedFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPosition": "Posición de corte",
+  "mediaCutterPositionHint": "Avanza o retrocede un segundo cada vez.",
+  "mediaCutterSplit": "Dividir",
+  "mediaCutterPartsTitle": "Partes para guardar",
+  "mediaCutterPartsHint": "Toca una parte para escucharla. Las partes eliminadas desaparecen de la lista, se saltan durante la reproducción y no se guardarán.",
+  "mediaCutterPartLabel": "Parte {index}",
+  "@mediaCutterPartLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartRange": "De {start} a {end}",
+  "@mediaCutterPartRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSave": "Guardar",
+  "mediaCutterReady": "Listo.",
+  "mediaCutterNoFile": "Abre primero un archivo multimedia.",
+  "mediaCutterInvalidSplitPoint": "Elige un punto dentro del archivo, no el inicio ni el final.",
+  "mediaCutterSplitAlreadyExists": "Ya hay una división en este punto.",
+  "mediaCutterSplitAdded": "División añadida en {position}.",
+  "@mediaCutterSplitAdded": {
+    "placeholders": {
+      "position": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSaving": "Guardando archivo...",
+  "mediaCutterSaved": "Archivo guardado: {fileName}",
+  "@mediaCutterSaved": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterLoadFailed": "No se pudo abrir el archivo: {error}",
+  "@mediaCutterLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterSaveFailed": "Error al guardar: {error}",
+  "@mediaCutterSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterNoPartsToSave": "Conserva al menos una parte antes de guardar.",
+  "mediaCutterRestoreDeletedPart": "Restaurar parte eliminada",
+  "mediaCutterNoDeletedParts": "No hay partes eliminadas para restaurar.",
+  "mediaCutterPartDeleteAction": "Eliminar",
+  "mediaCutterPartTapHint": "Toca dos veces para escuchar esta parte. Usa la acción Eliminar para quitarla.",
+  "mediaCutterPartDeleted": "Parte eliminada de {start} a {end}.",
+  "@mediaCutterPartDeleted": {
+    "description": "Status shown after a media part is deleted",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartRestored": "Parte restaurada de {start} a {end}.",
+  "@mediaCutterPartRestored": {
+    "description": "Status shown after a deleted media part is restored",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
   }
 }

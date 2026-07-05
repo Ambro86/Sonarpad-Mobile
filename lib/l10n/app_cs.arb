@@ -1066,5 +1066,108 @@
   "pharmacyProductsNoResultsTitle": "Nebylo nalezeno žádné parafarmakum ani doplněk",
   "@pharmacyProductsNoResultsTitle": {
     "description": "Empty state title for parapharmaceuticals and supplements search."
+  },
+  "mediaCutterTitle": "Oříznout mediální soubor",
+  "mediaCutterInstruction1": "Otevři zvukový nebo video soubor, přehraj ho a přejdi na místo, kde chceš střihnout.",
+  "mediaCutterInstruction2": "Pozastavte přehrávání, stiskněte Rozdělit, potom v části Části k uložení odstraňte části, které nechcete, a stiskněte Uložit.",
+  "mediaCutterOpenFile": "Otevřít mediální soubor",
+  "mediaCutterSelectedFile": "Vybraný soubor: {fileName}",
+  "@mediaCutterSelectedFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPosition": "Pozice střihu",
+  "mediaCutterPositionHint": "Posouvej se vpřed nebo zpět po jedné sekundě.",
+  "mediaCutterSplit": "Rozdělit",
+  "mediaCutterPartsTitle": "Části k uložení",
+  "mediaCutterPartsHint": "Klepnutím si část poslechnete. Odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a neuloží se.",
+  "mediaCutterPartLabel": "Část {index}",
+  "@mediaCutterPartLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartRange": "Od {start} do {end}",
+  "@mediaCutterPartRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSave": "Uložit",
+  "mediaCutterReady": "Připraveno.",
+  "mediaCutterNoFile": "Nejprve otevři mediální soubor.",
+  "mediaCutterInvalidSplitPoint": "Vyber místo uvnitř souboru, ne začátek ani konec.",
+  "mediaCutterSplitAlreadyExists": "V tomto místě už rozdělení existuje.",
+  "mediaCutterSplitAdded": "Rozdělení přidáno v {position}.",
+  "@mediaCutterSplitAdded": {
+    "placeholders": {
+      "position": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSaving": "Ukládání souboru...",
+  "mediaCutterSaved": "Soubor uložen: {fileName}",
+  "@mediaCutterSaved": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterLoadFailed": "Soubor nelze otevřít: {error}",
+  "@mediaCutterLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterSaveFailed": "Uložení se nezdařilo: {error}",
+  "@mediaCutterSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterNoPartsToSave": "Před uložením ponechte alespoň jednu část.",
+  "mediaCutterRestoreDeletedPart": "Obnovit odstraněnou část",
+  "mediaCutterNoDeletedParts": "Nejsou zde žádné odstraněné části k obnovení.",
+  "mediaCutterPartDeleteAction": "Odstranit",
+  "mediaCutterPartTapHint": "Dvojitým klepnutím si tuto část poslechnete. Akcí Odstranit ji odeberete.",
+  "mediaCutterPartDeleted": "Část od {start} do {end} byla odstraněna.",
+  "@mediaCutterPartDeleted": {
+    "description": "Status shown after a media part is deleted",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartRestored": "Část od {start} do {end} byla obnovena.",
+  "@mediaCutterPartRestored": {
+    "description": "Status shown after a deleted media part is restored",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
   }
 }

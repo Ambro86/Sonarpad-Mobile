@@ -396,6 +396,93 @@ abstract class AppLocalizations {
   /// **'Conversione non riuscita: {error}'**
   String convertMediaFailed(Object error);
 
+  /// Localized text for mediaCutterTitle.
+  String get mediaCutterTitle;
+
+  /// Localized text for mediaCutterInstruction1.
+  String get mediaCutterInstruction1;
+
+  /// Localized text for mediaCutterInstruction2.
+  String get mediaCutterInstruction2;
+
+  /// Localized text for mediaCutterOpenFile.
+  String get mediaCutterOpenFile;
+
+  /// Localized text for mediaCutterSelectedFile.
+  String mediaCutterSelectedFile(String fileName);
+
+  /// Localized text for mediaCutterPosition.
+  String get mediaCutterPosition;
+
+  /// Localized text for mediaCutterPositionHint.
+  String get mediaCutterPositionHint;
+
+  /// Localized text for mediaCutterSplit.
+  String get mediaCutterSplit;
+
+  /// Localized text for mediaCutterPartsTitle.
+  String get mediaCutterPartsTitle;
+
+  /// Localized text for mediaCutterPartsHint.
+  String get mediaCutterPartsHint;
+
+  /// Localized text for mediaCutterPartLabel.
+  String mediaCutterPartLabel(int index);
+
+  /// Localized text for mediaCutterPartRange.
+  String mediaCutterPartRange(String start, String end);
+
+  /// Localized text for mediaCutterSave.
+  String get mediaCutterSave;
+
+  /// Localized text for mediaCutterReady.
+  String get mediaCutterReady;
+
+  /// Localized text for mediaCutterNoFile.
+  String get mediaCutterNoFile;
+
+  /// Localized text for mediaCutterInvalidSplitPoint.
+  String get mediaCutterInvalidSplitPoint;
+
+  /// Localized text for mediaCutterSplitAlreadyExists.
+  String get mediaCutterSplitAlreadyExists;
+
+  /// Localized text for mediaCutterSplitAdded.
+  String mediaCutterSplitAdded(String position);
+
+  /// Localized text for mediaCutterSaving.
+  String get mediaCutterSaving;
+
+  /// Localized text for mediaCutterSaved.
+  String mediaCutterSaved(String fileName);
+
+  /// Localized text for mediaCutterLoadFailed.
+  String mediaCutterLoadFailed(Object error);
+
+  /// Localized text for mediaCutterSaveFailed.
+  String mediaCutterSaveFailed(Object error);
+
+  /// Localized text for mediaCutterNoPartsToSave.
+  String get mediaCutterNoPartsToSave;
+
+  /// Localized text for mediaCutterRestoreDeletedPart.
+  String get mediaCutterRestoreDeletedPart;
+
+  /// Localized text for mediaCutterNoDeletedParts.
+  String get mediaCutterNoDeletedParts;
+
+  /// Localized text for mediaCutterPartDeleteAction.
+  String get mediaCutterPartDeleteAction;
+
+  /// Localized text for mediaCutterPartTapHint.
+  String get mediaCutterPartTapHint;
+
+  /// Localized text for mediaCutterPartDeleted.
+  String mediaCutterPartDeleted(String start, String end);
+
+  /// Localized text for mediaCutterPartRestored.
+  String mediaCutterPartRestored(String start, String end);
+
   /// Localized text for donations.
   ///
   /// In it, this message translates to:

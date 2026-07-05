@@ -158,6 +158,112 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get mediaCutterTitle => 'Cut media file';
+
+  @override
+  String get mediaCutterInstruction1 => 'Open an audio or video file, play it, and move to the point where you want to cut.';
+
+  @override
+  String get mediaCutterInstruction2 => 'Pause, press Split, then delete the parts you do not want in the Parts to save section and press Save.';
+
+  @override
+  String get mediaCutterOpenFile => 'Open media file';
+
+  @override
+  String mediaCutterSelectedFile(String fileName) {
+    return 'Selected file: $fileName';
+  }
+
+  @override
+  String get mediaCutterPosition => 'Cut position';
+
+  @override
+  String get mediaCutterPositionHint => 'Move forward or backward one second at a time.';
+
+  @override
+  String get mediaCutterSplit => 'Split';
+
+  @override
+  String get mediaCutterPartsTitle => 'Parts to save';
+
+  @override
+  String get mediaCutterPartsHint => 'Tap a part to preview it. Deleted parts disappear from the list, are skipped during playback, and will not be saved.';
+
+  @override
+  String mediaCutterPartLabel(int index) {
+    return 'Part $index';
+  }
+
+  @override
+  String mediaCutterPartRange(String start, String end) {
+    return 'From $start to $end';
+  }
+
+  @override
+  String get mediaCutterSave => 'Save';
+
+  @override
+  String get mediaCutterReady => 'Ready.';
+
+  @override
+  String get mediaCutterNoFile => 'Open a media file first.';
+
+  @override
+  String get mediaCutterInvalidSplitPoint => 'Choose a point inside the file, not the beginning or the end.';
+
+  @override
+  String get mediaCutterSplitAlreadyExists => 'There is already a split at this point.';
+
+  @override
+  String mediaCutterSplitAdded(String position) {
+    return 'Split added at $position.';
+  }
+
+  @override
+  String get mediaCutterSaving => 'Saving file...';
+
+  @override
+  String mediaCutterSaved(String fileName) {
+    return 'File saved: $fileName';
+  }
+
+  @override
+  String mediaCutterLoadFailed(Object error) {
+    return 'Could not open the file: $error';
+  }
+
+  @override
+  String mediaCutterSaveFailed(Object error) {
+    return 'Save failed: $error';
+  }
+
+  @override
+  String get mediaCutterNoPartsToSave => 'Keep at least one part before saving.';
+
+
+  @override
+  String get mediaCutterRestoreDeletedPart => 'Restore deleted part';
+
+  @override
+  String get mediaCutterNoDeletedParts => 'There are no deleted parts to restore.';
+
+  @override
+  String get mediaCutterPartDeleteAction => 'Delete';
+
+  @override
+  String get mediaCutterPartTapHint => 'Double-tap to preview this part. Use the Delete action to remove it.';
+
+  @override
+  String mediaCutterPartDeleted(String start, String end) {
+    return 'Part deleted from $start to $end.';
+  }
+
+  @override
+  String mediaCutterPartRestored(String start, String end) {
+    return 'Part restored from $start to $end.';
+  }
+
+  @override
   String get donations => 'Donations';
 
   @override

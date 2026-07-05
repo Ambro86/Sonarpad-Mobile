@@ -28,7 +28,11 @@
       "Aggiunto nei Documenti il timer di spegnimento della lettura: può fermare automaticamente la lettura del documento dopo il tempo scelto, sia con Edge sia con le voci di sistema, salvando il punto di arresto. Il conteggio riparte quando avvii la lettura di un altro documento.",
       "Migliorata la pausa/ripresa della lettura documenti con le cuffie: con le voci di sistema, il comando Play/Pausa viene trattato come il tocco magico e la lettura può ripartire senza chiudere e riaprire il libro.",
       "Lo slider della posizione nei documenti mostra ora anche una stima del tempo rimanente di lettura, calcolata in base al testo ancora da leggere e alla velocità TTS impostata.",
-      "Nel Calendario le citazioni del giorno sono state aumentate enormemente, con molte nuove frasi tradotte in tutte le lingue disponibili."
+      "Nel Calendario le citazioni del giorno sono state aumentate enormemente, con molte nuove frasi tradotte in tutte le lingue disponibili.",
+      "Aggiunta la funzione Taglia file media: puoi aprire un audio o video, scegliere i punti di divisione, disattivare le parti non desiderate e salvare solo quelle da conservare.",
+      "In Taglia file media puoi ora toccare una parte attiva per ascoltarla in anteprima dal file originale; le parti disattivate non vengono riprodotte né salvate.",
+      "Migliorata la funzione Taglia file media: le parti eliminate spariscono dall’elenco, vengono saltate durante la riproduzione e possono essere ripristinate con un pulsante dedicato.",
+      "Migliorato il salvataggio di Taglia file media: ora usa la stessa destinazione di Converti media, mostra la barra di avanzamento e, se la cartella scelta non è scrivibile, prepara il file nella cartella Sonarpad e apre la condivisione di sistema."
     ],
     "en": [
       "Improved document reading: some texts with unusual accents are now read more reliably, including when moving character by character with VoiceOver.",
@@ -53,7 +57,11 @@
       "Added a document reading sleep timer: it can automatically stop reading the current document after the chosen time, with both Edge and system voices, and save the stopping point. The countdown restarts when you start reading another document.",
       "Improved document reading pause/resume from headphones: with system voices, the Play/Pause command is handled like Magic Tap so reading can resume without closing and reopening the book.",
       "The document position slider now also shows an estimated remaining reading time, calculated from the text still to read and the selected TTS speed.",
-      "The Calendar now includes a greatly expanded collection of daily quotes, with many new phrases translated into all available languages."
+      "The Calendar now includes a greatly expanded collection of daily quotes, with many new phrases translated into all available languages.",
+      "Added Cut media file: you can open an audio or video file, choose split points, turn off unwanted parts and save only the parts you want to keep.",
+      "In Cut media file, you can now tap an enabled part to preview it from the original file; disabled parts are not played or saved.",
+      "Improved Cut media file: deleted parts disappear from the list, are skipped during playback, and can be restored with a dedicated button.",
+      "Improved saving in Cut media file: it now uses the same destination workflow as Convert media, shows a progress bar, and if the selected folder is not writable, it prepares the file in the Sonarpad folder and opens the system share sheet."
     ],
     "fr": [
       "Amélioration de la lecture des documents : certains textes avec des accents particuliers sont maintenant mieux lus, y compris caractère par caractère avec VoiceOver.",
@@ -78,7 +86,11 @@
       "Ajout d’un minuteur d’arrêt pour la lecture des documents : il peut arrêter automatiquement la lecture du document en cours après la durée choisie, avec Edge comme avec les voix système, et enregistrer le point d’arrêt. Le compte à rebours redémarre quand vous lancez la lecture d’un autre document.",
       "Amélioration de la pause/reprise de la lecture des documents avec les écouteurs : avec les voix système, la commande Lecture/Pause est traitée comme le toucher magique et la lecture peut reprendre sans fermer puis rouvrir le livre.",
       "Le curseur de position des documents affiche maintenant aussi une estimation du temps de lecture restant, calculée d’après le texte encore à lire et la vitesse TTS sélectionnée.",
-      "Le Calendrier propose désormais une collection de citations du jour largement enrichie, avec de nombreuses nouvelles phrases traduites dans toutes les langues disponibles."
+      "Le Calendrier propose désormais une collection de citations du jour largement enrichie, avec de nombreuses nouvelles phrases traduites dans toutes les langues disponibles.",
+      "Ajout de la fonction Découper un média : vous pouvez ouvrir un fichier audio ou vidéo, choisir les points de division, désactiver les parties inutiles et enregistrer seulement celles à conserver.",
+      "Dans Couper un fichier média, tu peux maintenant toucher une partie active pour l’écouter depuis le fichier original ; les parties désactivées ne sont ni lues ni enregistrées.",
+      "Amélioration de Couper un fichier multimédia : les parties supprimées disparaissent de la liste, sont ignorées pendant la lecture et peuvent être restaurées avec un bouton dédié.",
+      "Amélioration de l’enregistrement dans Couper le fichier média : la fonction utilise désormais le même choix de destination que Convertir média, affiche une barre de progression et, si le dossier choisi n’est pas accessible en écriture, prépare le fichier dans le dossier Sonarpad puis ouvre le partage système."
     ],
     "es": [
       "Mejorada la lectura de documentos: algunos textos con acentos especiales ahora se leen mejor, también al moverse carácter por carácter con VoiceOver.",
@@ -103,7 +115,11 @@
       "Añadido un temporizador de apagado para la lectura de documentos: puede detener automáticamente la lectura del documento actual tras el tiempo elegido, tanto con Edge como con las voces del sistema, y guardar el punto de parada. La cuenta atrás se reinicia cuando empiezas a leer otro documento.",
       "Mejorada la pausa/reanudación de la lectura de documentos con auriculares: con las voces del sistema, el comando Reproducir/Pausa se trata como el toque mágico y la lectura puede continuar sin cerrar y volver a abrir el libro.",
       "El control deslizante de posición del documento ahora también muestra una estimación del tiempo de lectura restante, calculada según el texto que queda por leer y la velocidad TTS seleccionada.",
-      "El Calendario incluye ahora una colección de citas del día enormemente ampliada, con muchas frases nuevas traducidas a todos los idiomas disponibles."
+      "El Calendario incluye ahora una colección de citas del día enormemente ampliada, con muchas frases nuevas traducidas a todos los idiomas disponibles.",
+      "Añadida la función Cortar archivo multimedia: puedes abrir un audio o vídeo, elegir los puntos de división, desactivar las partes no deseadas y guardar solo las que quieras conservar.",
+      "En Cortar archivo multimedia, ahora puedes tocar una parte activa para escucharla desde el archivo original; las partes desactivadas no se reproducen ni se guardan.",
+      "Mejorada la función Cortar archivo multimedia: las partes eliminadas desaparecen de la lista, se saltan durante la reproducción y pueden restaurarse con un botón dedicado.",
+      "Mejorado el guardado en Cortar archivo multimedia: ahora usa el mismo flujo de destino que Convertir multimedia, muestra una barra de progreso y, si la carpeta elegida no permite escritura, prepara el archivo en la carpeta Sonarpad y abre la hoja de compartir del sistema."
     ],
     "pt": [
       "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caráter a caráter com o VoiceOver.",
@@ -128,7 +144,11 @@
       "Adicionado um temporizador de suspensão para a leitura de documentos: pode parar automaticamente a leitura do documento atual após o tempo escolhido, tanto com Edge como com as vozes do sistema, e guardar o ponto de paragem. A contagem recomeça quando inicia a leitura de outro documento.",
       "Melhorada a pausa/retoma da leitura de documentos com auscultadores: com as vozes do sistema, o comando Reproduzir/Pausar é tratado como o toque mágico e a leitura pode retomar sem fechar e reabrir o livro.",
       "O controlo deslizante de posição dos documentos agora também mostra uma estimativa do tempo de leitura restante, calculada com base no texto ainda por ler e na velocidade TTS escolhida.",
-      "O Calendário inclui agora uma coleção de citações do dia enormemente ampliada, com muitas frases novas traduzidas para todos os idiomas disponíveis."
+      "O Calendário inclui agora uma coleção de citações do dia enormemente ampliada, com muitas frases novas traduzidas para todos os idiomas disponíveis.",
+      "Adicionada a função Cortar ficheiro multimédia: podes abrir um áudio ou vídeo, escolher os pontos de divisão, desativar as partes indesejadas e guardar apenas as que queres conservar.",
+      "Em Cortar ficheiro multimédia, agora podes tocar numa parte ativa para a ouvir a partir do ficheiro original; as partes desativadas não são reproduzidas nem guardadas.",
+      "Melhorada a função Cortar ficheiro multimédia: as partes eliminadas desaparecem da lista, são ignoradas durante a reprodução e podem ser restauradas com um botão dedicado.",
+      "Melhorada a gravação em Cortar ficheiro multimédia: agora usa o mesmo fluxo de destino de Converter multimédia, mostra uma barra de progresso e, se a pasta escolhida não permitir escrita, prepara o ficheiro na pasta Sonarpad e abre a partilha do sistema."
     ],
     "pl": [
       "Ulepszono czytanie dokumentów: niektóre teksty z nietypowymi akcentami są teraz odczytywane lepiej, także podczas przechodzenia znak po znaku z VoiceOver.",
@@ -154,7 +174,11 @@
       "Dodano timer wyłączania czytania dokumentów: może automatycznie zatrzymać czytanie bieżącego dokumentu po wybranym czasie, zarówno z Edge, jak i z głosami systemowymi, oraz zapisać miejsce zatrzymania. Odliczanie zaczyna się od nowa po uruchomieniu czytania innego dokumentu.",
       "Ulepszono pauzę i wznawianie czytania dokumentów ze słuchawek: przy głosach systemowych polecenie Odtwórz/Pauza działa jak Magic Tap, więc czytanie można wznowić bez zamykania i ponownego otwierania książki.",
       "Suwak pozycji w dokumentach pokazuje teraz także szacowany pozostały czas czytania, obliczany na podstawie tekstu pozostałego do przeczytania i wybranej szybkości TTS.",
-      "Kalendarz zawiera teraz znacznie rozszerzony zbiór cytatów dnia, z wieloma nowymi zdaniami przetłumaczonymi na wszystkie dostępne języki."
+      "Kalendarz zawiera teraz znacznie rozszerzony zbiór cytatów dnia, z wieloma nowymi zdaniami przetłumaczonymi na wszystkie dostępne języki.",
+      "Dodano funkcję Przytnij plik multimedialny: możesz otworzyć plik audio lub wideo, wybrać punkty podziału, wyłączyć niechciane części i zapisać tylko te, które chcesz zachować.",
+      "W funkcji Przytnij plik multimedialny możesz teraz dotknąć włączonej części, aby odsłuchać ją z oryginalnego pliku; wyłączone części nie są odtwarzane ani zapisywane.",
+      "Ulepszono funkcję Wytnij plik multimedialny: usunięte części znikają z listy, są pomijane podczas odtwarzania i można je przywrócić osobnym przyciskiem.",
+      "Ulepszono zapisywanie w funkcji Przytnij plik multimedialny: używa teraz tego samego wyboru miejsca docelowego co Konwertuj multimedia, pokazuje pasek postępu, a jeśli wybrany folder nie pozwala na zapis, przygotowuje plik w folderze Sonarpad i otwiera systemowe udostępnianie."
     ],
     "cs": [
       "Vylepšeno čtení dokumentů: některé texty se zvláštními akcenty se nyní čtou lépe, i při pohybu znak po znaku pomocí VoiceOveru.",
@@ -179,7 +203,11 @@
       "Přidán časovač vypnutí čtení dokumentů: může automaticky zastavit čtení aktuálního dokumentu po zvolené době, s Edge i systémovými hlasy, a uložit místo zastavení. Odpočítávání začne znovu, když spustíte čtení jiného dokumentu.",
       "Vylepšeno pozastavení a pokračování čtení dokumentů ze sluchátek: u systémových hlasů se příkaz Přehrát/Pauza zpracuje jako Magic Tap, takže čtení lze obnovit bez zavření a opětovného otevření knihy.",
       "Posuvník pozice v dokumentech nyní zobrazuje také odhad zbývající doby čtení, vypočítaný podle textu zbývajícího ke čtení a zvolené rychlosti TTS.",
-      "Kalendář nyní obsahuje výrazně rozšířenou sbírku citátů dne s mnoha novými větami přeloženými do všech dostupných jazyků."
+      "Kalendář nyní obsahuje výrazně rozšířenou sbírku citátů dne s mnoha novými větami přeloženými do všech dostupných jazyků.",
+      "Přidána funkce Oříznout mediální soubor: můžeš otevřít zvukový nebo video soubor, zvolit místa rozdělení, vypnout nechtěné části a uložit jen ty, které chceš zachovat.",
+      "Ve funkci Oříznout mediální soubor můžeš nyní klepnout na zapnutou část a přehrát si ji z původního souboru; vypnuté části se nepřehrávají ani neukládají.",
+      "Vylepšena funkce Oříznout mediální soubor: odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a lze je obnovit samostatným tlačítkem.",
+      "Vylepšeno ukládání ve funkci Oříznout mediální soubor: nyní používá stejný postup výběru cíle jako Převést média, zobrazuje průběh a pokud do vybrané složky nelze zapisovat, připraví soubor ve složce Sonarpad a otevře systémové sdílení."
     ]
   },
   {

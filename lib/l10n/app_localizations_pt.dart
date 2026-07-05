@@ -159,6 +159,112 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get mediaCutterTitle => 'Cortar ficheiro multimédia';
+
+  @override
+  String get mediaCutterInstruction1 => 'Abre um ficheiro de áudio ou vídeo, reproduz e vai até ao ponto onde queres cortar.';
+
+  @override
+  String get mediaCutterInstruction2 => 'Coloque em pausa, prima Dividir, depois elimine as partes que não quer na secção Partes a guardar e prima Guardar.';
+
+  @override
+  String get mediaCutterOpenFile => 'Abrir ficheiro multimédia';
+
+  @override
+  String mediaCutterSelectedFile(String fileName) {
+    return 'Ficheiro selecionado: $fileName';
+  }
+
+  @override
+  String get mediaCutterPosition => 'Posição de corte';
+
+  @override
+  String get mediaCutterPositionHint => 'Avança ou recua um segundo de cada vez.';
+
+  @override
+  String get mediaCutterSplit => 'Dividir';
+
+  @override
+  String get mediaCutterPartsTitle => 'Partes a guardar';
+
+  @override
+  String get mediaCutterPartsHint => 'Toque numa parte para a ouvir. As partes eliminadas desaparecem da lista, são ignoradas durante a reprodução e não serão guardadas.';
+
+  @override
+  String mediaCutterPartLabel(int index) {
+    return 'Parte $index';
+  }
+
+  @override
+  String mediaCutterPartRange(String start, String end) {
+    return 'De $start a $end';
+  }
+
+  @override
+  String get mediaCutterSave => 'Guardar';
+
+  @override
+  String get mediaCutterReady => 'Pronto.';
+
+  @override
+  String get mediaCutterNoFile => 'Abre primeiro um ficheiro multimédia.';
+
+  @override
+  String get mediaCutterInvalidSplitPoint => 'Escolhe um ponto dentro do ficheiro, não o início nem o fim.';
+
+  @override
+  String get mediaCutterSplitAlreadyExists => 'Já existe uma divisão neste ponto.';
+
+  @override
+  String mediaCutterSplitAdded(String position) {
+    return 'Divisão adicionada em $position.';
+  }
+
+  @override
+  String get mediaCutterSaving => 'A guardar o ficheiro...';
+
+  @override
+  String mediaCutterSaved(String fileName) {
+    return 'Ficheiro guardado: $fileName';
+  }
+
+  @override
+  String mediaCutterLoadFailed(Object error) {
+    return 'Não foi possível abrir o ficheiro: $error';
+  }
+
+  @override
+  String mediaCutterSaveFailed(Object error) {
+    return 'Falha ao guardar: $error';
+  }
+
+  @override
+  String get mediaCutterNoPartsToSave => 'Mantenha pelo menos uma parte antes de guardar.';
+
+
+  @override
+  String get mediaCutterRestoreDeletedPart => 'Restaurar parte eliminada';
+
+  @override
+  String get mediaCutterNoDeletedParts => 'Não há partes eliminadas para restaurar.';
+
+  @override
+  String get mediaCutterPartDeleteAction => 'Eliminar';
+
+  @override
+  String get mediaCutterPartTapHint => 'Toque duas vezes para ouvir esta parte. Use a ação Eliminar para a remover.';
+
+  @override
+  String mediaCutterPartDeleted(String start, String end) {
+    return 'Parte eliminada de $start a $end.';
+  }
+
+  @override
+  String mediaCutterPartRestored(String start, String end) {
+    return 'Parte restaurada de $start a $end.';
+  }
+
+  @override
   String get donations => 'Donativos';
 
   @override

@@ -16,6 +16,7 @@ import 'services/changelog_service.dart';
 import 'services/document_library_service.dart';
 import 'screens/changelog_screen.dart';
 import 'screens/convert_media_screen.dart';
+import 'screens/media_cutter_screen.dart';
 import 'screens/documents_screen.dart';
 import 'screens/document_reader_screen.dart';
 import 'screens/gutenberg_screen.dart';
@@ -392,6 +393,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/meteo': (_) => const WeatherScreen(),
         '/podcasts': (_) => const PodcastScreen(),
         '/convert_media': (_) => const ConvertMediaScreen(),
+        '/media_cutter': (_) => const MediaCutterScreen(),
         '/radio': (_) => const RadioScreen(),
         '/radio/recordings': (_) => const RadioRecordingsScreen(),
         '/tv': (_) => const TvScreen(),

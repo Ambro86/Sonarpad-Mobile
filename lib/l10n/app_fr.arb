@@ -1069,5 +1069,108 @@
   "pharmacyProductsNoResultsTitle": "Aucun produit de parapharmacie ou complément trouvé",
   "@pharmacyProductsNoResultsTitle": {
     "description": "Empty state title for parapharmaceuticals and supplements search."
+  },
+  "mediaCutterTitle": "Découper un média",
+  "mediaCutterInstruction1": "Ouvre un fichier audio ou vidéo, lance la lecture, puis place-toi au point où tu veux couper.",
+  "mediaCutterInstruction2": "Mettez en pause, appuyez sur Diviser, puis supprimez les parties inutiles dans la section Parties à enregistrer et appuyez sur Enregistrer.",
+  "mediaCutterOpenFile": "Ouvrir un fichier média",
+  "mediaCutterSelectedFile": "Fichier sélectionné : {fileName}",
+  "@mediaCutterSelectedFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPosition": "Position de coupe",
+  "mediaCutterPositionHint": "Avance ou recule d’une seconde à la fois.",
+  "mediaCutterSplit": "Diviser",
+  "mediaCutterPartsTitle": "Parties à enregistrer",
+  "mediaCutterPartsHint": "Touchez une partie pour l’écouter. Les parties supprimées disparaissent de la liste, sont ignorées pendant la lecture et ne seront pas enregistrées.",
+  "mediaCutterPartLabel": "Partie {index}",
+  "@mediaCutterPartLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartRange": "De {start} à {end}",
+  "@mediaCutterPartRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSave": "Enregistrer",
+  "mediaCutterReady": "Prêt.",
+  "mediaCutterNoFile": "Ouvre d’abord un fichier média.",
+  "mediaCutterInvalidSplitPoint": "Choisis un point à l’intérieur du fichier, pas le début ni la fin.",
+  "mediaCutterSplitAlreadyExists": "Il y a déjà une division à cet endroit.",
+  "mediaCutterSplitAdded": "Division ajoutée à {position}.",
+  "@mediaCutterSplitAdded": {
+    "placeholders": {
+      "position": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSaving": "Enregistrement du fichier...",
+  "mediaCutterSaved": "Fichier enregistré : {fileName}",
+  "@mediaCutterSaved": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterLoadFailed": "Impossible d’ouvrir le fichier : {error}",
+  "@mediaCutterLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterSaveFailed": "Échec de l’enregistrement : {error}",
+  "@mediaCutterSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterNoPartsToSave": "Conservez au moins une partie avant d’enregistrer.",
+  "mediaCutterRestoreDeletedPart": "Restaurer une partie supprimée",
+  "mediaCutterNoDeletedParts": "Aucune partie supprimée à restaurer.",
+  "mediaCutterPartDeleteAction": "Supprimer",
+  "mediaCutterPartTapHint": "Touchez deux fois pour écouter cette partie. Utilisez l’action Supprimer pour la retirer.",
+  "mediaCutterPartDeleted": "Partie supprimée de {start} à {end}.",
+  "@mediaCutterPartDeleted": {
+    "description": "Status shown after a media part is deleted",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartRestored": "Partie restaurée de {start} à {end}.",
+  "@mediaCutterPartRestored": {
+    "description": "Status shown after a deleted media part is restored",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
   }
 }

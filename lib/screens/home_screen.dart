@@ -95,6 +95,11 @@ class _HomeScreenState extends State<HomeScreen> {
             routeName: '/convert_media'),
       ),
       _HomeButton(
+        label: l10n.mediaCutterTitle,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context,
+            routeName: '/media_cutter'),
+      ),
+      _HomeButton(
         label: l10n.cinemaTitle,
         onPressed: () => AccessibilityFeedbackService.goNamed(context,
             routeName: '/cinema'),
@@ -223,6 +228,10 @@ class _HomeScreenState extends State<HomeScreen> {
             label: l10n.convertMediaTitle,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,
                 routeName: '/convert_media')),
+        _HomeButton(
+            label: l10n.mediaCutterTitle,
+            onPressed: () => AccessibilityFeedbackService.goNamed(context,
+                routeName: '/media_cutter')),
         _HomeButton(
             label: l10n.cinemaTitle,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,
