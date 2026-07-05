@@ -1441,25 +1441,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (!_speaking || _ttsPaused) return;
 
     if (_activeTtsEngine == 'system') {
-      final resumeIndex = _currentReadingBookmarkIndex();
-      _readingToken += 1;
       if (mounted) {
-        setState(() {
-          if (resumeIndex != null) {
-            _bookmarkIndex = resumeIndex;
-            _focusedChunkIndex = resumeIndex;
-            _playingChunkIndex = resumeIndex;
-          }
-          _ttsPaused = true;
-        });
+        setState(() => _ttsPaused = true);
       }
+      await _flutterTts.pause();
       await _setMagicTapPlaying(false);
       await _saveAutomaticBookmarkFromPlayback();
-      try {
-        await _flutterTts.stop();
-      } catch (e) {
-        dev.log('DocumentReaderScreen system TTS stop on pause error: $e');
-      }
       return;
     }
 
@@ -1474,7 +1461,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (_activeTtsEngine == 'system') {
       if (mounted) setState(() => _ttsPaused = false);
       await _setMagicTapPlaying(true);
-      await _startReading(restartSleepTimer: false);
+      unawaited(
+        _flutterTts.speak('').catchError((Object error) {
+          dev.log('DocumentReaderScreen system TTS resume error: $error');
+          return null;
+        }),
+      );
       return;
     }
 
