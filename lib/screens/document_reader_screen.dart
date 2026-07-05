@@ -17,6 +17,7 @@ import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/google_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -39,6 +40,7 @@ class DocumentReaderScreen extends StatefulWidget {
 
 class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   final _tts = EdgeTtsBridge();
+  final _googleTts = GoogleTtsBridge.instance;
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
   final _extractor = DocumentTextExtractor();
@@ -77,6 +79,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   bool _ttsPaused = false;
   String? _activeTtsEngine;
+  String _configuredTtsEngine = 'edge';
   StreamSubscription<bool>? _playingSub;
 
   static const int _maxChunkChars = 650;
@@ -98,6 +101,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _playingSub = _audio.playingStream.listen((playing) {
       if (_speaking && _activeTtsEngine != 'system' && mounted) {
         setState(() => _ttsPaused = !playing);
+        if (Platform.isIOS && _activeTtsEngine == 'google') {
+          unawaited(_setMagicTapPlaying(playing));
+        }
       }
     });
     _flutterTts.setPauseHandler(() {
@@ -157,6 +163,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final documentReadingSleepTimerMinutes =
         await _settings.loadDocumentReadingSleepTimerMinutes();
     final ttsSpeed = await _settings.loadTtsSpeed();
+    final configuredTtsEngine = await _settings.loadTtsEngine();
     try {
       final editedPath =
           await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
@@ -169,8 +176,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         final path =
             await DocumentLibraryService().resolveFilePath(_currentDoc);
         originalPath = path;
-        includeEpubFootnotes = ext == 'epub' &&
-            await _settings.includeEpubFootnotesInText();
+        includeEpubFootnotes =
+            ext == 'epub' && await _settings.includeEpubFootnotesInText();
         final result = await _extractor.extract(
           path: path,
           extension: ext,
@@ -192,6 +199,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _documentSliderStepPercent = documentSliderStepPercent;
         _documentReadingSleepTimerMinutes = documentReadingSleepTimerMinutes;
         _ttsSpeed = ttsSpeed;
+        _configuredTtsEngine = configuredTtsEngine;
         _rebuildRemainingReadingEstimateCache();
         _focusedChunkIndex = -1;
         _refreshBookmarkStateForCurrentMode();
@@ -442,7 +450,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final footnotesByChunkIndex = <int, List<String>>{};
     var lastTargetIndex = 0;
 
-    for (var noteOrder = 0; noteOrder < footnoteParagraphs.length; noteOrder++) {
+    for (var noteOrder = 0;
+        noteOrder < footnoteParagraphs.length;
+        noteOrder++) {
       final footnote = footnoteParagraphs[noteOrder];
       final number = _epubFootnoteNumberFromParagraph(
             footnote,
@@ -517,7 +527,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (index < 0) return false;
       final before = index == 0 ? null : text.codeUnitAt(index - 1);
       final afterIndex = index + token.length;
-      final after = afterIndex >= text.length ? null : text.codeUnitAt(afterIndex);
+      final after =
+          afterIndex >= text.length ? null : text.codeUnitAt(afterIndex);
       if (!_isAsciiDigit(before) && !_isAsciiDigit(after)) return true;
       start = index + token.length;
     }
@@ -655,7 +666,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final paragraph = index + 1;
     final raw = (index >= 0 && index < _chunks.length) ? _chunks[index] : '';
     final preview = raw.replaceAll(RegExp(r'\s+'), ' ').trim();
-    final shortPreview = preview.length > 80 ? '${preview.substring(0, 80)}…' : preview;
+    final shortPreview =
+        preview.length > 80 ? '${preview.substring(0, 80)}…' : preview;
     final l10n = AppLocalizations.of(context);
     if (shortPreview.isEmpty) {
       return l10n.documentBookmarkChoiceLabel(order, paragraph);
@@ -700,7 +712,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                     },
                     child: ListTile(
                       leading: const Icon(Icons.bookmark),
-                      title: Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
+                      title:
+                          Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
                       onTap: () => Navigator.pop(dialogContext, bookmarkIndex),
                       trailing: ExcludeSemantics(
                         child: IconButton(
@@ -708,7 +721,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           icon: const Icon(Icons.delete_outline),
                           onPressed: () async {
                             await _deleteMultipleBookmark(bookmarkIndex);
-                            bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
+                            bookmarks =
+                                _normalizeBookmarkIndexes(_bookmarkIndexes);
                             if (!dialogContext.mounted) return;
                             if (bookmarks.isEmpty) {
                               Navigator.pop(dialogContext);
@@ -744,7 +758,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (existing.isEmpty) return;
 
     if (existing.length == 1) {
-      await _saveSingleBookmark(existing.single, showSnack: false, clearMultiple: true);
+      await _saveSingleBookmark(existing.single,
+          showSnack: false, clearMultiple: true);
       return;
     }
 
@@ -770,7 +785,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                     final bookmarkIndex = existing[index];
                     return ListTile(
                       leading: const Icon(Icons.bookmark),
-                      title: Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
+                      title:
+                          Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
                       onTap: () => Navigator.pop(dialogContext, bookmarkIndex),
                     );
                   },
@@ -799,7 +815,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (selectedIndex == null || !mounted) return;
     _openChunkAt(selectedIndex);
   }
-
 
   Future<void> _openDocumentIndex() async {
     if (_chunks.isEmpty || _documentIndexLoading) return;
@@ -945,7 +960,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       };
       await cacheFile.writeAsString(jsonEncode(payload), flush: true);
     } catch (e) {
-      dev.log('DocumentReaderScreen: impossibile salvare cache indice EPUB: $e');
+      dev.log(
+          'DocumentReaderScreen: impossibile salvare cache indice EPUB: $e');
     }
   }
 
@@ -1044,7 +1060,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   Future<void> _startReading({bool restartSleepTimer = true}) async {
     if (_chunks.isEmpty) {
-            showStatusMessage(context, AppLocalizations.of(context).noTextToRead);
+      showStatusMessage(context, AppLocalizations.of(context).noTextToRead);
       return;
     }
 
@@ -1061,15 +1077,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _startReadingSleepTimerIfNeeded(restart: restartSleepTimer);
       final startIndex = _activeDocumentPositionIndex;
 
-      if (engine == 'system') {
-        if (Platform.isIOS) {
-          try {
-            await _ttsCommands.invokeMethod('setupMagicTap', _currentDoc.name);
-          } catch (e) {
-            dev.log('DocumentReaderScreen: Errore setupMagicTap $e');
-          }
-          await _setMagicTapPlaying(true);
+      if (Platform.isIOS && (engine == 'system' || engine == 'google')) {
+        try {
+          await _ttsCommands.invokeMethod('setupMagicTap', _currentDoc.name);
+        } catch (e) {
+          dev.log('DocumentReaderScreen: Errore setupMagicTap $e');
         }
+        await _setMagicTapPlaying(true);
+      }
+
+      if (engine == 'system') {
         await _configureSystemTtsAudioSession();
         await _flutterTts.awaitSpeakCompletion(true);
         if (Platform.isIOS) {
@@ -1115,6 +1132,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         await _flutterTts.stop();
       } else {
         final voice = await _voice();
+        final speed = await _settings.loadTtsSpeed();
+        final pitch = await _settings.loadTtsPitch();
         final controller = StreamController<File>();
         _edgeFileController = controller;
         Object? generationError;
@@ -1127,8 +1146,19 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             }
             final textToSpeak =
                 _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
-            final file =
-                await _tts.speakToFile(text: textToSpeak, voice: voice);
+            final file = engine == 'google'
+                ? await _googleTts.speakToFile(
+                    text: textToSpeak,
+                    voiceId: voice,
+                    speed: speed,
+                    pitch: pitch,
+                  )
+                : await _tts.speakToFile(
+                    text: textToSpeak,
+                    voice: voice,
+                    speed: speed,
+                    pitch: pitch,
+                  );
             if (!controller.isClosed &&
                 mounted &&
                 _speaking &&
@@ -1173,7 +1203,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (!mounted) return;
       if (readingToken != _readingToken) return;
 
-      if (Platform.isIOS && engine == 'system') {
+      if (Platform.isIOS && (engine == 'system' || engine == 'google')) {
         try {
           await _ttsCommands.invokeMethod('clearMagicTap');
         } catch (_) {}
@@ -1197,7 +1227,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _ttsStatus = '${AppLocalizations.of(context).ttsError}: $e';
         _activeTtsEngine = null;
       });
-            showStatusMessage(context, '${AppLocalizations.of(context).ttsError}: $e');
+      showStatusMessage(
+          context, '${AppLocalizations.of(context).ttsError}: $e');
     } finally {
       if (mounted && readingToken == _readingToken) {
         setState(() => _speaking = false);
@@ -1291,7 +1322,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } else {
       await _saveAutomaticBookmarkFromPlayback();
     }
-    if (Platform.isIOS && _activeTtsEngine == 'system') {
+    if (Platform.isIOS &&
+        (_activeTtsEngine == 'system' || _activeTtsEngine == 'google')) {
       try {
         await _ttsCommands.invokeMethod('clearMagicTap');
       } catch (_) {}
@@ -1415,11 +1447,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       });
 
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).textEditedAndSaved);
+      showStatusMessage(
+          context, AppLocalizations.of(context).textEditedAndSaved);
     } catch (e) {
       dev.log('DocumentReaderScreen: Errore fatale durante il salvataggio: $e');
       if (!mounted) return;
-            showStatusMessage(context, '${AppLocalizations.of(context).saveError}: $e');
+      showStatusMessage(
+          context, '${AppLocalizations.of(context).saveError}: $e');
     }
   }
 
@@ -1452,6 +1486,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     if (mounted) setState(() => _ttsPaused = true);
     await _audio.pause();
+    if (_activeTtsEngine == 'google') {
+      await _setMagicTapPlaying(false);
+    }
     await _saveAutomaticBookmarkFromPlayback();
   }
 
@@ -1471,6 +1508,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
 
     if (mounted) setState(() => _ttsPaused = false);
+    if (_activeTtsEngine == 'google') {
+      await _setMagicTapPlaying(true);
+    }
     await _audio.resumeSequentialPlayback();
   }
 
@@ -1515,7 +1555,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   String? _documentRemainingReadingTimeLabel(AppLocalizations l10n) {
     if (_chunks.isEmpty || _remainingWordsFromChunk.isEmpty) return null;
-    final index = _activeDocumentPositionIndex.clamp(0, _chunks.length - 1).toInt();
+    final index =
+        _activeDocumentPositionIndex.clamp(0, _chunks.length - 1).toInt();
     if (index < 0 || index >= _remainingWordsFromChunk.length) return null;
 
     final remainingWords = _remainingWordsFromChunk[index];
@@ -1625,11 +1666,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       try {
         await edgeController.close();
       } catch (e) {
-        dev.log('DocumentReaderScreen: errore chiusura stream Edge dopo slider: $e');
+        dev.log(
+            'DocumentReaderScreen: errore chiusura stream Edge dopo slider: $e');
       }
     }
 
-    if (Platform.isIOS && activeEngine == 'system') {
+    if (Platform.isIOS &&
+        (activeEngine == 'system' || activeEngine == 'google')) {
       try {
         await _ttsCommands.invokeMethod('clearMagicTap');
       } catch (_) {}
@@ -1684,9 +1727,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           IconButton(
             icon: const Icon(Icons.search),
             tooltip: l10n.searchInDocument,
-            onPressed: _chunks.isEmpty
-                ? null
-                : () => unawaited(_openDocumentSearch()),
+            onPressed:
+                _chunks.isEmpty ? null : () => unawaited(_openDocumentSearch()),
           ),
           if (_documentIndex.isNotEmpty ||
               (_epubIndexSourcePath != null && _chunks.isNotEmpty))
@@ -1728,169 +1770,184 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   _currentDoc = newDoc;
                 });
                 if (!context.mounted) return;
-                                showStatusMessage(context, l10n.docSavedInLibrary);
+                showStatusMessage(context, l10n.docSavedInLibrary);
               },
             ),
         ],
       ),
-      body: SafeArea(
-        child: _loadingText
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (_ttsStatus != null) ...[
-                          Text(_ttsStatus!),
-                          const SizedBox(height: 12),
-                        ],
-                        FilledButton.icon(
-                          onPressed: _togglePlayPause,
-                          icon: Icon(!_speaking
-                              ? Icons.volume_up
-                              : (_ttsPaused ? Icons.play_arrow : Icons.pause)),
-                          label: Text(!_speaking
-                              ? l10n.startReading
-                              : (_ttsPaused
-                                  ? l10n.resumeReading
-                                  : l10n.pauseReading)),
-                        ),
-                        const SizedBox(height: 8),
-                        OutlinedButton.icon(
-                          onPressed: _speaking ? () => _stopReading() : null,
-                          icon: const Icon(Icons.stop),
-                          label: Text(l10n.stopReading),
-                        ),
-                        if (_chunks.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          _DocumentPositionSlider(
-                            value: _documentProgressPercent,
-                            label: l10n.documentPosition,
-                            remainingTimeLabel:
-                                _documentRemainingReadingTimeLabel(l10n),
-                            onChanged: _seekDocumentToPercent,
-                            stepPercent: _documentSliderStepPercent,
-                            onIncrease: () =>
-                                _seekDocumentByPercent(_documentSliderStepPercent.toDouble()),
-                            onDecrease: () =>
-                                _seekDocumentByPercent(-_documentSliderStepPercent.toDouble()),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1),
-                  Expanded(
-                    child: Semantics(
-                      label: l10n.documentTextLabel,
-                      explicitChildNodes: true,
-                      child: CustomScrollView(
-                        controller: _scrollController,
-                        scrollCacheExtent: const ScrollCacheExtent.pixels(
-                            4000), // Precarica i blocchi successivi per VoiceOver
-                        // BouncingScrollPhysics → flick naturale su iPhone
-                        physics: const BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics(),
-                        ),
-                        slivers: [
-                          SliverPadding(
-                            padding: const EdgeInsets.all(16),
-                            sliver: SliverList(
-                              delegate: SliverChildListDelegate([
-                                // --- Intestazione ---
-                                Row(
-                                  children: [
-                                    _ExtBadge(ext: doc.extension),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            displayName,
-                                            style: theme.textTheme.titleMedium
-                                                ?.copyWith(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                          ),
-                                          Text(
-                                            doc.extension.toUpperCase() +
-                                                (doc.editedTextPath != null
-                                                    ? ' (${l10n.modifiedInSonarpad})'
-                                                    : ''),
-                                            style: theme.textTheme.bodySmall
-                                                ?.copyWith(
-                                              color: doc.editedTextPath != null
-                                                  ? Colors.orange.shade700
-                                                  : null,
-                                              fontWeight:
-                                                  doc.editedTextPath != null
-                                                      ? FontWeight.bold
-                                                      : null,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                // Suggerimento modifica paragrafo (solo in lettura)
-                                if (!_speaking && _chunks.isNotEmpty)
-                                  Semantics(
-                                    liveRegion: false,
-                                    child: Text(
-                                      l10n.documentReaderEditHint,
-                                      style:
-                                          theme.textTheme.bodySmall?.copyWith(
-                                        color: colorScheme.outline,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                  ),
-
-                                const SizedBox(height: 24),
-                                const Divider(),
-                                const SizedBox(height: 8),
-
-                                // --- Corpo documento ---
-                                if (_loadError != null)
-                                  Semantics(
-                                    liveRegion: true,
-                                    child: Text(
-                                      _loadError!,
-                                      style:
-                                          theme.textTheme.bodyMedium?.copyWith(
-                                        color: colorScheme.secondary,
-                                      ),
-                                    ),
-                                  )
-                                else if (_chunks.isNotEmpty)
-                                  ..._buildChunkWidgets(
-                                    theme,
-                                    colorScheme,
-                                    l10n,
-                                  )
-                                else if (_documentText.isEmpty &&
-                                    _loadError == null)
-                                  Text(
-                                    l10n.noTextAvailableForDocument,
-                                    style: theme.textTheme.bodyMedium,
-                                  ),
-                              ]),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: _loadingText
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (_ttsStatus != null) ...[
+                              Text(_ttsStatus!),
+                              const SizedBox(height: 12),
+                            ],
+                            FilledButton.icon(
+                              onPressed: _togglePlayPause,
+                              icon: Icon(!_speaking
+                                  ? Icons.volume_up
+                                  : (_ttsPaused
+                                      ? Icons.play_arrow
+                                      : Icons.pause)),
+                              label: Text(!_speaking
+                                  ? l10n.startReading
+                                  : (_ttsPaused
+                                      ? l10n.resumeReading
+                                      : l10n.pauseReading)),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed:
+                                  _speaking ? () => _stopReading() : null,
+                              icon: const Icon(Icons.stop),
+                              label: Text(l10n.stopReading),
+                            ),
+                            if (_chunks.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              _DocumentPositionSlider(
+                                value: _documentProgressPercent,
+                                label: l10n.documentPosition,
+                                remainingTimeLabel:
+                                    _documentRemainingReadingTimeLabel(l10n),
+                                onChanged: _seekDocumentToPercent,
+                                stepPercent: _documentSliderStepPercent,
+                                onIncrease: () => _seekDocumentByPercent(
+                                    _documentSliderStepPercent.toDouble()),
+                                onDecrease: () => _seekDocumentByPercent(
+                                    -_documentSliderStepPercent.toDouble()),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
-                    ),
+                      const Divider(height: 1),
+                      Expanded(
+                        child: Semantics(
+                          label: l10n.documentTextLabel,
+                          explicitChildNodes: true,
+                          child: CustomScrollView(
+                            controller: _scrollController,
+                            scrollCacheExtent: const ScrollCacheExtent.pixels(
+                                4000), // Precarica i blocchi successivi per VoiceOver
+                            // BouncingScrollPhysics → flick naturale su iPhone
+                            physics: const BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics(),
+                            ),
+                            slivers: [
+                              SliverPadding(
+                                padding: const EdgeInsets.all(16),
+                                sliver: SliverList(
+                                  delegate: SliverChildListDelegate([
+                                    // --- Intestazione ---
+                                    Row(
+                                      children: [
+                                        _ExtBadge(ext: doc.extension),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                displayName,
+                                                style: theme
+                                                    .textTheme.titleMedium
+                                                    ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                              ),
+                                              Text(
+                                                doc.extension.toUpperCase() +
+                                                    (doc.editedTextPath != null
+                                                        ? ' (${l10n.modifiedInSonarpad})'
+                                                        : ''),
+                                                style: theme.textTheme.bodySmall
+                                                    ?.copyWith(
+                                                  color: doc.editedTextPath !=
+                                                          null
+                                                      ? Colors.orange.shade700
+                                                      : null,
+                                                  fontWeight:
+                                                      doc.editedTextPath != null
+                                                          ? FontWeight.bold
+                                                          : null,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+                                    // Suggerimento modifica paragrafo (solo in lettura)
+                                    if (!_speaking && _chunks.isNotEmpty)
+                                      Semantics(
+                                        liveRegion: false,
+                                        child: Text(
+                                          l10n.documentReaderEditHint,
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                            color: colorScheme.outline,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                      ),
+
+                                    const SizedBox(height: 24),
+                                    const Divider(),
+                                    const SizedBox(height: 8),
+
+                                    // --- Corpo documento ---
+                                    if (_loadError != null)
+                                      Semantics(
+                                        liveRegion: true,
+                                        child: Text(
+                                          _loadError!,
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                            color: colorScheme.secondary,
+                                          ),
+                                        ),
+                                      )
+                                    else if (_chunks.isNotEmpty)
+                                      ..._buildChunkWidgets(
+                                        theme,
+                                        colorScheme,
+                                        l10n,
+                                      )
+                                    else if (_documentText.isEmpty &&
+                                        _loadError == null)
+                                      Text(
+                                        l10n.noTextAvailableForDocument,
+                                        style: theme.textTheme.bodyMedium,
+                                      ),
+                                  ]),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+          ),
+          if (_configuredTtsEngine == 'google' || _activeTtsEngine == 'google')
+            const Positioned(
+              left: 0,
+              top: 0,
+              child: GoogleTtsRuntimeHost(),
+            ),
+        ],
       ),
     );
   }
@@ -2127,7 +2184,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
-  Future<void> _addMultipleBookmark(int index, {required bool showSnack}) async {
+  Future<void> _addMultipleBookmark(int index,
+      {required bool showSnack}) async {
     final nextBookmarks = List<int>.from(_bookmarkIndexes);
     nextBookmarks.remove(index);
     nextBookmarks.add(index);
@@ -2225,7 +2283,6 @@ class _ExtBadge extends StatelessWidget {
   }
 }
 
-
 class _DocumentIndexScreen extends StatelessWidget {
   const _DocumentIndexScreen({required this.entries});
 
@@ -2255,7 +2312,6 @@ class _DocumentIndexScreen extends StatelessWidget {
     );
   }
 }
-
 
 class _DocumentIndexLoadingDialog extends StatelessWidget {
   final String message;
@@ -2341,11 +2397,10 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
 
     final collapsedMatchIndex =
         collapsed.toLowerCase().indexOf(query.toLowerCase());
-    final safeMatchIndex =
-        (collapsedMatchIndex < 0 ? 0 : collapsedMatchIndex)
-            .clamp(0, collapsed.length)
-            .toInt();
-    
+    final safeMatchIndex = (collapsedMatchIndex < 0 ? 0 : collapsedMatchIndex)
+        .clamp(0, collapsed.length)
+        .toInt();
+
     int start = (safeMatchIndex - 70).clamp(0, collapsed.length).toInt();
     final end =
         (safeMatchIndex + query.length + 90).clamp(0, collapsed.length).toInt();

@@ -83,5 +83,8 @@ flutter:
     - assets/aifa_cache_seed.db
     - assets/changelog.json
     - assets/data/edge_voices.json
+    - assets/data/google_tts_voices.json
+    - assets/google_tts/bridgeHarness.js
+    - assets/google_tts/engine/
     - assets/rss/feed_cs.txt
     - assets/images/
