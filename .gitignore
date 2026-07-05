@@ -155,3 +155,5 @@ sonarpad_mobile_starter.zip
 
 # Ad-hoc test tools
 tools/test_*
+GOOGLE_TTS_PORTING_NOTES.txt
+tool/google_tts_local_probe.dart
