@@ -57,6 +57,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   String? _status;
   String? _resolvedArticleUrlForReader;
   String? _lastFinalReaderFetchUrl;
+  Future<void>? _initialReaderLoad;
 
   // Soglia minima per accettare il testo HTTP come reader mode
   static const _httpMinLength = 150;
@@ -184,7 +185,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         ),
       )
       ..loadRequest(Uri.parse(widget.article.link));
-    unawaited(_loadReaderArticle());
+    _initialReaderLoad = _loadReaderArticle();
+    unawaited(_initialReaderLoad);
 
     _ttsEventsSub = _ttsEvents.receiveBroadcastStream().listen((event) {
       if (event == 'toggle' && mounted) {
@@ -527,6 +529,22 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     final currentLen = _readerText?.trim().length ?? 0;
     if (currentLen >= _httpShortThreshold) return;
+
+    if (_isGoogleNewsUrl(widget.article.link)) {
+      final initialLoad = _initialReaderLoad;
+      if (initialLoad != null) {
+        await initialLoad;
+        if (!mounted) return;
+        final loadedLen = _readerText?.trim().length ?? 0;
+        if (loadedLen >= _httpShortThreshold) {
+          unawaited(AppLogger.log(
+            'News reader final URL HTTP: skip, Tinyfish Google News gia buono '
+            'length=$loadedLen url=$finalUrl',
+          ));
+          return;
+        }
+      }
+    }
 
     _lastFinalReaderFetchUrl = finalUrl;
     _resolvedArticleUrlForReader = finalUrl;

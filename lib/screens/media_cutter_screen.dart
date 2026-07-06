@@ -150,12 +150,13 @@ class _MediaPart {
 
   Duration get duration => end - start;
   double get volumeFactor => volumePercent.clamp(0, 200).toDouble() / 100.0;
-  bool get hasAudioChanges =>
-      volumePercent != 100 ||
+  bool get hasEffects =>
       effect != _MediaPartEffect.none ||
       secondaryEffect != _MediaPartEffect.none ||
       thirdEffect != _MediaPartEffect.none ||
       fourthEffect != _MediaPartEffect.none;
+  bool get hasAudioChanges =>
+      volumePercent != 100 || hasEffects;
 
   _MediaPart copyWith({
     bool? keep,
@@ -217,7 +218,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   ];
 
   final _audioPlayer = AudioPlayer();
-  final _effectPreviewPlayer = AudioPlayer();
   final _outputController = TextEditingController();
   VideoPlayerController? _videoController;
   StreamSubscription<Duration>? _audioPositionSubscription;
@@ -235,6 +235,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool _playing = false;
   int? _previewPartIndex;
   Duration? _previewPartEnd;
+  Duration? _renderedPreviewStart;
+  File? _renderedPreviewFile;
+  bool _usingRenderedPreviewSource = false;
+  bool _restoringOriginalAudioSource = false;
   bool _stoppingPartPreview = false;
   bool _skippingDeletedPart = false;
   Duration _duration = Duration.zero;
@@ -249,13 +253,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     super.initState();
     _audioPositionSubscription = _audioPlayer.positionStream.listen((position) {
       if (!mounted || _isVideo) return;
-      final clamped = _clampPosition(position);
+      final renderedStart = _renderedPreviewStart;
+      final clamped = _usingRenderedPreviewSource && renderedStart != null
+          ? _clampPosition(renderedStart + position)
+          : _clampPosition(position);
       setState(() => _position = clamped);
       _checkPartPreviewEnd(clamped);
       _checkDeletedPartDuringPlayback(clamped);
     });
     _audioDurationSubscription = _audioPlayer.durationStream.listen((duration) {
-      if (!mounted || _isVideo || duration == null) return;
+      if (!mounted ||
+          _isVideo ||
+          duration == null ||
+          _usingRenderedPreviewSource ||
+          _restoringOriginalAudioSource) {
+        return;
+      }
       setState(() {
         _duration = duration;
         _position = _clampPosition(_position);
@@ -275,7 +288,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _audioPlayingSubscription?.cancel();
     _videoRefreshTimer?.cancel();
     _videoController?.dispose();
-    _effectPreviewPlayer.dispose();
     _audioPlayer.dispose();
     _outputController.dispose();
     super.dispose();
@@ -386,6 +398,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _deletedPartHistory.clear();
       _previewPartIndex = null;
       _previewPartEnd = null;
+      _renderedPreviewStart = null;
+      _renderedPreviewFile = null;
+      _usingRenderedPreviewSource = false;
+      _restoringOriginalAudioSource = false;
       _stoppingPartPreview = false;
     });
 
@@ -473,6 +489,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         if (_audioPlayer.playing) {
           await _audioPlayer.pause();
         } else {
+          if (_usingRenderedPreviewSource) {
+            await _restoreOriginalAudioSource(seekTo: _position);
+          }
           await _setPlaybackVolume(1);
           await _audioPlayer.play();
         }
@@ -507,6 +526,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _seekTo(Duration position, {bool clearPreview = true}) async {
     if (clearPreview) _clearPartPreview();
+    if (!_isVideo && _usingRenderedPreviewSource) {
+      await _restoreOriginalAudioSource(seekTo: position);
+    }
     final clamped = _clampPosition(position);
     final target = clearPreview ? _skipDeletedPartsForward(clamped) : clamped;
     setState(() => _position = target);
@@ -538,9 +560,27 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       }
       return;
     }
+    if (!_isVideo &&
+        previewVolumeFactor == null &&
+        part.hasEffects &&
+        _audioFilterForPart(part) != null) {
+      await _playPartEffectsPreview(
+        index,
+        volumePercent: part.volumePercent,
+        effect: part.effect,
+        secondaryEffect: part.secondaryEffect,
+        thirdEffect: part.thirdEffect,
+        fourthEffect: part.fourthEffect,
+        effectAmountPercent: part.effectAmountPercent,
+      );
+      return;
+    }
 
     try {
       await _pause();
+      if (!_isVideo && _usingRenderedPreviewSource) {
+        await _restoreOriginalAudioSource(seekTo: part.start);
+      }
       await _setPlaybackVolume(previewVolumeFactor ?? part.volumeFactor);
       await _seekTo(part.start, clearPreview: false);
       if (!mounted) return;
@@ -602,6 +642,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
     final filter = _audioFilterForPart(previewPart);
     if (filter == null) {
+      if (!_isVideo && _usingRenderedPreviewSource) {
+        await _restoreOriginalAudioSource(seekTo: previewStart);
+      }
       await _playPart(
         index,
         previewVolumeFactor: volumePercent.clamp(0, 200).toDouble() / 100.0,
@@ -618,7 +661,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
     try {
       await _pause();
-      await _effectPreviewPlayer.stop();
+      if (!_isVideo && _usingRenderedPreviewSource) {
+        await _restoreOriginalAudioSource(seekTo: previewStart);
+      }
       final args = [
         '-y',
         '-ss',
@@ -651,8 +696,28 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (!ReturnCode.isSuccess(returnCode)) {
         throw logs.trim().isEmpty ? 'FFmpeg ${returnCode?.getValue()}' : logs;
       }
-      await _effectPreviewPlayer.setFilePath(previewFile.path);
-      await _effectPreviewPlayer.play();
+      await _setPlaybackVolume(1);
+      _usingRenderedPreviewSource = true;
+      _renderedPreviewStart = previewStart;
+      _renderedPreviewFile = previewFile;
+      await _audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.file(previewFile.path),
+          tag: MediaItem(
+            id: 'media_cutter_preview:${previewFile.path}',
+            album: 'Sonarpad',
+            title: _displayName.isEmpty ? p.basename(_inputPath) : _displayName,
+          ),
+        ),
+      );
+      if (!mounted) return;
+      setState(() {
+        _previewPartIndex = index;
+        _previewPartEnd = previewStart + previewDuration;
+        _position = previewStart;
+        _playing = true;
+      });
+      await _audioPlayer.play();
     } catch (error) {
       await AppLogger.log('Media cutter: effects preview failed error=$error');
       if (!mounted) return;
@@ -706,7 +771,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         }
       } else {
         await _audioPlayer.pause();
-        await _audioPlayer.seek(_clampPosition(end));
+        if (_usingRenderedPreviewSource) {
+          await _restoreOriginalAudioSource(seekTo: end);
+        } else {
+          await _audioPlayer.seek(_clampPosition(end));
+        }
       }
       await _setPlaybackVolume(1);
       if (!mounted) return;
@@ -719,6 +788,56 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     } finally {
       _stoppingPartPreview = false;
     }
+  }
+
+  Future<void> _restoreOriginalAudioSource({Duration? seekTo}) async {
+    if (_isVideo || !_usingRenderedPreviewSource || _inputPath.isEmpty) return;
+    _restoringOriginalAudioSource = true;
+    final target = _clampPosition(seekTo ?? _position);
+    final previewFile = _renderedPreviewFile;
+    try {
+      await _audioPlayer.stop();
+      final duration = await _audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.file(_inputPath),
+          tag: MediaItem(
+            id: 'media_cutter:${File(_inputPath).absolute.path}',
+            album: 'Sonarpad',
+            title: _displayName.isEmpty ? p.basename(_inputPath) : _displayName,
+          ),
+        ),
+      );
+      await _audioPlayer.seek(target);
+      if (mounted) {
+        setState(() {
+          _duration = duration ?? _duration;
+          _position = target;
+        });
+      }
+    } finally {
+      _usingRenderedPreviewSource = false;
+      _renderedPreviewStart = null;
+      _renderedPreviewFile = null;
+      _restoringOriginalAudioSource = false;
+      if (previewFile != null) {
+        unawaited(previewFile.delete().then((_) {}).catchError((_) {}));
+      }
+    }
+  }
+
+  Future<void> _stopRenderedEffectsPreview() async {
+    if (!_usingRenderedPreviewSource) {
+      await _pause();
+      return;
+    }
+    await _audioPlayer.pause();
+    await _restoreOriginalAudioSource(seekTo: _position);
+    if (!mounted) return;
+    setState(() {
+      _playing = false;
+      _previewPartIndex = null;
+      _previewPartEnd = null;
+    });
   }
 
   void _clearPartPreview() {
@@ -1043,14 +1162,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                unawaited(_effectPreviewPlayer.stop());
+                unawaited(_stopRenderedEffectsPreview());
                 Navigator.pop(dialogContext);
               },
               child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () {
-                unawaited(_effectPreviewPlayer.stop());
+                unawaited(_stopRenderedEffectsPreview());
                 Navigator.pop(
                   dialogContext,
                   _PartEffectSettings(
