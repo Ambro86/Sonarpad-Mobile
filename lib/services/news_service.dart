@@ -77,6 +77,8 @@ class NewsService {
       'https://sonarpad.com/api/get_community_news_sources.php';
   static const _addCommunityNewsSourceUrl =
       'https://sonarpad.com/api/add_community_news_source.php';
+  static const _tinyfishArticleFetchUrl =
+      'https://sonarpad.com/api/tinyfish_fetch_article.php';
   static const _communityHeaders = {
     'User-Agent': 'SonarpadMobile/0.1 (https://sonarpad.com)',
     'Accept': 'application/json',
@@ -953,6 +955,10 @@ class NewsService {
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
       return NewsArticleContent(text: article.summary, url: article.link);
     }
+    final tinyfishContent = await _tryFetchTinyfishArticleContent(resolvedUrl);
+    if (tinyfishContent != null && tinyfishContent.text.trim().length >= 150) {
+      return tinyfishContent;
+    }
     final langHeader = _acceptLanguageHeader(language);
     final fetch = await _browserGetWithFallback(
       Uri.parse(resolvedUrl),
@@ -1022,6 +1028,71 @@ class NewsService {
       text: text.isEmpty ? article.summary : text,
       url: resolvedUrl,
     );
+  }
+
+  Future<NewsArticleContent?> _tryFetchTinyfishArticleContent(
+    String articleUrl,
+  ) async {
+    try {
+      final uri = Uri.parse(_tinyfishArticleFetchUrl).replace(
+        queryParameters: {'url': articleUrl},
+      );
+      final response = await _client.get(
+        uri,
+        headers: const {'Accept': 'application/json'},
+      ).timeout(const Duration(seconds: 15));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        debugPrint(
+          'Sonarpad news Tinyfish: HTTP ${response.statusCode}, fallback reader',
+        );
+        return null;
+      }
+
+      final decoded = jsonDecode(
+        utf8.decode(response.bodyBytes, allowMalformed: true),
+      );
+      if (decoded is! Map || decoded['ok'] != true) return null;
+
+      final markdown = (decoded['markdown'] ?? '').toString().trim();
+      if (markdown.isEmpty) return null;
+
+      final text = _plainTextFromMarkdown(markdown);
+      if (text.trim().isEmpty) return null;
+
+      final finalUrl = (decoded['final_url'] ?? decoded['url'] ?? articleUrl)
+          .toString()
+          .trim();
+      return NewsArticleContent(
+        text: text,
+        url: finalUrl.isEmpty ? articleUrl : finalUrl,
+      );
+    } catch (e) {
+      debugPrint('Sonarpad news Tinyfish: fetch fallito, fallback reader: $e');
+      return null;
+    }
+  }
+
+  String _plainTextFromMarkdown(String markdown) {
+    var text = markdown
+        .replaceAll('\r', '\n')
+        .replaceAll(RegExp(r'!\[[^\]]*\]\([^)]+\)'), '')
+        .replaceAllMapped(
+          RegExp(r'\[([^\]]+)\]\([^)]+\)'),
+          (match) => match.group(1) ?? '',
+        )
+        .replaceAll(RegExp(r'^\s{0,3}#{1,6}\s+', multiLine: true), '')
+        .replaceAll(RegExp(r'^\s{0,3}>\s?', multiLine: true), '')
+        .replaceAll(RegExp(r'^\s{0,3}[-*+]\s+', multiLine: true), '')
+        .replaceAll(RegExp(r'^\s{0,3}\d+[.)]\s+', multiLine: true), '')
+        .replaceAll(RegExp(r'[*_`~]{1,3}'), '')
+        .replaceAll(RegExp(r'\n{3,}'), '\n\n');
+
+    text = HtmlReaderService.cleanText(text)
+        .split('\n')
+        .map((line) => line.replaceAll(RegExp(r'\s+'), ' ').trim())
+        .where((line) => line.isNotEmpty)
+        .join('\n\n');
+    return text.trim();
   }
 
   Future<List<NewsArticle>> _fetchRssSource(

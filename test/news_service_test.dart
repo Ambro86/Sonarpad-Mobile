@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:sonarpad_mobile_starter/models/news_article.dart';
 import 'package:sonarpad_mobile_starter/services/news_service.dart';
 import 'package:sonarpad_mobile_starter/services/news_sources/english_news_sources.dart';
 import 'package:sonarpad_mobile_starter/services/news_sources/french_news_sources.dart';
@@ -317,6 +320,94 @@ void main() {
 
       expect(articles.single.title, 'Vox story');
       expect(articles.single.summary, 'Vox encoded summary');
+    });
+
+    test('uses Tinyfish markdown before the existing article reader', () async {
+      final requested = <Uri>[];
+      final service = NewsService(
+        client: MockClient((request) async {
+          requested.add(request.url);
+          expect(request.url.host, 'sonarpad.com');
+          return http.Response.bytes(
+            utf8.encode(jsonEncode({
+              'ok': true,
+              'url': 'https://example.com/story',
+              'final_url': 'https://example.com/story',
+              'format': 'markdown',
+              'markdown': '''
+# Titolo articolo
+
+Questo è il primo paragrafo letto da Tinyfish, abbastanza lungo per essere accettato dal reader delle notizie senza passare al vecchio estrattore HTML.
+
+Questo è il secondo paragrafo con un [link utile](https://example.com) e testo pulito.
+''',
+            })),
+            200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      );
+
+      final content = await service.fetchArticleContent(
+        const NewsArticle(
+          id: '1',
+          title: 'Titolo articolo',
+          link: 'https://example.com/story',
+          summary: 'Riassunto RSS',
+          source: 'Test',
+          publishedAt: null,
+        ),
+        language: NewsLanguage.italian,
+      );
+
+      expect(requested, hasLength(1));
+      expect(content.text, contains('Titolo articolo'));
+      expect(content.text, contains('link utile'));
+      expect(content.text, isNot(contains('](https://example.com)')));
+    });
+
+    test('falls back to the existing article reader when Tinyfish fails',
+        () async {
+      final requested = <Uri>[];
+      final service = NewsService(
+        client: MockClient((request) async {
+          requested.add(request.url);
+          if (request.url.host == 'sonarpad.com') {
+            return http.Response('{"ok":false}', 502);
+          }
+          return http.Response(
+            '''
+<!doctype html>
+<html>
+  <head><title>Fallback</title></head>
+  <body>
+    <article>
+      <p>Questo paragrafo arriva dal reader HTML esistente e deve restare disponibile quando Tinyfish non risponde correttamente.</p>
+      <p>Secondo paragrafo abbastanza lungo per verificare che il comportamento precedente non venga rimosso.</p>
+    </article>
+  </body>
+</html>
+''',
+            200,
+            headers: {'content-type': 'text/html; charset=utf-8'},
+          );
+        }),
+      );
+
+      final content = await service.fetchArticleContent(
+        const NewsArticle(
+          id: '2',
+          title: 'Fallback',
+          link: 'https://example.com/fallback',
+          summary: 'Riassunto RSS',
+          source: 'Test',
+          publishedAt: null,
+        ),
+        language: NewsLanguage.italian,
+      );
+
+      expect(requested.map((uri) => uri.host), ['sonarpad.com', 'example.com']);
+      expect(content.text, contains('reader HTML esistente'));
     });
   });
 }
