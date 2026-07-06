@@ -159,4 +159,5 @@ GOOGLE_TTS_PORTING_NOTES.txt
 tool/google_tts_local_probe.dart
 tinyfish_response.json
 tinyfish_response.md
+tinyfish_fetch_corriere.bat
 server/

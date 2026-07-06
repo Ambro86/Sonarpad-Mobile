@@ -956,6 +956,21 @@ class NewsService {
     final resolvedUrl = await _resolveArticleUrl(article.link);
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
       unawaited(AppLogger.log(
+        'News Tinyfish: URL Google News non risolto, provo Tinyfish '
+        'url=$resolvedUrl',
+      ));
+      final tinyfishGoogleNewsContent =
+          await _tryFetchTinyfishArticleContent(resolvedUrl);
+      if (tinyfishGoogleNewsContent != null &&
+          tinyfishGoogleNewsContent.text.trim().length >= 100) {
+        unawaited(AppLogger.log(
+          'News Tinyfish: testo Google News accettato '
+          'length=${tinyfishGoogleNewsContent.text.trim().length} '
+          'url=${tinyfishGoogleNewsContent.url}',
+        ));
+        return tinyfishGoogleNewsContent;
+      }
+      unawaited(AppLogger.log(
         'News Tinyfish: URL Google News non risolto, uso riassunto RSS '
         'url=$resolvedUrl',
       ));

@@ -141,7 +141,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         NavigationDelegate(
           onPageStarted: (url) {
             unawaited(AppLogger.log('News WebView: caricamento avviato url=$url'));
-            if (_isHttpArticleUrl(url) && !_isGoogleNewsUrl(url)) {
+            if (_isHttpArticleUrl(url) &&
+                !_isGoogleNewsUrl(url) &&
+                !_isGoogleConsentUrl(url)) {
               unawaited(_loadReaderArticleFromFinalUrl(url));
             }
             if (mounted) {
@@ -473,6 +475,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return uri.host.toLowerCase() == 'news.google.com';
   }
 
+  bool _isGoogleConsentUrl(String url) {
+    final uri = Uri.tryParse(url.trim());
+    if (uri == null) return false;
+    final host = uri.host.toLowerCase();
+    return host == 'consent.google.com' || host.endsWith('.consent.google.com');
+  }
+
   bool _isHttpArticleUrl(String url) {
     final uri = Uri.tryParse(url.trim());
     if (uri == null) return false;
@@ -505,7 +514,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<void> _loadReaderArticleFromFinalUrl(String url) async {
     final finalUrl = url.trim();
-    if (!_isHttpArticleUrl(finalUrl) || _isGoogleNewsUrl(finalUrl)) return;
+    if (!_isHttpArticleUrl(finalUrl) ||
+        _isGoogleNewsUrl(finalUrl) ||
+        _isGoogleConsentUrl(finalUrl)) {
+      return;
+    }
     if (_sameNormalizedUrl(finalUrl, widget.article.link)) return;
     if (_lastFinalReaderFetchUrl != null &&
         _sameNormalizedUrl(_lastFinalReaderFetchUrl!, finalUrl)) {
