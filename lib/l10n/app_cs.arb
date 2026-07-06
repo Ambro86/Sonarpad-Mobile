@@ -1081,6 +1081,14 @@
   },
   "mediaCutterPosition": "Pozice střihu",
   "mediaCutterPositionHint": "Posouvej se vpřed nebo zpět po jedné sekundě.",
+  "mediaCutterHideVideoPreview": "Skrýt video",
+  "@mediaCutterHideVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterVideoPreview": "Náhled videa",
+  "@mediaCutterVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
   "mediaCutterSplit": "Rozdělit",
   "mediaCutterPartsTitle": "Části k uložení",
   "mediaCutterPartsHint": "Klepnutím si část poslechnete. Odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a neuloží se.",
@@ -1227,7 +1235,7 @@
   "@newsBrowseCommunitySources": {
     "description": "Localized text for newsBrowseCommunitySources."
   },
-  "newsAddCommunityInstructions": "Zadejte název zdroje a URL RSS kanálu. Zdroj bude přidán do komunity Sonarpad pro vybraný jazyk.",
+  "newsAddCommunityInstructions": "Zadejte název zdroje a URL RSS kanálu nebo webu. Sonarpad použije vybraný jazyk zpráv a pokud zadáte web, pokusí se automaticky najít kanál.",
   "@newsAddCommunityInstructions": {
     "description": "Localized text for newsAddCommunityInstructions."
   },
@@ -1235,7 +1243,7 @@
   "@newsCommunitySourceName": {
     "description": "Localized text for newsCommunitySourceName."
   },
-  "newsCommunitySourceUrl": "URL RSS kanálu",
+  "newsCommunitySourceUrl": "URL RSS kanálu nebo webu",
   "@newsCommunitySourceUrl": {
     "description": "Localized text for newsCommunitySourceUrl."
   },
@@ -1243,11 +1251,11 @@
   "@newsCommunitySubmit": {
     "description": "Localized text for newsCommunitySubmit."
   },
-  "newsCommunityChecking": "Kontroluji kanál...",
+  "newsCommunityChecking": "Kontroluji kanál nebo web...",
   "@newsCommunityChecking": {
     "description": "Localized text for newsCommunityChecking."
   },
-  "newsCommunityMissingFields": "Zadejte název a URL kanálu.",
+  "newsCommunityMissingFields": "Zadejte název a URL kanálu nebo webu.",
   "@newsCommunityMissingFields": {
     "description": "Localized text for newsCommunityMissingFields."
   },

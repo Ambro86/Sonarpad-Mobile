@@ -417,6 +417,12 @@ abstract class AppLocalizations {
   /// Localized text for mediaCutterPositionHint.
   String get mediaCutterPositionHint;
 
+  /// Localized text for mediaCutterHideVideoPreview.
+  String get mediaCutterHideVideoPreview;
+
+  /// Localized text for mediaCutterVideoPreview.
+  String get mediaCutterVideoPreview;
+
   /// Localized text for mediaCutterSplit.
   String get mediaCutterSplit;
 

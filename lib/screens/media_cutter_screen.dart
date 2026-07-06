@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -119,6 +120,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   String _displayName = '';
   String _outputDirectory = '';
   bool _isVideo = false;
+  bool _showVideoPreview = false;
   bool _loading = false;
   bool _saving = false;
   bool _playing = false;
@@ -265,6 +267,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _inputPath = path;
       _displayName = p.basename(path);
       _isVideo = _isVideoInput(path);
+      _showVideoPreview = false;
       _duration = Duration.zero;
       _position = Duration.zero;
       _playing = false;
@@ -312,7 +315,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           _rebuildParts();
         });
       } else {
-        final duration = await _audioPlayer.setFilePath(path);
+        final duration = await _audioPlayer.setAudioSource(
+          AudioSource.uri(
+            Uri.file(path),
+            tag: MediaItem(
+              id: 'media_cutter:${File(path).absolute.path}',
+              album: 'Sonarpad',
+              title: _displayName.isEmpty ? p.basename(path) : _displayName,
+            ),
+          ),
+        );
         setState(() {
           _duration = duration ?? Duration.zero;
           _position = Duration.zero;
@@ -1409,6 +1421,32 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   void _showSnack(String message) => showStatusMessage(context, message);
 
+
+  Widget _buildVideoPreview(AppLocalizations l10n) {
+    if (!_isVideo || !_showVideoPreview) return const SizedBox();
+    final controller = _videoController;
+    if (controller == null || !controller.value.isInitialized) {
+      return const SizedBox();
+    }
+    final aspectRatio = controller.value.aspectRatio <= 0
+        ? 16 / 9
+        : controller.value.aspectRatio;
+
+    return Semantics(
+      container: true,
+      label: l10n.mediaCutterVideoPreview,
+      child: ExcludeSemantics(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: AspectRatio(
+            aspectRatio: aspectRatio,
+            child: VideoPlayer(controller),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPositionSlider(AppLocalizations l10n) {
     if (_duration == Duration.zero) return const SizedBox();
     final position = _clampPosition(_position);
@@ -1590,6 +1628,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               const SizedBox(height: 16),
               const LinearProgressIndicator(),
             ],
+            if (_isVideo && _showVideoPreview) ...[
+              const SizedBox(height: 16),
+              _buildVideoPreview(l10n),
+            ],
             const SizedBox(height: 20),
             _buildPositionSlider(l10n),
             const SizedBox(height: 16),
@@ -1603,6 +1645,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   icon: Icon(_playing ? Icons.pause : Icons.play_arrow),
                   label: Text(_playing ? l10n.pause : l10n.play),
                 ),
+                if (_isVideo)
+                  OutlinedButton.icon(
+                    onPressed: canUseMedia
+                        ? () => setState(
+                              () => _showVideoPreview = !_showVideoPreview,
+                            )
+                        : null,
+                    icon: Icon(
+                      _showVideoPreview ? Icons.videocam_off : Icons.videocam,
+                    ),
+                    label: Text(
+                      _showVideoPreview
+                          ? l10n.mediaCutterHideVideoPreview
+                          : l10n.enableVideo,
+                    ),
+                  ),
                 FilledButton.icon(
                   onPressed: canUseMedia ? _splitHere : null,
                   icon: const Icon(Icons.content_cut),

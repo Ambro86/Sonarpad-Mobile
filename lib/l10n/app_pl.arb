@@ -3256,6 +3256,14 @@
   },
   "mediaCutterPosition": "Pozycja cięcia",
   "mediaCutterPositionHint": "Przesuwaj do przodu lub do tyłu o jedną sekundę.",
+  "mediaCutterHideVideoPreview": "Ukryj wideo",
+  "@mediaCutterHideVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterVideoPreview": "Podgląd wideo",
+  "@mediaCutterVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
   "mediaCutterSplit": "Podziel",
   "mediaCutterPartsTitle": "Części do zapisania",
   "mediaCutterPartsHint": "Stuknij część, aby jej posłuchać. Usunięte części znikają z listy, są pomijane podczas odtwarzania i nie zostaną zapisane.",
@@ -3402,7 +3410,7 @@
   "@newsBrowseCommunitySources": {
     "description": "Localized text for newsBrowseCommunitySources."
   },
-  "newsAddCommunityInstructions": "Wpisz tytuł źródła i adres kanału RSS. Źródło zostanie dodane do społeczności Sonarpad dla wybranego języka.",
+  "newsAddCommunityInstructions": "Wpisz tytuł źródła oraz adres kanału RSS albo strony internetowej. Sonarpad użyje wybranego języka wiadomości, a jeśli wpiszesz stronę, spróbuje automatycznie znaleźć kanał.",
   "@newsAddCommunityInstructions": {
     "description": "Localized text for newsAddCommunityInstructions."
   },
@@ -3410,7 +3418,7 @@
   "@newsCommunitySourceName": {
     "description": "Localized text for newsCommunitySourceName."
   },
-  "newsCommunitySourceUrl": "Adres kanału RSS",
+  "newsCommunitySourceUrl": "Adres kanału RSS lub strony",
   "@newsCommunitySourceUrl": {
     "description": "Localized text for newsCommunitySourceUrl."
   },
@@ -3418,11 +3426,11 @@
   "@newsCommunitySubmit": {
     "description": "Localized text for newsCommunitySubmit."
   },
-  "newsCommunityChecking": "Sprawdzanie kanału...",
+  "newsCommunityChecking": "Sprawdzanie kanału lub strony...",
   "@newsCommunityChecking": {
     "description": "Localized text for newsCommunityChecking."
   },
-  "newsCommunityMissingFields": "Wpisz tytuł i adres kanału.",
+  "newsCommunityMissingFields": "Wpisz tytuł i adres kanału lub strony.",
   "@newsCommunityMissingFields": {
     "description": "Localized text for newsCommunityMissingFields."
   },

@@ -1084,6 +1084,14 @@
   },
   "mediaCutterPosition": "Posição de corte",
   "mediaCutterPositionHint": "Avança ou recua um segundo de cada vez.",
+  "mediaCutterHideVideoPreview": "Ocultar vídeo",
+  "@mediaCutterHideVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterVideoPreview": "Pré-visualização do vídeo",
+  "@mediaCutterVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
   "mediaCutterSplit": "Dividir",
   "mediaCutterPartsTitle": "Partes a guardar",
   "mediaCutterPartsHint": "Toque numa parte para a ouvir. As partes eliminadas desaparecem da lista, são ignoradas durante a reprodução e não serão guardadas.",
@@ -1230,7 +1238,7 @@
   "@newsBrowseCommunitySources": {
     "description": "Localized text for newsBrowseCommunitySources."
   },
-  "newsAddCommunityInstructions": "Introduza o título da fonte e o URL do feed RSS. A fonte será adicionada à comunidade Sonarpad para o idioma selecionado.",
+  "newsAddCommunityInstructions": "Introduza o título da fonte e o URL do feed RSS ou do site. O Sonarpad usará o idioma de notícias selecionado e, se introduzir um site, tentará encontrar o feed automaticamente.",
   "@newsAddCommunityInstructions": {
     "description": "Localized text for newsAddCommunityInstructions."
   },
@@ -1238,7 +1246,7 @@
   "@newsCommunitySourceName": {
     "description": "Localized text for newsCommunitySourceName."
   },
-  "newsCommunitySourceUrl": "URL do feed RSS",
+  "newsCommunitySourceUrl": "URL do feed RSS ou do site",
   "@newsCommunitySourceUrl": {
     "description": "Localized text for newsCommunitySourceUrl."
   },
@@ -1246,11 +1254,11 @@
   "@newsCommunitySubmit": {
     "description": "Localized text for newsCommunitySubmit."
   },
-  "newsCommunityChecking": "A verificar feed...",
+  "newsCommunityChecking": "A verificar feed ou site...",
   "@newsCommunityChecking": {
     "description": "Localized text for newsCommunityChecking."
   },
-  "newsCommunityMissingFields": "Introduza o título e o URL do feed.",
+  "newsCommunityMissingFields": "Introduza o título e o URL do feed ou do site.",
   "@newsCommunityMissingFields": {
     "description": "Localized text for newsCommunityMissingFields."
   },

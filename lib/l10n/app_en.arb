@@ -1078,6 +1078,14 @@
   },
   "mediaCutterPosition": "Cut position",
   "mediaCutterPositionHint": "Move forward or backward one second at a time.",
+  "mediaCutterHideVideoPreview": "Hide video",
+  "@mediaCutterHideVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterVideoPreview": "Video preview",
+  "@mediaCutterVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
   "mediaCutterSplit": "Split",
   "mediaCutterPartsTitle": "Parts to save",
   "mediaCutterPartsHint": "Tap a part to preview it. Deleted parts disappear from the list, are skipped during playback, and will not be saved.",
@@ -1224,7 +1232,7 @@
   "@newsBrowseCommunitySources": {
     "description": "Localized text for newsBrowseCommunitySources."
   },
-  "newsAddCommunityInstructions": "Enter the source title and RSS feed URL. The source will be added to the Sonarpad community for the selected language.",
+  "newsAddCommunityInstructions": "Enter the source title and an RSS feed URL or website URL. Sonarpad will use the selected news language and, if you enter a website, will try to find the feed automatically.",
   "@newsAddCommunityInstructions": {
     "description": "Localized text for newsAddCommunityInstructions."
   },
@@ -1232,7 +1240,7 @@
   "@newsCommunitySourceName": {
     "description": "Localized text for newsCommunitySourceName."
   },
-  "newsCommunitySourceUrl": "RSS feed URL",
+  "newsCommunitySourceUrl": "RSS feed or website URL",
   "@newsCommunitySourceUrl": {
     "description": "Localized text for newsCommunitySourceUrl."
   },
@@ -1240,11 +1248,11 @@
   "@newsCommunitySubmit": {
     "description": "Localized text for newsCommunitySubmit."
   },
-  "newsCommunityChecking": "Checking feed...",
+  "newsCommunityChecking": "Checking feed or website...",
   "@newsCommunityChecking": {
     "description": "Localized text for newsCommunityChecking."
   },
-  "newsCommunityMissingFields": "Enter the title and feed URL.",
+  "newsCommunityMissingFields": "Enter the title and feed or website URL.",
   "@newsCommunityMissingFields": {
     "description": "Localized text for newsCommunityMissingFields."
   },

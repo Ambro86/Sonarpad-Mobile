@@ -573,22 +573,28 @@ class _CommunityNewsSourcesScreenState
             itemBuilder: (context, index) {
               final source = sources[index];
               final adding = _addingUrls.contains(source.uri.toString());
+              final sourceUrl = source.uri.toString();
+              final semanticLabel = '${source.name}, $sourceUrl';
               return Semantics(
                 button: true,
-                label: source.name,
+                enabled: !adding,
+                label: semanticLabel,
                 hint: l10n.newsCommunitySourceTapHint,
-                child: ListTile(
-                  leading: const Icon(Icons.rss_feed),
-                  title: Text(source.name),
-                  subtitle: Text(source.uri.toString()),
-                  trailing: adding
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.add),
-                  onTap: adding ? null : () => _addToLibrary(source),
+                onTap: adding ? null : () => _addToLibrary(source),
+                child: ExcludeSemantics(
+                  child: ListTile(
+                    leading: const Icon(Icons.rss_feed),
+                    title: Text(source.name),
+                    subtitle: Text(sourceUrl),
+                    trailing: adding
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.add),
+                    onTap: adding ? null : () => _addToLibrary(source),
+                  ),
                 ),
               );
             },

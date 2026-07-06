@@ -1084,6 +1084,14 @@
   },
   "mediaCutterPosition": "Position de coupe",
   "mediaCutterPositionHint": "Avance ou recule d’une seconde à la fois.",
+  "mediaCutterHideVideoPreview": "Masquer la vidéo",
+  "@mediaCutterHideVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterVideoPreview": "Aperçu vidéo",
+  "@mediaCutterVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
   "mediaCutterSplit": "Diviser",
   "mediaCutterPartsTitle": "Parties à enregistrer",
   "mediaCutterPartsHint": "Touchez une partie pour l’écouter. Les parties supprimées disparaissent de la liste, sont ignorées pendant la lecture et ne seront pas enregistrées.",
@@ -1230,7 +1238,7 @@
   "@newsBrowseCommunitySources": {
     "description": "Localized text for newsBrowseCommunitySources."
   },
-  "newsAddCommunityInstructions": "Saisissez le titre de la source et l’URL du flux RSS. La source sera ajoutée à la communauté Sonarpad pour la langue sélectionnée.",
+  "newsAddCommunityInstructions": "Saisissez le titre de la source et l’URL du flux RSS ou du site web. Sonarpad utilisera la langue des actualités sélectionnée et, si vous saisissez un site, essaiera de trouver automatiquement le flux.",
   "@newsAddCommunityInstructions": {
     "description": "Localized text for newsAddCommunityInstructions."
   },
@@ -1238,7 +1246,7 @@
   "@newsCommunitySourceName": {
     "description": "Localized text for newsCommunitySourceName."
   },
-  "newsCommunitySourceUrl": "URL du flux RSS",
+  "newsCommunitySourceUrl": "URL du flux RSS ou du site web",
   "@newsCommunitySourceUrl": {
     "description": "Localized text for newsCommunitySourceUrl."
   },
@@ -1246,11 +1254,11 @@
   "@newsCommunitySubmit": {
     "description": "Localized text for newsCommunitySubmit."
   },
-  "newsCommunityChecking": "Vérification du flux...",
+  "newsCommunityChecking": "Vérification du flux ou du site...",
   "@newsCommunityChecking": {
     "description": "Localized text for newsCommunityChecking."
   },
-  "newsCommunityMissingFields": "Saisissez le titre et l’URL du flux.",
+  "newsCommunityMissingFields": "Saisissez le titre et l’URL du flux ou du site.",
   "@newsCommunityMissingFields": {
     "description": "Localized text for newsCommunityMissingFields."
   },

@@ -181,6 +181,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterPositionHint => 'Posouvej se vpřed nebo zpět po jedné sekundě.';
 
   @override
+  String get mediaCutterHideVideoPreview => 'Skrýt video';
+
+  @override
+  String get mediaCutterVideoPreview => 'Náhled videa';
+
+  @override
   String get mediaCutterSplit => 'Rozdělit';
 
   @override
@@ -468,22 +474,22 @@ class AppLocalizationsCs extends AppLocalizations {
   String get newsBrowseCommunitySources => 'Komunitní zdroje';
 
   @override
-  String get newsAddCommunityInstructions => 'Zadejte název zdroje a URL RSS kanálu. Zdroj bude přidán do komunity Sonarpad pro vybraný jazyk.';
+  String get newsAddCommunityInstructions => 'Zadejte název zdroje a URL RSS kanálu nebo webu. Sonarpad použije vybraný jazyk zpráv a pokud zadáte web, pokusí se automaticky najít kanál.';
 
   @override
   String get newsCommunitySourceName => 'Název zdroje';
 
   @override
-  String get newsCommunitySourceUrl => 'URL RSS kanálu';
+  String get newsCommunitySourceUrl => 'URL RSS kanálu nebo webu';
 
   @override
   String get newsCommunitySubmit => 'Zkontrolovat a přidat';
 
   @override
-  String get newsCommunityChecking => 'Kontroluji kanál...';
+  String get newsCommunityChecking => 'Kontroluji kanál nebo web...';
 
   @override
-  String get newsCommunityMissingFields => 'Zadejte název a URL kanálu.';
+  String get newsCommunityMissingFields => 'Zadejte název a URL kanálu nebo webu.';
 
   @override
   String get newsCommunityAdded => 'Zdroj byl úspěšně přidán do komunity Sonarpad.';

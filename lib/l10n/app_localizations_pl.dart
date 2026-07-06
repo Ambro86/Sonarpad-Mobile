@@ -181,6 +181,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get mediaCutterPositionHint => 'Przesuwaj do przodu lub do tyłu o jedną sekundę.';
 
   @override
+  String get mediaCutterHideVideoPreview => 'Ukryj wideo';
+
+  @override
+  String get mediaCutterVideoPreview => 'Podgląd wideo';
+
+  @override
   String get mediaCutterSplit => 'Podziel';
 
   @override
@@ -468,22 +474,22 @@ class AppLocalizationsPl extends AppLocalizations {
   String get newsBrowseCommunitySources => 'Źródła społeczności';
 
   @override
-  String get newsAddCommunityInstructions => 'Wpisz tytuł źródła i adres kanału RSS. Źródło zostanie dodane do społeczności Sonarpad dla wybranego języka.';
+  String get newsAddCommunityInstructions => 'Wpisz tytuł źródła oraz adres kanału RSS albo strony internetowej. Sonarpad użyje wybranego języka wiadomości, a jeśli wpiszesz stronę, spróbuje automatycznie znaleźć kanał.';
 
   @override
   String get newsCommunitySourceName => 'Tytuł źródła';
 
   @override
-  String get newsCommunitySourceUrl => 'Adres kanału RSS';
+  String get newsCommunitySourceUrl => 'Adres kanału RSS lub strony';
 
   @override
   String get newsCommunitySubmit => 'Sprawdź i dodaj';
 
   @override
-  String get newsCommunityChecking => 'Sprawdzanie kanału...';
+  String get newsCommunityChecking => 'Sprawdzanie kanału lub strony...';
 
   @override
-  String get newsCommunityMissingFields => 'Wpisz tytuł i adres kanału.';
+  String get newsCommunityMissingFields => 'Wpisz tytuł i adres kanału lub strony.';
 
   @override
   String get newsCommunityAdded => 'Źródło dodane do społeczności Sonarpad.';
