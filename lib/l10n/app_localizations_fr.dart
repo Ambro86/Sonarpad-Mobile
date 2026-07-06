@@ -159,174 +159,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterTitle => 'Découper un média';
-
-  @override
-  String get mediaCutterInstruction1 => 'Ouvre un fichier audio ou vidéo, lance la lecture, puis place-toi au point où tu veux couper.';
-
-  @override
-  String get mediaCutterInstruction2 => 'Mettez en pause, appuyez sur Diviser, puis supprimez les parties inutiles dans la section Parties à enregistrer et appuyez sur Enregistrer.';
-
-  @override
-  String get mediaCutterOpenFile => 'Ouvrir un fichier média';
-
-  @override
-  String mediaCutterSelectedFile(String fileName) {
-    return 'Fichier sélectionné : $fileName';
-  }
-
-  @override
-  String get mediaCutterPosition => 'Position de coupe';
-
-  @override
-  String get mediaCutterPositionHint => 'Avance ou recule d’une seconde à la fois.';
-
-  @override
-  String get mediaCutterHideVideoPreview => 'Masquer la vidéo';
-
-  @override
-  String get mediaCutterVideoPreview => 'Aperçu vidéo';
-
-  @override
-  String get mediaCutterSplit => 'Diviser';
-
-  @override
-  String get mediaCutterPartsTitle => 'Parties à enregistrer';
-
-  @override
-  String get mediaCutterPartsHint => 'Touchez une partie pour l’écouter. Les parties supprimées disparaissent de la liste, sont ignorées pendant la lecture et ne seront pas enregistrées.';
-
-  @override
-  String mediaCutterPartLabel(int index) {
-    return 'Partie $index';
-  }
-
-  @override
-  String mediaCutterPartRange(String start, String end) {
-    return 'De $start à $end';
-  }
-
-  @override
-  String get mediaCutterSave => 'Enregistrer';
-
-  @override
-  String get mediaCutterReady => 'Prêt.';
-
-  @override
-  String get mediaCutterNoFile => 'Ouvre d’abord un fichier média.';
-
-  @override
-  String get mediaCutterInvalidSplitPoint => 'Choisis un point à l’intérieur du fichier, pas le début ni la fin.';
-
-  @override
-  String get mediaCutterSplitAlreadyExists => 'Il y a déjà une division à cet endroit.';
-
-  @override
-  String mediaCutterSplitAdded(String position) {
-    return 'Division ajoutée à $position.';
-  }
-
-  @override
-  String get mediaCutterSaving => 'Enregistrement du fichier...';
-
-  @override
-  String mediaCutterSaved(String fileName) {
-    return 'Fichier enregistré : $fileName';
-  }
-
-  @override
-  String mediaCutterLoadFailed(Object error) {
-    return 'Impossible d’ouvrir le fichier : $error';
-  }
-
-  @override
-  String mediaCutterSaveFailed(Object error) {
-    return 'Échec de l’enregistrement : $error';
-  }
-
-  @override
-  String get mediaCutterNoPartsToSave => 'Conservez au moins une partie avant d’enregistrer.';
-
-
-  @override
-  String get mediaCutterRestoreDeletedPart => 'Restaurer une partie supprimée';
-
-  @override
-  String get mediaCutterNoDeletedParts => 'Aucune partie supprimée à restaurer.';
-
-  @override
-  String get mediaCutterPartDeleteAction => 'Supprimer';
-
-  @override
-  String get mediaCutterPartEffectsAction => 'Régler les effets';
-
-  @override
-  String get mediaCutterPartEffectsTitle => 'Effets de la partie';
-
-  @override
-  String get mediaCutterPartEffectsDescription => 'Réglez le volume et l’effet uniquement pour cette partie.';
-
-  @override
-  String mediaCutterPartVolumeValue(int percent) {
-    return 'Volume de la partie : $percent %';
-  }
-
-  @override
-  String get mediaCutterPartEffect => 'Effet audio';
-
-  @override
-  String get mediaCutterPartEffectNone => 'Aucun effet';
-
-  @override
-  String get mediaCutterPartEffectEcho => 'Écho léger';
-
-  @override
-  String get mediaCutterPartEffectReverb => 'Réverbération légère';
-
-  @override
-  String get mediaCutterPartEffectFadeIn => 'Fondu entrant';
-
-  @override
-  String get mediaCutterPartEffectFadeOut => 'Fondu sortant';
-
-  @override
-  String mediaCutterPartEffectAmountValue(int percent) {
-    return 'Intensité de l’effet : $percent %';
-  }
-
-  @override
-  String get mediaCutterPartPreviewAction => 'Écouter l’aperçu';
-
-  @override
-  String get mediaCutterPartEffectsSavedOnly => 'L’aperçu utilise le volume choisi. Les effets audio sont appliqués lors de l’enregistrement.';
-
-  @override
-  String mediaCutterPartEffectsApplied(String start, String end) {
-    return 'Effets mis à jour pour la partie de $start à $end.';
-  }
-
-  @override
-  String mediaCutterPartEffectsSummary(int percent, String effect) {
-    return 'Volume $percent %, effet $effect';
-  }
-
-
-
-  @override
-  String get mediaCutterPartTapHint =>
-      'Touchez deux fois pour écouter cette partie. Utilisez les actions Supprimer ou Régler les effets.';
-
-  @override
-  String mediaCutterPartDeleted(String start, String end) {
-    return 'Partie supprimée de $start à $end.';
-  }
-
-  @override
-  String mediaCutterPartRestored(String start, String end) {
-    return 'Partie restaurée de $start à $end.';
-  }
-
-  @override
   String get donations => 'Dons';
 
   @override
@@ -444,18 +276,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get moveToPosition => 'Déplacer à la position';
 
   @override
-  String get sortPodcastsAlphabetically => 'Trier les podcasts alphabétiquement';
-
-  @override
-  String get sortRadioFavoritesAlphabetically => 'Trier les favoris radio alphabétiquement';
-
-  @override
-  String get podcastsSortedAlphabetically => 'Podcasts triés par ordre alphabétique.';
-
-  @override
-  String get radioFavoritesSortedAlphabetically => 'Radios favorites triées par ordre alphabétique.';
-
-  @override
   String positionLabel(int position, String targetName) {
     return 'Position $position: avant $targetName';
   }
@@ -468,67 +288,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get addCustomNewsSource => 'Ajouter une source RSS personnalisée';
-
-  @override
-  String get newsAddCommunitySource => 'Ajouter une source à la communauté Sonarpad';
-
-  @override
-  String get newsBrowseCommunitySources => 'Sources de la communauté';
-
-  @override
-  String get newsAddCommunityInstructions => 'Saisissez le titre de la source et l’URL du flux RSS ou du site web. Sonarpad utilisera la langue des actualités sélectionnée et, si vous saisissez un site, essaiera de trouver automatiquement le flux.';
-
-  @override
-  String get newsCommunitySourceName => 'Titre de la source';
-
-  @override
-  String get newsCommunitySourceUrl => 'URL du flux RSS ou du site web';
-
-  @override
-  String get newsCommunitySubmit => 'Vérifier et ajouter';
-
-  @override
-  String get newsCommunityChecking => 'Vérification du flux ou du site...';
-
-  @override
-  String get newsCommunityMissingFields => 'Saisissez le titre et l’URL du flux ou du site.';
-
-  @override
-  String get newsCommunityAdded => 'Source ajoutée correctement à la communauté Sonarpad.';
-
-  @override
-  String get newsCommunitySourcesTitle => 'Sources de la communauté';
-
-  @override
-  String get newsCommunitySourcesEmpty => 'Aucune source de la communauté disponible pour cette langue.';
-
-  @override
-  String get newsCommunitySourceTapHint => 'Touchez pour l’ajouter à votre bibliothèque d’actualités.';
-
-  @override
-  String newsCommunityAddError(Object error) {
-    return 'Erreur lors de l’ajout de la source : $error';
-  }
-
-  @override
-  String newsCommunitySelectedLanguage(Object language) {
-    return 'Langue sélectionnée : $language';
-  }
-
-  @override
-  String newsCommunitySourcesError(Object error) {
-    return 'Erreur de chargement des sources de la communauté : $error';
-  }
-
-  @override
-  String newsCommunitySourceAddedToLibrary(Object name) {
-    return '$name ajoutée à votre bibliothèque d’actualités.';
-  }
-
-  @override
-  String newsCommunityAddToLibraryError(Object error) {
-    return 'Erreur lors de l’ajout à la bibliothèque : $error';
-  }
 
   @override
   String get newsSourceName => 'Nom de la source ou du site';
@@ -1057,26 +816,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get documentTypeLabel => 'Document';
 
   @override
-
+  String get documentPosition => 'Position du document';
 
   @override
   String get documentRemainingLessThanOneMinute => 'moins de 1 minute restante';
 
   @override
-  String documentRemainingMinutes(Object minutes) {
+  String documentRemainingMinutes(int minutes) {
     return 'environ $minutes minutes restantes';
   }
 
   @override
-  String documentRemainingHours(Object hours) {
+  String documentRemainingHours(int hours) {
     return 'environ $hours heures restantes';
   }
 
   @override
-  String documentRemainingHoursMinutes(Object hours, Object minutes) {
+  String documentRemainingHoursMinutes(int hours, int minutes) {
     return 'environ $hours heures et $minutes minutes restantes';
   }
-  String get documentPosition => 'Position du document';
 
   @override
   String get folderTypeLabel => 'Dossier';
@@ -1149,9 +907,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get documentIndex => 'Table des matières';
-
-  @override
-  String get documentFootnoteLabel => 'Note de bas de page';
 
   @override
   String get documentSearchFieldLabel => 'Texte à rechercher';
@@ -1258,13 +1013,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Reprenez les documents, les podcasts et les contenus multimédias là où vous les aviez laissés.';
 
   @override
-  String get settingsIncludeFootnotesInText => 'Inclure les notes de bas de page dans le texte';
-
-  @override
-  String get settingsIncludeFootnotesInTextHint =>
-      'Pour les EPUB compatibles, affiche le texte de la note juste après le paragraphe qui la cite.';
-
-  @override
   String get settingsDocumentSliderStep => 'Pas du curseur des documents';
 
   @override
@@ -1272,10 +1020,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Règle de combien le curseur de position du document avance ou recule avec un balayage vers le haut ou vers le bas.';
 
   @override
-  String get settingsReadingSleepTimer => "Minuteur d’arrêt de lecture";
+  String get settingsReadingSleepTimer => 'Minuteur d’arrêt de lecture';
 
   @override
-  String get settingsReadingSleepTimerOff => "Désactivé";
+  String get settingsReadingSleepTimerOff => 'Désactivé';
 
   @override
   String settingsReadingSleepTimerMinutes(int minutes) {
@@ -1283,10 +1031,12 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get settingsReadingSleepTimerHint => "Arrête automatiquement la lecture du document en cours après la durée choisie et enregistre le point d’arrêt. Le compte à rebours redémarre chaque fois que vous lancez la lecture d’un document.";
+  String get settingsReadingSleepTimerHint =>
+      'Arrête automatiquement la lecture du document en cours après la durée choisie et enregistre le point d’arrêt. Le compte à rebours redémarre chaque fois que vous lancez la lecture d’un document.';
 
   @override
-  String get documentReadingSleepTimerStopped => "Minuteur d’arrêt : lecture arrêtée et position enregistrée.";
+  String get documentReadingSleepTimerStopped =>
+      'Minuteur d’arrêt : lecture arrêtée et position enregistrée.';
 
   @override
   String get settingsSeekStep =>
@@ -1643,100 +1393,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get bookmarkRemoved => 'Signet supprimé.';
 
-
-  @override
-  String get settingsMultipleDocumentBookmarks => 'Autoriser plusieurs signets dans les documents';
-
-  @override
-  String get settingsMultipleDocumentBookmarksHint =>
-      'Si cette option est désactivée, un seul signet est conservé par document. Si elle est activée, vous pouvez enregistrer plusieurs signets dans le même document.';
-
-
-
-  @override
-  String get pharmacyFeatureTitle => 'Médicaments, parapharmacie et compléments';
-
-  @override
-  String get pharmacyProductsSectionTitle => 'Parapharmacie et compléments';
-
-  @override
-  String get pharmacyProductsLoadingTitle => 'Recherche de parapharmacie et de compléments...';
-
-  @override
-  String get pharmacyProductsErrorTitle => 'Erreur lors de la recherche de parapharmacie et de compléments';
-
-  @override
-  String get pharmacyProductsNoResultsTitle => 'Aucun produit de parapharmacie ou complément trouvé';
-
-  @override
-  String get settingsVideoLandscapeFullscreen => 'Vidéo horizontale en plein écran';
-  @override
-  String get settingsVideoLandscapeFullscreenHint =>
-      'Lorsque vous activez la vidéo, elle s’affiche en plein écran en orientation horizontale. Les radios uniquement audio ne changent pas.';
-
-  @override
-  String get settingsPodcastCacheTitle => 'Cache des podcasts';
-
-  @override
-  String get settingsPodcastCacheHint => 'Vide uniquement les fichiers temporaires des podcasts. Les abonnements, l’historique et les fichiers audio importés restent intacts.';
-
-  @override
-  String settingsPodcastCacheSize(String size) {
-    return 'Espace utilisé : $size';
-  }
-
-  @override
-  String get clearPodcastCache => 'Vider le cache des podcasts';
-
-  @override
-  String get confirmClearPodcastCacheTitle => 'Vider le cache des podcasts ?';
-
-  @override
-  String get confirmClearPodcastCacheMessage => 'Les fichiers temporaires des podcasts seront supprimés. Les abonnements et l’historique des épisodes seront conservés.';
-
-  @override
-  String podcastCacheCleared(String size) {
-    return 'Cache des podcasts vidé : $size libérés.';
-  }
-
-  @override
-  String get podcastCacheEmpty => 'Le cache des podcasts est déjà vide.';
-
-  @override
-  String get documentGoToBookmarkAction => 'Aller au signet';
-
-  @override
-  String get documentChooseBookmarkTitle => 'Choisir un signet';
-
-  @override
-  String get documentDeleteBookmarkAction => 'Supprimer le signet';
-
-  @override
-  String get documentKeepBookmarkTitle => 'Quel signet voulez-vous conserver ?';
-
-  @override
-  String get documentKeepBookmarkMessage =>
-      'Les signets multiples sont désactivés. Choisissez le signet à conserver : les autres seront supprimés.';
-
-  @override
-  String documentBookmarkChoiceLabel(int order, int paragraph) {
-    return 'Signet {order}, paragraphe {paragraph}'
-        .replaceAll('{order}', '$order')
-        .replaceAll('{paragraph}', '$paragraph');
-  }
-
-  @override
-  String documentBookmarkChoiceLabelWithPreview(
-    int order,
-    int paragraph,
-    String preview,
-  ) {
-    return 'Signet {order}, paragraphe {paragraph}. {preview}'
-        .replaceAll('{order}', '$order')
-        .replaceAll('{paragraph}', '$paragraph')
-        .replaceAll('{preview}', preview);
-  }
-
   @override
   String get docEmpty => 'Le document est vide';
 
@@ -1875,7 +1531,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get logCleared => 'Log vidé';
 
   @override
-  String get parafarmacoDetailReadyAnnouncement => 'Fiche produit chargée. Balayez vers la droite pour choisir les sections.';
+  String get parafarmacoDetailReadyAnnouncement =>
+      'Fiche produit chargée. Balayez vers la droite pour choisir les sections.';
 
   @override
   String get systemLog => 'Journal système';
@@ -2580,13 +2237,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get podcastSelectDate => 'Sélectionner une date';
 
   @override
-  String get podcastNoDatesAvailable => 'Aucune date disponible pour ces épisodes.';
+  String get podcastNoDatesAvailable =>
+      'Aucune date disponible pour ces épisodes.';
 
   @override
   String get podcastChapters => 'Chapitres';
 
   @override
-  String get podcastChaptersUnavailable => 'Aucun chapitre disponible pour cet épisode.';
+  String get podcastChaptersUnavailable =>
+      'Aucun chapitre disponible pour cet épisode.';
 
   @override
   String get podcastUnplayed => 'Épisodes non écoutés';
@@ -2649,4 +2308,398 @@ class AppLocalizationsFr extends AppLocalizations {
   String routeNavigationFromTo(Object from, Object to, Object date) {
     return 'Détails de navigation de $from à $to - $date';
   }
+
+  @override
+  String get sortPodcastsAlphabetically =>
+      'Trier les podcasts alphabétiquement';
+
+  @override
+  String get sortRadioFavoritesAlphabetically =>
+      'Trier les favoris radio alphabétiquement';
+
+  @override
+  String get podcastsSortedAlphabetically =>
+      'Podcasts triés par ordre alphabétique.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically =>
+      'Radios favorites triées par ordre alphabétique.';
+
+  @override
+  String get settingsIncludeFootnotesInText =>
+      'Inclure les notes de bas de page dans le texte';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'Pour les EPUB compatibles, affiche le texte de la note juste après le paragraphe qui la cite.';
+
+  @override
+  String get documentFootnoteLabel => 'Note de bas de page';
+
+  @override
+  String get settingsMultipleDocumentBookmarks =>
+      'Autoriser plusieurs signets dans les documents';
+
+  @override
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Si cette option est désactivée, un seul signet est conservé par document. Si elle est activée, vous pouvez enregistrer plusieurs signets dans le même document.';
+
+  @override
+  String get documentGoToBookmarkAction => 'Aller au signet';
+
+  @override
+  String get documentChooseBookmarkTitle => 'Choisir un signet';
+
+  @override
+  String get documentDeleteBookmarkAction => 'Supprimer le signet';
+
+  @override
+  String get documentKeepBookmarkTitle => 'Quel signet voulez-vous conserver ?';
+
+  @override
+  String get documentKeepBookmarkMessage =>
+      'Les signets multiples sont désactivés. Choisissez le signet à conserver : les autres seront supprimés.';
+
+  @override
+  String documentBookmarkChoiceLabel(int order, int paragraph) {
+    return 'Signet $order, paragraphe $paragraph';
+  }
+
+  @override
+  String documentBookmarkChoiceLabelWithPreview(
+      int order, int paragraph, String preview) {
+    return 'Signet $order, paragraphe $paragraph. $preview';
+  }
+
+  @override
+  String get settingsVideoLandscapeFullscreen =>
+      'Vidéo horizontale en plein écran';
+
+  @override
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Lorsque vous activez la vidéo, elle s’affiche en plein écran en orientation horizontale. Les radios uniquement audio ne changent pas.';
+
+  @override
+  String get settingsPodcastCacheTitle => 'Cache des podcasts';
+
+  @override
+  String get settingsPodcastCacheHint =>
+      'Vide uniquement les fichiers temporaires des podcasts. Les abonnements, l’historique et les fichiers audio importés restent intacts.';
+
+  @override
+  String settingsPodcastCacheSize(String size) {
+    return 'Espace utilisé : $size';
+  }
+
+  @override
+  String get clearPodcastCache => 'Vider le cache des podcasts';
+
+  @override
+  String get confirmClearPodcastCacheTitle => 'Vider le cache des podcasts ?';
+
+  @override
+  String get confirmClearPodcastCacheMessage =>
+      'Les fichiers temporaires des podcasts seront supprimés. Les abonnements et l’historique des épisodes seront conservés.';
+
+  @override
+  String podcastCacheCleared(String size) {
+    return 'Cache des podcasts vidé : $size libérés.';
+  }
+
+  @override
+  String get podcastCacheEmpty => 'Le cache des podcasts est déjà vide.';
+
+  @override
+  String get pharmacyFeatureTitle =>
+      'Médicaments, parapharmacie et compléments';
+
+  @override
+  String get pharmacyProductsSectionTitle => 'Parapharmacie et compléments';
+
+  @override
+  String get pharmacyProductsLoadingTitle =>
+      'Recherche de parapharmacie et de compléments...';
+
+  @override
+  String get pharmacyProductsErrorTitle =>
+      'Erreur lors de la recherche de parapharmacie et de compléments';
+
+  @override
+  String get pharmacyProductsNoResultsTitle =>
+      'Aucun produit de parapharmacie ou complément trouvé';
+
+  @override
+  String get mediaCutterTitle => 'Découper un média';
+
+  @override
+  String get mediaCutterInstruction1 =>
+      'Ouvre un fichier audio ou vidéo, lance la lecture, puis place-toi au point où tu veux couper.';
+
+  @override
+  String get mediaCutterInstruction2 =>
+      'Mettez en pause, appuyez sur Diviser, puis supprimez les parties inutiles dans la section Parties à enregistrer et appuyez sur Enregistrer.';
+
+  @override
+  String get mediaCutterOpenFile => 'Ouvrir un fichier média';
+
+  @override
+  String mediaCutterSelectedFile(String fileName) {
+    return 'Fichier sélectionné : $fileName';
+  }
+
+  @override
+  String get mediaCutterPosition => 'Position de coupe';
+
+  @override
+  String get mediaCutterPositionHint =>
+      'Avance ou recule d’une seconde à la fois.';
+
+  @override
+  String get mediaCutterHideVideoPreview => 'Masquer la vidéo';
+
+  @override
+  String get mediaCutterVideoPreview => 'Aperçu vidéo';
+
+  @override
+  String get mediaCutterSplit => 'Diviser';
+
+  @override
+  String get mediaCutterPartsTitle => 'Parties à enregistrer';
+
+  @override
+  String get mediaCutterPartsHint =>
+      'Touchez une partie pour l’écouter. Les parties supprimées disparaissent de la liste, sont ignorées pendant la lecture et ne seront pas enregistrées.';
+
+  @override
+  String mediaCutterPartLabel(int index) {
+    return 'Partie $index';
+  }
+
+  @override
+  String mediaCutterPartRange(String start, String end) {
+    return 'De $start à $end';
+  }
+
+  @override
+  String get mediaCutterSave => 'Enregistrer';
+
+  @override
+  String get mediaCutterReady => 'Prêt.';
+
+  @override
+  String get mediaCutterNoFile => 'Ouvre d’abord un fichier média.';
+
+  @override
+  String get mediaCutterInvalidSplitPoint =>
+      'Choisis un point à l’intérieur du fichier, pas le début ni la fin.';
+
+  @override
+  String get mediaCutterSplitAlreadyExists =>
+      'Il y a déjà une division à cet endroit.';
+
+  @override
+  String mediaCutterSplitAdded(String position) {
+    return 'Division ajoutée à $position.';
+  }
+
+  @override
+  String get mediaCutterSaving => 'Enregistrement du fichier...';
+
+  @override
+  String mediaCutterSaved(String fileName) {
+    return 'Fichier enregistré : $fileName';
+  }
+
+  @override
+  String mediaCutterLoadFailed(Object error) {
+    return 'Impossible d’ouvrir le fichier : $error';
+  }
+
+  @override
+  String mediaCutterSaveFailed(Object error) {
+    return 'Échec de l’enregistrement : $error';
+  }
+
+  @override
+  String get mediaCutterNoPartsToSave =>
+      'Conservez au moins une partie avant d’enregistrer.';
+
+  @override
+  String get mediaCutterRestoreDeletedPart => 'Restaurer une partie supprimée';
+
+  @override
+  String get mediaCutterNoDeletedParts =>
+      'Aucune partie supprimée à restaurer.';
+
+  @override
+  String get mediaCutterPartDeleteAction => 'Supprimer';
+
+  @override
+  String get mediaCutterPartTapHint =>
+      'Touchez deux fois pour écouter cette partie. Utilisez les actions Supprimer ou Régler les effets.';
+
+  @override
+  String mediaCutterPartDeleted(String start, String end) {
+    return 'Partie supprimée de $start à $end.';
+  }
+
+  @override
+  String mediaCutterPartRestored(String start, String end) {
+    return 'Partie restaurée de $start à $end.';
+  }
+
+  @override
+  String get mediaCutterPartEffectsAction => 'Régler les effets';
+
+  @override
+  String get mediaCutterPartEffectsTitle => 'Effets de la partie';
+
+  @override
+  String get mediaCutterPartEffectsDescription =>
+      'Réglez le volume et l’effet uniquement pour cette partie.';
+
+  @override
+  String mediaCutterPartVolumeValue(int percent) {
+    return 'Volume de la partie : $percent %';
+  }
+
+  @override
+  String get mediaCutterPartEffect => 'Effet audio';
+
+  @override
+  String get mediaCutterPartEffectNone => 'Aucun effet';
+
+  @override
+  String get mediaCutterPartEffectEcho => 'Écho léger';
+
+  @override
+  String get mediaCutterPartEffectEchoRoom => 'Écho pièce';
+
+  @override
+  String get mediaCutterPartEffectEchoChamber => 'Écho chambre';
+
+  @override
+  String get mediaCutterPartEffectEchoCathedral => 'Écho cathédrale';
+
+  @override
+  String get mediaCutterPartEffectReverb => 'Réverbération légère';
+
+  @override
+  String get mediaCutterPartEffectChorus => 'Chorus';
+
+  @override
+  String get mediaCutterPartEffectPitchLow => 'Hauteur basse';
+
+  @override
+  String get mediaCutterPartEffectPitchVeryLow => 'Hauteur très basse';
+
+  @override
+  String get mediaCutterPartEffectPitchHigh => 'Hauteur haute';
+
+  @override
+  String get mediaCutterPartEffectPitchVeryHigh => 'Hauteur très haute';
+
+  @override
+  String get mediaCutterPartEffectRobot => 'Voix robot';
+
+  @override
+  String get mediaCutterPartEffectHelicopter => 'Hélicoptère';
+
+  @override
+  String get mediaCutterPartEffectAlien => 'Vibrato alien';
+
+  @override
+  String get mediaCutterPartEffectFadeIn => 'Fondu entrant';
+
+  @override
+  String get mediaCutterPartEffectFadeOut => 'Fondu sortant';
+
+  @override
+  String mediaCutterPartEffectAmountValue(int percent) {
+    return 'Intensité de l’effet : $percent %';
+  }
+
+  @override
+  String get mediaCutterPartPreviewAction => 'Écouter l’aperçu';
+
+  @override
+  String get mediaCutterPartEffectsSavedOnly =>
+      'L’aperçu utilise le volume choisi. Les effets audio sont appliqués lors de l’enregistrement.';
+
+  @override
+  String mediaCutterPartEffectsApplied(String start, String end) {
+    return 'Effets mis à jour pour la partie de $start à $end.';
+  }
+
+  @override
+  String mediaCutterPartEffectsSummary(int percent, String effect) {
+    return 'Volume $percent %, effet $effect';
+  }
+
+  @override
+  String get newsAddCommunitySource =>
+      'Ajouter une source à la communauté Sonarpad';
+
+  @override
+  String get newsBrowseCommunitySources => 'Sources de la communauté';
+
+  @override
+  String get newsAddCommunityInstructions =>
+      'Saisissez le titre de la source et l’URL du flux RSS ou du site web. Sonarpad utilisera la langue des actualités sélectionnée et, si vous saisissez un site, essaiera de trouver automatiquement le flux.';
+
+  @override
+  String get newsCommunitySourceName => 'Titre de la source';
+
+  @override
+  String get newsCommunitySourceUrl => 'URL du flux RSS ou du site web';
+
+  @override
+  String get newsCommunitySubmit => 'Vérifier et ajouter';
+
+  @override
+  String get newsCommunityChecking => 'Vérification du flux ou du site...';
+
+  @override
+  String get newsCommunityMissingFields =>
+      'Saisissez le titre et l’URL du flux ou du site.';
+
+  @override
+  String get newsCommunityAdded =>
+      'Source ajoutée correctement à la communauté Sonarpad.';
+
+  @override
+  String newsCommunityAddError(Object error) {
+    return 'Erreur lors de l’ajout de la source : $error';
+  }
+
+  @override
+  String newsCommunitySelectedLanguage(Object language) {
+    return 'Langue sélectionnée : $language';
+  }
+
+  @override
+  String get newsCommunitySourcesTitle => 'Sources de la communauté';
+
+  @override
+  String get newsCommunitySourcesEmpty =>
+      'Aucune source de la communauté disponible pour cette langue.';
+
+  @override
+  String newsCommunitySourcesError(Object error) {
+    return 'Erreur de chargement des sources de la communauté : $error';
+  }
+
+  @override
+  String newsCommunitySourceAddedToLibrary(Object name) {
+    return '$name ajoutée à votre bibliothèque d’actualités.';
+  }
+
+  @override
+  String newsCommunityAddToLibraryError(Object error) {
+    return 'Erreur lors de l’ajout à la bibliothèque : $error';
+  }
+
+  @override
+  String get newsCommunitySourceTapHint =>
+      'Touchez pour l’ajouter à votre bibliothèque d’actualités.';
 }

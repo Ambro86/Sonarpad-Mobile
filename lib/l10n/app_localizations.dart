@@ -396,144 +396,6 @@ abstract class AppLocalizations {
   /// **'Conversione non riuscita: {error}'**
   String convertMediaFailed(Object error);
 
-  /// Localized text for mediaCutterTitle.
-  String get mediaCutterTitle;
-
-  /// Localized text for mediaCutterInstruction1.
-  String get mediaCutterInstruction1;
-
-  /// Localized text for mediaCutterInstruction2.
-  String get mediaCutterInstruction2;
-
-  /// Localized text for mediaCutterOpenFile.
-  String get mediaCutterOpenFile;
-
-  /// Localized text for mediaCutterSelectedFile.
-  String mediaCutterSelectedFile(String fileName);
-
-  /// Localized text for mediaCutterPosition.
-  String get mediaCutterPosition;
-
-  /// Localized text for mediaCutterPositionHint.
-  String get mediaCutterPositionHint;
-
-  /// Localized text for mediaCutterHideVideoPreview.
-  String get mediaCutterHideVideoPreview;
-
-  /// Localized text for mediaCutterVideoPreview.
-  String get mediaCutterVideoPreview;
-
-  /// Localized text for mediaCutterSplit.
-  String get mediaCutterSplit;
-
-  /// Localized text for mediaCutterPartsTitle.
-  String get mediaCutterPartsTitle;
-
-  /// Localized text for mediaCutterPartsHint.
-  String get mediaCutterPartsHint;
-
-  /// Localized text for mediaCutterPartLabel.
-  String mediaCutterPartLabel(int index);
-
-  /// Localized text for mediaCutterPartRange.
-  String mediaCutterPartRange(String start, String end);
-
-  /// Localized text for mediaCutterSave.
-  String get mediaCutterSave;
-
-  /// Localized text for mediaCutterReady.
-  String get mediaCutterReady;
-
-  /// Localized text for mediaCutterNoFile.
-  String get mediaCutterNoFile;
-
-  /// Localized text for mediaCutterInvalidSplitPoint.
-  String get mediaCutterInvalidSplitPoint;
-
-  /// Localized text for mediaCutterSplitAlreadyExists.
-  String get mediaCutterSplitAlreadyExists;
-
-  /// Localized text for mediaCutterSplitAdded.
-  String mediaCutterSplitAdded(String position);
-
-  /// Localized text for mediaCutterSaving.
-  String get mediaCutterSaving;
-
-  /// Localized text for mediaCutterSaved.
-  String mediaCutterSaved(String fileName);
-
-  /// Localized text for mediaCutterLoadFailed.
-  String mediaCutterLoadFailed(Object error);
-
-  /// Localized text for mediaCutterSaveFailed.
-  String mediaCutterSaveFailed(Object error);
-
-  /// Localized text for mediaCutterNoPartsToSave.
-  String get mediaCutterNoPartsToSave;
-
-  /// Localized text for mediaCutterRestoreDeletedPart.
-  String get mediaCutterRestoreDeletedPart;
-
-  /// Localized text for mediaCutterNoDeletedParts.
-  String get mediaCutterNoDeletedParts;
-
-  /// Localized text for mediaCutterPartDeleteAction.
-  String get mediaCutterPartDeleteAction;
-
-  /// Localized text for mediaCutterPartEffectsAction.
-  String get mediaCutterPartEffectsAction;
-
-  /// Localized text for mediaCutterPartEffectsTitle.
-  String get mediaCutterPartEffectsTitle;
-
-  /// Localized text for mediaCutterPartEffectsDescription.
-  String get mediaCutterPartEffectsDescription;
-
-  /// Localized text for mediaCutterPartVolumeValue.
-  String mediaCutterPartVolumeValue(int percent);
-
-  /// Localized text for mediaCutterPartEffect.
-  String get mediaCutterPartEffect;
-
-  /// Localized text for mediaCutterPartEffectNone.
-  String get mediaCutterPartEffectNone;
-
-  /// Localized text for mediaCutterPartEffectEcho.
-  String get mediaCutterPartEffectEcho;
-
-  /// Localized text for mediaCutterPartEffectReverb.
-  String get mediaCutterPartEffectReverb;
-
-  /// Localized text for mediaCutterPartEffectFadeIn.
-  String get mediaCutterPartEffectFadeIn;
-
-  /// Localized text for mediaCutterPartEffectFadeOut.
-  String get mediaCutterPartEffectFadeOut;
-
-  /// Localized text for mediaCutterPartEffectAmountValue.
-  String mediaCutterPartEffectAmountValue(int percent);
-
-  /// Localized text for mediaCutterPartPreviewAction.
-  String get mediaCutterPartPreviewAction;
-
-  /// Localized text for mediaCutterPartEffectsSavedOnly.
-  String get mediaCutterPartEffectsSavedOnly;
-
-  /// Localized text for mediaCutterPartEffectsApplied.
-  String mediaCutterPartEffectsApplied(String start, String end);
-
-  /// Localized text for mediaCutterPartEffectsSummary.
-  String mediaCutterPartEffectsSummary(int percent, String effect);
-
-  /// Localized text for mediaCutterPartTapHint.
-  String get mediaCutterPartTapHint;
-
-  /// Localized text for mediaCutterPartDeleted.
-  String mediaCutterPartDeleted(String start, String end);
-
-  /// Localized text for mediaCutterPartRestored.
-  String mediaCutterPartRestored(String start, String end);
-
   /// Localized text for donations.
   ///
   /// In it, this message translates to:
@@ -744,30 +606,6 @@ abstract class AppLocalizations {
   /// **'Sposta alla posizione'**
   String get moveToPosition;
 
-  /// Button that sorts the subscribed podcasts alphabetically.
-  ///
-  /// In it, this message translates to:
-  /// **'Ordina podcast alfabeticamente'**
-  String get sortPodcastsAlphabetically;
-
-  /// Button that sorts radio favorites alphabetically.
-  ///
-  /// In it, this message translates to:
-  /// **'Ordina preferite alfabeticamente'**
-  String get sortRadioFavoritesAlphabetically;
-
-  /// Status message shown after podcasts have been sorted alphabetically.
-  ///
-  /// In it, this message translates to:
-  /// **'Podcast ordinati alfabeticamente.'**
-  String get podcastsSortedAlphabetically;
-
-  /// Status message shown after radio favorites have been sorted alphabetically.
-  ///
-  /// In it, this message translates to:
-  /// **'Radio preferite ordinate alfabeticamente.'**
-  String get radioFavoritesSortedAlphabetically;
-
   /// Localized text for positionLabel.
   ///
   /// In it, this message translates to:
@@ -791,57 +629,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Aggiungi sorgente RSS personalizzata'**
   String get addCustomNewsSource;
-
-  /// Localized text for newsAddCommunitySource.
-  String get newsAddCommunitySource;
-
-  /// Localized text for newsBrowseCommunitySources.
-  String get newsBrowseCommunitySources;
-
-  /// Localized text for newsAddCommunityInstructions.
-  String get newsAddCommunityInstructions;
-
-  /// Localized text for newsCommunitySourceName.
-  String get newsCommunitySourceName;
-
-  /// Localized text for newsCommunitySourceUrl.
-  String get newsCommunitySourceUrl;
-
-  /// Localized text for newsCommunitySubmit.
-  String get newsCommunitySubmit;
-
-  /// Localized text for newsCommunityChecking.
-  String get newsCommunityChecking;
-
-  /// Localized text for newsCommunityMissingFields.
-  String get newsCommunityMissingFields;
-
-  /// Localized text for newsCommunityAdded.
-  String get newsCommunityAdded;
-
-  /// Localized text for newsCommunitySourcesTitle.
-  String get newsCommunitySourcesTitle;
-
-  /// Localized text for newsCommunitySourcesEmpty.
-  String get newsCommunitySourcesEmpty;
-
-  /// Localized text for newsCommunitySourceTapHint.
-  String get newsCommunitySourceTapHint;
-
-  /// Localized text for newsCommunityAddError.
-  String newsCommunityAddError(Object error);
-
-  /// Localized text for newsCommunitySelectedLanguage.
-  String newsCommunitySelectedLanguage(Object language);
-
-  /// Localized text for newsCommunitySourcesError.
-  String newsCommunitySourcesError(Object error);
-
-  /// Localized text for newsCommunitySourceAddedToLibrary.
-  String newsCommunitySourceAddedToLibrary(Object name);
-
-  /// Localized text for newsCommunityAddToLibraryError.
-  String newsCommunityAddToLibraryError(Object error);
 
   /// Localized text for newsSourceName.
   ///
@@ -1759,19 +1546,19 @@ abstract class AppLocalizations {
   ///
   /// In it, this message translates to:
   /// **'circa {minutes} minuti rimanenti'**
-  String documentRemainingMinutes(Object minutes);
+  String documentRemainingMinutes(int minutes);
 
   /// Localized text for documentRemainingHours.
   ///
   /// In it, this message translates to:
   /// **'circa {hours} ore rimanenti'**
-  String documentRemainingHours(Object hours);
+  String documentRemainingHours(int hours);
 
   /// Localized text for documentRemainingHoursMinutes.
   ///
   /// In it, this message translates to:
   /// **'circa {hours} ore e {minutes} minuti rimanenti'**
-  String documentRemainingHoursMinutes(Object hours, Object minutes);
+  String documentRemainingHoursMinutes(int hours, int minutes);
 
   /// Localized text for folderTypeLabel.
   ///
@@ -1887,18 +1674,11 @@ abstract class AppLocalizations {
   /// **'Cerca nel documento'**
   String get searchInDocument;
 
-
   /// Localized text for documentIndex.
   ///
   /// In it, this message translates to:
   /// **'Indice'**
   String get documentIndex;
-
-  /// Localized text for documentFootnoteLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Nota a piè di pagina'**
-  String get documentFootnoteLabel;
 
   /// Localized text for documentSearchFieldLabel.
   ///
@@ -2085,18 +1865,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Riprendi documenti, podcast, RaiPlay e audiodescrizioni dal punto interrotto.'**
   String get settingsAutoBookmarkHint;
-
-  /// Localized text for settingsIncludeFootnotesInText.
-  ///
-  /// In it, this message translates to:
-  /// **'Includi le note a piè di pagina nel testo'**
-  String get settingsIncludeFootnotesInText;
-
-  /// Localized text for settingsIncludeFootnotesInTextHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Per gli EPUB supportati, mostra il testo della nota subito dopo il paragrafo che la richiama.'**
-  String get settingsIncludeFootnotesInTextHint;
 
   /// Localized text for settingsDocumentSliderStep.
   ///
@@ -2801,156 +2569,6 @@ abstract class AppLocalizations {
   /// **'Segnalibro rimosso.'**
   String get bookmarkRemoved;
 
-
-  /// Title for the setting that enables multiple bookmarks in documents.
-  ///
-  /// In it, this message translates to:
-  /// **'Permetti segnalibri multipli nei documenti'**
-  String get settingsMultipleDocumentBookmarks;
-
-  /// Description for the setting that enables multiple bookmarks in documents.
-  ///
-  /// In it, this message translates to:
-  /// **'Se disattivato, resta un solo segnalibro per documento. Se attivato, puoi salvare più segnalibri nello stesso documento.'**
-  String get settingsMultipleDocumentBookmarksHint;
-
-
-  /// Title for the medicines, parapharmaceuticals and supplements feature.
-  ///
-  /// In it, this message translates to:
-  /// **'Farmaci, parafarmaci e integratori'**
-  String get pharmacyFeatureTitle;
-
-  /// Title for the parapharmaceuticals and supplements results section.
-  ///
-  /// In it, this message translates to:
-  /// **'Parafarmaci e integratori'**
-  String get pharmacyProductsSectionTitle;
-
-  /// Loading title for parapharmaceuticals and supplements search.
-  ///
-  /// In it, this message translates to:
-  /// **'Ricerca parafarmaci e integratori in corso...'**
-  String get pharmacyProductsLoadingTitle;
-
-  /// Error title for parapharmaceuticals and supplements search.
-  ///
-  /// In it, this message translates to:
-  /// **'Errore nella ricerca parafarmaci e integratori'**
-  String get pharmacyProductsErrorTitle;
-
-  /// Empty state title for parapharmaceuticals and supplements search.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun parafarmaco o integratore trovato'**
-  String get pharmacyProductsNoResultsTitle;
-
-  /// Title for the setting that shows video full-screen in landscape orientation.
-  ///
-  /// In it, this message translates to:
-  /// **'Video orizzontale a schermo intero'**
-  String get settingsVideoLandscapeFullscreen;
-
-  /// Description for the setting that shows video full-screen in landscape orientation.
-  ///
-  /// In it, this message translates to:
-  /// **'Quando attivi il video, viene mostrato a schermo intero in orizzontale. Le radio solo audio non cambiano.'**
-  String get settingsVideoLandscapeFullscreenHint;
-
-  /// Title for the podcast cache management section in settings.
-  ///
-  /// In it, this message translates to:
-  /// **'Cache podcast'**
-  String get settingsPodcastCacheTitle;
-
-  /// Hint for the podcast cache management section in settings.
-  ///
-  /// In it, this message translates to:
-  /// **'Svuota i file temporanei dei podcast senza rimuovere gli abbonamenti, la cronologia o i file audio importati. Sonarpad pulisce automaticamente la cache quando diventa troppo grande o contiene file vecchi.'**
-  String get settingsPodcastCacheHint;
-
-  /// Shows how much space the podcast cache is using.
-  ///
-  /// In it, this message translates to:
-  /// **'Spazio usato: {size}'**
-  String settingsPodcastCacheSize(String size);
-
-  /// Button that clears the podcast cache.
-  ///
-  /// In it, this message translates to:
-  /// **'Svuota cache podcast'**
-  String get clearPodcastCache;
-
-  /// Confirmation dialog title before clearing podcast cache.
-  ///
-  /// In it, this message translates to:
-  /// **'Svuotare la cache podcast?'**
-  String get confirmClearPodcastCacheTitle;
-
-  /// Confirmation dialog message before clearing podcast cache.
-  ///
-  /// In it, this message translates to:
-  /// **'I file temporanei dei podcast verranno eliminati. Gli abbonamenti e la cronologia degli episodi resteranno invariati.'**
-  String get confirmClearPodcastCacheMessage;
-
-  /// Status message after clearing podcast cache.
-  ///
-  /// In it, this message translates to:
-  /// **'Cache podcast svuotata: liberati {size}.'**
-  String podcastCacheCleared(String size);
-
-  /// Status message when podcast cache is already empty.
-  ///
-  /// In it, this message translates to:
-  /// **'La cache podcast è già vuota.'**
-  String get podcastCacheEmpty;
-
-  /// Accessibility action and menu entry to open document bookmarks.
-  ///
-  /// In it, this message translates to:
-  /// **'Vai al segnalibro'**
-  String get documentGoToBookmarkAction;
-
-  /// Dialog title for choosing a document bookmark.
-  ///
-  /// In it, this message translates to:
-  /// **'Scegli segnalibro'**
-  String get documentChooseBookmarkTitle;
-
-  /// Action label to delete a document bookmark.
-  ///
-  /// In it, this message translates to:
-  /// **'Elimina segnalibro'**
-  String get documentDeleteBookmarkAction;
-
-  /// Dialog title asking which bookmark to keep when multiple bookmarks are disabled.
-  ///
-  /// In it, this message translates to:
-  /// **'Quale segnalibro vuoi mantenere?'**
-  String get documentKeepBookmarkTitle;
-
-  /// Dialog message asking which bookmark to keep when multiple bookmarks are disabled.
-  ///
-  /// In it, this message translates to:
-  /// **'I segnalibri multipli sono disattivati. Scegli un segnalibro da mantenere: gli altri verranno eliminati.'**
-  String get documentKeepBookmarkMessage;
-
-  /// Label for a bookmark in the bookmark chooser.
-  ///
-  /// In it, this message translates to:
-  /// **'Segnalibro {order}, paragrafo {paragraph}'**
-  String documentBookmarkChoiceLabel(int order, int paragraph);
-
-  /// Label for a bookmark in the bookmark chooser, including a short text preview.
-  ///
-  /// In it, this message translates to:
-  /// **'Segnalibro {order}, paragrafo {paragraph}. {preview}'**
-  String documentBookmarkChoiceLabelWithPreview(
-    int order,
-    int paragraph,
-    String preview,
-  );
-
   /// Localized text for docEmpty.
   ///
   /// In it, this message translates to:
@@ -3191,7 +2809,7 @@ abstract class AppLocalizations {
   /// **'Log svuotato'**
   String get logCleared;
 
-  /// Localized text for parafarmacoDetailReadyAnnouncement.
+  /// Announcement spoken after a para-pharmaceutical product detail page has loaded.
   ///
   /// In it, this message translates to:
   /// **'Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.'**
@@ -4636,6 +4254,637 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Dettagli navigazione da {from} a {to} - {date}'**
   String routeNavigationFromTo(Object from, Object to, Object date);
+
+  /// Button that sorts the subscribed podcasts alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina podcast alfabeticamente'**
+  String get sortPodcastsAlphabetically;
+
+  /// Button that sorts radio favorites alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina preferite alfabeticamente'**
+  String get sortRadioFavoritesAlphabetically;
+
+  /// Status message shown after podcasts have been sorted alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Podcast ordinati alfabeticamente.'**
+  String get podcastsSortedAlphabetically;
+
+  /// Status message shown after radio favorites have been sorted alphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Radio preferite ordinate alfabeticamente.'**
+  String get radioFavoritesSortedAlphabetically;
+
+  /// Localized text for settingsIncludeFootnotesInText.
+  ///
+  /// In it, this message translates to:
+  /// **'Includi le note a piè di pagina nel testo'**
+  String get settingsIncludeFootnotesInText;
+
+  /// Localized text for settingsIncludeFootnotesInTextHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Per gli EPUB supportati, mostra il testo della nota subito dopo il paragrafo che la richiama.'**
+  String get settingsIncludeFootnotesInTextHint;
+
+  /// Localized text for documentFootnoteLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Nota a piè di pagina'**
+  String get documentFootnoteLabel;
+
+  /// Title for the setting that enables multiple bookmarks in documents.
+  ///
+  /// In it, this message translates to:
+  /// **'Permetti segnalibri multipli nei documenti'**
+  String get settingsMultipleDocumentBookmarks;
+
+  /// Description for the setting that enables multiple bookmarks in documents.
+  ///
+  /// In it, this message translates to:
+  /// **'Se disattivato, resta un solo segnalibro per documento. Se attivato, puoi salvare più segnalibri nello stesso documento.'**
+  String get settingsMultipleDocumentBookmarksHint;
+
+  /// Accessibility action and menu entry to open document bookmarks.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai al segnalibro'**
+  String get documentGoToBookmarkAction;
+
+  /// Dialog title for choosing a document bookmark.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli segnalibro'**
+  String get documentChooseBookmarkTitle;
+
+  /// Action label to delete a document bookmark.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina segnalibro'**
+  String get documentDeleteBookmarkAction;
+
+  /// Dialog title asking which bookmark to keep when multiple bookmarks are disabled.
+  ///
+  /// In it, this message translates to:
+  /// **'Quale segnalibro vuoi mantenere?'**
+  String get documentKeepBookmarkTitle;
+
+  /// Dialog message asking which bookmark to keep when multiple bookmarks are disabled.
+  ///
+  /// In it, this message translates to:
+  /// **'I segnalibri multipli sono disattivati. Scegli un segnalibro da mantenere: gli altri verranno eliminati.'**
+  String get documentKeepBookmarkMessage;
+
+  /// Label for a bookmark in the bookmark chooser.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalibro {order}, paragrafo {paragraph}'**
+  String documentBookmarkChoiceLabel(int order, int paragraph);
+
+  /// Label for a bookmark in the bookmark chooser, including a short text preview.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalibro {order}, paragrafo {paragraph}. {preview}'**
+  String documentBookmarkChoiceLabelWithPreview(
+      int order, int paragraph, String preview);
+
+  /// Title for the setting that shows video full-screen in landscape orientation.
+  ///
+  /// In it, this message translates to:
+  /// **'Video orizzontale a schermo intero'**
+  String get settingsVideoLandscapeFullscreen;
+
+  /// Description for the setting that shows video full-screen in landscape orientation.
+  ///
+  /// In it, this message translates to:
+  /// **'Quando attivi il video, viene mostrato a schermo intero in orizzontale. Le radio solo audio non cambiano.'**
+  String get settingsVideoLandscapeFullscreenHint;
+
+  /// Localized text for settingsPodcastCacheTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Cache podcast'**
+  String get settingsPodcastCacheTitle;
+
+  /// Localized text for settingsPodcastCacheHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuove solo i file temporanei dei podcast. Abbonamenti, cronologia e audio importati restano intatti.'**
+  String get settingsPodcastCacheHint;
+
+  /// Localized text for settingsPodcastCacheSize.
+  ///
+  /// In it, this message translates to:
+  /// **'Spazio usato: {size}'**
+  String settingsPodcastCacheSize(String size);
+
+  /// Localized text for clearPodcastCache.
+  ///
+  /// In it, this message translates to:
+  /// **'Svuota cache podcast'**
+  String get clearPodcastCache;
+
+  /// Localized text for confirmClearPodcastCacheTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Svuotare la cache podcast?'**
+  String get confirmClearPodcastCacheTitle;
+
+  /// Localized text for confirmClearPodcastCacheMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'I file temporanei dei podcast verranno eliminati. Gli abbonamenti e la cronologia degli episodi resteranno invariati.'**
+  String get confirmClearPodcastCacheMessage;
+
+  /// Localized text for podcastCacheCleared.
+  ///
+  /// In it, this message translates to:
+  /// **'Cache podcast svuotata: liberati {size}.'**
+  String podcastCacheCleared(String size);
+
+  /// Localized text for podcastCacheEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'La cache podcast è già vuota.'**
+  String get podcastCacheEmpty;
+
+  /// Title for the medicines, parapharmaceuticals and supplements feature.
+  ///
+  /// In it, this message translates to:
+  /// **'Farmaci, parafarmaci e integratori'**
+  String get pharmacyFeatureTitle;
+
+  /// Title for the parapharmaceuticals and supplements results section.
+  ///
+  /// In it, this message translates to:
+  /// **'Parafarmaci e integratori'**
+  String get pharmacyProductsSectionTitle;
+
+  /// Loading title for parapharmaceuticals and supplements search.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricerca parafarmaci e integratori in corso...'**
+  String get pharmacyProductsLoadingTitle;
+
+  /// Error title for parapharmaceuticals and supplements search.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore nella ricerca parafarmaci e integratori'**
+  String get pharmacyProductsErrorTitle;
+
+  /// Empty state title for parapharmaceuticals and supplements search.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun parafarmaco o integratore trovato'**
+  String get pharmacyProductsNoResultsTitle;
+
+  /// No description provided for @mediaCutterTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Taglia file media'**
+  String get mediaCutterTitle;
+
+  /// No description provided for @mediaCutterInstruction1.
+  ///
+  /// In it, this message translates to:
+  /// **'Carica un file audio o video, poi riproducilo e vai al punto in cui vuoi fare il taglio.'**
+  String get mediaCutterInstruction1;
+
+  /// No description provided for @mediaCutterInstruction2.
+  ///
+  /// In it, this message translates to:
+  /// **'Metti in pausa, premi Dividi, poi nella sezione Parti da salvare elimina le parti che non vuoi e premi Salva.'**
+  String get mediaCutterInstruction2;
+
+  /// No description provided for @mediaCutterOpenFile.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri file media'**
+  String get mediaCutterOpenFile;
+
+  /// No description provided for @mediaCutterSelectedFile.
+  ///
+  /// In it, this message translates to:
+  /// **'File selezionato: {fileName}'**
+  String mediaCutterSelectedFile(String fileName);
+
+  /// No description provided for @mediaCutterPosition.
+  ///
+  /// In it, this message translates to:
+  /// **'Posizione di taglio'**
+  String get mediaCutterPosition;
+
+  /// No description provided for @mediaCutterPositionHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Scorri avanti o indietro di un secondo alla volta.'**
+  String get mediaCutterPositionHint;
+
+  /// Media cutter video preview label.
+  ///
+  /// In it, this message translates to:
+  /// **'Nascondi video'**
+  String get mediaCutterHideVideoPreview;
+
+  /// Media cutter video preview label.
+  ///
+  /// In it, this message translates to:
+  /// **'Anteprima video'**
+  String get mediaCutterVideoPreview;
+
+  /// No description provided for @mediaCutterSplit.
+  ///
+  /// In it, this message translates to:
+  /// **'Dividi'**
+  String get mediaCutterSplit;
+
+  /// No description provided for @mediaCutterPartsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Parti da salvare'**
+  String get mediaCutterPartsTitle;
+
+  /// No description provided for @mediaCutterPartsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca una parte per ascoltarla. Le parti eliminate scompaiono dall’elenco, vengono saltate durante la riproduzione e non saranno salvate.'**
+  String get mediaCutterPartsHint;
+
+  /// No description provided for @mediaCutterPartLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Parte {index}'**
+  String mediaCutterPartLabel(int index);
+
+  /// No description provided for @mediaCutterPartRange.
+  ///
+  /// In it, this message translates to:
+  /// **'Da {start} a {end}'**
+  String mediaCutterPartRange(String start, String end);
+
+  /// No description provided for @mediaCutterSave.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva'**
+  String get mediaCutterSave;
+
+  /// No description provided for @mediaCutterReady.
+  ///
+  /// In it, this message translates to:
+  /// **'Pronto.'**
+  String get mediaCutterReady;
+
+  /// No description provided for @mediaCutterNoFile.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri prima un file media.'**
+  String get mediaCutterNoFile;
+
+  /// No description provided for @mediaCutterInvalidSplitPoint.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli un punto interno al file, non l’inizio o la fine.'**
+  String get mediaCutterInvalidSplitPoint;
+
+  /// No description provided for @mediaCutterSplitAlreadyExists.
+  ///
+  /// In it, this message translates to:
+  /// **'In questo punto c’è già una divisione.'**
+  String get mediaCutterSplitAlreadyExists;
+
+  /// No description provided for @mediaCutterSplitAdded.
+  ///
+  /// In it, this message translates to:
+  /// **'Divisione aggiunta a {position}.'**
+  String mediaCutterSplitAdded(String position);
+
+  /// No description provided for @mediaCutterSaving.
+  ///
+  /// In it, this message translates to:
+  /// **'Salvataggio del file in corso...'**
+  String get mediaCutterSaving;
+
+  /// No description provided for @mediaCutterSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'File salvato: {fileName}'**
+  String mediaCutterSaved(String fileName);
+
+  /// No description provided for @mediaCutterLoadFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aprire il file: {error}'**
+  String mediaCutterLoadFailed(Object error);
+
+  /// No description provided for @mediaCutterSaveFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Salvataggio non riuscito: {error}'**
+  String mediaCutterSaveFailed(Object error);
+
+  /// No description provided for @mediaCutterNoPartsToSave.
+  ///
+  /// In it, this message translates to:
+  /// **'Lascia almeno una parte da salvare.'**
+  String get mediaCutterNoPartsToSave;
+
+  /// No description provided for @mediaCutterRestoreDeletedPart.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristina parte eliminata'**
+  String get mediaCutterRestoreDeletedPart;
+
+  /// No description provided for @mediaCutterNoDeletedParts.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ci sono parti eliminate da ripristinare.'**
+  String get mediaCutterNoDeletedParts;
+
+  /// No description provided for @mediaCutterPartDeleteAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get mediaCutterPartDeleteAction;
+
+  /// No description provided for @mediaCutterPartTapHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca due volte per ascoltare questa parte. Usa le azioni Elimina o Regola effetti.'**
+  String get mediaCutterPartTapHint;
+
+  /// Status shown after a media part is deleted
+  ///
+  /// In it, this message translates to:
+  /// **'Parte eliminata da {start} a {end}.'**
+  String mediaCutterPartDeleted(String start, String end);
+
+  /// Status shown after a deleted media part is restored
+  ///
+  /// In it, this message translates to:
+  /// **'Parte ripristinata da {start} a {end}.'**
+  String mediaCutterPartRestored(String start, String end);
+
+  /// No description provided for @mediaCutterPartEffectsAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Regola effetti'**
+  String get mediaCutterPartEffectsAction;
+
+  /// No description provided for @mediaCutterPartEffectsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Effetti della parte'**
+  String get mediaCutterPartEffectsTitle;
+
+  /// No description provided for @mediaCutterPartEffectsDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Regola volume ed effetto solo per questa parte.'**
+  String get mediaCutterPartEffectsDescription;
+
+  /// No description provided for @mediaCutterPartVolumeValue.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume parte: {percent}%'**
+  String mediaCutterPartVolumeValue(int percent);
+
+  /// No description provided for @mediaCutterPartEffect.
+  ///
+  /// In it, this message translates to:
+  /// **'Effetto audio'**
+  String get mediaCutterPartEffect;
+
+  /// No description provided for @mediaCutterPartEffectNone.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun effetto'**
+  String get mediaCutterPartEffectNone;
+
+  /// No description provided for @mediaCutterPartEffectEcho.
+  ///
+  /// In it, this message translates to:
+  /// **'Eco leggero'**
+  String get mediaCutterPartEffectEcho;
+
+  /// No description provided for @mediaCutterPartEffectEchoRoom.
+  ///
+  /// In it, this message translates to:
+  /// **'Eco stanza'**
+  String get mediaCutterPartEffectEchoRoom;
+
+  /// No description provided for @mediaCutterPartEffectEchoChamber.
+  ///
+  /// In it, this message translates to:
+  /// **'Eco camera'**
+  String get mediaCutterPartEffectEchoChamber;
+
+  /// No description provided for @mediaCutterPartEffectEchoCathedral.
+  ///
+  /// In it, this message translates to:
+  /// **'Eco cattedrale'**
+  String get mediaCutterPartEffectEchoCathedral;
+
+  /// No description provided for @mediaCutterPartEffectReverb.
+  ///
+  /// In it, this message translates to:
+  /// **'Riverbero leggero'**
+  String get mediaCutterPartEffectReverb;
+
+  /// No description provided for @mediaCutterPartEffectChorus.
+  ///
+  /// In it, this message translates to:
+  /// **'Chorus'**
+  String get mediaCutterPartEffectChorus;
+
+  /// No description provided for @mediaCutterPartEffectPitchLow.
+  ///
+  /// In it, this message translates to:
+  /// **'Pitch basso'**
+  String get mediaCutterPartEffectPitchLow;
+
+  /// No description provided for @mediaCutterPartEffectPitchVeryLow.
+  ///
+  /// In it, this message translates to:
+  /// **'Pitch molto basso'**
+  String get mediaCutterPartEffectPitchVeryLow;
+
+  /// No description provided for @mediaCutterPartEffectPitchHigh.
+  ///
+  /// In it, this message translates to:
+  /// **'Pitch alto'**
+  String get mediaCutterPartEffectPitchHigh;
+
+  /// No description provided for @mediaCutterPartEffectPitchVeryHigh.
+  ///
+  /// In it, this message translates to:
+  /// **'Pitch molto alto'**
+  String get mediaCutterPartEffectPitchVeryHigh;
+
+  /// No description provided for @mediaCutterPartEffectRobot.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce robot'**
+  String get mediaCutterPartEffectRobot;
+
+  /// No description provided for @mediaCutterPartEffectHelicopter.
+  ///
+  /// In it, this message translates to:
+  /// **'Elicottero'**
+  String get mediaCutterPartEffectHelicopter;
+
+  /// No description provided for @mediaCutterPartEffectAlien.
+  ///
+  /// In it, this message translates to:
+  /// **'Vibrato alieno'**
+  String get mediaCutterPartEffectAlien;
+
+  /// No description provided for @mediaCutterPartEffectFadeIn.
+  ///
+  /// In it, this message translates to:
+  /// **'Fade in'**
+  String get mediaCutterPartEffectFadeIn;
+
+  /// No description provided for @mediaCutterPartEffectFadeOut.
+  ///
+  /// In it, this message translates to:
+  /// **'Fade out'**
+  String get mediaCutterPartEffectFadeOut;
+
+  /// No description provided for @mediaCutterPartEffectAmountValue.
+  ///
+  /// In it, this message translates to:
+  /// **'Intensità effetto: {percent}%'**
+  String mediaCutterPartEffectAmountValue(int percent);
+
+  /// No description provided for @mediaCutterPartPreviewAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Ascolta anteprima'**
+  String get mediaCutterPartPreviewAction;
+
+  /// No description provided for @mediaCutterPartEffectsSavedOnly.
+  ///
+  /// In it, this message translates to:
+  /// **'L’anteprima usa il volume scelto. Gli effetti audio vengono applicati durante il salvataggio.'**
+  String get mediaCutterPartEffectsSavedOnly;
+
+  /// No description provided for @mediaCutterPartEffectsApplied.
+  ///
+  /// In it, this message translates to:
+  /// **'Effetti aggiornati per la parte da {start} a {end}.'**
+  String mediaCutterPartEffectsApplied(String start, String end);
+
+  /// No description provided for @mediaCutterPartEffectsSummary.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume {percent}%, effetto {effect}'**
+  String mediaCutterPartEffectsSummary(int percent, String effect);
+
+  /// Localized text for newsAddCommunitySource.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi testata alla comunità di Sonarpad'**
+  String get newsAddCommunitySource;
+
+  /// Localized text for newsBrowseCommunitySources.
+  ///
+  /// In it, this message translates to:
+  /// **'Testate della comunità'**
+  String get newsBrowseCommunitySources;
+
+  /// Localized text for newsAddCommunityInstructions.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci il titolo della testata e l’URL del feed RSS oppure del sito web. Sonarpad userà la lingua notizie selezionata e, se inserisci un sito, proverà a trovare automaticamente il feed.'**
+  String get newsAddCommunityInstructions;
+
+  /// Localized text for newsCommunitySourceName.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo testata'**
+  String get newsCommunitySourceName;
+
+  /// Localized text for newsCommunitySourceUrl.
+  ///
+  /// In it, this message translates to:
+  /// **'URL feed RSS o sito web'**
+  String get newsCommunitySourceUrl;
+
+  /// Localized text for newsCommunitySubmit.
+  ///
+  /// In it, this message translates to:
+  /// **'Verifica e aggiungi'**
+  String get newsCommunitySubmit;
+
+  /// Localized text for newsCommunityChecking.
+  ///
+  /// In it, this message translates to:
+  /// **'Controllo feed o sito...'**
+  String get newsCommunityChecking;
+
+  /// Localized text for newsCommunityMissingFields.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci titolo e URL del feed o del sito.'**
+  String get newsCommunityMissingFields;
+
+  /// Localized text for newsCommunityAdded.
+  ///
+  /// In it, this message translates to:
+  /// **'Testata aggiunta correttamente alla comunità Sonarpad.'**
+  String get newsCommunityAdded;
+
+  /// Localized text for newsCommunityAddError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore durante l’aggiunta della testata: {error}'**
+  String newsCommunityAddError(Object error);
+
+  /// Localized text for newsCommunitySelectedLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua selezionata: {language}'**
+  String newsCommunitySelectedLanguage(Object language);
+
+  /// Localized text for newsCommunitySourcesTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Testate della comunità'**
+  String get newsCommunitySourcesTitle;
+
+  /// Localized text for newsCommunitySourcesEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna testata della comunità disponibile per questa lingua.'**
+  String get newsCommunitySourcesEmpty;
+
+  /// Localized text for newsCommunitySourcesError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore caricamento testate della comunità: {error}'**
+  String newsCommunitySourcesError(Object error);
+
+  /// Localized text for newsCommunitySourceAddedToLibrary.
+  ///
+  /// In it, this message translates to:
+  /// **'{name} aggiunta alla tua libreria notizie.'**
+  String newsCommunitySourceAddedToLibrary(Object name);
+
+  /// Localized text for newsCommunityAddToLibraryError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore durante l’aggiunta alla libreria: {error}'**
+  String newsCommunityAddToLibraryError(Object error);
+
+  /// Localized text for newsCommunitySourceTapHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca per aggiungerla alla tua libreria notizie.'**
+  String get newsCommunitySourceTapHint;
 }
 
 class _AppLocalizationsDelegate

@@ -14,6 +14,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
@@ -21,7 +22,26 @@ import '../utils/status_message.dart';
 
 enum _MediaCutterDoneAction { share, close }
 
-enum _MediaPartEffect { none, echo, reverb, fadeIn, fadeOut }
+enum _MediaPartEffect {
+  none,
+  echo,
+  echoRoom,
+  echoChamber,
+  echoCathedral,
+  reverb,
+  chorus,
+  pitchLow,
+  pitchVeryLow,
+  pitchHigh,
+  pitchVeryHigh,
+  robot,
+  helicopter,
+  alien,
+  fadeIn,
+  fadeOut,
+}
+
+const _effectPreviewMaxDuration = Duration(seconds: 12);
 
 class _MediaCutterExportCancelled implements Exception {
   const _MediaCutterExportCancelled();
@@ -71,11 +91,17 @@ class _PartEffectSettings {
   const _PartEffectSettings({
     required this.volumePercent,
     required this.effect,
+    required this.secondaryEffect,
+    required this.thirdEffect,
+    required this.fourthEffect,
     required this.effectAmountPercent,
   });
 
   final int volumePercent;
   final _MediaPartEffect effect;
+  final _MediaPartEffect secondaryEffect;
+  final _MediaPartEffect thirdEffect;
+  final _MediaPartEffect fourthEffect;
   final int effectAmountPercent;
 }
 
@@ -86,6 +112,9 @@ class _MediaPart {
     this.keep = true,
     this.volumePercent = 100,
     this.effect = _MediaPartEffect.none,
+    this.secondaryEffect = _MediaPartEffect.none,
+    this.thirdEffect = _MediaPartEffect.none,
+    this.fourthEffect = _MediaPartEffect.none,
     this.effectAmountPercent = 50,
   });
 
@@ -94,17 +123,27 @@ class _MediaPart {
   final bool keep;
   final int volumePercent;
   final _MediaPartEffect effect;
+  final _MediaPartEffect secondaryEffect;
+  final _MediaPartEffect thirdEffect;
+  final _MediaPartEffect fourthEffect;
   final int effectAmountPercent;
 
   Duration get duration => end - start;
   double get volumeFactor => volumePercent.clamp(0, 200).toDouble() / 100.0;
   bool get hasAudioChanges =>
-      volumePercent != 100 || effect != _MediaPartEffect.none;
+      volumePercent != 100 ||
+      effect != _MediaPartEffect.none ||
+      secondaryEffect != _MediaPartEffect.none ||
+      thirdEffect != _MediaPartEffect.none ||
+      fourthEffect != _MediaPartEffect.none;
 
   _MediaPart copyWith({
     bool? keep,
     int? volumePercent,
     _MediaPartEffect? effect,
+    _MediaPartEffect? secondaryEffect,
+    _MediaPartEffect? thirdEffect,
+    _MediaPartEffect? fourthEffect,
     int? effectAmountPercent,
   }) =>
       _MediaPart(
@@ -113,6 +152,9 @@ class _MediaPart {
         keep: keep ?? this.keep,
         volumePercent: volumePercent ?? this.volumePercent,
         effect: effect ?? this.effect,
+        secondaryEffect: secondaryEffect ?? this.secondaryEffect,
+        thirdEffect: thirdEffect ?? this.thirdEffect,
+        fourthEffect: fourthEffect ?? this.fourthEffect,
         effectAmountPercent: effectAmountPercent ?? this.effectAmountPercent,
       );
 }
@@ -505,6 +547,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     int index, {
     required int volumePercent,
     required _MediaPartEffect effect,
+    required _MediaPartEffect secondaryEffect,
+    required _MediaPartEffect thirdEffect,
+    required _MediaPartEffect fourthEffect,
     required int effectAmountPercent,
   }) async {
     if (_inputPath.isEmpty || _loading || _saving) return;
@@ -512,9 +557,27 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final part = _parts[index];
     if (!part.keep || part.duration <= Duration.zero) return;
 
-    final previewPart = part.copyWith(
+    final previewStart = _effectPreviewStartForPart(
+      part,
+      effect: effect,
+      secondaryEffect: secondaryEffect,
+      thirdEffect: thirdEffect,
+      fourthEffect: fourthEffect,
+    );
+    final remainingPreviewDuration = part.end - previewStart;
+    if (remainingPreviewDuration <= Duration.zero) return;
+    final previewDuration = remainingPreviewDuration < _effectPreviewMaxDuration
+        ? remainingPreviewDuration
+        : _effectPreviewMaxDuration;
+    final previewPart = _MediaPart(
+      start: previewStart,
+      end: previewStart + previewDuration,
+      keep: part.keep,
       volumePercent: volumePercent,
       effect: effect,
+      secondaryEffect: secondaryEffect,
+      thirdEffect: thirdEffect,
+      fourthEffect: fourthEffect,
       effectAmountPercent: effectAmountPercent,
     );
     final filter = _audioFilterForPart(previewPart);
@@ -539,11 +602,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       final args = [
         '-y',
         '-ss',
-        _ffmpegTime(part.start),
+        _ffmpegTime(previewStart),
         '-i',
         _inputPath,
         '-t',
-        _ffmpegTime(part.duration),
+        _ffmpegTime(previewDuration),
         '-map',
         '0:a:0?',
         '-vn',
@@ -558,7 +621,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         previewFile.path,
       ];
       await AppLogger.log(
-        'Media cutter preview effects: args=${args.map(_quoteLogArg).join(' ')}',
+        'Media cutter preview effects: start=${_ffmpegTime(previewStart)} '
+        'duration=${_ffmpegTime(previewDuration)} '
+        'args=${args.map(_quoteLogArg).join(' ')}',
       );
       final session = await FFmpegKit.executeWithArguments(args);
       final returnCode = await session.getReturnCode();
@@ -579,6 +644,28 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         }
       }));
     }
+  }
+
+  Duration _effectPreviewStartForPart(
+    _MediaPart part,
+    {
+    required _MediaPartEffect effect,
+    required _MediaPartEffect secondaryEffect,
+    required _MediaPartEffect thirdEffect,
+    required _MediaPartEffect fourthEffect,
+  }) {
+    if ((effect == _MediaPartEffect.fadeOut ||
+            secondaryEffect == _MediaPartEffect.fadeOut ||
+            thirdEffect == _MediaPartEffect.fadeOut ||
+            fourthEffect == _MediaPartEffect.fadeOut) &&
+        part.duration > _effectPreviewMaxDuration) {
+      return part.end - _effectPreviewMaxDuration;
+    }
+    final current = _position;
+    if (current >= part.start && current < part.end) {
+      return current;
+    }
+    return part.start;
   }
 
   void _checkPartPreviewEnd(Duration position) {
@@ -663,16 +750,21 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _previewPartEnd = null;
       unawaited(_pause());
     }
+    final message = l10n.mediaCutterPartDeleted(
+      _formatTime(part.start),
+      _formatTime(part.end),
+    );
     setState(() {
       _parts = [
         for (var i = 0; i < _parts.length; i++)
           if (i == index) _parts[i].copyWith(keep: false) else _parts[i],
       ];
       _deletedPartHistory.add(_partKey(part));
-      _status = l10n.mediaCutterPartDeleted(
-        _formatTime(part.start),
-        _formatTime(part.end),
-      );
+      _status = message;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _showSnack(message);
     });
     if (_isInsidePart(_position, part)) {
       unawaited(_seekTo(part.end, clearPreview: true));
@@ -729,6 +821,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final part = _parts[index];
     var volumePercent = part.volumePercent;
     var effect = part.effect;
+    var secondaryEffect = part.secondaryEffect;
+    var thirdEffect = part.thirdEffect;
+    var fourthEffect = part.fourthEffect;
     var effectAmountPercent = part.effectAmountPercent;
 
     final result = await showDialog<_PartEffectSettings>(
@@ -789,7 +884,64 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                     setDialogState(() => effect = value);
                   },
                 ),
-                if (effect != _MediaPartEffect.none) ...[
+                const SizedBox(height: 12),
+                DropdownButtonFormField<_MediaPartEffect>(
+                  initialValue: secondaryEffect,
+                  decoration: InputDecoration(
+                    labelText: '${l10n.mediaCutterPartEffect} 2',
+                  ),
+                  items: [
+                    for (final value in _MediaPartEffect.values)
+                      DropdownMenuItem<_MediaPartEffect>(
+                        value: value,
+                        child: Text(_effectLabel(l10n, value)),
+                      ),
+                  ],
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setDialogState(() => secondaryEffect = value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<_MediaPartEffect>(
+                  initialValue: thirdEffect,
+                  decoration: InputDecoration(
+                    labelText: '${l10n.mediaCutterPartEffect} 3',
+                  ),
+                  items: [
+                    for (final value in _MediaPartEffect.values)
+                      DropdownMenuItem<_MediaPartEffect>(
+                        value: value,
+                        child: Text(_effectLabel(l10n, value)),
+                      ),
+                  ],
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setDialogState(() => thirdEffect = value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<_MediaPartEffect>(
+                  initialValue: fourthEffect,
+                  decoration: InputDecoration(
+                    labelText: '${l10n.mediaCutterPartEffect} 4',
+                  ),
+                  items: [
+                    for (final value in _MediaPartEffect.values)
+                      DropdownMenuItem<_MediaPartEffect>(
+                        value: value,
+                        child: Text(_effectLabel(l10n, value)),
+                      ),
+                  ],
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setDialogState(() => fourthEffect = value);
+                  },
+                ),
+                if (effect != _MediaPartEffect.none ||
+                    secondaryEffect != _MediaPartEffect.none ||
+                    thirdEffect != _MediaPartEffect.none ||
+                    fourthEffect != _MediaPartEffect.none) ...[
                   const SizedBox(height: 16),
                   ExcludeSemantics(
                     child: Text(
@@ -837,6 +989,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                       index,
                       volumePercent: volumePercent,
                       effect: effect,
+                      secondaryEffect: secondaryEffect,
+                      thirdEffect: thirdEffect,
+                      fourthEffect: fourthEffect,
                       effectAmountPercent: effectAmountPercent,
                     ),
                   ),
@@ -862,6 +1017,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   _PartEffectSettings(
                     volumePercent: volumePercent,
                     effect: effect,
+                    secondaryEffect: secondaryEffect,
+                    thirdEffect: thirdEffect,
+                    fourthEffect: fourthEffect,
                     effectAmountPercent: effectAmountPercent,
                   ),
                 );
@@ -881,6 +1039,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             _parts[i].copyWith(
               volumePercent: result.volumePercent,
               effect: result.effect,
+              secondaryEffect: result.secondaryEffect,
+              thirdEffect: result.thirdEffect,
+              fourthEffect: result.fourthEffect,
               effectAmountPercent: result.effectAmountPercent,
             )
           else
@@ -911,8 +1072,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     });
 
     final exportController = _MediaCutterExportController();
+    var wakelockEnabled = false;
     try {
       await _pause();
+      await _enableExportWakelock();
+      wakelockEnabled = true;
       var outputDir = _outputDirectory;
       if (outputDir.isEmpty) {
         outputDir = await _defaultOutputDirectory();
@@ -984,8 +1148,31 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       setState(() => _status = l10n.mediaCutterReady);
       _showSnack(l10n.mediaCutterSaveFailed(error));
     } finally {
+      if (wakelockEnabled) {
+        await _disableExportWakelock();
+      }
       exportController.dispose();
       if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _enableExportWakelock() async {
+    if (!(Platform.isIOS || Platform.isAndroid)) return;
+    try {
+      await WakelockPlus.enable();
+      await AppLogger.log('Media cutter: wakelock enabled during save');
+    } catch (error) {
+      await AppLogger.log('Media cutter: wakelock enable failed $error');
+    }
+  }
+
+  Future<void> _disableExportWakelock() async {
+    if (!(Platform.isIOS || Platform.isAndroid)) return;
+    try {
+      await WakelockPlus.disable();
+      await AppLogger.log('Media cutter: wakelock disabled after save');
+    } catch (error) {
+      await AppLogger.log('Media cutter: wakelock disable failed $error');
     }
   }
 
@@ -1398,14 +1585,58 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
 
     final amount = part.effectAmountPercent.clamp(0, 100) / 100.0;
-    switch (part.effect) {
+    for (final effect in [
+      part.effect,
+      part.secondaryEffect,
+      part.thirdEffect,
+      part.fourthEffect,
+    ]) {
+      final filter = _audioFilterForEffect(effect, part, amount);
+      if (filter != null) filters.add(filter);
+    }
+
+    if (filters.isEmpty) return null;
+    return filters.join(',');
+  }
+
+  String? _audioFilterForEffect(
+    _MediaPartEffect effect,
+    _MediaPart part,
+    double amount,
+  ) {
+    switch (effect) {
       case _MediaPartEffect.none:
-        break;
+        return null;
       case _MediaPartEffect.echo:
         final delay = (120 + 320 * amount).round();
         final decay = (0.35 + 0.55 * amount).toStringAsFixed(2);
-        filters.add('aecho=0.85:0.95:$delay:$decay');
-        break;
+        return 'aecho=0.85:0.95:$delay:$decay';
+      case _MediaPartEffect.echoRoom:
+        final delay1 = (55 + 90 * amount).round();
+        final delay2 = (95 + 140 * amount).round();
+        final decay1 = (0.22 + 0.24 * amount).toStringAsFixed(2);
+        final decay2 = (0.12 + 0.22 * amount).toStringAsFixed(2);
+        return 'aecho=0.82:0.88:$delay1|$delay2:$decay1|$decay2';
+      case _MediaPartEffect.echoChamber:
+        final delay1 = (95 + 150 * amount).round();
+        final delay2 = (180 + 260 * amount).round();
+        final delay3 = (280 + 360 * amount).round();
+        final decay1 = (0.28 + 0.30 * amount).toStringAsFixed(2);
+        final decay2 = (0.20 + 0.28 * amount).toStringAsFixed(2);
+        final decay3 = (0.13 + 0.22 * amount).toStringAsFixed(2);
+        return 'aecho=0.82:0.92:$delay1|$delay2|$delay3:'
+            '$decay1|$decay2|$decay3';
+      case _MediaPartEffect.echoCathedral:
+        final delay1 = (240 + 220 * amount).round();
+        final delay2 = (520 + 360 * amount).round();
+        final delay3 = (850 + 520 * amount).round();
+        final delay4 = (1200 + 700 * amount).round();
+        final decay1 = (0.30 + 0.30 * amount).toStringAsFixed(2);
+        final decay2 = (0.24 + 0.30 * amount).toStringAsFixed(2);
+        final decay3 = (0.18 + 0.28 * amount).toStringAsFixed(2);
+        final decay4 = (0.12 + 0.22 * amount).toStringAsFixed(2);
+        return 'aecho=0.78:0.96:$delay1|$delay2|$delay3|$delay4:'
+            '$decay1|$decay2|$decay3|$decay4';
       case _MediaPartEffect.reverb:
         final delay1 = (45 + 100 * amount).round();
         final delay2 = (110 + 260 * amount).round();
@@ -1413,25 +1644,56 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         final decay1 = (0.24 + 0.34 * amount).toStringAsFixed(2);
         final decay2 = (0.18 + 0.30 * amount).toStringAsFixed(2);
         final decay3 = (0.12 + 0.26 * amount).toStringAsFixed(2);
-        filters.add(
-          'aecho=0.85:0.95:$delay1|$delay2|$delay3:$decay1|$decay2|$decay3',
-        );
-        break;
+        return 'aecho=0.85:0.95:$delay1|$delay2|$delay3:'
+            '$decay1|$decay2|$decay3';
+      case _MediaPartEffect.chorus:
+        final delay1 = (35 + 20 * amount).round();
+        final delay2 = (55 + 30 * amount).round();
+        final decay1 = (0.22 + 0.18 * amount).toStringAsFixed(2);
+        final decay2 = (0.18 + 0.16 * amount).toStringAsFixed(2);
+        final speed1 = (0.22 + 0.18 * amount).toStringAsFixed(2);
+        final speed2 = (0.35 + 0.22 * amount).toStringAsFixed(2);
+        final depth1 = (1.5 + 1.4 * amount).toStringAsFixed(2);
+        final depth2 = (1.9 + 1.7 * amount).toStringAsFixed(2);
+        return 'chorus=0.75:0.88:$delay1|$delay2:$decay1|$decay2:'
+            '$speed1|$speed2:$depth1|$depth2';
+      case _MediaPartEffect.pitchLow:
+        return _pitchFilter(0.85);
+      case _MediaPartEffect.pitchVeryLow:
+        return _pitchFilter(0.75);
+      case _MediaPartEffect.pitchHigh:
+        return _pitchFilter(1.15);
+      case _MediaPartEffect.pitchVeryHigh:
+        return _pitchFilter(1.30);
+      case _MediaPartEffect.robot:
+        final bits = (10 - 5 * amount).round().clamp(5, 10);
+        return 'highpass=f=300,lowpass=f=3000,'
+            'acrusher=level_in=1:level_out=1:bits=$bits:mode=log:aa=1';
+      case _MediaPartEffect.helicopter:
+        final frequency = (6 + 12 * amount).toStringAsFixed(2);
+        final depth = (0.45 + 0.50 * amount).toStringAsFixed(2);
+        return 'tremolo=f=$frequency:d=$depth';
+      case _MediaPartEffect.alien:
+        final frequency = (4 + 7 * amount).toStringAsFixed(2);
+        final depth = (0.35 + 0.55 * amount).toStringAsFixed(2);
+        return 'vibrato=f=$frequency:d=$depth';
       case _MediaPartEffect.fadeIn:
         final fade = _fadeDurationSeconds(part.duration);
-        filters.add('afade=t=in:st=0:d=$fade');
-        break;
+        return 'afade=t=in:st=0:d=$fade';
       case _MediaPartEffect.fadeOut:
         final fade = _fadeDurationSeconds(part.duration);
         final start = (_seconds(part.duration) - double.parse(fade))
             .clamp(0.0, double.infinity)
             .toStringAsFixed(3);
-        filters.add('afade=t=out:st=$start:d=$fade');
-        break;
+        return 'afade=t=out:st=$start:d=$fade';
     }
+  }
 
-    if (filters.isEmpty) return null;
-    return filters.join(',');
+  String _pitchFilter(double factor) {
+    final compensation = 1 / factor;
+    return 'asetrate=44100*${factor.toStringAsFixed(3)},'
+        'aresample=44100,'
+        'atempo=${compensation.toStringAsFixed(6)}';
   }
 
   String _fadeDurationSeconds(Duration duration) {
@@ -1498,6 +1760,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         effect: previous.isEmpty
             ? _MediaPartEffect.none
             : previous.first.effect,
+        secondaryEffect: previous.isEmpty
+            ? _MediaPartEffect.none
+            : previous.first.secondaryEffect,
+        thirdEffect: previous.isEmpty
+            ? _MediaPartEffect.none
+            : previous.first.thirdEffect,
+        fourthEffect: previous.isEmpty
+            ? _MediaPartEffect.none
+            : previous.first.fourthEffect,
         effectAmountPercent:
             previous.isEmpty ? 50 : previous.first.effectAmountPercent,
       ));
@@ -1539,8 +1810,30 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return l10n.mediaCutterPartEffectNone;
       case _MediaPartEffect.echo:
         return l10n.mediaCutterPartEffectEcho;
+      case _MediaPartEffect.echoRoom:
+        return l10n.mediaCutterPartEffectEchoRoom;
+      case _MediaPartEffect.echoChamber:
+        return l10n.mediaCutterPartEffectEchoChamber;
+      case _MediaPartEffect.echoCathedral:
+        return l10n.mediaCutterPartEffectEchoCathedral;
       case _MediaPartEffect.reverb:
         return l10n.mediaCutterPartEffectReverb;
+      case _MediaPartEffect.chorus:
+        return l10n.mediaCutterPartEffectChorus;
+      case _MediaPartEffect.pitchLow:
+        return l10n.mediaCutterPartEffectPitchLow;
+      case _MediaPartEffect.pitchVeryLow:
+        return l10n.mediaCutterPartEffectPitchVeryLow;
+      case _MediaPartEffect.pitchHigh:
+        return l10n.mediaCutterPartEffectPitchHigh;
+      case _MediaPartEffect.pitchVeryHigh:
+        return l10n.mediaCutterPartEffectPitchVeryHigh;
+      case _MediaPartEffect.robot:
+        return l10n.mediaCutterPartEffectRobot;
+      case _MediaPartEffect.helicopter:
+        return l10n.mediaCutterPartEffectHelicopter;
+      case _MediaPartEffect.alien:
+        return l10n.mediaCutterPartEffectAlien;
       case _MediaPartEffect.fadeIn:
         return l10n.mediaCutterPartEffectFadeIn;
       case _MediaPartEffect.fadeOut:
@@ -1557,6 +1850,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
     if (part.effect != _MediaPartEffect.none) {
       pieces.add(_effectLabel(l10n, part.effect));
+    }
+    if (part.secondaryEffect != _MediaPartEffect.none) {
+      pieces.add(_effectLabel(l10n, part.secondaryEffect));
+    }
+    if (part.thirdEffect != _MediaPartEffect.none) {
+      pieces.add(_effectLabel(l10n, part.thirdEffect));
+    }
+    if (part.fourthEffect != _MediaPartEffect.none) {
+      pieces.add(_effectLabel(l10n, part.fourthEffect));
     }
     pieces.add(_localizedDurationSummary(duration));
 
@@ -1783,11 +2085,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           slider: true,
           label: l10n.mediaCutterPosition,
           value: l10n.playbackPositionValue(
-            _formatTime(position),
-            _formatTime(_duration),
+            _formatHumanDuration(position),
+            _formatHumanDuration(_duration),
           ),
-          increasedValue: _formatTime(oneSecondForward),
-          decreasedValue: _formatTime(oneSecondBack),
+          increasedValue: _formatHumanDuration(oneSecondForward),
+          decreasedValue: _formatHumanDuration(oneSecondBack),
           onIncrease: () => _seekTo(oneSecondForward),
           onDecrease: () => _seekTo(oneSecondBack),
           hint: l10n.mediaCutterPositionHint,
@@ -1854,6 +2156,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
 
     return Semantics(
+      key: ValueKey('media_cutter_part_semantics_${_partKey(part)}'),
       container: true,
       button: true,
       enabled: !_saving,

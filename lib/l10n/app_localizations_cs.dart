@@ -158,174 +158,6 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterTitle => 'Oříznout mediální soubor';
-
-  @override
-  String get mediaCutterInstruction1 => 'Otevři zvukový nebo video soubor, přehraj ho a přejdi na místo, kde chceš střihnout.';
-
-  @override
-  String get mediaCutterInstruction2 => 'Pozastavte přehrávání, stiskněte Rozdělit, potom v části Části k uložení odstraňte části, které nechcete, a stiskněte Uložit.';
-
-  @override
-  String get mediaCutterOpenFile => 'Otevřít mediální soubor';
-
-  @override
-  String mediaCutterSelectedFile(String fileName) {
-    return 'Vybraný soubor: $fileName';
-  }
-
-  @override
-  String get mediaCutterPosition => 'Pozice střihu';
-
-  @override
-  String get mediaCutterPositionHint => 'Posouvej se vpřed nebo zpět po jedné sekundě.';
-
-  @override
-  String get mediaCutterHideVideoPreview => 'Skrýt video';
-
-  @override
-  String get mediaCutterVideoPreview => 'Náhled videa';
-
-  @override
-  String get mediaCutterSplit => 'Rozdělit';
-
-  @override
-  String get mediaCutterPartsTitle => 'Části k uložení';
-
-  @override
-  String get mediaCutterPartsHint => 'Klepnutím si část poslechnete. Odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a neuloží se.';
-
-  @override
-  String mediaCutterPartLabel(int index) {
-    return 'Část $index';
-  }
-
-  @override
-  String mediaCutterPartRange(String start, String end) {
-    return 'Od $start do $end';
-  }
-
-  @override
-  String get mediaCutterSave => 'Uložit';
-
-  @override
-  String get mediaCutterReady => 'Připraveno.';
-
-  @override
-  String get mediaCutterNoFile => 'Nejprve otevři mediální soubor.';
-
-  @override
-  String get mediaCutterInvalidSplitPoint => 'Vyber místo uvnitř souboru, ne začátek ani konec.';
-
-  @override
-  String get mediaCutterSplitAlreadyExists => 'V tomto místě už rozdělení existuje.';
-
-  @override
-  String mediaCutterSplitAdded(String position) {
-    return 'Rozdělení přidáno v $position.';
-  }
-
-  @override
-  String get mediaCutterSaving => 'Ukládání souboru...';
-
-  @override
-  String mediaCutterSaved(String fileName) {
-    return 'Soubor uložen: $fileName';
-  }
-
-  @override
-  String mediaCutterLoadFailed(Object error) {
-    return 'Soubor nelze otevřít: $error';
-  }
-
-  @override
-  String mediaCutterSaveFailed(Object error) {
-    return 'Uložení se nezdařilo: $error';
-  }
-
-  @override
-  String get mediaCutterNoPartsToSave => 'Před uložením ponechte alespoň jednu část.';
-
-
-  @override
-  String get mediaCutterRestoreDeletedPart => 'Obnovit odstraněnou část';
-
-  @override
-  String get mediaCutterNoDeletedParts => 'Nejsou zde žádné odstraněné části k obnovení.';
-
-  @override
-  String get mediaCutterPartDeleteAction => 'Odstranit';
-
-  @override
-  String get mediaCutterPartEffectsAction => 'Upravit efekty';
-
-  @override
-  String get mediaCutterPartEffectsTitle => 'Efekty části';
-
-  @override
-  String get mediaCutterPartEffectsDescription => 'Upravte hlasitost a efekt pouze pro tuto část.';
-
-  @override
-  String mediaCutterPartVolumeValue(int percent) {
-    return 'Hlasitost části: $percent %';
-  }
-
-  @override
-  String get mediaCutterPartEffect => 'Zvukový efekt';
-
-  @override
-  String get mediaCutterPartEffectNone => 'Žádný efekt';
-
-  @override
-  String get mediaCutterPartEffectEcho => 'Lehké echo';
-
-  @override
-  String get mediaCutterPartEffectReverb => 'Lehký dozvuk';
-
-  @override
-  String get mediaCutterPartEffectFadeIn => 'Zesílení na začátku';
-
-  @override
-  String get mediaCutterPartEffectFadeOut => 'Zeslabení na konci';
-
-  @override
-  String mediaCutterPartEffectAmountValue(int percent) {
-    return 'Intenzita efektu: $percent %';
-  }
-
-  @override
-  String get mediaCutterPartPreviewAction => 'Přehrát náhled';
-
-  @override
-  String get mediaCutterPartEffectsSavedOnly => 'Náhled používá zvolenou hlasitost. Zvukové efekty se použijí při ukládání.';
-
-  @override
-  String mediaCutterPartEffectsApplied(String start, String end) {
-    return 'Efekty aktualizovány pro část od $start do $end.';
-  }
-
-  @override
-  String mediaCutterPartEffectsSummary(int percent, String effect) {
-    return 'Hlasitost $percent %, efekt $effect';
-  }
-
-
-
-  @override
-  String get mediaCutterPartTapHint =>
-      'Dvojitým klepnutím přehrajete tuto část. Použijte akce Smazat nebo Upravit efekty.';
-
-  @override
-  String mediaCutterPartDeleted(String start, String end) {
-    return 'Část od $start do $end byla odstraněna.';
-  }
-
-  @override
-  String mediaCutterPartRestored(String start, String end) {
-    return 'Část od $start do $end byla obnovena.';
-  }
-
-  @override
   String get donations => 'Dary';
 
   @override
@@ -442,18 +274,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get moveToPosition => 'Přesunout na pozici';
 
   @override
-  String get sortPodcastsAlphabetically => 'Seřadit podcasty abecedně';
-
-  @override
-  String get sortRadioFavoritesAlphabetically => 'Seřadit oblíbené abecedně';
-
-  @override
-  String get podcastsSortedAlphabetically => 'Podcasty seřazeny abecedně.';
-
-  @override
-  String get radioFavoritesSortedAlphabetically => 'Oblíbené stanice seřazeny abecedně.';
-
-  @override
   String positionLabel(int position, String targetName) {
     return 'Pozice $position: před $targetName';
   }
@@ -466,67 +286,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get addCustomNewsSource => 'Přidat vlastní RSS zdroj';
-
-  @override
-  String get newsAddCommunitySource => 'Přidat zdroj do komunity Sonarpad';
-
-  @override
-  String get newsBrowseCommunitySources => 'Komunitní zdroje';
-
-  @override
-  String get newsAddCommunityInstructions => 'Zadejte název zdroje a URL RSS kanálu nebo webu. Sonarpad použije vybraný jazyk zpráv a pokud zadáte web, pokusí se automaticky najít kanál.';
-
-  @override
-  String get newsCommunitySourceName => 'Název zdroje';
-
-  @override
-  String get newsCommunitySourceUrl => 'URL RSS kanálu nebo webu';
-
-  @override
-  String get newsCommunitySubmit => 'Zkontrolovat a přidat';
-
-  @override
-  String get newsCommunityChecking => 'Kontroluji kanál nebo web...';
-
-  @override
-  String get newsCommunityMissingFields => 'Zadejte název a URL kanálu nebo webu.';
-
-  @override
-  String get newsCommunityAdded => 'Zdroj byl úspěšně přidán do komunity Sonarpad.';
-
-  @override
-  String get newsCommunitySourcesTitle => 'Komunitní zdroje';
-
-  @override
-  String get newsCommunitySourcesEmpty => 'Pro tento jazyk nejsou dostupné žádné komunitní zdroje.';
-
-  @override
-  String get newsCommunitySourceTapHint => 'Klepnutím přidáte zdroj do své knihovny zpráv.';
-
-  @override
-  String newsCommunityAddError(Object error) {
-    return 'Chyba při přidávání zdroje: $error';
-  }
-
-  @override
-  String newsCommunitySelectedLanguage(Object language) {
-    return 'Vybraný jazyk: $language';
-  }
-
-  @override
-  String newsCommunitySourcesError(Object error) {
-    return 'Chyba při načítání komunitních zdrojů: $error';
-  }
-
-  @override
-  String newsCommunitySourceAddedToLibrary(Object name) {
-    return '$name byl přidán do vaší knihovny zpráv.';
-  }
-
-  @override
-  String newsCommunityAddToLibraryError(Object error) {
-    return 'Chyba při přidávání do knihovny: $error';
-  }
 
   @override
   String get newsSourceName => 'Název zdroje nebo webu';
@@ -1052,26 +811,25 @@ class AppLocalizationsCs extends AppLocalizations {
   String get documentTypeLabel => 'Dokument';
 
   @override
-
+  String get documentPosition => 'Pozice dokumentu';
 
   @override
   String get documentRemainingLessThanOneMinute => 'zbývá méně než 1 minuta';
 
   @override
-  String documentRemainingMinutes(Object minutes) {
+  String documentRemainingMinutes(int minutes) {
     return 'zbývá přibližně $minutes minut';
   }
 
   @override
-  String documentRemainingHours(Object hours) {
+  String documentRemainingHours(int hours) {
     return 'zbývá přibližně $hours hodin';
   }
 
   @override
-  String documentRemainingHoursMinutes(Object hours, Object minutes) {
+  String documentRemainingHoursMinutes(int hours, int minutes) {
     return 'zbývá přibližně $hours h a $minutes min';
   }
-  String get documentPosition => 'Pozice dokumentu';
 
   @override
   String get folderTypeLabel => 'Složka';
@@ -1143,9 +901,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get documentIndex => 'Obsah';
-
-  @override
-  String get documentFootnoteLabel => 'Poznámka pod čarou';
 
   @override
   String get documentSearchFieldLabel => 'Hledat text';
@@ -1251,13 +1006,6 @@ class AppLocalizationsCs extends AppLocalizations {
       'Pokračovat v dokumentech, podcastech, RaiPlay a audiopopisech tam, kde jste skončili.';
 
   @override
-  String get settingsIncludeFootnotesInText => 'Zahrnout poznámky pod čarou do textu';
-
-  @override
-  String get settingsIncludeFootnotesInTextHint =>
-      'U podporovaných knih EPUB zobrazí poznámku hned za odstavcem, který na ni odkazuje.';
-
-  @override
   String get settingsDocumentSliderStep => 'Krok posuvníku dokumentu';
 
   @override
@@ -1265,10 +1013,10 @@ class AppLocalizationsCs extends AppLocalizations {
       'Určuje, o kolik se posune posuvník pozice dokumentu při přejetí nahoru nebo dolů.';
 
   @override
-  String get settingsReadingSleepTimer => "Časovač vypnutí čtení";
+  String get settingsReadingSleepTimer => 'Časovač vypnutí čtení';
 
   @override
-  String get settingsReadingSleepTimerOff => "Vypnuto";
+  String get settingsReadingSleepTimerOff => 'Vypnuto';
 
   @override
   String settingsReadingSleepTimerMinutes(int minutes) {
@@ -1276,10 +1024,12 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get settingsReadingSleepTimerHint => "Po zvolené době automaticky zastaví čtení aktuálního dokumentu a uloží místo zastavení. Odpočítávání začne znovu při každém spuštění čtení dokumentu.";
+  String get settingsReadingSleepTimerHint =>
+      'Po zvolené době automaticky zastaví čtení aktuálního dokumentu a uloží místo zastavení. Odpočítávání začne znovu při každém spuštění čtení dokumentu.';
 
   @override
-  String get documentReadingSleepTimerStopped => "Časovač vypnutí: čtení zastaveno a poloha uložena.";
+  String get documentReadingSleepTimerStopped =>
+      'Časovač vypnutí: čtení zastaveno a poloha uložena.';
 
   @override
   String get settingsSeekStep => 'Krok zpět / vpřed pro média';
@@ -1632,100 +1382,6 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get bookmarkRemoved => 'Záložka odstraněna.';
 
-
-  @override
-  String get settingsMultipleDocumentBookmarks => 'Povolit více záložek v dokumentech';
-
-  @override
-  String get settingsMultipleDocumentBookmarksHint =>
-      'Pokud je vypnuto, každý dokument má jen jednu záložku. Pokud je zapnuto, můžete uložit více záložek ve stejném dokumentu.';
-
-
-
-  @override
-  String get pharmacyFeatureTitle => 'Léky, parafarmaka a doplňky';
-
-  @override
-  String get pharmacyProductsSectionTitle => 'Parafarmaka a doplňky';
-
-  @override
-  String get pharmacyProductsLoadingTitle => 'Hledají se parafarmaka a doplňky...';
-
-  @override
-  String get pharmacyProductsErrorTitle => 'Chyba při hledání parafarmak a doplňků';
-
-  @override
-  String get pharmacyProductsNoResultsTitle => 'Nebylo nalezeno žádné parafarmakum ani doplněk';
-
-  @override
-  String get settingsVideoLandscapeFullscreen => 'Vodorovné video přes celou obrazovku';
-  @override
-  String get settingsVideoLandscapeFullscreenHint =>
-      'Když zapnete video, zobrazí se přes celou obrazovku na šířku. Rádia pouze se zvukem se nemění.';
-
-  @override
-  String get settingsPodcastCacheTitle => 'Mezipaměť podcastů';
-
-  @override
-  String get settingsPodcastCacheHint => 'Vymaže jen dočasné soubory podcastů. Odběry, historie a importované audio zůstanou zachovány.';
-
-  @override
-  String settingsPodcastCacheSize(String size) {
-    return 'Využité místo: $size';
-  }
-
-  @override
-  String get clearPodcastCache => 'Vymazat mezipaměť podcastů';
-
-  @override
-  String get confirmClearPodcastCacheTitle => 'Vymazat mezipaměť podcastů?';
-
-  @override
-  String get confirmClearPodcastCacheMessage => 'Dočasné soubory podcastů budou odstraněny. Odběry a historie epizod zůstanou zachovány.';
-
-  @override
-  String podcastCacheCleared(String size) {
-    return 'Mezipaměť podcastů vymazána: uvolněno $size.';
-  }
-
-  @override
-  String get podcastCacheEmpty => 'Mezipaměť podcastů je už prázdná.';
-
-  @override
-  String get documentGoToBookmarkAction => 'Přejít na záložku';
-
-  @override
-  String get documentChooseBookmarkTitle => 'Vyberte záložku';
-
-  @override
-  String get documentDeleteBookmarkAction => 'Smazat záložku';
-
-  @override
-  String get documentKeepBookmarkTitle => 'Kterou záložku chcete ponechat?';
-
-  @override
-  String get documentKeepBookmarkMessage =>
-      'Více záložek je vypnuto. Vyberte záložku, kterou chcete ponechat: ostatní budou odstraněny.';
-
-  @override
-  String documentBookmarkChoiceLabel(int order, int paragraph) {
-    return 'Záložka {order}, odstavec {paragraph}'
-        .replaceAll('{order}', '$order')
-        .replaceAll('{paragraph}', '$paragraph');
-  }
-
-  @override
-  String documentBookmarkChoiceLabelWithPreview(
-    int order,
-    int paragraph,
-    String preview,
-  ) {
-    return 'Záložka {order}, odstavec {paragraph}. {preview}'
-        .replaceAll('{order}', '$order')
-        .replaceAll('{paragraph}', '$paragraph')
-        .replaceAll('{preview}', preview);
-  }
-
   @override
   String get docEmpty => 'Dokument je prázdný';
 
@@ -1864,7 +1520,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get logCleared => 'Log vymazán';
 
   @override
-  String get parafarmacoDetailReadyAnnouncement => 'Karta produktu byla načtena. Přejetím doprava vyberte sekce.';
+  String get parafarmacoDetailReadyAnnouncement =>
+      'Karta produktu byla načtena. Přejetím doprava vyberte sekce.';
 
   @override
   String get systemLog => 'Systémový protokol';
@@ -2566,13 +2223,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get podcastSelectDate => 'Vybrat datum';
 
   @override
-  String get podcastNoDatesAvailable => 'Pro tyto epizody nejsou k dispozici žádná data.';
+  String get podcastNoDatesAvailable =>
+      'Pro tyto epizody nejsou k dispozici žádná data.';
 
   @override
   String get podcastChapters => 'Kapitoly';
 
   @override
-  String get podcastChaptersUnavailable => 'Pro tuto epizodu nejsou dostupné žádné kapitoly.';
+  String get podcastChaptersUnavailable =>
+      'Pro tuto epizodu nejsou dostupné žádné kapitoly.';
 
   @override
   String get podcastUnplayed => 'Nepřehrané epizody';
@@ -2634,4 +2293,393 @@ class AppLocalizationsCs extends AppLocalizations {
   String routeNavigationFromTo(Object from, Object to, Object date) {
     return 'Podrobnosti navigace z $from do $to - $date';
   }
+
+  @override
+  String get sortPodcastsAlphabetically => 'Seřadit podcasty abecedně';
+
+  @override
+  String get sortRadioFavoritesAlphabetically => 'Seřadit oblíbené abecedně';
+
+  @override
+  String get podcastsSortedAlphabetically => 'Podcasty seřazeny abecedně.';
+
+  @override
+  String get radioFavoritesSortedAlphabetically =>
+      'Oblíbené stanice seřazeny abecedně.';
+
+  @override
+  String get settingsIncludeFootnotesInText =>
+      'Zahrnout poznámky pod čarou do textu';
+
+  @override
+  String get settingsIncludeFootnotesInTextHint =>
+      'U podporovaných knih EPUB zobrazí poznámku hned za odstavcem, který na ni odkazuje.';
+
+  @override
+  String get documentFootnoteLabel => 'Poznámka pod čarou';
+
+  @override
+  String get settingsMultipleDocumentBookmarks =>
+      'Povolit více záložek v dokumentech';
+
+  @override
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Pokud je vypnuto, každý dokument má jen jednu záložku. Pokud je zapnuto, můžete uložit více záložek ve stejném dokumentu.';
+
+  @override
+  String get documentGoToBookmarkAction => 'Přejít na záložku';
+
+  @override
+  String get documentChooseBookmarkTitle => 'Vyberte záložku';
+
+  @override
+  String get documentDeleteBookmarkAction => 'Smazat záložku';
+
+  @override
+  String get documentKeepBookmarkTitle => 'Kterou záložku chcete ponechat?';
+
+  @override
+  String get documentKeepBookmarkMessage =>
+      'Více záložek je vypnuto. Vyberte záložku, kterou chcete ponechat: ostatní budou odstraněny.';
+
+  @override
+  String documentBookmarkChoiceLabel(int order, int paragraph) {
+    return 'Záložka $order, odstavec $paragraph';
+  }
+
+  @override
+  String documentBookmarkChoiceLabelWithPreview(
+      int order, int paragraph, String preview) {
+    return 'Záložka $order, odstavec $paragraph. $preview';
+  }
+
+  @override
+  String get settingsVideoLandscapeFullscreen =>
+      'Vodorovné video přes celou obrazovku';
+
+  @override
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Když zapnete video, zobrazí se přes celou obrazovku na šířku. Rádia pouze se zvukem se nemění.';
+
+  @override
+  String get settingsPodcastCacheTitle => 'Mezipaměť podcastů';
+
+  @override
+  String get settingsPodcastCacheHint =>
+      'Vymaže jen dočasné soubory podcastů. Odběry, historie a importované audio zůstanou zachovány.';
+
+  @override
+  String settingsPodcastCacheSize(String size) {
+    return 'Využité místo: $size';
+  }
+
+  @override
+  String get clearPodcastCache => 'Vymazat mezipaměť podcastů';
+
+  @override
+  String get confirmClearPodcastCacheTitle => 'Vymazat mezipaměť podcastů?';
+
+  @override
+  String get confirmClearPodcastCacheMessage =>
+      'Dočasné soubory podcastů budou odstraněny. Odběry a historie epizod zůstanou zachovány.';
+
+  @override
+  String podcastCacheCleared(String size) {
+    return 'Mezipaměť podcastů vymazána: uvolněno $size.';
+  }
+
+  @override
+  String get podcastCacheEmpty => 'Mezipaměť podcastů je už prázdná.';
+
+  @override
+  String get pharmacyFeatureTitle => 'Léky, parafarmaka a doplňky';
+
+  @override
+  String get pharmacyProductsSectionTitle => 'Parafarmaka a doplňky';
+
+  @override
+  String get pharmacyProductsLoadingTitle =>
+      'Hledají se parafarmaka a doplňky...';
+
+  @override
+  String get pharmacyProductsErrorTitle =>
+      'Chyba při hledání parafarmak a doplňků';
+
+  @override
+  String get pharmacyProductsNoResultsTitle =>
+      'Nebylo nalezeno žádné parafarmakum ani doplněk';
+
+  @override
+  String get mediaCutterTitle => 'Oříznout mediální soubor';
+
+  @override
+  String get mediaCutterInstruction1 =>
+      'Otevři zvukový nebo video soubor, přehraj ho a přejdi na místo, kde chceš střihnout.';
+
+  @override
+  String get mediaCutterInstruction2 =>
+      'Pozastavte přehrávání, stiskněte Rozdělit, potom v části Části k uložení odstraňte části, které nechcete, a stiskněte Uložit.';
+
+  @override
+  String get mediaCutterOpenFile => 'Otevřít mediální soubor';
+
+  @override
+  String mediaCutterSelectedFile(String fileName) {
+    return 'Vybraný soubor: $fileName';
+  }
+
+  @override
+  String get mediaCutterPosition => 'Pozice střihu';
+
+  @override
+  String get mediaCutterPositionHint =>
+      'Posouvej se vpřed nebo zpět po jedné sekundě.';
+
+  @override
+  String get mediaCutterHideVideoPreview => 'Skrýt video';
+
+  @override
+  String get mediaCutterVideoPreview => 'Náhled videa';
+
+  @override
+  String get mediaCutterSplit => 'Rozdělit';
+
+  @override
+  String get mediaCutterPartsTitle => 'Části k uložení';
+
+  @override
+  String get mediaCutterPartsHint =>
+      'Klepnutím si část poslechnete. Odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a neuloží se.';
+
+  @override
+  String mediaCutterPartLabel(int index) {
+    return 'Část $index';
+  }
+
+  @override
+  String mediaCutterPartRange(String start, String end) {
+    return 'Od $start do $end';
+  }
+
+  @override
+  String get mediaCutterSave => 'Uložit';
+
+  @override
+  String get mediaCutterReady => 'Připraveno.';
+
+  @override
+  String get mediaCutterNoFile => 'Nejprve otevři mediální soubor.';
+
+  @override
+  String get mediaCutterInvalidSplitPoint =>
+      'Vyber místo uvnitř souboru, ne začátek ani konec.';
+
+  @override
+  String get mediaCutterSplitAlreadyExists =>
+      'V tomto místě už rozdělení existuje.';
+
+  @override
+  String mediaCutterSplitAdded(String position) {
+    return 'Rozdělení přidáno v $position.';
+  }
+
+  @override
+  String get mediaCutterSaving => 'Ukládání souboru...';
+
+  @override
+  String mediaCutterSaved(String fileName) {
+    return 'Soubor uložen: $fileName';
+  }
+
+  @override
+  String mediaCutterLoadFailed(Object error) {
+    return 'Soubor nelze otevřít: $error';
+  }
+
+  @override
+  String mediaCutterSaveFailed(Object error) {
+    return 'Uložení se nezdařilo: $error';
+  }
+
+  @override
+  String get mediaCutterNoPartsToSave =>
+      'Před uložením ponechte alespoň jednu část.';
+
+  @override
+  String get mediaCutterRestoreDeletedPart => 'Obnovit odstraněnou část';
+
+  @override
+  String get mediaCutterNoDeletedParts =>
+      'Nejsou zde žádné odstraněné části k obnovení.';
+
+  @override
+  String get mediaCutterPartDeleteAction => 'Odstranit';
+
+  @override
+  String get mediaCutterPartTapHint =>
+      'Dvojitým klepnutím přehrajete tuto část. Použijte akce Smazat nebo Upravit efekty.';
+
+  @override
+  String mediaCutterPartDeleted(String start, String end) {
+    return 'Část od $start do $end byla odstraněna.';
+  }
+
+  @override
+  String mediaCutterPartRestored(String start, String end) {
+    return 'Část od $start do $end byla obnovena.';
+  }
+
+  @override
+  String get mediaCutterPartEffectsAction => 'Upravit efekty';
+
+  @override
+  String get mediaCutterPartEffectsTitle => 'Efekty části';
+
+  @override
+  String get mediaCutterPartEffectsDescription =>
+      'Upravte hlasitost a efekt pouze pro tuto část.';
+
+  @override
+  String mediaCutterPartVolumeValue(int percent) {
+    return 'Hlasitost části: $percent %';
+  }
+
+  @override
+  String get mediaCutterPartEffect => 'Zvukový efekt';
+
+  @override
+  String get mediaCutterPartEffectNone => 'Žádný efekt';
+
+  @override
+  String get mediaCutterPartEffectEcho => 'Lehké echo';
+
+  @override
+  String get mediaCutterPartEffectEchoRoom => 'Ozvěna místnosti';
+
+  @override
+  String get mediaCutterPartEffectEchoChamber => 'Ozvěna komory';
+
+  @override
+  String get mediaCutterPartEffectEchoCathedral => 'Ozvěna katedrály';
+
+  @override
+  String get mediaCutterPartEffectReverb => 'Lehký dozvuk';
+
+  @override
+  String get mediaCutterPartEffectChorus => 'Chorus';
+
+  @override
+  String get mediaCutterPartEffectPitchLow => 'Nízká výška';
+
+  @override
+  String get mediaCutterPartEffectPitchVeryLow => 'Velmi nízká výška';
+
+  @override
+  String get mediaCutterPartEffectPitchHigh => 'Vysoká výška';
+
+  @override
+  String get mediaCutterPartEffectPitchVeryHigh => 'Velmi vysoká výška';
+
+  @override
+  String get mediaCutterPartEffectRobot => 'Robotický hlas';
+
+  @override
+  String get mediaCutterPartEffectHelicopter => 'Vrtulník';
+
+  @override
+  String get mediaCutterPartEffectAlien => 'Mimozemské vibrato';
+
+  @override
+  String get mediaCutterPartEffectFadeIn => 'Zesílení na začátku';
+
+  @override
+  String get mediaCutterPartEffectFadeOut => 'Zeslabení na konci';
+
+  @override
+  String mediaCutterPartEffectAmountValue(int percent) {
+    return 'Intenzita efektu: $percent %';
+  }
+
+  @override
+  String get mediaCutterPartPreviewAction => 'Přehrát náhled';
+
+  @override
+  String get mediaCutterPartEffectsSavedOnly =>
+      'Náhled používá zvolenou hlasitost. Zvukové efekty se použijí při ukládání.';
+
+  @override
+  String mediaCutterPartEffectsApplied(String start, String end) {
+    return 'Efekty aktualizovány pro část od $start do $end.';
+  }
+
+  @override
+  String mediaCutterPartEffectsSummary(int percent, String effect) {
+    return 'Hlasitost $percent %, efekt $effect';
+  }
+
+  @override
+  String get newsAddCommunitySource => 'Přidat zdroj do komunity Sonarpad';
+
+  @override
+  String get newsBrowseCommunitySources => 'Komunitní zdroje';
+
+  @override
+  String get newsAddCommunityInstructions =>
+      'Zadejte název zdroje a URL RSS kanálu nebo webu. Sonarpad použije vybraný jazyk zpráv a pokud zadáte web, pokusí se automaticky najít kanál.';
+
+  @override
+  String get newsCommunitySourceName => 'Název zdroje';
+
+  @override
+  String get newsCommunitySourceUrl => 'URL RSS kanálu nebo webu';
+
+  @override
+  String get newsCommunitySubmit => 'Zkontrolovat a přidat';
+
+  @override
+  String get newsCommunityChecking => 'Kontroluji kanál nebo web...';
+
+  @override
+  String get newsCommunityMissingFields =>
+      'Zadejte název a URL kanálu nebo webu.';
+
+  @override
+  String get newsCommunityAdded =>
+      'Zdroj byl úspěšně přidán do komunity Sonarpad.';
+
+  @override
+  String newsCommunityAddError(Object error) {
+    return 'Chyba při přidávání zdroje: $error';
+  }
+
+  @override
+  String newsCommunitySelectedLanguage(Object language) {
+    return 'Vybraný jazyk: $language';
+  }
+
+  @override
+  String get newsCommunitySourcesTitle => 'Komunitní zdroje';
+
+  @override
+  String get newsCommunitySourcesEmpty =>
+      'Pro tento jazyk nejsou dostupné žádné komunitní zdroje.';
+
+  @override
+  String newsCommunitySourcesError(Object error) {
+    return 'Chyba při načítání komunitních zdrojů: $error';
+  }
+
+  @override
+  String newsCommunitySourceAddedToLibrary(Object name) {
+    return '$name byl přidán do vaší knihovny zpráv.';
+  }
+
+  @override
+  String newsCommunityAddToLibraryError(Object error) {
+    return 'Chyba při přidávání do knihovny: $error';
+  }
+
+  @override
+  String get newsCommunitySourceTapHint =>
+      'Klepnutím přidáte zdroj do své knihovny zpráv.';
 }
