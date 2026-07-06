@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,6 +12,7 @@ import 'package:xml/xml.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
+import '../utils/app_logger.dart';
 import 'news_sources/english_news_sources.dart';
 import 'news_sources/italian_news_sources.dart';
 import 'news_sources/news_rss_source.dart';
@@ -953,12 +955,23 @@ class NewsService {
       {required NewsLanguage language}) async {
     final resolvedUrl = await _resolveArticleUrl(article.link);
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: URL Google News non risolto, uso riassunto RSS '
+        'url=$resolvedUrl',
+      ));
       return NewsArticleContent(text: article.summary, url: article.link);
     }
     final tinyfishContent = await _tryFetchTinyfishArticleContent(resolvedUrl);
-    if (tinyfishContent != null && tinyfishContent.text.trim().length >= 150) {
+    if (tinyfishContent != null && tinyfishContent.text.trim().length >= 100) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: testo accettato length=${tinyfishContent.text.trim().length} '
+        'url=${tinyfishContent.url}',
+      ));
       return tinyfishContent;
     }
+    unawaited(AppLogger.log(
+      'News Tinyfish: fallback reader HTML url=$resolvedUrl',
+    ));
     final langHeader = _acceptLanguageHeader(language);
     final fetch = await _browserGetWithFallback(
       Uri.parse(resolvedUrl),
@@ -1034,6 +1047,7 @@ class NewsService {
     String articleUrl,
   ) async {
     try {
+      unawaited(AppLogger.log('News Tinyfish: tentativo url=$articleUrl'));
       final uri = Uri.parse(_tinyfishArticleFetchUrl).replace(
         queryParameters: {'url': articleUrl},
       );
@@ -1042,6 +1056,10 @@ class NewsService {
         headers: const {'Accept': 'application/json'},
       ).timeout(const Duration(seconds: 15));
       if (response.statusCode < 200 || response.statusCode >= 300) {
+        unawaited(AppLogger.log(
+          'News Tinyfish: HTTP ${response.statusCode}, fallback reader '
+          'url=$articleUrl',
+        ));
         debugPrint(
           'Sonarpad news Tinyfish: HTTP ${response.statusCode}, fallback reader',
         );
@@ -1051,13 +1069,31 @@ class NewsService {
       final decoded = jsonDecode(
         utf8.decode(response.bodyBytes, allowMalformed: true),
       );
-      if (decoded is! Map || decoded['ok'] != true) return null;
+      if (decoded is! Map || decoded['ok'] != true) {
+        unawaited(AppLogger.log(
+          'News Tinyfish: risposta non valida, fallback reader url=$articleUrl',
+        ));
+        return null;
+      }
 
       final markdown = (decoded['markdown'] ?? '').toString().trim();
+      final cacheHit = decoded['cache_hit'];
+      final tinyfishEnabled = decoded['tinyfish_enabled'];
+      unawaited(AppLogger.log(
+        'News Tinyfish: risposta ok cache_hit=$cacheHit '
+        'tinyfish_enabled=$tinyfishEnabled markdownLength=${markdown.length} '
+        'url=$articleUrl',
+      ));
       if (markdown.isEmpty) return null;
 
       final text = _plainTextFromMarkdown(markdown);
-      if (text.trim().isEmpty) return null;
+      if (text.trim().isEmpty) {
+        unawaited(AppLogger.log(
+          'News Tinyfish: markdown vuoto dopo conversione, fallback reader '
+          'url=$articleUrl',
+        ));
+        return null;
+      }
 
       final finalUrl = (decoded['final_url'] ?? decoded['url'] ?? articleUrl)
           .toString()
@@ -1067,6 +1103,9 @@ class NewsService {
         url: finalUrl.isEmpty ? articleUrl : finalUrl,
       );
     } catch (e) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: errore, fallback reader url=$articleUrl error=$e',
+      ));
       debugPrint('Sonarpad news Tinyfish: fetch fallito, fallback reader: $e');
       return null;
     }

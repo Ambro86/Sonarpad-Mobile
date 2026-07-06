@@ -141,6 +141,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         NavigationDelegate(
           onPageStarted: (url) {
             unawaited(AppLogger.log('News WebView: caricamento avviato url=$url'));
+            if (_isHttpArticleUrl(url) && !_isGoogleNewsUrl(url)) {
+              unawaited(_loadReaderArticleFromFinalUrl(url));
+            }
             if (mounted) {
               setState(() {
                 _loading = true;

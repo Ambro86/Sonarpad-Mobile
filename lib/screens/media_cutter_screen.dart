@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
+import 'package:ffmpeg_kit_flutter_new/statistics.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -20,6 +22,50 @@ import '../utils/status_message.dart';
 enum _MediaCutterDoneAction { share, close }
 
 enum _MediaPartEffect { none, echo, reverb, fadeIn, fadeOut }
+
+class _MediaCutterExportCancelled implements Exception {
+  const _MediaCutterExportCancelled();
+}
+
+class _MediaCutterExportProgress {
+  const _MediaCutterExportProgress({
+    required this.fraction,
+    required this.label,
+  });
+
+  final double fraction;
+  final String label;
+}
+
+class _MediaCutterExportController {
+  _MediaCutterExportController()
+      : progress = ValueNotifier<_MediaCutterExportProgress>(
+          const _MediaCutterExportProgress(
+            fraction: 0,
+            label: '',
+          ),
+        );
+
+  final ValueNotifier<_MediaCutterExportProgress> progress;
+  FFmpegSession? currentSession;
+  bool cancelled = false;
+  bool disposed = false;
+
+  Future<void> cancel() async {
+    cancelled = true;
+    final session = currentSession;
+    if (session != null) {
+      await session.cancel();
+    } else {
+      await FFmpegKit.cancel();
+    }
+  }
+
+  void dispose() {
+    disposed = true;
+    progress.dispose();
+  }
+}
 
 class _PartEffectSettings {
   const _PartEffectSettings({
@@ -109,6 +155,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   ];
 
   final _audioPlayer = AudioPlayer();
+  final _effectPreviewPlayer = AudioPlayer();
   final _outputController = TextEditingController();
   VideoPlayerController? _videoController;
   StreamSubscription<Duration>? _audioPositionSubscription;
@@ -166,6 +213,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _audioPlayingSubscription?.cancel();
     _videoRefreshTimer?.cancel();
     _videoController?.dispose();
+    _effectPreviewPlayer.dispose();
     _audioPlayer.dispose();
     _outputController.dispose();
     super.dispose();
@@ -453,6 +501,86 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
+  Future<void> _playPartEffectsPreview(
+    int index, {
+    required int volumePercent,
+    required _MediaPartEffect effect,
+    required int effectAmountPercent,
+  }) async {
+    if (_inputPath.isEmpty || _loading || _saving) return;
+    if (index < 0 || index >= _parts.length) return;
+    final part = _parts[index];
+    if (!part.keep || part.duration <= Duration.zero) return;
+
+    final previewPart = part.copyWith(
+      volumePercent: volumePercent,
+      effect: effect,
+      effectAmountPercent: effectAmountPercent,
+    );
+    final filter = _audioFilterForPart(previewPart);
+    if (filter == null) {
+      await _playPart(
+        index,
+        previewVolumeFactor: volumePercent.clamp(0, 200).toDouble() / 100.0,
+      );
+      return;
+    }
+
+    final tempRoot = await getTemporaryDirectory();
+    final previewFile = File(
+      p.join(
+        tempRoot.path,
+        'sonarpad_media_cutter_preview_${DateTime.now().millisecondsSinceEpoch}.m4a',
+      ),
+    );
+    try {
+      await _pause();
+      await _effectPreviewPlayer.stop();
+      final args = [
+        '-y',
+        '-ss',
+        _ffmpegTime(part.start),
+        '-i',
+        _inputPath,
+        '-t',
+        _ffmpegTime(part.duration),
+        '-map',
+        '0:a:0?',
+        '-vn',
+        '-sn',
+        '-dn',
+        '-filter:a',
+        filter,
+        '-c:a',
+        'aac',
+        '-b:a',
+        '160k',
+        previewFile.path,
+      ];
+      await AppLogger.log(
+        'Media cutter preview effects: args=${args.map(_quoteLogArg).join(' ')}',
+      );
+      final session = await FFmpegKit.executeWithArguments(args);
+      final returnCode = await session.getReturnCode();
+      final logs = await session.getAllLogsAsString() ?? '';
+      if (!ReturnCode.isSuccess(returnCode)) {
+        throw logs.trim().isEmpty ? 'FFmpeg ${returnCode?.getValue()}' : logs;
+      }
+      await _effectPreviewPlayer.setFilePath(previewFile.path);
+      await _effectPreviewPlayer.play();
+    } catch (error) {
+      await AppLogger.log('Media cutter: effects preview failed error=$error');
+      if (!mounted) return;
+      _showSnack(AppLocalizations.of(context).mediaCutterSaveFailed(error));
+    } finally {
+      unawaited(Future<void>.delayed(const Duration(seconds: 30)).then((_) async {
+        if (await previewFile.exists()) {
+          await previewFile.delete();
+        }
+      }));
+    }
+  }
+
   void _checkPartPreviewEnd(Duration position) {
     final end = _previewPartEnd;
     if (end == null || _stoppingPartPreview || position < end) return;
@@ -615,15 +743,32 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               children: [
                 Text(l10n.mediaCutterPartEffectsDescription),
                 const SizedBox(height: 16),
-                Text(l10n.mediaCutterPartVolumeValue(volumePercent)),
-                Slider(
-                  value: volumePercent.toDouble(),
-                  min: 0,
-                  max: 200,
-                  divisions: 20,
-                  label: '$volumePercent%',
-                  onChanged: (value) => setDialogState(
-                    () => volumePercent = value.round(),
+                ExcludeSemantics(
+                  child: Text(l10n.mediaCutterPartVolumeValue(volumePercent)),
+                ),
+                Semantics(
+                  slider: true,
+                  label: l10n.mediaCutterPartVolumeValue(volumePercent),
+                  value: '$volumePercent%',
+                  increasedValue: '${(volumePercent + 10).clamp(0, 200)}%',
+                  decreasedValue: '${(volumePercent - 10).clamp(0, 200)}%',
+                  onIncrease: () => setDialogState(
+                    () => volumePercent = (volumePercent + 10).clamp(0, 200),
+                  ),
+                  onDecrease: () => setDialogState(
+                    () => volumePercent = (volumePercent - 10).clamp(0, 200),
+                  ),
+                  child: ExcludeSemantics(
+                    child: Slider(
+                      value: volumePercent.toDouble(),
+                      min: 0,
+                      max: 200,
+                      divisions: 20,
+                      label: '$volumePercent%',
+                      onChanged: (value) => setDialogState(
+                        () => volumePercent = value.round(),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -646,27 +791,53 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 ),
                 if (effect != _MediaPartEffect.none) ...[
                   const SizedBox(height: 16),
-                  Text(l10n.mediaCutterPartEffectAmountValue(effectAmountPercent)),
-                  Slider(
-                    value: effectAmountPercent.toDouble(),
-                    min: 0,
-                    max: 100,
-                    divisions: 10,
-                    label: '$effectAmountPercent%',
-                    onChanged: (value) => setDialogState(
-                      () => effectAmountPercent = value.round(),
+                  ExcludeSemantics(
+                    child: Text(
+                      l10n.mediaCutterPartEffectAmountValue(
+                        effectAmountPercent,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(l10n.mediaCutterPartEffectsSavedOnly),
+                  Semantics(
+                    slider: true,
+                    label: l10n.mediaCutterPartEffectAmountValue(
+                      effectAmountPercent,
+                    ),
+                    value: '$effectAmountPercent%',
+                    increasedValue:
+                        '${(effectAmountPercent + 10).clamp(0, 100)}%',
+                    decreasedValue:
+                        '${(effectAmountPercent - 10).clamp(0, 100)}%',
+                    onIncrease: () => setDialogState(
+                      () => effectAmountPercent =
+                          (effectAmountPercent + 10).clamp(0, 100),
+                    ),
+                    onDecrease: () => setDialogState(
+                      () => effectAmountPercent =
+                          (effectAmountPercent - 10).clamp(0, 100),
+                    ),
+                    child: ExcludeSemantics(
+                      child: Slider(
+                        value: effectAmountPercent.toDouble(),
+                        min: 0,
+                        max: 100,
+                        divisions: 10,
+                        label: '$effectAmountPercent%',
+                        onChanged: (value) => setDialogState(
+                          () => effectAmountPercent = value.round(),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
                   onPressed: () => unawaited(
-                    _playPart(
+                    _playPartEffectsPreview(
                       index,
-                      previewVolumeFactor:
-                          volumePercent.clamp(0, 200).toDouble() / 100.0,
+                      volumePercent: volumePercent,
+                      effect: effect,
+                      effectAmountPercent: effectAmountPercent,
                     ),
                   ),
                   icon: const Icon(Icons.play_arrow),
@@ -677,18 +848,24 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
+              onPressed: () {
+                unawaited(_effectPreviewPlayer.stop());
+                Navigator.pop(dialogContext);
+              },
               child: Text(l10n.cancel),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(
-                dialogContext,
-                _PartEffectSettings(
-                  volumePercent: volumePercent,
-                  effect: effect,
-                  effectAmountPercent: effectAmountPercent,
-                ),
-              ),
+              onPressed: () {
+                unawaited(_effectPreviewPlayer.stop());
+                Navigator.pop(
+                  dialogContext,
+                  _PartEffectSettings(
+                    volumePercent: volumePercent,
+                    effect: effect,
+                    effectAmountPercent: effectAmountPercent,
+                  ),
+                );
+              },
               child: Text(l10n.ok),
             ),
           ],
@@ -733,6 +910,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _status = l10n.mediaCutterSaving;
     });
 
+    final exportController = _MediaCutterExportController();
     try {
       await _pause();
       var outputDir = _outputDirectory;
@@ -763,10 +941,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
       var output = await _uniqueOutputPath(outputDir, _inputPath);
       try {
-        await _runWithProgressDialog(l10n, () async {
-          await _exportKeptParts(keptParts, output);
+        await _runWithProgressDialog(l10n, exportController, () async {
+          await _exportKeptParts(keptParts, output, exportController);
         });
       } catch (error) {
+        if (error is _MediaCutterExportCancelled) rethrow;
         final defaultOutputDir = await _defaultOutputDirectory();
         final alreadyUsingDefault = p.equals(
           p.normalize(outputDir),
@@ -787,8 +966,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           _outputController.text = _defaultOutputDirectoryDisplayPath(outputDir);
         });
         _showSnack(l10n.convertMediaOutputNotWritable);
-        await _runWithProgressDialog(l10n, () async {
-          await _exportKeptParts(keptParts, output);
+        await _runWithProgressDialog(l10n, exportController, () async {
+          await _exportKeptParts(keptParts, output, exportController);
         });
       }
       if (!mounted) return;
@@ -796,11 +975,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       setState(() => _status = message);
       await _showDoneDialog(message, output, forceShare: fallbackToShare);
     } catch (error) {
+      if (error is _MediaCutterExportCancelled) {
+        await AppLogger.log('Media cutter: save cancelled by user');
+        return;
+      }
       await AppLogger.log('Media cutter: save failed error=$error');
       if (!mounted) return;
       setState(() => _status = l10n.mediaCutterReady);
       _showSnack(l10n.mediaCutterSaveFailed(error));
     } finally {
+      exportController.dispose();
       if (mounted) setState(() => _saving = false);
     }
   }
@@ -808,6 +992,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   Future<void> _exportKeptParts(
     List<_MediaPart> keptParts,
     String output,
+    _MediaCutterExportController exportController,
   ) async {
     final input = _inputPath;
     final tempRoot = await getTemporaryDirectory();
@@ -820,9 +1005,17 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     await workDir.create(recursive: true);
     final ext = _outputExtension(input);
     final segmentPaths = <String>[];
+    final totalDurationMs = keptParts.fold<int>(
+      0,
+      (sum, part) => sum + part.duration.inMilliseconds,
+    );
+    var completedDurationMs = 0;
 
     try {
       for (var i = 0; i < keptParts.length; i++) {
+        if (exportController.cancelled) {
+          throw const _MediaCutterExportCancelled();
+        }
         final part = keptParts[i];
         final segment = p.join(
           workDir.path,
@@ -857,12 +1050,40 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           'make_zero',
           segment,
         ];
-        await _runFfmpeg(args, 'segment ${i + 1}/${keptParts.length}');
+        await _runFfmpeg(
+          args,
+          'segment ${i + 1}/${keptParts.length}',
+          exportController,
+          onStatistics: (statistics) {
+            final segmentMs = statistics.getTime().clamp(
+                  0,
+                  part.duration.inMilliseconds,
+                );
+            final fraction = totalDurationMs <= 0
+                ? 0.0
+                : (completedDurationMs + segmentMs) / totalDurationMs;
+            _updateExportProgress(
+              exportController,
+              fraction,
+              'Parte ${i + 1} di ${keptParts.length}',
+            );
+          },
+        );
+        completedDurationMs += part.duration.inMilliseconds;
+        _updateExportProgress(
+          exportController,
+          totalDurationMs <= 0 ? 1 : completedDurationMs / totalDurationMs,
+          'Parte ${i + 1} di ${keptParts.length}',
+        );
         segmentPaths.add(segment);
       }
 
+      if (exportController.cancelled) {
+        throw const _MediaCutterExportCancelled();
+      }
       if (segmentPaths.length == 1) {
         await File(segmentPaths.single).copy(output);
+        _updateExportProgress(exportController, 1, 'Completamento');
         return;
       }
 
@@ -882,21 +1103,68 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         'copy',
         output,
       ];
-      await _runFfmpeg(concatArgs, 'concat');
+      _updateExportProgress(exportController, 0.98, 'Completamento');
+      await _runFfmpeg(concatArgs, 'concat', exportController);
+      _updateExportProgress(exportController, 1, 'Completamento');
     } finally {
+      if (exportController.cancelled) {
+        final outputFile = File(output);
+        if (await outputFile.exists()) {
+          await outputFile.delete();
+        }
+      }
       if (await workDir.exists()) {
         await workDir.delete(recursive: true);
       }
     }
   }
 
-  Future<void> _runFfmpeg(List<String> args, String step) async {
+  void _updateExportProgress(
+    _MediaCutterExportController exportController,
+    double fraction,
+    String label,
+  ) {
+    if (exportController.disposed) return;
+    exportController.progress.value = _MediaCutterExportProgress(
+      fraction: fraction.clamp(0.0, 1.0).toDouble(),
+      label: label,
+    );
+  }
+
+  Future<void> _runFfmpeg(
+    List<String> args,
+    String step,
+    _MediaCutterExportController exportController, {
+    void Function(Statistics statistics)? onStatistics,
+  }) async {
+    if (exportController.cancelled) {
+      throw const _MediaCutterExportCancelled();
+    }
     await AppLogger.log(
       'Media cutter ffmpeg $step: args=${args.map(_quoteLogArg).join(' ')}',
     );
-    final session = await FFmpegKit.executeWithArguments(args);
-    final returnCode = await session.getReturnCode();
-    final logs = await session.getAllLogsAsString() ?? '';
+    final completer = Completer<FFmpegSession>();
+    final session = await FFmpegKit.executeWithArgumentsAsync(
+      args,
+      (completedSession) {
+        if (!completer.isCompleted) completer.complete(completedSession);
+      },
+      null,
+      onStatistics,
+    );
+    exportController.currentSession = session;
+    final completedSession = await completer.future;
+    if (identical(exportController.currentSession, session)) {
+      exportController.currentSession = null;
+    }
+    if (exportController.cancelled) {
+      throw const _MediaCutterExportCancelled();
+    }
+    final returnCode = await completedSession.getReturnCode();
+    final logs = await completedSession.getAllLogsAsString() ?? '';
+    if (ReturnCode.isCancel(returnCode)) {
+      throw const _MediaCutterExportCancelled();
+    }
     if (!ReturnCode.isSuccess(returnCode)) {
       await AppLogger.log(
         'Media cutter ffmpeg $step failed returnCode=${returnCode?.getValue()} '
@@ -908,6 +1176,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _runWithProgressDialog(
     AppLocalizations l10n,
+    _MediaCutterExportController exportController,
     Future<void> Function() task,
   ) async {
     final taskFuture = task();
@@ -939,14 +1208,54 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               children: [
                 Text(l10n.mediaCutterSaving),
                 const SizedBox(height: 16),
-                const LinearProgressIndicator(),
+                ValueListenableBuilder<_MediaCutterExportProgress>(
+                  valueListenable: exportController.progress,
+                  builder: (context, progress, _) {
+                    final percent = (progress.fraction * 100).round();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        LinearProgressIndicator(value: progress.fraction),
+                        const SizedBox(height: 8),
+                        Text(
+                          progress.label.isEmpty
+                              ? '$percent%'
+                              : '${progress.label}: $percent%',
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  unawaited(taskFuture.catchError((error, stackTrace) async {
+                    await AppLogger.log(
+                      'Media cutter: background export stopped after cancel '
+                      'error=$error',
+                    );
+                  }));
+                  unawaited(exportController.cancel());
+                  closeDialog();
+                  if (mounted) {
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Text(l10n.cancel),
+              ),
+            ],
           ),
         );
       },
     );
 
+    if (exportController.cancelled) {
+      throw const _MediaCutterExportCancelled();
+    }
     await taskFuture;
   }
 
@@ -1093,16 +1402,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       case _MediaPartEffect.none:
         break;
       case _MediaPartEffect.echo:
-        final delay = (80 + 220 * amount).round();
-        final decay = (0.18 + 0.45 * amount).toStringAsFixed(2);
-        filters.add('aecho=0.8:0.88:$delay:$decay');
+        final delay = (120 + 320 * amount).round();
+        final decay = (0.35 + 0.55 * amount).toStringAsFixed(2);
+        filters.add('aecho=0.85:0.95:$delay:$decay');
         break;
       case _MediaPartEffect.reverb:
-        final delay1 = (55 + 120 * amount).round();
-        final delay2 = (120 + 280 * amount).round();
-        final decay1 = (0.16 + 0.28 * amount).toStringAsFixed(2);
-        final decay2 = (0.10 + 0.24 * amount).toStringAsFixed(2);
-        filters.add('aecho=0.8:0.9:$delay1|$delay2:$decay1|$decay2');
+        final delay1 = (45 + 100 * amount).round();
+        final delay2 = (110 + 260 * amount).round();
+        final delay3 = (190 + 420 * amount).round();
+        final decay1 = (0.24 + 0.34 * amount).toStringAsFixed(2);
+        final decay2 = (0.18 + 0.30 * amount).toStringAsFixed(2);
+        final decay3 = (0.12 + 0.26 * amount).toStringAsFixed(2);
+        filters.add(
+          'aecho=0.85:0.95:$delay1|$delay2|$delay3:$decay1|$decay2|$decay3',
+        );
         break;
       case _MediaPartEffect.fadeIn:
         final fade = _fadeDurationSeconds(part.duration);
