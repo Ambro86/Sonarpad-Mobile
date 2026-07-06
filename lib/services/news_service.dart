@@ -35,6 +35,16 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.czech => 'cs',
       };
 
+  String get communityKey => switch (this) {
+        NewsLanguage.italian => 'italian',
+        NewsLanguage.english => 'english',
+        NewsLanguage.french => 'french',
+        NewsLanguage.spanish => 'spanish',
+        NewsLanguage.portuguese => 'portuguese',
+        NewsLanguage.polish => 'polish',
+        NewsLanguage.czech => 'czech',
+      };
+
   String label(AppLocalizations l10n) => switch (this) {
         NewsLanguage.italian => l10n.italian,
         NewsLanguage.english => l10n.english,
@@ -62,6 +72,15 @@ class NewsService {
   static final _corriereHomeFeedUri = Uri.parse(
     'https://xml2.corriereobjects.it/feed-hp/homepage-restyle-2025.xml',
   );
+
+  static const _communityNewsSourcesUrl =
+      'https://sonarpad.com/api/get_community_news_sources.php';
+  static const _addCommunityNewsSourceUrl =
+      'https://sonarpad.com/api/add_community_news_source.php';
+  static const _communityHeaders = {
+    'User-Agent': 'SonarpadMobile/0.1 (https://sonarpad.com)',
+    'Accept': 'application/json',
+  };
 
   static const _chromeClientSettings = rhttp.ClientSettings(
     emulator: rhttp.Emulation.chrome136,
@@ -307,6 +326,96 @@ class NewsService {
         await prefs.setStringList(key, order);
       }
     }
+  }
+
+  Future<String> addCommunityNewsSource({
+    required NewsLanguage language,
+    required String name,
+    required String feedUrl,
+    String? uiLanguageCode,
+  }) async {
+    final response = await _client.post(
+      Uri.parse(_addCommunityNewsSourceUrl),
+      headers: _communityHeaders,
+      body: {
+        'name': name,
+        'url': feedUrl,
+        'language': language.communityKey,
+        'ui_language': uiLanguageCode ?? language.code,
+      },
+    ).timeout(const Duration(seconds: 15));
+
+    final decoded = _decodeJsonMap(response.body);
+    final message = (decoded['message'] ?? '').toString().trim();
+    final error = (decoded['error'] ?? '').toString().trim();
+    final ok = decoded['ok'] == true;
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(error.isEmpty ? 'HTTP ${response.statusCode}' : error);
+    }
+    if (!ok) {
+      throw Exception(error.isEmpty ? 'Richiesta rifiutata' : error);
+    }
+    return message;
+  }
+
+  Future<List<NewsRssSource>> fetchCommunityNewsSources(
+    NewsLanguage language,
+  ) async {
+    final uri = Uri.parse(_communityNewsSourcesUrl).replace(
+      queryParameters: {'language': language.communityKey},
+    );
+    final response = await _client
+        .get(uri, headers: _communityHeaders)
+        .timeout(const Duration(seconds: 12));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Community HTTP ${response.statusCode}');
+    }
+
+    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+    final items = decoded is List ? decoded : decoded is Map ? decoded['items'] : null;
+    if (items is! List) return const [];
+
+    final currentCustomSources = await getCustomSources(language);
+    final knownUrls = <String>{
+      ...language.rssSources.map((source) => source.uri.toString().trim().toLowerCase()),
+      ...currentCustomSources.map((source) => source.uri.toString().trim().toLowerCase()),
+    };
+    final knownNames = <String>{
+      ...language.rssSources.map((source) => source.name),
+      ...currentCustomSources.map((source) => source.name),
+    };
+
+    final sources = <NewsRssSource>[];
+    for (final raw in items) {
+      if (raw is! Map) continue;
+      final name = (raw['name'] ?? '').toString().trim();
+      final url = (raw['url'] ?? '').toString().trim();
+      final rawLanguage = (raw['language'] ?? '').toString().trim().toLowerCase();
+      if (name.isEmpty || url.isEmpty) continue;
+      if (rawLanguage.isNotEmpty && rawLanguage != language.communityKey) {
+        continue;
+      }
+      final uri = Uri.tryParse(url);
+      if (uri == null || !uri.hasScheme || uri.host.isEmpty) continue;
+      if (knownUrls.contains(uri.toString().trim().toLowerCase())) continue;
+      sources.add(NewsRssSource(
+        name: _uniqueSourceName(name, knownNames),
+        uri: uri,
+        isCustom: true,
+      ));
+    }
+    return sources;
+  }
+
+  Map<String, dynamic> _decodeJsonMap(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) {
+        return decoded.map((key, value) => MapEntry(key.toString(), value));
+      }
+    } catch (_) {}
+    return const {};
   }
 
   Future<void> addCustomSource(

@@ -3320,7 +3320,7 @@
   "mediaCutterRestoreDeletedPart": "Przywróć usuniętą część",
   "mediaCutterNoDeletedParts": "Nie ma usuniętych części do przywrócenia.",
   "mediaCutterPartDeleteAction": "Usuń",
-  "mediaCutterPartTapHint": "Stuknij dwukrotnie, aby posłuchać tej części. Użyj akcji Usuń, aby ją usunąć.",
+  "mediaCutterPartTapHint": "Stuknij dwukrotnie, aby odsłuchać tę część. Użyj działań Usuń lub Dostosuj efekty.",
   "mediaCutterPartDeleted": "Usunięto część od {start} do {end}.",
   "@mediaCutterPartDeleted": {
     "description": "Status shown after a media part is deleted",
@@ -3344,5 +3344,137 @@
         "type": "String"
       }
     }
+  },
+  "mediaCutterPartEffectsAction": "Dostosuj efekty",
+  "mediaCutterPartEffectsTitle": "Efekty części",
+  "mediaCutterPartEffectsDescription": "Dostosuj głośność i efekt tylko dla tej części.",
+  "mediaCutterPartVolumeValue": "Głośność części: {percent}%",
+  "@mediaCutterPartVolumeValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartEffect": "Efekt audio",
+  "mediaCutterPartEffectNone": "Bez efektu",
+  "mediaCutterPartEffectEcho": "Lekkie echo",
+  "mediaCutterPartEffectReverb": "Lekki pogłos",
+  "mediaCutterPartEffectFadeIn": "Narastanie",
+  "mediaCutterPartEffectFadeOut": "Wyciszenie",
+  "mediaCutterPartEffectAmountValue": "Intensywność efektu: {percent}%",
+  "@mediaCutterPartEffectAmountValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartPreviewAction": "Odsłuchaj podgląd",
+  "mediaCutterPartEffectsSavedOnly": "Podgląd używa wybranej głośności. Efekty audio zostaną zastosowane podczas zapisywania.",
+  "mediaCutterPartEffectsApplied": "Zaktualizowano efekty dla części od {start} do {end}.",
+  "@mediaCutterPartEffectsApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsSummary": "Głośność {percent}%, efekt {effect}",
+  "@mediaCutterPartEffectsSummary": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "newsAddCommunitySource": "Dodaj źródło do społeczności Sonarpad",
+  "@newsAddCommunitySource": {
+    "description": "Localized text for newsAddCommunitySource."
+  },
+  "newsBrowseCommunitySources": "Źródła społeczności",
+  "@newsBrowseCommunitySources": {
+    "description": "Localized text for newsBrowseCommunitySources."
+  },
+  "newsAddCommunityInstructions": "Wpisz tytuł źródła i adres kanału RSS. Źródło zostanie dodane do społeczności Sonarpad dla wybranego języka.",
+  "@newsAddCommunityInstructions": {
+    "description": "Localized text for newsAddCommunityInstructions."
+  },
+  "newsCommunitySourceName": "Tytuł źródła",
+  "@newsCommunitySourceName": {
+    "description": "Localized text for newsCommunitySourceName."
+  },
+  "newsCommunitySourceUrl": "Adres kanału RSS",
+  "@newsCommunitySourceUrl": {
+    "description": "Localized text for newsCommunitySourceUrl."
+  },
+  "newsCommunitySubmit": "Sprawdź i dodaj",
+  "@newsCommunitySubmit": {
+    "description": "Localized text for newsCommunitySubmit."
+  },
+  "newsCommunityChecking": "Sprawdzanie kanału...",
+  "@newsCommunityChecking": {
+    "description": "Localized text for newsCommunityChecking."
+  },
+  "newsCommunityMissingFields": "Wpisz tytuł i adres kanału.",
+  "@newsCommunityMissingFields": {
+    "description": "Localized text for newsCommunityMissingFields."
+  },
+  "newsCommunityAdded": "Źródło dodane do społeczności Sonarpad.",
+  "@newsCommunityAdded": {
+    "description": "Localized text for newsCommunityAdded."
+  },
+  "newsCommunityAddError": "Błąd podczas dodawania źródła: {error}",
+  "@newsCommunityAddError": {
+    "description": "Localized text for newsCommunityAddError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySelectedLanguage": "Wybrany język: {language}",
+  "@newsCommunitySelectedLanguage": {
+    "description": "Localized text for newsCommunitySelectedLanguage.",
+    "placeholders": {
+      "language": {}
+    }
+  },
+  "newsCommunitySourcesTitle": "Źródła społeczności",
+  "@newsCommunitySourcesTitle": {
+    "description": "Localized text for newsCommunitySourcesTitle."
+  },
+  "newsCommunitySourcesEmpty": "Brak źródeł społeczności dla tego języka.",
+  "@newsCommunitySourcesEmpty": {
+    "description": "Localized text for newsCommunitySourcesEmpty."
+  },
+  "newsCommunitySourcesError": "Błąd ładowania źródeł społeczności: {error}",
+  "@newsCommunitySourcesError": {
+    "description": "Localized text for newsCommunitySourcesError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceAddedToLibrary": "Dodano {name} do biblioteki wiadomości.",
+  "@newsCommunitySourceAddedToLibrary": {
+    "description": "Localized text for newsCommunitySourceAddedToLibrary.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "newsCommunityAddToLibraryError": "Błąd podczas dodawania do biblioteki: {error}",
+  "@newsCommunityAddToLibraryError": {
+    "description": "Localized text for newsCommunityAddToLibraryError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceTapHint": "Stuknij, aby dodać do swojej biblioteki wiadomości.",
+  "@newsCommunitySourceTapHint": {
+    "description": "Localized text for newsCommunitySourceTapHint."
   }
 }

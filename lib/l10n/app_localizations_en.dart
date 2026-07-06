@@ -251,7 +251,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mediaCutterPartDeleteAction => 'Delete';
 
   @override
-  String get mediaCutterPartTapHint => 'Double-tap to preview this part. Use the Delete action to remove it.';
+  String get mediaCutterPartEffectsAction => 'Adjust effects';
+
+  @override
+  String get mediaCutterPartEffectsTitle => 'Part effects';
+
+  @override
+  String get mediaCutterPartEffectsDescription => 'Adjust volume and effect only for this part.';
+
+  @override
+  String mediaCutterPartVolumeValue(int percent) {
+    return 'Part volume: $percent%';
+  }
+
+  @override
+  String get mediaCutterPartEffect => 'Audio effect';
+
+  @override
+  String get mediaCutterPartEffectNone => 'No effect';
+
+  @override
+  String get mediaCutterPartEffectEcho => 'Light echo';
+
+  @override
+  String get mediaCutterPartEffectReverb => 'Light reverb';
+
+  @override
+  String get mediaCutterPartEffectFadeIn => 'Fade in';
+
+  @override
+  String get mediaCutterPartEffectFadeOut => 'Fade out';
+
+  @override
+  String mediaCutterPartEffectAmountValue(int percent) {
+    return 'Effect intensity: $percent%';
+  }
+
+  @override
+  String get mediaCutterPartPreviewAction => 'Preview';
+
+  @override
+  String get mediaCutterPartEffectsSavedOnly => 'The preview uses the selected volume. Audio effects are applied when saving.';
+
+  @override
+  String mediaCutterPartEffectsApplied(String start, String end) {
+    return 'Effects updated for the part from $start to $end.';
+  }
+
+  @override
+  String mediaCutterPartEffectsSummary(int percent, String effect) {
+    return 'Volume $percent%, effect $effect';
+  }
+
+
+
+  @override
+  String get mediaCutterPartTapHint =>
+      'Double-tap to preview this part. Use the Delete or Adjust effects actions.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -403,6 +459,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addCustomNewsSource => 'Add custom RSS source';
+
+  @override
+  String get newsAddCommunitySource => 'Add news source to Sonarpad community';
+
+  @override
+  String get newsBrowseCommunitySources => 'Community news sources';
+
+  @override
+  String get newsAddCommunityInstructions => 'Enter the source title and RSS feed URL. The source will be added to the Sonarpad community for the selected language.';
+
+  @override
+  String get newsCommunitySourceName => 'Source title';
+
+  @override
+  String get newsCommunitySourceUrl => 'RSS feed URL';
+
+  @override
+  String get newsCommunitySubmit => 'Check and add';
+
+  @override
+  String get newsCommunityChecking => 'Checking feed...';
+
+  @override
+  String get newsCommunityMissingFields => 'Enter the title and feed URL.';
+
+  @override
+  String get newsCommunityAdded => 'News source added successfully to the Sonarpad community.';
+
+  @override
+  String get newsCommunitySourcesTitle => 'Community news sources';
+
+  @override
+  String get newsCommunitySourcesEmpty => 'No community news sources are available for this language.';
+
+  @override
+  String get newsCommunitySourceTapHint => 'Tap to add it to your news library.';
+
+  @override
+  String newsCommunityAddError(Object error) {
+    return 'Error while adding the news source: $error';
+  }
+
+  @override
+  String newsCommunitySelectedLanguage(Object language) {
+    return 'Selected language: $language';
+  }
+
+  @override
+  String newsCommunitySourcesError(Object error) {
+    return 'Error loading community news sources: $error';
+  }
+
+  @override
+  String newsCommunitySourceAddedToLibrary(Object name) {
+    return '$name added to your news library.';
+  }
+
+  @override
+  String newsCommunityAddToLibraryError(Object error) {
+    return 'Error while adding to the library: $error';
+  }
 
   @override
   String get newsSourceName => 'Source or site name';

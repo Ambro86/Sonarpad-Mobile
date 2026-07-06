@@ -32,7 +32,9 @@
       "Aggiunta la funzione Taglia file media: puoi aprire un audio o video, scegliere i punti di divisione, disattivare le parti non desiderate e salvare solo quelle da conservare.",
       "In Taglia file media puoi ora toccare una parte attiva per ascoltarla in anteprima dal file originale; le parti disattivate non vengono riprodotte né salvate.",
       "Migliorata la funzione Taglia file media: le parti eliminate spariscono dall’elenco, vengono saltate durante la riproduzione e possono essere ripristinate con un pulsante dedicato.",
-      "Migliorato il salvataggio di Taglia file media: ora usa la stessa destinazione di Converti media, mostra la barra di avanzamento e, se la cartella scelta non è scrivibile, prepara il file nella cartella Sonarpad e apre la condivisione di sistema."
+      "Migliorato il salvataggio di Taglia file media: ora usa la stessa destinazione di Converti media, mostra la barra di avanzamento e, se la cartella scelta non è scrivibile, prepara il file nella cartella Sonarpad e apre la condivisione di sistema.",
+      "Taglia file media ora permette di regolare volume ed effetti audio per ogni parte, con una sola azione VoiceOver “Regola effetti” e applicazione finale tramite FFmpeg.",
+      "Nelle Notizie sono stati aggiunti i pulsanti per proporre una testata alla comunità Sonarpad e per sfogliare le testate condivise della lingua selezionata, aggiungendole alla propria libreria con un tocco."
     ],
     "en": [
       "Improved document reading: some texts with unusual accents are now read more reliably, including when moving character by character with VoiceOver.",
@@ -61,7 +63,9 @@
       "Added Cut media file: you can open an audio or video file, choose split points, turn off unwanted parts and save only the parts you want to keep.",
       "In Cut media file, you can now tap an enabled part to preview it from the original file; disabled parts are not played or saved.",
       "Improved Cut media file: deleted parts disappear from the list, are skipped during playback, and can be restored with a dedicated button.",
-      "Improved saving in Cut media file: it now uses the same destination workflow as Convert media, shows a progress bar, and if the selected folder is not writable, it prepares the file in the Sonarpad folder and opens the system share sheet."
+      "Improved saving in Cut media file: it now uses the same destination workflow as Convert media, shows a progress bar, and if the selected folder is not writable, it prepares the file in the Sonarpad folder and opens the system share sheet.",
+      "Cut media file now lets you adjust volume and audio effects for each part, with a single VoiceOver action “Adjust effects” and final processing through FFmpeg.",
+      "News now includes buttons to submit a source to the Sonarpad community and browse shared sources for the selected language, adding them to your library with one tap."
     ],
     "fr": [
       "Amélioration de la lecture des documents : certains textes avec des accents particuliers sont maintenant mieux lus, y compris caractère par caractère avec VoiceOver.",
@@ -90,7 +94,9 @@
       "Ajout de la fonction Découper un média : vous pouvez ouvrir un fichier audio ou vidéo, choisir les points de division, désactiver les parties inutiles et enregistrer seulement celles à conserver.",
       "Dans Couper un fichier média, tu peux maintenant toucher une partie active pour l’écouter depuis le fichier original ; les parties désactivées ne sont ni lues ni enregistrées.",
       "Amélioration de Couper un fichier multimédia : les parties supprimées disparaissent de la liste, sont ignorées pendant la lecture et peuvent être restaurées avec un bouton dédié.",
-      "Amélioration de l’enregistrement dans Couper le fichier média : la fonction utilise désormais le même choix de destination que Convertir média, affiche une barre de progression et, si le dossier choisi n’est pas accessible en écriture, prépare le fichier dans le dossier Sonarpad puis ouvre le partage système."
+      "Amélioration de l’enregistrement dans Couper le fichier média : la fonction utilise désormais le même choix de destination que Convertir média, affiche une barre de progression et, si le dossier choisi n’est pas accessible en écriture, prépare le fichier dans le dossier Sonarpad puis ouvre le partage système.",
+      "Couper le fichier média permet maintenant de régler le volume et les effets audio pour chaque partie, avec une seule action VoiceOver « Régler les effets » et une application finale via FFmpeg.",
+      "Les Actualités disposent maintenant de boutons pour proposer une source à la communauté Sonarpad et parcourir les sources partagées de la langue sélectionnée, afin de les ajouter à votre bibliothèque d’un toucher."
     ],
     "es": [
       "Mejorada la lectura de documentos: algunos textos con acentos especiales ahora se leen mejor, también al moverse carácter por carácter con VoiceOver.",
@@ -119,7 +125,9 @@
       "Añadida la función Cortar archivo multimedia: puedes abrir un audio o vídeo, elegir los puntos de división, desactivar las partes no deseadas y guardar solo las que quieras conservar.",
       "En Cortar archivo multimedia, ahora puedes tocar una parte activa para escucharla desde el archivo original; las partes desactivadas no se reproducen ni se guardan.",
       "Mejorada la función Cortar archivo multimedia: las partes eliminadas desaparecen de la lista, se saltan durante la reproducción y pueden restaurarse con un botón dedicado.",
-      "Mejorado el guardado en Cortar archivo multimedia: ahora usa el mismo flujo de destino que Convertir multimedia, muestra una barra de progreso y, si la carpeta elegida no permite escritura, prepara el archivo en la carpeta Sonarpad y abre la hoja de compartir del sistema."
+      "Mejorado el guardado en Cortar archivo multimedia: ahora usa el mismo flujo de destino que Convertir multimedia, muestra una barra de progreso y, si la carpeta elegida no permite escritura, prepara el archivo en la carpeta Sonarpad y abre la hoja de compartir del sistema.",
+      "Cortar archivo multimedia ahora permite ajustar el volumen y los efectos de audio de cada parte, con una sola acción de VoiceOver “Ajustar efectos” y procesamiento final mediante FFmpeg.",
+      "Noticias ahora incluye botones para proponer una fuente a la comunidad de Sonarpad y explorar las fuentes compartidas del idioma seleccionado, añadiéndolas a tu biblioteca con un toque."
     ],
     "pt": [
       "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caráter a caráter com o VoiceOver.",
@@ -148,7 +156,9 @@
       "Adicionada a função Cortar ficheiro multimédia: podes abrir um áudio ou vídeo, escolher os pontos de divisão, desativar as partes indesejadas e guardar apenas as que queres conservar.",
       "Em Cortar ficheiro multimédia, agora podes tocar numa parte ativa para a ouvir a partir do ficheiro original; as partes desativadas não são reproduzidas nem guardadas.",
       "Melhorada a função Cortar ficheiro multimédia: as partes eliminadas desaparecem da lista, são ignoradas durante a reprodução e podem ser restauradas com um botão dedicado.",
-      "Melhorada a gravação em Cortar ficheiro multimédia: agora usa o mesmo fluxo de destino de Converter multimédia, mostra uma barra de progresso e, se a pasta escolhida não permitir escrita, prepara o ficheiro na pasta Sonarpad e abre a partilha do sistema."
+      "Melhorada a gravação em Cortar ficheiro multimédia: agora usa o mesmo fluxo de destino de Converter multimédia, mostra uma barra de progresso e, se a pasta escolhida não permitir escrita, prepara o ficheiro na pasta Sonarpad e abre a partilha do sistema.",
+      "Cortar ficheiro multimédia agora permite ajustar o volume e os efeitos de áudio de cada parte, com uma única ação do VoiceOver “Ajustar efeitos” e processamento final pelo FFmpeg.",
+      "As Notícias agora incluem botões para enviar uma fonte para a comunidade Sonarpad e explorar as fontes partilhadas do idioma selecionado, adicionando-as à biblioteca com um toque."
     ],
     "pl": [
       "Ulepszono czytanie dokumentów: niektóre teksty z nietypowymi akcentami są teraz odczytywane lepiej, także podczas przechodzenia znak po znaku z VoiceOver.",
@@ -178,7 +188,9 @@
       "Dodano funkcję Przytnij plik multimedialny: możesz otworzyć plik audio lub wideo, wybrać punkty podziału, wyłączyć niechciane części i zapisać tylko te, które chcesz zachować.",
       "W funkcji Przytnij plik multimedialny możesz teraz dotknąć włączonej części, aby odsłuchać ją z oryginalnego pliku; wyłączone części nie są odtwarzane ani zapisywane.",
       "Ulepszono funkcję Wytnij plik multimedialny: usunięte części znikają z listy, są pomijane podczas odtwarzania i można je przywrócić osobnym przyciskiem.",
-      "Ulepszono zapisywanie w funkcji Przytnij plik multimedialny: używa teraz tego samego wyboru miejsca docelowego co Konwertuj multimedia, pokazuje pasek postępu, a jeśli wybrany folder nie pozwala na zapis, przygotowuje plik w folderze Sonarpad i otwiera systemowe udostępnianie."
+      "Ulepszono zapisywanie w funkcji Przytnij plik multimedialny: używa teraz tego samego wyboru miejsca docelowego co Konwertuj multimedia, pokazuje pasek postępu, a jeśli wybrany folder nie pozwala na zapis, przygotowuje plik w folderze Sonarpad i otwiera systemowe udostępnianie.",
+      "Przytnij plik multimedialny pozwala teraz regulować głośność i efekty audio dla każdej części, z jedną akcją VoiceOver „Dostosuj efekty” i końcowym przetwarzaniem przez FFmpeg.",
+      "W Wiadomościach dodano przyciski do zgłaszania źródeł do społeczności Sonarpad oraz przeglądania źródeł udostępnionych dla wybranego języka i dodawania ich do własnej biblioteki jednym stuknięciem."
     ],
     "cs": [
       "Vylepšeno čtení dokumentů: některé texty se zvláštními akcenty se nyní čtou lépe, i při pohybu znak po znaku pomocí VoiceOveru.",
@@ -207,7 +219,9 @@
       "Přidána funkce Oříznout mediální soubor: můžeš otevřít zvukový nebo video soubor, zvolit místa rozdělení, vypnout nechtěné části a uložit jen ty, které chceš zachovat.",
       "Ve funkci Oříznout mediální soubor můžeš nyní klepnout na zapnutou část a přehrát si ji z původního souboru; vypnuté části se nepřehrávají ani neukládají.",
       "Vylepšena funkce Oříznout mediální soubor: odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a lze je obnovit samostatným tlačítkem.",
-      "Vylepšeno ukládání ve funkci Oříznout mediální soubor: nyní používá stejný postup výběru cíle jako Převést média, zobrazuje průběh a pokud do vybrané složky nelze zapisovat, připraví soubor ve složce Sonarpad a otevře systémové sdílení."
+      "Vylepšeno ukládání ve funkci Oříznout mediální soubor: nyní používá stejný postup výběru cíle jako Převést média, zobrazuje průběh a pokud do vybrané složky nelze zapisovat, připraví soubor ve složce Sonarpad a otevře systémové sdílení.",
+      "Oříznout mediální soubor nyní umožňuje upravit hlasitost a zvukové efekty pro každou část, s jedinou akcí VoiceOver „Upravit efekty“ a finálním zpracováním přes FFmpeg.",
+      "Ve Zprávách přibyla tlačítka pro odeslání zdroje do komunity Sonarpad a pro procházení sdílených zdrojů vybraného jazyka, které lze jedním klepnutím přidat do vlastní knihovny."
     ]
   },
   {

@@ -253,7 +253,63 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mediaCutterPartDeleteAction => 'Eliminar';
 
   @override
-  String get mediaCutterPartTapHint => 'Toca dos veces para escuchar esta parte. Usa la acción Eliminar para quitarla.';
+  String get mediaCutterPartEffectsAction => 'Ajustar efectos';
+
+  @override
+  String get mediaCutterPartEffectsTitle => 'Efectos de la parte';
+
+  @override
+  String get mediaCutterPartEffectsDescription => 'Ajusta el volumen y el efecto solo para esta parte.';
+
+  @override
+  String mediaCutterPartVolumeValue(int percent) {
+    return 'Volumen de la parte: $percent %';
+  }
+
+  @override
+  String get mediaCutterPartEffect => 'Efecto de audio';
+
+  @override
+  String get mediaCutterPartEffectNone => 'Sin efecto';
+
+  @override
+  String get mediaCutterPartEffectEcho => 'Eco ligero';
+
+  @override
+  String get mediaCutterPartEffectReverb => 'Reverberación ligera';
+
+  @override
+  String get mediaCutterPartEffectFadeIn => 'Fundido de entrada';
+
+  @override
+  String get mediaCutterPartEffectFadeOut => 'Fundido de salida';
+
+  @override
+  String mediaCutterPartEffectAmountValue(int percent) {
+    return 'Intensidad del efecto: $percent %';
+  }
+
+  @override
+  String get mediaCutterPartPreviewAction => 'Escuchar vista previa';
+
+  @override
+  String get mediaCutterPartEffectsSavedOnly => 'La vista previa usa el volumen elegido. Los efectos de audio se aplican al guardar.';
+
+  @override
+  String mediaCutterPartEffectsApplied(String start, String end) {
+    return 'Efectos actualizados para la parte de $start a $end.';
+  }
+
+  @override
+  String mediaCutterPartEffectsSummary(int percent, String effect) {
+    return 'Volumen $percent %, efecto $effect';
+  }
+
+
+
+  @override
+  String get mediaCutterPartTapHint =>
+      'Toca dos veces para escuchar esta parte. Usa las acciones Eliminar o Ajustar efectos.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -407,6 +463,67 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get addCustomNewsSource => 'Añadir fuente RSS personalizada';
+
+  @override
+  String get newsAddCommunitySource => 'Añadir fuente a la comunidad de Sonarpad';
+
+  @override
+  String get newsBrowseCommunitySources => 'Fuentes de la comunidad';
+
+  @override
+  String get newsAddCommunityInstructions => 'Introduce el título de la fuente y la URL del feed RSS. La fuente se añadirá a la comunidad de Sonarpad para el idioma seleccionado.';
+
+  @override
+  String get newsCommunitySourceName => 'Título de la fuente';
+
+  @override
+  String get newsCommunitySourceUrl => 'URL del feed RSS';
+
+  @override
+  String get newsCommunitySubmit => 'Comprobar y añadir';
+
+  @override
+  String get newsCommunityChecking => 'Comprobando feed...';
+
+  @override
+  String get newsCommunityMissingFields => 'Introduce el título y la URL del feed.';
+
+  @override
+  String get newsCommunityAdded => 'Fuente añadida correctamente a la comunidad de Sonarpad.';
+
+  @override
+  String get newsCommunitySourcesTitle => 'Fuentes de la comunidad';
+
+  @override
+  String get newsCommunitySourcesEmpty => 'No hay fuentes de la comunidad disponibles para este idioma.';
+
+  @override
+  String get newsCommunitySourceTapHint => 'Toca para añadirla a tu biblioteca de noticias.';
+
+  @override
+  String newsCommunityAddError(Object error) {
+    return 'Error al añadir la fuente: $error';
+  }
+
+  @override
+  String newsCommunitySelectedLanguage(Object language) {
+    return 'Idioma seleccionado: $language';
+  }
+
+  @override
+  String newsCommunitySourcesError(Object error) {
+    return 'Error al cargar las fuentes de la comunidad: $error';
+  }
+
+  @override
+  String newsCommunitySourceAddedToLibrary(Object name) {
+    return '$name añadida a tu biblioteca de noticias.';
+  }
+
+  @override
+  String newsCommunityAddToLibraryError(Object error) {
+    return 'Error al añadir a la biblioteca: $error';
+  }
 
   @override
   String get newsSourceName => 'Nombre de la fuente o del sitio';

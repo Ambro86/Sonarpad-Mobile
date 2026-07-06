@@ -18,23 +18,55 @@ import '../utils/status_message.dart';
 
 enum _MediaCutterDoneAction { share, close }
 
+enum _MediaPartEffect { none, echo, reverb, fadeIn, fadeOut }
+
+class _PartEffectSettings {
+  const _PartEffectSettings({
+    required this.volumePercent,
+    required this.effect,
+    required this.effectAmountPercent,
+  });
+
+  final int volumePercent;
+  final _MediaPartEffect effect;
+  final int effectAmountPercent;
+}
+
 class _MediaPart {
   const _MediaPart({
     required this.start,
     required this.end,
     this.keep = true,
+    this.volumePercent = 100,
+    this.effect = _MediaPartEffect.none,
+    this.effectAmountPercent = 50,
   });
 
   final Duration start;
   final Duration end;
   final bool keep;
+  final int volumePercent;
+  final _MediaPartEffect effect;
+  final int effectAmountPercent;
 
   Duration get duration => end - start;
+  double get volumeFactor => volumePercent.clamp(0, 200).toDouble() / 100.0;
+  bool get hasAudioChanges =>
+      volumePercent != 100 || effect != _MediaPartEffect.none;
 
-  _MediaPart copyWith({bool? keep}) => _MediaPart(
+  _MediaPart copyWith({
+    bool? keep,
+    int? volumePercent,
+    _MediaPartEffect? effect,
+    int? effectAmountPercent,
+  }) =>
+      _MediaPart(
         start: start,
         end: end,
         keep: keep ?? this.keep,
+        volumePercent: volumePercent ?? this.volumePercent,
+        effect: effect ?? this.effect,
+        effectAmountPercent: effectAmountPercent ?? this.effectAmountPercent,
       );
 }
 
@@ -307,6 +339,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         if (controller.value.isPlaying) {
           await controller.pause();
         } else {
+          await _setPlaybackVolume(1);
           await controller.play();
         }
         if (!mounted) return;
@@ -318,6 +351,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         if (_audioPlayer.playing) {
           await _audioPlayer.pause();
         } else {
+          await _setPlaybackVolume(1);
           await _audioPlayer.play();
         }
       }
@@ -340,6 +374,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
+  Future<void> _setPlaybackVolume(double volume) async {
+    final clamped = volume.clamp(0.0, 2.0).toDouble();
+    if (_isVideo) {
+      await _videoController?.setVolume(clamped.clamp(0.0, 1.0).toDouble());
+    } else {
+      await _audioPlayer.setVolume(clamped);
+    }
+  }
+
   Future<void> _seekTo(Duration position, {bool clearPreview = true}) async {
     if (clearPreview) _clearPartPreview();
     final clamped = _clampPosition(position);
@@ -359,7 +402,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
-  Future<void> _playPart(int index) async {
+  Future<void> _playPart(
+    int index, {
+    double? previewVolumeFactor,
+  }) async {
     if (_inputPath.isEmpty || _loading || _saving) return;
     if (index < 0 || index >= _parts.length) return;
     final part = _parts[index];
@@ -373,6 +419,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
     try {
       await _pause();
+      await _setPlaybackVolume(previewVolumeFactor ?? part.volumeFactor);
       await _seekTo(part.start, clearPreview: false);
       if (!mounted) return;
       setState(() {
@@ -414,6 +461,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         await _audioPlayer.pause();
         await _audioPlayer.seek(_clampPosition(end));
       }
+      await _setPlaybackVolume(1);
       if (!mounted) return;
       setState(() {
         _position = _clampPosition(end);
@@ -527,6 +575,129 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           if (i == index) _parts[i].copyWith(keep: true) else _parts[i],
       ];
       _status = l10n.mediaCutterPartRestored(
+        _formatTime(part.start),
+        _formatTime(part.end),
+      );
+    });
+  }
+
+  Future<void> _showPartEffectsDialog(int index) async {
+    if (_saving || index < 0 || index >= _parts.length || !_parts[index].keep) {
+      return;
+    }
+    final l10n = AppLocalizations.of(context);
+    final part = _parts[index];
+    var volumePercent = part.volumePercent;
+    var effect = part.effect;
+    var effectAmountPercent = part.effectAmountPercent;
+
+    final result = await showDialog<_PartEffectSettings>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          title: Text(l10n.mediaCutterPartEffectsTitle),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(l10n.mediaCutterPartEffectsDescription),
+                const SizedBox(height: 16),
+                Text(l10n.mediaCutterPartVolumeValue(volumePercent)),
+                Slider(
+                  value: volumePercent.toDouble(),
+                  min: 0,
+                  max: 200,
+                  divisions: 20,
+                  label: '$volumePercent%',
+                  onChanged: (value) => setDialogState(
+                    () => volumePercent = value.round(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<_MediaPartEffect>(
+                  initialValue: effect,
+                  decoration: InputDecoration(
+                    labelText: l10n.mediaCutterPartEffect,
+                  ),
+                  items: [
+                    for (final value in _MediaPartEffect.values)
+                      DropdownMenuItem<_MediaPartEffect>(
+                        value: value,
+                        child: Text(_effectLabel(l10n, value)),
+                      ),
+                  ],
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setDialogState(() => effect = value);
+                  },
+                ),
+                if (effect != _MediaPartEffect.none) ...[
+                  const SizedBox(height: 16),
+                  Text(l10n.mediaCutterPartEffectAmountValue(effectAmountPercent)),
+                  Slider(
+                    value: effectAmountPercent.toDouble(),
+                    min: 0,
+                    max: 100,
+                    divisions: 10,
+                    label: '$effectAmountPercent%',
+                    onChanged: (value) => setDialogState(
+                      () => effectAmountPercent = value.round(),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(l10n.mediaCutterPartEffectsSavedOnly),
+                ],
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () => unawaited(
+                    _playPart(
+                      index,
+                      previewVolumeFactor:
+                          volumePercent.clamp(0, 200).toDouble() / 100.0,
+                    ),
+                  ),
+                  icon: const Icon(Icons.play_arrow),
+                  label: Text(l10n.mediaCutterPartPreviewAction),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(
+                dialogContext,
+                _PartEffectSettings(
+                  volumePercent: volumePercent,
+                  effect: effect,
+                  effectAmountPercent: effectAmountPercent,
+                ),
+              ),
+              child: Text(l10n.ok),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result == null || !mounted) return;
+    setState(() {
+      _parts = [
+        for (var i = 0; i < _parts.length; i++)
+          if (i == index)
+            _parts[i].copyWith(
+              volumePercent: result.volumePercent,
+              effect: result.effect,
+              effectAmountPercent: result.effectAmountPercent,
+            )
+          else
+            _parts[i],
+      ];
+      _status = l10n.mediaCutterPartEffectsApplied(
         _formatTime(part.start),
         _formatTime(part.end),
       );
@@ -665,6 +836,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           ],
           '-sn',
           '-dn',
+          if (_audioFilterForPart(part) != null) ...[
+            '-filter:a',
+            _audioFilterForPart(part)!,
+          ],
           ..._codecArguments(input),
           '-avoid_negative_ts',
           'make_zero',
@@ -895,6 +1070,53 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
+  String? _audioFilterForPart(_MediaPart part) {
+    final filters = <String>[];
+    if (part.volumePercent != 100) {
+      filters.add('volume=${part.volumeFactor.toStringAsFixed(3)}');
+    }
+
+    final amount = part.effectAmountPercent.clamp(0, 100) / 100.0;
+    switch (part.effect) {
+      case _MediaPartEffect.none:
+        break;
+      case _MediaPartEffect.echo:
+        final delay = (80 + 220 * amount).round();
+        final decay = (0.18 + 0.45 * amount).toStringAsFixed(2);
+        filters.add('aecho=0.8:0.88:$delay:$decay');
+        break;
+      case _MediaPartEffect.reverb:
+        final delay1 = (55 + 120 * amount).round();
+        final delay2 = (120 + 280 * amount).round();
+        final decay1 = (0.16 + 0.28 * amount).toStringAsFixed(2);
+        final decay2 = (0.10 + 0.24 * amount).toStringAsFixed(2);
+        filters.add('aecho=0.8:0.9:$delay1|$delay2:$decay1|$decay2');
+        break;
+      case _MediaPartEffect.fadeIn:
+        final fade = _fadeDurationSeconds(part.duration);
+        filters.add('afade=t=in:st=0:d=$fade');
+        break;
+      case _MediaPartEffect.fadeOut:
+        final fade = _fadeDurationSeconds(part.duration);
+        final start = (_seconds(part.duration) - double.parse(fade))
+            .clamp(0.0, double.infinity)
+            .toStringAsFixed(3);
+        filters.add('afade=t=out:st=$start:d=$fade');
+        break;
+    }
+
+    if (filters.isEmpty) return null;
+    return filters.join(',');
+  }
+
+  String _fadeDurationSeconds(Duration duration) {
+    final seconds = _seconds(duration);
+    final fade = seconds <= 0 ? 0.2 : (seconds / 3).clamp(0.2, 3.0);
+    return fade.toStringAsFixed(3);
+  }
+
+  double _seconds(Duration duration) => duration.inMilliseconds / 1000.0;
+
   List<String> _codecArguments(String inputPath) {
     if (_isVideoInput(inputPath)) {
       return [
@@ -947,6 +1169,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         start: start,
         end: end,
         keep: previous.isEmpty ? true : previous.first.keep,
+        volumePercent: previous.isEmpty ? 100 : previous.first.volumePercent,
+        effect: previous.isEmpty
+            ? _MediaPartEffect.none
+            : previous.first.effect,
+        effectAmountPercent:
+            previous.isEmpty ? 50 : previous.first.effectAmountPercent,
       ));
     }
     _parts = rebuilt;
@@ -978,6 +1206,177 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       'vob',
       '3gp',
     }.contains(extension);
+  }
+
+  String _effectLabel(AppLocalizations l10n, _MediaPartEffect effect) {
+    switch (effect) {
+      case _MediaPartEffect.none:
+        return l10n.mediaCutterPartEffectNone;
+      case _MediaPartEffect.echo:
+        return l10n.mediaCutterPartEffectEcho;
+      case _MediaPartEffect.reverb:
+        return l10n.mediaCutterPartEffectReverb;
+      case _MediaPartEffect.fadeIn:
+        return l10n.mediaCutterPartEffectFadeIn;
+      case _MediaPartEffect.fadeOut:
+        return l10n.mediaCutterPartEffectFadeOut;
+    }
+  }
+
+  String _partDetailsSummary(AppLocalizations l10n, _MediaPart part) {
+    final duration = _formatHumanDuration(part.duration);
+    final pieces = <String>[];
+
+    if (part.volumePercent != 100) {
+      pieces.add(_localizedVolumeSummary(part.volumePercent));
+    }
+    if (part.effect != _MediaPartEffect.none) {
+      pieces.add(_effectLabel(l10n, part.effect));
+    }
+    pieces.add(_localizedDurationSummary(duration));
+
+    return pieces.join(', ');
+  }
+
+  String _localizedVolumeSummary(int percent) {
+    final lang = Localizations.localeOf(context).languageCode;
+    switch (lang) {
+      case 'en':
+        return 'volume $percent%';
+      case 'fr':
+        return 'volume $percent %';
+      case 'es':
+        return 'volumen $percent%';
+      case 'pt':
+        return 'volume $percent%';
+      case 'pl':
+        return 'głośność $percent%';
+      case 'cs':
+        return 'hlasitost $percent %';
+      default:
+        return 'volume $percent%';
+    }
+  }
+
+  String _localizedDurationSummary(String duration) {
+    final lang = Localizations.localeOf(context).languageCode;
+    switch (lang) {
+      case 'en':
+        return 'duration $duration';
+      case 'fr':
+        return 'durée $duration';
+      case 'es':
+        return 'duración $duration';
+      case 'pt':
+        return 'duração $duration';
+      case 'pl':
+        return 'czas trwania $duration';
+      case 'cs':
+        return 'délka $duration';
+      default:
+        return 'durata $duration';
+    }
+  }
+
+  String _formatHumanDuration(Duration duration) {
+    var totalSeconds = duration.inSeconds;
+    if (totalSeconds <= 0 && duration.inMilliseconds > 0) totalSeconds = 1;
+    if (totalSeconds < 0) totalSeconds = 0;
+
+    final hours = totalSeconds ~/ 3600;
+    final minutes = (totalSeconds % 3600) ~/ 60;
+    final seconds = totalSeconds % 60;
+    final units = <String>[];
+
+    if (hours > 0) units.add(_humanDurationUnit('hour', hours));
+    if (minutes > 0) units.add(_humanDurationUnit('minute', minutes));
+    if (seconds > 0 || units.isEmpty) {
+      units.add(_humanDurationUnit('second', seconds));
+    }
+
+    return _joinHumanDurationUnits(units);
+  }
+
+  String _humanDurationUnit(String unit, int value) {
+    final lang = Localizations.localeOf(context).languageCode;
+    final word = switch (lang) {
+      'en' => switch (unit) {
+          'hour' => value == 1 ? 'hour' : 'hours',
+          'minute' => value == 1 ? 'minute' : 'minutes',
+          _ => value == 1 ? 'second' : 'seconds',
+        },
+      'fr' => switch (unit) {
+          'hour' => value == 1 ? 'heure' : 'heures',
+          'minute' => value == 1 ? 'minute' : 'minutes',
+          _ => value == 1 ? 'seconde' : 'secondes',
+        },
+      'es' => switch (unit) {
+          'hour' => value == 1 ? 'hora' : 'horas',
+          'minute' => value == 1 ? 'minuto' : 'minutos',
+          _ => value == 1 ? 'segundo' : 'segundos',
+        },
+      'pt' => switch (unit) {
+          'hour' => value == 1 ? 'hora' : 'horas',
+          'minute' => value == 1 ? 'minuto' : 'minutos',
+          _ => value == 1 ? 'segundo' : 'segundos',
+        },
+      'pl' => _polishDurationUnit(unit, value),
+      'cs' => _czechDurationUnit(unit, value),
+      _ => switch (unit) {
+          'hour' => value == 1 ? 'ora' : 'ore',
+          'minute' => value == 1 ? 'minuto' : 'minuti',
+          _ => value == 1 ? 'secondo' : 'secondi',
+        },
+    };
+    return '$value $word';
+  }
+
+  String _polishDurationUnit(String unit, int value) {
+    final mod10 = value % 10;
+    final mod100 = value % 100;
+    final few = mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14);
+    switch (unit) {
+      case 'hour':
+        if (value == 1) return 'godzina';
+        return few ? 'godziny' : 'godzin';
+      case 'minute':
+        if (value == 1) return 'minuta';
+        return few ? 'minuty' : 'minut';
+      default:
+        if (value == 1) return 'sekunda';
+        return few ? 'sekundy' : 'sekund';
+    }
+  }
+
+  String _czechDurationUnit(String unit, int value) {
+    final few = value >= 2 && value <= 4;
+    switch (unit) {
+      case 'hour':
+        if (value == 1) return 'hodina';
+        return few ? 'hodiny' : 'hodin';
+      case 'minute':
+        if (value == 1) return 'minuta';
+        return few ? 'minuty' : 'minut';
+      default:
+        if (value == 1) return 'sekunda';
+        return few ? 'sekundy' : 'sekund';
+    }
+  }
+
+  String _joinHumanDurationUnits(List<String> units) {
+    if (units.length <= 1) return units.first;
+    final lang = Localizations.localeOf(context).languageCode;
+    final connector = switch (lang) {
+      'en' => ' and ',
+      'fr' => ' et ',
+      'es' => ' y ',
+      'pt' => ' e ',
+      'pl' => ' i ',
+      'cs' => ' a ',
+      _ => ' e ',
+    };
+    if (units.length == 2) return '${units[0]}$connector${units[1]}';
+    return '${units.sublist(0, units.length - 1).join(', ')}$connector${units.last}';
   }
 
   String _formatTime(Duration duration) {
@@ -1095,21 +1494,26 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _formatTime(part.start),
       _formatTime(part.end),
     );
+    final partSummary = _partDetailsSummary(l10n, part);
     final deleteAction = CustomSemanticsAction(
       label: l10n.mediaCutterPartDeleteAction,
+    );
+    final effectsAction = CustomSemanticsAction(
+      label: l10n.mediaCutterPartEffectsAction,
     );
 
     return Semantics(
       container: true,
       button: true,
       enabled: !_saving,
-      label: '$label, $range',
+      label: '$label, $partSummary',
       hint: l10n.mediaCutterPartTapHint,
       onTap: _saving ? null : () => _playPart(originalIndex),
       customSemanticsActions: _saving
           ? const <CustomSemanticsAction, VoidCallback>{}
           : <CustomSemanticsAction, VoidCallback>{
               deleteAction: () => _deletePart(originalIndex),
+              effectsAction: () => unawaited(_showPartEffectsDialog(originalIndex)),
             },
       child: ExcludeSemantics(
         child: Card(
@@ -1121,12 +1525,23 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   ? Icons.volume_up
                   : Icons.play_arrow,
             ),
-            title: Text(label),
+            title: Text('$label, $partSummary'),
             subtitle: Text(range),
-            trailing: IconButton(
-              tooltip: l10n.mediaCutterPartDeleteAction,
-              icon: const Icon(Icons.delete_outline),
-              onPressed: _saving ? null : () => _deletePart(originalIndex),
+            trailing: Wrap(
+              spacing: 4,
+              children: [
+                IconButton(
+                  tooltip: l10n.mediaCutterPartEffectsAction,
+                  icon: const Icon(Icons.tune),
+                  onPressed:
+                      _saving ? null : () => _showPartEffectsDialog(originalIndex),
+                ),
+                IconButton(
+                  tooltip: l10n.mediaCutterPartDeleteAction,
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: _saving ? null : () => _deletePart(originalIndex),
+                ),
+              ],
             ),
           ),
         ),

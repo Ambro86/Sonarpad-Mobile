@@ -1142,7 +1142,7 @@
   "mediaCutterRestoreDeletedPart": "Restore deleted part",
   "mediaCutterNoDeletedParts": "There are no deleted parts to restore.",
   "mediaCutterPartDeleteAction": "Delete",
-  "mediaCutterPartTapHint": "Double-tap to preview this part. Use the Delete action to remove it.",
+  "mediaCutterPartTapHint": "Double-tap to preview this part. Use the Delete or Adjust effects actions.",
   "mediaCutterPartDeleted": "Part deleted from {start} to {end}.",
   "@mediaCutterPartDeleted": {
     "description": "Status shown after a media part is deleted",
@@ -1166,5 +1166,137 @@
         "type": "String"
       }
     }
+  },
+  "mediaCutterPartEffectsAction": "Adjust effects",
+  "mediaCutterPartEffectsTitle": "Part effects",
+  "mediaCutterPartEffectsDescription": "Adjust volume and effect only for this part.",
+  "mediaCutterPartVolumeValue": "Part volume: {percent}%",
+  "@mediaCutterPartVolumeValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartEffect": "Audio effect",
+  "mediaCutterPartEffectNone": "No effect",
+  "mediaCutterPartEffectEcho": "Light echo",
+  "mediaCutterPartEffectReverb": "Light reverb",
+  "mediaCutterPartEffectFadeIn": "Fade in",
+  "mediaCutterPartEffectFadeOut": "Fade out",
+  "mediaCutterPartEffectAmountValue": "Effect intensity: {percent}%",
+  "@mediaCutterPartEffectAmountValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartPreviewAction": "Preview",
+  "mediaCutterPartEffectsSavedOnly": "The preview uses the selected volume. Audio effects are applied when saving.",
+  "mediaCutterPartEffectsApplied": "Effects updated for the part from {start} to {end}.",
+  "@mediaCutterPartEffectsApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsSummary": "Volume {percent}%, effect {effect}",
+  "@mediaCutterPartEffectsSummary": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "newsAddCommunitySource": "Add news source to Sonarpad community",
+  "@newsAddCommunitySource": {
+    "description": "Localized text for newsAddCommunitySource."
+  },
+  "newsBrowseCommunitySources": "Community news sources",
+  "@newsBrowseCommunitySources": {
+    "description": "Localized text for newsBrowseCommunitySources."
+  },
+  "newsAddCommunityInstructions": "Enter the source title and RSS feed URL. The source will be added to the Sonarpad community for the selected language.",
+  "@newsAddCommunityInstructions": {
+    "description": "Localized text for newsAddCommunityInstructions."
+  },
+  "newsCommunitySourceName": "Source title",
+  "@newsCommunitySourceName": {
+    "description": "Localized text for newsCommunitySourceName."
+  },
+  "newsCommunitySourceUrl": "RSS feed URL",
+  "@newsCommunitySourceUrl": {
+    "description": "Localized text for newsCommunitySourceUrl."
+  },
+  "newsCommunitySubmit": "Check and add",
+  "@newsCommunitySubmit": {
+    "description": "Localized text for newsCommunitySubmit."
+  },
+  "newsCommunityChecking": "Checking feed...",
+  "@newsCommunityChecking": {
+    "description": "Localized text for newsCommunityChecking."
+  },
+  "newsCommunityMissingFields": "Enter the title and feed URL.",
+  "@newsCommunityMissingFields": {
+    "description": "Localized text for newsCommunityMissingFields."
+  },
+  "newsCommunityAdded": "News source added successfully to the Sonarpad community.",
+  "@newsCommunityAdded": {
+    "description": "Localized text for newsCommunityAdded."
+  },
+  "newsCommunityAddError": "Error while adding the news source: {error}",
+  "@newsCommunityAddError": {
+    "description": "Localized text for newsCommunityAddError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySelectedLanguage": "Selected language: {language}",
+  "@newsCommunitySelectedLanguage": {
+    "description": "Localized text for newsCommunitySelectedLanguage.",
+    "placeholders": {
+      "language": {}
+    }
+  },
+  "newsCommunitySourcesTitle": "Community news sources",
+  "@newsCommunitySourcesTitle": {
+    "description": "Localized text for newsCommunitySourcesTitle."
+  },
+  "newsCommunitySourcesEmpty": "No community news sources are available for this language.",
+  "@newsCommunitySourcesEmpty": {
+    "description": "Localized text for newsCommunitySourcesEmpty."
+  },
+  "newsCommunitySourcesError": "Error loading community news sources: {error}",
+  "@newsCommunitySourcesError": {
+    "description": "Localized text for newsCommunitySourcesError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceAddedToLibrary": "{name} added to your news library.",
+  "@newsCommunitySourceAddedToLibrary": {
+    "description": "Localized text for newsCommunitySourceAddedToLibrary.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "newsCommunityAddToLibraryError": "Error while adding to the library: {error}",
+  "@newsCommunityAddToLibraryError": {
+    "description": "Localized text for newsCommunityAddToLibraryError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceTapHint": "Tap to add it to your news library.",
+  "@newsCommunitySourceTapHint": {
+    "description": "Localized text for newsCommunitySourceTapHint."
   }
 }

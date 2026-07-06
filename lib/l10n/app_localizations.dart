@@ -474,6 +474,51 @@ abstract class AppLocalizations {
   /// Localized text for mediaCutterPartDeleteAction.
   String get mediaCutterPartDeleteAction;
 
+  /// Localized text for mediaCutterPartEffectsAction.
+  String get mediaCutterPartEffectsAction;
+
+  /// Localized text for mediaCutterPartEffectsTitle.
+  String get mediaCutterPartEffectsTitle;
+
+  /// Localized text for mediaCutterPartEffectsDescription.
+  String get mediaCutterPartEffectsDescription;
+
+  /// Localized text for mediaCutterPartVolumeValue.
+  String mediaCutterPartVolumeValue(int percent);
+
+  /// Localized text for mediaCutterPartEffect.
+  String get mediaCutterPartEffect;
+
+  /// Localized text for mediaCutterPartEffectNone.
+  String get mediaCutterPartEffectNone;
+
+  /// Localized text for mediaCutterPartEffectEcho.
+  String get mediaCutterPartEffectEcho;
+
+  /// Localized text for mediaCutterPartEffectReverb.
+  String get mediaCutterPartEffectReverb;
+
+  /// Localized text for mediaCutterPartEffectFadeIn.
+  String get mediaCutterPartEffectFadeIn;
+
+  /// Localized text for mediaCutterPartEffectFadeOut.
+  String get mediaCutterPartEffectFadeOut;
+
+  /// Localized text for mediaCutterPartEffectAmountValue.
+  String mediaCutterPartEffectAmountValue(int percent);
+
+  /// Localized text for mediaCutterPartPreviewAction.
+  String get mediaCutterPartPreviewAction;
+
+  /// Localized text for mediaCutterPartEffectsSavedOnly.
+  String get mediaCutterPartEffectsSavedOnly;
+
+  /// Localized text for mediaCutterPartEffectsApplied.
+  String mediaCutterPartEffectsApplied(String start, String end);
+
+  /// Localized text for mediaCutterPartEffectsSummary.
+  String mediaCutterPartEffectsSummary(int percent, String effect);
+
   /// Localized text for mediaCutterPartTapHint.
   String get mediaCutterPartTapHint;
 
@@ -740,6 +785,57 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Aggiungi sorgente RSS personalizzata'**
   String get addCustomNewsSource;
+
+  /// Localized text for newsAddCommunitySource.
+  String get newsAddCommunitySource;
+
+  /// Localized text for newsBrowseCommunitySources.
+  String get newsBrowseCommunitySources;
+
+  /// Localized text for newsAddCommunityInstructions.
+  String get newsAddCommunityInstructions;
+
+  /// Localized text for newsCommunitySourceName.
+  String get newsCommunitySourceName;
+
+  /// Localized text for newsCommunitySourceUrl.
+  String get newsCommunitySourceUrl;
+
+  /// Localized text for newsCommunitySubmit.
+  String get newsCommunitySubmit;
+
+  /// Localized text for newsCommunityChecking.
+  String get newsCommunityChecking;
+
+  /// Localized text for newsCommunityMissingFields.
+  String get newsCommunityMissingFields;
+
+  /// Localized text for newsCommunityAdded.
+  String get newsCommunityAdded;
+
+  /// Localized text for newsCommunitySourcesTitle.
+  String get newsCommunitySourcesTitle;
+
+  /// Localized text for newsCommunitySourcesEmpty.
+  String get newsCommunitySourcesEmpty;
+
+  /// Localized text for newsCommunitySourceTapHint.
+  String get newsCommunitySourceTapHint;
+
+  /// Localized text for newsCommunityAddError.
+  String newsCommunityAddError(Object error);
+
+  /// Localized text for newsCommunitySelectedLanguage.
+  String newsCommunitySelectedLanguage(Object language);
+
+  /// Localized text for newsCommunitySourcesError.
+  String newsCommunitySourcesError(Object error);
+
+  /// Localized text for newsCommunitySourceAddedToLibrary.
+  String newsCommunitySourceAddedToLibrary(Object name);
+
+  /// Localized text for newsCommunityAddToLibraryError.
+  String newsCommunityAddToLibraryError(Object error);
 
   /// Localized text for newsSourceName.
   ///

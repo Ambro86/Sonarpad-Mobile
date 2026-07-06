@@ -1145,7 +1145,7 @@
   "mediaCutterRestoreDeletedPart": "Obnovit odstraněnou část",
   "mediaCutterNoDeletedParts": "Nejsou zde žádné odstraněné části k obnovení.",
   "mediaCutterPartDeleteAction": "Odstranit",
-  "mediaCutterPartTapHint": "Dvojitým klepnutím si tuto část poslechnete. Akcí Odstranit ji odeberete.",
+  "mediaCutterPartTapHint": "Dvojitým klepnutím přehrajete tuto část. Použijte akce Smazat nebo Upravit efekty.",
   "mediaCutterPartDeleted": "Část od {start} do {end} byla odstraněna.",
   "@mediaCutterPartDeleted": {
     "description": "Status shown after a media part is deleted",
@@ -1169,5 +1169,137 @@
         "type": "String"
       }
     }
+  },
+  "mediaCutterPartEffectsAction": "Upravit efekty",
+  "mediaCutterPartEffectsTitle": "Efekty části",
+  "mediaCutterPartEffectsDescription": "Upravte hlasitost a efekt pouze pro tuto část.",
+  "mediaCutterPartVolumeValue": "Hlasitost části: {percent} %",
+  "@mediaCutterPartVolumeValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartEffect": "Zvukový efekt",
+  "mediaCutterPartEffectNone": "Žádný efekt",
+  "mediaCutterPartEffectEcho": "Lehké echo",
+  "mediaCutterPartEffectReverb": "Lehký dozvuk",
+  "mediaCutterPartEffectFadeIn": "Zesílení na začátku",
+  "mediaCutterPartEffectFadeOut": "Zeslabení na konci",
+  "mediaCutterPartEffectAmountValue": "Intenzita efektu: {percent} %",
+  "@mediaCutterPartEffectAmountValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartPreviewAction": "Přehrát náhled",
+  "mediaCutterPartEffectsSavedOnly": "Náhled používá zvolenou hlasitost. Zvukové efekty se použijí při ukládání.",
+  "mediaCutterPartEffectsApplied": "Efekty aktualizovány pro část od {start} do {end}.",
+  "@mediaCutterPartEffectsApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsSummary": "Hlasitost {percent} %, efekt {effect}",
+  "@mediaCutterPartEffectsSummary": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "newsAddCommunitySource": "Přidat zdroj do komunity Sonarpad",
+  "@newsAddCommunitySource": {
+    "description": "Localized text for newsAddCommunitySource."
+  },
+  "newsBrowseCommunitySources": "Komunitní zdroje",
+  "@newsBrowseCommunitySources": {
+    "description": "Localized text for newsBrowseCommunitySources."
+  },
+  "newsAddCommunityInstructions": "Zadejte název zdroje a URL RSS kanálu. Zdroj bude přidán do komunity Sonarpad pro vybraný jazyk.",
+  "@newsAddCommunityInstructions": {
+    "description": "Localized text for newsAddCommunityInstructions."
+  },
+  "newsCommunitySourceName": "Název zdroje",
+  "@newsCommunitySourceName": {
+    "description": "Localized text for newsCommunitySourceName."
+  },
+  "newsCommunitySourceUrl": "URL RSS kanálu",
+  "@newsCommunitySourceUrl": {
+    "description": "Localized text for newsCommunitySourceUrl."
+  },
+  "newsCommunitySubmit": "Zkontrolovat a přidat",
+  "@newsCommunitySubmit": {
+    "description": "Localized text for newsCommunitySubmit."
+  },
+  "newsCommunityChecking": "Kontroluji kanál...",
+  "@newsCommunityChecking": {
+    "description": "Localized text for newsCommunityChecking."
+  },
+  "newsCommunityMissingFields": "Zadejte název a URL kanálu.",
+  "@newsCommunityMissingFields": {
+    "description": "Localized text for newsCommunityMissingFields."
+  },
+  "newsCommunityAdded": "Zdroj byl úspěšně přidán do komunity Sonarpad.",
+  "@newsCommunityAdded": {
+    "description": "Localized text for newsCommunityAdded."
+  },
+  "newsCommunityAddError": "Chyba při přidávání zdroje: {error}",
+  "@newsCommunityAddError": {
+    "description": "Localized text for newsCommunityAddError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySelectedLanguage": "Vybraný jazyk: {language}",
+  "@newsCommunitySelectedLanguage": {
+    "description": "Localized text for newsCommunitySelectedLanguage.",
+    "placeholders": {
+      "language": {}
+    }
+  },
+  "newsCommunitySourcesTitle": "Komunitní zdroje",
+  "@newsCommunitySourcesTitle": {
+    "description": "Localized text for newsCommunitySourcesTitle."
+  },
+  "newsCommunitySourcesEmpty": "Pro tento jazyk nejsou dostupné žádné komunitní zdroje.",
+  "@newsCommunitySourcesEmpty": {
+    "description": "Localized text for newsCommunitySourcesEmpty."
+  },
+  "newsCommunitySourcesError": "Chyba při načítání komunitních zdrojů: {error}",
+  "@newsCommunitySourcesError": {
+    "description": "Localized text for newsCommunitySourcesError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceAddedToLibrary": "{name} byl přidán do vaší knihovny zpráv.",
+  "@newsCommunitySourceAddedToLibrary": {
+    "description": "Localized text for newsCommunitySourceAddedToLibrary.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "newsCommunityAddToLibraryError": "Chyba při přidávání do knihovny: {error}",
+  "@newsCommunityAddToLibraryError": {
+    "description": "Localized text for newsCommunityAddToLibraryError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceTapHint": "Klepnutím přidáte zdroj do své knihovny zpráv.",
+  "@newsCommunitySourceTapHint": {
+    "description": "Localized text for newsCommunitySourceTapHint."
   }
 }

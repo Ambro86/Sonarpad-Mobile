@@ -164,6 +164,32 @@ class _NewsScreenState extends State<NewsScreen> {
     }
   }
 
+  Future<void> _addCommunitySource() async {
+    if (_language == null) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/community/add'),
+        builder: (_) => _AddCommunityNewsSourceScreen(language: _language!),
+      ),
+    );
+  }
+
+  Future<void> _openCommunitySources() async {
+    if (_language == null) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/community'),
+        builder: (_) => _CommunityNewsSourcesScreen(
+          language: _language!,
+          parentFolderId: widget.folderId,
+        ),
+      ),
+    );
+    await _loadSources();
+  }
+
   Future<void> _createFolder() async {
     if (_language == null || widget.folderId != null) return;
     final ctrl = TextEditingController();
@@ -270,6 +296,16 @@ class _NewsScreenState extends State<NewsScreen> {
             onPressed: _addCustomSource,
           ),
           IconButton(
+            icon: const Icon(Icons.cloud_upload),
+            tooltip: l10n.newsAddCommunitySource,
+            onPressed: _addCommunitySource,
+          ),
+          IconButton(
+            icon: const Icon(Icons.public),
+            tooltip: l10n.newsBrowseCommunitySources,
+            onPressed: _openCommunitySources,
+          ),
+          IconButton(
             icon: const Icon(Icons.upload_file),
             tooltip: l10n.importRssSourcesFromOpml,
             onPressed: _importRssFromOpml,
@@ -328,6 +364,236 @@ class _NewsScreenState extends State<NewsScreen> {
                   ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AddCommunityNewsSourceScreen extends StatefulWidget {
+  const _AddCommunityNewsSourceScreen({required this.language});
+
+  final NewsLanguage language;
+
+  @override
+  State<_AddCommunityNewsSourceScreen> createState() =>
+      _AddCommunityNewsSourceScreenState();
+}
+
+class _AddCommunityNewsSourceScreenState
+    extends State<_AddCommunityNewsSourceScreen> {
+  final _service = NewsService();
+  final _nameController = TextEditingController();
+  final _urlController = TextEditingController();
+  bool _submitting = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _urlController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context);
+    final name = _nameController.text.trim();
+    final url = _urlController.text.trim();
+    if (name.isEmpty || url.isEmpty) {
+      showStatusMessage(context, l10n.newsCommunityMissingFields);
+      return;
+    }
+
+    setState(() => _submitting = true);
+    try {
+      final message = await _service.addCommunityNewsSource(
+        language: widget.language,
+        name: name,
+        feedUrl: url,
+        uiLanguageCode: l10n.localeName,
+      );
+      if (!mounted) return;
+      _nameController.clear();
+      _urlController.clear();
+      showStatusMessage(
+        context,
+        message.trim().isEmpty ? l10n.newsCommunityAdded : message.trim(),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      showStatusMessage(context, l10n.newsCommunityAddError(e));
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.newsAddCommunitySource)),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Text(l10n.newsAddCommunityInstructions),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              labelText: l10n.newsCommunitySourceName,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _urlController,
+            decoration: InputDecoration(
+              labelText: l10n.newsCommunitySourceUrl,
+            ),
+            keyboardType: TextInputType.url,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n.newsCommunitySelectedLanguage(widget.language.label(l10n)),
+          ),
+          const SizedBox(height: 24),
+          FilledButton.icon(
+            onPressed: _submitting ? null : _submit,
+            icon: const Icon(Icons.cloud_upload),
+            label: Text(_submitting
+                ? l10n.newsCommunityChecking
+                : l10n.newsCommunitySubmit),
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommunityNewsSourcesScreen extends StatefulWidget {
+  const _CommunityNewsSourcesScreen({
+    required this.language,
+    this.parentFolderId,
+  });
+
+  final NewsLanguage language;
+  final String? parentFolderId;
+
+  @override
+  State<_CommunityNewsSourcesScreen> createState() =>
+      _CommunityNewsSourcesScreenState();
+}
+
+class _CommunityNewsSourcesScreenState
+    extends State<_CommunityNewsSourcesScreen> {
+  final _service = NewsService();
+  late Future<List<NewsRssSource>> _future;
+  final Set<String> _addingUrls = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _service.fetchCommunityNewsSources(widget.language);
+  }
+
+  void _reload() {
+    setState(() {
+      _future = _service.fetchCommunityNewsSources(widget.language);
+    });
+  }
+
+  Future<void> _addToLibrary(NewsRssSource source) async {
+    final url = source.uri.toString();
+    if (_addingUrls.contains(url)) return;
+    setState(() => _addingUrls.add(url));
+    try {
+      await _service.addCustomSource(
+        widget.language,
+        source.name,
+        url,
+        parentFolderId: widget.parentFolderId,
+      );
+      if (!mounted) return;
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).newsCommunitySourceAddedToLibrary(
+          source.name,
+        ),
+      );
+      _reload();
+    } catch (e) {
+      if (!mounted) return;
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).newsCommunityAddToLibraryError(e),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _addingUrls.remove(url));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.newsCommunitySourcesTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: l10n.update,
+            onPressed: _reload,
+          ),
+        ],
+      ),
+      body: FutureBuilder<List<NewsRssSource>>(
+        future: _future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(l10n.newsCommunitySourcesError(snapshot.error!)),
+              ),
+            );
+          }
+          final sources = snapshot.data ?? const <NewsRssSource>[];
+          if (sources.isEmpty) {
+            return Center(child: Text(l10n.newsCommunitySourcesEmpty));
+          }
+          return ListView.separated(
+            itemCount: sources.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final source = sources[index];
+              final adding = _addingUrls.contains(source.uri.toString());
+              return Semantics(
+                button: true,
+                label: source.name,
+                hint: l10n.newsCommunitySourceTapHint,
+                child: ListTile(
+                  leading: const Icon(Icons.rss_feed),
+                  title: Text(source.name),
+                  subtitle: Text(source.uri.toString()),
+                  trailing: adding
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.add),
+                  onTap: adding ? null : () => _addToLibrary(source),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

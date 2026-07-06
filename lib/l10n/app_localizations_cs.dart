@@ -251,7 +251,63 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterPartDeleteAction => 'Odstranit';
 
   @override
-  String get mediaCutterPartTapHint => 'Dvojitým klepnutím si tuto část poslechnete. Akcí Odstranit ji odeberete.';
+  String get mediaCutterPartEffectsAction => 'Upravit efekty';
+
+  @override
+  String get mediaCutterPartEffectsTitle => 'Efekty části';
+
+  @override
+  String get mediaCutterPartEffectsDescription => 'Upravte hlasitost a efekt pouze pro tuto část.';
+
+  @override
+  String mediaCutterPartVolumeValue(int percent) {
+    return 'Hlasitost části: $percent %';
+  }
+
+  @override
+  String get mediaCutterPartEffect => 'Zvukový efekt';
+
+  @override
+  String get mediaCutterPartEffectNone => 'Žádný efekt';
+
+  @override
+  String get mediaCutterPartEffectEcho => 'Lehké echo';
+
+  @override
+  String get mediaCutterPartEffectReverb => 'Lehký dozvuk';
+
+  @override
+  String get mediaCutterPartEffectFadeIn => 'Zesílení na začátku';
+
+  @override
+  String get mediaCutterPartEffectFadeOut => 'Zeslabení na konci';
+
+  @override
+  String mediaCutterPartEffectAmountValue(int percent) {
+    return 'Intenzita efektu: $percent %';
+  }
+
+  @override
+  String get mediaCutterPartPreviewAction => 'Přehrát náhled';
+
+  @override
+  String get mediaCutterPartEffectsSavedOnly => 'Náhled používá zvolenou hlasitost. Zvukové efekty se použijí při ukládání.';
+
+  @override
+  String mediaCutterPartEffectsApplied(String start, String end) {
+    return 'Efekty aktualizovány pro část od $start do $end.';
+  }
+
+  @override
+  String mediaCutterPartEffectsSummary(int percent, String effect) {
+    return 'Hlasitost $percent %, efekt $effect';
+  }
+
+
+
+  @override
+  String get mediaCutterPartTapHint =>
+      'Dvojitým klepnutím přehrajete tuto část. Použijte akce Smazat nebo Upravit efekty.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -404,6 +460,67 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get addCustomNewsSource => 'Přidat vlastní RSS zdroj';
+
+  @override
+  String get newsAddCommunitySource => 'Přidat zdroj do komunity Sonarpad';
+
+  @override
+  String get newsBrowseCommunitySources => 'Komunitní zdroje';
+
+  @override
+  String get newsAddCommunityInstructions => 'Zadejte název zdroje a URL RSS kanálu. Zdroj bude přidán do komunity Sonarpad pro vybraný jazyk.';
+
+  @override
+  String get newsCommunitySourceName => 'Název zdroje';
+
+  @override
+  String get newsCommunitySourceUrl => 'URL RSS kanálu';
+
+  @override
+  String get newsCommunitySubmit => 'Zkontrolovat a přidat';
+
+  @override
+  String get newsCommunityChecking => 'Kontroluji kanál...';
+
+  @override
+  String get newsCommunityMissingFields => 'Zadejte název a URL kanálu.';
+
+  @override
+  String get newsCommunityAdded => 'Zdroj byl úspěšně přidán do komunity Sonarpad.';
+
+  @override
+  String get newsCommunitySourcesTitle => 'Komunitní zdroje';
+
+  @override
+  String get newsCommunitySourcesEmpty => 'Pro tento jazyk nejsou dostupné žádné komunitní zdroje.';
+
+  @override
+  String get newsCommunitySourceTapHint => 'Klepnutím přidáte zdroj do své knihovny zpráv.';
+
+  @override
+  String newsCommunityAddError(Object error) {
+    return 'Chyba při přidávání zdroje: $error';
+  }
+
+  @override
+  String newsCommunitySelectedLanguage(Object language) {
+    return 'Vybraný jazyk: $language';
+  }
+
+  @override
+  String newsCommunitySourcesError(Object error) {
+    return 'Chyba při načítání komunitních zdrojů: $error';
+  }
+
+  @override
+  String newsCommunitySourceAddedToLibrary(Object name) {
+    return '$name byl přidán do vaší knihovny zpráv.';
+  }
+
+  @override
+  String newsCommunityAddToLibraryError(Object error) {
+    return 'Chyba při přidávání do knihovny: $error';
+  }
 
   @override
   String get newsSourceName => 'Název zdroje nebo webu';

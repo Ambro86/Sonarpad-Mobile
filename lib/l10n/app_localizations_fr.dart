@@ -252,7 +252,63 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mediaCutterPartDeleteAction => 'Supprimer';
 
   @override
-  String get mediaCutterPartTapHint => 'Touchez deux fois pour écouter cette partie. Utilisez l’action Supprimer pour la retirer.';
+  String get mediaCutterPartEffectsAction => 'Régler les effets';
+
+  @override
+  String get mediaCutterPartEffectsTitle => 'Effets de la partie';
+
+  @override
+  String get mediaCutterPartEffectsDescription => 'Réglez le volume et l’effet uniquement pour cette partie.';
+
+  @override
+  String mediaCutterPartVolumeValue(int percent) {
+    return 'Volume de la partie : $percent %';
+  }
+
+  @override
+  String get mediaCutterPartEffect => 'Effet audio';
+
+  @override
+  String get mediaCutterPartEffectNone => 'Aucun effet';
+
+  @override
+  String get mediaCutterPartEffectEcho => 'Écho léger';
+
+  @override
+  String get mediaCutterPartEffectReverb => 'Réverbération légère';
+
+  @override
+  String get mediaCutterPartEffectFadeIn => 'Fondu entrant';
+
+  @override
+  String get mediaCutterPartEffectFadeOut => 'Fondu sortant';
+
+  @override
+  String mediaCutterPartEffectAmountValue(int percent) {
+    return 'Intensité de l’effet : $percent %';
+  }
+
+  @override
+  String get mediaCutterPartPreviewAction => 'Écouter l’aperçu';
+
+  @override
+  String get mediaCutterPartEffectsSavedOnly => 'L’aperçu utilise le volume choisi. Les effets audio sont appliqués lors de l’enregistrement.';
+
+  @override
+  String mediaCutterPartEffectsApplied(String start, String end) {
+    return 'Effets mis à jour pour la partie de $start à $end.';
+  }
+
+  @override
+  String mediaCutterPartEffectsSummary(int percent, String effect) {
+    return 'Volume $percent %, effet $effect';
+  }
+
+
+
+  @override
+  String get mediaCutterPartTapHint =>
+      'Touchez deux fois pour écouter cette partie. Utilisez les actions Supprimer ou Régler les effets.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -406,6 +462,67 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get addCustomNewsSource => 'Ajouter une source RSS personnalisée';
+
+  @override
+  String get newsAddCommunitySource => 'Ajouter une source à la communauté Sonarpad';
+
+  @override
+  String get newsBrowseCommunitySources => 'Sources de la communauté';
+
+  @override
+  String get newsAddCommunityInstructions => 'Saisissez le titre de la source et l’URL du flux RSS. La source sera ajoutée à la communauté Sonarpad pour la langue sélectionnée.';
+
+  @override
+  String get newsCommunitySourceName => 'Titre de la source';
+
+  @override
+  String get newsCommunitySourceUrl => 'URL du flux RSS';
+
+  @override
+  String get newsCommunitySubmit => 'Vérifier et ajouter';
+
+  @override
+  String get newsCommunityChecking => 'Vérification du flux...';
+
+  @override
+  String get newsCommunityMissingFields => 'Saisissez le titre et l’URL du flux.';
+
+  @override
+  String get newsCommunityAdded => 'Source ajoutée correctement à la communauté Sonarpad.';
+
+  @override
+  String get newsCommunitySourcesTitle => 'Sources de la communauté';
+
+  @override
+  String get newsCommunitySourcesEmpty => 'Aucune source de la communauté disponible pour cette langue.';
+
+  @override
+  String get newsCommunitySourceTapHint => 'Touchez pour l’ajouter à votre bibliothèque d’actualités.';
+
+  @override
+  String newsCommunityAddError(Object error) {
+    return 'Erreur lors de l’ajout de la source : $error';
+  }
+
+  @override
+  String newsCommunitySelectedLanguage(Object language) {
+    return 'Langue sélectionnée : $language';
+  }
+
+  @override
+  String newsCommunitySourcesError(Object error) {
+    return 'Erreur de chargement des sources de la communauté : $error';
+  }
+
+  @override
+  String newsCommunitySourceAddedToLibrary(Object name) {
+    return '$name ajoutée à votre bibliothèque d’actualités.';
+  }
+
+  @override
+  String newsCommunityAddToLibraryError(Object error) {
+    return 'Erreur lors de l’ajout à la bibliothèque : $error';
+  }
 
   @override
   String get newsSourceName => 'Nom de la source ou du site';
