@@ -4688,6 +4688,48 @@ abstract class AppLocalizations {
   /// **'Eco cattedrale'**
   String get mediaCutterPartEffectEchoCathedral;
 
+  /// No description provided for @mediaCutterPartEffectLargeRoom.
+  ///
+  /// In it, this message translates to:
+  /// **'Stanza grande'**
+  String get mediaCutterPartEffectLargeRoom;
+
+  /// No description provided for @mediaCutterPartEffectSmallRoom.
+  ///
+  /// In it, this message translates to:
+  /// **'Stanza piccola'**
+  String get mediaCutterPartEffectSmallRoom;
+
+  /// No description provided for @mediaCutterPartEffectBathroom.
+  ///
+  /// In it, this message translates to:
+  /// **'Effetto bagno'**
+  String get mediaCutterPartEffectBathroom;
+
+  /// No description provided for @mediaCutterPartEffectTunnel.
+  ///
+  /// In it, this message translates to:
+  /// **'Tunnel'**
+  String get mediaCutterPartEffectTunnel;
+
+  /// No description provided for @mediaCutterPartEffectRepeatEcho.
+  ///
+  /// In it, this message translates to:
+  /// **'Eco ripetizione parole'**
+  String get mediaCutterPartEffectRepeatEcho;
+
+  /// No description provided for @mediaCutterPartEffectCorridor.
+  ///
+  /// In it, this message translates to:
+  /// **'Corridoio'**
+  String get mediaCutterPartEffectCorridor;
+
+  /// No description provided for @mediaCutterPartEffectDelay.
+  ///
+  /// In it, this message translates to:
+  /// **'Delay'**
+  String get mediaCutterPartEffectDelay;
+
   /// No description provided for @mediaCutterPartEffectReverb.
   ///
   /// In it, this message translates to:
@@ -4741,6 +4783,84 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Vibrato alieno'**
   String get mediaCutterPartEffectAlien;
+
+  /// No description provided for @mediaCutterPartEffectBrightVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce più chiara'**
+  String get mediaCutterPartEffectBrightVoice;
+
+  /// No description provided for @mediaCutterPartEffectDarkVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce più scura'**
+  String get mediaCutterPartEffectDarkVoice;
+
+  /// No description provided for @mediaCutterPartEffectGhost.
+  ///
+  /// In it, this message translates to:
+  /// **'Fantasma'**
+  String get mediaCutterPartEffectGhost;
+
+  /// No description provided for @mediaCutterPartEffectTelephone.
+  ///
+  /// In it, this message translates to:
+  /// **'Telefono'**
+  String get mediaCutterPartEffectTelephone;
+
+  /// No description provided for @mediaCutterPartEffectOldRadio.
+  ///
+  /// In it, this message translates to:
+  /// **'Radio vecchia'**
+  String get mediaCutterPartEffectOldRadio;
+
+  /// No description provided for @mediaCutterPartEffectMegaphone.
+  ///
+  /// In it, this message translates to:
+  /// **'Megafono'**
+  String get mediaCutterPartEffectMegaphone;
+
+  /// No description provided for @mediaCutterPartEffectUnderwater.
+  ///
+  /// In it, this message translates to:
+  /// **'Sott’acqua'**
+  String get mediaCutterPartEffectUnderwater;
+
+  /// No description provided for @mediaCutterPartEffectMonster.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostro'**
+  String get mediaCutterPartEffectMonster;
+
+  /// No description provided for @mediaCutterPartEffectChipmunk.
+  ///
+  /// In it, this message translates to:
+  /// **'Scoiattolo'**
+  String get mediaCutterPartEffectChipmunk;
+
+  /// No description provided for @mediaCutterPartEffectDream.
+  ///
+  /// In it, this message translates to:
+  /// **'Sogno'**
+  String get mediaCutterPartEffectDream;
+
+  /// No description provided for @mediaCutterPartEffectDistortion.
+  ///
+  /// In it, this message translates to:
+  /// **'Distorsione'**
+  String get mediaCutterPartEffectDistortion;
+
+  /// No description provided for @mediaCutterPartEffectLoFi.
+  ///
+  /// In it, this message translates to:
+  /// **'Lo-fi'**
+  String get mediaCutterPartEffectLoFi;
+
+  /// No description provided for @mediaCutterPartEffectReverseEcho.
+  ///
+  /// In it, this message translates to:
+  /// **'Reverse echo'**
+  String get mediaCutterPartEffectReverseEcho;
 
   /// No description provided for @mediaCutterPartEffectFadeIn.
   ///

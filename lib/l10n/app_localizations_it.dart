@@ -2568,6 +2568,27 @@ class AppLocalizationsIt extends AppLocalizations {
   String get mediaCutterPartEffectEchoCathedral => 'Eco cattedrale';
 
   @override
+  String get mediaCutterPartEffectLargeRoom => 'Stanza grande';
+
+  @override
+  String get mediaCutterPartEffectSmallRoom => 'Stanza piccola';
+
+  @override
+  String get mediaCutterPartEffectBathroom => 'Effetto bagno';
+
+  @override
+  String get mediaCutterPartEffectTunnel => 'Tunnel';
+
+  @override
+  String get mediaCutterPartEffectRepeatEcho => 'Eco ripetizione parole';
+
+  @override
+  String get mediaCutterPartEffectCorridor => 'Corridoio';
+
+  @override
+  String get mediaCutterPartEffectDelay => 'Delay';
+
+  @override
   String get mediaCutterPartEffectReverb => 'Riverbero leggero';
 
   @override
@@ -2593,6 +2614,45 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get mediaCutterPartEffectAlien => 'Vibrato alieno';
+
+  @override
+  String get mediaCutterPartEffectBrightVoice => 'Voce più chiara';
+
+  @override
+  String get mediaCutterPartEffectDarkVoice => 'Voce più scura';
+
+  @override
+  String get mediaCutterPartEffectGhost => 'Fantasma';
+
+  @override
+  String get mediaCutterPartEffectTelephone => 'Telefono';
+
+  @override
+  String get mediaCutterPartEffectOldRadio => 'Radio vecchia';
+
+  @override
+  String get mediaCutterPartEffectMegaphone => 'Megafono';
+
+  @override
+  String get mediaCutterPartEffectUnderwater => 'Sott’acqua';
+
+  @override
+  String get mediaCutterPartEffectMonster => 'Mostro';
+
+  @override
+  String get mediaCutterPartEffectChipmunk => 'Scoiattolo';
+
+  @override
+  String get mediaCutterPartEffectDream => 'Sogno';
+
+  @override
+  String get mediaCutterPartEffectDistortion => 'Distorsione';
+
+  @override
+  String get mediaCutterPartEffectLoFi => 'Lo-fi';
+
+  @override
+  String get mediaCutterPartEffectReverseEcho => 'Reverse echo';
 
   @override
   String get mediaCutterPartEffectFadeIn => 'Fade in';

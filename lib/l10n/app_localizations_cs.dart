@@ -2563,6 +2563,27 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterPartEffectEchoCathedral => 'Ozvěna katedrály';
 
   @override
+  String get mediaCutterPartEffectLargeRoom => 'Velká místnost';
+
+  @override
+  String get mediaCutterPartEffectSmallRoom => 'Malá místnost';
+
+  @override
+  String get mediaCutterPartEffectBathroom => 'Koupelna';
+
+  @override
+  String get mediaCutterPartEffectTunnel => 'Tunel';
+
+  @override
+  String get mediaCutterPartEffectRepeatEcho => 'Opakovaná ozvěna';
+
+  @override
+  String get mediaCutterPartEffectCorridor => 'Chodba';
+
+  @override
+  String get mediaCutterPartEffectDelay => 'Delay';
+
+  @override
   String get mediaCutterPartEffectReverb => 'Lehký dozvuk';
 
   @override
@@ -2588,6 +2609,45 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaCutterPartEffectAlien => 'Mimozemské vibrato';
+
+  @override
+  String get mediaCutterPartEffectBrightVoice => 'Jasnější hlas';
+
+  @override
+  String get mediaCutterPartEffectDarkVoice => 'Tmavší hlas';
+
+  @override
+  String get mediaCutterPartEffectGhost => 'Duch';
+
+  @override
+  String get mediaCutterPartEffectTelephone => 'Telefon';
+
+  @override
+  String get mediaCutterPartEffectOldRadio => 'Staré rádio';
+
+  @override
+  String get mediaCutterPartEffectMegaphone => 'Megafon';
+
+  @override
+  String get mediaCutterPartEffectUnderwater => 'Pod vodou';
+
+  @override
+  String get mediaCutterPartEffectMonster => 'Příšera';
+
+  @override
+  String get mediaCutterPartEffectChipmunk => 'Vysoký hlas';
+
+  @override
+  String get mediaCutterPartEffectDream => 'Sen';
+
+  @override
+  String get mediaCutterPartEffectDistortion => 'Zkreslení';
+
+  @override
+  String get mediaCutterPartEffectLoFi => 'Lo-fi';
+
+  @override
+  String get mediaCutterPartEffectReverseEcho => 'Obrácená ozvěna';
 
   @override
   String get mediaCutterPartEffectFadeIn => 'Zesílení na začátku';

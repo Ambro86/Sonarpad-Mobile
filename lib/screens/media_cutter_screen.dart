@@ -28,6 +28,13 @@ enum _MediaPartEffect {
   echoRoom,
   echoChamber,
   echoCathedral,
+  largeRoom,
+  smallRoom,
+  bathroom,
+  tunnel,
+  repeatEcho,
+  corridor,
+  delay,
   reverb,
   chorus,
   pitchLow,
@@ -37,6 +44,19 @@ enum _MediaPartEffect {
   robot,
   helicopter,
   alien,
+  brightVoice,
+  darkVoice,
+  ghost,
+  telephone,
+  oldRadio,
+  megaphone,
+  underwater,
+  monster,
+  chipmunk,
+  dream,
+  distortion,
+  loFi,
+  reverseEcho,
   fadeIn,
   fadeOut,
 }
@@ -813,6 +833,29 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     });
   }
 
+  Widget _buildEffectDropdown(
+    AppLocalizations l10n, {
+    required _MediaPartEffect value,
+    required String label,
+    required ValueChanged<_MediaPartEffect> onChanged,
+  }) {
+    return DropdownButtonFormField<_MediaPartEffect>(
+      initialValue: value,
+      decoration: InputDecoration(labelText: label),
+      items: [
+        for (final effect in _MediaPartEffect.values)
+          DropdownMenuItem<_MediaPartEffect>(
+            value: effect,
+            child: Text(_effectLabel(l10n, effect)),
+          ),
+      ],
+      onChanged: (value) {
+        if (value == null) return;
+        onChanged(value);
+      },
+    );
+  }
+
   Future<void> _showPartEffectsDialog(int index) async {
     if (_saving || index < 0 || index >= _parts.length || !_parts[index].keep) {
       return;
@@ -881,63 +924,59 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   ],
                   onChanged: (value) {
                     if (value == null) return;
-                    setDialogState(() => effect = value);
+                    setDialogState(() {
+                      effect = value;
+                      if (effect == _MediaPartEffect.none) {
+                        secondaryEffect = _MediaPartEffect.none;
+                        thirdEffect = _MediaPartEffect.none;
+                        fourthEffect = _MediaPartEffect.none;
+                      }
+                    });
                   },
                 ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<_MediaPartEffect>(
-                  initialValue: secondaryEffect,
-                  decoration: InputDecoration(
-                    labelText: '${l10n.mediaCutterPartEffect} 2',
+                if (effect != _MediaPartEffect.none ||
+                    secondaryEffect != _MediaPartEffect.none) ...[
+                  const SizedBox(height: 12),
+                  _buildEffectDropdown(
+                    l10n,
+                    value: secondaryEffect,
+                    label: '${l10n.mediaCutterPartEffect} 2',
+                    onChanged: (value) => setDialogState(() {
+                      secondaryEffect = value;
+                      if (secondaryEffect == _MediaPartEffect.none) {
+                        thirdEffect = _MediaPartEffect.none;
+                        fourthEffect = _MediaPartEffect.none;
+                      }
+                    }),
                   ),
-                  items: [
-                    for (final value in _MediaPartEffect.values)
-                      DropdownMenuItem<_MediaPartEffect>(
-                        value: value,
-                        child: Text(_effectLabel(l10n, value)),
-                      ),
-                  ],
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setDialogState(() => secondaryEffect = value);
-                  },
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<_MediaPartEffect>(
-                  initialValue: thirdEffect,
-                  decoration: InputDecoration(
-                    labelText: '${l10n.mediaCutterPartEffect} 3',
+                ],
+                if (secondaryEffect != _MediaPartEffect.none ||
+                    thirdEffect != _MediaPartEffect.none) ...[
+                  const SizedBox(height: 12),
+                  _buildEffectDropdown(
+                    l10n,
+                    value: thirdEffect,
+                    label: '${l10n.mediaCutterPartEffect} 3',
+                    onChanged: (value) => setDialogState(() {
+                      thirdEffect = value;
+                      if (thirdEffect == _MediaPartEffect.none) {
+                        fourthEffect = _MediaPartEffect.none;
+                      }
+                    }),
                   ),
-                  items: [
-                    for (final value in _MediaPartEffect.values)
-                      DropdownMenuItem<_MediaPartEffect>(
-                        value: value,
-                        child: Text(_effectLabel(l10n, value)),
-                      ),
-                  ],
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setDialogState(() => thirdEffect = value);
-                  },
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<_MediaPartEffect>(
-                  initialValue: fourthEffect,
-                  decoration: InputDecoration(
-                    labelText: '${l10n.mediaCutterPartEffect} 4',
+                ],
+                if (thirdEffect != _MediaPartEffect.none ||
+                    fourthEffect != _MediaPartEffect.none) ...[
+                  const SizedBox(height: 12),
+                  _buildEffectDropdown(
+                    l10n,
+                    value: fourthEffect,
+                    label: '${l10n.mediaCutterPartEffect} 4',
+                    onChanged: (value) => setDialogState(
+                      () => fourthEffect = value,
+                    ),
                   ),
-                  items: [
-                    for (final value in _MediaPartEffect.values)
-                      DropdownMenuItem<_MediaPartEffect>(
-                        value: value,
-                        child: Text(_effectLabel(l10n, value)),
-                      ),
-                  ],
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setDialogState(() => fourthEffect = value);
-                  },
-                ),
+                ],
                 if (effect != _MediaPartEffect.none ||
                     secondaryEffect != _MediaPartEffect.none ||
                     thirdEffect != _MediaPartEffect.none ||
@@ -1637,6 +1676,64 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         final decay4 = (0.12 + 0.22 * amount).toStringAsFixed(2);
         return 'aecho=0.78:0.96:$delay1|$delay2|$delay3|$delay4:'
             '$decay1|$decay2|$decay3|$decay4';
+      case _MediaPartEffect.largeRoom:
+        final delay1 = (65 + 40 * amount).round();
+        final delay2 = (125 + 70 * amount).round();
+        final delay3 = (210 + 100 * amount).round();
+        final decay1 = (0.20 + 0.18 * amount).toStringAsFixed(2);
+        final decay2 = (0.16 + 0.16 * amount).toStringAsFixed(2);
+        final decay3 = (0.11 + 0.14 * amount).toStringAsFixed(2);
+        return 'aecho=0.82:0.90:$delay1|$delay2|$delay3:'
+            '$decay1|$decay2|$decay3';
+      case _MediaPartEffect.smallRoom:
+        final delay1 = (25 + 30 * amount).round();
+        final delay2 = (55 + 45 * amount).round();
+        final decay1 = (0.12 + 0.16 * amount).toStringAsFixed(2);
+        final decay2 = (0.08 + 0.14 * amount).toStringAsFixed(2);
+        return 'aecho=0.84:0.82:$delay1|$delay2:$decay1|$decay2';
+      case _MediaPartEffect.bathroom:
+        final delay1 = (35 + 30 * amount).round();
+        final delay2 = (70 + 55 * amount).round();
+        final delay3 = (110 + 75 * amount).round();
+        final decay1 = (0.22 + 0.20 * amount).toStringAsFixed(2);
+        final decay2 = (0.17 + 0.17 * amount).toStringAsFixed(2);
+        final decay3 = (0.12 + 0.14 * amount).toStringAsFixed(2);
+        return 'highpass=f=180,'
+            'aecho=0.86:0.90:$delay1|$delay2|$delay3:'
+            '$decay1|$decay2|$decay3';
+      case _MediaPartEffect.tunnel:
+        final delay1 = (140 + 80 * amount).round();
+        final delay2 = (290 + 140 * amount).round();
+        final delay3 = (440 + 200 * amount).round();
+        final delay4 = (590 + 260 * amount).round();
+        final decay1 = (0.32 + 0.20 * amount).toStringAsFixed(2);
+        final decay2 = (0.25 + 0.18 * amount).toStringAsFixed(2);
+        final decay3 = (0.19 + 0.16 * amount).toStringAsFixed(2);
+        final decay4 = (0.14 + 0.13 * amount).toStringAsFixed(2);
+        return 'aecho=0.78:0.94:$delay1|$delay2|$delay3|$delay4:'
+            '$decay1|$decay2|$decay3|$decay4';
+      case _MediaPartEffect.repeatEcho:
+        final delay1 = (300 + 240 * amount).round();
+        final delay2 = delay1 * 2;
+        final delay3 = delay1 * 3;
+        final decay1 = (0.45 + 0.25 * amount).toStringAsFixed(2);
+        final decay2 = (0.30 + 0.20 * amount).toStringAsFixed(2);
+        final decay3 = (0.18 + 0.16 * amount).toStringAsFixed(2);
+        return 'aecho=0.80:0.95:$delay1|$delay2|$delay3:'
+            '$decay1|$decay2|$decay3';
+      case _MediaPartEffect.corridor:
+        final delay1 = (85 + 55 * amount).round();
+        final delay2 = (180 + 100 * amount).round();
+        final delay3 = (310 + 145 * amount).round();
+        final decay1 = (0.18 + 0.16 * amount).toStringAsFixed(2);
+        final decay2 = (0.14 + 0.14 * amount).toStringAsFixed(2);
+        final decay3 = (0.10 + 0.12 * amount).toStringAsFixed(2);
+        return 'aecho=0.82:0.90:$delay1|$delay2|$delay3:'
+            '$decay1|$decay2|$decay3';
+      case _MediaPartEffect.delay:
+        final delay = (180 + 300 * amount).round();
+        final decay = (0.35 + 0.30 * amount).toStringAsFixed(2);
+        return 'aecho=0.90:0.88:$delay:$decay';
       case _MediaPartEffect.reverb:
         final delay1 = (45 + 100 * amount).round();
         final delay2 = (110 + 260 * amount).round();
@@ -1677,6 +1774,77 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         final frequency = (4 + 7 * amount).toStringAsFixed(2);
         final depth = (0.35 + 0.55 * amount).toStringAsFixed(2);
         return 'vibrato=f=$frequency:d=$depth';
+      case _MediaPartEffect.brightVoice:
+        final gain = (3 + 6 * amount).toStringAsFixed(2);
+        return 'equalizer=f=3500:t=q:w=1.0:g=$gain,highpass=f=120';
+      case _MediaPartEffect.darkVoice:
+        final gain = (3 + 6 * amount).toStringAsFixed(2);
+        return 'equalizer=f=180:t=q:w=1.0:g=$gain,lowpass=f=4200';
+      case _MediaPartEffect.ghost:
+        final delay1 = (500 + 360 * amount).round();
+        final delay2 = (900 + 520 * amount).round();
+        final decay1 = (0.34 + 0.20 * amount).toStringAsFixed(2);
+        final decay2 = (0.20 + 0.16 * amount).toStringAsFixed(2);
+        final vibratoFrequency = (3.8 + 2.6 * amount).toStringAsFixed(2);
+        final vibratoDepth = (0.22 + 0.28 * amount).toStringAsFixed(2);
+        return 'aecho=0.70:0.95:$delay1|$delay2:$decay1|$decay2,'
+            'vibrato=f=$vibratoFrequency:d=$vibratoDepth,volume=0.92';
+      case _MediaPartEffect.telephone:
+        final ratio = (2.2 + 2.4 * amount).toStringAsFixed(2);
+        return 'highpass=f=300,lowpass=f=3400,'
+            'acompressor=threshold=-18dB:ratio=$ratio:attack=5:release=80';
+      case _MediaPartEffect.oldRadio:
+        final bits = (10 - 4 * amount).round().clamp(6, 10);
+        final ratio = (2.5 + 2.5 * amount).toStringAsFixed(2);
+        return 'highpass=f=250,lowpass=f=3200,'
+            'acrusher=level_in=1:level_out=1:bits=$bits:mode=log:aa=1,'
+            'acompressor=threshold=-20dB:ratio=$ratio:attack=5:release=120';
+      case _MediaPartEffect.megaphone:
+        final gain = (3 + 5 * amount).toStringAsFixed(2);
+        final ratio = (4 + 4 * amount).toStringAsFixed(2);
+        return 'highpass=f=500,lowpass=f=5000,'
+            'acompressor=threshold=-16dB:ratio=$ratio:attack=3:release=80,'
+            'equalizer=f=1800:t=q:w=1.0:g=$gain';
+      case _MediaPartEffect.underwater:
+        final lowpass = (1300 - 650 * amount).round().clamp(550, 1300);
+        final delay1 = (50 + 50 * amount).round();
+        final delay2 = (110 + 70 * amount).round();
+        final decay1 = (0.12 + 0.12 * amount).toStringAsFixed(2);
+        final decay2 = (0.08 + 0.10 * amount).toStringAsFixed(2);
+        return 'lowpass=f=$lowpass,'
+            'aecho=0.75:0.55:$delay1|$delay2:$decay1|$decay2';
+      case _MediaPartEffect.monster:
+        final factor = 0.82 - 0.18 * amount;
+        final bits = (10 - 4 * amount).round().clamp(6, 10);
+        return '${_pitchFilter(factor)},'
+            'acrusher=level_in=1:level_out=1:bits=$bits:mode=log:aa=1';
+      case _MediaPartEffect.chipmunk:
+        final factor = 1.35 + 0.35 * amount;
+        return _pitchFilter(factor);
+      case _MediaPartEffect.dream:
+        final delay1 = (180 + 160 * amount).round();
+        final delay2 = (380 + 280 * amount).round();
+        final decay1 = (0.20 + 0.14 * amount).toStringAsFixed(2);
+        final decay2 = (0.12 + 0.12 * amount).toStringAsFixed(2);
+        return 'aecho=0.72:0.82:$delay1|$delay2:$decay1|$decay2,'
+            'chorus=0.65:0.75:45|65:0.18|0.14:0.25|0.38:1.6|2.1';
+      case _MediaPartEffect.distortion:
+        final bits = (9 - 5 * amount).round().clamp(4, 9);
+        final levelIn = (1.0 + 0.45 * amount).toStringAsFixed(2);
+        return 'acrusher=level_in=$levelIn:level_out=0.85:'
+            'bits=$bits:mode=log:aa=1';
+      case _MediaPartEffect.loFi:
+        final lowpass = (4800 - 1800 * amount).round().clamp(2400, 4800);
+        final bits = (10 - 4 * amount).round().clamp(6, 10);
+        return 'lowpass=f=$lowpass,highpass=f=120,'
+            'acrusher=level_in=1:level_out=0.9:bits=$bits:mode=log:aa=1';
+      case _MediaPartEffect.reverseEcho:
+        final delay1 = (320 + 220 * amount).round();
+        final delay2 = (680 + 360 * amount).round();
+        final decay1 = (0.30 + 0.20 * amount).toStringAsFixed(2);
+        final decay2 = (0.16 + 0.16 * amount).toStringAsFixed(2);
+        return 'areverse,aecho=0.75:0.88:$delay1|$delay2:'
+            '$decay1|$decay2,areverse';
       case _MediaPartEffect.fadeIn:
         final fade = _fadeDurationSeconds(part.duration);
         return 'afade=t=in:st=0:d=$fade';
@@ -1816,6 +1984,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return l10n.mediaCutterPartEffectEchoChamber;
       case _MediaPartEffect.echoCathedral:
         return l10n.mediaCutterPartEffectEchoCathedral;
+      case _MediaPartEffect.largeRoom:
+        return l10n.mediaCutterPartEffectLargeRoom;
+      case _MediaPartEffect.smallRoom:
+        return l10n.mediaCutterPartEffectSmallRoom;
+      case _MediaPartEffect.bathroom:
+        return l10n.mediaCutterPartEffectBathroom;
+      case _MediaPartEffect.tunnel:
+        return l10n.mediaCutterPartEffectTunnel;
+      case _MediaPartEffect.repeatEcho:
+        return l10n.mediaCutterPartEffectRepeatEcho;
+      case _MediaPartEffect.corridor:
+        return l10n.mediaCutterPartEffectCorridor;
+      case _MediaPartEffect.delay:
+        return l10n.mediaCutterPartEffectDelay;
       case _MediaPartEffect.reverb:
         return l10n.mediaCutterPartEffectReverb;
       case _MediaPartEffect.chorus:
@@ -1834,6 +2016,32 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return l10n.mediaCutterPartEffectHelicopter;
       case _MediaPartEffect.alien:
         return l10n.mediaCutterPartEffectAlien;
+      case _MediaPartEffect.brightVoice:
+        return l10n.mediaCutterPartEffectBrightVoice;
+      case _MediaPartEffect.darkVoice:
+        return l10n.mediaCutterPartEffectDarkVoice;
+      case _MediaPartEffect.ghost:
+        return l10n.mediaCutterPartEffectGhost;
+      case _MediaPartEffect.telephone:
+        return l10n.mediaCutterPartEffectTelephone;
+      case _MediaPartEffect.oldRadio:
+        return l10n.mediaCutterPartEffectOldRadio;
+      case _MediaPartEffect.megaphone:
+        return l10n.mediaCutterPartEffectMegaphone;
+      case _MediaPartEffect.underwater:
+        return l10n.mediaCutterPartEffectUnderwater;
+      case _MediaPartEffect.monster:
+        return l10n.mediaCutterPartEffectMonster;
+      case _MediaPartEffect.chipmunk:
+        return l10n.mediaCutterPartEffectChipmunk;
+      case _MediaPartEffect.dream:
+        return l10n.mediaCutterPartEffectDream;
+      case _MediaPartEffect.distortion:
+        return l10n.mediaCutterPartEffectDistortion;
+      case _MediaPartEffect.loFi:
+        return l10n.mediaCutterPartEffectLoFi;
+      case _MediaPartEffect.reverseEcho:
+        return l10n.mediaCutterPartEffectReverseEcho;
       case _MediaPartEffect.fadeIn:
         return l10n.mediaCutterPartEffectFadeIn;
       case _MediaPartEffect.fadeOut:
