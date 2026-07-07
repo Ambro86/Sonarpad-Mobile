@@ -972,26 +972,84 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     });
   }
 
-  Widget _buildEffectDropdown(
+  Widget _buildEffectPicker(
     AppLocalizations l10n, {
     required _MediaPartEffect value,
     required String label,
     required ValueChanged<_MediaPartEffect> onChanged,
   }) {
-    return DropdownButtonFormField<_MediaPartEffect>(
-      initialValue: value,
-      decoration: InputDecoration(labelText: label),
-      items: [
-        for (final effect in _MediaPartEffect.values)
-          DropdownMenuItem<_MediaPartEffect>(
-            value: effect,
-            child: Text(_effectLabel(l10n, effect)),
+    final selectedLabel = _effectLabel(l10n, value);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(height: 6),
+        Semantics(
+          button: true,
+          label: label,
+          value: selectedLabel,
+          child: ExcludeSemantics(
+            child: OutlinedButton(
+              onPressed: () async {
+                final selected = await _showEffectPickerDialog(
+                  l10n,
+                  title: label,
+                  current: value,
+                );
+                if (selected == null) return;
+                onChanged(selected);
+              },
+              child: Row(
+                children: [
+                  Expanded(child: Text(selectedLabel)),
+                  const Icon(Icons.arrow_drop_down),
+                ],
+              ),
+            ),
           ),
+        ),
       ],
-      onChanged: (value) {
-        if (value == null) return;
-        onChanged(value);
-      },
+    );
+  }
+
+  Future<_MediaPartEffect?> _showEffectPickerDialog(
+    AppLocalizations l10n, {
+    required String title,
+    required _MediaPartEffect current,
+  }) {
+    return showDialog<_MediaPartEffect>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: _MediaPartEffect.values.length,
+            itemBuilder: (context, index) {
+              final effect = _MediaPartEffect.values[index];
+              final selected = effect == current;
+              final effectLabel = _effectLabel(l10n, effect);
+              return Semantics(
+                selected: selected,
+                button: true,
+                child: ListTile(
+                  selected: selected,
+                  title: Text(effectLabel),
+                  trailing: selected ? const Icon(Icons.check) : null,
+                  onTap: () => Navigator.pop(dialogContext, effect),
+                ),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1049,7 +1107,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                _buildEffectDropdown(
+                _buildEffectPicker(
                   l10n,
                   value: effect,
                   label: _effectSlotLabel(l10n, 1),
@@ -1060,7 +1118,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 if (effect != _MediaPartEffect.none ||
                     secondaryEffect != _MediaPartEffect.none) ...[
                   const SizedBox(height: 12),
-                  _buildEffectDropdown(
+                  _buildEffectPicker(
                     l10n,
                     value: secondaryEffect,
                     label: _effectSlotLabel(l10n, 2),
@@ -1072,7 +1130,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 if (secondaryEffect != _MediaPartEffect.none ||
                     thirdEffect != _MediaPartEffect.none) ...[
                   const SizedBox(height: 12),
-                  _buildEffectDropdown(
+                  _buildEffectPicker(
                     l10n,
                     value: thirdEffect,
                     label: _effectSlotLabel(l10n, 3),
@@ -1084,7 +1142,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 if (thirdEffect != _MediaPartEffect.none ||
                     fourthEffect != _MediaPartEffect.none) ...[
                   const SizedBox(height: 12),
-                  _buildEffectDropdown(
+                  _buildEffectPicker(
                     l10n,
                     value: fourthEffect,
                     label: _effectSlotLabel(l10n, 4),
