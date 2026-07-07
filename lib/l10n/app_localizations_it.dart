@@ -2451,6 +2451,21 @@ class AppLocalizationsIt extends AppLocalizations {
   String get mediaCutterHideVideoPreview => 'Nascondi video';
 
   @override
+  String get mediaCutterVideoRotation => 'Rotazione video';
+
+  @override
+  String get mediaCutterVideoRotationNone => 'Nessuna rotazione';
+
+  @override
+  String get mediaCutterVideoRotationRight => 'Ruota a destra';
+
+  @override
+  String get mediaCutterVideoRotationLeft => 'Ruota a sinistra';
+
+  @override
+  String get mediaCutterVideoRotationUpsideDown => 'Ruota di 180 gradi';
+
+  @override
   String get mediaCutterVideoPreview => 'Anteprima video';
 
   @override

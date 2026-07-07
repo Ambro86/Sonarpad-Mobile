@@ -22,6 +22,13 @@ import '../utils/status_message.dart';
 
 enum _MediaCutterDoneAction { share, close }
 
+enum _VideoRotation {
+  none,
+  right,
+  left,
+  upsideDown,
+}
+
 enum _MediaPartEffect {
   none,
   echo,
@@ -230,6 +237,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   String _outputDirectory = '';
   bool _isVideo = false;
   bool _showVideoPreview = false;
+  _VideoRotation _videoRotation = _VideoRotation.none;
   bool _loading = false;
   bool _saving = false;
   bool _playing = false;
@@ -391,6 +399,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _displayName = p.basename(path);
       _isVideo = _isVideoInput(path);
       _showVideoPreview = false;
+      _videoRotation = _VideoRotation.none;
       _duration = Duration.zero;
       _position = Duration.zero;
       _playing = false;
@@ -1429,6 +1438,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             '-filter:a',
             _audioFilterForPart(part)!,
           ],
+          if (_videoFilter() != null) ...[
+            '-filter:v',
+            _videoFilter()!,
+          ],
           ..._codecArguments(input),
           '-avoid_negative_ts',
           'make_zero',
@@ -2029,6 +2042,28 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   double _seconds(Duration duration) => duration.inMilliseconds / 1000.0;
 
+  String? _videoFilter() {
+    if (!_isVideo) return null;
+    return switch (_videoRotation) {
+      _VideoRotation.none => null,
+      _VideoRotation.right => 'transpose=1',
+      _VideoRotation.left => 'transpose=2',
+      _VideoRotation.upsideDown => 'transpose=1,transpose=1',
+    };
+  }
+
+  String _videoRotationLabel(
+    AppLocalizations l10n,
+    _VideoRotation rotation,
+  ) {
+    return switch (rotation) {
+      _VideoRotation.none => l10n.mediaCutterVideoRotationNone,
+      _VideoRotation.right => l10n.mediaCutterVideoRotationRight,
+      _VideoRotation.left => l10n.mediaCutterVideoRotationLeft,
+      _VideoRotation.upsideDown => l10n.mediaCutterVideoRotationUpsideDown,
+    };
+  }
+
   List<String> _codecArguments(String inputPath) {
     if (_isVideoInput(inputPath)) {
       return [
@@ -2626,6 +2661,31 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               ],
               const SizedBox(height: 20),
               _buildPositionSlider(l10n),
+              if (_isVideo) ...[
+                const SizedBox(height: 16),
+                DropdownButtonFormField<_VideoRotation>(
+                  initialValue: _videoRotation,
+                  decoration: InputDecoration(
+                    labelText: l10n.mediaCutterVideoRotation,
+                  ),
+                  items: [
+                    for (final rotation in _VideoRotation.values)
+                      DropdownMenuItem<_VideoRotation>(
+                        value: rotation,
+                        child: Text(_videoRotationLabel(l10n, rotation)),
+                      ),
+                  ],
+                  onChanged: _loading || _saving
+                      ? null
+                      : (value) {
+                          if (value == null || value == _videoRotation) return;
+                          setState(() {
+                            _videoRotation = value;
+                            _hasUnsavedEdit = true;
+                          });
+                        },
+                ),
+              ],
               const SizedBox(height: 16),
               Wrap(
                 spacing: 12,

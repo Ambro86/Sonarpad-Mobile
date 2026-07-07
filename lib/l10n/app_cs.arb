@@ -1084,6 +1084,11 @@
   "mediaCutterPosition": "Pozice střihu",
   "mediaCutterPositionHint": "Posouvej se vpřed nebo zpět po jedné sekundě.",
   "mediaCutterHideVideoPreview": "Skrýt video",
+  "mediaCutterVideoRotation": "Otočení videa",
+  "mediaCutterVideoRotationNone": "Bez otočení",
+  "mediaCutterVideoRotationRight": "Otočit doprava",
+  "mediaCutterVideoRotationLeft": "Otočit doleva",
+  "mediaCutterVideoRotationUpsideDown": "Otočit o 180 stupňů",
   "@mediaCutterHideVideoPreview": {
     "description": "Media cutter video preview label."
   },

@@ -2445,6 +2445,21 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterHideVideoPreview => 'Skrýt video';
 
   @override
+  String get mediaCutterVideoRotation => 'Otočení videa';
+
+  @override
+  String get mediaCutterVideoRotationNone => 'Bez otočení';
+
+  @override
+  String get mediaCutterVideoRotationRight => 'Otočit doprava';
+
+  @override
+  String get mediaCutterVideoRotationLeft => 'Otočit doleva';
+
+  @override
+  String get mediaCutterVideoRotationUpsideDown => 'Otočit o 180 stupňů';
+
+  @override
   String get mediaCutterVideoPreview => 'Náhled videa';
 
   @override

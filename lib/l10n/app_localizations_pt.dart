@@ -2453,6 +2453,21 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterHideVideoPreview => 'Ocultar vídeo';
 
   @override
+  String get mediaCutterVideoRotation => 'Rotação do vídeo';
+
+  @override
+  String get mediaCutterVideoRotationNone => 'Sem rotação';
+
+  @override
+  String get mediaCutterVideoRotationRight => 'Rodar para a direita';
+
+  @override
+  String get mediaCutterVideoRotationLeft => 'Rodar para a esquerda';
+
+  @override
+  String get mediaCutterVideoRotationUpsideDown => 'Rodar 180 graus';
+
+  @override
   String get mediaCutterVideoPreview => 'Pré-visualização do vídeo';
 
   @override

@@ -4502,6 +4502,36 @@ abstract class AppLocalizations {
   /// **'Nascondi video'**
   String get mediaCutterHideVideoPreview;
 
+  /// No description provided for @mediaCutterVideoRotation.
+  ///
+  /// In it, this message translates to:
+  /// **'Rotazione video'**
+  String get mediaCutterVideoRotation;
+
+  /// No description provided for @mediaCutterVideoRotationNone.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna rotazione'**
+  String get mediaCutterVideoRotationNone;
+
+  /// No description provided for @mediaCutterVideoRotationRight.
+  ///
+  /// In it, this message translates to:
+  /// **'Ruota a destra'**
+  String get mediaCutterVideoRotationRight;
+
+  /// No description provided for @mediaCutterVideoRotationLeft.
+  ///
+  /// In it, this message translates to:
+  /// **'Ruota a sinistra'**
+  String get mediaCutterVideoRotationLeft;
+
+  /// No description provided for @mediaCutterVideoRotationUpsideDown.
+  ///
+  /// In it, this message translates to:
+  /// **'Ruota di 180 gradi'**
+  String get mediaCutterVideoRotationUpsideDown;
+
   /// Media cutter video preview label.
   ///
   /// In it, this message translates to:

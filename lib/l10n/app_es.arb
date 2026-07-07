@@ -1087,6 +1087,11 @@
   "mediaCutterPosition": "Posición de corte",
   "mediaCutterPositionHint": "Avanza o retrocede un segundo cada vez.",
   "mediaCutterHideVideoPreview": "Ocultar vídeo",
+  "mediaCutterVideoRotation": "Rotación de vídeo",
+  "mediaCutterVideoRotationNone": "Sin rotación",
+  "mediaCutterVideoRotationRight": "Girar a la derecha",
+  "mediaCutterVideoRotationLeft": "Girar a la izquierda",
+  "mediaCutterVideoRotationUpsideDown": "Girar 180 grados",
   "@mediaCutterHideVideoPreview": {
     "description": "Media cutter video preview label."
   },
