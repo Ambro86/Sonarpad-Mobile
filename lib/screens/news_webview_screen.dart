@@ -617,6 +617,14 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       if (initialLoad != null) {
         await initialLoad;
         if (!mounted) return;
+        if (_lastFinalReaderFetchUrl != null &&
+            _sameNormalizedUrl(_lastFinalReaderFetchUrl!, finalUrl)) {
+          unawaited(AppLogger.log(
+            'News reader final URL HTTP: skip fetch gia avviato '
+            'url=$finalUrl',
+          ));
+          return;
+        }
         final loadedLen = _readerText?.trim().length ?? 0;
         if (loadedLen >= _httpShortThreshold) {
           unawaited(AppLogger.log(

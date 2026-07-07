@@ -1047,29 +1047,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<_MediaPartEffect>(
-                  initialValue: effect,
-                  decoration: InputDecoration(
-                    labelText: l10n.mediaCutterPartEffect,
-                  ),
-                  items: [
-                    for (final value in _MediaPartEffect.values)
-                      DropdownMenuItem<_MediaPartEffect>(
-                        value: value,
-                        child: Text(_effectLabel(l10n, value)),
-                      ),
-                  ],
-                  onChanged: (value) {
-                    if (value == null) return;
-                    setDialogState(() {
-                      effect = value;
-                      if (effect == _MediaPartEffect.none) {
-                        secondaryEffect = _MediaPartEffect.none;
-                        thirdEffect = _MediaPartEffect.none;
-                        fourthEffect = _MediaPartEffect.none;
-                      }
-                    });
-                  },
+                _buildEffectDropdown(
+                  l10n,
+                  value: effect,
+                  label: _effectSlotLabel(l10n, 1),
+                  onChanged: (value) => setDialogState(() {
+                    effect = value;
+                  }),
                 ),
                 if (effect != _MediaPartEffect.none ||
                     secondaryEffect != _MediaPartEffect.none) ...[
@@ -1077,13 +1061,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   _buildEffectDropdown(
                     l10n,
                     value: secondaryEffect,
-                    label: '${l10n.mediaCutterPartEffect} 2',
+                    label: _effectSlotLabel(l10n, 2),
                     onChanged: (value) => setDialogState(() {
                       secondaryEffect = value;
-                      if (secondaryEffect == _MediaPartEffect.none) {
-                        thirdEffect = _MediaPartEffect.none;
-                        fourthEffect = _MediaPartEffect.none;
-                      }
                     }),
                   ),
                 ],
@@ -1093,12 +1073,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   _buildEffectDropdown(
                     l10n,
                     value: thirdEffect,
-                    label: '${l10n.mediaCutterPartEffect} 3',
+                    label: _effectSlotLabel(l10n, 3),
                     onChanged: (value) => setDialogState(() {
                       thirdEffect = value;
-                      if (thirdEffect == _MediaPartEffect.none) {
-                        fourthEffect = _MediaPartEffect.none;
-                      }
                     }),
                   ),
                 ],
@@ -1108,7 +1085,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   _buildEffectDropdown(
                     l10n,
                     value: fourthEffect,
-                    label: '${l10n.mediaCutterPartEffect} 4',
+                    label: _effectSlotLabel(l10n, 4),
                     onChanged: (value) => setDialogState(
                       () => fourthEffect = value,
                     ),
@@ -1943,7 +1920,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       case _MediaPartEffect.alien:
         final frequency = (4 + 7 * amount).toStringAsFixed(2);
         final depth = (0.35 + 0.55 * amount).toStringAsFixed(2);
-        return 'vibrato=f=$frequency:d=$depth';
+        return '${_pitchFilter(1.08 + 0.12 * amount)},'
+            'tremolo=f=$frequency:d=$depth,'
+            'chorus=0.62:0.78:35|58:0.18|0.14:0.28|0.42:1.8|2.4';
       case _MediaPartEffect.brightVoice:
         final gain = (3 + 6 * amount).toStringAsFixed(2);
         return 'equalizer=f=3500:t=q:w=1.0:g=$gain,highpass=f=120';
@@ -1955,10 +1934,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         final delay2 = (900 + 520 * amount).round();
         final decay1 = (0.34 + 0.20 * amount).toStringAsFixed(2);
         final decay2 = (0.20 + 0.16 * amount).toStringAsFixed(2);
-        final vibratoFrequency = (3.8 + 2.6 * amount).toStringAsFixed(2);
-        final vibratoDepth = (0.22 + 0.28 * amount).toStringAsFixed(2);
+        final tremoloFrequency = (3.8 + 2.6 * amount).toStringAsFixed(2);
+        final tremoloDepth = (0.22 + 0.28 * amount).toStringAsFixed(2);
         return 'aecho=0.70:0.95:$delay1|$delay2:$decay1|$decay2,'
-            'vibrato=f=$vibratoFrequency:d=$vibratoDepth,volume=0.92';
+            'tremolo=f=$tremoloFrequency:d=$tremoloDepth,volume=0.92';
       case _MediaPartEffect.telephone:
         final ratio = (2.2 + 2.4 * amount).toStringAsFixed(2);
         return 'highpass=f=300,lowpass=f=3400,'
@@ -2240,6 +2219,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
+  String _effectSlotLabel(AppLocalizations l10n, int slot) {
+    return '${l10n.mediaCutterPartEffect} $slot';
+  }
+
+  void _addEffectSlotSummary(
+    AppLocalizations l10n,
+    List<String> pieces,
+    int slot,
+    _MediaPartEffect effect,
+  ) {
+    if (effect == _MediaPartEffect.none) return;
+    pieces.add('${_effectSlotLabel(l10n, slot)} ${_effectLabel(l10n, effect)}');
+  }
+
   String _partDetailsSummary(AppLocalizations l10n, _MediaPart part) {
     final duration = _formatHumanDuration(part.duration);
     final pieces = <String>[];
@@ -2247,18 +2240,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (part.volumePercent != 100) {
       pieces.add(_localizedVolumeSummary(part.volumePercent));
     }
-    if (part.effect != _MediaPartEffect.none) {
-      pieces.add(_effectLabel(l10n, part.effect));
-    }
-    if (part.secondaryEffect != _MediaPartEffect.none) {
-      pieces.add(_effectLabel(l10n, part.secondaryEffect));
-    }
-    if (part.thirdEffect != _MediaPartEffect.none) {
-      pieces.add(_effectLabel(l10n, part.thirdEffect));
-    }
-    if (part.fourthEffect != _MediaPartEffect.none) {
-      pieces.add(_effectLabel(l10n, part.fourthEffect));
-    }
+    _addEffectSlotSummary(l10n, pieces, 1, part.effect);
+    _addEffectSlotSummary(l10n, pieces, 2, part.secondaryEffect);
+    _addEffectSlotSummary(l10n, pieces, 3, part.thirdEffect);
+    _addEffectSlotSummary(l10n, pieces, 4, part.fourthEffect);
     pieces.add(_localizedDurationSummary(duration));
 
     return pieces.join(', ');
