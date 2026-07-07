@@ -91,6 +91,8 @@ class NewsService {
       'https://sonarpad.com/api/add_community_news_source.php';
   static const _tinyfishArticleFetchUrl =
       'https://sonarpad.com/api/tinyfish_fetch_article.php';
+  static const _tinyfishPolicyTimeout = Duration(seconds: 4);
+  static const _readerFallbackMinLength = 150;
   static const _communityHeaders = {
     'User-Agent': 'SonarpadMobile/0.1 (https://sonarpad.com)',
     'Accept': 'application/json',
@@ -115,6 +117,7 @@ class NewsService {
 
   final http.Client _client;
   final bool _useBrowserClient;
+  bool? _tinyfishFallbackOnlyPolicy;
   NewsService({http.Client? client})
       : _client = client ?? http.Client(),
         _useBrowserClient = client == null;
@@ -964,6 +967,77 @@ class NewsService {
   Future<NewsArticleContent> fetchArticleContent(NewsArticle article,
       {required NewsLanguage language}) async {
     final resolvedUrl = await _resolveArticleUrl(article.link);
+    final fallbackOnly = await _loadTinyfishFallbackOnlyPolicy();
+
+    unawaited(AppLogger.log(
+      'News articolo: recupero contenuto avviato '
+      'language=${language.code} fallbackOnly=$fallbackOnly '
+      'originalUrl=${article.link} resolvedUrl=$resolvedUrl',
+    ));
+
+    if (fallbackOnly) {
+      unawaited(AppLogger.log(
+        'News articolo: ordine recupero = reader locale -> Tinyfish -> WebView',
+      ));
+      return _fetchArticleContentLocalThenTinyfish(
+        article,
+        language: language,
+        resolvedUrl: resolvedUrl,
+      );
+    }
+
+    unawaited(AppLogger.log(
+      'News articolo: ordine recupero = Tinyfish -> reader locale -> WebView',
+    ));
+    return _fetchArticleContentTinyfishFirst(
+      article,
+      language: language,
+      resolvedUrl: resolvedUrl,
+    );
+  }
+
+  Future<bool> _loadTinyfishFallbackOnlyPolicy() async {
+    final cached = _tinyfishFallbackOnlyPolicy;
+    if (cached != null) return cached;
+
+    try {
+      final uri = Uri.parse(_tinyfishArticleFetchUrl).replace(
+        queryParameters: {'policy': '1'},
+      );
+      final response = await _client.get(
+        uri,
+        headers: const {'Accept': 'application/json'},
+      ).timeout(_tinyfishPolicyTimeout);
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final decoded = jsonDecode(
+          utf8.decode(response.bodyBytes, allowMalformed: true),
+        );
+        if (decoded is Map) {
+          final fallbackOnly = decoded['tinyfish_fallback_only'] == true ||
+              decoded['fallback_only'] == true ||
+              decoded['mode']?.toString().toLowerCase() == 'fallback_only';
+          _tinyfishFallbackOnlyPolicy = fallbackOnly;
+          unawaited(AppLogger.log(
+            'News Tinyfish: policy caricata fallbackOnly=$fallbackOnly',
+          ));
+          return fallbackOnly;
+        }
+      }
+    } catch (e) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: policy non disponibile, uso comportamento standard: $e',
+      ));
+    }
+
+    _tinyfishFallbackOnlyPolicy = false;
+    return false;
+  }
+
+  Future<NewsArticleContent> _fetchArticleContentTinyfishFirst(
+    NewsArticle article, {
+    required NewsLanguage language,
+    required String resolvedUrl,
+  }) async {
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
       unawaited(AppLogger.log(
         'News Tinyfish: URL Google News non risolto, provo Tinyfish '
@@ -1003,8 +1077,100 @@ class NewsService {
       ));
       return tinyfishContent;
     }
+
+    return _fetchArticleContentWithoutTinyfish(
+      article,
+      language: language,
+      resolvedUrl: resolvedUrl,
+    );
+  }
+
+  Future<NewsArticleContent> _fetchArticleContentLocalThenTinyfish(
+    NewsArticle article, {
+    required NewsLanguage language,
+    required String resolvedUrl,
+  }) async {
     unawaited(AppLogger.log(
-      'News Tinyfish: fallback reader HTML url=$resolvedUrl',
+      'News Tinyfish: modalità fallback-only attiva, provo prima reader locale '
+      'url=$resolvedUrl',
+    ));
+
+    if (_isGoogleNewsArticleUrl(resolvedUrl)) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: URL Google News non risolto in fallback-only, '
+        'reader locale non utile, provo Tinyfish fallback url=$resolvedUrl',
+      ));
+      final tinyfishGoogleNewsResult = await _tryFetchTinyfishArticleContent(
+        resolvedUrl,
+        fallbackAttempt: true,
+      );
+      final tinyfishGoogleNewsContent = tinyfishGoogleNewsResult.content;
+      if (tinyfishGoogleNewsContent != null &&
+          tinyfishGoogleNewsContent.text.trim().length >= 100) {
+        return tinyfishGoogleNewsContent;
+      }
+      return NewsArticleContent(text: article.summary, url: article.link);
+    }
+
+    NewsArticleContent? localContent;
+    try {
+      localContent = await _fetchArticleContentWithoutTinyfish(
+        article,
+        language: language,
+        resolvedUrl: resolvedUrl,
+      );
+      final localLength = localContent.text.trim().length;
+      unawaited(AppLogger.log(
+        'News Tinyfish: reader locale completato in fallback-only '
+        'length=$localLength url=$resolvedUrl',
+      ));
+      if (localLength >= _readerFallbackMinLength &&
+          !_isWeakArticleText(
+            localContent.text,
+            article.summary,
+            includeTruncated: true,
+          )) {
+        unawaited(AppLogger.log(
+          'News Tinyfish: reader locale sufficiente, Tinyfish non usato '
+          'url=$resolvedUrl',
+        ));
+        return localContent;
+      }
+    } catch (e) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: reader locale fallito in fallback-only, '
+        'provo Tinyfish url=$resolvedUrl error=$e',
+      ));
+    }
+
+    final tinyfishResult = await _tryFetchTinyfishArticleContent(
+      resolvedUrl,
+      fallbackAttempt: true,
+    );
+    final tinyfishContent = tinyfishResult.content;
+    if (tinyfishContent != null && tinyfishContent.text.trim().length >= 100) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: fallback Tinyfish accettato '
+        'length=${tinyfishContent.text.trim().length} url=${tinyfishContent.url}',
+      ));
+      return tinyfishContent;
+    }
+
+    unawaited(AppLogger.log(
+      'News Tinyfish: fallback-only senza testo valido, resta WebView '
+      'url=$resolvedUrl',
+    ));
+    return localContent ??
+        NewsArticleContent(text: article.summary, url: article.link);
+  }
+
+  Future<NewsArticleContent> _fetchArticleContentWithoutTinyfish(
+    NewsArticle article, {
+    required NewsLanguage language,
+    required String resolvedUrl,
+  }) async {
+    unawaited(AppLogger.log(
+      'News reader HTML: estrazione senza Tinyfish url=$resolvedUrl',
     ));
     final langHeader = _acceptLanguageHeader(language);
     final fetch = await _browserGetWithFallback(
@@ -1016,6 +1182,10 @@ class NewsService {
       },
     );
     final response = fetch.response;
+    unawaited(AppLogger.log(
+      'News reader HTML: risposta HTTP code=${response.statusCode} '
+      'profile=${fetch.profile.name} url=$resolvedUrl',
+    ));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Articolo non raggiungibile: ${response.statusCode}');
     }
@@ -1024,6 +1194,10 @@ class NewsService {
       return NewsArticleContent(text: article.summary, url: article.link);
     }
     var text = _extractArticleText(html, language: language);
+    unawaited(AppLogger.log(
+      'News reader HTML: estrazione iniziale length=${text.trim().length} '
+      'profile=${fetch.profile.name} url=$resolvedUrl',
+    ));
     final resolvedUri = Uri.parse(resolvedUrl);
     final ampUri = _ampArticleUri(resolvedUri);
     if (fetch.profile != _BrowserFetchProfile.iphone &&
@@ -1032,6 +1206,9 @@ class NewsService {
           article.summary,
           includeTruncated: ampUri != null,
         )) {
+      unawaited(AppLogger.log(
+        'News reader HTML: testo debole, provo profilo iPhone url=$resolvedUrl',
+      ));
       final iphoneResponse = await _browserGetWithProfile(
         _BrowserFetchProfile.iphone,
         Uri.parse(resolvedUrl),
@@ -1047,8 +1224,15 @@ class NewsService {
           allowMalformed: true,
         );
         final iphoneText = _extractArticleText(iphoneHtml, language: language);
+        unawaited(AppLogger.log(
+          'News reader HTML: profilo iPhone length=${iphoneText.trim().length} '
+          'previousLength=${text.trim().length} url=$resolvedUrl',
+        ));
         if (iphoneText.trim().length > text.trim().length) {
           text = iphoneText;
+          unawaited(AppLogger.log(
+            'News reader HTML: profilo iPhone accettato url=$resolvedUrl',
+          ));
         }
       }
     }
@@ -1058,6 +1242,9 @@ class NewsService {
           article.summary,
           includeTruncated: true,
         )) {
+      unawaited(AppLogger.log(
+        'News reader HTML: testo ancora debole, provo AMP url=$ampUri',
+      ));
       final ampFetch = await _browserGetWithFallback(ampUri);
       final ampResponse = ampFetch.response;
       if (ampResponse.statusCode >= 200 && ampResponse.statusCode < 300) {
@@ -1066,24 +1253,42 @@ class NewsService {
           allowMalformed: true,
         );
         final ampText = _extractArticleText(ampHtml, language: language);
+        unawaited(AppLogger.log(
+          'News reader HTML: AMP length=${ampText.trim().length} '
+          'previousLength=${text.trim().length} url=$ampUri',
+        ));
         if (ampText.trim().length > text.trim().length) {
           text = ampText;
+          unawaited(AppLogger.log(
+            'News reader HTML: AMP accettato url=$ampUri',
+          ));
         }
       }
     }
+    final finalText = text.isEmpty ? article.summary : text;
+    unawaited(AppLogger.log(
+      'News reader HTML: risultato finale length=${finalText.trim().length} '
+      'usedSummary=${text.isEmpty} url=$resolvedUrl',
+    ));
     return NewsArticleContent(
-      text: text.isEmpty ? article.summary : text,
+      text: finalText,
       url: resolvedUrl,
     );
   }
 
   Future<_TinyfishArticleFetchResult> _tryFetchTinyfishArticleContent(
-    String articleUrl,
-  ) async {
+    String articleUrl, {
+    bool fallbackAttempt = false,
+  }) async {
     try {
-      unawaited(AppLogger.log('News Tinyfish: tentativo url=$articleUrl'));
+      unawaited(AppLogger.log(
+        'News Tinyfish: tentativo url=$articleUrl fallbackAttempt=$fallbackAttempt',
+      ));
       final uri = Uri.parse(_tinyfishArticleFetchUrl).replace(
-        queryParameters: {'url': articleUrl},
+        queryParameters: {
+          'url': articleUrl,
+          if (fallbackAttempt) 'fallback': '1',
+        },
       );
       final response = await _client.get(
         uri,
@@ -1114,10 +1319,11 @@ class NewsService {
       final markdown = (decoded['markdown'] ?? '').toString().trim();
       final cacheHit = decoded['cache_hit'];
       final tinyfishEnabled = decoded['tinyfish_enabled'];
+      final fallbackOnly = decoded['tinyfish_fallback_only'];
       unawaited(AppLogger.log(
         'News Tinyfish: risposta ok cache_hit=$cacheHit '
-        'tinyfish_enabled=$tinyfishEnabled markdownLength=${markdown.length} '
-        'url=$articleUrl',
+        'tinyfish_enabled=$tinyfishEnabled fallbackOnly=$fallbackOnly '
+        'markdownLength=${markdown.length} url=$articleUrl',
       ));
       if (markdown.isEmpty) return const _TinyfishArticleFetchResult();
 
@@ -1150,10 +1356,16 @@ class NewsService {
 
   bool _isTinyfishDisabledResponse(http.Response response) {
     final header = response.headers['x-sonarpad-tinyfish']?.toLowerCase();
+    final policyHeader =
+        response.headers['x-sonarpad-tinyfish-policy']?.toLowerCase();
     if (header == 'disabled') return true;
+    if (policyHeader == 'fallback_only') return true;
     final body = utf8.decode(response.bodyBytes, allowMalformed: true);
+    final lowerBody = body.toLowerCase();
     return response.statusCode == 503 &&
-        body.toLowerCase().contains('tinyfish disabilitato');
+        (lowerBody.contains('tinyfish disabilitato') ||
+            lowerBody.contains('fallback-only') ||
+            lowerBody.contains('modalita fallback'));
   }
 
   String _plainTextFromMarkdown(String markdown) {

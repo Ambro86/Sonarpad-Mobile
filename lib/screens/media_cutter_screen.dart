@@ -8,6 +8,7 @@ import 'package:ffmpeg_kit_flutter_new/statistics.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:path/path.dart' as p;
@@ -195,6 +196,9 @@ class MediaCutterScreen extends StatefulWidget {
 }
 
 class _MediaCutterScreenState extends State<MediaCutterScreen> {
+  static const _mediaCommands = MethodChannel('sonarpad/tts_commands');
+  static const _mediaEvents = EventChannel('sonarpad/tts_events');
+
   static const _mediaExtensions = [
     'mp3',
     'm4a',
@@ -224,12 +228,24 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     'wav',
   ];
 
+  static const _mediaSeekStepOptions = <Duration>[
+    Duration(seconds: 1),
+    Duration(seconds: 5),
+    Duration(seconds: 10),
+    Duration(seconds: 30),
+    Duration(minutes: 1),
+    Duration(minutes: 2),
+    Duration(minutes: 5),
+    Duration(minutes: 10),
+  ];
+
   final _audioPlayer = AudioPlayer();
   final _outputController = TextEditingController();
   VideoPlayerController? _videoController;
   StreamSubscription<Duration>? _audioPositionSubscription;
   StreamSubscription<Duration?>? _audioDurationSubscription;
   StreamSubscription<bool>? _audioPlayingSubscription;
+  StreamSubscription<dynamic>? _mediaEventsSubscription;
   Timer? _videoRefreshTimer;
 
   String _inputPath = '';
@@ -253,14 +269,25 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool _effectPreviewPreparing = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
+  Duration _mediaSeekStep = const Duration(seconds: 1);
   List<Duration> _splitPoints = [];
   List<_MediaPart> _parts = [];
   final List<String> _deletedPartHistory = [];
   String? _status;
+  DateTime? _lastSeekLogAt;
+  Duration? _lastSeekLogPosition;
 
   @override
   void initState() {
     super.initState();
+    if (Platform.isIOS) {
+      _mediaEventsSubscription =
+          _mediaEvents.receiveBroadcastStream().listen((event) {
+        if (event == 'toggle' && mounted) {
+          unawaited(_handleMagicTapToggle());
+        }
+      });
+    }
     _audioPositionSubscription = _audioPlayer.positionStream.listen((position) {
       if (!mounted || _isVideo) return;
       final renderedStart = _renderedPreviewStart;
@@ -293,6 +320,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   @override
   void dispose() {
+    if (Platform.isIOS) {
+      unawaited(_clearMagicTap());
+    }
+    unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     _audioPositionSubscription?.cancel();
     _audioDurationSubscription?.cancel();
     _audioPlayingSubscription?.cancel();
@@ -303,16 +334,86 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     super.dispose();
   }
 
+  Future<void> _logMediaCutter(String message) async {
+    await AppLogger.log('Media cutter: $message');
+  }
+
+  String _logDuration(Duration duration) => _formatTime(duration);
+
+  String _logMaybeDuration(Duration? duration) =>
+      duration == null ? 'none' : _logDuration(duration);
+
+  int get _deletedPartCount => _parts.where((part) => !part.keep).length;
+
+  String _logPlaybackState() {
+    return 'file="${_displayName.isEmpty ? p.basename(_inputPath) : _displayName}" '
+        'type=${_isVideo ? 'video' : 'audio'} '
+        'playing=$_playing '
+        'original=${_logDuration(_position)} '
+        'timeline=${_logDuration(_currentTimelinePosition)} '
+        'duration=${_logDuration(_duration)} '
+        'timelineDuration=${_logDuration(_editedTimelineDuration)} '
+        'parts=${_parts.length} deleted=$_deletedPartCount '
+        'previewIndex=${_previewPartIndex ?? 'none'} '
+        'previewEnd=${_logMaybeDuration(_previewPartEnd)} '
+        'renderedPreview=$_usingRenderedPreviewSource';
+  }
+
+  String _logPart(int index, _MediaPart part) {
+    final effects = _activeEffects(part).map((effect) => effect.name).join('|');
+    return 'index=$index start=${_logDuration(part.start)} '
+        'end=${_logDuration(part.end)} '
+        'duration=${_logDuration(part.duration)} '
+        'keep=${part.keep} volume=${part.volumePercent}% '
+        'effects=${effects.isEmpty ? 'none' : effects} '
+        'effectAmount=${part.effectAmountPercent}%';
+  }
+
+  void _logSeekRequest({
+    required String source,
+    required Duration requestedTimeline,
+    required Duration requestedOriginal,
+    required Duration finalOriginal,
+    required bool skippedDeletedPart,
+  }) {
+    final now = DateTime.now();
+    final lastTime = _lastSeekLogAt;
+    final lastPosition = _lastSeekLogPosition;
+    final samePosition = lastPosition != null &&
+        (lastPosition.inMilliseconds - finalOriginal.inMilliseconds).abs() < 1000;
+    if (lastTime != null &&
+        now.difference(lastTime) < const Duration(milliseconds: 700) &&
+        samePosition) {
+      return;
+    }
+    _lastSeekLogAt = now;
+    _lastSeekLogPosition = finalOriginal;
+    unawaited(_logMediaCutter(
+      'seek source=$source requestedTimeline=${_logDuration(requestedTimeline)} '
+      'requestedOriginal=${_logDuration(requestedOriginal)} '
+      'finalOriginal=${_logDuration(finalOriginal)} '
+      'skippedDeletedPart=$skippedDeletedPart ${_logPlaybackState()}',
+    ));
+  }
+
   Future<void> _pickInput() async {
     final l10n = AppLocalizations.of(context);
-    if (!await _confirmDiscardUnsavedEdit()) return;
+    unawaited(_logMediaCutter('pick file requested'));
+    if (!await _confirmDiscardUnsavedEdit()) {
+      unawaited(_logMediaCutter('pick file cancelled because unsaved edits were kept'));
+      return;
+    }
     final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: _mediaExtensions,
     );
     final path =
         result == null || result.files.isEmpty ? null : result.files.first.path;
-    if (path == null || path.isEmpty) return;
+    if (path == null || path.isEmpty) {
+      unawaited(_logMediaCutter('pick file cancelled by user'));
+      return;
+    }
+    unawaited(_logMediaCutter('file picked path="$path" name="${p.basename(path)}"'));
     if (!await File(path).exists()) {
       if (!mounted) return;
       _showSnack(l10n.fileInaccessible(p.basename(path)));
@@ -364,6 +465,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _outputDirectory = path;
       _outputController.text = _shortPath(path, parentCount: 2);
     });
+    unawaited(_logMediaCutter('output directory selected path="$path"'));
   }
 
   Future<bool> _isWritableOutputDirectory(String path) async {
@@ -416,7 +518,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _hasUnsavedEdit = false;
     });
 
+    unawaited(_logMediaCutter(
+      'load start path="$path" name="${p.basename(path)}" '
+      'type=${_isVideo ? 'video' : 'audio'}',
+    ));
+
     try {
+      await _clearMagicTap();
       await _audioPlayer.stop();
       _videoRefreshTimer?.cancel();
       final oldVideoController = _videoController;
@@ -451,6 +559,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           _playing = controller.value.isPlaying;
           _rebuildParts();
         });
+        unawaited(_logMediaCutter(
+          'load video ok duration=${_logDuration(_duration)} '
+          'parts=${_parts.length} path="$path"',
+        ));
       } else {
         final duration = await _audioPlayer.setAudioSource(
           AudioSource.uri(
@@ -468,7 +580,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           _playing = false;
           _rebuildParts();
         });
+        unawaited(_logMediaCutter(
+          'load audio ok duration=${_logDuration(_duration)} '
+          'parts=${_parts.length} path="$path"',
+        ));
       }
+      await _setupMagicTap();
+      unawaited(_logMediaCutter('load completed ${_logPlaybackState()}'));
     } catch (error) {
       await AppLogger.log(
           'Media cutter: load failed path="$path" error=$error');
@@ -481,6 +599,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _togglePlayback() async {
     if (_inputPath.isEmpty || _loading || _saving) return;
+    unawaited(_logMediaCutter('toggle playback requested ${_logPlaybackState()}'));
     _clearPartPreview();
     try {
       if (_isVideo) {
@@ -488,9 +607,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         if (controller == null || !controller.value.isInitialized) return;
         if (controller.value.isPlaying) {
           await controller.pause();
+          await _setMagicTapPlaying(false);
+          unawaited(_logMediaCutter('video paused by toggle ${_logPlaybackState()}'));
         } else {
+          await _seekTo(_editedToOriginalPosition(_currentTimelinePosition),
+              clearPreview: false);
           await _setPlaybackVolume(1);
           await controller.play();
+          await _setMagicTapPlaying(true);
+          unawaited(_logMediaCutter('video playing by toggle ${_logPlaybackState()}'));
         }
         if (!mounted) return;
         setState(() {
@@ -500,12 +625,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       } else {
         if (_audioPlayer.playing) {
           await _audioPlayer.pause();
+          await _setMagicTapPlaying(false);
+          unawaited(_logMediaCutter('audio paused by toggle ${_logPlaybackState()}'));
         } else {
           if (_usingRenderedPreviewSource) {
             await _restoreOriginalAudioSource(seekTo: _position);
           }
+          await _seekTo(_editedToOriginalPosition(_currentTimelinePosition),
+              clearPreview: false);
           await _setPlaybackVolume(1);
           await _audioPlayer.play();
+          await _setMagicTapPlaying(true);
+          unawaited(_logMediaCutter('audio playing by toggle ${_logPlaybackState()}'));
         }
       }
     } catch (error) {
@@ -514,8 +645,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   Future<void> _pause() async {
+    unawaited(_logMediaCutter('pause requested ${_logPlaybackState()}'));
     if (_isVideo) {
       await _videoController?.pause();
+      await _setMagicTapPlaying(false);
       if (mounted && _videoController != null) {
         setState(() {
           _position = _clampPosition(_videoController!.value.position);
@@ -524,7 +657,70 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       }
     } else {
       await _audioPlayer.pause();
+      await _setMagicTapPlaying(false);
     }
+    unawaited(_logMediaCutter('pause completed ${_logPlaybackState()}'));
+  }
+
+  Future<void> _setupMagicTap() async {
+    if (!Platform.isIOS || _inputPath.isEmpty) return;
+    try {
+      await _mediaCommands.invokeMethod(
+        'setupMagicTap',
+        _displayName.isEmpty ? p.basename(_inputPath) : _displayName,
+      );
+      await _setMagicTapPlaying(false);
+      unawaited(_logMediaCutter('magic tap setup ok title="${_displayName.isEmpty ? p.basename(_inputPath) : _displayName}"'));
+    } catch (error) {
+      await AppLogger.log('Media cutter: setupMagicTap failed error=$error');
+    }
+  }
+
+  Future<void> _setMagicTapPlaying(bool playing) async {
+    if (!Platform.isIOS) return;
+    try {
+      await _mediaCommands.invokeMethod('setMagicTapPlaying', playing);
+    } catch (error) {
+      await AppLogger.log(
+        'Media cutter: setMagicTapPlaying failed playing=$playing error=$error',
+      );
+    }
+  }
+
+  Future<void> _clearMagicTap() async {
+    if (!Platform.isIOS) return;
+    try {
+      await _mediaCommands.invokeMethod('clearMagicTap');
+    } catch (error) {
+      await AppLogger.log('Media cutter: clearMagicTap failed error=$error');
+    }
+  }
+
+  Future<void> _handleMagicTapToggle() async {
+    if (_inputPath.isEmpty || _loading || _saving) return;
+    unawaited(_logMediaCutter('magic tap received ${_logPlaybackState()}'));
+    final wasPreviewing = _previewPartEnd != null ||
+        _previewPartIndex != null ||
+        _usingRenderedPreviewSource;
+    final wasPlaying = _isVideo
+        ? (_videoController?.value.isPlaying ?? false)
+        : _audioPlayer.playing;
+
+    if (wasPreviewing) {
+      await _pause();
+      if (!_isVideo && _usingRenderedPreviewSource) {
+        await _restoreOriginalAudioSource(seekTo: _position);
+      }
+      _clearPartPreview();
+      await _setPlaybackVolume(1);
+      await _setMagicTapPlaying(false);
+      unawaited(_logMediaCutter(
+        'magic tap stopped preview wasPlaying=$wasPlaying ${_logPlaybackState()}',
+      ));
+      if (wasPlaying) return;
+    }
+
+    await _togglePlayback();
   }
 
   Future<void> _setPlaybackVolume(double volume) async {
@@ -543,6 +739,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
     final clamped = _clampPosition(position);
     final target = clearPreview ? _skipDeletedPartsForward(clamped) : clamped;
+    if (target != clamped) {
+      unawaited(_logMediaCutter(
+        'seek skipped deleted part requestedOriginal=${_logDuration(clamped)} '
+        'targetOriginal=${_logDuration(target)} clearPreview=$clearPreview',
+      ));
+    }
     setState(() => _position = target);
     if (_isVideo) {
       await _videoController?.seekTo(target);
@@ -565,6 +767,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (_inputPath.isEmpty || _loading || _saving) return;
     if (index < 0 || index >= _parts.length) return;
     final part = _parts[index];
+    unawaited(_logMediaCutter('part preview requested ${_logPart(index, part)}'));
     if (!part.keep || part.duration <= Duration.zero) {
       if (_previewPartIndex == index) {
         _clearPartPreview();
@@ -589,11 +792,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         final controller = _videoController;
         if (controller == null || !controller.value.isInitialized) return;
         await controller.play();
+        await _setMagicTapPlaying(false);
         if (!mounted) return;
         setState(() => _playing = controller.value.isPlaying);
       } else {
         await _audioPlayer.play();
+        await _setMagicTapPlaying(false);
       }
+      unawaited(_logMediaCutter('part preview playing ${_logPart(index, part)}'));
     } catch (error) {
       await AppLogger.log('Media cutter: part preview failed error=$error');
     }
@@ -613,6 +819,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
     if (index < 0 || index >= _parts.length) return;
     final part = _parts[index];
+    unawaited(_logMediaCutter(
+      'effects preview requested index=$index volume=$volumePercent% '
+      'effect=${effect.name} secondary=${secondaryEffect.name} '
+      'third=${thirdEffect.name} fourth=${fourthEffect.name} '
+      'amount=$effectAmountPercent% part=${_logPart(index, part)}',
+    ));
     if (!part.keep || part.duration <= Duration.zero) return;
 
     final initialPreviewStart = _effectPreviewStartForPart(
@@ -721,6 +933,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _playing = true;
       });
       await _audioPlayer.play();
+      await _setMagicTapPlaying(false);
       await AppLogger.log(
         'Media cutter: effects preview playing '
         'file=${previewFile.path} duration=${_ffmpegTime(previewDuration)}',
@@ -773,6 +986,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   void _checkPartPreviewEnd(Duration position) {
     final end = _previewPartEnd;
     if (end == null || _stoppingPartPreview || position < end) return;
+    unawaited(_logMediaCutter(
+      'part preview reached end position=${_logDuration(position)} '
+      'end=${_logDuration(end)}',
+    ));
     unawaited(_stopPartPreviewAtEnd(end));
   }
 
@@ -795,6 +1012,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         }
       }
       await _setPlaybackVolume(1);
+      await _setMagicTapPlaying(false);
       if (!mounted) return;
       setState(() {
         _position = _clampPosition(end);
@@ -811,6 +1029,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (_isVideo || !_usingRenderedPreviewSource || _inputPath.isEmpty) return;
     _restoringOriginalAudioSource = true;
     final target = _clampPosition(seekTo ?? _position);
+    unawaited(_logMediaCutter('restore original audio source target=${_logDuration(target)}'));
     final previewFile = _renderedPreviewFile;
     try {
       await _audioPlayer.stop();
@@ -839,6 +1058,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (previewFile != null) {
         unawaited(previewFile.delete().then((_) {}).catchError((_) {}));
       }
+      unawaited(_logMediaCutter('restore original audio source completed ${_logPlaybackState()}'));
     }
   }
 
@@ -859,6 +1079,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   void _clearPartPreview() {
     if (_previewPartIndex == null && _previewPartEnd == null) return;
+    unawaited(_logMediaCutter(
+      'clear part preview index=${_previewPartIndex ?? 'none'} '
+      'end=${_logMaybeDuration(_previewPartEnd)}',
+    ));
     if (!mounted) {
       _previewPartIndex = null;
       _previewPartEnd = null;
@@ -872,17 +1096,30 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _splitHere() async {
     final l10n = AppLocalizations.of(context);
+    unawaited(_logMediaCutter('split requested ${_logPlaybackState()}'));
     if (_inputPath.isEmpty || _duration == Duration.zero) {
       _showSnack(l10n.mediaCutterNoFile);
       return;
     }
     await _pause();
+    _clearPartPreview();
+    if (!_isVideo && _usingRenderedPreviewSource) {
+      await _restoreOriginalAudioSource(seekTo: _position);
+    }
     final point = Duration(seconds: _position.inSeconds);
     if (point <= Duration.zero || point >= _duration) {
+      unawaited(_logMediaCutter(
+        'split rejected invalid point=${_logDuration(point)} '
+        'duration=${_logDuration(_duration)}',
+      ));
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
       return;
     }
     if (_splitPoints.any((existing) => existing.inSeconds == point.inSeconds)) {
+      unawaited(_logMediaCutter(
+        'split rejected duplicate point=${_logDuration(point)} '
+        'splitPoints=${_splitPoints.map(_logDuration).join('|')}',
+      ));
       _showSnack(l10n.mediaCutterSplitAlreadyExists);
       return;
     }
@@ -894,12 +1131,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _hasUnsavedEdit = true;
       _status = l10n.mediaCutterSplitAdded(_formatTime(point));
     });
+    unawaited(_logMediaCutter(
+      'split added point=${_logDuration(point)} '
+      'splitPoints=${_splitPoints.map(_logDuration).join('|')} '
+      'parts=${_parts.length} deleted=$_deletedPartCount',
+    ));
   }
 
   void _deletePart(int index) {
     if (index < 0 || index >= _parts.length || !_parts[index].keep) return;
     final l10n = AppLocalizations.of(context);
     final part = _parts[index];
+    unawaited(_logMediaCutter('delete part requested ${_logPart(index, part)}'));
     final wasPreviewingThisPart = _previewPartIndex == index;
     if (wasPreviewingThisPart) {
       _previewPartIndex = null;
@@ -923,6 +1166,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (!mounted) return;
       _showSnack(message);
     });
+    unawaited(_logMediaCutter(
+      'delete part completed ${_logPart(index, part.copyWith(keep: false))} '
+      'parts=${_parts.length} deleted=$_deletedPartCount',
+    ));
     if (_isInsidePart(_position, part)) {
       unawaited(_seekTo(part.end, clearPreview: true));
     }
@@ -959,6 +1206,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
 
     final part = _parts[index];
+    unawaited(_logMediaCutter('restore deleted part requested ${_logPart(index, part)}'));
     setState(() {
       _parts = [
         for (var i = 0; i < _parts.length; i++)
@@ -970,6 +1218,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _formatTime(part.end),
       );
     });
+    unawaited(_logMediaCutter(
+      'restore deleted part completed index=$index parts=${_parts.length} '
+      'deleted=$_deletedPartCount',
+    ));
   }
 
   Widget _buildEffectPicker(
@@ -1266,6 +1518,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       );
       _hasUnsavedEdit = true;
     });
+    unawaited(_logMediaCutter(
+      'part effects applied index=$index volume=$volumePercent% '
+      'effect=${effect.name} secondary=${secondaryEffect.name} '
+      'third=${thirdEffect.name} fourth=${fourthEffect.name} '
+      'amount=$effectAmountPercent%',
+    ));
   }
 
   Future<void> _save() async {
@@ -1275,6 +1533,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       return;
     }
     final keptParts = _parts.where((part) => part.keep).toList();
+    unawaited(_logMediaCutter(
+      'save requested keptParts=${keptParts.length} totalParts=${_parts.length} '
+      'deleted=$_deletedPartCount outputDir="$_outputDirectory" ${_logPlaybackState()}',
+    ));
     if (keptParts.isEmpty) {
       _showSnack(l10n.mediaCutterNoPartsToSave);
       return;
@@ -1352,6 +1614,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         });
       }
       if (!mounted) return;
+      unawaited(_logMediaCutter(
+        'save completed output="$output" fallbackToShare=$fallbackToShare '
+        'keptParts=${keptParts.length}',
+      ));
       final message = l10n.mediaCutterSaved(p.basename(output));
       setState(() {
         _hasUnsavedEdit = false;
@@ -1441,6 +1707,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
     var completedDurationMs = 0;
 
+    unawaited(_logMediaCutter(
+      'export start output="$output" keptParts=${keptParts.length} '
+      'totalDuration=${_logDuration(Duration(milliseconds: totalDurationMs))} '
+      'isVideo=${_isVideoInput(input)}',
+    ));
+    for (var i = 0; i < keptParts.length; i++) {
+      unawaited(_logMediaCutter('export part ${i + 1}/${keptParts.length} ${_logPart(i, keptParts[i])}'));
+    }
+
     try {
       for (var i = 0; i < keptParts.length; i++) {
         if (exportController.cancelled) {
@@ -1518,6 +1793,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (segmentPaths.length == 1) {
         await File(segmentPaths.single).copy(output);
         _updateExportProgress(exportController, 1, 'Completamento');
+        unawaited(_logMediaCutter('export single segment copied output="$output"'));
         return;
       }
 
@@ -1542,6 +1818,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _updateExportProgress(exportController, 0.98, 'Completamento');
       await _runFfmpeg(concatArgs, 'concat', exportController);
       _updateExportProgress(exportController, 1, 'Completamento');
+      unawaited(_logMediaCutter('export concat completed output="$output" segments=${segmentPaths.length}'));
     } finally {
       if (exportController.cancelled) {
         final outputFile = File(output);
@@ -1608,6 +1885,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       );
       throw logs.trim().isEmpty ? 'FFmpeg ${returnCode?.getValue()}' : logs;
     }
+    await AppLogger.log('Media cutter ffmpeg $step completed returnCode=${returnCode?.getValue()}');
   }
 
   Future<void> _runWithProgressDialog(
@@ -1783,6 +2061,70 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   bool get _hasDeletedParts => _parts.any((part) => !part.keep);
 
+  List<_MediaPart> get _keptParts => [
+        for (final part in _parts)
+          if (part.keep) part,
+      ];
+
+  Duration get _editedTimelineDuration {
+    if (!_hasDeletedParts) return _duration;
+    var total = Duration.zero;
+    for (final part in _keptParts) {
+      if (part.duration > Duration.zero) total += part.duration;
+    }
+    return total;
+  }
+
+  Duration get _currentTimelinePosition => _originalToEditedPosition(_position);
+
+  Duration _originalToEditedPosition(Duration originalPosition) {
+    final original = _clampPosition(originalPosition);
+    if (!_hasDeletedParts) return original;
+    var elapsed = Duration.zero;
+    for (final part in _parts) {
+      if (!part.keep) continue;
+      if (original <= part.start) return elapsed;
+      if (original < part.end) return elapsed + (original - part.start);
+      elapsed += part.duration;
+    }
+    return elapsed;
+  }
+
+  Duration _editedToOriginalPosition(Duration editedPosition) {
+    if (!_hasDeletedParts) return _clampPosition(editedPosition);
+    final keptParts = _keptParts;
+    if (keptParts.isEmpty) return Duration.zero;
+    final total = _editedTimelineDuration;
+    var edited = editedPosition;
+    if (edited < Duration.zero) edited = Duration.zero;
+    if (total > Duration.zero && edited > total) edited = total;
+
+    var elapsed = Duration.zero;
+    for (var i = 0; i < keptParts.length; i++) {
+      final part = keptParts[i];
+      final nextElapsed = elapsed + part.duration;
+      final isLast = i == keptParts.length - 1;
+      if (edited < nextElapsed || (edited == nextElapsed && isLast)) {
+        return _clampPosition(part.start + (edited - elapsed));
+      }
+      elapsed = nextElapsed;
+    }
+    return _clampPosition(keptParts.last.end);
+  }
+
+  Future<void> _seekTimelineTo(Duration timelinePosition) async {
+    final requestedOriginal = _editedToOriginalPosition(timelinePosition);
+    final finalOriginal = _skipDeletedPartsForward(requestedOriginal);
+    _logSeekRequest(
+      source: 'slider',
+      requestedTimeline: timelinePosition,
+      requestedOriginal: requestedOriginal,
+      finalOriginal: finalOriginal,
+      skippedDeletedPart: finalOriginal != requestedOriginal,
+    );
+    await _seekTo(requestedOriginal);
+  }
+
   String _partKey(_MediaPart part) =>
       '${part.start.inMilliseconds}:${part.end.inMilliseconds}';
 
@@ -1817,6 +2159,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (_skippingDeletedPart) return;
     _skippingDeletedPart = true;
     try {
+      unawaited(_logMediaCutter(
+        'playback skipped deleted part target=${_logDuration(target)} '
+        '${_logPlaybackState()}',
+      ));
       await _seekTo(target, clearPreview: false);
       if (target >= _duration) await _pause();
     } finally {
@@ -2153,26 +2499,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       final start = points[i];
       final end = points[i + 1];
       final previous = oldParts.where(
-        (part) => part.start == start && part.end == end,
+        (part) => part.start <= start && part.end >= end,
       );
+      final inherited = previous.isEmpty ? null : previous.first;
       rebuilt.add(_MediaPart(
         start: start,
         end: end,
-        keep: previous.isEmpty ? true : previous.first.keep,
-        volumePercent: previous.isEmpty ? 100 : previous.first.volumePercent,
-        effect:
-            previous.isEmpty ? _MediaPartEffect.none : previous.first.effect,
-        secondaryEffect: previous.isEmpty
-            ? _MediaPartEffect.none
-            : previous.first.secondaryEffect,
-        thirdEffect: previous.isEmpty
-            ? _MediaPartEffect.none
-            : previous.first.thirdEffect,
-        fourthEffect: previous.isEmpty
-            ? _MediaPartEffect.none
-            : previous.first.fourthEffect,
-        effectAmountPercent:
-            previous.isEmpty ? 50 : previous.first.effectAmountPercent,
+        keep: inherited?.keep ?? true,
+        volumePercent: inherited?.volumePercent ?? 100,
+        effect: inherited?.effect ?? _MediaPartEffect.none,
+        secondaryEffect:
+            inherited?.secondaryEffect ?? _MediaPartEffect.none,
+        thirdEffect: inherited?.thirdEffect ?? _MediaPartEffect.none,
+        fourthEffect: inherited?.fourthEffect ?? _MediaPartEffect.none,
+        effectAmountPercent: inherited?.effectAmountPercent ?? 50,
       ));
     }
     _parts = rebuilt;
@@ -2454,6 +2794,79 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     return '${units.sublist(0, units.length - 1).join(', ')}$connector${units.last}';
   }
 
+  String _mediaSeekStepButtonLabel() {
+    final step = _formatHumanDuration(_mediaSeekStep);
+    final lang = Localizations.localeOf(context).languageCode;
+    return switch (lang) {
+      'en' => 'Adjust media file movement: $step',
+      'fr' => 'Régler le déplacement du fichier média : $step',
+      'es' => 'Ajustar el desplazamiento del archivo multimedia: $step',
+      'pt' => 'Regular o deslocamento do arquivo de mídia: $step',
+      'pl' => 'Dostosuj przesuwanie pliku multimedialnego: $step',
+      'cs' => 'Nastavit posun mediálního souboru: $step',
+      _ => 'Regola lo spostamento del file media: $step',
+    };
+  }
+
+  String _mediaSeekStepDialogTitle() {
+    final lang = Localizations.localeOf(context).languageCode;
+    return switch (lang) {
+      'en' => 'Media file movement',
+      'fr' => 'Déplacement du fichier média',
+      'es' => 'Desplazamiento del archivo multimedia',
+      'pt' => 'Deslocamento do arquivo de mídia',
+      'pl' => 'Przesuwanie pliku multimedialnego',
+      'cs' => 'Posun mediálního souboru',
+      _ => 'Spostamento del file media',
+    };
+  }
+
+  String _mediaSeekStepSelectedMessage(Duration step) {
+    final formatted = _formatHumanDuration(step);
+    final lang = Localizations.localeOf(context).languageCode;
+    return switch (lang) {
+      'en' => 'Media file movement set to $formatted.',
+      'fr' => 'Déplacement du fichier média réglé sur $formatted.',
+      'es' => 'Desplazamiento del archivo multimedia ajustado a $formatted.',
+      'pt' => 'Deslocamento do arquivo de mídia definido para $formatted.',
+      'pl' => 'Przesuwanie pliku multimedialnego ustawione na $formatted.',
+      'cs' => 'Posun mediálního souboru nastaven na $formatted.',
+      _ => 'Spostamento del file media impostato a $formatted.',
+    };
+  }
+
+  Future<void> _showMediaSeekStepDialog() async {
+    final selected = await showDialog<Duration>(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text(_mediaSeekStepDialogTitle()),
+          children: [
+            for (final step in _mediaSeekStepOptions)
+              SimpleDialogOption(
+                onPressed: () => Navigator.of(context).pop(step),
+                child: Row(
+                  children: [
+                    if (step == _mediaSeekStep)
+                      const Icon(Icons.check)
+                    else
+                      const SizedBox(width: 24),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(_formatHumanDuration(step))),
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
+    );
+
+    if (selected == null || selected == _mediaSeekStep || !mounted) return;
+    setState(() => _mediaSeekStep = selected);
+    unawaited(_logMediaCutter('media movement step changed to ${_logDuration(selected)}'));
+    _showSnack(_mediaSeekStepSelectedMessage(selected));
+  }
+
   String _formatTime(Duration duration) {
     final totalSeconds = duration.inSeconds < 0 ? 0 : duration.inSeconds;
     final hours = totalSeconds ~/ 3600;
@@ -2511,20 +2924,28 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Widget _buildPositionSlider(AppLocalizations l10n) {
     if (_duration == Duration.zero) return const SizedBox();
-    final position = _clampPosition(_position);
+    final position = _currentTimelinePosition;
+    final sliderDuration = _editedTimelineDuration;
+    if (sliderDuration == Duration.zero) return const SizedBox();
     final posSecs = position.inSeconds.toDouble();
-    final durSecs =
-        _duration.inSeconds.toDouble().clamp(1.0, double.infinity).toDouble();
-    final oneSecondForward =
-        _clampPosition(position + const Duration(seconds: 1));
-    final oneSecondBack = _clampPosition(position - const Duration(seconds: 1));
+    final durSecs = sliderDuration.inSeconds
+        .toDouble()
+        .clamp(1.0, double.infinity)
+        .toDouble();
+    final seekStep = _mediaSeekStep;
+    final stepForward = position + seekStep > sliderDuration
+        ? sliderDuration
+        : position + seekStep;
+    final stepBack = position - seekStep < Duration.zero
+        ? Duration.zero
+        : position - seekStep;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ExcludeSemantics(
           child: Text(
-            '${_formatTime(position)} / ${_formatTime(_duration)}',
+            '${_formatTime(position)} / ${_formatTime(sliderDuration)}',
             textAlign: TextAlign.center,
           ),
         ),
@@ -2534,22 +2955,28 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           label: l10n.mediaCutterPosition,
           value: l10n.playbackPositionValue(
             _formatHumanDuration(position),
-            _formatHumanDuration(_duration),
+            _formatHumanDuration(sliderDuration),
           ),
-          increasedValue: _formatHumanDuration(oneSecondForward),
-          decreasedValue: _formatHumanDuration(oneSecondBack),
-          onIncrease: () => _seekTo(oneSecondForward),
-          onDecrease: () => _seekTo(oneSecondBack),
+          increasedValue: _formatHumanDuration(stepForward),
+          decreasedValue: _formatHumanDuration(stepBack),
+          onIncrease: position < sliderDuration
+              ? () => unawaited(_seekTimelineTo(stepForward))
+              : null,
+          onDecrease: position > Duration.zero
+              ? () => unawaited(_seekTimelineTo(stepBack))
+              : null,
           hint: l10n.mediaCutterPositionHint,
           child: ExcludeSemantics(
             child: Slider(
               value: posSecs.clamp(0.0, durSecs).toDouble(),
               min: 0,
               max: durSecs,
-              divisions: _duration.inSeconds > 0 ? _duration.inSeconds : null,
+              divisions: sliderDuration.inSeconds > 0 ? sliderDuration.inSeconds : null,
               onChanged: _saving
                   ? null
-                  : (value) => _seekTo(Duration(seconds: value.round())),
+                  : (value) => unawaited(
+                        _seekTimelineTo(Duration(seconds: value.round())),
+                      ),
             ),
           ),
         ),
@@ -2710,6 +3137,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               ],
               const SizedBox(height: 20),
               _buildPositionSlider(l10n),
+              if (_inputPath.isNotEmpty && _duration != Duration.zero) ...[
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: canUseMedia
+                      ? () => unawaited(_showMediaSeekStepDialog())
+                      : null,
+                  icon: const Icon(Icons.swap_horiz),
+                  label: Text(_mediaSeekStepButtonLabel()),
+                ),
+              ],
               if (_isVideo) ...[
                 const SizedBox(height: 16),
                 DropdownButtonFormField<_VideoRotation>(

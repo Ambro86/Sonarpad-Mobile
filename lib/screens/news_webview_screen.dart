@@ -691,6 +691,15 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           'News reader HTTP: testo troppo corto, resta WebView '
           'length=${text.length}',
         ));
+        unawaited(AppLogger.log(
+          'News reader UI: WebView mantenuta perché reader/Tinyfish non hanno '
+          'fornito testo sufficiente length=${text.length}',
+        ));
+      } else {
+        unawaited(AppLogger.log(
+          'News reader UI: reader testuale disponibile, WebView non necessaria '
+          'length=${text.length}',
+        ));
       }
       setState(() {
         if (text.length >= _httpMinLength) {
@@ -703,12 +712,18 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     } catch (e) {
       debugPrint('Sonarpad reader: rhttp reader failed: $e');
       unawaited(AppLogger.log('News reader HTTP: estrazione fallita: $e'));
+      unawaited(AppLogger.log(
+        'News reader UI: WebView mantenuta perché il recupero testuale è fallito',
+      ));
       if (!mounted) return;
       setState(() => _readerPreparing = false);
     }
   }
 
   Future<void> _loadVisibleReaderArticleFromWebView() async {
+    unawaited(AppLogger.log(
+      'News reader WebView: controllo testo visibile avviato',
+    ));
     for (int i = 0; i < 4; i++) {
       await Future.delayed(const Duration(milliseconds: 1500));
       if (!mounted) return;

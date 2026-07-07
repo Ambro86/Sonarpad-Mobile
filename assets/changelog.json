@@ -35,7 +35,8 @@
       "Migliorato il salvataggio di Taglia file media: ora usa la stessa destinazione di Converti media, mostra la barra di avanzamento e, se la cartella scelta non è scrivibile, prepara il file nella cartella Sonarpad e apre la condivisione di sistema.",
       "Taglia file media ora permette di regolare volume ed effetti audio per ogni parte, con una sola azione VoiceOver “Regola effetti” e applicazione finale tramite FFmpeg.",
       "Nelle Notizie sono stati aggiunti i pulsanti per proporre una testata alla comunità Sonarpad e per sfogliare le testate condivise della lingua selezionata, aggiungendole alla propria libreria con un tocco.",
-      "Nelle Notizie la comunità Sonarpad ora usa sempre la lingua notizie selezionata; quando aggiungi una testata puoi inserire sia un feed RSS sia un sito web, con ricerca automatica del feed quando possibile."
+      "Nelle Notizie la comunità Sonarpad ora usa sempre la lingua notizie selezionata; quando aggiungi una testata puoi inserire sia un feed RSS sia un sito web, con ricerca automatica del feed quando possibile.",
+      "In Taglia file media è stato aggiunto il pulsante Regola lo spostamento del file media, per scegliere di quanto avanzare o tornare indietro con lo slider."
     ],
     "en": [
       "Improved document reading: some texts with unusual accents are now read more reliably, including when moving character by character with VoiceOver.",
@@ -67,7 +68,8 @@
       "Improved saving in Cut media file: it now uses the same destination workflow as Convert media, shows a progress bar, and if the selected folder is not writable, it prepares the file in the Sonarpad folder and opens the system share sheet.",
       "Cut media file now lets you adjust volume and audio effects for each part, with a single VoiceOver action “Adjust effects” and final processing through FFmpeg.",
       "News now includes buttons to submit a source to the Sonarpad community and browse shared sources for the selected language, adding them to your library with one tap.",
-      "In News, the Sonarpad community now always uses the selected news language; when submitting a source you can enter either an RSS feed or a website, with automatic feed discovery when possible."
+      "In News, the Sonarpad community now always uses the selected news language; when submitting a source you can enter either an RSS feed or a website, with automatic feed discovery when possible.",
+      "Media Cutter now includes an Adjust media file movement button to choose how far the slider moves forward or backward."
     ],
     "fr": [
       "Amélioration de la lecture des documents : certains textes avec des accents particuliers sont maintenant mieux lus, y compris caractère par caractère avec VoiceOver.",
@@ -99,7 +101,8 @@
       "Amélioration de l’enregistrement dans Couper le fichier média : la fonction utilise désormais le même choix de destination que Convertir média, affiche une barre de progression et, si le dossier choisi n’est pas accessible en écriture, prépare le fichier dans le dossier Sonarpad puis ouvre le partage système.",
       "Couper le fichier média permet maintenant de régler le volume et les effets audio pour chaque partie, avec une seule action VoiceOver « Régler les effets » et une application finale via FFmpeg.",
       "Les Actualités disposent maintenant de boutons pour proposer une source à la communauté Sonarpad et parcourir les sources partagées de la langue sélectionnée, afin de les ajouter à votre bibliothèque d’un toucher.",
-      "Dans Actualités, la communauté Sonarpad utilise toujours la langue d’actualités sélectionnée ; lors de l’ajout d’une source, vous pouvez saisir un flux RSS ou un site web, avec recherche automatique du flux quand c’est possible."
+      "Dans Actualités, la communauté Sonarpad utilise toujours la langue d’actualités sélectionnée ; lors de l’ajout d’une source, vous pouvez saisir un flux RSS ou un site web, avec recherche automatique du flux quand c’est possible.",
+      "Taglia file media ajoute un bouton pour régler le déplacement du fichier média et choisir de combien avancer ou reculer avec le curseur."
     ],
     "es": [
       "Mejorada la lectura de documentos: algunos textos con acentos especiales ahora se leen mejor, también al moverse carácter por carácter con VoiceOver.",
@@ -131,7 +134,8 @@
       "Mejorado el guardado en Cortar archivo multimedia: ahora usa el mismo flujo de destino que Convertir multimedia, muestra una barra de progreso y, si la carpeta elegida no permite escritura, prepara el archivo en la carpeta Sonarpad y abre la hoja de compartir del sistema.",
       "Cortar archivo multimedia ahora permite ajustar el volumen y los efectos de audio de cada parte, con una sola acción de VoiceOver “Ajustar efectos” y procesamiento final mediante FFmpeg.",
       "Noticias ahora incluye botones para proponer una fuente a la comunidad de Sonarpad y explorar las fuentes compartidas del idioma seleccionado, añadiéndolas a tu biblioteca con un toque.",
-      "En Noticias, la comunidad de Sonarpad usa siempre el idioma de noticias seleccionado; al enviar una fuente puedes introducir un feed RSS o un sitio web, con búsqueda automática del feed cuando sea posible."
+      "En Noticias, la comunidad de Sonarpad usa siempre el idioma de noticias seleccionado; al enviar una fuente puedes introducir un feed RSS o un sitio web, con búsqueda automática del feed cuando sea posible.",
+      "Taglia file media añade un botón para ajustar el desplazamiento del archivo multimedia y elegir cuánto avanzar o retroceder con el control deslizante."
     ],
     "pt": [
       "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caráter a caráter com o VoiceOver.",
@@ -163,7 +167,8 @@
       "Melhorada a gravação em Cortar ficheiro multimédia: agora usa o mesmo fluxo de destino de Converter multimédia, mostra uma barra de progresso e, se a pasta escolhida não permitir escrita, prepara o ficheiro na pasta Sonarpad e abre a partilha do sistema.",
       "Cortar ficheiro multimédia agora permite ajustar o volume e os efeitos de áudio de cada parte, com uma única ação do VoiceOver “Ajustar efeitos” e processamento final pelo FFmpeg.",
       "As Notícias agora incluem botões para enviar uma fonte para a comunidade Sonarpad e explorar as fontes partilhadas do idioma selecionado, adicionando-as à biblioteca com um toque.",
-      "Nas Notícias, a comunidade Sonarpad passa a usar sempre o idioma de notícias selecionado; ao enviar uma fonte, pode introduzir um feed RSS ou um site, com deteção automática do feed quando possível."
+      "Nas Notícias, a comunidade Sonarpad passa a usar sempre o idioma de notícias selecionado; ao enviar uma fonte, pode introduzir um feed RSS ou um site, com deteção automática do feed quando possível.",
+      "Taglia file media adiciona um botão para regular o deslocamento do arquivo de mídia e escolher quanto avançar ou retroceder com o controle deslizante."
     ],
     "pl": [
       "Ulepszono czytanie dokumentów: niektóre teksty z nietypowymi akcentami są teraz odczytywane lepiej, także podczas przechodzenia znak po znaku z VoiceOver.",
@@ -196,7 +201,8 @@
       "Ulepszono zapisywanie w funkcji Przytnij plik multimedialny: używa teraz tego samego wyboru miejsca docelowego co Konwertuj multimedia, pokazuje pasek postępu, a jeśli wybrany folder nie pozwala na zapis, przygotowuje plik w folderze Sonarpad i otwiera systemowe udostępnianie.",
       "Przytnij plik multimedialny pozwala teraz regulować głośność i efekty audio dla każdej części, z jedną akcją VoiceOver „Dostosuj efekty” i końcowym przetwarzaniem przez FFmpeg.",
       "W Wiadomościach dodano przyciski do zgłaszania źródeł do społeczności Sonarpad oraz przeglądania źródeł udostępnionych dla wybranego języka i dodawania ich do własnej biblioteki jednym stuknięciem.",
-      "W Wiadomościach społeczność Sonarpad zawsze używa wybranego języka wiadomości; przy zgłaszaniu źródła można wpisać kanał RSS albo stronę internetową, a kanał zostanie wyszukany automatycznie, gdy to możliwe."
+      "W Wiadomościach społeczność Sonarpad zawsze używa wybranego języka wiadomości; przy zgłaszaniu źródła można wpisać kanał RSS albo stronę internetową, a kanał zostanie wyszukany automatycznie, gdy to możliwe.",
+      "Taglia file media ma teraz przycisk do ustawiania przesuwania pliku multimedialnego, aby wybrać, o ile przesuwać suwak do przodu lub do tyłu."
     ],
     "cs": [
       "Vylepšeno čtení dokumentů: některé texty se zvláštními akcenty se nyní čtou lépe, i při pohybu znak po znaku pomocí VoiceOveru.",
@@ -228,7 +234,8 @@
       "Vylepšeno ukládání ve funkci Oříznout mediální soubor: nyní používá stejný postup výběru cíle jako Převést média, zobrazuje průběh a pokud do vybrané složky nelze zapisovat, připraví soubor ve složce Sonarpad a otevře systémové sdílení.",
       "Oříznout mediální soubor nyní umožňuje upravit hlasitost a zvukové efekty pro každou část, s jedinou akcí VoiceOver „Upravit efekty“ a finálním zpracováním přes FFmpeg.",
       "Ve Zprávách přibyla tlačítka pro odeslání zdroje do komunity Sonarpad a pro procházení sdílených zdrojů vybraného jazyka, které lze jedním klepnutím přidat do vlastní knihovny.",
-      "Ve Zprávách komunita Sonarpad vždy používá vybraný jazyk zpráv; při odesílání zdroje lze zadat RSS kanál nebo web a kanál se pokud možno vyhledá automaticky."
+      "Ve Zprávách komunita Sonarpad vždy používá vybraný jazyk zpráv; při odesílání zdroje lze zadat RSS kanál nebo web a kanál se pokud možno vyhledá automaticky.",
+      "Taglia file media nyní obsahuje tlačítko pro nastavení posunu mediálního souboru, takže lze zvolit, o kolik se má posuvník posouvat dopředu nebo dozadu."
     ]
   },
   {
