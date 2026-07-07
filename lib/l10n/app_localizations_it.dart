@@ -2711,6 +2711,101 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get mediaCutterGuidedModeTitle => 'Taglio guidato';
+
+  @override
+  String get mediaCutterGuidedModeDescription => 'Adatto per chi comincia. È sufficiente selezionare un punto iniziale e un punto finale, ascoltare il taglio e poi applicarlo.';
+
+  @override
+  String get mediaCutterAdvancedModeTitle => 'Taglio avanzato';
+
+  @override
+  String get mediaCutterAdvancedModeDescription => 'Ispirato ai programmi di manipolazione media più famosi, permette di dividere un file media in diverse parti ed eliminare le parti non volute.';
+
+  @override
+  String get mediaCutterChangeCutMode => 'Cambia tipo di taglio';
+
+  @override
+  String get mediaCutterGuidedSetStart => 'Inizio taglio';
+
+  @override
+  String get mediaCutterGuidedSetEnd => 'Fine taglio';
+
+  @override
+  String get mediaCutterGuidedApplyCut => 'Applica taglio';
+
+  @override
+  String get mediaCutterGuidedListenCut => 'Ascolta taglio';
+
+  @override
+  String get mediaCutterGuidedModifyCut => 'Modifica taglio';
+
+  @override
+  String get mediaCutterGuidedMoveStartBackOneSecond => 'Sposta inizio taglio indietro di 1 secondo';
+
+  @override
+  String get mediaCutterGuidedMoveStartForwardOneSecond => 'Sposta inizio taglio avanti di 1 secondo';
+
+  @override
+  String get mediaCutterGuidedMoveEndBackOneSecond => 'Sposta fine taglio indietro di 1 secondo';
+
+  @override
+  String get mediaCutterGuidedMoveEndForwardOneSecond => 'Sposta fine taglio avanti di 1 secondo';
+
+  @override
+  String mediaCutterGuidedCutAdjusted(String start, String end) {
+    return 'Taglio modificato da $start a $end.';
+  }
+
+  @override
+  String get mediaCutterGuidedNoCut => 'Nessun taglio';
+
+  @override
+  String get mediaCutterGuidedEffectsAction => 'Regola effetti del file';
+
+  @override
+  String get mediaCutterGuidedEffectsDescription => 'Regola volume ed effetti per tutto il file risultante.';
+
+  @override
+  String get mediaCutterGuidedFileTapHint => 'Tocca due volte per riprodurre il file risultante. Usa l’azione Regola effetti del file per applicare effetti a tutto il file.';
+
+  @override
+  String mediaCutterGuidedStartSet(String start) {
+    return 'Inizio taglio impostato a $start.';
+  }
+
+  @override
+  String mediaCutterGuidedEndSet(String start, String end) {
+    return 'Fine taglio impostata a $end. Taglio da $start a $end.';
+  }
+
+  @override
+  String mediaCutterGuidedCutApplied(String start, String end) {
+    return 'Taglio applicato da $start a $end.';
+  }
+
+  @override
+  String get mediaCutterGuidedNeedStartEnd => 'Imposta prima inizio e fine taglio.';
+
+  @override
+  String mediaCutterGuidedCutSummary(String start, String end) {
+    return 'Taglio da $start a $end';
+  }
+
+  @override
+  String mediaCutterGuidedMultipleCutSummary(int count, String cuts) {
+    return '$count tagli: $cuts';
+  }
+
+  @override
+  String get mediaCutterGuidedPendingCutExitMessage => 'Hai un taglio guidato non applicato. Vuoi uscire senza conservarlo?';
+
+  @override
+  String mediaCutterSplitAddedAnnouncement(int partNumber) {
+    return 'Divisione aggiunta. Parte $partNumber aggiunta.';
+  }
+
+  @override
   String get newsAddCommunitySource =>
       'Aggiungi testata alla comunità di Sonarpad';
 

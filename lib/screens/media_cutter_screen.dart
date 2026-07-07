@@ -23,6 +23,8 @@ import '../utils/status_message.dart';
 
 enum _MediaCutterDoneAction { share, close }
 
+enum _MediaCutterMode { guided, advanced }
+
 enum _VideoRotation {
   none,
   right,
@@ -239,7 +241,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     Duration(minutes: 10),
   ];
 
-  static const _minimumSplitSeparation = Duration(milliseconds: 500);
+  static const _splitBoundaryTolerance = Duration.zero;
 
   final _audioPlayer = AudioPlayer();
   final _outputController = TextEditingController();
@@ -271,7 +273,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool _effectPreviewPreparing = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  Duration _mediaSeekStep = const Duration(seconds: 1);
+  Duration _mediaSeekStep = const Duration(seconds: 5);
+  _MediaCutterMode? _selectedMode;
+  Duration? _guidedCutStart;
+  Duration? _guidedCutEnd;
   List<Duration> _splitPoints = [];
   List<_MediaPart> _parts = [];
   final List<String> _deletedPartHistory = [];
@@ -606,6 +611,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _duration = Duration.zero;
       _position = Duration.zero;
       _playing = false;
+      _guidedCutStart = null;
+      _guidedCutEnd = null;
       _splitPoints = [];
       _parts = [];
       _deletedPartHistory.clear();
@@ -1182,21 +1189,512 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     });
   }
 
+
+  AppLocalizations get _l10n => AppLocalizations.of(context);
+
+  String get _guidedModeTitle => _l10n.mediaCutterGuidedModeTitle;
+
+  String get _guidedModeDescription => _l10n.mediaCutterGuidedModeDescription;
+
+  String get _advancedModeTitle => _l10n.mediaCutterAdvancedModeTitle;
+
+  String get _advancedModeDescription => _l10n.mediaCutterAdvancedModeDescription;
+
+  String get _changeCutModeLabel => _l10n.mediaCutterChangeCutMode;
+
+  String get _guidedSetStartLabel => _l10n.mediaCutterGuidedSetStart;
+
+  String get _guidedSetEndLabel => _l10n.mediaCutterGuidedSetEnd;
+
+  String get _guidedApplyCutLabel => _l10n.mediaCutterGuidedApplyCut;
+
+  String get _guidedListenCutLabel => _l10n.mediaCutterGuidedListenCut;
+
+  String get _guidedModifyCutLabel => _l10n.mediaCutterGuidedModifyCut;
+
+  String get _guidedMoveStartBackOneSecondLabel =>
+      _l10n.mediaCutterGuidedMoveStartBackOneSecond;
+
+  String get _guidedMoveStartForwardOneSecondLabel =>
+      _l10n.mediaCutterGuidedMoveStartForwardOneSecond;
+
+  String get _guidedMoveEndBackOneSecondLabel =>
+      _l10n.mediaCutterGuidedMoveEndBackOneSecond;
+
+  String get _guidedMoveEndForwardOneSecondLabel =>
+      _l10n.mediaCutterGuidedMoveEndForwardOneSecond;
+
+  String _guidedCutAdjustedMessage(Duration start, Duration end) =>
+      _l10n.mediaCutterGuidedCutAdjusted(
+        _formatTime(start),
+        _formatTime(end),
+      );
+
+  String get _guidedNoCutLabel => _l10n.mediaCutterGuidedNoCut;
+
+  String get _guidedEffectsLabel => _l10n.mediaCutterGuidedEffectsAction;
+
+  String get _guidedEffectsDescription =>
+      _l10n.mediaCutterGuidedEffectsDescription;
+
+  String get _guidedFileTapHint => _l10n.mediaCutterGuidedFileTapHint;
+
+  String _guidedStartSetMessage(Duration start) =>
+      _l10n.mediaCutterGuidedStartSet(_formatTime(start));
+
+  String _guidedEndSetMessage(Duration start, Duration end) =>
+      _l10n.mediaCutterGuidedEndSet(
+        _formatTime(start),
+        _formatTime(end),
+      );
+
+  String _guidedCutAppliedMessage(Duration start, Duration end) =>
+      _l10n.mediaCutterGuidedCutApplied(
+        _formatTime(start),
+        _formatTime(end),
+      );
+
+  String get _guidedNeedStartEndMessage =>
+      _l10n.mediaCutterGuidedNeedStartEnd;
+
+  String _guidedCutSummary(Duration start, Duration end) =>
+      _l10n.mediaCutterGuidedCutSummary(
+        _formatTime(start),
+        _formatTime(end),
+      );
+
+  String _guidedMultipleCutSummary(int count, List<String> cuts) =>
+      _l10n.mediaCutterGuidedMultipleCutSummary(count, cuts.join('; '));
+
+  String get _guidedPendingCutExitMessage =>
+      _l10n.mediaCutterGuidedPendingCutExitMessage;
+
+  bool get _isGuidedMode => _selectedMode == _MediaCutterMode.guided;
+
+  bool get _hasPendingGuidedCut =>
+      _isGuidedMode &&
+      _inputPath.isNotEmpty &&
+      !_saving &&
+      (_guidedCutStart != null || _guidedCutEnd != null);
+  String get _guidedPrimaryCutButtonLabel {
+    if (_guidedCutStart == null) return _guidedSetStartLabel;
+    if (_guidedCutEnd == null) return _guidedSetEndLabel;
+    return _guidedApplyCutLabel;
+  }
+
+  List<_MediaPart> get _deletedCuts => [
+        for (final part in _parts)
+          if (!part.keep) part,
+      ];
+
+  String get _guidedCurrentSummary {
+    final pendingStart = _guidedCutStart;
+    final pendingEnd = _guidedCutEnd;
+    if (pendingStart != null && pendingEnd != null) {
+      final start = pendingStart <= pendingEnd ? pendingStart : pendingEnd;
+      final end = pendingStart <= pendingEnd ? pendingEnd : pendingStart;
+      return _guidedCutSummary(start, end);
+    }
+    final cuts = _deletedCuts;
+    if (cuts.isEmpty) return _guidedNoCutLabel;
+    final labels = [
+      for (final cut in cuts) _guidedCutSummary(cut.start, cut.end),
+    ];
+    if (labels.length == 1) return labels.first;
+    return _guidedMultipleCutSummary(labels.length, labels);
+  }
+
+  void _selectMode(_MediaCutterMode mode) {
+    setState(() {
+      _selectedMode = mode;
+      _guidedCutStart = null;
+      _guidedCutEnd = null;
+    });
+    unawaited(_logMediaCutter('mode selected ${mode.name}'));
+  }
+
+  Future<bool> _confirmChangeMode() async {
+    if (!_hasUnsavedEdit) return true;
+    return _confirmDiscardUnsavedEdit();
+  }
+
+  Future<void> _changeMode() async {
+    if (!await _confirmChangeMode()) return;
+    await _pause();
+    await _audioPlayer.stop();
+    _videoRefreshTimer?.cancel();
+    final oldVideoController = _videoController;
+    _videoController = null;
+    if (oldVideoController != null) {
+      await oldVideoController.dispose();
+    }
+    setState(() {
+      _selectedMode = null;
+      _inputPath = '';
+      _displayName = '';
+      _duration = Duration.zero;
+      _position = Duration.zero;
+      _playing = false;
+      _guidedCutStart = null;
+      _guidedCutEnd = null;
+      _splitPoints = [];
+      _parts = [];
+      _deletedPartHistory.clear();
+      _hasUnsavedEdit = false;
+      _status = null;
+      _showVideoPreview = false;
+      _isVideo = false;
+      _videoRotation = _VideoRotation.none;
+    });
+  }
+
+  Duration _currentOriginalCutPoint() => _clampPosition(_position);
+
+  Future<void> _guidedCutButtonPressed() async {
+    if (_inputPath.isEmpty || _duration == Duration.zero) {
+      _showSnack(AppLocalizations.of(context).mediaCutterNoFile);
+      return;
+    }
+    final current = _currentOriginalCutPoint();
+    if (_guidedCutStart == null) {
+      setState(() {
+        _guidedCutStart = current;
+        _guidedCutEnd = null;
+        _status = _guidedStartSetMessage(current);
+      });
+      _showSnack(_guidedStartSetMessage(current));
+      unawaited(_logMediaCutter(
+        'guided cut start set start=${_logPreciseDuration(current)} ${_logPlaybackState()}',
+      ));
+      return;
+    }
+    if (_guidedCutEnd == null) {
+      final start = _guidedCutStart!;
+      if ((current.inMilliseconds - start.inMilliseconds).abs() < 250) {
+        _showSnack(AppLocalizations.of(context).mediaCutterInvalidSplitPoint);
+        return;
+      }
+      final orderedStart = start <= current ? start : current;
+      final orderedEnd = start <= current ? current : start;
+      setState(() {
+        _guidedCutStart = orderedStart;
+        _guidedCutEnd = orderedEnd;
+        _status = _guidedEndSetMessage(orderedStart, orderedEnd);
+      });
+      _showSnack(_guidedEndSetMessage(orderedStart, orderedEnd));
+      unawaited(_logMediaCutter(
+        'guided cut end set start=${_logPreciseDuration(orderedStart)} '
+        'end=${_logPreciseDuration(orderedEnd)} ${_logPlaybackState()}',
+      ));
+      return;
+    }
+    await _applyGuidedCut();
+  }
+
+  bool _isInsideKeptPartStrict(Duration position) =>
+      _keptPartIndexContainingSplitPoint(position) != null;
+
+  bool _isGuidedCutReadyToEdit() =>
+      _inputPath.isNotEmpty && _guidedCutStart != null && _guidedCutEnd != null;
+
+  Future<void> _showGuidedModifyCutDialog() async {
+    if (!_isGuidedCutReadyToEdit()) {
+      _showSnack(_guidedNeedStartEndMessage);
+      return;
+    }
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            final start = _guidedCutStart;
+            final end = _guidedCutEnd;
+            final summary = start != null && end != null
+                ? _guidedCutSummary(start <= end ? start : end, start <= end ? end : start)
+                : _guidedNeedStartEndMessage;
+            Future<void> adjust({required bool moveStart, required int direction}) async {
+              await _adjustGuidedCutByOneSecond(
+                moveStart: moveStart,
+                direction: direction,
+              );
+              if (mounted) setDialogState(() {});
+            }
+
+            return AlertDialog(
+              title: Text(_guidedModifyCutLabel),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(summary),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      onPressed: () => unawaited(adjust(moveStart: true, direction: -1)),
+                      icon: const Icon(Icons.keyboard_double_arrow_left),
+                      label: Text(_guidedMoveStartBackOneSecondLabel),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: () => unawaited(adjust(moveStart: true, direction: 1)),
+                      icon: const Icon(Icons.keyboard_double_arrow_right),
+                      label: Text(_guidedMoveStartForwardOneSecondLabel),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: () => unawaited(adjust(moveStart: false, direction: -1)),
+                      icon: const Icon(Icons.keyboard_double_arrow_left),
+                      label: Text(_guidedMoveEndBackOneSecondLabel),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: () => unawaited(adjust(moveStart: false, direction: 1)),
+                      icon: const Icon(Icons.keyboard_double_arrow_right),
+                      label: Text(_guidedMoveEndForwardOneSecondLabel),
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: () => unawaited(_listenGuidedCut()),
+                      icon: const Icon(Icons.hearing),
+                      label: Text(_guidedListenCutLabel),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: Text(MaterialLocalizations.of(dialogContext).closeButtonLabel),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _adjustGuidedCutByOneSecond({
+    required bool moveStart,
+    required int direction,
+  }) async {
+    final l10n = AppLocalizations.of(context);
+    final start = _guidedCutStart;
+    final end = _guidedCutEnd;
+    if (start == null || end == null) {
+      _showSnack(_guidedNeedStartEndMessage);
+      return;
+    }
+
+    final step = Duration(seconds: direction < 0 ? -1 : 1);
+    var newStart = start;
+    var newEnd = end;
+    if (moveStart) {
+      newStart += step;
+    } else {
+      newEnd += step;
+    }
+
+    if (newStart < Duration.zero) newStart = Duration.zero;
+    if (newEnd > _duration) newEnd = _duration;
+    if (newEnd <= newStart ||
+        newEnd.inMilliseconds - newStart.inMilliseconds < 250) {
+      _showSnack(l10n.mediaCutterInvalidSplitPoint);
+      unawaited(_logMediaCutter(
+        'guided cut adjust rejected too close moveStart=$moveStart direction=$direction '
+        'start=${_logPreciseDuration(start)} end=${_logPreciseDuration(end)} '
+        'newStart=${_logPreciseDuration(newStart)} newEnd=${_logPreciseDuration(newEnd)}',
+      ));
+      return;
+    }
+
+    final orderedStart = newStart;
+    final orderedEnd = newEnd;
+    final validStart = orderedStart == Duration.zero || _isInsideKeptPartStrict(orderedStart);
+    final validEnd = orderedEnd == _duration || _isInsideKeptPartStrict(orderedEnd);
+    if (!validStart || !validEnd) {
+      _showSnack(l10n.mediaCutterInvalidSplitPoint);
+      unawaited(_logMediaCutter(
+        'guided cut adjust rejected outside kept part moveStart=$moveStart direction=$direction '
+        'newStart=${_logPreciseDuration(orderedStart)} newEnd=${_logPreciseDuration(orderedEnd)}',
+      ));
+      return;
+    }
+
+    setState(() {
+      _guidedCutStart = orderedStart;
+      _guidedCutEnd = orderedEnd;
+      _position = moveStart ? orderedStart : orderedEnd;
+      _status = _guidedCutAdjustedMessage(orderedStart, orderedEnd);
+    });
+    await _seekTo(moveStart ? orderedStart : orderedEnd, clearPreview: true);
+    _showSnack(_guidedCutAdjustedMessage(orderedStart, orderedEnd));
+    unawaited(_logMediaCutter(
+      'guided cut adjusted moveStart=$moveStart direction=$direction '
+      'start=${_logPreciseDuration(orderedStart)} end=${_logPreciseDuration(orderedEnd)} '
+      '${_logPlaybackState()}',
+    ));
+  }
+
+  Future<void> _listenGuidedCut() async {
+    final start = _guidedCutStart;
+    final end = _guidedCutEnd;
+    if (start == null || end == null) {
+      _showSnack(_guidedNeedStartEndMessage);
+      return;
+    }
+    if (end <= start) {
+      _showSnack(AppLocalizations.of(context).mediaCutterInvalidSplitPoint);
+      return;
+    }
+    unawaited(_logMediaCutter(
+      'guided listen cut start=${_logPreciseDuration(start)} '
+      'end=${_logPreciseDuration(end)} ${_logPlaybackState()}',
+    ));
+    try {
+      await _pause();
+      if (!_isVideo && _usingRenderedPreviewSource) {
+        await _restoreOriginalAudioSource(seekTo: start);
+      }
+      await _setPlaybackVolume(1);
+      await _seekTo(start, clearPreview: false);
+      if (!mounted) return;
+      setState(() {
+        _previewPartIndex = null;
+        _previewPartEnd = end;
+        _position = start;
+      });
+      if (_isVideo) {
+        final controller = _videoController;
+        if (controller == null || !controller.value.isInitialized) return;
+        await controller.play();
+        await _setMagicTapPlaying(false);
+        if (mounted) setState(() => _playing = controller.value.isPlaying);
+      } else {
+        await _audioPlayer.play();
+        await _setMagicTapPlaying(false);
+      }
+    } catch (error) {
+      await AppLogger.log('Media cutter: guided listen cut failed error=$error');
+      if (mounted) _showSnack(AppLocalizations.of(context).mediaCutterSaveFailed(error));
+    }
+  }
+
+  void _addSplitPointIfNeeded(Duration point) {
+    if (point <= Duration.zero || point >= _duration) return;
+    if (_matchingExistingSplitPoint(point) != null) return;
+    _splitPoints = [..._splitPoints, point]..sort((a, b) => a.compareTo(b));
+  }
+
+  Future<void> _applyGuidedCut() async {
+    final l10n = AppLocalizations.of(context);
+    final start = _guidedCutStart;
+    final end = _guidedCutEnd;
+    if (start == null || end == null) {
+      _showSnack(_guidedNeedStartEndMessage);
+      return;
+    }
+    final cutStart = start <= end ? start : end;
+    final cutEnd = start <= end ? end : start;
+    if (cutStart < Duration.zero || cutEnd > _duration || cutEnd <= cutStart) {
+      _showSnack(l10n.mediaCutterInvalidSplitPoint);
+      return;
+    }
+    final validStart = cutStart == Duration.zero || _isInsideKeptPartStrict(cutStart);
+    final validEnd = cutEnd == _duration || _isInsideKeptPartStrict(cutEnd);
+    if (!validStart || !validEnd) {
+      _showSnack(l10n.mediaCutterInvalidSplitPoint);
+      unawaited(_logMediaCutter(
+        'guided cut rejected outside kept part start=${_logPreciseDuration(cutStart)} '
+        'end=${_logPreciseDuration(cutEnd)} parts=${_parts.asMap().entries.map((entry) => _logPart(entry.key, entry.value)).join(' || ')}',
+      ));
+      return;
+    }
+    await _pause();
+    _clearPartPreview();
+    if (!_isVideo && _usingRenderedPreviewSource) {
+      await _restoreOriginalAudioSource(seekTo: cutStart);
+    }
+    setState(() {
+      _addSplitPointIfNeeded(cutStart);
+      _addSplitPointIfNeeded(cutEnd);
+      _rebuildParts();
+      _parts = [
+        for (final part in _parts)
+          if (part.start >= cutStart && part.end <= cutEnd)
+            part.copyWith(keep: false)
+          else
+            part,
+      ];
+      _deletedPartHistory.add('$cutStart:$cutEnd');
+      _guidedCutStart = null;
+      _guidedCutEnd = null;
+      _hasUnsavedEdit = true;
+      _status = _guidedCutAppliedMessage(cutStart, cutEnd);
+    });
+    _showSnack(_guidedCutAppliedMessage(cutStart, cutEnd));
+    unawaited(_logMediaCutter(
+      'guided cut applied start=${_logPreciseDuration(cutStart)} '
+      'end=${_logPreciseDuration(cutEnd)} splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
+      'parts=${_parts.length} deleted=$_deletedPartCount',
+    ));
+  }
+
+  Future<void> _showGuidedEffectsDialog() async {
+    final index = _parts.indexWhere((part) => part.keep);
+    if (index < 0) return;
+    await _showPartEffectsDialog(index, applyToWholeFile: true);
+    if (!mounted || index >= _parts.length) return;
+    final source = _parts[index];
+    unawaited(_logMediaCutter(
+      'guided effects applied to whole file volume=${source.volumePercent}% '
+      'effect=${source.effect.name} secondary=${source.secondaryEffect.name} '
+      'third=${source.thirdEffect.name} fourth=${source.fourthEffect.name} '
+      'amount=${source.effectAmountPercent}%',
+    ));
+  }
+
   Duration _splitPointFromPosition(Duration position) {
     final milliseconds = position.inMilliseconds;
     return Duration(milliseconds: milliseconds < 0 ? 0 : milliseconds);
   }
 
-  Duration? _nearExistingSplitPoint(Duration point) {
+  Duration? _matchingExistingSplitPoint(Duration point) {
     for (final existing in _splitPoints) {
       final distance =
           (existing.inMilliseconds - point.inMilliseconds).abs();
-      if (distance < _minimumSplitSeparation.inMilliseconds) {
+      if (distance <= _splitBoundaryTolerance.inMilliseconds) {
         return existing;
       }
     }
     return null;
   }
+
+  int? _keptPartIndexContainingSplitPoint(Duration point) {
+    for (var i = 0; i < _parts.length; i++) {
+      final part = _parts[i];
+      if (!part.keep) continue;
+      if (point > part.start && point < part.end) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  int _visiblePartNumberForStart(Duration start) {
+    var visibleNumber = 0;
+    for (final part in _parts) {
+      if (!part.keep) continue;
+      visibleNumber++;
+      if ((part.start.inMilliseconds - start.inMilliseconds).abs() < 2) {
+        return visibleNumber;
+      }
+    }
+    return visibleNumber == 0 ? 1 : visibleNumber;
+  }
+
+  String _splitAddedAnnouncement(int partNumber) =>
+      _l10n.mediaCutterSplitAddedAnnouncement(partNumber);
 
   Future<void> _splitHere() async {
     final l10n = AppLocalizations.of(context);
@@ -1210,7 +1708,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (!_isVideo && _usingRenderedPreviewSource) {
       await _restoreOriginalAudioSource(seekTo: _position);
     }
-    final point = _splitPointFromPosition(_position);
+    var point = _splitPointFromPosition(_position);
     if (point <= Duration.zero || point >= _duration) {
       unawaited(_logMediaCutter(
         'split rejected invalid point=${_logPreciseDuration(point)} '
@@ -1219,27 +1717,48 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
       return;
     }
-    final nearExisting = _nearExistingSplitPoint(point);
-    if (nearExisting != null) {
+    final existing = _matchingExistingSplitPoint(point);
+    if (existing != null) {
       unawaited(_logMediaCutter(
-        'split rejected duplicate point=${_logPreciseDuration(point)} '
-        'near=${_logPreciseDuration(nearExisting)} '
-        'minimumGap=${_logPreciseDuration(_minimumSplitSeparation)} '
+        'split rejected exact duplicate point=${_logPreciseDuration(point)} '
+        'existing=${_logPreciseDuration(existing)} '
         'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')}',
       ));
       _showSnack(l10n.mediaCutterSplitAlreadyExists);
       return;
     }
+    final targetPartIndex = _keptPartIndexContainingSplitPoint(point);
+    if (targetPartIndex == null) {
+      unawaited(_logMediaCutter(
+        'split rejected not inside kept part point=${_logPreciseDuration(point)} '
+        'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
+        'parts=${_parts.asMap().entries.map((entry) => _logPart(entry.key, entry.value)).join(' || ')}',
+      ));
+      _showSnack(l10n.mediaCutterInvalidSplitPoint);
+      return;
+    }
+    final targetPart = _parts[targetPartIndex];
+    unawaited(_logMediaCutter(
+      'split target part index=$targetPartIndex '
+      'start=${_logPreciseDuration(targetPart.start)} '
+      'end=${_logPreciseDuration(targetPart.end)} '
+      'duration=${_logPreciseDuration(targetPart.duration)}',
+    ));
+    var addedVisiblePartNumber = 1;
     setState(() {
       _previewPartIndex = null;
       _previewPartEnd = null;
       _splitPoints = [..._splitPoints, point]..sort((a, b) => a.compareTo(b));
       _rebuildParts();
       _hasUnsavedEdit = true;
+      addedVisiblePartNumber = _visiblePartNumberForStart(point);
       _status = l10n.mediaCutterSplitAdded(_formatTime(point));
     });
+    final announcement = _splitAddedAnnouncement(addedVisiblePartNumber);
+    _showSnack(announcement);
     unawaited(_logMediaCutter(
       'split added point=${_logPreciseDuration(point)} '
+      'addedVisiblePart=$addedVisiblePartNumber '
       'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
       'parts=${_parts.length} deleted=$_deletedPartCount',
     ));
@@ -1412,7 +1931,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
-  Future<void> _showPartEffectsDialog(int index) async {
+  Future<void> _showPartEffectsDialog(int index, {bool applyToWholeFile = false}) async {
     if (_saving || index < 0 || index >= _parts.length || !_parts[index].keep) {
       return;
     }
@@ -1429,13 +1948,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          title: Text(l10n.mediaCutterPartEffectsTitle),
+          title: Text(applyToWholeFile ? _guidedEffectsLabel : l10n.mediaCutterPartEffectsTitle),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(l10n.mediaCutterPartEffectsDescription),
+                Text(applyToWholeFile ? _guidedEffectsDescription : l10n.mediaCutterPartEffectsDescription),
                 const SizedBox(height: 16),
                 ExcludeSemantics(
                   child: Text(l10n.mediaCutterPartVolumeValue(volumePercent)),
@@ -1607,7 +2126,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     setState(() {
       _parts = [
         for (var i = 0; i < _parts.length; i++)
-          if (i == index)
+          if (applyToWholeFile ? _parts[i].keep : i == index)
             _parts[i].copyWith(
               volumePercent: result.volumePercent,
               effect: result.effect,
@@ -1619,10 +2138,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           else
             _parts[i],
       ];
-      _status = l10n.mediaCutterPartEffectsApplied(
-        _formatTime(part.start),
-        _formatTime(part.end),
-      );
+      _status = applyToWholeFile
+          ? _guidedEffectsLabel
+          : l10n.mediaCutterPartEffectsApplied(
+              _formatTime(part.start),
+              _formatTime(part.end),
+            );
       _hasUnsavedEdit = true;
     });
     unawaited(_logMediaCutter(
@@ -1750,13 +2271,19 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   Future<bool> _confirmDiscardUnsavedEdit() async {
-    if (!_hasUnsavedEdit || _saving) return true;
+    if (_saving) return true;
+    final hasPendingGuidedCut = _hasPendingGuidedCut;
+    if (!_hasUnsavedEdit && !hasPendingGuidedCut) return true;
     final l10n = AppLocalizations.of(context);
     final result = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.mediaCutterUnsavedExitTitle),
-        content: Text(l10n.mediaCutterUnsavedExitMessage),
+        content: Text(
+          hasPendingGuidedCut && !_hasUnsavedEdit
+              ? _guidedPendingCutExitMessage
+              : l10n.mediaCutterUnsavedExitMessage,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
@@ -1769,6 +2296,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         ],
       ),
     );
+    if (result == true && hasPendingGuidedCut) {
+      unawaited(_logMediaCutter(
+        'discarding pending guided cut start=${_logMaybeDuration(_guidedCutStart)} '
+        'end=${_logMaybeDuration(_guidedCutEnd)} ${_logPlaybackState()}',
+      ));
+    }
     return result ?? false;
   }
 
@@ -3189,9 +3722,110 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
+
+  Widget _buildModeSelection() {
+    Widget modeCard({
+      required _MediaCutterMode mode,
+      required IconData icon,
+      required String title,
+      required String description,
+    }) {
+      return Card(
+        child: InkWell(
+          onTap: () => _selectMode(mode),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(icon, size: 32),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(description),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: Text(AppLocalizations.of(context).mediaCutterTitle)),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            modeCard(
+              mode: _MediaCutterMode.guided,
+              icon: Icons.content_cut,
+              title: _guidedModeTitle,
+              description: _guidedModeDescription,
+            ),
+            const SizedBox(height: 12),
+            modeCard(
+              mode: _MediaCutterMode.advanced,
+              icon: Icons.graphic_eq,
+              title: _advancedModeTitle,
+              description: _advancedModeDescription,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGuidedSummarySection(AppLocalizations l10n) {
+    if (_inputPath.isEmpty || _duration == Duration.zero) return const SizedBox();
+    final title = _displayName.isEmpty ? p.basename(_inputPath) : _displayName;
+    final summary = _guidedCurrentSummary;
+    final effectsAction = CustomSemanticsAction(label: _guidedEffectsLabel);
+    return Semantics(
+      key: const ValueKey('media_cutter_guided_summary_semantics'),
+      container: true,
+      button: true,
+      enabled: !_saving,
+      label: '$title, $summary',
+      hint: _guidedFileTapHint,
+      onTap: _saving ? null : () => _togglePlayback(),
+      customSemanticsActions: _saving
+          ? const <CustomSemanticsAction, VoidCallback>{}
+          : <CustomSemanticsAction, VoidCallback>{
+              effectsAction: () => unawaited(_showGuidedEffectsDialog()),
+            },
+      child: ExcludeSemantics(
+        child: Card(
+          child: ListTile(
+            enabled: !_saving,
+            onTap: !_saving ? () => _togglePlayback() : null,
+            leading: Icon(_playing ? Icons.pause : Icons.play_arrow),
+            title: Text(title),
+            subtitle: Text(summary),
+            trailing: IconButton(
+              tooltip: _guidedEffectsLabel,
+              icon: const Icon(Icons.tune),
+              onPressed: _saving ? null : _showGuidedEffectsDialog,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    if (_selectedMode == null) return _buildModeSelection();
     final canUseMedia = _inputPath.isNotEmpty && !_loading && !_saving;
 
     return PopScope(
@@ -3208,9 +3842,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text(l10n.mediaCutterInstruction1),
+              Text(_isGuidedMode ? _guidedModeTitle : _advancedModeTitle),
               const SizedBox(height: 4),
-              Text(l10n.mediaCutterInstruction2),
+              Text(_isGuidedMode ? _guidedModeDescription : _advancedModeDescription),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _loading || _saving ? null : () => unawaited(_changeMode()),
+                icon: const Icon(Icons.swap_horiz),
+                label: Text(_changeCutModeLabel),
+              ),
               const SizedBox(height: 16),
               FilledButton.icon(
                 onPressed: _loading || _saving ? null : _pickInput,
@@ -3242,8 +3882,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 const SizedBox(height: 16),
                 _buildVideoPreview(l10n),
               ],
-              const SizedBox(height: 20),
-              _buildPositionSlider(l10n),
               if (_inputPath.isNotEmpty && _duration != Duration.zero) ...[
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
@@ -3276,9 +3914,30 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             _videoRotation = value;
                             _hasUnsavedEdit = true;
                           });
+                          unawaited(_logMediaCutter(
+                            'video rotation changed rotation=${value.name} mode=${_selectedMode?.name ?? 'none'} ${_logPlaybackState()}',
+                          ));
                         },
                 ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: canUseMedia
+                      ? () => setState(
+                            () => _showVideoPreview = !_showVideoPreview,
+                          )
+                      : null,
+                  icon: Icon(
+                    _showVideoPreview ? Icons.videocam_off : Icons.videocam,
+                  ),
+                  label: Text(
+                    _showVideoPreview
+                        ? l10n.mediaCutterHideVideoPreview
+                        : l10n.enableVideo,
+                  ),
+                ),
               ],
+              const SizedBox(height: 20),
+              _buildPositionSlider(l10n),
               const SizedBox(height: 16),
               Wrap(
                 spacing: 12,
@@ -3290,38 +3949,50 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                     icon: Icon(_playing ? Icons.pause : Icons.play_arrow),
                     label: Text(_playing ? l10n.pause : l10n.play),
                   ),
-                  if (_isVideo)
-                    OutlinedButton.icon(
-                      onPressed: canUseMedia
-                          ? () => setState(
-                                () => _showVideoPreview = !_showVideoPreview,
-                              )
-                          : null,
-                      icon: Icon(
-                        _showVideoPreview ? Icons.videocam_off : Icons.videocam,
-                      ),
-                      label: Text(
-                        _showVideoPreview
-                            ? l10n.mediaCutterHideVideoPreview
-                            : l10n.enableVideo,
-                      ),
+                  if (_isGuidedMode) ...[
+                    FilledButton.icon(
+                      onPressed: canUseMedia ? _guidedCutButtonPressed : null,
+                      icon: const Icon(Icons.content_cut),
+                      label: Text(_guidedPrimaryCutButtonLabel),
                     ),
-                  FilledButton.icon(
-                    onPressed: canUseMedia ? _splitHere : null,
-                    icon: const Icon(Icons.content_cut),
-                    label: Text(l10n.mediaCutterSplit),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: canUseMedia && _hasDeletedParts
-                        ? _restoreDeletedPart
-                        : null,
-                    icon: const Icon(Icons.restore),
-                    label: Text(l10n.mediaCutterRestoreDeletedPart),
-                  ),
+                    OutlinedButton.icon(
+                      onPressed: canUseMedia &&
+                              _guidedCutStart != null &&
+                              _guidedCutEnd != null
+                          ? _listenGuidedCut
+                          : null,
+                      icon: const Icon(Icons.hearing),
+                      label: Text(_guidedListenCutLabel),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: canUseMedia &&
+                              _guidedCutStart != null &&
+                              _guidedCutEnd != null
+                          ? _showGuidedModifyCutDialog
+                          : null,
+                      icon: const Icon(Icons.tune),
+                      label: Text(_guidedModifyCutLabel),
+                    ),
+                  ] else ...[
+                    FilledButton.icon(
+                      onPressed: canUseMedia ? _splitHere : null,
+                      icon: const Icon(Icons.content_cut),
+                      label: Text(l10n.mediaCutterSplit),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: canUseMedia && _hasDeletedParts
+                          ? _restoreDeletedPart
+                          : null,
+                      icon: const Icon(Icons.restore),
+                      label: Text(l10n.mediaCutterRestoreDeletedPart),
+                    ),
+                  ],
                 ],
               ),
               const SizedBox(height: 20),
-              _buildPartsSection(l10n),
+              _isGuidedMode
+                  ? _buildGuidedSummarySection(l10n)
+                  : _buildPartsSection(l10n),
               const SizedBox(height: 20),
               Text(_status ?? l10n.mediaCutterReady),
               const SizedBox(height: 16),

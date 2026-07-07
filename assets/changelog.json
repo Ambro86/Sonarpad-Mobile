@@ -3,6 +3,8 @@
     "version": "0.3.2",
     "date": "2026-06-27",
     "it": [
+      "Nel Taglio guidato, se imposti inizio o fine taglio e provi a uscire senza applicare, Sonarpad ora avvisa prima di perdere il taglio preparato; il controllo di rotazione video resta disponibile anche nel flusso guidato.",
+      "Nel taglio guidato è stato aggiunto Modifica taglio: permette di spostare inizio o fine taglio avanti o indietro di 1 secondo e riascoltare il taglio senza rifarlo da capo.",
       "Migliorata la lettura dei documenti: alcuni testi con accenti particolari vengono ora letti meglio anche muovendosi carattere per carattere con VoiceOver.",
       "Migliorata l’apertura dei file TXT italiani provenienti dalla Biblioteca Digitale: anche importandoli dai Documenti, Sonarpad corregge meglio le vocali accentate visualizzate in modo errato.",
       "Corretto il test voce nelle impostazioni: quando cambi velocità o tono, il pulsante Test voce usa subito i nuovi valori.",
@@ -36,9 +38,14 @@
       "Taglia file media ora permette di regolare volume ed effetti audio per ogni parte, con una sola azione VoiceOver “Regola effetti” e applicazione finale tramite FFmpeg.",
       "Nelle Notizie sono stati aggiunti i pulsanti per proporre una testata alla comunità Sonarpad e per sfogliare le testate condivise della lingua selezionata, aggiungendole alla propria libreria con un tocco.",
       "Nelle Notizie la comunità Sonarpad ora usa sempre la lingua notizie selezionata; quando aggiungi una testata puoi inserire sia un feed RSS sia un sito web, con ricerca automatica del feed quando possibile.",
-      "In Taglia file media è stato aggiunto il pulsante Regola lo spostamento del file media, per scegliere di quanto avanzare o tornare indietro con lo slider."
+      "In Taglia file media è stato aggiunto il pulsante Regola lo spostamento del file media, per scegliere di quanto avanzare o tornare indietro con lo slider.",
+      "Migliorato Taglia file media: con VoiceOver i controlli di spostamento, video e rotazione sono prima dello slider; le divisioni vicino a un bordo possono spezzare la parte mantenuta e Sonarpad annuncia quale parte è stata aggiunta.",
+      "In Taglia file media, se dividi dentro una parte già esistente, quella parte viene spezzata in due e le parti successive vengono rinumerate correttamente.",
+      "In Taglia file media ora puoi scegliere tra Taglio guidato e Taglio avanzato. Il Taglio guidato permette di impostare inizio e fine, ascoltare il taglio da rimuovere e applicarlo, con una sola scheda riepilogativa del file e gli effetti applicati a tutto il risultato."
     ],
     "en": [
+      "In Guided cut, if you set a start or end point and try to leave without applying it, Sonarpad now warns before losing the prepared cut; video rotation remains available in the guided flow too.",
+      "Guided cut now includes Edit cut: move the start or end point forward or back by 1 second and listen again without starting over.",
       "Improved document reading: some texts with unusual accents are now read more reliably, including when moving character by character with VoiceOver.",
       "Improved opening Italian TXT files from the Digital Library: when imported from Documents, Sonarpad now fixes accented vowels that were shown incorrectly.",
       "Fixed the voice test in Settings: when you change speed or pitch, the Test voice button now uses the new values immediately.",
@@ -69,9 +76,14 @@
       "Cut media file now lets you adjust volume and audio effects for each part, with a single VoiceOver action “Adjust effects” and final processing through FFmpeg.",
       "News now includes buttons to submit a source to the Sonarpad community and browse shared sources for the selected language, adding them to your library with one tap.",
       "In News, the Sonarpad community now always uses the selected news language; when submitting a source you can enter either an RSS feed or a website, with automatic feed discovery when possible.",
-      "Media Cutter now includes an Adjust media file movement button to choose how far the slider moves forward or backward."
+      "Media Cutter now includes an Adjust media file movement button to choose how far the slider moves forward or backward.",
+      "Media Cutter has been improved: with VoiceOver, movement, video and rotation controls now appear before the slider; splits near an existing boundary can split the nearby kept part, and Sonarpad announces which part was added.",
+      "In Cut media file, splitting inside an existing part now splits that part in two and renumbers the following parts correctly.",
+      "Cut media file now lets you choose between Guided cut and Advanced cut. Guided cut lets you set the start and end, listen to the section to remove and apply the cut, with one file summary card and effects applied to the whole result."
     ],
     "fr": [
+      "Dans la découpe guidée, si vous définissez un début ou une fin puis quittez sans appliquer, Sonarpad avertit désormais avant de perdre la découpe préparée ; la rotation vidéo reste aussi disponible dans le flux guidé.",
+      "La découpe guidée inclut maintenant Modifier la découpe : déplacez le début ou la fin d’une seconde en avant ou en arrière et réécoutez sans recommencer.",
       "Amélioration de la lecture des documents : certains textes avec des accents particuliers sont maintenant mieux lus, y compris caractère par caractère avec VoiceOver.",
       "Amélioration de l’ouverture des fichiers TXT italiens de la Bibliothèque numérique : importés depuis Documents, Sonarpad corrige mieux les voyelles accentuées affichées de façon incorrecte.",
       "Correction du test vocal dans les réglages : lorsque vous changez la vitesse ou la hauteur, le bouton Tester la voix utilise immédiatement les nouvelles valeurs.",
@@ -102,9 +114,14 @@
       "Couper le fichier média permet maintenant de régler le volume et les effets audio pour chaque partie, avec une seule action VoiceOver « Régler les effets » et une application finale via FFmpeg.",
       "Les Actualités disposent maintenant de boutons pour proposer une source à la communauté Sonarpad et parcourir les sources partagées de la langue sélectionnée, afin de les ajouter à votre bibliothèque d’un toucher.",
       "Dans Actualités, la communauté Sonarpad utilise toujours la langue d’actualités sélectionnée ; lors de l’ajout d’une source, vous pouvez saisir un flux RSS ou un site web, avec recherche automatique du flux quand c’est possible.",
-      "Taglia file media ajoute un bouton pour régler le déplacement du fichier média et choisir de combien avancer ou reculer avec le curseur."
+      "Taglia file media ajoute un bouton pour régler le déplacement du fichier média et choisir de combien avancer ou reculer avec le curseur.",
+      "Taglia file media a été amélioré : avec VoiceOver, les commandes de déplacement, vidéo et rotation se trouvent avant le curseur ; les divisions proches d’un bord peuvent couper la partie conservée, et Sonarpad annonce quelle partie a été ajoutée.",
+      "Dans Couper le fichier média, une division à l’intérieur d’une partie existante coupe maintenant cette partie en deux et renumérote correctement les parties suivantes.",
+      "Taglia file media permet maintenant de choisir entre Découpe guidée et Découpe avancée. La découpe guidée permet de définir le début et la fin, d’écouter la partie à retirer et d’appliquer la découpe, avec une seule fiche récapitulative et des effets appliqués à tout le résultat."
     ],
     "es": [
+      "En el corte guiado, si defines un inicio o un final y sales sin aplicarlo, Sonarpad ahora avisa antes de perder el corte preparado; la rotación de vídeo también está disponible en el flujo guiado.",
+      "El corte guiado ahora incluye Modificar corte: mueve el inicio o el final 1 segundo hacia adelante o hacia atrás y vuelve a escucharlo sin empezar de nuevo.",
       "Mejorada la lectura de documentos: algunos textos con acentos especiales ahora se leen mejor, también al moverse carácter por carácter con VoiceOver.",
       "Mejorada la apertura de archivos TXT italianos de la Biblioteca Digital: al importarlos desde Documentos, Sonarpad corrige mejor las vocales acentuadas mostradas de forma incorrecta.",
       "Corregida la prueba de voz en Ajustes: al cambiar la velocidad o el tono, el botón Probar voz usa inmediatamente los nuevos valores.",
@@ -135,9 +152,14 @@
       "Cortar archivo multimedia ahora permite ajustar el volumen y los efectos de audio de cada parte, con una sola acción de VoiceOver “Ajustar efectos” y procesamiento final mediante FFmpeg.",
       "Noticias ahora incluye botones para proponer una fuente a la comunidad de Sonarpad y explorar las fuentes compartidas del idioma seleccionado, añadiéndolas a tu biblioteca con un toque.",
       "En Noticias, la comunidad de Sonarpad usa siempre el idioma de noticias seleccionado; al enviar una fuente puedes introducir un feed RSS o un sitio web, con búsqueda automática del feed cuando sea posible.",
-      "Taglia file media añade un botón para ajustar el desplazamiento del archivo multimedia y elegir cuánto avanzar o retroceder con el control deslizante."
+      "Taglia file media añade un botón para ajustar el desplazamiento del archivo multimedia y elegir cuánto avanzar o retroceder con el control deslizante.",
+      "Taglia file media se ha mejorado: con VoiceOver, los controles de desplazamiento, vídeo y rotación están antes del control deslizante; las divisiones cerca de un borde pueden cortar la parte conservada, y Sonarpad anuncia qué parte se ha añadido.",
+      "En Cortar archivo multimedia, si divides dentro de una parte existente, esa parte se divide en dos y las partes siguientes se renumeran correctamente.",
+      "Taglia file media ahora permite elegir entre Corte guiado y Corte avanzado. El corte guiado permite definir inicio y fin, escuchar la sección que se eliminará y aplicar el corte, con una sola ficha de resumen del archivo y efectos aplicados a todo el resultado."
     ],
     "pt": [
+      "No corte guiado, se definir um início ou fim e tentar sair sem aplicar, o Sonarpad avisa antes de perder o corte preparado; a rotação de vídeo também fica disponível no fluxo guiado.",
+      "O corte guiado inclui agora Modificar corte: avance ou recue o início ou o fim 1 segundo e volte a ouvir sem recomeçar.",
       "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caráter a caráter com o VoiceOver.",
       "Melhorada a abertura de ficheiros TXT italianos da Biblioteca Digital: ao importar a partir dos Documentos, o Sonarpad corrige melhor as vogais acentuadas apresentadas de forma incorreta.",
       "Corrigido o teste de voz nas definições: ao alterar a velocidade ou o tom, o botão Testar voz usa imediatamente os novos valores.",
@@ -168,9 +190,14 @@
       "Cortar ficheiro multimédia agora permite ajustar o volume e os efeitos de áudio de cada parte, com uma única ação do VoiceOver “Ajustar efeitos” e processamento final pelo FFmpeg.",
       "As Notícias agora incluem botões para enviar uma fonte para a comunidade Sonarpad e explorar as fontes partilhadas do idioma selecionado, adicionando-as à biblioteca com um toque.",
       "Nas Notícias, a comunidade Sonarpad passa a usar sempre o idioma de notícias selecionado; ao enviar uma fonte, pode introduzir um feed RSS ou um site, com deteção automática do feed quando possível.",
-      "Taglia file media adiciona um botão para regular o deslocamento do arquivo de mídia e escolher quanto avançar ou retroceder com o controle deslizante."
+      "Taglia file media adiciona um botão para regular o deslocamento do arquivo de mídia e escolher quanto avançar ou retroceder com o controle deslizante.",
+      "Taglia file media foi melhorado: com VoiceOver, os controles de deslocamento, vídeo e rotação ficam antes do controle deslizante; divisões perto de uma borda podem cortar a parte mantida, e o Sonarpad anuncia qual parte foi adicionada.",
+      "Em Cortar arquivo de mídia, ao dividir dentro de uma parte existente, essa parte agora é dividida em duas e as partes seguintes são renumeradas corretamente.",
+      "Taglia file media agora permite escolher entre Corte guiado e Corte avançado. O corte guiado permite definir início e fim, ouvir a parte a remover e aplicar o corte, com um único cartão de resumo do ficheiro e efeitos aplicados a todo o resultado."
     ],
     "pl": [
+      "W cięciu z przewodnikiem, jeśli ustawisz początek lub koniec i spróbujesz wyjść bez zastosowania, Sonarpad ostrzega przed utratą przygotowanego cięcia; obrót wideo jest nadal dostępny także w trybie z przewodnikiem.",
+      "Cięcie z przewodnikiem ma teraz opcję Edytuj cięcie: można przesunąć początek lub koniec o 1 sekundę do przodu albo wstecz i odsłuchać ponownie bez zaczynania od nowa.",
       "Ulepszono czytanie dokumentów: niektóre teksty z nietypowymi akcentami są teraz odczytywane lepiej, także podczas przechodzenia znak po znaku z VoiceOver.",
       "Ulepszono otwieranie włoskich plików TXT z Biblioteki Cyfrowej: przy imporcie z Dokumentów Sonarpad lepiej poprawia błędnie wyświetlane samogłoski akcentowane.",
       "Naprawiono test głosu w ustawieniach: po zmianie szybkości lub tonu przycisk Test głosu od razu używa nowych wartości.",
@@ -202,9 +229,14 @@
       "Przytnij plik multimedialny pozwala teraz regulować głośność i efekty audio dla każdej części, z jedną akcją VoiceOver „Dostosuj efekty” i końcowym przetwarzaniem przez FFmpeg.",
       "W Wiadomościach dodano przyciski do zgłaszania źródeł do społeczności Sonarpad oraz przeglądania źródeł udostępnionych dla wybranego języka i dodawania ich do własnej biblioteki jednym stuknięciem.",
       "W Wiadomościach społeczność Sonarpad zawsze używa wybranego języka wiadomości; przy zgłaszaniu źródła można wpisać kanał RSS albo stronę internetową, a kanał zostanie wyszukany automatycznie, gdy to możliwe.",
-      "Taglia file media ma teraz przycisk do ustawiania przesuwania pliku multimedialnego, aby wybrać, o ile przesuwać suwak do przodu lub do tyłu."
+      "Taglia file media ma teraz przycisk do ustawiania przesuwania pliku multimedialnego, aby wybrać, o ile przesuwać suwak do przodu lub do tyłu.",
+      "Ulepszono Taglia file media: w VoiceOver elementy sterujące przesuwaniem, wideo i obrotem są przed suwakiem; podziały blisko granicy mogą rozdzielić zachowaną część, a Sonarpad ogłasza, która część została dodana.",
+      "W funkcji Przytnij plik multimedialny podział wewnątrz istniejącej części dzieli teraz tę część na dwie i poprawnie zmienia numerację kolejnych części.",
+      "Funkcja przycinania plików multimedialnych pozwala teraz wybrać tryb z przewodnikiem lub zaawansowany. Tryb z przewodnikiem umożliwia ustawienie początku i końca, odsłuchanie fragmentu do usunięcia i zastosowanie cięcia, z jedną kartą podsumowania pliku i efektami dla całego wyniku."
     ],
     "cs": [
+      "V průvodci střihem Sonarpad nyní upozorní, když nastavíte začátek nebo konec a pokusíte se odejít bez použití střihu; otočení videa zůstává dostupné i v průvodci.",
+      "Průvodce střihem nyní obsahuje Upravit střih: začátek nebo konec lze posunout o 1 sekundu vpřed či zpět a znovu poslechnout bez opakování od začátku.",
       "Vylepšeno čtení dokumentů: některé texty se zvláštními akcenty se nyní čtou lépe, i při pohybu znak po znaku pomocí VoiceOveru.",
       "Vylepšeno otevírání italských souborů TXT z Digitální knihovny: při importu z Dokumentů Sonarpad lépe opravuje chybně zobrazené samohlásky s diakritikou.",
       "Opraven test hlasu v nastavení: po změně rychlosti nebo výšky tlačítko Test hlasu okamžitě použije nové hodnoty.",
@@ -235,7 +267,10 @@
       "Oříznout mediální soubor nyní umožňuje upravit hlasitost a zvukové efekty pro každou část, s jedinou akcí VoiceOver „Upravit efekty“ a finálním zpracováním přes FFmpeg.",
       "Ve Zprávách přibyla tlačítka pro odeslání zdroje do komunity Sonarpad a pro procházení sdílených zdrojů vybraného jazyka, které lze jedním klepnutím přidat do vlastní knihovny.",
       "Ve Zprávách komunita Sonarpad vždy používá vybraný jazyk zpráv; při odesílání zdroje lze zadat RSS kanál nebo web a kanál se pokud možno vyhledá automaticky.",
-      "Taglia file media nyní obsahuje tlačítko pro nastavení posunu mediálního souboru, takže lze zvolit, o kolik se má posuvník posouvat dopředu nebo dozadu."
+      "Taglia file media nyní obsahuje tlačítko pro nastavení posunu mediálního souboru, takže lze zvolit, o kolik se má posuvník posouvat dopředu nebo dozadu.",
+      "Taglia file media bylo vylepšeno: ve VoiceOveru jsou ovládací prvky posunu, videa a otočení před posuvníkem; rozdělení blízko hranice může rozdělit zachovanou část a Sonarpad oznámí, která část byla přidána.",
+      "Ve funkci Oříznout mediální soubor rozdělení uvnitř existující části nyní rozdělí tuto část na dvě a správně přečísluje následující části.",
+      "Střih mediálního souboru nyní umožňuje vybrat průvodce střihem nebo pokročilý střih. Průvodce umožňuje nastavit začátek a konec, poslechnout si odstraňovanou část a střih použít, s jednou souhrnnou kartou souboru a efekty pro celý výsledek."
     ]
   },
   {

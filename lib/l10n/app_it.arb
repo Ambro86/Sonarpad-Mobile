@@ -3442,6 +3442,97 @@
       }
     }
   },
+  "mediaCutterGuidedModeTitle": "Taglio guidato",
+  "mediaCutterGuidedModeDescription": "Adatto per chi comincia. È sufficiente selezionare un punto iniziale e un punto finale, ascoltare il taglio e poi applicarlo.",
+  "mediaCutterAdvancedModeTitle": "Taglio avanzato",
+  "mediaCutterAdvancedModeDescription": "Ispirato ai programmi di manipolazione media più famosi, permette di dividere un file media in diverse parti ed eliminare le parti non volute.",
+  "mediaCutterChangeCutMode": "Cambia tipo di taglio",
+  "mediaCutterGuidedSetStart": "Inizio taglio",
+  "mediaCutterGuidedSetEnd": "Fine taglio",
+  "mediaCutterGuidedApplyCut": "Applica taglio",
+  "mediaCutterGuidedListenCut": "Ascolta taglio",
+  "mediaCutterGuidedModifyCut": "Modifica taglio",
+  "mediaCutterGuidedMoveStartBackOneSecond": "Sposta inizio taglio indietro di 1 secondo",
+  "mediaCutterGuidedMoveStartForwardOneSecond": "Sposta inizio taglio avanti di 1 secondo",
+  "mediaCutterGuidedMoveEndBackOneSecond": "Sposta fine taglio indietro di 1 secondo",
+  "mediaCutterGuidedMoveEndForwardOneSecond": "Sposta fine taglio avanti di 1 secondo",
+  "mediaCutterGuidedCutAdjusted": "Taglio modificato da {start} a {end}.",
+  "@mediaCutterGuidedCutAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNoCut": "Nessun taglio",
+  "mediaCutterGuidedEffectsAction": "Regola effetti del file",
+  "mediaCutterGuidedEffectsDescription": "Regola volume ed effetti per tutto il file risultante.",
+  "mediaCutterGuidedFileTapHint": "Tocca due volte per riprodurre il file risultante. Usa l’azione Regola effetti del file per applicare effetti a tutto il file.",
+  "mediaCutterGuidedStartSet": "Inizio taglio impostato a {start}.",
+  "@mediaCutterGuidedStartSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedEndSet": "Fine taglio impostata a {end}. Taglio da {start} a {end}.",
+  "@mediaCutterGuidedEndSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutApplied": "Taglio applicato da {start} a {end}.",
+  "@mediaCutterGuidedCutApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNeedStartEnd": "Imposta prima inizio e fine taglio.",
+  "mediaCutterGuidedCutSummary": "Taglio da {start} a {end}",
+  "@mediaCutterGuidedCutSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedMultipleCutSummary": "{count} tagli: {cuts}",
+  "@mediaCutterGuidedMultipleCutSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cuts": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedPendingCutExitMessage": "Hai un taglio guidato non applicato. Vuoi uscire senza conservarlo?",
+  "mediaCutterSplitAddedAnnouncement": "Divisione aggiunta. Parte {partNumber} aggiunta.",
+  "@mediaCutterSplitAddedAnnouncement": {
+    "placeholders": {
+      "partNumber": {
+        "type": "int"
+      }
+    }
+  },
   "newsAddCommunitySource": "Aggiungi testata alla comunità di Sonarpad",
   "@newsAddCommunitySource": {
     "description": "Localized text for newsAddCommunitySource."

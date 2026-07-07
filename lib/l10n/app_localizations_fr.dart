@@ -2725,6 +2725,101 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get mediaCutterGuidedModeTitle => 'Découpe guidée';
+
+  @override
+  String get mediaCutterGuidedModeDescription => 'Adapté aux débutants. Sélectionnez un point de début et un point de fin, écoutez la découpe, puis appliquez-la.';
+
+  @override
+  String get mediaCutterAdvancedModeTitle => 'Découpe avancée';
+
+  @override
+  String get mediaCutterAdvancedModeDescription => 'Inspiré des programmes de montage multimédia les plus connus. Il permet de diviser un fichier média en plusieurs parties et de supprimer celles que vous ne voulez pas.';
+
+  @override
+  String get mediaCutterChangeCutMode => 'Changer le type de découpe';
+
+  @override
+  String get mediaCutterGuidedSetStart => 'Début de la découpe';
+
+  @override
+  String get mediaCutterGuidedSetEnd => 'Fin de la découpe';
+
+  @override
+  String get mediaCutterGuidedApplyCut => 'Appliquer la découpe';
+
+  @override
+  String get mediaCutterGuidedListenCut => 'Écouter la découpe';
+
+  @override
+  String get mediaCutterGuidedModifyCut => 'Modifier la découpe';
+
+  @override
+  String get mediaCutterGuidedMoveStartBackOneSecond => 'Reculer le début de la découpe de 1 seconde';
+
+  @override
+  String get mediaCutterGuidedMoveStartForwardOneSecond => 'Avancer le début de la découpe de 1 seconde';
+
+  @override
+  String get mediaCutterGuidedMoveEndBackOneSecond => 'Reculer la fin de la découpe de 1 seconde';
+
+  @override
+  String get mediaCutterGuidedMoveEndForwardOneSecond => 'Avancer la fin de la découpe de 1 seconde';
+
+  @override
+  String mediaCutterGuidedCutAdjusted(String start, String end) {
+    return 'Découpe modifiée de $start à $end.';
+  }
+
+  @override
+  String get mediaCutterGuidedNoCut => 'Aucune découpe';
+
+  @override
+  String get mediaCutterGuidedEffectsAction => 'Régler les effets du fichier';
+
+  @override
+  String get mediaCutterGuidedEffectsDescription => 'Réglez le volume et les effets pour tout le fichier obtenu.';
+
+  @override
+  String get mediaCutterGuidedFileTapHint => 'Touchez deux fois pour lire le fichier obtenu. Utilisez Régler les effets du fichier pour appliquer les effets à tout le fichier.';
+
+  @override
+  String mediaCutterGuidedStartSet(String start) {
+    return 'Début de la découpe défini à $start.';
+  }
+
+  @override
+  String mediaCutterGuidedEndSet(String start, String end) {
+    return 'Fin de la découpe définie à $end. Découpe de $start à $end.';
+  }
+
+  @override
+  String mediaCutterGuidedCutApplied(String start, String end) {
+    return 'Découpe appliquée de $start à $end.';
+  }
+
+  @override
+  String get mediaCutterGuidedNeedStartEnd => 'Définissez d’abord le début et la fin de la découpe.';
+
+  @override
+  String mediaCutterGuidedCutSummary(String start, String end) {
+    return 'Découpe de $start à $end';
+  }
+
+  @override
+  String mediaCutterGuidedMultipleCutSummary(int count, String cuts) {
+    return '$count découpes : $cuts';
+  }
+
+  @override
+  String get mediaCutterGuidedPendingCutExitMessage => 'Vous avez une découpe guidée non appliquée. Voulez-vous quitter sans la conserver ?';
+
+  @override
+  String mediaCutterSplitAddedAnnouncement(int partNumber) {
+    return 'Division ajoutée. Partie $partNumber ajoutée.';
+  }
+
+  @override
   String get newsAddCommunitySource =>
       'Ajouter une source à la communauté Sonarpad';
 

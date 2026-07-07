@@ -1264,6 +1264,97 @@
       }
     }
   },
+  "mediaCutterGuidedModeTitle": "Guided cut",
+  "mediaCutterGuidedModeDescription": "Suitable for beginners. Select a start point and an end point, listen to the cut, then apply it.",
+  "mediaCutterAdvancedModeTitle": "Advanced cut",
+  "mediaCutterAdvancedModeDescription": "Inspired by popular media editing programs. It lets you split a media file into several parts and remove the parts you do not want.",
+  "mediaCutterChangeCutMode": "Change cut type",
+  "mediaCutterGuidedSetStart": "Cut start",
+  "mediaCutterGuidedSetEnd": "Cut end",
+  "mediaCutterGuidedApplyCut": "Apply cut",
+  "mediaCutterGuidedListenCut": "Listen to cut",
+  "mediaCutterGuidedModifyCut": "Edit cut",
+  "mediaCutterGuidedMoveStartBackOneSecond": "Move cut start back by 1 second",
+  "mediaCutterGuidedMoveStartForwardOneSecond": "Move cut start forward by 1 second",
+  "mediaCutterGuidedMoveEndBackOneSecond": "Move cut end back by 1 second",
+  "mediaCutterGuidedMoveEndForwardOneSecond": "Move cut end forward by 1 second",
+  "mediaCutterGuidedCutAdjusted": "Cut changed from {start} to {end}.",
+  "@mediaCutterGuidedCutAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNoCut": "No cut",
+  "mediaCutterGuidedEffectsAction": "Adjust file effects",
+  "mediaCutterGuidedEffectsDescription": "Adjust volume and effects for the whole resulting file.",
+  "mediaCutterGuidedFileTapHint": "Double tap to play the resulting file. Use Adjust file effects to apply effects to the whole file.",
+  "mediaCutterGuidedStartSet": "Cut start set to {start}.",
+  "@mediaCutterGuidedStartSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedEndSet": "Cut end set to {end}. Cut from {start} to {end}.",
+  "@mediaCutterGuidedEndSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutApplied": "Cut applied from {start} to {end}.",
+  "@mediaCutterGuidedCutApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNeedStartEnd": "Set the cut start and end first.",
+  "mediaCutterGuidedCutSummary": "Cut from {start} to {end}",
+  "@mediaCutterGuidedCutSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedMultipleCutSummary": "{count} cuts: {cuts}",
+  "@mediaCutterGuidedMultipleCutSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cuts": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedPendingCutExitMessage": "You have a guided cut that has not been applied. Do you want to leave without keeping it?",
+  "mediaCutterSplitAddedAnnouncement": "Split added. Part {partNumber} added.",
+  "@mediaCutterSplitAddedAnnouncement": {
+    "placeholders": {
+      "partNumber": {
+        "type": "int"
+      }
+    }
+  },
   "newsAddCommunitySource": "Add news source to Sonarpad community",
   "@newsAddCommunitySource": {
     "description": "Localized text for newsAddCommunitySource."

@@ -2706,6 +2706,101 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String get mediaCutterGuidedModeTitle => 'Průvodce střihem';
+
+  @override
+  String get mediaCutterGuidedModeDescription => 'Vhodné pro začátečníky. Vyberte začátek a konec, poslechněte si střih a potom jej použijte.';
+
+  @override
+  String get mediaCutterAdvancedModeTitle => 'Pokročilý střih';
+
+  @override
+  String get mediaCutterAdvancedModeDescription => 'Inspirováno známými programy pro úpravu médií. Umožňuje rozdělit soubor na více částí a odstranit nechtěné části.';
+
+  @override
+  String get mediaCutterChangeCutMode => 'Změnit typ střihu';
+
+  @override
+  String get mediaCutterGuidedSetStart => 'Začátek střihu';
+
+  @override
+  String get mediaCutterGuidedSetEnd => 'Konec střihu';
+
+  @override
+  String get mediaCutterGuidedApplyCut => 'Použít střih';
+
+  @override
+  String get mediaCutterGuidedListenCut => 'Poslechnout střih';
+
+  @override
+  String get mediaCutterGuidedModifyCut => 'Upravit střih';
+
+  @override
+  String get mediaCutterGuidedMoveStartBackOneSecond => 'Posunout začátek střihu o 1 sekundu zpět';
+
+  @override
+  String get mediaCutterGuidedMoveStartForwardOneSecond => 'Posunout začátek střihu o 1 sekundu vpřed';
+
+  @override
+  String get mediaCutterGuidedMoveEndBackOneSecond => 'Posunout konec střihu o 1 sekundu zpět';
+
+  @override
+  String get mediaCutterGuidedMoveEndForwardOneSecond => 'Posunout konec střihu o 1 sekundu vpřed';
+
+  @override
+  String mediaCutterGuidedCutAdjusted(String start, String end) {
+    return 'Střih změněn od $start do $end.';
+  }
+
+  @override
+  String get mediaCutterGuidedNoCut => 'Žádný střih';
+
+  @override
+  String get mediaCutterGuidedEffectsAction => 'Upravit efekty souboru';
+
+  @override
+  String get mediaCutterGuidedEffectsDescription => 'Upravte hlasitost a efekty pro celý výsledný soubor.';
+
+  @override
+  String get mediaCutterGuidedFileTapHint => 'Dvojitým klepnutím přehrajete výsledný soubor. Pomocí úpravy efektů použijete efekty na celý soubor.';
+
+  @override
+  String mediaCutterGuidedStartSet(String start) {
+    return 'Začátek střihu nastaven na $start.';
+  }
+
+  @override
+  String mediaCutterGuidedEndSet(String start, String end) {
+    return 'Konec střihu nastaven na $end. Střih od $start do $end.';
+  }
+
+  @override
+  String mediaCutterGuidedCutApplied(String start, String end) {
+    return 'Střih použit od $start do $end.';
+  }
+
+  @override
+  String get mediaCutterGuidedNeedStartEnd => 'Nejprve nastavte začátek a konec střihu.';
+
+  @override
+  String mediaCutterGuidedCutSummary(String start, String end) {
+    return 'Střih od $start do $end';
+  }
+
+  @override
+  String mediaCutterGuidedMultipleCutSummary(int count, String cuts) {
+    return '$count střihů: $cuts';
+  }
+
+  @override
+  String get mediaCutterGuidedPendingCutExitMessage => 'Máte nepoužitý střih z průvodce. Chcete odejít bez jeho zachování?';
+
+  @override
+  String mediaCutterSplitAddedAnnouncement(int partNumber) {
+    return 'Rozdělení přidáno. Část $partNumber přidána.';
+  }
+
+  @override
   String get newsAddCommunitySource => 'Přidat zdroj do komunity Sonarpad';
 
   @override

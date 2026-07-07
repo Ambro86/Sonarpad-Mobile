@@ -4958,6 +4958,89 @@ abstract class AppLocalizations {
   /// **'Volume {percent}%, effetto {effect}'**
   String mediaCutterPartEffectsSummary(int percent, String effect);
 
+
+
+  /// No description provided for @mediaCutterGuidedModeTitle.
+  String get mediaCutterGuidedModeTitle;
+
+  /// No description provided for @mediaCutterGuidedModeDescription.
+  String get mediaCutterGuidedModeDescription;
+
+  /// No description provided for @mediaCutterAdvancedModeTitle.
+  String get mediaCutterAdvancedModeTitle;
+
+  /// No description provided for @mediaCutterAdvancedModeDescription.
+  String get mediaCutterAdvancedModeDescription;
+
+  /// No description provided for @mediaCutterChangeCutMode.
+  String get mediaCutterChangeCutMode;
+
+  /// No description provided for @mediaCutterGuidedSetStart.
+  String get mediaCutterGuidedSetStart;
+
+  /// No description provided for @mediaCutterGuidedSetEnd.
+  String get mediaCutterGuidedSetEnd;
+
+  /// No description provided for @mediaCutterGuidedApplyCut.
+  String get mediaCutterGuidedApplyCut;
+
+  /// No description provided for @mediaCutterGuidedListenCut.
+  String get mediaCutterGuidedListenCut;
+
+  /// No description provided for @mediaCutterGuidedModifyCut.
+  String get mediaCutterGuidedModifyCut;
+
+  /// No description provided for @mediaCutterGuidedMoveStartBackOneSecond.
+  String get mediaCutterGuidedMoveStartBackOneSecond;
+
+  /// No description provided for @mediaCutterGuidedMoveStartForwardOneSecond.
+  String get mediaCutterGuidedMoveStartForwardOneSecond;
+
+  /// No description provided for @mediaCutterGuidedMoveEndBackOneSecond.
+  String get mediaCutterGuidedMoveEndBackOneSecond;
+
+  /// No description provided for @mediaCutterGuidedMoveEndForwardOneSecond.
+  String get mediaCutterGuidedMoveEndForwardOneSecond;
+
+  /// No description provided for @mediaCutterGuidedCutAdjusted.
+  String mediaCutterGuidedCutAdjusted(String start, String end);
+
+  /// No description provided for @mediaCutterGuidedNoCut.
+  String get mediaCutterGuidedNoCut;
+
+  /// No description provided for @mediaCutterGuidedEffectsAction.
+  String get mediaCutterGuidedEffectsAction;
+
+  /// No description provided for @mediaCutterGuidedEffectsDescription.
+  String get mediaCutterGuidedEffectsDescription;
+
+  /// No description provided for @mediaCutterGuidedFileTapHint.
+  String get mediaCutterGuidedFileTapHint;
+
+  /// No description provided for @mediaCutterGuidedStartSet.
+  String mediaCutterGuidedStartSet(String start);
+
+  /// No description provided for @mediaCutterGuidedEndSet.
+  String mediaCutterGuidedEndSet(String start, String end);
+
+  /// No description provided for @mediaCutterGuidedCutApplied.
+  String mediaCutterGuidedCutApplied(String start, String end);
+
+  /// No description provided for @mediaCutterGuidedNeedStartEnd.
+  String get mediaCutterGuidedNeedStartEnd;
+
+  /// No description provided for @mediaCutterGuidedCutSummary.
+  String mediaCutterGuidedCutSummary(String start, String end);
+
+  /// No description provided for @mediaCutterGuidedMultipleCutSummary.
+  String mediaCutterGuidedMultipleCutSummary(int count, String cuts);
+
+  /// No description provided for @mediaCutterGuidedPendingCutExitMessage.
+  String get mediaCutterGuidedPendingCutExitMessage;
+
+  /// No description provided for @mediaCutterSplitAddedAnnouncement.
+  String mediaCutterSplitAddedAnnouncement(int partNumber);
+
   /// Localized text for newsAddCommunitySource.
   ///
   /// In it, this message translates to:

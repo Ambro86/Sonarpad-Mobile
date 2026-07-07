@@ -1270,6 +1270,97 @@
       }
     }
   },
+  "mediaCutterGuidedModeTitle": "Découpe guidée",
+  "mediaCutterGuidedModeDescription": "Adapté aux débutants. Sélectionnez un point de début et un point de fin, écoutez la découpe, puis appliquez-la.",
+  "mediaCutterAdvancedModeTitle": "Découpe avancée",
+  "mediaCutterAdvancedModeDescription": "Inspiré des programmes de montage multimédia les plus connus. Il permet de diviser un fichier média en plusieurs parties et de supprimer celles que vous ne voulez pas.",
+  "mediaCutterChangeCutMode": "Changer le type de découpe",
+  "mediaCutterGuidedSetStart": "Début de la découpe",
+  "mediaCutterGuidedSetEnd": "Fin de la découpe",
+  "mediaCutterGuidedApplyCut": "Appliquer la découpe",
+  "mediaCutterGuidedListenCut": "Écouter la découpe",
+  "mediaCutterGuidedModifyCut": "Modifier la découpe",
+  "mediaCutterGuidedMoveStartBackOneSecond": "Reculer le début de la découpe de 1 seconde",
+  "mediaCutterGuidedMoveStartForwardOneSecond": "Avancer le début de la découpe de 1 seconde",
+  "mediaCutterGuidedMoveEndBackOneSecond": "Reculer la fin de la découpe de 1 seconde",
+  "mediaCutterGuidedMoveEndForwardOneSecond": "Avancer la fin de la découpe de 1 seconde",
+  "mediaCutterGuidedCutAdjusted": "Découpe modifiée de {start} à {end}.",
+  "@mediaCutterGuidedCutAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNoCut": "Aucune découpe",
+  "mediaCutterGuidedEffectsAction": "Régler les effets du fichier",
+  "mediaCutterGuidedEffectsDescription": "Réglez le volume et les effets pour tout le fichier obtenu.",
+  "mediaCutterGuidedFileTapHint": "Touchez deux fois pour lire le fichier obtenu. Utilisez Régler les effets du fichier pour appliquer les effets à tout le fichier.",
+  "mediaCutterGuidedStartSet": "Début de la découpe défini à {start}.",
+  "@mediaCutterGuidedStartSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedEndSet": "Fin de la découpe définie à {end}. Découpe de {start} à {end}.",
+  "@mediaCutterGuidedEndSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutApplied": "Découpe appliquée de {start} à {end}.",
+  "@mediaCutterGuidedCutApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNeedStartEnd": "Définissez d’abord le début et la fin de la découpe.",
+  "mediaCutterGuidedCutSummary": "Découpe de {start} à {end}",
+  "@mediaCutterGuidedCutSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedMultipleCutSummary": "{count} découpes : {cuts}",
+  "@mediaCutterGuidedMultipleCutSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cuts": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedPendingCutExitMessage": "Vous avez une découpe guidée non appliquée. Voulez-vous quitter sans la conserver ?",
+  "mediaCutterSplitAddedAnnouncement": "Division ajoutée. Partie {partNumber} ajoutée.",
+  "@mediaCutterSplitAddedAnnouncement": {
+    "placeholders": {
+      "partNumber": {
+        "type": "int"
+      }
+    }
+  },
   "newsAddCommunitySource": "Ajouter une source à la communauté Sonarpad",
   "@newsAddCommunitySource": {
     "description": "Localized text for newsAddCommunitySource."

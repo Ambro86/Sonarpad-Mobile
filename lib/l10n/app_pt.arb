@@ -1270,6 +1270,97 @@
       }
     }
   },
+  "mediaCutterGuidedModeTitle": "Corte guiado",
+  "mediaCutterGuidedModeDescription": "Adequado para quem está a começar. Selecione um ponto inicial e um ponto final, ouça o corte e depois aplique-o.",
+  "mediaCutterAdvancedModeTitle": "Corte avançado",
+  "mediaCutterAdvancedModeDescription": "Inspirado nos programas de edição multimédia mais conhecidos. Permite dividir um ficheiro em várias partes e eliminar as partes que não quer.",
+  "mediaCutterChangeCutMode": "Alterar tipo de corte",
+  "mediaCutterGuidedSetStart": "Início do corte",
+  "mediaCutterGuidedSetEnd": "Fim do corte",
+  "mediaCutterGuidedApplyCut": "Aplicar corte",
+  "mediaCutterGuidedListenCut": "Ouvir corte",
+  "mediaCutterGuidedModifyCut": "Modificar corte",
+  "mediaCutterGuidedMoveStartBackOneSecond": "Recuar o início do corte 1 segundo",
+  "mediaCutterGuidedMoveStartForwardOneSecond": "Avançar o início do corte 1 segundo",
+  "mediaCutterGuidedMoveEndBackOneSecond": "Recuar o fim do corte 1 segundo",
+  "mediaCutterGuidedMoveEndForwardOneSecond": "Avançar o fim do corte 1 segundo",
+  "mediaCutterGuidedCutAdjusted": "Corte modificado de {start} a {end}.",
+  "@mediaCutterGuidedCutAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNoCut": "Nenhum corte",
+  "mediaCutterGuidedEffectsAction": "Regular efeitos do ficheiro",
+  "mediaCutterGuidedEffectsDescription": "Regule o volume e os efeitos para todo o ficheiro resultante.",
+  "mediaCutterGuidedFileTapHint": "Toque duas vezes para reproduzir o ficheiro resultante. Use Regular efeitos do ficheiro para aplicar efeitos a todo o ficheiro.",
+  "mediaCutterGuidedStartSet": "Início do corte definido em {start}.",
+  "@mediaCutterGuidedStartSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedEndSet": "Fim do corte definido em {end}. Corte de {start} a {end}.",
+  "@mediaCutterGuidedEndSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutApplied": "Corte aplicado de {start} a {end}.",
+  "@mediaCutterGuidedCutApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNeedStartEnd": "Defina primeiro o início e o fim do corte.",
+  "mediaCutterGuidedCutSummary": "Corte de {start} a {end}",
+  "@mediaCutterGuidedCutSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedMultipleCutSummary": "{count} cortes: {cuts}",
+  "@mediaCutterGuidedMultipleCutSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cuts": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedPendingCutExitMessage": "Tem um corte guiado que ainda não foi aplicado. Quer sair sem o conservar?",
+  "mediaCutterSplitAddedAnnouncement": "Divisão adicionada. Parte {partNumber} adicionada.",
+  "@mediaCutterSplitAddedAnnouncement": {
+    "placeholders": {
+      "partNumber": {
+        "type": "int"
+      }
+    }
+  },
   "newsAddCommunitySource": "Adicionar fonte à comunidade Sonarpad",
   "@newsAddCommunitySource": {
     "description": "Localized text for newsAddCommunitySource."

@@ -3442,6 +3442,97 @@
       }
     }
   },
+  "mediaCutterGuidedModeTitle": "Cięcie z przewodnikiem",
+  "mediaCutterGuidedModeDescription": "Dobre dla początkujących. Wybierz punkt początkowy i końcowy, odsłuchaj wycinany fragment, a potem zastosuj cięcie.",
+  "mediaCutterAdvancedModeTitle": "Cięcie zaawansowane",
+  "mediaCutterAdvancedModeDescription": "Inspirowane popularnymi programami do edycji multimediów. Pozwala podzielić plik na części i usunąć niechciane fragmenty.",
+  "mediaCutterChangeCutMode": "Zmień typ cięcia",
+  "mediaCutterGuidedSetStart": "Początek cięcia",
+  "mediaCutterGuidedSetEnd": "Koniec cięcia",
+  "mediaCutterGuidedApplyCut": "Zastosuj cięcie",
+  "mediaCutterGuidedListenCut": "Odsłuchaj wycinany fragment",
+  "mediaCutterGuidedModifyCut": "Edytuj cięcie",
+  "mediaCutterGuidedMoveStartBackOneSecond": "Przesuń początek cięcia o 1 sekundę wstecz",
+  "mediaCutterGuidedMoveStartForwardOneSecond": "Przesuń początek cięcia o 1 sekundę do przodu",
+  "mediaCutterGuidedMoveEndBackOneSecond": "Przesuń koniec cięcia o 1 sekundę wstecz",
+  "mediaCutterGuidedMoveEndForwardOneSecond": "Przesuń koniec cięcia o 1 sekundę do przodu",
+  "mediaCutterGuidedCutAdjusted": "Zmieniono cięcie od {start} do {end}.",
+  "@mediaCutterGuidedCutAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNoCut": "Brak cięcia",
+  "mediaCutterGuidedEffectsAction": "Dostosuj efekty pliku",
+  "mediaCutterGuidedEffectsDescription": "Dostosuj głośność i efekty dla całego pliku wynikowego.",
+  "mediaCutterGuidedFileTapHint": "Stuknij dwukrotnie, aby odtworzyć wynikowy plik. Użyj opcji dostosowania efektów, aby zastosować je do całego pliku.",
+  "mediaCutterGuidedStartSet": "Początek cięcia ustawiony na {start}.",
+  "@mediaCutterGuidedStartSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedEndSet": "Koniec cięcia ustawiony na {end}. Cięcie od {start} do {end}.",
+  "@mediaCutterGuidedEndSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutApplied": "Zastosowano cięcie od {start} do {end}.",
+  "@mediaCutterGuidedCutApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNeedStartEnd": "Najpierw ustaw początek i koniec cięcia.",
+  "mediaCutterGuidedCutSummary": "Cięcie od {start} do {end}",
+  "@mediaCutterGuidedCutSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedMultipleCutSummary": "{count} cięć: {cuts}",
+  "@mediaCutterGuidedMultipleCutSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cuts": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedPendingCutExitMessage": "Masz niezastosowane cięcie z przewodnikiem. Czy chcesz wyjść bez jego zachowania?",
+  "mediaCutterSplitAddedAnnouncement": "Dodano podział. Dodano część {partNumber}.",
+  "@mediaCutterSplitAddedAnnouncement": {
+    "placeholders": {
+      "partNumber": {
+        "type": "int"
+      }
+    }
+  },
   "newsAddCommunitySource": "Dodaj źródło do społeczności Sonarpad",
   "@newsAddCommunitySource": {
     "description": "Localized text for newsAddCommunitySource."
