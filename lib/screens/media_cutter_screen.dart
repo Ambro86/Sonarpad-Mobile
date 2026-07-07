@@ -640,6 +640,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       effectAmountPercent: effectAmountPercent,
     );
     final filter = _audioFilterForPart(previewPart);
+    final activeEffects = _activeEffects(previewPart);
     if (filter == null) {
       if (!_isVideo && _usingRenderedPreviewSource) {
         await _restoreOriginalAudioSource(seekTo: previewStart);
@@ -688,6 +689,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await AppLogger.log(
         'Media cutter preview effects: start=${_ffmpegTime(previewStart)} '
         'duration=${_ffmpegTime(previewDuration)} '
+        'activeEffects=${activeEffects.map((effect) => effect.name).join('|')} '
         'args=${args.map(_quoteLogArg).join(' ')}',
       );
       final session = await FFmpegKit.executeWithArguments(args);
@@ -1771,18 +1773,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
 
     final amount = part.effectAmountPercent.clamp(0, 100) / 100.0;
-    for (final effect in [
-      part.effect,
-      part.secondaryEffect,
-      part.thirdEffect,
-      part.fourthEffect,
-    ]) {
+    for (final effect in _activeEffects(part)) {
       final filter = _audioFilterForEffect(effect, part, amount);
       if (filter != null) filters.add(filter);
     }
 
     if (filters.isEmpty) return null;
     return filters.join(',');
+  }
+
+  List<_MediaPartEffect> _activeEffects(_MediaPart part) {
+    return [
+      part.effect,
+      part.secondaryEffect,
+      part.thirdEffect,
+      part.fourthEffect,
+    ].where((effect) => effect != _MediaPartEffect.none).toList();
   }
 
   String? _audioFilterForEffect(
