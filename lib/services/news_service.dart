@@ -983,10 +983,10 @@ class NewsService {
       }
       if (tinyfishGoogleNewsResult.disabled) {
         unawaited(AppLogger.log(
-          'News Tinyfish: disabilitato su Google News, attendo URL finale '
-          'WebView url=$resolvedUrl',
+          'News Tinyfish: disabilitato su Google News non risolto, '
+          'uso riassunto RSS url=$resolvedUrl',
         ));
-        return NewsArticleContent(text: '', url: article.link);
+        return NewsArticleContent(text: article.summary, url: article.link);
       }
       unawaited(AppLogger.log(
         'News Tinyfish: URL Google News non risolto, uso riassunto RSS '
