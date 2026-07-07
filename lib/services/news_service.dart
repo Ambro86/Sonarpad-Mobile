@@ -26,6 +26,16 @@ import 'news_sources/czech_news_sources.dart';
 
 enum NewsLanguage { italian, english, french, spanish, portuguese, polish, czech }
 
+class _TinyfishArticleFetchResult {
+  const _TinyfishArticleFetchResult({
+    this.content,
+    this.disabled = false,
+  });
+
+  final NewsArticleContent? content;
+  final bool disabled;
+}
+
 extension NewsLanguageInfo on NewsLanguage {
   String get code => switch (this) {
         NewsLanguage.italian => 'it',
@@ -959,8 +969,9 @@ class NewsService {
         'News Tinyfish: URL Google News non risolto, provo Tinyfish '
         'url=$resolvedUrl',
       ));
-      final tinyfishGoogleNewsContent =
+      final tinyfishGoogleNewsResult =
           await _tryFetchTinyfishArticleContent(resolvedUrl);
+      final tinyfishGoogleNewsContent = tinyfishGoogleNewsResult.content;
       if (tinyfishGoogleNewsContent != null &&
           tinyfishGoogleNewsContent.text.trim().length >= 100) {
         unawaited(AppLogger.log(
@@ -970,13 +981,21 @@ class NewsService {
         ));
         return tinyfishGoogleNewsContent;
       }
+      if (tinyfishGoogleNewsResult.disabled) {
+        unawaited(AppLogger.log(
+          'News Tinyfish: disabilitato su Google News, attendo URL finale '
+          'WebView url=$resolvedUrl',
+        ));
+        return NewsArticleContent(text: '', url: article.link);
+      }
       unawaited(AppLogger.log(
         'News Tinyfish: URL Google News non risolto, uso riassunto RSS '
         'url=$resolvedUrl',
       ));
       return NewsArticleContent(text: article.summary, url: article.link);
     }
-    final tinyfishContent = await _tryFetchTinyfishArticleContent(resolvedUrl);
+    final tinyfishResult = await _tryFetchTinyfishArticleContent(resolvedUrl);
+    final tinyfishContent = tinyfishResult.content;
     if (tinyfishContent != null && tinyfishContent.text.trim().length >= 100) {
       unawaited(AppLogger.log(
         'News Tinyfish: testo accettato length=${tinyfishContent.text.trim().length} '
@@ -1058,7 +1077,7 @@ class NewsService {
     );
   }
 
-  Future<NewsArticleContent?> _tryFetchTinyfishArticleContent(
+  Future<_TinyfishArticleFetchResult> _tryFetchTinyfishArticleContent(
     String articleUrl,
   ) async {
     try {
@@ -1071,14 +1090,15 @@ class NewsService {
         headers: const {'Accept': 'application/json'},
       ).timeout(const Duration(seconds: 15));
       if (response.statusCode < 200 || response.statusCode >= 300) {
+        final disabled = _isTinyfishDisabledResponse(response);
         unawaited(AppLogger.log(
           'News Tinyfish: HTTP ${response.statusCode}, fallback reader '
-          'url=$articleUrl',
+          'disabled=$disabled url=$articleUrl',
         ));
         debugPrint(
           'Sonarpad news Tinyfish: HTTP ${response.statusCode}, fallback reader',
         );
-        return null;
+        return _TinyfishArticleFetchResult(disabled: disabled);
       }
 
       final decoded = jsonDecode(
@@ -1088,7 +1108,7 @@ class NewsService {
         unawaited(AppLogger.log(
           'News Tinyfish: risposta non valida, fallback reader url=$articleUrl',
         ));
-        return null;
+        return const _TinyfishArticleFetchResult();
       }
 
       final markdown = (decoded['markdown'] ?? '').toString().trim();
@@ -1099,7 +1119,7 @@ class NewsService {
         'tinyfish_enabled=$tinyfishEnabled markdownLength=${markdown.length} '
         'url=$articleUrl',
       ));
-      if (markdown.isEmpty) return null;
+      if (markdown.isEmpty) return const _TinyfishArticleFetchResult();
 
       final text = _plainTextFromMarkdown(markdown);
       if (text.trim().isEmpty) {
@@ -1107,23 +1127,33 @@ class NewsService {
           'News Tinyfish: markdown vuoto dopo conversione, fallback reader '
           'url=$articleUrl',
         ));
-        return null;
+        return const _TinyfishArticleFetchResult();
       }
 
       final finalUrl = (decoded['final_url'] ?? decoded['url'] ?? articleUrl)
           .toString()
           .trim();
-      return NewsArticleContent(
-        text: text,
-        url: finalUrl.isEmpty ? articleUrl : finalUrl,
+      return _TinyfishArticleFetchResult(
+        content: NewsArticleContent(
+          text: text,
+          url: finalUrl.isEmpty ? articleUrl : finalUrl,
+        ),
       );
     } catch (e) {
       unawaited(AppLogger.log(
         'News Tinyfish: errore, fallback reader url=$articleUrl error=$e',
       ));
       debugPrint('Sonarpad news Tinyfish: fetch fallito, fallback reader: $e');
-      return null;
+      return const _TinyfishArticleFetchResult();
     }
+  }
+
+  bool _isTinyfishDisabledResponse(http.Response response) {
+    final header = response.headers['x-sonarpad-tinyfish']?.toLowerCase();
+    if (header == 'disabled') return true;
+    final body = utf8.decode(response.bodyBytes, allowMalformed: true);
+    return response.statusCode == 503 &&
+        body.toLowerCase().contains('tinyfish disabilitato');
   }
 
   String _plainTextFromMarkdown(String markdown) {
