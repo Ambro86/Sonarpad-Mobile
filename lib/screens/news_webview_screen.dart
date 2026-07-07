@@ -57,12 +57,25 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   String? _status;
   String? _resolvedArticleUrlForReader;
   String? _lastFinalReaderFetchUrl;
+  String? _allowedMainArticleUrl;
   Future<void>? _initialReaderLoad;
 
   // Soglia minima per accettare il testo HTTP come reader mode
   static const _httpMinLength = 150;
   // Soglia sotto la quale il WebView puo ancora sostituire il testo HTTP
   static const _httpShortThreshold = 600;
+  static const _ignoredArticleQueryKeys = {
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_term',
+    'utm_content',
+    'fbclid',
+    'gclid',
+    'refresh_ce',
+    'refresh_ce-cp',
+    'output',
+  };
 
   static const _ttsCommands = MethodChannel('sonarpad/tts_commands');
   static const _ttsEvents = EventChannel('sonarpad/tts_events');
@@ -136,6 +149,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       widget.readSourceName ?? widget.article.source,
       widget.article,
     ));
+    if (_isHttpArticleUrl(widget.article.link) &&
+        !_isGoogleNewsUrl(widget.article.link) &&
+        !_isGoogleConsentUrl(widget.article.link)) {
+      _allowedMainArticleUrl = widget.article.link;
+    }
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -166,6 +184,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               unawaited(AppLogger.log(
                 'News WebView: navigazione bloccata per contenuto media '
                 'url=${request.url}',
+              ));
+              return NavigationDecision.prevent;
+            }
+            if (_shouldBlockUnexpectedArticleNavigation(request.url)) {
+              unawaited(AppLogger.log(
+                'News WebView: navigazione articolo inattesa bloccata '
+                'url=${request.url} allowed=$_allowedMainArticleUrl',
               ));
               return NavigationDecision.prevent;
             }
@@ -491,6 +516,47 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return (scheme == 'http' || scheme == 'https') && uri.host.isNotEmpty;
   }
 
+  bool _isSameArticleNavigation(String a, String b) {
+    final au = Uri.tryParse(a.trim());
+    final bu = Uri.tryParse(b.trim());
+    if (au == null || bu == null) return _sameNormalizedUrl(a, b);
+    if (au.host.toLowerCase() != bu.host.toLowerCase()) return false;
+    final aPath = _normalizedArticlePath(au);
+    final bPath = _normalizedArticlePath(bu);
+    if (aPath != bPath) return false;
+    final aQuery = _meaningfulArticleQuery(au);
+    final bQuery = _meaningfulArticleQuery(bu);
+    return aQuery == bQuery || aQuery.isEmpty || bQuery.isEmpty;
+  }
+
+  String _normalizedArticlePath(Uri uri) {
+    var path = uri.path.trim();
+    if (path.length > 1 && path.endsWith('/')) {
+      path = path.substring(0, path.length - 1);
+    }
+    return path;
+  }
+
+  String _meaningfulArticleQuery(Uri uri) {
+    final entries = uri.queryParameters.entries
+        .where((entry) => !_ignoredArticleQueryKeys.contains(entry.key))
+        .toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    return entries.map((entry) => '${entry.key}=${entry.value}').join('&');
+  }
+
+  bool _shouldBlockUnexpectedArticleNavigation(String url) {
+    if (!_isHttpArticleUrl(url) ||
+        _isGoogleNewsUrl(url) ||
+        _isGoogleConsentUrl(url)) {
+      return false;
+    }
+    final allowed = _allowedMainArticleUrl;
+    if (allowed == null || allowed.isEmpty) return false;
+    if (_readerText == null) return false;
+    return !_isSameArticleNavigation(url, allowed);
+  }
+
   bool _sameNormalizedUrl(String a, String b) {
     final au = Uri.tryParse(a.trim());
     final bu = Uri.tryParse(b.trim());
@@ -525,6 +591,22 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     if (_lastFinalReaderFetchUrl != null &&
         _sameNormalizedUrl(_lastFinalReaderFetchUrl!, finalUrl)) {
       return;
+    }
+    final allowed = _allowedMainArticleUrl;
+    if (allowed != null &&
+        allowed.isNotEmpty &&
+        _readerText != null &&
+        !_isSameArticleNavigation(finalUrl, allowed)) {
+      unawaited(AppLogger.log(
+        'News reader final URL HTTP: skip url inatteso '
+        'url=$finalUrl allowed=$allowed',
+      ));
+      return;
+    }
+    if (allowed == null ||
+        allowed.isEmpty ||
+        (_readerText == null && !_isSameArticleNavigation(finalUrl, allowed))) {
+      _allowedMainArticleUrl = finalUrl;
     }
 
     final currentLen = _readerText?.trim().length ?? 0;

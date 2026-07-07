@@ -1136,6 +1136,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'OK';
 
   @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
   String get invia => 'Send';
 
   @override
@@ -2441,7 +2447,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mediaCutterPartsHint =>
-      'Tap a part to preview it. Deleted parts disappear from the list, are skipped during playback, and will not be saved.';
+      'Tap a part to listen to it. Deleted parts disappear from the list, are skipped during playback, and will not be saved. Effects are applied to the whole part only when the media is saved.';
 
   @override
   String mediaCutterPartLabel(int index) {
@@ -2458,6 +2464,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mediaCutterReady => 'Ready.';
+
+  @override
+  String get mediaCutterUnsavedExitTitle => 'Unsaved file';
+
+  @override
+  String get mediaCutterUnsavedExitMessage =>
+      'The file has not been saved. Are you sure you want to leave?';
 
   @override
   String get mediaCutterNoFile => 'Open a media file first.';

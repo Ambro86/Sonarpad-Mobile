@@ -430,6 +430,8 @@
   "settingsViewSysLog": "Ver registo do sistema",
   "settingsMailOpenError": "Erro ao abrir o e-mail: {error}",
   "ok": "OK",
+  "yes": "Sim",
+  "no": "Não",
   "invia": "Enviar",
   "saveArticle": "Guardar artigo",
   "shareArticle": "Partilhar artigo",
@@ -1094,7 +1096,7 @@
   },
   "mediaCutterSplit": "Dividir",
   "mediaCutterPartsTitle": "Partes a guardar",
-  "mediaCutterPartsHint": "Toque numa parte para a ouvir. As partes eliminadas desaparecem da lista, são ignoradas durante a reprodução e não serão guardadas.",
+  "mediaCutterPartsHint": "Toque numa parte para a ouvir. As partes eliminadas desaparecem da lista, são ignoradas durante a reprodução e não serão guardadas. Os efeitos são aplicados a toda a parte apenas quando o ficheiro multimédia é guardado.",
   "mediaCutterPartLabel": "Parte {index}",
   "@mediaCutterPartLabel": {
     "placeholders": {
@@ -1116,6 +1118,8 @@
   },
   "mediaCutterSave": "Guardar",
   "mediaCutterReady": "Pronto.",
+  "mediaCutterUnsavedExitTitle": "Ficheiro não guardado",
+  "mediaCutterUnsavedExitMessage": "O ficheiro não foi guardado. Tem a certeza de que quer sair?",
   "mediaCutterNoFile": "Abre primeiro um ficheiro multimédia.",
   "mediaCutterInvalidSplitPoint": "Escolhe um ponto dentro do ficheiro, não o início nem o fim.",
   "mediaCutterSplitAlreadyExists": "Já existe uma divisão neste ponto.",

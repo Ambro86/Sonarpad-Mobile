@@ -2119,6 +2119,18 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get ok;
 
+  /// No description provided for @yes.
+  ///
+  /// In it, this message translates to:
+  /// **'Si'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In it, this message translates to:
+  /// **'No'**
+  String get no;
+
   /// Localized text for invia.
   ///
   /// In it, this message translates to:
@@ -4511,7 +4523,7 @@ abstract class AppLocalizations {
   /// No description provided for @mediaCutterPartsHint.
   ///
   /// In it, this message translates to:
-  /// **'Tocca una parte per ascoltarla. Le parti eliminate scompaiono dall’elenco, vengono saltate durante la riproduzione e non saranno salvate.'**
+  /// **'Tocca una parte per ascoltarla. Le parti eliminate scompaiono dall’elenco, vengono saltate durante la riproduzione e non saranno salvate. Gli effetti vengono applicati all\'intera parte soltanto una volta salvato il media.'**
   String get mediaCutterPartsHint;
 
   /// No description provided for @mediaCutterPartLabel.
@@ -4537,6 +4549,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Pronto.'**
   String get mediaCutterReady;
+
+  /// No description provided for @mediaCutterUnsavedExitTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'File non salvato'**
+  String get mediaCutterUnsavedExitTitle;
+
+  /// No description provided for @mediaCutterUnsavedExitMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Il file non e stato salvato. Sei sicuro di voler uscire?'**
+  String get mediaCutterUnsavedExitMessage;
 
   /// No description provided for @mediaCutterNoFile.
   ///

@@ -1630,6 +1630,8 @@
     }
   },
   "ok": "OK",
+  "yes": "Si",
+  "no": "No",
   "@ok": {
     "description": "Localized text for ok."
   },
@@ -3266,7 +3268,7 @@
   },
   "mediaCutterSplit": "Dividi",
   "mediaCutterPartsTitle": "Parti da salvare",
-  "mediaCutterPartsHint": "Tocca una parte per ascoltarla. Le parti eliminate scompaiono dall’elenco, vengono saltate durante la riproduzione e non saranno salvate.",
+  "mediaCutterPartsHint": "Tocca una parte per ascoltarla. Le parti eliminate scompaiono dall’elenco, vengono saltate durante la riproduzione e non saranno salvate. Gli effetti vengono applicati all'intera parte soltanto una volta salvato il media.",
   "mediaCutterPartLabel": "Parte {index}",
   "@mediaCutterPartLabel": {
     "placeholders": {
@@ -3288,6 +3290,8 @@
   },
   "mediaCutterSave": "Salva",
   "mediaCutterReady": "Pronto.",
+  "mediaCutterUnsavedExitTitle": "File non salvato",
+  "mediaCutterUnsavedExitMessage": "Il file non e stato salvato. Sei sicuro di voler uscire?",
   "mediaCutterNoFile": "Apri prima un file media.",
   "mediaCutterInvalidSplitPoint": "Scegli un punto interno al file, non l’inizio o la fine.",
   "mediaCutterSplitAlreadyExists": "In questo punto c’è già una divisione.",

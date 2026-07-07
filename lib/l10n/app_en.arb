@@ -433,6 +433,8 @@
   "settingsViewSysLog": "View system log",
   "settingsMailOpenError": "Error opening email: {error}",
   "ok": "OK",
+  "yes": "Yes",
+  "no": "No",
   "invia": "Send",
   "saveArticle": "Save article",
   "shareArticle": "Share article",
@@ -1088,7 +1090,7 @@
   },
   "mediaCutterSplit": "Split",
   "mediaCutterPartsTitle": "Parts to save",
-  "mediaCutterPartsHint": "Tap a part to preview it. Deleted parts disappear from the list, are skipped during playback, and will not be saved.",
+  "mediaCutterPartsHint": "Tap a part to listen to it. Deleted parts disappear from the list, are skipped during playback, and will not be saved. Effects are applied to the whole part only when the media is saved.",
   "mediaCutterPartLabel": "Part {index}",
   "@mediaCutterPartLabel": {
     "placeholders": {
@@ -1110,6 +1112,8 @@
   },
   "mediaCutterSave": "Save",
   "mediaCutterReady": "Ready.",
+  "mediaCutterUnsavedExitTitle": "Unsaved file",
+  "mediaCutterUnsavedExitMessage": "The file has not been saved. Are you sure you want to leave?",
   "mediaCutterNoFile": "Open a media file first.",
   "mediaCutterInvalidSplitPoint": "Choose a point inside the file, not the beginning or the end.",
   "mediaCutterSplitAlreadyExists": "There is already a split at this point.",

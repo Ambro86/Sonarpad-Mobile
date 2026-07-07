@@ -1143,6 +1143,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get ok => 'OK';
 
   @override
+  String get yes => 'Ano';
+
+  @override
+  String get no => 'Ne';
+
+  @override
   String get invia => 'Odeslat';
 
   @override
@@ -2449,7 +2455,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaCutterPartsHint =>
-      'Klepnutím si část poslechnete. Odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a neuloží se.';
+      'Klepnutím si část poslechnete. Odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a neuloží se. Efekty se použijí na celou část až při uložení média.';
 
   @override
   String mediaCutterPartLabel(int index) {
@@ -2466,6 +2472,13 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaCutterReady => 'Připraveno.';
+
+  @override
+  String get mediaCutterUnsavedExitTitle => 'Soubor není uložen';
+
+  @override
+  String get mediaCutterUnsavedExitMessage =>
+      'Soubor nebyl uložen. Opravdu chcete odejít?';
 
   @override
   String get mediaCutterNoFile => 'Nejprve otevři mediální soubor.';

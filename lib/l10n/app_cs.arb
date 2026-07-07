@@ -430,6 +430,8 @@
   "settingsViewSysLog": "Zobrazit systémový protokol",
   "settingsMailOpenError": "Chyba při otevírání e-mailu: {error}",
   "ok": "OK",
+  "yes": "Ano",
+  "no": "Ne",
   "invia": "Odeslat",
   "saveArticle": "Uložit článek",
   "shareArticle": "Sdílet článek",
@@ -1091,7 +1093,7 @@
   },
   "mediaCutterSplit": "Rozdělit",
   "mediaCutterPartsTitle": "Části k uložení",
-  "mediaCutterPartsHint": "Klepnutím si část poslechnete. Odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a neuloží se.",
+  "mediaCutterPartsHint": "Klepnutím si část poslechnete. Odstraněné části zmizí ze seznamu, při přehrávání se přeskočí a neuloží se. Efekty se použijí na celou část až při uložení média.",
   "mediaCutterPartLabel": "Část {index}",
   "@mediaCutterPartLabel": {
     "placeholders": {
@@ -1113,6 +1115,8 @@
   },
   "mediaCutterSave": "Uložit",
   "mediaCutterReady": "Připraveno.",
+  "mediaCutterUnsavedExitTitle": "Soubor není uložen",
+  "mediaCutterUnsavedExitMessage": "Soubor nebyl uložen. Opravdu chcete odejít?",
   "mediaCutterNoFile": "Nejprve otevři mediální soubor.",
   "mediaCutterInvalidSplitPoint": "Vyber místo uvnitř souboru, ne začátek ani konec.",
   "mediaCutterSplitAlreadyExists": "V tomto místě už rozdělení existuje.",

@@ -1143,6 +1143,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get ok => 'OK';
 
   @override
+  String get yes => 'Tak';
+
+  @override
+  String get no => 'Nie';
+
+  @override
   String get invia => 'Wyślij';
 
   @override
@@ -2450,7 +2456,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get mediaCutterPartsHint =>
-      'Stuknij część, aby jej posłuchać. Usunięte części znikają z listy, są pomijane podczas odtwarzania i nie zostaną zapisane.';
+      'Stuknij część, aby jej posłuchać. Usunięte części znikają z listy, są pomijane podczas odtwarzania i nie zostaną zapisane. Efekty są stosowane do całej części dopiero po zapisaniu multimediów.';
 
   @override
   String mediaCutterPartLabel(int index) {
@@ -2467,6 +2473,13 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get mediaCutterReady => 'Gotowe.';
+
+  @override
+  String get mediaCutterUnsavedExitTitle => 'Plik nie został zapisany';
+
+  @override
+  String get mediaCutterUnsavedExitMessage =>
+      'Plik nie został zapisany. Czy na pewno chcesz wyjść?';
 
   @override
   String get mediaCutterNoFile => 'Najpierw otwórz plik multimedialny.';

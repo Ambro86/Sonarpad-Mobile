@@ -62,6 +62,7 @@ enum _MediaPartEffect {
 }
 
 const _effectPreviewMaxDuration = Duration(seconds: 12);
+const _effectPreviewMinDuration = Duration(seconds: 2);
 
 class _MediaCutterExportCancelled implements Exception {
   const _MediaCutterExportCancelled();
@@ -155,8 +156,7 @@ class _MediaPart {
       secondaryEffect != _MediaPartEffect.none ||
       thirdEffect != _MediaPartEffect.none ||
       fourthEffect != _MediaPartEffect.none;
-  bool get hasAudioChanges =>
-      volumePercent != 100 || hasEffects;
+  bool get hasAudioChanges => volumePercent != 100 || hasEffects;
 
   _MediaPart copyWith({
     bool? keep,
@@ -241,6 +241,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool _restoringOriginalAudioSource = false;
   bool _stoppingPartPreview = false;
   bool _skippingDeletedPart = false;
+  bool _hasUnsavedEdit = false;
+  bool _effectPreviewPreparing = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   List<Duration> _splitPoints = [];
@@ -295,6 +297,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _pickInput() async {
     final l10n = AppLocalizations.of(context);
+    if (!await _confirmDiscardUnsavedEdit()) return;
     final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: _mediaExtensions,
@@ -320,8 +323,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       });
     }
   }
-
-
 
   Future<void> _pickOutput() async {
     final l10n = AppLocalizations.of(context);
@@ -403,6 +404,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _usingRenderedPreviewSource = false;
       _restoringOriginalAudioSource = false;
       _stoppingPartPreview = false;
+      _hasUnsavedEdit = false;
     });
 
     try {
@@ -417,13 +419,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (_isVideo) {
         final controller = VideoPlayerController.file(
           File(path),
-          videoPlayerOptions:
-              VideoPlayerOptions(allowBackgroundPlayback: true),
+          videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
         );
         _videoController = controller;
         await controller.initialize();
         await controller.setVolume(1);
-        _videoRefreshTimer = Timer.periodic(const Duration(milliseconds: 250), (_) {
+        _videoRefreshTimer =
+            Timer.periodic(const Duration(milliseconds: 250), (_) {
           if (!mounted || _videoController == null) return;
           final value = _videoController!.value;
           final clamped = _clampPosition(value.position);
@@ -459,7 +461,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         });
       }
     } catch (error) {
-      await AppLogger.log('Media cutter: load failed path="$path" error=$error');
+      await AppLogger.log(
+          'Media cutter: load failed path="$path" error=$error');
       if (!mounted) return;
       setState(() => _status = l10n.mediaCutterLoadFailed(error));
     } finally {
@@ -560,22 +563,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       }
       return;
     }
-    if (!_isVideo &&
-        previewVolumeFactor == null &&
-        part.hasEffects &&
-        _audioFilterForPart(part) != null) {
-      await _playPartEffectsPreview(
-        index,
-        volumePercent: part.volumePercent,
-        effect: part.effect,
-        secondaryEffect: part.secondaryEffect,
-        thirdEffect: part.thirdEffect,
-        fourthEffect: part.fourthEffect,
-        effectAmountPercent: part.effectAmountPercent,
-      );
-      return;
-    }
-
     try {
       await _pause();
       if (!_isVideo && _usingRenderedPreviewSource) {
@@ -612,18 +599,21 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     required _MediaPartEffect fourthEffect,
     required int effectAmountPercent,
   }) async {
-    if (_inputPath.isEmpty || _loading || _saving) return;
+    if (_inputPath.isEmpty || _loading || _saving || _effectPreviewPreparing) {
+      return;
+    }
     if (index < 0 || index >= _parts.length) return;
     final part = _parts[index];
     if (!part.keep || part.duration <= Duration.zero) return;
 
-    final previewStart = _effectPreviewStartForPart(
+    final initialPreviewStart = _effectPreviewStartForPart(
       part,
       effect: effect,
       secondaryEffect: secondaryEffect,
       thirdEffect: thirdEffect,
       fourthEffect: fourthEffect,
     );
+    final previewStart = _audibleEffectPreviewStart(part, initialPreviewStart);
     final remainingPreviewDuration = part.end - previewStart;
     if (remainingPreviewDuration <= Duration.zero) return;
     final previewDuration = remainingPreviewDuration < _effectPreviewMaxDuration
@@ -660,6 +650,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       ),
     );
     try {
+      _effectPreviewPreparing = true;
       await _pause();
       if (!_isVideo && _usingRenderedPreviewSource) {
         await _restoreOriginalAudioSource(seekTo: previewStart);
@@ -710,6 +701,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           ),
         ),
       );
+      await _audioPlayer.seek(Duration.zero);
       if (!mounted) return;
       setState(() {
         _previewPartIndex = index;
@@ -718,12 +710,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _playing = true;
       });
       await _audioPlayer.play();
+      await AppLogger.log(
+        'Media cutter: effects preview playing '
+        'file=${previewFile.path} duration=${_ffmpegTime(previewDuration)}',
+      );
     } catch (error) {
       await AppLogger.log('Media cutter: effects preview failed error=$error');
       if (!mounted) return;
       _showSnack(AppLocalizations.of(context).mediaCutterSaveFailed(error));
     } finally {
-      unawaited(Future<void>.delayed(const Duration(seconds: 30)).then((_) async {
+      _effectPreviewPreparing = false;
+      unawaited(
+          Future<void>.delayed(const Duration(seconds: 30)).then((_) async {
         if (await previewFile.exists()) {
           await previewFile.delete();
         }
@@ -731,9 +729,17 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
+  Duration _audibleEffectPreviewStart(_MediaPart part, Duration previewStart) {
+    final remaining = part.end - previewStart;
+    if (remaining >= _effectPreviewMinDuration ||
+        part.duration <= _effectPreviewMinDuration) {
+      return previewStart;
+    }
+    return part.end - _effectPreviewMinDuration;
+  }
+
   Duration _effectPreviewStartForPart(
-    _MediaPart part,
-    {
+    _MediaPart part, {
     required _MediaPartEffect effect,
     required _MediaPartEffect secondaryEffect,
     required _MediaPartEffect thirdEffect,
@@ -872,9 +878,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     setState(() {
       _previewPartIndex = null;
       _previewPartEnd = null;
-      _splitPoints = [..._splitPoints, point]
-        ..sort((a, b) => a.compareTo(b));
+      _splitPoints = [..._splitPoints, point]..sort((a, b) => a.compareTo(b));
       _rebuildParts();
+      _hasUnsavedEdit = true;
       _status = l10n.mediaCutterSplitAdded(_formatTime(point));
     });
   }
@@ -899,6 +905,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           if (i == index) _parts[i].copyWith(keep: false) else _parts[i],
       ];
       _deletedPartHistory.add(_partKey(part));
+      _hasUnsavedEdit = true;
       _status = message;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -922,7 +929,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         : null;
     var index = keyToRestore == null
         ? -1
-        : _parts.indexWhere((part) => !part.keep && _partKey(part) == keyToRestore);
+        : _parts
+            .indexWhere((part) => !part.keep && _partKey(part) == keyToRestore);
 
     while (index == -1 && _deletedPartHistory.isNotEmpty) {
       keyToRestore = _deletedPartHistory.removeLast();
@@ -945,6 +953,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         for (var i = 0; i < _parts.length; i++)
           if (i == index) _parts[i].copyWith(keep: true) else _parts[i],
       ];
+      _hasUnsavedEdit = true;
       _status = l10n.mediaCutterPartRestored(
         _formatTime(part.start),
         _formatTime(part.end),
@@ -1209,6 +1218,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _formatTime(part.start),
         _formatTime(part.end),
       );
+      _hasUnsavedEdit = true;
     });
   }
 
@@ -1241,7 +1251,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         if (!mounted) return;
         setState(() {
           _outputDirectory = outputDir;
-          _outputController.text = _defaultOutputDirectoryDisplayPath(outputDir);
+          _outputController.text =
+              _defaultOutputDirectoryDisplayPath(outputDir);
         });
       }
 
@@ -1256,7 +1267,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         if (!mounted) return;
         setState(() {
           _outputDirectory = outputDir;
-          _outputController.text = _defaultOutputDirectoryDisplayPath(outputDir);
+          _outputController.text =
+              _defaultOutputDirectoryDisplayPath(outputDir);
         });
         _showSnack(l10n.convertMediaOutputNotWritable);
       }
@@ -1285,7 +1297,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         if (!mounted) return;
         setState(() {
           _outputDirectory = outputDir;
-          _outputController.text = _defaultOutputDirectoryDisplayPath(outputDir);
+          _outputController.text =
+              _defaultOutputDirectoryDisplayPath(outputDir);
         });
         _showSnack(l10n.convertMediaOutputNotWritable);
         await _runWithProgressDialog(l10n, exportController, () async {
@@ -1294,7 +1307,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       }
       if (!mounted) return;
       final message = l10n.mediaCutterSaved(p.basename(output));
-      setState(() => _status = message);
+      setState(() {
+        _hasUnsavedEdit = false;
+        _status = message;
+      });
       await _showDoneDialog(message, output, forceShare: fallbackToShare);
     } catch (error) {
       if (error is _MediaCutterExportCancelled) {
@@ -1312,6 +1328,29 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       exportController.dispose();
       if (mounted) setState(() => _saving = false);
     }
+  }
+
+  Future<bool> _confirmDiscardUnsavedEdit() async {
+    if (!_hasUnsavedEdit || _saving) return true;
+    final l10n = AppLocalizations.of(context);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.mediaCutterUnsavedExitTitle),
+        content: Text(l10n.mediaCutterUnsavedExitMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.no),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.yes),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
   }
 
   Future<void> _enableExportWakelock() async {
@@ -1434,7 +1473,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
       final listFile = File(p.join(workDir.path, 'concat.txt'));
       await listFile.writeAsString(
-        segmentPaths.map((path) => "file '${path.replaceAll("'", r"'\\''")}'").join('\n'),
+        segmentPaths
+            .map((path) => "file '${path.replaceAll("'", r"'\\''")}'")
+            .join('\n'),
       );
       final concatArgs = [
         '-y',
@@ -1684,14 +1725,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     return candidate;
   }
 
-
-
   String _outputExtension(String inputPath) {
     if (_isVideoInput(inputPath)) return '.mp4';
     final ext = p.extension(inputPath).toLowerCase();
     return ext.isEmpty ? '.mp3' : ext;
   }
-
 
   bool get _hasDeletedParts => _parts.any((part) => !part.keep);
 
@@ -2044,9 +2082,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         end: end,
         keep: previous.isEmpty ? true : previous.first.keep,
         volumePercent: previous.isEmpty ? 100 : previous.first.volumePercent,
-        effect: previous.isEmpty
-            ? _MediaPartEffect.none
-            : previous.first.effect,
+        effect:
+            previous.isEmpty ? _MediaPartEffect.none : previous.first.effect,
         secondaryEffect: previous.isEmpty
             ? _MediaPartEffect.none
             : previous.first.secondaryEffect,
@@ -2363,7 +2400,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   void _showSnack(String message) => showStatusMessage(context, message);
 
-
   Widget _buildVideoPreview(AppLocalizations l10n) {
     if (!_isVideo || !_showVideoPreview) return const SizedBox();
     final controller = _videoController;
@@ -2395,7 +2431,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final posSecs = position.inSeconds.toDouble();
     final durSecs =
         _duration.inSeconds.toDouble().clamp(1.0, double.infinity).toDouble();
-    final oneSecondForward = _clampPosition(position + const Duration(seconds: 1));
+    final oneSecondForward =
+        _clampPosition(position + const Duration(seconds: 1));
     final oneSecondBack = _clampPosition(position - const Duration(seconds: 1));
 
     return Column(
@@ -2452,7 +2489,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         const SizedBox(height: 8),
         Text(l10n.mediaCutterPartsHint),
         const SizedBox(height: 8),
-        for (var visibleIndex = 0; visibleIndex < visibleParts.length; visibleIndex++)
+        for (var visibleIndex = 0;
+            visibleIndex < visibleParts.length;
+            visibleIndex++)
           _buildPartTile(
             l10n,
             originalIndex: visibleParts[visibleIndex].key,
@@ -2494,7 +2533,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           ? const <CustomSemanticsAction, VoidCallback>{}
           : <CustomSemanticsAction, VoidCallback>{
               deleteAction: () => _deletePart(originalIndex),
-              effectsAction: () => unawaited(_showPartEffectsDialog(originalIndex)),
+              effectsAction: () =>
+                  unawaited(_showPartEffectsDialog(originalIndex)),
             },
       child: ExcludeSemantics(
         child: Card(
@@ -2514,8 +2554,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 IconButton(
                   tooltip: l10n.mediaCutterPartEffectsAction,
                   icon: const Icon(Icons.tune),
-                  onPressed:
-                      _saving ? null : () => _showPartEffectsDialog(originalIndex),
+                  onPressed: _saving
+                      ? null
+                      : () => _showPartEffectsDialog(originalIndex),
                 ),
                 IconButton(
                   tooltip: l10n.mediaCutterPartDeleteAction,
@@ -2535,99 +2576,109 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final l10n = AppLocalizations.of(context);
     final canUseMedia = _inputPath.isNotEmpty && !_loading && !_saving;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.mediaCutterTitle)),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(l10n.mediaCutterInstruction1),
-            const SizedBox(height: 4),
-            Text(l10n.mediaCutterInstruction2),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: _loading || _saving ? null : _pickInput,
-              icon: const Icon(Icons.folder_open),
-              label: Text(l10n.mediaCutterOpenFile),
-            ),
-            if (_displayName.isNotEmpty) ...[
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldLeave = await _confirmDiscardUnsavedEdit();
+        if (!context.mounted || !shouldLeave) return;
+        Navigator.of(context).pop();
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.mediaCutterTitle)),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text(l10n.mediaCutterInstruction1),
+              const SizedBox(height: 4),
+              Text(l10n.mediaCutterInstruction2),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: _loading || _saving ? null : _pickInput,
+                icon: const Icon(Icons.folder_open),
+                label: Text(l10n.mediaCutterOpenFile),
+              ),
+              if (_displayName.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(l10n.mediaCutterSelectedFile(_displayName)),
+              ],
               const SizedBox(height: 12),
-              Text(l10n.mediaCutterSelectedFile(_displayName)),
-            ],
-            const SizedBox(height: 12),
-            TextField(
-              controller: _outputController,
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: l10n.convertMediaOutput,
-                suffixIcon: IconButton(
-                  tooltip: l10n.convertMediaBrowse,
-                  onPressed: _loading || _saving ? null : _pickOutput,
-                  icon: const Icon(Icons.drive_folder_upload),
+              TextField(
+                controller: _outputController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: l10n.convertMediaOutput,
+                  suffixIcon: IconButton(
+                    tooltip: l10n.convertMediaBrowse,
+                    onPressed: _loading || _saving ? null : _pickOutput,
+                    icon: const Icon(Icons.drive_folder_upload),
+                  ),
                 ),
               ),
-            ),
-            if (_loading) ...[
-              const SizedBox(height: 16),
-              const LinearProgressIndicator(),
-            ],
-            if (_isVideo && _showVideoPreview) ...[
-              const SizedBox(height: 16),
-              _buildVideoPreview(l10n),
-            ],
-            const SizedBox(height: 20),
-            _buildPositionSlider(l10n),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
-              children: [
-                FilledButton.icon(
-                  onPressed: canUseMedia ? _togglePlayback : null,
-                  icon: Icon(_playing ? Icons.pause : Icons.play_arrow),
-                  label: Text(_playing ? l10n.pause : l10n.play),
-                ),
-                if (_isVideo)
-                  OutlinedButton.icon(
-                    onPressed: canUseMedia
-                        ? () => setState(
-                              () => _showVideoPreview = !_showVideoPreview,
-                            )
-                        : null,
-                    icon: Icon(
-                      _showVideoPreview ? Icons.videocam_off : Icons.videocam,
-                    ),
-                    label: Text(
-                      _showVideoPreview
-                          ? l10n.mediaCutterHideVideoPreview
-                          : l10n.enableVideo,
-                    ),
-                  ),
-                FilledButton.icon(
-                  onPressed: canUseMedia ? _splitHere : null,
-                  icon: const Icon(Icons.content_cut),
-                  label: Text(l10n.mediaCutterSplit),
-                ),
-                OutlinedButton.icon(
-                  onPressed:
-                      canUseMedia && _hasDeletedParts ? _restoreDeletedPart : null,
-                  icon: const Icon(Icons.restore),
-                  label: Text(l10n.mediaCutterRestoreDeletedPart),
-                ),
+              if (_loading) ...[
+                const SizedBox(height: 16),
+                const LinearProgressIndicator(),
               ],
-            ),
-            const SizedBox(height: 20),
-            _buildPartsSection(l10n),
-            const SizedBox(height: 20),
-            Text(_status ?? l10n.mediaCutterReady),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: canUseMedia ? _save : null,
-              icon: const Icon(Icons.save_alt),
-              label: Text(l10n.mediaCutterSave),
-            ),
-          ],
+              if (_isVideo && _showVideoPreview) ...[
+                const SizedBox(height: 16),
+                _buildVideoPreview(l10n),
+              ],
+              const SizedBox(height: 20),
+              _buildPositionSlider(l10n),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.center,
+                children: [
+                  FilledButton.icon(
+                    onPressed: canUseMedia ? _togglePlayback : null,
+                    icon: Icon(_playing ? Icons.pause : Icons.play_arrow),
+                    label: Text(_playing ? l10n.pause : l10n.play),
+                  ),
+                  if (_isVideo)
+                    OutlinedButton.icon(
+                      onPressed: canUseMedia
+                          ? () => setState(
+                                () => _showVideoPreview = !_showVideoPreview,
+                              )
+                          : null,
+                      icon: Icon(
+                        _showVideoPreview ? Icons.videocam_off : Icons.videocam,
+                      ),
+                      label: Text(
+                        _showVideoPreview
+                            ? l10n.mediaCutterHideVideoPreview
+                            : l10n.enableVideo,
+                      ),
+                    ),
+                  FilledButton.icon(
+                    onPressed: canUseMedia ? _splitHere : null,
+                    icon: const Icon(Icons.content_cut),
+                    label: Text(l10n.mediaCutterSplit),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: canUseMedia && _hasDeletedParts
+                        ? _restoreDeletedPart
+                        : null,
+                    icon: const Icon(Icons.restore),
+                    label: Text(l10n.mediaCutterRestoreDeletedPart),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              _buildPartsSection(l10n),
+              const SizedBox(height: 20),
+              Text(_status ?? l10n.mediaCutterReady),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: canUseMedia ? _save : null,
+                icon: const Icon(Icons.save_alt),
+                label: Text(l10n.mediaCutterSave),
+              ),
+            ],
+          ),
         ),
       ),
     );

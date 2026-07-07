@@ -430,6 +430,8 @@
   "settingsViewSysLog": "Voir le journal système",
   "settingsMailOpenError": "Erreur d’ouverture de l’e-mail : {error}",
   "ok": "OK",
+  "yes": "Oui",
+  "no": "Non",
   "invia": "Envoyer",
   "saveArticle": "Enregistrer l'article",
   "shareArticle": "Partager l'article",
@@ -1094,7 +1096,7 @@
   },
   "mediaCutterSplit": "Diviser",
   "mediaCutterPartsTitle": "Parties à enregistrer",
-  "mediaCutterPartsHint": "Touchez une partie pour l’écouter. Les parties supprimées disparaissent de la liste, sont ignorées pendant la lecture et ne seront pas enregistrées.",
+  "mediaCutterPartsHint": "Touchez une partie pour l’écouter. Les parties supprimées disparaissent de la liste, sont ignorées pendant la lecture et ne seront pas enregistrées. Les effets sont appliqués à toute la partie uniquement lorsque le média est enregistré.",
   "mediaCutterPartLabel": "Partie {index}",
   "@mediaCutterPartLabel": {
     "placeholders": {
@@ -1116,6 +1118,8 @@
   },
   "mediaCutterSave": "Enregistrer",
   "mediaCutterReady": "Prêt.",
+  "mediaCutterUnsavedExitTitle": "Fichier non enregistré",
+  "mediaCutterUnsavedExitMessage": "Le fichier n'a pas été enregistré. Voulez-vous vraiment quitter ?",
   "mediaCutterNoFile": "Ouvre d’abord un fichier média.",
   "mediaCutterInvalidSplitPoint": "Choisis un point à l’intérieur du fichier, pas le début ni la fin.",
   "mediaCutterSplitAlreadyExists": "Il y a déjà une division à cet endroit.",
