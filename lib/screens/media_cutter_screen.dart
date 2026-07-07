@@ -239,6 +239,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     Duration(minutes: 10),
   ];
 
+  static const _minimumSplitSeparation = Duration(milliseconds: 500);
+
   final _audioPlayer = AudioPlayer();
   final _outputController = TextEditingController();
   VideoPlayerController? _videoController;
@@ -340,6 +342,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   String _logDuration(Duration duration) => _formatTime(duration);
 
+  String _logPreciseDuration(Duration duration) {
+    final clamped = duration < Duration.zero ? Duration.zero : duration;
+    final milliseconds = clamped.inMilliseconds % 1000;
+    if (milliseconds == 0) return _formatTime(clamped);
+    return '${_formatTime(clamped)}.${milliseconds.toString().padLeft(3, '0')}';
+  }
+
   String _logMaybeDuration(Duration? duration) =>
       duration == null ? 'none' : _logDuration(duration);
 
@@ -438,18 +447,37 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final initialDirectory = _outputDirectory.isEmpty
         ? await _defaultOutputDirectory()
         : _outputDirectory;
-    final path = await FilePicker.getDirectoryPath(
+    final selectedPath = await FilePicker.getDirectoryPath(
       dialogTitle: l10n.convertMediaOutput,
       initialDirectory: initialDirectory,
     );
-    if (path == null || path.isEmpty) return;
+    if (selectedPath == null || selectedPath.isEmpty) return;
+
+    var path = selectedPath;
+    try {
+      final selectedType = await FileSystemEntity.type(selectedPath);
+      if (selectedType == FileSystemEntityType.file) {
+        final parent = p.dirname(selectedPath);
+        await AppLogger.log(
+          'Media cutter: output picker returned a file path; '
+          'using parent directory instead selected="$selectedPath" parent="$parent"',
+        );
+        path = parent;
+      }
+    } catch (error) {
+      await AppLogger.log(
+        'Media cutter: output picker path type check failed '
+        'path="$selectedPath" error=$error',
+      );
+    }
 
     final writable = await _isWritableOutputDirectory(path);
     if (!mounted) return;
     if (!writable) {
       await AppLogger.log(
         'Media cutter: selected output directory is not writable, '
-        'path="$path"; using default app folder and native sharing fallback',
+        'path="$path" originalSelection="$selectedPath"; '
+        'using default app folder and native sharing fallback',
       );
       final fallback = await _defaultOutputDirectory();
       if (!mounted) return;
@@ -465,7 +493,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _outputDirectory = path;
       _outputController.text = _shortPath(path, parentCount: 2);
     });
-    unawaited(_logMediaCutter('output directory selected path="$path"'));
+    unawaited(_logMediaCutter(
+      'output directory selected path="$path" originalSelection="$selectedPath"',
+    ));
   }
 
   Future<bool> _isWritableOutputDirectory(String path) async {
@@ -491,6 +521,77 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       return false;
     }
   }
+
+  Future<VideoPlayerController> _initializeVideoControllerWithRetry(
+    String path,
+  ) async {
+    Object? lastError;
+    for (var attempt = 1; attempt <= 2; attempt++) {
+      final controller = VideoPlayerController.file(
+        File(path),
+        videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
+      );
+      try {
+        await controller.initialize();
+        if (attempt > 1) {
+          unawaited(_logMediaCutter(
+            'video initialize retry succeeded attempt=$attempt path="$path"',
+          ));
+        }
+        return controller;
+      } catch (error) {
+        lastError = error;
+        await AppLogger.log(
+          'Media cutter: video initialize failed attempt=$attempt '
+          'path="$path" error=$error',
+        );
+        await controller.dispose().catchError((_) {});
+        if (attempt < 2) {
+          await Future<void>.delayed(const Duration(milliseconds: 350));
+        }
+      }
+    }
+    throw lastError ?? StateError('Video initialize failed');
+  }
+
+  Future<Duration?> _setAudioSourceWithRetry(String path) async {
+    Object? lastError;
+    for (var attempt = 1; attempt <= 2; attempt++) {
+      try {
+        if (attempt > 1) {
+          await _audioPlayer.stop();
+          await Future<void>.delayed(const Duration(milliseconds: 250));
+        }
+        final duration = await _audioPlayer.setAudioSource(
+          AudioSource.uri(
+            Uri.file(path),
+            tag: MediaItem(
+              id: 'media_cutter:${File(path).absolute.path}',
+              album: 'Sonarpad',
+              title: _displayName.isEmpty ? p.basename(path) : _displayName,
+            ),
+          ),
+        );
+        if (attempt > 1) {
+          unawaited(_logMediaCutter(
+            'audio source retry succeeded attempt=$attempt path="$path"',
+          ));
+        }
+        return duration;
+      } catch (error) {
+        lastError = error;
+        await AppLogger.log(
+          'Media cutter: audio source failed attempt=$attempt '
+          'path="$path" error=$error',
+        );
+        if (attempt < 2) {
+          await Future<void>.delayed(const Duration(milliseconds: 350));
+        }
+      }
+    }
+    throw lastError ?? StateError('Audio source failed');
+  }
+
 
   Future<void> _loadMedia(String path) async {
     final l10n = AppLocalizations.of(context);
@@ -534,12 +635,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       }
 
       if (_isVideo) {
-        final controller = VideoPlayerController.file(
-          File(path),
-          videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
-        );
+        final controller = await _initializeVideoControllerWithRetry(path);
         _videoController = controller;
-        await controller.initialize();
         await controller.setVolume(1);
         _videoRefreshTimer =
             Timer.periodic(const Duration(milliseconds: 250), (_) {
@@ -564,16 +661,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           'parts=${_parts.length} path="$path"',
         ));
       } else {
-        final duration = await _audioPlayer.setAudioSource(
-          AudioSource.uri(
-            Uri.file(path),
-            tag: MediaItem(
-              id: 'media_cutter:${File(path).absolute.path}',
-              album: 'Sonarpad',
-              title: _displayName.isEmpty ? p.basename(path) : _displayName,
-            ),
-          ),
-        );
+        final duration = await _setAudioSourceWithRetry(path);
         setState(() {
           _duration = duration ?? Duration.zero;
           _position = Duration.zero;
@@ -1094,6 +1182,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     });
   }
 
+  Duration _splitPointFromPosition(Duration position) {
+    final milliseconds = position.inMilliseconds;
+    return Duration(milliseconds: milliseconds < 0 ? 0 : milliseconds);
+  }
+
+  Duration? _nearExistingSplitPoint(Duration point) {
+    for (final existing in _splitPoints) {
+      final distance =
+          (existing.inMilliseconds - point.inMilliseconds).abs();
+      if (distance < _minimumSplitSeparation.inMilliseconds) {
+        return existing;
+      }
+    }
+    return null;
+  }
+
   Future<void> _splitHere() async {
     final l10n = AppLocalizations.of(context);
     unawaited(_logMediaCutter('split requested ${_logPlaybackState()}'));
@@ -1106,19 +1210,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (!_isVideo && _usingRenderedPreviewSource) {
       await _restoreOriginalAudioSource(seekTo: _position);
     }
-    final point = Duration(seconds: _position.inSeconds);
+    final point = _splitPointFromPosition(_position);
     if (point <= Duration.zero || point >= _duration) {
       unawaited(_logMediaCutter(
-        'split rejected invalid point=${_logDuration(point)} '
-        'duration=${_logDuration(_duration)}',
+        'split rejected invalid point=${_logPreciseDuration(point)} '
+        'duration=${_logPreciseDuration(_duration)}',
       ));
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
       return;
     }
-    if (_splitPoints.any((existing) => existing.inSeconds == point.inSeconds)) {
+    final nearExisting = _nearExistingSplitPoint(point);
+    if (nearExisting != null) {
       unawaited(_logMediaCutter(
-        'split rejected duplicate point=${_logDuration(point)} '
-        'splitPoints=${_splitPoints.map(_logDuration).join('|')}',
+        'split rejected duplicate point=${_logPreciseDuration(point)} '
+        'near=${_logPreciseDuration(nearExisting)} '
+        'minimumGap=${_logPreciseDuration(_minimumSplitSeparation)} '
+        'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')}',
       ));
       _showSnack(l10n.mediaCutterSplitAlreadyExists);
       return;
@@ -1132,8 +1239,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _status = l10n.mediaCutterSplitAdded(_formatTime(point));
     });
     unawaited(_logMediaCutter(
-      'split added point=${_logDuration(point)} '
-      'splitPoints=${_splitPoints.map(_logDuration).join('|')} '
+      'split added point=${_logPreciseDuration(point)} '
+      'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
       'parts=${_parts.length} deleted=$_deletedPartCount',
     ));
   }
