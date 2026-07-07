@@ -328,6 +328,16 @@ void main() {
         client: MockClient((request) async {
           requested.add(request.url);
           expect(request.url.host, 'sonarpad.com');
+          if (request.url.queryParameters['policy'] == '1') {
+            return http.Response.bytes(
+              utf8.encode(jsonEncode({
+                'ok': true,
+                'tinyfish_fallback_only': false,
+              })),
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'},
+            );
+          }
           return http.Response.bytes(
             utf8.encode(jsonEncode({
               'ok': true,
@@ -360,7 +370,10 @@ Questo è il secondo paragrafo con un [link utile](https://example.com) e testo 
         language: NewsLanguage.italian,
       );
 
-      expect(requested, hasLength(1));
+      expect(
+        requested.map((uri) => uri.queryParameters['policy'] == '1'),
+        [true, false],
+      );
       expect(content.text, contains('Titolo articolo'));
       expect(content.text, contains('link utile'));
       expect(content.text, isNot(contains('](https://example.com)')));
@@ -406,7 +419,15 @@ Questo è il secondo paragrafo con un [link utile](https://example.com) e testo 
         language: NewsLanguage.italian,
       );
 
-      expect(requested.map((uri) => uri.host), ['sonarpad.com', 'example.com']);
+      expect(
+        requested.map((uri) => uri.queryParameters['policy'] == '1'),
+        [true, false, false],
+      );
+      expect(requested.map((uri) => uri.host), [
+        'sonarpad.com',
+        'sonarpad.com',
+        'example.com',
+      ]);
       expect(content.text, contains('reader HTML esistente'));
     });
   });
