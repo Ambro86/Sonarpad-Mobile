@@ -1291,10 +1291,19 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     return _guidedApplyCutLabel;
   }
 
-  List<_MediaPart> get _deletedCuts => [
-        for (final part in _parts)
-          if (!part.keep) part,
-      ];
+  List<_MediaPart> get _deletedCuts {
+    final merged = <_MediaPart>[];
+    for (final part in _parts) {
+      if (part.keep) continue;
+      if (merged.isNotEmpty && merged.last.end == part.start) {
+        final previous = merged.removeLast();
+        merged.add(previous.copyWith(end: part.end));
+      } else {
+        merged.add(part);
+      }
+    }
+    return merged;
+  }
 
   String get _guidedCurrentSummary {
     final pendingStart = _guidedCutStart;
@@ -1785,16 +1794,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
       return;
     }
-    final validStart = cutStart == Duration.zero || _isInsideKeptPartStrict(cutStart);
-    final validEnd = cutEnd == _duration || _isInsideKeptPartStrict(cutEnd);
-    if (!validStart || !validEnd) {
-      _showSnack(l10n.mediaCutterInvalidSplitPoint);
-      unawaited(_logMediaCutter(
-        'guided cut rejected outside kept part start=${_logPreciseDuration(cutStart)} '
-        'end=${_logPreciseDuration(cutEnd)} parts=${_parts.asMap().entries.map((entry) => _logPart(entry.key, entry.value)).join(' || ')}',
-      ));
-      return;
-    }
     await _pause();
     _clearPartPreview();
     if (!_isVideo && _usingRenderedPreviewSource) {
@@ -1804,13 +1803,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _addSplitPointIfNeeded(cutStart);
       _addSplitPointIfNeeded(cutEnd);
       _rebuildParts();
-      _parts = [
-        for (final part in _parts)
-          if (part.start >= cutStart && part.end <= cutEnd)
-            part.copyWith(keep: false)
-          else
-            part,
-      ];
+      final updatedParts = <_MediaPart>[];
+      for (final part in _parts) {
+        final overlapsCut = part.end > cutStart && part.start < cutEnd;
+        updatedParts.add(overlapsCut ? part.copyWith(keep: false) : part);
+      }
+      _parts = updatedParts;
       _deletedPartHistory.add('$cutStart:$cutEnd');
       _guidedCutStart = null;
       _guidedCutEnd = null;
@@ -2196,70 +2194,71 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                _buildEffectPicker(
-                  l10n,
-                  value: effect,
-                  label: _effectSlotLabel(l10n, 1),
-                  onChanged: (value) => setDialogState(() {
-                    normalizeDialogEffects([
-                      value,
+                Builder(
+                  builder: (context) {
+                    final currentEffects = [
+                      effect,
                       secondaryEffect,
                       thirdEffect,
                       fourthEffect,
-                    ]);
-                  }),
+                    ];
+                    final activeCount = currentEffects
+                        .where((item) => item != _MediaPartEffect.none)
+                        .length;
+                    final visibleSlots = activeCount == 0 ? 1 : activeCount;
+                    final children = <Widget>[];
+
+                    void setEffectSlot(int slot, _MediaPartEffect value) {
+                      final slots = [
+                        effect,
+                        secondaryEffect,
+                        thirdEffect,
+                        fourthEffect,
+                      ];
+                      slots[slot] = value;
+                      normalizeDialogEffects(slots);
+                    }
+
+                    for (var slot = 0; slot < visibleSlots; slot++) {
+                      if (children.isNotEmpty) {
+                        children.add(const SizedBox(height: 12));
+                      }
+                      children.add(_buildEffectPicker(
+                        l10n,
+                        value: currentEffects[slot],
+                        label: _effectSlotLabel(l10n, slot + 1),
+                        onChanged: (value) => setDialogState(
+                          () => setEffectSlot(slot, value),
+                        ),
+                      ));
+                    }
+
+                    if (activeCount > 0 && activeCount < 4) {
+                      children.add(const SizedBox(height: 12));
+                      children.add(OutlinedButton.icon(
+                        onPressed: () async {
+                          final selected = await _showEffectPickerDialog(
+                            l10n,
+                            title: '${l10n.add} ${_effectSlotLabel(l10n, activeCount + 1)}',
+                            current: _MediaPartEffect.none,
+                          );
+                          if (!mounted || !dialogContext.mounted) return;
+                          if (selected == null || selected == _MediaPartEffect.none) {
+                            return;
+                          }
+                          setDialogState(() => setEffectSlot(activeCount, selected));
+                        },
+                        icon: const Icon(Icons.add),
+                        label: Text('${l10n.add} ${_effectSlotLabel(l10n, activeCount + 1)}'),
+                      ));
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: children,
+                    );
+                  },
                 ),
-                if (effect != _MediaPartEffect.none ||
-                    secondaryEffect != _MediaPartEffect.none) ...[
-                  const SizedBox(height: 12),
-                  _buildEffectPicker(
-                    l10n,
-                    value: secondaryEffect,
-                    label: _effectSlotLabel(l10n, 2),
-                    onChanged: (value) => setDialogState(() {
-                      normalizeDialogEffects([
-                        effect,
-                        value,
-                        thirdEffect,
-                        fourthEffect,
-                      ]);
-                    }),
-                  ),
-                ],
-                if (secondaryEffect != _MediaPartEffect.none ||
-                    thirdEffect != _MediaPartEffect.none) ...[
-                  const SizedBox(height: 12),
-                  _buildEffectPicker(
-                    l10n,
-                    value: thirdEffect,
-                    label: _effectSlotLabel(l10n, 3),
-                    onChanged: (value) => setDialogState(() {
-                      normalizeDialogEffects([
-                        effect,
-                        secondaryEffect,
-                        value,
-                        fourthEffect,
-                      ]);
-                    }),
-                  ),
-                ],
-                if (thirdEffect != _MediaPartEffect.none ||
-                    fourthEffect != _MediaPartEffect.none) ...[
-                  const SizedBox(height: 12),
-                  _buildEffectPicker(
-                    l10n,
-                    value: fourthEffect,
-                    label: _effectSlotLabel(l10n, 4),
-                    onChanged: (value) => setDialogState(() {
-                      normalizeDialogEffects([
-                        effect,
-                        secondaryEffect,
-                        thirdEffect,
-                        value,
-                      ]);
-                    }),
-                  ),
-                ],
                 if (effect != _MediaPartEffect.none ||
                     secondaryEffect != _MediaPartEffect.none ||
                     thirdEffect != _MediaPartEffect.none ||
