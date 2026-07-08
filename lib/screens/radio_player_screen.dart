@@ -190,8 +190,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         _videoController?.pause();
         _videoController?.dispose();
         _videoController = null;
-        await _audio.setUrl(widget.station.streamUrl,
-            title: l10n.nowPlayingTitle(widget.station.name));
+        await _audio.setUrl(
+          widget.station.streamUrl,
+          title: l10n.nowPlayingTitle(widget.station.name),
+          headers: widget.tvChannel?.playbackHeaders,
+        );
         if (!mounted) return;
         unawaited(_audio.play().catchError((e) {
           if (!mounted) return;
@@ -792,8 +795,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         !TvService.isDashStreamUrl(widget.station.streamUrl)) {
       final streams =
           await TvService().resolveAudioDescriptionStreams(tvChannel);
-      if (streams.hasAudioDescription &&
-          streams.videoUrl != streams.audioUrl) {
+      if (streams.hasAudioDescription && streams.videoUrl != streams.audioUrl) {
         recordingVideoUrl = streams.videoUrl;
         recordingAudioUrl = streams.audioUrl;
         await AppLogger.log(
@@ -849,7 +851,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             final nextHour = twoDigits(clampInt(selectedHour + 1, 0, 23));
             final previousHour = twoDigits(clampInt(selectedHour - 1, 0, 23));
             final nextMinute = twoDigits(clampInt(selectedMinute + 1, 0, 59));
-            final previousMinute = twoDigits(clampInt(selectedMinute - 1, 0, 59));
+            final previousMinute =
+                twoDigits(clampInt(selectedMinute - 1, 0, 59));
 
             void setHour(int value) {
               setDialogState(() {
@@ -1010,20 +1013,23 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                       OutlinedButton.icon(
                         onPressed: pickStart,
                         icon: const Icon(Icons.schedule),
-                        label: Text('Ora di inizio: ${_formatTimeOfDay(startTime)}'),
+                        label: Text(
+                            'Ora di inizio: ${_formatTimeOfDay(startTime)}'),
                       ),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
                         onPressed: pickEnd,
                         icon: const Icon(Icons.schedule),
-                        label: Text('Ora di fine: ${_formatTimeOfDay(endTime)}'),
+                        label:
+                            Text('Ora di fine: ${_formatTimeOfDay(endTime)}'),
                       ),
                       const SizedBox(height: 16),
                       TextField(
                         controller: titleController,
                         decoration: const InputDecoration(
                           labelText: 'Titolo facoltativo',
-                          hintText: 'Lascia vuoto per usare il nome della radio o TV',
+                          hintText:
+                              'Lascia vuoto per usare il nome della radio o TV',
                         ),
                         textInputAction: TextInputAction.done,
                       ),
@@ -1145,7 +1151,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
     } catch (error) {
       if (!mounted) return;
-      await AppLogger.log('RadioPlayer: scheduled recording start failed: $error');
+      await AppLogger.log(
+          'RadioPlayer: scheduled recording start failed: $error');
       if (!mounted) return;
       setState(() {
         _recording = false;
@@ -1167,7 +1174,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
     } catch (error) {
       if (!mounted) return;
-      showStatusMessage(context, 'Errore salvataggio registrazione programmata: $error');
+      showStatusMessage(
+          context, 'Errore salvataggio registrazione programmata: $error');
     } finally {
       if (mounted) {
         _clearScheduledRecordingState();
@@ -1236,7 +1244,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   bool get _hasPendingScheduledRecording =>
       _scheduledRecordingStartTimer?.isActive ?? false;
-
 
   bool get _requiresRaiAudioDescriptionVideoPlayback =>
       widget.isVideoSupported &&
@@ -1463,8 +1470,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                     ),
                   if (_canRecordStream)
                     OutlinedButton.icon(
-                      onPressed:
-                          _loading || _recording ? null : _showScheduleRecordingDialog,
+                      onPressed: _loading || _recording
+                          ? null
+                          : _showScheduleRecordingDialog,
                       icon: const Icon(Icons.schedule),
                       label: const Text('Programma registrazione'),
                     ),
@@ -1656,8 +1664,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 ),
               if (_canRecordStream)
                 OutlinedButton.icon(
-                  onPressed:
-                      _loading || _recording ? null : _showScheduleRecordingDialog,
+                  onPressed: _loading || _recording
+                      ? null
+                      : _showScheduleRecordingDialog,
                   icon: const Icon(Icons.schedule),
                   label: const Text('Programma registrazione'),
                 ),

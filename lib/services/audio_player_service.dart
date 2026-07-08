@@ -224,13 +224,20 @@ class AudioPlayerService {
     AudioSessionType sessionType = AudioSessionType.playback,
     String? title,
     String? mediaId,
+    Map<String, String>? headers,
   }) async {
     AppLogger.log(
       'Sonarpad audio: playUrl start url=$url, title="${title ?? 'none'}", '
       'mediaId=$mediaId, sessionType=$sessionType',
     );
     _stopRequested = false;
-    await setUrl(url, sessionType: sessionType, title: title, mediaId: mediaId);
+    await setUrl(
+      url,
+      sessionType: sessionType,
+      title: title,
+      mediaId: mediaId,
+      headers: headers,
+    );
     if (!_stopRequested) {
       await play();
     } else {
@@ -246,6 +253,7 @@ class AudioPlayerService {
     AudioSessionType sessionType = AudioSessionType.playback,
     String? title,
     String? mediaId,
+    Map<String, String>? headers,
   }) async {
     if (_pendingDispose != null) {
       AppLogger.log(
@@ -275,6 +283,7 @@ class AudioPlayerService {
 
     final source = AudioSource.uri(
       Uri.parse(url),
+      headers: headers,
       tag: MediaItem(
         id: mediaId ?? url,
         album: 'Sonarpad',
@@ -542,7 +551,8 @@ class AudioPlayerService {
             await _player.seek(Duration.zero, index: 0);
           }
         } catch (e) {
-          AppLogger.log('Sonarpad audio: stream playlist pre-reset ignored: $e');
+          AppLogger.log(
+              'Sonarpad audio: stream playlist pre-reset ignored: $e');
         }
 
         Duration? duration;
