@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart';
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
+import '../utils/app_logger.dart';
 import 'favorite_tvs_screen.dart';
 import 'tv_channel_screen.dart';
 import 'tv_recordings_screen.dart';
@@ -27,6 +28,7 @@ class _TvScreenState extends State<TvScreen> {
   Map<String, TvProgram> _currentPrograms = {};
   bool _loading = true;
   String? _error;
+  String? _cacheWarning;
 
   @override
   void initState() {
@@ -43,14 +45,30 @@ class _TvScreenState extends State<TvScreen> {
   Future<void> _load() async {
     final code = await _settings.getTvSecretCode();
     try {
-      final channels = await _service.loadChannels(code);
-      final currentPrograms = await _service.loadCurrentPrograms(code);
+      final channelResult = await _service.loadChannelsWithCache(code);
+      var currentPrograms = <String, TvProgram>{};
+      try {
+        currentPrograms = await _service.loadCurrentPrograms(code);
+      } catch (e) {
+        await AppLogger.log(
+          'TV: programmi correnti non disponibili, mostro comunque la lista '
+          'canali error=$e',
+        );
+      }
       if (!mounted) return;
       setState(() {
-        _channels = channels;
+        _channels = channelResult.channels;
         _currentPrograms = currentPrograms;
+        _cacheWarning = channelResult.cacheWarning;
         _loading = false;
       });
+      if (channelResult.fromCache && channelResult.cacheWarning != null) {
+        showStatusMessage(
+          context,
+          channelResult.cacheWarning!,
+          duration: const Duration(seconds: 4),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -174,6 +192,27 @@ class _TvScreenState extends State<TvScreen> {
     final categories = map.keys.toList();
 
     final listChildren = <Widget>[
+      if (_cacheWarning != null)
+        Padding(
+          key: const ValueKey('tv_cache_warning'),
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Semantics(
+            liveRegion: true,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  _cacheWarning!,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+            ),
+          ),
+        ),
       Padding(
         key: const ValueKey('tv_search_box'),
         padding: const EdgeInsets.only(bottom: 12),

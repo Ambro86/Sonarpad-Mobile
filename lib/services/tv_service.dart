@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/app_logger.dart';
@@ -91,6 +92,31 @@ class TvProgram {
   });
 }
 
+
+class TvChannelLoadResult {
+  final List<TvChannel> channels;
+  final bool fromCache;
+  final DateTime? cacheSavedAt;
+  final String? cacheWarning;
+
+  const TvChannelLoadResult({
+    required this.channels,
+    this.fromCache = false,
+    this.cacheSavedAt,
+    this.cacheWarning,
+  });
+}
+
+class _CachedTvChannels {
+  final List<TvChannel> channels;
+  final DateTime? savedAt;
+
+  const _CachedTvChannels({
+    required this.channels,
+    this.savedAt,
+  });
+}
+
 class TvService {
   static const _routeClientToken =
       String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN');
@@ -152,11 +178,17 @@ class TvService {
   }
 
   Future<List<TvChannel>> loadChannels(String secretKey) async {
-    if (secretKey.trim().isEmpty) return [];
+    final result = await loadChannelsWithCache(secretKey);
+    return result.channels;
+  }
 
-    final channels = <TvChannel>[];
+  Future<TvChannelLoadResult> loadChannelsWithCache(String secretKey) async {
+    if (secretKey.trim().isEmpty) {
+      return const TvChannelLoadResult(channels: []);
+    }
 
     try {
+      await AppLogger.log('TV: scaricamento lista canali dal server Sonarpad');
       final response = await http.get(
         Uri.parse(
             'https://sonarpad.com/api/tv_channels_resolver.php?resolve=0'),
@@ -168,46 +200,144 @@ class TvService {
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        final mainData = jsonDecode(response.body);
-        for (var ch in mainData['channels']) {
-          final name = (ch['name'] as String)
-              .replaceFirst(RegExp(r'^\[\d+\]\s*'), '')
-              .trim();
-          var url = (ch['url'] as String).trim();
-          if (name == 'La7') url = _la7StreamUrl;
-          if (name == 'La7 Cinema' || name == 'La7D' || name == 'LA7D') {
-            url = _la7CinemaDashUrl;
-          }
-          if (name.isNotEmpty && url.isNotEmpty) {
-            final gt = ch['group_title'] as String?;
-            final cat = (gt == null || gt.trim().isEmpty) ? 'Altri' : gt.trim();
-
-            channels.add(TvChannel(
-              name: name,
-              url: url,
-              category: cat,
-              streamResolver: ch['stream_resolver'] as String?,
-              resolverEndpoint: ch['resolver_endpoint'] as String?,
-              resolverRealm: ch['resolver_realm'] as String?,
-              resolverChannelId: ch['resolver_channel_id'] as String?,
-              tvgId: ch['tvg_id']?.toString() ?? '',
-              tvgName: ch['tvg_name']?.toString() ?? '',
-              httpUserAgent: ch['http_user_agent']?.toString() ?? '',
-            ));
-          }
-        }
+        final channels = _parseServerChannels(response.body);
         if (channels.isNotEmpty) {
           dev.log('CANALI SCARICATI CON SUCCESSO DAL SERVER SONARPAD!');
-          return channels;
+          await _writeChannelsCache(channels);
+          await AppLogger.log(
+            'TV: lista canali scaricata e salvata in cache privata '
+            'count=${channels.length}',
+          );
+          return TvChannelLoadResult(channels: channels);
         }
       }
       throw Exception(
           'Nessun canale ricevuto dal server (status: ${response.statusCode})');
     } catch (e) {
       dev.log('Failed to load channels from network: $e');
+      await AppLogger.log(
+        'TV: server o connessione non disponibile, provo cache privata error=$e',
+      );
+      final cached = await _readChannelsCache();
+      if (cached != null && cached.channels.isNotEmpty) {
+        final savedAtText = _formatCacheSavedAt(cached.savedAt);
+        final warning = savedAtText == null
+            ? 'Connessione assente o server non raggiungibile. Uso l\'ultima lista TV scaricata.'
+            : 'Connessione assente o server non raggiungibile. Uso l\'ultima lista TV scaricata il $savedAtText.';
+        await AppLogger.log(
+          'TV: uso lista canali da cache privata '
+          'count=${cached.channels.length} savedAt=${cached.savedAt?.toIso8601String() ?? "unknown"}',
+        );
+        return TvChannelLoadResult(
+          channels: cached.channels,
+          fromCache: true,
+          cacheSavedAt: cached.savedAt,
+          cacheWarning: warning,
+        );
+      }
+      await AppLogger.log('TV: cache privata lista canali assente o non valida');
       throw Exception(
           'Impossibile scaricare i canali. Verifica la connessione internet e riprova.');
     }
+  }
+
+  List<TvChannel> _parseServerChannels(String body) {
+    final mainData = jsonDecode(body);
+    if (mainData is! Map<String, dynamic>) return [];
+    final rawChannels = mainData['channels'];
+    if (rawChannels is! List) return [];
+
+    final channels = <TvChannel>[];
+    for (final raw in rawChannels) {
+      if (raw is! Map<String, dynamic>) continue;
+      final name = (raw['name']?.toString() ?? '')
+          .replaceFirst(RegExp(r'^\[\d+\]\s*'), '')
+          .trim();
+      var url = (raw['url']?.toString() ?? '').trim();
+      if (name == 'La7') url = _la7StreamUrl;
+      if (name == 'La7 Cinema' || name == 'La7D' || name == 'LA7D') {
+        url = _la7CinemaDashUrl;
+      }
+      if (name.isEmpty || url.isEmpty) continue;
+
+      final gt = raw['group_title']?.toString();
+      final cat = (gt == null || gt.trim().isEmpty) ? 'Altri' : gt.trim();
+
+      channels.add(TvChannel(
+        name: name,
+        url: url,
+        category: cat,
+        streamResolver: raw['stream_resolver'] as String?,
+        resolverEndpoint: raw['resolver_endpoint'] as String?,
+        resolverRealm: raw['resolver_realm'] as String?,
+        resolverChannelId: raw['resolver_channel_id'] as String?,
+        tvgId: raw['tvg_id']?.toString() ?? '',
+        tvgName: raw['tvg_name']?.toString() ?? '',
+        httpUserAgent: raw['http_user_agent']?.toString() ?? '',
+      ));
+    }
+    return channels;
+  }
+
+  Future<File> _channelsCacheFile() async {
+    final supportDir = await getApplicationSupportDirectory();
+    final cacheDir = Directory('${supportDir.path}/tv_cache');
+    if (!await cacheDir.exists()) {
+      await cacheDir.create(recursive: true);
+    }
+    return File('${cacheDir.path}/channels.json');
+  }
+
+  Future<void> _writeChannelsCache(List<TvChannel> channels) async {
+    try {
+      final file = await _channelsCacheFile();
+      final payload = <String, dynamic>{
+        'saved_at': DateTime.now().toIso8601String(),
+        'channels': channels.map((channel) => channel.toJson()).toList(),
+      };
+      await file.writeAsString(jsonEncode(payload), flush: true);
+    } catch (e) {
+      await AppLogger.log('TV: impossibile salvare cache lista canali error=$e');
+    }
+  }
+
+  Future<_CachedTvChannels?> _readChannelsCache() async {
+    try {
+      final file = await _channelsCacheFile();
+      if (!await file.exists()) return null;
+      final decoded = jsonDecode(await file.readAsString());
+      if (decoded is! Map<String, dynamic>) return null;
+      final rawChannels = decoded['channels'];
+      if (rawChannels is! List) return null;
+      final channels = <TvChannel>[];
+      for (final raw in rawChannels) {
+        if (raw is Map<String, dynamic>) {
+          try {
+            channels.add(TvChannel.fromJson(raw));
+          } catch (_) {
+            // Ignora singoli canali corrotti nella cache.
+          }
+        }
+      }
+      if (channels.isEmpty) return null;
+      final savedAtRaw = decoded['saved_at']?.toString();
+      final savedAt = savedAtRaw == null ? null : DateTime.tryParse(savedAtRaw);
+      return _CachedTvChannels(channels: channels, savedAt: savedAt);
+    } catch (e) {
+      await AppLogger.log('TV: cache lista canali non leggibile error=$e');
+      return null;
+    }
+  }
+
+  String? _formatCacheSavedAt(DateTime? value) {
+    if (value == null) return null;
+    final local = value.toLocal();
+    final day = local.day.toString().padLeft(2, '0');
+    final month = local.month.toString().padLeft(2, '0');
+    final year = local.year.toString();
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    return '$day/$month/$year alle $hour:$minute';
   }
 
   Future<Map<String, TvProgram>> loadCurrentPrograms(String secretKey) async {
