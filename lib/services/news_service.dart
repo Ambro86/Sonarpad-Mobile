@@ -93,6 +93,7 @@ class NewsService {
       'https://sonarpad.com/api/tinyfish_fetch_article.php';
   static const _tinyfishPolicyTimeout = Duration(seconds: 4);
   static const _tinyfishArticleTimeout = Duration(seconds: 20);
+  static const _tinyfishFallbackOnlyDefault = true;
   static const _readerFallbackMinLength = 150;
   static const _communityHeaders = {
     'User-Agent': 'SonarpadMobile/0.1 (https://sonarpad.com)',
@@ -115,10 +116,11 @@ class NewsService {
   );
   static Future<http.Client>? _chromeClientFuture;
   static Future<http.Client>? _iphoneClientFuture;
+  static bool? _sessionTinyfishFallbackOnlyPolicy;
+  static Future<bool>? _sessionTinyfishPolicyFuture;
 
   final http.Client _client;
   final bool _useBrowserClient;
-  bool? _tinyfishFallbackOnlyPolicy;
   NewsService({http.Client? client})
       : _client = client ?? http.Client(),
         _useBrowserClient = client == null;
@@ -968,11 +970,15 @@ class NewsService {
   Future<NewsArticleContent> fetchArticleContent(NewsArticle article,
       {required NewsLanguage language}) async {
     final resolvedUrl = await _resolveArticleUrl(article.link);
-    final fallbackOnly = await _loadTinyfishFallbackOnlyPolicy();
+    final fallbackOnly = _tinyfishFallbackOnlyPolicyForCurrentSession();
+    final policySource = _sessionTinyfishFallbackOnlyPolicy == null
+        ? 'default_pending'
+        : 'session_cache';
 
     unawaited(AppLogger.log(
       'News articolo: recupero contenuto avviato '
       'language=${language.code} fallbackOnly=$fallbackOnly '
+      'policySource=$policySource '
       'originalUrl=${article.link} resolvedUrl=$resolvedUrl',
     ));
 
@@ -997,10 +1003,56 @@ class NewsService {
     );
   }
 
-  Future<bool> _loadTinyfishFallbackOnlyPolicy() async {
-    final cached = _tinyfishFallbackOnlyPolicy;
+  void prefetchTinyfishFallbackOnlyPolicy() {
+    final cached = _sessionTinyfishFallbackOnlyPolicy;
+    if (cached != null) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: policy già in memoria per questa sessione '
+        'fallbackOnly=$cached',
+      ));
+      return;
+    }
+
+    if (_sessionTinyfishPolicyFuture != null) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: richiesta policy già in corso, riuso la stessa '
+        'richiesta',
+      ));
+      return;
+    }
+
+    unawaited(AppLogger.log(
+      'News Tinyfish: richiesta policy avviata in background per questa '
+      'sessione',
+    ));
+    unawaited(loadTinyfishFallbackOnlyPolicyForSession());
+  }
+
+  Future<bool> loadTinyfishFallbackOnlyPolicyForSession() {
+    final cached = _sessionTinyfishFallbackOnlyPolicy;
+    if (cached != null) return Future.value(cached);
+
+    final existing = _sessionTinyfishPolicyFuture;
+    if (existing != null) return existing;
+
+    final future = _loadTinyfishFallbackOnlyPolicyFromServer();
+    _sessionTinyfishPolicyFuture = future;
+    return future.whenComplete(() {
+      if (identical(_sessionTinyfishPolicyFuture, future)) {
+        _sessionTinyfishPolicyFuture = null;
+      }
+    });
+  }
+
+  bool _tinyfishFallbackOnlyPolicyForCurrentSession() {
+    final cached = _sessionTinyfishFallbackOnlyPolicy;
     if (cached != null) return cached;
 
+    prefetchTinyfishFallbackOnlyPolicy();
+    return _tinyfishFallbackOnlyDefault;
+  }
+
+  Future<bool> _loadTinyfishFallbackOnlyPolicyFromServer() async {
     try {
       final uri = Uri.parse(_tinyfishArticleFetchUrl).replace(
         queryParameters: {'policy': '1'},
@@ -1017,21 +1069,43 @@ class NewsService {
           final fallbackOnly = decoded['tinyfish_fallback_only'] == true ||
               decoded['fallback_only'] == true ||
               decoded['mode']?.toString().toLowerCase() == 'fallback_only';
-          _tinyfishFallbackOnlyPolicy = fallbackOnly;
+          _sessionTinyfishFallbackOnlyPolicy = fallbackOnly;
           unawaited(AppLogger.log(
-            'News Tinyfish: policy caricata fallbackOnly=$fallbackOnly',
+            'News Tinyfish: policy ricevuta dal server e mantenuta in '
+            'memoria per questa sessione fallbackOnly=$fallbackOnly',
           ));
           return fallbackOnly;
         }
+
+        unawaited(AppLogger.log(
+          'News Tinyfish: risposta policy non valida, uso default sicuro '
+          'fallbackOnly=$_tinyfishFallbackOnlyDefault',
+        ));
+      } else {
+        unawaited(AppLogger.log(
+          'News Tinyfish: risposta policy HTTP ${response.statusCode}, uso '
+          'default sicuro fallbackOnly=$_tinyfishFallbackOnlyDefault',
+        ));
       }
     } catch (e) {
       unawaited(AppLogger.log(
-        'News Tinyfish: policy non disponibile, uso comportamento standard: $e',
+        'News Tinyfish: policy non disponibile, uso default sicuro '
+        'fallbackOnly=$_tinyfishFallbackOnlyDefault error=$e',
       ));
     }
 
-    _tinyfishFallbackOnlyPolicy = false;
-    return false;
+    _sessionTinyfishFallbackOnlyPolicy = _tinyfishFallbackOnlyDefault;
+    unawaited(AppLogger.log(
+      'News Tinyfish: default sicuro mantenuto in memoria per questa '
+      'sessione fallbackOnly=$_tinyfishFallbackOnlyDefault',
+    ));
+    return _tinyfishFallbackOnlyDefault;
+  }
+
+  @visibleForTesting
+  static void resetTinyfishFallbackOnlyPolicyForTests() {
+    _sessionTinyfishFallbackOnlyPolicy = null;
+    _sessionTinyfishPolicyFuture = null;
   }
 
   Future<NewsArticleContent> _fetchArticleContentTinyfishFirst(

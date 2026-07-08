@@ -13,6 +13,10 @@ import 'package:sonarpad_mobile_starter/services/news_sources/spanish_news_sourc
 
 void main() {
   group('NewsService', () {
+    setUp(() {
+      NewsService.resetTinyfishFallbackOnlyPolicyForTests();
+    });
+
     test('uses Corriere restyle 2025 feed as default source', () {
       final corriere = italianNewsSources.firstWhere(
         (source) => source.name == 'Corriere della Sera',
@@ -358,6 +362,8 @@ Questo è il secondo paragrafo con un [link utile](https://example.com) e testo 
         }),
       );
 
+      await service.loadTinyfishFallbackOnlyPolicyForSession();
+
       final content = await service.fetchArticleContent(
         const NewsArticle(
           id: '1',
@@ -385,6 +391,17 @@ Questo è il secondo paragrafo con un [link utile](https://example.com) e testo 
       final service = NewsService(
         client: MockClient((request) async {
           requested.add(request.url);
+          if (request.url.host == 'sonarpad.com' &&
+              request.url.queryParameters['policy'] == '1') {
+            return http.Response.bytes(
+              utf8.encode(jsonEncode({
+                'ok': true,
+                'tinyfish_fallback_only': false,
+              })),
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'},
+            );
+          }
           if (request.url.host == 'sonarpad.com') {
             return http.Response('{"ok":false}', 502);
           }
@@ -406,6 +423,8 @@ Questo è il secondo paragrafo con un [link utile](https://example.com) e testo 
           );
         }),
       );
+
+      await service.loadTinyfishFallbackOnlyPolicyForSession();
 
       final content = await service.fetchArticleContent(
         const NewsArticle(

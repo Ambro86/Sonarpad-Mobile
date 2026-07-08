@@ -52,6 +52,7 @@ class _NewsScreenState extends State<NewsScreen> {
         'cs' => NewsLanguage.czech,
         _ => NewsLanguage.italian,
       };
+      _service.prefetchTinyfishFallbackOnlyPolicy();
       _loadSources();
     }
   }
@@ -633,6 +634,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   @override
   void initState() {
     super.initState();
+    _service.prefetchTinyfishFallbackOnlyPolicy();
     _currentUri = widget.initialUri ?? widget.source.uri;
     _future = _buildFuture();
   }
