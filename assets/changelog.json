@@ -3,6 +3,8 @@
     "version": "0.3.2",
     "date": "2026-06-27",
     "it": [
+      "Notizie: allineati i timeout Tinyfish; il server attende fino a 15 secondi e l’app fino a 20 secondi, riducendo chiamate bloccate e fallback troppo rapidi.",
+      "In Taglia file media, la schermata degli effetti ora evita doppie letture con VoiceOver e mantiene ordinati gli effetti scelti; nel taglio avanzato ogni parte può essere modificata spostando inizio o fine di 1 secondo e ascoltando subito il risultato.",
       "Nel Taglio guidato, se imposti inizio o fine taglio e provi a uscire senza applicare, Sonarpad ora avvisa prima di perdere il taglio preparato; il controllo di rotazione video resta disponibile anche nel flusso guidato.",
       "Nel taglio guidato è stato aggiunto Modifica taglio: permette di spostare inizio o fine taglio avanti o indietro di 1 secondo e riascoltare il taglio senza rifarlo da capo.",
       "Migliorata la lettura dei documenti: alcuni testi con accenti particolari vengono ora letti meglio anche muovendosi carattere per carattere con VoiceOver.",
@@ -41,9 +43,12 @@
       "In Taglia file media è stato aggiunto il pulsante Regola lo spostamento del file media, per scegliere di quanto avanzare o tornare indietro con lo slider.",
       "Migliorato Taglia file media: con VoiceOver i controlli di spostamento, video e rotazione sono prima dello slider; le divisioni vicino a un bordo possono spezzare la parte mantenuta e Sonarpad annuncia quale parte è stata aggiunta.",
       "In Taglia file media, se dividi dentro una parte già esistente, quella parte viene spezzata in due e le parti successive vengono rinumerate correttamente.",
-      "In Taglia file media ora puoi scegliere tra Taglio guidato e Taglio avanzato. Il Taglio guidato permette di impostare inizio e fine, ascoltare il taglio da rimuovere e applicarlo, con una sola scheda riepilogativa del file e gli effetti applicati a tutto il risultato."
+      "In Taglia file media ora puoi scegliere tra Taglio guidato e Taglio avanzato. Il Taglio guidato permette di impostare inizio e fine, ascoltare il taglio da rimuovere e applicarlo, con una sola scheda riepilogativa del file e gli effetti applicati a tutto il risultato.",
+      "Notizie: rimossa una chiamata ridondante al reader quando la WebView carica la pagina, riducendo estrazioni doppie e log inutili."
     ],
     "en": [
+      "News: Tinyfish timeouts are now aligned; the server waits up to 15 seconds and the app up to 20 seconds, reducing stuck calls and overly early fallbacks.",
+      "In Cut media file, the effects screen now avoids duplicate VoiceOver readings and keeps selected effects ordered; in Advanced cut each part can be edited by moving its start or end by 1 second and previewing the result immediately.",
       "In Guided cut, if you set a start or end point and try to leave without applying it, Sonarpad now warns before losing the prepared cut; video rotation remains available in the guided flow too.",
       "Guided cut now includes Edit cut: move the start or end point forward or back by 1 second and listen again without starting over.",
       "Improved document reading: some texts with unusual accents are now read more reliably, including when moving character by character with VoiceOver.",
@@ -79,9 +84,12 @@
       "Media Cutter now includes an Adjust media file movement button to choose how far the slider moves forward or backward.",
       "Media Cutter has been improved: with VoiceOver, movement, video and rotation controls now appear before the slider; splits near an existing boundary can split the nearby kept part, and Sonarpad announces which part was added.",
       "In Cut media file, splitting inside an existing part now splits that part in two and renumbers the following parts correctly.",
-      "Cut media file now lets you choose between Guided cut and Advanced cut. Guided cut lets you set the start and end, listen to the section to remove and apply the cut, with one file summary card and effects applied to the whole result."
+      "Cut media file now lets you choose between Guided cut and Advanced cut. Guided cut lets you set the start and end, listen to the section to remove and apply the cut, with one file summary card and effects applied to the whole result.",
+      "News: removed a redundant reader call while the WebView loads the page, reducing duplicate extraction attempts and unnecessary logs."
     ],
     "fr": [
+      "Actualités : les délais d’attente Tinyfish sont désormais alignés ; le serveur attend jusqu’à 15 secondes et l’app jusqu’à 20 secondes, afin de réduire les appels bloqués et les bascules trop rapides.",
+      "Dans Couper un fichier média, l’écran des effets évite maintenant les lectures en double avec VoiceOver et garde les effets sélectionnés dans l’ordre; dans le mode avancé, chaque partie peut être modifiée en déplaçant son début ou sa fin d’une seconde puis en l’écoutant.",
       "Dans la découpe guidée, si vous définissez un début ou une fin puis quittez sans appliquer, Sonarpad avertit désormais avant de perdre la découpe préparée ; la rotation vidéo reste aussi disponible dans le flux guidé.",
       "La découpe guidée inclut maintenant Modifier la découpe : déplacez le début ou la fin d’une seconde en avant ou en arrière et réécoutez sans recommencer.",
       "Amélioration de la lecture des documents : certains textes avec des accents particuliers sont maintenant mieux lus, y compris caractère par caractère avec VoiceOver.",
@@ -117,9 +125,12 @@
       "Taglia file media ajoute un bouton pour régler le déplacement du fichier média et choisir de combien avancer ou reculer avec le curseur.",
       "Taglia file media a été amélioré : avec VoiceOver, les commandes de déplacement, vidéo et rotation se trouvent avant le curseur ; les divisions proches d’un bord peuvent couper la partie conservée, et Sonarpad annonce quelle partie a été ajoutée.",
       "Dans Couper le fichier média, une division à l’intérieur d’une partie existante coupe maintenant cette partie en deux et renumérote correctement les parties suivantes.",
-      "Taglia file media permet maintenant de choisir entre Découpe guidée et Découpe avancée. La découpe guidée permet de définir le début et la fin, d’écouter la partie à retirer et d’appliquer la découpe, avec une seule fiche récapitulative et des effets appliqués à tout le résultat."
+      "Taglia file media permet maintenant de choisir entre Découpe guidée et Découpe avancée. La découpe guidée permet de définir le début et la fin, d’écouter la partie à retirer et d’appliquer la découpe, avec une seule fiche récapitulative et des effets appliqués à tout le résultat.",
+      "Actualités : suppression d’un appel redondant au lecteur pendant le chargement de la WebView, afin de réduire les extractions en double et les journaux inutiles."
     ],
     "es": [
+      "Noticias: se han alineado los tiempos de espera de Tinyfish; el servidor espera hasta 15 segundos y la app hasta 20 segundos, reduciendo llamadas bloqueadas y cambios de fallback demasiado rápidos.",
+      "En Cortar archivo multimedia, la pantalla de efectos evita ahora lecturas duplicadas con VoiceOver y mantiene ordenados los efectos elegidos; en el corte avanzado cada parte puede modificarse moviendo su inicio o final 1 segundo y escuchando el resultado.",
       "En el corte guiado, si defines un inicio o un final y sales sin aplicarlo, Sonarpad ahora avisa antes de perder el corte preparado; la rotación de vídeo también está disponible en el flujo guiado.",
       "El corte guiado ahora incluye Modificar corte: mueve el inicio o el final 1 segundo hacia adelante o hacia atrás y vuelve a escucharlo sin empezar de nuevo.",
       "Mejorada la lectura de documentos: algunos textos con acentos especiales ahora se leen mejor, también al moverse carácter por carácter con VoiceOver.",
@@ -155,9 +166,12 @@
       "Taglia file media añade un botón para ajustar el desplazamiento del archivo multimedia y elegir cuánto avanzar o retroceder con el control deslizante.",
       "Taglia file media se ha mejorado: con VoiceOver, los controles de desplazamiento, vídeo y rotación están antes del control deslizante; las divisiones cerca de un borde pueden cortar la parte conservada, y Sonarpad anuncia qué parte se ha añadido.",
       "En Cortar archivo multimedia, si divides dentro de una parte existente, esa parte se divide en dos y las partes siguientes se renumeran correctamente.",
-      "Taglia file media ahora permite elegir entre Corte guiado y Corte avanzado. El corte guiado permite definir inicio y fin, escuchar la sección que se eliminará y aplicar el corte, con una sola ficha de resumen del archivo y efectos aplicados a todo el resultado."
+      "Taglia file media ahora permite elegir entre Corte guiado y Corte avanzado. El corte guiado permite definir inicio y fin, escuchar la sección que se eliminará y aplicar el corte, con una sola ficha de resumen del archivo y efectos aplicados a todo el resultado.",
+      "Noticias: se eliminó una llamada redundante al lector durante la carga de la WebView, reduciendo extracciones duplicadas y registros innecesarios."
     ],
     "pt": [
+      "Notícias: os tempos limite do Tinyfish foram alinhados; o servidor espera até 15 segundos e a app até 20 segundos, reduzindo chamadas bloqueadas e fallback demasiado rápido.",
+      "Em Cortar ficheiro de mídia, a tela de efeitos agora evita leituras duplicadas com o VoiceOver e mantém os efeitos escolhidos em ordem; no corte avançado cada parte pode ser modificada movendo o início ou o fim em 1 segundo e ouvindo o resultado.",
       "No corte guiado, se definir um início ou fim e tentar sair sem aplicar, o Sonarpad avisa antes de perder o corte preparado; a rotação de vídeo também fica disponível no fluxo guiado.",
       "O corte guiado inclui agora Modificar corte: avance ou recue o início ou o fim 1 segundo e volte a ouvir sem recomeçar.",
       "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caráter a caráter com o VoiceOver.",
@@ -193,9 +207,12 @@
       "Taglia file media adiciona um botão para regular o deslocamento do arquivo de mídia e escolher quanto avançar ou retroceder com o controle deslizante.",
       "Taglia file media foi melhorado: com VoiceOver, os controles de deslocamento, vídeo e rotação ficam antes do controle deslizante; divisões perto de uma borda podem cortar a parte mantida, e o Sonarpad anuncia qual parte foi adicionada.",
       "Em Cortar arquivo de mídia, ao dividir dentro de uma parte existente, essa parte agora é dividida em duas e as partes seguintes são renumeradas corretamente.",
-      "Taglia file media agora permite escolher entre Corte guiado e Corte avançado. O corte guiado permite definir início e fim, ouvir a parte a remover e aplicar o corte, com um único cartão de resumo do ficheiro e efeitos aplicados a todo o resultado."
+      "Taglia file media agora permite escolher entre Corte guiado e Corte avançado. O corte guiado permite definir início e fim, ouvir a parte a remover e aplicar o corte, com um único cartão de resumo do ficheiro e efeitos aplicados a todo o resultado.",
+      "Notícias: removida uma chamada redundante ao leitor durante o carregamento da WebView, reduzindo extrações duplicadas e logs desnecessários."
     ],
     "pl": [
+      "Wiadomości: wyrównano limity czasu Tinyfish; serwer czeka do 15 sekund, a aplikacja do 20 sekund, co ogranicza zablokowane wywołania i zbyt szybkie przełączanie awaryjne.",
+      "W Przytnij plik multimedialny ekran efektów nie powtarza już etykiet w VoiceOver i utrzymuje wybrane efekty we właściwej kolejności; w trybie zaawansowanym każdą część można edytować, przesuwając jej początek lub koniec o 1 sekundę i od razu odsłuchując wynik.",
       "W cięciu z przewodnikiem, jeśli ustawisz początek lub koniec i spróbujesz wyjść bez zastosowania, Sonarpad ostrzega przed utratą przygotowanego cięcia; obrót wideo jest nadal dostępny także w trybie z przewodnikiem.",
       "Cięcie z przewodnikiem ma teraz opcję Edytuj cięcie: można przesunąć początek lub koniec o 1 sekundę do przodu albo wstecz i odsłuchać ponownie bez zaczynania od nowa.",
       "Ulepszono czytanie dokumentów: niektóre teksty z nietypowymi akcentami są teraz odczytywane lepiej, także podczas przechodzenia znak po znaku z VoiceOver.",
@@ -232,9 +249,12 @@
       "Taglia file media ma teraz przycisk do ustawiania przesuwania pliku multimedialnego, aby wybrać, o ile przesuwać suwak do przodu lub do tyłu.",
       "Ulepszono Taglia file media: w VoiceOver elementy sterujące przesuwaniem, wideo i obrotem są przed suwakiem; podziały blisko granicy mogą rozdzielić zachowaną część, a Sonarpad ogłasza, która część została dodana.",
       "W funkcji Przytnij plik multimedialny podział wewnątrz istniejącej części dzieli teraz tę część na dwie i poprawnie zmienia numerację kolejnych części.",
-      "Funkcja przycinania plików multimedialnych pozwala teraz wybrać tryb z przewodnikiem lub zaawansowany. Tryb z przewodnikiem umożliwia ustawienie początku i końca, odsłuchanie fragmentu do usunięcia i zastosowanie cięcia, z jedną kartą podsumowania pliku i efektami dla całego wyniku."
+      "Funkcja przycinania plików multimedialnych pozwala teraz wybrać tryb z przewodnikiem lub zaawansowany. Tryb z przewodnikiem umożliwia ustawienie początku i końca, odsłuchanie fragmentu do usunięcia i zastosowanie cięcia, z jedną kartą podsumowania pliku i efektami dla całego wyniku.",
+      "Wiadomości: usunięto nadmiarowe wywołanie czytnika podczas ładowania WebView, ograniczając podwójne próby wyodrębniania i zbędne logi."
     ],
     "cs": [
+      "Zprávy: časové limity Tinyfish jsou nyní sladěné; server čeká až 15 sekund a aplikace až 20 sekund, což omezuje zaseknuté požadavky a příliš rychlý fallback.",
+      "Ve funkci Oříznout mediální soubor už obrazovka efektů neopakuje popisky ve VoiceOveru a udržuje vybrané efekty ve správném pořadí; v pokročilém střihu lze každou část upravit posunem začátku nebo konce o 1 sekundu a výsledek hned poslechnout.",
       "V průvodci střihem Sonarpad nyní upozorní, když nastavíte začátek nebo konec a pokusíte se odejít bez použití střihu; otočení videa zůstává dostupné i v průvodci.",
       "Průvodce střihem nyní obsahuje Upravit střih: začátek nebo konec lze posunout o 1 sekundu vpřed či zpět a znovu poslechnout bez opakování od začátku.",
       "Vylepšeno čtení dokumentů: některé texty se zvláštními akcenty se nyní čtou lépe, i při pohybu znak po znaku pomocí VoiceOveru.",
@@ -270,7 +290,8 @@
       "Taglia file media nyní obsahuje tlačítko pro nastavení posunu mediálního souboru, takže lze zvolit, o kolik se má posuvník posouvat dopředu nebo dozadu.",
       "Taglia file media bylo vylepšeno: ve VoiceOveru jsou ovládací prvky posunu, videa a otočení před posuvníkem; rozdělení blízko hranice může rozdělit zachovanou část a Sonarpad oznámí, která část byla přidána.",
       "Ve funkci Oříznout mediální soubor rozdělení uvnitř existující části nyní rozdělí tuto část na dvě a správně přečísluje následující části.",
-      "Střih mediálního souboru nyní umožňuje vybrat průvodce střihem nebo pokročilý střih. Průvodce umožňuje nastavit začátek a konec, poslechnout si odstraňovanou část a střih použít, s jednou souhrnnou kartou souboru a efekty pro celý výsledek."
+      "Střih mediálního souboru nyní umožňuje vybrat průvodce střihem nebo pokročilý střih. Průvodce umožňuje nastavit začátek a konec, poslechnout si odstraňovanou část a střih použít, s jednou souhrnnou kartou souboru a efekty pro celý výsledek.",
+      "Zprávy: odstraněno nadbytečné volání čtečky při načítání WebView, čímž se omezují dvojité pokusy o extrakci a zbytečné logy."
     ]
   },
   {

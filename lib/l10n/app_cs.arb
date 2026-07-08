@@ -1162,7 +1162,7 @@
   "mediaCutterRestoreDeletedPart": "Obnovit odstraněnou část",
   "mediaCutterNoDeletedParts": "Nejsou zde žádné odstraněné části k obnovení.",
   "mediaCutterPartDeleteAction": "Odstranit",
-  "mediaCutterPartTapHint": "Dvojitým klepnutím přehrajete tuto část. Použijte akce Smazat nebo Upravit efekty.",
+  "mediaCutterPartTapHint": "Dvojitým klepnutím si tuto část poslechnete. Použijte akce Upravit část, Odstranit nebo Upravit efekty.",
   "mediaCutterPartDeleted": "Část od {start} do {end} byla odstraněna.",
   "@mediaCutterPartDeleted": {
     "description": "Status shown after a media part is deleted",
@@ -1188,6 +1188,19 @@
     }
   },
   "mediaCutterPartEffectsAction": "Upravit efekty",
+  "mediaCutterPartEditAction": "Upravit část",
+  "mediaCutterPartEditDescription": "Posuňte začátek nebo konec části o 1 sekundu a potom si upravenou část poslechněte.",
+  "mediaCutterPartAdjusted": "Část upravena od {start} do {end}.",
+  "@mediaCutterPartAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
   "mediaCutterPartEffectsTitle": "Efekty části",
   "mediaCutterPartEffectsDescription": "Upravte hlasitost a efekt pouze pro tuto část.",
   "mediaCutterPartVolumeValue": "Hlasitost části: {percent} %",

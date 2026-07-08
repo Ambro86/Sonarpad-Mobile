@@ -2537,7 +2537,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mediaCutterPartTapHint =>
-      'Double-tap to preview this part. Use the Delete or Adjust effects actions.';
+      'Double-tap to preview this part. Use the Edit part, Delete, or Adjust effects actions.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -2551,6 +2551,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mediaCutterPartEffectsAction => 'Adjust effects';
+
+  @override
+  String get mediaCutterPartEditAction => 'Edit part';
+
+  @override
+  String get mediaCutterPartEditDescription =>
+      'Move the start or end of the part by 1 second, then listen to the edited part.';
+
+  @override
+  String mediaCutterPartAdjusted(String start, String end) {
+    return 'Part edited from $start to $end.';
+  }
 
   @override
   String get mediaCutterPartEffectsTitle => 'Part effects';

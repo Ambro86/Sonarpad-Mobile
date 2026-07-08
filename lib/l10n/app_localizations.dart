@@ -4688,6 +4688,15 @@ abstract class AppLocalizations {
   /// **'Regola effetti'**
   String get mediaCutterPartEffectsAction;
 
+  /// No description provided for @mediaCutterPartEditAction.
+  String get mediaCutterPartEditAction;
+
+  /// No description provided for @mediaCutterPartEditDescription.
+  String get mediaCutterPartEditDescription;
+
+  /// No description provided for @mediaCutterPartAdjusted.
+  String mediaCutterPartAdjusted(String start, String end);
+
   /// No description provided for @mediaCutterPartEffectsTitle.
   ///
   /// In it, this message translates to:

@@ -74,6 +74,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _recording = false;
   bool _isRecordingFeatureUnlocked = false;
   File? _recordingOutput;
+  DateTime? _scheduledRecordingStart;
+  DateTime? _scheduledRecordingEnd;
+  String? _scheduledRecordingTitle;
+  Timer? _scheduledRecordingStartTimer;
+  Timer? _scheduledRecordingStopTimer;
 
   bool _loading = false;
   String? _error;
@@ -736,67 +741,380 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _toggleRecording() async {
-    final l10n = AppLocalizations.of(context);
     try {
       if (_recording) {
-        final file = await _recordingService.stop();
-        if (!mounted) return;
-        setState(() {
-          _recording = false;
-          _recordingOutput = file;
-        });
-        showStatusMessage(
-            context,
-            l10n.recordingSaved(
-              file == null ? '' : p.basenameWithoutExtension(file.path),
-            ));
+        await _stopRecordingNow();
+        if (_scheduledRecordingStopTimer != null) {
+          _cancelScheduledRecording(showMessage: false);
+        }
         return;
       }
-
-      String? recordingVideoUrl;
-      String? recordingAudioUrl;
-      final tvChannel = widget.tvChannel;
-      if (tvChannel != null &&
-          TvService().isRaiAudioDescriptionChannel(tvChannel) &&
-          !TvService.isDashStreamUrl(widget.station.streamUrl)) {
-        final streams =
-            await TvService().resolveAudioDescriptionStreams(tvChannel);
-        if (streams.hasAudioDescription &&
-            streams.videoUrl != streams.audioUrl) {
-          recordingVideoUrl = streams.videoUrl;
-          recordingAudioUrl = streams.audioUrl;
-          await AppLogger.log(
-            'RadioPlayer: RAI AD recording requested videoUrl=$recordingVideoUrl audioUrl=$recordingAudioUrl',
-          );
-        } else {
-          await AppLogger.log(
-            'RadioPlayer: RAI AD recording fallback to normal stream hasAD=${streams.hasAudioDescription}',
-          );
-        }
-      }
-
-      final file = await _recordingService.start(
-        stationName: widget.station.name,
-        streamUrl: widget.station.streamUrl,
-        videoStreamUrl: recordingVideoUrl,
-        audioStreamUrl: recordingAudioUrl,
-        httpUserAgent: widget.tvChannel?.httpUserAgent,
-      );
-      if (!mounted) return;
-      setState(() {
-        _recording = true;
-        _recordingOutput = file;
-      });
-      showStatusMessage(context, l10n.recordingStarted);
+      await _startRecordingNow();
     } catch (error) {
       if (!mounted) return;
       setState(() {
         _recording = false;
         _recordingOutput = null;
       });
-      showStatusMessage(context, l10n.recordingError(error));
+      showStatusMessage(
+          context, AppLocalizations.of(context).recordingError(error));
     }
   }
+
+  Future<File?> _stopRecordingNow({bool showMessage = true}) async {
+    final l10n = AppLocalizations.of(context);
+    final file = await _recordingService.stop();
+    if (!mounted) return file;
+    setState(() {
+      _recording = false;
+      _recordingOutput = file;
+    });
+    if (showMessage) {
+      showStatusMessage(
+          context,
+          l10n.recordingSaved(
+            file == null ? '' : p.basenameWithoutExtension(file.path),
+          ));
+    }
+    return file;
+  }
+
+  Future<File> _startRecordingNow({
+    String? titleOverride,
+    bool showMessage = true,
+  }) async {
+    final l10n = AppLocalizations.of(context);
+    String? recordingVideoUrl;
+    String? recordingAudioUrl;
+    final tvChannel = widget.tvChannel;
+    if (tvChannel != null &&
+        TvService().isRaiAudioDescriptionChannel(tvChannel) &&
+        !TvService.isDashStreamUrl(widget.station.streamUrl)) {
+      final streams =
+          await TvService().resolveAudioDescriptionStreams(tvChannel);
+      if (streams.hasAudioDescription &&
+          streams.videoUrl != streams.audioUrl) {
+        recordingVideoUrl = streams.videoUrl;
+        recordingAudioUrl = streams.audioUrl;
+        await AppLogger.log(
+          'RadioPlayer: RAI AD recording requested videoUrl=$recordingVideoUrl audioUrl=$recordingAudioUrl',
+        );
+      } else {
+        await AppLogger.log(
+          'RadioPlayer: RAI AD recording fallback to normal stream hasAD=${streams.hasAudioDescription}',
+        );
+      }
+    }
+
+    final file = await _recordingService.start(
+      stationName: _scheduledRecordingFileName(titleOverride),
+      streamUrl: widget.station.streamUrl,
+      videoStreamUrl: recordingVideoUrl,
+      audioStreamUrl: recordingAudioUrl,
+      httpUserAgent: widget.tvChannel?.httpUserAgent,
+    );
+    if (!mounted) return file;
+    setState(() {
+      _recording = true;
+      _recordingOutput = file;
+    });
+    if (showMessage) {
+      showStatusMessage(context, l10n.recordingStarted);
+    }
+    return file;
+  }
+
+  String _scheduledRecordingFileName(String? titleOverride) {
+    final title = titleOverride?.trim();
+    if (title != null && title.isNotEmpty) return title;
+    return widget.station.name;
+  }
+
+  Future<void> _showScheduleRecordingDialog() async {
+    if (_recording) {
+      showStatusMessage(
+        context,
+        'Termina la registrazione in corso prima di programmarne una nuova.',
+      );
+      return;
+    }
+    final now = DateTime.now();
+    TimeOfDay startTime = TimeOfDay.fromDateTime(
+      now.add(const Duration(minutes: 5)),
+    );
+    TimeOfDay endTime = TimeOfDay.fromDateTime(
+      now.add(const Duration(minutes: 35)),
+    );
+    final titleController = TextEditingController();
+    try {
+      final request = await showDialog<_ScheduledRecordingRequest>(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (context, setDialogState) {
+              Future<void> pickStart() async {
+                final picked = await showTimePicker(
+                  context: context,
+                  initialTime: startTime,
+                  helpText: 'Ora di inizio',
+                );
+                if (picked != null) {
+                  setDialogState(() => startTime = picked);
+                }
+              }
+
+              Future<void> pickEnd() async {
+                final picked = await showTimePicker(
+                  context: context,
+                  initialTime: endTime,
+                  helpText: 'Ora di fine',
+                );
+                if (picked != null) {
+                  setDialogState(() => endTime = picked);
+                }
+              }
+
+              return AlertDialog(
+                title: const Text('Programma registrazione'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'In questa versione la registrazione programmata parte solo se Sonarpad resta aperto su questo player. Se chiudi l’app o questa schermata, la registrazione non può partire da sola.',
+                      ),
+                      const SizedBox(height: 16),
+                      OutlinedButton.icon(
+                        onPressed: pickStart,
+                        icon: const Icon(Icons.schedule),
+                        label: Text('Ora di inizio: ${_formatTimeOfDay(startTime)}'),
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: pickEnd,
+                        icon: const Icon(Icons.schedule),
+                        label: Text('Ora di fine: ${_formatTimeOfDay(endTime)}'),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: titleController,
+                        decoration: const InputDecoration(
+                          labelText: 'Titolo facoltativo',
+                          hintText: 'Lascia vuoto per usare il nome della radio o TV',
+                        ),
+                        textInputAction: TextInputAction.done,
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('Annulla'),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.pop(
+                        dialogContext,
+                        _ScheduledRecordingRequest(
+                          startTime: startTime,
+                          endTime: endTime,
+                          title: titleController.text.trim(),
+                        ),
+                      );
+                    },
+                    child: const Text('Programma'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+      if (request == null || !mounted) return;
+      _scheduleRecording(request);
+    } finally {
+      titleController.dispose();
+    }
+  }
+
+  void _scheduleRecording(_ScheduledRecordingRequest request) {
+    final now = DateTime.now();
+    var start = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      request.startTime.hour,
+      request.startTime.minute,
+    );
+    if (!start.isAfter(now)) {
+      start = start.add(const Duration(days: 1));
+    }
+    var end = DateTime(
+      start.year,
+      start.month,
+      start.day,
+      request.endTime.hour,
+      request.endTime.minute,
+    );
+    if (!end.isAfter(start)) {
+      end = end.add(const Duration(days: 1));
+    }
+
+    _cancelScheduledRecording(showMessage: false);
+    final title = request.title.trim().isEmpty ? null : request.title.trim();
+    setState(() {
+      _scheduledRecordingStart = start;
+      _scheduledRecordingEnd = end;
+      _scheduledRecordingTitle = title;
+      _scheduledRecordingStartTimer = Timer(
+        start.difference(now),
+        () => unawaited(_startScheduledRecording()),
+      );
+    });
+    unawaited(AppLogger.log(
+      'RadioPlayer: scheduled recording set start=$start end=$end title=${title ?? ''} station="${widget.station.name}" tv=${widget.tvChannel != null}',
+    ));
+    showStatusMessage(
+      context,
+      'Registrazione programmata: ${_formatScheduledDateTime(start)} - ${_formatScheduledDateTime(end)}.',
+    );
+  }
+
+  Future<void> _startScheduledRecording() async {
+    if (!mounted) return;
+    final end = _scheduledRecordingEnd;
+    final title = _scheduledRecordingTitle;
+    try {
+      if (_recording) {
+        AppLogger.log(
+          'RadioPlayer: scheduled recording skipped because another recording is already active',
+        );
+        showStatusMessage(
+          context,
+          'Registrazione programmata non avviata: una registrazione è già in corso.',
+        );
+        _clearScheduledRecordingState();
+        return;
+      }
+      await AppLogger.log(
+        'RadioPlayer: scheduled recording start title=${title ?? ''} end=$end',
+      );
+      await _startRecordingNow(titleOverride: title, showMessage: false);
+      if (!mounted) return;
+      showStatusMessage(context, 'Registrazione programmata avviata.');
+      if (end == null) {
+        _clearScheduledRecordingState();
+        return;
+      }
+      final delay = end.difference(DateTime.now());
+      if (delay <= Duration.zero) {
+        await _stopScheduledRecording();
+      } else {
+        setState(() {
+          _scheduledRecordingStartTimer?.cancel();
+          _scheduledRecordingStartTimer = null;
+          _scheduledRecordingStopTimer = Timer(
+            delay,
+            () => unawaited(_stopScheduledRecording()),
+          );
+        });
+      }
+    } catch (error) {
+      if (!mounted) return;
+      await AppLogger.log('RadioPlayer: scheduled recording start failed: $error');
+      if (!mounted) return;
+      setState(() {
+        _recording = false;
+        _recordingOutput = null;
+      });
+      _clearScheduledRecordingState();
+      showStatusMessage(context, 'Errore registrazione programmata: $error');
+    }
+  }
+
+  Future<void> _stopScheduledRecording() async {
+    if (!mounted) return;
+    try {
+      await AppLogger.log('RadioPlayer: scheduled recording stop');
+      if (_recording) {
+        await _stopRecordingNow(showMessage: false);
+        if (!mounted) return;
+        showStatusMessage(context, 'Registrazione programmata salvata.');
+      }
+    } catch (error) {
+      if (!mounted) return;
+      showStatusMessage(context, 'Errore salvataggio registrazione programmata: $error');
+    } finally {
+      if (mounted) {
+        _clearScheduledRecordingState();
+      }
+    }
+  }
+
+  void _cancelScheduledRecording({bool showMessage = true}) {
+    _scheduledRecordingStartTimer?.cancel();
+    _scheduledRecordingStopTimer?.cancel();
+    final hadSchedule = _scheduledRecordingStart != null ||
+        _scheduledRecordingStartTimer != null ||
+        _scheduledRecordingStopTimer != null;
+    _clearScheduledRecordingState(setStateIfMounted: false);
+    if (mounted) {
+      setState(() {});
+      if (showMessage && hadSchedule) {
+        showStatusMessage(context, 'Registrazione programmata annullata.');
+      }
+    }
+    if (hadSchedule) {
+      unawaited(AppLogger.log('RadioPlayer: scheduled recording cancelled'));
+    }
+  }
+
+  void _clearScheduledRecordingState({bool setStateIfMounted = true}) {
+    void clear() {
+      _scheduledRecordingStartTimer?.cancel();
+      _scheduledRecordingStopTimer?.cancel();
+      _scheduledRecordingStartTimer = null;
+      _scheduledRecordingStopTimer = null;
+      _scheduledRecordingStart = null;
+      _scheduledRecordingEnd = null;
+      _scheduledRecordingTitle = null;
+    }
+
+    if (setStateIfMounted && mounted) {
+      setState(clear);
+    } else {
+      clear();
+    }
+  }
+
+  static String _formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
+
+  static String _formatScheduledDateTime(DateTime value) {
+    final day = value.day.toString().padLeft(2, '0');
+    final month = value.month.toString().padLeft(2, '0');
+    final hour = value.hour.toString().padLeft(2, '0');
+    final minute = value.minute.toString().padLeft(2, '0');
+    return '$day/$month $hour:$minute';
+  }
+
+  String? get _scheduledRecordingSummary {
+    final start = _scheduledRecordingStart;
+    final end = _scheduledRecordingEnd;
+    if (start == null || end == null) return null;
+    final title = _scheduledRecordingTitle;
+    final titlePart = title == null || title.isEmpty ? '' : ' Titolo: $title.';
+    return 'Registrazione programmata: ${_formatScheduledDateTime(start)} - ${_formatScheduledDateTime(end)}.$titlePart';
+  }
+
+  bool get _hasPendingScheduledRecording =>
+      _scheduledRecordingStartTimer?.isActive ?? false;
+
 
   bool get _requiresRaiAudioDescriptionVideoPlayback =>
       widget.isVideoSupported &&
@@ -855,6 +1173,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   @override
   void dispose() {
+    _scheduledRecordingStartTimer?.cancel();
+    _scheduledRecordingStopTimer?.cancel();
     FocusManager.instance.primaryFocus?.unfocus();
     if (Platform.isIOS &&
         (_videoController != null || _mediaKitPlayer != null)) {
@@ -1019,6 +1339,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                         _recording ? l10n.stopRecording : l10n.startRecording,
                       ),
                     ),
+                  if (_canRecordStream)
+                    OutlinedButton.icon(
+                      onPressed:
+                          _loading || _recording ? null : _showScheduleRecordingDialog,
+                      icon: const Icon(Icons.schedule),
+                      label: const Text('Programma registrazione'),
+                    ),
                 ],
               ),
               if (_recordingOutput != null) ...[
@@ -1028,6 +1355,23 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.white),
                 ),
+              ],
+              if (_scheduledRecordingSummary != null) ...[
+                const SizedBox(height: 12),
+                Text(
+                  _scheduledRecordingSummary!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                if (_hasPendingScheduledRecording)
+                  TextButton.icon(
+                    onPressed: () => _cancelScheduledRecording(),
+                    icon: const Icon(Icons.cancel, color: Colors.white),
+                    label: const Text(
+                      'Annulla registrazione programmata',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
               ],
               if (_videoController != null &&
                   _videoController!.value.isInitialized) ...[
@@ -1188,6 +1532,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   label: Text(
                       _recording ? l10n.stopRecording : l10n.startRecording),
                 ),
+              if (_canRecordStream)
+                OutlinedButton.icon(
+                  onPressed:
+                      _loading || _recording ? null : _showScheduleRecordingDialog,
+                  icon: const Icon(Icons.schedule),
+                  label: const Text('Programma registrazione'),
+                ),
             ],
           ),
           if (_recordingOutput != null) ...[
@@ -1196,6 +1547,19 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               p.basenameWithoutExtension(_recordingOutput!.path),
               textAlign: TextAlign.center,
             ),
+          ],
+          if (_scheduledRecordingSummary != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              _scheduledRecordingSummary!,
+              textAlign: TextAlign.center,
+            ),
+            if (_hasPendingScheduledRecording)
+              TextButton.icon(
+                onPressed: () => _cancelScheduledRecording(),
+                icon: const Icon(Icons.cancel),
+                label: const Text('Annulla registrazione programmata'),
+              ),
           ],
           if (_videoController == null && _mediaKitPlayer == null) ...[
             const SizedBox(height: 24),
@@ -1228,6 +1592,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       ),
     );
   }
+}
+
+class _ScheduledRecordingRequest {
+  const _ScheduledRecordingRequest({
+    required this.startTime,
+    required this.endTime,
+    required this.title,
+  });
+
+  final TimeOfDay startTime;
+  final TimeOfDay endTime;
+  final String title;
 }
 
 class _PlayerVolumeSlider extends StatelessWidget {

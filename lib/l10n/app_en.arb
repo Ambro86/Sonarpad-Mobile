@@ -1159,7 +1159,7 @@
   "mediaCutterRestoreDeletedPart": "Restore deleted part",
   "mediaCutterNoDeletedParts": "There are no deleted parts to restore.",
   "mediaCutterPartDeleteAction": "Delete",
-  "mediaCutterPartTapHint": "Double-tap to preview this part. Use the Delete or Adjust effects actions.",
+  "mediaCutterPartTapHint": "Double-tap to preview this part. Use the Edit part, Delete, or Adjust effects actions.",
   "mediaCutterPartDeleted": "Part deleted from {start} to {end}.",
   "@mediaCutterPartDeleted": {
     "description": "Status shown after a media part is deleted",
@@ -1185,6 +1185,19 @@
     }
   },
   "mediaCutterPartEffectsAction": "Adjust effects",
+  "mediaCutterPartEditAction": "Edit part",
+  "mediaCutterPartEditDescription": "Move the start or end of the part by 1 second, then listen to the edited part.",
+  "mediaCutterPartAdjusted": "Part edited from {start} to {end}.",
+  "@mediaCutterPartAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
   "mediaCutterPartEffectsTitle": "Part effects",
   "mediaCutterPartEffectsDescription": "Adjust volume and effect only for this part.",
   "mediaCutterPartVolumeValue": "Part volume: {percent}%",

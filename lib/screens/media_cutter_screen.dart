@@ -169,6 +169,8 @@ class _MediaPart {
   bool get hasAudioChanges => volumePercent != 100 || hasEffects;
 
   _MediaPart copyWith({
+    Duration? start,
+    Duration? end,
     bool? keep,
     int? volumePercent,
     _MediaPartEffect? effect,
@@ -178,8 +180,8 @@ class _MediaPart {
     int? effectAmountPercent,
   }) =>
       _MediaPart(
-        start: start,
-        end: end,
+        start: start ?? this.start,
+        end: end ?? this.end,
         keep: keep ?? this.keep,
         volumePercent: volumePercent ?? this.volumePercent,
         effect: effect ?? this.effect,
@@ -1269,6 +1271,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   String get _guidedPendingCutExitMessage =>
       _l10n.mediaCutterGuidedPendingCutExitMessage;
 
+  String get _partEditActionLabel => _l10n.mediaCutterPartEditAction;
+
+  String get _partEditDescription => _l10n.mediaCutterPartEditDescription;
+
+  String _partAdjustedMessage(Duration start, Duration end) =>
+      _l10n.mediaCutterPartAdjusted(_formatTime(start), _formatTime(end));
+
   bool get _isGuidedMode => _selectedMode == _MediaCutterMode.guided;
 
   bool get _hasPendingGuidedCut =>
@@ -1533,6 +1542,182 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       'guided cut adjusted moveStart=$moveStart direction=$direction '
       'start=${_logPreciseDuration(orderedStart)} end=${_logPreciseDuration(orderedEnd)} '
       '${_logPlaybackState()}',
+    ));
+  }
+
+  Future<void> _showAdvancedPartEditDialog(int index) async {
+    if (_saving || index < 0 || index >= _parts.length || !_parts[index].keep) {
+      return;
+    }
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            if (index < 0 || index >= _parts.length || !_parts[index].keep) {
+              return AlertDialog(
+                title: Text(_partEditActionLabel),
+                content: Text(AppLocalizations.of(context).mediaCutterInvalidSplitPoint),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: Text(MaterialLocalizations.of(dialogContext).closeButtonLabel),
+                  ),
+                ],
+              );
+            }
+            final part = _parts[index];
+            final summary = AppLocalizations.of(context).mediaCutterPartRange(
+              _formatTime(part.start),
+              _formatTime(part.end),
+            );
+            Future<void> adjust({required bool moveStart, required int direction}) async {
+              await _adjustAdvancedPartEdgeByOneSecond(
+                index: index,
+                moveStart: moveStart,
+                direction: direction,
+              );
+              if (mounted) setDialogState(() {});
+            }
+
+            return AlertDialog(
+              title: Text(_partEditActionLabel),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(_partEditDescription),
+                    const SizedBox(height: 8),
+                    Text(summary),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      onPressed: () => unawaited(adjust(moveStart: true, direction: -1)),
+                      icon: const Icon(Icons.keyboard_double_arrow_left),
+                      label: Text(_guidedMoveStartBackOneSecondLabel),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: () => unawaited(adjust(moveStart: true, direction: 1)),
+                      icon: const Icon(Icons.keyboard_double_arrow_right),
+                      label: Text(_guidedMoveStartForwardOneSecondLabel),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: () => unawaited(adjust(moveStart: false, direction: -1)),
+                      icon: const Icon(Icons.keyboard_double_arrow_left),
+                      label: Text(_guidedMoveEndBackOneSecondLabel),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: () => unawaited(adjust(moveStart: false, direction: 1)),
+                      icon: const Icon(Icons.keyboard_double_arrow_right),
+                      label: Text(_guidedMoveEndForwardOneSecondLabel),
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: () => unawaited(_playPart(index)),
+                      icon: const Icon(Icons.hearing),
+                      label: Text(_guidedListenCutLabel),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: Text(MaterialLocalizations.of(dialogContext).closeButtonLabel),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _adjustAdvancedPartEdgeByOneSecond({
+    required int index,
+    required bool moveStart,
+    required int direction,
+  }) async {
+    final l10n = AppLocalizations.of(context);
+    if (index < 0 || index >= _parts.length || !_parts[index].keep) {
+      _showSnack(l10n.mediaCutterInvalidSplitPoint);
+      return;
+    }
+    final currentPart = _parts[index];
+    final step = Duration(seconds: direction < 0 ? -1 : 1);
+    var newStart = currentPart.start;
+    var newEnd = currentPart.end;
+    if (moveStart) {
+      newStart += step;
+    } else {
+      newEnd += step;
+    }
+
+    if (moveStart && index == 0) {
+      _showSnack(l10n.mediaCutterInvalidSplitPoint);
+      return;
+    }
+    if (!moveStart && index == _parts.length - 1) {
+      _showSnack(l10n.mediaCutterInvalidSplitPoint);
+      return;
+    }
+
+    final minDuration = const Duration(milliseconds: 250);
+    final previousBoundary = index == 0
+        ? Duration.zero
+        : _parts[index - 1].start + minDuration;
+    final nextBoundary = index == _parts.length - 1
+        ? _duration
+        : _parts[index + 1].end - minDuration;
+    if (newStart < previousBoundary) newStart = previousBoundary;
+    if (newEnd > nextBoundary) newEnd = nextBoundary;
+    if (newStart < Duration.zero) newStart = Duration.zero;
+    if (newEnd > _duration) newEnd = _duration;
+
+    if (newEnd <= newStart ||
+        newEnd.inMilliseconds - newStart.inMilliseconds < 250) {
+      _showSnack(l10n.mediaCutterInvalidSplitPoint);
+      unawaited(_logMediaCutter(
+        'advanced part edit rejected too close index=$index moveStart=$moveStart direction=$direction '
+        'oldStart=${_logPreciseDuration(currentPart.start)} oldEnd=${_logPreciseDuration(currentPart.end)} '
+        'newStart=${_logPreciseDuration(newStart)} newEnd=${_logPreciseDuration(newEnd)}',
+      ));
+      return;
+    }
+
+    final updatedParts = [..._parts];
+    if (moveStart) {
+      if (index > 0) {
+        updatedParts[index - 1] = updatedParts[index - 1].copyWith(end: newStart);
+      }
+      updatedParts[index] = updatedParts[index].copyWith(start: newStart);
+    } else {
+      updatedParts[index] = updatedParts[index].copyWith(end: newEnd);
+      if (index < updatedParts.length - 1) {
+        updatedParts[index + 1] = updatedParts[index + 1].copyWith(start: newEnd);
+      }
+    }
+
+    final editedPart = updatedParts[index];
+    setState(() {
+      _parts = updatedParts;
+      _splitPoints = [
+        for (var i = 0; i < updatedParts.length - 1; i++)
+          updatedParts[i].end,
+      ].where((point) => point > Duration.zero && point < _duration).toList();
+      _position = moveStart ? editedPart.start : editedPart.end;
+      _hasUnsavedEdit = true;
+      _status = _partAdjustedMessage(editedPart.start, editedPart.end);
+    });
+    await _seekTo(moveStart ? editedPart.start : editedPart.end, clearPreview: true);
+    _showSnack(_partAdjustedMessage(editedPart.start, editedPart.end));
+    unawaited(_logMediaCutter(
+      'advanced part edited index=$index moveStart=$moveStart direction=$direction '
+      'start=${_logPreciseDuration(editedPart.start)} end=${_logPreciseDuration(editedPart.end)} '
+      'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} parts=${_parts.length} deleted=$_deletedPartCount',
     ));
   }
 
@@ -1860,12 +2045,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        ExcludeSemantics(
+          child: Text(label, style: Theme.of(context).textTheme.labelLarge),
+        ),
         const SizedBox(height: 6),
         Semantics(
           button: true,
-          label: label,
-          value: selectedLabel,
+          label: '$label, $selectedLabel',
           child: ExcludeSemantics(
             child: OutlinedButton(
               onPressed: () async {
@@ -1931,6 +2117,21 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
+  List<_MediaPartEffect> _normalizedEffectSlots(
+    List<_MediaPartEffect> effects,
+  ) {
+    final active = [
+      for (final effect in effects)
+        if (effect != _MediaPartEffect.none) effect,
+    ];
+    while (active.length < 4) {
+      active.add(_MediaPartEffect.none);
+    }
+    return active.take(4).toList();
+  }
+
+
+
   Future<void> _showPartEffectsDialog(int index, {bool applyToWholeFile = false}) async {
     if (_saving || index < 0 || index >= _parts.length || !_parts[index].keep) {
       return;
@@ -1943,6 +2144,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     var thirdEffect = part.thirdEffect;
     var fourthEffect = part.fourthEffect;
     var effectAmountPercent = part.effectAmountPercent;
+
+    void normalizeDialogEffects(List<_MediaPartEffect> slots) {
+      final normalized = _normalizedEffectSlots(slots);
+      effect = normalized[0];
+      secondaryEffect = normalized[1];
+      thirdEffect = normalized[2];
+      fourthEffect = normalized[3];
+    }
+
+    normalizeDialogEffects([effect, secondaryEffect, thirdEffect, fourthEffect]);
 
     final result = await showDialog<_PartEffectSettings>(
       context: context,
@@ -1990,7 +2201,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   value: effect,
                   label: _effectSlotLabel(l10n, 1),
                   onChanged: (value) => setDialogState(() {
-                    effect = value;
+                    normalizeDialogEffects([
+                      value,
+                      secondaryEffect,
+                      thirdEffect,
+                      fourthEffect,
+                    ]);
                   }),
                 ),
                 if (effect != _MediaPartEffect.none ||
@@ -2001,7 +2217,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                     value: secondaryEffect,
                     label: _effectSlotLabel(l10n, 2),
                     onChanged: (value) => setDialogState(() {
-                      secondaryEffect = value;
+                      normalizeDialogEffects([
+                        effect,
+                        value,
+                        thirdEffect,
+                        fourthEffect,
+                      ]);
                     }),
                   ),
                 ],
@@ -2013,7 +2234,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                     value: thirdEffect,
                     label: _effectSlotLabel(l10n, 3),
                     onChanged: (value) => setDialogState(() {
-                      thirdEffect = value;
+                      normalizeDialogEffects([
+                        effect,
+                        secondaryEffect,
+                        value,
+                        fourthEffect,
+                      ]);
                     }),
                   ),
                 ],
@@ -2024,9 +2250,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                     l10n,
                     value: fourthEffect,
                     label: _effectSlotLabel(l10n, 4),
-                    onChanged: (value) => setDialogState(
-                      () => fourthEffect = value,
-                    ),
+                    onChanged: (value) => setDialogState(() {
+                      normalizeDialogEffects([
+                        effect,
+                        secondaryEffect,
+                        thirdEffect,
+                        value,
+                      ]);
+                    }),
                   ),
                 ],
                 if (effect != _MediaPartEffect.none ||
@@ -2103,6 +2334,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             FilledButton(
               onPressed: () {
                 unawaited(_stopRenderedEffectsPreview());
+                normalizeDialogEffects([
+                  effect,
+                  secondaryEffect,
+                  thirdEffect,
+                  fourthEffect,
+                ]);
                 Navigator.pop(
                   dialogContext,
                   _PartEffectSettings(
@@ -3671,6 +3908,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final effectsAction = CustomSemanticsAction(
       label: l10n.mediaCutterPartEffectsAction,
     );
+    final editAction = CustomSemanticsAction(
+      label: _partEditActionLabel,
+    );
 
     return Semantics(
       key: ValueKey('media_cutter_part_semantics_${_partKey(part)}'),
@@ -3683,6 +3923,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       customSemanticsActions: _saving
           ? const <CustomSemanticsAction, VoidCallback>{}
           : <CustomSemanticsAction, VoidCallback>{
+              editAction: () =>
+                  unawaited(_showAdvancedPartEditDialog(originalIndex)),
               deleteAction: () => _deletePart(originalIndex),
               effectsAction: () =>
                   unawaited(_showPartEffectsDialog(originalIndex)),
@@ -3702,6 +3944,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             trailing: Wrap(
               spacing: 4,
               children: [
+                IconButton(
+                  tooltip: _partEditActionLabel,
+                  icon: const Icon(Icons.edit),
+                  onPressed: _saving
+                      ? null
+                      : () => _showAdvancedPartEditDialog(originalIndex),
+                ),
                 IconButton(
                   tooltip: l10n.mediaCutterPartEffectsAction,
                   icon: const Icon(Icons.tune),

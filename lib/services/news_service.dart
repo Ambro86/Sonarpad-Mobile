@@ -92,6 +92,7 @@ class NewsService {
   static const _tinyfishArticleFetchUrl =
       'https://sonarpad.com/api/tinyfish_fetch_article.php';
   static const _tinyfishPolicyTimeout = Duration(seconds: 4);
+  static const _tinyfishArticleTimeout = Duration(seconds: 20);
   static const _readerFallbackMinLength = 150;
   static const _communityHeaders = {
     'User-Agent': 'SonarpadMobile/0.1 (https://sonarpad.com)',
@@ -1293,7 +1294,7 @@ class NewsService {
       final response = await _client.get(
         uri,
         headers: const {'Accept': 'application/json'},
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(_tinyfishArticleTimeout);
       if (response.statusCode < 200 || response.statusCode >= 300) {
         final disabled = _isTinyfishDisabledResponse(response);
         unawaited(AppLogger.log(

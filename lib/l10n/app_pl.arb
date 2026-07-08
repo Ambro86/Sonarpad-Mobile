@@ -3337,7 +3337,7 @@
   "mediaCutterRestoreDeletedPart": "Przywróć usuniętą część",
   "mediaCutterNoDeletedParts": "Nie ma usuniętych części do przywrócenia.",
   "mediaCutterPartDeleteAction": "Usuń",
-  "mediaCutterPartTapHint": "Stuknij dwukrotnie, aby odsłuchać tę część. Użyj działań Usuń lub Dostosuj efekty.",
+  "mediaCutterPartTapHint": "Stuknij dwukrotnie, aby odsłuchać tę część. Użyj akcji Edytuj część, Usuń albo Dostosuj efekty.",
   "mediaCutterPartDeleted": "Usunięto część od {start} do {end}.",
   "@mediaCutterPartDeleted": {
     "description": "Status shown after a media part is deleted",
@@ -3363,6 +3363,19 @@
     }
   },
   "mediaCutterPartEffectsAction": "Dostosuj efekty",
+  "mediaCutterPartEditAction": "Edytuj część",
+  "mediaCutterPartEditDescription": "Przesuń początek lub koniec części o 1 sekundę, a potem odsłuchaj zmienioną część.",
+  "mediaCutterPartAdjusted": "Część zmieniona od {start} do {end}.",
+  "@mediaCutterPartAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
   "mediaCutterPartEffectsTitle": "Efekty części",
   "mediaCutterPartEffectsDescription": "Dostosuj głośność i efekt tylko dla tej części.",
   "mediaCutterPartVolumeValue": "Głośność części: {percent}%",

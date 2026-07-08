@@ -2546,7 +2546,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get mediaCutterPartTapHint =>
-      'Stuknij dwukrotnie, aby odsłuchać tę część. Użyj działań Usuń lub Dostosuj efekty.';
+      'Stuknij dwukrotnie, aby odsłuchać tę część. Użyj akcji Edytuj część, Usuń albo Dostosuj efekty.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -2560,6 +2560,18 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get mediaCutterPartEffectsAction => 'Dostosuj efekty';
+
+  @override
+  String get mediaCutterPartEditAction => 'Edytuj część';
+
+  @override
+  String get mediaCutterPartEditDescription =>
+      'Przesuń początek lub koniec części o 1 sekundę, a potem odsłuchaj zmienioną część.';
+
+  @override
+  String mediaCutterPartAdjusted(String start, String end) {
+    return 'Część zmieniona od $start do $end.';
+  }
 
   @override
   String get mediaCutterPartEffectsTitle => 'Efekty części';

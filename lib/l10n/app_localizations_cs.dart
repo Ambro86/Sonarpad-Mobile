@@ -2545,7 +2545,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaCutterPartTapHint =>
-      'Dvojitým klepnutím přehrajete tuto část. Použijte akce Smazat nebo Upravit efekty.';
+      'Dvojitým klepnutím si tuto část poslechnete. Použijte akce Upravit část, Odstranit nebo Upravit efekty.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -2559,6 +2559,18 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaCutterPartEffectsAction => 'Upravit efekty';
+
+  @override
+  String get mediaCutterPartEditAction => 'Upravit část';
+
+  @override
+  String get mediaCutterPartEditDescription =>
+      'Posuňte začátek nebo konec části o 1 sekundu a potom si upravenou část poslechněte.';
+
+  @override
+  String mediaCutterPartAdjusted(String start, String end) {
+    return 'Část upravena od $start do $end.';
+  }
 
   @override
   String get mediaCutterPartEffectsTitle => 'Efekty části';
