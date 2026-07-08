@@ -286,5 +286,28 @@ void main() {
         await dir.delete(recursive: true);
       }
     });
+
+
+    test('extracts readable text from RTF with unicode and hex escapes', () {
+      final rtf = r"""{\rtf1\ansi\ansicpg1252{\fonttbl{\f0 Arial;}}
+Caff\u232? e citt\'e0.\par Seconda riga con \b grassetto\b0 .}""";
+
+      final decoded = DocumentTextExtractor.decodeRtfDocumentTextBytes(
+        latin1.encode(rtf),
+      );
+
+      expect(decoded, 'Caffè e città.\nSeconda riga con grassetto.');
+    });
+
+    test('extracts readable text from Windows-1250 RTF hex escapes', () {
+      final rtf = r"""{\rtf1\ansi\ansicpg1250 P\'f8\'edli\'9a \u382?lu\'9dou\'e8k\'fd k\'f9\'f2.}""";
+
+      final decoded = DocumentTextExtractor.decodeRtfDocumentTextBytes(
+        latin1.encode(rtf),
+      );
+
+      expect(decoded, 'Příliš žluťoučký kůň.');
+    });
+
   });
 }

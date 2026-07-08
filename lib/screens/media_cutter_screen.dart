@@ -259,6 +259,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   StreamSubscription<bool>? _audioPlayingSubscription;
   StreamSubscription<dynamic>? _mediaEventsSubscription;
   Timer? _videoRefreshTimer;
+  Timer? _deletedSkipTimer;
+  Duration? _scheduledDeletedSkipBoundary;
+  Duration? _scheduledDeletedSkipTarget;
 
   String _inputPath = '';
   String _displayName = '';
@@ -312,6 +315,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       setState(() => _position = clamped);
       _checkPartPreviewEnd(clamped);
       _checkDeletedPartDuringPlayback(clamped);
+      _scheduleDeletedPartSkipTimer(fromPosition: clamped);
     });
     _audioDurationSubscription = _audioPlayer.durationStream.listen((duration) {
       if (!mounted ||
@@ -343,6 +347,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _audioDurationSubscription?.cancel();
     _audioPlayingSubscription?.cancel();
     _videoRefreshTimer?.cancel();
+    _cancelDeletedSkipTimer();
     _videoController?.dispose();
     _audioPlayer.dispose();
     _outputController.dispose();
@@ -643,6 +648,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await _clearMagicTap();
       await _audioPlayer.stop();
       _videoRefreshTimer?.cancel();
+      _cancelDeletedSkipTimer();
       final oldVideoController = _videoController;
       _videoController = null;
       if (oldVideoController != null) {
@@ -664,6 +670,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           });
           _checkPartPreviewEnd(clamped);
           _checkDeletedPartDuringPlayback(clamped);
+          _scheduleDeletedPartSkipTimer(fromPosition: clamped);
         });
         setState(() {
           _duration = controller.value.duration;
@@ -718,6 +725,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           await _setPlaybackVolume(1);
           await controller.play();
           await _setMagicTapPlaying(true);
+          _scheduleDeletedPartSkipTimer(fromPosition: controller.value.position);
           unawaited(_logMediaCutter('video playing by toggle ${_logPlaybackState()}'));
         }
         if (!mounted) return;
@@ -739,6 +747,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           await _setPlaybackVolume(1);
           await _audioPlayer.play();
           await _setMagicTapPlaying(true);
+          _scheduleDeletedPartSkipTimer(fromPosition: _audioPlayer.position);
           unawaited(_logMediaCutter('audio playing by toggle ${_logPlaybackState()}'));
         }
       }
@@ -748,6 +757,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   Future<void> _pause() async {
+    _cancelDeletedSkipTimer();
     unawaited(_logMediaCutter('pause requested ${_logPlaybackState()}'));
     if (_isVideo) {
       await _videoController?.pause();
@@ -836,6 +846,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   Future<void> _seekTo(Duration position, {bool clearPreview = true}) async {
+    _cancelDeletedSkipTimer();
     if (clearPreview) _clearPartPreview();
     if (!_isVideo && _usingRenderedPreviewSource) {
       await _restoreOriginalAudioSource(seekTo: position);
@@ -860,6 +871,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     } else {
       await _audioPlayer.seek(target);
       if (target >= _duration) await _audioPlayer.pause();
+    }
+    if (_isPlayerActuallyPlaying && _previewPartEnd == null) {
+      _scheduleDeletedPartSkipTimer(fromPosition: target);
     }
   }
 
@@ -1363,6 +1377,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     await _pause();
     await _audioPlayer.stop();
     _videoRefreshTimer?.cancel();
+    _cancelDeletedSkipTimer();
     final oldVideoController = _videoController;
     _videoController = null;
     if (oldVideoController != null) {
@@ -1903,6 +1918,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _hasUnsavedEdit = true;
       _status = _guidedCutAppliedMessage(cutStart, cutEnd);
     });
+    await _seekTo(cutStart, clearPreview: true);
     _showSnack(_guidedCutAppliedMessage(cutStart, cutEnd));
     unawaited(_logMediaCutter(
       'guided cut applied start=${_logPreciseDuration(cutStart)} '
@@ -1914,11 +1930,19 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   Future<void> _showGuidedEffectsDialog() async {
     final index = _parts.indexWhere((part) => part.keep);
     if (index < 0) return;
+    final before = _parts[index];
     await _showPartEffectsDialog(index, applyToWholeFile: true);
     if (!mounted || index >= _parts.length) return;
     final source = _parts[index];
+    final changed = before.volumePercent != source.volumePercent ||
+        before.effect != source.effect ||
+        before.secondaryEffect != source.secondaryEffect ||
+        before.thirdEffect != source.thirdEffect ||
+        before.fourthEffect != source.fourthEffect ||
+        before.effectAmountPercent != source.effectAmountPercent;
     unawaited(_logMediaCutter(
-      'guided effects applied to whole file volume=${source.volumePercent}% '
+      'guided effects ${changed ? 'applied' : 'closed without changes'} '
+      'to whole file volume=${source.volumePercent}% '
       'effect=${source.effect.name} secondary=${source.secondaryEffect.name} '
       'third=${source.thirdEffect.name} fourth=${source.fourthEffect.name} '
       'amount=${source.effectAmountPercent}%',
@@ -2137,7 +2161,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         const SizedBox(height: 6),
         Semantics(
           button: true,
-          label: '$label, $selectedLabel',
+          label: selectedLabel,
+          hint: label,
           child: ExcludeSemantics(
             child: OutlinedButton(
               onPressed: () async {
@@ -2225,21 +2250,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final l10n = AppLocalizations.of(context);
     final part = _parts[index];
     var volumePercent = part.volumePercent;
-    var effect = part.effect;
-    var secondaryEffect = part.secondaryEffect;
-    var thirdEffect = part.thirdEffect;
-    var fourthEffect = part.fourthEffect;
+    var effectSlots = _normalizedEffectSlots([
+      part.effect,
+      part.secondaryEffect,
+      part.thirdEffect,
+      part.fourthEffect,
+    ]);
     var effectAmountPercent = part.effectAmountPercent;
-
-    void normalizeDialogEffects(List<_MediaPartEffect> slots) {
-      final normalized = _normalizedEffectSlots(slots);
-      effect = normalized[0];
-      secondaryEffect = normalized[1];
-      thirdEffect = normalized[2];
-      fourthEffect = normalized[3];
-    }
-
-    normalizeDialogEffects([effect, secondaryEffect, thirdEffect, fourthEffect]);
 
     final result = await showDialog<_PartEffectSettings>(
       context: context,
@@ -2284,27 +2301,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 const SizedBox(height: 12),
                 Builder(
                   builder: (context) {
-                    final currentEffects = [
-                      effect,
-                      secondaryEffect,
-                      thirdEffect,
-                      fourthEffect,
-                    ];
-                    final activeCount = currentEffects
+                    final activeCount = effectSlots
                         .where((item) => item != _MediaPartEffect.none)
                         .length;
                     final visibleSlots = activeCount == 0 ? 1 : activeCount;
                     final children = <Widget>[];
 
                     void setEffectSlot(int slot, _MediaPartEffect value) {
-                      final slots = [
-                        effect,
-                        secondaryEffect,
-                        thirdEffect,
-                        fourthEffect,
-                      ];
-                      slots[slot] = value;
-                      normalizeDialogEffects(slots);
+                      final updated = [...effectSlots];
+                      updated[slot] = value;
+                      // When the user edits an existing slot, keep that slot in place.
+                      // Only collapse empty holes if a slot is explicitly set to "none".
+                      effectSlots = value == _MediaPartEffect.none
+                          ? _normalizedEffectSlots(updated)
+                          : updated;
                     }
 
                     for (var slot = 0; slot < visibleSlots; slot++) {
@@ -2313,7 +2323,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                       }
                       children.add(_buildEffectPicker(
                         l10n,
-                        value: currentEffects[slot],
+                        value: effectSlots[slot],
                         label: _effectSlotLabel(l10n, slot + 1),
                         onChanged: (value) => setDialogState(
                           () => setEffectSlot(slot, value),
@@ -2334,7 +2344,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                           if (selected == null || selected == _MediaPartEffect.none) {
                             return;
                           }
-                          setDialogState(() => setEffectSlot(activeCount, selected));
+                          setDialogState(() {
+                            final updated = [...effectSlots];
+                            updated[activeCount] = selected;
+                            effectSlots = updated;
+                          });
                         },
                         icon: const Icon(Icons.add),
                         label: Text('${l10n.add} ${_effectSlotLabel(l10n, activeCount + 1)}'),
@@ -2347,10 +2361,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                     );
                   },
                 ),
-                if (effect != _MediaPartEffect.none ||
-                    secondaryEffect != _MediaPartEffect.none ||
-                    thirdEffect != _MediaPartEffect.none ||
-                    fourthEffect != _MediaPartEffect.none) ...[
+                if (effectSlots.any((item) => item != _MediaPartEffect.none)) ...[
                   const SizedBox(height: 16),
                   ExcludeSemantics(
                     child: Text(
@@ -2397,10 +2408,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                     _playPartEffectsPreview(
                       index,
                       volumePercent: volumePercent,
-                      effect: effect,
-                      secondaryEffect: secondaryEffect,
-                      thirdEffect: thirdEffect,
-                      fourthEffect: fourthEffect,
+                      effect: effectSlots[0],
+                      secondaryEffect: effectSlots[1],
+                      thirdEffect: effectSlots[2],
+                      fourthEffect: effectSlots[3],
                       effectAmountPercent: effectAmountPercent,
                     ),
                   ),
@@ -2421,20 +2432,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             FilledButton(
               onPressed: () {
                 unawaited(_stopRenderedEffectsPreview());
-                normalizeDialogEffects([
-                  effect,
-                  secondaryEffect,
-                  thirdEffect,
-                  fourthEffect,
-                ]);
+                final normalizedSlots = _normalizedEffectSlots(effectSlots);
                 Navigator.pop(
                   dialogContext,
                   _PartEffectSettings(
                     volumePercent: volumePercent,
-                    effect: effect,
-                    secondaryEffect: secondaryEffect,
-                    thirdEffect: thirdEffect,
-                    fourthEffect: fourthEffect,
+                    effect: normalizedSlots[0],
+                    secondaryEffect: normalizedSlots[1],
+                    thirdEffect: normalizedSlots[2],
+                    fourthEffect: normalizedSlots[3],
                     effectAmountPercent: effectAmountPercent,
                   ),
                 );
@@ -2471,10 +2477,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _hasUnsavedEdit = true;
     });
     unawaited(_logMediaCutter(
-      'part effects applied index=$index volume=$volumePercent% '
-      'effect=${effect.name} secondary=${secondaryEffect.name} '
-      'third=${thirdEffect.name} fourth=${fourthEffect.name} '
-      'amount=$effectAmountPercent%',
+      'part effects applied index=$index applyToWholeFile=$applyToWholeFile '
+      'volume=${result.volumePercent}% '
+      'effect=${result.effect.name} secondary=${result.secondaryEffect.name} '
+      'third=${result.thirdEffect.name} fourth=${result.fourthEffect.name} '
+      'amount=${result.effectAmountPercent}%',
     ));
   }
 
@@ -3112,8 +3119,68 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     return target;
   }
 
+  bool get _isPlayerActuallyPlaying => _isVideo
+      ? (_videoController?.value.isPlaying ?? _playing)
+      : (_audioPlayer.playing || _playing);
+
+  void _cancelDeletedSkipTimer() {
+    _deletedSkipTimer?.cancel();
+    _deletedSkipTimer = null;
+    _scheduledDeletedSkipBoundary = null;
+    _scheduledDeletedSkipTarget = null;
+  }
+
+  void _scheduleDeletedPartSkipTimer({Duration? fromPosition}) {
+    if (!_hasDeletedParts || !_isPlayerActuallyPlaying || _previewPartEnd != null ||
+        _skippingDeletedPart) {
+      return;
+    }
+    final position = _clampPosition(fromPosition ?? _position);
+    for (var index = 0; index < _parts.length; index++) {
+      final part = _parts[index];
+      if (!part.keep) continue;
+      if (position < part.start || position >= part.end) continue;
+      final nextIndex = index + 1;
+      if (nextIndex >= _parts.length || _parts[nextIndex].keep) {
+        if (_scheduledDeletedSkipBoundary != null) _cancelDeletedSkipTimer();
+        return;
+      }
+
+      var target = _parts[nextIndex].end;
+      for (var scan = nextIndex + 1; scan < _parts.length; scan++) {
+        if (_parts[scan].keep) break;
+        target = _parts[scan].end;
+      }
+
+      final boundary = part.end;
+      if (_scheduledDeletedSkipBoundary == boundary &&
+          _scheduledDeletedSkipTarget == target &&
+          _deletedSkipTimer != null) {
+        return;
+      }
+      _cancelDeletedSkipTimer();
+      _scheduledDeletedSkipBoundary = boundary;
+      _scheduledDeletedSkipTarget = target;
+      final delayMs = boundary.inMilliseconds - position.inMilliseconds;
+      final delay = Duration(milliseconds: delayMs <= 0 ? 1 : delayMs);
+      unawaited(_logMediaCutter(
+        'playback skip scheduled boundary=${_logPreciseDuration(boundary)} '
+        'target=${_logPreciseDuration(target)} delayMs=${delay.inMilliseconds} '
+        '${_logPlaybackState()}',
+      ));
+      _deletedSkipTimer = Timer(delay, () {
+        _deletedSkipTimer = null;
+        _scheduledDeletedSkipBoundary = null;
+        _scheduledDeletedSkipTarget = null;
+        if (!mounted || _previewPartEnd != null || !_isPlayerActuallyPlaying) return;
+        unawaited(_skipDeletedPartDuringPlayback(target));
+      });
+      return;
+    }
+  }
+
   void _checkDeletedPartDuringPlayback(Duration position) {
-    if (_skippingDeletedPart || _previewPartEnd != null || !_playing) return;
+    if (_skippingDeletedPart || _previewPartEnd != null || !_isPlayerActuallyPlaying) return;
     final target = _skipDeletedPartsForward(position);
     if (target == position) return;
     unawaited(_skipDeletedPartDuringPlayback(target));
@@ -3121,16 +3188,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _skipDeletedPartDuringPlayback(Duration target) async {
     if (_skippingDeletedPart) return;
+    _cancelDeletedSkipTimer();
     _skippingDeletedPart = true;
     try {
       unawaited(_logMediaCutter(
-        'playback skipped deleted part target=${_logDuration(target)} '
+        'playback skipped deleted part target=${_logPreciseDuration(target)} '
         '${_logPlaybackState()}',
       ));
       await _seekTo(target, clearPreview: false);
       if (target >= _duration) await _pause();
     } finally {
       _skippingDeletedPart = false;
+      if (mounted && _isPlayerActuallyPlaying && _previewPartEnd == null) {
+        _scheduleDeletedPartSkipTimer(fromPosition: target);
+      }
     }
   }
 

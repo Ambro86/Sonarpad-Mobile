@@ -41,7 +41,8 @@ class DocumentTableOfContentsEntry {
 /// Servizio che estrae il testo da documenti di vari formati.
 ///
 /// Formati con estrazione completa:
-/// - TXT, MD, RTF → lettura diretta del file
+/// - TXT, MD     → lettura diretta del file
+/// - RTF         → parsing RTF e conversione in testo leggibile
 /// - HTML, HTM    → strip tag HTML
 /// - PDF          → [syncfusion_flutter_pdf] PdfTextExtractor
 /// - DOCX / DOC   → unzip (archive) + parsing XML word/document.xml
@@ -50,6 +51,30 @@ class DocumentTextExtractor {
   Future<String> _readTextFileSafe(String path) async {
     final bytes = await File(path).readAsBytes();
     return decodeDocumentTextBytes(bytes);
+  }
+
+  Future<String> _readRtfFileSafe(String path) async {
+    final bytes = await File(path).readAsBytes();
+    return decodeRtfDocumentTextBytes(bytes);
+  }
+
+  static String decodeRtfDocumentTextBytes(List<int> bytes) {
+    final raw = latin1.decode(bytes, allowInvalid: true);
+    if (!raw.trimLeft().startsWith('{\\rtf')) {
+      return decodeDocumentTextBytes(bytes);
+    }
+    return _normalizeRtfPlainText(_RtfPlainTextParser(raw).parse());
+  }
+
+  static String _normalizeRtfPlainText(String text) {
+    return _normalizeDecodedText(
+      text
+          .replaceAll('\u00A0', ' ')
+          .replaceAll(RegExp(r'[ \t]+\n'), '\n')
+          .replaceAll(RegExp(r'\n[ \t]+'), '\n')
+          .replaceAll(RegExp(r'\n{3,}'), '\n\n')
+          .trim(),
+    );
   }
 
   static String decodeDocumentTextBytes(List<int> bytes) {
@@ -538,8 +563,10 @@ class DocumentTextExtractor {
       switch (extension) {
         case 'txt':
         case 'md':
-        case 'rtf':
           return ExtractionResult(text: await _readTextFileSafe(path));
+
+        case 'rtf':
+          return ExtractionResult(text: await _readRtfFileSafe(path));
 
         case 'html':
         case 'htm':
@@ -3096,3 +3123,388 @@ const _windows1252 = <int?>[
   0x00FE,
   0x00FF,
 ];
+
+class _RtfPlainTextParser {
+  static const _ignoredDestinations = <String>{
+    'annotation',
+    'author',
+    'buptim',
+    'category',
+    'colortbl',
+    'comment',
+    'creatim',
+    'datafield',
+    'doccomm',
+    'fonttbl',
+    'footer',
+    'footerf',
+    'footerl',
+    'footerr',
+    'footnote',
+    'generator',
+    'header',
+    'headerf',
+    'headerl',
+    'headerr',
+    'info',
+    'keywords',
+    'listoverridetable',
+    'listtable',
+    'manager',
+    'object',
+    'operator',
+    'pict',
+    'pnseclvl',
+    'pntext',
+    'revtbl',
+    'rsidtbl',
+    'shp',
+    'shppict',
+    'stylesheet',
+    'subject',
+    'title',
+    'userprops',
+    'xmlnstbl',
+  };
+
+  final String source;
+  final StringBuffer _buffer = StringBuffer();
+  final List<_RtfState> _stack = [_RtfState()];
+
+  int _index = 0;
+  int _fallbackCharsToSkip = 0;
+  int? _pendingHighSurrogate;
+
+  _RtfPlainTextParser(this.source);
+
+  _RtfState get _state => _stack.last;
+
+  String parse() {
+    while (_index < source.length) {
+      final codeUnit = source.codeUnitAt(_index);
+      switch (codeUnit) {
+        case 0x7B: // {
+          _stack.add(_state.copy());
+          _index++;
+          break;
+        case 0x7D: // }
+          _flushPendingHighSurrogate();
+          if (_stack.length > 1) {
+            _stack.removeLast();
+          }
+          _index++;
+          break;
+        case 0x5C: // backslash
+          _readControlOrEscapedCharacter();
+          break;
+        case 0x0D:
+        case 0x0A:
+          // RTF line breaks in the source are formatting only. Real document
+          // paragraphs are represented by \par or \line.
+          _index++;
+          break;
+        default:
+          _appendRawCharacter(codeUnit);
+          _index++;
+      }
+    }
+    _flushPendingHighSurrogate();
+    return _buffer.toString();
+  }
+
+  void _readControlOrEscapedCharacter() {
+    _index++; // skip backslash
+    if (_index >= source.length) return;
+
+    final marker = source.codeUnitAt(_index);
+    if (marker == 0x27) { // '
+      _readHexEncodedByte();
+      return;
+    }
+
+    if (_isAsciiLetter(marker)) {
+      _readControlWord();
+      return;
+    }
+
+    _readEscapedSymbol(marker);
+  }
+
+  void _readHexEncodedByte() {
+    _index++; // skip quote
+    if (_index + 1 >= source.length) return;
+    final hex = source.substring(_index, _index + 2);
+    final value = int.tryParse(hex, radix: 16);
+    _index += 2;
+    if (value == null) return;
+    if (_state.skipDestination) return;
+    if (_consumeUnicodeFallbackCharacter()) return;
+    _appendDecodedByte(value);
+  }
+
+  void _readControlWord() {
+    final start = _index;
+    while (_index < source.length && _isAsciiLetter(source.codeUnitAt(_index))) {
+      _index++;
+    }
+    final word = source.substring(start, _index);
+
+    var sign = 1;
+    if (_index < source.length) {
+      final codeUnit = source.codeUnitAt(_index);
+      if (codeUnit == 0x2D) { // -
+        sign = -1;
+        _index++;
+      } else if (codeUnit == 0x2B) { // +
+        _index++;
+      }
+    }
+
+    int? number;
+    final numberStart = _index;
+    while (_index < source.length && _isAsciiDigit(source.codeUnitAt(_index))) {
+      _index++;
+    }
+    if (_index > numberStart) {
+      number = int.tryParse(source.substring(numberStart, _index));
+      if (number != null) number *= sign;
+    }
+
+    if (_index < source.length && source.codeUnitAt(_index) == 0x20) {
+      _index++;
+    }
+
+    _handleControlWord(word, number);
+  }
+
+  void _readEscapedSymbol(int marker) {
+    _index++;
+    switch (marker) {
+      case 0x5C: // backslash
+      case 0x7B: // {
+      case 0x7D: // }
+        _appendLiteralCharacter(marker);
+        break;
+      case 0x7E: // non-breaking space
+        _appendText(' ');
+        break;
+      case 0x5F: // non-breaking hyphen
+        _appendText('-');
+        break;
+      case 0x2D: // optional hyphen
+        break;
+      case 0x2A: // ignorable destination
+        _state.skipDestination = true;
+        break;
+      case 0x0D:
+      case 0x0A:
+        break;
+      default:
+        _appendLiteralCharacter(marker);
+        break;
+    }
+  }
+
+  void _handleControlWord(String word, int? number) {
+    if (word == 'ansicpg' && number != null) {
+      _state.codePage = number;
+      return;
+    }
+    if (word == 'mac') {
+      _state.codePage = 10000;
+      return;
+    }
+    if (word == 'pc' || word == 'pca') {
+      _state.codePage = 437;
+      return;
+    }
+    if (word == 'uc' && number != null) {
+      _state.unicodeFallbackLength = number.clamp(0, 20).toInt();
+      return;
+    }
+    if (_ignoredDestinations.contains(word)) {
+      _state.skipDestination = true;
+      return;
+    }
+    if (_state.skipDestination) return;
+
+    switch (word) {
+      case 'u':
+        if (number != null) _appendUnicodeCodeUnit(number);
+        _fallbackCharsToSkip = _state.unicodeFallbackLength;
+        break;
+      case 'par':
+      case 'line':
+        _appendText('\n');
+        break;
+      case 'page':
+      case 'sect':
+        _appendText('\n\n');
+        break;
+      case 'tab':
+        _appendText('\t');
+        break;
+      case 'emdash':
+        _appendText('—');
+        break;
+      case 'endash':
+        _appendText('–');
+        break;
+      case 'emspace':
+      case 'enspace':
+      case 'qmspace':
+        _appendText(' ');
+        break;
+      case 'bullet':
+        _appendText('•');
+        break;
+      case 'lquote':
+        _appendText('‘');
+        break;
+      case 'rquote':
+        _appendText('’');
+        break;
+      case 'ldblquote':
+        _appendText('“');
+        break;
+      case 'rdblquote':
+        _appendText('”');
+        break;
+      default:
+        // Formatting controls such as \b, \i, \fs24, \cf1 are intentionally
+        // ignored: we only need the readable document text.
+        break;
+    }
+  }
+
+  void _appendRawCharacter(int codeUnit) {
+    if (_state.skipDestination) return;
+    if (_consumeUnicodeFallbackCharacter()) return;
+    if (codeUnit >= 0x80 && codeUnit <= 0xFF) {
+      _appendDecodedByte(codeUnit);
+    } else {
+      _appendLiteralCharacter(codeUnit);
+    }
+  }
+
+  void _appendDecodedByte(int value) {
+    _appendText(_decodeByteForCurrentCodePage(value));
+  }
+
+  String _decodeByteForCurrentCodePage(int value) {
+    if (value < 0x80) return String.fromCharCode(value);
+    switch (_state.codePage) {
+      case 1250:
+        return DocumentTextExtractor._decodeSingleByte(
+          [value],
+          _windows1250,
+        );
+      case 1251:
+        return DocumentTextExtractor._decodeSingleByte(
+          [value],
+          _windows1251,
+        );
+      case 1252:
+        return DocumentTextExtractor._decodeSingleByte(
+          [value],
+          _windows1252,
+        );
+      case 1253:
+        return DocumentTextExtractor._decodeSingleByte(
+          [value],
+          _windows1253,
+        );
+      case 1254:
+        return DocumentTextExtractor._decodeSingleByte(
+          [value],
+          _windows1254,
+        );
+      case 1255:
+        return DocumentTextExtractor._decodeSingleByte(
+          [value],
+          _windows1255,
+        );
+      case 1256:
+        return DocumentTextExtractor._decodeSingleByte(
+          [value],
+          _windows1256,
+        );
+      default:
+        return DocumentTextExtractor._decodeSingleByte(
+          [value],
+          _windows1252,
+        );
+    }
+  }
+
+  void _appendLiteralCharacter(int codeUnit) {
+    _appendText(String.fromCharCode(codeUnit));
+  }
+
+  void _appendUnicodeCodeUnit(int value) {
+    var codeUnit = value;
+    if (codeUnit < 0) codeUnit += 65536;
+    if (codeUnit < 0 || codeUnit > 0x10FFFF) return;
+
+    if (codeUnit >= 0xD800 && codeUnit <= 0xDBFF) {
+      _flushPendingHighSurrogate();
+      _pendingHighSurrogate = codeUnit;
+      return;
+    }
+    if (codeUnit >= 0xDC00 && codeUnit <= 0xDFFF) {
+      final high = _pendingHighSurrogate;
+      if (high != null) {
+        final fullCodePoint =
+            0x10000 + ((high - 0xD800) << 10) + (codeUnit - 0xDC00);
+        _pendingHighSurrogate = null;
+        _appendText(String.fromCharCode(fullCodePoint));
+        return;
+      }
+      return;
+    }
+    _flushPendingHighSurrogate();
+    _appendText(String.fromCharCode(codeUnit));
+  }
+
+  void _flushPendingHighSurrogate() {
+    if (_pendingHighSurrogate != null) {
+      _pendingHighSurrogate = null;
+    }
+  }
+
+  void _appendText(String text) {
+    if (text.isEmpty || _state.skipDestination) return;
+    _buffer.write(text);
+  }
+
+  bool _consumeUnicodeFallbackCharacter() {
+    if (_fallbackCharsToSkip <= 0) return false;
+    _fallbackCharsToSkip--;
+    return true;
+  }
+
+  static bool _isAsciiLetter(int codeUnit) =>
+      codeUnit >= 0x41 && codeUnit <= 0x5A ||
+      codeUnit >= 0x61 && codeUnit <= 0x7A;
+
+  static bool _isAsciiDigit(int codeUnit) =>
+      codeUnit >= 0x30 && codeUnit <= 0x39;
+}
+
+class _RtfState {
+  int codePage;
+  int unicodeFallbackLength;
+  bool skipDestination;
+
+  _RtfState({
+    this.codePage = 1252,
+    this.unicodeFallbackLength = 1,
+    this.skipDestination = false,
+  });
+
+  _RtfState copy() => _RtfState(
+        codePage: codePage,
+        unicodeFallbackLength: unicodeFallbackLength,
+        skipDestination: skipDestination,
+      );
+}

@@ -3,6 +3,8 @@
     "version": "0.3.2",
     "date": "2026-06-27",
     "it": [
+      "Taglia file media: dopo Applica taglio, la riproduzione con lo slider ora salta preventivamente le parti rimosse al confine esatto del taglio; nella schermata effetti, toccare Effetto 1 modifica quello esistente invece di creare Effetto 2.",
+      "Documenti: migliorata l’apertura dei file RTF; Sonarpad ora interpreta il formato e mostra testo leggibile invece dei codici RTF.",
       "Notizie: allineati i timeout Tinyfish; il server attende fino a 15 secondi e l’app fino a 20 secondi, riducendo chiamate bloccate e fallback troppo rapidi.",
       "In Taglia file media, la schermata degli effetti ora evita doppie letture con VoiceOver e mantiene ordinati gli effetti scelti; nel taglio avanzato ogni parte può essere modificata spostando inizio o fine di 1 secondo e ascoltando subito il risultato.",
       "Nel Taglio guidato, se imposti inizio o fine taglio e provi a uscire senza applicare, Sonarpad ora avvisa prima di perdere il taglio preparato; il controllo di rotazione video resta disponibile anche nel flusso guidato.",
@@ -47,6 +49,8 @@
       "Notizie: rimossa una chiamata ridondante al reader quando la WebView carica la pagina, riducendo estrazioni doppie e log inutili."
     ],
     "en": [
+      "Cut media file: after Apply cut, playback with the slider now skips removed sections proactively at the exact cut boundary; in the effects screen, tapping Effect 1 edits the existing effect instead of creating Effect 2.",
+      "Documents: improved opening of RTF files; Sonarpad now interprets the format and shows readable text instead of RTF codes.",
       "News: Tinyfish timeouts are now aligned; the server waits up to 15 seconds and the app up to 20 seconds, reducing stuck calls and overly early fallbacks.",
       "In Cut media file, the effects screen now avoids duplicate VoiceOver readings and keeps selected effects ordered; in Advanced cut each part can be edited by moving its start or end by 1 second and previewing the result immediately.",
       "In Guided cut, if you set a start or end point and try to leave without applying it, Sonarpad now warns before losing the prepared cut; video rotation remains available in the guided flow too.",
@@ -88,6 +92,8 @@
       "News: removed a redundant reader call while the WebView loads the page, reducing duplicate extraction attempts and unnecessary logs."
     ],
     "fr": [
+      "Découper un fichier média : après Appliquer la coupe, la lecture avec le curseur saute désormais les parties supprimées de façon préventive au bord exact de la coupe ; dans l’écran des effets, toucher Effet 1 modifie l’effet existant au lieu de créer Effet 2.",
+      "Documents : meilleure ouverture des fichiers RTF ; Sonarpad interprète maintenant le format et affiche un texte lisible au lieu des codes RTF.",
       "Actualités : les délais d’attente Tinyfish sont désormais alignés ; le serveur attend jusqu’à 15 secondes et l’app jusqu’à 20 secondes, afin de réduire les appels bloqués et les bascules trop rapides.",
       "Dans Couper un fichier média, l’écran des effets évite maintenant les lectures en double avec VoiceOver et garde les effets sélectionnés dans l’ordre; dans le mode avancé, chaque partie peut être modifiée en déplaçant son début ou sa fin d’une seconde puis en l’écoutant.",
       "Dans la découpe guidée, si vous définissez un début ou une fin puis quittez sans appliquer, Sonarpad avertit désormais avant de perdre la découpe préparée ; la rotation vidéo reste aussi disponible dans le flux guidé.",
@@ -129,6 +135,8 @@
       "Actualités : suppression d’un appel redondant au lecteur pendant le chargement de la WebView, afin de réduire les extractions en double et les journaux inutiles."
     ],
     "es": [
+      "Cortar archivo multimedia: después de Aplicar corte, la reproducción con el deslizador ahora salta preventivamente las partes eliminadas en el límite exacto del corte; en la pantalla de efectos, tocar Efecto 1 modifica el efecto existente en lugar de crear Efecto 2.",
+      "Documentos: mejorada la apertura de archivos RTF; Sonarpad ahora interpreta el formato y muestra texto legible en lugar de códigos RTF.",
       "Noticias: se han alineado los tiempos de espera de Tinyfish; el servidor espera hasta 15 segundos y la app hasta 20 segundos, reduciendo llamadas bloqueadas y cambios de fallback demasiado rápidos.",
       "En Cortar archivo multimedia, la pantalla de efectos evita ahora lecturas duplicadas con VoiceOver y mantiene ordenados los efectos elegidos; en el corte avanzado cada parte puede modificarse moviendo su inicio o final 1 segundo y escuchando el resultado.",
       "En el corte guiado, si defines un inicio o un final y sales sin aplicarlo, Sonarpad ahora avisa antes de perder el corte preparado; la rotación de vídeo también está disponible en el flujo guiado.",
@@ -170,6 +178,8 @@
       "Noticias: se eliminó una llamada redundante al lector durante la carga de la WebView, reduciendo extracciones duplicadas y registros innecesarios."
     ],
     "pt": [
+      "Cortar ficheiro multimédia: depois de Aplicar corte, a reprodução com o controlo deslizante passa a saltar preventivamente as partes removidas no limite exato do corte; no ecrã de efeitos, tocar em Efeito 1 edita o efeito existente em vez de criar Efeito 2.",
+      "Documentos: melhorada a abertura de ficheiros RTF; o Sonarpad agora interpreta o formato e mostra texto legível em vez de códigos RTF.",
       "Notícias: os tempos limite do Tinyfish foram alinhados; o servidor espera até 15 segundos e a app até 20 segundos, reduzindo chamadas bloqueadas e fallback demasiado rápido.",
       "Em Cortar ficheiro de mídia, a tela de efeitos agora evita leituras duplicadas com o VoiceOver e mantém os efeitos escolhidos em ordem; no corte avançado cada parte pode ser modificada movendo o início ou o fim em 1 segundo e ouvindo o resultado.",
       "No corte guiado, se definir um início ou fim e tentar sair sem aplicar, o Sonarpad avisa antes de perder o corte preparado; a rotação de vídeo também fica disponível no fluxo guiado.",
@@ -211,6 +221,8 @@
       "Notícias: removida uma chamada redundante ao leitor durante o carregamento da WebView, reduzindo extrações duplicadas e logs desnecessários."
     ],
     "pl": [
+      "Przycinanie pliku multimedialnego: po użyciu Zastosuj cięcie odtwarzanie ze suwakiem z wyprzedzeniem pomija usunięte fragmenty dokładnie na granicy cięcia; na ekranie efektów stuknięcie Efekt 1 edytuje istniejący efekt zamiast tworzyć Efekt 2.",
+      "Dokumenty: ulepszono otwieranie plików RTF; Sonarpad interpretuje teraz ten format i pokazuje czytelny tekst zamiast kodów RTF.",
       "Wiadomości: wyrównano limity czasu Tinyfish; serwer czeka do 15 sekund, a aplikacja do 20 sekund, co ogranicza zablokowane wywołania i zbyt szybkie przełączanie awaryjne.",
       "W Przytnij plik multimedialny ekran efektów nie powtarza już etykiet w VoiceOver i utrzymuje wybrane efekty we właściwej kolejności; w trybie zaawansowanym każdą część można edytować, przesuwając jej początek lub koniec o 1 sekundę i od razu odsłuchując wynik.",
       "W cięciu z przewodnikiem, jeśli ustawisz początek lub koniec i spróbujesz wyjść bez zastosowania, Sonarpad ostrzega przed utratą przygotowanego cięcia; obrót wideo jest nadal dostępny także w trybie z przewodnikiem.",
@@ -253,6 +265,8 @@
       "Wiadomości: usunięto nadmiarowe wywołanie czytnika podczas ładowania WebView, ograniczając podwójne próby wyodrębniania i zbędne logi."
     ],
     "cs": [
+      "Oříznout mediální soubor: po volbě Použít střih přehrávání pomocí posuvníku nyní preventivně přeskočí odstraněné části přesně na hranici střihu; na obrazovce efektů klepnutí na Efekt 1 upraví stávající efekt místo vytvoření Efektu 2.",
+      "Dokumenty: vylepšeno otevírání souborů RTF; Sonarpad nyní formát interpretuje a zobrazuje čitelný text místo kódů RTF.",
       "Zprávy: časové limity Tinyfish jsou nyní sladěné; server čeká až 15 sekund a aplikace až 20 sekund, což omezuje zaseknuté požadavky a příliš rychlý fallback.",
       "Ve funkci Oříznout mediální soubor už obrazovka efektů neopakuje popisky ve VoiceOveru a udržuje vybrané efekty ve správném pořadí; v pokročilém střihu lze každou část upravit posunem začátku nebo konce o 1 sekundu a výsledek hned poslechnout.",
       "V průvodci střihem Sonarpad nyní upozorní, když nastavíte začátek nebo konec a pokusíte se odejít bez použití střihu; otočení videa zůstává dostupné i v průvodci.",
