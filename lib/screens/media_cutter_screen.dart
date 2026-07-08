@@ -73,6 +73,12 @@ enum _MediaPartEffect {
 
 const _effectPreviewMaxDuration = Duration(seconds: 12);
 const _effectPreviewMinDuration = Duration(seconds: 2);
+const _cutEditStepOptions = <Duration>[
+  Duration(seconds: 1),
+  Duration(milliseconds: 500),
+  Duration(milliseconds: 250),
+  Duration(milliseconds: 100),
+];
 
 class _MediaCutterExportCancelled implements Exception {
   const _MediaCutterExportCancelled();
@@ -1214,17 +1220,33 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   String get _guidedModifyCutLabel => _l10n.mediaCutterGuidedModifyCut;
 
-  String get _guidedMoveStartBackOneSecondLabel =>
-      _l10n.mediaCutterGuidedMoveStartBackOneSecond;
+  String _cutEditStepLabel(Duration step) {
+    switch (step.inMilliseconds) {
+      case 1000:
+        return _l10n.mediaCutterCutEditStepOneSecond;
+      case 500:
+        return _l10n.mediaCutterCutEditStepHalfSecond;
+      case 250:
+        return _l10n.mediaCutterCutEditStepQuarterSecond;
+      case 100:
+        return _l10n.mediaCutterCutEditStepTenthSecond;
+      default:
+        final seconds = step.inMilliseconds / 1000;
+        return '${seconds.toStringAsFixed(2)} s';
+    }
+  }
 
-  String get _guidedMoveStartForwardOneSecondLabel =>
-      _l10n.mediaCutterGuidedMoveStartForwardOneSecond;
+  String _moveStartBackLabel(Duration step) =>
+      _l10n.mediaCutterMoveStartBackBy(_cutEditStepLabel(step));
 
-  String get _guidedMoveEndBackOneSecondLabel =>
-      _l10n.mediaCutterGuidedMoveEndBackOneSecond;
+  String _moveStartForwardLabel(Duration step) =>
+      _l10n.mediaCutterMoveStartForwardBy(_cutEditStepLabel(step));
 
-  String get _guidedMoveEndForwardOneSecondLabel =>
-      _l10n.mediaCutterGuidedMoveEndForwardOneSecond;
+  String _moveEndBackLabel(Duration step) =>
+      _l10n.mediaCutterMoveEndBackBy(_cutEditStepLabel(step));
+
+  String _moveEndForwardLabel(Duration step) =>
+      _l10n.mediaCutterMoveEndForwardBy(_cutEditStepLabel(step));
 
   String _guidedCutAdjustedMessage(Duration start, Duration end) =>
       _l10n.mediaCutterGuidedCutAdjusted(
@@ -1409,17 +1431,75 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     await _applyGuidedCut();
   }
 
-  bool _isInsideKeptPartStrict(Duration position) =>
-      _keptPartIndexContainingSplitPoint(position) != null;
-
   bool _isGuidedCutReadyToEdit() =>
       _inputPath.isNotEmpty && _guidedCutStart != null && _guidedCutEnd != null;
+
+  int _cutEditStepIndex(Duration step) {
+    final index = _cutEditStepOptions.indexWhere(
+      (option) => option.inMilliseconds == step.inMilliseconds,
+    );
+    return index == -1 ? 0 : index;
+  }
+
+  Widget _buildCutEditPrecisionSlider({
+    required Duration value,
+    required ValueChanged<Duration> onChanged,
+  }) {
+    final index = _cutEditStepIndex(value);
+    final label = _cutEditStepLabel(value);
+    void setIndex(int newIndex) {
+      final maxIndex = _cutEditStepOptions.length - 1;
+      final clamped = newIndex < 0
+          ? 0
+          : newIndex > maxIndex
+              ? maxIndex
+              : newIndex;
+      onChanged(_cutEditStepOptions[clamped]);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ExcludeSemantics(
+          child: Text(_l10n.mediaCutterCutEditPrecisionValue(label)),
+        ),
+        Semantics(
+          slider: true,
+          label: _l10n.mediaCutterCutEditPrecisionLabel,
+          value: label,
+          increasedValue: _cutEditStepLabel(
+            _cutEditStepOptions[
+              index + 1 >= _cutEditStepOptions.length
+                  ? _cutEditStepOptions.length - 1
+                  : index + 1
+            ],
+          ),
+          decreasedValue: _cutEditStepLabel(
+            _cutEditStepOptions[index - 1 < 0 ? 0 : index - 1],
+          ),
+          onIncrease: () => setIndex(index + 1),
+          onDecrease: () => setIndex(index - 1),
+          child: ExcludeSemantics(
+            child: Slider(
+              value: index.toDouble(),
+              min: 0,
+              max: (_cutEditStepOptions.length - 1).toDouble(),
+              divisions: _cutEditStepOptions.length - 1,
+              label: label,
+              onChanged: (rawValue) => setIndex(rawValue.round()),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   Future<void> _showGuidedModifyCutDialog() async {
     if (!_isGuidedCutReadyToEdit()) {
       _showSnack(_guidedNeedStartEndMessage);
       return;
     }
+    var editStep = _cutEditStepOptions.first;
     await showDialog<void>(
       context: context,
       builder: (dialogContext) {
@@ -1431,9 +1511,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 ? _guidedCutSummary(start <= end ? start : end, start <= end ? end : start)
                 : _guidedNeedStartEndMessage;
             Future<void> adjust({required bool moveStart, required int direction}) async {
-              await _adjustGuidedCutByOneSecond(
+              await _adjustGuidedCutByStep(
                 moveStart: moveStart,
                 direction: direction,
+                step: editStep,
               );
               if (mounted) setDialogState(() {});
             }
@@ -1447,28 +1528,33 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   children: [
                     Text(summary),
                     const SizedBox(height: 16),
+                    _buildCutEditPrecisionSlider(
+                      value: editStep,
+                      onChanged: (value) => setDialogState(() => editStep = value),
+                    ),
+                    const SizedBox(height: 16),
                     OutlinedButton.icon(
                       onPressed: () => unawaited(adjust(moveStart: true, direction: -1)),
                       icon: const Icon(Icons.keyboard_double_arrow_left),
-                      label: Text(_guidedMoveStartBackOneSecondLabel),
+                      label: Text(_moveStartBackLabel(editStep)),
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: () => unawaited(adjust(moveStart: true, direction: 1)),
                       icon: const Icon(Icons.keyboard_double_arrow_right),
-                      label: Text(_guidedMoveStartForwardOneSecondLabel),
+                      label: Text(_moveStartForwardLabel(editStep)),
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: () => unawaited(adjust(moveStart: false, direction: -1)),
                       icon: const Icon(Icons.keyboard_double_arrow_left),
-                      label: Text(_guidedMoveEndBackOneSecondLabel),
+                      label: Text(_moveEndBackLabel(editStep)),
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: () => unawaited(adjust(moveStart: false, direction: 1)),
                       icon: const Icon(Icons.keyboard_double_arrow_right),
-                      label: Text(_guidedMoveEndForwardOneSecondLabel),
+                      label: Text(_moveEndForwardLabel(editStep)),
                     ),
                     const SizedBox(height: 12),
                     FilledButton.icon(
@@ -1492,9 +1578,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
-  Future<void> _adjustGuidedCutByOneSecond({
+  Future<void> _adjustGuidedCutByStep({
     required bool moveStart,
     required int direction,
+    required Duration step,
   }) async {
     final l10n = AppLocalizations.of(context);
     final start = _guidedCutStart;
@@ -1504,23 +1591,24 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       return;
     }
 
-    final step = Duration(seconds: direction < 0 ? -1 : 1);
+    final signedStep = Duration(milliseconds: step.inMilliseconds * (direction < 0 ? -1 : 1));
     var newStart = start;
     var newEnd = end;
     if (moveStart) {
-      newStart += step;
+      newStart += signedStep;
     } else {
-      newEnd += step;
+      newEnd += signedStep;
     }
 
     if (newStart < Duration.zero) newStart = Duration.zero;
     if (newEnd > _duration) newEnd = _duration;
     if (newEnd <= newStart ||
-        newEnd.inMilliseconds - newStart.inMilliseconds < 250) {
+        newEnd.inMilliseconds - newStart.inMilliseconds < 100) {
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
       unawaited(_logMediaCutter(
-        'guided cut adjust rejected too close moveStart=$moveStart direction=$direction '
-        'start=${_logPreciseDuration(start)} end=${_logPreciseDuration(end)} '
+        'guided cut adjust rejected too close moveStart=$moveStart direction=$direction ' 
+        'step=${_logPreciseDuration(step)} ' 
+        'start=${_logPreciseDuration(start)} end=${_logPreciseDuration(end)} ' 
         'newStart=${_logPreciseDuration(newStart)} newEnd=${_logPreciseDuration(newEnd)}',
       ));
       return;
@@ -1528,17 +1616,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
     final orderedStart = newStart;
     final orderedEnd = newEnd;
-    final validStart = orderedStart == Duration.zero || _isInsideKeptPartStrict(orderedStart);
-    final validEnd = orderedEnd == _duration || _isInsideKeptPartStrict(orderedEnd);
-    if (!validStart || !validEnd) {
-      _showSnack(l10n.mediaCutterInvalidSplitPoint);
-      unawaited(_logMediaCutter(
-        'guided cut adjust rejected outside kept part moveStart=$moveStart direction=$direction '
-        'newStart=${_logPreciseDuration(orderedStart)} newEnd=${_logPreciseDuration(orderedEnd)}',
-      ));
-      return;
-    }
-
     setState(() {
       _guidedCutStart = orderedStart;
       _guidedCutEnd = orderedEnd;
@@ -1548,8 +1625,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     await _seekTo(moveStart ? orderedStart : orderedEnd, clearPreview: true);
     _showSnack(_guidedCutAdjustedMessage(orderedStart, orderedEnd));
     unawaited(_logMediaCutter(
-      'guided cut adjusted moveStart=$moveStart direction=$direction '
-      'start=${_logPreciseDuration(orderedStart)} end=${_logPreciseDuration(orderedEnd)} '
+      'guided cut adjusted moveStart=$moveStart direction=$direction ' 
+      'step=${_logPreciseDuration(step)} ' 
+      'start=${_logPreciseDuration(orderedStart)} end=${_logPreciseDuration(orderedEnd)} ' 
       '${_logPlaybackState()}',
     ));
   }
@@ -1558,6 +1636,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (_saving || index < 0 || index >= _parts.length || !_parts[index].keep) {
       return;
     }
+    var editStep = _cutEditStepOptions.first;
     await showDialog<void>(
       context: context,
       builder: (dialogContext) {
@@ -1581,10 +1660,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               _formatTime(part.end),
             );
             Future<void> adjust({required bool moveStart, required int direction}) async {
-              await _adjustAdvancedPartEdgeByOneSecond(
+              await _adjustAdvancedPartEdgeByStep(
                 index: index,
                 moveStart: moveStart,
                 direction: direction,
+                step: editStep,
               );
               if (mounted) setDialogState(() {});
             }
@@ -1600,28 +1680,33 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                     const SizedBox(height: 8),
                     Text(summary),
                     const SizedBox(height: 16),
+                    _buildCutEditPrecisionSlider(
+                      value: editStep,
+                      onChanged: (value) => setDialogState(() => editStep = value),
+                    ),
+                    const SizedBox(height: 16),
                     OutlinedButton.icon(
                       onPressed: () => unawaited(adjust(moveStart: true, direction: -1)),
                       icon: const Icon(Icons.keyboard_double_arrow_left),
-                      label: Text(_guidedMoveStartBackOneSecondLabel),
+                      label: Text(_moveStartBackLabel(editStep)),
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: () => unawaited(adjust(moveStart: true, direction: 1)),
                       icon: const Icon(Icons.keyboard_double_arrow_right),
-                      label: Text(_guidedMoveStartForwardOneSecondLabel),
+                      label: Text(_moveStartForwardLabel(editStep)),
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: () => unawaited(adjust(moveStart: false, direction: -1)),
                       icon: const Icon(Icons.keyboard_double_arrow_left),
-                      label: Text(_guidedMoveEndBackOneSecondLabel),
+                      label: Text(_moveEndBackLabel(editStep)),
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: () => unawaited(adjust(moveStart: false, direction: 1)),
                       icon: const Icon(Icons.keyboard_double_arrow_right),
-                      label: Text(_guidedMoveEndForwardOneSecondLabel),
+                      label: Text(_moveEndForwardLabel(editStep)),
                     ),
                     const SizedBox(height: 12),
                     FilledButton.icon(
@@ -1645,10 +1730,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
-  Future<void> _adjustAdvancedPartEdgeByOneSecond({
+  Future<void> _adjustAdvancedPartEdgeByStep({
     required int index,
     required bool moveStart,
     required int direction,
+    required Duration step,
   }) async {
     final l10n = AppLocalizations.of(context);
     if (index < 0 || index >= _parts.length || !_parts[index].keep) {
@@ -1656,13 +1742,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       return;
     }
     final currentPart = _parts[index];
-    final step = Duration(seconds: direction < 0 ? -1 : 1);
+    final signedStep = Duration(milliseconds: step.inMilliseconds * (direction < 0 ? -1 : 1));
     var newStart = currentPart.start;
     var newEnd = currentPart.end;
     if (moveStart) {
-      newStart += step;
+      newStart += signedStep;
     } else {
-      newEnd += step;
+      newEnd += signedStep;
     }
 
     if (moveStart && index == 0) {
@@ -1674,7 +1760,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       return;
     }
 
-    final minDuration = const Duration(milliseconds: 250);
+    final minDuration = const Duration(milliseconds: 100);
     final previousBoundary = index == 0
         ? Duration.zero
         : _parts[index - 1].start + minDuration;
@@ -1687,11 +1773,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (newEnd > _duration) newEnd = _duration;
 
     if (newEnd <= newStart ||
-        newEnd.inMilliseconds - newStart.inMilliseconds < 250) {
+        newEnd.inMilliseconds - newStart.inMilliseconds < minDuration.inMilliseconds) {
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
       unawaited(_logMediaCutter(
-        'advanced part edit rejected too close index=$index moveStart=$moveStart direction=$direction '
-        'oldStart=${_logPreciseDuration(currentPart.start)} oldEnd=${_logPreciseDuration(currentPart.end)} '
+        'advanced part edit rejected too close index=$index moveStart=$moveStart direction=$direction ' 
+        'step=${_logPreciseDuration(step)} ' 
+        'oldStart=${_logPreciseDuration(currentPart.start)} oldEnd=${_logPreciseDuration(currentPart.end)} ' 
         'newStart=${_logPreciseDuration(newStart)} newEnd=${_logPreciseDuration(newEnd)}',
       ));
       return;
@@ -1724,8 +1811,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     await _seekTo(moveStart ? editedPart.start : editedPart.end, clearPreview: true);
     _showSnack(_partAdjustedMessage(editedPart.start, editedPart.end));
     unawaited(_logMediaCutter(
-      'advanced part edited index=$index moveStart=$moveStart direction=$direction '
-      'start=${_logPreciseDuration(editedPart.start)} end=${_logPreciseDuration(editedPart.end)} '
+      'advanced part edited index=$index moveStart=$moveStart direction=$direction ' 
+      'step=${_logPreciseDuration(step)} ' 
+      'start=${_logPreciseDuration(editedPart.start)} end=${_logPreciseDuration(editedPart.end)} ' 
       'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} parts=${_parts.length} deleted=$_deletedPartCount',
     ));
   }

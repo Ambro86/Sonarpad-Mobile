@@ -1297,6 +1297,51 @@
   "mediaCutterGuidedMoveStartForwardOneSecond": "Mover el inicio del corte 1 segundo hacia adelante",
   "mediaCutterGuidedMoveEndBackOneSecond": "Mover el final del corte 1 segundo hacia atrás",
   "mediaCutterGuidedMoveEndForwardOneSecond": "Mover el final del corte 1 segundo hacia adelante",
+  "mediaCutterCutEditPrecisionLabel": "Precisión de edición del corte",
+  "mediaCutterCutEditPrecisionValue": "Precisión de edición del corte: {value}",
+  "@mediaCutterCutEditPrecisionValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterCutEditStepOneSecond": "1 segundo",
+  "mediaCutterCutEditStepHalfSecond": "0,5 segundos",
+  "mediaCutterCutEditStepQuarterSecond": "0,25 segundos",
+  "mediaCutterCutEditStepTenthSecond": "0,10 segundos",
+  "mediaCutterMoveStartBackBy": "Mover inicio del corte hacia atrás {value}",
+  "@mediaCutterMoveStartBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveStartForwardBy": "Mover inicio del corte hacia adelante {value}",
+  "@mediaCutterMoveStartForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndBackBy": "Mover fin del corte hacia atrás {value}",
+  "@mediaCutterMoveEndBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndForwardBy": "Mover fin del corte hacia adelante {value}",
+  "@mediaCutterMoveEndForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "mediaCutterGuidedCutAdjusted": "Corte modificado de {start} a {end}.",
   "@mediaCutterGuidedCutAdjusted": {
     "placeholders": {

@@ -1291,6 +1291,51 @@
   "mediaCutterGuidedMoveStartForwardOneSecond": "Move cut start forward by 1 second",
   "mediaCutterGuidedMoveEndBackOneSecond": "Move cut end back by 1 second",
   "mediaCutterGuidedMoveEndForwardOneSecond": "Move cut end forward by 1 second",
+  "mediaCutterCutEditPrecisionLabel": "Cut edit precision",
+  "mediaCutterCutEditPrecisionValue": "Cut edit precision: {value}",
+  "@mediaCutterCutEditPrecisionValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterCutEditStepOneSecond": "1 second",
+  "mediaCutterCutEditStepHalfSecond": "0.5 seconds",
+  "mediaCutterCutEditStepQuarterSecond": "0.25 seconds",
+  "mediaCutterCutEditStepTenthSecond": "0.10 seconds",
+  "mediaCutterMoveStartBackBy": "Move cut start back by {value}",
+  "@mediaCutterMoveStartBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveStartForwardBy": "Move cut start forward by {value}",
+  "@mediaCutterMoveStartForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndBackBy": "Move cut end back by {value}",
+  "@mediaCutterMoveEndBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndForwardBy": "Move cut end forward by {value}",
+  "@mediaCutterMoveEndForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "mediaCutterGuidedCutAdjusted": "Cut changed from {start} to {end}.",
   "@mediaCutterGuidedCutAdjusted": {
     "placeholders": {

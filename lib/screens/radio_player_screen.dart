@@ -830,6 +830,128 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     return widget.station.name;
   }
 
+  Future<TimeOfDay?> _showScheduledRecordingTimePicker({
+    required BuildContext context,
+    required TimeOfDay initialTime,
+    required String title,
+  }) async {
+    int selectedHour = initialTime.hour;
+    int selectedMinute = initialTime.minute;
+
+    String twoDigits(int value) => value.toString().padLeft(2, '0');
+    int clampInt(int value, int min, int max) => value.clamp(min, max).toInt();
+
+    return showDialog<TimeOfDay>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final nextHour = twoDigits(clampInt(selectedHour + 1, 0, 23));
+            final previousHour = twoDigits(clampInt(selectedHour - 1, 0, 23));
+            final nextMinute = twoDigits(clampInt(selectedMinute + 1, 0, 59));
+            final previousMinute = twoDigits(clampInt(selectedMinute - 1, 0, 59));
+
+            void setHour(int value) {
+              setDialogState(() {
+                selectedHour = clampInt(value, 0, 23);
+              });
+            }
+
+            void setMinute(int value) {
+              setDialogState(() {
+                selectedMinute = clampInt(value, 0, 59);
+              });
+            }
+
+            Widget buildValueSlider({
+              required String visibleLabel,
+              required String semanticsLabel,
+              required int value,
+              required int min,
+              required int max,
+              required String increasedValue,
+              required String decreasedValue,
+              required ValueChanged<int> onChanged,
+            }) {
+              final valueText = twoDigits(value);
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ExcludeSemantics(
+                    child: Text('$visibleLabel: $valueText'),
+                  ),
+                  Semantics(
+                    slider: true,
+                    label: semanticsLabel,
+                    value: valueText,
+                    increasedValue: increasedValue,
+                    decreasedValue: decreasedValue,
+                    onIncrease: () => onChanged(value + 1),
+                    onDecrease: () => onChanged(value - 1),
+                    child: ExcludeSemantics(
+                      child: Slider(
+                        value: value.toDouble(),
+                        min: min.toDouble(),
+                        max: max.toDouble(),
+                        divisions: max - min,
+                        label: valueText,
+                        onChanged: (newValue) => onChanged(newValue.round()),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return AlertDialog(
+              title: Text(title),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  buildValueSlider(
+                    visibleLabel: 'Ore',
+                    semanticsLabel: 'Seleziona le ore',
+                    value: selectedHour,
+                    min: 0,
+                    max: 23,
+                    increasedValue: nextHour,
+                    decreasedValue: previousHour,
+                    onChanged: setHour,
+                  ),
+                  const SizedBox(height: 16),
+                  buildValueSlider(
+                    visibleLabel: 'Minuti',
+                    semanticsLabel: 'Seleziona i minuti',
+                    value: selectedMinute,
+                    min: 0,
+                    max: 59,
+                    increasedValue: nextMinute,
+                    decreasedValue: previousMinute,
+                    onChanged: setMinute,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Annulla'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(
+                    dialogContext,
+                    TimeOfDay(hour: selectedHour, minute: selectedMinute),
+                  ),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Future<void> _showScheduleRecordingDialog() async {
     if (_recording) {
       showStatusMessage(
@@ -853,10 +975,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           return StatefulBuilder(
             builder: (context, setDialogState) {
               Future<void> pickStart() async {
-                final picked = await showTimePicker(
+                final picked = await _showScheduledRecordingTimePicker(
                   context: context,
                   initialTime: startTime,
-                  helpText: 'Ora di inizio',
+                  title: 'Ora di inizio',
                 );
                 if (picked != null) {
                   setDialogState(() => startTime = picked);
@@ -864,10 +986,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               }
 
               Future<void> pickEnd() async {
-                final picked = await showTimePicker(
+                final picked = await _showScheduledRecordingTimePicker(
                   context: context,
                   initialTime: endTime,
-                  helpText: 'Ora di fine',
+                  title: 'Ora di fine',
                 );
                 if (picked != null) {
                   setDialogState(() => endTime = picked);

@@ -3469,6 +3469,51 @@
   "mediaCutterGuidedMoveStartForwardOneSecond": "Sposta inizio taglio avanti di 1 secondo",
   "mediaCutterGuidedMoveEndBackOneSecond": "Sposta fine taglio indietro di 1 secondo",
   "mediaCutterGuidedMoveEndForwardOneSecond": "Sposta fine taglio avanti di 1 secondo",
+  "mediaCutterCutEditPrecisionLabel": "Precisione modifica taglio",
+  "mediaCutterCutEditPrecisionValue": "Precisione modifica taglio: {value}",
+  "@mediaCutterCutEditPrecisionValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterCutEditStepOneSecond": "1 secondo",
+  "mediaCutterCutEditStepHalfSecond": "0,5 secondi",
+  "mediaCutterCutEditStepQuarterSecond": "0,25 secondi",
+  "mediaCutterCutEditStepTenthSecond": "0,10 secondi",
+  "mediaCutterMoveStartBackBy": "Sposta inizio taglio indietro di {value}",
+  "@mediaCutterMoveStartBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveStartForwardBy": "Sposta inizio taglio avanti di {value}",
+  "@mediaCutterMoveStartForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndBackBy": "Sposta fine taglio indietro di {value}",
+  "@mediaCutterMoveEndBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndForwardBy": "Sposta fine taglio avanti di {value}",
+  "@mediaCutterMoveEndForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "mediaCutterGuidedCutAdjusted": "Taglio modificato da {start} a {end}.",
   "@mediaCutterGuidedCutAdjusted": {
     "placeholders": {

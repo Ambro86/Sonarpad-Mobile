@@ -5011,6 +5011,36 @@ abstract class AppLocalizations {
   /// No description provided for @mediaCutterGuidedMoveEndForwardOneSecond.
   String get mediaCutterGuidedMoveEndForwardOneSecond;
 
+  /// No description provided for @mediaCutterCutEditPrecisionLabel.
+  String get mediaCutterCutEditPrecisionLabel;
+
+  /// No description provided for @mediaCutterCutEditPrecisionValue.
+  String mediaCutterCutEditPrecisionValue(String value);
+
+  /// No description provided for @mediaCutterCutEditStepOneSecond.
+  String get mediaCutterCutEditStepOneSecond;
+
+  /// No description provided for @mediaCutterCutEditStepHalfSecond.
+  String get mediaCutterCutEditStepHalfSecond;
+
+  /// No description provided for @mediaCutterCutEditStepQuarterSecond.
+  String get mediaCutterCutEditStepQuarterSecond;
+
+  /// No description provided for @mediaCutterCutEditStepTenthSecond.
+  String get mediaCutterCutEditStepTenthSecond;
+
+  /// No description provided for @mediaCutterMoveStartBackBy.
+  String mediaCutterMoveStartBackBy(String value);
+
+  /// No description provided for @mediaCutterMoveStartForwardBy.
+  String mediaCutterMoveStartForwardBy(String value);
+
+  /// No description provided for @mediaCutterMoveEndBackBy.
+  String mediaCutterMoveEndBackBy(String value);
+
+  /// No description provided for @mediaCutterMoveEndForwardBy.
+  String mediaCutterMoveEndForwardBy(String value);
+
   /// No description provided for @mediaCutterGuidedCutAdjusted.
   String mediaCutterGuidedCutAdjusted(String start, String end);
 

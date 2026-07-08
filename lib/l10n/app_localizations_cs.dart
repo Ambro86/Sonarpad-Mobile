@@ -2760,6 +2760,46 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterGuidedMoveEndForwardOneSecond => 'Posunout konec střihu o 1 sekundu vpřed';
 
   @override
+  String get mediaCutterCutEditPrecisionLabel => 'Přesnost úpravy střihu';
+
+  @override
+  String get mediaCutterCutEditStepOneSecond => '1 sekunda';
+
+  @override
+  String get mediaCutterCutEditStepHalfSecond => '0,5 sekundy';
+
+  @override
+  String get mediaCutterCutEditStepQuarterSecond => '0,25 sekundy';
+
+  @override
+  String get mediaCutterCutEditStepTenthSecond => '0,10 sekundy';
+
+  @override
+  String mediaCutterCutEditPrecisionValue(String value) {
+    return 'Přesnost úpravy střihu: $value';
+  }
+
+  @override
+  String mediaCutterMoveStartBackBy(String value) {
+    return 'Posunout začátek střihu zpět o $value';
+  }
+
+  @override
+  String mediaCutterMoveStartForwardBy(String value) {
+    return 'Posunout začátek střihu vpřed o $value';
+  }
+
+  @override
+  String mediaCutterMoveEndBackBy(String value) {
+    return 'Posunout konec střihu zpět o $value';
+  }
+
+  @override
+  String mediaCutterMoveEndForwardBy(String value) {
+    return 'Posunout konec střihu vpřed o $value';
+  }
+
+  @override
   String mediaCutterGuidedCutAdjusted(String start, String end) {
     return 'Střih změněn od $start do $end.';
   }

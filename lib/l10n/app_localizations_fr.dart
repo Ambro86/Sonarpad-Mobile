@@ -2779,6 +2779,46 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mediaCutterGuidedMoveEndForwardOneSecond => 'Avancer la fin de la découpe de 1 seconde';
 
   @override
+  String get mediaCutterCutEditPrecisionLabel => 'Précision de modification de coupe';
+
+  @override
+  String get mediaCutterCutEditStepOneSecond => '1 seconde';
+
+  @override
+  String get mediaCutterCutEditStepHalfSecond => '0,5 seconde';
+
+  @override
+  String get mediaCutterCutEditStepQuarterSecond => '0,25 seconde';
+
+  @override
+  String get mediaCutterCutEditStepTenthSecond => '0,10 seconde';
+
+  @override
+  String mediaCutterCutEditPrecisionValue(String value) {
+    return 'Précision de modification de coupe : $value';
+  }
+
+  @override
+  String mediaCutterMoveStartBackBy(String value) {
+    return 'Reculer le début de la coupe de $value';
+  }
+
+  @override
+  String mediaCutterMoveStartForwardBy(String value) {
+    return 'Avancer le début de la coupe de $value';
+  }
+
+  @override
+  String mediaCutterMoveEndBackBy(String value) {
+    return 'Reculer la fin de la coupe de $value';
+  }
+
+  @override
+  String mediaCutterMoveEndForwardBy(String value) {
+    return 'Avancer la fin de la coupe de $value';
+  }
+
+  @override
   String mediaCutterGuidedCutAdjusted(String start, String end) {
     return 'Découpe modifiée de $start à $end.';
   }

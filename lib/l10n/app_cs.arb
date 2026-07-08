@@ -1294,6 +1294,51 @@
   "mediaCutterGuidedMoveStartForwardOneSecond": "Posunout začátek střihu o 1 sekundu vpřed",
   "mediaCutterGuidedMoveEndBackOneSecond": "Posunout konec střihu o 1 sekundu zpět",
   "mediaCutterGuidedMoveEndForwardOneSecond": "Posunout konec střihu o 1 sekundu vpřed",
+  "mediaCutterCutEditPrecisionLabel": "Přesnost úpravy střihu",
+  "mediaCutterCutEditPrecisionValue": "Přesnost úpravy střihu: {value}",
+  "@mediaCutterCutEditPrecisionValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterCutEditStepOneSecond": "1 sekunda",
+  "mediaCutterCutEditStepHalfSecond": "0,5 sekundy",
+  "mediaCutterCutEditStepQuarterSecond": "0,25 sekundy",
+  "mediaCutterCutEditStepTenthSecond": "0,10 sekundy",
+  "mediaCutterMoveStartBackBy": "Posunout začátek střihu zpět o {value}",
+  "@mediaCutterMoveStartBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveStartForwardBy": "Posunout začátek střihu vpřed o {value}",
+  "@mediaCutterMoveStartForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndBackBy": "Posunout konec střihu zpět o {value}",
+  "@mediaCutterMoveEndBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndForwardBy": "Posunout konec střihu vpřed o {value}",
+  "@mediaCutterMoveEndForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "mediaCutterGuidedCutAdjusted": "Střih změněn od {start} do {end}.",
   "@mediaCutterGuidedCutAdjusted": {
     "placeholders": {

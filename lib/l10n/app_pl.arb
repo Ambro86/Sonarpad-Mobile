@@ -3469,6 +3469,51 @@
   "mediaCutterGuidedMoveStartForwardOneSecond": "Przesuń początek cięcia o 1 sekundę do przodu",
   "mediaCutterGuidedMoveEndBackOneSecond": "Przesuń koniec cięcia o 1 sekundę wstecz",
   "mediaCutterGuidedMoveEndForwardOneSecond": "Przesuń koniec cięcia o 1 sekundę do przodu",
+  "mediaCutterCutEditPrecisionLabel": "Precyzja edycji cięcia",
+  "mediaCutterCutEditPrecisionValue": "Precyzja edycji cięcia: {value}",
+  "@mediaCutterCutEditPrecisionValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterCutEditStepOneSecond": "1 sekunda",
+  "mediaCutterCutEditStepHalfSecond": "0,5 sekundy",
+  "mediaCutterCutEditStepQuarterSecond": "0,25 sekundy",
+  "mediaCutterCutEditStepTenthSecond": "0,10 sekundy",
+  "mediaCutterMoveStartBackBy": "Przesuń początek cięcia wstecz o {value}",
+  "@mediaCutterMoveStartBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveStartForwardBy": "Przesuń początek cięcia do przodu o {value}",
+  "@mediaCutterMoveStartForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndBackBy": "Przesuń koniec cięcia wstecz o {value}",
+  "@mediaCutterMoveEndBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndForwardBy": "Przesuń koniec cięcia do przodu o {value}",
+  "@mediaCutterMoveEndForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "mediaCutterGuidedCutAdjusted": "Zmieniono cięcie od {start} do {end}.",
   "@mediaCutterGuidedCutAdjusted": {
     "placeholders": {
