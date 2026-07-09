@@ -396,6 +396,21 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         'effectAmount=${part.effectAmountPercent}%';
   }
 
+  String _logEffectSlots(List<_MediaPartEffect> slots) {
+    return slots
+        .asMap()
+        .entries
+        .map((entry) => 'slot${entry.key + 1}=${entry.value.name}')
+        .join(',');
+  }
+
+  int _visibleEffectSlots(List<_MediaPartEffect> slots) {
+    final firstEmptySlot = slots.indexWhere(
+      (item) => item == _MediaPartEffect.none,
+    );
+    return firstEmptySlot == -1 ? slots.length : firstEmptySlot + 1;
+  }
+
   void _logSeekRequest({
     required String source,
     required Duration requestedTimeline,
@@ -2150,40 +2165,37 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     required _MediaPartEffect value,
     required String label,
     required ValueChanged<_MediaPartEffect> onChanged,
+    VoidCallback? onOpen,
+    ValueChanged<_MediaPartEffect?>? onDialogClosed,
   }) {
     final selectedLabel = _effectLabel(l10n, value);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ExcludeSemantics(
-          child: Text(label, style: Theme.of(context).textTheme.labelLarge),
-        ),
-        const SizedBox(height: 6),
-        Semantics(
-          button: true,
-          label: selectedLabel,
-          hint: label,
-          child: ExcludeSemantics(
-            child: OutlinedButton(
-              onPressed: () async {
-                final selected = await _showEffectPickerDialog(
-                  l10n,
-                  title: label,
-                  current: value,
-                );
-                if (selected == null) return;
-                onChanged(selected);
-              },
-              child: Row(
-                children: [
-                  Expanded(child: Text(selectedLabel)),
-                  const Icon(Icons.arrow_drop_down),
-                ],
-              ),
-            ),
+    final buttonLabel = value == _MediaPartEffect.none
+        ? label
+        : '$label $selectedLabel';
+    return Semantics(
+      button: true,
+      label: buttonLabel,
+      child: ExcludeSemantics(
+        child: OutlinedButton(
+          onPressed: () async {
+            onOpen?.call();
+            final selected = await _showEffectPickerDialog(
+              l10n,
+              title: label,
+              current: value,
+            );
+            onDialogClosed?.call(selected);
+            if (selected == null) return;
+            onChanged(selected);
+          },
+          child: Row(
+            children: [
+              Expanded(child: Text(buttonLabel)),
+              const Icon(Icons.arrow_drop_down),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -2257,6 +2269,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       part.fourthEffect,
     ]);
     var effectAmountPercent = part.effectAmountPercent;
+    unawaited(_logMediaCutter(
+      'effects dialog opened index=$index applyToWholeFile=$applyToWholeFile '
+      'volume=$volumePercent% slots=${_logEffectSlots(effectSlots)} '
+      'visibleSlots=${_visibleEffectSlots(effectSlots)}',
+    ));
 
     final result = await showDialog<_PartEffectSettings>(
       context: context,
@@ -2301,57 +2318,60 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 const SizedBox(height: 12),
                 Builder(
                   builder: (context) {
-                    final activeCount = effectSlots
-                        .where((item) => item != _MediaPartEffect.none)
-                        .length;
-                    final visibleSlots = activeCount == 0 ? 1 : activeCount;
+                    final visibleSlots = _visibleEffectSlots(effectSlots);
                     final children = <Widget>[];
 
                     void setEffectSlot(int slot, _MediaPartEffect value) {
+                      final beforeSlots = [...effectSlots];
+                      final beforeValue = beforeSlots[slot];
                       final updated = [...effectSlots];
                       updated[slot] = value;
-                      // When the user edits an existing slot, keep that slot in place.
-                      // Only collapse empty holes if a slot is explicitly set to "none".
+                      // Slot fixed: tapping "Audio effect 1" always edits slot 1.
+                      // A new effect is created only by tapping the next empty slot.
                       effectSlots = value == _MediaPartEffect.none
                           ? _normalizedEffectSlots(updated)
                           : updated;
+                      final action = beforeValue == _MediaPartEffect.none
+                          ? (value == _MediaPartEffect.none ? 'empty_kept_empty' : 'created')
+                          : (value == _MediaPartEffect.none ? 'cleared' : 'modified');
+                      unawaited(_logMediaCutter(
+                        'effect slot changed action=$action slot=${slot + 1} '
+                        'from=${beforeValue.name} to=${value.name} '
+                        'beforeSlots=${_logEffectSlots(beforeSlots)} '
+                        'afterSlots=${_logEffectSlots(effectSlots)} '
+                        'beforeVisible=${_visibleEffectSlots(beforeSlots)} '
+                        'afterVisible=${_visibleEffectSlots(effectSlots)}',
+                      ));
                     }
 
                     for (var slot = 0; slot < visibleSlots; slot++) {
                       if (children.isNotEmpty) {
                         children.add(const SizedBox(height: 12));
                       }
+                      final fixedSlot = slot;
                       children.add(_buildEffectPicker(
                         l10n,
-                        value: effectSlots[slot],
-                        label: _effectSlotLabel(l10n, slot + 1),
+                        value: effectSlots[fixedSlot],
+                        label: _effectSlotLabel(l10n, fixedSlot + 1),
+                        onOpen: () => unawaited(_logMediaCutter(
+                          'effect slot picker opened slot=${fixedSlot + 1} '
+                          'current=${effectSlots[fixedSlot].name} '
+                          'visibleSlots=$visibleSlots '
+                          'slots=${_logEffectSlots(effectSlots)}',
+                        )),
+                        onDialogClosed: (selected) => unawaited(_logMediaCutter(
+                          selected == null
+                              ? 'effect slot picker cancelled slot=${fixedSlot + 1} '
+                                  'current=${effectSlots[fixedSlot].name} '
+                                  'slots=${_logEffectSlots(effectSlots)}'
+                              : 'effect slot picker selected slot=${fixedSlot + 1} '
+                                  'from=${effectSlots[fixedSlot].name} '
+                                  'to=${selected.name} '
+                                  'slotsBeforeApply=${_logEffectSlots(effectSlots)}',
+                        )),
                         onChanged: (value) => setDialogState(
-                          () => setEffectSlot(slot, value),
+                          () => setEffectSlot(fixedSlot, value),
                         ),
-                      ));
-                    }
-
-                    if (activeCount > 0 && activeCount < 4) {
-                      children.add(const SizedBox(height: 12));
-                      children.add(OutlinedButton.icon(
-                        onPressed: () async {
-                          final selected = await _showEffectPickerDialog(
-                            l10n,
-                            title: '${l10n.add} ${_effectSlotLabel(l10n, activeCount + 1)}',
-                            current: _MediaPartEffect.none,
-                          );
-                          if (!mounted || !dialogContext.mounted) return;
-                          if (selected == null || selected == _MediaPartEffect.none) {
-                            return;
-                          }
-                          setDialogState(() {
-                            final updated = [...effectSlots];
-                            updated[activeCount] = selected;
-                            effectSlots = updated;
-                          });
-                        },
-                        icon: const Icon(Icons.add),
-                        label: Text('${l10n.add} ${_effectSlotLabel(l10n, activeCount + 1)}'),
                       ));
                     }
 
@@ -2424,6 +2444,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           actions: [
             TextButton(
               onPressed: () {
+                unawaited(_logMediaCutter(
+                  'effects dialog cancelled index=$index applyToWholeFile=$applyToWholeFile '
+                  'slots=${_logEffectSlots(effectSlots)} '
+                  'visibleSlots=${_visibleEffectSlots(effectSlots)}',
+                ));
                 unawaited(_stopRenderedEffectsPreview());
                 Navigator.pop(dialogContext);
               },
@@ -2433,6 +2458,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               onPressed: () {
                 unawaited(_stopRenderedEffectsPreview());
                 final normalizedSlots = _normalizedEffectSlots(effectSlots);
+                unawaited(_logMediaCutter(
+                  'effects dialog confirmed index=$index applyToWholeFile=$applyToWholeFile '
+                  'rawSlots=${_logEffectSlots(effectSlots)} '
+                  'normalizedSlots=${_logEffectSlots(normalizedSlots)} '
+                  'visibleSlots=${_visibleEffectSlots(effectSlots)} '
+                  'volume=$volumePercent% amount=$effectAmountPercent%',
+                ));
                 Navigator.pop(
                   dialogContext,
                   _PartEffectSettings(
@@ -2452,7 +2484,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       ),
     );
 
-    if (result == null || !mounted) return;
+    if (result == null || !mounted) {
+      unawaited(_logMediaCutter(
+        'effects dialog closed without applying index=$index '
+        'applyToWholeFile=$applyToWholeFile resultNull=${result == null} '
+        'mounted=$mounted',
+      ));
+      return;
+    }
     setState(() {
       _parts = [
         for (var i = 0; i < _parts.length; i++)
