@@ -2162,9 +2162,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Widget _buildEffectPicker(
     AppLocalizations l10n, {
+    required int slotNumber,
     required _MediaPartEffect value,
     required String label,
     required ValueChanged<_MediaPartEffect> onChanged,
+    required String Function() debugSlotsSnapshot,
+    required int Function() debugVisibleSlotsSnapshot,
     VoidCallback? onOpen,
     ValueChanged<_MediaPartEffect?>? onDialogClosed,
   }) {
@@ -2173,17 +2176,33 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         ? label
         : '$label $selectedLabel';
     return Semantics(
+      key: ValueKey('media-cutter-effect-slot-$slotNumber'),
       button: true,
       label: buttonLabel,
       child: ExcludeSemantics(
         child: OutlinedButton(
           onPressed: () async {
+            unawaited(_logMediaCutter(
+              'effect slot button pressed slot=$slotNumber '
+              'title="$label" label="$buttonLabel" current=${value.name} '
+              'visibleSlots=${debugVisibleSlotsSnapshot()} '
+              'slots=${debugSlotsSnapshot()}',
+            ));
             onOpen?.call();
             final selected = await _showEffectPickerDialog(
               l10n,
               title: label,
               current: value,
             );
+            unawaited(_logMediaCutter(
+              selected == null
+                  ? 'effect slot dialog returned slot=$slotNumber selected=null '
+                      'title="$label" current=${value.name} '
+                      'slots=${debugSlotsSnapshot()}'
+                  : 'effect slot dialog returned slot=$slotNumber selected=${selected.name} '
+                      'title="$label" current=${value.name} '
+                      'slots=${debugSlotsSnapshot()}',
+            ));
             onDialogClosed?.call(selected);
             if (selected == null) return;
             onChanged(selected);
@@ -2349,28 +2368,35 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         children.add(const SizedBox(height: 12));
                       }
                       final fixedSlot = slot;
-                      children.add(_buildEffectPicker(
-                        l10n,
-                        value: effectSlots[fixedSlot],
-                        label: _effectSlotLabel(l10n, fixedSlot + 1),
-                        onOpen: () => unawaited(_logMediaCutter(
-                          'effect slot picker opened slot=${fixedSlot + 1} '
-                          'current=${effectSlots[fixedSlot].name} '
-                          'visibleSlots=$visibleSlots '
-                          'slots=${_logEffectSlots(effectSlots)}',
-                        )),
-                        onDialogClosed: (selected) => unawaited(_logMediaCutter(
-                          selected == null
-                              ? 'effect slot picker cancelled slot=${fixedSlot + 1} '
-                                  'current=${effectSlots[fixedSlot].name} '
-                                  'slots=${_logEffectSlots(effectSlots)}'
-                              : 'effect slot picker selected slot=${fixedSlot + 1} '
-                                  'from=${effectSlots[fixedSlot].name} '
-                                  'to=${selected.name} '
-                                  'slotsBeforeApply=${_logEffectSlots(effectSlots)}',
-                        )),
-                        onChanged: (value) => setDialogState(
-                          () => setEffectSlot(fixedSlot, value),
+                      final slotNumber = fixedSlot + 1;
+                      children.add(KeyedSubtree(
+                        key: ValueKey('media-cutter-effect-slot-wrapper-$slotNumber'),
+                        child: _buildEffectPicker(
+                          l10n,
+                          slotNumber: slotNumber,
+                          value: effectSlots[fixedSlot],
+                          label: _effectSlotLabel(l10n, slotNumber),
+                          debugSlotsSnapshot: () => _logEffectSlots(effectSlots),
+                          debugVisibleSlotsSnapshot: () => _visibleEffectSlots(effectSlots),
+                          onOpen: () => unawaited(_logMediaCutter(
+                            'effect slot picker opened slot=$slotNumber '
+                            'current=${effectSlots[fixedSlot].name} '
+                            'visibleSlots=${_visibleEffectSlots(effectSlots)} '
+                            'slots=${_logEffectSlots(effectSlots)}',
+                          )),
+                          onDialogClosed: (selected) => unawaited(_logMediaCutter(
+                            selected == null
+                                ? 'effect slot picker cancelled slot=$slotNumber '
+                                    'current=${effectSlots[fixedSlot].name} '
+                                    'slots=${_logEffectSlots(effectSlots)}'
+                                : 'effect slot picker selected slot=$slotNumber '
+                                    'from=${effectSlots[fixedSlot].name} '
+                                    'to=${selected.name} '
+                                    'slotsBeforeApply=${_logEffectSlots(effectSlots)}',
+                          )),
+                          onChanged: (value) => setDialogState(
+                            () => setEffectSlot(fixedSlot, value),
+                          ),
                         ),
                       ));
                     }
