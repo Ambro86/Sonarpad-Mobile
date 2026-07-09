@@ -2175,38 +2175,49 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final buttonLabel = value == _MediaPartEffect.none
         ? label
         : '$label $selectedLabel';
+
+    Future<void> activateSlot(String source) async {
+      unawaited(_logMediaCutter(
+        'effect slot activated source=$source slot=$slotNumber '
+        'title="$label" label="$buttonLabel" current=${value.name} '
+        'visibleSlots=${debugVisibleSlotsSnapshot()} '
+        'slots=${debugSlotsSnapshot()}',
+      ));
+      onOpen?.call();
+      final selected = await _showEffectPickerDialog(
+        l10n,
+        title: label,
+        current: value,
+      );
+      unawaited(_logMediaCutter(
+        selected == null
+            ? 'effect slot dialog returned slot=$slotNumber selected=null '
+                'title="$label" current=${value.name} '
+                'slots=${debugSlotsSnapshot()}'
+            : 'effect slot dialog returned slot=$slotNumber selected=${selected.name} '
+                'title="$label" current=${value.name} '
+                'slots=${debugSlotsSnapshot()}',
+      ));
+      onDialogClosed?.call(selected);
+      if (selected == null) return;
+      onChanged(selected);
+    }
+
+    // Important for VoiceOver: the semantics node itself owns the tap action.
+    // If only the visual OutlinedButton receives the tap, iOS can keep focus on
+    // the newly inserted empty slot after slot 1 is filled and then open slot 2
+    // even when the user is trying to re-open slot 1. Binding the semantics tap
+    // directly to this slot keeps title, selected value and saved slot aligned.
     return Semantics(
-      key: ValueKey('media-cutter-effect-slot-$slotNumber'),
+      key: ValueKey('media-cutter-effect-slot-semantics-$slotNumber'),
+      container: true,
       button: true,
       label: buttonLabel,
+      onTap: () => unawaited(activateSlot('semantics')),
       child: ExcludeSemantics(
         child: OutlinedButton(
-          onPressed: () async {
-            unawaited(_logMediaCutter(
-              'effect slot button pressed slot=$slotNumber '
-              'title="$label" label="$buttonLabel" current=${value.name} '
-              'visibleSlots=${debugVisibleSlotsSnapshot()} '
-              'slots=${debugSlotsSnapshot()}',
-            ));
-            onOpen?.call();
-            final selected = await _showEffectPickerDialog(
-              l10n,
-              title: label,
-              current: value,
-            );
-            unawaited(_logMediaCutter(
-              selected == null
-                  ? 'effect slot dialog returned slot=$slotNumber selected=null '
-                      'title="$label" current=${value.name} '
-                      'slots=${debugSlotsSnapshot()}'
-                  : 'effect slot dialog returned slot=$slotNumber selected=${selected.name} '
-                      'title="$label" current=${value.name} '
-                      'slots=${debugSlotsSnapshot()}',
-            ));
-            onDialogClosed?.call(selected);
-            if (selected == null) return;
-            onChanged(selected);
-          },
+          key: ValueKey('media-cutter-effect-slot-button-$slotNumber'),
+          onPressed: () => unawaited(activateSlot('button')),
           child: Row(
             children: [
               Expanded(child: Text(buttonLabel)),
