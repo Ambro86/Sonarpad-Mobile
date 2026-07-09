@@ -626,7 +626,10 @@ class RaiPlayService {
       final xmlUrl = '$url${sep}output=45&pl=native';
       await AppLogger.log('RaiPlayService: Interrogo il relinker XML: $xmlUrl');
       try {
-        final resp = await http.get(Uri.parse(xmlUrl));
+        final resp = await http.get(Uri.parse(xmlUrl), headers: {
+          'Origin': 'https://www.raiplay.it',
+          'Referer': 'https://www.raiplay.it/',
+        });
         if (resp.statusCode == 200) {
           final body = resp.body;
           final match = RegExp(r'<url[^>]*type="content"[^>]*>([^<]+)</url>')

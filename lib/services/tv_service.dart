@@ -655,7 +655,11 @@ class TvService {
 
       final response = await http.get(
         Uri.parse(reqUrl),
-        headers: {'User-Agent': channel.playbackUserAgent},
+        headers: {
+          'User-Agent': channel.playbackUserAgent,
+          'Origin': 'https://www.raiplay.it',
+          'Referer': 'https://www.raiplay.it/',
+        },
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
