@@ -4667,7 +4667,7 @@ abstract class AppLocalizations {
   /// No description provided for @mediaCutterPartTapHint.
   ///
   /// In it, this message translates to:
-  /// **'Tocca due volte per ascoltare questa parte. Usa le azioni Elimina o Regola effetti.'**
+  /// **'Tocca due volte per ascoltare questa parte. Usa le azioni Modifica parte, Elimina o Regola effetti.'**
   String get mediaCutterPartTapHint;
 
   /// Status shown after a media part is deleted
@@ -4689,12 +4689,21 @@ abstract class AppLocalizations {
   String get mediaCutterPartEffectsAction;
 
   /// No description provided for @mediaCutterPartEditAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica parte'**
   String get mediaCutterPartEditAction;
 
   /// No description provided for @mediaCutterPartEditDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta di 1 secondo l’inizio o la fine della parte, poi ascolta la parte modificata.'**
   String get mediaCutterPartEditDescription;
 
   /// No description provided for @mediaCutterPartAdjusted.
+  ///
+  /// In it, this message translates to:
+  /// **'Parte modificata da {start} a {end}.'**
   String mediaCutterPartAdjusted(String start, String end);
 
   /// No description provided for @mediaCutterPartEffectsTitle.
@@ -4835,6 +4844,12 @@ abstract class AppLocalizations {
   /// **'Voce robot'**
   String get mediaCutterPartEffectRobot;
 
+  /// No description provided for @mediaCutterPartEffectSuperRobot.
+  ///
+  /// In it, this message translates to:
+  /// **'Super robot'**
+  String get mediaCutterPartEffectSuperRobot;
+
   /// No description provided for @mediaCutterPartEffectHelicopter.
   ///
   /// In it, this message translates to:
@@ -4967,117 +4982,226 @@ abstract class AppLocalizations {
   /// **'Volume {percent}%, effetto {effect}'**
   String mediaCutterPartEffectsSummary(int percent, String effect);
 
-
-
   /// No description provided for @mediaCutterGuidedModeTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Taglio guidato'**
   String get mediaCutterGuidedModeTitle;
 
   /// No description provided for @mediaCutterGuidedModeDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Adatto per chi comincia. È sufficiente selezionare un punto iniziale e un punto finale, ascoltare il taglio e poi applicarlo.'**
   String get mediaCutterGuidedModeDescription;
 
   /// No description provided for @mediaCutterAdvancedModeTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Taglio avanzato'**
   String get mediaCutterAdvancedModeTitle;
 
   /// No description provided for @mediaCutterAdvancedModeDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Ispirato ai programmi di manipolazione media più famosi, permette di dividere un file media in diverse parti ed eliminare le parti non volute.'**
   String get mediaCutterAdvancedModeDescription;
 
   /// No description provided for @mediaCutterChangeCutMode.
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia tipo di taglio'**
   String get mediaCutterChangeCutMode;
 
   /// No description provided for @mediaCutterGuidedSetStart.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizio taglio'**
   String get mediaCutterGuidedSetStart;
 
   /// No description provided for @mediaCutterGuidedSetEnd.
+  ///
+  /// In it, this message translates to:
+  /// **'Fine taglio'**
   String get mediaCutterGuidedSetEnd;
 
   /// No description provided for @mediaCutterGuidedApplyCut.
+  ///
+  /// In it, this message translates to:
+  /// **'Applica taglio'**
   String get mediaCutterGuidedApplyCut;
 
   /// No description provided for @mediaCutterGuidedListenCut.
+  ///
+  /// In it, this message translates to:
+  /// **'Ascolta taglio'**
   String get mediaCutterGuidedListenCut;
 
   /// No description provided for @mediaCutterGuidedModifyCut.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica taglio'**
   String get mediaCutterGuidedModifyCut;
 
   /// No description provided for @mediaCutterGuidedMoveStartBackOneSecond.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta inizio taglio indietro di 1 secondo'**
   String get mediaCutterGuidedMoveStartBackOneSecond;
 
   /// No description provided for @mediaCutterGuidedMoveStartForwardOneSecond.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta inizio taglio avanti di 1 secondo'**
   String get mediaCutterGuidedMoveStartForwardOneSecond;
 
   /// No description provided for @mediaCutterGuidedMoveEndBackOneSecond.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta fine taglio indietro di 1 secondo'**
   String get mediaCutterGuidedMoveEndBackOneSecond;
 
   /// No description provided for @mediaCutterGuidedMoveEndForwardOneSecond.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta fine taglio avanti di 1 secondo'**
   String get mediaCutterGuidedMoveEndForwardOneSecond;
 
   /// No description provided for @mediaCutterCutEditPrecisionLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Precisione modifica taglio'**
   String get mediaCutterCutEditPrecisionLabel;
 
   /// No description provided for @mediaCutterCutEditPrecisionValue.
+  ///
+  /// In it, this message translates to:
+  /// **'Precisione modifica taglio: {value}'**
   String mediaCutterCutEditPrecisionValue(String value);
 
   /// No description provided for @mediaCutterCutEditStepOneSecond.
+  ///
+  /// In it, this message translates to:
+  /// **'1 secondo'**
   String get mediaCutterCutEditStepOneSecond;
 
   /// No description provided for @mediaCutterCutEditStepHalfSecond.
+  ///
+  /// In it, this message translates to:
+  /// **'0,5 secondi'**
   String get mediaCutterCutEditStepHalfSecond;
 
   /// No description provided for @mediaCutterCutEditStepQuarterSecond.
+  ///
+  /// In it, this message translates to:
+  /// **'0,25 secondi'**
   String get mediaCutterCutEditStepQuarterSecond;
 
   /// No description provided for @mediaCutterCutEditStepTenthSecond.
+  ///
+  /// In it, this message translates to:
+  /// **'0,10 secondi'**
   String get mediaCutterCutEditStepTenthSecond;
 
   /// No description provided for @mediaCutterMoveStartBackBy.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta inizio taglio indietro di {value}'**
   String mediaCutterMoveStartBackBy(String value);
 
   /// No description provided for @mediaCutterMoveStartForwardBy.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta inizio taglio avanti di {value}'**
   String mediaCutterMoveStartForwardBy(String value);
 
   /// No description provided for @mediaCutterMoveEndBackBy.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta fine taglio indietro di {value}'**
   String mediaCutterMoveEndBackBy(String value);
 
   /// No description provided for @mediaCutterMoveEndForwardBy.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta fine taglio avanti di {value}'**
   String mediaCutterMoveEndForwardBy(String value);
 
   /// No description provided for @mediaCutterGuidedCutAdjusted.
+  ///
+  /// In it, this message translates to:
+  /// **'Taglio modificato da {start} a {end}.'**
   String mediaCutterGuidedCutAdjusted(String start, String end);
 
   /// No description provided for @mediaCutterGuidedNoCut.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun taglio'**
   String get mediaCutterGuidedNoCut;
 
   /// No description provided for @mediaCutterGuidedEffectsAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Regola effetti del file'**
   String get mediaCutterGuidedEffectsAction;
 
   /// No description provided for @mediaCutterGuidedEffectsDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Regola volume ed effetti per tutto il file risultante.'**
   String get mediaCutterGuidedEffectsDescription;
 
   /// No description provided for @mediaCutterGuidedFileTapHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca due volte per riprodurre il file risultante. Usa l’azione Regola effetti del file per applicare effetti a tutto il file.'**
   String get mediaCutterGuidedFileTapHint;
 
   /// No description provided for @mediaCutterGuidedStartSet.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizio taglio impostato a {start}.'**
   String mediaCutterGuidedStartSet(String start);
 
   /// No description provided for @mediaCutterGuidedEndSet.
+  ///
+  /// In it, this message translates to:
+  /// **'Fine taglio impostata a {end}. Taglio da {start} a {end}.'**
   String mediaCutterGuidedEndSet(String start, String end);
 
   /// No description provided for @mediaCutterGuidedCutApplied.
+  ///
+  /// In it, this message translates to:
+  /// **'Taglio applicato da {start} a {end}.'**
   String mediaCutterGuidedCutApplied(String start, String end);
 
   /// No description provided for @mediaCutterGuidedNeedStartEnd.
+  ///
+  /// In it, this message translates to:
+  /// **'Imposta prima inizio e fine taglio.'**
   String get mediaCutterGuidedNeedStartEnd;
 
   /// No description provided for @mediaCutterGuidedCutSummary.
+  ///
+  /// In it, this message translates to:
+  /// **'Taglio da {start} a {end}'**
   String mediaCutterGuidedCutSummary(String start, String end);
 
   /// No description provided for @mediaCutterGuidedMultipleCutSummary.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} tagli: {cuts}'**
   String mediaCutterGuidedMultipleCutSummary(int count, String cuts);
 
   /// No description provided for @mediaCutterGuidedPendingCutExitMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai un taglio guidato non applicato. Vuoi uscire senza conservarlo?'**
   String get mediaCutterGuidedPendingCutExitMessage;
 
   /// No description provided for @mediaCutterSplitAddedAnnouncement.
+  ///
+  /// In it, this message translates to:
+  /// **'Divisione aggiunta. Parte {partNumber} aggiunta.'**
   String mediaCutterSplitAddedAnnouncement(int partNumber);
 
   /// Localized text for newsAddCommunitySource.

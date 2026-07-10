@@ -52,6 +52,7 @@ enum _MediaPartEffect {
   pitchHigh,
   pitchVeryHigh,
   robot,
+  superRobot,
   helicopter,
   alien,
   brightVoice,
@@ -282,6 +283,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool _skippingDeletedPart = false;
   bool _hasUnsavedEdit = false;
   bool _effectPreviewPreparing = false;
+  Future<String>? _underwaterBubblesSourcePath;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   Duration _mediaSeekStep = const Duration(seconds: 5);
@@ -342,6 +344,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (Platform.isIOS) {
       unawaited(_clearMagicTap());
     }
+    unawaited(_deleteUnderwaterBubblesCache());
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     _audioPositionSubscription?.cancel();
     _audioDurationSubscription?.cancel();
@@ -356,6 +359,39 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _logMediaCutter(String message) async {
     await AppLogger.log('Media cutter: $message');
+  }
+
+  Future<void> _deleteUnderwaterBubblesCache() async {
+    final sourcePath = _underwaterBubblesSourcePath;
+    if (sourcePath == null) return;
+    try {
+      final file = File(await sourcePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (_) {
+      // Cache cleanup is best-effort.
+    }
+  }
+
+  Future<String> _ensureUnderwaterBubblesSourcePath() {
+    final cached = _underwaterBubblesSourcePath;
+    if (cached != null) return cached;
+    _underwaterBubblesSourcePath = _buildUnderwaterBubblesSourcePath();
+    return _underwaterBubblesSourcePath!;
+  }
+
+  Future<String> _buildUnderwaterBubblesSourcePath() async {
+    final tempRoot = await getTemporaryDirectory();
+    final file = File(p.join(tempRoot.path, 'sonarpad_underwater_bubbles.mp3'));
+    if (!await file.exists()) {
+      final data = await rootBundle.load('assets/audio/underwater_bubbles.mp3');
+      await file.writeAsBytes(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+        flush: true,
+      );
+    }
+    return file.path;
   }
 
   String _logDuration(Duration duration) => _formatTime(duration);
@@ -983,8 +1019,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       fourthEffect: fourthEffect,
       effectAmountPercent: effectAmountPercent,
     );
-    final filter = _audioFilterForPart(previewPart);
     final activeEffects = _activeEffects(previewPart);
+    final usesUnderwaterBubbles =
+        activeEffects.contains(_MediaPartEffect.underwater);
+    final String? filter = usesUnderwaterBubbles
+        ? _underwaterAudioFilterForPart(previewPart)
+        : _audioFilterForPart(previewPart);
     if (filter == null) {
       if (!_isVideo && _usingRenderedPreviewSource) {
         await _restoreOriginalAudioSource(seekTo: previewStart);
@@ -1009,7 +1049,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (!_isVideo && _usingRenderedPreviewSource) {
         await _restoreOriginalAudioSource(seekTo: previewStart);
       }
-      final args = [
+      final String audioFilter = filter;
+      final args = <String>[
         '-y',
         '-ss',
         _ffmpegTime(previewStart),
@@ -1017,19 +1058,36 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _inputPath,
         '-t',
         _ffmpegTime(previewDuration),
-        '-map',
-        '0:a:0?',
-        '-vn',
-        '-sn',
-        '-dn',
-        '-filter:a',
-        filter,
         '-c:a',
         'aac',
         '-b:a',
         '160k',
         previewFile.path,
       ];
+      if (usesUnderwaterBubbles) {
+        args.insertAll(5, [
+          '-stream_loop',
+          '-1',
+          '-i',
+          await _ensureUnderwaterBubblesSourcePath(),
+        ]);
+        args.insertAll(8, [
+          '-filter_complex',
+          audioFilter,
+          '-map',
+          '[outa]',
+        ]);
+      } else {
+        args.insertAll(8, [
+          '-map',
+          '0:a:0?',
+          '-vn',
+          '-sn',
+          '-dn',
+          '-filter:a',
+          audioFilter,
+        ]);
+      }
       await AppLogger.log(
         'Media cutter preview effects: start=${_ffmpegTime(previewStart)} '
         'duration=${_ffmpegTime(previewDuration)} '
@@ -2773,39 +2831,73 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           workDir.path,
           'segment_${i.toString().padLeft(3, '0')}$ext',
         );
-        final args = [
+        final activeEffects = _activeEffects(part);
+        final usesUnderwaterBubbles =
+            activeEffects.contains(_MediaPartEffect.underwater);
+        final String? filter = usesUnderwaterBubbles
+            ? _underwaterAudioFilterForPart(part)
+            : _audioFilterForPart(part);
+        final String? audioFilter = filter;
+        final args = <String>[
           '-y',
           '-ss',
           _ffmpegTime(part.start),
           '-i',
           input,
+        ];
+        if (usesUnderwaterBubbles) {
+          args.addAll([
+            '-stream_loop',
+            '-1',
+            '-i',
+            await _ensureUnderwaterBubblesSourcePath(),
+          ]);
+        }
+        args.addAll([
           '-t',
           _ffmpegTime(part.duration),
-          if (_isVideoInput(input)) ...[
+        ]);
+        if (_isVideoInput(input)) {
+          args.addAll([
             '-map',
             '0:v:0?',
+          ]);
+        }
+        if (usesUnderwaterBubbles) {
+          args.addAll([
+            '-filter_complex',
+            audioFilter!,
             '-map',
-            '0:a:0?',
-          ] else ...[
+            '[outa]',
+          ]);
+        } else {
+          args.addAll([
             '-map',
             '0:a:0?',
             '-vn',
-          ],
-          '-sn',
-          '-dn',
-          if (_audioFilterForPart(part) != null) ...[
-            '-filter:a',
-            _audioFilterForPart(part)!,
-          ],
-          if (_videoFilter() != null) ...[
+            '-sn',
+            '-dn',
+          ]);
+          if (audioFilter != null) {
+            args.addAll([
+              '-filter:a',
+              audioFilter,
+            ]);
+          }
+        }
+        final videoFilter = _videoFilter();
+        if (videoFilter != null) {
+          args.addAll([
             '-filter:v',
-            _videoFilter()!,
-          ],
+            videoFilter,
+          ]);
+        }
+        args.addAll([
           ..._codecArguments(input),
           '-avoid_negative_ts',
           'make_zero',
           segment,
-        ];
+        ]);
         await _runFfmpeg(
           args,
           'segment ${i + 1}/${keptParts.length}',
@@ -3281,7 +3373,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
-  String? _audioFilterForPart(_MediaPart part) {
+  String? _audioFilterForPart(
+    _MediaPart part, {
+    Set<_MediaPartEffect> skipEffects = const {},
+  }) {
     final filters = <String>[];
     if (part.volumePercent != 100) {
       filters.add('volume=${part.volumeFactor.toStringAsFixed(3)}');
@@ -3289,12 +3384,36 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
     final amount = part.effectAmountPercent.clamp(0, 100) / 100.0;
     for (final effect in _activeEffects(part)) {
+      if (skipEffects.contains(effect)) continue;
       final filter = _audioFilterForEffect(effect, part, amount);
       if (filter != null) filters.add(filter);
     }
 
     if (filters.isEmpty) return null;
     return filters.join(',');
+  }
+
+  String? _underwaterAudioFilterForPart(_MediaPart part) {
+    final baseFilter = _audioFilterForPart(
+      part,
+      skipEffects: {_MediaPartEffect.underwater},
+    );
+    final amount = part.effectAmountPercent.clamp(0, 100) / 100.0;
+    final lowpass = (1300 - 650 * amount).round().clamp(550, 1300);
+    final delay1 = (50 + 50 * amount).round();
+    final delay2 = (110 + 70 * amount).round();
+    final decay1 = (0.12 + 0.12 * amount).toStringAsFixed(2);
+    final decay2 = (0.08 + 0.10 * amount).toStringAsFixed(2);
+    final voiceFilter = [
+      if (baseFilter != null && baseFilter.isNotEmpty) baseFilter,
+      'lowpass=f=$lowpass',
+      'aecho=0.75:0.55:$delay1|$delay2:$decay1|$decay2',
+    ].join(',');
+    return '[0:a:0]$voiceFilter[uwVoice];'
+        '[1:a:0]aresample=44100,highpass=f=55,lowpass=f=7000,volume=0.10[uwBubbles];'
+        '[uwVoice][uwBubbles]amix=inputs=2:normalize=0:duration=first,'
+        'acompressor=threshold=-18dB:ratio=2.5:attack=6:release=140,'
+        'alimiter=limit=0.90[outa]';
   }
 
   List<_MediaPartEffect> _activeEffects(_MediaPart part) {
@@ -3334,16 +3453,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return 'aecho=0.82:0.92:$delay1|$delay2|$delay3:'
             '$decay1|$decay2|$decay3';
       case _MediaPartEffect.echoCathedral:
-        final delay1 = (240 + 220 * amount).round();
-        final delay2 = (520 + 360 * amount).round();
-        final delay3 = (850 + 520 * amount).round();
-        final delay4 = (1200 + 700 * amount).round();
-        final decay1 = (0.30 + 0.30 * amount).toStringAsFixed(2);
-        final decay2 = (0.24 + 0.30 * amount).toStringAsFixed(2);
-        final decay3 = (0.18 + 0.28 * amount).toStringAsFixed(2);
-        final decay4 = (0.12 + 0.22 * amount).toStringAsFixed(2);
-        return 'aecho=0.78:0.96:$delay1|$delay2|$delay3|$delay4:'
-            '$decay1|$decay2|$decay3|$decay4';
+        return 'aresample=44100,asplit=2[cat2Dry][cat2Wet];'
+            "aevalsrc=exprs='if(eq(n,0),1,(2*random(0)-1)*0.24*"
+            "exp(-t/1.85))':s=44100:d=4.8:c=mono,"
+            'highpass=f=80,lowpass=f=7200[cat2IR];'
+            '[cat2Wet]adelay=58:all=1,'
+            'aecho=0.86:0.66:65|138|245:0.38|0.28|0.20[cat2Pre];'
+            '[cat2Pre][cat2IR]afir=dry=0:wet=1:length=1:irnorm=0.65:'
+            'irfmt=mono:maxir=6,highpass=f=90,lowpass=f=7600,'
+            'stereowiden=delay=25:feedback=0.16:crossfeed=0.16:drymix=0.82,'
+            'volume=1.18[cat2Verb];'
+            '[cat2Dry]volume=0.52[cat2Voice];'
+            '[cat2Voice][cat2Verb]amix=inputs=2:normalize=0,'
+            'aecho=0.82:0.78:420|840|1260:0.30|0.22|0.14,'
+            'equalizer=f=2400:t=q:w=1.2:g=1.5,'
+            'acompressor=threshold=-19dB:ratio=3:attack=8:release=220,'
+            'alimiter=limit=0.88';
       case _MediaPartEffect.largeRoom:
         final delay1 = (65 + 40 * amount).round();
         final delay2 = (125 + 70 * amount).round();
@@ -3412,16 +3537,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return 'aecho=0.85:0.95:$delay1|$delay2|$delay3:'
             '$decay1|$decay2|$decay3';
       case _MediaPartEffect.chorus:
-        final delay1 = (35 + 20 * amount).round();
-        final delay2 = (55 + 30 * amount).round();
-        final decay1 = (0.22 + 0.18 * amount).toStringAsFixed(2);
-        final decay2 = (0.18 + 0.16 * amount).toStringAsFixed(2);
-        final speed1 = (0.22 + 0.18 * amount).toStringAsFixed(2);
-        final speed2 = (0.35 + 0.22 * amount).toStringAsFixed(2);
-        final depth1 = (1.5 + 1.4 * amount).toStringAsFixed(2);
-        final depth2 = (1.9 + 1.7 * amount).toStringAsFixed(2);
-        return 'chorus=0.75:0.88:$delay1|$delay2:$decay1|$decay2:'
-            '$speed1|$speed2:$depth1|$depth2';
+        return 'aresample=44100,asplit=4[center][high][low][double];'
+            '[center]volume=0.95[c];'
+            '[high]asetrate=44100*1.260,aresample=44100,atempo=0.793651,'
+            'adelay=12:all=1,pan=stereo|FL=0.20*FL|FR=0.85*FR,'
+            'volume=0.58[h];'
+            '[low]asetrate=44100*0.841,aresample=44100,atempo=1.189061,'
+            'adelay=20:all=1,pan=stereo|FL=0.85*FL|FR=0.20*FR,'
+            'volume=0.52[l];'
+            '[double]asetrate=44100*1.018,aresample=44100,'
+            'atempo=0.982318,adelay=32:all=1,volume=0.38[d];'
+            '[c][h][l][d]amix=inputs=4:normalize=0,'
+            'chorus=0.72:0.68:16|29|44:0.36|0.29|0.23:'
+            '0.25|0.43|0.62:2.8|3.8|4.8,'
+            'highpass=f=90,equalizer=f=2800:t=q:w=1.2:g=2,'
+            'acompressor=threshold=-18dB:ratio=3:attack=8:release=140,'
+            'alimiter=limit=0.88';
       case _MediaPartEffect.pitchLow:
         return _pitchFilter(0.85);
       case _MediaPartEffect.pitchVeryLow:
@@ -3431,19 +3562,48 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       case _MediaPartEffect.pitchVeryHigh:
         return _pitchFilter(1.30);
       case _MediaPartEffect.robot:
-        final bits = (10 - 5 * amount).round().clamp(5, 10);
-        return 'highpass=f=300,lowpass=f=3000,'
-            'acrusher=level_in=1:level_out=1:bits=$bits:mode=log:aa=1';
+        return 'highpass=f=100,lowpass=f=8500,'
+            "afftfilt=real='hypot(re,im)':imag='0':"
+            'win_size=512:win_func=hann:overlap=0.75,'
+            'equalizer=f=2400:t=q:w=1.4:g=2.5,'
+            'acompressor=threshold=-14dB:ratio=2.2:attack=8:release=100,'
+            'alimiter=limit=0.92';
+      case _MediaPartEffect.superRobot:
+        return 'highpass=f=100,lowpass=f=9000,'
+            "afftfilt=real='hypot(re,im)*(0.18+0.82*"
+            "pow(abs(cos(PI*b*sr/(2*nb*110))),10))':imag='0':"
+            'win_size=1024:win_func=hann:overlap=0.80,'
+            'equalizer=f=1800:t=q:w=1.2:g=4,'
+            'equalizer=f=4200:t=q:w=1.0:g=3,'
+            'chorus=0.76:0.64:8|14:0.22|0.16:0.32|0.48:1.4|2.0,'
+            'acompressor=threshold=-18dB:ratio=3.5:attack=4:release=90:'
+            'makeup=1.25,alimiter=limit=0.90';
       case _MediaPartEffect.helicopter:
         final frequency = (6 + 12 * amount).toStringAsFixed(2);
         final depth = (0.45 + 0.50 * amount).toStringAsFixed(2);
         return 'tremolo=f=$frequency:d=$depth';
       case _MediaPartEffect.alien:
-        final frequency = (4 + 7 * amount).toStringAsFixed(2);
-        final depth = (0.35 + 0.55 * amount).toStringAsFixed(2);
-        return '${_pitchFilter(1.08 + 0.12 * amount)},'
-            'tremolo=f=$frequency:d=$depth,'
-            'chorus=0.62:0.78:35|58:0.18|0.14:0.28|0.42:1.8|2.4';
+        return 'aresample=44100,'
+            'asplit=3[alienWarlord][alienClear][alienSignal];'
+            '[alienWarlord]asetrate=44100*0.820,aresample=44100,'
+            'atempo=1.219512,'
+            "afftfilt=real='hypot(re,im)*(0.30+0.70*"
+            "pow(abs(cos(PI*b*sr/(2*nb*95))),8))':imag='0':"
+            'win_size=768:win_func=hann:overlap=0.80,'
+            'equalizer=f=380:t=q:w=1.1:g=4,volume=0.82[alienW];'
+            '[alienClear]asetrate=44100*0.880,aresample=44100,'
+            'atempo=1.136364,highpass=f=100,lowpass=f=6500,'
+            'equalizer=f=2600:t=q:w=1.2:g=3,volume=0.34[alienC];'
+            '[alienSignal]asetrate=44100*1.180,aresample=44100,'
+            'atempo=0.847458,highpass=f=900,tremolo=f=7.2:d=0.42,'
+            'adelay=24:all=1,volume=0.20[alienS];'
+            '[alienW][alienC][alienS]amix=inputs=3:normalize=0,'
+            'flanger=delay=2.5:depth=3.8:regen=16:width=62:speed=0.22:'
+            'shape=sinusoidal:phase=45:interp=quadratic,'
+            'aecho=0.86:0.55:95|185:0.17|0.09,'
+            'equalizer=f=2100:t=q:w=1.0:g=3,'
+            'acompressor=threshold=-18dB:ratio=3.2:attack=5:release=110,'
+            'alimiter=limit=0.88';
       case _MediaPartEffect.brightVoice:
         final gain = (3 + 6 * amount).toStringAsFixed(2);
         return 'equalizer=f=3500:t=q:w=1.0:g=$gain,highpass=f=120';
@@ -3451,30 +3611,73 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         final gain = (3 + 6 * amount).toStringAsFixed(2);
         return 'equalizer=f=180:t=q:w=1.0:g=$gain,lowpass=f=4200';
       case _MediaPartEffect.ghost:
-        final delay1 = (500 + 360 * amount).round();
-        final delay2 = (900 + 520 * amount).round();
-        final decay1 = (0.34 + 0.20 * amount).toStringAsFixed(2);
-        final decay2 = (0.20 + 0.16 * amount).toStringAsFixed(2);
-        final tremoloFrequency = (3.8 + 2.6 * amount).toStringAsFixed(2);
-        final tremoloDepth = (0.22 + 0.28 * amount).toStringAsFixed(2);
-        return 'aecho=0.70:0.95:$delay1|$delay2:$decay1|$decay2,'
-            'tremolo=f=$tremoloFrequency:d=$tremoloDepth,volume=0.92';
+        return 'aresample=44100,asplit=3[spirit][air][shadow];'
+            '[spirit]asetrate=44100*0.930,aresample=44100,'
+            'atempo=1.075269,'
+            "afftfilt=real='hypot(re,im)':imag='0':"
+            'win_size=1024:win_func=hann:overlap=0.80,volume=0.82[s];'
+            '[air]highpass=f=1700,lowpass=f=7800,tremolo=f=5.2:d=0.32,'
+            'adelay=95:all=1,volume=0.38[a];'
+            '[shadow]asetrate=44100*0.780,aresample=44100,'
+            'atempo=1.282051,lowpass=f=2400,adelay=190:all=1,'
+            'volume=0.34[g];'
+            '[s][a][g]amix=inputs=3:normalize=0,'
+            'aecho=0.72:0.82:360|760:0.34|0.20,'
+            'tremolo=f=3.6:d=0.14,equalizer=f=420:t=q:w=1.1:g=3,'
+            'acompressor=threshold=-18dB:ratio=2.8:attack=8:release=150,'
+            'alimiter=limit=0.88';
       case _MediaPartEffect.telephone:
-        final ratio = (2.2 + 2.4 * amount).toStringAsFixed(2);
-        return 'highpass=f=300,lowpass=f=3400,'
-            'acompressor=threshold=-18dB:ratio=$ratio:attack=5:release=80';
+        return 'highpass=f=320:p=2,lowpass=f=3400:p=2,'
+            'equalizer=f=850:t=q:w=1.1:g=5,'
+            'equalizer=f=2100:t=q:w=1.0:g=4.5,'
+            'acompressor=threshold=-20dB:ratio=5:attack=3:release=70:'
+            'makeup=1.4,volume=1.35,'
+            'asoftclip=type=tanh:threshold=0.82:output=0.82,'
+            'alimiter=limit=0.90';
       case _MediaPartEffect.oldRadio:
-        final bits = (10 - 4 * amount).round().clamp(6, 10);
-        final ratio = (2.5 + 2.5 * amount).toStringAsFixed(2);
-        return 'highpass=f=250,lowpass=f=3200,'
-            'acrusher=level_in=1:level_out=1:bits=$bits:mode=log:aa=1,'
-            'acompressor=threshold=-20dB:ratio=$ratio:attack=5:release=120';
+        return 'aresample=44100,pan=mono|c0=0.5*c0+0.5*c1,'
+            'asplit=2[radio4Voice][radio4Body];'
+            'anoisesrc=color=pink:amplitude=0.024:r=44100[radio4Noise];'
+            "aevalsrc=exprs='if(gt(random(0),0.99970),"
+            "0.22*(2*random(1)-1),0)':s=44100:c=mono[radio4Crackle];"
+            '[radio4Voice]highpass=f=260:p=2,lowpass=f=3300:p=2,'
+            'equalizer=f=900:t=q:w=0.9:g=7,'
+            'equalizer=f=2200:t=q:w=1.0:g=4,'
+            'acompressor=threshold=-28dB:ratio=7:attack=2:release=75:'
+            'makeup=2.6,vibrato=f=4.4:d=0.055,volume=3.0,'
+            'asoftclip=type=atan:threshold=0.58:output=0.66:oversample=4,'
+            'volume=0.82[radio4V];'
+            '[radio4Body]highpass=f=320,lowpass=f=3000,'
+            'acrusher=bits=6:mix=0.62:mode=lin:aa=0.52:samples=2,'
+            'volume=0.38[radio4B];'
+            '[radio4Noise]highpass=f=380,lowpass=f=4800,'
+            'tremolo=f=6.8:d=0.48,volume=0.72[radio4N];'
+            '[radio4Crackle]highpass=f=700,lowpass=f=6500,'
+            'volume=0.50[radio4K];'
+            '[radio4V][radio4B][radio4N][radio4K]'
+            'amix=inputs=4:normalize=0:duration=first,'
+            'tremolo=f=0.75:d=0.08,'
+            'acompressor=threshold=-20dB:ratio=3.2:attack=3:release=100,'
+            'alimiter=limit=0.84,pan=stereo|FL=c0|FR=c0';
       case _MediaPartEffect.megaphone:
-        final gain = (3 + 5 * amount).toStringAsFixed(2);
-        final ratio = (4 + 4 * amount).toStringAsFixed(2);
-        return 'highpass=f=500,lowpass=f=5000,'
-            'acompressor=threshold=-16dB:ratio=$ratio:attack=3:release=80,'
-            'equalizer=f=1800:t=q:w=1.0:g=$gain';
+        return 'pan=mono|c0=0.5*c0+0.5*c1,'
+            'asplit=2[mega3Voice][mega3Metal];'
+            '[mega3Voice]highpass=f=360:p=2,lowpass=f=6100:p=2,'
+            'equalizer=f=1050:t=q:w=0.85:g=6,'
+            'equalizer=f=2350:t=q:w=0.9:g=5,'
+            'equalizer=f=4100:t=q:w=1.1:g=3,volume=0.82[mega3V];'
+            '[mega3Metal]highpass=f=520,lowpass=f=5800,'
+            "afftfilt=real='hypot(re,im)':imag='0':"
+            'win_size=384:win_func=hann:overlap=0.75,'
+            'aecho=0.80:0.72:5|11|20:0.54|0.41|0.28,'
+            'volume=0.30[mega3M];'
+            '[mega3V][mega3M]amix=inputs=2:normalize=0,'
+            'flanger=delay=1.8:depth=1.35:regen=27:width=56:speed=0.10:'
+            'shape=sinusoidal:phase=25:interp=quadratic,'
+            'aecho=0.86:0.64:118|238:0.30|0.17,'
+            'acompressor=threshold=-22dB:ratio=4.2:attack=3:release=85:'
+            'makeup=1.5,equalizer=f=1800:t=q:w=1.0:g=2,'
+            'alimiter=limit=0.88,pan=stereo|FL=c0|FR=c0';
       case _MediaPartEffect.underwater:
         final lowpass = (1300 - 650 * amount).round().clamp(550, 1300);
         final delay1 = (50 + 50 * amount).round();
@@ -3484,37 +3687,123 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return 'lowpass=f=$lowpass,'
             'aecho=0.75:0.55:$delay1|$delay2:$decay1|$decay2';
       case _MediaPartEffect.monster:
-        final factor = 0.82 - 0.18 * amount;
-        final bits = (10 - 4 * amount).round().clamp(6, 10);
-        return '${_pitchFilter(factor)},'
-            'acrusher=level_in=1:level_out=1:bits=$bits:mode=log:aa=1';
+        return 'aresample=44100,'
+            'asplit=4[mon2Center][mon2Left][mon2Right][mon2Growl];'
+            '[mon2Center]asetrate=44100*0.820,aresample=44100,'
+            'atempo=1.219512,highpass=f=80,lowpass=f=6200,'
+            'equalizer=f=2400:t=q:w=1.2:g=3.5,volume=0.40[mon2C];'
+            '[mon2Left]asetrate=44100*0.500,aresample=44100,atempo=2.0,'
+            "afftfilt=real='hypot(re,im)*(0.30+0.70*"
+            "pow(abs(cos(PI*b*sr/(2*nb*68))),8))':imag='0':"
+            'win_size=768:win_func=hann:overlap=0.82,lowpass=f=3400,'
+            'pan=stereo|FL=1.0*FL|FR=0.08*FR,volume=0.78[mon2L];'
+            '[mon2Right]asetrate=44100*0.550,aresample=44100,'
+            'atempo=1.818182,'
+            "afftfilt=real='hypot(re,im)':imag='0':"
+            'win_size=768:win_func=hann:overlap=0.82,lowpass=f=3600,'
+            'adelay=24:all=1,pan=stereo|FL=0.08*FL|FR=1.0*FR,'
+            'volume=0.72[mon2R];'
+            '[mon2Growl]asetrate=44100*0.680,aresample=44100,'
+            'atempo=1.470588,lowpass=f=4200,tremolo=f=18:d=0.48,'
+            'volume=2.2,'
+            'asoftclip=type=tanh:threshold=0.62:output=0.62:oversample=4,'
+            'volume=0.46[mon2G];'
+            '[mon2C][mon2L][mon2R][mon2G]amix=inputs=4:normalize=0,'
+            'equalizer=f=150:t=q:w=1.0:g=5,'
+            'equalizer=f=2200:t=q:w=1.1:g=2.5,'
+            'acompressor=threshold=-22dB:ratio=4:attack=4:release=140,'
+            'alimiter=limit=0.86';
       case _MediaPartEffect.chipmunk:
-        final factor = 1.35 + 0.35 * amount;
-        return _pitchFilter(factor);
+        return 'aresample=44100,'
+            'asplit=3[chipMain][chipDouble][chipClear];'
+            '[chipMain]asetrate=44100*1.520,aresample=44100,'
+            'atempo=0.657895,highpass=f=130,'
+            'equalizer=f=3600:t=q:w=1.1:g=4,volume=0.78[chipM];'
+            '[chipDouble]asetrate=44100*1.610,aresample=44100,'
+            'atempo=0.621118,highpass=f=180,adelay=18:all=1,'
+            'pan=stereo|FL=0.35*FL|FR=0.90*FR,'
+            'equalizer=f=4800:t=q:w=1.2:g=3,volume=0.38[chipD];'
+            '[chipClear]asetrate=44100*1.430,aresample=44100,'
+            'atempo=0.699301,adelay=9:all=1,'
+            'pan=stereo|FL=0.90*FL|FR=0.35*FR,volume=0.30[chipC];'
+            '[chipM][chipD][chipC]amix=inputs=3:normalize=0,'
+            'chorus=0.78:0.62:10|17:0.20|0.15:'
+            '0.36|0.52:1.5|2.1,highpass=f=120,'
+            'equalizer=f=5200:t=q:w=1.2:g=2.5,'
+            'acompressor=threshold=-18dB:ratio=2.6:attack=4:release=90,'
+            'alimiter=limit=0.88';
       case _MediaPartEffect.dream:
-        final delay1 = (180 + 160 * amount).round();
-        final delay2 = (380 + 280 * amount).round();
-        final decay1 = (0.20 + 0.14 * amount).toStringAsFixed(2);
-        final decay2 = (0.12 + 0.12 * amount).toStringAsFixed(2);
-        return 'aecho=0.72:0.82:$delay1|$delay2:$decay1|$decay2,'
-            'chorus=0.65:0.75:45|65:0.18|0.14:0.25|0.38:1.6|2.1';
+        return 'aresample=44100,'
+            'asplit=4[dreamVoice][dreamHigh][dreamLow][dreamShimmer];'
+            '[dreamVoice]highpass=f=90,lowpass=f=7600,'
+            'equalizer=f=3000:t=q:w=1.2:g=2.5,volume=0.58[dreamV];'
+            '[dreamHigh]asetrate=44100*1.498,aresample=44100,'
+            'atempo=0.667557,adelay=28:all=1,'
+            'pan=stereo|FL=0.25*FL|FR=0.90*FR,highpass=f=180,'
+            'volume=0.32[dreamH];'
+            '[dreamLow]asetrate=44100*0.749,aresample=44100,'
+            'atempo=1.335113,adelay=42:all=1,'
+            'pan=stereo|FL=0.90*FL|FR=0.25*FR,lowpass=f=5200,'
+            'volume=0.28[dreamL];'
+            '[dreamShimmer]asetrate=44100*2.0,aresample=44100,'
+            'atempo=0.5,adelay=75:all=1,highpass=f=1200,'
+            'volume=0.16[dreamS];'
+            '[dreamV][dreamH][dreamL][dreamS]amix=inputs=4:normalize=0,'
+            'chorus=0.76:0.66:22|38|56:0.30|0.24|0.18:'
+            '0.20|0.34|0.49:2.2|3.1|4.0,'
+            'aecho=0.76:0.72:240|520|920:0.28|0.18|0.10,'
+            'tremolo=f=2.8:d=0.07,'
+            'stereowiden=delay=18:feedback=0.10:crossfeed=0.18:drymix=0.82,'
+            'equalizer=f=4600:t=q:w=1.1:g=2,'
+            'acompressor=threshold=-18dB:ratio=2.4:attack=9:release=170,'
+            'alimiter=limit=0.88';
       case _MediaPartEffect.distortion:
-        final bits = (9 - 5 * amount).round().clamp(4, 9);
-        final levelIn = (1.0 + 0.45 * amount).toStringAsFixed(2);
-        return 'acrusher=level_in=$levelIn:level_out=0.85:'
-            'bits=$bits:mode=log:aa=1';
+        return 'asplit=2[dist6Dry][dist6Wet];'
+            '[dist6Dry]highpass=f=90,volume=0.34[dist6D];'
+            '[dist6Wet]highpass=f=90,'
+            'acompressor=threshold=-28dB:ratio=5:attack=3:release=80:'
+            'makeup=2.8,volume=3.2,'
+            "aeval=exprs='clip(val(ch)*7,-0.44,0.44)':c=same,"
+            'volume=1.65,'
+            'acrusher=bits=10:mix=0.20:mode=lin:aa=0.85:samples=1,'
+            'equalizer=f=2400:t=q:w=1.0:g=3.5,'
+            'equalizer=f=5600:t=q:w=1.1:g=2,'
+            'asoftclip=type=atan:threshold=0.76:output=0.78:oversample=8,'
+            'volume=0.72[dist6W];'
+            '[dist6D][dist6W]amix=inputs=2:normalize=0,'
+            'volume=0.78,alimiter=limit=0.88';
       case _MediaPartEffect.loFi:
-        final lowpass = (4800 - 1800 * amount).round().clamp(2400, 4800);
-        final bits = (10 - 4 * amount).round().clamp(6, 10);
-        return 'lowpass=f=$lowpass,highpass=f=120,'
-            'acrusher=level_in=1:level_out=0.9:bits=$bits:mode=log:aa=1';
+        return 'pan=mono|c0=0.5*c0+0.5*c1,'
+            'asplit=2[lofi2Dry][lofi2Chip];'
+            '[lofi2Dry]highpass=f=120,lowpass=f=6800,'
+            'volume=0.20[lofi2D];'
+            '[lofi2Chip]aresample=12000,aresample=44100,'
+            'acrusher=bits=6:mix=0.82:mode=lin:aa=0.42:samples=3,'
+            'vibrato=f=4.2:d=0.10,tremolo=f=9.5:d=0.10,'
+            'highpass=f=180,lowpass=f=4800,'
+            'equalizer=f=1250:t=q:w=1.0:g=5,volume=1.5,'
+            'asoftclip=type=atan:threshold=0.72:output=0.72:oversample=4,'
+            'volume=0.78[lofi2C];'
+            '[lofi2D][lofi2C]amix=inputs=2:normalize=0,'
+            'acompressor=threshold=-20dB:ratio=3.2:attack=4:release=100,'
+            'alimiter=limit=0.86,pan=stereo|FL=c0|FR=c0';
       case _MediaPartEffect.reverseEcho:
-        final delay1 = (320 + 220 * amount).round();
-        final delay2 = (680 + 360 * amount).round();
-        final decay1 = (0.30 + 0.20 * amount).toStringAsFixed(2);
-        final decay2 = (0.16 + 0.16 * amount).toStringAsFixed(2);
-        return 'areverse,aecho=0.75:0.88:$delay1|$delay2:'
-            '$decay1|$decay2,areverse';
+        return 'asplit=3[revVoice][revSwell][revWhisper];'
+            '[revVoice]highpass=f=90,lowpass=f=7600,'
+            'equalizer=f=2800:t=q:w=1.2:g=2,volume=0.58[revV];'
+            '[revSwell]areverse,'
+            'aecho=0.76:0.88:320|680|1080:0.46|0.30|0.18,'
+            'areverse,highpass=f=120,lowpass=f=6800,'
+            'stereowiden=delay=20:feedback=0.10:crossfeed=0.16:drymix=0.80,'
+            'volume=0.72[revS];'
+            '[revWhisper]highpass=f=1700,lowpass=f=7800,areverse,'
+            'aecho=0.72:0.82:180|460:0.34|0.20,areverse,'
+            'tremolo=f=4.8:d=0.22,adelay=35:all=1,'
+            'pan=stereo|FL=0.28*FL|FR=0.92*FR,volume=0.30[revW];'
+            '[revV][revS][revW]amix=inputs=3:normalize=0,'
+            'equalizer=f=3500:t=q:w=1.1:g=2.5,'
+            'acompressor=threshold=-18dB:ratio=2.6:attack=7:release=150,'
+            'alimiter=limit=0.88';
       case _MediaPartEffect.fadeIn:
         final fade = _fadeDurationSeconds(part.duration);
         return 'afade=t=in:st=0:d=$fade';
@@ -3697,6 +3986,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return l10n.mediaCutterPartEffectPitchVeryHigh;
       case _MediaPartEffect.robot:
         return l10n.mediaCutterPartEffectRobot;
+      case _MediaPartEffect.superRobot:
+        return l10n.mediaCutterPartEffectSuperRobot;
       case _MediaPartEffect.helicopter:
         return l10n.mediaCutterPartEffectHelicopter;
       case _MediaPartEffect.alien:

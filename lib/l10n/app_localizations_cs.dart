@@ -2645,6 +2645,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterPartEffectRobot => 'Robotický hlas';
 
   @override
+  String get mediaCutterPartEffectSuperRobot => 'Super robot';
+
+  @override
   String get mediaCutterPartEffectHelicopter => 'Vrtulník';
 
   @override
@@ -2721,13 +2724,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterGuidedModeTitle => 'Průvodce střihem';
 
   @override
-  String get mediaCutterGuidedModeDescription => 'Vhodné pro začátečníky. Vyberte začátek a konec, poslechněte si střih a potom jej použijte.';
+  String get mediaCutterGuidedModeDescription =>
+      'Vhodné pro začátečníky. Vyberte začátek a konec, poslechněte si střih a potom jej použijte.';
 
   @override
   String get mediaCutterAdvancedModeTitle => 'Pokročilý střih';
 
   @override
-  String get mediaCutterAdvancedModeDescription => 'Inspirováno známými programy pro úpravu médií. Umožňuje rozdělit soubor na více částí a odstranit nechtěné části.';
+  String get mediaCutterAdvancedModeDescription =>
+      'Inspirováno známými programy pro úpravu médií. Umožňuje rozdělit soubor na více částí a odstranit nechtěné části.';
 
   @override
   String get mediaCutterChangeCutMode => 'Změnit typ střihu';
@@ -2748,19 +2753,28 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterGuidedModifyCut => 'Upravit střih';
 
   @override
-  String get mediaCutterGuidedMoveStartBackOneSecond => 'Posunout začátek střihu o 1 sekundu zpět';
+  String get mediaCutterGuidedMoveStartBackOneSecond =>
+      'Posunout začátek střihu o 1 sekundu zpět';
 
   @override
-  String get mediaCutterGuidedMoveStartForwardOneSecond => 'Posunout začátek střihu o 1 sekundu vpřed';
+  String get mediaCutterGuidedMoveStartForwardOneSecond =>
+      'Posunout začátek střihu o 1 sekundu vpřed';
 
   @override
-  String get mediaCutterGuidedMoveEndBackOneSecond => 'Posunout konec střihu o 1 sekundu zpět';
+  String get mediaCutterGuidedMoveEndBackOneSecond =>
+      'Posunout konec střihu o 1 sekundu zpět';
 
   @override
-  String get mediaCutterGuidedMoveEndForwardOneSecond => 'Posunout konec střihu o 1 sekundu vpřed';
+  String get mediaCutterGuidedMoveEndForwardOneSecond =>
+      'Posunout konec střihu o 1 sekundu vpřed';
 
   @override
   String get mediaCutterCutEditPrecisionLabel => 'Přesnost úpravy střihu';
+
+  @override
+  String mediaCutterCutEditPrecisionValue(String value) {
+    return 'Přesnost úpravy střihu: $value';
+  }
 
   @override
   String get mediaCutterCutEditStepOneSecond => '1 sekunda';
@@ -2773,11 +2787,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaCutterCutEditStepTenthSecond => '0,10 sekundy';
-
-  @override
-  String mediaCutterCutEditPrecisionValue(String value) {
-    return 'Přesnost úpravy střihu: $value';
-  }
 
   @override
   String mediaCutterMoveStartBackBy(String value) {
@@ -2811,10 +2820,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterGuidedEffectsAction => 'Upravit efekty souboru';
 
   @override
-  String get mediaCutterGuidedEffectsDescription => 'Upravte hlasitost a efekty pro celý výsledný soubor.';
+  String get mediaCutterGuidedEffectsDescription =>
+      'Upravte hlasitost a efekty pro celý výsledný soubor.';
 
   @override
-  String get mediaCutterGuidedFileTapHint => 'Dvojitým klepnutím přehrajete výsledný soubor. Pomocí úpravy efektů použijete efekty na celý soubor.';
+  String get mediaCutterGuidedFileTapHint =>
+      'Dvojitým klepnutím přehrajete výsledný soubor. Pomocí úpravy efektů použijete efekty na celý soubor.';
 
   @override
   String mediaCutterGuidedStartSet(String start) {
@@ -2832,7 +2843,8 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedNeedStartEnd => 'Nejprve nastavte začátek a konec střihu.';
+  String get mediaCutterGuidedNeedStartEnd =>
+      'Nejprve nastavte začátek a konec střihu.';
 
   @override
   String mediaCutterGuidedCutSummary(String start, String end) {
@@ -2845,7 +2857,8 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedPendingCutExitMessage => 'Máte nepoužitý střih z průvodce. Chcete odejít bez jeho zachování?';
+  String get mediaCutterGuidedPendingCutExitMessage =>
+      'Máte nepoužitý střih z průvodce. Chcete odejít bez jeho zachování?';
 
   @override
   String mediaCutterSplitAddedAnnouncement(int partNumber) {

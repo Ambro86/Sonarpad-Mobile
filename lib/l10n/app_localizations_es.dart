@@ -2660,6 +2660,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mediaCutterPartEffectRobot => 'Voz robot';
 
   @override
+  String get mediaCutterPartEffectSuperRobot => 'Súper robot';
+
+  @override
   String get mediaCutterPartEffectHelicopter => 'Helicóptero';
 
   @override
@@ -2736,13 +2739,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mediaCutterGuidedModeTitle => 'Corte guiado';
 
   @override
-  String get mediaCutterGuidedModeDescription => 'Adecuado para principiantes. Selecciona un punto inicial y uno final, escucha el corte y luego aplícalo.';
+  String get mediaCutterGuidedModeDescription =>
+      'Adecuado para principiantes. Selecciona un punto inicial y uno final, escucha el corte y luego aplícalo.';
 
   @override
   String get mediaCutterAdvancedModeTitle => 'Corte avanzado';
 
   @override
-  String get mediaCutterAdvancedModeDescription => 'Inspirado en los programas de edición multimedia más conocidos. Permite dividir un archivo multimedia en varias partes y eliminar las partes que no quieras.';
+  String get mediaCutterAdvancedModeDescription =>
+      'Inspirado en los programas de edición multimedia más conocidos. Permite dividir un archivo multimedia en varias partes y eliminar las partes que no quieras.';
 
   @override
   String get mediaCutterChangeCutMode => 'Cambiar tipo de corte';
@@ -2763,19 +2768,29 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mediaCutterGuidedModifyCut => 'Modificar corte';
 
   @override
-  String get mediaCutterGuidedMoveStartBackOneSecond => 'Mover el inicio del corte 1 segundo hacia atrás';
+  String get mediaCutterGuidedMoveStartBackOneSecond =>
+      'Mover el inicio del corte 1 segundo hacia atrás';
 
   @override
-  String get mediaCutterGuidedMoveStartForwardOneSecond => 'Mover el inicio del corte 1 segundo hacia adelante';
+  String get mediaCutterGuidedMoveStartForwardOneSecond =>
+      'Mover el inicio del corte 1 segundo hacia adelante';
 
   @override
-  String get mediaCutterGuidedMoveEndBackOneSecond => 'Mover el final del corte 1 segundo hacia atrás';
+  String get mediaCutterGuidedMoveEndBackOneSecond =>
+      'Mover el final del corte 1 segundo hacia atrás';
 
   @override
-  String get mediaCutterGuidedMoveEndForwardOneSecond => 'Mover el final del corte 1 segundo hacia adelante';
+  String get mediaCutterGuidedMoveEndForwardOneSecond =>
+      'Mover el final del corte 1 segundo hacia adelante';
 
   @override
-  String get mediaCutterCutEditPrecisionLabel => 'Precisión de edición del corte';
+  String get mediaCutterCutEditPrecisionLabel =>
+      'Precisión de edición del corte';
+
+  @override
+  String mediaCutterCutEditPrecisionValue(String value) {
+    return 'Precisión de edición del corte: $value';
+  }
 
   @override
   String get mediaCutterCutEditStepOneSecond => '1 segundo';
@@ -2788,11 +2803,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get mediaCutterCutEditStepTenthSecond => '0,10 segundos';
-
-  @override
-  String mediaCutterCutEditPrecisionValue(String value) {
-    return 'Precisión de edición del corte: $value';
-  }
 
   @override
   String mediaCutterMoveStartBackBy(String value) {
@@ -2826,10 +2836,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mediaCutterGuidedEffectsAction => 'Ajustar efectos del archivo';
 
   @override
-  String get mediaCutterGuidedEffectsDescription => 'Ajusta el volumen y los efectos para todo el archivo resultante.';
+  String get mediaCutterGuidedEffectsDescription =>
+      'Ajusta el volumen y los efectos para todo el archivo resultante.';
 
   @override
-  String get mediaCutterGuidedFileTapHint => 'Toca dos veces para reproducir el archivo resultante. Usa Ajustar efectos del archivo para aplicar efectos a todo el archivo.';
+  String get mediaCutterGuidedFileTapHint =>
+      'Toca dos veces para reproducir el archivo resultante. Usa Ajustar efectos del archivo para aplicar efectos a todo el archivo.';
 
   @override
   String mediaCutterGuidedStartSet(String start) {
@@ -2847,7 +2859,8 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedNeedStartEnd => 'Configura primero el inicio y el fin del corte.';
+  String get mediaCutterGuidedNeedStartEnd =>
+      'Configura primero el inicio y el fin del corte.';
 
   @override
   String mediaCutterGuidedCutSummary(String start, String end) {
@@ -2860,7 +2873,8 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedPendingCutExitMessage => 'Tienes un corte guiado sin aplicar. ¿Quieres salir sin conservarlo?';
+  String get mediaCutterGuidedPendingCutExitMessage =>
+      'Tienes un corte guiado sin aplicar. ¿Quieres salir sin conservarlo?';
 
   @override
   String mediaCutterSplitAddedAnnouncement(int partNumber) {
