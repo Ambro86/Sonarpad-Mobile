@@ -15,6 +15,7 @@ import '../utils/app_logger.dart';
 import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
+import '../widgets/letter_jump_option_picker_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final ValueChanged<SonarpadThemeMode>? onThemeModeChanged;
@@ -31,7 +32,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _settings = AppSettingsService();
   final _podcastCache = PodcastCacheService();
   final _flutterTts = FlutterTts();
-  final _screenFocusNode = FocusNode();
+  final _edgeLanguageFocusNode = FocusNode(debugLabel: 'edge-language');
+  final _edgeVoiceFocusNode = FocusNode(debugLabel: 'edge-voice');
   final _viewLogFocusNode = FocusNode();
   String _appLanguage = 'it';
   SonarpadThemeMode _themeMode = SonarpadThemeMode.system;
@@ -217,7 +219,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
-    _screenFocusNode.dispose();
+    _edgeLanguageFocusNode.dispose();
+    _edgeVoiceFocusNode.dispose();
     _viewLogFocusNode.dispose();
     _tvSecretCodeController.dispose();
     unawaited(_audio.stop().whenComplete(_audio.dispose));
@@ -332,7 +335,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _save() async {
+  Future<void> _save({bool showConfirmation = true}) async {
     setState(() => _isSaving = true);
     final l10n = AppLocalizations.of(context);
     final rawCode = _tvSecretCodeController.text.trim();
@@ -448,14 +451,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     unawaited(AppLogger.log('Settings: save completed'));
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (FocusManager.instance.primaryFocus == null &&
-          !_screenFocusNode.hasFocus) {
-        _screenFocusNode.requestFocus();
-      }
-      showStatusMessage(context, savedMessage);
-    });
+    if (showConfirmation) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showStatusMessage(context, savedMessage);
+      });
+    }
   }
 
   Future<void> _stabilizeAccessibilityAfterSettingsChange({
@@ -505,6 +506,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     FocusScope.of(context).unfocus();
     await showDialog<void>(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(title),
         content: Text(message),
@@ -517,7 +519,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
     if (!mounted) return;
-    _screenFocusNode.requestFocus();
   }
 
   void _markSaved(String rawCode) {
@@ -571,6 +572,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
     final result = await showDialog<_SettingsLeaveAction>(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(l10n.settingsUnsavedTitle),
         content: Text(l10n.settingsUnsavedMessage),
@@ -595,7 +597,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (result == _SettingsLeaveAction.discard) return true;
     if (result == _SettingsLeaveAction.save) {
-      await _save();
+      await _save(showConfirmation: false);
       return !_hasUnsavedChanges;
     }
     return false;
@@ -712,6 +714,106 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _edgeVoices,
       languageCode,
     );
+  }
+
+  TtsVoiceLanguage? get _selectedEdgeLanguage {
+    for (final language in _edgeLanguages) {
+      if (language.code == _languageCode) return language;
+    }
+    return _edgeLanguages.isEmpty ? null : _edgeLanguages.first;
+  }
+
+  TtsVoiceOption? get _selectedEdgeVoice {
+    final voices = AppSettingsService.voicesForLanguageFrom(
+      _edgeVoices,
+      _languageCode,
+    );
+    for (final voice in voices) {
+      if (voice.voice == _voice) return voice;
+    }
+    return voices.isEmpty ? null : voices.first;
+  }
+
+  Future<void> _restoreControlFocus(FocusNode focusNode) async {
+    if (!mounted) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    focusNode.requestFocus();
+
+    // VoiceOver può ricevere il nuovo albero semantico con qualche istante di
+    // ritardo dopo la rimozione di una route. Un secondo aggancio al controllo
+    // reale evita che il focus resti sul nodo ormai eliminato del selettore.
+    await Future<void>.delayed(const Duration(milliseconds: 320));
+    if (!mounted) return;
+    focusNode.requestFocus();
+  }
+
+  Future<void> _openEdgeLanguagePicker() async {
+    final l10n = AppLocalizations.of(context);
+    final languages = List<TtsVoiceLanguage>.of(_edgeLanguages)
+      ..sort((a, b) => a.label.compareTo(b.label));
+
+    final result = await Navigator.of(context).push<TtsVoiceLanguage>(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/settings/edge-languages'),
+        builder: (_) => LetterJumpOptionPickerScreen<TtsVoiceLanguage>(
+          title: l10n.ttsVoiceLanguage,
+          options: languages,
+          labelBuilder: (language) => language.label,
+          selectedBuilder: (language) => language.code == _languageCode,
+          selectedLabel: _selectedOptionLabel(l10n.localeName),
+          leadingBuilder: (selected) =>
+              Icon(selected ? Icons.check : Icons.language),
+          selectLetterLabel: _selectLetterLabel(l10n.localeName),
+          selectLetterTitle: _selectLetterLabel(l10n.localeName),
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+    if (result != null && result.code != _languageCode) {
+      setState(() {
+        _languageCode = result.code;
+        _voice = AppSettingsService.defaultVoiceForLanguageFrom(
+          _edgeVoices,
+          result.code,
+        );
+      });
+    }
+    await _restoreControlFocus(_edgeLanguageFocusNode);
+  }
+
+  Future<void> _openEdgeVoicePicker() async {
+    final l10n = AppLocalizations.of(context);
+    final voices = List<TtsVoiceOption>.of(
+      AppSettingsService.voicesForLanguageFrom(
+        _edgeVoices,
+        _languageCode,
+      ),
+    )..sort((a, b) => a.label.compareTo(b.label));
+
+    final result = await Navigator.of(context).push<TtsVoiceOption>(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/settings/edge-voices'),
+        builder: (_) => LetterJumpOptionPickerScreen<TtsVoiceOption>(
+          title: l10n.ttsVoice,
+          options: voices,
+          labelBuilder: (voice) => '${voice.label} (${voice.voice})',
+          selectedBuilder: (voice) => voice.voice == _voice,
+          selectedLabel: _selectedOptionLabel(l10n.localeName),
+          leadingBuilder: (selected) =>
+              Icon(selected ? Icons.check : Icons.record_voice_over),
+          selectLetterLabel: _selectLetterLabel(l10n.localeName),
+          selectLetterTitle: _selectLetterLabel(l10n.localeName),
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+    if (result != null && result.voice != _voice) {
+      setState(() => _voice = result.voice);
+    }
+    await _restoreControlFocus(_edgeVoiceFocusNode);
   }
 
   double _sliderStep(double value, double delta) {
@@ -837,10 +939,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final voices = AppSettingsService.voicesForLanguageFrom(
-      _edgeVoices,
-      _languageCode,
-    );
     final showItalianOnlySettings = _appLanguage == 'it' &&
         Localizations.localeOf(context).languageCode == 'it';
     return PopScope(
@@ -861,9 +959,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: _loading
             ? Center(
                 child: CircularProgressIndicator(semanticsLabel: l10n.loading))
-            : Focus(
-                focusNode: _screenFocusNode,
-                child: ListView(
+            : ListView(
                   key: const PageStorageKey<String>('settings-list'),
                   padding: const EdgeInsets.all(16),
                   children: [
@@ -958,57 +1054,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const SizedBox(height: 12),
                     if (_ttsEngine == 'edge') ...[
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        initialValue: _languageCode,
-                        decoration:
-                            InputDecoration(labelText: l10n.ttsVoiceLanguage),
-                        items: _edgeLanguages
-                            .map((language) => DropdownMenuItem(
-                                  value: language.code,
-                                  child: Text(
-                                    language.label,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          final next = value ?? 'it';
-                          setState(() {
-                            _languageCode = next;
-                            _voice =
-                                AppSettingsService.defaultVoiceForLanguageFrom(
-                              _edgeVoices,
-                              next,
-                            );
-                          });
-                        },
+                      ListTile(
+                        focusNode: _edgeLanguageFocusNode,
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.language),
+                        title: Text(l10n.ttsVoiceLanguage),
+                        subtitle: Text(
+                          _selectedEdgeLanguage?.label ?? _languageCode,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: _openEdgeLanguagePicker,
                       ),
-                      const SizedBox(height: 12),
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        initialValue: _voice,
-                        decoration: InputDecoration(labelText: l10n.ttsVoice),
-                        items: voices
-                            .map((voice) => DropdownMenuItem(
-                                  value: voice.voice,
-                                  child: Text(
-                                    '${voice.label} (${voice.voice})',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(
-                            () => _voice = value ??
-                                AppSettingsService.defaultVoiceForLanguageFrom(
-                                  _edgeVoices,
-                                  _languageCode,
-                                ),
-                          );
-                        },
+                      const SizedBox(height: 4),
+                      ListTile(
+                        focusNode: _edgeVoiceFocusNode,
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.record_voice_over),
+                        title: Text(l10n.ttsVoice),
+                        subtitle: Text(
+                          _selectedEdgeVoice == null
+                              ? _voice
+                              : '${_selectedEdgeVoice!.label} '
+                                  '(${_selectedEdgeVoice!.voice})',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: _openEdgeVoicePicker,
                       ),
                     ] else ...[
                       Builder(
@@ -1476,7 +1550,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                     const SizedBox(height: 16),
                     FilledButton.icon(
-                      onPressed: _isSaving ? null : _save,
+                      onPressed: _isSaving ? null : () => _save(),
                       icon: _isSaving
                           ? const SizedBox(
                               width: 20,
@@ -1511,8 +1585,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ],
                 ),
-              ),
       ),
     );
   }
 }
+
+String _selectLetterLabel(String localeName) => switch (localeName) {
+      'en' => 'Select letter',
+      'es' => 'Seleccionar letra',
+      'fr' => 'Sélectionner une lettre',
+      'pt' => 'Selecionar letra',
+      'pl' => 'Wybierz literę',
+      'cs' => 'Vybrat písmeno',
+      _ => 'Seleziona lettera',
+    };
+
+String _selectedOptionLabel(String localeName) => switch (localeName) {
+      'en' => 'selected',
+      'es' => 'seleccionada',
+      'fr' => 'sélectionnée',
+      'pt' => 'selecionada',
+      'pl' => 'wybrano',
+      'cs' => 'vybráno',
+      _ => 'selezionata',
+    };

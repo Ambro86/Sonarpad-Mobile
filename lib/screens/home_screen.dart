@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final _settings = AppSettingsService();
   final _raiPlaySoundService = RaiPlaySoundService();
   final _raiPlayService = RaiPlayService();
+  final _settingsFocusNode = FocusNode(debugLabel: 'home-settings');
   bool _isSecretCodeValid = false;
   bool _isTvCodeValid = false;
   bool _isRaiPlayValid = false;
@@ -29,6 +30,23 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _settingsFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _restoreSettingsFocus() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _settingsFocusNode.requestFocus();
+      Future<void>.delayed(const Duration(milliseconds: 320), () {
+        if (!mounted) return;
+        _settingsFocusNode.requestFocus();
+      });
+    });
   }
 
   Future<void> _load() async {
@@ -298,6 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
     children.addAll([
       _HomeButton(
         label: l10n.settings,
+        focusNode: _settingsFocusNode,
         onPressed: () async {
           final appLanguage = await AccessibilityFeedbackService.goNamed<String>(
             context,
@@ -305,12 +324,14 @@ class _HomeScreenState extends State<HomeScreen> {
           );
           if (!context.mounted) return;
           await _load();
-          if (!context.mounted || appLanguage == null) return;
-          if (appLanguage != Localizations.localeOf(context).languageCode) {
+          if (!context.mounted) return;
+          if (appLanguage != null &&
+              appLanguage != Localizations.localeOf(context).languageCode) {
             await Future<void>.delayed(Duration.zero);
             if (!context.mounted) return;
             SonarpadApp.setLocale(context, Locale(appLanguage));
           }
+          _restoreSettingsFocus();
         },
       ),
       _HomeButton(
@@ -358,13 +379,20 @@ class _HomeScreenState extends State<HomeScreen> {
 class _HomeButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
-  const _HomeButton({required this.label, required this.onPressed});
+  final FocusNode? focusNode;
+
+  const _HomeButton({
+    required this.label,
+    required this.onPressed,
+    this.focusNode,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: FilledButton(
+        focusNode: focusNode,
         style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
         onPressed: onPressed,
         child: Text(label, style: const TextStyle(fontSize: 20)),

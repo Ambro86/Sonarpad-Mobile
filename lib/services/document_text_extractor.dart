@@ -59,7 +59,31 @@ class DocumentTextExtractor {
   }
 
   static String decodeRtfDocumentTextBytes(List<int> bytes) {
-    final raw = latin1.decode(bytes, allowInvalid: true);
+    String raw;
+    if (_startsWith(bytes, const [0xEF, 0xBB, 0xBF])) {
+      // Un BOM UTF-8 è un'indicazione esplicita dell'encoding del contenitore.
+      // I control word e gli escape RTF restano ASCII, mentre eventuale testo
+      // Unicode scritto direttamente nel file viene così preservato.
+      raw = utf8.decode(bytes.sublist(3), allowMalformed: true);
+    } else if (_startsWith(bytes, const [0xFF, 0xFE, 0x00, 0x00])) {
+      raw = _decodeUtf32(bytes.sublist(4), Endian.little);
+    } else if (_startsWith(bytes, const [0x00, 0x00, 0xFE, 0xFF])) {
+      raw = _decodeUtf32(bytes.sublist(4), Endian.big);
+    } else if (_startsWith(bytes, const [0xFF, 0xFE])) {
+      raw = _decodeUtf16(bytes.sublist(2), Endian.little);
+    } else if (_startsWith(bytes, const [0xFE, 0xFF])) {
+      raw = _decodeUtf16(bytes.sublist(2), Endian.big);
+    } else {
+      raw = latin1.decode(bytes, allowInvalid: true);
+      if (!raw.trimLeft().startsWith('{\\rtf')) {
+        final utf16Guess = _tryDecodeUtf16WithoutBom(bytes);
+        if (utf16Guess != null &&
+            utf16Guess.trimLeft().startsWith('{\\rtf')) {
+          raw = utf16Guess;
+        }
+      }
+    }
+
     if (!raw.trimLeft().startsWith('{\\rtf')) {
       return decodeDocumentTextBytes(bytes);
     }
@@ -69,6 +93,7 @@ class DocumentTextExtractor {
   static String _normalizeRtfPlainText(String text) {
     return _normalizeDecodedText(
       text
+          .replaceAll('\u0000', '')
           .replaceAll('\u00A0', ' ')
           .replaceAll(RegExp(r'[ \t]+\n'), '\n')
           .replaceAll(RegExp(r'\n[ \t]+'), '\n')
@@ -3124,56 +3149,224 @@ const _windows1252 = <int?>[
   0x00FF,
 ];
 
+const _windows1257 = <int?>[
+  0x20AC, null, 0x201A, null, 0x201E, 0x2026, 0x2020, 0x2021,
+  null, 0x2030, null, 0x2039, null, 0x00A8, 0x02C7, 0x00B8,
+  null, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+  null, 0x2122, null, 0x203A, null, 0x00AF, 0x02DB, null,
+  0x00A0, null, 0x00A2, 0x00A3, 0x00A4, null, 0x00A6, 0x00A7,
+  0x00D8, 0x00A9, 0x0156, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00C6,
+  0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B6, 0x00B7,
+  0x00F8, 0x00B9, 0x0157, 0x00BB, 0x00BC, 0x00BD, 0x00BE, 0x00E6,
+  0x0104, 0x012E, 0x0100, 0x0106, 0x00C4, 0x00C5, 0x0118, 0x0112,
+  0x010C, 0x00C9, 0x0179, 0x0116, 0x0122, 0x0136, 0x012A, 0x013B,
+  0x0160, 0x0143, 0x0145, 0x00D3, 0x014C, 0x00D5, 0x00D6, 0x00D7,
+  0x0172, 0x0141, 0x015A, 0x016A, 0x00DC, 0x017B, 0x017D, 0x00DF,
+  0x0105, 0x012F, 0x0101, 0x0107, 0x00E4, 0x00E5, 0x0119, 0x0113,
+  0x010D, 0x00E9, 0x017A, 0x0117, 0x0123, 0x0137, 0x012B, 0x013C,
+  0x0161, 0x0144, 0x0146, 0x00F3, 0x014D, 0x00F5, 0x00F6, 0x00F7,
+  0x0173, 0x0142, 0x015B, 0x016B, 0x00FC, 0x017C, 0x017E, 0x02D9,
+];
+
+const _windows1258 = <int?>[
+  0x20AC, null, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
+  0x02C6, 0x2030, null, 0x2039, 0x0152, null, null, null,
+  null, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+  0x02DC, 0x2122, null, 0x203A, 0x0153, null, null, 0x0178,
+  0x00A0, 0x00A1, 0x00A2, 0x00A3, 0x00A4, 0x00A5, 0x00A6, 0x00A7,
+  0x00A8, 0x00A9, 0x00AA, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00AF,
+  0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B6, 0x00B7,
+  0x00B8, 0x00B9, 0x00BA, 0x00BB, 0x00BC, 0x00BD, 0x00BE, 0x00BF,
+  0x00C0, 0x00C1, 0x00C2, 0x0102, 0x00C4, 0x00C5, 0x00C6, 0x00C7,
+  0x00C8, 0x00C9, 0x00CA, 0x00CB, 0x0300, 0x00CD, 0x00CE, 0x00CF,
+  0x0110, 0x00D1, 0x0309, 0x00D3, 0x00D4, 0x01A0, 0x00D6, 0x00D7,
+  0x00D8, 0x00D9, 0x00DA, 0x00DB, 0x00DC, 0x01AF, 0x0303, 0x00DF,
+  0x00E0, 0x00E1, 0x00E2, 0x0103, 0x00E4, 0x00E5, 0x00E6, 0x00E7,
+  0x00E8, 0x00E9, 0x00EA, 0x00EB, 0x0301, 0x00ED, 0x00EE, 0x00EF,
+  0x0111, 0x00F1, 0x0323, 0x00F3, 0x00F4, 0x01A1, 0x00F6, 0x00F7,
+  0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x01B0, 0x20AB, 0x00FF,
+];
+
+const _windows874 = <int?>[
+  0x20AC, null, null, null, null, 0x2026, null, null,
+  null, null, null, null, null, null, null, null,
+  null, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,
+  null, null, null, null, null, null, null, null,
+  0x00A0, 0x0E01, 0x0E02, 0x0E03, 0x0E04, 0x0E05, 0x0E06, 0x0E07,
+  0x0E08, 0x0E09, 0x0E0A, 0x0E0B, 0x0E0C, 0x0E0D, 0x0E0E, 0x0E0F,
+  0x0E10, 0x0E11, 0x0E12, 0x0E13, 0x0E14, 0x0E15, 0x0E16, 0x0E17,
+  0x0E18, 0x0E19, 0x0E1A, 0x0E1B, 0x0E1C, 0x0E1D, 0x0E1E, 0x0E1F,
+  0x0E20, 0x0E21, 0x0E22, 0x0E23, 0x0E24, 0x0E25, 0x0E26, 0x0E27,
+  0x0E28, 0x0E29, 0x0E2A, 0x0E2B, 0x0E2C, 0x0E2D, 0x0E2E, 0x0E2F,
+  0x0E30, 0x0E31, 0x0E32, 0x0E33, 0x0E34, 0x0E35, 0x0E36, 0x0E37,
+  0x0E38, 0x0E39, 0x0E3A, null, null, null, null, 0x0E3F,
+  0x0E40, 0x0E41, 0x0E42, 0x0E43, 0x0E44, 0x0E45, 0x0E46, 0x0E47,
+  0x0E48, 0x0E49, 0x0E4A, 0x0E4B, 0x0E4C, 0x0E4D, 0x0E4E, 0x0E4F,
+  0x0E50, 0x0E51, 0x0E52, 0x0E53, 0x0E54, 0x0E55, 0x0E56, 0x0E57,
+  0x0E58, 0x0E59, 0x0E5A, 0x0E5B, null, null, null, null,
+];
+
+const _cp437 = <int?>[
+  0x00C7, 0x00FC, 0x00E9, 0x00E2, 0x00E4, 0x00E0, 0x00E5, 0x00E7,
+  0x00EA, 0x00EB, 0x00E8, 0x00EF, 0x00EE, 0x00EC, 0x00C4, 0x00C5,
+  0x00C9, 0x00E6, 0x00C6, 0x00F4, 0x00F6, 0x00F2, 0x00FB, 0x00F9,
+  0x00FF, 0x00D6, 0x00DC, 0x00A2, 0x00A3, 0x00A5, 0x20A7, 0x0192,
+  0x00E1, 0x00ED, 0x00F3, 0x00FA, 0x00F1, 0x00D1, 0x00AA, 0x00BA,
+  0x00BF, 0x2310, 0x00AC, 0x00BD, 0x00BC, 0x00A1, 0x00AB, 0x00BB,
+  0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x2561, 0x2562, 0x2556,
+  0x2555, 0x2563, 0x2551, 0x2557, 0x255D, 0x255C, 0x255B, 0x2510,
+  0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x255E, 0x255F,
+  0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x2567,
+  0x2568, 0x2564, 0x2565, 0x2559, 0x2558, 0x2552, 0x2553, 0x256B,
+  0x256A, 0x2518, 0x250C, 0x2588, 0x2584, 0x258C, 0x2590, 0x2580,
+  0x03B1, 0x00DF, 0x0393, 0x03C0, 0x03A3, 0x03C3, 0x00B5, 0x03C4,
+  0x03A6, 0x0398, 0x03A9, 0x03B4, 0x221E, 0x03C6, 0x03B5, 0x2229,
+  0x2261, 0x00B1, 0x2265, 0x2264, 0x2320, 0x2321, 0x00F7, 0x2248,
+  0x00B0, 0x2219, 0x00B7, 0x221A, 0x207F, 0x00B2, 0x25A0, 0x00A0,
+];
+
+const _cp850 = <int?>[
+  0x00C7, 0x00FC, 0x00E9, 0x00E2, 0x00E4, 0x00E0, 0x00E5, 0x00E7,
+  0x00EA, 0x00EB, 0x00E8, 0x00EF, 0x00EE, 0x00EC, 0x00C4, 0x00C5,
+  0x00C9, 0x00E6, 0x00C6, 0x00F4, 0x00F6, 0x00F2, 0x00FB, 0x00F9,
+  0x00FF, 0x00D6, 0x00DC, 0x00F8, 0x00A3, 0x00D8, 0x00D7, 0x0192,
+  0x00E1, 0x00ED, 0x00F3, 0x00FA, 0x00F1, 0x00D1, 0x00AA, 0x00BA,
+  0x00BF, 0x00AE, 0x00AC, 0x00BD, 0x00BC, 0x00A1, 0x00AB, 0x00BB,
+  0x2591, 0x2592, 0x2593, 0x2502, 0x2524, 0x00C1, 0x00C2, 0x00C0,
+  0x00A9, 0x2563, 0x2551, 0x2557, 0x255D, 0x00A2, 0x00A5, 0x2510,
+  0x2514, 0x2534, 0x252C, 0x251C, 0x2500, 0x253C, 0x00E3, 0x00C3,
+  0x255A, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256C, 0x00A4,
+  0x00F0, 0x00D0, 0x00CA, 0x00CB, 0x00C8, 0x0131, 0x00CD, 0x00CE,
+  0x00CF, 0x2518, 0x250C, 0x2588, 0x2584, 0x00A6, 0x00CC, 0x2580,
+  0x00D3, 0x00DF, 0x00D4, 0x00D2, 0x00F5, 0x00D5, 0x00B5, 0x00FE,
+  0x00DE, 0x00DA, 0x00DB, 0x00D9, 0x00FD, 0x00DD, 0x00AF, 0x00B4,
+  0x00AD, 0x00B1, 0x2017, 0x00BE, 0x00B6, 0x00A7, 0x00F7, 0x00B8,
+  0x00B0, 0x00A8, 0x00B7, 0x00B9, 0x00B3, 0x00B2, 0x25A0, 0x00A0,
+];
+
+const _macRoman = <int?>[
+  0x00C4, 0x00C5, 0x00C7, 0x00C9, 0x00D1, 0x00D6, 0x00DC, 0x00E1,
+  0x00E0, 0x00E2, 0x00E4, 0x00E3, 0x00E5, 0x00E7, 0x00E9, 0x00E8,
+  0x00EA, 0x00EB, 0x00ED, 0x00EC, 0x00EE, 0x00EF, 0x00F1, 0x00F3,
+  0x00F2, 0x00F4, 0x00F6, 0x00F5, 0x00FA, 0x00F9, 0x00FB, 0x00FC,
+  0x2020, 0x00B0, 0x00A2, 0x00A3, 0x00A7, 0x2022, 0x00B6, 0x00DF,
+  0x00AE, 0x00A9, 0x2122, 0x00B4, 0x00A8, 0x2260, 0x00C6, 0x00D8,
+  0x221E, 0x00B1, 0x2264, 0x2265, 0x00A5, 0x00B5, 0x2202, 0x2211,
+  0x220F, 0x03C0, 0x222B, 0x00AA, 0x00BA, 0x03A9, 0x00E6, 0x00F8,
+  0x00BF, 0x00A1, 0x00AC, 0x221A, 0x0192, 0x2248, 0x2206, 0x00AB,
+  0x00BB, 0x2026, 0x00A0, 0x00C0, 0x00C3, 0x00D5, 0x0152, 0x0153,
+  0x2013, 0x2014, 0x201C, 0x201D, 0x2018, 0x2019, 0x00F7, 0x25CA,
+  0x00FF, 0x0178, 0x2044, 0x20AC, 0x2039, 0x203A, 0xFB01, 0xFB02,
+  0x2021, 0x00B7, 0x201A, 0x201E, 0x2030, 0x00C2, 0x00CA, 0x00C1,
+  0x00CB, 0x00C8, 0x00CD, 0x00CE, 0x00CF, 0x00CC, 0x00D3, 0x00D4,
+  0xF8FF, 0x00D2, 0x00DA, 0x00DB, 0x00D9, 0x0131, 0x02C6, 0x02DC,
+  0x00AF, 0x02D8, 0x02D9, 0x02DA, 0x00B8, 0x02DD, 0x02DB, 0x02C7,
+];
+
 class _RtfPlainTextParser {
+  /// Destinazioni che contengono metadati, formattazione o dati non leggibili.
+  ///
+  /// Non vengono ignorati i contenitori `field`, `object` e `shp`, perché al
+  /// loro interno possono esserci rispettivamente `fldrslt`, `result` e
+  /// `shptxt`, cioè testo realmente visibile nel documento.
   static const _ignoredDestinations = <String>{
     'annotation',
+    'atnauthor',
+    'atndate',
+    'atnid',
+    'atnparent',
     'author',
     'buptim',
     'category',
     'colortbl',
+    'colorschememapping',
     'comment',
+    'company',
     'creatim',
     'datafield',
+    'datastore',
     'doccomm',
+    'docvar',
+    'factoidname',
+    'falt',
+    'filetbl',
+    'fldinst',
+    'fontemb',
+    'fontfile',
     'fonttbl',
     'footer',
     'footerf',
     'footerl',
     'footerr',
-    'footnote',
+    'ftncn',
+    'ftnsep',
+    'ftnsepc',
+    'aftncn',
+    'aftnsep',
+    'aftnsepc',
     'generator',
     'header',
     'headerf',
     'headerl',
     'headerr',
+    'htmltag',
     'info',
+    'keycode',
     'keywords',
+    'latentstyles',
     'listoverridetable',
     'listtable',
     'manager',
-    'object',
+    'mhtmltag',
+    'mmathpr',
+    'objalias',
+    'objclass',
+    'objdata',
+    'objname',
+    'objsect',
+    'objtime',
     'operator',
+    'panose',
+    'pgp',
     'pict',
     'pnseclvl',
-    'pntext',
+    'private',
+    'propname',
+    'protend',
+    'protstart',
     'revtbl',
     'rsidtbl',
-    'shp',
+    'shpinst',
     'shppict',
+    'sn',
+    'sp',
     'stylesheet',
     'subject',
+    'themedata',
     'title',
+    'txe',
     'userprops',
+    'xmlattrname',
+    'xmlattrvalue',
+    'xmlclose',
+    'xmlname',
     'xmlnstbl',
+    'xmlopen',
   };
 
   final String source;
   final StringBuffer _buffer = StringBuffer();
   final List<_RtfState> _stack = [_RtfState()];
+  final Map<int, int> _fontCodePages = <int, int>{};
 
   int _index = 0;
   int _fallbackCharsToSkip = 0;
+  int _binaryBytesToSkip = 0;
   int? _pendingHighSurrogate;
+  int? _defaultFontNumber;
+
+  final List<int> _pendingEncodedBytes = <int>[];
+  int? _pendingEncodedCodePage;
 
   _RtfPlainTextParser(this.source);
 
@@ -3181,17 +3374,28 @@ class _RtfPlainTextParser {
 
   String parse() {
     while (_index < source.length) {
+      if (_binaryBytesToSkip > 0) {
+        final available = source.length - _index;
+        final amount = _binaryBytesToSkip < available
+            ? _binaryBytesToSkip
+            : available;
+        _index += amount;
+        _binaryBytesToSkip -= amount;
+        continue;
+      }
+
       final codeUnit = source.codeUnitAt(_index);
       switch (codeUnit) {
         case 0x7B: // {
-          _stack.add(_state.copy());
+          _flushPendingEncodedBytes();
+          _fallbackCharsToSkip = 0;
+          _openGroup();
           _index++;
           break;
         case 0x7D: // }
-          _flushPendingHighSurrogate();
-          if (_stack.length > 1) {
-            _stack.removeLast();
-          }
+          _flushPendingEncodedBytes();
+          _fallbackCharsToSkip = 0;
+          _closeGroup();
           _index++;
           break;
         case 0x5C: // backslash
@@ -3199,8 +3403,9 @@ class _RtfPlainTextParser {
           break;
         case 0x0D:
         case 0x0A:
-          // RTF line breaks in the source are formatting only. Real document
-          // paragraphs are represented by \par or \line.
+          // Gli a-capo presenti nel sorgente RTF servono solo a impaginarlo.
+          // I veri a-capo del documento sono \par, \line, \row ecc.
+          _flushPendingEncodedBytes();
           _index++;
           break;
         default:
@@ -3208,12 +3413,62 @@ class _RtfPlainTextParser {
           _index++;
       }
     }
+    _flushPendingEncodedBytes();
     _flushPendingHighSurrogate();
     return _buffer.toString();
   }
 
+  void _openGroup() {
+    final parent = _state;
+    final child = parent.copyForChildGroup();
+
+    // \upr contiene due gruppi: il primo è il fallback ANSI, il secondo è il
+    // testo Unicode dentro una destinazione \*\ud. Un lettore Unicode deve
+    // scegliere esclusivamente il secondo per evitare duplicazioni o perdita
+    // di caratteri non rappresentabili nella code page ANSI.
+    if (parent.uprNextChildIndex >= 0) {
+      final childIndex = parent.uprNextChildIndex;
+      parent.uprNextChildIndex++;
+      if (parent.uprNextChildIndex > 1) {
+        parent.uprNextChildIndex = -1;
+      }
+      if (childIndex == 0) {
+        child.skipDestination = true;
+      } else {
+        child.allowUnicodeDestination = true;
+        child.skipDestination = false;
+      }
+    }
+
+    _stack.add(child);
+  }
+
+  void _closeGroup() {
+    _flushPendingHighSurrogate();
+    if (_stack.length <= 1) return;
+
+    final closingState = _state;
+    if (closingState.closeText.isNotEmpty &&
+        !closingState.skipDestination &&
+        !closingState.hidden &&
+        !closingState.deleted) {
+      _buffer.write(closingState.closeText);
+    }
+    _stack.removeLast();
+
+    // Quando termina la tabella dei font, applica il font predefinito anche
+    // agli RTF che non ripetono esplicitamente \fN all'inizio del corpo.
+    // I sottogruppi dei singoli font ereditano la stessa destinazione, quindi
+    // interveniamo soltanto quando stiamo uscendo davvero da fonttbl.
+    if (closingState.destination == 'fonttbl' &&
+        _state.destination != 'fonttbl') {
+      final defaultFont = _defaultFontNumber;
+      if (defaultFont != null) _selectFont(defaultFont);
+    }
+  }
+
   void _readControlOrEscapedCharacter() {
-    _index++; // skip backslash
+    _index++; // salta il backslash
     if (_index >= source.length) return;
 
     final marker = source.codeUnitAt(_index);
@@ -3222,6 +3477,7 @@ class _RtfPlainTextParser {
       return;
     }
 
+    _flushPendingEncodedBytes();
     if (_isAsciiLetter(marker)) {
       _readControlWord();
       return;
@@ -3231,15 +3487,18 @@ class _RtfPlainTextParser {
   }
 
   void _readHexEncodedByte() {
-    _index++; // skip quote
-    if (_index + 1 >= source.length) return;
+    _index++; // salta l'apostrofo
+    if (_index + 1 >= source.length) {
+      _index = source.length;
+      return;
+    }
     final hex = source.substring(_index, _index + 2);
     final value = int.tryParse(hex, radix: 16);
     _index += 2;
     if (value == null) return;
-    if (_state.skipDestination) return;
     if (_consumeUnicodeFallbackCharacter()) return;
-    _appendDecodedByte(value);
+    if (_state.skipDestination) return;
+    _appendEncodedByte(value);
   }
 
   void _readControlWord() {
@@ -3247,7 +3506,7 @@ class _RtfPlainTextParser {
     while (_index < source.length && _isAsciiLetter(source.codeUnitAt(_index))) {
       _index++;
     }
-    final word = source.substring(start, _index);
+    final word = source.substring(start, _index).toLowerCase();
 
     var sign = 1;
     if (_index < source.length) {
@@ -3270,8 +3529,20 @@ class _RtfPlainTextParser {
       if (number != null) number *= sign;
     }
 
+    // Uno spazio dopo un control word è un delimitatore e non fa parte del
+    // testo. Gli altri caratteri delimitatori devono invece essere riletti.
     if (_index < source.length && source.codeUnitAt(_index) == 0x20) {
       _index++;
+    }
+
+    // Nel fallback ANSI successivo a \uN, ogni control word conta come un
+    // solo carattere e non deve alterare lo stato del parser. \binN conta
+    // come un carattere, ma richiede comunque di saltare i suoi N byte.
+    if (_consumeUnicodeFallbackCharacter()) {
+      if (word == 'bin') {
+        _binaryBytesToSkip = number != null && number > 0 ? number : 0;
+      }
+      return;
     }
 
     _handleControlWord(word, number);
@@ -3279,24 +3550,45 @@ class _RtfPlainTextParser {
 
   void _readEscapedSymbol(int marker) {
     _index++;
+
+    // Anche un control symbol rappresenta un solo carattere di fallback.
+    if (_consumeUnicodeFallbackCharacter()) {
+      if (marker == 0x0D &&
+          _index < source.length &&
+          source.codeUnitAt(_index) == 0x0A) {
+        _index++;
+      }
+      return;
+    }
+
     switch (marker) {
       case 0x5C: // backslash
       case 0x7B: // {
       case 0x7D: // }
         _appendLiteralCharacter(marker);
         break;
-      case 0x7E: // non-breaking space
+      case 0x7E: // spazio non interrompibile
         _appendText(' ');
         break;
-      case 0x5F: // non-breaking hyphen
+      case 0x5F: // trattino non interrompibile
         _appendText('-');
         break;
-      case 0x2D: // optional hyphen
+      case 0x2D: // trattino opzionale
         break;
-      case 0x2A: // ignorable destination
-        _state.skipDestination = true;
+      case 0x2A: // destinazione ignorable: il nome arriva subito dopo
+        _state.ignorableDestinationPending = true;
+        break;
+      case 0x3A: // subentry in un indice
+        _appendText(':');
+        break;
+      case 0x7C: // formula delimiter
+        _appendText('|');
         break;
       case 0x0D:
+        if (_index < source.length && source.codeUnitAt(_index) == 0x0A) {
+          _index++;
+        }
+        break;
       case 0x0A:
         break;
       default:
@@ -3306,23 +3598,136 @@ class _RtfPlainTextParser {
   }
 
   void _handleControlWord(String word, int? number) {
+    // \binN è seguito da N byte opachi. Possono contenere parentesi e
+    // backslash: interpretarli come RTF romperebbe lo stack dei gruppi.
+    if (word == 'bin') {
+      _binaryBytesToSkip = number != null && number > 0 ? number : 0;
+      return;
+    }
+
     if (word == 'ansicpg' && number != null) {
-      _state.codePage = number;
+      _state.ansiCodePage = number;
+      if (_state.currentFontNumber == null) _state.codePage = number;
+      return;
+    }
+    if (word == 'ansi') {
+      _state.ansiCodePage = 1252;
+      if (_state.currentFontNumber == null) _state.codePage = 1252;
       return;
     }
     if (word == 'mac') {
+      _state.ansiCodePage = 10000;
       _state.codePage = 10000;
       return;
     }
-    if (word == 'pc' || word == 'pca') {
+    if (word == 'pc') {
+      _state.ansiCodePage = 437;
       _state.codePage = 437;
       return;
     }
-    if (word == 'uc' && number != null) {
-      _state.unicodeFallbackLength = number.clamp(0, 20).toInt();
+    if (word == 'pca') {
+      _state.ansiCodePage = 850;
+      _state.codePage = 850;
       return;
     }
+    if (word == 'deff' && number != null) {
+      _defaultFontNumber = number;
+      return;
+    }
+    if (word == 'uc' && number != null) {
+      _state.unicodeFallbackLength = number.clamp(0, 32).toInt();
+      return;
+    }
+
+    // Metadati della tabella font: servono per decodificare correttamente gli
+    // escape esadecimali, ma non devono comparire nel testo estratto.
+    if (_state.destination == 'fonttbl') {
+      if (word == 'f' && number != null) {
+        _state.fontDefinitionNumber = number;
+        _fontCodePages.putIfAbsent(number, () => _state.ansiCodePage);
+        return;
+      }
+      if (word == 'fcharset' && number != null) {
+        final fontNumber = _state.fontDefinitionNumber;
+        if (fontNumber != null) {
+          _fontCodePages[fontNumber] =
+              _codePageForFontCharset(number, _state.ansiCodePage);
+        }
+        return;
+      }
+      if (word == 'cpg' && number != null) {
+        final fontNumber = _state.fontDefinitionNumber;
+        if (fontNumber != null) _fontCodePages[fontNumber] = number;
+        return;
+      }
+    }
+
+    if (word == 'f' || word == 'af') {
+      if (number != null) _selectFont(number);
+      return;
+    }
+    if (word == 'cpg' && number != null) {
+      _state.codePage = number;
+      return;
+    }
+    if (word == 'plain') {
+      _state.hidden = false;
+      _state.deleted = false;
+      final defaultFont = _defaultFontNumber;
+      if (defaultFont != null) {
+        _selectFont(defaultFont);
+      } else {
+        _state.currentFontNumber = null;
+        _state.codePage = _state.ansiCodePage;
+      }
+      return;
+    }
+    if (word == 'v') {
+      _state.hidden = number == null || number != 0;
+      return;
+    }
+    if (word == 'deleted') {
+      _state.deleted = number == null || number != 0;
+      return;
+    }
+
+    // \* dichiara una destinazione che un lettore può ignorare. Facciamo
+    // eccezione per \ud quando è il ramo Unicode di \upr.
+    if (_state.ignorableDestinationPending) {
+      _state.ignorableDestinationPending = false;
+      if (word == 'ud' && _state.allowUnicodeDestination) {
+        _state.destination = 'ud';
+        _state.skipDestination = false;
+        return;
+      }
+      _state.destination = word;
+      _state.skipDestination = true;
+      return;
+    }
+
+    if (word == 'upr') {
+      _state.uprNextChildIndex = 0;
+      return;
+    }
+    if (word == 'ud') {
+      if (!_state.allowUnicodeDestination) {
+        _state.destination = 'ud';
+      }
+      return;
+    }
+
+    // Le vecchie caselle di testo possono trovarsi dentro una destinazione
+    // ignorable \do. Il sottogruppo \dptxbxtext contiene però testo visibile.
+    if (word == 'dptxbxtext') {
+      _state.destination = word;
+      _state.skipDestination = false;
+      _appendText('\n');
+      _state.closeText = '\n';
+      return;
+    }
+
     if (_ignoredDestinations.contains(word)) {
+      _state.destination = word;
       _state.skipDestination = true;
       return;
     }
@@ -3335,105 +3740,195 @@ class _RtfPlainTextParser {
         break;
       case 'par':
       case 'line':
+      case 'softline':
         _appendText('\n');
         break;
       case 'page':
       case 'sect':
+      case 'column':
+      case 'softpage':
         _appendText('\n\n');
         break;
       case 'tab':
+        _appendCharacterControl('\t');
+        break;
+      case 'cell':
+      case 'nestcell':
         _appendText('\t');
         break;
+      case 'row':
+      case 'nestrow':
+        _appendText('\n');
+        break;
       case 'emdash':
-        _appendText('—');
+        _appendCharacterControl('—');
         break;
       case 'endash':
-        _appendText('–');
+        _appendCharacterControl('–');
         break;
       case 'emspace':
       case 'enspace':
       case 'qmspace':
-        _appendText(' ');
+        _appendCharacterControl(' ');
         break;
       case 'bullet':
-        _appendText('•');
+        _appendCharacterControl('•');
         break;
       case 'lquote':
-        _appendText('‘');
+        _appendCharacterControl('‘');
         break;
       case 'rquote':
-        _appendText('’');
+        _appendCharacterControl('’');
         break;
       case 'ldblquote':
-        _appendText('“');
+        _appendCharacterControl('“');
         break;
       case 'rdblquote':
-        _appendText('”');
+        _appendCharacterControl('”');
+        break;
+      case 'ltrmark':
+        _appendCharacterControl('\u200E');
+        break;
+      case 'rtlmark':
+        _appendCharacterControl('\u200F');
+        break;
+      case 'zwj':
+        _appendCharacterControl('\u200D');
+        break;
+      case 'zwnj':
+        _appendCharacterControl('\u200C');
+        break;
+      case 'footnote':
+      case 'endnote':
+        _appendText(' (');
+        _state.closeText = ')';
+        break;
+      case 'shptxt':
+        _appendText('\n');
+        _state.closeText = '\n';
+        break;
+      case 'chftn':
+      case 'chftnsep':
+      case 'chftnsepc':
+      case 'chatn':
+        // Marcatori automatici: il testo della nota viene conservato, il
+        // simbolo numerico è gestito dal programma che ha creato l'RTF.
         break;
       default:
-        // Formatting controls such as \b, \i, \fs24, \cf1 are intentionally
-        // ignored: we only need the readable document text.
+        // Formattazione (\b, \i, \fs24, \cf1, \pard...) intenzionalmente
+        // ignorata: qui serve soltanto il testo leggibile.
         break;
     }
   }
 
-  void _appendRawCharacter(int codeUnit) {
-    if (_state.skipDestination) return;
+  void _selectFont(int fontNumber) {
+    _state.currentFontNumber = fontNumber;
+    _state.codePage = _fontCodePages[fontNumber] ?? _state.ansiCodePage;
+  }
+
+  void _appendCharacterControl(String text) {
     if (_consumeUnicodeFallbackCharacter()) return;
+    _appendText(text);
+  }
+
+  void _appendRawCharacter(int codeUnit) {
+    if (_consumeUnicodeFallbackCharacter()) return;
+    if (_state.skipDestination || _state.hidden || _state.deleted) return;
     if (codeUnit >= 0x80 && codeUnit <= 0xFF) {
-      _appendDecodedByte(codeUnit);
+      _appendEncodedByte(codeUnit);
     } else {
       _appendLiteralCharacter(codeUnit);
     }
   }
 
-  void _appendDecodedByte(int value) {
-    _appendText(_decodeByteForCurrentCodePage(value));
+  void _appendEncodedByte(int value) {
+    if (_state.skipDestination || _state.hidden || _state.deleted) return;
+    final codePage = _state.codePage;
+    if (_pendingEncodedCodePage != codePage) {
+      _flushPendingEncodedBytes();
+      _pendingEncodedCodePage = codePage;
+    }
+    _pendingEncodedBytes.add(value);
+
+    // Le code page a byte singolo possono essere emesse subito. Le code page
+    // UTF-8/asiatiche devono invece ricevere l'intera sequenza multibyte.
+    if (!_isMultibyteCodePage(codePage)) {
+      _flushPendingEncodedBytes();
+    }
   }
 
-  String _decodeByteForCurrentCodePage(int value) {
-    if (value < 0x80) return String.fromCharCode(value);
-    switch (_state.codePage) {
+  void _flushPendingEncodedBytes() {
+    if (_pendingEncodedBytes.isEmpty) return;
+    final bytes = List<int>.from(_pendingEncodedBytes);
+    final codePage = _pendingEncodedCodePage ?? _state.codePage;
+    _pendingEncodedBytes.clear();
+    _pendingEncodedCodePage = null;
+
+    final decoded = _decodeBytesForCodePage(bytes, codePage);
+    if (decoded.isNotEmpty &&
+        !_state.skipDestination &&
+        !_state.hidden &&
+        !_state.deleted) {
+      _flushPendingHighSurrogate();
+      _buffer.write(decoded);
+    }
+  }
+
+  String _decodeBytesForCodePage(List<int> bytes, int codePage) {
+    if (bytes.isEmpty) return '';
+    if (codePage == 65001) {
+      return utf8.decode(bytes, allowMalformed: true);
+    }
+
+    final table = _singleByteTableForCodePage(codePage);
+    if (table != null) {
+      return DocumentTextExtractor._decodeSingleByte(bytes, table);
+    }
+
+    // Le più comuni code page DBCS non hanno un codec nella libreria standard
+    // di Dart. Conserviamo almeno l'ASCII e sostituiamo in modo esplicito le
+    // sequenze non decodificabili, evitando testo Latin-1 ingannevole.
+    if (_isMultibyteCodePage(codePage)) {
+      final output = StringBuffer();
+      for (final byte in bytes) {
+        output.writeCharCode(byte < 0x80 ? byte : 0xFFFD);
+      }
+      return output.toString();
+    }
+
+    return DocumentTextExtractor._decodeSingleByte(bytes, _windows1252);
+  }
+
+  List<int?>? _singleByteTableForCodePage(int codePage) {
+    switch (codePage) {
+      case 437:
+        return _cp437;
+      case 850:
+        return _cp850;
+      case 874:
+        return _windows874;
+      case 10000:
+        return _macRoman;
       case 1250:
-        return DocumentTextExtractor._decodeSingleByte(
-          [value],
-          _windows1250,
-        );
+        return _windows1250;
       case 1251:
-        return DocumentTextExtractor._decodeSingleByte(
-          [value],
-          _windows1251,
-        );
+        return _windows1251;
       case 1252:
-        return DocumentTextExtractor._decodeSingleByte(
-          [value],
-          _windows1252,
-        );
+        return _windows1252;
       case 1253:
-        return DocumentTextExtractor._decodeSingleByte(
-          [value],
-          _windows1253,
-        );
+        return _windows1253;
       case 1254:
-        return DocumentTextExtractor._decodeSingleByte(
-          [value],
-          _windows1254,
-        );
+        return _windows1254;
       case 1255:
-        return DocumentTextExtractor._decodeSingleByte(
-          [value],
-          _windows1255,
-        );
+        return _windows1255;
       case 1256:
-        return DocumentTextExtractor._decodeSingleByte(
-          [value],
-          _windows1256,
-        );
+        return _windows1256;
+      case 1257:
+        return _windows1257;
+      case 1258:
+        return _windows1258;
       default:
-        return DocumentTextExtractor._decodeSingleByte(
-          [value],
-          _windows1252,
-        );
+        return null;
     }
   }
 
@@ -3458,7 +3953,6 @@ class _RtfPlainTextParser {
             0x10000 + ((high - 0xD800) << 10) + (codeUnit - 0xDC00);
         _pendingHighSurrogate = null;
         _appendText(String.fromCharCode(fullCodePoint));
-        return;
       }
       return;
     }
@@ -3467,13 +3961,20 @@ class _RtfPlainTextParser {
   }
 
   void _flushPendingHighSurrogate() {
-    if (_pendingHighSurrogate != null) {
-      _pendingHighSurrogate = null;
-    }
+    // Un high surrogate isolato è un RTF malformato: non deve essere emesso né
+    // combinato accidentalmente con un low surrogate molto più avanti.
+    _pendingHighSurrogate = null;
   }
 
   void _appendText(String text) {
-    if (text.isEmpty || _state.skipDestination) return;
+    if (text.isEmpty ||
+        _state.skipDestination ||
+        _state.hidden ||
+        _state.deleted) {
+      return;
+    }
+    _flushPendingEncodedBytes();
+    _flushPendingHighSurrogate();
     _buffer.write(text);
   }
 
@@ -3481,6 +3982,62 @@ class _RtfPlainTextParser {
     if (_fallbackCharsToSkip <= 0) return false;
     _fallbackCharsToSkip--;
     return true;
+  }
+
+  static bool _isMultibyteCodePage(int codePage) =>
+      codePage == 65001 ||
+      codePage == 932 ||
+      codePage == 936 ||
+      codePage == 949 ||
+      codePage == 950 ||
+      codePage == 1361;
+
+  static int _codePageForFontCharset(int charset, int ansiCodePage) {
+    switch (charset) {
+      case 0:
+      case 1:
+        return ansiCodePage;
+      case 77:
+        return 10000;
+      case 128:
+        return 932;
+      case 129:
+        return 949;
+      case 130:
+        return 1361;
+      case 134:
+        return 936;
+      case 136:
+        return 950;
+      case 161:
+        return 1253;
+      case 162:
+        return 1254;
+      case 163:
+        return 1258;
+      case 177:
+        return 1255;
+      case 178:
+      case 179:
+      case 180:
+        return 1256;
+      case 181:
+        return 1255;
+      case 186:
+        return 1257;
+      case 204:
+        return 1251;
+      case 222:
+        return 874;
+      case 238:
+        return 1250;
+      case 254:
+        return 437;
+      case 255:
+        return 850;
+      default:
+        return ansiCodePage;
+    }
   }
 
   static bool _isAsciiLetter(int codeUnit) =>
@@ -3492,19 +4049,41 @@ class _RtfPlainTextParser {
 }
 
 class _RtfState {
+  int ansiCodePage;
   int codePage;
   int unicodeFallbackLength;
+  int? currentFontNumber;
+  int? fontDefinitionNumber;
   bool skipDestination;
+  bool ignorableDestinationPending = false;
+  bool allowUnicodeDestination = false;
+  bool hidden;
+  bool deleted;
+  String? destination;
+  String closeText = '';
+  int uprNextChildIndex = -1;
 
   _RtfState({
+    this.ansiCodePage = 1252,
     this.codePage = 1252,
     this.unicodeFallbackLength = 1,
+    this.currentFontNumber,
+    this.fontDefinitionNumber,
     this.skipDestination = false,
+    this.hidden = false,
+    this.deleted = false,
+    this.destination,
   });
 
-  _RtfState copy() => _RtfState(
+  _RtfState copyForChildGroup() => _RtfState(
+        ansiCodePage: ansiCodePage,
         codePage: codePage,
         unicodeFallbackLength: unicodeFallbackLength,
+        currentFontNumber: currentFontNumber,
+        fontDefinitionNumber: fontDefinitionNumber,
         skipDestination: skipDestination,
+        hidden: hidden,
+        deleted: deleted,
+        destination: destination,
       );
 }

@@ -287,7 +287,6 @@ void main() {
       }
     });
 
-
     test('extracts readable text from RTF with unicode and hex escapes', () {
       final rtf = r"""{\rtf1\ansi\ansicpg1252{\fonttbl{\f0 Arial;}}
 Caff\u232? e citt\'e0.\par Seconda riga con \b grassetto\b0 .}""";
@@ -309,5 +308,153 @@ Caff\u232? e citt\'e0.\par Seconda riga con \b grassetto\b0 .}""";
       expect(decoded, 'Příliš žluťoučký kůň.');
     });
 
+    group('RTF robust parsing', () {
+      String decode(String rtf) =>
+          DocumentTextExtractor.decodeRtfDocumentTextBytes(latin1.encode(rtf));
+
+      test('skips binary payloads without corrupting RTF groups', () {
+        final rtf = r'{\rtf1\ansi Prima\bin6 {\}abc dopo.}';
+
+        expect(decode(rtf), 'Prima dopo.');
+      });
+
+      test('keeps field results and ignores field instructions', () {
+        final rtf = r'''{\rtf1\ansi
+{\field{\fldinst HYPERLINK "https://example.com"}{\fldrslt Sito visibile}}
+}''';
+
+        expect(decode(rtf), 'Sito visibile');
+      });
+
+      test('separates table cells and rows', () {
+        final rtf = r'{\rtf1\ansi A\cell B\cell\row C\cell D\cell\row}';
+
+        expect(decode(rtf), 'A\tB\nC\tD');
+      });
+
+      test('preserves text boxes and embedded object results', () {
+        final rtf = r'''{\rtf1\ansi
+{\shp{\*\shpinst{\sp{\sn shapeType}{\sv 1}}}{\shptxt Testo casella.}}
+{\object{\*\objclass Package}{\*\objdata 010203}{\result Risultato oggetto.}}
+}''';
+
+        expect(decode(rtf), 'Testo casella.\nRisultato oggetto.');
+      });
+
+      test('chooses the Unicode branch of upr destinations', () {
+        final rtf = r'{\rtf1\ansi{\upr{cafe}{\*\ud caf\u233?}}}';
+
+        expect(decode(rtf), 'café');
+      });
+
+      test('uses font charset when decoding hexadecimal bytes', () {
+        final rtf = r'''{\rtf1\ansi
+{\fonttbl{\f0\fnil\fcharset204 Arial;}}
+\f0 \'cf\'f0\'e8\'e2\'e5\'f2
+}''';
+
+        expect(decode(rtf), 'Привет');
+      });
+
+      test('applies the default font charset without an explicit body font', () {
+        final rtf = r'''{\rtf1\ansi\deff0
+{\fonttbl{\f0\fnil\fcharset204 Arial;}}
+\'cf\'f0\'e8\'e2\'e5\'f2
+}''';
+
+        expect(decode(rtf), 'Привет');
+      });
+
+      test('decodes UTF-8 byte escapes declared with ansicpg65001', () {
+        final rtf = r"{\rtf1\ansi\ansicpg65001 Caf\'c3\'a9}";
+
+        expect(decode(rtf), 'Café');
+      });
+
+      test('recognizes UTF-8, UTF-16 and UTF-32 byte-order marks', () {
+        const rtf = r'{\rtf1\ansi Testo con BOM: café 日本語.}';
+        final utf8Bom = <int>[0xEF, 0xBB, 0xBF, ...utf8.encode(rtf)];
+        final utf16LeBom = <int>[0xFF, 0xFE];
+        final utf32LeBom = <int>[0xFF, 0xFE, 0x00, 0x00];
+        for (final unit in rtf.codeUnits) {
+          utf16LeBom
+            ..add(unit & 0xFF)
+            ..add((unit >> 8) & 0xFF);
+        }
+        for (final codePoint in rtf.runes) {
+          utf32LeBom
+            ..add(codePoint & 0xFF)
+            ..add((codePoint >> 8) & 0xFF)
+            ..add((codePoint >> 16) & 0xFF)
+            ..add((codePoint >> 24) & 0xFF);
+        }
+
+        for (final bytes in [utf8Bom, utf16LeBom, utf32LeBom]) {
+          expect(
+            DocumentTextExtractor.decodeRtfDocumentTextBytes(bytes),
+            'Testo con BOM: café 日本語.',
+          );
+        }
+      });
+
+      test('supports Baltic, Vietnamese, Thai, DOS and Mac code pages', () {
+        expect(
+          decode(r"{\rtf1\ansi\ansicpg1257 \'c0\'feuolas}"),
+          'Ąžuolas',
+        );
+        expect(
+          decode(r"{\rtf1\ansi\ansicpg1258 \'d0\'e0}"),
+          'Đà',
+        );
+        expect(
+          decode(r"{\rtf1\ansi\ansicpg874 \'c0\'d2\'c9\'d2\'e4\'b7\'c2}"),
+          'ภาษาไทย',
+        );
+        expect(decode(r"{\rtf1\pc \'82}"), 'é');
+        expect(decode(r"{\rtf1\pca \'82}"), 'é');
+        expect(decode(r"{\rtf1\mac \'8e}"), 'é');
+      });
+
+      test('omits hidden and deleted text but keeps notes and old list text', () {
+        final rtf = r'''{\rtf1\ansi
+Visibile{\v nascosto} ancora{\deleted eliminato} fine.\par
+{\pntext 1.\tab}Voce{\footnote nota}
+}''';
+
+        expect(decode(rtf), 'Visibile ancora fine.\n1.\tVoce (nota)');
+      });
+
+      test('handles escaped braces, surrogate pairs and malformed endings', () {
+        final rtf = r'{\rtf1\ansi Graffa \{ok\}. Emoji \u-10179?\u-8704?';
+
+        expect(decode(rtf), 'Graffa {ok}. Emoji 😀');
+      });
+
+      test('counts control words as Unicode fallback characters', () {
+        final rtf = r'{\rtf1\ansi\uc1 Simbolo \u8226\bullet  dopo.}';
+
+        expect(decode(rtf), 'Simbolo • dopo.');
+      });
+
+      test('stops malformed Unicode fallback at group delimiters', () {
+        final rtf = r'{\rtf1\ansi Prima {\uc1\u233} dopo.}';
+
+        expect(decode(rtf), 'Prima é dopo.');
+      });
+
+      test('counts binary data as one Unicode fallback character', () {
+        final rtf = r'{\rtf1\ansi\uc1 X\u65\bin3 abcY}';
+
+        expect(decode(rtf), 'XAY');
+      });
+
+      test('preserves text from legacy drawing text boxes', () {
+        final rtf = r'''{\rtf1\ansi
+{\*\do\dptxbx{\dptxbxtext Testo vecchia casella.}}
+}''';
+
+        expect(decode(rtf), 'Testo vecchia casella.');
+      });
+    });
   });
 }
