@@ -22,7 +22,7 @@ import '../services/epub_export_service.dart';
 import '../services/internet_archive_service.dart';
 import '../services/librivox_service.dart';
 import '../utils/app_logger.dart';
-import '../utils/accessibility_list_behavior.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'document_editor_screen.dart';
 import 'document_reader_screen.dart';

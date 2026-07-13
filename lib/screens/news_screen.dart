@@ -16,7 +16,7 @@ import '../services/news_sources/news_rss_source.dart';
 import 'news_webview_screen.dart';
 import '../utils/status_message.dart';
 import '../utils/list_timestamp_formatter.dart';
-import '../utils/accessibility_list_behavior.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class NewsScreen extends StatefulWidget {
   final String? folderId;
