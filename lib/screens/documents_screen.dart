@@ -22,6 +22,7 @@ import '../services/epub_export_service.dart';
 import '../services/internet_archive_service.dart';
 import '../services/librivox_service.dart';
 import '../utils/app_logger.dart';
+import '../utils/accessibility_list_behavior.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'document_editor_screen.dart';
 import 'document_reader_screen.dart';
@@ -1077,8 +1078,21 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 : docs.isEmpty
                     ? const _EmptyState()
                     : ListView.separated(
+                        key: PageStorageKey<String>(
+                          'documents_${widget.folderId ?? 'root'}',
+                        ),
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                        scrollCacheExtent: accessibilityListCacheExtent(context),
                         itemCount: docs.length,
+                        findItemIndexCallback: (key) {
+                          if (key is! ValueKey<String>) return null;
+                          const prefix = 'document_item_';
+                          if (!key.value.startsWith(prefix)) return null;
+                          final id = key.value.substring(prefix.length);
+                          final itemIndex =
+                              docs.indexWhere((doc) => doc.id == id);
+                          return itemIndex < 0 ? null : itemIndex;
+                        },
                         separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final doc = docs[index];
@@ -1086,6 +1100,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                           final isLast = index == docs.length - 1;
 
                           return _DocumentTile(
+                            key: ValueKey<String>('document_item_${doc.id}'),
                             doc: doc,
                             isFirst: isFirst,
                             isLast: isLast,
@@ -1124,6 +1139,7 @@ class _DocumentTile extends StatelessWidget {
   final ValueChanged<_DocumentAction> onAction;
 
   const _DocumentTile({
+    super.key,
     required this.doc,
     required this.isFirst,
     required this.isLast,
@@ -1175,11 +1191,11 @@ class _DocumentTile extends StatelessWidget {
     final badgeColor = _badgeColor(doc.extension);
     final displayName = doc.displayName;
 
-    return MergeSemantics(
-      child: Semantics(
-        key: ValueKey('document_item_semantics_${doc.id}'),
-        container: true,
-        customSemanticsActions: {
+    return Semantics(
+      container: true,
+      button: true,
+      onTap: onOpen,
+      customSemanticsActions: {
           CustomSemanticsAction(
               label: doc.isFolder
                   ? l10n.removeFolder
@@ -1197,12 +1213,12 @@ class _DocumentTile extends StatelessWidget {
                 onAction(_DocumentAction.moveDown),
           CustomSemanticsAction(label: l10n.moveToPosition): () =>
               onAction(_DocumentAction.moveToPosition),
-        },
-        label:
-            '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} $displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}',
-        hint: doc.isFolder ? l10n.openFolderHint : l10n.openDocumentHint,
+      },
+      label:
+          '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} $displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}',
+      hint: doc.isFolder ? l10n.openFolderHint : l10n.openDocumentHint,
+      child: ExcludeSemantics(
         child: Card(
-          key: ValueKey('document_item_card_${doc.id}'),
           elevation: 2,
           clipBehavior: Clip.antiAlias,
           child: InkWell(

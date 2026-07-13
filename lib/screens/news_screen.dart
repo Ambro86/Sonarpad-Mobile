@@ -16,6 +16,7 @@ import '../services/news_sources/news_rss_source.dart';
 import 'news_webview_screen.dart';
 import '../utils/status_message.dart';
 import '../utils/list_timestamp_formatter.dart';
+import '../utils/accessibility_list_behavior.dart';
 
 class NewsScreen extends StatefulWidget {
   final String? folderId;
@@ -842,6 +843,13 @@ enum _NewsSourceAction {
   moveOutOfFolder,
 }
 
+String _newsSourceStableId(NewsRssSource source) {
+  if (source.isFolder) {
+    return 'folder:${source.folderId ?? source.uri}';
+  }
+  return 'source:${source.uri}';
+}
+
 class _NewsSourceList extends StatelessWidget {
   const _NewsSourceList({
     required this.sources,
@@ -981,18 +989,38 @@ class _NewsSourceList extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return ListView.separated(
+      key: PageStorageKey<String>(
+        'news_sources_${language.code}_${currentFolderId ?? 'root'}',
+      ),
+      scrollCacheExtent: accessibilityListCacheExtent(context),
       itemCount: sources.length,
+      findItemIndexCallback: (key) {
+        if (key is! ValueKey<String>) return null;
+        const prefix = 'news_source_item_';
+        if (!key.value.startsWith(prefix)) return null;
+        final stableId = key.value.substring(prefix.length);
+        final itemIndex = sources.indexWhere(
+          (source) => _newsSourceStableId(source) == stableId,
+        );
+        return itemIndex < 0 ? null : itemIndex;
+      },
       separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (context, index) {
         final source = sources[index];
+        final stableId = _newsSourceStableId(source);
         final isFirst = index == 0;
         final isLast = index == sources.length - 1;
 
-        return MergeSemantics(
-          child: Semantics(
-            key: ValueKey('news_source_semantics_${source.name}'),
-            container: true,
-            customSemanticsActions: {
+        return Semantics(
+          key: ValueKey<String>('news_source_item_$stableId'),
+          container: true,
+          button: true,
+          label: source.isFolder
+              ? '${l10n.folderTypeLabel} ${source.name}'
+              : source.name,
+          hint: source.isFolder ? l10n.openFolderHint : null,
+          onTap: () => onSourceSelected(source),
+          customSemanticsActions: {
               if (onCreateFolder != null)
                 CustomSemanticsAction(label: l10n.createNewFolder): () {
                   onCreateFolder!();
@@ -1022,9 +1050,9 @@ class _NewsSourceList extends StatelessWidget {
               if (source.isCustom && !source.isFolder)
                 CustomSemanticsAction(label: l10n.deleteNewsSource): () =>
                     _handleAction(context, _NewsSourceAction.delete, index),
-            },
+          },
+          child: ExcludeSemantics(
             child: ListTile(
-              key: ValueKey('news_source_${source.isFolder ? source.folderId : source.name}'),
               leading: Icon(source.isFolder ? Icons.folder : Icons.rss_feed),
               title: Text(source.name),
               trailing: const Icon(Icons.chevron_right),
