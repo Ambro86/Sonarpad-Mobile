@@ -1056,29 +1056,28 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _ffmpegTime(previewStart),
         '-i',
         _inputPath,
-        '-t',
-        _ffmpegTime(previewDuration),
-        '-c:a',
-        'aac',
-        '-b:a',
-        '160k',
-        previewFile.path,
       ];
       if (usesUnderwaterBubbles) {
-        args.insertAll(5, [
+        args.addAll([
           '-stream_loop',
           '-1',
           '-i',
           await _ensureUnderwaterBubblesSourcePath(),
         ]);
-        args.insertAll(8, [
+      }
+      args.addAll([
+        '-t',
+        _ffmpegTime(previewDuration),
+      ]);
+      if (usesUnderwaterBubbles) {
+        args.addAll([
           '-filter_complex',
           audioFilter,
           '-map',
           '[outa]',
         ]);
       } else {
-        args.insertAll(8, [
+        args.addAll([
           '-map',
           '0:a:0?',
           '-vn',
@@ -1088,6 +1087,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           audioFilter,
         ]);
       }
+      args.addAll([
+        '-c:a',
+        'aac',
+        '-b:a',
+        '160k',
+        previewFile.path,
+      ]);
       await AppLogger.log(
         'Media cutter preview effects: start=${_ffmpegTime(previewStart)} '
         'duration=${_ffmpegTime(previewDuration)} '
