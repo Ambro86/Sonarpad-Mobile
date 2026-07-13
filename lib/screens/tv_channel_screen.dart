@@ -135,18 +135,13 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     try {
       final isRaiAd = _service.isRaiAudioDescriptionChannel(widget.channel);
 
-      // Su iOS: per i canali RAI tentiamo la traccia di audiodescrizione.
-      // resolveAudioDescriptionStreamUrl scarica il master HLS, cerca
-      // EXT-X-MEDIA con LANGUAGE="des" / NAME="Audiodescrizione" /
-      // CHARACTERISTICS contains "describes-video" e restituisce quell'URI.
-      // Se la traccia non c'è, cade back sull'URL principale.
-      final String resolvedUrl;
-      if (!Platform.isWindows && isRaiAd) {
-        resolvedUrl =
-            await _service.resolveAudioDescriptionStreamUrl(widget.channel);
-      } else {
-        resolvedUrl = await _service.resolveStreamUrl(widget.channel);
-      }
+      // Il player mobile riceve sempre il master RAI. Quando il canale può
+      // avere l'audiodescrizione, RadioPlayerScreen apre il master con MediaKit
+      // e seleziona la traccia "des" se presente, anche con il video disattivato.
+      // Evitiamo così di aprire direttamente la playlist audio figlia, che su
+      // alcuni stream (in particolare Rai 1) può richiedere il contesto della
+      // richiesta al master e rispondere con accesso negato.
+      final resolvedUrl = await _service.resolveStreamUrl(widget.channel);
 
       if (!mounted) return;
 

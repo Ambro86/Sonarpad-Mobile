@@ -146,10 +146,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
-      if (_requiresRaiAudioDescriptionVideoPlayback) {
+      if (_requiresRaiAudioDescriptionMediaKitPlayback) {
         final tvChannel = widget.tvChannel!;
         final streams =
             await TvService().resolveAudioDescriptionStreams(tvChannel);
+        await AppLogger.log(
+          'RadioPlayer: RAI MediaKit playback selected '
+          'videoEnabled=$_isVideoEnabled hasAD=${streams.hasAudioDescription}',
+        );
         await _playMediaKitVideo(
           streamUrl: streams.videoUrl,
           preferRaiAudioDescription: streams.hasAudioDescription,
@@ -683,7 +687,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   void _toggleVideo(bool enable) {
     AppLogger.log(
-      'RadioPlayer: enable video switch changed enable=$enable requiresVideoPlayback=$_requiresVideoPlayback requiresRaiADVideo=$_requiresRaiAudioDescriptionVideoPlayback position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
+      'RadioPlayer: enable video switch changed enable=$enable requiresVideoPlayback=$_requiresVideoPlayback requiresRaiADMediaKit=$_requiresRaiAudioDescriptionMediaKitPlayback position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
     );
     setState(() => _isVideoEnabled = enable);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1245,9 +1249,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool get _hasPendingScheduledRecording =>
       _scheduledRecordingStartTimer?.isActive ?? false;
 
-  bool get _requiresRaiAudioDescriptionVideoPlayback =>
+  bool get _requiresRaiAudioDescriptionMediaKitPlayback =>
       widget.isVideoSupported &&
-      _isVideoEnabled &&
       widget.tvChannel != null &&
       TvService().isRaiAudioDescriptionChannel(widget.tvChannel!);
 
