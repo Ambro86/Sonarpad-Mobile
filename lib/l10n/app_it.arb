@@ -1259,6 +1259,75 @@
   "@documentReaderEditHint": {
     "description": "Localized text for documentReaderEditHint."
   },
+  "documentParagraphSelectionStartAction": "Avvia selezione paragrafi",
+  "@documentParagraphSelectionStartAction": {
+    "description": "Localized text for documentParagraphSelectionStartAction."
+  },
+  "documentParagraphSelectionTapHint": "Modalità selezione attiva. Tocca due volte per selezionare o deselezionare questo paragrafo.",
+  "@documentParagraphSelectionTapHint": {
+    "description": "Localized text for documentParagraphSelectionTapHint."
+  },
+  "documentParagraphSelectionStarted": "Modalità selezione attiva. Paragrafo selezionato. Tocca due volte sugli altri paragrafi per selezionarli.",
+  "@documentParagraphSelectionStarted": {
+    "description": "Localized text for documentParagraphSelectionStarted."
+  },
+  "documentParagraphSelectedAnnouncement": "Paragrafo selezionato. Totale selezionati: {count}.",
+  "@documentParagraphSelectedAnnouncement": {
+    "description": "Localized text for documentParagraphSelectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphDeselectedAnnouncement": "Paragrafo deselezionato. Totale selezionati: {count}.",
+  "@documentParagraphDeselectedAnnouncement": {
+    "description": "Localized text for documentParagraphDeselectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphSelectionCount": "Selezionati: {count}",
+  "@documentParagraphSelectionCount": {
+    "description": "Localized text for documentParagraphSelectionCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentDeleteSelectedParagraphs": "Elimina paragrafi selezionati",
+  "@documentDeleteSelectedParagraphs": {
+    "description": "Localized text for documentDeleteSelectedParagraphs."
+  },
+  "documentDeleteSelectedParagraphsConfirmation": "Eliminare i paragrafi selezionati? Totale: {count}.",
+  "@documentDeleteSelectedParagraphsConfirmation": {
+    "description": "Localized text for documentDeleteSelectedParagraphsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentSelectedParagraphsDeleted": "Paragrafi eliminati: {count}.",
+  "@documentSelectedParagraphsDeleted": {
+    "description": "Localized text for documentSelectedParagraphsDeleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentExitParagraphSelection": "Esci dalla selezione paragrafi",
+  "@documentExitParagraphSelection": {
+    "description": "Localized text for documentExitParagraphSelection."
+  },
+  "documentParagraphSelectionExited": "Modalità selezione disattivata.",
+  "@documentParagraphSelectionExited": {
+    "description": "Localized text for documentParagraphSelectionExited."
+  },
   "documentBookmarkHintSet": "Scorri verso l’alto o verso il basso per impostare un segnalibro.",
   "@documentBookmarkHintSet": {
     "description": "Localized text for documentBookmarkHintSet."

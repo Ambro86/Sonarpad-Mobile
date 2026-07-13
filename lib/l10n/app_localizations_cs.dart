@@ -875,6 +875,50 @@ class AppLocalizationsCs extends AppLocalizations {
   String get documentReaderEditHint =>
       'Klepnutím na odstavec ho upravíte. Přejetím nahoru nebo dolů přidáte záložku.';
 
+
+  @override
+  String get documentParagraphSelectionStartAction => 'Spustit výběr odstavců';
+
+  @override
+  String get documentParagraphSelectionTapHint => 'Režim výběru je aktivní. Dvojitým klepnutím tento odstavec vyberete nebo zrušíte jeho výběr.';
+
+  @override
+  String get documentParagraphSelectionStarted => 'Režim výběru je aktivní. Odstavec byl vybrán. Dvojitým klepnutím vyberte další odstavce.';
+
+  @override
+  String documentParagraphSelectedAnnouncement(int count) {
+    return 'Odstavec vybrán. Celkem vybráno: $count.';
+  }
+
+  @override
+  String documentParagraphDeselectedAnnouncement(int count) {
+    return 'Výběr odstavce zrušen. Celkem vybráno: $count.';
+  }
+
+  @override
+  String documentParagraphSelectionCount(int count) {
+    return 'Vybráno: $count';
+  }
+
+  @override
+  String get documentDeleteSelectedParagraphs => 'Odstranit vybrané odstavce';
+
+  @override
+  String documentDeleteSelectedParagraphsConfirmation(int count) {
+    return 'Odstranit vybrané odstavce? Celkem: $count.';
+  }
+
+  @override
+  String documentSelectedParagraphsDeleted(int count) {
+    return 'Odstraněné odstavce: $count.';
+  }
+
+  @override
+  String get documentExitParagraphSelection => 'Ukončit výběr odstavců';
+
+  @override
+  String get documentParagraphSelectionExited => 'Režim výběru byl vypnut.';
+
   @override
   String get documentBookmarkHintSet =>
       'Přejetím nahoru nebo dolů nastavíte záložku.';

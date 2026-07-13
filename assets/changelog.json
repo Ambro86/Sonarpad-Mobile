@@ -3,6 +3,7 @@
     "version": "0.3.2",
     "date": "2026-06-27",
     "it": [
+      "Documenti: aggiunta la modalità di selezione multipla dei paragrafi. Dall’azione secondaria si avvia la selezione; durante la modalità il doppio tap seleziona o deseleziona i paragrafi, mostra il conteggio e permette di eliminarli insieme dopo una conferma. Il comando Indietro esce prima dalla modalità di selezione senza chiudere il documento.",
       "Taglia file media: aggiunto un log diagnostico dettagliato per gli slot degli effetti audio, così si vede se un doppio tap modifica davvero Effetto audio 1/2 o se crea erroneamente uno slot nuovo.",
       "Taglia file media: dopo Applica taglio, la riproduzione con lo slider ora salta preventivamente le parti rimosse al confine esatto del taglio; nella schermata effetti, toccare Effetto 1 modifica quello esistente invece di creare Effetto 2.",
       "Documenti: migliorata l’apertura dei file RTF; Sonarpad ora interpreta il formato e mostra testo leggibile invece dei codici RTF.",
@@ -50,6 +51,7 @@
       "Notizie: rimossa una chiamata ridondante al reader quando la WebView carica la pagina, riducendo estrazioni doppie e log inutili."
     ],
     "en": [
+      "Documents: added a multiple-paragraph selection mode. Start it from a paragraph’s secondary action; while the mode is active, double tap selects or deselects paragraphs, shows the selected count, and lets you delete them together after confirmation. Back exits selection mode first without closing the document.",
       "Cut media file: added detailed diagnostic logging for audio effect slots, so it is clear whether a double tap edits Audio effect 1/2 or incorrectly creates a new slot.",
       "Cut media file: after Apply cut, playback with the slider now skips removed sections proactively at the exact cut boundary; in the effects screen, tapping Effect 1 edits the existing effect instead of creating Effect 2.",
       "Documents: improved opening of RTF files; Sonarpad now interprets the format and shows readable text instead of RTF codes.",
@@ -94,6 +96,7 @@
       "News: removed a redundant reader call while the WebView loads the page, reducing duplicate extraction attempts and unnecessary logs."
     ],
     "fr": [
+      "Documents : ajout d’un mode de sélection multiple des paragraphes. La sélection démarre depuis l’action secondaire d’un paragraphe ; lorsque le mode est actif, un double toucher sélectionne ou désélectionne les paragraphes, annonce leur nombre et permet de les supprimer ensemble après confirmation. Le bouton Retour quitte d’abord le mode de sélection sans fermer le document.",
       "Découper un fichier multimédia : ajout d’un journal diagnostique détaillé pour les emplacements des effets audio, afin de vérifier si un double toucher modifie bien l’effet audio 1/2 ou crée à tort un nouvel emplacement.",
       "Découper un fichier média : après Appliquer la coupe, la lecture avec le curseur saute désormais les parties supprimées de façon préventive au bord exact de la coupe ; dans l’écran des effets, toucher Effet 1 modifie l’effet existant au lieu de créer Effet 2.",
       "Documents : meilleure ouverture des fichiers RTF ; Sonarpad interprète maintenant le format et affiche un texte lisible au lieu des codes RTF.",
@@ -138,6 +141,7 @@
       "Actualités : suppression d’un appel redondant au lecteur pendant le chargement de la WebView, afin de réduire les extractions en double et les journaux inutiles."
     ],
     "es": [
+      "Documentos: se añadió un modo de selección múltiple de párrafos. Se inicia desde la acción secundaria de un párrafo; mientras el modo está activo, el doble toque selecciona o deselecciona párrafos, muestra el número seleccionado y permite eliminarlos juntos tras una confirmación. Atrás sale primero del modo de selección sin cerrar el documento.",
       "Cortar archivo multimedia: se agregó un registro de diagnóstico detallado para los espacios de efectos de audio, para comprobar si un doble toque modifica realmente el efecto de audio 1/2 o crea por error un nuevo espacio.",
       "Cortar archivo multimedia: después de Aplicar corte, la reproducción con el deslizador ahora salta preventivamente las partes eliminadas en el límite exacto del corte; en la pantalla de efectos, tocar Efecto 1 modifica el efecto existente en lugar de crear Efecto 2.",
       "Documentos: mejorada la apertura de archivos RTF; Sonarpad ahora interpreta el formato y muestra texto legible en lugar de códigos RTF.",
@@ -182,6 +186,7 @@
       "Noticias: se eliminó una llamada redundante al lector durante la carga de la WebView, reduciendo extracciones duplicadas y registros innecesarios."
     ],
     "pt": [
+      "Documentos: foi adicionado um modo de seleção múltipla de parágrafos. A seleção é iniciada pela ação secundária de um parágrafo; enquanto o modo está ativo, o toque duplo seleciona ou desseleciona parágrafos, anuncia a quantidade selecionada e permite eliminá-los em conjunto após confirmação. O comando Voltar sai primeiro do modo de seleção sem fechar o documento.",
       "Cortar ficheiro multimédia: foi adicionado um registo de diagnóstico detalhado para os espaços dos efeitos de áudio, para verificar se um duplo toque modifica realmente o Efeito de áudio 1/2 ou cria por engano um novo espaço.",
       "Cortar ficheiro multimédia: depois de Aplicar corte, a reprodução com o controlo deslizante passa a saltar preventivamente as partes removidas no limite exato do corte; no ecrã de efeitos, tocar em Efeito 1 edita o efeito existente em vez de criar Efeito 2.",
       "Documentos: melhorada a abertura de ficheiros RTF; o Sonarpad agora interpreta o formato e mostra texto legível em vez de códigos RTF.",
@@ -226,6 +231,7 @@
       "Notícias: removida uma chamada redundante ao leitor durante o carregamento da WebView, reduzindo extrações duplicadas e logs desnecessários."
     ],
     "pl": [
+      "Dokumenty: dodano tryb wielokrotnego zaznaczania akapitów. Zaznaczanie uruchamia się z dodatkowej czynności akapitu; w tym trybie podwójne stuknięcie zaznacza lub odznacza akapity, podaje ich liczbę i pozwala usunąć je razem po potwierdzeniu. Polecenie Wstecz najpierw opuszcza tryb zaznaczania, nie zamykając dokumentu.",
       "Przycinanie pliku multimedialnego: dodano szczegółowy dziennik diagnostyczny pól efektów audio, aby było widać, czy dwukrotne stuknięcie naprawdę edytuje Efekt audio 1/2, czy błędnie tworzy nowe pole.",
       "Przycinanie pliku multimedialnego: po użyciu Zastosuj cięcie odtwarzanie ze suwakiem z wyprzedzeniem pomija usunięte fragmenty dokładnie na granicy cięcia; na ekranie efektów stuknięcie Efekt 1 edytuje istniejący efekt zamiast tworzyć Efekt 2.",
       "Dokumenty: ulepszono otwieranie plików RTF; Sonarpad interpretuje teraz ten format i pokazuje czytelny tekst zamiast kodów RTF.",
@@ -271,6 +277,7 @@
       "Wiadomości: usunięto nadmiarowe wywołanie czytnika podczas ładowania WebView, ograniczając podwójne próby wyodrębniania i zbędne logi."
     ],
     "cs": [
+      "Dokumenty: byl přidán režim vícenásobného výběru odstavců. Výběr se spouští sekundární akcí odstavce; v tomto režimu dvojité klepnutí odstavec vybere nebo zruší jeho výběr, oznámí počet vybraných odstavců a umožní je po potvrzení společně odstranit. Příkaz Zpět nejprve ukončí režim výběru, aniž by zavřel dokument.",
       "Oříznutí mediálního souboru: přidán podrobný diagnostický protokol pro pozice zvukových efektů, aby bylo vidět, zda dvojité klepnutí skutečně upraví Zvukový efekt 1/2, nebo omylem vytvoří novou pozici.",
       "Oříznout mediální soubor: po volbě Použít střih přehrávání pomocí posuvníku nyní preventivně přeskočí odstraněné části přesně na hranici střihu; na obrazovce efektů klepnutí na Efekt 1 upraví stávající efekt místo vytvoření Efektu 2.",
       "Dokumenty: vylepšeno otevírání souborů RTF; Sonarpad nyní formát interpretuje a zobrazuje čitelný text místo kódů RTF.",

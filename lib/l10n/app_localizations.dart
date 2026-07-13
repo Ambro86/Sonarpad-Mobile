@@ -1632,6 +1632,40 @@ abstract class AppLocalizations {
   /// **'Tocca un paragrafo per modificarlo. Scorri verso l’alto o verso il basso per aggiungere un segnalibro.'**
   String get documentReaderEditHint;
 
+
+  /// Starts paragraph multi-selection mode.
+  String get documentParagraphSelectionStartAction;
+
+  /// Hint announced while paragraph multi-selection mode is active.
+  String get documentParagraphSelectionTapHint;
+
+  /// Announcement when paragraph multi-selection mode starts.
+  String get documentParagraphSelectionStarted;
+
+  /// Announcement after selecting a paragraph.
+  String documentParagraphSelectedAnnouncement(int count);
+
+  /// Announcement after deselecting a paragraph.
+  String documentParagraphDeselectedAnnouncement(int count);
+
+  /// Number of currently selected paragraphs.
+  String documentParagraphSelectionCount(int count);
+
+  /// Deletes all currently selected paragraphs.
+  String get documentDeleteSelectedParagraphs;
+
+  /// Confirmation before deleting selected paragraphs.
+  String documentDeleteSelectedParagraphsConfirmation(int count);
+
+  /// Announcement after deleting selected paragraphs.
+  String documentSelectedParagraphsDeleted(int count);
+
+  /// Exits paragraph multi-selection mode.
+  String get documentExitParagraphSelection;
+
+  /// Announcement after leaving paragraph multi-selection mode.
+  String get documentParagraphSelectionExited;
+
   /// Localized text for documentBookmarkHintSet.
   ///
   /// In it, this message translates to:

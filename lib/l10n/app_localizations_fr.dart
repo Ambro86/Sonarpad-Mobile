@@ -880,6 +880,50 @@ class AppLocalizationsFr extends AppLocalizations {
   String get documentReaderEditHint =>
       'Touchez un paragraphe pour le modifier. Balayez vers le haut ou vers le bas pour ajouter un signet.';
 
+
+  @override
+  String get documentParagraphSelectionStartAction => 'Démarrer la sélection de paragraphes';
+
+  @override
+  String get documentParagraphSelectionTapHint => 'Le mode de sélection est actif. Touchez deux fois pour sélectionner ou désélectionner ce paragraphe.';
+
+  @override
+  String get documentParagraphSelectionStarted => 'Le mode de sélection est actif. Paragraphe sélectionné. Touchez deux fois les autres paragraphes pour les sélectionner.';
+
+  @override
+  String documentParagraphSelectedAnnouncement(int count) {
+    return 'Paragraphe sélectionné. Total sélectionné : $count.';
+  }
+
+  @override
+  String documentParagraphDeselectedAnnouncement(int count) {
+    return 'Paragraphe désélectionné. Total sélectionné : $count.';
+  }
+
+  @override
+  String documentParagraphSelectionCount(int count) {
+    return 'Sélectionnés : $count';
+  }
+
+  @override
+  String get documentDeleteSelectedParagraphs => 'Supprimer les paragraphes sélectionnés';
+
+  @override
+  String documentDeleteSelectedParagraphsConfirmation(int count) {
+    return 'Supprimer les paragraphes sélectionnés ? Total : $count.';
+  }
+
+  @override
+  String documentSelectedParagraphsDeleted(int count) {
+    return 'Paragraphes supprimés : $count.';
+  }
+
+  @override
+  String get documentExitParagraphSelection => 'Quitter la sélection de paragraphes';
+
+  @override
+  String get documentParagraphSelectionExited => 'Mode de sélection désactivé.';
+
   @override
   String get documentBookmarkHintSet =>
       'Balayez vers le haut ou vers le bas pour définir un signet.';

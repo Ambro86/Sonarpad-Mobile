@@ -92,7 +92,6 @@ class TvProgram {
   });
 }
 
-
 class TvChannelLoadResult {
   final List<TvChannel> channels;
   final bool fromCache;
@@ -235,7 +234,8 @@ class TvService {
           cacheWarning: warning,
         );
       }
-      await AppLogger.log('TV: cache privata lista canali assente o non valida');
+      await AppLogger.log(
+          'TV: cache privata lista canali assente o non valida');
       throw Exception(
           'Impossibile scaricare i canali. Verifica la connessione internet e riprova.');
     }
@@ -297,7 +297,8 @@ class TvService {
       };
       await file.writeAsString(jsonEncode(payload), flush: true);
     } catch (e) {
-      await AppLogger.log('TV: impossibile salvare cache lista canali error=$e');
+      await AppLogger.log(
+          'TV: impossibile salvare cache lista canali error=$e');
     }
   }
 
@@ -572,7 +573,10 @@ class TvService {
 
     if (discoveryIds.containsKey(normName)) {
       effResolver = 'aurora_channel';
-      effChannelId ??= discoveryIds[normName];
+      // The Discovery+ page exposes UUIDs which are not valid channel IDs for
+      // Aurora. For known free-to-air channels always prefer the numeric ID,
+      // even when the server playlist supplied one of those page UUIDs.
+      effChannelId = discoveryIds[normName];
     }
     // ------------------------------
 

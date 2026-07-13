@@ -874,6 +874,50 @@ class AppLocalizationsPl extends AppLocalizations {
   String get documentReaderEditHint =>
       'Dotknij akapitu, aby go edytować. Przesuń w górę lub w dół, aby dodać zakładkę.';
 
+
+  @override
+  String get documentParagraphSelectionStartAction => 'Rozpocznij zaznaczanie akapitów';
+
+  @override
+  String get documentParagraphSelectionTapHint => 'Tryb zaznaczania jest aktywny. Stuknij dwukrotnie, aby zaznaczyć lub odznaczyć ten akapit.';
+
+  @override
+  String get documentParagraphSelectionStarted => 'Tryb zaznaczania jest aktywny. Akapit zaznaczony. Stuknij dwukrotnie inne akapity, aby je zaznaczyć.';
+
+  @override
+  String documentParagraphSelectedAnnouncement(int count) {
+    return 'Akapit zaznaczony. Łącznie zaznaczono: $count.';
+  }
+
+  @override
+  String documentParagraphDeselectedAnnouncement(int count) {
+    return 'Akapit odznaczony. Łącznie zaznaczono: $count.';
+  }
+
+  @override
+  String documentParagraphSelectionCount(int count) {
+    return 'Zaznaczone: $count';
+  }
+
+  @override
+  String get documentDeleteSelectedParagraphs => 'Usuń zaznaczone akapity';
+
+  @override
+  String documentDeleteSelectedParagraphsConfirmation(int count) {
+    return 'Usunąć zaznaczone akapity? Łącznie: $count.';
+  }
+
+  @override
+  String documentSelectedParagraphsDeleted(int count) {
+    return 'Usunięte akapity: $count.';
+  }
+
+  @override
+  String get documentExitParagraphSelection => 'Zakończ zaznaczanie akapitów';
+
+  @override
+  String get documentParagraphSelectionExited => 'Tryb zaznaczania wyłączony.';
+
   @override
   String get documentBookmarkHintSet =>
       'Przesuń w górę lub w dół, aby ustawić zakładkę.';

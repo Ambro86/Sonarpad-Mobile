@@ -874,6 +874,50 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentReaderEditHint =>
       'Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.';
 
+
+  @override
+  String get documentParagraphSelectionStartAction => 'Iniciar seleção de parágrafos';
+
+  @override
+  String get documentParagraphSelectionTapHint => 'O modo de seleção está ativo. Toque duas vezes para selecionar ou desmarcar este parágrafo.';
+
+  @override
+  String get documentParagraphSelectionStarted => 'O modo de seleção está ativo. Parágrafo selecionado. Toque duas vezes nos outros parágrafos para selecioná-los.';
+
+  @override
+  String documentParagraphSelectedAnnouncement(int count) {
+    return 'Parágrafo selecionado. Total selecionado: $count.';
+  }
+
+  @override
+  String documentParagraphDeselectedAnnouncement(int count) {
+    return 'Parágrafo desmarcado. Total selecionado: $count.';
+  }
+
+  @override
+  String documentParagraphSelectionCount(int count) {
+    return 'Selecionados: $count';
+  }
+
+  @override
+  String get documentDeleteSelectedParagraphs => 'Eliminar parágrafos selecionados';
+
+  @override
+  String documentDeleteSelectedParagraphsConfirmation(int count) {
+    return 'Eliminar os parágrafos selecionados? Total: $count.';
+  }
+
+  @override
+  String documentSelectedParagraphsDeleted(int count) {
+    return 'Parágrafos eliminados: $count.';
+  }
+
+  @override
+  String get documentExitParagraphSelection => 'Sair da seleção de parágrafos';
+
+  @override
+  String get documentParagraphSelectionExited => 'Modo de seleção desativado.';
+
   @override
   String get documentBookmarkHintSet =>
       'Deslize para cima ou para baixo para definir um marcador.';

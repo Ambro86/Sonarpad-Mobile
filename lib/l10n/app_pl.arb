@@ -1254,6 +1254,75 @@
     "description": "Localized text for documentReaderTitle."
   },
   "documentReaderEditHint": "Dotknij akapitu, aby go edytować. Przesuń w górę lub w dół, aby dodać zakładkę.",
+  "documentParagraphSelectionStartAction": "Rozpocznij zaznaczanie akapitów",
+  "@documentParagraphSelectionStartAction": {
+    "description": "Localized text for documentParagraphSelectionStartAction."
+  },
+  "documentParagraphSelectionTapHint": "Tryb zaznaczania jest aktywny. Stuknij dwukrotnie, aby zaznaczyć lub odznaczyć ten akapit.",
+  "@documentParagraphSelectionTapHint": {
+    "description": "Localized text for documentParagraphSelectionTapHint."
+  },
+  "documentParagraphSelectionStarted": "Tryb zaznaczania jest aktywny. Akapit zaznaczony. Stuknij dwukrotnie inne akapity, aby je zaznaczyć.",
+  "@documentParagraphSelectionStarted": {
+    "description": "Localized text for documentParagraphSelectionStarted."
+  },
+  "documentParagraphSelectedAnnouncement": "Akapit zaznaczony. Łącznie zaznaczono: {count}.",
+  "@documentParagraphSelectedAnnouncement": {
+    "description": "Localized text for documentParagraphSelectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphDeselectedAnnouncement": "Akapit odznaczony. Łącznie zaznaczono: {count}.",
+  "@documentParagraphDeselectedAnnouncement": {
+    "description": "Localized text for documentParagraphDeselectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphSelectionCount": "Zaznaczone: {count}",
+  "@documentParagraphSelectionCount": {
+    "description": "Localized text for documentParagraphSelectionCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentDeleteSelectedParagraphs": "Usuń zaznaczone akapity",
+  "@documentDeleteSelectedParagraphs": {
+    "description": "Localized text for documentDeleteSelectedParagraphs."
+  },
+  "documentDeleteSelectedParagraphsConfirmation": "Usunąć zaznaczone akapity? Łącznie: {count}.",
+  "@documentDeleteSelectedParagraphsConfirmation": {
+    "description": "Localized text for documentDeleteSelectedParagraphsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentSelectedParagraphsDeleted": "Usunięte akapity: {count}.",
+  "@documentSelectedParagraphsDeleted": {
+    "description": "Localized text for documentSelectedParagraphsDeleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentExitParagraphSelection": "Zakończ zaznaczanie akapitów",
+  "@documentExitParagraphSelection": {
+    "description": "Localized text for documentExitParagraphSelection."
+  },
+  "documentParagraphSelectionExited": "Tryb zaznaczania wyłączony.",
+  "@documentParagraphSelectionExited": {
+    "description": "Localized text for documentParagraphSelectionExited."
+  },
   "@documentReaderEditHint": {
     "description": "Localized text for documentReaderEditHint."
   },

@@ -320,6 +320,75 @@
   "readDocument": "Lire le document",
   "documentReaderTitle": "Lecteur de document",
   "documentReaderEditHint": "Touchez un paragraphe pour le modifier. Balayez vers le haut ou vers le bas pour ajouter un signet.",
+  "documentParagraphSelectionStartAction": "Démarrer la sélection de paragraphes",
+  "@documentParagraphSelectionStartAction": {
+    "description": "Localized text for documentParagraphSelectionStartAction."
+  },
+  "documentParagraphSelectionTapHint": "Le mode de sélection est actif. Touchez deux fois pour sélectionner ou désélectionner ce paragraphe.",
+  "@documentParagraphSelectionTapHint": {
+    "description": "Localized text for documentParagraphSelectionTapHint."
+  },
+  "documentParagraphSelectionStarted": "Le mode de sélection est actif. Paragraphe sélectionné. Touchez deux fois les autres paragraphes pour les sélectionner.",
+  "@documentParagraphSelectionStarted": {
+    "description": "Localized text for documentParagraphSelectionStarted."
+  },
+  "documentParagraphSelectedAnnouncement": "Paragraphe sélectionné. Total sélectionné : {count}.",
+  "@documentParagraphSelectedAnnouncement": {
+    "description": "Localized text for documentParagraphSelectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphDeselectedAnnouncement": "Paragraphe désélectionné. Total sélectionné : {count}.",
+  "@documentParagraphDeselectedAnnouncement": {
+    "description": "Localized text for documentParagraphDeselectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphSelectionCount": "Sélectionnés : {count}",
+  "@documentParagraphSelectionCount": {
+    "description": "Localized text for documentParagraphSelectionCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentDeleteSelectedParagraphs": "Supprimer les paragraphes sélectionnés",
+  "@documentDeleteSelectedParagraphs": {
+    "description": "Localized text for documentDeleteSelectedParagraphs."
+  },
+  "documentDeleteSelectedParagraphsConfirmation": "Supprimer les paragraphes sélectionnés ? Total : {count}.",
+  "@documentDeleteSelectedParagraphsConfirmation": {
+    "description": "Localized text for documentDeleteSelectedParagraphsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentSelectedParagraphsDeleted": "Paragraphes supprimés : {count}.",
+  "@documentSelectedParagraphsDeleted": {
+    "description": "Localized text for documentSelectedParagraphsDeleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentExitParagraphSelection": "Quitter la sélection de paragraphes",
+  "@documentExitParagraphSelection": {
+    "description": "Localized text for documentExitParagraphSelection."
+  },
+  "documentParagraphSelectionExited": "Mode de sélection désactivé.",
+  "@documentParagraphSelectionExited": {
+    "description": "Localized text for documentParagraphSelectionExited."
+  },
   "documentBookmarkHintSet": "Balayez vers le haut ou vers le bas pour définir un signet.",
   "documentEditParagraphActionHint": "Touchez deux fois pour modifier ce paragraphe. ",
   "documentBookmarkHintReplace": "Balayez vers le haut ou vers le bas pour supprimer le signet existant ou le remplacer par ce paragraphe.",

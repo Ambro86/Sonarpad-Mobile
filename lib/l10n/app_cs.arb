@@ -317,6 +317,75 @@
   "readDocument": "Číst dokument",
   "documentReaderTitle": "Čtečka dokumentů",
   "documentReaderEditHint": "Klepnutím na odstavec ho upravíte. Přejetím nahoru nebo dolů přidáte záložku.",
+  "documentParagraphSelectionStartAction": "Spustit výběr odstavců",
+  "@documentParagraphSelectionStartAction": {
+    "description": "Localized text for documentParagraphSelectionStartAction."
+  },
+  "documentParagraphSelectionTapHint": "Režim výběru je aktivní. Dvojitým klepnutím tento odstavec vyberete nebo zrušíte jeho výběr.",
+  "@documentParagraphSelectionTapHint": {
+    "description": "Localized text for documentParagraphSelectionTapHint."
+  },
+  "documentParagraphSelectionStarted": "Režim výběru je aktivní. Odstavec byl vybrán. Dvojitým klepnutím vyberte další odstavce.",
+  "@documentParagraphSelectionStarted": {
+    "description": "Localized text for documentParagraphSelectionStarted."
+  },
+  "documentParagraphSelectedAnnouncement": "Odstavec vybrán. Celkem vybráno: {count}.",
+  "@documentParagraphSelectedAnnouncement": {
+    "description": "Localized text for documentParagraphSelectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphDeselectedAnnouncement": "Výběr odstavce zrušen. Celkem vybráno: {count}.",
+  "@documentParagraphDeselectedAnnouncement": {
+    "description": "Localized text for documentParagraphDeselectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphSelectionCount": "Vybráno: {count}",
+  "@documentParagraphSelectionCount": {
+    "description": "Localized text for documentParagraphSelectionCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentDeleteSelectedParagraphs": "Odstranit vybrané odstavce",
+  "@documentDeleteSelectedParagraphs": {
+    "description": "Localized text for documentDeleteSelectedParagraphs."
+  },
+  "documentDeleteSelectedParagraphsConfirmation": "Odstranit vybrané odstavce? Celkem: {count}.",
+  "@documentDeleteSelectedParagraphsConfirmation": {
+    "description": "Localized text for documentDeleteSelectedParagraphsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentSelectedParagraphsDeleted": "Odstraněné odstavce: {count}.",
+  "@documentSelectedParagraphsDeleted": {
+    "description": "Localized text for documentSelectedParagraphsDeleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentExitParagraphSelection": "Ukončit výběr odstavců",
+  "@documentExitParagraphSelection": {
+    "description": "Localized text for documentExitParagraphSelection."
+  },
+  "documentParagraphSelectionExited": "Režim výběru byl vypnut.",
+  "@documentParagraphSelectionExited": {
+    "description": "Localized text for documentParagraphSelectionExited."
+  },
   "documentBookmarkHintSet": "Přejetím nahoru nebo dolů nastavíte záložku.",
   "documentEditParagraphActionHint": "Dvojitým klepnutím upravíte tento odstavec. ",
   "documentBookmarkHintReplace": "Přejetím nahoru nebo dolů odeberete stávající záložku nebo ji nahradíte tímto odstavcem.",

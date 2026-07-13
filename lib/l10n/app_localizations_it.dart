@@ -874,6 +874,50 @@ class AppLocalizationsIt extends AppLocalizations {
   String get documentReaderEditHint =>
       'Tocca un paragrafo per modificarlo. Scorri verso l’alto o verso il basso per aggiungere un segnalibro.';
 
+
+  @override
+  String get documentParagraphSelectionStartAction => 'Avvia selezione paragrafi';
+
+  @override
+  String get documentParagraphSelectionTapHint => 'Modalità selezione attiva. Tocca due volte per selezionare o deselezionare questo paragrafo.';
+
+  @override
+  String get documentParagraphSelectionStarted => 'Modalità selezione attiva. Paragrafo selezionato. Tocca due volte sugli altri paragrafi per selezionarli.';
+
+  @override
+  String documentParagraphSelectedAnnouncement(int count) {
+    return 'Paragrafo selezionato. Totale selezionati: $count.';
+  }
+
+  @override
+  String documentParagraphDeselectedAnnouncement(int count) {
+    return 'Paragrafo deselezionato. Totale selezionati: $count.';
+  }
+
+  @override
+  String documentParagraphSelectionCount(int count) {
+    return 'Selezionati: $count';
+  }
+
+  @override
+  String get documentDeleteSelectedParagraphs => 'Elimina paragrafi selezionati';
+
+  @override
+  String documentDeleteSelectedParagraphsConfirmation(int count) {
+    return 'Eliminare i paragrafi selezionati? Totale: $count.';
+  }
+
+  @override
+  String documentSelectedParagraphsDeleted(int count) {
+    return 'Paragrafi eliminati: $count.';
+  }
+
+  @override
+  String get documentExitParagraphSelection => 'Esci dalla selezione paragrafi';
+
+  @override
+  String get documentParagraphSelectionExited => 'Modalità selezione disattivata.';
+
   @override
   String get documentBookmarkHintSet =>
       'Scorri verso l’alto o verso il basso per impostare un segnalibro.';

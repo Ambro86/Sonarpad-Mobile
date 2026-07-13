@@ -75,6 +75,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   double _ttsSpeed = 1.0;
   List<int> _remainingWordsFromChunk = const <int>[];
 
+  bool _paragraphSelectionMode = false;
+  final Set<int> _selectedParagraphIndexes = <int>{};
+  Timer? _paragraphSelectionAnnouncementTimer;
+
   bool _ttsPaused = false;
   String? _activeTtsEngine;
   StreamSubscription<bool>? _playingSub;
@@ -134,6 +138,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
     _ttsEventsSub?.cancel();
     _playingSub?.cancel();
+    _paragraphSelectionAnnouncementTimer?.cancel();
     _cancelReadingSleepTimer();
     unawaited(_audio.stopAndDispose());
     _scrollController.dispose();
@@ -1317,6 +1322,215 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   // ---------------------------------------------------------------------------
+  // Selezione multipla dei paragrafi
+  // ---------------------------------------------------------------------------
+
+  void _announceParagraphSelection(String message) {
+    _paragraphSelectionAnnouncementTimer?.cancel();
+    _paragraphSelectionAnnouncementTimer = Timer(
+      const Duration(milliseconds: 120),
+      () {
+        if (!mounted) return;
+        announceStatusMessage(context, message);
+      },
+    );
+  }
+
+  void _startParagraphSelection(int index) {
+    if (_speaking || index < 0 || index >= _chunks.length) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() {
+      _paragraphSelectionMode = true;
+      _selectedParagraphIndexes
+        ..clear()
+        ..add(index);
+    });
+    showStatusMessage(
+      context,
+      l10n.documentParagraphSelectionStarted,
+    );
+  }
+
+  void _toggleParagraphSelection(int index) {
+    if (!_paragraphSelectionMode || index < 0 || index >= _chunks.length) {
+      return;
+    }
+    final l10n = AppLocalizations.of(context);
+    late final bool selected;
+    setState(() {
+      if (_selectedParagraphIndexes.contains(index)) {
+        _selectedParagraphIndexes.remove(index);
+        selected = false;
+      } else {
+        _selectedParagraphIndexes.add(index);
+        selected = true;
+      }
+    });
+    final count = _selectedParagraphIndexes.length;
+    _announceParagraphSelection(
+      selected
+          ? l10n.documentParagraphSelectedAnnouncement(count)
+          : l10n.documentParagraphDeselectedAnnouncement(count),
+    );
+  }
+
+  void _exitParagraphSelection({bool announce = true}) {
+    if (!_paragraphSelectionMode) return;
+    _paragraphSelectionAnnouncementTimer?.cancel();
+    setState(() {
+      _paragraphSelectionMode = false;
+      _selectedParagraphIndexes.clear();
+    });
+    if (announce) {
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).documentParagraphSelectionExited,
+      );
+    }
+  }
+
+  int _remapIndexAfterParagraphDeletion(
+    int oldIndex,
+    List<int> deletedIndexes,
+    int newLength,
+  ) {
+    if (newLength <= 0) return 0;
+    final removedBefore =
+        deletedIndexes.where((index) => index < oldIndex).length;
+    final candidate = oldIndex - removedBefore;
+    return candidate.clamp(0, newLength - 1).toInt();
+  }
+
+  List<int> _remapBookmarksAfterParagraphDeletion(
+    List<int> deletedIndexes,
+    int newLength,
+  ) {
+    if (newLength <= 0) return const <int>[];
+    final deleted = deletedIndexes.toSet();
+    final remapped = <int>{};
+    for (final oldIndex in _bookmarkIndexes) {
+      if (deleted.contains(oldIndex)) continue;
+      remapped.add(
+        _remapIndexAfterParagraphDeletion(
+          oldIndex,
+          deletedIndexes,
+          newLength,
+        ),
+      );
+    }
+    final result = remapped.toList()..sort();
+    return List<int>.unmodifiable(result);
+  }
+
+  Future<void> _deleteSelectedParagraphs() async {
+    if (!_paragraphSelectionMode || _selectedParagraphIndexes.isEmpty) return;
+    final l10n = AppLocalizations.of(context);
+    final count = _selectedParagraphIndexes.length;
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(l10n.documentDeleteSelectedParagraphs),
+            content: Text(
+              l10n.documentDeleteSelectedParagraphsConfirmation(count),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: Text(l10n.deleteItem),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    if (!confirmed || !mounted) return;
+
+    final deletedIndexes = _selectedParagraphIndexes.toList()..sort();
+    final deletedSet = deletedIndexes.toSet();
+    final updatedChunks = <String>[
+      for (var i = 0; i < _chunks.length; i++)
+        if (!deletedSet.contains(i)) _chunks[i],
+    ];
+    final newText = updatedChunks.join('\n\n');
+    final newBookmarkIndexes = _remapBookmarksAfterParagraphDeletion(
+      deletedIndexes,
+      updatedChunks.length,
+    );
+    final oldAutomaticBookmark =
+        _storedAutomaticBookmarkIndexForDocumentSave();
+    final newAutomaticBookmark = _remapIndexAfterParagraphDeletion(
+      oldAutomaticBookmark,
+      deletedIndexes,
+      updatedChunks.length,
+    );
+    final firstDeletedIndex = deletedIndexes.first;
+    final nextFocusIndex = updatedChunks.isEmpty
+        ? -1
+        : _remapIndexAfterParagraphDeletion(
+            firstDeletedIndex,
+            deletedIndexes,
+            updatedChunks.length,
+          );
+
+    try {
+      final library = DocumentLibraryService();
+      final editedPath = await library.saveEditedText(_currentDoc, newText);
+      final newDoc = DocumentItem(
+        id: _currentDoc.id,
+        name: _currentDoc.name,
+        path: _currentDoc.path,
+        extension: _currentDoc.extension,
+        addedAt: _currentDoc.addedAt,
+        bookmarkIndex: newAutomaticBookmark,
+        bookmarkIndexes: newBookmarkIndexes,
+        editedTextPath: editedPath,
+        isTemporary: _currentDoc.isTemporary,
+        isFolder: _currentDoc.isFolder,
+        parentId: _currentDoc.parentId,
+      );
+
+      if (!_currentDoc.isTemporary) {
+        await library.load();
+        await library.update(newDoc);
+      }
+      if (!mounted) return;
+
+      setState(() {
+        _currentDoc = newDoc;
+        _documentText = newText;
+        _chunks = updatedChunks;
+        _bookmarkIndexes = newBookmarkIndexes;
+        _bookmarkIndex = newAutomaticBookmark;
+        _hasBookmark = updatedChunks.isNotEmpty && newAutomaticBookmark > 0;
+        _focusedChunkIndex = nextFocusIndex;
+        _playingChunkIndex = -1;
+        _paragraphSelectionMode = false;
+        _selectedParagraphIndexes.clear();
+        _rebuildRemainingReadingEstimateCache();
+      });
+
+      if (nextFocusIndex >= 0) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _scrollToChunk(nextFocusIndex);
+        });
+      }
+      showStatusMessage(
+        context,
+        l10n.documentSelectedParagraphsDeleted(count),
+      );
+    } catch (error) {
+      dev.log(
+        'DocumentReaderScreen: errore eliminazione paragrafi: $error',
+      );
+      if (!mounted) return;
+      showStatusMessage(context, '${l10n.saveError}: $error');
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Modifica paragrafo singolo
   // ---------------------------------------------------------------------------
 
@@ -1428,6 +1642,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // ---------------------------------------------------------------------------
 
   Future<void> _togglePlayPause() async {
+    if (_paragraphSelectionMode) return;
     if (!_speaking) {
       await _startReading();
     } else if (_ttsPaused) {
@@ -1673,23 +1888,50 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final displayName = doc.displayName;
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          displayName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: l10n.searchInDocument,
-            onPressed: _chunks.isEmpty
-                ? null
-                : () => unawaited(_openDocumentSearch()),
+    return PopScope(
+      canPop: !_paragraphSelectionMode,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop || !_paragraphSelectionMode) return;
+        _exitParagraphSelection();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: _paragraphSelectionMode
+              ? IconButton(
+                  icon: const Icon(Icons.close),
+                  tooltip: l10n.documentExitParagraphSelection,
+                  onPressed: () => _exitParagraphSelection(),
+                )
+              : null,
+          title: Text(
+            _paragraphSelectionMode
+                ? l10n.documentParagraphSelectionCount(
+                    _selectedParagraphIndexes.length,
+                  )
+                : displayName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          if (_documentIndex.isNotEmpty ||
-              (_epubIndexSourcePath != null && _chunks.isNotEmpty))
+          actions: [
+            if (_paragraphSelectionMode)
+              IconButton(
+                icon: const Icon(Icons.delete),
+                tooltip: l10n.documentDeleteSelectedParagraphs,
+                onPressed: _selectedParagraphIndexes.isEmpty
+                    ? null
+                    : () => unawaited(_deleteSelectedParagraphs()),
+              )
+            else
+              IconButton(
+                icon: const Icon(Icons.search),
+                tooltip: l10n.searchInDocument,
+                onPressed: _chunks.isEmpty
+                    ? null
+                    : () => unawaited(_openDocumentSearch()),
+              ),
+          if (!_paragraphSelectionMode &&
+              (_documentIndex.isNotEmpty ||
+                  (_epubIndexSourcePath != null && _chunks.isNotEmpty)))
             IconButton(
               icon: _documentIndexLoading
                   ? const SizedBox(
@@ -1703,7 +1945,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   ? null
                   : () => unawaited(_openDocumentIndex()),
             ),
-          if (doc.isTemporary)
+          if (!_paragraphSelectionMode && doc.isTemporary)
             IconButton(
               icon: const Icon(Icons.save),
               tooltip: l10n.saveInLibrary,
@@ -1749,7 +1991,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           const SizedBox(height: 12),
                         ],
                         FilledButton.icon(
-                          onPressed: _togglePlayPause,
+                          onPressed:
+                              _paragraphSelectionMode ? null : _togglePlayPause,
                           icon: Icon(!_speaking
                               ? Icons.volume_up
                               : (_ttsPaused ? Icons.play_arrow : Icons.pause)),
@@ -1761,7 +2004,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                         ),
                         const SizedBox(height: 8),
                         OutlinedButton.icon(
-                          onPressed: _speaking ? () => _stopReading() : null,
+                          onPressed: _paragraphSelectionMode
+                              ? null
+                              : (_speaking ? () => _stopReading() : null),
                           icon: const Icon(Icons.stop),
                           label: Text(l10n.stopReading),
                         ),
@@ -1845,7 +2090,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                                   Semantics(
                                     liveRegion: false,
                                     child: Text(
-                                      l10n.documentReaderEditHint,
+                                      _paragraphSelectionMode
+                                          ? l10n.documentParagraphSelectionTapHint
+                                          : l10n.documentReaderEditHint,
                                       style:
                                           theme.textTheme.bodySmall?.copyWith(
                                         color: colorScheme.outline,
@@ -1891,6 +2138,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   ),
                 ],
               ),
+        ),
       ),
     );
   }
@@ -1909,35 +2157,61 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           ? _bookmarkIndexes.contains(i)
           : (_hasBookmark && i == _bookmarkIndex);
 
-      // Durante la lettura TTS il tap è disabilitato per non interferire.
-      final canEdit = !_speaking;
+      // Durante la lettura TTS le azioni sul testo sono disabilitate.
+      final canInteract = !_speaking;
+      final isSelected = _selectedParagraphIndexes.contains(i);
 
-      String hintText = canEdit ? l10n.documentEditParagraphActionHint : '';
-      if (_multipleDocumentBookmarksEnabled) {
-        hintText += l10n.documentBookmarkHintSet;
-        if (_bookmarkIndexes.isNotEmpty) {
-          hintText += ' $_goToBookmarkActionLabel.';
-        }
-      } else if (_hasBookmark) {
-        hintText += l10n.documentBookmarkHintReplace;
+      String hintText;
+      if (_paragraphSelectionMode) {
+        hintText = l10n.documentParagraphSelectionTapHint;
       } else {
-        hintText += l10n.documentBookmarkHintSet;
+        hintText = canInteract ? l10n.documentEditParagraphActionHint : '';
+        if (_multipleDocumentBookmarksEnabled) {
+          hintText += l10n.documentBookmarkHintSet;
+          if (_bookmarkIndexes.isNotEmpty) {
+            hintText += ' $_goToBookmarkActionLabel.';
+          }
+        } else if (_hasBookmark) {
+          hintText += l10n.documentBookmarkHintReplace;
+        } else {
+          hintText += l10n.documentBookmarkHintSet;
+        }
       }
 
       final Map<CustomSemanticsAction, VoidCallback> actions = {};
-      if (_multipleDocumentBookmarksEnabled) {
-        actions[CustomSemanticsAction(label: l10n.documentSetBookmarkAction)] =
-            () => _setBookmark(i);
-        if (_bookmarkIndexes.isNotEmpty) {
-          actions[CustomSemanticsAction(label: _goToBookmarkActionLabel)] =
-              () => unawaited(_openBookmarkPicker());
+      if (_paragraphSelectionMode) {
+        if (_selectedParagraphIndexes.isNotEmpty) {
+          actions[CustomSemanticsAction(
+            label: l10n.documentDeleteSelectedParagraphs,
+          )] = () => unawaited(_deleteSelectedParagraphs());
         }
-      } else if (_hasBookmark) {
         actions[CustomSemanticsAction(
-            label: l10n.documentReplaceBookmarkAction)] = () => _setBookmark(i);
+          label: l10n.documentExitParagraphSelection,
+        )] = () => _exitParagraphSelection();
       } else {
-        actions[CustomSemanticsAction(label: l10n.documentSetBookmarkAction)] =
-            () => _setBookmark(i);
+        if (canInteract) {
+          actions[CustomSemanticsAction(
+            label: l10n.documentParagraphSelectionStartAction,
+          )] = () => _startParagraphSelection(i);
+        }
+        if (_multipleDocumentBookmarksEnabled) {
+          actions[CustomSemanticsAction(
+            label: l10n.documentSetBookmarkAction,
+          )] = () => _setBookmark(i);
+          if (_bookmarkIndexes.isNotEmpty) {
+            actions[CustomSemanticsAction(
+              label: _goToBookmarkActionLabel,
+            )] = () => unawaited(_openBookmarkPicker());
+          }
+        } else if (_hasBookmark) {
+          actions[CustomSemanticsAction(
+            label: l10n.documentReplaceBookmarkAction,
+          )] = () => _setBookmark(i);
+        } else {
+          actions[CustomSemanticsAction(
+            label: l10n.documentSetBookmarkAction,
+          )] = () => _setBookmark(i);
+        }
       }
       widgets.add(
         AutoScrollTag(
@@ -1950,11 +2224,20 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             onDidGainAccessibilityFocus: () =>
                 _syncDocumentPositionFromAccessibilityFocus(i),
             hint: hintText,
-            onTap: canEdit ? () => _editParagraph(i) : null,
+            selected: _paragraphSelectionMode ? isSelected : null,
+            onTap: canInteract
+                ? (_paragraphSelectionMode
+                    ? () => _toggleParagraphSelection(i)
+                    : () => _editParagraph(i))
+                : null,
             customSemanticsActions: actions,
             child: GestureDetector(
               excludeFromSemantics: true,
-              onTap: canEdit ? () => _editParagraph(i) : null,
+              onTap: canInteract
+                  ? (_paragraphSelectionMode
+                      ? () => _toggleParagraphSelection(i)
+                      : () => _editParagraph(i))
+                  : null,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.easeInOut,
@@ -1962,21 +2245,28 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isPlaying
-                      ? colorScheme.primaryContainer
-                      : Colors.transparent,
+                  color: isSelected
+                      ? colorScheme.secondaryContainer
+                      : (isPlaying
+                          ? colorScheme.primaryContainer
+                          : Colors.transparent),
                   borderRadius: BorderRadius.circular(8),
-                  border: isPlaying
+                  border: isSelected
                       ? Border.all(
-                          color: colorScheme.primary.withAlpha(128),
-                          width: 1.5,
+                          color: colorScheme.secondary,
+                          width: 2,
                         )
-                      : (isBookmarked
+                      : (isPlaying
                           ? Border.all(
-                              color: Colors.red.withAlpha(128),
+                              color: colorScheme.primary.withAlpha(128),
                               width: 1.5,
                             )
-                          : null),
+                          : (isBookmarked
+                              ? Border.all(
+                                  color: Colors.red.withAlpha(128),
+                                  width: 1.5,
+                                )
+                              : null)),
                 ),
                 child: Stack(
                   children: [
@@ -1985,8 +2275,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight:
                             isPlaying ? FontWeight.w600 : FontWeight.normal,
-                        color:
-                            isPlaying ? colorScheme.onPrimaryContainer : null,
+                        color: isSelected
+                            ? colorScheme.onSecondaryContainer
+                            : (isPlaying
+                                ? colorScheme.onPrimaryContainer
+                                : null),
                       ),
                     ),
                     if (isBookmarked && !isPlaying)

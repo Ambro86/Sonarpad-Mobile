@@ -125,6 +125,25 @@ class _MediaCutterExportController {
   }
 }
 
+class _MediaEffectSlot {
+  const _MediaEffectSlot({
+    required this.effect,
+    required this.amountPercent,
+  });
+
+  final _MediaPartEffect effect;
+  final int amountPercent;
+
+  _MediaEffectSlot copyWith({
+    _MediaPartEffect? effect,
+    int? amountPercent,
+  }) =>
+      _MediaEffectSlot(
+        effect: effect ?? this.effect,
+        amountPercent: amountPercent ?? this.amountPercent,
+      );
+}
+
 class _PartEffectSettings {
   const _PartEffectSettings({
     required this.volumePercent,
@@ -133,6 +152,9 @@ class _PartEffectSettings {
     required this.thirdEffect,
     required this.fourthEffect,
     required this.effectAmountPercent,
+    required this.secondaryEffectAmountPercent,
+    required this.thirdEffectAmountPercent,
+    required this.fourthEffectAmountPercent,
   });
 
   final int volumePercent;
@@ -141,6 +163,9 @@ class _PartEffectSettings {
   final _MediaPartEffect thirdEffect;
   final _MediaPartEffect fourthEffect;
   final int effectAmountPercent;
+  final int secondaryEffectAmountPercent;
+  final int thirdEffectAmountPercent;
+  final int fourthEffectAmountPercent;
 }
 
 class _MediaPart {
@@ -154,6 +179,9 @@ class _MediaPart {
     this.thirdEffect = _MediaPartEffect.none,
     this.fourthEffect = _MediaPartEffect.none,
     this.effectAmountPercent = 50,
+    this.secondaryEffectAmountPercent = 50,
+    this.thirdEffectAmountPercent = 50,
+    this.fourthEffectAmountPercent = 50,
   });
 
   final Duration start;
@@ -165,6 +193,9 @@ class _MediaPart {
   final _MediaPartEffect thirdEffect;
   final _MediaPartEffect fourthEffect;
   final int effectAmountPercent;
+  final int secondaryEffectAmountPercent;
+  final int thirdEffectAmountPercent;
+  final int fourthEffectAmountPercent;
 
   Duration get duration => end - start;
   double get volumeFactor => volumePercent.clamp(0, 200).toDouble() / 100.0;
@@ -185,6 +216,9 @@ class _MediaPart {
     _MediaPartEffect? thirdEffect,
     _MediaPartEffect? fourthEffect,
     int? effectAmountPercent,
+    int? secondaryEffectAmountPercent,
+    int? thirdEffectAmountPercent,
+    int? fourthEffectAmountPercent,
   }) =>
       _MediaPart(
         start: start ?? this.start,
@@ -196,6 +230,12 @@ class _MediaPart {
         thirdEffect: thirdEffect ?? this.thirdEffect,
         fourthEffect: fourthEffect ?? this.fourthEffect,
         effectAmountPercent: effectAmountPercent ?? this.effectAmountPercent,
+        secondaryEffectAmountPercent: secondaryEffectAmountPercent ??
+            this.secondaryEffectAmountPercent,
+        thirdEffectAmountPercent:
+            thirdEffectAmountPercent ?? this.thirdEffectAmountPercent,
+        fourthEffectAmountPercent:
+            fourthEffectAmountPercent ?? this.fourthEffectAmountPercent,
       );
 }
 
@@ -422,27 +462,74 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         'renderedPreview=$_usingRenderedPreviewSource';
   }
 
+  List<_MediaEffectSlot> _effectSlotsForPart(_MediaPart part) => [
+        _MediaEffectSlot(
+          effect: part.effect,
+          amountPercent: part.effectAmountPercent,
+        ),
+        _MediaEffectSlot(
+          effect: part.secondaryEffect,
+          amountPercent: part.secondaryEffectAmountPercent,
+        ),
+        _MediaEffectSlot(
+          effect: part.thirdEffect,
+          amountPercent: part.thirdEffectAmountPercent,
+        ),
+        _MediaEffectSlot(
+          effect: part.fourthEffect,
+          amountPercent: part.fourthEffectAmountPercent,
+        ),
+      ];
+
+  List<_MediaEffectSlot> _activeEffectSlots(_MediaPart part) =>
+      _effectSlotsForPart(part)
+          .where((slot) => slot.effect != _MediaPartEffect.none)
+          .toList();
+
+  List<_MediaEffectSlot> _normalizedEffectSlots(
+    List<_MediaEffectSlot> slots,
+  ) {
+    final active = [
+      for (final slot in slots)
+        if (slot.effect != _MediaPartEffect.none)
+          _MediaEffectSlot(
+            effect: slot.effect,
+            amountPercent: slot.amountPercent.clamp(0, 100).toInt(),
+          ),
+    ];
+    while (active.length < 4) {
+      active.add(const _MediaEffectSlot(
+        effect: _MediaPartEffect.none,
+        amountPercent: 50,
+      ));
+    }
+    return active.take(4).toList();
+  }
+
   String _logPart(int index, _MediaPart part) {
-    final effects = _activeEffects(part).map((effect) => effect.name).join('|');
+    final effects = _activeEffectSlots(part)
+        .map((slot) => '${slot.effect.name}:${slot.amountPercent}%')
+        .join('|');
     return 'index=$index start=${_logDuration(part.start)} '
         'end=${_logDuration(part.end)} '
         'duration=${_logDuration(part.duration)} '
         'keep=${part.keep} volume=${part.volumePercent}% '
-        'effects=${effects.isEmpty ? 'none' : effects} '
-        'effectAmount=${part.effectAmountPercent}%';
+        'effects=${effects.isEmpty ? 'none' : effects}';
   }
 
-  String _logEffectSlots(List<_MediaPartEffect> slots) {
+  String _logEffectSlots(List<_MediaEffectSlot> slots) {
     return slots
         .asMap()
         .entries
-        .map((entry) => 'slot${entry.key + 1}=${entry.value.name}')
+        .map((entry) =>
+            'slot${entry.key + 1}=${entry.value.effect.name}:'
+            '${entry.value.amountPercent}%')
         .join(',');
   }
 
-  int _visibleEffectSlots(List<_MediaPartEffect> slots) {
+  int _visibleEffectSlots(List<_MediaEffectSlot> slots) {
     final firstEmptySlot = slots.indexWhere(
-      (item) => item == _MediaPartEffect.none,
+      (item) => item.effect == _MediaPartEffect.none,
     );
     return firstEmptySlot == -1 ? slots.length : firstEmptySlot + 1;
   }
@@ -981,6 +1068,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     required _MediaPartEffect thirdEffect,
     required _MediaPartEffect fourthEffect,
     required int effectAmountPercent,
+    required int secondaryEffectAmountPercent,
+    required int thirdEffectAmountPercent,
+    required int fourthEffectAmountPercent,
   }) async {
     if (_inputPath.isEmpty || _loading || _saving || _effectPreviewPreparing) {
       return;
@@ -989,9 +1079,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final part = _parts[index];
     unawaited(_logMediaCutter(
       'effects preview requested index=$index volume=$volumePercent% '
-      'effect=${effect.name} secondary=${secondaryEffect.name} '
-      'third=${thirdEffect.name} fourth=${fourthEffect.name} '
-      'amount=$effectAmountPercent% part=${_logPart(index, part)}',
+      'effect=${effect.name}:$effectAmountPercent% '
+      'secondary=${secondaryEffect.name}:$secondaryEffectAmountPercent% '
+      'third=${thirdEffect.name}:$thirdEffectAmountPercent% '
+      'fourth=${fourthEffect.name}:$fourthEffectAmountPercent% '
+      'part=${_logPart(index, part)}',
     ));
     if (!part.keep || part.duration <= Duration.zero) return;
 
@@ -1018,10 +1110,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       thirdEffect: thirdEffect,
       fourthEffect: fourthEffect,
       effectAmountPercent: effectAmountPercent,
+      secondaryEffectAmountPercent: secondaryEffectAmountPercent,
+      thirdEffectAmountPercent: thirdEffectAmountPercent,
+      fourthEffectAmountPercent: fourthEffectAmountPercent,
     );
     final activeEffects = _activeEffects(previewPart);
-    final usesUnderwaterBubbles =
-        activeEffects.contains(_MediaPartEffect.underwater);
+    final usesUnderwaterBubbles = _usesUnderwaterBubbles(previewPart);
     final String? filter = usesUnderwaterBubbles
         ? _underwaterAudioFilterForPart(previewPart)
         : _audioFilterForPart(previewPart);
@@ -2018,13 +2112,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         before.secondaryEffect != source.secondaryEffect ||
         before.thirdEffect != source.thirdEffect ||
         before.fourthEffect != source.fourthEffect ||
-        before.effectAmountPercent != source.effectAmountPercent;
+        before.effectAmountPercent != source.effectAmountPercent ||
+        before.secondaryEffectAmountPercent !=
+            source.secondaryEffectAmountPercent ||
+        before.thirdEffectAmountPercent != source.thirdEffectAmountPercent ||
+        before.fourthEffectAmountPercent != source.fourthEffectAmountPercent;
     unawaited(_logMediaCutter(
       'guided effects ${changed ? 'applied' : 'closed without changes'} '
       'to whole file volume=${source.volumePercent}% '
-      'effect=${source.effect.name} secondary=${source.secondaryEffect.name} '
-      'third=${source.thirdEffect.name} fourth=${source.fourthEffect.name} '
-      'amount=${source.effectAmountPercent}%',
+      'effect=${source.effect.name}:${source.effectAmountPercent}% '
+      'secondary=${source.secondaryEffect.name}:'
+      '${source.secondaryEffectAmountPercent}% '
+      'third=${source.thirdEffect.name}:${source.thirdEffectAmountPercent}% '
+      'fourth=${source.fourthEffect.name}:'
+      '${source.fourthEffectAmountPercent}%',
     ));
   }
 
@@ -2334,21 +2435,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
-  List<_MediaPartEffect> _normalizedEffectSlots(
-    List<_MediaPartEffect> effects,
-  ) {
-    final active = [
-      for (final effect in effects)
-        if (effect != _MediaPartEffect.none) effect,
-    ];
-    while (active.length < 4) {
-      active.add(_MediaPartEffect.none);
-    }
-    return active.take(4).toList();
-  }
-
-
-
   Future<void> _showPartEffectsDialog(int index, {bool applyToWholeFile = false}) async {
     if (_saving || index < 0 || index >= _parts.length || !_parts[index].keep) {
       return;
@@ -2356,13 +2442,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final l10n = AppLocalizations.of(context);
     final part = _parts[index];
     var volumePercent = part.volumePercent;
-    var effectSlots = _normalizedEffectSlots([
-      part.effect,
-      part.secondaryEffect,
-      part.thirdEffect,
-      part.fourthEffect,
-    ]);
-    var effectAmountPercent = part.effectAmountPercent;
+    var effectSlots = _normalizedEffectSlots(_effectSlotsForPart(part));
     unawaited(_logMediaCutter(
       'effects dialog opened index=$index applyToWholeFile=$applyToWholeFile '
       'volume=$volumePercent% slots=${_logEffectSlots(effectSlots)} '
@@ -2417,17 +2497,21 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
                     void setEffectSlot(int slot, _MediaPartEffect value) {
                       final beforeSlots = [...effectSlots];
-                      final beforeValue = beforeSlots[slot];
+                      final beforeValue = beforeSlots[slot].effect;
                       final updated = [...effectSlots];
-                      updated[slot] = value;
+                      updated[slot] = updated[slot].copyWith(effect: value);
                       // Slot fixed: tapping "Audio effect 1" always edits slot 1.
-                      // A new effect is created only by tapping the next empty slot.
+                      // Clearing a slot compacts both the effect and its own amount.
                       effectSlots = value == _MediaPartEffect.none
                           ? _normalizedEffectSlots(updated)
                           : updated;
                       final action = beforeValue == _MediaPartEffect.none
-                          ? (value == _MediaPartEffect.none ? 'empty_kept_empty' : 'created')
-                          : (value == _MediaPartEffect.none ? 'cleared' : 'modified');
+                          ? (value == _MediaPartEffect.none
+                              ? 'empty_kept_empty'
+                              : 'created')
+                          : (value == _MediaPartEffect.none
+                              ? 'cleared'
+                              : 'modified');
                       unawaited(_logMediaCutter(
                         'effect slot changed action=$action slot=${slot + 1} '
                         'from=${beforeValue.name} to=${value.name} '
@@ -2445,27 +2529,34 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                       final fixedSlot = slot;
                       final slotNumber = fixedSlot + 1;
                       children.add(KeyedSubtree(
-                        key: ValueKey('media-cutter-effect-slot-wrapper-$slotNumber'),
+                        key: ValueKey(
+                          'media-cutter-effect-slot-wrapper-$slotNumber',
+                        ),
                         child: _buildEffectPicker(
                           l10n,
                           slotNumber: slotNumber,
-                          value: effectSlots[fixedSlot],
+                          value: effectSlots[fixedSlot].effect,
                           label: _effectSlotLabel(l10n, slotNumber),
-                          debugSlotsSnapshot: () => _logEffectSlots(effectSlots),
-                          debugVisibleSlotsSnapshot: () => _visibleEffectSlots(effectSlots),
+                          debugSlotsSnapshot: () =>
+                              _logEffectSlots(effectSlots),
+                          debugVisibleSlotsSnapshot: () =>
+                              _visibleEffectSlots(effectSlots),
                           onOpen: () => unawaited(_logMediaCutter(
                             'effect slot picker opened slot=$slotNumber '
-                            'current=${effectSlots[fixedSlot].name} '
+                            'current=${effectSlots[fixedSlot].effect.name} '
                             'visibleSlots=${_visibleEffectSlots(effectSlots)} '
                             'slots=${_logEffectSlots(effectSlots)}',
                           )),
-                          onDialogClosed: (selected) => unawaited(_logMediaCutter(
+                          onDialogClosed: (selected) =>
+                              unawaited(_logMediaCutter(
                             selected == null
-                                ? 'effect slot picker cancelled slot=$slotNumber '
-                                    'current=${effectSlots[fixedSlot].name} '
+                                ? 'effect slot picker cancelled '
+                                    'slot=$slotNumber '
+                                    'current=${effectSlots[fixedSlot].effect.name} '
                                     'slots=${_logEffectSlots(effectSlots)}'
-                                : 'effect slot picker selected slot=$slotNumber '
-                                    'from=${effectSlots[fixedSlot].name} '
+                                : 'effect slot picker selected '
+                                    'slot=$slotNumber '
+                                    'from=${effectSlots[fixedSlot].effect.name} '
                                     'to=${selected.name} '
                                     'slotsBeforeApply=${_logEffectSlots(effectSlots)}',
                           )),
@@ -2474,6 +2565,61 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                           ),
                         ),
                       ));
+
+                      final selectedEffect = effectSlots[fixedSlot].effect;
+                      if (selectedEffect != _MediaPartEffect.none) {
+                        final amount = effectSlots[fixedSlot].amountPercent;
+                        final amountLabel =
+                            '${_effectSlotLabel(l10n, slotNumber)}, '
+                            '${_effectLabel(l10n, selectedEffect)}, '
+                            '${l10n.mediaCutterPartEffectAmountValue(amount)}';
+                        children.add(const SizedBox(height: 6));
+                        children.add(ExcludeSemantics(
+                          child: Text(amountLabel),
+                        ));
+                        children.add(Semantics(
+                          slider: true,
+                          label: amountLabel,
+                          value: '$amount%',
+                          increasedValue:
+                              '${(amount + 10).clamp(0, 100)}%',
+                          decreasedValue:
+                              '${(amount - 10).clamp(0, 100)}%',
+                          onIncrease: () => setDialogState(() {
+                            final current =
+                                effectSlots[fixedSlot].amountPercent;
+                            effectSlots[fixedSlot] = effectSlots[fixedSlot]
+                                .copyWith(
+                              amountPercent:
+                                  (current + 10).clamp(0, 100).toInt(),
+                            );
+                          }),
+                          onDecrease: () => setDialogState(() {
+                            final current =
+                                effectSlots[fixedSlot].amountPercent;
+                            effectSlots[fixedSlot] = effectSlots[fixedSlot]
+                                .copyWith(
+                              amountPercent:
+                                  (current - 10).clamp(0, 100).toInt(),
+                            );
+                          }),
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: amount.toDouble(),
+                              min: 0,
+                              max: 100,
+                              divisions: 10,
+                              label: '$amount%',
+                              onChanged: (value) => setDialogState(() {
+                                effectSlots[fixedSlot] =
+                                    effectSlots[fixedSlot].copyWith(
+                                  amountPercent: value.round(),
+                                );
+                              }),
+                            ),
+                          ),
+                        ));
+                      }
                     }
 
                     return Column(
@@ -2482,58 +2628,23 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                     );
                   },
                 ),
-                if (effectSlots.any((item) => item != _MediaPartEffect.none)) ...[
-                  const SizedBox(height: 16),
-                  ExcludeSemantics(
-                    child: Text(
-                      l10n.mediaCutterPartEffectAmountValue(
-                        effectAmountPercent,
-                      ),
-                    ),
-                  ),
-                  Semantics(
-                    slider: true,
-                    label: l10n.mediaCutterPartEffectAmountValue(
-                      effectAmountPercent,
-                    ),
-                    value: '$effectAmountPercent%',
-                    increasedValue:
-                        '${(effectAmountPercent + 10).clamp(0, 100)}%',
-                    decreasedValue:
-                        '${(effectAmountPercent - 10).clamp(0, 100)}%',
-                    onIncrease: () => setDialogState(
-                      () => effectAmountPercent =
-                          (effectAmountPercent + 10).clamp(0, 100),
-                    ),
-                    onDecrease: () => setDialogState(
-                      () => effectAmountPercent =
-                          (effectAmountPercent - 10).clamp(0, 100),
-                    ),
-                    child: ExcludeSemantics(
-                      child: Slider(
-                        value: effectAmountPercent.toDouble(),
-                        min: 0,
-                        max: 100,
-                        divisions: 10,
-                        label: '$effectAmountPercent%',
-                        onChanged: (value) => setDialogState(
-                          () => effectAmountPercent = value.round(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
                   onPressed: () => unawaited(
                     _playPartEffectsPreview(
                       index,
                       volumePercent: volumePercent,
-                      effect: effectSlots[0],
-                      secondaryEffect: effectSlots[1],
-                      thirdEffect: effectSlots[2],
-                      fourthEffect: effectSlots[3],
-                      effectAmountPercent: effectAmountPercent,
+                      effect: effectSlots[0].effect,
+                      secondaryEffect: effectSlots[1].effect,
+                      thirdEffect: effectSlots[2].effect,
+                      fourthEffect: effectSlots[3].effect,
+                      effectAmountPercent: effectSlots[0].amountPercent,
+                      secondaryEffectAmountPercent:
+                          effectSlots[1].amountPercent,
+                      thirdEffectAmountPercent:
+                          effectSlots[2].amountPercent,
+                      fourthEffectAmountPercent:
+                          effectSlots[3].amountPercent,
                     ),
                   ),
                   icon: const Icon(Icons.play_arrow),
@@ -2564,17 +2675,23 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   'rawSlots=${_logEffectSlots(effectSlots)} '
                   'normalizedSlots=${_logEffectSlots(normalizedSlots)} '
                   'visibleSlots=${_visibleEffectSlots(effectSlots)} '
-                  'volume=$volumePercent% amount=$effectAmountPercent%',
+                  'volume=$volumePercent%',
                 ));
                 Navigator.pop(
                   dialogContext,
                   _PartEffectSettings(
                     volumePercent: volumePercent,
-                    effect: normalizedSlots[0],
-                    secondaryEffect: normalizedSlots[1],
-                    thirdEffect: normalizedSlots[2],
-                    fourthEffect: normalizedSlots[3],
-                    effectAmountPercent: effectAmountPercent,
+                    effect: normalizedSlots[0].effect,
+                    secondaryEffect: normalizedSlots[1].effect,
+                    thirdEffect: normalizedSlots[2].effect,
+                    fourthEffect: normalizedSlots[3].effect,
+                    effectAmountPercent: normalizedSlots[0].amountPercent,
+                    secondaryEffectAmountPercent:
+                        normalizedSlots[1].amountPercent,
+                    thirdEffectAmountPercent:
+                        normalizedSlots[2].amountPercent,
+                    fourthEffectAmountPercent:
+                        normalizedSlots[3].amountPercent,
                   ),
                 );
               },
@@ -2604,6 +2721,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               thirdEffect: result.thirdEffect,
               fourthEffect: result.fourthEffect,
               effectAmountPercent: result.effectAmountPercent,
+              secondaryEffectAmountPercent:
+                  result.secondaryEffectAmountPercent,
+              thirdEffectAmountPercent: result.thirdEffectAmountPercent,
+              fourthEffectAmountPercent: result.fourthEffectAmountPercent,
             )
           else
             _parts[i],
@@ -2619,9 +2740,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     unawaited(_logMediaCutter(
       'part effects applied index=$index applyToWholeFile=$applyToWholeFile '
       'volume=${result.volumePercent}% '
-      'effect=${result.effect.name} secondary=${result.secondaryEffect.name} '
-      'third=${result.thirdEffect.name} fourth=${result.fourthEffect.name} '
-      'amount=${result.effectAmountPercent}%',
+      'effect=${result.effect.name}:${result.effectAmountPercent}% '
+      'secondary=${result.secondaryEffect.name}:'
+      '${result.secondaryEffectAmountPercent}% '
+      'third=${result.thirdEffect.name}:${result.thirdEffectAmountPercent}% '
+      'fourth=${result.fourthEffect.name}:'
+      '${result.fourthEffectAmountPercent}%',
     ));
   }
 
@@ -2837,9 +2961,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           workDir.path,
           'segment_${i.toString().padLeft(3, '0')}$ext',
         );
-        final activeEffects = _activeEffects(part);
-        final usesUnderwaterBubbles =
-            activeEffects.contains(_MediaPartEffect.underwater);
+        final usesUnderwaterBubbles = _usesUnderwaterBubbles(part);
         final String? filter = usesUnderwaterBubbles
             ? _underwaterAudioFilterForPart(part)
             : _audioFilterForPart(part);
@@ -3388,10 +3510,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       filters.add('volume=${part.volumeFactor.toStringAsFixed(3)}');
     }
 
-    final amount = part.effectAmountPercent.clamp(0, 100) / 100.0;
-    for (final effect in _activeEffects(part)) {
-      if (skipEffects.contains(effect)) continue;
-      final filter = _audioFilterForEffect(effect, part, amount);
+    for (final slot in _activeEffectSlots(part)) {
+      if (skipEffects.contains(slot.effect)) continue;
+      final amount = slot.amountPercent.clamp(0, 100) / 100.0;
+      final filter = _audioFilterForEffect(slot.effect, part, amount);
       if (filter != null) filters.add(filter);
     }
 
@@ -3404,7 +3526,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       part,
       skipEffects: {_MediaPartEffect.underwater},
     );
-    final amount = part.effectAmountPercent.clamp(0, 100) / 100.0;
+    final underwaterSlot = _activeEffectSlots(part).firstWhere(
+      (slot) =>
+          slot.effect == _MediaPartEffect.underwater &&
+          slot.amountPercent > 0,
+      orElse: () => const _MediaEffectSlot(
+        effect: _MediaPartEffect.underwater,
+        amountPercent: 50,
+      ),
+    );
+    final amount = underwaterSlot.amountPercent.clamp(0, 100) / 100.0;
     final lowpass = (1300 - 650 * amount).round().clamp(550, 1300);
     final delay1 = (50 + 50 * amount).round();
     final delay2 = (110 + 70 * amount).round();
@@ -3416,26 +3547,29 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       'aecho=0.75:0.55:$delay1|$delay2:$decay1|$decay2',
     ].join(',');
     return '[0:a:0]$voiceFilter[uwVoice];'
-        '[1:a:0]aresample=44100,highpass=f=55,lowpass=f=7000,volume=0.10[uwBubbles];'
+        '[1:a:0]aresample=44100,highpass=f=55,lowpass=f=7000,'
+        'volume=${(0.03 + 0.14 * amount).toStringAsFixed(3)}[uwBubbles];'
         '[uwVoice][uwBubbles]amix=inputs=2:normalize=0:duration=first,'
         'acompressor=threshold=-18dB:ratio=2.5:attack=6:release=140,'
         'alimiter=limit=0.90[outa]';
   }
 
-  List<_MediaPartEffect> _activeEffects(_MediaPart part) {
-    return [
-      part.effect,
-      part.secondaryEffect,
-      part.thirdEffect,
-      part.fourthEffect,
-    ].where((effect) => effect != _MediaPartEffect.none).toList();
-  }
+  List<_MediaPartEffect> _activeEffects(_MediaPart part) =>
+      _activeEffectSlots(part).map((slot) => slot.effect).toList();
+
+  bool _usesUnderwaterBubbles(_MediaPart part) =>
+      _activeEffectSlots(part).any(
+        (slot) =>
+            slot.effect == _MediaPartEffect.underwater &&
+            slot.amountPercent > 0,
+      );
 
   String? _audioFilterForEffect(
     _MediaPartEffect effect,
     _MediaPart part,
     double amount,
   ) {
+    if (amount <= 0.0001) return null;
     switch (effect) {
       case _MediaPartEffect.none:
         return null;
@@ -3459,22 +3593,32 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return 'aecho=0.82:0.92:$delay1|$delay2|$delay3:'
             '$decay1|$decay2|$decay3';
       case _MediaPartEffect.echoCathedral:
+        final irAmplitude = (0.06 + 0.18 * amount).toStringAsFixed(3);
+        final dryVolume = (1.00 - 0.48 * amount).toStringAsFixed(3);
+        final wetVolume = (0.16 + 1.02 * amount).toStringAsFixed(3);
+        final widenFeedback = (0.02 + 0.14 * amount).toStringAsFixed(3);
+        final widenCrossfeed = (0.03 + 0.13 * amount).toStringAsFixed(3);
+        final tail1 = (0.04 + 0.26 * amount).toStringAsFixed(3);
+        final tail2 = (0.03 + 0.19 * amount).toStringAsFixed(3);
+        final tail3 = (0.02 + 0.12 * amount).toStringAsFixed(3);
         return 'aresample=44100,asplit=2[cat2Dry][cat2Wet];'
-            "aevalsrc=exprs='if(eq(n,0),1,(2*random(0)-1)*0.24*"
+            "aevalsrc=exprs='if(eq(n,0),1,(2*random(0)-1)*$irAmplitude*"
             "exp(-t/1.85))':s=44100:d=4.8:c=mono,"
             'highpass=f=80,lowpass=f=7200[cat2IR];'
             '[cat2Wet]adelay=58:all=1,'
             'aecho=0.86:0.66:65|138|245:0.38|0.28|0.20[cat2Pre];'
             '[cat2Pre][cat2IR]afir=dry=0:wet=1:length=1:irnorm=0.65:'
             'irfmt=mono:maxir=6,highpass=f=90,lowpass=f=7600,'
-            'stereowiden=delay=25:feedback=0.16:crossfeed=0.16:drymix=0.82,'
-            'volume=1.18[cat2Verb];'
-            '[cat2Dry]volume=0.52[cat2Voice];'
+            'stereowiden=delay=25:feedback=$widenFeedback:'
+            'crossfeed=$widenCrossfeed:drymix=0.82,'
+            'volume=$wetVolume[cat2Verb];'
+            '[cat2Dry]volume=$dryVolume[cat2Voice];'
             '[cat2Voice][cat2Verb]amix=inputs=2:normalize=0,'
-            'aecho=0.82:0.78:420|840|1260:0.30|0.22|0.14,'
-            'equalizer=f=2400:t=q:w=1.2:g=1.5,'
-            'acompressor=threshold=-19dB:ratio=3:attack=8:release=220,'
-            'alimiter=limit=0.88';
+            'aecho=0.82:0.78:420|840|1260:$tail1|$tail2|$tail3,'
+            'equalizer=f=2400:t=q:w=1.2:g=${(1.5 * amount).toStringAsFixed(2)},'
+            'acompressor=threshold=-19dB:'
+            'ratio=${(1.2 + 1.8 * amount).toStringAsFixed(2)}:'
+            'attack=8:release=220,alimiter=limit=0.88';
       case _MediaPartEffect.largeRoom:
         final delay1 = (65 + 40 * amount).round();
         final delay2 = (125 + 70 * amount).round();
@@ -3543,73 +3687,128 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return 'aecho=0.85:0.95:$delay1|$delay2|$delay3:'
             '$decay1|$decay2|$decay3';
       case _MediaPartEffect.chorus:
+        final highFactor = 1.0 + 0.260 * amount;
+        final lowFactor = 1.0 - 0.159 * amount;
+        final doubleFactor = 1.0 + 0.018 * amount;
+        final centerVolume = (1.0 - 0.05 * amount).toStringAsFixed(3);
+        final highVolume = (0.58 * amount).toStringAsFixed(3);
+        final lowVolume = (0.52 * amount).toStringAsFixed(3);
+        final doubleVolume = (0.38 * amount).toStringAsFixed(3);
+        final chorusOut = (0.08 + 0.60 * amount).toStringAsFixed(3);
+        final depth1 = (0.36 * amount).toStringAsFixed(3);
+        final depth2 = (0.29 * amount).toStringAsFixed(3);
+        final depth3 = (0.23 * amount).toStringAsFixed(3);
         return 'aresample=44100,asplit=4[center][high][low][double];'
-            '[center]volume=0.95[c];'
-            '[high]asetrate=44100*1.260,aresample=44100,atempo=0.793651,'
+            '[center]volume=$centerVolume[c];'
+            '[high]asetrate=44100*${highFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / highFactor).toStringAsFixed(6)},'
             'adelay=12:all=1,pan=stereo|FL=0.20*FL|FR=0.85*FR,'
-            'volume=0.58[h];'
-            '[low]asetrate=44100*0.841,aresample=44100,atempo=1.189061,'
+            'volume=$highVolume[h];'
+            '[low]asetrate=44100*${lowFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / lowFactor).toStringAsFixed(6)},'
             'adelay=20:all=1,pan=stereo|FL=0.85*FL|FR=0.20*FR,'
-            'volume=0.52[l];'
-            '[double]asetrate=44100*1.018,aresample=44100,'
-            'atempo=0.982318,adelay=32:all=1,volume=0.38[d];'
+            'volume=$lowVolume[l];'
+            '[double]asetrate=44100*${doubleFactor.toStringAsFixed(6)},'
+            'aresample=44100,'
+            'atempo=${(1 / doubleFactor).toStringAsFixed(6)},'
+            'adelay=32:all=1,volume=$doubleVolume[d];'
             '[c][h][l][d]amix=inputs=4:normalize=0,'
-            'chorus=0.72:0.68:16|29|44:0.36|0.29|0.23:'
-            '0.25|0.43|0.62:2.8|3.8|4.8,'
-            'highpass=f=90,equalizer=f=2800:t=q:w=1.2:g=2,'
-            'acompressor=threshold=-18dB:ratio=3:attack=8:release=140,'
-            'alimiter=limit=0.88';
+            'chorus=0.72:$chorusOut:16|29|44:'
+            '$depth1|$depth2|$depth3:0.25|0.43|0.62:2.8|3.8|4.8,'
+            'highpass=f=90,'
+            'equalizer=f=2800:t=q:w=1.2:g=${(2 * amount).toStringAsFixed(2)},'
+            'acompressor=threshold=-18dB:'
+            'ratio=${(1.2 + 1.8 * amount).toStringAsFixed(2)}:'
+            'attack=8:release=140,alimiter=limit=0.88';
       case _MediaPartEffect.pitchLow:
-        return _pitchFilter(0.85);
+        return _pitchFilter(0.85, amount);
       case _MediaPartEffect.pitchVeryLow:
-        return _pitchFilter(0.75);
+        return _pitchFilter(0.75, amount);
       case _MediaPartEffect.pitchHigh:
-        return _pitchFilter(1.15);
+        return _pitchFilter(1.15, amount);
       case _MediaPartEffect.pitchVeryHigh:
-        return _pitchFilter(1.30);
+        return _pitchFilter(1.30, amount);
       case _MediaPartEffect.robot:
-        return 'highpass=f=100,lowpass=f=8500,'
-            "afftfilt=real='hypot(re,im)':imag='0':"
-            'win_size=512:win_func=hann:overlap=0.75,'
-            'equalizer=f=2400:t=q:w=1.4:g=2.5,'
-            'acompressor=threshold=-14dB:ratio=2.2:attack=8:release=100,'
-            'alimiter=limit=0.92';
+        final blend = amount.toStringAsFixed(4);
+        final eqGain = (2.5 * amount).toStringAsFixed(2);
+        final ratio = (1.0 + 1.2 * amount).toStringAsFixed(2);
+        return 'highpass=f=${(40 + 60 * amount).round()},'
+            'lowpass=f=${(18000 - 9500 * amount).round()},'
+            "afftfilt=real='(1-$blend)*re+$blend*hypot(re,im)':"
+            "imag='(1-$blend)*im':win_size=512:win_func=hann:"
+            'overlap=0.75,equalizer=f=2400:t=q:w=1.4:g=$eqGain,'
+            'acompressor=threshold=-14dB:ratio=$ratio:'
+            'attack=8:release=100,alimiter=limit=0.92';
       case _MediaPartEffect.superRobot:
-        return 'highpass=f=100,lowpass=f=9000,'
-            "afftfilt=real='hypot(re,im)*(0.18+0.82*"
-            "pow(abs(cos(PI*b*sr/(2*nb*110))),10))':imag='0':"
-            'win_size=1024:win_func=hann:overlap=0.80,'
-            'equalizer=f=1800:t=q:w=1.2:g=4,'
-            'equalizer=f=4200:t=q:w=1.0:g=3,'
-            'chorus=0.76:0.64:8|14:0.22|0.16:0.32|0.48:1.4|2.0,'
-            'acompressor=threshold=-18dB:ratio=3.5:attack=4:release=90:'
-            'makeup=1.25,alimiter=limit=0.90';
+        final blend = amount.toStringAsFixed(4);
+        final spectralFloor = (1.0 - 0.82 * amount).toStringAsFixed(4);
+        final spectralDepth = (0.82 * amount).toStringAsFixed(4);
+        final spectralPower = (2.0 + 8.0 * amount).toStringAsFixed(2);
+        final chorusDepth1 = (0.22 * amount).toStringAsFixed(3);
+        final chorusDepth2 = (0.16 * amount).toStringAsFixed(3);
+        return 'highpass=f=${(40 + 60 * amount).round()},'
+            'lowpass=f=${(18000 - 9000 * amount).round()},'
+            "afftfilt=real='(1-$blend)*re+$blend*hypot(re,im)*"
+            "($spectralFloor+$spectralDepth*"
+            "pow(abs(cos(PI*b*sr/(2*nb*110))),$spectralPower))':"
+            "imag='(1-$blend)*im':win_size=1024:win_func=hann:"
+            'overlap=0.80,'
+            'equalizer=f=1800:t=q:w=1.2:g=${(4 * amount).toStringAsFixed(2)},'
+            'equalizer=f=4200:t=q:w=1.0:g=${(3 * amount).toStringAsFixed(2)},'
+            'chorus=0.76:${(0.08 + 0.56 * amount).toStringAsFixed(3)}:'
+            '8|14:$chorusDepth1|$chorusDepth2:0.32|0.48:1.4|2.0,'
+            'acompressor=threshold=-18dB:'
+            'ratio=${(1.2 + 2.3 * amount).toStringAsFixed(2)}:'
+            'attack=4:release=90:makeup=${(1 + 0.25 * amount).toStringAsFixed(3)},'
+            'alimiter=limit=0.90';
       case _MediaPartEffect.helicopter:
         final frequency = (6 + 12 * amount).toStringAsFixed(2);
         final depth = (0.45 + 0.50 * amount).toStringAsFixed(2);
         return 'tremolo=f=$frequency:d=$depth';
       case _MediaPartEffect.alien:
+        final warlordFactor = 1.0 - 0.180 * amount;
+        final clearFactor = 1.0 - 0.120 * amount;
+        final signalFactor = 1.0 + 0.180 * amount;
+        final spectralBlend = amount.toStringAsFixed(4);
+        final warlordVolume = (0.15 + 0.67 * amount).toStringAsFixed(3);
+        final clearVolume = (0.85 - 0.51 * amount).toStringAsFixed(3);
+        final signalVolume = (0.20 * amount).toStringAsFixed(3);
         return 'aresample=44100,'
             'asplit=3[alienWarlord][alienClear][alienSignal];'
-            '[alienWarlord]asetrate=44100*0.820,aresample=44100,'
-            'atempo=1.219512,'
-            "afftfilt=real='hypot(re,im)*(0.30+0.70*"
-            "pow(abs(cos(PI*b*sr/(2*nb*95))),8))':imag='0':"
+            '[alienWarlord]asetrate=44100*${warlordFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / warlordFactor).toStringAsFixed(6)},'
+            "afftfilt=real='(1-$spectralBlend)*re+$spectralBlend*"
+            "hypot(re,im)*(0.30+0.70*"
+            "pow(abs(cos(PI*b*sr/(2*nb*95))),8))':"
+            "imag='(1-$spectralBlend)*im':"
             'win_size=768:win_func=hann:overlap=0.80,'
-            'equalizer=f=380:t=q:w=1.1:g=4,volume=0.82[alienW];'
-            '[alienClear]asetrate=44100*0.880,aresample=44100,'
-            'atempo=1.136364,highpass=f=100,lowpass=f=6500,'
-            'equalizer=f=2600:t=q:w=1.2:g=3,volume=0.34[alienC];'
-            '[alienSignal]asetrate=44100*1.180,aresample=44100,'
-            'atempo=0.847458,highpass=f=900,tremolo=f=7.2:d=0.42,'
-            'adelay=24:all=1,volume=0.20[alienS];'
+            'equalizer=f=380:t=q:w=1.1:g=${(4 * amount).toStringAsFixed(2)},'
+            'volume=$warlordVolume[alienW];'
+            '[alienClear]asetrate=44100*${clearFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / clearFactor).toStringAsFixed(6)},'
+            'highpass=f=${(40 + 60 * amount).round()},'
+            'lowpass=f=${(16000 - 9500 * amount).round()},'
+            'equalizer=f=2600:t=q:w=1.2:g=${(3 * amount).toStringAsFixed(2)},'
+            'volume=$clearVolume[alienC];'
+            '[alienSignal]asetrate=44100*${signalFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / signalFactor).toStringAsFixed(6)},'
+            'highpass=f=900,tremolo=f=7.2:'
+            'd=${(0.42 * amount).toStringAsFixed(3)},'
+            'adelay=24:all=1,volume=$signalVolume[alienS];'
             '[alienW][alienC][alienS]amix=inputs=3:normalize=0,'
-            'flanger=delay=2.5:depth=3.8:regen=16:width=62:speed=0.22:'
+            'flanger=delay=${(0.5 + 2.0 * amount).toStringAsFixed(2)}:'
+            'depth=${(0.3 + 3.5 * amount).toStringAsFixed(2)}:'
+            'regen=${(16 * amount).toStringAsFixed(2)}:'
+            'width=${(10 + 52 * amount).toStringAsFixed(2)}:'
+            'speed=${(0.10 + 0.12 * amount).toStringAsFixed(2)}:'
             'shape=sinusoidal:phase=45:interp=quadratic,'
-            'aecho=0.86:0.55:95|185:0.17|0.09,'
-            'equalizer=f=2100:t=q:w=1.0:g=3,'
-            'acompressor=threshold=-18dB:ratio=3.2:attack=5:release=110,'
-            'alimiter=limit=0.88';
+            'aecho=0.86:0.55:95|185:'
+            '${(0.17 * amount).toStringAsFixed(3)}|'
+            '${(0.09 * amount).toStringAsFixed(3)},'
+            'equalizer=f=2100:t=q:w=1.0:g=${(3 * amount).toStringAsFixed(2)},'
+            'acompressor=threshold=-18dB:'
+            'ratio=${(1.2 + 2.0 * amount).toStringAsFixed(2)}:'
+            'attack=5:release=110,alimiter=limit=0.88';
       case _MediaPartEffect.brightVoice:
         final gain = (3 + 6 * amount).toStringAsFixed(2);
         return 'equalizer=f=3500:t=q:w=1.0:g=$gain,highpass=f=120';
@@ -3617,72 +3816,112 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         final gain = (3 + 6 * amount).toStringAsFixed(2);
         return 'equalizer=f=180:t=q:w=1.0:g=$gain,lowpass=f=4200';
       case _MediaPartEffect.ghost:
-        return 'aresample=44100,asplit=3[spirit][air][shadow];'
-            '[spirit]asetrate=44100*0.930,aresample=44100,'
-            'atempo=1.075269,'
-            "afftfilt=real='hypot(re,im)':imag='0':"
-            'win_size=1024:win_func=hann:overlap=0.80,volume=0.82[s];'
-            '[air]highpass=f=1700,lowpass=f=7800,tremolo=f=5.2:d=0.32,'
-            'adelay=95:all=1,volume=0.38[a];'
-            '[shadow]asetrate=44100*0.780,aresample=44100,'
-            'atempo=1.282051,lowpass=f=2400,adelay=190:all=1,'
-            'volume=0.34[g];'
-            '[s][a][g]amix=inputs=3:normalize=0,'
-            'aecho=0.72:0.82:360|760:0.34|0.20,'
-            'tremolo=f=3.6:d=0.14,equalizer=f=420:t=q:w=1.1:g=3,'
-            'acompressor=threshold=-18dB:ratio=2.8:attack=8:release=150,'
-            'alimiter=limit=0.88';
+        final pitch = (0.98 - 0.08 * amount).toStringAsFixed(3);
+        final tempo = (1 / (0.98 - 0.08 * amount)).toStringAsFixed(6);
+        final highpass = (90 + 130 * amount).round();
+        final lowpass = (7600 - 2400 * amount).round().clamp(5000, 7600);
+        final lowGain = (1.5 + 3.5 * amount).toStringAsFixed(2);
+        final metalGain = (2.5 + 5.5 * amount).toStringAsFixed(2);
+        final flangerDelay = (1.2 + 2.4 * amount).toStringAsFixed(2);
+        final flangerDepth = (1.6 + 3.8 * amount).toStringAsFixed(2);
+        final flangerRegen = (8 + 24 * amount).toStringAsFixed(1);
+        final flangerWidth = (42 + 38 * amount).toStringAsFixed(1);
+        final flangerSpeed = (0.13 + 0.16 * amount).toStringAsFixed(2);
+        final tremoloFrequency = (3.2 + 2.4 * amount).toStringAsFixed(2);
+        final tremoloDepth = (0.08 + 0.28 * amount).toStringAsFixed(2);
+        final delay1 = (110 + 50 * amount).round();
+        final delay2 = (330 + 170 * amount).round();
+        final delay3 = (680 + 320 * amount).round();
+        final decay1 = (0.18 + 0.18 * amount).toStringAsFixed(2);
+        final decay2 = (0.12 + 0.18 * amount).toStringAsFixed(2);
+        final decay3 = (0.08 + 0.16 * amount).toStringAsFixed(2);
+        return 'aresample=44100,asetrate=44100*$pitch,aresample=44100,'
+            'atempo=$tempo,highpass=f=$highpass:p=2,'
+            'lowpass=f=$lowpass:p=2,'
+            'equalizer=f=430:t=q:w=1.1:g=$lowGain,'
+            'equalizer=f=2350:t=q:w=0.85:g=$metalGain,'
+            'flanger=delay=$flangerDelay:depth=$flangerDepth:'
+            'regen=$flangerRegen:width=$flangerWidth:speed=$flangerSpeed:'
+            'shape=sinusoidal:phase=55:interp=quadratic,'
+            'tremolo=f=$tremoloFrequency:d=$tremoloDepth,'
+            'aecho=0.78:0.78:$delay1|$delay2|$delay3:'
+            '$decay1|$decay2|$decay3,'
+            'acompressor=threshold=-20dB:ratio=3.4:attack=5:release=150:'
+            'makeup=1.35,asoftclip=type=tanh:threshold=0.86:output=0.90,'
+            'alimiter=limit=0.90';
       case _MediaPartEffect.telephone:
-        return 'highpass=f=320:p=2,lowpass=f=3400:p=2,'
-            'equalizer=f=850:t=q:w=1.1:g=5,'
-            'equalizer=f=2100:t=q:w=1.0:g=4.5,'
-            'acompressor=threshold=-20dB:ratio=5:attack=3:release=70:'
-            'makeup=1.4,volume=1.35,'
-            'asoftclip=type=tanh:threshold=0.82:output=0.82,'
+        final highpass = (60 + 260 * amount).round();
+        final lowpass = (16000 - 12600 * amount).round();
+        final gain1 = (5 * amount).toStringAsFixed(2);
+        final gain2 = (4.5 * amount).toStringAsFixed(2);
+        final ratio = (1.0 + 4.0 * amount).toStringAsFixed(2);
+        final makeup = (1.0 + 0.4 * amount).toStringAsFixed(2);
+        final outputVolume = (1.0 + 0.35 * amount).toStringAsFixed(2);
+        final clipThreshold = (0.98 - 0.16 * amount).toStringAsFixed(2);
+        return 'highpass=f=$highpass:p=2,lowpass=f=$lowpass:p=2,'
+            'equalizer=f=850:t=q:w=1.1:g=$gain1,'
+            'equalizer=f=2100:t=q:w=1.0:g=$gain2,'
+            'acompressor=threshold=-20dB:ratio=$ratio:attack=3:release=70:'
+            'makeup=$makeup,volume=$outputVolume,'
+            'asoftclip=type=tanh:threshold=$clipThreshold:output=0.82,'
             'alimiter=limit=0.90';
       case _MediaPartEffect.oldRadio:
+        final highpass = (220 + 180 * amount).round();
+        final lowpass = (3600 - 1600 * amount).round().clamp(1800, 3600);
+        final bits = (10 - 6 * amount).round().clamp(4, 10);
+        final crushMix = (0.55 + 0.40 * amount).toStringAsFixed(2);
+        final midGain = (5.0 + 6.0 * amount).toStringAsFixed(2);
+        final upperGain = (2.0 + 5.0 * amount).toStringAsFixed(2);
+        final ratio = (3.5 + 5.0 * amount).toStringAsFixed(2);
+        final vibratoDepth = (0.025 + 0.090 * amount).toStringAsFixed(3);
+        final tremoloDepth = (0.06 + 0.20 * amount).toStringAsFixed(2);
         return 'aresample=44100,pan=mono|c0=0.5*c0+0.5*c1,'
-            'asplit=2[radio4Voice][radio4Body];'
-            'anoisesrc=color=pink:amplitude=0.024:r=44100[radio4Noise];'
-            "aevalsrc=exprs='if(gt(random(0),0.99970),"
-            "0.22*(2*random(1)-1),0)':s=44100:c=mono[radio4Crackle];"
-            '[radio4Voice]highpass=f=260:p=2,lowpass=f=3300:p=2,'
-            'equalizer=f=900:t=q:w=0.9:g=7,'
-            'equalizer=f=2200:t=q:w=1.0:g=4,'
-            'acompressor=threshold=-28dB:ratio=7:attack=2:release=75:'
-            'makeup=2.6,vibrato=f=4.4:d=0.055,volume=3.0,'
-            'asoftclip=type=atan:threshold=0.58:output=0.66:oversample=4,'
-            'volume=0.82[radio4V];'
-            '[radio4Body]highpass=f=320,lowpass=f=3000,'
-            'acrusher=bits=6:mix=0.62:mode=lin:aa=0.52:samples=2,'
-            'volume=0.38[radio4B];'
-            '[radio4Noise]highpass=f=380,lowpass=f=4800,'
-            'tremolo=f=6.8:d=0.48,volume=0.72[radio4N];'
-            '[radio4Crackle]highpass=f=700,lowpass=f=6500,'
-            'volume=0.50[radio4K];'
-            '[radio4V][radio4B][radio4N][radio4K]'
-            'amix=inputs=4:normalize=0:duration=first,'
-            'tremolo=f=0.75:d=0.08,'
-            'acompressor=threshold=-20dB:ratio=3.2:attack=3:release=100,'
-            'alimiter=limit=0.84,pan=stereo|FL=c0|FR=c0';
+            'highpass=f=$highpass:p=2,lowpass=f=$lowpass:p=2,'
+            'equalizer=f=900:t=q:w=0.9:g=$midGain,'
+            'equalizer=f=2200:t=q:w=1.0:g=$upperGain,'
+            'acrusher=level_in=1:level_out=1:bits=$bits:mix=$crushMix:'
+            'mode=log:aa=0.85:samples=2,'
+            'acompressor=threshold=-24dB:ratio=$ratio:attack=3:release=90:'
+            'makeup=2.2,vibrato=f=4.5:d=$vibratoDepth,'
+            'tremolo=f=0.85:d=$tremoloDepth,'
+            'asoftclip=type=tanh:threshold=0.72:output=0.82,'
+            'volume=1.25,alimiter=limit=0.90,'
+            'pan=stereo|FL=c0|FR=c0';
       case _MediaPartEffect.megaphone:
+        final voiceHighpass = (70 + 290 * amount).round();
+        final voiceLowpass = (16000 - 9900 * amount).round();
+        final voiceVolume = (1.0 - 0.18 * amount).toStringAsFixed(3);
+        final metalVolume = (0.30 * amount).toStringAsFixed(3);
+        final echo1 = (0.30 * amount).toStringAsFixed(3);
+        final echo2 = (0.17 * amount).toStringAsFixed(3);
         return 'pan=mono|c0=0.5*c0+0.5*c1,'
             'asplit=2[mega3Voice][mega3Metal];'
-            '[mega3Voice]highpass=f=360:p=2,lowpass=f=6100:p=2,'
-            'equalizer=f=1050:t=q:w=0.85:g=6,'
-            'equalizer=f=2350:t=q:w=0.9:g=5,'
-            'equalizer=f=4100:t=q:w=1.1:g=3,volume=0.82[mega3V];'
+            '[mega3Voice]highpass=f=$voiceHighpass:p=2,'
+            'lowpass=f=$voiceLowpass:p=2,'
+            'equalizer=f=1050:t=q:w=0.85:g=${(6 * amount).toStringAsFixed(2)},'
+            'equalizer=f=2350:t=q:w=0.9:g=${(5 * amount).toStringAsFixed(2)},'
+            'equalizer=f=4100:t=q:w=1.1:g=${(3 * amount).toStringAsFixed(2)},'
+            'volume=$voiceVolume[mega3V];'
             '[mega3Metal]highpass=f=520,lowpass=f=5800,'
             "afftfilt=real='hypot(re,im)':imag='0':"
             'win_size=384:win_func=hann:overlap=0.75,'
-            'aecho=0.80:0.72:5|11|20:0.54|0.41|0.28,'
-            'volume=0.30[mega3M];'
+            'aecho=0.80:0.72:5|11|20:'
+            '${(0.54 * amount).toStringAsFixed(3)}|'
+            '${(0.41 * amount).toStringAsFixed(3)}|'
+            '${(0.28 * amount).toStringAsFixed(3)},'
+            'volume=$metalVolume[mega3M];'
             '[mega3V][mega3M]amix=inputs=2:normalize=0,'
-            'flanger=delay=1.8:depth=1.35:regen=27:width=56:speed=0.10:'
+            'flanger=delay=${(0.4 + 1.4 * amount).toStringAsFixed(2)}:'
+            'depth=${(0.15 + 1.20 * amount).toStringAsFixed(2)}:'
+            'regen=${(27 * amount).toStringAsFixed(2)}:'
+            'width=${(8 + 48 * amount).toStringAsFixed(2)}:'
+            'speed=${(0.10 + 0.05 * amount).toStringAsFixed(2)}:'
             'shape=sinusoidal:phase=25:interp=quadratic,'
-            'aecho=0.86:0.64:118|238:0.30|0.17,'
-            'acompressor=threshold=-22dB:ratio=4.2:attack=3:release=85:'
-            'makeup=1.5,equalizer=f=1800:t=q:w=1.0:g=2,'
+            'aecho=0.86:0.64:118|238:$echo1|$echo2,'
+            'acompressor=threshold=-22dB:'
+            'ratio=${(1.2 + 3 * amount).toStringAsFixed(2)}:'
+            'attack=3:release=85:makeup=${(1 + 0.5 * amount).toStringAsFixed(2)},'
+            'equalizer=f=1800:t=q:w=1.0:g=${(2 * amount).toStringAsFixed(2)},'
             'alimiter=limit=0.88,pan=stereo|FL=c0|FR=c0';
       case _MediaPartEffect.underwater:
         final lowpass = (1300 - 650 * amount).round().clamp(550, 1300);
@@ -3693,128 +3932,216 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return 'lowpass=f=$lowpass,'
             'aecho=0.75:0.55:$delay1|$delay2:$decay1|$decay2';
       case _MediaPartEffect.monster:
+        final centerFactor = 1.0 - 0.180 * amount;
+        final leftFactor = 1.0 - 0.500 * amount;
+        final rightFactor = 1.0 - 0.450 * amount;
+        final growlFactor = 1.0 - 0.320 * amount;
+        final centerVolume = (1.0 - 0.60 * amount).toStringAsFixed(3);
+        final leftVolume = (0.78 * amount).toStringAsFixed(3);
+        final rightVolume = (0.72 * amount).toStringAsFixed(3);
+        final growlVolume = (0.46 * amount).toStringAsFixed(3);
+        final spectralBlend = amount.toStringAsFixed(4);
         return 'aresample=44100,'
             'asplit=4[mon2Center][mon2Left][mon2Right][mon2Growl];'
-            '[mon2Center]asetrate=44100*0.820,aresample=44100,'
-            'atempo=1.219512,highpass=f=80,lowpass=f=6200,'
-            'equalizer=f=2400:t=q:w=1.2:g=3.5,volume=0.40[mon2C];'
-            '[mon2Left]asetrate=44100*0.500,aresample=44100,atempo=2.0,'
-            "afftfilt=real='hypot(re,im)*(0.30+0.70*"
-            "pow(abs(cos(PI*b*sr/(2*nb*68))),8))':imag='0':"
+            '[mon2Center]asetrate=44100*${centerFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / centerFactor).toStringAsFixed(6)},'
+            'highpass=f=80,lowpass=f=6200,'
+            'equalizer=f=2400:t=q:w=1.2:g=${(3.5 * amount).toStringAsFixed(2)},'
+            'volume=$centerVolume[mon2C];'
+            '[mon2Left]asetrate=44100*${leftFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / leftFactor).toStringAsFixed(6)},'
+            "afftfilt=real='(1-$spectralBlend)*re+$spectralBlend*"
+            "hypot(re,im)*(0.30+0.70*"
+            "pow(abs(cos(PI*b*sr/(2*nb*68))),8))':"
+            "imag='(1-$spectralBlend)*im':"
             'win_size=768:win_func=hann:overlap=0.82,lowpass=f=3400,'
-            'pan=stereo|FL=1.0*FL|FR=0.08*FR,volume=0.78[mon2L];'
-            '[mon2Right]asetrate=44100*0.550,aresample=44100,'
-            'atempo=1.818182,'
-            "afftfilt=real='hypot(re,im)':imag='0':"
+            'pan=stereo|FL=1.0*FL|FR=0.08*FR,'
+            'volume=$leftVolume[mon2L];'
+            '[mon2Right]asetrate=44100*${rightFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / rightFactor).toStringAsFixed(6)},'
+            "afftfilt=real='(1-$spectralBlend)*re+$spectralBlend*"
+            "hypot(re,im)':imag='(1-$spectralBlend)*im':"
             'win_size=768:win_func=hann:overlap=0.82,lowpass=f=3600,'
             'adelay=24:all=1,pan=stereo|FL=0.08*FL|FR=1.0*FR,'
-            'volume=0.72[mon2R];'
-            '[mon2Growl]asetrate=44100*0.680,aresample=44100,'
-            'atempo=1.470588,lowpass=f=4200,tremolo=f=18:d=0.48,'
-            'volume=2.2,'
-            'asoftclip=type=tanh:threshold=0.62:output=0.62:oversample=4,'
-            'volume=0.46[mon2G];'
+            'volume=$rightVolume[mon2R];'
+            '[mon2Growl]asetrate=44100*${growlFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / growlFactor).toStringAsFixed(6)},'
+            'lowpass=f=4200,tremolo=f=18:'
+            'd=${(0.48 * amount).toStringAsFixed(3)},'
+            'volume=${(1 + 1.2 * amount).toStringAsFixed(2)},'
+            'asoftclip=type=tanh:'
+            'threshold=${(0.92 - 0.30 * amount).toStringAsFixed(2)}:'
+            'output=0.62:oversample=4,volume=$growlVolume[mon2G];'
             '[mon2C][mon2L][mon2R][mon2G]amix=inputs=4:normalize=0,'
-            'equalizer=f=150:t=q:w=1.0:g=5,'
-            'equalizer=f=2200:t=q:w=1.1:g=2.5,'
-            'acompressor=threshold=-22dB:ratio=4:attack=4:release=140,'
-            'alimiter=limit=0.86';
+            'equalizer=f=150:t=q:w=1.0:g=${(5 * amount).toStringAsFixed(2)},'
+            'equalizer=f=2200:t=q:w=1.1:g=${(2.5 * amount).toStringAsFixed(2)},'
+            'acompressor=threshold=-22dB:'
+            'ratio=${(1.2 + 2.8 * amount).toStringAsFixed(2)}:'
+            'attack=4:release=140,alimiter=limit=0.86';
       case _MediaPartEffect.chipmunk:
+        final mainFactor = 1.0 + 0.520 * amount;
+        final doubleFactor = 1.0 + 0.610 * amount;
+        final clearFactor = 1.0 + 0.430 * amount;
+        final mainVolume = (1.0 - 0.22 * amount).toStringAsFixed(3);
+        final doubleVolume = (0.38 * amount).toStringAsFixed(3);
+        final clearVolume = (0.30 * amount).toStringAsFixed(3);
         return 'aresample=44100,'
             'asplit=3[chipMain][chipDouble][chipClear];'
-            '[chipMain]asetrate=44100*1.520,aresample=44100,'
-            'atempo=0.657895,highpass=f=130,'
-            'equalizer=f=3600:t=q:w=1.1:g=4,volume=0.78[chipM];'
-            '[chipDouble]asetrate=44100*1.610,aresample=44100,'
-            'atempo=0.621118,highpass=f=180,adelay=18:all=1,'
+            '[chipMain]asetrate=44100*${mainFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / mainFactor).toStringAsFixed(6)},'
+            'highpass=f=${(60 + 70 * amount).round()},'
+            'equalizer=f=3600:t=q:w=1.1:g=${(4 * amount).toStringAsFixed(2)},'
+            'volume=$mainVolume[chipM];'
+            '[chipDouble]asetrate=44100*${doubleFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / doubleFactor).toStringAsFixed(6)},'
+            'highpass=f=180,adelay=18:all=1,'
             'pan=stereo|FL=0.35*FL|FR=0.90*FR,'
-            'equalizer=f=4800:t=q:w=1.2:g=3,volume=0.38[chipD];'
-            '[chipClear]asetrate=44100*1.430,aresample=44100,'
-            'atempo=0.699301,adelay=9:all=1,'
-            'pan=stereo|FL=0.90*FL|FR=0.35*FR,volume=0.30[chipC];'
+            'equalizer=f=4800:t=q:w=1.2:g=${(3 * amount).toStringAsFixed(2)},'
+            'volume=$doubleVolume[chipD];'
+            '[chipClear]asetrate=44100*${clearFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / clearFactor).toStringAsFixed(6)},'
+            'adelay=9:all=1,pan=stereo|FL=0.90*FL|FR=0.35*FR,'
+            'volume=$clearVolume[chipC];'
             '[chipM][chipD][chipC]amix=inputs=3:normalize=0,'
-            'chorus=0.78:0.62:10|17:0.20|0.15:'
+            'chorus=0.78:${(0.08 + 0.54 * amount).toStringAsFixed(3)}:'
+            '10|17:${(0.20 * amount).toStringAsFixed(3)}|'
+            '${(0.15 * amount).toStringAsFixed(3)}:'
             '0.36|0.52:1.5|2.1,highpass=f=120,'
-            'equalizer=f=5200:t=q:w=1.2:g=2.5,'
-            'acompressor=threshold=-18dB:ratio=2.6:attack=4:release=90,'
-            'alimiter=limit=0.88';
+            'equalizer=f=5200:t=q:w=1.2:g=${(2.5 * amount).toStringAsFixed(2)},'
+            'acompressor=threshold=-18dB:'
+            'ratio=${(1.1 + 1.5 * amount).toStringAsFixed(2)}:'
+            'attack=4:release=90,alimiter=limit=0.88';
       case _MediaPartEffect.dream:
+        final highFactor = 1.0 + 0.498 * amount;
+        final lowFactor = 1.0 - 0.251 * amount;
+        final shimmerFactor = 1.0 + amount;
+        final voiceVolume = (1.0 - 0.42 * amount).toStringAsFixed(3);
+        final highVolume = (0.32 * amount).toStringAsFixed(3);
+        final lowVolume = (0.28 * amount).toStringAsFixed(3);
+        final shimmerVolume = (0.16 * amount).toStringAsFixed(3);
         return 'aresample=44100,'
             'asplit=4[dreamVoice][dreamHigh][dreamLow][dreamShimmer];'
             '[dreamVoice]highpass=f=90,lowpass=f=7600,'
-            'equalizer=f=3000:t=q:w=1.2:g=2.5,volume=0.58[dreamV];'
-            '[dreamHigh]asetrate=44100*1.498,aresample=44100,'
-            'atempo=0.667557,adelay=28:all=1,'
-            'pan=stereo|FL=0.25*FL|FR=0.90*FR,highpass=f=180,'
-            'volume=0.32[dreamH];'
-            '[dreamLow]asetrate=44100*0.749,aresample=44100,'
-            'atempo=1.335113,adelay=42:all=1,'
-            'pan=stereo|FL=0.90*FL|FR=0.25*FR,lowpass=f=5200,'
-            'volume=0.28[dreamL];'
-            '[dreamShimmer]asetrate=44100*2.0,aresample=44100,'
-            'atempo=0.5,adelay=75:all=1,highpass=f=1200,'
-            'volume=0.16[dreamS];'
+            'equalizer=f=3000:t=q:w=1.2:g=${(2.5 * amount).toStringAsFixed(2)},'
+            'volume=$voiceVolume[dreamV];'
+            '[dreamHigh]asetrate=44100*${highFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / highFactor).toStringAsFixed(6)},'
+            'adelay=28:all=1,pan=stereo|FL=0.25*FL|FR=0.90*FR,'
+            'highpass=f=180,volume=$highVolume[dreamH];'
+            '[dreamLow]asetrate=44100*${lowFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / lowFactor).toStringAsFixed(6)},'
+            'adelay=42:all=1,pan=stereo|FL=0.90*FL|FR=0.25*FR,'
+            'lowpass=f=5200,volume=$lowVolume[dreamL];'
+            '[dreamShimmer]asetrate=44100*${shimmerFactor.toStringAsFixed(6)},'
+            'aresample=44100,atempo=${(1 / shimmerFactor).toStringAsFixed(6)},'
+            'adelay=75:all=1,highpass=f=1200,'
+            'volume=$shimmerVolume[dreamS];'
             '[dreamV][dreamH][dreamL][dreamS]amix=inputs=4:normalize=0,'
-            'chorus=0.76:0.66:22|38|56:0.30|0.24|0.18:'
+            'chorus=0.76:${(0.08 + 0.58 * amount).toStringAsFixed(3)}:'
+            '22|38|56:${(0.30 * amount).toStringAsFixed(3)}|'
+            '${(0.24 * amount).toStringAsFixed(3)}|'
+            '${(0.18 * amount).toStringAsFixed(3)}:'
             '0.20|0.34|0.49:2.2|3.1|4.0,'
-            'aecho=0.76:0.72:240|520|920:0.28|0.18|0.10,'
-            'tremolo=f=2.8:d=0.07,'
-            'stereowiden=delay=18:feedback=0.10:crossfeed=0.18:drymix=0.82,'
-            'equalizer=f=4600:t=q:w=1.1:g=2,'
-            'acompressor=threshold=-18dB:ratio=2.4:attack=9:release=170,'
-            'alimiter=limit=0.88';
+            'aecho=0.76:0.72:240|520|920:'
+            '${(0.28 * amount).toStringAsFixed(3)}|'
+            '${(0.18 * amount).toStringAsFixed(3)}|'
+            '${(0.10 * amount).toStringAsFixed(3)},'
+            'tremolo=f=2.8:d=${(0.07 * amount).toStringAsFixed(3)},'
+            'stereowiden=delay=18:'
+            'feedback=${(0.10 * amount).toStringAsFixed(3)}:'
+            'crossfeed=${(0.18 * amount).toStringAsFixed(3)}:drymix=0.82,'
+            'equalizer=f=4600:t=q:w=1.1:g=${(2 * amount).toStringAsFixed(2)},'
+            'acompressor=threshold=-18dB:'
+            'ratio=${(1.1 + 1.3 * amount).toStringAsFixed(2)}:'
+            'attack=9:release=170,alimiter=limit=0.88';
       case _MediaPartEffect.distortion:
+        final dryVolume = (1.0 - 0.66 * amount).toStringAsFixed(3);
+        final wetVolume = (0.72 * amount).toStringAsFixed(3);
+        final drive = (1.0 + 6.0 * amount).toStringAsFixed(3);
+        final clip = (0.98 - 0.54 * amount).toStringAsFixed(3);
+        final crushMix = (0.20 * amount).toStringAsFixed(3);
         return 'asplit=2[dist6Dry][dist6Wet];'
-            '[dist6Dry]highpass=f=90,volume=0.34[dist6D];'
+            '[dist6Dry]highpass=f=90,volume=$dryVolume[dist6D];'
             '[dist6Wet]highpass=f=90,'
-            'acompressor=threshold=-28dB:ratio=5:attack=3:release=80:'
-            'makeup=2.8,volume=3.2,'
-            "aeval=exprs='clip(val(ch)*7,-0.44,0.44)':c=same,"
-            'volume=1.65,'
-            'acrusher=bits=10:mix=0.20:mode=lin:aa=0.85:samples=1,'
-            'equalizer=f=2400:t=q:w=1.0:g=3.5,'
-            'equalizer=f=5600:t=q:w=1.1:g=2,'
-            'asoftclip=type=atan:threshold=0.76:output=0.78:oversample=8,'
-            'volume=0.72[dist6W];'
+            'acompressor=threshold=-28dB:'
+            'ratio=${(1.0 + 4.0 * amount).toStringAsFixed(2)}:'
+            'attack=3:release=80:makeup=${(1 + 1.8 * amount).toStringAsFixed(2)},'
+            'volume=${(1 + 2.2 * amount).toStringAsFixed(2)},'
+            "aeval=exprs='clip(val(ch)*$drive,-$clip,$clip)':c=same,"
+            'volume=${(1 + 0.65 * amount).toStringAsFixed(2)},'
+            'acrusher=bits=${(16 - 6 * amount).round()}:'
+            'mix=$crushMix:mode=lin:aa=0.85:samples=1,'
+            'equalizer=f=2400:t=q:w=1.0:g=${(3.5 * amount).toStringAsFixed(2)},'
+            'equalizer=f=5600:t=q:w=1.1:g=${(2 * amount).toStringAsFixed(2)},'
+            'asoftclip=type=atan:'
+            'threshold=${(0.98 - 0.22 * amount).toStringAsFixed(2)}:'
+            'output=0.78:oversample=8,volume=$wetVolume[dist6W];'
             '[dist6D][dist6W]amix=inputs=2:normalize=0,'
-            'volume=0.78,alimiter=limit=0.88';
+            'volume=${(1.0 - 0.22 * amount).toStringAsFixed(3)},'
+            'alimiter=limit=0.88';
       case _MediaPartEffect.loFi:
+        final sampleRate = (44100 - 32100 * amount).round();
+        final bits = (16 - 10 * amount).round().clamp(6, 16);
+        final dryVolume = (1.0 - 0.80 * amount).toStringAsFixed(3);
+        final chipVolume = (0.78 * amount).toStringAsFixed(3);
         return 'pan=mono|c0=0.5*c0+0.5*c1,'
             'asplit=2[lofi2Dry][lofi2Chip];'
             '[lofi2Dry]highpass=f=120,lowpass=f=6800,'
-            'volume=0.20[lofi2D];'
-            '[lofi2Chip]aresample=12000,aresample=44100,'
-            'acrusher=bits=6:mix=0.82:mode=lin:aa=0.42:samples=3,'
-            'vibrato=f=4.2:d=0.10,tremolo=f=9.5:d=0.10,'
-            'highpass=f=180,lowpass=f=4800,'
-            'equalizer=f=1250:t=q:w=1.0:g=5,volume=1.5,'
-            'asoftclip=type=atan:threshold=0.72:output=0.72:oversample=4,'
-            'volume=0.78[lofi2C];'
+            'volume=$dryVolume[lofi2D];'
+            '[lofi2Chip]aresample=$sampleRate,aresample=44100,'
+            'acrusher=bits=$bits:'
+            'mix=${(0.82 * amount).toStringAsFixed(3)}:'
+            'mode=lin:aa=${(0.90 - 0.48 * amount).toStringAsFixed(3)}:'
+            'samples=${(1 + 2 * amount).round()},'
+            'vibrato=f=4.2:d=${(0.10 * amount).toStringAsFixed(3)},'
+            'tremolo=f=9.5:d=${(0.10 * amount).toStringAsFixed(3)},'
+            'highpass=f=${(80 + 100 * amount).round()},'
+            'lowpass=f=${(12000 - 7200 * amount).round()},'
+            'equalizer=f=1250:t=q:w=1.0:g=${(5 * amount).toStringAsFixed(2)},'
+            'volume=${(1 + 0.5 * amount).toStringAsFixed(2)},'
+            'asoftclip=type=atan:'
+            'threshold=${(0.96 - 0.24 * amount).toStringAsFixed(2)}:'
+            'output=0.72:oversample=4,volume=$chipVolume[lofi2C];'
             '[lofi2D][lofi2C]amix=inputs=2:normalize=0,'
-            'acompressor=threshold=-20dB:ratio=3.2:attack=4:release=100,'
-            'alimiter=limit=0.86,pan=stereo|FL=c0|FR=c0';
+            'acompressor=threshold=-20dB:'
+            'ratio=${(1.1 + 2.1 * amount).toStringAsFixed(2)}:'
+            'attack=4:release=100,alimiter=limit=0.86,'
+            'pan=stereo|FL=c0|FR=c0';
       case _MediaPartEffect.reverseEcho:
+        final voiceVolume = (1.0 - 0.42 * amount).toStringAsFixed(3);
+        final swellVolume = (0.72 * amount).toStringAsFixed(3);
+        final whisperVolume = (0.30 * amount).toStringAsFixed(3);
         return 'asplit=3[revVoice][revSwell][revWhisper];'
             '[revVoice]highpass=f=90,lowpass=f=7600,'
-            'equalizer=f=2800:t=q:w=1.2:g=2,volume=0.58[revV];'
+            'equalizer=f=2800:t=q:w=1.2:g=${(2 * amount).toStringAsFixed(2)},'
+            'volume=$voiceVolume[revV];'
             '[revSwell]areverse,'
-            'aecho=0.76:0.88:320|680|1080:0.46|0.30|0.18,'
+            'aecho=0.76:0.88:320|680|1080:'
+            '${(0.46 * amount).toStringAsFixed(3)}|'
+            '${(0.30 * amount).toStringAsFixed(3)}|'
+            '${(0.18 * amount).toStringAsFixed(3)},'
             'areverse,highpass=f=120,lowpass=f=6800,'
-            'stereowiden=delay=20:feedback=0.10:crossfeed=0.16:drymix=0.80,'
-            'volume=0.72[revS];'
+            'stereowiden=delay=20:'
+            'feedback=${(0.10 * amount).toStringAsFixed(3)}:'
+            'crossfeed=${(0.16 * amount).toStringAsFixed(3)}:drymix=0.80,'
+            'volume=$swellVolume[revS];'
             '[revWhisper]highpass=f=1700,lowpass=f=7800,areverse,'
-            'aecho=0.72:0.82:180|460:0.34|0.20,areverse,'
-            'tremolo=f=4.8:d=0.22,adelay=35:all=1,'
-            'pan=stereo|FL=0.28*FL|FR=0.92*FR,volume=0.30[revW];'
+            'aecho=0.72:0.82:180|460:'
+            '${(0.34 * amount).toStringAsFixed(3)}|'
+            '${(0.20 * amount).toStringAsFixed(3)},areverse,'
+            'tremolo=f=4.8:d=${(0.22 * amount).toStringAsFixed(3)},'
+            'adelay=35:all=1,pan=stereo|FL=0.28*FL|FR=0.92*FR,'
+            'volume=$whisperVolume[revW];'
             '[revV][revS][revW]amix=inputs=3:normalize=0,'
-            'equalizer=f=3500:t=q:w=1.1:g=2.5,'
-            'acompressor=threshold=-18dB:ratio=2.6:attack=7:release=150,'
-            'alimiter=limit=0.88';
+            'equalizer=f=3500:t=q:w=1.1:g=${(2.5 * amount).toStringAsFixed(2)},'
+            'acompressor=threshold=-18dB:'
+            'ratio=${(1.1 + 1.5 * amount).toStringAsFixed(2)}:'
+            'attack=7:release=150,alimiter=limit=0.88';
       case _MediaPartEffect.fadeIn:
-        final fade = _fadeDurationSeconds(part.duration);
+        final fade = _fadeDurationSeconds(part.duration, amount);
         return 'afade=t=in:st=0:d=$fade';
       case _MediaPartEffect.fadeOut:
-        final fade = _fadeDurationSeconds(part.duration);
+        final fade = _fadeDurationSeconds(part.duration, amount);
         final start = (_seconds(part.duration) - double.parse(fade))
             .clamp(0.0, double.infinity)
             .toStringAsFixed(3);
@@ -3822,16 +4149,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
-  String _pitchFilter(double factor) {
+  String _pitchFilter(double targetFactor, double amount) {
+    final factor = 1.0 + (targetFactor - 1.0) * amount;
     final compensation = 1 / factor;
-    return 'asetrate=44100*${factor.toStringAsFixed(3)},'
+    return 'asetrate=44100*${factor.toStringAsFixed(6)},'
         'aresample=44100,'
         'atempo=${compensation.toStringAsFixed(6)}';
   }
 
-  String _fadeDurationSeconds(Duration duration) {
+  String _fadeDurationSeconds(Duration duration, double amount) {
     final seconds = _seconds(duration);
-    final fade = seconds <= 0 ? 0.2 : (seconds / 3).clamp(0.2, 3.0);
+    final maximum = seconds <= 0 ? 0.2 : (seconds / 3).clamp(0.2, 3.0);
+    final fade = (maximum * amount).clamp(0.05, maximum);
     return fade.toStringAsFixed(3);
   }
 
@@ -3919,6 +4248,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         thirdEffect: inherited?.thirdEffect ?? _MediaPartEffect.none,
         fourthEffect: inherited?.fourthEffect ?? _MediaPartEffect.none,
         effectAmountPercent: inherited?.effectAmountPercent ?? 50,
+        secondaryEffectAmountPercent:
+            inherited?.secondaryEffectAmountPercent ?? 50,
+        thirdEffectAmountPercent:
+            inherited?.thirdEffectAmountPercent ?? 50,
+        fourthEffectAmountPercent:
+            inherited?.fourthEffectAmountPercent ?? 50,
       ));
     }
     _parts = rebuilt;
@@ -4040,9 +4375,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     List<String> pieces,
     int slot,
     _MediaPartEffect effect,
+    int amountPercent,
   ) {
     if (effect == _MediaPartEffect.none) return;
-    pieces.add('${_effectSlotLabel(l10n, slot)} ${_effectLabel(l10n, effect)}');
+    pieces.add(
+      '${_effectSlotLabel(l10n, slot)} ${_effectLabel(l10n, effect)} '
+      '$amountPercent%',
+    );
   }
 
   String _partDetailsSummary(AppLocalizations l10n, _MediaPart part) {
@@ -4052,10 +4391,34 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (part.volumePercent != 100) {
       pieces.add(_localizedVolumeSummary(part.volumePercent));
     }
-    _addEffectSlotSummary(l10n, pieces, 1, part.effect);
-    _addEffectSlotSummary(l10n, pieces, 2, part.secondaryEffect);
-    _addEffectSlotSummary(l10n, pieces, 3, part.thirdEffect);
-    _addEffectSlotSummary(l10n, pieces, 4, part.fourthEffect);
+    _addEffectSlotSummary(
+      l10n,
+      pieces,
+      1,
+      part.effect,
+      part.effectAmountPercent,
+    );
+    _addEffectSlotSummary(
+      l10n,
+      pieces,
+      2,
+      part.secondaryEffect,
+      part.secondaryEffectAmountPercent,
+    );
+    _addEffectSlotSummary(
+      l10n,
+      pieces,
+      3,
+      part.thirdEffect,
+      part.thirdEffectAmountPercent,
+    );
+    _addEffectSlotSummary(
+      l10n,
+      pieces,
+      4,
+      part.fourthEffect,
+      part.fourthEffectAmountPercent,
+    );
     pieces.add(_localizedDurationSummary(duration));
 
     return pieces.join(', ');

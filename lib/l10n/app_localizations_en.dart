@@ -870,6 +870,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get documentReaderEditHint =>
       'Tap a paragraph to edit it. Swipe up or down to add a bookmark.';
 
+
+  @override
+  String get documentParagraphSelectionStartAction => 'Start paragraph selection';
+
+  @override
+  String get documentParagraphSelectionTapHint => 'Selection mode is active. Double tap to select or deselect this paragraph.';
+
+  @override
+  String get documentParagraphSelectionStarted => 'Selection mode is active. Paragraph selected. Double tap other paragraphs to select them.';
+
+  @override
+  String documentParagraphSelectedAnnouncement(int count) {
+    return 'Paragraph selected. Total selected: $count.';
+  }
+
+  @override
+  String documentParagraphDeselectedAnnouncement(int count) {
+    return 'Paragraph deselected. Total selected: $count.';
+  }
+
+  @override
+  String documentParagraphSelectionCount(int count) {
+    return 'Selected: $count';
+  }
+
+  @override
+  String get documentDeleteSelectedParagraphs => 'Delete selected paragraphs';
+
+  @override
+  String documentDeleteSelectedParagraphsConfirmation(int count) {
+    return 'Delete the selected paragraphs? Total: $count.';
+  }
+
+  @override
+  String documentSelectedParagraphsDeleted(int count) {
+    return 'Paragraphs deleted: $count.';
+  }
+
+  @override
+  String get documentExitParagraphSelection => 'Exit paragraph selection';
+
+  @override
+  String get documentParagraphSelectionExited => 'Selection mode turned off.';
+
   @override
   String get documentBookmarkHintSet => 'Swipe up or down to set a bookmark.';
 
