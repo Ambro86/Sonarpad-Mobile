@@ -141,11 +141,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _error = null;
     });
     try {
-      if (_requiresVideoPlayback) {
-        await _playMediaKitVideo();
-        return;
-      }
-
       if (_requiresRaiAudioDescriptionMediaKitPlayback) {
         final tvChannel = widget.tvChannel!;
         final streams =
@@ -158,6 +153,25 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           streamUrl: streams.videoUrl,
           preferRaiAudioDescription: streams.hasAudioDescription,
         );
+        return;
+      }
+
+      // Tutti i canali TV usano sempre MediaKit, anche quando il video è
+      // disattivato. just_audio/AVPlayer può perdere immediatamente la
+      // connessione con alcuni master HLS televisivi (in particolare i live
+      // Mediaset). MediaKit apre invece lo stesso master nei due modi; quando
+      // il video è spento viene disabilitata soltanto la traccia video.
+      if (_requiresTvMediaKitPlayback) {
+        await AppLogger.log(
+          'RadioPlayer: TV MediaKit playback selected '
+          'station="${widget.station.name}" videoEnabled=$_isVideoEnabled',
+        );
+        await _playMediaKitVideo();
+        return;
+      }
+
+      if (_requiresVideoPlayback) {
+        await _playMediaKitVideo();
         return;
       }
 
@@ -351,6 +365,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         httpHeaders: mediaKitHeaders,
       ),
     );
+    if (mounted &&
+        _mediaKitPlayer == player &&
+        !_mediaKitVideoSettingApplied) {
+      _mediaKitVideoSettingApplied = true;
+      await _applyMediaKitVideoEnabled(player, _isVideoEnabled);
+    }
     AppLogger.log(
       'RadioPlayer: MediaKit open completed station="${widget.station.name}" playing=$_mediaKitPlaying buffering=$_mediaKitBuffering position=$_mediaKitLastPosition duration=$_mediaKitLastDuration preferRaiAD=$preferRaiAudioDescription',
     );
@@ -607,7 +627,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
   }
 
-  Future<void> _applyMediaKitVideoEnabled(
+  Future<bool> _applyMediaKitVideoEnabled(
     mk.Player player,
     bool enable,
   ) async {
@@ -618,11 +638,36 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       AppLogger.log(
         'RadioPlayer: MediaKit video ${enable ? 'enabled' : 'disabled'} after start',
       );
+      return true;
     } catch (error) {
       AppLogger.log(
         'RadioPlayer: failed to apply MediaKit video setting after start: $error',
       );
+      return false;
     }
+  }
+
+  Future<void> _applyTvMediaKitVideoSetting(bool enable) async {
+    await _settings.setVideoEnabled(enable);
+    if (!mounted) return;
+
+    final player = _mediaKitPlayer;
+    if (player == null) {
+      await _play();
+      return;
+    }
+
+    _mediaKitVideoSettingApplied = true;
+    final applied = await _applyMediaKitVideoEnabled(player, enable);
+    if (!mounted || _mediaKitPlayer != player) return;
+    if (!applied) {
+      AppLogger.log(
+        'RadioPlayer: restarting TV MediaKit because the video track setting could not be applied',
+      );
+      await _play();
+      return;
+    }
+    setState(() {});
   }
 
   Future<void> _applyMpdVideoSetting(bool enable) async {
@@ -693,7 +738,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _isVideoEnabled != enable) return;
       if (_requiresVideoPlayback) {
+        // I live DASH mantengono il riavvio già previsto, perché alcuni MPD
+        // applicano in modo affidabile il cambio traccia solo alla riapertura.
         unawaited(_applyMpdVideoSetting(enable));
+      } else if (_requiresTvMediaKitPlayback) {
+        unawaited(_applyTvMediaKitVideoSetting(enable));
       } else {
         unawaited(_applyVideoSetting(enable));
       }
@@ -1253,6 +1302,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       widget.isVideoSupported &&
       widget.tvChannel != null &&
       TvService().isRaiAudioDescriptionChannel(widget.tvChannel!);
+
+  bool get _requiresTvMediaKitPlayback =>
+      widget.isVideoSupported && widget.tvChannel != null;
 
   bool get _requiresVideoPlayback =>
       widget.isVideoSupported &&
