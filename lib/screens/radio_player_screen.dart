@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart' as mkv;
 import 'package:path/path.dart' as p;
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
@@ -63,6 +64,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _mediaKitRaiAudioTrackApplied = false;
   bool _mediaKitBuffering = false;
   bool _mediaKitCompleted = false;
+  bool _mediaKitIsMpd = false;
+  bool _mpdWakelockRequested = false;
   Duration? _mediaKitLastPosition;
   Duration? _mediaKitLastDuration;
   DateTime? _mediaKitLastProgressAt;
@@ -220,6 +223,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         }));
       }
     } catch (e) {
+      if (_mediaKitIsMpd) {
+        await _disableMpdWakelock();
+      }
       if (!mounted) return;
       AppLogger.log('RadioPlayer: Error during _play: $e');
       setState(() => _error = e.toString());
@@ -237,12 +243,22 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     bool preferRaiAudioDescription = false,
   }) async {
     final playbackUrl = streamUrl ?? widget.station.streamUrl;
+    final isMpd = TvService.isDashStreamUrl(playbackUrl);
     final mediaKitHeaders = _mediaKitHttpHeaders();
     await _audio.stop();
     _videoController?.pause();
     _videoController?.dispose();
     _videoController = null;
     await _disposeMediaKitPlayer();
+    _mediaKitIsMpd = isMpd;
+    if (isMpd) {
+      // AudioPlayerService.stop() disattiva il wakelock globale. Gli MPD live
+      // vengono riaperti a ogni finestra DASH, quindi lo riattiviamo anche
+      // durante i refresh per lasciare attivi timer e callback su iOS.
+      await _enableMpdWakelock();
+    } else {
+      await _disableMpdWakelock();
+    }
 
     final player = mk.Player();
     final controller = mkv.VideoController(player);
@@ -365,9 +381,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         httpHeaders: mediaKitHeaders,
       ),
     );
-    if (mounted &&
-        _mediaKitPlayer == player &&
-        !_mediaKitVideoSettingApplied) {
+    if (mounted && _mediaKitPlayer == player && !_mediaKitVideoSettingApplied) {
       _mediaKitVideoSettingApplied = true;
       await _applyMediaKitVideoEnabled(player, _isVideoEnabled);
     }
@@ -618,12 +632,45 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Future<void> _stop() async {
     if (_mediaKitPlayer != null) {
       await _mediaKitPlayer!.pause();
+      if (_mediaKitIsMpd) {
+        await _disableMpdWakelock();
+      }
       if (mounted) setState(() {});
     } else if (_videoController != null) {
       await _videoController!.pause();
       setState(() {});
     } else {
       await _audio.stop();
+    }
+  }
+
+  Future<void> _enableMpdWakelock() async {
+    if (!(Platform.isIOS || Platform.isAndroid)) return;
+    _mpdWakelockRequested = true;
+    try {
+      // La chiamata è intenzionalmente ripetuta: _audio.stop() può avere
+      // disattivato il wakelock durante la riapertura della finestra MPD.
+      await WakelockPlus.enable();
+      await AppLogger.log('RadioPlayer: MPD wakelock enabled');
+    } catch (error) {
+      await AppLogger.log(
+        'RadioPlayer: MPD wakelock enable failed: $error',
+      );
+    }
+  }
+
+  Future<void> _disableMpdWakelock() async {
+    if (!_mpdWakelockRequested || !(Platform.isIOS || Platform.isAndroid)) {
+      return;
+    }
+    _mpdWakelockRequested = false;
+    try {
+      await WakelockPlus.disable();
+      await AppLogger.log('RadioPlayer: MPD wakelock disabled');
+    } catch (error) {
+      await AppLogger.log(
+        'RadioPlayer: MPD wakelock disable failed: $error',
+      );
     }
   }
 
@@ -708,8 +755,21 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     if (mediaKitPlayer != null) {
       if (_mediaKitPlaying) {
         await mediaKitPlayer.pause();
+        if (_mediaKitIsMpd) {
+          await _disableMpdWakelock();
+        }
       } else {
-        await mediaKitPlayer.play();
+        if (_mediaKitIsMpd) {
+          await _enableMpdWakelock();
+        }
+        try {
+          await mediaKitPlayer.play();
+        } catch (_) {
+          if (_mediaKitIsMpd) {
+            await _disableMpdWakelock();
+          }
+          rethrow;
+        }
       }
       return;
     }
@@ -1366,6 +1426,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     _restoreSystemOrientation();
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
+    unawaited(_disableMpdWakelock());
     unawaited(_disposeMediaKitPlayer());
     if (_recordingService.isRecording) {
       unawaited(_recordingService.stop().catchError((error) {
