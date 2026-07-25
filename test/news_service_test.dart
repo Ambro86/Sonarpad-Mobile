@@ -257,6 +257,76 @@ void main() {
       expect(articles.single.title, 'Notizia aggiornata');
     });
 
+    test('returns every article from a single RSS source', () async {
+      final items = List.generate(
+        75,
+        (index) => '''
+    <item>
+      <guid>article-$index</guid>
+      <title>Notizia $index</title>
+      <link>https://example.com/news/$index</link>
+      <pubDate>Thu, 28 May 2026 08:30:00 GMT</pubDate>
+    </item>''',
+      ).join();
+      final service = NewsService(
+        client: MockClient(
+          (_) async => http.Response(
+            '<rss version="2.0"><channel>$items</channel></rss>',
+            200,
+          ),
+        ),
+      );
+
+      final articles = await service.fetchSourceNews(
+        NewsRssSource(
+          name: 'Feed lungo',
+          uri: Uri.parse('https://example.com/feed.xml'),
+        ),
+      );
+
+      expect(articles, hasLength(75));
+    });
+
+    test('keeps RSS article ids stable when the feed order changes', () async {
+      var reversed = false;
+      String item(String guid, String title) => '''
+    <item>
+      <guid>$guid</guid>
+      <title>$title</title>
+      <link>https://example.com/$guid</link>
+    </item>''';
+      final service = NewsService(
+        client: MockClient((_) async {
+          var entries = [
+            item('guid-a', 'Notizia A'),
+            item('guid-b', 'Notizia B')
+          ];
+          if (reversed) entries = entries.reversed.toList();
+          return http.Response(
+            '<rss version="2.0"><channel>${entries.join()}</channel></rss>',
+            200,
+          );
+        }),
+      );
+      final source = NewsRssSource(
+        name: 'Feed stabile',
+        uri: Uri.parse('https://example.com/feed.xml'),
+      );
+
+      final first = await service.fetchSourceNews(source);
+      reversed = true;
+      final second = await service.fetchSourceNews(source);
+
+      final firstIdsByTitle = {
+        for (final article in first) article.title: article.id
+      };
+      final secondIdsByTitle = {
+        for (final article in second) article.title: article.id
+      };
+      expect(secondIdsByTitle, firstIdsByTitle);
+      expect(firstIdsByTitle['Notizia A'], 'Feed stabile|guid-a');
+    });
+
     test('parses Atom feeds such as Reddit RSS', () async {
       final service = NewsService(
         client: MockClient((request) async {
@@ -293,7 +363,8 @@ void main() {
       expect(articles.single.summary, 'Story summary');
     });
 
-    test('parses RSS content encoded fallback used by Vox-style feeds', () async {
+    test('parses RSS content encoded fallback used by Vox-style feeds',
+        () async {
       final service = NewsService(
         client: MockClient((request) async {
           return http.Response(

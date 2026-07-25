@@ -48,7 +48,10 @@ class _TvScreenState extends State<TvScreen> {
       final channelResult = await _service.loadChannelsWithCache(code);
       var currentPrograms = <String, TvProgram>{};
       try {
-        currentPrograms = await _service.loadCurrentPrograms(code);
+        currentPrograms = await _service.loadCurrentPrograms(
+          code,
+          channels: channelResult.channels,
+        );
       } catch (e) {
         await AppLogger.log(
           'TV: programmi correnti non disponibili, mostro comunque la lista '

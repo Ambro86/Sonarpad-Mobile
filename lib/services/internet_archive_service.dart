@@ -30,6 +30,15 @@ class InternetArchiveItem {
 
   String get creatorLabel => creator.isEmpty ? identifier : creator;
 
+  InternetArchiveItem metadataOnly() => InternetArchiveItem(
+        identifier: identifier,
+        title: title,
+        creator: creator,
+        description: description,
+        source: source,
+        tracks: const [],
+      );
+
   Map<String, dynamic> toLibraryJson() => {
         'identifier': identifier,
         'title': title,
@@ -113,13 +122,13 @@ class InternetArchiveService {
     final uri = Uri.parse(
       'https://archive.org/advancedsearch.php?'
       '${_queryString({
-        'q': [_searchQuery(source, query)],
-        'output': ['json'],
-        'page': ['$page'],
-        'rows': ['$rows'],
-        'sort[]': ['downloads desc'],
-        'fl[]': ['identifier', 'title', 'creator', 'description'],
-      })}',
+            'q': [_searchQuery(source, query)],
+            'output': ['json'],
+            'page': ['$page'],
+            'rows': ['$rows'],
+            'sort[]': ['downloads desc'],
+            'fl[]': ['identifier', 'title', 'creator', 'description'],
+          })}',
     );
 
     final response = await _client.get(
@@ -130,8 +139,8 @@ class InternetArchiveService {
       throw Exception('Internet Archive ${response.statusCode}');
     }
 
-    final decoded = jsonDecode(utf8.decode(response.bodyBytes))
-        as Map<String, dynamic>;
+    final decoded =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     final responseBody = decoded['response'] as Map<String, dynamic>? ?? {};
     final rawDocs = responseBody['docs'];
     final items = rawDocs is List
@@ -159,14 +168,16 @@ class InternetArchiveService {
       throw Exception('Internet Archive ${response.statusCode}');
     }
 
-    final decoded = jsonDecode(utf8.decode(response.bodyBytes))
-        as Map<String, dynamic>;
+    final decoded =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
     final files = decoded['files'];
+    final seenUrls = <String>{};
     final tracks = files is List
         ? files
             .whereType<Map<String, dynamic>>()
             .map((json) => _trackFromFileJson(item.identifier, json))
             .whereType<InternetArchiveTrack>()
+            .where((track) => seenUrls.add(track.audioUrl))
             .toList()
         : <InternetArchiveTrack>[];
     return InternetArchiveItem(
@@ -205,8 +216,7 @@ class InternetArchiveService {
     return InternetArchiveTrack(
       title: _stringValue(json['title'], fallback: _displayFileName(name)),
       fileName: name,
-      audioUrl: Uri.https('archive.org', '/download/$identifier/$name')
-          .toString(),
+      audioUrl: buildInternetArchiveDownloadUrl(identifier, name),
       format: format,
       length: _stringValue(json['length']),
     );
@@ -226,8 +236,7 @@ class InternetArchiveService {
     final base = switch (source) {
       InternetArchiveSource.oldTimeRadio =>
         'collection:oldtimeradio AND mediatype:audio',
-      InternetArchiveSource.liveMusic =>
-        'collection:etree AND mediatype:audio',
+      InternetArchiveSource.liveMusic => 'collection:etree AND mediatype:audio',
       InternetArchiveSource.speeches =>
         'mediatype:audio AND (subject:speech OR title:speech OR description:speech)',
     };
@@ -263,6 +272,18 @@ class InternetArchiveService {
     }
     return parts.join('&');
   }
+}
+
+String buildInternetArchiveDownloadUrl(String identifier, String fileName) {
+  final fileSegments = fileName
+      .split('/')
+      .where((segment) => segment.isNotEmpty)
+      .toList(growable: false);
+  return Uri(
+    scheme: 'https',
+    host: 'archive.org',
+    pathSegments: ['download', identifier, ...fileSegments],
+  ).toString();
 }
 
 String _stringValue(Object? value, {String fallback = ''}) {

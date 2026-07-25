@@ -24,7 +24,15 @@ import 'news_sources/portuguese_news_sources.dart';
 import 'news_sources/polish_news_sources.dart';
 import 'news_sources/czech_news_sources.dart';
 
-enum NewsLanguage { italian, english, french, spanish, portuguese, polish, czech }
+enum NewsLanguage {
+  italian,
+  english,
+  french,
+  spanish,
+  portuguese,
+  polish,
+  czech
+}
 
 class _TinyfishArticleFetchResult {
   const _TinyfishArticleFetchResult({
@@ -151,40 +159,50 @@ class NewsService {
         'publishedAt': article.publishedAt?.toIso8601String(),
       });
 
-  Future<List<NewsArticle>> getReadArticles(NewsLanguage language, String sourceName) async {
+  Future<List<NewsArticle>> getReadArticles(
+      NewsLanguage language, String sourceName) async {
     final prefs = await SharedPreferences.getInstance();
-    final listStr = prefs.getStringList(_getReadArticlesKey(language, sourceName)) ?? [];
-    return listStr.map((s) {
-      try {
-        final map = jsonDecode(s);
-        return NewsArticle(
-          id: map['id'],
-          title: map['title'],
-          link: map['link'],
-          summary: map['summary'],
-          source: map['source'],
-          publishedAt: map['publishedAt'] != null ? DateTime.parse(map['publishedAt']) : null,
-        );
-      } catch (_) {
-        return null;
-      }
-    }).whereType<NewsArticle>().toList();
+    final listStr =
+        prefs.getStringList(_getReadArticlesKey(language, sourceName)) ?? [];
+    return listStr
+        .map((s) {
+          try {
+            final map = jsonDecode(s);
+            return NewsArticle(
+              id: map['id'],
+              title: map['title'],
+              link: map['link'],
+              summary: map['summary'],
+              source: map['source'],
+              publishedAt: map['publishedAt'] != null
+                  ? DateTime.parse(map['publishedAt'])
+                  : null,
+            );
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<NewsArticle>()
+        .toList();
   }
 
-  Future<void> addReadArticle(NewsLanguage language, String sourceName, NewsArticle article) async {
+  Future<void> addReadArticle(
+      NewsLanguage language, String sourceName, NewsArticle article) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _getReadArticlesKey(language, sourceName);
     var current = await getReadArticles(language, sourceName);
     current.removeWhere((a) => a.id == article.id);
     current.insert(0, article);
     if (current.length > 50) {
-      current = current.take(50).toList(); // Maximum 50 read articles per source
+      current =
+          current.take(50).toList(); // Maximum 50 read articles per source
     }
     final listStr = current.map(_encodeReadArticle).toList();
     await prefs.setStringList(key, listStr);
   }
 
-  Future<void> removeReadArticle(NewsLanguage language, String sourceName, String articleId) async {
+  Future<void> removeReadArticle(
+      NewsLanguage language, String sourceName, String articleId) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _getReadArticlesKey(language, sourceName);
     final current = await getReadArticles(language, sourceName);
@@ -192,7 +210,8 @@ class NewsService {
     await prefs.setStringList(key, current.map(_encodeReadArticle).toList());
   }
 
-  Future<void> clearReadArticles(NewsLanguage language, String sourceName) async {
+  Future<void> clearReadArticles(
+      NewsLanguage language, String sourceName) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_getReadArticlesKey(language, sourceName));
   }
@@ -212,7 +231,6 @@ class NewsService {
         .whereType<NewsRssSource>()
         .toList();
   }
-
 
   Future<List<NewsSourceFolder>> getFolders(NewsLanguage language) async {
     final prefs = await SharedPreferences.getInstance();
@@ -252,7 +270,8 @@ class NewsService {
     try {
       final decoded = jsonDecode(jsonText);
       if (decoded is! Map) return {};
-      return decoded.map((key, value) => MapEntry(key.toString(), value.toString()));
+      return decoded
+          .map((key, value) => MapEntry(key.toString(), value.toString()));
     } catch (_) {
       return {};
     }
@@ -298,7 +317,9 @@ class NewsService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
       _getCustomPrefsKey(language),
-      updatedCustomSources.map((source) => jsonEncode(source.toJson())).toList(),
+      updatedCustomSources
+          .map((source) => jsonEncode(source.toJson()))
+          .toList(),
     );
 
     final assignments = await _getSourceFolderAssignments(language);
@@ -318,7 +339,8 @@ class NewsService {
     if (source.isCustom) {
       final customSources = await getCustomSources(language);
       final updated = customSources.map((customSource) {
-        if (customSource.name != source.name || customSource.uri != source.uri) {
+        if (customSource.name != source.name ||
+            customSource.uri != source.uri) {
           return customSource;
         }
         return folderId == null
@@ -392,13 +414,19 @@ class NewsService {
     }
 
     final decoded = jsonDecode(utf8.decode(response.bodyBytes));
-    final items = decoded is List ? decoded : decoded is Map ? decoded['items'] : null;
+    final items = decoded is List
+        ? decoded
+        : decoded is Map
+            ? decoded['items']
+            : null;
     if (items is! List) return const [];
 
     final currentCustomSources = await getCustomSources(language);
     final knownUrls = <String>{
-      ...language.rssSources.map((source) => source.uri.toString().trim().toLowerCase()),
-      ...currentCustomSources.map((source) => source.uri.toString().trim().toLowerCase()),
+      ...language.rssSources
+          .map((source) => source.uri.toString().trim().toLowerCase()),
+      ...currentCustomSources
+          .map((source) => source.uri.toString().trim().toLowerCase()),
     };
     final knownNames = <String>{
       ...language.rssSources.map((source) => source.name),
@@ -410,7 +438,8 @@ class NewsService {
       if (raw is! Map) continue;
       final name = (raw['name'] ?? '').toString().trim();
       final url = (raw['url'] ?? '').toString().trim();
-      final rawLanguage = (raw['language'] ?? '').toString().trim().toLowerCase();
+      final rawLanguage =
+          (raw['language'] ?? '').toString().trim().toLowerCase();
       if (name.isEmpty || url.isEmpty) continue;
       if (rawLanguage.isNotEmpty && rawLanguage != language.communityKey) {
         continue;
@@ -452,7 +481,8 @@ class NewsService {
     final lowerInput = originalInput.toLowerCase();
     final isExplicitUrl =
         lowerInput.startsWith('http://') || lowerInput.startsWith('https://');
-    final looksLikeDomain = originalInput.contains('.') && !originalInput.contains(' ');
+    final looksLikeDomain =
+        originalInput.contains('.') && !originalInput.contains(' ');
 
     if (!isExplicitUrl) {
       if (looksLikeDomain) {
@@ -570,12 +600,14 @@ class NewsService {
         if (feedTitle != null && feedTitle.trim().isNotEmpty) {
           return _cleanFeedTitle(feedTitle);
         }
-        final title = doc.findAllElements('title').firstOrNull?.innerText.trim();
+        final title =
+            doc.findAllElements('title').firstOrNull?.innerText.trim();
         if (title != null && title.isNotEmpty) {
           return _cleanFeedTitle(title);
         }
       } catch (_) {
-        final title = html_parser.parse(body).querySelector('title')?.text.trim();
+        final title =
+            html_parser.parse(body).querySelector('title')?.text.trim();
         if (title != null && title.isNotEmpty) {
           return _cleanFeedTitle(title);
         }
@@ -627,8 +659,10 @@ class NewsService {
       for (final folder in folders) folder.name.trim().toLowerCase(): folder,
     };
     final knownUrls = <String>{
-      ...language.rssSources.map((source) => source.uri.toString().trim().toLowerCase()),
-      ...currentCustomSources.map((source) => source.uri.toString().trim().toLowerCase()),
+      ...language.rssSources
+          .map((source) => source.uri.toString().trim().toLowerCase()),
+      ...currentCustomSources
+          .map((source) => source.uri.toString().trim().toLowerCase()),
     };
     final knownNames = <String>{
       ...language.rssSources.map((source) => source.name),
@@ -651,11 +685,11 @@ class NewsService {
       return folder;
     }
 
-    void importOutline(XmlElement outline, String? currentFolderId,
-        List<String> folderPath) {
-      final feedUrl = (_opmlAttribute(outline, 'xmlUrl') ??
-              _opmlAttribute(outline, 'url'))
-          ?.trim();
+    void importOutline(
+        XmlElement outline, String? currentFolderId, List<String> folderPath) {
+      final feedUrl =
+          (_opmlAttribute(outline, 'xmlUrl') ?? _opmlAttribute(outline, 'url'))
+              ?.trim();
       if (feedUrl != null && feedUrl.isNotEmpty) {
         final uri = Uri.tryParse(feedUrl);
         if (uri == null || !uri.hasScheme || uri.host.isEmpty) return;
@@ -733,7 +767,8 @@ class NewsService {
       sourcesByFolder.putIfAbsent(source.parentFolderId, () => []).add(source);
     }
     final hasFolders = customSources.any((source) =>
-        source.parentFolderId != null && folderById.containsKey(source.parentFolderId));
+        source.parentFolderId != null &&
+        folderById.containsKey(source.parentFolderId));
 
     final buffer = StringBuffer()
       ..writeln('<?xml version="1.0" encoding="UTF-8"?>')
@@ -760,7 +795,8 @@ class NewsService {
         writeSource(source, '  ');
       }
       for (final folder in folders) {
-        final folderSources = sourcesByFolder[folder.id] ?? const <NewsRssSource>[];
+        final folderSources =
+            sourcesByFolder[folder.id] ?? const <NewsRssSource>[];
         if (folderSources.isEmpty) continue;
         final name = _escapeOpmlAttribute(folder.name);
         buffer.writeln('  <outline text="$name" title="$name">');
@@ -770,7 +806,8 @@ class NewsService {
         buffer.writeln('  </outline>');
       }
       final unknownFolderSources = customSources.where((source) =>
-          source.parentFolderId != null && !folderById.containsKey(source.parentFolderId));
+          source.parentFolderId != null &&
+          !folderById.containsKey(source.parentFolderId));
       for (final source in unknownFolderSources) {
         writeSource(source, '  ');
       }
@@ -817,7 +854,8 @@ class NewsService {
     String? folderId,
   }) async {
     final prefs = await SharedPreferences.getInstance();
-    final folders = folderId == null ? await getFolders(language) : <NewsSourceFolder>[];
+    final folders =
+        folderId == null ? await getFolders(language) : <NewsSourceFolder>[];
     final defaultSources = language.rssSources;
     final customSources = await getCustomSources(language);
     final assignments = await _getSourceFolderAssignments(language);
@@ -839,7 +877,8 @@ class NewsService {
       return source.parentFolderId == folderId;
     }).toList();
 
-    final savedOrder = prefs.getStringList(_getFolderOrderPrefsKey(language, folderId));
+    final savedOrder =
+        prefs.getStringList(_getFolderOrderPrefsKey(language, folderId));
     if (savedOrder == null || savedOrder.isEmpty) {
       return visibleSources;
     }
@@ -849,7 +888,8 @@ class NewsService {
       final source = visibleSources
           .where((source) => _itemOrderKey(source) == key || source.name == key)
           .firstOrNull;
-      if (source != null && !ordered.any((s) => _itemOrderKey(s) == _itemOrderKey(source))) {
+      if (source != null &&
+          !ordered.any((s) => _itemOrderKey(s) == _itemOrderKey(source))) {
         ordered.add(source);
       }
     }
@@ -920,7 +960,7 @@ class NewsService {
   }) async {
     final articles = await _fetchRssSource(source, language: language);
     _sortNewestFirst(articles);
-    return articles.take(40).toList();
+    return articles;
   }
 
   void _sortNewestFirst(List<NewsArticle> articles) {
@@ -945,7 +985,6 @@ class NewsService {
             city.isNotEmpty &&
             countryCode != null &&
             countryCode.isNotEmpty) {
-          
           if (countryCode == 'IT') {
             city = switch (city) {
               'Rome' => 'Roma',
@@ -1497,13 +1536,19 @@ class NewsService {
         index++;
         final title = _text(item, 'title');
         final link = _text(item, 'link');
+        final guid = _text(item, 'guid');
         final description = _cleanRssDescription(_rssDescription(item));
         final source = item.findElements('source').isNotEmpty
             ? item.findElements('source').first.innerText.trim()
             : rssSource.name;
         final pubDateRaw = _text(item, 'pubDate');
         return NewsArticle(
-          id: '${rssSource.name}_$index',
+          id: _stableArticleId(
+            rssSource,
+            externalId: guid,
+            link: link,
+            fallback: '$title|$pubDateRaw|$index',
+          ),
           title: _cleanGoogleTitle(title),
           link: link,
           summary: description,
@@ -1545,8 +1590,14 @@ class NewsService {
       );
       final publishedRaw = _text(entry, 'published');
       final updatedRaw = _text(entry, 'updated');
+      final externalId = _text(entry, 'id');
       return NewsArticle(
-        id: '${rssSource.name}_atom_$index',
+        id: _stableArticleId(
+          rssSource,
+          externalId: externalId,
+          link: link,
+          fallback: '$title|$publishedRaw|$updatedRaw|$index',
+        ),
         title: _cleanGoogleTitle(title),
         link: link,
         summary: summary,
@@ -1601,7 +1652,11 @@ class NewsService {
 
       index++;
       articles.add(NewsArticle(
-        id: '${rssSource.name}_html_$index',
+        id: _stableArticleId(
+          rssSource,
+          link: fullUrl,
+          fallback: '$text|$index',
+        ),
         title: text,
         link: fullUrl,
         summary: '',
@@ -1611,6 +1666,18 @@ class NewsService {
       if (articles.length >= 30) break;
     }
     return articles;
+  }
+
+  String _stableArticleId(
+    NewsRssSource source, {
+    String externalId = '',
+    String link = '',
+    required String fallback,
+  }) {
+    final identity = externalId.trim().isNotEmpty
+        ? externalId.trim()
+        : (link.trim().isNotEmpty ? link.trim() : fallback);
+    return '${source.name}|$identity';
   }
 
   String _resolveRelativeUrl(String href, String baseUrl) {

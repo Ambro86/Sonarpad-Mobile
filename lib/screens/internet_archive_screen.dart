@@ -265,9 +265,23 @@ class _InternetArchiveItemScreenState
   @override
   void initState() {
     super.initState();
-    _item = widget.item.tracks.isEmpty
-        ? _service.fetchItem(widget.item)
-        : Future.value(widget.item);
+    _item = _loadItem();
+  }
+
+  Future<InternetArchiveItem> _loadItem() async {
+    try {
+      final refreshed = await _service.fetchItem(widget.item);
+      if (refreshed.tracks.isNotEmpty || widget.item.tracks.isEmpty) {
+        return refreshed;
+      }
+    } catch (_) {
+      if (widget.item.tracks.isEmpty) rethrow;
+    }
+    return widget.item;
+  }
+
+  void _retryLoad() {
+    setState(() => _item = _loadItem());
   }
 
   void _playTrack(InternetArchiveItem item, InternetArchiveTrack track) {
@@ -295,17 +309,20 @@ class _InternetArchiveItemScreenState
         id: 'archive_${item.identifier}_'
             '${DateTime.now().microsecondsSinceEpoch}',
         name: item.title,
-        path: item.encodeForLibrary(),
+        path: item.metadataOnly().encodeForLibrary(),
         extension: 'archiveaudio',
         addedAt: DateTime.now(),
         parentId: widget.parentId,
       );
       await library.add(doc);
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).audioSavedInDocuments);
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).audioSavedInDocuments,
+      );
     } catch (error) {
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).error(error));
+      showStatusMessage(context, AppLocalizations.of(context).error(error));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -327,13 +344,33 @@ class _InternetArchiveItemScreenState
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.error(snapshot.error!)));
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(l10n.error(snapshot.error!)),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: _retryLoad,
+                  child: Text(l10n.retry),
+                ),
+                if (widget.allowSave) ...[
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    onPressed:
+                        _saving ? null : () => _saveToLibrary(widget.item),
+                    icon: const Icon(Icons.library_add),
+                    label: Text(l10n.saveAudioInDocuments),
+                  ),
+                ],
+              ],
+            );
           }
           final item = snapshot.data ?? widget.item;
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text(item.title, style: Theme.of(context).textTheme.headlineSmall),
+              Text(item.title,
+                  style: Theme.of(context).textTheme.headlineSmall),
               if (item.creator.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(item.creator),

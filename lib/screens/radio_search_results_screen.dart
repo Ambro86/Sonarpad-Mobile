@@ -23,8 +23,11 @@ class RadioSearchResultsScreen extends StatefulWidget {
 }
 
 class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
+  static const _pageSize = 25;
+
   final _service = RadioService();
   List<RadioStation> _favorites = [];
+  int _page = 0;
 
   @override
   void initState() {
@@ -64,6 +67,15 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
         showStatusMessage(context, exists
             ? l10n.radioFavoriteRemoved(station.name)
             : l10n.radioFavoriteAdded(station.name));
+  }
+
+  void _changePage(int page, int totalPages, String localeName) {
+    final nextPage = page.clamp(0, totalPages - 1).toInt();
+    setState(() => _page = nextPage);
+    showStatusMessage(
+      context,
+      _radioPageLabel(localeName, nextPage + 1, totalPages),
+    );
   }
 
   @override
@@ -113,26 +125,102 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               ),
             );
           }
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: results.length,
-            itemBuilder: (context, index) {
-              final station = results[index];
-              final isFavorite = _favorites
-                  .any((item) => item.streamUrl == station.streamUrl);
-              return Padding(
-                key: ValueKey('radio_search_result_row_${station.streamUrl}'),
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: RadioTile(
-                  key: ValueKey('radio_search_result_tile_${station.streamUrl}'),
-                  station: station,
-                  isFavorite: isFavorite,
-                  isPlaying: false,
-                  onPlay: () => _play(station),
-                  onToggleFavorite: () => _toggleFavorite(station),
+          final totalPages = (results.length + _pageSize - 1) ~/ _pageSize;
+          final currentPage = _page.clamp(0, totalPages - 1).toInt();
+          final start = currentPage * _pageSize;
+          final end = start + _pageSize < results.length
+              ? start + _pageSize
+              : results.length;
+          final visibleResults = results.sublist(start, end);
+          final pageLabel = _radioPageLabel(
+            l10n.localeName,
+            currentPage + 1,
+            totalPages,
+          );
+
+          return Column(
+            children: [
+              Semantics(
+                liveRegion: true,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                  child: Text(
+                    pageLabel,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
-              );
-            },
+              ),
+              Expanded(
+                child: ListView.builder(
+                  key: PageStorageKey('radio_results_page_$currentPage'),
+                  padding: const EdgeInsets.all(16),
+                  itemCount: visibleResults.length,
+                  itemBuilder: (context, index) {
+                    final station = visibleResults[index];
+                    final isFavorite = _favorites
+                        .any((item) => item.streamUrl == station.streamUrl);
+                    return Padding(
+                      key: ValueKey(
+                        'radio_search_result_row_${station.streamUrl}',
+                      ),
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: RadioTile(
+                        key: ValueKey(
+                          'radio_search_result_tile_${station.streamUrl}',
+                        ),
+                        station: station,
+                        isFavorite: isFavorite,
+                        isPlaying: false,
+                        onPlay: () => _play(station),
+                        onToggleFavorite: () => _toggleFavorite(station),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              if (totalPages > 1)
+                SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            key: const ValueKey('radio_previous_page'),
+                            onPressed: currentPage > 0
+                                ? () => _changePage(
+                                      currentPage - 1,
+                                      totalPages,
+                                      l10n.localeName,
+                                    )
+                                : null,
+                            icon: const Icon(Icons.navigate_before),
+                            label: Text(
+                              _radioPreviousLabel(l10n.localeName),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton.icon(
+                            key: const ValueKey('radio_next_page'),
+                            onPressed: currentPage + 1 < totalPages
+                                ? () => _changePage(
+                                      currentPage + 1,
+                                      totalPages,
+                                      l10n.localeName,
+                                    )
+                                : null,
+                            icon: const Icon(Icons.navigate_next),
+                            label: Text(_radioNextLabel(l10n.localeName)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
           );
         },
       ),
@@ -140,6 +228,41 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
   }
 }
 
+String _radioPreviousLabel(String localeName) {
+  return switch (localeName) {
+    'en' => 'Previous',
+    'es' => 'Anterior',
+    'fr' => 'Précédents',
+    'pt' => 'Anteriores',
+    'pl' => 'Poprzednie',
+    'cs' => 'Předchozí',
+    _ => 'Precedenti',
+  };
+}
+
+String _radioNextLabel(String localeName) {
+  return switch (localeName) {
+    'en' => 'Next',
+    'es' => 'Siguiente',
+    'fr' => 'Suivants',
+    'pt' => 'Seguintes',
+    'pl' => 'Następne',
+    'cs' => 'Další',
+    _ => 'Successivi',
+  };
+}
+
+String _radioPageLabel(String localeName, int current, int total) {
+  return switch (localeName) {
+    'en' => 'Page $current of $total',
+    'es' => 'Página $current de $total',
+    'fr' => 'Page $current sur $total',
+    'pt' => 'Página $current de $total',
+    'pl' => 'Strona $current z $total',
+    'cs' => 'Stránka $current z $total',
+    _ => 'Pagina $current di $total',
+  };
+}
 
 String _radioNoResultsMessage(String localeName, String query) {
   final hasQuery = query.trim().isNotEmpty;

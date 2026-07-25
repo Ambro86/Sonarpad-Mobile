@@ -341,7 +341,10 @@ class TvService {
     return '$day/$month/$year alle $hour:$minute';
   }
 
-  Future<Map<String, TvProgram>> loadCurrentPrograms(String secretKey) async {
+  Future<Map<String, TvProgram>> loadCurrentPrograms(
+    String secretKey, {
+    List<TvChannel> channels = const [],
+  }) async {
     final template =
         _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
     final nowTime = DateTime.now();
@@ -361,6 +364,7 @@ class TvService {
     if (root is! List) return {};
 
     final programsByChannel = <String, List<TvProgram>>{};
+    final exactChannelNames = <String, String>{};
     final nowSec = nowTime.millisecondsSinceEpoch ~/ 1000;
 
     for (final group in root) {
@@ -377,6 +381,7 @@ class TvService {
 
         final target = normalizeChannelName(guideChannel);
         if (target.isEmpty) continue;
+        exactChannelNames.putIfAbsent(target, () => guideChannel);
         programsByChannel.putIfAbsent(target, () => <TvProgram>[]).add(
               TvProgram(
                 title: title,
@@ -393,21 +398,100 @@ class TvService {
       final programs = entry.value;
       programs.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-      final exact = programs.cast<TvProgram?>().firstWhere(
-            (program) =>
-                program != null &&
-                program.startTime <= nowSec &&
-                program.endTime > nowSec,
-            orElse: () => null,
-          );
-
-      final fallback = exact ?? _latestStartedProgram(programs, nowSec);
-      if (fallback != null) {
-        currentPrograms[entry.key] = fallback;
+      final current = _currentProgramAt(programs, nowSec);
+      if (current != null) {
+        currentPrograms[entry.key] = current;
       }
     }
 
+    await _refreshExpiredCurrentPrograms(
+      channels: channels,
+      secretKey: secretKey,
+      exactChannelNames: exactChannelNames,
+      targetDate: nowTime,
+      nowSec: nowSec,
+      currentPrograms: currentPrograms,
+    );
+
     return currentPrograms;
+  }
+
+  TvProgram? _currentProgramAt(List<TvProgram> programs, int nowSec) {
+    TvProgram? current;
+    for (final program in programs) {
+      if (program.startTime > nowSec || program.endTime <= nowSec) continue;
+      if (current == null || program.startTime > current.startTime) {
+        current = program;
+      }
+    }
+    return current ?? _latestStartedProgram(programs, nowSec);
+  }
+
+  Future<void> _refreshExpiredCurrentPrograms({
+    required List<TvChannel> channels,
+    required String secretKey,
+    required Map<String, String> exactChannelNames,
+    required DateTime targetDate,
+    required int nowSec,
+    required Map<String, TvProgram> currentPrograms,
+  }) async {
+    if (channels.isEmpty) return;
+
+    final pending = <MapEntry<String, TvChannel>>[];
+    final scheduledKeys = <String>{};
+    for (final channel in channels) {
+      String? key;
+      for (final candidate in guideLookupKeys(channel)) {
+        if (currentPrograms.containsKey(candidate)) {
+          key = candidate;
+          break;
+        }
+      }
+      if (key == null || !scheduledKeys.add(key)) continue;
+      final current = currentPrograms[key];
+      if (current == null || current.endTime > nowSec) continue;
+      pending.add(MapEntry(key, channel));
+    }
+
+    // Keep the fast timeline as the normal path. Only stale channels reach
+    // this code, with a small concurrency limit to avoid burdening either the
+    // phone or the guide service.
+    const maxConcurrentRequests = 4;
+    for (var start = 0;
+        start < pending.length;
+        start += maxConcurrentRequests) {
+      final requestedEnd = start + maxConcurrentRequests;
+      final end = requestedEnd < pending.length ? requestedEnd : pending.length;
+      final batch = pending.sublist(start, end);
+      final refreshed = await Future.wait(batch.map((entry) async {
+        try {
+          final exactName =
+              exactChannelNames[entry.key] ?? guideChannelName(entry.value);
+          final programs = await _loadChannelGuideForExactName(
+            exactName,
+            secretKey,
+            targetDate,
+          );
+          return MapEntry(entry.key, _currentProgramAt(programs, nowSec));
+        } catch (e) {
+          await AppLogger.log(
+            'TV: aggiornamento programma corrente fallito '
+            'canale=${entry.value.name} error=$e',
+          );
+          return MapEntry<String, TvProgram?>(entry.key, null);
+        }
+      }));
+      for (final entry in refreshed) {
+        final program = entry.value;
+        if (program != null) {
+          currentPrograms[entry.key] = program;
+          await AppLogger.log(
+            'TV: programma corrente aggiornato dalla guida completa '
+            'canale=${entry.key} programma=${program.title}',
+          );
+        }
+      }
+    }
   }
 
   TvProgram? _latestStartedProgram(List<TvProgram> programs, int nowSec) {
@@ -467,15 +551,26 @@ class TvService {
     } catch (_) {}
 
     final targetChannelForApi = exactChannelName ?? channel;
+    return _loadChannelGuideForExactName(
+      targetChannelForApi,
+      secretKey,
+      dt,
+    );
+  }
 
+  Future<List<TvProgram>> _loadChannelGuideForExactName(
+    String channel,
+    String secretKey,
+    DateTime targetDate,
+  ) async {
     // Fallback sulla URL specifica per canale
     final template =
         _decodePayload(_oggiInTvGuideUrlPayloadJson, secretKey.trim());
     final date =
-        '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+        '${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
 
     final url = template
-        .replaceAll('{channel}', Uri.encodeComponent(targetChannelForApi))
+        .replaceAll('{channel}', Uri.encodeComponent(channel))
         .replaceAll('{date}', date);
 
     final response = await http.get(

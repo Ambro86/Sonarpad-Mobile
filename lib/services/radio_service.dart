@@ -473,7 +473,7 @@ class RadioService {
         'hidebroken': 'true',
         'order': 'votes',
         'reverse': 'true',
-        'limit': globalSearch ? '100' : '50',
+        'limit': '100',
         if (query.trim().isNotEmpty) 'name': query.trim(),
         if (genreTag != null && genreTag.trim().isNotEmpty) 'tag': genreTag,
         if (!globalSearch && _isCountryCode(languageCode))
