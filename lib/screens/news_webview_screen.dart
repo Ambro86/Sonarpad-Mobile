@@ -64,6 +64,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<NewsArticleContent?>? _tinyfishFallbackFuture;
   int _webViewPageGeneration = 0;
   int? _activeVisibleExtractionGeneration;
+  bool _pureWebViewRevealInProgress = false;
 
   // Soglia minima per accettare il testo HTTP come reader mode
   static const _httpMinLength = 150;
@@ -691,9 +692,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       ));
     }
 
-    if (mounted && _readerText == null) {
-      setState(() => _readerPreparing = false);
-    }
+    // Se anche il reader dell'URL finale non basta, la WebView resta
+    // nascosta: saranno l'estrazione visibile e poi Tinyfish a decidere se
+    // mostrare un reader pulito o, come ultima possibilità, la pagina ripulita.
   }
 
   Future<void> _loadReaderArticle() async {
@@ -720,22 +721,24 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           'length=${text.length}',
         ));
       }
-      setState(() {
-        if (text.length >= _httpMinLength) {
+      if (text.length >= _httpMinLength) {
+        setState(() {
           _readerTitle = widget.article.title;
           _readerText = text;
           _readerBestTextLength = text.length;
-        }
-        _readerPreparing = false;
-      });
+          _readerPreparing = false;
+        });
+      }
     } catch (e) {
       debugPrint('Sonarpad reader: rhttp reader failed: $e');
       unawaited(AppLogger.log('News reader HTTP: estrazione fallita: $e'));
       unawaited(AppLogger.log(
         'News reader UI: WebView mantenuta perché il recupero testuale è fallito',
       ));
+      // Non mostriamo ancora la WebView grezza: può contenere per un
+      // istante banner cookie e altri elementi che VoiceOver annuncerebbe.
+      // Il tentativo WebView/Tinyfish terminerà la preparazione.
       if (!mounted) return;
-      setState(() => _readerPreparing = false);
     }
   }
 
@@ -938,9 +941,93 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     unawaited(AppLogger.log(
       'News reader UI: Tinyfish ultimo fallback non disponibile; '
-      'resta WebView length=${text.length} previousLength=$existingLength',
+      'preparo la WebView ripulita length=${text.length} '
+      'previousLength=$existingLength',
     ));
-    if (_readerPreparing) setState(() => _readerPreparing = false);
+    await _revealCleanPureWebView(
+      pageUrl: pageUrl,
+      generation: generation,
+    );
+  }
+
+  Future<void> _revealCleanPureWebView({
+    required String pageUrl,
+    required int generation,
+  }) async {
+    if (_pureWebViewRevealInProgress ||
+        !mounted ||
+        generation != _webViewPageGeneration) {
+      return;
+    }
+    _pureWebViewRevealInProgress = true;
+    try {
+      await _acceptCookieConsentIfPresent();
+      var hidden = 0;
+      for (final delay in const <Duration>[
+        Duration.zero,
+        Duration(milliseconds: 450),
+      ]) {
+        if (delay > Duration.zero) await Future<void>.delayed(delay);
+        if (!mounted || generation != _webViewPageGeneration) return;
+        try {
+          final result = await _controller.runJavaScriptReturningResult(r'''
+            (function () {
+              var hidden = 0;
+              function textOf(el) {
+                return ((el.innerText || el.textContent || el.getAttribute('aria-label') || '')
+                  .toLowerCase().replace(/\s+/g, ' ').trim());
+              }
+              function removeOrHide(el) {
+                if (!el) return;
+                el.setAttribute('aria-hidden', 'true');
+                el.style.setProperty('display', 'none', 'important');
+                el.style.setProperty('visibility', 'hidden', 'important');
+                hidden++;
+              }
+              var selectors = [
+                '#onetrust-consent-sdk', '.onetrust-pc-dark-filter',
+                '.qc-cmp2-container', '.qc-cmp-cleanslate',
+                '[id*="cookie" i]', '[class*="cookie" i]',
+                '[id*="consent" i]', '[class*="consent" i]',
+                '[id*="privacy-manager" i]', '[class*="privacy-manager" i]'
+              ];
+              selectors.forEach(function(selector) {
+                try {
+                  document.querySelectorAll(selector).forEach(removeOrHide);
+                } catch (e) {}
+              });
+              document.querySelectorAll('[role="dialog"], [aria-modal="true"]').forEach(function(el) {
+                var t = textOf(el);
+                if (/cookie|consenso|privacy|accetta|rifiuta|accept|reject|manage preferences|gestisci preferenze/.test(t)) {
+                  removeOrHide(el);
+                }
+              });
+              if (document.documentElement) {
+                document.documentElement.style.setProperty('overflow', 'auto', 'important');
+              }
+              if (document.body) {
+                document.body.style.setProperty('overflow', 'auto', 'important');
+                document.body.style.setProperty('position', 'static', 'important');
+              }
+              return hidden;
+            })()
+          ''');
+          hidden += int.tryParse(result.toString().replaceAll('"', '')) ?? 0;
+        } catch (error) {
+          unawaited(AppLogger.log(
+            'News WebView: pulizia prima della visualizzazione fallita: $error',
+          ));
+        }
+      }
+      if (!mounted || generation != _webViewPageGeneration) return;
+      setState(() => _readerPreparing = false);
+      unawaited(AppLogger.log(
+        'News WebView: pagina pura mostrata solo dopo pulizia '
+        'hiddenElements=$hidden url=$pageUrl generation=$generation',
+      ));
+    } finally {
+      _pureWebViewRevealInProgress = false;
+    }
   }
 
   Future<String> _extractVisibleArticleText() async {

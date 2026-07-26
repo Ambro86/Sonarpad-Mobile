@@ -54,12 +54,6 @@
 @import flutter_tts;
 #endif
 
-#if __has_include(<flutter_vlc_player/FlutterVlcPlayerPlugin.h>)
-#import <flutter_vlc_player/FlutterVlcPlayerPlugin.h>
-#else
-@import flutter_vlc_player;
-#endif
-
 #if __has_include(<flutter_web_auth_2/FlutterWebAuth2Plugin.h>)
 #import <flutter_web_auth_2/FlutterWebAuth2Plugin.h>
 #else
@@ -185,7 +179,6 @@
   [FFmpegKitFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"FFmpegKitFlutterPlugin"]];
   [FilePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FilePickerPlugin"]];
   [FlutterTtsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterTtsPlugin"]];
-  [FlutterVlcPlayerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterVlcPlayerPlugin"]];
   [FlutterWebAuth2Plugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterWebAuth2Plugin"]];
   [GoogleMlKitBarcodeScanningPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitBarcodeScanningPlugin"]];
   [GoogleMlKitCommonsPlugin registerWithRegistrar:[registry registrarForPlugin:@"GoogleMlKitCommonsPlugin"]];
