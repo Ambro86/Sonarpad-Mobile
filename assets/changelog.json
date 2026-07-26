@@ -3,6 +3,7 @@
     "version": "0.3.2",
     "date": "2026-06-27",
     "it": [
+      "Taglia file media: resa la pipeline di esportazione pronta per la produzione. Sonarpad rileva con FFprobe le tracce reali, gestisce video senza audio e file audio con copertina, normalizza i segmenti prima dell’unione, ricodifica automaticamente se l’unione rapida non è affidabile, controlla tracce, durata e decodifica all’inizio, alla fine e nei punti di giunzione, e pubblica il file solo dopo la verifica tramite rinomina atomica. I file temporanei incompleti vengono eliminati anche dopo errori o annullamenti.",
       "Taglia file media: corretto il salvataggio dei video tagliati che potevano risultare di 0 secondi e senza audio. FFmpeg non elimina più per errore la traccia video; gli MP4 vengono ottimizzati per iOS e ogni segmento video viene verificato prima del salvataggio finale.",
       "TV MPD/DASH: se il video è disattivato, Sonarpad monta prima una superficie video invisibile, avvia il flusso e soltanto dopo disattiva la traccia video; corretto anche il cambio video quando VLC ricade su MediaKit.",
       "TV MPD/DASH: le brevi finestre live HBBTV vengono rinnovate nello stesso player poco prima della fine o dopo uno stallo, evitando che la riproduzione resti bloccata; nelle notizie la WebView pura rimane nascosta finché banner cookie e consenso non sono stati gestiti e ripuliti.",
@@ -56,6 +57,7 @@
       "TV MPD/DASH: corretto il canale muto con il nuovo player VLC. Sonarpad attende ora la PlatformView nativa, inizializza VLC solo quando il canale è pronto, seleziona esplicitamente la traccia audio e usa MediaKit come fallback se VLC non è disponibile."
     ],
     "en": [
+      "Cut media file: hardened the export pipeline for production. Sonarpad now detects the actual streams with FFprobe, handles silent videos and audio files with cover art, normalizes segments before joining, automatically re-encodes when fast concatenation is not reliable, validates streams, duration and decoding at the start, end and join points, and publishes the output only after validation through an atomic rename. Incomplete temporary files are cleaned up after errors or cancellation.",
       "Cut media file: fixed trimmed videos that could be saved as 0 seconds and without audio. FFmpeg no longer removes the video track by mistake; MP4 files are optimized for iOS and each video segment is validated before the final save.",
       "TV MPD/DASH: when video is disabled, Sonarpad first mounts a hidden video surface, starts the stream and only then disables the video track; video switching after VLC falls back to MediaKit is also fixed.",
       "TV MPD/DASH: short HBBTV live windows are renewed in the same player just before the end or after a stall, preventing playback from remaining stuck; in News, the raw WebView stays hidden until cookie and consent banners have been handled and cleaned.",
@@ -106,6 +108,7 @@
       "MPD/DASH TV: fixed silent playback with the new VLC player. Sonarpad now waits for the native PlatformView, initializes VLC only when its channel is ready, explicitly selects the audio track, and falls back to MediaKit if VLC is unavailable."
     ],
     "fr": [
+      "Découper un fichier multimédia : pipeline d’exportation renforcé pour la production. Sonarpad détecte désormais les flux réels avec FFprobe, gère les vidéos sans audio et les fichiers audio avec pochette, normalise les segments avant l’assemblage, réencode automatiquement si la concaténation rapide n’est pas fiable, vérifie les flux, la durée et le décodage au début, à la fin et aux points de jonction, puis ne publie le fichier qu’après validation par renommage atomique. Les fichiers temporaires incomplets sont supprimés après une erreur ou une annulation.",
       "Découper un fichier multimédia : correction des vidéos découpées qui pouvaient être enregistrées avec une durée de 0 seconde et sans son. FFmpeg ne supprime plus la piste vidéo par erreur ; les fichiers MP4 sont optimisés pour iOS et chaque segment vidéo est vérifié avant l’enregistrement final.",
       "TV MPD/DASH : lorsque la vidéo est désactivée, Sonarpad monte d’abord une surface vidéo masquée, démarre le flux, puis désactive la piste vidéo ; le changement vidéo après le repli de VLC vers MediaKit est également corrigé.",
       "TV MPD/DASH : les courtes fenêtres en direct HBBTV sont renouvelées dans le même lecteur juste avant leur fin ou après un blocage ; dans les actualités, la WebView brute reste masquée jusqu’au traitement et au nettoyage des bannières de cookies et de consentement.",
@@ -156,6 +159,7 @@
       "TV MPD/DASH : correction de la lecture muette avec le nouveau lecteur VLC. Sonarpad attend désormais la PlatformView native, initialise VLC seulement lorsque son canal est prêt, sélectionne explicitement la piste audio et utilise MediaKit en secours si VLC est indisponible."
     ],
     "es": [
+      "Cortar archivo multimedia: se reforzó la exportación para producción. Sonarpad detecta las pistas reales con FFprobe, gestiona vídeos sin audio y archivos de audio con carátula, normaliza los segmentos antes de unirlos, recodifica automáticamente si la concatenación rápida no es fiable, comprueba pistas, duración y decodificación al inicio, al final y en los puntos de unión, y publica el archivo solo después de validarlo mediante un renombrado atómico. Los archivos temporales incompletos se eliminan tras errores o cancelaciones.",
       "Cortar archivo multimedia: corregidos los vídeos recortados que podían guardarse con 0 segundos y sin audio. FFmpeg ya no elimina por error la pista de vídeo; los archivos MP4 se optimizan para iOS y cada segmento de vídeo se verifica antes del guardado final.",
       "TV MPD/DASH: cuando el vídeo está desactivado, Sonarpad monta primero una superficie de vídeo oculta, inicia el flujo y solo después desactiva la pista de vídeo; también se corrige el cambio de vídeo tras la alternativa de VLC a MediaKit.",
       "TV MPD/DASH: las ventanas HBBTV en directo de corta duración se renuevan en el mismo reproductor justo antes de terminar o tras un bloqueo; en Noticias, la WebView sin procesar permanece oculta hasta gestionar y limpiar los avisos de cookies y consentimiento.",
@@ -206,6 +210,7 @@
       "TV MPD/DASH: corregida la reproducción sin audio con el nuevo reproductor VLC. Sonarpad ahora espera la PlatformView nativa, inicializa VLC solo cuando su canal está listo, selecciona explícitamente la pista de audio y usa MediaKit como alternativa si VLC no está disponible."
     ],
     "pt": [
+      "Cortar ficheiro multimédia: a exportação foi reforçada para produção. O Sonarpad deteta as faixas reais com FFprobe, trata vídeos sem áudio e ficheiros de áudio com capa, normaliza os segmentos antes da união, recodifica automaticamente quando a concatenação rápida não é fiável, verifica faixas, duração e descodificação no início, no fim e nos pontos de junção, e só publica o ficheiro depois da validação através de uma mudança de nome atómica. Os ficheiros temporários incompletos são removidos após erros ou cancelamentos.",
       "Cortar ficheiro multimédia: corrigidos os vídeos cortados que podiam ser guardados com 0 segundos e sem áudio. O FFmpeg já não remove por engano a faixa de vídeo; os ficheiros MP4 são otimizados para iOS e cada segmento de vídeo é verificado antes da gravação final.",
       "TV MPD/DASH: quando o vídeo está desativado, o Sonarpad monta primeiro uma superfície de vídeo oculta, inicia o fluxo e só depois desativa a faixa de vídeo; também foi corrigida a mudança de vídeo após o VLC recorrer ao MediaKit.",
       "TV MPD/DASH: as janelas curtas de transmissão HBBTV são renovadas no mesmo leitor pouco antes do fim ou após um bloqueio; nas Notícias, a WebView pura permanece oculta até os avisos de cookies e consentimento serem tratados e limpos.",
@@ -256,6 +261,7 @@
       "TV MPD/DASH: corrigida a reprodução sem áudio com o novo leitor VLC. O Sonarpad aguarda agora a PlatformView nativa, inicializa o VLC apenas quando o canal está pronto, seleciona explicitamente a faixa de áudio e usa o MediaKit como alternativa se o VLC não estiver disponível."
     ],
     "pl": [
+      "Wycinanie pliku multimedialnego: wzmocniono eksport do zastosowań produkcyjnych. Sonarpad wykrywa rzeczywiste strumienie za pomocą FFprobe, obsługuje filmy bez dźwięku i pliki audio z okładką, normalizuje segmenty przed łączeniem, automatycznie ponownie koduje materiał, gdy szybkie łączenie nie jest pewne, sprawdza strumienie, czas trwania oraz dekodowanie na początku, końcu i w punktach połączeń, a plik publikuje dopiero po pomyślnej walidacji przez atomową zmianę nazwy. Niekompletne pliki tymczasowe są usuwane po błędach i anulowaniu.",
       "Wycinanie pliku multimedialnego: naprawiono problem, przez który przycięte filmy mogły być zapisywane jako pliki o długości 0 sekund i bez dźwięku. FFmpeg nie usuwa już omyłkowo ścieżki wideo; pliki MP4 są optymalizowane dla iOS, a każdy segment wideo jest sprawdzany przed końcowym zapisem.",
       "TV MPD/DASH: gdy wideo jest wyłączone, Sonarpad najpierw montuje ukrytą powierzchnię wideo, uruchamia strumień, a dopiero potem wyłącza ścieżkę wideo; poprawiono też przełączanie wideo po przejściu z VLC na MediaKit.",
       "TV MPD/DASH: krótkie okna transmisji HBBTV są odnawiane w tym samym odtwarzaczu tuż przed końcem lub po zablokowaniu; w Wiadomościach surowy WebView pozostaje ukryty, dopóki banery plików cookie i zgody nie zostaną obsłużone i usunięte.",
@@ -307,6 +313,7 @@
       "TV MPD/DASH: naprawiono brak dźwięku w nowym odtwarzaczu VLC. Sonarpad czeka teraz na natywny PlatformView, inicjalizuje VLC dopiero po przygotowaniu kanału, jawnie wybiera ścieżkę audio i przechodzi na MediaKit, gdy VLC jest niedostępny."
     ],
     "cs": [
+      "Oříznutí mediálního souboru: exportní proces byl zpevněn pro produkční použití. Sonarpad nyní pomocí FFprobe zjišťuje skutečné stopy, zvládá videa bez zvuku i zvukové soubory s obalem, před spojením normalizuje segmenty, při nespolehlivém rychlém spojení automaticky provede nové kódování, kontroluje stopy, délku a dekódování na začátku, na konci i v místech spojů a výsledný soubor zveřejní až po ověření atomickým přejmenováním. Neúplné dočasné soubory se po chybě nebo zrušení odstraní.",
       "Oříznutí mediálního souboru: opraven problém, kdy se oříznutá videa mohla uložit s délkou 0 sekund a bez zvuku. FFmpeg již omylem neodstraňuje video stopu; soubory MP4 jsou optimalizovány pro iOS a každý video segment je před konečným uložením ověřen.",
       "TV MPD/DASH: když je video vypnuté, Sonarpad nejprve připojí skrytou video plochu, spustí stream a teprve poté vypne video stopu; opraveno je také přepínání videa po přechodu z VLC na MediaKit.",
       "TV MPD/DASH: krátká živá okna HBBTV se obnovují ve stejném přehrávači těsně před koncem nebo po zaseknutí; ve Zprávách zůstává čistá WebView skrytá, dokud nejsou zpracovány a odstraněny bannery cookies a souhlasu.",

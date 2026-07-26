@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
+import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:ffmpeg_kit_flutter_new/statistics.dart';
+import 'package:ffmpeg_kit_flutter_new/stream_information.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -83,6 +85,54 @@ const _cutEditStepOptions = <Duration>[
 
 class _MediaCutterExportCancelled implements Exception {
   const _MediaCutterExportCancelled();
+}
+
+class _MediaCutterOutputWriteException implements Exception {
+  const _MediaCutterOutputWriteException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
+class _MediaProbeInfo {
+  const _MediaProbeInfo({
+    required this.hasVideo,
+    required this.hasAudio,
+    required this.duration,
+    required this.videoCodec,
+    required this.audioCodec,
+    required this.videoStreamIndex,
+    required this.audioStreamIndex,
+    required this.width,
+    required this.height,
+    required this.frameRate,
+    required this.audioSampleRate,
+    required this.audioChannelLayout,
+  });
+
+  final bool hasVideo;
+  final bool hasAudio;
+  final Duration? duration;
+  final String? videoCodec;
+  final String? audioCodec;
+  final int? videoStreamIndex;
+  final int? audioStreamIndex;
+  final int? width;
+  final int? height;
+  final double? frameRate;
+  final String? audioSampleRate;
+  final String? audioChannelLayout;
+
+  String get logSummary =>
+      'video=$hasVideo audio=$hasAudio duration=${duration?.inMilliseconds}ms '
+      'videoCodec=${videoCodec ?? 'none'} videoStream=${videoStreamIndex ?? 'none'} '
+      'size=${width ?? 0}x${height ?? 0} '
+      'fps=${frameRate?.toStringAsFixed(3) ?? 'unknown'} '
+      'audioCodec=${audioCodec ?? 'none'} audioStream=${audioStreamIndex ?? 'none'} '
+      'sampleRate=${audioSampleRate ?? 'unknown'} '
+      'layout=${audioChannelLayout ?? 'unknown'}';
 }
 
 class _MediaCutterExportProgress {
@@ -308,6 +358,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   String _displayName = '';
   String _outputDirectory = '';
   bool _isVideo = false;
+  _MediaProbeInfo? _inputProbe;
   bool _showVideoPreview = false;
   _VideoRotation _videoRotation = _VideoRotation.none;
   bool _loading = false;
@@ -757,6 +808,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _inputPath = path;
       _displayName = p.basename(path);
       _isVideo = _isVideoInput(path);
+      _inputProbe = null;
       _showVideoPreview = false;
       _videoRotation = _VideoRotation.none;
       _duration = Duration.zero;
@@ -793,6 +845,21 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         await oldVideoController.dispose();
       }
 
+      final probe = await _probeMedia(path, purpose: 'input load');
+      if (!probe.hasVideo && !probe.hasAudio) {
+        throw StateError('Il file non contiene tracce audio o video utilizzabili.');
+      }
+      if (mounted) {
+        setState(() {
+          _inputProbe = probe;
+          _isVideo = probe.hasVideo;
+        });
+      } else {
+        _inputProbe = probe;
+        _isVideo = probe.hasVideo;
+      }
+      unawaited(_logMediaCutter('input probe ${probe.logSummary} path="$path"'));
+
       if (_isVideo) {
         final controller = await _initializeVideoControllerWithRetry(path);
         _videoController = controller;
@@ -811,7 +878,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           _scheduleDeletedPartSkipTimer(fromPosition: clamped);
         });
         setState(() {
-          _duration = controller.value.duration;
+          _duration = controller.value.duration > Duration.zero
+              ? controller.value.duration
+              : (probe.duration ?? Duration.zero);
           _position = _clampPosition(controller.value.position);
           _playing = controller.value.isPlaying;
           _rebuildParts();
@@ -823,7 +892,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       } else {
         final duration = await _setAudioSourceWithRetry(path);
         setState(() {
-          _duration = duration ?? Duration.zero;
+          _duration = duration ?? probe.duration ?? Duration.zero;
           _position = Duration.zero;
           _playing = false;
           _rebuildParts();
@@ -1086,6 +1155,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       'part=${_logPart(index, part)}',
     ));
     if (!part.keep || part.duration <= Duration.zero) return;
+    if (_inputProbe?.hasAudio == false) {
+      unawaited(_logMediaCutter(
+        'effects preview skipped because the source has no audio track',
+      ));
+      await _playPart(
+        index,
+        previewVolumeFactor: volumePercent.clamp(0, 200).toDouble() / 100.0,
+      );
+      return;
+    }
 
     final initialPreviewStart = _effectPreviewStartForPart(
       part,
@@ -1143,7 +1222,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (!_isVideo && _usingRenderedPreviewSource) {
         await _restoreOriginalAudioSource(seekTo: previewStart);
       }
-      final String audioFilter = filter;
+      final inputProbe = _inputProbe;
+      final inputAudioMap = inputProbe == null
+          ? '0:a:0'
+          : _inputStreamMap(inputProbe, video: false);
+      final String audioFilter = usesUnderwaterBubbles
+          ? filter.replaceFirst('[0:a:0]', '[$inputAudioMap]')
+          : filter;
       final args = <String>[
         '-y',
         '-ss',
@@ -1173,7 +1258,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       } else {
         args.addAll([
           '-map',
-          '0:a:0?',
+          inputAudioMap,
           '-vn',
           '-sn',
           '-dn',
@@ -2811,6 +2896,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         });
       } catch (error) {
         if (error is _MediaCutterExportCancelled) rethrow;
+        if (error is! _MediaCutterOutputWriteException) rethrow;
         final defaultOutputDir = await _defaultOutputDirectory();
         final alreadyUsingDefault = p.equals(
           p.normalize(outputDir),
@@ -2920,12 +3006,515 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
+  Future<_MediaProbeInfo> _probeMedia(
+    String path, {
+    required String purpose,
+  }) async {
+    await AppLogger.log('Media cutter ffprobe $purpose start path="$path"');
+    final session = await FFprobeKit.getMediaInformation(path);
+    final returnCode = await session.getReturnCode();
+    final information = session.getMediaInformation();
+    final output = await session.getOutput() ?? '';
+    if (!ReturnCode.isSuccess(returnCode) || information == null) {
+      await AppLogger.log(
+        'Media cutter ffprobe $purpose failed '
+        'returnCode=${returnCode?.getValue()} output="${_compactLog(output)}"',
+      );
+      throw StateError(
+        'Impossibile analizzare le tracce del file multimediale.',
+      );
+    }
+
+    final streams = information.getStreams();
+    final videoStreams = streams.where(
+      (stream) =>
+          stream.getType() == 'video' && !_isAttachedPictureStream(stream),
+    );
+    final audioStreams = streams.where((stream) => stream.getType() == 'audio');
+    final video = _preferredStream(videoStreams);
+    final audio = _preferredStream(audioStreams);
+    final duration = _parseProbeDuration(information.getDuration()) ??
+        _parseProbeDuration(video?.getStringProperty('duration')) ??
+        _parseProbeDuration(audio?.getStringProperty('duration'));
+    final result = _MediaProbeInfo(
+      hasVideo: video != null,
+      hasAudio: audio != null,
+      duration: duration,
+      videoCodec: video?.getCodec(),
+      audioCodec: audio?.getCodec(),
+      videoStreamIndex: video?.getIndex(),
+      audioStreamIndex: audio?.getIndex(),
+      width: video?.getWidth(),
+      height: video?.getHeight(),
+      frameRate: _parseProbeRate(
+        video?.getAverageFrameRate() ?? video?.getRealFrameRate(),
+      ),
+      audioSampleRate: audio?.getSampleRate(),
+      audioChannelLayout: audio?.getChannelLayout(),
+    );
+    await AppLogger.log(
+      'Media cutter ffprobe $purpose completed ${result.logSummary} '
+      'path="$path"',
+    );
+    return result;
+  }
+
+  bool _isAttachedPictureStream(StreamInformation stream) {
+    try {
+      final properties = stream.getAllProperties();
+      if (properties is! Map) return false;
+      final disposition = properties['disposition'];
+      if (disposition is! Map) return false;
+      final value = disposition['attached_pic'];
+      return value == 1 || value == true || value == '1';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  StreamInformation? _preferredStream(
+    Iterable<StreamInformation> streams,
+  ) {
+    StreamInformation? first;
+    for (final stream in streams) {
+      first ??= stream;
+      if (_streamDispositionEnabled(stream, 'default')) return stream;
+    }
+    return first;
+  }
+
+  bool _streamDispositionEnabled(StreamInformation stream, String key) {
+    try {
+      final properties = stream.getAllProperties();
+      if (properties is! Map) return false;
+      final disposition = properties['disposition'];
+      if (disposition is! Map) return false;
+      final value = disposition[key];
+      return value == 1 || value == true || value == '1';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  String _inputStreamMap(
+    _MediaProbeInfo source, {
+    required bool video,
+  }) {
+    final index = video ? source.videoStreamIndex : source.audioStreamIndex;
+    if (index != null) return '0:$index';
+    return video ? '0:v:0' : '0:a:0';
+  }
+
+  Duration? _parseProbeDuration(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    final seconds = double.tryParse(raw.trim());
+    if (seconds == null || !seconds.isFinite || seconds < 0) return null;
+    return Duration(microseconds: (seconds * 1000000).round());
+  }
+
+  double? _parseProbeRate(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    final value = raw.trim();
+    if (!value.contains('/')) {
+      final parsed = double.tryParse(value);
+      return parsed != null && parsed.isFinite && parsed > 0 ? parsed : null;
+    }
+    final parts = value.split('/');
+    if (parts.length != 2) return null;
+    final numerator = double.tryParse(parts[0]);
+    final denominator = double.tryParse(parts[1]);
+    if (numerator == null || denominator == null || denominator == 0) {
+      return null;
+    }
+    final rate = numerator / denominator;
+    return rate.isFinite && rate > 0 ? rate : null;
+  }
+
+  int _minimumPartDurationMs(_MediaProbeInfo source) {
+    if (!source.hasVideo) return 20;
+    final frameRate = source.frameRate;
+    if (frameRate == null || frameRate <= 0) return 50;
+    return (1000 / frameRate).ceil().clamp(20, 250).toInt();
+  }
+
+  String _normalizeAudioFilter(String? filter) {
+    const normalization =
+        'aresample=44100:async=1:first_pts=0,'
+        'aformat=sample_fmts=fltp:sample_rates=44100:'
+        'channel_layouts=stereo';
+    if (filter == null || filter.trim().isEmpty) return normalization;
+    return '$filter,$normalization';
+  }
+
+  String _normalizeComplexAudioOutput(String filter) {
+    const outputLabel = '[outa]';
+    if (!filter.endsWith(outputLabel)) {
+      throw StateError(
+        'Il filtro audio complesso non contiene l’uscita prevista.',
+      );
+    }
+    final body = filter.substring(0, filter.length - outputLabel.length);
+    return '$body,aresample=44100:async=1:first_pts=0,'
+        'aformat=sample_fmts=fltp:sample_rates=44100:'
+        'channel_layouts=stereo$outputLabel';
+  }
+
+  List<String> _productionCodecArguments({
+    required String inputPath,
+    required bool hasVideo,
+    required bool hasAudio,
+  }) {
+    final args = <String>[];
+    if (hasVideo) {
+      args.addAll([
+        '-c:v',
+        'mpeg4',
+        '-q:v',
+        '4',
+        '-pix_fmt',
+        'yuv420p',
+        '-video_track_timescale',
+        '90000',
+      ]);
+    }
+    if (hasAudio) {
+      if (hasVideo) {
+        args.addAll([
+          '-c:a',
+          'aac',
+          '-b:a',
+          '192k',
+        ]);
+      } else {
+        final ext = p.extension(inputPath).toLowerCase().replaceFirst('.', '');
+        args.addAll(switch (ext) {
+          'mp3' => ['-c:a', 'libmp3lame', '-b:a', '192k'],
+          'm4a' || 'm4b' || 'aac' || 'mp4' =>
+            ['-c:a', 'aac', '-b:a', '192k'],
+          'ogg' => ['-c:a', 'libvorbis', '-q:a', '5'],
+          'opus' => ['-c:a', 'libopus', '-b:a', '160k'],
+          'flac' => ['-c:a', 'flac'],
+          'wav' => ['-c:a', 'pcm_s16le'],
+          'aiff' || 'aif' => ['-c:a', 'pcm_s16be'],
+          'wma' => ['-c:a', 'wmav2'],
+          _ => ['-c:a', 'aac', '-b:a', '192k'],
+        });
+      }
+      args.addAll([
+        '-ar',
+        '44100',
+        '-ac',
+        '2',
+      ]);
+    }
+    return args;
+  }
+
+  String _pendingOutputPath(String output) {
+    final directory = p.dirname(output);
+    final extension = p.extension(output);
+    final stem = p.basenameWithoutExtension(output);
+    final nonce = DateTime.now().microsecondsSinceEpoch;
+    return p.join(
+      directory,
+      '.sonarpad-media-cutter-$nonce-$stem.partial$extension',
+    );
+  }
+
+  Future<void> _cleanupStalePendingOutputs(String outputDirectory) async {
+    final directory = Directory(outputDirectory);
+    if (!await directory.exists()) return;
+    final cutoff = DateTime.now().subtract(const Duration(hours: 24));
+    try {
+      await for (final entity in directory.list(followLinks: false)) {
+        if (entity is! File) continue;
+        final name = p.basename(entity.path);
+        if (!name.startsWith('.sonarpad-media-cutter-') ||
+            !name.contains('.partial')) {
+          continue;
+        }
+        final stat = await entity.stat();
+        if (stat.modified.isAfter(cutoff)) continue;
+        await entity.delete();
+        await AppLogger.log(
+          'Media cutter: removed stale pending output path="${entity.path}"',
+        );
+      }
+    } catch (error) {
+      await AppLogger.log(
+        'Media cutter: stale pending cleanup failed '
+        'directory="$outputDirectory" error=$error',
+      );
+    }
+  }
+
+  int _durationToleranceMs(int expectedMs) {
+    if (expectedMs < 2000) return 700;
+    if (expectedMs < 10000) return 1200;
+    final fivePercent = (expectedMs * 0.05).round();
+    return fivePercent > 2000 ? fivePercent : 2000;
+  }
+
+  Future<_MediaProbeInfo> _validateExportFile({
+    required String path,
+    required bool expectedVideo,
+    required bool expectedAudio,
+    required Duration expectedDuration,
+    required String label,
+    required _MediaCutterExportController exportController,
+    required bool deepDecode,
+    List<Duration> validationPoints = const <Duration>[],
+  }) async {
+    if (exportController.cancelled) {
+      throw const _MediaCutterExportCancelled();
+    }
+    final file = File(path);
+    if (!await file.exists()) {
+      throw StateError('Il file $label non è stato creato.');
+    }
+    final bytes = await file.length();
+    if (bytes <= 0) {
+      throw StateError('Il file $label è vuoto.');
+    }
+
+    final probe = await _probeMedia(path, purpose: 'validate $label');
+    if (expectedVideo && !probe.hasVideo) {
+      throw StateError('Il file $label non contiene la traccia video attesa.');
+    }
+    if (expectedAudio && !probe.hasAudio) {
+      throw StateError('Il file $label non contiene la traccia audio attesa.');
+    }
+    if (!expectedVideo && !probe.hasAudio) {
+      throw StateError('Il file audio $label non contiene una traccia audio.');
+    }
+
+    final actualDuration = probe.duration;
+    if (actualDuration == null || actualDuration <= Duration.zero) {
+      throw StateError('Il file $label ha una durata non valida.');
+    }
+    final expectedMs = expectedDuration.inMilliseconds;
+    if (expectedMs > 0) {
+      final actualMs = actualDuration.inMilliseconds;
+      final tolerance = _durationToleranceMs(expectedMs);
+      final minimum = (expectedMs - tolerance).clamp(1, expectedMs);
+      final maximum = expectedMs + tolerance;
+      if (actualMs < minimum || actualMs > maximum) {
+        throw StateError(
+          'Durata non valida per $label: attesa '
+          '${_ffmpegTime(expectedDuration)}, ottenuta '
+          '${_ffmpegTime(actualDuration)}.',
+        );
+      }
+    }
+
+    if (deepDecode) {
+      if (expectedVideo) {
+        await _runFfmpeg(
+          [
+            '-v',
+            'error',
+            '-xerror',
+            '-i',
+            path,
+            '-map',
+            '0:v:0',
+            '-frames:v',
+            '1',
+            '-f',
+            'null',
+            '-',
+          ],
+          'validate $label video start',
+          exportController,
+        );
+      }
+      if (expectedAudio) {
+        await _runFfmpeg(
+          [
+            '-v',
+            'error',
+            '-xerror',
+            '-i',
+            path,
+            '-map',
+            '0:a:0',
+            '-t',
+            '0.350',
+            '-f',
+            'null',
+            '-',
+          ],
+          'validate $label audio start',
+          exportController,
+        );
+      }
+
+      if (actualDuration > const Duration(seconds: 1)) {
+        final tailStart = actualDuration - const Duration(milliseconds: 700);
+        if (expectedVideo) {
+          await _runFfmpeg(
+            [
+              '-v',
+              'error',
+              '-xerror',
+              '-ss',
+              _ffmpegTime(tailStart),
+              '-i',
+              path,
+              '-map',
+              '0:v:0',
+              '-frames:v',
+              '1',
+              '-f',
+              'null',
+              '-',
+            ],
+            'validate $label video end',
+            exportController,
+          );
+        }
+        if (expectedAudio) {
+          await _runFfmpeg(
+            [
+              '-v',
+              'error',
+              '-xerror',
+              '-ss',
+              _ffmpegTime(tailStart),
+              '-i',
+              path,
+              '-map',
+              '0:a:0',
+              '-t',
+              '0.350',
+              '-f',
+              'null',
+              '-',
+            ],
+            'validate $label audio end',
+            exportController,
+          );
+        }
+      }
+
+      final points = _sampleValidationPoints(
+        validationPoints,
+        actualDuration,
+      );
+      for (var i = 0; i < points.length; i++) {
+        final point = points[i];
+        final start = point > const Duration(milliseconds: 250)
+            ? point - const Duration(milliseconds: 250)
+            : Duration.zero;
+        final args = <String>[
+          '-v',
+          'error',
+          '-xerror',
+          '-ss',
+          _ffmpegTime(start),
+          '-i',
+          path,
+        ];
+        if (expectedVideo) args.addAll(['-map', '0:v:0']);
+        if (expectedAudio) args.addAll(['-map', '0:a:0']);
+        args.addAll([
+          '-t',
+          '0.500',
+          '-f',
+          'null',
+          '-',
+        ]);
+        await _runFfmpeg(
+          args,
+          'validate $label junction ${i + 1}/${points.length}',
+          exportController,
+        );
+      }
+    }
+
+    await AppLogger.log(
+      'Media cutter: validation passed label="$label" bytes=$bytes '
+      'expectedVideo=$expectedVideo expectedAudio=$expectedAudio '
+      'expectedDuration=${expectedDuration.inMilliseconds}ms '
+      '${probe.logSummary} path="$path"',
+    );
+    return probe;
+  }
+
+  List<Duration> _sampleValidationPoints(
+    List<Duration> points,
+    Duration actualDuration,
+  ) {
+    final usable = points
+        .where(
+          (point) =>
+              point > const Duration(milliseconds: 500) &&
+              point < actualDuration - const Duration(milliseconds: 500),
+        )
+        .toList(growable: false);
+    if (usable.length <= 24) return usable;
+    final sampled = <Duration>[];
+    for (var i = 0; i < 24; i++) {
+      final index = ((usable.length - 1) * i / 23).round();
+      final point = usable[index];
+      if (sampled.isEmpty || sampled.last != point) sampled.add(point);
+    }
+    return sampled;
+  }
+
+  Future<void> _deleteFileIfExists(File file, String label) async {
+    try {
+      if (await file.exists()) await file.delete();
+    } catch (error) {
+      await AppLogger.log(
+        'Media cutter: cleanup failed label="$label" '
+        'path="${file.path}" error=$error',
+      );
+    }
+  }
+
+  Future<void> _publishValidatedOutput({
+    required String pendingOutput,
+    required String output,
+  }) async {
+    final destination = File(output);
+    if (await destination.exists()) {
+      throw StateError('Il file di destinazione esiste già: $output');
+    }
+    try {
+      await File(pendingOutput).rename(output);
+      await AppLogger.log(
+        'Media cutter: validated output published atomically '
+        'from="$pendingOutput" to="$output"',
+      );
+    } catch (error) {
+      await AppLogger.log(
+        'Media cutter: atomic publish failed output="$output" error=$error',
+      );
+      throw _MediaCutterOutputWriteException(
+        'Impossibile completare il salvataggio in modo sicuro: $error',
+      );
+    }
+  }
+
   Future<void> _exportKeptParts(
     List<_MediaPart> keptParts,
     String output,
     _MediaCutterExportController exportController,
   ) async {
     final input = _inputPath;
+    final source = _inputProbe ??
+        await _probeMedia(input, purpose: 'export input');
+    if (!source.hasVideo && !source.hasAudio) {
+      throw StateError('Il file non contiene tracce esportabili.');
+    }
+
+    final inputFile = File(input);
+    final inputSnapshot = await inputFile.stat();
+    if (inputSnapshot.type != FileSystemEntityType.file) {
+      throw StateError('Il file sorgente non è più disponibile.');
+    }
+
     final tempRoot = await getTemporaryDirectory();
     final workDir = Directory(
       p.join(
@@ -2934,22 +3523,63 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       ),
     );
     await workDir.create(recursive: true);
-    final ext = _outputExtension(input);
-    final isVideoInput = _isVideoInput(input);
+    await _cleanupStalePendingOutputs(p.dirname(output));
+    final ext = source.hasVideo ? '.mp4' : _outputExtension(input);
+    final pendingOutput = _pendingOutputPath(output);
     final segmentPaths = <String>[];
     final totalDurationMs = keptParts.fold<int>(
       0,
       (sum, part) => sum + part.duration.inMilliseconds,
     );
+    final expectedDuration = Duration(milliseconds: totalDurationMs);
+    final junctionPoints = <Duration>[];
+    var junctionElapsed = Duration.zero;
+    for (var i = 0; i < keptParts.length - 1; i++) {
+      junctionElapsed += keptParts[i].duration;
+      junctionPoints.add(junctionElapsed);
+    }
     var completedDurationMs = 0;
 
+    if (keptParts.isEmpty || expectedDuration <= Duration.zero) {
+      throw StateError('Non ci sono parti valide da esportare.');
+    }
+    final minimumPartMs = _minimumPartDurationMs(source);
+    var previousEnd = Duration.zero;
+    for (var i = 0; i < keptParts.length; i++) {
+      final part = keptParts[i];
+      if (part.start < Duration.zero || part.end <= part.start) {
+        throw StateError('La parte ${i + 1} contiene limiti non validi.');
+      }
+      if (i > 0 && part.start < previousEnd) {
+        throw StateError('Le parti da esportare sono sovrapposte o disordinate.');
+      }
+      if (part.duration.inMilliseconds < minimumPartMs) {
+        throw StateError(
+          'La parte ${i + 1} è troppo breve per produrre un file valido '
+          '(${part.duration.inMilliseconds} ms; minimo $minimumPartMs ms).',
+        );
+      }
+      final sourceDuration = source.duration;
+      if (sourceDuration != null &&
+          part.end > sourceDuration + const Duration(seconds: 1)) {
+        throw StateError(
+          'La parte ${i + 1} supera la durata del file sorgente.',
+        );
+      }
+      previousEnd = part.end;
+    }
+
     unawaited(_logMediaCutter(
-      'export start output="$output" keptParts=${keptParts.length} '
-      'totalDuration=${_logDuration(Duration(milliseconds: totalDurationMs))} '
-      'isVideo=$isVideoInput',
+      'export production start output="$output" pending="$pendingOutput" '
+      'keptParts=${keptParts.length} '
+      'totalDuration=${_logDuration(expectedDuration)} '
+      'source=${source.logSummary}',
     ));
     for (var i = 0; i < keptParts.length; i++) {
-      unawaited(_logMediaCutter('export part ${i + 1}/${keptParts.length} ${_logPart(i, keptParts[i])}'));
+      unawaited(_logMediaCutter(
+        'export part ${i + 1}/${keptParts.length} '
+        '${_logPart(i, keptParts[i])}',
+      ));
     }
 
     try {
@@ -2962,13 +3592,36 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           workDir.path,
           'segment_${i.toString().padLeft(3, '0')}$ext',
         );
-        final usesUnderwaterBubbles = _usesUnderwaterBubbles(part);
-        final String? filter = usesUnderwaterBubbles
-            ? _underwaterAudioFilterForPart(part)
-            : _audioFilterForPart(part);
-        final String? audioFilter = filter;
+        final requestedUnderwater = _usesUnderwaterBubbles(part);
+        final usesUnderwaterBubbles = source.hasAudio && requestedUnderwater;
+        if (!source.hasAudio &&
+            (requestedUnderwater || _audioFilterForPart(part) != null)) {
+          unawaited(_logMediaCutter(
+            'export part ${i + 1}: audio effects skipped because the '
+            'source has no audio track',
+          ));
+        }
+        final rawAudioFilter = source.hasAudio
+            ? (usesUnderwaterBubbles
+                ? _underwaterAudioFilterForPart(part)
+                : _audioFilterForPart(part))
+            : null;
+        final selectedRawAudioFilter = usesUnderwaterBubbles &&
+                rawAudioFilter != null
+            ? rawAudioFilter.replaceFirst(
+                '[0:a:0]',
+                '[${_inputStreamMap(source, video: false)}]',
+              )
+            : rawAudioFilter;
+        final audioFilter = source.hasAudio
+            ? (usesUnderwaterBubbles
+                ? _normalizeComplexAudioOutput(selectedRawAudioFilter!)
+                : _normalizeAudioFilter(selectedRawAudioFilter))
+            : null;
         final args = <String>[
           '-y',
+          '-fflags',
+          '+genpts',
           '-ss',
           _ffmpegTime(part.start),
           '-i',
@@ -2986,62 +3639,68 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           '-t',
           _ffmpegTime(part.duration),
         ]);
-        if (isVideoInput) {
+        if (source.hasVideo) {
           args.addAll([
             '-map',
-            '0:v:0?',
+            _inputStreamMap(source, video: true),
           ]);
         }
-        if (usesUnderwaterBubbles) {
-          args.addAll([
-            '-filter_complex',
-            audioFilter!,
-            '-map',
-            '[outa]',
-          ]);
-        } else {
-          args.addAll([
-            '-map',
-            '0:a:0?',
-          ]);
-          // `-vn` must only be used for audio-only inputs. Adding it while
-          // exporting a video overrides the preceding video map and produces
-          // an MP4 without a video stream, which iOS may report as 0 seconds.
-          if (!isVideoInput) {
-            args.add('-vn');
-          }
-          args.addAll([
-            '-sn',
-            '-dn',
-          ]);
-          if (audioFilter != null) {
+        if (source.hasAudio) {
+          if (usesUnderwaterBubbles) {
             args.addAll([
+              '-filter_complex',
+              audioFilter!,
+              '-map',
+              '[outa]',
+            ]);
+          } else {
+            args.addAll([
+              '-map',
+              _inputStreamMap(source, video: false),
               '-filter:a',
-              audioFilter,
+              audioFilter!,
             ]);
           }
+        } else if (!source.hasVideo) {
+          throw StateError('Il file non contiene una traccia audio valida.');
         }
+        if (!source.hasVideo) args.add('-vn');
+        args.addAll([
+          '-sn',
+          '-dn',
+          '-map_metadata',
+          '-1',
+          '-map_chapters',
+          '-1',
+        ]);
         final videoFilter = _videoFilter();
-        if (videoFilter != null) {
+        if (source.hasVideo && videoFilter != null) {
           args.addAll([
             '-filter:v',
             videoFilter,
           ]);
         }
+        args.addAll(_productionCodecArguments(
+          inputPath: input,
+          hasVideo: source.hasVideo,
+          hasAudio: source.hasAudio,
+        ));
         args.addAll([
-          ..._codecArguments(input),
+          '-max_muxing_queue_size',
+          '2048',
           '-avoid_negative_ts',
           'make_zero',
         ]);
-        if (isVideoInput && ext == '.mp4') {
-          // Put the MP4 index at the beginning of the file so iOS can read
-          // duration and tracks immediately after the export is copied.
+        if (source.hasVideo && ext == '.mp4') {
           args.addAll([
+            '-metadata:s:v:0',
+            'rotate=0',
             '-movflags',
             '+faststart',
           ]);
         }
         args.add(segment);
+
         await _runFfmpeg(
           args,
           'segment ${i + 1}/${keptParts.length}',
@@ -3056,46 +3715,26 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 : (completedDurationMs + segmentMs) / totalDurationMs;
             _updateExportProgress(
               exportController,
-              fraction,
+              fraction * 0.88,
               'Parte ${i + 1} di ${keptParts.length}',
             );
           },
         );
-        final segmentFile = File(segment);
-        final segmentBytes = await segmentFile.length();
-        if (segmentBytes <= 0) {
-          throw StateError('FFmpeg ha creato un segmento vuoto: $segment');
-        }
-        unawaited(_logMediaCutter(
-          'export segment created index=$i bytes=$segmentBytes '
-          'expectedVideo=$isVideoInput path="$segment"',
-        ));
-        if (isVideoInput) {
-          await _runFfmpeg(
-            [
-              '-v',
-              'error',
-              '-i',
-              segment,
-              '-map',
-              '0:v:0',
-              '-frames:v',
-              '1',
-              '-f',
-              'null',
-              '-',
-            ],
-            'validate video segment ${i + 1}/${keptParts.length}',
-            exportController,
-          );
-          unawaited(_logMediaCutter(
-            'export video segment validated index=$i path="$segment"',
-          ));
-        }
+        await _validateExportFile(
+          path: segment,
+          expectedVideo: source.hasVideo,
+          expectedAudio: source.hasAudio,
+          expectedDuration: part.duration,
+          label: 'segmento ${i + 1}',
+          exportController: exportController,
+          deepDecode: false,
+        );
         completedDurationMs += part.duration.inMilliseconds;
         _updateExportProgress(
           exportController,
-          totalDurationMs <= 0 ? 1 : completedDurationMs / totalDurationMs,
+          totalDurationMs <= 0
+              ? 0.88
+              : (completedDurationMs / totalDurationMs) * 0.88,
           'Parte ${i + 1} di ${keptParts.length}',
         );
         segmentPaths.add(segment);
@@ -3104,44 +3743,171 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (exportController.cancelled) {
         throw const _MediaCutterExportCancelled();
       }
-      if (segmentPaths.length == 1) {
-        await File(segmentPaths.single).copy(output);
-        _updateExportProgress(exportController, 1, 'Completamento');
-        unawaited(_logMediaCutter('export single segment copied output="$output"'));
-        return;
-      }
+      final pendingFile = File(pendingOutput);
+      if (await pendingFile.exists()) await pendingFile.delete();
 
-      final listFile = File(p.join(workDir.path, 'concat.txt'));
-      await listFile.writeAsString(
-        segmentPaths
-            .map((path) => "file '${path.replaceAll("'", r"'\\''")}'")
-            .join('\n'),
-      );
-      final concatArgs = [
-        '-y',
-        '-f',
-        'concat',
-        '-safe',
-        '0',
-        '-i',
-        listFile.path,
-        '-c',
-        'copy',
-        output,
-      ];
-      _updateExportProgress(exportController, 0.98, 'Completamento');
-      await _runFfmpeg(concatArgs, 'concat', exportController);
-      _updateExportProgress(exportController, 1, 'Completamento');
-      unawaited(_logMediaCutter('export concat completed output="$output" segments=${segmentPaths.length}'));
-    } finally {
-      if (exportController.cancelled) {
-        final outputFile = File(output);
-        if (await outputFile.exists()) {
-          await outputFile.delete();
+      if (segmentPaths.length == 1) {
+        try {
+          await File(segmentPaths.single).copy(pendingOutput);
+        } on FileSystemException catch (error) {
+          throw _MediaCutterOutputWriteException(
+            'Impossibile scrivere il file temporaneo nella cartella scelta: '
+            '$error',
+          );
+        }
+        _updateExportProgress(exportController, 0.93, 'Verifica finale');
+        unawaited(_logMediaCutter(
+          'export single segment staged pending="$pendingOutput"',
+        ));
+      } else {
+        final listFile = File(p.join(workDir.path, 'concat.txt'));
+        await listFile.writeAsString(
+          segmentPaths
+              .map((path) => "file '${path.replaceAll("'", r"'\\''")}'")
+              .join('\n'),
+          flush: true,
+        );
+        final concatCopyArgs = [
+          '-y',
+          '-fflags',
+          '+genpts',
+          '-f',
+          'concat',
+          '-safe',
+          '0',
+          '-i',
+          listFile.path,
+          '-c',
+          'copy',
+          '-avoid_negative_ts',
+          'make_zero',
+          if (ext == '.mp4') ...[
+            '-movflags',
+            '+faststart',
+          ],
+          pendingOutput,
+        ];
+        _updateExportProgress(exportController, 0.90, 'Unione delle parti');
+        var needsReencode = false;
+        try {
+          await _runFfmpeg(
+            concatCopyArgs,
+            'concat stream copy',
+            exportController,
+          );
+          await _validateExportFile(
+            path: pendingOutput,
+            expectedVideo: source.hasVideo,
+            expectedAudio: source.hasAudio,
+            expectedDuration: expectedDuration,
+            label: 'unione veloce',
+            exportController: exportController,
+            deepDecode: false,
+          );
+        } catch (error) {
+          if (error is _MediaCutterExportCancelled) rethrow;
+          needsReencode = true;
+          await AppLogger.log(
+            'Media cutter: concat stream copy rejected; '
+            'retrying with re-encode error=$error',
+          );
+          if (await pendingFile.exists()) await pendingFile.delete();
+        }
+
+        if (needsReencode) {
+          final concatReencodeArgs = <String>[
+            '-y',
+            '-fflags',
+            '+genpts',
+            '-f',
+            'concat',
+            '-safe',
+            '0',
+            '-i',
+            listFile.path,
+          ];
+          if (source.hasVideo) {
+            concatReencodeArgs.addAll(['-map', '0:v:0']);
+          }
+          if (source.hasAudio) {
+            concatReencodeArgs.addAll(['-map', '0:a:0']);
+          }
+          concatReencodeArgs.addAll(_productionCodecArguments(
+            inputPath: input,
+            hasVideo: source.hasVideo,
+            hasAudio: source.hasAudio,
+          ));
+          concatReencodeArgs.addAll([
+            '-max_muxing_queue_size',
+            '2048',
+            '-avoid_negative_ts',
+            'make_zero',
+            if (source.hasVideo) ...[
+              '-metadata:s:v:0',
+              'rotate=0',
+            ],
+            if (ext == '.mp4') ...[
+              '-movflags',
+              '+faststart',
+            ],
+            pendingOutput,
+          ]);
+          await _runFfmpeg(
+            concatReencodeArgs,
+            'concat re-encode fallback',
+            exportController,
+          );
         }
       }
+
+      final currentInputStat = await inputFile.stat();
+      if (currentInputStat.type != FileSystemEntityType.file ||
+          currentInputStat.size != inputSnapshot.size ||
+          currentInputStat.modified != inputSnapshot.modified) {
+        throw StateError(
+          'Il file sorgente è cambiato durante il salvataggio. '
+          'Riaprilo e ripeti il taglio.',
+        );
+      }
+
+      _updateExportProgress(exportController, 0.95, 'Controllo del file');
+      await _validateExportFile(
+        path: pendingOutput,
+        expectedVideo: source.hasVideo,
+        expectedAudio: source.hasAudio,
+        expectedDuration: expectedDuration,
+        label: 'file finale',
+        exportController: exportController,
+        deepDecode: true,
+        validationPoints: junctionPoints,
+      );
+      if (exportController.cancelled) {
+        throw const _MediaCutterExportCancelled();
+      }
+      _updateExportProgress(exportController, 0.99, 'Pubblicazione');
+      await _publishValidatedOutput(
+        pendingOutput: pendingOutput,
+        output: output,
+      );
+      _updateExportProgress(exportController, 1, 'Completamento');
+      unawaited(_logMediaCutter(
+        'export production completed output="$output" '
+        'segments=${segmentPaths.length} source=${source.logSummary}',
+      ));
+    } finally {
+      await _deleteFileIfExists(
+        File(pendingOutput),
+        'pending output',
+      );
       if (await workDir.exists()) {
-        await workDir.delete(recursive: true);
+        try {
+          await workDir.delete(recursive: true);
+        } catch (error) {
+          await AppLogger.log(
+            'Media cutter: work directory cleanup failed '
+            'path="${workDir.path}" error=$error',
+          );
+        }
       }
     }
   }
@@ -3368,7 +4134,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   String _outputExtension(String inputPath) {
-    if (_isVideoInput(inputPath)) return '.mp4';
+    final currentProbe = inputPath == _inputPath ? _inputProbe : null;
+    if (currentProbe?.hasVideo == true ||
+        (currentProbe == null && _isVideoInput(inputPath))) {
+      return '.mp4';
+    }
     final ext = p.extension(inputPath).toLowerCase();
     return ext.isEmpty ? '.mp3' : ext;
   }
@@ -4235,33 +5005,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     };
   }
 
-  List<String> _codecArguments(String inputPath) {
-    if (_isVideoInput(inputPath)) {
-      return [
-        '-c:v',
-        'mpeg4',
-        '-q:v',
-        '4',
-        '-c:a',
-        'aac',
-        '-b:a',
-        '192k',
-      ];
-    }
-
-    final ext = p.extension(inputPath).toLowerCase().replaceFirst('.', '');
-    return switch (ext) {
-      'mp3' => ['-c:a', 'libmp3lame', '-b:a', '192k'],
-      'm4a' || 'm4b' || 'aac' => ['-c:a', 'aac', '-b:a', '192k'],
-      'ogg' => ['-c:a', 'libvorbis', '-q:a', '5'],
-      'opus' => ['-c:a', 'libopus', '-b:a', '160k'],
-      'flac' => ['-c:a', 'flac'],
-      'wav' => ['-c:a', 'pcm_s16le'],
-      'aiff' || 'aif' => ['-c:a', 'pcm_s16be'],
-      'wma' => ['-c:a', 'wmav2'],
-      _ => ['-c:a', 'aac', '-b:a', '192k'],
-    };
-  }
 
   void _rebuildParts() {
     if (_duration == Duration.zero) {
