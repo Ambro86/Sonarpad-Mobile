@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart' as mkv;
 import 'package:path/path.dart' as p;
@@ -53,10 +54,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Timer? _mediaKitDiagnosticsTimer;
 
   VideoPlayerController? _videoController;
+  VlcPlayerController? _dashVlcController;
   mk.Player? _mediaKitPlayer;
   mkv.VideoController? _mediaKitController;
   bool _isVideoEnabled = false;
   bool _displayVideoInPortrait = false;
+  bool _dashVlcInitialized = false;
+  bool _dashVlcPlaying = false;
+  bool _dashVlcBuffering = false;
+  bool _dashVlcSettingsInProgress = false;
+  bool _dashVlcVideoSettingApplied = false;
+  int? _dashVlcPreferredVideoTrack;
+  double _dashVlcVolume = 1.0;
   bool _isFavorite = false;
   bool _mediaKitPlaying = false;
   bool _mediaKitVideoSettingApplied = false;
@@ -70,8 +79,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Duration? _mediaKitLastDuration;
   DateTime? _mediaKitLastProgressAt;
   DateTime? _mediaKitLastPositionLogAt;
-  DateTime? _mediaKitLastAutoRecoveryAt;
-  bool _mediaKitAutoRecoveryInProgress = false;
   double _mediaKitVolume = 1.0;
   double _videoPlayerVolume = 1.0;
   bool _recording = false;
@@ -99,7 +106,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           _mediaEvents.receiveBroadcastStream().listen((event) {
         if (event == 'toggle' &&
             mounted &&
-            (_videoController != null || _mediaKitPlayer != null)) {
+            (_videoController != null ||
+                _dashVlcController != null ||
+                _mediaKitPlayer != null)) {
           unawaited(_toggleVideoPlayback());
         }
       });
@@ -159,8 +168,20 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
-      // Tutti i canali TV usano sempre MediaKit, anche quando il video è
-      // disattivato. just_audio/AVPlayer può perdere immediatamente la
+      // Gli MPD/DASH usano un motore dedicato basato su libVLC. Questo
+      // percorso è intenzionalmente separato: HLS, radio e tutti gli altri
+      // flussi continuano a usare i player già esistenti.
+      if (_requiresVideoPlayback) {
+        await AppLogger.log(
+          'RadioPlayer: dedicated VLC DASH playback selected '
+          'station="${widget.station.name}" videoEnabled=$_isVideoEnabled',
+        );
+        await _playDashWithVlc();
+        return;
+      }
+
+      // Tutti gli altri canali TV usano sempre MediaKit, anche quando il video
+      // è disattivato. just_audio/AVPlayer può perdere immediatamente la
       // connessione con alcuni master HLS televisivi (in particolare i live
       // Mediaset). MediaKit apre invece lo stesso master nei due modi; quando
       // il video è spento viene disabilitata soltanto la traccia video.
@@ -173,13 +194,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
-      if (_requiresVideoPlayback) {
-        await _playMediaKitVideo();
-        return;
-      }
-
       if (widget.isVideoSupported && _isVideoEnabled) {
         await _audio.stop();
+        await _disposeDashVlcPlayer();
         await _disposeMediaKitPlayer();
         _videoController?.dispose();
         _videoPlayerVolume = await _settings.loadMediaVolume();
@@ -207,6 +224,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         if (Platform.isIOS && _videoController != null) {
           await _mediaCommands.invokeMethod('clearMagicTap');
         }
+        await _disposeDashVlcPlayer();
         await _disposeMediaKitPlayer();
         _videoController?.pause();
         _videoController?.dispose();
@@ -223,7 +241,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         }));
       }
     } catch (e) {
-      if (_mediaKitIsMpd) {
+      if (_requiresVideoPlayback || _mediaKitIsMpd) {
         await _disableMpdWakelock();
       }
       if (!mounted) return;
@@ -233,8 +251,183 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (mounted) {
         setState(() => _loading = false);
         AppLogger.log(
-            'RadioPlayer: _play complete. loading=false, isVideo=${_videoController != null || _mediaKitPlayer != null}');
+            'RadioPlayer: _play complete. loading=false, isVideo=${_videoController != null || _dashVlcController != null || _mediaKitPlayer != null}');
       }
+    }
+  }
+
+  Future<void> _playDashWithVlc() async {
+    final playbackUrl = widget.station.streamUrl;
+    final headers = _mediaKitHttpHeaders();
+    final httpOptions = <String>[
+      VlcHttpOptions.httpContinuous(true),
+      VlcHttpOptions.httpReconnect(true),
+    ];
+    final userAgent = headers['User-Agent'] ?? headers['user-agent'];
+    if (userAgent != null && userAgent.trim().isNotEmpty) {
+      httpOptions.add(VlcHttpOptions.httpUserAgent(userAgent.trim()));
+    }
+    final referrer = headers['Referer'] ?? headers['Referrer'];
+    if (referrer != null && referrer.trim().isNotEmpty) {
+      httpOptions.add(VlcHttpOptions.httpReferrer(referrer.trim()));
+    }
+
+    await _audio.stop();
+    _videoController?.pause();
+    _videoController?.dispose();
+    _videoController = null;
+    await _disposeMediaKitPlayer();
+    await _disposeDashVlcPlayer();
+    await _enableMpdWakelock();
+
+    _dashVlcVolume = await _settings.loadMediaVolume();
+    final controller = VlcPlayerController.network(
+      playbackUrl,
+      hwAcc: HwAcc.auto,
+      autoInitialize: true,
+      autoPlay: true,
+      allowBackgroundPlayback: true,
+      options: VlcPlayerOptions(
+        http: VlcHttpOptions(httpOptions),
+        advanced: VlcAdvancedOptions([
+          VlcAdvancedOptions.networkCaching(3000),
+          VlcAdvancedOptions.liveCaching(3000),
+        ]),
+      ),
+    );
+    _dashVlcController = controller;
+    _dashVlcInitialized = false;
+    _dashVlcPlaying = false;
+    _dashVlcBuffering = false;
+    _dashVlcSettingsInProgress = false;
+    _dashVlcVideoSettingApplied = false;
+    _dashVlcPreferredVideoTrack = null;
+    controller.addListener(_onDashVlcChanged);
+
+    if (Platform.isIOS) {
+      await _mediaCommands.invokeMethod(
+        'setupMagicTap',
+        widget.station.name,
+      );
+    }
+    if (mounted) setState(() {});
+    await AppLogger.log(
+      'RadioPlayer: VLC DASH controller created '
+      'station="${widget.station.name}" url=$playbackUrl '
+      'videoEnabled=$_isVideoEnabled volume=$_dashVlcVolume',
+    );
+  }
+
+  void _onDashVlcChanged() {
+    final controller = _dashVlcController;
+    if (controller == null) return;
+    final value = controller.value;
+    final initializedChanged = _dashVlcInitialized != value.isInitialized;
+    final playingChanged = _dashVlcPlaying != value.isPlaying;
+    final bufferingChanged = _dashVlcBuffering != value.isBuffering;
+
+    _dashVlcInitialized = value.isInitialized;
+    _dashVlcPlaying = value.isPlaying;
+    _dashVlcBuffering = value.isBuffering;
+
+    if (value.isInitialized && !_dashVlcVideoSettingApplied) {
+      unawaited(_applyDashVlcStartupSettings(controller));
+    }
+    if (value.hasError && value.errorDescription.trim().isNotEmpty) {
+      AppLogger.log(
+        'RadioPlayer: VLC DASH error station="${widget.station.name}" '
+        'error=${value.errorDescription} position=${value.position} '
+        'duration=${value.duration} buffering=${value.isBuffering}',
+      );
+      if (mounted && _error != value.errorDescription) {
+        setState(() => _error = value.errorDescription);
+      }
+      return;
+    }
+
+    // VLC può recuperare autonomamente da una disconnessione HTTP. Quando il
+    // flusso torna effettivamente in riproduzione, rimuoviamo l'errore ormai
+    // superato senza riaprire il manifest.
+    final recoveredFromError = value.isPlaying && _error != null;
+    if (recoveredFromError && mounted) {
+      _error = null;
+    }
+
+    if (playingChanged && Platform.isIOS) {
+      unawaited(
+        _mediaCommands.invokeMethod('setMagicTapPlaying', value.isPlaying),
+      );
+    }
+    if (initializedChanged ||
+        playingChanged ||
+        bufferingChanged ||
+        recoveredFromError) {
+      AppLogger.log(
+        'RadioPlayer: VLC DASH state initialized=${value.isInitialized} '
+        'playing=${value.isPlaying} buffering=${value.isBuffering} '
+        'ended=${value.isEnded} position=${value.position} '
+        'duration=${value.duration} videoEnabled=$_isVideoEnabled',
+      );
+      if (mounted) setState(() {});
+    }
+  }
+
+  Future<void> _applyDashVlcStartupSettings(
+    VlcPlayerController controller,
+  ) async {
+    if (_dashVlcSettingsInProgress || _dashVlcController != controller) return;
+    _dashVlcSettingsInProgress = true;
+    try {
+      await controller.setVolume((_dashVlcVolume * 100).round());
+      final applied = await _setDashVlcVideoTrack(controller, _isVideoEnabled);
+      if (_dashVlcController != controller) return;
+      _dashVlcVideoSettingApplied = applied;
+      await AppLogger.log(
+        'RadioPlayer: VLC DASH startup settings applied '
+        'volume=$_dashVlcVolume videoEnabled=$_isVideoEnabled '
+        'videoTrackApplied=$applied',
+      );
+    } catch (error) {
+      await AppLogger.log(
+        'RadioPlayer: VLC DASH startup settings failed: $error',
+      );
+    } finally {
+      _dashVlcSettingsInProgress = false;
+    }
+  }
+
+  Future<bool> _setDashVlcVideoTrack(
+    VlcPlayerController controller,
+    bool enable,
+  ) async {
+    try {
+      if (!enable) {
+        final activeTrack = await controller.getVideoTrack();
+        if (activeTrack != null && activeTrack >= 0) {
+          _dashVlcPreferredVideoTrack = activeTrack;
+        }
+        await controller.setVideoTrack(-1);
+        return true;
+      }
+
+      final activeTrack = await controller.getVideoTrack();
+      if (activeTrack != null && activeTrack >= 0) return true;
+      final tracks = await controller.getVideoTracks();
+      final availableTracks = tracks.keys.where((track) => track >= 0).toList()
+        ..sort();
+      if (availableTracks.isEmpty) return false;
+      final preferred = _dashVlcPreferredVideoTrack;
+      final selected = preferred != null && availableTracks.contains(preferred)
+          ? preferred
+          : availableTracks.first;
+      await controller.setVideoTrack(selected);
+      _dashVlcPreferredVideoTrack = selected;
+      return true;
+    } catch (error) {
+      AppLogger.log(
+        'RadioPlayer: failed to set VLC DASH video track enable=$enable: $error',
+      );
+      return false;
     }
   }
 
@@ -246,15 +439,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final isMpd = TvService.isDashStreamUrl(playbackUrl);
     final mediaKitHeaders = _mediaKitHttpHeaders();
     await _audio.stop();
+    await _disposeDashVlcPlayer();
     _videoController?.pause();
     _videoController?.dispose();
     _videoController = null;
     await _disposeMediaKitPlayer();
     _mediaKitIsMpd = isMpd;
     if (isMpd) {
-      // AudioPlayerService.stop() disattiva il wakelock globale. Gli MPD live
-      // vengono riaperti a ogni finestra DASH, quindi lo riattiviamo anche
-      // durante i refresh per lasciare attivi timer e callback su iOS.
+      // AudioPlayerService.stop() disattiva il wakelock globale. Se un flusso
+      // risolto internamente fosse MPD, lo manteniamo attivo senza alcun
+      // riavvio periodico.
       await _enableMpdWakelock();
     } else {
       await _disableMpdWakelock();
@@ -273,7 +467,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitLastDuration = null;
     _mediaKitLastProgressAt = DateTime.now();
     _mediaKitLastPositionLogAt = null;
-    _mediaKitAutoRecoveryInProgress = false;
     _mediaKitVolume = await _settings.loadMediaVolume();
     var initialVolumeApplied = false;
     var postStartStabilizationScheduled = false;
@@ -335,9 +528,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         AppLogger.log(
           'RadioPlayer: MediaKit position position=$position duration=$_mediaKitLastDuration playing=$_mediaKitPlaying buffering=$_mediaKitBuffering completed=$_mediaKitCompleted',
         );
-      }
-      if (_shouldPreemptivelyRefreshMediaKitDashLiveWindow(player)) {
-        unawaited(_refreshMediaKitDashLiveWindow(player, reason: 'preemptive'));
       }
     });
     _mediaKitDurationSubscription = player.stream.duration.listen((duration) {
@@ -508,109 +698,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       AppLogger.log(
         'RadioPlayer: MediaKit heartbeat station="${widget.station.name}" playing=$_mediaKitPlaying buffering=$_mediaKitBuffering completed=$_mediaKitCompleted position=$_mediaKitLastPosition duration=$_mediaKitLastDuration stalledFor=$stallText videoEnabled=$_isVideoEnabled videoApplied=$_mediaKitVideoSettingApplied volume=$_mediaKitVolume',
       );
-      if (_shouldRecoverMediaKitDashStall(player)) {
-        unawaited(_recoverMediaKitDashStall(player));
-      }
     });
   }
 
-  bool _shouldPreemptivelyRefreshMediaKitDashLiveWindow(mk.Player player) {
-    if (!_requiresVideoPlayback || _mediaKitPlayer != player) return false;
-    if (_mediaKitAutoRecoveryInProgress) return false;
-    if (!_mediaKitPlaying || _mediaKitCompleted) return false;
-    if (_mediaKitBuffering) return false;
-
-    final position = _mediaKitLastPosition;
-    final duration = _mediaKitLastDuration;
-    if (position == null || duration == null) return false;
-
-    // DASH/HBBTV live streams such as La7 Cinema can expose a short finite
-    // window of about 36 seconds. Refresh just before the end of that window,
-    // while playback is still alive, so the user should hear much less of the
-    // stall than with a recovery after buffering has already started.
-    if (duration < const Duration(seconds: 20)) return false;
-    if (position < const Duration(seconds: 10)) return false;
-
-    final remaining = duration - position;
-    if (remaining > const Duration(seconds: 3)) return false;
-
-    final lastRecovery = _mediaKitLastAutoRecoveryAt;
-    if (lastRecovery != null &&
-        DateTime.now().difference(lastRecovery) < const Duration(seconds: 20)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  bool _shouldRecoverMediaKitDashStall(mk.Player player) {
-    if (!_requiresVideoPlayback || _mediaKitPlayer != player) return false;
-    if (_mediaKitAutoRecoveryInProgress) return false;
-    if (!_mediaKitPlaying || !_mediaKitBuffering || _mediaKitCompleted) {
-      return false;
-    }
-
-    final position = _mediaKitLastPosition;
-    final duration = _mediaKitLastDuration;
-    final lastProgress = _mediaKitLastProgressAt;
-    if (position == null || duration == null || lastProgress == null) {
-      return false;
-    }
-
-    final stalledFor = DateTime.now().difference(lastProgress);
-    if (stalledFor < const Duration(seconds: 7)) return false;
-
-    // La7 Cinema and similar HBBTV DASH live streams can expose a short
-    // moving window as a finite duration. On iOS/MediaKit the stream may
-    // reach the end of that window, keep reporting playing=true, then stay
-    // buffering forever until the MPD is reopened. Recover only when we are
-    // clearly stalled near the end of the current window.
-    final nearLiveWindowEnd = duration > Duration.zero &&
-        duration - position <= const Duration(seconds: 2);
-    if (!nearLiveWindowEnd) return false;
-
-    final lastRecovery = _mediaKitLastAutoRecoveryAt;
-    if (lastRecovery != null &&
-        DateTime.now().difference(lastRecovery) < const Duration(seconds: 20)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  Future<void> _recoverMediaKitDashStall(mk.Player player) async {
-    await _refreshMediaKitDashLiveWindow(player, reason: 'stalled');
-  }
-
-  Future<void> _refreshMediaKitDashLiveWindow(
-    mk.Player player, {
-    required String reason,
-  }) async {
-    if (_mediaKitAutoRecoveryInProgress || _mediaKitPlayer != player) return;
-    _mediaKitAutoRecoveryInProgress = true;
-    _mediaKitLastAutoRecoveryAt = DateTime.now();
-    final remaining =
-        (_mediaKitLastDuration != null && _mediaKitLastPosition != null)
-            ? _mediaKitLastDuration! - _mediaKitLastPosition!
-            : null;
-    AppLogger.log(
-      'RadioPlayer: MediaKit DASH live window refresh reason=$reason station="${widget.station.name}" position=$_mediaKitLastPosition duration=$_mediaKitLastDuration remaining=$remaining buffering=$_mediaKitBuffering playing=$_mediaKitPlaying videoEnabled=$_isVideoEnabled',
-    );
-    try {
-      await _play();
-    } catch (error) {
-      AppLogger.log(
-        'RadioPlayer: MediaKit DASH live window refresh failed reason=$reason error=$error',
-      );
-    } finally {
-      _mediaKitAutoRecoveryInProgress = false;
-    }
-  }
-
   Future<void> _stabilizeMediaKitAfterStart(mk.Player player) async {
-    // Some DASH/MPD HBBTV streams on iOS need the stream to start before
-    // applying playback parameters. Do not select tracks before play here:
-    // that can break some channels. This only reapplies the volume shortly
+    // Alcuni live televisivi devono partire prima di accettare in modo
+    // affidabile i parametri di riproduzione. Non selezioniamo tracce in questa
+    // fase: riapplichiamo soltanto il volume poco dopo l'avvio,
     // after startup, which is safe and helps streams that become silent while
     // still reporting a playing state.
     for (final delay in const [Duration(seconds: 2), Duration(seconds: 6)]) {
@@ -630,7 +724,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _stop() async {
-    if (_mediaKitPlayer != null) {
+    final dashController = _dashVlcController;
+    if (dashController != null) {
+      await dashController.pause();
+      await _disableMpdWakelock();
+      if (mounted) setState(() {});
+    } else if (_mediaKitPlayer != null) {
       await _mediaKitPlayer!.pause();
       if (_mediaKitIsMpd) {
         await _disableMpdWakelock();
@@ -649,7 +748,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mpdWakelockRequested = true;
     try {
       // La chiamata è intenzionalmente ripetuta: _audio.stop() può avere
-      // disattivato il wakelock durante la riapertura della finestra MPD.
+      // disattivato il wakelock prima dell'avvio del motore DASH dedicato.
       await WakelockPlus.enable();
       await AppLogger.log('RadioPlayer: MPD wakelock enabled');
     } catch (error) {
@@ -717,13 +816,39 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     setState(() {});
   }
 
-  Future<void> _applyMpdVideoSetting(bool enable) async {
+  Future<void> _applyDashVlcVideoSetting(bool enable) async {
     await _settings.setVideoEnabled(enable);
     if (!mounted) return;
-    AppLogger.log(
-      'RadioPlayer: MPD video setting changed to $enable; restarting DASH stream to apply cleanly position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
+    final controller = _dashVlcController;
+    if (controller == null || !controller.value.isInitialized) {
+      _dashVlcVideoSettingApplied = false;
+      if (mounted) setState(() {});
+      return;
+    }
+
+    _dashVlcVideoSettingApplied = false;
+    final applied = await _setDashVlcVideoTrack(controller, enable);
+    if (!mounted || _dashVlcController != controller) return;
+    _dashVlcVideoSettingApplied = applied;
+    await AppLogger.log(
+      'RadioPlayer: VLC DASH video setting changed in place '
+      'enable=$enable applied=$applied; stream was not reopened',
     );
-    await _play();
+    setState(() {});
+  }
+
+  void _setDashVlcVolume(double value) {
+    final clamped = value.clamp(0.0, 1.0).toDouble();
+    setState(() => _dashVlcVolume = clamped);
+    unawaited(_settings.saveMediaVolume(clamped));
+    final controller = _dashVlcController;
+    if (controller != null && controller.value.isInitialized) {
+      unawaited(
+        controller.setVolume((clamped * 100).round()).catchError((error) {
+          AppLogger.log('RadioPlayer: failed to set VLC DASH volume: $error');
+        }),
+      );
+    }
   }
 
   void _setMediaKitVolume(double value) {
@@ -751,6 +876,24 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _toggleVideoPlayback() async {
+    final dashController = _dashVlcController;
+    if (dashController != null && dashController.value.isInitialized) {
+      if (dashController.value.isPlaying) {
+        await dashController.pause();
+        await _disableMpdWakelock();
+      } else {
+        await _enableMpdWakelock();
+        try {
+          await dashController.play();
+        } catch (_) {
+          await _disableMpdWakelock();
+          rethrow;
+        }
+      }
+      if (mounted) setState(() {});
+      return;
+    }
+
     final mediaKitPlayer = _mediaKitPlayer;
     if (mediaKitPlayer != null) {
       if (_mediaKitPlaying) {
@@ -798,9 +941,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _isVideoEnabled != enable) return;
       if (_requiresVideoPlayback) {
-        // I live DASH mantengono il riavvio già previsto, perché alcuni MPD
-        // applicano in modo affidabile il cambio traccia solo alla riapertura.
-        unawaited(_applyMpdVideoSetting(enable));
+        unawaited(_applyDashVlcVideoSetting(enable));
       } else if (_requiresTvMediaKitPlayback) {
         unawaited(_applyTvMediaKitVideoSetting(enable));
       } else {
@@ -1364,15 +1505,22 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       TvService().isRaiAudioDescriptionChannel(widget.tvChannel!);
 
   bool get _requiresTvMediaKitPlayback =>
-      widget.isVideoSupported && widget.tvChannel != null;
+      widget.isVideoSupported &&
+      widget.tvChannel != null &&
+      !_requiresVideoPlayback;
 
   bool get _requiresVideoPlayback =>
       widget.isVideoSupported &&
       TvService.isDashStreamUrl(widget.station.streamUrl);
 
-  bool get _isVideoPlaying => _mediaKitPlayer != null
-      ? _mediaKitPlaying
-      : (_videoController?.value.isPlaying ?? false);
+  bool get _isVideoPlaying => _dashVlcController != null
+      ? _dashVlcPlaying
+      : (_mediaKitPlayer != null
+          ? _mediaKitPlaying
+          : (_videoController?.value.isPlaying ?? false));
+
+  bool get _videoControlsDisabled =>
+      _loading || (_dashVlcController != null && !_dashVlcInitialized);
 
   bool get _canRecordStream => _isRecordingFeatureUnlocked;
 
@@ -1380,6 +1528,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _displayVideoInPortrait &&
       _isVideoEnabled &&
       ((_videoController != null && _videoController!.value.isInitialized) ||
+          (_dashVlcController != null && _dashVlcInitialized) ||
           _mediaKitController != null);
 
   void _syncLandscapeFullscreenOrientation() {
@@ -1421,12 +1570,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _scheduledRecordingStopTimer?.cancel();
     FocusManager.instance.primaryFocus?.unfocus();
     if (Platform.isIOS &&
-        (_videoController != null || _mediaKitPlayer != null)) {
+        (_videoController != null ||
+            _dashVlcController != null ||
+            _mediaKitPlayer != null)) {
       unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
     }
     _restoreSystemOrientation();
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     unawaited(_disableMpdWakelock());
+    unawaited(_disposeDashVlcPlayer());
     unawaited(_disposeMediaKitPlayer());
     if (_recordingService.isRecording) {
       unawaited(_recordingService.stop().catchError((error) {
@@ -1438,6 +1590,25 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());
     super.dispose();
+  }
+
+  Future<void> _disposeDashVlcPlayer() async {
+    final controller = _dashVlcController;
+    if (controller == null) return;
+    controller.removeListener(_onDashVlcChanged);
+    _dashVlcController = null;
+    _dashVlcInitialized = false;
+    _dashVlcPlaying = false;
+    _dashVlcBuffering = false;
+    _dashVlcSettingsInProgress = false;
+    _dashVlcVideoSettingApplied = false;
+    _dashVlcPreferredVideoTrack = null;
+    try {
+      await controller.dispose();
+      await AppLogger.log('RadioPlayer: VLC DASH dispose completed');
+    } catch (error) {
+      await AppLogger.log('RadioPlayer: VLC DASH dispose failed: $error');
+    }
   }
 
   Future<void> _disposeMediaKitPlayer() async {
@@ -1472,7 +1643,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _mediaKitLastDuration = null;
     _mediaKitLastProgressAt = null;
     _mediaKitLastPositionLogAt = null;
-    _mediaKitAutoRecoveryInProgress = false;
     if (player != null) {
       await player.dispose();
       AppLogger.log('RadioPlayer: MediaKit dispose completed');
@@ -1486,6 +1656,43 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     return AspectRatio(
       aspectRatio: aspect,
       child: VideoPlayer(controller),
+    );
+  }
+
+  Widget _buildDashVlcSurface() {
+    final controller = _dashVlcController!;
+    final aspect = controller.value.aspectRatio > 0
+        ? controller.value.aspectRatio
+        : 16 / 9;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final visibleWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+        final width = _isVideoEnabled ? visibleWidth : 1.0;
+        final height = _isVideoEnabled ? visibleWidth / aspect : 1.0;
+        return Align(
+          alignment: Alignment.center,
+          child: ExcludeSemantics(
+            excluding: !_isVideoEnabled,
+            child: IgnorePointer(
+              ignoring: !_isVideoEnabled,
+              child: SizedBox(
+                width: width,
+                height: height,
+                child: VlcPlayer(
+                  key: GlobalObjectKey(controller),
+                  controller: controller,
+                  aspectRatio: aspect,
+                  placeholder: _isVideoEnabled
+                      ? const Center(child: CircularProgressIndicator())
+                      : const SizedBox.shrink(),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1513,6 +1720,35 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               width: aspect >= 1 ? aspect : 1,
               height: aspect >= 1 ? 1 : 1 / aspect,
               child: VideoPlayer(controller),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashVlcVideoFullscreenSurface() {
+    final controller = _dashVlcController!;
+    final aspect = controller.value.aspectRatio > 0
+        ? controller.value.aspectRatio
+        : 16 / 9;
+    return ColoredBox(
+      color: Colors.black,
+      child: ClipRect(
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: SizedBox(
+              width: aspect >= 1 ? aspect : 1,
+              height: aspect >= 1 ? 1 : 1 / aspect,
+              child: VlcPlayer(
+                key: GlobalObjectKey(controller),
+                controller: controller,
+                aspectRatio: aspect,
+                placeholder: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
             ),
           ),
         ),
@@ -1569,7 +1805,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 alignment: WrapAlignment.center,
                 children: [
                   FilledButton.icon(
-                    onPressed: _loading ? null : _toggleVideoPlayback,
+                    onPressed: _videoControlsDisabled ? null : _toggleVideoPlayback,
                     icon:
                         Icon(_isVideoPlaying ? Icons.pause : Icons.play_arrow),
                     label: Text(_isVideoPlaying ? l10n.pause : l10n.play),
@@ -1627,6 +1863,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   onChanged: _setVideoPlayerVolume,
                 ),
               ],
+              if (_dashVlcController != null) ...[
+                const SizedBox(height: 12),
+                _PlayerVolumeSlider(
+                  volume: _dashVlcVolume,
+                  onChanged: _setDashVlcVolume,
+                ),
+              ],
               if (_mediaKitPlayer != null) ...[
                 const SizedBox(height: 12),
                 _PlayerVolumeSlider(
@@ -1645,7 +1888,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final videoSurface =
         _videoController != null && _videoController!.value.isInitialized
             ? _buildVideoPlayerFullscreenSurface(_videoController!)
-            : _buildMediaKitVideoFullscreenSurface();
+            : (_dashVlcController != null
+                ? _buildDashVlcVideoFullscreenSurface()
+                : _buildMediaKitVideoFullscreenSurface());
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -1742,6 +1987,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             const SizedBox(height: 24),
             _buildVideoPlayerSurface(_videoController!),
           ],
+          if (_dashVlcController != null) ...[
+            SizedBox(height: _isVideoEnabled ? 24 : 0),
+            _buildDashVlcSurface(),
+          ],
           if (_mediaKitController != null && _isVideoEnabled) ...[
             const SizedBox(height: 24),
             _buildMediaKitVideoSurface(),
@@ -1752,9 +2001,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             runSpacing: 12,
             alignment: WrapAlignment.center,
             children: [
-              if (_mediaKitPlayer != null || _videoController != null)
+              if (_dashVlcController != null ||
+                  _mediaKitPlayer != null ||
+                  _videoController != null)
                 FilledButton.icon(
-                  onPressed: _loading ? null : _toggleVideoPlayback,
+                  onPressed: _videoControlsDisabled ? null : _toggleVideoPlayback,
                   icon: Icon(_isVideoPlaying ? Icons.pause : Icons.play_arrow),
                   label: Text(_isVideoPlaying ? l10n.pause : l10n.play),
                 )
@@ -1808,7 +2059,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 label: const Text('Annulla registrazione programmata'),
               ),
           ],
-          if (_videoController == null && _mediaKitPlayer == null) ...[
+          if (_videoController == null &&
+              _dashVlcController == null &&
+              _mediaKitPlayer == null) ...[
             const SizedBox(height: 24),
             VolumeSlider(audioPlayer: _audio),
           ],
@@ -1818,6 +2071,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             _PlayerVolumeSlider(
               volume: _videoPlayerVolume,
               onChanged: _setVideoPlayerVolume,
+            ),
+          ],
+          if (_dashVlcController != null) ...[
+            const SizedBox(height: 24),
+            _PlayerVolumeSlider(
+              volume: _dashVlcVolume,
+              onChanged: _setDashVlcVolume,
             ),
           ],
           if (_mediaKitPlayer != null) ...[
