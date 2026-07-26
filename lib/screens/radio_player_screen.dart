@@ -64,6 +64,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _dashVlcBuffering = false;
   bool _dashVlcSettingsInProgress = false;
   bool _dashVlcVideoSettingApplied = false;
+  bool _dashVlcAudioSettingApplied = false;
+  bool _dashVlcAudioSettingsInProgress = false;
+  bool _dashVlcInitializationInProgress = false;
+  bool _dashVlcFallbackInProgress = false;
+  int _dashVlcInitializationGeneration = 0;
   int? _dashVlcPreferredVideoTrack;
   double _dashVlcVolume = 1.0;
   bool _isFavorite = false;
@@ -284,8 +289,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final controller = VlcPlayerController.network(
       playbackUrl,
       hwAcc: HwAcc.auto,
-      autoInitialize: true,
-      autoPlay: true,
+      // L'inizializzazione automatica del plugin può correre prima che il
+      // canale Pigeon della PlatformView sia pronto, soprattutto su iOS.
+      // La eseguiamo manualmente subito dopo la creazione della vista.
+      autoInitialize: false,
+      autoPlay: false,
       allowBackgroundPlayback: true,
       options: VlcPlayerOptions(
         http: VlcHttpOptions(httpOptions),
@@ -301,7 +309,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _dashVlcBuffering = false;
     _dashVlcSettingsInProgress = false;
     _dashVlcVideoSettingApplied = false;
+    _dashVlcAudioSettingApplied = false;
+    _dashVlcAudioSettingsInProgress = false;
+    _dashVlcInitializationInProgress = false;
+    _dashVlcFallbackInProgress = false;
     _dashVlcPreferredVideoTrack = null;
+    final initializationGeneration = ++_dashVlcInitializationGeneration;
     controller.addListener(_onDashVlcChanged);
 
     if (Platform.isIOS) {
@@ -314,8 +327,212 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await AppLogger.log(
       'RadioPlayer: VLC DASH controller created '
       'station="${widget.station.name}" url=$playbackUrl '
-      'videoEnabled=$_isVideoEnabled volume=$_dashVlcVolume',
+      'videoEnabled=$_isVideoEnabled volume=$_dashVlcVolume '
+      'autoInitialize=false',
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(
+        _initializeDashVlcAfterPlatformView(
+          controller,
+          initializationGeneration,
+        ),
+      );
+    });
+  }
+
+  Future<void> _initializeDashVlcAfterPlatformView(
+    VlcPlayerController controller,
+    int generation,
+  ) async {
+    if (_dashVlcInitializationInProgress ||
+        _dashVlcController != controller ||
+        generation != _dashVlcInitializationGeneration) {
+      return;
+    }
+    _dashVlcInitializationInProgress = true;
+    Object? lastError;
+    try {
+      // onPlatformViewCreated imposta isReadyToInitialize. Aspettiamo la vista
+      // nativa invece di chiamare initialize nello stesso istante in cui viene
+      // creata: evita il channel-error osservato nel log su iOS.
+      for (var waitAttempt = 1; waitAttempt <= 40; waitAttempt++) {
+        if (!mounted ||
+            _dashVlcController != controller ||
+            generation != _dashVlcInitializationGeneration) {
+          return;
+        }
+        if (controller.isReadyToInitialize == true) break;
+        if (waitAttempt == 40) {
+          throw TimeoutException(
+            'La vista nativa VLC non è diventata pronta entro 8 secondi.',
+          );
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+      }
+
+      // Un breve margine dopo la callback della PlatformView permette al lato
+      // nativo di registrare il canale Pigeon associato al viewId.
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+
+      const retryDelays = <Duration>[
+        Duration.zero,
+        Duration(milliseconds: 350),
+        Duration(milliseconds: 900),
+      ];
+      for (var index = 0; index < retryDelays.length; index++) {
+        final delay = retryDelays[index];
+        if (delay > Duration.zero) await Future<void>.delayed(delay);
+        if (!mounted ||
+            _dashVlcController != controller ||
+            generation != _dashVlcInitializationGeneration) {
+          return;
+        }
+        try {
+          await AppLogger.log(
+            'RadioPlayer: VLC DASH initialize attempt=${index + 1} '
+            'viewReady=${controller.isReadyToInitialize}',
+          );
+          await controller.initialize().timeout(const Duration(seconds: 5));
+          lastError = null;
+          break;
+        } on TimeoutException catch (error) {
+          // Future.timeout non annulla la chiamata nativa sottostante. Non
+          // avviamo un secondo initialize sovrapposto: passiamo al fallback e
+          // lasciamo che la generazione del controller scarti eventuali eventi
+          // tardivi.
+          lastError = error;
+          await AppLogger.log(
+            'RadioPlayer: VLC DASH initialize attempt=${index + 1} timed out: $error',
+          );
+          break;
+        } catch (error) {
+          lastError = error;
+          await AppLogger.log(
+            'RadioPlayer: VLC DASH initialize attempt=${index + 1} failed: $error',
+          );
+        }
+      }
+
+      if (lastError != null || !controller.value.isInitialized) {
+        throw StateError(
+          'VLC DASH non inizializzato dopo i tentativi: $lastError',
+        );
+      }
+      if (_dashVlcController != controller) return;
+
+      await controller.setVolume((_dashVlcVolume * 100).round());
+      await AppLogger.log(
+        'RadioPlayer: VLC DASH initialized successfully; starting playback '
+        'volume=$_dashVlcVolume',
+      );
+      await controller.play();
+      unawaited(_retryDashVlcAudioTrack(controller));
+      unawaited(_retryDashVlcVideoTrack(controller));
+    } catch (error) {
+      lastError = error;
+      await AppLogger.log(
+        'RadioPlayer: VLC DASH initialization failed permanently: $error',
+      );
+      await _fallbackFromDashVlcToMediaKit(controller, error);
+    } finally {
+      if (_dashVlcController == controller) {
+        _dashVlcInitializationInProgress = false;
+      }
+    }
+  }
+
+  Future<void> _retryDashVlcAudioTrack(
+    VlcPlayerController controller,
+  ) async {
+    for (final delay in const <Duration>[
+      Duration(milliseconds: 150),
+      Duration(milliseconds: 500),
+      Duration(seconds: 1),
+      Duration(seconds: 2),
+      Duration(seconds: 4),
+    ]) {
+      await Future<void>.delayed(delay);
+      if (!mounted ||
+          _dashVlcController != controller ||
+          _dashVlcAudioSettingApplied) {
+        return;
+      }
+      await _ensureDashVlcAudioTrack(controller);
+    }
+
+    if (mounted &&
+        _dashVlcController == controller &&
+        controller.value.isInitialized &&
+        !_dashVlcAudioSettingApplied) {
+      const error = 'VLC DASH inizializzato ma nessuna traccia audio disponibile';
+      await AppLogger.log(
+        'RadioPlayer: $error; fallback to MediaKit',
+      );
+      await _fallbackFromDashVlcToMediaKit(controller, StateError(error));
+    }
+  }
+
+  Future<void> _retryDashVlcVideoTrack(
+    VlcPlayerController controller,
+  ) async {
+    for (final delay in const <Duration>[
+      Duration(milliseconds: 250),
+      Duration(seconds: 1),
+      Duration(seconds: 3),
+    ]) {
+      await Future<void>.delayed(delay);
+      if (!mounted ||
+          _dashVlcController != controller ||
+          _dashVlcVideoSettingApplied) {
+        return;
+      }
+      final applied =
+          await _setDashVlcVideoTrack(controller, _isVideoEnabled);
+      if (_dashVlcController == controller) {
+        _dashVlcVideoSettingApplied = applied;
+      }
+    }
+  }
+
+  Future<void> _fallbackFromDashVlcToMediaKit(
+    VlcPlayerController controller,
+    Object error,
+  ) async {
+    if (_dashVlcFallbackInProgress ||
+        !mounted ||
+        _dashVlcController != controller) {
+      return;
+    }
+    _dashVlcFallbackInProgress = true;
+    await AppLogger.log(
+      'RadioPlayer: VLC DASH unavailable, falling back to MediaKit '
+      'station="${widget.station.name}" error=$error',
+    );
+    try {
+      await _disposeDashVlcPlayer();
+      if (!mounted) return;
+      await _playMediaKitVideo();
+      if (mounted) {
+        setState(() {
+          _error = null;
+          _loading = false;
+        });
+      }
+    } catch (fallbackError) {
+      await AppLogger.log(
+        'RadioPlayer: MediaKit fallback after VLC failure also failed: '
+        '$fallbackError',
+      );
+      if (mounted) {
+        setState(() {
+          _error = fallbackError.toString();
+          _loading = false;
+        });
+      }
+    } finally {
+      _dashVlcFallbackInProgress = false;
+    }
   }
 
   void _onDashVlcChanged() {
@@ -332,6 +549,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
     if (value.isInitialized && !_dashVlcVideoSettingApplied) {
       unawaited(_applyDashVlcStartupSettings(controller));
+    }
+    if (value.isInitialized && !_dashVlcAudioSettingApplied) {
+      unawaited(_ensureDashVlcAudioTrack(controller));
     }
     if (value.hasError && value.errorDescription.trim().isNotEmpty) {
       AppLogger.log(
@@ -393,6 +613,49 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       );
     } finally {
       _dashVlcSettingsInProgress = false;
+    }
+  }
+
+  Future<bool> _ensureDashVlcAudioTrack(
+    VlcPlayerController controller,
+  ) async {
+    if (_dashVlcAudioSettingsInProgress ||
+        _dashVlcController != controller ||
+        !controller.value.isInitialized) {
+      return false;
+    }
+    _dashVlcAudioSettingsInProgress = true;
+    try {
+      final activeTrack = await controller.getAudioTrack();
+      final tracks = await controller.getAudioTracks();
+      await AppLogger.log(
+        'RadioPlayer: VLC DASH audio tracks active=$activeTrack '
+        'available=$tracks',
+      );
+      if (activeTrack != null && activeTrack >= 0) {
+        _dashVlcAudioSettingApplied = true;
+        return true;
+      }
+
+      final availableTracks = tracks.keys.where((track) => track >= 0).toList()
+        ..sort();
+      if (availableTracks.isEmpty) return false;
+      final selected = availableTracks.first;
+      await controller.setAudioTrack(selected);
+      await controller.setVolume((_dashVlcVolume * 100).round());
+      _dashVlcAudioSettingApplied = true;
+      await AppLogger.log(
+        'RadioPlayer: VLC DASH audio track selected track=$selected '
+        'label=${tracks[selected]} volume=$_dashVlcVolume',
+      );
+      return true;
+    } catch (error) {
+      await AppLogger.log(
+        'RadioPlayer: failed to select VLC DASH audio track: $error',
+      );
+      return false;
+    } finally {
+      _dashVlcAudioSettingsInProgress = false;
     }
   }
 
@@ -1602,8 +1865,21 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _dashVlcBuffering = false;
     _dashVlcSettingsInProgress = false;
     _dashVlcVideoSettingApplied = false;
+    _dashVlcAudioSettingApplied = false;
+    _dashVlcAudioSettingsInProgress = false;
+    _dashVlcInitializationInProgress = false;
     _dashVlcPreferredVideoTrack = null;
+    _dashVlcInitializationGeneration++;
     try {
+      // Se initialize non è mai riuscito, il canale nativo non esiste e la
+      // dispose del plugin genera lo stesso channel-error del log.
+      if (!controller.value.isInitialized) {
+        await AppLogger.log(
+          'RadioPlayer: VLC DASH native dispose skipped because controller '
+          'was never initialized',
+        );
+        return;
+      }
       await controller.dispose();
       await AppLogger.log('RadioPlayer: VLC DASH dispose completed');
     } catch (error) {
@@ -1669,24 +1945,42 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         final visibleWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : MediaQuery.sizeOf(context).width;
-        final width = _isVideoEnabled ? visibleWidth : 1.0;
-        final height = _isVideoEnabled ? visibleWidth / aspect : 1.0;
-        return Align(
-          alignment: Alignment.center,
-          child: ExcludeSemantics(
-            excluding: !_isVideoEnabled,
-            child: IgnorePointer(
-              ignoring: !_isVideoEnabled,
-              child: SizedBox(
-                width: width,
-                height: height,
-                child: VlcPlayer(
-                  key: GlobalObjectKey(controller),
-                  controller: controller,
-                  aspectRatio: aspect,
-                  placeholder: _isVideoEnabled
-                      ? const Center(child: CircularProgressIndicator())
-                      : const SizedBox.shrink(),
+        // Su iOS la PlatformView VLC deve conservare una superficie reale
+        // durante l'inizializzazione. Ridurla a 1x1 può impedire la creazione
+        // completa del canale nativo. In modalità solo audio il figlio conserva
+        // le dimensioni video reali, mentre il layout ne espone soltanto una
+        // sottilissima area ritagliata. Evitiamo Opacity(0), che può impedire
+        // alla PlatformView di entrare nella scena e quindi di creare il canale.
+        final playerSurface = SizedBox(
+          width: visibleWidth,
+          height: visibleWidth / aspect,
+          child: VlcPlayer(
+            key: GlobalObjectKey(controller),
+            controller: controller,
+            aspectRatio: aspect,
+            placeholder: _isVideoEnabled
+                ? const Center(child: CircularProgressIndicator())
+                : const SizedBox.shrink(),
+          ),
+        );
+        if (_isVideoEnabled) {
+          return Align(
+            alignment: Alignment.center,
+            child: playerSurface,
+          );
+        }
+        return ExcludeSemantics(
+          child: IgnorePointer(
+            child: SizedBox(
+              height: 2,
+              child: ClipRect(
+                child: OverflowBox(
+                  alignment: Alignment.topCenter,
+                  minWidth: visibleWidth,
+                  maxWidth: visibleWidth,
+                  minHeight: visibleWidth / aspect,
+                  maxHeight: visibleWidth / aspect,
+                  child: playerSurface,
                 ),
               ),
             ),

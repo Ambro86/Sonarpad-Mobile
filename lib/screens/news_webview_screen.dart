@@ -47,8 +47,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   bool _loading = true;
   String? _readerTitle;
   String? _readerText;
-  // lunghezza testo HTTP; il WebView puo migliorarlo se < _httpShortThreshold
-  int _readerHttpTextLength = 0;
+  // Lunghezza del miglior testo già disponibile; la WebView può ancora
+  // migliorarlo se resta sotto _httpShortThreshold.
+  int _readerBestTextLength = 0;
   bool _readerPreparing = true;
   bool _speaking = false;
   bool _ttsPaused = false;
@@ -59,6 +60,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   String? _lastFinalReaderFetchUrl;
   String? _allowedMainArticleUrl;
   Future<void>? _initialReaderLoad;
+  Future<void>? _finalReaderLoad;
+  Future<NewsArticleContent?>? _tinyfishFallbackFuture;
+  int _webViewPageGeneration = 0;
+  int? _activeVisibleExtractionGeneration;
 
   // Soglia minima per accettare il testo HTTP come reader mode
   static const _httpMinLength = 150;
@@ -159,6 +164,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (url) {
+            _webViewPageGeneration += 1;
             unawaited(AppLogger.log('News WebView: caricamento avviato url=$url'));
             if (mounted) {
               setState(() {
@@ -167,12 +173,22 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             }
           },
           onPageFinished: (url) {
+            final generation = _webViewPageGeneration;
             unawaited(AppLogger.log('News WebView: caricamento completato url=$url'));
             if (mounted) setState(() => _loading = false);
             unawaited(_acceptCookieConsentIfPresent());
-            unawaited(_loadReaderArticleFromFinalUrl(url));
+            final finalReaderLoad = _loadReaderArticleFromFinalUrl(url);
+            _finalReaderLoad = finalReaderLoad;
+            unawaited(finalReaderLoad.whenComplete(() {
+              if (identical(_finalReaderLoad, finalReaderLoad)) {
+                _finalReaderLoad = null;
+              }
+            }));
             unawaited(_neutralizeEmbeddedSiteMedia(url));
-            unawaited(_loadVisibleReaderArticleFromWebView());
+            unawaited(_loadVisibleReaderArticleFromWebView(
+              pageUrl: url,
+              generation: generation,
+            ));
           },
           onNavigationRequest: (NavigationRequest request) {
             if (_shouldBlockEmbeddedMediaNavigation(request.url)) {
@@ -610,7 +626,15 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     if (_isGoogleNewsUrl(widget.article.link)) {
       final initialLoad = _initialReaderLoad;
       if (initialLoad != null) {
-        await initialLoad;
+        try {
+          await initialLoad.timeout(const Duration(seconds: 1));
+        } on TimeoutException {
+          unawaited(AppLogger.log(
+            'News reader final URL HTTP: il reader iniziale Google News è '
+            'ancora in corso; avvio comunque il reader dell URL finale '
+            'url=$finalUrl',
+          ));
+        }
         if (!mounted) return;
         if (_lastFinalReaderFetchUrl != null &&
             _sameNormalizedUrl(_lastFinalReaderFetchUrl!, finalUrl)) {
@@ -623,7 +647,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         final loadedLen = _readerText?.trim().length ?? 0;
         if (loadedLen >= _httpShortThreshold) {
           unawaited(AppLogger.log(
-            'News reader final URL HTTP: skip, Tinyfish Google News gia buono '
+            'News reader final URL HTTP: skip, reader iniziale gia buono '
             'length=$loadedLen url=$finalUrl',
           ));
           return;
@@ -646,14 +670,14 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final text = _cleanVisibleText(content.text);
       final existingLen = _readerText?.trim().length ?? 0;
       unawaited(AppLogger.log(
-        'News reader final URL HTTP: estrazione completata ' 
+        'News reader final URL HTTP: estrazione completata '
         'length=${text.length} existingLength=$existingLen url=$finalUrl',
       ));
       if (text.length >= _httpMinLength && text.length > existingLen) {
         setState(() {
           _readerTitle = widget.article.title;
           _readerText = text;
-          _readerHttpTextLength = text.length;
+          _readerBestTextLength = text.length;
           _readerPreparing = false;
         });
         unawaited(AppLogger.log(
@@ -687,8 +711,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           'length=${text.length}',
         ));
         unawaited(AppLogger.log(
-          'News reader UI: WebView mantenuta perché reader/Tinyfish non hanno '
-          'fornito testo sufficiente length=${text.length}',
+          'News reader UI: reader HTTP insufficiente; attendo WebView e, solo '
+          'se necessario, Tinyfish length=${text.length}',
         ));
       } else {
         unawaited(AppLogger.log(
@@ -700,7 +724,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         if (text.length >= _httpMinLength) {
           _readerTitle = widget.article.title;
           _readerText = text;
-          _readerHttpTextLength = text.length;
+          _readerBestTextLength = text.length;
         }
         _readerPreparing = false;
       });
@@ -715,63 +739,208 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     }
   }
 
-  Future<void> _loadVisibleReaderArticleFromWebView() async {
+  Future<void> _loadVisibleReaderArticleFromWebView({
+    required String pageUrl,
+    required int generation,
+  }) async {
+    if (!_isHttpArticleUrl(pageUrl) ||
+        _isGoogleNewsUrl(pageUrl) ||
+        _isGoogleConsentUrl(pageUrl)) {
+      unawaited(AppLogger.log(
+        'News reader WebView: pagina intermedia, attendo il redirect prima '
+        'dell\'ultimo fallback url=$pageUrl generation=$generation',
+      ));
+      await Future.delayed(const Duration(seconds: 7));
+      if (!mounted || generation != _webViewPageGeneration) return;
+      await _waitForPendingLocalReaders(generation);
+      if (!mounted || generation != _webViewPageGeneration) return;
+      if (_hasSufficientReaderTextForTinyfishSkip()) return;
+      await _applyTinyfishFallbackAfterWebView(
+        pageUrl: pageUrl,
+        generation: generation,
+      );
+      return;
+    }
+    if (_activeVisibleExtractionGeneration == generation) return;
+    _activeVisibleExtractionGeneration = generation;
+
     unawaited(AppLogger.log(
-      'News reader WebView: controllo testo visibile avviato',
+      'News reader WebView: controllo testo visibile avviato '
+      'generation=$generation url=$pageUrl',
     ));
-    for (int i = 0; i < 4; i++) {
-      await Future.delayed(const Duration(milliseconds: 1500));
-      if (!mounted) return;
-      // Salta solo se il testo HTTP è già lungo (non parziale)
-      final httpLen = _readerHttpTextLength;
-      if (_readerText != null && httpLen >= _httpShortThreshold) {
-        unawaited(AppLogger.log(
-          'News reader WebView: skip tentativo ${i + 1}, '
-          'testo HTTP già buono length=$httpLen',
-        ));
-        return;
-      }
-
-      try {
-        unawaited(AppLogger.log(
-          'News reader WebView: estrazione visibile tentativo ${i + 1}',
-        ));
-        final text = await _extractVisibleArticleText();
-        if (!mounted) return;
-
-        unawaited(AppLogger.log(
-          'News reader WebView: tentativo ${i + 1} length=${text.length}',
-        ));
-        // Sostituisce il testo HTTP se il WebView trova qualcosa di più lungo
-        if (text.length >= 400 && text.length > httpLen) {
-          setState(() {
-            _readerTitle = widget.article.title;
-            _readerText = text;
-            _readerHttpTextLength = text.length;
-            _readerPreparing = false;
-          });
+    try {
+      for (int i = 0; i < 4; i++) {
+        await Future.delayed(const Duration(milliseconds: 1500));
+        if (!mounted || generation != _webViewPageGeneration) {
           unawaited(AppLogger.log(
-            'News reader WebView: testo accettato tentativo ${i + 1} '
-            'length=${text.length} (sostituisce HTTP len=$httpLen)',
+            'News reader WebView: tentativi annullati perché la pagina è '
+            'cambiata generation=$generation current=$_webViewPageGeneration',
           ));
           return;
         }
-      } catch (e) {
-        debugPrint('Sonarpad reader: visible WebView extraction failed: $e');
+
+        // Salta solo se il testo HTTP è già lungo; i testi brevi possono
+        // essere migliorati dalla pagina visibile.
+        final httpLen = _readerBestTextLength;
+        if (_readerText != null && httpLen >= _httpShortThreshold) {
+          unawaited(AppLogger.log(
+            'News reader WebView: skip tentativo ${i + 1}, '
+            'testo HTTP già buono length=$httpLen',
+          ));
+          return;
+        }
+
+        try {
+          unawaited(AppLogger.log(
+            'News reader WebView: estrazione visibile tentativo ${i + 1}',
+          ));
+          final text = await _extractVisibleArticleText();
+          if (!mounted || generation != _webViewPageGeneration) return;
+
+          unawaited(AppLogger.log(
+            'News reader WebView: tentativo ${i + 1} length=${text.length}',
+          ));
+          // Sostituisce il testo HTTP se il WebView trova qualcosa di più
+          // lungo e abbastanza consistente da rappresentare l'articolo.
+          if (text.length >= 400 && text.length > httpLen) {
+            setState(() {
+              _readerTitle = widget.article.title;
+              _readerText = text;
+              _readerBestTextLength = text.length;
+              _readerPreparing = false;
+            });
+            unawaited(AppLogger.log(
+              'News reader WebView: testo accettato tentativo ${i + 1} '
+              'length=${text.length} (sostituisce HTTP len=$httpLen); '
+              'Tinyfish non usato',
+            ));
+            return;
+          }
+        } catch (e) {
+          debugPrint('Sonarpad reader: visible WebView extraction failed: $e');
+          unawaited(AppLogger.log(
+            'News reader WebView: estrazione fallita tentativo ${i + 1}: $e',
+          ));
+        }
+      }
+
+      if (!mounted || generation != _webViewPageGeneration) return;
+      await _waitForPendingLocalReaders(generation);
+      if (!mounted || generation != _webViewPageGeneration) return;
+      if (_hasSufficientReaderTextForTinyfishSkip()) {
         unawaited(AppLogger.log(
-          'News reader WebView: estrazione fallita tentativo ${i + 1}: $e',
+          'News reader WebView: nessun miglioramento necessario, il testo '
+          'locale è già sufficiente; Tinyfish non usato '
+          'length=${_readerText?.trim().length ?? 0}',
         ));
+        if (_readerPreparing) setState(() => _readerPreparing = false);
+        return;
+      }
+
+      await _applyTinyfishFallbackAfterWebView(
+        pageUrl: pageUrl,
+        generation: generation,
+      );
+    } finally {
+      if (_activeVisibleExtractionGeneration == generation) {
+        _activeVisibleExtractionGeneration = null;
       }
     }
+  }
 
-    // Fallback if it fails after all retries
-    if (mounted && _readerText == null) {
-      unawaited(AppLogger.log(
-        'News reader WebView: nessun testo valido dopo 4 tentativi, '
-        'mostro WebView',
-      ));
-      setState(() => _readerPreparing = false);
+  Future<void> _waitForPendingLocalReaders(int generation) async {
+    final pending = <Future<void>>[];
+    final initial = _initialReaderLoad;
+    final finalLoad = _finalReaderLoad;
+    if (initial != null) pending.add(initial);
+    if (finalLoad != null && !identical(finalLoad, initial)) {
+      pending.add(finalLoad);
     }
+    if (pending.isEmpty) return;
+
+    unawaited(AppLogger.log(
+      'News reader WebView: attendo il completamento dei reader locali prima '
+      'di Tinyfish generation=$generation pending=${pending.length}',
+    ));
+    try {
+      await Future.wait(pending).timeout(const Duration(seconds: 3));
+    } on TimeoutException {
+      unawaited(AppLogger.log(
+        'News reader WebView: timeout dei reader locali, Tinyfish può essere '
+        'usato come ultimo fallback generation=$generation',
+      ));
+    } catch (e) {
+      unawaited(AppLogger.log(
+        'News reader WebView: reader locale concluso con errore prima di '
+        'Tinyfish generation=$generation error=$e',
+      ));
+    }
+  }
+
+  bool _hasSufficientReaderTextForTinyfishSkip() {
+    final text = _readerText?.trim() ?? '';
+    if (text.length < _httpMinLength) return false;
+    if (text == widget.article.summary.trim()) return false;
+    if (text.length < 1200 && _looksLikeTruncatedReaderText(text)) {
+      return false;
+    }
+    return true;
+  }
+
+  bool _looksLikeTruncatedReaderText(String text) {
+    final trimmed = text.trimRight();
+    if (trimmed.endsWith('...') || trimmed.endsWith('…')) return true;
+    if (trimmed.isEmpty) return false;
+    const sentenceEnd = '.!?»”")\']';
+    return !sentenceEnd.contains(trimmed[trimmed.length - 1]);
+  }
+
+  Future<NewsArticleContent?> _requestTinyfishFallback({String? pageUrl}) {
+    final preferredUrl = _resolvedArticleUrlForReader ??
+        (_isHttpArticleUrl(pageUrl ?? '') &&
+                !_isGoogleNewsUrl(pageUrl ?? '') &&
+                !_isGoogleConsentUrl(pageUrl ?? '')
+            ? pageUrl
+            : null);
+    return _tinyfishFallbackFuture ??=
+        _newsService.fetchArticleContentTinyfishFallback(
+      widget.article,
+      preferredUrl: preferredUrl,
+    );
+  }
+
+  Future<void> _applyTinyfishFallbackAfterWebView({
+    required String pageUrl,
+    required int generation,
+  }) async {
+    unawaited(AppLogger.log(
+      'News reader WebView: nessun testo valido disponibile, '
+      'provo Tinyfish come ultimo fallback url=$pageUrl',
+    ));
+    final content = await _requestTinyfishFallback(pageUrl: pageUrl);
+    if (!mounted || generation != _webViewPageGeneration) return;
+
+    final text = content?.text.trim() ?? '';
+    final existingLength = _readerText?.trim().length ?? 0;
+    if (text.length >= _httpMinLength && text.length > existingLength) {
+      setState(() {
+        _readerTitle = widget.article.title;
+        _readerText = text;
+        _readerBestTextLength = text.length;
+        _readerPreparing = false;
+      });
+      unawaited(AppLogger.log(
+        'News reader UI: Tinyfish ultimo fallback accettato '
+        'length=${text.length} previousLength=$existingLength',
+      ));
+      return;
+    }
+
+    unawaited(AppLogger.log(
+      'News reader UI: Tinyfish ultimo fallback non disponibile; '
+      'resta WebView length=${text.length} previousLength=$existingLength',
+    ));
+    if (_readerPreparing) setState(() => _readerPreparing = false);
   }
 
   Future<String> _extractVisibleArticleText() async {
@@ -1042,16 +1211,17 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     setState(() => _status = l10n.loadingArticle);
     try {
-      final content = await _newsService.fetchArticleContent(widget.article,
-          language: widget.language);
-      final text = content.text.trim();
+      final content = await _requestTinyfishFallback(
+        pageUrl: _resolvedArticleUrlForReader,
+      );
+      final text = content?.text.trim() ?? '';
       unawaited(AppLogger.log(
-        'News TTS: fallback HTTP articolo length=${text.length}',
+        'News TTS: Tinyfish ultimo fallback length=${text.length}',
       ));
       if (text.length >= 200) return text;
     } catch (e) {
-      debugPrint('Sonarpad TTS: article HTTP extraction failed: $e');
-      unawaited(AppLogger.log('News TTS: fallback HTTP fallito: $e'));
+      debugPrint('Sonarpad TTS: Tinyfish fallback failed: $e');
+      unawaited(AppLogger.log('News TTS: Tinyfish ultimo fallback fallito: $e'));
     }
 
     final fallback =

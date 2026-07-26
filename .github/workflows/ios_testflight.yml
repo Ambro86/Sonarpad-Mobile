@@ -40,6 +40,13 @@ jobs:
             flutter create --platforms=ios --project-name sonarpad .
           fi
 
+      - name: Refresh Flutter plugins after iOS project creation
+        run: |
+          # Il progetto iOS viene generato dinamicamente. Rigeneriamo qui i
+          # metadati dei plugin affinché FlutterVlcPlayerPlugin sia incluso nel
+          # GeneratedPluginRegistrant e nei Pod.
+          flutter pub get
+
       - name: Set iOS app name
         run: |
           PLIST="ios/Runner/Info.plist"
@@ -193,6 +200,13 @@ jobs:
       - name: Install CocoaPods dependencies
         run: |
           flutter build ios --config-only || true
+          REGISTRANT="ios/Runner/GeneratedPluginRegistrant.m"
+          if [ ! -f "$REGISTRANT" ] || ! grep -q "FlutterVlcPlayerPlugin" "$REGISTRANT"; then
+            echo "ERRORE: FlutterVlcPlayerPlugin non registrato nel progetto iOS"
+            [ -f "$REGISTRANT" ] && cat "$REGISTRANT"
+            exit 1
+          fi
+          echo "FlutterVlcPlayerPlugin presente nel GeneratedPluginRegistrant"
           if [ -f "ios/Podfile" ]; then
             sed -i '' -e 's/flutter_additional_ios_build_settings(target)/flutter_additional_ios_build_settings(target)\n      target.build_configurations.each do |config|\n        config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"] ||= ["$(inherited)", "PERMISSION_CAMERA=1"]\n      end/g' ios/Podfile
             cd ios

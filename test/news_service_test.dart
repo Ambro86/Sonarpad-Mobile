@@ -520,5 +520,163 @@ Questo è il secondo paragrafo con un [link utile](https://example.com) e testo 
       ]);
       expect(content.text, contains('reader HTML esistente'));
     });
+
+    test(
+        'in fallback-only non chiama Tinyfish prima che la WebView venga provata',
+        () async {
+      final requested = <Uri>[];
+      final service = NewsService(
+        client: MockClient((request) async {
+          requested.add(request.url);
+          if (request.url.host == 'sonarpad.com' &&
+              request.url.queryParameters['policy'] == '1') {
+            return http.Response.bytes(
+              utf8.encode(jsonEncode({
+                'ok': true,
+                'tinyfish_fallback_only': true,
+              })),
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'},
+            );
+          }
+          expect(request.url.host, 'example.com');
+          return http.Response(
+            '''
+<!doctype html>
+<html>
+  <body>
+    <article>
+      <p>Testo recuperato direttamente dal reader locale senza coinvolgere Tinyfish prima della WebView.</p>
+      <p>Un secondo paragrafo rende il contenuto abbastanza lungo da essere utilizzabile nella schermata notizie.</p>
+    </article>
+  </body>
+</html>
+''',
+            200,
+            headers: {'content-type': 'text/html; charset=utf-8'},
+          );
+        }),
+      );
+
+      await service.loadTinyfishFallbackOnlyPolicyForSession();
+      final content = await service.fetchArticleContent(
+        const NewsArticle(
+          id: '3',
+          title: 'Reader prima della WebView',
+          link: 'https://example.com/reader-first',
+          summary: 'Riassunto RSS',
+          source: 'Test',
+          publishedAt: null,
+        ),
+        language: NewsLanguage.italian,
+      );
+
+      expect(requested.map((uri) => uri.host), [
+        'sonarpad.com',
+        'example.com',
+      ]);
+      expect(
+        requested.where((uri) =>
+            uri.host == 'sonarpad.com' &&
+            uri.queryParameters.containsKey('url')),
+        isEmpty,
+      );
+      expect(content.text, contains('reader locale'));
+    });
+
+    test('esegue Tinyfish con fallback=1 solo su richiesta dopo la WebView',
+        () async {
+      final requested = <Uri>[];
+      final service = NewsService(
+        client: MockClient((request) async {
+          requested.add(request.url);
+          if (request.url.queryParameters['policy'] == '1') {
+            return http.Response.bytes(
+              utf8.encode(jsonEncode({
+                'ok': true,
+                'tinyfish_fallback_only': true,
+              })),
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'},
+            );
+          }
+          expect(request.url.host, 'sonarpad.com');
+          expect(request.url.queryParameters['fallback'], '1');
+          expect(
+            request.url.queryParameters['url'],
+            'https://example.com/final-story',
+          );
+          return http.Response.bytes(
+            utf8.encode(jsonEncode({
+              'ok': true,
+              'url': 'https://example.com/final-story',
+              'final_url': 'https://example.com/final-story',
+              'format': 'markdown',
+              'markdown': '''
+# Articolo recuperato
+
+Questo contenuto viene restituito da Tinyfish soltanto dopo il fallimento del reader HTTP e dei tentativi eseguiti nella WebView.
+
+Il secondo paragrafo conferma che il testo è abbastanza lungo da essere accettato come ultimo fallback.
+''',
+            })),
+            200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      );
+
+      await service.loadTinyfishFallbackOnlyPolicyForSession();
+      final content = await service.fetchArticleContentTinyfishFallback(
+        const NewsArticle(
+          id: '4',
+          title: 'Articolo recuperato',
+          link: 'https://news.google.com/rss/articles/example',
+          summary: 'Riassunto RSS',
+          source: 'Test',
+          publishedAt: null,
+        ),
+        preferredUrl: 'https://example.com/final-story',
+      );
+
+      expect(requested, hasLength(2));
+      expect(content, isNotNull);
+      expect(content!.text, contains('ultimo fallback'));
+    });
+
+    test('non ripete Tinyfish dopo la WebView in modalità Tinyfish-first',
+        () async {
+      final requested = <Uri>[];
+      final service = NewsService(
+        client: MockClient((request) async {
+          requested.add(request.url);
+          expect(request.url.queryParameters['policy'], '1');
+          return http.Response.bytes(
+            utf8.encode(jsonEncode({
+              'ok': true,
+              'tinyfish_fallback_only': false,
+            })),
+            200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      );
+
+      await service.loadTinyfishFallbackOnlyPolicyForSession();
+      final content = await service.fetchArticleContentTinyfishFallback(
+        const NewsArticle(
+          id: '5',
+          title: 'Nessun doppio tentativo',
+          link: 'https://example.com/story',
+          summary: 'Riassunto RSS',
+          source: 'Test',
+          publishedAt: null,
+        ),
+        preferredUrl: 'https://example.com/story',
+      );
+
+      expect(content, isNull);
+      expect(requested, hasLength(1));
+    });
   });
 }

@@ -102,7 +102,6 @@ class NewsService {
   static const _tinyfishPolicyTimeout = Duration(seconds: 4);
   static const _tinyfishArticleTimeout = Duration(seconds: 20);
   static const _tinyfishFallbackOnlyDefault = true;
-  static const _readerFallbackMinLength = 150;
   static const _communityHeaders = {
     'User-Agent': 'SonarpadMobile/0.1 (https://sonarpad.com)',
     'Accept': 'application/json',
@@ -1023,9 +1022,9 @@ class NewsService {
 
     if (fallbackOnly) {
       unawaited(AppLogger.log(
-        'News articolo: ordine recupero = reader locale -> Tinyfish -> WebView',
+        'News articolo: ordine recupero = reader locale -> WebView -> Tinyfish',
       ));
-      return _fetchArticleContentLocalThenTinyfish(
+      return _fetchArticleContentLocalBeforeWebView(
         article,
         language: language,
         resolvedUrl: resolvedUrl,
@@ -1199,36 +1198,28 @@ class NewsService {
     );
   }
 
-  Future<NewsArticleContent> _fetchArticleContentLocalThenTinyfish(
+  Future<NewsArticleContent> _fetchArticleContentLocalBeforeWebView(
     NewsArticle article, {
     required NewsLanguage language,
     required String resolvedUrl,
   }) async {
     unawaited(AppLogger.log(
-      'News Tinyfish: modalità fallback-only attiva, provo prima reader locale '
+      'News Tinyfish: modalità fallback-only attiva, eseguo solo il reader '
+      'locale prima della WebView '
       'url=$resolvedUrl',
     ));
 
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
       unawaited(AppLogger.log(
         'News Tinyfish: URL Google News non risolto in fallback-only, '
-        'reader locale non utile, provo Tinyfish fallback url=$resolvedUrl',
+        'reader locale non utile; Tinyfish verrà valutato soltanto dopo la '
+        'WebView url=$resolvedUrl',
       ));
-      final tinyfishGoogleNewsResult = await _tryFetchTinyfishArticleContent(
-        resolvedUrl,
-        fallbackAttempt: true,
-      );
-      final tinyfishGoogleNewsContent = tinyfishGoogleNewsResult.content;
-      if (tinyfishGoogleNewsContent != null &&
-          tinyfishGoogleNewsContent.text.trim().length >= 100) {
-        return tinyfishGoogleNewsContent;
-      }
       return NewsArticleContent(text: article.summary, url: article.link);
     }
 
-    NewsArticleContent? localContent;
     try {
-      localContent = await _fetchArticleContentWithoutTinyfish(
+      final localContent = await _fetchArticleContentWithoutTinyfish(
         article,
         language: language,
         resolvedUrl: resolvedUrl,
@@ -1238,44 +1229,65 @@ class NewsService {
         'News Tinyfish: reader locale completato in fallback-only '
         'length=$localLength url=$resolvedUrl',
       ));
-      if (localLength >= _readerFallbackMinLength &&
-          !_isWeakArticleText(
-            localContent.text,
-            article.summary,
-            includeTruncated: true,
-          )) {
-        unawaited(AppLogger.log(
-          'News Tinyfish: reader locale sufficiente, Tinyfish non usato '
-          'url=$resolvedUrl',
-        ));
-        return localContent;
-      }
+      return localContent;
     } catch (e) {
       unawaited(AppLogger.log(
         'News Tinyfish: reader locale fallito in fallback-only, '
-        'provo Tinyfish url=$resolvedUrl error=$e',
+        'resta la WebView; Tinyfish verrà valutato dopo url=$resolvedUrl '
+        'error=$e',
       ));
     }
 
+    return NewsArticleContent(text: article.summary, url: article.link);
+  }
+
+  /// Ultimo tentativo per la modalità fallback-only.
+  ///
+  /// La schermata notizie richiama questo metodo solo dopo che il reader HTTP
+  /// e l'estrazione della WebView non hanno prodotto un articolo valido. In
+  /// modalità Tinyfish-first restituisce null, perché Tinyfish è già stato
+  /// provato da [fetchArticleContent].
+  Future<NewsArticleContent?> fetchArticleContentTinyfishFallback(
+    NewsArticle article, {
+    String? preferredUrl,
+  }) async {
+    final fallbackOnly = _tinyfishFallbackOnlyPolicyForCurrentSession();
+    if (!fallbackOnly) {
+      unawaited(AppLogger.log(
+        'News Tinyfish: fallback dopo WebView ignorato perché la modalità '
+        'corrente è Tinyfish-first',
+      ));
+      return null;
+    }
+
+    var targetUrl = preferredUrl?.trim() ?? '';
+    if (targetUrl.isEmpty || !_isHttpUrl(targetUrl)) {
+      targetUrl = await _resolveArticleUrl(article.link);
+    }
+    if (targetUrl.isEmpty) targetUrl = article.link;
+
+    unawaited(AppLogger.log(
+      'News Tinyfish: reader HTTP e WebView insufficienti, avvio ultimo '
+      'fallback url=$targetUrl',
+    ));
     final tinyfishResult = await _tryFetchTinyfishArticleContent(
-      resolvedUrl,
+      targetUrl,
       fallbackAttempt: true,
     );
     final tinyfishContent = tinyfishResult.content;
     if (tinyfishContent != null && tinyfishContent.text.trim().length >= 100) {
       unawaited(AppLogger.log(
-        'News Tinyfish: fallback Tinyfish accettato '
-        'length=${tinyfishContent.text.trim().length} url=${tinyfishContent.url}',
+        'News Tinyfish: ultimo fallback accettato '
+        'length=${tinyfishContent.text.trim().length} '
+        'url=${tinyfishContent.url}',
       ));
       return tinyfishContent;
     }
 
     unawaited(AppLogger.log(
-      'News Tinyfish: fallback-only senza testo valido, resta WebView '
-      'url=$resolvedUrl',
+      'News Tinyfish: ultimo fallback senza testo valido url=$targetUrl',
     ));
-    return localContent ??
-        NewsArticleContent(text: article.summary, url: article.link);
+    return null;
   }
 
   Future<NewsArticleContent> _fetchArticleContentWithoutTinyfish(
@@ -1773,6 +1785,13 @@ class NewsService {
         path.contains('/articles/') ||
         path.contains('/read/') ||
         path.contains('/__i/rss/rd/articles/');
+  }
+
+  bool _isHttpUrl(String url) {
+    final uri = Uri.tryParse(url.trim());
+    if (uri == null || uri.host.isEmpty) return false;
+    final scheme = uri.scheme.toLowerCase();
+    return scheme == 'http' || scheme == 'https';
   }
 
   Future<String?> _resolveGoogleNewsArticleUrl(String url) async {
