@@ -3,6 +3,7 @@
     "version": "0.3.2",
     "date": "2026-06-27",
     "it": [
+      "Taglia file media: corretto il salvataggio dei video tagliati che potevano risultare di 0 secondi e senza audio. FFmpeg non elimina più per errore la traccia video; gli MP4 vengono ottimizzati per iOS e ogni segmento video viene verificato prima del salvataggio finale.",
       "TV MPD/DASH: se il video è disattivato, Sonarpad monta prima una superficie video invisibile, avvia il flusso e soltanto dopo disattiva la traccia video; corretto anche il cambio video quando VLC ricade su MediaKit.",
       "TV MPD/DASH: le brevi finestre live HBBTV vengono rinnovate nello stesso player poco prima della fine o dopo uno stallo, evitando che la riproduzione resti bloccata; nelle notizie la WebView pura rimane nascosta finché banner cookie e consenso non sono stati gestiti e ripuliti.",
       "Documenti: aggiunta la modalità di selezione multipla dei paragrafi. Dall’azione secondaria si avvia la selezione; durante la modalità il doppio tap seleziona o deseleziona i paragrafi, mostra il conteggio e permette di eliminarli insieme dopo una conferma. Il comando Indietro esce prima dalla modalità di selezione senza chiudere il documento.",
@@ -55,6 +56,7 @@
       "TV MPD/DASH: corretto il canale muto con il nuovo player VLC. Sonarpad attende ora la PlatformView nativa, inizializza VLC solo quando il canale è pronto, seleziona esplicitamente la traccia audio e usa MediaKit come fallback se VLC non è disponibile."
     ],
     "en": [
+      "Cut media file: fixed trimmed videos that could be saved as 0 seconds and without audio. FFmpeg no longer removes the video track by mistake; MP4 files are optimized for iOS and each video segment is validated before the final save.",
       "TV MPD/DASH: when video is disabled, Sonarpad first mounts a hidden video surface, starts the stream and only then disables the video track; video switching after VLC falls back to MediaKit is also fixed.",
       "TV MPD/DASH: short HBBTV live windows are renewed in the same player just before the end or after a stall, preventing playback from remaining stuck; in News, the raw WebView stays hidden until cookie and consent banners have been handled and cleaned.",
       "Documents: added a multiple-paragraph selection mode. Start it from a paragraph’s secondary action; while the mode is active, double tap selects or deselects paragraphs, shows the selected count, and lets you delete them together after confirmation. Back exits selection mode first without closing the document.",
@@ -104,6 +106,7 @@
       "MPD/DASH TV: fixed silent playback with the new VLC player. Sonarpad now waits for the native PlatformView, initializes VLC only when its channel is ready, explicitly selects the audio track, and falls back to MediaKit if VLC is unavailable."
     ],
     "fr": [
+      "Découper un fichier multimédia : correction des vidéos découpées qui pouvaient être enregistrées avec une durée de 0 seconde et sans son. FFmpeg ne supprime plus la piste vidéo par erreur ; les fichiers MP4 sont optimisés pour iOS et chaque segment vidéo est vérifié avant l’enregistrement final.",
       "TV MPD/DASH : lorsque la vidéo est désactivée, Sonarpad monte d’abord une surface vidéo masquée, démarre le flux, puis désactive la piste vidéo ; le changement vidéo après le repli de VLC vers MediaKit est également corrigé.",
       "TV MPD/DASH : les courtes fenêtres en direct HBBTV sont renouvelées dans le même lecteur juste avant leur fin ou après un blocage ; dans les actualités, la WebView brute reste masquée jusqu’au traitement et au nettoyage des bannières de cookies et de consentement.",
       "Documents : ajout d’un mode de sélection multiple des paragraphes. La sélection démarre depuis l’action secondaire d’un paragraphe ; lorsque le mode est actif, un double toucher sélectionne ou désélectionne les paragraphes, annonce leur nombre et permet de les supprimer ensemble après confirmation. Le bouton Retour quitte d’abord le mode de sélection sans fermer le document.",
@@ -153,6 +156,7 @@
       "TV MPD/DASH : correction de la lecture muette avec le nouveau lecteur VLC. Sonarpad attend désormais la PlatformView native, initialise VLC seulement lorsque son canal est prêt, sélectionne explicitement la piste audio et utilise MediaKit en secours si VLC est indisponible."
     ],
     "es": [
+      "Cortar archivo multimedia: corregidos los vídeos recortados que podían guardarse con 0 segundos y sin audio. FFmpeg ya no elimina por error la pista de vídeo; los archivos MP4 se optimizan para iOS y cada segmento de vídeo se verifica antes del guardado final.",
       "TV MPD/DASH: cuando el vídeo está desactivado, Sonarpad monta primero una superficie de vídeo oculta, inicia el flujo y solo después desactiva la pista de vídeo; también se corrige el cambio de vídeo tras la alternativa de VLC a MediaKit.",
       "TV MPD/DASH: las ventanas HBBTV en directo de corta duración se renuevan en el mismo reproductor justo antes de terminar o tras un bloqueo; en Noticias, la WebView sin procesar permanece oculta hasta gestionar y limpiar los avisos de cookies y consentimiento.",
       "Documentos: se añadió un modo de selección múltiple de párrafos. Se inicia desde la acción secundaria de un párrafo; mientras el modo está activo, el doble toque selecciona o deselecciona párrafos, muestra el número seleccionado y permite eliminarlos juntos tras una confirmación. Atrás sale primero del modo de selección sin cerrar el documento.",
@@ -202,6 +206,7 @@
       "TV MPD/DASH: corregida la reproducción sin audio con el nuevo reproductor VLC. Sonarpad ahora espera la PlatformView nativa, inicializa VLC solo cuando su canal está listo, selecciona explícitamente la pista de audio y usa MediaKit como alternativa si VLC no está disponible."
     ],
     "pt": [
+      "Cortar ficheiro multimédia: corrigidos os vídeos cortados que podiam ser guardados com 0 segundos e sem áudio. O FFmpeg já não remove por engano a faixa de vídeo; os ficheiros MP4 são otimizados para iOS e cada segmento de vídeo é verificado antes da gravação final.",
       "TV MPD/DASH: quando o vídeo está desativado, o Sonarpad monta primeiro uma superfície de vídeo oculta, inicia o fluxo e só depois desativa a faixa de vídeo; também foi corrigida a mudança de vídeo após o VLC recorrer ao MediaKit.",
       "TV MPD/DASH: as janelas curtas de transmissão HBBTV são renovadas no mesmo leitor pouco antes do fim ou após um bloqueio; nas Notícias, a WebView pura permanece oculta até os avisos de cookies e consentimento serem tratados e limpos.",
       "Documentos: foi adicionado um modo de seleção múltipla de parágrafos. A seleção é iniciada pela ação secundária de um parágrafo; enquanto o modo está ativo, o toque duplo seleciona ou desseleciona parágrafos, anuncia a quantidade selecionada e permite eliminá-los em conjunto após confirmação. O comando Voltar sai primeiro do modo de seleção sem fechar o documento.",
@@ -251,6 +256,7 @@
       "TV MPD/DASH: corrigida a reprodução sem áudio com o novo leitor VLC. O Sonarpad aguarda agora a PlatformView nativa, inicializa o VLC apenas quando o canal está pronto, seleciona explicitamente a faixa de áudio e usa o MediaKit como alternativa se o VLC não estiver disponível."
     ],
     "pl": [
+      "Wycinanie pliku multimedialnego: naprawiono problem, przez który przycięte filmy mogły być zapisywane jako pliki o długości 0 sekund i bez dźwięku. FFmpeg nie usuwa już omyłkowo ścieżki wideo; pliki MP4 są optymalizowane dla iOS, a każdy segment wideo jest sprawdzany przed końcowym zapisem.",
       "TV MPD/DASH: gdy wideo jest wyłączone, Sonarpad najpierw montuje ukrytą powierzchnię wideo, uruchamia strumień, a dopiero potem wyłącza ścieżkę wideo; poprawiono też przełączanie wideo po przejściu z VLC na MediaKit.",
       "TV MPD/DASH: krótkie okna transmisji HBBTV są odnawiane w tym samym odtwarzaczu tuż przed końcem lub po zablokowaniu; w Wiadomościach surowy WebView pozostaje ukryty, dopóki banery plików cookie i zgody nie zostaną obsłużone i usunięte.",
       "Dokumenty: dodano tryb wielokrotnego zaznaczania akapitów. Zaznaczanie uruchamia się z dodatkowej czynności akapitu; w tym trybie podwójne stuknięcie zaznacza lub odznacza akapity, podaje ich liczbę i pozwala usunąć je razem po potwierdzeniu. Polecenie Wstecz najpierw opuszcza tryb zaznaczania, nie zamykając dokumentu.",
@@ -301,6 +307,7 @@
       "TV MPD/DASH: naprawiono brak dźwięku w nowym odtwarzaczu VLC. Sonarpad czeka teraz na natywny PlatformView, inicjalizuje VLC dopiero po przygotowaniu kanału, jawnie wybiera ścieżkę audio i przechodzi na MediaKit, gdy VLC jest niedostępny."
     ],
     "cs": [
+      "Oříznutí mediálního souboru: opraven problém, kdy se oříznutá videa mohla uložit s délkou 0 sekund a bez zvuku. FFmpeg již omylem neodstraňuje video stopu; soubory MP4 jsou optimalizovány pro iOS a každý video segment je před konečným uložením ověřen.",
       "TV MPD/DASH: když je video vypnuté, Sonarpad nejprve připojí skrytou video plochu, spustí stream a teprve poté vypne video stopu; opraveno je také přepínání videa po přechodu z VLC na MediaKit.",
       "TV MPD/DASH: krátká živá okna HBBTV se obnovují ve stejném přehrávači těsně před koncem nebo po zaseknutí; ve Zprávách zůstává čistá WebView skrytá, dokud nejsou zpracovány a odstraněny bannery cookies a souhlasu.",
       "Dokumenty: byl přidán režim vícenásobného výběru odstavců. Výběr se spouští sekundární akcí odstavce; v tomto režimu dvojité klepnutí odstavec vybere nebo zruší jeho výběr, oznámí počet vybraných odstavců a umožní je po potvrzení společně odstranit. Příkaz Zpět nejprve ukončí režim výběru, aniž by zavřel dokument.",

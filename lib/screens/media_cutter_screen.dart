@@ -2935,6 +2935,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
     await workDir.create(recursive: true);
     final ext = _outputExtension(input);
+    final isVideoInput = _isVideoInput(input);
     final segmentPaths = <String>[];
     final totalDurationMs = keptParts.fold<int>(
       0,
@@ -2945,7 +2946,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     unawaited(_logMediaCutter(
       'export start output="$output" keptParts=${keptParts.length} '
       'totalDuration=${_logDuration(Duration(milliseconds: totalDurationMs))} '
-      'isVideo=${_isVideoInput(input)}',
+      'isVideo=$isVideoInput',
     ));
     for (var i = 0; i < keptParts.length; i++) {
       unawaited(_logMediaCutter('export part ${i + 1}/${keptParts.length} ${_logPart(i, keptParts[i])}'));
@@ -2985,7 +2986,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           '-t',
           _ffmpegTime(part.duration),
         ]);
-        if (_isVideoInput(input)) {
+        if (isVideoInput) {
           args.addAll([
             '-map',
             '0:v:0?',
@@ -3002,7 +3003,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           args.addAll([
             '-map',
             '0:a:0?',
-            '-vn',
+          ]);
+          // `-vn` must only be used for audio-only inputs. Adding it while
+          // exporting a video overrides the preceding video map and produces
+          // an MP4 without a video stream, which iOS may report as 0 seconds.
+          if (!isVideoInput) {
+            args.add('-vn');
+          }
+          args.addAll([
             '-sn',
             '-dn',
           ]);
@@ -3024,8 +3032,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           ..._codecArguments(input),
           '-avoid_negative_ts',
           'make_zero',
-          segment,
         ]);
+        if (isVideoInput && ext == '.mp4') {
+          // Put the MP4 index at the beginning of the file so iOS can read
+          // duration and tracks immediately after the export is copied.
+          args.addAll([
+            '-movflags',
+            '+faststart',
+          ]);
+        }
+        args.add(segment);
         await _runFfmpeg(
           args,
           'segment ${i + 1}/${keptParts.length}',
@@ -3045,6 +3061,37 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             );
           },
         );
+        final segmentFile = File(segment);
+        final segmentBytes = await segmentFile.length();
+        if (segmentBytes <= 0) {
+          throw StateError('FFmpeg ha creato un segmento vuoto: $segment');
+        }
+        unawaited(_logMediaCutter(
+          'export segment created index=$i bytes=$segmentBytes '
+          'expectedVideo=$isVideoInput path="$segment"',
+        ));
+        if (isVideoInput) {
+          await _runFfmpeg(
+            [
+              '-v',
+              'error',
+              '-i',
+              segment,
+              '-map',
+              '0:v:0',
+              '-frames:v',
+              '1',
+              '-f',
+              'null',
+              '-',
+            ],
+            'validate video segment ${i + 1}/${keptParts.length}',
+            exportController,
+          );
+          unawaited(_logMediaCutter(
+            'export video segment validated index=$i path="$segment"',
+          ));
+        }
         completedDurationMs += part.duration.inMilliseconds;
         _updateExportProgress(
           exportController,
