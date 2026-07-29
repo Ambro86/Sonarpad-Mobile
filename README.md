@@ -138,3 +138,23 @@ Refer to the `LICENSE` file for full terms.
 
 Copyright © Ambrogio Riili. All rights reserved.
 
+
+## Motore effetti DSP nativo
+
+Il Media Cutter include il pacchetto locale `packages/sonarpad_audio_dsp`,
+compilato automaticamente con i build hook Dart/Flutter. Il motore C++ è usato
+per coro, vocoder, robot, vecchia radio, cambi vocali e ambienti ibridi.
+Richiede Flutter stabile con Dart 3.10 o successivo e, per Android, un NDK
+installato. La dipendenza `android_libcpp_shared` inserisce il runtime C++ nel
+pacchetto Android.
+
+La corrispondenza fra i 55 nomi dell'archivio sperimentale e il catalogo finale
+è documentata in `MIGRAZIONE_EFFETTI_DSP.md`.
+
+
+### Asset audio degli effetti
+
+Gli asset originali del Media Cutter sono in `assets/audio/effect_sources/`.
+Sono inclusi nel bundle Flutter, convertiti in PCM soltanto al primo utilizzo e
+gestiti dal motore C++ con crossfade e ducking. Nessun campione audio di terze
+parti è incorporato.

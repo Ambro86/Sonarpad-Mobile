@@ -2531,7 +2531,7 @@ class _DocumentIndexScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.documentIndex)),
       body: ListView.separated(
         itemCount: entries.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
+        separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final entry = entries[index];
           return ListTile(
@@ -2711,7 +2711,7 @@ class _DocumentSearchResultsScreen extends StatelessWidget {
           ? Center(child: Text(l10n.noDocumentSearchResults(query)))
           : ListView.separated(
               itemCount: results.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
+              separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {
                 final result = results[index];
                 return ListTile(

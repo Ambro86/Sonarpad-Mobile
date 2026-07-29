@@ -874,15 +874,17 @@ class AppLocalizationsPl extends AppLocalizations {
   String get documentReaderEditHint =>
       'Dotknij akapitu, aby go edytować. Przesuń w górę lub w dół, aby dodać zakładkę.';
 
+  @override
+  String get documentParagraphSelectionStartAction =>
+      'Rozpocznij zaznaczanie akapitów';
 
   @override
-  String get documentParagraphSelectionStartAction => 'Rozpocznij zaznaczanie akapitów';
+  String get documentParagraphSelectionTapHint =>
+      'Tryb zaznaczania jest aktywny. Stuknij dwukrotnie, aby zaznaczyć lub odznaczyć ten akapit.';
 
   @override
-  String get documentParagraphSelectionTapHint => 'Tryb zaznaczania jest aktywny. Stuknij dwukrotnie, aby zaznaczyć lub odznaczyć ten akapit.';
-
-  @override
-  String get documentParagraphSelectionStarted => 'Tryb zaznaczania jest aktywny. Akapit zaznaczony. Stuknij dwukrotnie inne akapity, aby je zaznaczyć.';
+  String get documentParagraphSelectionStarted =>
+      'Tryb zaznaczania jest aktywny. Akapit zaznaczony. Stuknij dwukrotnie inne akapity, aby je zaznaczyć.';
 
   @override
   String documentParagraphSelectedAnnouncement(int count) {
@@ -1162,7 +1164,11 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String settingsCodeRequestBody(
-      String name, String surname, String email, String os) {
+    String name,
+    String surname,
+    String email,
+    String os,
+  ) {
     return 'Imię: $name; Nazwisko: $surname; Email: $email; System operacyjny: $os';
   }
 
@@ -2399,7 +2405,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String documentBookmarkChoiceLabelWithPreview(
-      int order, int paragraph, String preview) {
+    int order,
+    int paragraph,
+    String preview,
+  ) {
     return 'Zakładka $order, akapit $paragraph. $preview';
   }
 

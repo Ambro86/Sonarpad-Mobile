@@ -144,7 +144,7 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
           }
           return ListView.separated(
             itemCount: files.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
               final file = files[index];
               final name = p.basenameWithoutExtension(file.path);

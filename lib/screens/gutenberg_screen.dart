@@ -215,7 +215,7 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
           }
           return ListView.separated(
             itemCount: _books.length + (_nextPage == null ? 0 : 1),
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
               if (index >= _books.length) {
                 return ListTile(

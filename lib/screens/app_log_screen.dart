@@ -94,7 +94,7 @@ class _AppLogScreenState extends State<AppLogScreen> {
                 child: ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: _logLines.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final line = _logLines[index];
                     return Text(

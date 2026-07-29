@@ -870,15 +870,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get documentReaderEditHint =>
       'Tap a paragraph to edit it. Swipe up or down to add a bookmark.';
 
+  @override
+  String get documentParagraphSelectionStartAction =>
+      'Start paragraph selection';
 
   @override
-  String get documentParagraphSelectionStartAction => 'Start paragraph selection';
+  String get documentParagraphSelectionTapHint =>
+      'Selection mode is active. Double tap to select or deselect this paragraph.';
 
   @override
-  String get documentParagraphSelectionTapHint => 'Selection mode is active. Double tap to select or deselect this paragraph.';
-
-  @override
-  String get documentParagraphSelectionStarted => 'Selection mode is active. Paragraph selected. Double tap other paragraphs to select them.';
+  String get documentParagraphSelectionStarted =>
+      'Selection mode is active. Paragraph selected. Double tap other paragraphs to select them.';
 
   @override
   String documentParagraphSelectedAnnouncement(int count) {
@@ -1155,7 +1157,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String settingsCodeRequestBody(
-      String name, String surname, String email, String os) {
+    String name,
+    String surname,
+    String email,
+    String os,
+  ) {
     return 'Name: $name; Surname: $surname; Email: $email; Operating system: $os';
   }
 
@@ -2390,7 +2396,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String documentBookmarkChoiceLabelWithPreview(
-      int order, int paragraph, String preview) {
+    int order,
+    int paragraph,
+    String preview,
+  ) {
     return 'Bookmark $order, paragraph $paragraph. $preview';
   }
 

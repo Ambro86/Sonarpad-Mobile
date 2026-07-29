@@ -183,7 +183,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                 controller: _scrollController,
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                 itemCount: itemCount,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   var currentIndex = index;
 
@@ -294,7 +294,7 @@ class _PodcastDateSelectorScreen extends StatelessWidget {
             : ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: dateEpisodes.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final item = dateEpisodes[index];
                   return Card(
@@ -393,7 +393,7 @@ class _PlayedEpisodesScreenState extends State<_PlayedEpisodesScreen> {
               : ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: _episodes.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final episode = _episodes[index];
                     return Card(

@@ -68,7 +68,7 @@ import 'app_localizations_pt.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -91,11 +91,11 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -105,7 +105,7 @@ abstract class AppLocalizations {
     Locale('es'),
     Locale('fr'),
     Locale('pl'),
-    Locale('pt')
+    Locale('pt'),
   ];
 
   /// Localized text for appTitle.
@@ -1632,38 +1632,70 @@ abstract class AppLocalizations {
   /// **'Tocca un paragrafo per modificarlo. Scorri verso l’alto o verso il basso per aggiungere un segnalibro.'**
   String get documentReaderEditHint;
 
-
-  /// Starts paragraph multi-selection mode.
+  /// Localized text for documentParagraphSelectionStartAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvia selezione paragrafi'**
   String get documentParagraphSelectionStartAction;
 
-  /// Hint announced while paragraph multi-selection mode is active.
+  /// Localized text for documentParagraphSelectionTapHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Modalità selezione attiva. Tocca due volte per selezionare o deselezionare questo paragrafo.'**
   String get documentParagraphSelectionTapHint;
 
-  /// Announcement when paragraph multi-selection mode starts.
+  /// Localized text for documentParagraphSelectionStarted.
+  ///
+  /// In it, this message translates to:
+  /// **'Modalità selezione attiva. Paragrafo selezionato. Tocca due volte sugli altri paragrafi per selezionarli.'**
   String get documentParagraphSelectionStarted;
 
-  /// Announcement after selecting a paragraph.
+  /// Localized text for documentParagraphSelectedAnnouncement.
+  ///
+  /// In it, this message translates to:
+  /// **'Paragrafo selezionato. Totale selezionati: {count}.'**
   String documentParagraphSelectedAnnouncement(int count);
 
-  /// Announcement after deselecting a paragraph.
+  /// Localized text for documentParagraphDeselectedAnnouncement.
+  ///
+  /// In it, this message translates to:
+  /// **'Paragrafo deselezionato. Totale selezionati: {count}.'**
   String documentParagraphDeselectedAnnouncement(int count);
 
-  /// Number of currently selected paragraphs.
+  /// Localized text for documentParagraphSelectionCount.
+  ///
+  /// In it, this message translates to:
+  /// **'Selezionati: {count}'**
   String documentParagraphSelectionCount(int count);
 
-  /// Deletes all currently selected paragraphs.
+  /// Localized text for documentDeleteSelectedParagraphs.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina paragrafi selezionati'**
   String get documentDeleteSelectedParagraphs;
 
-  /// Confirmation before deleting selected paragraphs.
+  /// Localized text for documentDeleteSelectedParagraphsConfirmation.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare i paragrafi selezionati? Totale: {count}.'**
   String documentDeleteSelectedParagraphsConfirmation(int count);
 
-  /// Announcement after deleting selected paragraphs.
+  /// Localized text for documentSelectedParagraphsDeleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Paragrafi eliminati: {count}.'**
   String documentSelectedParagraphsDeleted(int count);
 
-  /// Exits paragraph multi-selection mode.
+  /// Localized text for documentExitParagraphSelection.
+  ///
+  /// In it, this message translates to:
+  /// **'Esci dalla selezione paragrafi'**
   String get documentExitParagraphSelection;
 
-  /// Announcement after leaving paragraph multi-selection mode.
+  /// Localized text for documentParagraphSelectionExited.
+  ///
+  /// In it, this message translates to:
+  /// **'Modalità selezione disattivata.'**
   String get documentParagraphSelectionExited;
 
   /// Localized text for documentBookmarkHintSet.
@@ -2115,7 +2147,11 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nome: {name}; Cognome: {surname}; Email: {email}; Sistema operativo: {os}'**
   String settingsCodeRequestBody(
-      String name, String surname, String email, String os);
+    String name,
+    String surname,
+    String email,
+    String os,
+  );
 
   /// Localized text for settingsNameOptional.
   ///
@@ -4396,7 +4432,10 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Segnalibro {order}, paragrafo {paragraph}. {preview}'**
   String documentBookmarkChoiceLabelWithPreview(
-      int order, int paragraph, String preview);
+    int order,
+    int paragraph,
+    String preview,
+  );
 
   /// Title for the setting that shows video full-screen in landscape orientation.
   ///
@@ -5352,14 +5391,14 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) => <String>[
-        'cs',
-        'en',
-        'es',
-        'fr',
-        'it',
-        'pl',
-        'pt'
-      ].contains(locale.languageCode);
+    'cs',
+    'en',
+    'es',
+    'fr',
+    'it',
+    'pl',
+    'pt',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -5385,8 +5424,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

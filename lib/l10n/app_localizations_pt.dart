@@ -874,15 +874,17 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentReaderEditHint =>
       'Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.';
 
+  @override
+  String get documentParagraphSelectionStartAction =>
+      'Iniciar seleção de parágrafos';
 
   @override
-  String get documentParagraphSelectionStartAction => 'Iniciar seleção de parágrafos';
+  String get documentParagraphSelectionTapHint =>
+      'O modo de seleção está ativo. Toque duas vezes para selecionar ou desmarcar este parágrafo.';
 
   @override
-  String get documentParagraphSelectionTapHint => 'O modo de seleção está ativo. Toque duas vezes para selecionar ou desmarcar este parágrafo.';
-
-  @override
-  String get documentParagraphSelectionStarted => 'O modo de seleção está ativo. Parágrafo selecionado. Toque duas vezes nos outros parágrafos para selecioná-los.';
+  String get documentParagraphSelectionStarted =>
+      'O modo de seleção está ativo. Parágrafo selecionado. Toque duas vezes nos outros parágrafos para selecioná-los.';
 
   @override
   String documentParagraphSelectedAnnouncement(int count) {
@@ -900,7 +902,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get documentDeleteSelectedParagraphs => 'Eliminar parágrafos selecionados';
+  String get documentDeleteSelectedParagraphs =>
+      'Eliminar parágrafos selecionados';
 
   @override
   String documentDeleteSelectedParagraphsConfirmation(int count) {
@@ -1166,7 +1169,11 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String settingsCodeRequestBody(
-      String name, String surname, String email, String os) {
+    String name,
+    String surname,
+    String email,
+    String os,
+  ) {
     return 'Nome: $name; Apelido: $surname; E-mail: $email; Sistema operativo: $os';
   }
 
@@ -2407,7 +2414,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String documentBookmarkChoiceLabelWithPreview(
-      int order, int paragraph, String preview) {
+    int order,
+    int paragraph,
+    String preview,
+  ) {
     return 'Marcador $order, parágrafo $paragraph. $preview';
   }
 

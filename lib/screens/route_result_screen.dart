@@ -29,7 +29,7 @@ class RouteResultScreen extends StatelessWidget {
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: result.paths.length,
-        separatorBuilder: (_, __) => const Divider(),
+        separatorBuilder: (_, _) => const Divider(),
         itemBuilder: (context, index) {
           final path = result.paths[index];
           final distanceStr = l10n.formatDistance(path.distanceMeters);

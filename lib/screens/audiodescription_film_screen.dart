@@ -97,7 +97,7 @@ class _AudiodescriptionFilmScreenState
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: _filteredItems.length,
-        separatorBuilder: (_, __) => const Divider(),
+        separatorBuilder: (_, _) => const Divider(),
         itemBuilder: (context, index) {
           final item = _filteredItems[index];
           return ListTile(

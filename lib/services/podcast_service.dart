@@ -1011,7 +1011,7 @@ class PodcastService {
     final appleParams = {
       'media': 'podcast',
       'entity': 'podcast',
-      if (country != null) 'country': country,
+      'country': ?country,
       'limit': '25',
       if (q.isNotEmpty) 'term': q,
       if (genreId != null) 'genreId': '$genreId',

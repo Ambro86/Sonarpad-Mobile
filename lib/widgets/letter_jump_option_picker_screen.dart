@@ -137,7 +137,7 @@ class _LetterJumpOptionPickerScreenState<T>
       body: ListView.separated(
         controller: _scrollController,
         itemCount: widget.options.length + (showLetterPicker ? 1 : 0),
-        separatorBuilder: (_, __) => const Divider(height: 1),
+        separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {
           if (showLetterPicker && index == 0) {
             return ListTile(
@@ -188,7 +188,7 @@ class _LetterPickerScreen extends StatelessWidget {
       appBar: AppBar(title: Text(title)),
       body: ListView.separated(
         itemCount: letters.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
+        separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final letter = letters[index];
           return ListTile(

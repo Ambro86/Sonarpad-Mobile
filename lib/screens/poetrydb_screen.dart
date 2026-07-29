@@ -157,7 +157,7 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
           }
           return ListView.separated(
             itemCount: poems.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
               final poem = poems[index];
               final subtitle = poem.lineCount > 0

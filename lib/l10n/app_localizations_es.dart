@@ -878,15 +878,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get documentReaderEditHint =>
       'Toca un párrafo para editarlo. Desliza hacia arriba o hacia abajo para añadir un marcador.';
 
+  @override
+  String get documentParagraphSelectionStartAction =>
+      'Iniciar selección de párrafos';
 
   @override
-  String get documentParagraphSelectionStartAction => 'Iniciar selección de párrafos';
+  String get documentParagraphSelectionTapHint =>
+      'El modo de selección está activo. Toca dos veces para seleccionar o deseleccionar este párrafo.';
 
   @override
-  String get documentParagraphSelectionTapHint => 'El modo de selección está activo. Toca dos veces para seleccionar o deseleccionar este párrafo.';
-
-  @override
-  String get documentParagraphSelectionStarted => 'El modo de selección está activo. Párrafo seleccionado. Toca dos veces otros párrafos para seleccionarlos.';
+  String get documentParagraphSelectionStarted =>
+      'El modo de selección está activo. Párrafo seleccionado. Toca dos veces otros párrafos para seleccionarlos.';
 
   @override
   String documentParagraphSelectedAnnouncement(int count) {
@@ -904,7 +906,8 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get documentDeleteSelectedParagraphs => 'Eliminar párrafos seleccionados';
+  String get documentDeleteSelectedParagraphs =>
+      'Eliminar párrafos seleccionados';
 
   @override
   String documentDeleteSelectedParagraphsConfirmation(int count) {
@@ -917,10 +920,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get documentExitParagraphSelection => 'Salir de la selección de párrafos';
+  String get documentExitParagraphSelection =>
+      'Salir de la selección de párrafos';
 
   @override
-  String get documentParagraphSelectionExited => 'Modo de selección desactivado.';
+  String get documentParagraphSelectionExited =>
+      'Modo de selección desactivado.';
 
   @override
   String get documentBookmarkHintSet =>
@@ -1172,7 +1177,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String settingsCodeRequestBody(
-      String name, String surname, String email, String os) {
+    String name,
+    String surname,
+    String email,
+    String os,
+  ) {
     return 'Nombre: $name; Apellido: $surname; Correo electrónico: $email; Sistema operativo: $os';
   }
 
@@ -2414,7 +2423,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String documentBookmarkChoiceLabelWithPreview(
-      int order, int paragraph, String preview) {
+    int order,
+    int paragraph,
+    String preview,
+  ) {
     return 'Marcador $order, párrafo $paragraph. $preview';
   }
 

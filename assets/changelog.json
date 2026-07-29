@@ -1,5 +1,44 @@
 [
   {
+    "version": "0.3.3",
+    "date": "2026-07-28",
+    "it": [
+      "Taglia file media: aggiunto un motore DSP C++ condiviso da iPhone e Android per coro, vocoder, cambi di voce, robot, vecchia radio e ambienti. Anteprima e salvataggio usano ora lo stesso motore nativo, mentre FFmpeg resta responsabile di decodifica, codifica e ricomposizione del video.",
+      "Effetti audio: recuperate tutte le famiglie dell’archivio sperimentale e accorpate le varianti quasi identiche in un catalogo più chiaro. Coro, chitarra parlante, organo parlante, una voce in molte, Robot, Super robot e Vecchia radio sono stati rifatti con DSP dedicato.",
+      "Taglia file media: mantenute le verifiche production-ready su tracce, durata e decodifica anche quando vengono usati gli effetti DSP nativi.",
+      "Effetti audio: aggiunti asset originali per coro, chitarra e organo parlanti, vecchia radio, giungla, folla, pioggia, traffico, slot machine, grilli, campanelli e applausi. Il DSP applica loop con crossfade e abbassa automaticamente il fondale sotto la voce; se un asset non è disponibile resta il fallback sintetico."
+    ],
+    "en": [
+      "Media Cutter: added a shared C++ DSP engine for iPhone and Android for chorus, vocoder, voice transformations, robot, old radio and procedural ambience. Preview and export now use the same native engine, while FFmpeg remains responsible for decoding, encoding and video remuxing.",
+      "Audio effects: restored every family from the experimental archive and merged near-duplicate variants into a clearer perceptual catalogue. Chorus, talking guitar, talking organ, one voice into many, Robot, Super Robot and Old Radio were rebuilt with dedicated DSP.",
+      "Media Cutter: production-ready track, duration and decode validation remains active when native DSP effects are used.",
+      "Audio effects: added original assets for chorus, talking guitar and organ, old radio, jungle, crowd, rain, traffic, slot machines, crickets, bells and applause. The DSP loops them with crossfades and automatically ducks the background under speech, with a procedural fallback if an asset is unavailable."
+    ],
+    "es": [
+      "Cortador multimedia: añadido un motor DSP C++ compartido entre iPhone y Android para coro, vocoder, cambios de voz, robot, radio antigua y ambientes. La vista previa y la exportación usan el mismo motor nativo.",
+      "Efectos de audio: recuperadas todas las familias del archivo experimental y agrupadas las variantes casi idénticas en un catálogo más claro.",
+      "Efectos de audio: añadidos recursos originales para coro, guitarra y órgano parlantes, radio antigua y ambientes, con bucles suaves, reducción automática bajo la voz y respaldo procedimental."
+    ],
+    "fr": [
+      "Découpeur multimédia : ajout d’un moteur DSP C++ commun à iPhone et Android pour le chœur, le vocodeur, les transformations de voix, le robot, la vieille radio et les ambiances.",
+      "Effets audio : toutes les familles de l’archive expérimentale ont été récupérées et les variantes presque identiques ont été regroupées.",
+      "Effets audio : ajout de ressources originales pour le chœur, la guitare et l’orgue parlants, la vieille radio et les ambiances, avec boucles fondues, atténuation sous la voix et secours procédural."
+    ],
+    "pt": [
+      "Cortador de mídia: adicionado um motor DSP C++ compartilhado entre iPhone e Android para coro, vocoder, alterações de voz, robô, rádio antiga e ambientes.",
+      "Efeitos de áudio: todas as famílias do arquivo experimental foram recuperadas e as variantes quase idênticas foram agrupadas.",
+      "Efeitos de áudio: adicionados recursos originais para coro, guitarra e órgão falantes, rádio antiga e ambientes, com loop suave, redução sob a voz e fallback procedural."
+    ],
+    "pl": [
+      "Przycinanie multimediów: dodano wspólny silnik DSP C++ dla iPhone’a i Androida do chóru, wokodera, zmian głosu, robota, starego radia i efektów otoczenia.",
+      "Efekty audio: dodano oryginalne zasoby dla chóru, mówiącej gitary i organów, starego radia oraz otoczenia, z płynną pętlą i automatycznym ściszaniem pod głosem."
+    ],
+    "cs": [
+      "Střih médií: přidán společný C++ DSP engine pro iPhone a Android pro sbor, vokodér, změny hlasu, robota, staré rádio a zvuková prostředí.",
+      "Zvukové efekty: přidány původní zvukové podklady pro sbor, mluvící kytaru a varhany, staré rádio a prostředí, s plynulou smyčkou a automatickým ztišením pod hlasem."
+    ]
+  },
+  {
     "version": "0.3.2",
     "date": "2026-06-27",
     "it": [

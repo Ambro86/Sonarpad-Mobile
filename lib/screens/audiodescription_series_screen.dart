@@ -65,7 +65,7 @@ class _AudiodescriptionSeriesScreenState
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: _episodes.length,
-        separatorBuilder: (_, __) => const Divider(),
+        separatorBuilder: (_, _) => const Divider(),
         itemBuilder: (context, index) {
           final item = _episodes[index];
           return ListTile(

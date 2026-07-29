@@ -789,7 +789,7 @@ class _WeatherRecentCitiesScreenState
               ? Center(child: Text(l10n.weatherCityNotFound)) // Or another localized string
               : ListView.separated(
                   itemCount: _cities.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final cityData = _cities[index];
                     final cityObj = _deserializeCity(cityData);

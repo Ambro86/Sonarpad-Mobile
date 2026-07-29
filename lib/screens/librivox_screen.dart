@@ -174,7 +174,7 @@ class _LibrivoxResultsScreenState extends State<_LibrivoxResultsScreen> {
           }
           return ListView.separated(
             itemCount: _books.length + (_hasMore ? 1 : 0),
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
               if (index >= _books.length) {
                 return ListTile(

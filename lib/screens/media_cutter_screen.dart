@@ -17,6 +17,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:sonarpad_audio_dsp/sonarpad_audio_dsp.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -73,6 +74,33 @@ enum _MediaPartEffect {
   reverseEcho,
   fadeIn,
   fadeOut,
+  backwards,
+  talkingGuitar,
+  mosquito,
+  oneOfMany,
+  organVocoder,
+  warped,
+  swirling,
+  vader,
+  metallic,
+  songbird,
+  exterminator,
+  rainAndThunder,
+  jungle,
+  crowd,
+  slotMachines,
+  traffic,
+  spaceship,
+  cricket,
+  siren,
+  sleighBells,
+  dj,
+  applause,
+  badMelody,
+  badHarmony,
+  warmVoice,
+  turtle,
+  haunting,
 }
 
 const _effectPreviewMaxDuration = Duration(seconds: 12);
@@ -301,6 +329,69 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   static const _mediaCommands = MethodChannel('sonarpad/tts_commands');
   static const _mediaEvents = EventChannel('sonarpad/tts_events');
 
+  // Catalogo percettivo: le varianti sperimentali quasi identiche sono
+  // state accorpate. I valori enum restano separati solo quando producono
+  // un'identità sonora realmente diversa.
+  static const _availableEffects = <_MediaPartEffect>[
+    _MediaPartEffect.none,
+    _MediaPartEffect.echo,
+    _MediaPartEffect.echoCathedral,
+    _MediaPartEffect.bathroom,
+    _MediaPartEffect.tunnel,
+    _MediaPartEffect.repeatEcho,
+    _MediaPartEffect.reverb,
+    _MediaPartEffect.chorus,
+    _MediaPartEffect.pitchLow,
+    _MediaPartEffect.pitchVeryLow,
+    _MediaPartEffect.pitchHigh,
+    _MediaPartEffect.robot,
+    _MediaPartEffect.superRobot,
+    _MediaPartEffect.helicopter,
+    _MediaPartEffect.alien,
+    _MediaPartEffect.brightVoice,
+    _MediaPartEffect.darkVoice,
+    _MediaPartEffect.ghost,
+    _MediaPartEffect.telephone,
+    _MediaPartEffect.oldRadio,
+    _MediaPartEffect.megaphone,
+    _MediaPartEffect.underwater,
+    _MediaPartEffect.monster,
+    _MediaPartEffect.chipmunk,
+    _MediaPartEffect.dream,
+    _MediaPartEffect.distortion,
+    _MediaPartEffect.loFi,
+    _MediaPartEffect.reverseEcho,
+    _MediaPartEffect.fadeIn,
+    _MediaPartEffect.fadeOut,
+    _MediaPartEffect.backwards,
+    _MediaPartEffect.talkingGuitar,
+    _MediaPartEffect.mosquito,
+    _MediaPartEffect.oneOfMany,
+    _MediaPartEffect.organVocoder,
+    _MediaPartEffect.warped,
+    _MediaPartEffect.swirling,
+    _MediaPartEffect.vader,
+    _MediaPartEffect.metallic,
+    _MediaPartEffect.songbird,
+    _MediaPartEffect.exterminator,
+    _MediaPartEffect.rainAndThunder,
+    _MediaPartEffect.jungle,
+    _MediaPartEffect.crowd,
+    _MediaPartEffect.slotMachines,
+    _MediaPartEffect.traffic,
+    _MediaPartEffect.spaceship,
+    _MediaPartEffect.cricket,
+    _MediaPartEffect.siren,
+    _MediaPartEffect.sleighBells,
+    _MediaPartEffect.dj,
+    _MediaPartEffect.applause,
+    _MediaPartEffect.badMelody,
+    _MediaPartEffect.badHarmony,
+    _MediaPartEffect.warmVoice,
+    _MediaPartEffect.turtle,
+    _MediaPartEffect.haunting,
+  ];
+
   static const _mediaExtensions = [
     'mp3',
     'm4a',
@@ -376,6 +467,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool _hasUnsavedEdit = false;
   bool _effectPreviewPreparing = false;
   Future<String>? _underwaterBubblesSourcePath;
+  final Map<_MediaPartEffect, Future<String?>> _nativeDspAssetPcmPaths = {};
+  final Set<String> _nativeDspAssetCachePaths = {};
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   Duration _mediaSeekStep = const Duration(seconds: 5);
@@ -433,10 +526,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   @override
   void dispose() {
+    SonarpadAudioDsp.cancelActive();
     if (Platform.isIOS) {
       unawaited(_clearMagicTap());
     }
     unawaited(_deleteUnderwaterBubblesCache());
+    unawaited(_deleteNativeDspAssetCache());
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     _audioPositionSubscription?.cancel();
     _audioDurationSubscription?.cancel();
@@ -484,6 +579,135 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       );
     }
     return file.path;
+  }
+
+
+  String? _nativeDspAssetFileNameFor(_MediaPartEffect effect) {
+    return switch (effect) {
+      _MediaPartEffect.chorus => 'choir_bed.mp3',
+      _MediaPartEffect.oldRadio => 'old_radio_static.mp3',
+      _MediaPartEffect.talkingGuitar => 'guitar_carrier.mp3',
+      _MediaPartEffect.organVocoder => 'organ_carrier.mp3',
+      _MediaPartEffect.rainAndThunder => 'rain_thunder.mp3',
+      _MediaPartEffect.jungle => 'jungle_ambience.mp3',
+      _MediaPartEffect.crowd => 'crowd_ambience.mp3',
+      _MediaPartEffect.slotMachines => 'slot_machines.mp3',
+      _MediaPartEffect.traffic => 'traffic_ambience.mp3',
+      _MediaPartEffect.cricket => 'crickets.mp3',
+      _MediaPartEffect.sleighBells => 'sleigh_bells.mp3',
+      _MediaPartEffect.applause => 'applause.mp3',
+      _ => null,
+    };
+  }
+
+  Future<String?> _ensureNativeDspAssetPcmPath(
+    _MediaPartEffect effect,
+  ) {
+    final assetName = _nativeDspAssetFileNameFor(effect);
+    if (assetName == null) return Future<String?>.value();
+    return _nativeDspAssetPcmPaths.putIfAbsent(
+      effect,
+      () => _buildNativeDspAssetPcmPath(effect, assetName),
+    );
+  }
+
+  Future<String?> _buildNativeDspAssetPcmPath(
+    _MediaPartEffect effect,
+    String assetName,
+  ) async {
+    final tempRoot = await getTemporaryDirectory();
+    final safeName = assetName.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
+    final sourceFile = File(
+      p.join(tempRoot.path, 'sonarpad_dsp_asset_$safeName'),
+    );
+    final pcmFile = File(
+      p.join(tempRoot.path, 'sonarpad_dsp_asset_$safeName.f32'),
+    );
+    _nativeDspAssetCachePaths
+      ..add(sourceFile.path)
+      ..add(pcmFile.path);
+
+    try {
+      if (await pcmFile.exists() && await pcmFile.length() >= 8192) {
+        final bytes = await pcmFile.length();
+        if (bytes % (2 * 4) == 0) return pcmFile.path;
+        await pcmFile.delete();
+      }
+
+      final data = await rootBundle.load(
+        'assets/audio/effect_sources/$assetName',
+      );
+      await sourceFile.writeAsBytes(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+        flush: true,
+      );
+
+      final args = <String>[
+        '-y',
+        '-i',
+        sourceFile.path,
+        '-vn',
+        '-sn',
+        '-dn',
+        '-af',
+        'highpass=f=25,alimiter=limit=0.95',
+        '-f',
+        'f32le',
+        '-acodec',
+        'pcm_f32le',
+        '-ar',
+        '44100',
+        '-ac',
+        '2',
+        pcmFile.path,
+      ];
+      await _logMediaCutter(
+        'native DSP asset prepare start effect=${effect.name} '
+        'asset=$assetName',
+      );
+      final session = await FFmpegKit.executeWithArguments(args);
+      final returnCode = await session.getReturnCode();
+      final logs = await session.getAllLogsAsString() ?? '';
+      final pcmBytes = await pcmFile.exists() ? await pcmFile.length() : 0;
+      final valid = ReturnCode.isSuccess(returnCode) &&
+          pcmBytes >= 8192 &&
+          pcmBytes % (2 * 4) == 0;
+      if (!valid) {
+        await _deleteFileIfExists(pcmFile, 'invalid native DSP asset PCM');
+        await _logMediaCutter(
+          'native DSP asset unavailable effect=${effect.name} '
+          'asset=$assetName returnCode=${returnCode?.getValue()} '
+          'fallback=procedural logs=${logs.trim()}',
+        );
+        return null;
+      }
+      await _logMediaCutter(
+        'native DSP asset ready effect=${effect.name} asset=$assetName '
+        'bytes=${await pcmFile.length()}',
+      );
+      return pcmFile.path;
+    } catch (error) {
+      await _deleteFileIfExists(pcmFile, 'failed native DSP asset PCM');
+      await _logMediaCutter(
+        'native DSP asset prepare failed effect=${effect.name} '
+        'asset=$assetName fallback=procedural error=$error',
+      );
+      return null;
+    }
+  }
+
+  Future<void> _deleteNativeDspAssetCache() async {
+    final paths = _nativeDspAssetCachePaths.toList(growable: false);
+    _nativeDspAssetPcmPaths.clear();
+    _nativeDspAssetCachePaths.clear();
+    for (final path in paths) {
+      try {
+        final file = File(path);
+        if (await file.exists()) await file.delete();
+      } catch (_) {
+        // Cache cleanup is best-effort.
+      }
+    }
   }
 
   String _logDuration(Duration duration) => _formatTime(duration);
@@ -1207,11 +1431,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       fourthEffectAmountPercent: fourthEffectAmountPercent,
     );
     final activeEffects = _activeEffects(previewPart);
+    final usesNativeDsp = _nativeDspSlots(previewPart).isNotEmpty;
     final usesUnderwaterBubbles = _usesUnderwaterBubbles(previewPart);
     final String? filter = usesUnderwaterBubbles
         ? _underwaterAudioFilterForPart(previewPart)
         : _audioFilterForPart(previewPart);
-    if (filter == null) {
+    if (filter == null && !usesNativeDsp) {
       if (!_isVideo && _usingRenderedPreviewSource) {
         await _restoreOriginalAudioSource(seekTo: previewStart);
       }
@@ -1229,6 +1454,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         'sonarpad_media_cutter_preview_${DateTime.now().millisecondsSinceEpoch}.m4a',
       ),
     );
+    Directory? previewDspWorkDir;
     try {
       _effectPreviewPreparing = true;
       await _pause();
@@ -1239,53 +1465,91 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       final inputAudioMap = inputProbe == null
           ? '0:a:0'
           : _inputStreamMap(inputProbe, video: false);
-      final String audioFilter = usesUnderwaterBubbles
-          ? filter.replaceFirst('[0:a:0]', '[$inputAudioMap]')
-          : filter;
-      final args = <String>[
-        '-y',
-        '-ss',
-        _ffmpegTime(previewStart),
-        '-i',
-        _inputPath,
-      ];
-      if (usesUnderwaterBubbles) {
+      final args = <String>[];
+      if (usesNativeDsp) {
+        final workDirectory = Directory(
+          p.join(
+            tempRoot.path,
+            'sonarpad_dsp_preview_${DateTime.now().microsecondsSinceEpoch}',
+          ),
+        );
+        previewDspWorkDir = workDirectory;
+        await workDirectory.create(recursive: true);
+        final pcm = await _renderNativeDspPcm(
+          part: previewPart,
+          workDirectory: workDirectory.path,
+          label: 'preview',
+          exportController: null,
+        );
         args.addAll([
-          '-stream_loop',
-          '-1',
+          '-y',
+          '-f',
+          'f32le',
+          '-ar',
+          '44100',
+          '-ac',
+          '2',
           '-i',
-          await _ensureUnderwaterBubblesSourcePath(),
-        ]);
-      }
-      args.addAll([
-        '-t',
-        _ffmpegTime(previewDuration),
-      ]);
-      if (usesUnderwaterBubbles) {
-        args.addAll([
-          '-filter_complex',
-          audioFilter,
-          '-map',
-          '[outa]',
+          pcm,
+          '-t',
+          _ffmpegTime(previewDuration),
+          '-filter:a',
+          _postNativeDspFilter(previewPart)!,
+          '-c:a',
+          'aac',
+          '-b:a',
+          '160k',
+          previewFile.path,
         ]);
       } else {
+        final String audioFilter = usesUnderwaterBubbles
+            ? filter!.replaceFirst('[0:a:0]', '[$inputAudioMap]')
+            : filter!;
         args.addAll([
-          '-map',
-          inputAudioMap,
-          '-vn',
-          '-sn',
-          '-dn',
-          '-filter:a',
-          audioFilter,
+          '-y',
+          '-ss',
+          _ffmpegTime(previewStart),
+          '-i',
+          _inputPath,
+        ]);
+        if (usesUnderwaterBubbles) {
+          args.addAll([
+            '-stream_loop',
+            '-1',
+            '-i',
+            await _ensureUnderwaterBubblesSourcePath(),
+          ]);
+        }
+        args.addAll([
+          '-t',
+          _ffmpegTime(previewDuration),
+        ]);
+        if (usesUnderwaterBubbles) {
+          args.addAll([
+            '-filter_complex',
+            audioFilter,
+            '-map',
+            '[outa]',
+          ]);
+        } else {
+          args.addAll([
+            '-map',
+            inputAudioMap,
+            '-vn',
+            '-sn',
+            '-dn',
+            '-filter:a',
+            audioFilter,
+          ]);
+        }
+        args.addAll([
+          '-c:a',
+          'aac',
+          '-b:a',
+          '160k',
+          previewFile.path,
         ]);
       }
-      args.addAll([
-        '-c:a',
-        'aac',
-        '-b:a',
-        '160k',
-        previewFile.path,
-      ]);
       await AppLogger.log(
         'Media cutter preview effects: start=${_ffmpegTime(previewStart)} '
         'duration=${_ffmpegTime(previewDuration)} '
@@ -1332,6 +1596,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _showSnack(AppLocalizations.of(context).mediaCutterSaveFailed(error));
     } finally {
       _effectPreviewPreparing = false;
+      final dspDirectory = previewDspWorkDir;
+      if (dspDirectory != null) {
+        unawaited(
+          dspDirectory.delete(recursive: true).then((_) {}).catchError((_) {}),
+        );
+      }
       unawaited(
           Future<void>.delayed(const Duration(seconds: 30)).then((_) async {
         if (await previewFile.exists()) {
@@ -2528,9 +2798,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           width: double.maxFinite,
           child: ListView.builder(
             shrinkWrap: true,
-            itemCount: _MediaPartEffect.values.length,
+            itemCount: _availableEffects.length,
             itemBuilder: (context, index) {
-              final effect = _MediaPartEffect.values[index];
+              final effect = _availableEffects[index];
               final selected = effect == current;
               final effectLabel = _effectLabel(l10n, effect);
               return Semantics(
@@ -3625,8 +3895,19 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           workDir.path,
           'segment_${i.toString().padLeft(3, '0')}$ext',
         );
+        final usesNativeDsp =
+            source.hasAudio && _nativeDspSlots(part).isNotEmpty;
+        final nativePcm = usesNativeDsp
+            ? await _renderNativeDspPcm(
+                part: part,
+                workDirectory: workDir.path,
+                label: 'segment_${i.toString().padLeft(3, '0')}',
+                exportController: exportController,
+              )
+            : null;
         final requestedUnderwater = _usesUnderwaterBubbles(part);
-        final usesUnderwaterBubbles = source.hasAudio && requestedUnderwater;
+        final usesUnderwaterBubbles =
+            source.hasAudio && requestedUnderwater && !usesNativeDsp;
         if (!source.hasAudio &&
             (requestedUnderwater || _audioFilterForPart(part) != null)) {
           unawaited(_logMediaCutter(
@@ -3660,7 +3941,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           '-i',
           input,
         ];
-        if (usesUnderwaterBubbles) {
+        if (usesNativeDsp) {
+          args.addAll([
+            '-f',
+            'f32le',
+            '-ar',
+            '44100',
+            '-ac',
+            '2',
+            '-i',
+            nativePcm!,
+          ]);
+        } else if (usesUnderwaterBubbles) {
           args.addAll([
             '-stream_loop',
             '-1',
@@ -3679,7 +3971,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           ]);
         }
         if (source.hasAudio) {
-          if (usesUnderwaterBubbles) {
+          if (usesNativeDsp) {
+            args.addAll([
+              '-map',
+              '1:a:0',
+              '-filter:a',
+              _postNativeDspFilter(part)!,
+            ]);
+          } else if (usesUnderwaterBubbles) {
             args.addAll([
               '-filter_complex',
               audioFilter!,
@@ -4360,6 +4659,270 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
+  SonarpadDspEffect? _nativeDspEffectFor(_MediaPartEffect effect) {
+    return switch (effect) {
+      _MediaPartEffect.chorus => SonarpadDspEffect.chorus,
+      _MediaPartEffect.robot => SonarpadDspEffect.robot,
+      _MediaPartEffect.superRobot => SonarpadDspEffect.superRobot,
+      _MediaPartEffect.oldRadio => SonarpadDspEffect.oldRadio,
+      _MediaPartEffect.alien => SonarpadDspEffect.alien,
+      _MediaPartEffect.pitchLow => SonarpadDspEffect.pitchLow,
+      _MediaPartEffect.pitchVeryLow => SonarpadDspEffect.pitchVeryLow,
+      _MediaPartEffect.pitchHigh => SonarpadDspEffect.pitchHigh,
+      _MediaPartEffect.pitchVeryHigh => SonarpadDspEffect.pitchVeryHigh,
+      _MediaPartEffect.monster => SonarpadDspEffect.monster,
+      _MediaPartEffect.chipmunk => SonarpadDspEffect.chipmunk,
+      _MediaPartEffect.brightVoice => SonarpadDspEffect.brightVoice,
+      _MediaPartEffect.darkVoice => SonarpadDspEffect.darkVoice,
+      _MediaPartEffect.backwards => SonarpadDspEffect.backwards,
+      _MediaPartEffect.talkingGuitar => SonarpadDspEffect.talkingGuitar,
+      _MediaPartEffect.mosquito => SonarpadDspEffect.mosquito,
+      _MediaPartEffect.oneOfMany => SonarpadDspEffect.oneOfMany,
+      _MediaPartEffect.organVocoder => SonarpadDspEffect.organVocoder,
+      _MediaPartEffect.warped => SonarpadDspEffect.warped,
+      _MediaPartEffect.swirling => SonarpadDspEffect.swirling,
+      _MediaPartEffect.vader => SonarpadDspEffect.vader,
+      _MediaPartEffect.metallic => SonarpadDspEffect.metallic,
+      _MediaPartEffect.songbird => SonarpadDspEffect.songbird,
+      _MediaPartEffect.exterminator => SonarpadDspEffect.exterminator,
+      _MediaPartEffect.rainAndThunder => SonarpadDspEffect.rainAndThunder,
+      _MediaPartEffect.jungle => SonarpadDspEffect.jungle,
+      _MediaPartEffect.crowd => SonarpadDspEffect.crowd,
+      _MediaPartEffect.slotMachines => SonarpadDspEffect.slotMachines,
+      _MediaPartEffect.traffic => SonarpadDspEffect.traffic,
+      _MediaPartEffect.spaceship => SonarpadDspEffect.spaceship,
+      _MediaPartEffect.cricket => SonarpadDspEffect.cricket,
+      _MediaPartEffect.siren => SonarpadDspEffect.siren,
+      _MediaPartEffect.sleighBells => SonarpadDspEffect.sleighBells,
+      _MediaPartEffect.dj => SonarpadDspEffect.dj,
+      _MediaPartEffect.applause => SonarpadDspEffect.applause,
+      _MediaPartEffect.badMelody => SonarpadDspEffect.badMelody,
+      _MediaPartEffect.badHarmony => SonarpadDspEffect.badHarmony,
+      _MediaPartEffect.warmVoice => SonarpadDspEffect.warmVoice,
+      _MediaPartEffect.turtle => SonarpadDspEffect.turtle,
+      _MediaPartEffect.haunting => SonarpadDspEffect.haunting,
+      _ => null,
+    };
+  }
+
+  bool _isNativeDspEffect(_MediaPartEffect effect) =>
+      _nativeDspEffectFor(effect) != null;
+
+  List<_MediaEffectSlot> _nativeDspSlots(_MediaPart part) =>
+      _activeEffectSlots(part)
+          .where((slot) => _isNativeDspEffect(slot.effect))
+          .toList(growable: false);
+
+  Set<_MediaPartEffect> _nativeDspEffectSet(_MediaPart part) => {
+        for (final slot in _nativeDspSlots(part)) slot.effect,
+      };
+
+  Future<void> _processNativeDspStep({
+    required String inputPath,
+    required String? assetPath,
+    required String outputPath,
+    required SonarpadDspEffect effect,
+    required double amount,
+    required _MediaCutterExportController? exportController,
+  }) async {
+    if (exportController?.cancelled ?? false) {
+      throw const _MediaCutterExportCancelled();
+    }
+    final process = SonarpadAudioDsp.processFile(
+      inputPath: inputPath,
+      assetPath: assetPath,
+      outputPath: outputPath,
+      effect: effect,
+      amount: amount,
+      sampleRate: 44100,
+      channels: 2,
+    );
+    if (exportController == null) {
+      await process;
+      return;
+    }
+
+    var completed = false;
+    Object? processError;
+    StackTrace? processStack;
+    final monitored = process.then<void>(
+      (_) => completed = true,
+      onError: (Object error, StackTrace stackTrace) {
+        processError = error;
+        processStack = stackTrace;
+        completed = true;
+      },
+    );
+    var cancelSent = false;
+    while (!completed) {
+      if (exportController.cancelled && !cancelSent) {
+        cancelSent = true;
+        SonarpadAudioDsp.cancelActive();
+        await _logMediaCutter(
+          'native DSP cancellation requested effect=${effect.name}',
+        );
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+    }
+    await monitored;
+    if (exportController.cancelled || cancelSent) {
+      throw const _MediaCutterExportCancelled();
+    }
+    final error = processError;
+    if (error != null) {
+      Error.throwWithStackTrace(error, processStack ?? StackTrace.current);
+    }
+  }
+
+  Future<String> _renderNativeDspPcm({
+    required _MediaPart part,
+    required String workDirectory,
+    required String label,
+    required _MediaCutterExportController? exportController,
+  }) async {
+    final source = _inputProbe ??
+        await _probeMedia(_inputPath, purpose: '$label native DSP input');
+    if (!source.hasAudio) {
+      throw StateError('L’effetto DSP richiede una traccia audio.');
+    }
+    final nativeSlots = _nativeDspSlots(part);
+    if (nativeSlots.isEmpty) {
+      throw StateError('Nessun effetto DSP da elaborare.');
+    }
+    final nativeEffects = _nativeDspEffectSet(part);
+    final skipBeforeDsp = <_MediaPartEffect>{
+      ...nativeEffects,
+      _MediaPartEffect.fadeIn,
+      _MediaPartEffect.fadeOut,
+    };
+    final requestedUnderwater = _usesUnderwaterBubbles(part);
+    final rawFilter = requestedUnderwater
+        ? _underwaterAudioFilterForPart(part, skipEffects: skipBeforeDsp)
+        : _audioFilterForPart(part, skipEffects: skipBeforeDsp);
+    final inputRaw = p.join(workDirectory, '${label}_dsp_input.f32');
+    final extractionArgs = <String>[
+      '-y',
+      '-ss',
+      _ffmpegTime(part.start),
+      '-i',
+      _inputPath,
+    ];
+    if (requestedUnderwater) {
+      extractionArgs.addAll([
+        '-stream_loop',
+        '-1',
+        '-i',
+        await _ensureUnderwaterBubblesSourcePath(),
+      ]);
+    }
+    extractionArgs.addAll(['-t', _ffmpegTime(part.duration)]);
+    if (requestedUnderwater) {
+      final complex = rawFilter!.replaceFirst(
+        '[0:a:0]',
+        '[${_inputStreamMap(source, video: false)}]',
+      );
+      extractionArgs.addAll([
+        '-filter_complex',
+        _normalizeComplexAudioOutput(complex),
+        '-map',
+        '[outa]',
+      ]);
+    } else {
+      extractionArgs.addAll([
+        '-map',
+        _inputStreamMap(source, video: false),
+        '-filter:a',
+        _normalizeAudioFilter(rawFilter),
+      ]);
+    }
+    extractionArgs.addAll([
+      '-vn',
+      '-sn',
+      '-dn',
+      '-f',
+      'f32le',
+      '-acodec',
+      'pcm_f32le',
+      '-ar',
+      '44100',
+      '-ac',
+      '2',
+      inputRaw,
+    ]);
+    if (exportController != null) {
+      await _runFfmpeg(
+        extractionArgs,
+        '$label DSP PCM extraction',
+        exportController,
+      );
+    } else {
+      final session = await FFmpegKit.executeWithArguments(extractionArgs);
+      final code = await session.getReturnCode();
+      final logs = await session.getAllLogsAsString() ?? '';
+      if (!ReturnCode.isSuccess(code)) {
+        throw logs.trim().isEmpty ? 'FFmpeg ${code?.getValue()}' : logs;
+      }
+    }
+
+    var current = inputRaw;
+    for (var index = 0; index < nativeSlots.length; index++) {
+      final slot = nativeSlots[index];
+      final nativeEffect = _nativeDspEffectFor(slot.effect)!;
+      final next = p.join(
+        workDirectory,
+        '${label}_dsp_${index.toString().padLeft(2, '0')}.f32',
+      );
+      final assetPath = await _ensureNativeDspAssetPcmPath(slot.effect);
+      if (exportController?.cancelled ?? false) {
+        throw const _MediaCutterExportCancelled();
+      }
+      await _logMediaCutter(
+        'native DSP start label="$label" effect=${slot.effect.name} '
+        'engine=${nativeEffect.name} amount=${slot.amountPercent}% '
+        'asset=${assetPath == null ? 'procedural-fallback' : p.basename(assetPath)}',
+      );
+      await _processNativeDspStep(
+        inputPath: current,
+        assetPath: assetPath,
+        outputPath: next,
+        effect: nativeEffect,
+        amount: slot.amountPercent.clamp(0, 100) / 100.0,
+        exportController: exportController,
+      );
+      final produced = File(next);
+      if (!await produced.exists() || await produced.length() == 0) {
+        throw StateError(
+          'Il motore DSP non ha prodotto audio per ${slot.effect.name}.',
+        );
+      }
+      if (current != inputRaw) {
+        await _deleteFileIfExists(File(current), 'intermediate DSP PCM');
+      }
+      current = next;
+      await _logMediaCutter(
+        'native DSP completed label="$label" effect=${slot.effect.name} '
+        'bytes=${await produced.length()}',
+      );
+    }
+    await _deleteFileIfExists(File(inputRaw), 'native DSP source PCM');
+    return current;
+  }
+
+  String? _postNativeDspFilter(_MediaPart part) {
+    final fades = _terminalFadeFilters(
+      part,
+      _activeEffectSlots(part),
+      skipEffects: _nativeDspEffectSet(part),
+    );
+    final filters = <String>[
+      'aresample=44100',
+      'aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo',
+      ...fades,
+      'alimiter=limit=0.94',
+    ];
+    return filters.join(',');
+  }
+
   String? _audioFilterForPart(
     _MediaPart part, {
     Set<_MediaPartEffect> skipEffects = const {},
@@ -4378,7 +4941,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
     final activeSlots = _activeEffectSlots(part);
     for (final slot in activeSlots) {
-      if (skipEffects.contains(slot.effect)) continue;
+      if (skipEffects.contains(slot.effect) || _isNativeDspEffect(slot.effect)) {
+        continue;
+      }
       // I fade devono essere applicati all'uscita dell'intera catena.
       // In caso contrario riverbero, echo o altri effetti negli slot
       // successivi possono rendere nuovamente udibile l'inizio o la coda.
@@ -4420,10 +4985,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     return filters;
   }
 
-  String? _underwaterAudioFilterForPart(_MediaPart part) {
+  String? _underwaterAudioFilterForPart(
+    _MediaPart part, {
+    Set<_MediaPartEffect> skipEffects = const {},
+  }) {
     final baseFilter = _audioFilterForPart(
       part,
       skipEffects: {
+        ...skipEffects,
         _MediaPartEffect.underwater,
         _MediaPartEffect.fadeIn,
         _MediaPartEffect.fadeOut,
@@ -4451,6 +5020,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final terminalFades = _terminalFadeFilters(
       part,
       _activeEffectSlots(part),
+      skipEffects: skipEffects,
     );
     final outputFilters = <String>[
       'acompressor=threshold=-18dB:ratio=2.5:attack=6:release=140',
@@ -5060,6 +5630,34 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             .clamp(0.0, double.infinity)
             .toStringAsFixed(3);
         return 'afade=t=out:st=$start:d=$fade';
+      case _MediaPartEffect.backwards:
+      case _MediaPartEffect.talkingGuitar:
+      case _MediaPartEffect.mosquito:
+      case _MediaPartEffect.oneOfMany:
+      case _MediaPartEffect.organVocoder:
+      case _MediaPartEffect.warped:
+      case _MediaPartEffect.swirling:
+      case _MediaPartEffect.vader:
+      case _MediaPartEffect.metallic:
+      case _MediaPartEffect.songbird:
+      case _MediaPartEffect.exterminator:
+      case _MediaPartEffect.rainAndThunder:
+      case _MediaPartEffect.jungle:
+      case _MediaPartEffect.crowd:
+      case _MediaPartEffect.slotMachines:
+      case _MediaPartEffect.traffic:
+      case _MediaPartEffect.spaceship:
+      case _MediaPartEffect.cricket:
+      case _MediaPartEffect.siren:
+      case _MediaPartEffect.sleighBells:
+      case _MediaPartEffect.dj:
+      case _MediaPartEffect.applause:
+      case _MediaPartEffect.badMelody:
+      case _MediaPartEffect.badHarmony:
+      case _MediaPartEffect.warmVoice:
+      case _MediaPartEffect.turtle:
+      case _MediaPartEffect.haunting:
+        return null;
     }
   }
 
@@ -5246,7 +5844,79 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         return l10n.mediaCutterPartEffectFadeIn;
       case _MediaPartEffect.fadeOut:
         return l10n.mediaCutterPartEffectFadeOut;
+      case _MediaPartEffect.backwards:
+      case _MediaPartEffect.talkingGuitar:
+      case _MediaPartEffect.mosquito:
+      case _MediaPartEffect.oneOfMany:
+      case _MediaPartEffect.organVocoder:
+      case _MediaPartEffect.warped:
+      case _MediaPartEffect.swirling:
+      case _MediaPartEffect.vader:
+      case _MediaPartEffect.metallic:
+      case _MediaPartEffect.songbird:
+      case _MediaPartEffect.exterminator:
+      case _MediaPartEffect.rainAndThunder:
+      case _MediaPartEffect.jungle:
+      case _MediaPartEffect.crowd:
+      case _MediaPartEffect.slotMachines:
+      case _MediaPartEffect.traffic:
+      case _MediaPartEffect.spaceship:
+      case _MediaPartEffect.cricket:
+      case _MediaPartEffect.siren:
+      case _MediaPartEffect.sleighBells:
+      case _MediaPartEffect.dj:
+      case _MediaPartEffect.applause:
+      case _MediaPartEffect.badMelody:
+      case _MediaPartEffect.badHarmony:
+      case _MediaPartEffect.warmVoice:
+      case _MediaPartEffect.turtle:
+      case _MediaPartEffect.haunting:
+        return _nativeEffectLabel(effect);
     }
+  }
+
+  String _nativeEffectLabel(_MediaPartEffect effect) {
+    final language = Localizations.localeOf(context).languageCode;
+    String tr(String it, String en, {String? es, String? fr, String? pt}) {
+      return switch (language) {
+        'it' => it,
+        'es' => es ?? en,
+        'fr' => fr ?? en,
+        'pt' => pt ?? en,
+        _ => en,
+      };
+    }
+
+    return switch (effect) {
+      _MediaPartEffect.backwards => tr('Al contrario', 'Backwards', es: 'Al revés', fr: 'À l’envers', pt: 'Ao contrário'),
+      _MediaPartEffect.talkingGuitar => tr('Chitarra parlante', 'Talking guitar', es: 'Guitarra parlante', fr: 'Guitare parlante', pt: 'Guitarra falante'),
+      _MediaPartEffect.mosquito => tr('Zanzara', 'Mosquito', es: 'Mosquito', fr: 'Moustique', pt: 'Mosquito'),
+      _MediaPartEffect.oneOfMany => tr('Una voce in molte', 'One voice, many singers', es: 'Una voz, muchos cantantes', fr: 'Une voix, plusieurs chanteurs', pt: 'Uma voz, vários cantores'),
+      _MediaPartEffect.organVocoder => tr('Organo parlante', 'Talking organ', es: 'Órgano parlante', fr: 'Orgue parlant', pt: 'Órgão falante'),
+      _MediaPartEffect.warped => tr('Deformato', 'Warped', es: 'Deformado', fr: 'Déformé', pt: 'Deformado'),
+      _MediaPartEffect.swirling => tr('Vortice stereo', 'Stereo vortex', es: 'Vórtice estéreo', fr: 'Tourbillon stéréo', pt: 'Vórtice estéreo'),
+      _MediaPartEffect.vader => tr('Voce oscura cinematografica', 'Cinematic dark voice', es: 'Voz oscura cinematográfica', fr: 'Voix sombre cinématographique', pt: 'Voz escura cinematográfica'),
+      _MediaPartEffect.metallic => tr('Metallico', 'Metallic', es: 'Metálico', fr: 'Métallique', pt: 'Metálico'),
+      _MediaPartEffect.songbird => tr('Uccellino', 'Songbird', es: 'Pájaro cantor', fr: 'Oiseau chanteur', pt: 'Pássaro cantor'),
+      _MediaPartEffect.exterminator => tr('Exterminator', 'Exterminator'),
+      _MediaPartEffect.rainAndThunder => tr('Pioggia e tuoni', 'Rain and thunder', es: 'Lluvia y truenos', fr: 'Pluie et tonnerre', pt: 'Chuva e trovões'),
+      _MediaPartEffect.jungle => tr('Giungla', 'Jungle', es: 'Selva', fr: 'Jungle', pt: 'Selva'),
+      _MediaPartEffect.crowd => tr('Folla', 'Crowd', es: 'Multitud', fr: 'Foule', pt: 'Multidão'),
+      _MediaPartEffect.slotMachines => tr('Slot machine', 'Slot machines', es: 'Máquinas tragamonedas', fr: 'Machines à sous', pt: 'Caça-níqueis'),
+      _MediaPartEffect.traffic => tr('Traffico', 'Traffic', es: 'Tráfico', fr: 'Circulation', pt: 'Trânsito'),
+      _MediaPartEffect.spaceship => tr('Astronave', 'Spaceship', es: 'Nave espacial', fr: 'Vaisseau spatial', pt: 'Nave espacial'),
+      _MediaPartEffect.cricket => tr('Grillo', 'Cricket', es: 'Grillo', fr: 'Grillon', pt: 'Grilo'),
+      _MediaPartEffect.siren => tr('Sirena', 'Siren', es: 'Sirena', fr: 'Sirène', pt: 'Sirene'),
+      _MediaPartEffect.sleighBells => tr('Campanelli', 'Sleigh bells', es: 'Cascabeles', fr: 'Grelots', pt: 'Sinos'),
+      _MediaPartEffect.dj => tr('DJ e scratch', 'DJ scratch', es: 'DJ y scratch', fr: 'DJ et scratch', pt: 'DJ e scratch'),
+      _MediaPartEffect.applause => tr('Applausi', 'Applause', es: 'Aplausos', fr: 'Applaudissements', pt: 'Aplausos'),
+      _MediaPartEffect.badMelody => tr('Melodia stonata', 'Off-key melody', es: 'Melodía desafinada', fr: 'Mélodie fausse', pt: 'Melodia desafinada'),
+      _MediaPartEffect.badHarmony => tr('Armonia dissonante', 'Dissonant harmony', es: 'Armonía disonante', fr: 'Harmonie dissonante', pt: 'Harmonia dissonante'),
+      _MediaPartEffect.warmVoice => tr('Voce calda', 'Warm voice', es: 'Voz cálida', fr: 'Voix chaude', pt: 'Voz quente'),
+      _MediaPartEffect.turtle => tr('Tartaruga', 'Turtle', es: 'Tortuga', fr: 'Tortue', pt: 'Tartaruga'),
+      _MediaPartEffect.haunting => tr('Infestato', 'Haunting', es: 'Embrujado', fr: 'Hanté', pt: 'Assombrado'),
+      _ => effect.name,
+    };
   }
 
   String _effectSlotLabel(AppLocalizations l10n, int slot) {

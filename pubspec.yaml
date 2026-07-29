@@ -1,10 +1,10 @@
 name: sonarpad_mobile_starter
 description: Starter accessibile Flutter per Sonarpad iPhone con notizie, podcast, Wikipedia ed Edge TTS Rust.
 publish_to: 'none'
-version: 0.3.2+6
+version: 0.3.3+7
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -57,6 +57,8 @@ dependencies:
   device_calendar: ^4.3.3
   timezone: ^0.9.4
   ffmpeg_kit_flutter_new: ^4.1.0
+  sonarpad_audio_dsp:
+    path: packages/sonarpad_audio_dsp
 
 dependency_overrides:
   epubx:
@@ -86,3 +88,4 @@ flutter:
     - assets/rss/feed_cs.txt
     - assets/images/
     - assets/audio/
+    - assets/audio/effect_sources/

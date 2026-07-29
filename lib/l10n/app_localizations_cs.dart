@@ -875,15 +875,16 @@ class AppLocalizationsCs extends AppLocalizations {
   String get documentReaderEditHint =>
       'Klepnutím na odstavec ho upravíte. Přejetím nahoru nebo dolů přidáte záložku.';
 
-
   @override
   String get documentParagraphSelectionStartAction => 'Spustit výběr odstavců';
 
   @override
-  String get documentParagraphSelectionTapHint => 'Režim výběru je aktivní. Dvojitým klepnutím tento odstavec vyberete nebo zrušíte jeho výběr.';
+  String get documentParagraphSelectionTapHint =>
+      'Režim výběru je aktivní. Dvojitým klepnutím tento odstavec vyberete nebo zrušíte jeho výběr.';
 
   @override
-  String get documentParagraphSelectionStarted => 'Režim výběru je aktivní. Odstavec byl vybrán. Dvojitým klepnutím vyberte další odstavce.';
+  String get documentParagraphSelectionStarted =>
+      'Režim výběru je aktivní. Odstavec byl vybrán. Dvojitým klepnutím vyberte další odstavce.';
 
   @override
   String documentParagraphSelectedAnnouncement(int count) {
@@ -1162,7 +1163,11 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String settingsCodeRequestBody(
-      String name, String surname, String email, String os) {
+    String name,
+    String surname,
+    String email,
+    String os,
+  ) {
     return 'Jméno: $name; Příjmení: $surname; E-mail: $email; Operační systém: $os';
   }
 
@@ -2399,7 +2404,10 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String documentBookmarkChoiceLabelWithPreview(
-      int order, int paragraph, String preview) {
+    int order,
+    int paragraph,
+    String preview,
+  ) {
     return 'Záložka $order, odstavec $paragraph. $preview';
   }
 

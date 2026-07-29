@@ -874,15 +874,17 @@ class AppLocalizationsIt extends AppLocalizations {
   String get documentReaderEditHint =>
       'Tocca un paragrafo per modificarlo. Scorri verso l’alto o verso il basso per aggiungere un segnalibro.';
 
+  @override
+  String get documentParagraphSelectionStartAction =>
+      'Avvia selezione paragrafi';
 
   @override
-  String get documentParagraphSelectionStartAction => 'Avvia selezione paragrafi';
+  String get documentParagraphSelectionTapHint =>
+      'Modalità selezione attiva. Tocca due volte per selezionare o deselezionare questo paragrafo.';
 
   @override
-  String get documentParagraphSelectionTapHint => 'Modalità selezione attiva. Tocca due volte per selezionare o deselezionare questo paragrafo.';
-
-  @override
-  String get documentParagraphSelectionStarted => 'Modalità selezione attiva. Paragrafo selezionato. Tocca due volte sugli altri paragrafi per selezionarli.';
+  String get documentParagraphSelectionStarted =>
+      'Modalità selezione attiva. Paragrafo selezionato. Tocca due volte sugli altri paragrafi per selezionarli.';
 
   @override
   String documentParagraphSelectedAnnouncement(int count) {
@@ -900,7 +902,8 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get documentDeleteSelectedParagraphs => 'Elimina paragrafi selezionati';
+  String get documentDeleteSelectedParagraphs =>
+      'Elimina paragrafi selezionati';
 
   @override
   String documentDeleteSelectedParagraphsConfirmation(int count) {
@@ -916,7 +919,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get documentExitParagraphSelection => 'Esci dalla selezione paragrafi';
 
   @override
-  String get documentParagraphSelectionExited => 'Modalità selezione disattivata.';
+  String get documentParagraphSelectionExited =>
+      'Modalità selezione disattivata.';
 
   @override
   String get documentBookmarkHintSet =>
@@ -1164,7 +1168,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String settingsCodeRequestBody(
-      String name, String surname, String email, String os) {
+    String name,
+    String surname,
+    String email,
+    String os,
+  ) {
     return 'Nome: $name; Cognome: $surname; Email: $email; Sistema operativo: $os';
   }
 
@@ -2405,7 +2413,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String documentBookmarkChoiceLabelWithPreview(
-      int order, int paragraph, String preview) {
+    int order,
+    int paragraph,
+    String preview,
+  ) {
     return 'Segnalibro $order, paragrafo $paragraph. $preview';
   }
 

@@ -136,7 +136,7 @@ class _AudiodescriptionRecentScreenState
               : ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: _filteredItems.length + 2,
-                  separatorBuilder: (_, __) => const Divider(),
+                  separatorBuilder: (_, _) => const Divider(),
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return ListTile(

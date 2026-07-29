@@ -397,7 +397,7 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: routes.length,
-            separatorBuilder: (_, __) => const Divider(),
+            separatorBuilder: (_, _) => const Divider(),
             itemBuilder: (context, index) {
               final item = routes[index];
               final title = '${item.fromDisplayLabel} → ${item.toDisplayLabel}';

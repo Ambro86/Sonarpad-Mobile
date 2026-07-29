@@ -571,7 +571,7 @@ class _CommunityNewsSourcesScreenState
           }
           return ListView.separated(
             itemCount: sources.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
               final source = sources[index];
               final adding = _addingUrls.contains(source.uri.toString());
@@ -1004,7 +1004,7 @@ class _NewsSourceList extends StatelessWidget {
         );
         return itemIndex < 0 ? null : itemIndex;
       },
-      separatorBuilder: (_, __) => const Divider(height: 1),
+      separatorBuilder: (_, _) => const Divider(height: 1),
       itemBuilder: (context, index) {
         final source = sources[index];
         final stableId = _newsSourceStableId(source);
@@ -1358,7 +1358,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
         return ListView.separated(
           controller: _scrollController,
           itemCount: itemCount,
-          separatorBuilder: (_, __) => const Divider(height: 1),
+          separatorBuilder: (_, _) => const Divider(height: 1),
           itemBuilder: (context, index) {
             if (_readUris.isNotEmpty && index == 0) {
               return AutoScrollTag(
@@ -1497,7 +1497,7 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
               ? Center(child: Text(l10n.noNewsFound))
               : ListView.separated(
                   itemCount: _articles.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final article = _articles[index];
                     final summaryTrimmed = article.summary.trim();
