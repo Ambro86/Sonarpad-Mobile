@@ -108,6 +108,13 @@ class _HomeScreenState extends State<HomeScreen> {
             routeName: '/podcasts'),
       ),
       _HomeButton(
+        label: l10n.sonarTubeTitle,
+        onPressed: () => AccessibilityFeedbackService.goNamed(
+          context,
+          routeName: '/sonartube',
+        ),
+      ),
+      _HomeButton(
         label: l10n.convertMediaTitle,
         onPressed: () => AccessibilityFeedbackService.goNamed(context,
             routeName: '/convert_media'),
@@ -242,6 +249,10 @@ class _HomeScreenState extends State<HomeScreen> {
             label: l10n.podcasts,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,
                 routeName: '/podcasts')),
+        _HomeButton(
+            label: l10n.sonarTubeTitle,
+            onPressed: () => AccessibilityFeedbackService.goNamed(context,
+                routeName: '/sonartube')),
         _HomeButton(
             label: l10n.convertMediaTitle,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,

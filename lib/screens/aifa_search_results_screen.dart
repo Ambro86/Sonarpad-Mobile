@@ -109,6 +109,14 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
   List<Widget> _buildResultsChildren() {
     final l10n = AppLocalizations.of(context);
     final children = <Widget>[];
+    final visibleParafarmacoResults = _aifaLoading
+        ? _parafarmacoResults
+            .where((product) => !_parafarmacoService.isMedicationResult(product))
+            .toList(growable: false)
+        : _parafarmacoService.excludeAifaMedicationDuplicates(
+            _parafarmacoResults,
+            _results,
+          );
 
     children.add(const _SectionHeader(
       title: 'Farmaci AIFA',
@@ -156,18 +164,18 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
         title: l10n.pharmacyProductsLoadingTitle,
         subtitle: 'Sto cercando parafarmaci, integratori e dispositivi.',
       ));
-    } else if (_parafarmacoError != null && _parafarmacoResults.isEmpty) {
+    } else if (_parafarmacoError != null && visibleParafarmacoResults.isEmpty) {
       children.add(_StatusTile.error(
         title: l10n.pharmacyProductsErrorTitle,
         subtitle: _parafarmacoError!,
       ));
-    } else if (_parafarmacoResults.isEmpty) {
+    } else if (visibleParafarmacoResults.isEmpty) {
       children.add(_StatusTile.info(
         title: l10n.pharmacyProductsNoResultsTitle,
         subtitle: 'Non sono disponibili schede prodotto per questa ricerca.',
       ));
     } else {
-      for (final product in _parafarmacoResults) {
+      for (final product in visibleParafarmacoResults) {
         children.add(ListTile(
           title: Text(
             product.name,

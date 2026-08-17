@@ -204,6 +204,96 @@ abstract class AppLocalizations {
   /// **'Media e intrattenimento'**
   String get categoryMedia;
 
+  /// No description provided for @sonarTubeTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'SonarTube'**
+  String get sonarTubeTitle;
+
+  /// No description provided for @sonarTubeSearchLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca video, canali o playlist'**
+  String get sonarTubeSearchLabel;
+
+  /// No description provided for @sonarTubeSearchPrompt.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci una ricerca per trovare video, canali e playlist.'**
+  String get sonarTubeSearchPrompt;
+
+  /// No description provided for @sonarTubeNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun video trovato.'**
+  String get sonarTubeNoResults;
+
+  /// No description provided for @sonarTubeLoadMore.
+  ///
+  /// In it, this message translates to:
+  /// **'Carica altri risultati'**
+  String get sonarTubeLoadMore;
+
+  /// No description provided for @sonarTubeChannel.
+  ///
+  /// In it, this message translates to:
+  /// **'Canale'**
+  String get sonarTubeChannel;
+
+  /// No description provided for @sonarTubePlaylist.
+  ///
+  /// In it, this message translates to:
+  /// **'Playlist'**
+  String get sonarTubePlaylist;
+
+  /// No description provided for @sonarTubeLive.
+  ///
+  /// In it, this message translates to:
+  /// **'In diretta'**
+  String get sonarTubeLive;
+
+  /// No description provided for @sonarTubeResolving.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione del video…'**
+  String get sonarTubeResolving;
+
+  /// No description provided for @sonarTubeFavorites.
+  ///
+  /// In it, this message translates to:
+  /// **'Preferiti'**
+  String get sonarTubeFavorites;
+
+  /// No description provided for @sonarTubeNoFavorites.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun canale o playlist preferito.'**
+  String get sonarTubeNoFavorites;
+
+  /// No description provided for @sonarTubeAddFavorite.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi ai preferiti'**
+  String get sonarTubeAddFavorite;
+
+  /// No description provided for @sonarTubeRemoveFavorite.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi dai preferiti'**
+  String get sonarTubeRemoveFavorite;
+
+  /// No description provided for @sonarTubeFavoriteAdded.
+  ///
+  /// In it, this message translates to:
+  /// **'{name} aggiunto ai preferiti.'**
+  String sonarTubeFavoriteAdded(String name);
+
+  /// No description provided for @sonarTubeFavoriteRemoved.
+  ///
+  /// In it, this message translates to:
+  /// **'{name} rimosso dai preferiti.'**
+  String sonarTubeFavoriteRemoved(String name);
+
   /// Localized text for categoryUtilities.
   ///
   /// In it, this message translates to:
@@ -3394,6 +3484,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Registrazioni'**
   String get recordings;
+
+  /// No description provided for @selectRecordings.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona registrazioni'**
+  String get selectRecordings;
+
+  /// No description provided for @deleteRecordingsConfirmation.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =1{Vuoi eliminare definitivamente una registrazione?} other{Vuoi eliminare definitivamente {count} registrazioni?}}'**
+  String deleteRecordingsConfirmation(int count);
 
   /// No description provided for @noRecordings.
   ///

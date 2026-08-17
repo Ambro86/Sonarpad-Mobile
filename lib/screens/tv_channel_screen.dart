@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
@@ -129,6 +130,28 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
       setState(() => _selectedDate = selected);
       _loadGuide();
     }
+  }
+
+  Future<void> _showProgramDetails(TvProgram program) {
+    final l10n = AppLocalizations.of(context);
+    final description = program.description.trim();
+    return showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(program.title),
+        content: SingleChildScrollView(
+          child: Text(
+            description.isEmpty ? l10n.noPodcastDescription : description,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.back),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _play() async {
@@ -304,6 +327,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                                     ? const Icon(Icons.live_tv,
                                         color: Colors.red)
                                     : null,
+                                onTap: () => _showProgramDetails(program),
                               );
                             },
                           ),

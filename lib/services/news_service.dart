@@ -132,6 +132,36 @@ class NewsService {
       : _client = client ?? http.Client(),
         _useBrowserClient = client == null;
 
+  /// Restituisce true quando l'estrazione non contiene altro che il titolo.
+  ///
+  /// Alcuni reader restituiscono il titolo della pagina come se fosse il
+  /// corpo dell'articolo. Il confronto ignora spazi e punteggiatura e gestisce
+  /// anche il titolo ripetuto, senza scartare un vero testo aggiuntivo.
+  static bool isArticleTextOnlyTitle(String text, String title) {
+    final textWords = _normalizedArticleWords(text);
+    final titleWords = _normalizedArticleWords(title);
+    if (textWords.isEmpty || titleWords.isEmpty) return false;
+    if (textWords.length % titleWords.length != 0) return false;
+
+    for (var i = 0; i < textWords.length; i++) {
+      if (textWords[i] != titleWords[i % titleWords.length]) return false;
+    }
+    return true;
+  }
+
+  static List<String> _normalizedArticleWords(String value) {
+    return value
+        .toLowerCase()
+        .replaceAll(
+          RegExp(r'''[\s.,;:!?\u2026'"\u201c\u201d\u2018\u2019\u00ab\u00bb()\[\]{}<>|/\\\u2014\u2013_-]+'''),
+          ' ',
+        )
+        .trim()
+        .split(' ')
+        .where((word) => word.isNotEmpty)
+        .toList(growable: false);
+  }
+
   String _getPrefsKey(NewsLanguage language) =>
       'news_sources_order_${language.name}';
   String _getHiddenPrefsKey(NewsLanguage language) =>

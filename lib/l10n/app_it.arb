@@ -64,6 +64,31 @@
   "@categoryMedia": {
     "description": "Localized text for categoryMedia."
   },
+  "sonarTubeTitle": "SonarTube",
+  "sonarTubeSearchLabel": "Cerca video, canali o playlist",
+  "sonarTubeSearchPrompt": "Inserisci una ricerca per trovare video, canali e playlist.",
+  "sonarTubeNoResults": "Nessun video trovato.",
+  "sonarTubeLoadMore": "Carica altri risultati",
+  "sonarTubeChannel": "Canale",
+  "sonarTubePlaylist": "Playlist",
+  "sonarTubeLive": "In diretta",
+  "sonarTubeResolving": "Preparazione del video…",
+  "sonarTubeFavorites": "Preferiti",
+  "sonarTubeNoFavorites": "Nessun canale o playlist preferito.",
+  "sonarTubeAddFavorite": "Aggiungi ai preferiti",
+  "sonarTubeRemoveFavorite": "Rimuovi dai preferiti",
+  "sonarTubeFavoriteAdded": "{name} aggiunto ai preferiti.",
+  "@sonarTubeFavoriteAdded": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sonarTubeFavoriteRemoved": "{name} rimosso dai preferiti.",
+  "@sonarTubeFavoriteRemoved": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
   "categoryUtilities": "Ricerche e utilità",
   "@categoryUtilities": {
     "description": "Localized text for categoryUtilities."
@@ -2580,6 +2605,13 @@
   "startRecording": "Avvia registrazione",
   "stopRecording": "Ferma registrazione",
   "recordings": "Registrazioni",
+  "selectRecordings": "Seleziona registrazioni",
+  "deleteRecordingsConfirmation": "{count, plural, =1{Vuoi eliminare definitivamente una registrazione?} other{Vuoi eliminare definitivamente {count} registrazioni?}}",
+  "@deleteRecordingsConfirmation": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "noRecordings": "Nessuna registrazione.",
   "recordingStarted": "Registrazione avviata.",
   "recordingSaved": "Registrazione salvata: {path}",

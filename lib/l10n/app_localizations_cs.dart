@@ -57,6 +57,56 @@ class AppLocalizationsCs extends AppLocalizations {
   String get categoryMedia => 'Média a zábava';
 
   @override
+  String get sonarTubeTitle => 'SonarTube';
+
+  @override
+  String get sonarTubeSearchLabel => 'Hledat videa, kanály nebo playlisty';
+
+  @override
+  String get sonarTubeSearchPrompt =>
+      'Zadejte hledání videí, kanálů a playlistů.';
+
+  @override
+  String get sonarTubeNoResults => 'Nebyla nalezena žádná videa.';
+
+  @override
+  String get sonarTubeLoadMore => 'Načíst další výsledky';
+
+  @override
+  String get sonarTubeChannel => 'Kanál';
+
+  @override
+  String get sonarTubePlaylist => 'Playlist';
+
+  @override
+  String get sonarTubeLive => 'Živě';
+
+  @override
+  String get sonarTubeResolving => 'Příprava videa…';
+
+  @override
+  String get sonarTubeFavorites => 'Oblíbené';
+
+  @override
+  String get sonarTubeNoFavorites => 'Žádné oblíbené kanály ani playlisty.';
+
+  @override
+  String get sonarTubeAddFavorite => 'Přidat do oblíbených';
+
+  @override
+  String get sonarTubeRemoveFavorite => 'Odebrat z oblíbených';
+
+  @override
+  String sonarTubeFavoriteAdded(String name) {
+    return '$name přidáno do oblíbených.';
+  }
+
+  @override
+  String sonarTubeFavoriteRemoved(String name) {
+    return '$name odebráno z oblíbených.';
+  }
+
+  @override
   String get categoryUtilities => 'Vyhledávání a nástroje';
 
   @override
@@ -1849,6 +1899,20 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get recordings => 'Nahrávky';
+
+  @override
+  String get selectRecordings => 'Vybrat nahrávky';
+
+  @override
+  String deleteRecordingsConfirmation(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Trvale odstranit $count nahrávek?',
+      one: 'Trvale odstranit jednu nahrávku?',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get noRecordings => 'Žádné nahrávky.';

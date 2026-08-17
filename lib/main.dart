@@ -27,6 +27,7 @@ import 'screens/librivox_screen.dart';
 import 'screens/news_screen.dart';
 import 'screens/cinema_screen.dart';
 import 'screens/podcast_screen.dart';
+import 'screens/sonartube_screen.dart';
 import 'screens/radio_screen.dart';
 import 'screens/radio_recordings_screen.dart';
 import 'screens/raiplay_screen.dart';
@@ -392,6 +393,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/cinema': (_) => const CinemaScreen(),
         '/meteo': (_) => const WeatherScreen(),
         '/podcasts': (_) => const PodcastScreen(),
+        '/sonartube': (_) => const SonarTubeScreen(),
         '/convert_media': (_) => const ConvertMediaScreen(),
         '/media_cutter': (_) => const MediaCutterScreen(),
         '/radio': (_) => const RadioScreen(),

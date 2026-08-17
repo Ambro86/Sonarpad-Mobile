@@ -19,16 +19,42 @@ class DropboxBrowserScreen extends StatefulWidget {
 
 class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   final DropboxService _dropbox = DropboxService();
+  final TextEditingController _searchController = TextEditingController();
   bool _loading = true;
   String? _error;
   String _currentPath = "";
+  String _searchQuery = "";
   List<Map<String, dynamic>> _entries = [];
   bool _isAuthenticating = false;
+
+  List<Map<String, dynamic>> get _visibleEntries {
+    final query = _searchQuery.trim().toLowerCase();
+    if (query.isEmpty) return _entries;
+    return _entries
+        .where((entry) {
+          final name = entry['name'];
+          return name is String && name.toLowerCase().contains(query);
+        })
+        .toList(growable: false);
+  }
 
   @override
   void initState() {
     super.initState();
     _init();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    if (_searchQuery.isNotEmpty) {
+      setState(() => _searchQuery = "");
+    }
   }
 
   Future<void> _init() async {
@@ -89,8 +115,10 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       });
 
       if (mounted) {
+        _searchController.clear();
         setState(() {
           _currentPath = path;
+          _searchQuery = "";
           _entries = filtered;
           _loading = false;
           _isAuthenticating = false;
@@ -102,6 +130,8 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
         setState(() {
           _entries = [];
           _currentPath = "";
+          _searchController.clear();
+          _searchQuery = "";
           _error = l10n.dropboxLoginPrompt;
           _loading = false;
           _isAuthenticating = false;
@@ -133,8 +163,10 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       final tempFile = File(p.join(tempDir.path, name));
       await tempFile.writeAsBytes(bytes);
 
-      final doc =
-          await widget.documentService.importFile(tempFile, originalName: name);
+      final doc = await widget.documentService.importFile(
+        tempFile,
+        originalName: name,
+      );
       await widget.documentService.add(doc);
 
       if (mounted) {
@@ -167,8 +199,9 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text(_currentPath.isEmpty ? 'Dropbox' : p.basename(_currentPath)),
+        title: Text(
+          _currentPath.isEmpty ? 'Dropbox' : p.basename(_currentPath),
+        ),
         actions: [
           if (_dropbox.isAuthenticated)
             IconButton(
@@ -179,9 +212,11 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
                 setState(() {
                   _entries = [];
                   _currentPath = "";
+                  _searchController.clear();
+                  _searchQuery = "";
                 });
               },
-            )
+            ),
         ],
       ),
       body: _buildBody(),
@@ -190,9 +225,11 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
 
   Widget _buildBody() {
     final l10n = AppLocalizations.of(context);
+    final visibleEntries = _visibleEntries;
     if (_loading || _isAuthenticating) {
       return Center(
-          child: CircularProgressIndicator(semanticsLabel: l10n.loading));
+        child: CircularProgressIndicator(semanticsLabel: l10n.loading),
+      );
     }
 
     if (!_dropbox.isAuthenticated) {
@@ -212,7 +249,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             if (_error != null) ...[
               const SizedBox(height: 16),
               Text(_error!, style: const TextStyle(color: Colors.red)),
-            ]
+            ],
           ],
         ),
       );
@@ -223,14 +260,16 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(_error!,
-                style: const TextStyle(color: Colors.red),
-                textAlign: TextAlign.center),
+            Text(
+              _error!,
+              style: const TextStyle(color: Colors.red),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _loadFolder(_currentPath),
               child: Text(l10n.retry),
-            )
+            ),
           ],
         ),
       );
@@ -238,6 +277,28 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
 
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              labelText: l10n.search,
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _searchQuery.isEmpty
+                  ? null
+                  : IconButton(
+                      onPressed: _clearSearch,
+                      icon: const Icon(Icons.clear),
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).closeButtonTooltip,
+                    ),
+              border: const OutlineInputBorder(),
+            ),
+            textInputAction: TextInputAction.search,
+            onChanged: (value) => setState(() => _searchQuery = value),
+          ),
+        ),
         if (_currentPath.isNotEmpty)
           ListTile(
             leading: const Icon(Icons.drive_folder_upload, size: 40),
@@ -248,12 +309,19 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             },
           ),
         Expanded(
-          child: _entries.isEmpty
-              ? Center(child: Text(l10n.noSupportedFilesInFolder))
+          child: visibleEntries.isEmpty
+              ? Center(
+                  child: Text(
+                    _searchQuery.trim().isEmpty
+                        ? l10n.noSupportedFilesInFolder
+                        : l10n.noDocumentSearchResults(_searchQuery.trim()),
+                    textAlign: TextAlign.center,
+                  ),
+                )
               : ListView.builder(
-                  itemCount: _entries.length,
+                  itemCount: visibleEntries.length,
                   itemBuilder: (context, index) {
-                    final entry = _entries[index];
+                    final entry = visibleEntries[index];
                     final isFolder = entry['.tag'] == 'folder';
                     final name = entry['name'] as String;
 

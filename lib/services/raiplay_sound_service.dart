@@ -10,6 +10,7 @@ class RaiPlaySoundItem {
   final RaiPlaySoundItemKind kind;
   final String pathId;
   final String audioUrl;
+  final DateTime? publishedAt;
 
   RaiPlaySoundItem({
     required this.id,
@@ -18,6 +19,7 @@ class RaiPlaySoundItem {
     required this.kind,
     required this.pathId,
     required this.audioUrl,
+    this.publishedAt,
   });
 }
 
@@ -34,6 +36,10 @@ class RaiPlaySoundPage {
 }
 
 class RaiPlaySoundService {
+  RaiPlaySoundService({http.Client? client}) : _client = client;
+
+  final http.Client? _client;
+
   static const _baseUrlB64 = "BT9NUQVqHVc7T1RfJlUTPlshCyReBjdSSi9E";
   static const _genresUrlB64 =
       "BT9NUQVqHVc7T1RfJlUTPlshCyReBjdSSi9ERy1WGycIPFwmQi0H";
@@ -98,15 +104,14 @@ class RaiPlaySoundService {
       },
     };
 
-    final response = await http
-        .post(
-          Uri.parse(searchUrl),
-          headers: {
-            'User-Agent': 'SonarpadMobile/0.1',
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode(body),
-        )
+    final response = await _post(
+      Uri.parse(searchUrl),
+      headers: {
+        'User-Agent': 'SonarpadMobile/0.1',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body),
+    )
         .timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
       throw Exception('Impossibile cercare in RaiPlay Sound.');
@@ -141,15 +146,14 @@ class RaiPlaySoundService {
     if (suggestionUrl == null) return null;
 
     try {
-      final response = await http
-          .post(
-            Uri.parse(suggestionUrl),
-            headers: {
-              'User-Agent': 'SonarpadMobile/0.1',
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({'text': query}),
-          )
+      final response = await _post(
+        Uri.parse(suggestionUrl),
+        headers: {
+          'User-Agent': 'SonarpadMobile/0.1',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'text': query}),
+      )
           .timeout(const Duration(seconds: 10));
       if (response.statusCode != 200) return null;
       final root = jsonDecode(response.body);
@@ -175,7 +179,7 @@ class RaiPlaySoundService {
   Future<RaiPlaySoundPage> loadPage(String url,
       {bool isRootPage = false}) async {
     final response =
-        await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+        await _get(Uri.parse(url)).timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
       throw Exception('HTTP ${response.statusCode}');
     }
@@ -243,7 +247,36 @@ class RaiPlaySoundService {
       kind: kind,
       pathId: pathId,
       audioUrl: audioUrl,
+      publishedAt: _preferredDate(card),
     );
+  }
+
+  DateTime? _preferredDate(Map<String, dynamic> card) {
+    for (final key in [
+      'publication_date_iso',
+      'publication_date',
+      'create_date',
+      'literal_publication_date',
+    ]) {
+      final raw = _stringField(card, key);
+      if (raw == null) continue;
+
+      final isoDate = DateTime.tryParse(raw);
+      if (isoDate != null) return isoDate;
+
+      final match = RegExp(
+        r'^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$',
+      ).firstMatch(raw);
+      if (match == null) continue;
+      final day = int.parse(match.group(1)!);
+      final month = int.parse(match.group(2)!);
+      final year = int.parse(match.group(3)!);
+      final date = DateTime(year, month, day);
+      if (date.year == year && date.month == month && date.day == day) {
+        return date;
+      }
+    }
+    return null;
   }
 
   String _preferredTitle(Map<String, dynamic> card) {
@@ -324,5 +357,21 @@ class RaiPlaySoundService {
     final trimmed = title.trim();
     return trimmed == 'Audiodescrizioni-fiction' ||
         trimmed == 'Audiodescrizioni_film';
+  }
+
+  Future<http.Response> _get(Uri url) {
+    final client = _client;
+    return client == null ? http.get(url) : client.get(url);
+  }
+
+  Future<http.Response> _post(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+  }) {
+    final client = _client;
+    return client == null
+        ? http.post(url, headers: headers, body: body)
+        : client.post(url, headers: headers, body: body);
   }
 }

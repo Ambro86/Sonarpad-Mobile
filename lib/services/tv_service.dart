@@ -83,12 +83,14 @@ class TvProgram {
   final String hour;
   final int startTime;
   final int endTime;
+  final String description;
 
   TvProgram({
     required this.title,
     required this.hour,
     required this.startTime,
     required this.endTime,
+    this.description = '',
   });
 }
 
@@ -388,6 +390,7 @@ class TvService {
                 hour: item['hour']?.toString().trim() ?? '',
                 startTime: startTime,
                 endTime: endTime,
+                description: item['description']?.toString().trim() ?? '',
               ),
             );
       }
@@ -588,8 +591,9 @@ class TvService {
       programs.add(TvProgram(
         title: item['title']?.toString().trim() ?? '',
         hour: item['hour']?.toString().trim() ?? '',
-        startTime: _readInt(item, 'start_time', 'start_time'),
-        endTime: _readInt(item, 'end_time', 'end_time'),
+        startTime: _readInt(item, 'startTime', 'start_time'),
+        endTime: _readInt(item, 'endTime', 'end_time'),
+        description: item['description']?.toString().trim() ?? '',
       ));
     }
 

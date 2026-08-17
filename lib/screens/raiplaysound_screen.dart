@@ -2,12 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:intl/intl.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/podcast_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/recent_searches_service.dart';
+import '../utils/list_timestamp_formatter.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
@@ -15,8 +19,14 @@ import '../utils/status_message.dart';
 class RaiPlaySoundScreen extends StatefulWidget {
   final String? url;
   final String? searchQuery;
+  final RaiPlaySoundService? service;
 
-  const RaiPlaySoundScreen({super.key, this.url, this.searchQuery});
+  const RaiPlaySoundScreen({
+    super.key,
+    this.url,
+    this.searchQuery,
+    this.service,
+  });
 
   @override
   State<RaiPlaySoundScreen> createState() => _RaiPlaySoundScreenState();
@@ -24,9 +34,10 @@ class RaiPlaySoundScreen extends StatefulWidget {
 
 class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   final _settings = AppSettingsService();
-  final _service = RaiPlaySoundService();
+  late final _service = widget.service ?? RaiPlaySoundService();
   final _podcastService = PodcastService();
   final _searchController = TextEditingController();
+  final _scrollController = AutoScrollController();
 
   RaiPlaySoundPage? _page;
   bool _loading = true;
@@ -45,6 +56,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -160,7 +172,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
         description: item.description,
         audioUrl: audioPath,
         id: 'raiplaysound:${item.id}',
-        publishedAt: DateTime.now(),
+        publishedAt: item.publishedAt ?? DateTime.now(),
       );
 
       if (!mounted) return;
@@ -174,6 +186,63 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
         Navigator.pushReplacement(context, route);
       } else {
         Navigator.push(context, route);
+      }
+    }
+  }
+
+  bool _hasDatedAudioItems(List<RaiPlaySoundItem> items) => items.any(
+        (item) =>
+            item.kind == RaiPlaySoundItemKind.audio && item.publishedAt != null,
+      );
+
+  Future<void> _openDateSelector(List<RaiPlaySoundItem> items) async {
+    final selectedItem = await Navigator.push<RaiPlaySoundItem>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _RaiPlaySoundDateSelectorScreen(items: items),
+      ),
+    );
+    if (selectedItem == null || !mounted) return;
+
+    final itemIndex = items.indexWhere((item) => item.id == selectedItem.id);
+    if (itemIndex < 0) return;
+    final listIndex = itemIndex + (_hasDatedAudioItems(items) ? 1 : 0);
+
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    await _tryScrollToItemIndex(listIndex);
+  }
+
+  Future<void> _tryScrollToItemIndex(int listIndex, {int attempt = 0}) async {
+    if (!mounted) return;
+    if (!_scrollController.hasClients) {
+      if (attempt < 3) {
+        Future<void>.delayed(
+          Duration(milliseconds: 250 + (attempt * 150)),
+          () => _tryScrollToItemIndex(listIndex, attempt: attempt + 1),
+        );
+      }
+      return;
+    }
+
+    try {
+      await _scrollController.scrollToIndex(
+        listIndex,
+        preferPosition: AutoScrollPosition.begin,
+        duration: const Duration(milliseconds: 300),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted || !_scrollController.hasClients) return;
+      await _scrollController.scrollToIndex(
+        listIndex,
+        preferPosition: AutoScrollPosition.begin,
+        duration: const Duration(milliseconds: 120),
+      );
+    } catch (_) {
+      if (attempt < 3) {
+        Future<void>.delayed(
+          Duration(milliseconds: 300 + (attempt * 200)),
+          () => _tryScrollToItemIndex(listIndex, attempt: attempt + 1),
+        );
       }
     }
   }
@@ -213,6 +282,9 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final items = _page?.items ?? const <RaiPlaySoundItem>[];
+    final hasDateButton = _hasDatedAudioItems(items);
     return Scaffold(
       appBar: AppBar(title: Text(_page?.title ?? 'RaiPlay Sound')),
       body: _loading
@@ -268,42 +340,80 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                       ),
                     Expanded(
                       child: ListView.builder(
+                        controller: _scrollController,
                         padding: const EdgeInsets.all(16),
-                        itemCount: _page!.items.length,
+                        itemCount: items.length + (hasDateButton ? 1 : 0),
                         itemBuilder: (context, index) {
-                          final item = _page!.items[index];
+                          if (hasDateButton && index == 0) {
+                            return AutoScrollTag(
+                              key: const ValueKey(
+                                'raiplaysound_select_date_scroll',
+                              ),
+                              controller: _scrollController,
+                              index: index,
+                              child: Card(
+                                child: ListTile(
+                                  key: const ValueKey(
+                                    'raiplaysound_select_date',
+                                  ),
+                                  leading: const Icon(Icons.event),
+                                  title: Text(l10n.podcastSelectDate),
+                                  trailing: const Icon(Icons.chevron_right),
+                                  onTap: () => _openDateSelector(items),
+                                ),
+                              ),
+                            );
+                          }
+
+                          final itemIndex = index - (hasDateButton ? 1 : 0);
+                          final item = items[itemIndex];
                           final isAudio =
                               item.kind == RaiPlaySoundItemKind.audio;
 
-                          return Card(
-                            key: ValueKey('raiplaysound_item_${item.id}'),
-                            child: Semantics(
-                              key: ValueKey(
-                                  'raiplaysound_item_semantics_${item.id}'),
-                              container: true,
-                              customSemanticsActions: {
-                                if (isAudio && _canSubscribeCurrentPage)
-                                  const CustomSemanticsAction(
-                                    label: 'Aggiungi ai podcast',
-                                  ): () => unawaited(
-                                        _subscribeCurrentPageToPodcasts(),
-                                      ),
-                              },
-                              child: ListTile(
+                          return AutoScrollTag(
+                            key: ValueKey(
+                              'raiplaysound_item_scroll_${item.id}',
+                            ),
+                            controller: _scrollController,
+                            index: index,
+                            child: Card(
+                              key: ValueKey('raiplaysound_item_${item.id}'),
+                              child: Semantics(
                                 key: ValueKey(
-                                    'raiplaysound_item_tile_${item.id}'),
-                                leading: Icon(
-                                  isAudio ? Icons.audiotrack : Icons.folder,
+                                    'raiplaysound_item_semantics_${item.id}'),
+                                container: true,
+                                customSemanticsActions: {
+                                  if (isAudio && _canSubscribeCurrentPage)
+                                    const CustomSemanticsAction(
+                                      label: 'Aggiungi ai podcast',
+                                    ): () => unawaited(
+                                          _subscribeCurrentPageToPodcasts(),
+                                        ),
+                                },
+                                child: ListTile(
+                                  key: ValueKey(
+                                      'raiplaysound_item_tile_${item.id}'),
+                                  leading: Icon(
+                                    isAudio ? Icons.audiotrack : Icons.folder,
+                                  ),
+                                  title: Text(
+                                    isAudio
+                                        ? titleWithListTimestamp(
+                                            item.title,
+                                            item.publishedAt,
+                                            l10n.localeName,
+                                          )
+                                        : item.title,
+                                  ),
+                                  subtitle: item.description.isNotEmpty
+                                      ? Text(
+                                          item.description,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        )
+                                      : null,
+                                  onTap: () => _openItem(item),
                                 ),
-                                title: Text(item.title),
-                                subtitle: item.description.isNotEmpty
-                                    ? Text(
-                                        item.description,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      )
-                                    : null,
-                                onTap: () => _openItem(item),
                               ),
                             ),
                           );
@@ -314,4 +424,60 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                 ),
     );
   }
+}
+
+class _RaiPlaySoundDateSelectorScreen extends StatelessWidget {
+  const _RaiPlaySoundDateSelectorScreen({required this.items});
+
+  final List<RaiPlaySoundItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final formatter = DateFormat.yMMMMd(l10n.localeName);
+    final datedItems = <_RaiPlaySoundDatedItem>[];
+    final seenDates = <String>{};
+
+    for (final item in items) {
+      if (item.kind != RaiPlaySoundItemKind.audio) continue;
+      final publishedAt = item.publishedAt;
+      if (publishedAt == null) continue;
+      final localDate = publishedAt.toLocal();
+      final dateKey = '${localDate.year.toString().padLeft(4, '0')}-'
+          '${localDate.month.toString().padLeft(2, '0')}-'
+          '${localDate.day.toString().padLeft(2, '0')}';
+      if (seenDates.add(dateKey)) {
+        datedItems.add(_RaiPlaySoundDatedItem(localDate, item));
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.podcastSelectDate)),
+      body: SafeArea(
+        child: datedItems.isEmpty
+            ? Center(child: Text(l10n.podcastNoDatesAvailable))
+            : ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: datedItems.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                itemBuilder: (context, index) {
+                  final datedItem = datedItems[index];
+                  return Card(
+                    child: ListTile(
+                      title: Text(formatter.format(datedItem.date)),
+                      onTap: () => Navigator.pop(context, datedItem.item),
+                    ),
+                  );
+                },
+              ),
+      ),
+    );
+  }
+}
+
+class _RaiPlaySoundDatedItem {
+  const _RaiPlaySoundDatedItem(this.date, this.item);
+
+  final DateTime date;
+  final RaiPlaySoundItem item;
 }

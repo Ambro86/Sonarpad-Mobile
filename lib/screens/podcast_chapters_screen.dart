@@ -8,10 +8,15 @@ class PodcastChaptersScreen extends StatelessWidget {
   PodcastChaptersScreen({
     super.key,
     required this.episode,
-  });
+    this.chapters,
+    PodcastService? service,
+  }) : _chaptersFuture = chapters == null
+            ? (service ?? PodcastService()).fetchEpisodeChapters(episode)
+            : Future.value(chapters);
 
   final PodcastEpisode episode;
-  final PodcastService _service = PodcastService();
+  final List<PodcastChapter>? chapters;
+  final Future<List<PodcastChapter>> _chaptersFuture;
 
   String _format(Duration duration) {
     final hours = duration.inHours;
@@ -30,7 +35,7 @@ class PodcastChaptersScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.podcastChapters)),
       body: SafeArea(
         child: FutureBuilder<List<PodcastChapter>>(
-          future: _service.fetchEpisodeChapters(episode),
+          future: _chaptersFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
               return Center(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
@@ -10,6 +11,10 @@ import 'package:xml/xml.dart';
 import '../models/podcast.dart';
 import 'raiplay_sound_service.dart';
 import 'podcast_cache_service.dart';
+
+typedef EmbeddedPodcastChapterLoader = Future<List<PodcastChapter>> Function(
+  String mediaUrl,
+);
 
 class PodcastService {
   String _getPlayedEpisodesKey(String feedUrl) => 'sonarpad_played_episodes_$feedUrl';
@@ -912,7 +917,13 @@ class PodcastService {
         czechName: 'TV recenze'),
   ];
   final http.Client _client;
-  PodcastService({http.Client? client}) : _client = client ?? http.Client();
+  final EmbeddedPodcastChapterLoader? _embeddedChapterLoader;
+
+  PodcastService({
+    http.Client? client,
+    EmbeddedPodcastChapterLoader? embeddedChapterLoader,
+  })  : _client = client ?? http.Client(),
+        _embeddedChapterLoader = embeddedChapterLoader;
 
   Future<List<PodcastSubscription>> loadSubscriptions() async {
     final prefs = await SharedPreferences.getInstance();
@@ -1494,13 +1505,68 @@ class PodcastService {
         // non sempre raggiungibili o protetti da CDN.
       }
     }
-    return const [];
+
+    try {
+      return await (_embeddedChapterLoader ?? _loadEmbeddedMediaChapters)(
+        episode.audioUrl,
+      );
+    } catch (_) {
+      // I capitoli incorporati sono un miglioramento opzionale: un formato non
+      // supportato o un server che rifiuta FFprobe non deve bloccare il player.
+      return const [];
+    }
   }
 
   bool hasChapterSource(PodcastEpisode episode) {
     return (episode.chaptersUrl?.trim().isNotEmpty ?? false) ||
         extractEmbeddedChaptersUrl(episode.audioUrl) != null ||
         extractBuzzsproutChaptersUrl(episode.audioUrl) != null;
+  }
+
+  Future<List<PodcastChapter>> _loadEmbeddedMediaChapters(
+    String mediaUrl,
+  ) async {
+    final session = await FFprobeKit.getMediaInformation(mediaUrl, 15000);
+    final mediaInformation = session.getMediaInformation();
+    if (mediaInformation == null) return const [];
+    return parseEmbeddedMediaChapters(
+      mediaInformation.getChapters().map((chapter) {
+        return Map<dynamic, dynamic>.from(
+          chapter.getAllProperties() ?? const <dynamic, dynamic>{},
+        );
+      }),
+    );
+  }
+
+  List<PodcastChapter> parseEmbeddedMediaChapters(
+    Iterable<Map<dynamic, dynamic>> rawChapters,
+  ) {
+    final chapters = <PodcastChapter>[];
+    for (final raw in rawChapters) {
+      final start = _parseChapterStartTime(raw['start_time']);
+      if (start == null || start < Duration.zero) continue;
+      final rawTags = raw['tags'];
+      String? title;
+      if (rawTags is Map) {
+        for (final entry in rawTags.entries) {
+          if (entry.key.toString().toLowerCase() != 'title') continue;
+          final candidate = entry.value?.toString().trim();
+          if (candidate != null && candidate.isNotEmpty) title = candidate;
+          break;
+        }
+      }
+      if (title == null) continue;
+      chapters.add(PodcastChapter(start: start, title: title));
+    }
+    chapters.sort((a, b) => a.start.compareTo(b.start));
+    final deduped = <PodcastChapter>[];
+    Duration? lastStart;
+    for (final chapter in chapters) {
+      if (chapter.start == lastStart) continue;
+      deduped.add(chapter);
+      lastStart = chapter.start;
+    }
+    return deduped;
   }
 
   String? extractEmbeddedChaptersUrl(String url) {

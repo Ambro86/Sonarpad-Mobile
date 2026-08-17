@@ -12,6 +12,8 @@ import '../services/app_settings_service.dart';
 import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/tv_service.dart';
+import '../utils/status_message.dart';
+import '../widgets/recording_selection_dialog.dart';
 import 'podcast_episode_player_screen.dart';
 
 class RadioRecordingsScreen extends StatefulWidget {
@@ -76,17 +78,51 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
   }
 
   Future<void> _deleteRecording(File file) async {
-    if (await file.exists()) {
-      await file.delete();
+    await _deleteRecordings([file]);
+  }
+
+  Future<void> _deleteRecordings(List<File> files) async {
+    for (final file in files) {
+      if (await file.exists()) {
+        await file.delete();
+      }
     }
     _reload();
   }
 
   Future<void> _shareRecording(File file) async {
+    await _shareRecordings([file]);
+  }
+
+  Future<void> _shareRecordings(List<File> files) async {
+    if (files.isEmpty) return;
     await SharePlus.instance.share(ShareParams(
-      files: [XFile(file.path)],
-      subject: p.basenameWithoutExtension(file.path),
+      files: files.map((file) => XFile(file.path)).toList(),
+      subject: files.length == 1
+          ? p.basenameWithoutExtension(files.single.path)
+          : AppLocalizations.of(context).recordings,
     ));
+  }
+
+  Future<void> _selectAndShareRecordings() async {
+    try {
+      final recordings = await _future;
+      if (!mounted) return;
+      final result = await showRecordingSelectionDialog(context, recordings);
+      if (!mounted || result == null || result.recordings.isEmpty) return;
+      switch (result.action) {
+        case RecordingSelectionAction.share:
+          await _shareRecordings(result.recordings);
+          break;
+        case RecordingSelectionAction.delete:
+          await _deleteRecordings(result.recordings);
+          break;
+      }
+    } catch (error) {
+      if (mounted) {
+        showStatusMessage(context, AppLocalizations.of(context).error(error));
+      }
+    }
   }
 
   String _openLabel(String localeName) => switch (localeName) {
@@ -114,6 +150,11 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
       appBar: AppBar(
         title: Text(l10n.recordings),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.playlist_add_check),
+            tooltip: l10n.selectRecordings,
+            onPressed: _isAccessAllowed ? _selectAndShareRecordings : null,
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: l10n.update,
@@ -162,34 +203,36 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
                   key: ValueKey('radio_recording_${file.path}'),
                   leading: const Icon(Icons.mic),
                   title: Text(name),
-                  trailing: PopupMenuButton<_RecordingAction>(
-                    onSelected: (action) {
-                      switch (action) {
-                        case _RecordingAction.open:
-                          _openRecording(file);
-                          break;
-                        case _RecordingAction.share:
-                          _shareRecording(file);
-                          break;
-                        case _RecordingAction.delete:
-                          _deleteRecording(file);
-                          break;
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: _RecordingAction.open,
-                        child: Text(_openLabel(l10n.localeName)),
-                      ),
-                      PopupMenuItem(
-                        value: _RecordingAction.share,
-                        child: Text(l10n.share),
-                      ),
-                      PopupMenuItem(
-                        value: _RecordingAction.delete,
-                        child: Text(_deleteLabel(l10n.localeName)),
-                      ),
-                    ],
+                  trailing: ExcludeSemantics(
+                    child: PopupMenuButton<_RecordingAction>(
+                      onSelected: (action) {
+                        switch (action) {
+                          case _RecordingAction.open:
+                            _openRecording(file);
+                            break;
+                          case _RecordingAction.share:
+                            _shareRecording(file);
+                            break;
+                          case _RecordingAction.delete:
+                            _deleteRecording(file);
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: _RecordingAction.open,
+                          child: Text(_openLabel(l10n.localeName)),
+                        ),
+                        PopupMenuItem(
+                          value: _RecordingAction.share,
+                          child: Text(l10n.share),
+                        ),
+                        PopupMenuItem(
+                          value: _RecordingAction.delete,
+                          child: Text(_deleteLabel(l10n.localeName)),
+                        ),
+                      ],
+                    ),
                   ),
                   onTap: () => _openRecording(file),
                 ),

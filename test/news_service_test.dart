@@ -17,6 +17,33 @@ void main() {
       NewsService.resetTinyfishFallbackOnlyPolicyForTests();
     });
 
+    test('riconosce come insufficiente il testo composto solo dal titolo', () {
+      const title = 'Un titolo molto lungo: con spazi e punteggiatura!';
+
+      expect(
+        NewsService.isArticleTextOnlyTitle(title, title),
+        isTrue,
+      );
+      expect(
+        NewsService.isArticleTextOnlyTitle('$title\n\n$title', title),
+        isTrue,
+      );
+      expect(
+        NewsService.isArticleTextOnlyTitle(
+          '$title\n\nQuesto è il primo paragrafo dell articolo.',
+          title,
+        ),
+        isFalse,
+      );
+      expect(
+        NewsService.isArticleTextOnlyTitle(
+          'Un testo breve ma diverso dal titolo.',
+          title,
+        ),
+        isFalse,
+      );
+    });
+
     test('uses Corriere restyle 2025 feed as default source', () {
       final corriere = italianNewsSources.firstWhere(
         (source) => source.name == 'Corriere della Sera',

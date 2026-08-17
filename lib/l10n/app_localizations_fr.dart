@@ -57,6 +57,57 @@ class AppLocalizationsFr extends AppLocalizations {
   String get categoryMedia => 'Médias et divertissement';
 
   @override
+  String get sonarTubeTitle => 'SonarTube';
+
+  @override
+  String get sonarTubeSearchLabel =>
+      'Rechercher des vidéos, chaînes ou playlists';
+
+  @override
+  String get sonarTubeSearchPrompt =>
+      'Saisissez une recherche pour trouver des vidéos, chaînes et playlists.';
+
+  @override
+  String get sonarTubeNoResults => 'Aucune vidéo trouvée.';
+
+  @override
+  String get sonarTubeLoadMore => 'Charger plus de résultats';
+
+  @override
+  String get sonarTubeChannel => 'Chaîne';
+
+  @override
+  String get sonarTubePlaylist => 'Playlist';
+
+  @override
+  String get sonarTubeLive => 'En direct';
+
+  @override
+  String get sonarTubeResolving => 'Préparation de la vidéo…';
+
+  @override
+  String get sonarTubeFavorites => 'Favoris';
+
+  @override
+  String get sonarTubeNoFavorites => 'Aucune chaîne ou playlist favorite.';
+
+  @override
+  String get sonarTubeAddFavorite => 'Ajouter aux favoris';
+
+  @override
+  String get sonarTubeRemoveFavorite => 'Retirer des favoris';
+
+  @override
+  String sonarTubeFavoriteAdded(String name) {
+    return '$name ajouté aux favoris.';
+  }
+
+  @override
+  String sonarTubeFavoriteRemoved(String name) {
+    return '$name retiré des favoris.';
+  }
+
+  @override
   String get categoryUtilities => 'Recherches et utilitaires';
 
   @override
@@ -1865,6 +1916,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get recordings => 'Enregistrements';
+
+  @override
+  String get selectRecordings => 'Sélectionner des enregistrements';
+
+  @override
+  String deleteRecordingsConfirmation(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Supprimer définitivement $count enregistrements ?',
+      one: 'Supprimer définitivement un enregistrement ?',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get noRecordings => 'Aucun enregistrement.';

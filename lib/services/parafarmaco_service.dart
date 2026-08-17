@@ -6,6 +6,8 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
+import 'aifa_service.dart';
+
 class ParafarmacoSearchResult {
   final String name;
   final String category;
@@ -86,6 +88,37 @@ class ParafarmacoService {
       'Mozilla/5.0 (compatible; SonarpadMobile/1.0; +https://sonarpad.com)';
 
   final Map<String, dom.Document> _indexCache = {};
+
+  /// Rimuove soltanto le schede di medicinali Codifa già rappresentate dai
+  /// risultati ufficiali AIFA. Integratori, dispositivi e parafarmaci con lo
+  /// stesso marchio restano disponibili.
+  List<ParafarmacoSearchResult> excludeAifaMedicationDuplicates(
+    List<ParafarmacoSearchResult> products,
+    List<AifaDrugResult> aifaDrugs,
+  ) {
+    if (aifaDrugs.isEmpty) return List.of(products);
+    return products
+        .where((product) =>
+            !isMedicationResult(product) ||
+            !aifaDrugs.any((drug) =>
+                _sameCommercialMedicine(product.name, drug.denominazione)))
+        .toList(growable: false);
+  }
+
+  bool isMedicationResult(ParafarmacoSearchResult product) {
+    final path = Uri.tryParse(product.sourceUrl)?.path.toLowerCase() ?? '';
+    return path.contains('/farmaci/') ||
+        product.category.toLowerCase().contains('medicinale');
+  }
+
+  bool _sameCommercialMedicine(String productName, String aifaName) {
+    final product = _normalize(productName);
+    final aifa = _normalize(aifaName);
+    if (product.length < 3 || aifa.length < 3) return false;
+    return product == aifa ||
+        product.startsWith('$aifa ') ||
+        aifa.startsWith('$product ');
+  }
 
   Future<List<ParafarmacoSearchResult>> searchProducts(String rawQuery) async {
     final query = rawQuery.trim();

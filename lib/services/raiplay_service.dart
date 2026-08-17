@@ -95,7 +95,11 @@ class RaiPlayService {
       throw Exception('Impossibile caricare il menu RaiPlay.');
     }
 
-    final root = jsonDecode(resp.body);
+    return parseRootMenuResponse(resp.body);
+  }
+
+  RaiPlayPage parseRootMenuResponse(String responseBody) {
+    final root = jsonDecode(responseBody);
     final sections = root['menuv4'] ?? root['menuv3'];
     if (sections == null || sections is! List) {
       throw Exception('Menu RaiPlay non disponibile.');
@@ -228,7 +232,13 @@ class RaiPlayService {
 
     String title = _menuLabel(rawTitle);
 
-    if (title.toLowerCase() == 'altro') return null;
+    final normalizedTitle = title.toLowerCase();
+    final menuType = (_stringField(section, 'menu_type') ?? '').toLowerCase();
+    if (normalizedTitle == 'altro' ||
+        normalizedTitle == 'dirette' ||
+        menuType == 'canali tv') {
+      return null;
+    }
     final elements = section['elements'];
     if (elements is List && elements.isNotEmpty) {
       final desc = _sectionDescription(

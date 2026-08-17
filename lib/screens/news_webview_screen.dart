@@ -622,7 +622,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     }
 
     final currentLen = _readerText?.trim().length ?? 0;
-    if (currentLen >= _httpShortThreshold) return;
+    if (currentLen >= _httpShortThreshold &&
+        !_isOnlyArticleTitle(_readerText ?? '')) {
+      return;
+    }
 
     if (_isGoogleNewsUrl(widget.article.link)) {
       final initialLoad = _initialReaderLoad;
@@ -646,7 +649,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           return;
         }
         final loadedLen = _readerText?.trim().length ?? 0;
-        if (loadedLen >= _httpShortThreshold) {
+        if (loadedLen >= _httpShortThreshold &&
+            !_isOnlyArticleTitle(_readerText ?? '')) {
           unawaited(AppLogger.log(
             'News reader final URL HTTP: skip, reader iniziale gia buono '
             'length=$loadedLen url=$finalUrl',
@@ -674,7 +678,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         'News reader final URL HTTP: estrazione completata '
         'length=${text.length} existingLength=$existingLen url=$finalUrl',
       ));
-      if (text.length >= _httpMinLength && text.length > existingLen) {
+      if (text.length >= _httpMinLength &&
+          text.length > existingLen &&
+          !_isOnlyArticleTitle(text)) {
         setState(() {
           _readerTitle = widget.article.title;
           _readerText = text;
@@ -706,10 +712,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       unawaited(AppLogger.log(
         'News reader HTTP: estrazione completata length=${text.length}',
       ));
-      if (text.length < _httpMinLength) {
+      final onlyTitle = _isOnlyArticleTitle(text);
+      if (text.length < _httpMinLength || onlyTitle) {
         unawaited(AppLogger.log(
-          'News reader HTTP: testo troppo corto, resta WebView '
-          'length=${text.length}',
+          'News reader HTTP: testo insufficiente, resta WebView '
+          'length=${text.length} onlyTitle=$onlyTitle',
         ));
         unawaited(AppLogger.log(
           'News reader UI: reader HTTP insufficiente; attendo WebView e, solo '
@@ -721,7 +728,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           'length=${text.length}',
         ));
       }
-      if (text.length >= _httpMinLength) {
+      if (text.length >= _httpMinLength && !onlyTitle) {
         setState(() {
           _readerTitle = widget.article.title;
           _readerText = text;
@@ -785,7 +792,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         // Salta solo se il testo HTTP è già lungo; i testi brevi possono
         // essere migliorati dalla pagina visibile.
         final httpLen = _readerBestTextLength;
-        if (_readerText != null && httpLen >= _httpShortThreshold) {
+        if (_readerText != null &&
+            httpLen >= _httpShortThreshold &&
+            !_isOnlyArticleTitle(_readerText!)) {
           unawaited(AppLogger.log(
             'News reader WebView: skip tentativo ${i + 1}, '
             'testo HTTP già buono length=$httpLen',
@@ -805,7 +814,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           ));
           // Sostituisce il testo HTTP se il WebView trova qualcosa di più
           // lungo e abbastanza consistente da rappresentare l'articolo.
-          if (text.length >= 400 && text.length > httpLen) {
+          if (text.length >= 400 &&
+              text.length > httpLen &&
+              !_isOnlyArticleTitle(text)) {
             setState(() {
               _readerTitle = widget.article.title;
               _readerText = text;
@@ -883,12 +894,16 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   bool _hasSufficientReaderTextForTinyfishSkip() {
     final text = _readerText?.trim() ?? '';
     if (text.length < _httpMinLength) return false;
+    if (_isOnlyArticleTitle(text)) return false;
     if (text == widget.article.summary.trim()) return false;
     if (text.length < 1200 && _looksLikeTruncatedReaderText(text)) {
       return false;
     }
     return true;
   }
+
+  bool _isOnlyArticleTitle(String text) =>
+      NewsService.isArticleTextOnlyTitle(text, widget.article.title);
 
   bool _looksLikeTruncatedReaderText(String text) {
     final trimmed = text.trimRight();
@@ -925,7 +940,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     final text = content?.text.trim() ?? '';
     final existingLength = _readerText?.trim().length ?? 0;
-    if (text.length >= _httpMinLength && text.length > existingLength) {
+    if (text.length >= _httpMinLength &&
+        text.length > existingLength &&
+        !_isOnlyArticleTitle(text)) {
       setState(() {
         _readerTitle = widget.article.title;
         _readerText = text;

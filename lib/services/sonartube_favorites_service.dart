@@ -1,0 +1,85 @@
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'sonartube_service.dart';
+
+class SonarTubeFavoritesService {
+  static const _key = 'sonarpad_sonartube_favorites';
+
+  Future<List<SonarTubeItem>> loadFavorites() async {
+    final preferences = await SharedPreferences.getInstance();
+    final encoded = preferences.getStringList(_key) ?? const [];
+    final favorites = <SonarTubeItem>[];
+    for (final value in encoded) {
+      try {
+        final raw = jsonDecode(value);
+        if (raw is! Map) continue;
+        final item = _fromJson(Map<String, dynamic>.from(raw));
+        if (item != null) favorites.add(item);
+      } catch (_) {
+        // Ignora una singola voce danneggiata senza perdere gli altri preferiti.
+      }
+    }
+    return favorites;
+  }
+
+  Future<bool> toggleFavorite(SonarTubeItem item) async {
+    if (item.kind == SonarTubeItemKind.video) {
+      throw ArgumentError('Solo canali e playlist possono essere preferiti.');
+    }
+    final favorites = await loadFavorites();
+    final key = itemKey(item);
+    final wasFavorite = favorites.any((favorite) => itemKey(favorite) == key);
+    favorites.removeWhere((favorite) => itemKey(favorite) == key);
+    if (!wasFavorite) favorites.add(item);
+    await _save(favorites);
+    return !wasFavorite;
+  }
+
+  String itemKey(SonarTubeItem item) => '${item.kind.name}:${item.id}';
+
+  Future<void> _save(List<SonarTubeItem> favorites) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setStringList(
+      _key,
+      favorites.map((item) => jsonEncode(_toJson(item))).toList(),
+    );
+  }
+
+  Map<String, dynamic> _toJson(SonarTubeItem item) => {
+    'kind': item.kind.name,
+    'id': item.id,
+    'title': item.title,
+    'url': item.url,
+    'channel': item.channel,
+    'thumbnail': item.thumbnailUrl,
+    'description': item.description,
+  };
+
+  SonarTubeItem? _fromJson(Map<String, dynamic> raw) {
+    final kind = switch (raw['kind']) {
+      'channel' => SonarTubeItemKind.channel,
+      'playlist' => SonarTubeItemKind.playlist,
+      _ => null,
+    };
+    final id = raw['id']?.toString().trim();
+    final title = raw['title']?.toString().trim();
+    if (kind == null ||
+        id == null ||
+        id.isEmpty ||
+        title == null ||
+        title.isEmpty) {
+      return null;
+    }
+    return SonarTubeItem(
+      kind: kind,
+      id: id,
+      title: title,
+      url: raw['url']?.toString() ?? '',
+      channel: raw['channel']?.toString(),
+      thumbnailUrl: raw['thumbnail']?.toString(),
+      description: raw['description']?.toString(),
+    );
+  }
+}

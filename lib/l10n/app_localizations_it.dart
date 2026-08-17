@@ -57,6 +57,56 @@ class AppLocalizationsIt extends AppLocalizations {
   String get categoryMedia => 'Media e intrattenimento';
 
   @override
+  String get sonarTubeTitle => 'SonarTube';
+
+  @override
+  String get sonarTubeSearchLabel => 'Cerca video, canali o playlist';
+
+  @override
+  String get sonarTubeSearchPrompt =>
+      'Inserisci una ricerca per trovare video, canali e playlist.';
+
+  @override
+  String get sonarTubeNoResults => 'Nessun video trovato.';
+
+  @override
+  String get sonarTubeLoadMore => 'Carica altri risultati';
+
+  @override
+  String get sonarTubeChannel => 'Canale';
+
+  @override
+  String get sonarTubePlaylist => 'Playlist';
+
+  @override
+  String get sonarTubeLive => 'In diretta';
+
+  @override
+  String get sonarTubeResolving => 'Preparazione del video…';
+
+  @override
+  String get sonarTubeFavorites => 'Preferiti';
+
+  @override
+  String get sonarTubeNoFavorites => 'Nessun canale o playlist preferito.';
+
+  @override
+  String get sonarTubeAddFavorite => 'Aggiungi ai preferiti';
+
+  @override
+  String get sonarTubeRemoveFavorite => 'Rimuovi dai preferiti';
+
+  @override
+  String sonarTubeFavoriteAdded(String name) {
+    return '$name aggiunto ai preferiti.';
+  }
+
+  @override
+  String sonarTubeFavoriteRemoved(String name) {
+    return '$name rimosso dai preferiti.';
+  }
+
+  @override
   String get categoryUtilities => 'Ricerche e utilità';
 
   @override
@@ -1856,6 +1906,20 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get recordings => 'Registrazioni';
+
+  @override
+  String get selectRecordings => 'Seleziona registrazioni';
+
+  @override
+  String deleteRecordingsConfirmation(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Vuoi eliminare definitivamente $count registrazioni?',
+      one: 'Vuoi eliminare definitivamente una registrazione?',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get noRecordings => 'Nessuna registrazione.';

@@ -1,8 +1,45 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/services/raiplay_service.dart';
 
 void main() {
   const secretKey = String.fromEnvironment('RAIPLAY_SECRET');
+
+  test('hides the RaiPlay live TV section from the root menu', () {
+    final page = RaiPlayService().parseRootMenuResponse(jsonEncode({
+      'menuv4': [
+        {
+          'name': 'Home',
+          'menu_type': 'Home',
+          'elements': [{}],
+        },
+        {
+          'name': 'Dirette',
+          'menu_type': 'Canali Tv',
+          'elements': [
+            {'title': 'Guida TV/Replay'},
+            {'title': 'Dirette'},
+          ],
+        },
+        {
+          'name': 'Catalogo',
+          'menu_type': 'Catalogo',
+          'elements': [{}],
+        },
+        {
+          'name': 'Altro',
+          'menu_type': 'Altro',
+          'elements': [{}],
+        },
+      ],
+    }));
+
+    expect(
+      page.items.map((item) => item.title),
+      ['Home', 'Catalogo', 'TGR'],
+    );
+  });
 
   test('keeps RaiPlay video master separate from described audio track', () {
     const masterUrl =
@@ -29,6 +66,21 @@ video/playlist.m3u8
       'https://example.com/path/des/audio.m3u8?token=abc',
     );
   });
+
+  test('real RaiPlay root omits the live TV section', () async {
+    final service = RaiPlayService();
+    expect(service.isSecretCodeValid(secretKey), isTrue);
+
+    final page = await service.loadRootPage(secretKey);
+
+    expect(
+      page.items.map((item) => item.title.toLowerCase()),
+      isNot(contains('dirette')),
+    );
+  }, skip: secretKey.trim().isEmpty
+      ? 'Pass RAIPLAY_SECRET with '
+          '--dart-define=RAIPLAY_SECRET=<code> to run the real RaiPlay test.'
+      : false);
 
   test('resolves a real Mare Fuori episode into separate video and audio URLs',
       () async {

@@ -50,6 +50,7 @@ class _PodcastEpisodePlayerScreenState
 
   bool _loaded = false;
   bool _loading = false;
+  List<PodcastChapter>? _detectedChapters;
   String? _error;
   int _seekStep = 60;
   int _lastVideoBookmarkSecond = -1;
@@ -327,7 +328,10 @@ class _PodcastEpisodePlayerScreenState
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/podcasts/chapters'),
-        builder: (_) => PodcastChaptersScreen(episode: widget.episode),
+        builder: (_) => PodcastChaptersScreen(
+          episode: widget.episode,
+          chapters: _detectedChapters,
+        ),
       ),
     );
     if (position == null || !mounted) return;
@@ -344,6 +348,12 @@ class _PodcastEpisodePlayerScreenState
     } else {
       await _audio.seek(position);
     }
+  }
+
+  Future<void> _detectChapters() async {
+    final chapters = await _podcastService.fetchEpisodeChapters(widget.episode);
+    if (!mounted) return;
+    setState(() => _detectedChapters = chapters);
   }
 
   void _toggleVideo(bool enable) {
@@ -409,6 +419,7 @@ class _PodcastEpisodePlayerScreenState
       '$_logSubject',
     );
     _loadSettings();
+    unawaited(_detectChapters());
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       AppLogger.log(
         'PodcastPlayer: postFrame callback start mounted=$mounted, $_logSubject',
@@ -721,7 +732,8 @@ class _PodcastEpisodePlayerScreenState
                   textAlign: TextAlign.center,
                 ),
               ],
-              if (_podcastService.hasChapterSource(widget.episode)) ...[
+              if (_podcastService.hasChapterSource(widget.episode) ||
+                  (_detectedChapters?.isNotEmpty ?? false)) ...[
                 const SizedBox(height: 16),
                 Center(
                   child: OutlinedButton.icon(
