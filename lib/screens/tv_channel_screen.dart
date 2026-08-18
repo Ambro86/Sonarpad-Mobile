@@ -6,8 +6,89 @@ import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
+import '../utils/accessibility_list_behavior.dart';
 import 'radio_player_screen.dart';
 import '../utils/status_message.dart';
+
+Future<DateTime?> showTvDaySelectionDialog(
+  BuildContext context, {
+  required DateTime selectedDate,
+  required DateTime today,
+  required String Function(DateTime date) labelForDate,
+}) {
+  return showDialog<DateTime>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Scegli giorno'),
+      content: RadioGroup<DateTime>(
+        groupValue: selectedDate,
+        onChanged: (value) {
+          if (value != null) Navigator.pop(dialogContext, value);
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [-1, 0, 1, 2].map((offset) {
+            final date = today.add(Duration(days: offset));
+            return RadioListTile<DateTime>(
+              title: Text(labelForDate(date)),
+              value: date,
+            );
+          }).toList(),
+        ),
+      ),
+    ),
+  );
+}
+
+Future<void> showTvProgramDetailsDialog(
+  BuildContext context,
+  TvProgram program,
+) {
+  final l10n = AppLocalizations.of(context);
+  final description = program.description.trim();
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (dialogContext) => Dialog(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560, maxHeight: 640),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                  autofocus: true,
+                  onPressed: () => Navigator.pop(dialogContext),
+                  icon: const Icon(Icons.arrow_back),
+                  label: Text(l10n.back),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                program.title,
+                style: Theme.of(dialogContext).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 16),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Text(
+                    description.isEmpty
+                        ? l10n.noPodcastDescription
+                        : description,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 class TvChannelScreen extends StatefulWidget {
   final TvChannel channel;
@@ -86,44 +167,11 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    final selected = await showDialog<DateTime>(
-      context: context,
-      builder: (context) {
-        DateTime tempDate = _selectedDate;
-        return StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return AlertDialog(
-              title: const Text('Scegli giorno'),
-              content: RadioGroup<DateTime>(
-                groupValue: tempDate,
-                onChanged: (value) {
-                  if (value != null) setStateDialog(() => tempDate = value);
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [-1, 0, 1, 2].map((offset) {
-                    final d = today.add(Duration(days: offset));
-                    return RadioListTile<DateTime>(
-                      title: Text(_getLabelForDate(d)),
-                      value: d,
-                    );
-                  }).toList(),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Annulla'),
-                ),
-                FilledButton(
-                  onPressed: () => Navigator.pop(context, tempDate),
-                  child: const Text('Conferma'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+    final selected = await showTvDaySelectionDialog(
+      context,
+      selectedDate: _selectedDate,
+      today: today,
+      labelForDate: _getLabelForDate,
     );
 
     if (selected != null && selected != _selectedDate) {
@@ -133,25 +181,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   }
 
   Future<void> _showProgramDetails(TvProgram program) {
-    final l10n = AppLocalizations.of(context);
-    final description = program.description.trim();
-    return showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(program.title),
-        content: SingleChildScrollView(
-          child: Text(
-            description.isEmpty ? l10n.noPodcastDescription : description,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.back),
-          ),
-        ],
-      ),
-    );
+    return showTvProgramDetailsDialog(context, program);
   }
 
   Future<void> _play() async {
@@ -292,6 +322,8 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                         ? const Center(
                             child: Text('Nessun programma trovato per oggi.'))
                         : ListView.builder(
+                            scrollCacheExtent:
+                                accessibilityListCacheExtent(context),
                             itemCount: _guide.length,
                             itemBuilder: (context, index) {
                               final program = _guide[index];
