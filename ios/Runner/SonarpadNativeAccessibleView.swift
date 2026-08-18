@@ -279,8 +279,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var sections: [SonarpadNativeSection] = []
   private var refreshControl: UIRefreshControl?
   private var refreshEnabled = false
+  private var lastInitialScrollId: String?
   private var lastInitialFocusId: String?
-  private var entryAnchorId: String?
   private var debugTag: String?
 
   private func emitDebug(_ message: String) {
@@ -326,34 +326,29 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       case "scrollTo":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? true
-          let focusOnNextEntry = map["focusOnNextEntry"] as? Bool ?? false
-          self.emitDebug("method scrollTo id=\(id) animated=\(animated) focusOnNextEntry=\(focusOnNextEntry) window=\(self.rootView.window != nil)")
-          if self.debugTag == "document" && focusOnNextEntry {
-            self.armEntryAnchor(id: id, notification: nil)
-          } else {
-            self.scrollToRow(id: id, animated: animated)
+          let durationMs = (map["durationMs"] as? NSNumber)?.intValue
+          self.emitDebug("method scrollTo id=\(id) animated=\(animated) durationMs=\(durationMs.map { String($0) } ?? "nil") window=\(self.rootView.window != nil)")
+          self.scrollToRow(
+            id: id,
+            animated: animated,
+            durationMs: durationMs
+          ) {
+            result(nil)
           }
+        } else {
+          result(nil)
         }
-        result(nil)
       case "focusInitial":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           self.emitDebug("method focusInitial id=\(id) window=\(self.rootView.window != nil)")
-          if self.debugTag == "document" {
-            self.armEntryAnchor(id: id, notification: .screenChanged, notificationName: "screenChanged")
-          } else {
-            self.focusRow(id: id, animated: false, maxAttempts: 4)
-          }
+          self.focusRow(id: id, animated: false, maxAttempts: 4)
         }
         result(nil)
       case "focusTo":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? false
           self.emitDebug("method focusTo id=\(id) animated=\(animated) window=\(self.rootView.window != nil)")
-          if self.debugTag == "document" {
-            self.armEntryAnchor(id: id, notification: .layoutChanged, notificationName: "layoutChanged")
-          } else {
-            self.focusRow(id: id, animated: animated, maxAttempts: 4)
-          }
+          self.focusRow(id: id, animated: animated, maxAttempts: 4)
         }
         result(nil)
       default:
@@ -403,24 +398,19 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       emitDebug("apply reloadData end visible=\(tableView.indexPathsForVisibleRows?.count ?? 0) contentOffsetY=\(tableView.contentOffset.y)")
     }
 
+    let requestedInitialScrollId = map["initialScrollId"] as? String
+    if requestedInitialScrollId != lastInitialScrollId {
+      lastInitialScrollId = requestedInitialScrollId
+      if let id = requestedInitialScrollId, !id.isEmpty {
+        scrollToRow(id: id, animated: false)
+      }
+    }
+
     let requestedInitialFocusId = map["initialFocusId"] as? String
     if requestedInitialFocusId != lastInitialFocusId {
       lastInitialFocusId = requestedInitialFocusId
       if let id = requestedInitialFocusId, !id.isEmpty {
-        if debugTag == "document" {
-          // Match the old Flutter reader behaviour first: move the document
-          // to the saved chunk. The entry anchor temporarily exposes only
-          // that visible cell to the platform-view accessibility subtree.
-          // It is cleared on the first real VoiceOver row focus, so normal
-          // flick navigation is never redirected or trapped afterwards.
-          emitDebug("apply initialFocusId changed -> arm one-shot entry id=\(id)")
-          armEntryAnchor(id: id, notification: nil)
-        } else {
-          // Keep the generic renderer behavior unchanged: position the row
-          // now, then let UniversalAccessibleList issue focusInitial once the
-          // platform view is attached.
-          scrollToRow(id: id, animated: false)
-        }
+        scrollToRow(id: id, animated: false)
       }
     }
 
@@ -752,103 +742,9 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
-  private func clearEntryAnchor(reason: String) {
-    guard entryAnchorId != nil || rootView.accessibilityElements != nil else { return }
-    emitDebug("entry anchor clear target=\(entryAnchorId ?? "nil") reason=\(reason)")
-    entryAnchorId = nil
-    rootView.accessibilityElements = nil
-  }
-
   private func handleAccessibilityFocus(_ id: String) {
-    let pending = entryAnchorId
-    emitDebug("VoiceOver didBecomeFocused row=\(id) entryAnchor=\(pending ?? "nil")")
-
-    if let pending = pending {
-      if pending == id {
-        // The one-shot handoff succeeded. Restore the normal UITableView
-        // accessibility hierarchy before the user's next flick.
-        clearEntryAnchor(reason: "target acquired")
-      } else {
-        // Never fight a real VoiceOver navigation decision. If iOS focused a
-        // different row, drop the temporary anchor immediately and let normal
-        // table traversal continue. This is deliberately NOT a redirect.
-        clearEntryAnchor(reason: "actual focus moved to \(id), expected \(pending)")
-      }
-    }
-
+    emitDebug("VoiceOver didBecomeFocused row=\(id)")
     channel.invokeMethod("event", arguments: ["type": "focus", "id": id])
-  }
-
-  private func armEntryAnchor(
-    id: String,
-    notification: UIAccessibility.Notification?,
-    notificationName: String = "none",
-    attempt: Int = 0
-  ) {
-    guard debugTag == "document" else {
-      if notification != nil {
-        focusRow(id: id, animated: false, maxAttempts: 4)
-      } else {
-        scrollToRow(id: id, animated: false)
-      }
-      return
-    }
-
-    guard let indexPath = indexPath(forRowId: id) else {
-      emitDebug("entry anchor id=\(id) attempt=\(attempt) indexPath NOT FOUND")
-      clearEntryAnchor(reason: "missing row")
-      return
-    }
-
-    if attempt == 0 {
-      // Replace any older pending entry point (for example repeated slider
-      // adjustments) without leaving a stale accessibility element exposed.
-      rootView.accessibilityElements = nil
-      entryAnchorId = id
-    } else if entryAnchorId != id {
-      return
-    }
-
-    tableView.layoutIfNeeded()
-    // Flutter's old AutoScrollTag used begin/top alignment for bookmark
-    // resume. Keeping the target at the top also gives UIKit the best natural
-    // traversal fallback if the explicit focus notification is ignored.
-    tableView.scrollToRow(at: indexPath, at: .top, animated: false)
-
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.04) { [weak self] in
-      guard let self = self, self.entryAnchorId == id else { return }
-      self.tableView.layoutIfNeeded()
-
-      guard self.rootView.window != nil,
-            let target = self.accessibilityTarget(at: indexPath) else {
-        if attempt < 12 {
-          self.emitDebug("entry anchor waiting id=\(id) attempt=\(attempt) window=\(self.rootView.window != nil) cellExists=\(self.tableView.cellForRow(at: indexPath) != nil)")
-          self.armEntryAnchor(
-            id: id,
-            notification: notification,
-            notificationName: notificationName,
-            attempt: attempt + 1
-          )
-        } else {
-          self.clearEntryAnchor(reason: "target unavailable after retries")
-        }
-        return
-      }
-
-      // The restriction is temporary and one-shot. VoiceOver sees the saved
-      // row as the only entry element of the embedded native subtree. As soon
-      // as any real row receives focus, handleAccessibilityFocus clears it.
-      self.rootView.accessibilityElements = [target]
-      self.emitDebug("entry anchor armed id=\(id) attempt=\(attempt) offsetY=\(self.tableView.contentOffset.y) notification=\(notificationName)")
-
-      if let notification = notification {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) { [weak self] in
-          guard let self = self, self.entryAnchorId == id else { return }
-          self.emitDebug("entry anchor POST id=\(id) notification=\(notificationName)")
-          UIAccessibility.post(notification: notification, argument: target)
-        }
-      }
-    }
   }
 
   private func accessibilityTarget(at indexPath: IndexPath) -> Any? {
@@ -898,23 +794,68 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
-  private func scrollToRow(id: String, animated: Bool, attempt: Int = 0) {
+  private func scrollToRow(
+    id: String,
+    animated: Bool,
+    durationMs: Int? = nil,
+    attempt: Int = 0,
+    completion: (() -> Void)? = nil
+  ) {
     guard let indexPath = indexPath(forRowId: id) else {
       emitDebug("scrollToRow id=\(id) attempt=\(attempt) indexPath NOT FOUND rows=\(sections.reduce(0) { $0 + $1.rows.count })")
+      completion?()
       return
     }
-    emitDebug("scrollToRow id=\(id) attempt=\(attempt) indexPath=\(indexPath) animated=\(animated) beforeOffsetY=\(tableView.contentOffset.y) visible=\(tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false)")
-    tableView.layoutIfNeeded()
-    tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
 
-    let delay: TimeInterval = animated ? 0.40 : 0.03
-    DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+    tableView.layoutIfNeeded()
+    let duration: TimeInterval =
+      animated ? Double(durationMs ?? 300) / 1000.0 : 0.0
+    emitDebug("scrollToRow id=\(id) attempt=\(attempt) indexPath=\(indexPath) animated=\(animated) duration=\(duration) position=top beforeOffsetY=\(tableView.contentOffset.y) visible=\(tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false)")
+
+    if animated {
+      let rect = tableView.rectForRow(at: indexPath)
+      let minOffsetY = -tableView.adjustedContentInset.top
+      let maxOffsetY = max(
+        minOffsetY,
+        tableView.contentSize.height
+          - tableView.bounds.height
+          + tableView.adjustedContentInset.bottom
+      )
+      let targetOffsetY = min(
+        max(rect.minY - tableView.adjustedContentInset.top, minOffsetY),
+        maxOffsetY
+      )
+      UIView.animate(
+        withDuration: duration,
+        delay: 0,
+        options: [.beginFromCurrentState, .curveEaseOut, .allowUserInteraction],
+        animations: {
+          self.tableView.setContentOffset(
+            CGPoint(x: self.tableView.contentOffset.x, y: targetOffsetY),
+            animated: false
+          )
+        }
+      )
+    } else {
+      tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+    }
+
+    let verifyDelay = animated ? duration + 0.03 : 0.03
+    DispatchQueue.main.asyncAfter(deadline: .now() + verifyDelay) { [weak self] in
       guard let self = self else { return }
       self.tableView.layoutIfNeeded()
       let isVisible = self.tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false
       self.emitDebug("scrollToRow verify id=\(id) attempt=\(attempt) visible=\(isVisible) offsetY=\(self.tableView.contentOffset.y) cellExists=\(self.tableView.cellForRow(at: indexPath) != nil)")
-      if !isVisible && attempt < 12 {
-        self.scrollToRow(id: id, animated: false, attempt: attempt + 1)
+      if !isVisible && attempt < 3 {
+        self.scrollToRow(
+          id: id,
+          animated: false,
+          durationMs: durationMs,
+          attempt: attempt + 1,
+          completion: completion
+        )
+      } else {
+        completion?()
       }
     }
   }

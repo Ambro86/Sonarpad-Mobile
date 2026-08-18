@@ -87,8 +87,17 @@ class _LetterJumpOptionPickerScreenState<T>
     if (index == null || index < 0 || index >= widget.options.length) return;
 
     if (useSharedAccessibleViewModel) {
-      await Future<void>.delayed(const Duration(milliseconds: 120));
-      await _accessibleController.focusTo('option_$index');
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      await _accessibleController.scrollTo(
+        'option_$index',
+        duration: const Duration(milliseconds: 300),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted) return;
+      await _accessibleController.scrollTo(
+        'option_$index',
+        duration: const Duration(milliseconds: 120),
+      );
       return;
     }
 

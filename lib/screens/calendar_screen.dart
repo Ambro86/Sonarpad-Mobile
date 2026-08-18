@@ -49,7 +49,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Future<void> _scrollToToday() async {
     if (useSharedAccessibleViewModel) {
-      await _accessibleListController.focusTo('day_$_accessiblePastDays');
+      await _accessibleListController.scrollTo(
+        'day_$_accessiblePastDays',
+        duration: const Duration(milliseconds: 500),
+      );
       return;
     }
     _scrollController.animateTo(
@@ -103,7 +106,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               controller: _accessibleListController,
-              initialFocusId: 'day_$_accessiblePastDays',
+              initialScrollId: 'day_$_accessiblePastDays',
               sections: [AccessibleListSection(rows: [
                 for (var i = 0; i < _accessibleTotalDays; i++)
                   AccessibleListRow(

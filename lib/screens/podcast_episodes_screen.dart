@@ -22,6 +22,7 @@ class PodcastEpisodesScreen extends StatefulWidget {
 class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
   final _service = PodcastService();
   final _scrollController = AutoScrollController();
+  final _accessibleListController = AccessibleListController();
   late Future<List<PodcastEpisode>> _episodes;
   Set<String> _playedAudioUrls = {};
 
@@ -93,6 +94,23 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
       (e) => e.audioUrl == selectedEpisode.audioUrl,
     );
     if (episodeIndex < 0) return;
+
+    if (useSharedAccessibleViewModel) {
+      final targetId = visibleEpisodes[episodeIndex].id ??
+          visibleEpisodes[episodeIndex].audioUrl;
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      await _accessibleListController.scrollTo(
+        targetId,
+        duration: const Duration(milliseconds: 300),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted) return;
+      await _accessibleListController.scrollTo(
+        targetId,
+        duration: const Duration(milliseconds: 120),
+      );
+      return;
+    }
 
     final hasDateButton = _hasDatedEpisodes(visibleEpisodes);
     final listIndex = episodeIndex +
@@ -205,6 +223,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
               ];
               return UniversalAccessibleList(
                 key: ValueKey('shared-podcast-episodes-${widget.subscription.feedUrl}-${rows.length}'),
+                controller: _accessibleListController,
                 refreshEnabled: true,
                 sections: [AccessibleListSection(rows: rows)],
                 onEvent: (event) async {

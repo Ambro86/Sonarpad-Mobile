@@ -209,8 +209,17 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     final itemIndex = items.indexWhere((item) => item.id == selectedItem.id);
     if (itemIndex < 0) return;
     if (useSharedAccessibleViewModel) {
-      await Future<void>.delayed(const Duration(milliseconds: 150));
-      await _accessibleListController.focusTo('item_$itemIndex');
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      await _accessibleListController.scrollTo(
+        'item_$itemIndex',
+        duration: const Duration(milliseconds: 300),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted) return;
+      await _accessibleListController.scrollTo(
+        'item_$itemIndex',
+        duration: const Duration(milliseconds: 120),
+      );
       return;
     }
 

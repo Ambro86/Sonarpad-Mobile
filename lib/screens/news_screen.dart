@@ -1443,10 +1443,6 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     );
     if (!mounted) return;
     await _loadReadArticles();
-    if (!mounted) return;
-    if (useSharedAccessibleViewModel) {
-      _schedulePendingArticleFocus();
-    }
   }
 
   Future<void> _loadReadArticles() async {
@@ -1471,8 +1467,6 @@ class _NewsArticleListState extends State<_NewsArticleList> {
   }
 
   void _schedulePendingArticleScroll(List<NewsArticle> articles) {
-    if (useSharedAccessibleViewModel) return;
-
     final pendingId = _pendingArticleScrollId;
     if (pendingId == null || _pendingArticleScrollScheduled) return;
 
@@ -1483,28 +1477,22 @@ class _NewsArticleListState extends State<_NewsArticleList> {
       return;
     }
 
-    final listIndex = articleIndex + (_readUris.isNotEmpty ? 1 : 0);
     _pendingArticleScrollScheduled = true;
 
+    if (useSharedAccessibleViewModel) {
+      Future<void>.delayed(const Duration(milliseconds: 350), () {
+        _tryScrollToPendingArticleId(pendingId);
+      });
+      return;
+    }
+
+    final listIndex = articleIndex + (_readUris.isNotEmpty ? 1 : 0);
     Future<void>.delayed(const Duration(milliseconds: 350), () {
       _tryScrollToPendingArticle(listIndex);
     });
   }
 
-  void _schedulePendingArticleFocus() {
-    final pendingId = _pendingArticleScrollId;
-    if (pendingId == null || _pendingArticleScrollScheduled) return;
-
-    _pendingArticleScrollScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future<void>.delayed(
-        const Duration(milliseconds: 180),
-        () => _tryFocusPendingArticle(pendingId),
-      );
-    });
-  }
-
-  Future<void> _tryFocusPendingArticle(
+  Future<void> _tryScrollToPendingArticleId(
     String id, {
     int attempt = 0,
   }) async {
@@ -1514,7 +1502,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
       if (attempt < 4) {
         Future<void>.delayed(
           Duration(milliseconds: 180 + (attempt * 120)),
-          () => _tryFocusPendingArticle(id, attempt: attempt + 1),
+          () => _tryScrollToPendingArticleId(id, attempt: attempt + 1),
         );
       } else {
         _pendingArticleScrollId = null;
@@ -1524,16 +1512,25 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     }
 
     try {
-      await _accessibleListController.focusTo(id, animated: false);
+      await _accessibleListController.scrollTo(
+        id,
+        duration: const Duration(milliseconds: 300),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 180));
+      if (!mounted || _pendingArticleScrollId != id) return;
+      await _accessibleListController.scrollTo(
+        id,
+        duration: const Duration(milliseconds: 120),
+      );
       if (!mounted || _pendingArticleScrollId != id) return;
       _pendingArticleScrollId = null;
       _pendingArticleScrollScheduled = false;
     } catch (_) {
       if (!mounted || _pendingArticleScrollId != id) return;
-      if (attempt < 4) {
+      if (attempt < 3) {
         Future<void>.delayed(
-          Duration(milliseconds: 220 + (attempt * 150)),
-          () => _tryFocusPendingArticle(id, attempt: attempt + 1),
+          Duration(milliseconds: 300 + (attempt * 200)),
+          () => _tryScrollToPendingArticleId(id, attempt: attempt + 1),
         );
       } else {
         _pendingArticleScrollId = null;
