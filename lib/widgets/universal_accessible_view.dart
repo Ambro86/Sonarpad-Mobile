@@ -179,6 +179,9 @@ typedef AccessibleListEventCallback = FutureOr<void> Function(
 class AccessibleListController {
   MethodChannel? _channel;
   Object? _flutterOwner;
+
+  bool get hasAttachedRenderer =>
+      _channel != null || _flutterScrollTo != null || _flutterFocusTo != null;
   Future<void> Function(String id, bool animated)? _flutterScrollTo;
   Future<void> Function(String id, bool animated)? _flutterFocusTo;
 

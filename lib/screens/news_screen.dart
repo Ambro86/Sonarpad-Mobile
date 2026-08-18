@@ -1385,6 +1385,7 @@ class _NewsArticleList extends StatefulWidget {
 class _NewsArticleListState extends State<_NewsArticleList> {
   final _service = NewsService();
   final _scrollController = AutoScrollController();
+  final _accessibleListController = AccessibleListController();
   Set<String> _readUris = {};
   bool _loadingRead = true;
   String? _pendingArticleScrollId;
@@ -1442,6 +1443,10 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     );
     if (!mounted) return;
     await _loadReadArticles();
+    if (!mounted) return;
+    if (useSharedAccessibleViewModel) {
+      _schedulePendingArticleFocus();
+    }
   }
 
   Future<void> _loadReadArticles() async {
@@ -1466,6 +1471,8 @@ class _NewsArticleListState extends State<_NewsArticleList> {
   }
 
   void _schedulePendingArticleScroll(List<NewsArticle> articles) {
+    if (useSharedAccessibleViewModel) return;
+
     final pendingId = _pendingArticleScrollId;
     if (pendingId == null || _pendingArticleScrollScheduled) return;
 
@@ -1482,6 +1489,57 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     Future<void>.delayed(const Duration(milliseconds: 350), () {
       _tryScrollToPendingArticle(listIndex);
     });
+  }
+
+  void _schedulePendingArticleFocus() {
+    final pendingId = _pendingArticleScrollId;
+    if (pendingId == null || _pendingArticleScrollScheduled) return;
+
+    _pendingArticleScrollScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future<void>.delayed(
+        const Duration(milliseconds: 180),
+        () => _tryFocusPendingArticle(pendingId),
+      );
+    });
+  }
+
+  Future<void> _tryFocusPendingArticle(
+    String id, {
+    int attempt = 0,
+  }) async {
+    if (!mounted || _pendingArticleScrollId != id) return;
+
+    if (!_accessibleListController.hasAttachedRenderer) {
+      if (attempt < 4) {
+        Future<void>.delayed(
+          Duration(milliseconds: 180 + (attempt * 120)),
+          () => _tryFocusPendingArticle(id, attempt: attempt + 1),
+        );
+      } else {
+        _pendingArticleScrollId = null;
+        _pendingArticleScrollScheduled = false;
+      }
+      return;
+    }
+
+    try {
+      await _accessibleListController.focusTo(id, animated: false);
+      if (!mounted || _pendingArticleScrollId != id) return;
+      _pendingArticleScrollId = null;
+      _pendingArticleScrollScheduled = false;
+    } catch (_) {
+      if (!mounted || _pendingArticleScrollId != id) return;
+      if (attempt < 4) {
+        Future<void>.delayed(
+          Duration(milliseconds: 220 + (attempt * 150)),
+          () => _tryFocusPendingArticle(id, attempt: attempt + 1),
+        );
+      } else {
+        _pendingArticleScrollId = null;
+        _pendingArticleScrollScheduled = false;
+      }
+    }
   }
 
   Future<void> _tryScrollToPendingArticle(int listIndex, {int attempt = 0}) async {
@@ -1593,6 +1651,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           ];
           return UniversalAccessibleList(
             key: ValueKey('shared-news-articles-${widget.sourceName}-${rows.length}'),
+            controller: _accessibleListController,
             sections: [AccessibleListSection(rows: rows)],
             onEvent: (event) async {
               if (event.type != 'activate' || event.id == null) return;
