@@ -364,37 +364,40 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                       final isCurrent =
                           program.startTime <= now && program.endTime > now;
 
-                      return Semantics(
-                        onDidGainAccessibilityFocus: () => keepAccessibilityFocusVisible(
-                          context,
-                          debugLabel:
-                              'TV guida: ${program.hour} ${program.title}',
-                        ),
-                        child: ListTile(
-                          tileColor: isCurrent
-                              ? Theme.of(context).colorScheme.primaryContainer
-                              : null,
-                          leading: Text(
-                            program.hour,
-                            style: TextStyle(
-                              fontWeight: isCurrent
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              fontSize: 16,
-                            ),
+                      return Builder(
+                        builder: (itemContext) => Semantics(
+                          onDidGainAccessibilityFocus: () =>
+                              keepAccessibilityFocusVisible(
+                            itemContext,
+                            debugLabel:
+                                'TV guida: ${program.hour} ${program.title}',
                           ),
-                          title: Text(
-                            program.title,
-                            style: TextStyle(
-                              fontWeight: isCurrent
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                          child: ListTile(
+                            tileColor: isCurrent
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : null,
+                            leading: Text(
+                              program.hour,
+                              style: TextStyle(
+                                fontWeight: isCurrent
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                fontSize: 16,
+                              ),
                             ),
+                            title: Text(
+                              program.title,
+                              style: TextStyle(
+                                fontWeight: isCurrent
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            trailing: isCurrent
+                                ? const Icon(Icons.live_tv, color: Colors.red)
+                                : null,
+                            onTap: () => _showProgramDetails(program),
                           ),
-                          trailing: isCurrent
-                              ? const Icon(Icons.live_tv, color: Colors.red)
-                              : null,
-                          onTap: () => _showProgramDetails(program),
                         ),
                       );
                     },

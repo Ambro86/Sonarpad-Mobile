@@ -960,9 +960,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: _loading
             ? Center(
                 child: CircularProgressIndicator(semanticsLabel: l10n.loading))
-            : ListView(
-                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
+            : accessibilityStaticScrollView(
                   key: const PageStorageKey<String>('settings-list'),
+                  debugLabel: 'Impostazioni',
                   padding: const EdgeInsets.all(16),
                   children: [
                     DropdownButtonFormField<String>(

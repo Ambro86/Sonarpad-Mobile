@@ -35,6 +35,54 @@ ScrollCacheExtent? accessibilityListCacheExtentForPlatform() {
   return null;
 }
 
+final Set<String> _loggedEagerScrollViews = <String>{};
+
+/// Builds a finite, static scrolling form in the safest way for VoiceOver.
+///
+/// iOS 27 beta can stop VoiceOver traversal at the last child laid out by a
+/// lazy sliver. For short/finite screens such as Settings there is no benefit
+/// in virtualizing the controls, so on iOS we eagerly lay out the whole column
+/// inside one [SingleChildScrollView]. This keeps every semantic descendant in
+/// the tree and leaves Android/other platforms on the normal [ListView].
+///
+/// Do not use this helper for large/dynamic collections such as TV channels or
+/// document paragraphs. Those continue to use the proactive focus workaround.
+Widget accessibilityStaticScrollView({
+  Key? key,
+  EdgeInsetsGeometry? padding,
+  ScrollPhysics? physics,
+  String? debugLabel,
+  required List<Widget> children,
+}) {
+  final isIos = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  if (isIos) {
+    if (debugLabel != null && _loggedEagerScrollViews.add(debugLabel)) {
+      _logAccessibilityList(
+        'mode=eager_static label="${_safeAccessibilityLabel(debugLabel)}" '
+        'children=${children.length}',
+      );
+    }
+    return SingleChildScrollView(
+      key: key,
+      padding: padding,
+      physics: physics ??
+          const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: children,
+      ),
+    );
+  }
+
+  return ListView(
+    key: key,
+    padding: padding,
+    physics: physics,
+    scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
+    children: children,
+  );
+}
+
 int _accessibilityFocusSequence = 0;
 final Map<ScrollPosition, int> _latestFocusForPosition =
     <ScrollPosition, int>{};
