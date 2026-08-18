@@ -598,12 +598,17 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           child: DropdownButtonFormField<Object?>(
             initialValue: selectedValue,
+            isExpanded: true,
             decoration: InputDecoration(labelText: row.title),
             items: row.options
                 .map(
                   (option) => DropdownMenuItem<Object?>(
                     value: option.value,
-                    child: Text(option.label),
+                    child: Text(
+                      option.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 )
                 .toList(growable: false),
