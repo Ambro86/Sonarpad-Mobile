@@ -263,6 +263,7 @@ class _TvScreenState extends State<TvScreen> {
               MaterialPageRoute(
                 settings: const RouteSettings(name: '/tv/favorites'),
                 builder: (_) => FavoriteTvsScreen(
+                  channels: _channels,
                   currentPrograms: _currentPrograms,
                   onOpenChannel: _openChannel,
                 ),
@@ -443,14 +444,19 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
       _currentProgramForChannel(_service, widget.currentPrograms, channel);
 
   bool _isFavorite(TvChannel channel) =>
-      _favorites.any((favorite) => favorite.name == channel.name);
+      _favorites.any((favorite) =>
+          _service.isSameFavoriteChannel(favorite, channel));
 
   Future<void> _toggleFavorite(TvChannel channel) async {
     final l10n = AppLocalizations.of(context);
     final favs = await _service.loadFavorites();
-    final wasFavorite = favs.any((c) => c.name == channel.name);
+    final wasFavorite = favs.any((favorite) =>
+        _service.isSameFavoriteChannel(favorite, channel));
     final next = wasFavorite
-        ? favs.where((c) => c.name != channel.name).toList()
+        ? favs
+            .where((favorite) =>
+                !_service.isSameFavoriteChannel(favorite, channel))
+            .toList()
         : [...favs, channel];
     await _service.saveFavorites(next);
     if (!mounted) return;
@@ -519,14 +525,19 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
       _currentProgramForChannel(_service, widget.currentPrograms, channel);
 
   bool _isFavorite(TvChannel channel) =>
-      _favorites.any((favorite) => favorite.name == channel.name);
+      _favorites.any((favorite) =>
+          _service.isSameFavoriteChannel(favorite, channel));
 
   Future<void> _toggleFavorite(TvChannel channel) async {
     final l10n = AppLocalizations.of(context);
     final favs = await _service.loadFavorites();
-    final wasFavorite = favs.any((c) => c.name == channel.name);
+    final wasFavorite = favs.any((favorite) =>
+        _service.isSameFavoriteChannel(favorite, channel));
     final next = wasFavorite
-        ? favs.where((c) => c.name != channel.name).toList()
+        ? favs
+            .where((favorite) =>
+                !_service.isSameFavoriteChannel(favorite, channel))
+            .toList()
         : [...favs, channel];
     await _service.saveFavorites(next);
     if (!mounted) return;

@@ -7,10 +7,12 @@ import '../utils/status_message.dart';
 class FavoriteTvsScreen extends StatefulWidget {
   const FavoriteTvsScreen({
     super.key,
+    required this.channels,
     required this.currentPrograms,
     required this.onOpenChannel,
   });
 
+  final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
   final ValueChanged<TvChannel> onOpenChannel;
 
@@ -46,7 +48,9 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
   }
 
   Future<void> _load() async {
-    final favs = await _service.loadFavorites();
+    final favs = await _service.loadFavorites(
+      currentChannels: widget.channels,
+    );
     if (!mounted) return;
     setState(() {
       _favorites = favs;
@@ -56,7 +60,8 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
 
   Future<void> _removeFromFavorites(TvChannel channel) async {
     final favs = await _service.loadFavorites();
-    favs.removeWhere((c) => c.name == channel.name);
+    favs.removeWhere((favorite) =>
+        _service.isSameFavoriteChannel(favorite, channel));
     await _service.saveFavorites(favs);
     if (!mounted) return;
     showStatusMessage(context, '${channel.name} rimosso dai preferiti');

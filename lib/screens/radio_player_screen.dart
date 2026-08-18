@@ -131,7 +131,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Future<bool> _loadIsFavorite() async {
     if (widget.tvChannel != null) {
       final favorites = await TvService().loadFavorites();
-      return favorites.any((item) => item.name == widget.tvChannel!.name);
+      return favorites.any((item) =>
+          TvService().isSameFavoriteChannel(item, widget.tvChannel!));
     }
     final favorites = await RadioService().loadFavorites();
     return favorites.any((item) => item.streamUrl == widget.station.streamUrl);
@@ -820,10 +821,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       final service = TvService();
       final channel = widget.tvChannel!;
       final favorites = await service.loadFavorites();
-      final alreadyFavorite =
-          favorites.any((item) => item.name == channel.name);
+      final alreadyFavorite = favorites.any(
+        (item) => service.isSameFavoriteChannel(item, channel),
+      );
       final next = alreadyFavorite
-          ? favorites.where((item) => item.name != channel.name).toList()
+          ? favorites
+              .where((item) => !service.isSameFavoriteChannel(item, channel))
+              .toList()
           : [...favorites, channel];
       await service.saveFavorites(next);
       if (!mounted) return;

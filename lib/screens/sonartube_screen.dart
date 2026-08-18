@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_service.dart';
+import '../utils/accessibility_list_behavior.dart';
 import '../utils/status_message.dart';
 import 'podcast_episode_player_screen.dart';
 
@@ -273,6 +274,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                             focusNode: _searchFocusNode,
                             decoration: InputDecoration(
                               labelText: l10n.sonarTubeSearchLabel,
+                              hintText: l10n.sonarTubeSearchPrompt,
                               prefixIcon: const Icon(Icons.search),
                             ),
                             textInputAction: TextInputAction.search,
@@ -303,15 +305,19 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             Expanded(
               child: !_loading && _items.isEmpty
                   ? Center(
-                      child: Text(
-                        _query == null && !_isCollection
-                            ? l10n.sonarTubeSearchPrompt
-                            : l10n.sonarTubeNoResults,
-                        textAlign: TextAlign.center,
+                      child: ExcludeSemantics(
+                        excluding: _query == null && !_isCollection,
+                        child: Text(
+                          _query == null && !_isCollection
+                              ? l10n.sonarTubeSearchPrompt
+                              : l10n.sonarTubeNoResults,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
+                      scrollCacheExtent: accessibilityListCacheExtent(context),
                       itemCount: _items.length + (_nextToken == null ? 0 : 1),
                       itemBuilder: (context, index) {
                         if (index == _items.length) {
@@ -344,28 +350,18 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                         final favoriteLabel = isFavorite
                             ? l10n.sonarTubeRemoveFavorite
                             : l10n.sonarTubeAddFavorite;
-                        return Semantics(
-                          customSemanticsActions: canFavorite
-                              ? {
-                                  CustomSemanticsAction(
-                                    label: favoriteLabel,
-                                  ): () =>
-                                      _toggleFavorite(item),
-                                }
-                              : const {},
-                          child: Card(
-                            child: ListTile(
-                              key: ValueKey(
-                                'sonartube_${item.kind.name}_${item.id}',
-                              ),
+                        final card = Card(
+                          child: ListTile(
                               leading: item.thumbnailUrl == null
-                                  ? Icon(
-                                      item.kind == SonarTubeItemKind.video
-                                          ? Icons.play_circle_outline
-                                          : item.kind ==
-                                                SonarTubeItemKind.channel
-                                          ? Icons.account_circle
-                                          : Icons.playlist_play,
+                                  ? ExcludeSemantics(
+                                      child: Icon(
+                                        item.kind == SonarTubeItemKind.video
+                                            ? Icons.play_circle_outline
+                                            : item.kind ==
+                                                  SonarTubeItemKind.channel
+                                            ? Icons.account_circle
+                                            : Icons.playlist_play,
+                                      ),
                                     )
                                   : ClipRRect(
                                       borderRadius: BorderRadius.circular(6),
@@ -375,11 +371,12 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                                         height: 56,
                                         fit: BoxFit.cover,
                                         excludeFromSemantics: true,
-                                        errorBuilder: (_, _, _) =>
-                                            const SizedBox(
+                                        errorBuilder: (_, _, _) => const ExcludeSemantics(
+                                          child: SizedBox(
                                               width: 88,
                                               child: Icon(Icons.video_library),
                                             ),
+                                        ),
                                       ),
                                     ),
                               title: Text(item.title),
@@ -410,11 +407,37 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                                         ),
                                       ),
                                     )
-                                  : const Icon(Icons.play_arrow),
+                                  : const ExcludeSemantics(
+                                      child: Icon(Icons.play_arrow),
+                                    ),
                               enabled: _resolvingId == null,
                               onTap: () => _openItem(item),
                             ),
-                          ),
+                        );
+                        final subtitle = resolving
+                            ? l10n.sonarTubeResolving
+                            : _subtitle(l10n, item);
+                        return Semantics(
+                            key: ValueKey(
+                              'sonartube_${item.kind.name}_${item.id}',
+                            ),
+                            container: true,
+                            button: true,
+                            label: [
+                              item.title,
+                              if (subtitle?.isNotEmpty ?? false) subtitle!,
+                            ].join(', '),
+                            onTap: _resolvingId == null
+                                ? () => _openItem(item)
+                                : null,
+                            customSemanticsActions: canFavorite
+                                ? {
+                                    CustomSemanticsAction(
+                                      label: favoriteLabel,
+                                    ): () => _toggleFavorite(item),
+                                  }
+                                : null,
+                            child: ExcludeSemantics(child: card),
                         );
                       },
                     ),

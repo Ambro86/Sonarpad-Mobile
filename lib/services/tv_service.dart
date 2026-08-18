@@ -600,15 +600,36 @@ class TvService {
     return programs.where((p) => p.title.isNotEmpty).toList();
   }
 
-  Future<List<TvChannel>> loadFavorites() async {
+  Future<List<TvChannel>> loadFavorites({
+    List<TvChannel> currentChannels = const [],
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonStr = prefs.getString(_prefsKey);
     if (jsonStr == null || jsonStr.isEmpty) return [];
     try {
       final List<dynamic> list = jsonDecode(jsonStr);
-      return list
-          .map((item) => TvChannel.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
+      final rawFavorites = list
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList(growable: false);
+      final favorites = rawFavorites
+          .map(_favoriteReferenceFromJson)
+          .whereType<TvChannel>()
+          .toList(growable: false);
+
+      // Migra il vecchio formato, che conservava anche l'URL dello stream.
+      if (rawFavorites.any((item) => item.containsKey('url'))) {
+        await _writeFavoriteReferences(prefs, favorites);
+      }
+
+      if (currentChannels.isEmpty) return favorites;
+      return favorites
+          .map((favorite) => _currentChannelForFavorite(
+                favorite,
+                currentChannels,
+              ))
+          .whereType<TvChannel>()
+          .toList(growable: false);
     } catch (e) {
       dev.log('Errore caricamento canali tv preferiti: $e');
       return [];
@@ -617,8 +638,76 @@ class TvService {
 
   Future<void> saveFavorites(List<TvChannel> favorites) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonList = favorites.map((ch) => ch.toJson()).toList();
+    await _writeFavoriteReferences(prefs, favorites);
+  }
+
+  Future<void> _writeFavoriteReferences(
+    SharedPreferences prefs,
+    List<TvChannel> favorites,
+  ) async {
+    final jsonList = favorites.map(_favoriteReferenceToJson).toList();
     await prefs.setString(_prefsKey, jsonEncode(jsonList));
+  }
+
+  Map<String, dynamic> _favoriteReferenceToJson(TvChannel channel) => {
+        'name': channel.name,
+        if (channel.tvgId.trim().isNotEmpty) 'tvg_id': channel.tvgId,
+        if (channel.tvgName.trim().isNotEmpty) 'tvg_name': channel.tvgName,
+        if (channel.streamResolver?.trim().isNotEmpty ?? false)
+          'stream_resolver': channel.streamResolver,
+        if (channel.resolverRealm?.trim().isNotEmpty ?? false)
+          'resolver_realm': channel.resolverRealm,
+        if (channel.resolverChannelId?.trim().isNotEmpty ?? false)
+          'resolver_channel_id': channel.resolverChannelId,
+      };
+
+  TvChannel? _favoriteReferenceFromJson(Map<String, dynamic> json) {
+    final name = json['name']?.toString().trim() ?? '';
+    if (name.isEmpty) return null;
+    return TvChannel(
+      name: name,
+      url: '',
+      category: '',
+      streamResolver: json['stream_resolver']?.toString(),
+      resolverRealm: json['resolver_realm']?.toString(),
+      resolverChannelId: json['resolver_channel_id']?.toString(),
+      tvgId: json['tvg_id']?.toString() ?? '',
+      tvgName: json['tvg_name']?.toString() ?? '',
+    );
+  }
+
+  TvChannel? _currentChannelForFavorite(
+    TvChannel favorite,
+    List<TvChannel> currentChannels,
+  ) {
+    for (final channel in currentChannels) {
+      if (isSameFavoriteChannel(favorite, channel)) return channel;
+    }
+    return null;
+  }
+
+  bool isSameFavoriteChannel(TvChannel first, TvChannel second) {
+    final firstTvgId = first.tvgId.trim().toLowerCase();
+    final secondTvgId = second.tvgId.trim().toLowerCase();
+    if (firstTvgId.isNotEmpty && secondTvgId.isNotEmpty) {
+      return firstTvgId == secondTvgId;
+    }
+
+    final firstResolverId = first.resolverChannelId?.trim() ?? '';
+    final secondResolverId = second.resolverChannelId?.trim() ?? '';
+    if (firstResolverId.isNotEmpty && secondResolverId.isNotEmpty) {
+      final firstResolver = first.streamResolver?.trim().toLowerCase() ?? '';
+      final secondResolver = second.streamResolver?.trim().toLowerCase() ?? '';
+      if (firstResolverId == secondResolverId &&
+          (firstResolver.isEmpty ||
+              secondResolver.isEmpty ||
+              firstResolver == secondResolver)) {
+        return true;
+      }
+    }
+
+    return normalizeChannelName(first.name) ==
+        normalizeChannelName(second.name);
   }
 
   List<String> guideLookupKeys(TvChannel channel) {

@@ -10,6 +10,71 @@ import 'package:sonarpad_mobile_starter/screens/sonartube_screen.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 
 void main() {
+  testWidgets('builds every playlist video for VoiceOver traversal', (
+    tester,
+  ) async {
+    final semanticsHandle = tester.ensureSemantics();
+    SharedPreferences.setMockInitialValues({});
+    const playlist = SonarTubeItem(
+      kind: SonarTubeItemKind.playlist,
+      id: 'PL_FLO',
+      title: 'Flo La Piccola Robinson 1981',
+      url: 'https://www.youtube.com/playlist?list=PL_FLO',
+    );
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        return http.Response(
+          jsonEncode({
+            'ok': true,
+            'page': 1,
+            'items': List.generate(
+              50,
+              (index) => {
+                'kind': 'video',
+                'id': 'video_${index + 1}',
+                'title': 'Episodio ${index + 1}',
+                'url': 'https://www.youtube.com/watch?v=video_${index + 1}',
+              },
+            ),
+          }),
+          200,
+        );
+      }),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(accessibleNavigation: true),
+          child: child!,
+        ),
+        home: SonarTubeScreen(collection: playlist, service: service),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(
+        const ValueKey('sonartube_video_video_50'),
+        skipOffstage: false,
+      ),
+      findsOneWidget,
+    );
+    final firstVideoSemantics = tester.getSemantics(
+      find.byKey(const ValueKey('sonartube_video_video_1')),
+    );
+    expect(firstVideoSemantics.label, contains('Episodio 1'));
+    expect(
+      firstVideoSemantics.getSemanticsData().customSemanticsActionIds,
+      isEmpty,
+    );
+    semanticsHandle.dispose();
+  });
+
   testWidgets('searches and opens a channel with its real videos', (
     tester,
   ) async {
