@@ -5,6 +5,7 @@ import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class AddRadioScreen extends StatefulWidget {
   const AddRadioScreen({super.key});
@@ -67,6 +68,7 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioAddCommunity)),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           TextField(

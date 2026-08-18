@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/italiaonline_service.dart';
 import 'italiaonline_detail_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class ItaliaOnlineScreen extends StatefulWidget {
   const ItaliaOnlineScreen({super.key});
@@ -47,6 +48,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
         title: const Text('Pagine Bianche e Gialle'),
       ),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           SegmentedButton<DirectoryKind>(
@@ -245,6 +247,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
 
     if (res.ambiguousPlaces != null && res.ambiguousPlaces!.isNotEmpty) {
       return ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           Text(
@@ -279,6 +282,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
     }
 
     return ListView.builder(
+      scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
       itemCount: _results.length + (res.isLastPage ? 0 : 1),
       itemBuilder: (context, index) {
         if (index == _results.length) {

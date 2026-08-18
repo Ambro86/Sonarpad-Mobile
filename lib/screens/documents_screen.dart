@@ -1194,6 +1194,10 @@ class _DocumentTile extends StatelessWidget {
     return Semantics(
       container: true,
       button: true,
+      onDidGainAccessibilityFocus: () => keepAccessibilityFocusVisible(
+        context,
+        debugLabel: 'Documenti: $displayName',
+      ),
       onTap: onOpen,
       customSemanticsActions: {
           CustomSemanticsAction(

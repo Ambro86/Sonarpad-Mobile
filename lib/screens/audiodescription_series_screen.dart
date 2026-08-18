@@ -3,6 +3,7 @@ import '../services/audiodescription_service.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class AudiodescriptionSeriesScreen extends StatefulWidget {
   final AudiodescriptionGroup group;
@@ -63,6 +64,7 @@ class _AudiodescriptionSeriesScreenState
         title: Text(widget.group.title),
       ),
       body: ListView.separated(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         itemCount: _episodes.length,
         separatorBuilder: (_, _) => const Divider(),

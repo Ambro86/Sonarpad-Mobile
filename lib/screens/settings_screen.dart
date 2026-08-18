@@ -16,6 +16,7 @@ import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
 import '../widgets/letter_jump_option_picker_screen.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class SettingsScreen extends StatefulWidget {
   final ValueChanged<SonarpadThemeMode>? onThemeModeChanged;
@@ -960,6 +961,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ? Center(
                 child: CircularProgressIndicator(semanticsLabel: l10n.loading))
             : ListView(
+                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   key: const PageStorageKey<String>('settings-list'),
                   padding: const EdgeInsets.all(16),
                   children: [

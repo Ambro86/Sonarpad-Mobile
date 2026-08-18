@@ -7,6 +7,7 @@ import '../services/document_library_service.dart';
 import '../services/librivox_service.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class LibrivoxScreen extends StatefulWidget {
   final String? parentId;
@@ -57,6 +58,7 @@ class _LibrivoxScreenState extends State<LibrivoxScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('LibriVox')),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -173,6 +175,7 @@ class _LibrivoxResultsScreenState extends State<_LibrivoxResultsScreen> {
             return Center(child: Text(l10n.noLibrivoxAudiobooksFound));
           }
           return ListView.separated(
+            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             itemCount: _books.length + (_hasMore ? 1 : 0),
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
@@ -295,6 +298,7 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
           }
           final book = snapshot.data ?? widget.book;
           return ListView(
+            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             padding: const EdgeInsets.all(16),
             children: [
               Text(book.title, style: Theme.of(context).textTheme.headlineSmall),

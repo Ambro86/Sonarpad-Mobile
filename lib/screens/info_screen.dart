@@ -8,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/changelog_service.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class InfoScreen extends StatelessWidget {
   const InfoScreen({super.key});
@@ -49,6 +50,7 @@ class InfoScreen extends StatelessWidget {
                 : '';
 
             return ListView(
+              scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
               padding: const EdgeInsets.all(16),
               children: [
                 Text(l10n.appTitle,

@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/voice_dictionary_service.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class VoiceDictionaryScreen extends StatefulWidget {
   const VoiceDictionaryScreen({super.key});
@@ -54,6 +55,7 @@ class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
       appBar: AppBar(title: Text(l10n.voiceDictionaryTitle)),
       body: SafeArea(
         child: ListView(
+          scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
           padding: const EdgeInsets.all(16),
           children: [
             FilledButton.icon(

@@ -5,6 +5,7 @@ import '../services/aifa_pdf_parser.dart';
 import '../services/aifa_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class AifaConfezioniScreen extends StatefulWidget {
   final AifaDrugResult drugGroup;
@@ -219,6 +220,7 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
               ),
             Expanded(
               child: ListView.builder(
+                scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                 itemCount: widget.drugGroup.confezioni.length,
                 itemBuilder: (context, index) {
                   final conf = widget.drugGroup.confezioni[index];

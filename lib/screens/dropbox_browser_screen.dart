@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../services/dropbox_service.dart';
 import '../services/document_library_service.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class DropboxBrowserScreen extends StatefulWidget {
   final DocumentLibraryService documentService;
@@ -319,6 +320,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
                   ),
                 )
               : ListView.builder(
+                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   itemCount: visibleEntries.length,
                   itemBuilder: (context, index) {
                     final entry = visibleEntries[index];

@@ -6,6 +6,7 @@ import '../services/radio_service.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart'; // Per RadioTile
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class RadioSearchResultsScreen extends StatefulWidget {
   final Future<List<RadioStation>> resultsFuture;
@@ -152,6 +153,7 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               ),
               Expanded(
                 child: ListView.builder(
+                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   key: PageStorageKey('radio_results_page_$currentPage'),
                   padding: const EdgeInsets.all(16),
                   itemCount: visibleResults.length,

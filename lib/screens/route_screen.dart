@@ -6,6 +6,7 @@ import '../services/recent_routes_service.dart';
 import '../services/route_service.dart';
 import 'route_result_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class RouteScreen extends StatefulWidget {
   const RouteScreen({super.key});
@@ -153,6 +154,7 @@ class _RouteScreenState extends State<RouteScreen> {
           content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
+              scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
               shrinkWrap: true,
               itemCount: candidates.length,
               itemBuilder: (context, index) {
@@ -182,6 +184,7 @@ class _RouteScreenState extends State<RouteScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.routeTitle)),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           OutlinedButton.icon(
@@ -395,6 +398,7 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
             return Center(child: Text(l10n.routeRecentRoutesEmpty));
           }
           return ListView.separated(
+            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             padding: const EdgeInsets.all(16),
             itemCount: routes.length,
             separatorBuilder: (_, _) => const Divider(),

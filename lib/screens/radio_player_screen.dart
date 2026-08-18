@@ -19,6 +19,7 @@ import 'package:video_player/video_player.dart';
 import '../services/app_settings_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class RadioPlayerScreen extends StatefulWidget {
   final RadioStation station;
@@ -1707,6 +1708,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         ),
       ),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           Text(

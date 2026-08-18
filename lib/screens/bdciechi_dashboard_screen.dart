@@ -5,6 +5,7 @@ import '../services/app_settings_service.dart';
 import '../services/document_library_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class BdCiechiDashboardScreen extends StatefulWidget {
   final String username;
@@ -492,6 +493,7 @@ class _BdCiechiListScreenState extends State<BdCiechiListScreen> {
               : _displayList.isEmpty
                   ? const Center(child: Text('Nessun risultato trovato.'))
                   : ListView.separated(
+                      scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                       itemCount: _displayList.length,
                       separatorBuilder: (context, index) =>
                           const Divider(height: 1),

@@ -10,6 +10,7 @@ import '../services/app_settings_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class CalendarDayScreen extends StatefulWidget {
   final DateTime date;
@@ -268,6 +269,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
         ],
       ),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           Text(capTitle, style: Theme.of(context).textTheme.headlineMedium),

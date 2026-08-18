@@ -14,6 +14,7 @@ import '../services/route_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class RouteResultScreen extends StatelessWidget {
   final RouteResult result;
@@ -27,6 +28,7 @@ class RouteResultScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.routeResultsTitle)),
       body: ListView.separated(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         itemCount: result.paths.length,
         separatorBuilder: (_, _) => const Divider(),
@@ -410,6 +412,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
         ],
       ),
       body: ListView.builder(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         itemCount: _items.length,
         itemBuilder: (context, index) {

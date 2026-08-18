@@ -5,6 +5,7 @@ import '../services/document_library_service.dart';
 import '../services/poetrydb_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class PoetryDbScreen extends StatefulWidget {
   final String? parentId;
@@ -47,6 +48,7 @@ class _PoetryDbScreenState extends State<PoetryDbScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('PoetryDB')),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -156,6 +158,7 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
             return Center(child: Text(l10n.poetryDbNoPoemsFound));
           }
           return ListView.separated(
+            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             itemCount: poems.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {

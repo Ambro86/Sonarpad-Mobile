@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
 import 'cinema_detail_screen.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class CinemaUpcomingScreen extends StatefulWidget {
   const CinemaUpcomingScreen({super.key});
@@ -74,7 +74,7 @@ class _CinemaUpcomingScreenState extends State<CinemaUpcomingScreen> {
                   : Semantics(
                       explicitChildNodes: true,
                       child: ListView.separated(
-                        scrollCacheExtent: const ScrollCacheExtent.pixels(4000),
+                        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                         physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics(),
                         ),

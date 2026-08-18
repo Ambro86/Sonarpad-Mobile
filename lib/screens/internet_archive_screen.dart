@@ -7,6 +7,7 @@ import '../services/document_library_service.dart';
 import '../services/internet_archive_service.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class InternetArchiveScreen extends StatefulWidget {
   final String? parentId;
@@ -63,6 +64,7 @@ class _InternetArchiveScreenState extends State<InternetArchiveScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.internetArchiveTitle)),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -209,6 +211,7 @@ class _InternetArchiveResultsScreenState
             return Center(child: Text(l10n.internetArchiveNoItemsFound));
           }
           return ListView.separated(
+            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             itemCount: _items.length + (_hasMore ? 1 : 0),
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
@@ -345,6 +348,7 @@ class _InternetArchiveItemScreenState
           }
           if (snapshot.hasError) {
             return ListView(
+              scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
               padding: const EdgeInsets.all(16),
               children: [
                 Text(l10n.error(snapshot.error!)),
@@ -367,6 +371,7 @@ class _InternetArchiveItemScreenState
           }
           final item = snapshot.data ?? widget.item;
           return ListView(
+            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             padding: const EdgeInsets.all(16),
             children: [
               Text(item.title,

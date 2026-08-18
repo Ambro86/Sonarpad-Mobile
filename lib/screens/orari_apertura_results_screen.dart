@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/orari_apertura_service.dart';
 import 'orari_apertura_detail_screen.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class OrariAperturaResultsScreen extends StatefulWidget {
   final String cosa;
@@ -64,6 +65,7 @@ class _OrariAperturaResultsScreenState
                   child: Text(_errorMessage!,
                       style: TextStyle(color: Colors.red, fontSize: 18)))
               : ListView.builder(
+                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   padding: const EdgeInsets.all(16.0),
                   itemCount: _results.length,
                   itemBuilder: (context, index) {

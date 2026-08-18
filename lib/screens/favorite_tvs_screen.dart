@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../services/tv_service.dart';
+import '../utils/accessibility_list_behavior.dart';
 import '../utils/status_message.dart';
 
 class FavoriteTvsScreen extends StatefulWidget {
@@ -82,6 +83,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                   ),
                 )
               : ListView.builder(
+                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   padding: const EdgeInsets.all(16),
                   itemCount: _favorites.length,
                   itemBuilder: (context, index) {
@@ -102,6 +104,10 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                           container: true,
                           button: true,
                           enabled: true,
+                          onDidGainAccessibilityFocus: () => keepAccessibilityFocusVisible(
+                            context,
+                            debugLabel: 'TV preferiti: ${channel.name}',
+                          ),
                           label: semanticsLabel,
                           hint: 'Tocca per aprire il canale TV',
                           onTap: () => widget.onOpenChannel(channel),

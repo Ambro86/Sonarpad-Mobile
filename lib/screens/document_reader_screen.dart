@@ -21,6 +21,7 @@ import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 /// Schermata di lettura/ascolto di un documento della libreria.
 ///
@@ -685,6 +686,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
+                scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                 shrinkWrap: true,
                 itemCount: bookmarks.length,
                 itemBuilder: (context, index) {
@@ -769,6 +771,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
               SizedBox(
                 height: 320,
                 child: ListView.builder(
+                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   shrinkWrap: true,
                   itemCount: existing.length,
                   itemBuilder: (context, index) {
@@ -2035,8 +2038,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                       explicitChildNodes: true,
                       child: CustomScrollView(
                         controller: _scrollController,
-                        scrollCacheExtent: const ScrollCacheExtent.pixels(
-                            4000), // Precarica i blocchi successivi per VoiceOver
+                        scrollCacheExtent: accessibilityListCacheExtentForPlatform(), // Precarica i blocchi successivi per VoiceOver
                         // BouncingScrollPhysics → flick naturale su iPhone
                         physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics(),
@@ -2530,6 +2532,7 @@ class _DocumentIndexScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.documentIndex)),
       body: ListView.separated(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         itemCount: entries.length,
         separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {
@@ -2664,6 +2667,7 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.searchInDocument)),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -2710,6 +2714,7 @@ class _DocumentSearchResultsScreen extends StatelessWidget {
       body: results.isEmpty
           ? Center(child: Text(l10n.noDocumentSearchResults(query)))
           : ListView.separated(
+              scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
               itemCount: results.length,
               separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {

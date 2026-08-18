@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/audiodescription_service.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 const _scheduledAudiodescriptionsTitle = 'Audiodescrizioni in programma';
 const _scheduledAudiodescriptionsEmpty =
@@ -102,6 +103,7 @@ class _AudiodescriptionScheduledScreenState
                   : RefreshIndicator(
                       onRefresh: _load,
                       child: ListView.builder(
+                        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                         padding: const EdgeInsets.all(16),
                         itemCount: _days.length,
                         itemBuilder: (context, dayIndex) {

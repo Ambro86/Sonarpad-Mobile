@@ -15,6 +15,7 @@ import '../utils/list_timestamp_formatter.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class RaiPlaySoundScreen extends StatefulWidget {
   final String? url;
@@ -340,6 +341,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                       ),
                     Expanded(
                       child: ListView.builder(
+                        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                         controller: _scrollController,
                         padding: const EdgeInsets.all(16),
                         itemCount: items.length + (hasDateButton ? 1 : 0),
@@ -457,6 +459,7 @@ class _RaiPlaySoundDateSelectorScreen extends StatelessWidget {
         child: datedItems.isEmpty
             ? Center(child: Text(l10n.podcastNoDatesAvailable))
             : ListView.separated(
+                scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                 padding: const EdgeInsets.all(16),
                 itemCount: datedItems.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),

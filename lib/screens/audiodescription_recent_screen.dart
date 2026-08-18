@@ -8,6 +8,7 @@ import 'audiodescription_scheduled_screen.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 const _scheduledAudiodescriptionsTitle = 'Audiodescrizioni in programma';
 
@@ -134,6 +135,7 @@ class _AudiodescriptionRecentScreenState
           : _error.isNotEmpty
               ? Center(child: Text('${l10n.audiodescriptionError}: $_error'))
               : ListView.separated(
+                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   padding: const EdgeInsets.all(16),
                   itemCount: _filteredItems.length + 2,
                   separatorBuilder: (_, _) => const Divider(),

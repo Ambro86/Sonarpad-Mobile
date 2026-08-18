@@ -24,6 +24,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 enum _MediaCutterDoneAction { share, close }
 
@@ -2797,6 +2798,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
+            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             shrinkWrap: true,
             itemCount: _availableEffects.length,
             itemBuilder: (context, index) {
@@ -6463,6 +6465,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           AppBar(title: Text(AppLocalizations.of(context).mediaCutterTitle)),
       body: SafeArea(
         child: ListView(
+          scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
           padding: const EdgeInsets.all(16),
           children: [
             modeCard(
@@ -6541,6 +6544,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         appBar: AppBar(title: Text(l10n.mediaCutterTitle)),
         body: SafeArea(
           child: ListView(
+            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             padding: const EdgeInsets.all(16),
             children: [
               Text(_isGuidedMode ? _guidedModeTitle : _advancedModeTitle),

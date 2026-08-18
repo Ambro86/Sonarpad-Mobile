@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
@@ -19,6 +18,7 @@ import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
   const NewsWebViewScreen(
@@ -1750,7 +1750,7 @@ class _ReaderArticleView extends StatelessWidget {
       label: l10n.articleTextSemantics,
       explicitChildNodes: true,
       child: CustomScrollView(
-        scrollCacheExtent: const ScrollCacheExtent.pixels(4000),
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),

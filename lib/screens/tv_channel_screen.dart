@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
+import '../utils/accessibility_list_behavior.dart';
 import 'radio_player_screen.dart';
 import '../utils/status_message.dart';
 
@@ -355,6 +356,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                     child: Text('Nessun programma trovato per oggi.'),
                   )
                 : ListView.builder(
+                    scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                     itemCount: _guide.length,
                     itemBuilder: (context, index) {
                       final program = _guide[index];
@@ -362,31 +364,38 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                       final isCurrent =
                           program.startTime <= now && program.endTime > now;
 
-                      return ListTile(
-                        tileColor: isCurrent
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : null,
-                        leading: Text(
-                          program.hour,
-                          style: TextStyle(
-                            fontWeight: isCurrent
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            fontSize: 16,
-                          ),
+                      return Semantics(
+                        onDidGainAccessibilityFocus: () => keepAccessibilityFocusVisible(
+                          context,
+                          debugLabel:
+                              'TV guida: ${program.hour} ${program.title}',
                         ),
-                        title: Text(
-                          program.title,
-                          style: TextStyle(
-                            fontWeight: isCurrent
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                        child: ListTile(
+                          tileColor: isCurrent
+                              ? Theme.of(context).colorScheme.primaryContainer
+                              : null,
+                          leading: Text(
+                            program.hour,
+                            style: TextStyle(
+                              fontWeight: isCurrent
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: 16,
+                            ),
                           ),
+                          title: Text(
+                            program.title,
+                            style: TextStyle(
+                              fontWeight: isCurrent
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                          trailing: isCurrent
+                              ? const Icon(Icons.live_tv, color: Colors.red)
+                              : null,
+                          onTap: () => _showProgramDetails(program),
                         ),
-                        trailing: isCurrent
-                            ? const Icon(Icons.live_tv, color: Colors.red)
-                            : null,
-                        onTap: () => _showProgramDetails(program),
                       );
                     },
                   ),

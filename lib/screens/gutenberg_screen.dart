@@ -11,6 +11,7 @@ import '../services/gutendex_service.dart';
 import '../utils/app_logger.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class GutenbergScreen extends StatefulWidget {
   final String? parentId;
@@ -74,6 +75,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Project Gutenberg')),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -214,6 +216,7 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
             return Center(child: Text(l10n.noGutenbergBooksFound));
           }
           return ListView.separated(
+            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             itemCount: _books.length + (_nextPage == null ? 0 : 1),
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
@@ -338,6 +341,7 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(book.title)),
       body: ListView(
+        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           Text(book.title, style: Theme.of(context).textTheme.headlineSmall),

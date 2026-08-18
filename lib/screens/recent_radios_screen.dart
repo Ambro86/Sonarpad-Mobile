@@ -6,6 +6,7 @@ import '../services/radio_service.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart';
 import '../utils/status_message.dart';
+import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class RecentRadiosScreen extends StatefulWidget {
   const RecentRadiosScreen({super.key});
@@ -111,6 +112,7 @@ class _RecentRadiosScreenState extends State<RecentRadiosScreen> {
           : _recent.isEmpty
               ? Center(child: Text(_noRecentRadiosLabel(l10n.localeName)))
               : ListView.builder(
+                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   padding: const EdgeInsets.all(16),
                   itemCount: _recent.length,
                   itemBuilder: (context, index) {
