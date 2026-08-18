@@ -270,21 +270,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       return;
     }
 
-    // The platform view can attach a few frames after the document data has
-    // finished loading. Wait for the active renderer before asking VoiceOver
-    // to move to the paragraph, otherwise the request can be silently lost.
-    for (var attempt = 0; attempt < 16; attempt++) {
-      if (!mounted) return;
-      if (!useNativeIosAccessibleViews ||
-          _accessibleDocumentListController.hasAttachedNativeRenderer) {
-        await _accessibleDocumentListController.focusTo(
-          'paragraph_$index',
-          animated: false,
-        );
-        return;
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 75));
-    }
+    // The controller is renderer-neutral: if the active renderer has not
+    // attached yet, focusTo() queues the request and replays it as soon as
+    // either UIKit or Flutter becomes available. Screens never need to know
+    // which renderer is active.
+    await _accessibleDocumentListController.focusTo(
+      'paragraph_$index',
+      animated: false,
+    );
   }
 
   List<String> _splitTextForDocumentDisplay(String text) {
