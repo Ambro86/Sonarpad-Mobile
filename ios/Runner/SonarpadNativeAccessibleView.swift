@@ -280,7 +280,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var refreshControl: UIRefreshControl?
   private var refreshEnabled = false
   private var lastInitialFocusId: String?
-  private var pendingEntryFocusId: String?
+  private var entryAnchorId: String?
   private var debugTag: String?
 
   private func emitDebug(_ message: String) {
@@ -327,27 +327,33 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? true
           let focusOnNextEntry = map["focusOnNextEntry"] as? Bool ?? false
-          if focusOnNextEntry {
-            self.pendingEntryFocusId = id
-          }
           self.emitDebug("method scrollTo id=\(id) animated=\(animated) focusOnNextEntry=\(focusOnNextEntry) window=\(self.rootView.window != nil)")
-          self.scrollToRow(id: id, animated: animated)
+          if self.debugTag == "document" && focusOnNextEntry {
+            self.armEntryAnchor(id: id, notification: nil)
+          } else {
+            self.scrollToRow(id: id, animated: animated)
+          }
         }
         result(nil)
       case "focusInitial":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
-          let animated = map["animated"] as? Bool ?? false
-          self.pendingEntryFocusId = id
-          self.emitDebug("method focusInitial id=\(id) animated=\(animated) window=\(self.rootView.window != nil)")
-          self.focusRow(id: id, animated: animated, maxAttempts: 4)
+          self.emitDebug("method focusInitial id=\(id) window=\(self.rootView.window != nil)")
+          if self.debugTag == "document" {
+            self.armEntryAnchor(id: id, notification: .screenChanged, notificationName: "screenChanged")
+          } else {
+            self.focusRow(id: id, animated: false, maxAttempts: 4)
+          }
         }
         result(nil)
       case "focusTo":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? false
-          self.pendingEntryFocusId = nil
           self.emitDebug("method focusTo id=\(id) animated=\(animated) window=\(self.rootView.window != nil)")
-          self.focusRow(id: id, animated: animated, maxAttempts: 4)
+          if self.debugTag == "document" {
+            self.armEntryAnchor(id: id, notification: .layoutChanged, notificationName: "layoutChanged")
+          } else {
+            self.focusRow(id: id, animated: animated, maxAttempts: 4)
+          }
         }
         result(nil)
       default:
@@ -401,12 +407,20 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     if requestedInitialFocusId != lastInitialFocusId {
       lastInitialFocusId = requestedInitialFocusId
       if let id = requestedInitialFocusId, !id.isEmpty {
-        // Prepare the table at the saved location, but do not start a retry
-        // storm while VoiceOver still owns Flutter's AppBar semantics. Dart
-        // first focuses the platform-view node, then invokes focusInitial.
-        pendingEntryFocusId = id
-        emitDebug("apply initialFocusId changed -> prepare entry id=\(id)")
-        scrollToRow(id: id, animated: false)
+        if debugTag == "document" {
+          // Match the old Flutter reader behaviour first: move the document
+          // to the saved chunk. The entry anchor temporarily exposes only
+          // that visible cell to the platform-view accessibility subtree.
+          // It is cleared on the first real VoiceOver row focus, so normal
+          // flick navigation is never redirected or trapped afterwards.
+          emitDebug("apply initialFocusId changed -> arm one-shot entry id=\(id)")
+          armEntryAnchor(id: id, notification: nil)
+        } else {
+          // Keep the generic renderer behavior unchanged: position the row
+          // now, then let UniversalAccessibleList issue focusInitial once the
+          // platform view is attached.
+          scrollToRow(id: id, animated: false)
+        }
       }
     }
 
@@ -738,33 +752,103 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
-  private func handleAccessibilityFocus(_ id: String) {
-    emitDebug("VoiceOver didBecomeFocused row=\(id) pendingEntry=\(pendingEntryFocusId ?? "nil")")
+  private func clearEntryAnchor(reason: String) {
+    guard entryAnchorId != nil || rootView.accessibilityElements != nil else { return }
+    emitDebug("entry anchor clear target=\(entryAnchorId ?? "nil") reason=\(reason)")
+    entryAnchorId = nil
+    rootView.accessibilityElements = nil
+  }
 
-    if let pending = pendingEntryFocusId, pending != id,
-       let indexPath = indexPath(forRowId: pending) {
-      // When VoiceOver enters the native table from a Flutter control it can
-      // default to row 0 even though the table has already been scrolled. Do
-      // not publish that transient wrong row to Dart. Redirect the native
-      // accessibility focus to the remembered entry point instead.
-      emitDebug("VoiceOver entry redirect from=\(id) to=\(pending)")
-      tableView.scrollToRow(at: indexPath, at: .middle, animated: false)
-      tableView.layoutIfNeeded()
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.04) { [weak self] in
-        guard let self = self,
-              self.pendingEntryFocusId == pending,
-              let target = self.accessibilityTarget(at: indexPath) else { return }
-        self.emitDebug("VoiceOver entry redirect POST to=\(pending)")
-        UIAccessibility.post(notification: .layoutChanged, argument: target)
+  private func handleAccessibilityFocus(_ id: String) {
+    let pending = entryAnchorId
+    emitDebug("VoiceOver didBecomeFocused row=\(id) entryAnchor=\(pending ?? "nil")")
+
+    if let pending = pending {
+      if pending == id {
+        // The one-shot handoff succeeded. Restore the normal UITableView
+        // accessibility hierarchy before the user's next flick.
+        clearEntryAnchor(reason: "target acquired")
+      } else {
+        // Never fight a real VoiceOver navigation decision. If iOS focused a
+        // different row, drop the temporary anchor immediately and let normal
+        // table traversal continue. This is deliberately NOT a redirect.
+        clearEntryAnchor(reason: "actual focus moved to \(id), expected \(pending)")
+      }
+    }
+
+    channel.invokeMethod("event", arguments: ["type": "focus", "id": id])
+  }
+
+  private func armEntryAnchor(
+    id: String,
+    notification: UIAccessibility.Notification?,
+    notificationName: String = "none",
+    attempt: Int = 0
+  ) {
+    guard debugTag == "document" else {
+      if notification != nil {
+        focusRow(id: id, animated: false, maxAttempts: 4)
+      } else {
+        scrollToRow(id: id, animated: false)
       }
       return
     }
 
-    if pendingEntryFocusId == id {
-      emitDebug("VoiceOver entry target acquired row=\(id)")
-      pendingEntryFocusId = nil
+    guard let indexPath = indexPath(forRowId: id) else {
+      emitDebug("entry anchor id=\(id) attempt=\(attempt) indexPath NOT FOUND")
+      clearEntryAnchor(reason: "missing row")
+      return
     }
-    channel.invokeMethod("event", arguments: ["type": "focus", "id": id])
+
+    if attempt == 0 {
+      // Replace any older pending entry point (for example repeated slider
+      // adjustments) without leaving a stale accessibility element exposed.
+      rootView.accessibilityElements = nil
+      entryAnchorId = id
+    } else if entryAnchorId != id {
+      return
+    }
+
+    tableView.layoutIfNeeded()
+    // Flutter's old AutoScrollTag used begin/top alignment for bookmark
+    // resume. Keeping the target at the top also gives UIKit the best natural
+    // traversal fallback if the explicit focus notification is ignored.
+    tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.04) { [weak self] in
+      guard let self = self, self.entryAnchorId == id else { return }
+      self.tableView.layoutIfNeeded()
+
+      guard self.rootView.window != nil,
+            let target = self.accessibilityTarget(at: indexPath) else {
+        if attempt < 12 {
+          self.emitDebug("entry anchor waiting id=\(id) attempt=\(attempt) window=\(self.rootView.window != nil) cellExists=\(self.tableView.cellForRow(at: indexPath) != nil)")
+          self.armEntryAnchor(
+            id: id,
+            notification: notification,
+            notificationName: notificationName,
+            attempt: attempt + 1
+          )
+        } else {
+          self.clearEntryAnchor(reason: "target unavailable after retries")
+        }
+        return
+      }
+
+      // The restriction is temporary and one-shot. VoiceOver sees the saved
+      // row as the only entry element of the embedded native subtree. As soon
+      // as any real row receives focus, handleAccessibilityFocus clears it.
+      self.rootView.accessibilityElements = [target]
+      self.emitDebug("entry anchor armed id=\(id) attempt=\(attempt) offsetY=\(self.tableView.contentOffset.y) notification=\(notificationName)")
+
+      if let notification = notification {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) { [weak self] in
+          guard let self = self, self.entryAnchorId == id else { return }
+          self.emitDebug("entry anchor POST id=\(id) notification=\(notificationName)")
+          UIAccessibility.post(notification: notification, argument: target)
+        }
+      }
+    }
   }
 
   private func accessibilityTarget(at indexPath: IndexPath) -> Any? {
@@ -864,9 +948,6 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         return
       }
 
-      // At this point Flutter has already been asked to move accessibility
-      // focus onto the embedded platform view. A single layoutChanged targets
-      // the actual native row without repeatedly resetting the whole screen.
       self.emitDebug("focusRow POST id=\(id) attempt=\(attempt) notification=layoutChanged offsetY=\(self.tableView.contentOffset.y)")
       UIAccessibility.post(notification: .layoutChanged, argument: target)
 
@@ -874,9 +955,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         guard let self = self else { return }
         let focusedAfter = self.voiceOverFocusedRowId()
         self.emitDebug("focusRow VERIFY id=\(id) attempt=\(attempt) focusedAfter=\(focusedAfter ?? "nil") expected=\(id)")
-        if focusedAfter == id {
-          self.pendingEntryFocusId = nil
-        } else if attempt < maxAttempts {
+        if focusedAfter != id && attempt < maxAttempts {
           self.focusRow(id: id, animated: false, attempt: attempt + 1, maxAttempts: maxAttempts)
         }
       }
