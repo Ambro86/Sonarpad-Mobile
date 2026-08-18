@@ -241,12 +241,95 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     return values.isEmpty ? null : values.join(' · ');
   }
 
+  Widget _buildFlutterSonarTubeItem(
+    AppLocalizations l10n,
+    SonarTubeItem item, {
+    required bool resolving,
+    required bool canFavorite,
+    required bool isFavorite,
+    required String favoriteLabel,
+    required String? subtitle,
+  }) {
+    final card = Card(
+      child: ListTile(
+        leading: item.thumbnailUrl == null
+            ? ExcludeSemantics(
+                child: Icon(
+                  item.kind == SonarTubeItemKind.video
+                      ? Icons.play_circle_outline
+                      : item.kind == SonarTubeItemKind.channel
+                          ? Icons.account_circle
+                          : Icons.playlist_play,
+                ),
+              )
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.network(
+                  item.thumbnailUrl!,
+                  width: 88,
+                  height: 56,
+                  fit: BoxFit.cover,
+                  excludeFromSemantics: true,
+                  errorBuilder: (_, _, _) => const ExcludeSemantics(
+                    child: SizedBox(
+                      width: 88,
+                      child: Icon(Icons.video_library),
+                    ),
+                  ),
+                ),
+              ),
+        title: Text(item.title),
+        subtitle: Text(
+          resolving ? l10n.sonarTubeResolving : (subtitle ?? ''),
+        ),
+        trailing: resolving
+            ? const SizedBox.square(
+                dimension: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : canFavorite
+                ? ExcludeSemantics(
+                    child: IconButton(
+                      key: ValueKey(
+                        'sonartube_favorite_${item.kind.name}_${item.id}',
+                      ),
+                      tooltip: favoriteLabel,
+                      onPressed: () => _toggleFavorite(item),
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                      ),
+                    ),
+                  )
+                : const ExcludeSemantics(child: Icon(Icons.play_arrow)),
+        enabled: _resolvingId == null,
+        onTap: _resolvingId == null ? () => _openItem(item) : null,
+      ),
+    );
+    return Semantics(
+      key: ValueKey('sonartube_${item.kind.name}_${item.id}'),
+      container: true,
+      button: true,
+      label: [
+        item.title,
+        if (subtitle?.isNotEmpty ?? false) subtitle!,
+      ].join(', '),
+      onTap: _resolvingId == null ? () => _openItem(item) : null,
+      child: ExcludeSemantics(child: card),
+    );
+  }
+
   Widget _buildSharedAccessibleSonarTube(AppLocalizations l10n) {
     final rows = <AccessibleListRow>[];
     if (!_isCollection) {
       rows.add(AccessibleListRow(
         id: 'favorites',
         title: l10n.sonarTubeFavorites,
+        flutterChild: OutlinedButton.icon(
+          key: const ValueKey('sonartube_favorites_button'),
+          onPressed: _openFavorites,
+          icon: const Icon(Icons.favorite),
+          label: Text(l10n.sonarTubeFavorites),
+        ),
       ));
       rows.add(AccessibleListRow(
         id: 'query',
@@ -254,12 +337,29 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         kind: 'textField',
         value: _searchController.text,
         placeholder: l10n.sonarTubeSearchPrompt,
+        flutterChild: TextField(
+          key: const ValueKey('sonartube_search_field'),
+          controller: _searchController,
+          focusNode: _searchFocusNode,
+          decoration: InputDecoration(
+            labelText: l10n.sonarTubeSearchLabel,
+            hintText: l10n.sonarTubeSearchPrompt,
+            prefixIcon: const Icon(Icons.search),
+          ),
+          textInputAction: TextInputAction.search,
+          onSubmitted: (_) => _search(),
+        ),
       ));
       rows.add(AccessibleListRow(
         id: 'search',
         title: l10n.search,
         kind: 'button',
         enabled: !_loading,
+        flutterChild: FilledButton(
+          key: const ValueKey('sonartube_search_button'),
+          onPressed: _loading ? null : _search,
+          child: Text(l10n.search),
+        ),
       ));
     }
     if (_loading) {
@@ -306,6 +406,15 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         actions: canFavorite
             ? [AccessibleCustomAction(id: 'favorite', label: favoriteLabel)]
             : const [],
+        flutterChild: _buildFlutterSonarTubeItem(
+          l10n,
+          item,
+          resolving: resolving,
+          canFavorite: canFavorite,
+          isFavorite: isFavorite,
+          favoriteLabel: favoriteLabel,
+          subtitle: subtitle,
+        ),
       ));
     }
     if (_nextToken != null) {
@@ -314,6 +423,19 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         title: _loadingMore ? l10n.loading : l10n.sonarTubeLoadMore,
         kind: 'button',
         enabled: !_loadingMore,
+        flutterChild: FilledButton.tonal(
+          key: const ValueKey('sonartube_load_more'),
+          onPressed: _loadingMore ? null : _loadMore,
+          child: _loadingMore
+              ? SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    semanticsLabel: l10n.loading,
+                  ),
+                )
+              : Text(l10n.sonarTubeLoadMore),
+        ),
       ));
     }
 

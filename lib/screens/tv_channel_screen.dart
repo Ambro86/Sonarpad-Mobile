@@ -103,6 +103,25 @@ Future<void> showTvProgramDetailsDialog(
                             title: description.isEmpty
                                 ? l10n.noPodcastDescription
                                 : description,
+                            flutterChild: Semantics(
+                              key: const ValueKey(
+                                'tv_program_details_description_semantics',
+                              ),
+                              container: true,
+                              sortKey: const OrdinalSortKey(3),
+                              label: description.isEmpty
+                                  ? l10n.noPodcastDescription
+                                  : description,
+                              child: ExcludeSemantics(
+                                child: SingleChildScrollView(
+                                  child: Text(
+                                    description.isEmpty
+                                        ? l10n.noPodcastDescription
+                                        : description,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ])],
                         onEvent: (_) {},

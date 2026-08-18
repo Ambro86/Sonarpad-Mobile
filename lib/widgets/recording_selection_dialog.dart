@@ -47,6 +47,22 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
                               title: p.basenameWithoutExtension(recordings[i].path),
                               kind: 'toggle',
                               toggleValue: selectedPaths.contains(recordings[i].path),
+                              flutterChild: CheckboxListTile(
+                                value: selectedPaths.contains(recordings[i].path),
+                                controlAffinity: ListTileControlAffinity.leading,
+                                title: Text(
+                                  p.basenameWithoutExtension(recordings[i].path),
+                                ),
+                                onChanged: (value) {
+                                  setDialogState(() {
+                                    if (value ?? false) {
+                                      selectedPaths.add(recordings[i].path);
+                                    } else {
+                                      selectedPaths.remove(recordings[i].path);
+                                    }
+                                  });
+                                },
+                              ),
                             ),
                         ])],
                         onEvent: (event) {
