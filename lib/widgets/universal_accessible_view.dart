@@ -195,7 +195,7 @@ class AccessibleListController {
   final String? debugName;
   MethodChannel? _channel;
   Object? _flutterOwner;
-  ({String id, bool animated})? _pendingScroll;
+  ({String id, bool animated, bool focusOnNextEntry})? _pendingScroll;
   ({String id, bool animated})? _pendingFocus;
 
   bool get hasAttachedRenderer =>
@@ -210,14 +210,19 @@ class AccessibleListController {
     unawaited(AppLogger.log('ACCESSIBLE[$name] $message'));
   }
 
-  Future<void> scrollTo(String id, {bool animated = true}) async {
-    _debug('scrollTo requested id=$id animated=$animated native=${_channel != null} flutter=${_flutterScrollTo != null}');
+  Future<void> scrollTo(
+    String id, {
+    bool animated = true,
+    bool focusOnNextEntry = false,
+  }) async {
+    _debug('scrollTo requested id=$id animated=$animated focusOnNextEntry=$focusOnNextEntry native=${_channel != null} flutter=${_flutterScrollTo != null}');
     final channel = _channel;
     if (channel != null) {
       _debug('scrollTo dispatch native id=$id');
       await channel.invokeMethod<void>('scrollTo', {
         'id': id,
         'animated': animated,
+        'focusOnNextEntry': focusOnNextEntry,
       });
       return;
     }
@@ -228,7 +233,11 @@ class AccessibleListController {
       return;
     }
     _debug('scrollTo queued id=$id');
-    _pendingScroll = (id: id, animated: animated);
+    _pendingScroll = (
+      id: id,
+      animated: animated,
+      focusOnNextEntry: focusOnNextEntry,
+    );
   }
 
   Future<void> focusTo(String id, {bool animated = false}) async {
@@ -264,6 +273,7 @@ class AccessibleListController {
       unawaited(channel.invokeMethod<void>('scrollTo', {
         'id': pendingScroll.id,
         'animated': pendingScroll.animated,
+        'focusOnNextEntry': pendingScroll.focusOnNextEntry,
       }));
     }
     if (pendingFocus != null) {
@@ -339,6 +349,8 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   final Map<String, TextEditingController> _flutterTextControllers =
       <String, TextEditingController>{};
   final GlobalKey _flutterTargetKey = GlobalKey(debugLabel: 'accessible_target_row');
+  final GlobalKey _nativeViewKey = GlobalKey(debugLabel: 'accessible_native_view');
+  int _nativeInitialFocusGeneration = 0;
   String? _flutterTargetId;
   bool _initialFocusScheduled = false;
 
@@ -495,6 +507,10 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     }
     if (oldWidget.initialFocusId != widget.initialFocusId) {
       _initialFocusScheduled = false;
+      final currentChannel = _channel;
+      if (currentChannel != null && useNativeIosAccessibleViews) {
+        _scheduleNativeInitialFocus(currentChannel);
+      }
     }
     final channel = _channel;
     if (channel != null) {
@@ -541,10 +557,48 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     _channel = channel;
     widget.controller?._attach(channel);
     channel.setMethodCallHandler(_handleMethod);
+    _scheduleNativeInitialFocus(channel);
+  }
+
+  void _scheduleNativeInitialFocus(MethodChannel channel) {
+    final id = widget.initialFocusId;
+    if (id == null || id.isEmpty || !useNativeIosAccessibleViews) return;
+    final generation = ++_nativeInitialFocusGeneration;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await WidgetsBinding.instance.endOfFrame;
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+      if (!mounted || _channel != channel || generation != _nativeInitialFocusGeneration) {
+        return;
+      }
+
+      // First move Flutter accessibility focus onto the embedded platform
+      // view. A UIKit notification alone can be ignored while VoiceOver still
+      // owns the surrounding Flutter AppBar semantics node.
+      final nativeRenderObject =
+          _nativeViewKey.currentContext?.findRenderObject();
+      final tag = widget.debugTag ?? widget.controller?.debugName;
+      if (tag != null && tag.isNotEmpty) {
+        unawaited(AppLogger.log(
+          'DOC_NATIVE[$tag] Flutter semantics focus -> platform view '
+          'id=$id render=${nativeRenderObject?.runtimeType}',
+        ));
+      }
+      nativeRenderObject?.sendSemanticsEvent(const FocusSemanticEvent());
+
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+      if (!mounted || _channel != channel || generation != _nativeInitialFocusGeneration) {
+        return;
+      }
+      await channel.invokeMethod<void>('focusInitial', {
+        'id': id,
+        'animated': false,
+      });
+    });
   }
 
   @override
   void dispose() {
+    _nativeInitialFocusGeneration += 1;
     final channel = _channel;
     if (channel != null) {
       widget.controller?._detach(channel);
@@ -866,6 +920,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       return _buildFlutterModel(context);
     }
     return UiKitView(
+      key: _nativeViewKey,
       viewType: 'sonarpad/native_accessible_list',
       creationParams: _data,
       creationParamsCodec: const StandardMessageCodec(),

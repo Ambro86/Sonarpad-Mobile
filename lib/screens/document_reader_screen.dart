@@ -67,6 +67,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       AppSettingsService.defaultDocumentReadingSleepTimerMinutes;
   int _playingChunkIndex = -1;
   int _focusedChunkIndex = -1;
+  final ValueNotifier<int> _documentPositionRevision = ValueNotifier<int>(0);
   int _initialBookmarkFocusIndex = -1;
   String? _lastLoggedInitialFocusId;
   StreamController<File>? _edgeFileController;
@@ -152,6 +153,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _cancelReadingSleepTimer();
     unawaited(_audio.stopAndDispose());
     _scrollController.dispose();
+    _documentPositionRevision.dispose();
     super.dispose();
   }
 
@@ -267,17 +269,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (mounted) {
         setState(() => _loadingText = false);
         _docLog('DOC_BOOKMARK loading=false build requested initialFocusIndex=$_initialBookmarkFocusIndex');
-        final initialBookmarkIndex = _initialBookmarkFocusIndex;
-        if (initialBookmarkIndex >= 0) {
-          _docLog('DOC_FOCUS scheduling delayed initial focus index=$initialBookmarkIndex delayMs=500');
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted) {
-              _docLog('DOC_FOCUS delayed initial focus firing index=$initialBookmarkIndex');
-              unawaited(_focusChunk(initialBookmarkIndex));
-            } else {
-              _docLog('DOC_FOCUS delayed initial focus cancelled: reader unmounted');
-            }
-          });
+        if (_initialBookmarkFocusIndex >= 0) {
+          _docLog('DOC_FOCUS initial focus delegated to UniversalAccessibleList id=paragraph_$_initialBookmarkFocusIndex');
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -292,7 +285,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // Scroll automatico al chunk corrente
   // ---------------------------------------------------------------------------
 
-  void _scrollToChunk(int index) {
+  void _scrollToChunk(int index, {bool focusOnNextEntry = false}) {
     if (index < 0 || index >= _chunks.length) {
       _docLog('DOC_SCROLL reject index=$index chunks=${_chunks.length}');
       return;
@@ -303,6 +296,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _accessibleDocumentListController.scrollTo(
           'paragraph_$index',
           animated: false,
+          focusOnNextEntry: focusOnNextEntry,
         ),
       );
       return;
@@ -1921,9 +1915,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     // la posizione corrente e quindi anche lo slider percentuale.
     if (_speaking && !_ttsPaused) return;
     if (_focusedChunkIndex == index) return;
-    setState(() {
-      _focusedChunkIndex = index;
-    });
+    _focusedChunkIndex = index;
+    // Updating the current VoiceOver paragraph must not rebuild and re-send
+    // all document rows to the native table. Only the small position control
+    // needs to refresh.
+    _documentPositionRevision.value += 1;
   }
 
   void _seekDocumentToPercent(double percent) {
@@ -1938,14 +1934,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final shouldResumeReading = _speaking && !_ttsPaused;
     _docLog('DOC_SCROLL slider seek percent=$percent targetIndex=$targetIndex currentIndex=$currentIndex changed=$positionChanged speaking=$_speaking nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer}');
     if (!positionChanged && !_speaking) return;
-    setState(() {
-      // Seeking changes the current reading/navigation position, not the
-      // saved bookmark. Keeping these concepts separate also prevents the
-      // native paragraph list from changing underneath the focused slider.
-      _focusedChunkIndex = targetIndex;
-      if (_speaking) _playingChunkIndex = targetIndex;
-    });
-    _scrollToChunk(targetIndex);
+    // Seeking changes the current reading/navigation position, not the saved
+    // bookmark. Do not rebuild the whole document list while the position
+    // slider owns VoiceOver focus: update only the position control, then move
+    // the native table and remember where VoiceOver should enter it next.
+    _focusedChunkIndex = targetIndex;
+    if (_speaking) _playingChunkIndex = targetIndex;
+    _documentPositionRevision.value += 1;
+    _scrollToChunk(targetIndex, focusOnNextEntry: true);
     if (shouldRealignReading) {
       final seekToken = ++_documentSeekToken;
       unawaited(
@@ -2157,17 +2153,22 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                         ),
                         if (_chunks.isNotEmpty) ...[
                           const SizedBox(height: 8),
-                          _DocumentPositionSlider(
-                            value: _documentProgressPercent,
-                            label: l10n.documentPosition,
-                            remainingTimeLabel:
-                                _documentRemainingReadingTimeLabel(l10n),
-                            onChanged: _seekDocumentToPercent,
-                            stepPercent: _documentSliderStepPercent,
-                            onIncrease: () =>
-                                _seekDocumentByPercent(_documentSliderStepPercent.toDouble()),
-                            onDecrease: () =>
-                                _seekDocumentByPercent(-_documentSliderStepPercent.toDouble()),
+                          ValueListenableBuilder<int>(
+                            valueListenable: _documentPositionRevision,
+                            builder: (context, _, __) => _DocumentPositionSlider(
+                              value: _documentProgressPercent,
+                              label: l10n.documentPosition,
+                              remainingTimeLabel:
+                                  _documentRemainingReadingTimeLabel(l10n),
+                              onChanged: _seekDocumentToPercent,
+                              stepPercent: _documentSliderStepPercent,
+                              onIncrease: () => _seekDocumentByPercent(
+                                _documentSliderStepPercent.toDouble(),
+                              ),
+                              onDecrease: () => _seekDocumentByPercent(
+                                -_documentSliderStepPercent.toDouble(),
+                              ),
+                            ),
                           ),
                         ],
                       ],
