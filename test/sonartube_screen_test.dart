@@ -10,7 +10,7 @@ import 'package:sonarpad_mobile_starter/screens/sonartube_screen.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 
 void main() {
-  testWidgets('builds every playlist video for VoiceOver traversal', (
+  testWidgets('scrolls through every playlist video with standard list', (
     tester,
   ) async {
     final semanticsHandle = tester.ensureSemantics();
@@ -53,10 +53,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const ValueKey('sonartube_video_video_50')),
-      findsOneWidget,
-    );
     final firstVideoSemantics = tester.getSemantics(
       find.byKey(const ValueKey('sonartube_video_video_1')),
     );
@@ -64,6 +60,16 @@ void main() {
     expect(
       firstVideoSemantics.getSemanticsData().customSemanticsActionIds,
       isEmpty,
+    );
+
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('sonartube_video_video_50')),
+      500,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(
+      find.byKey(const ValueKey('sonartube_video_video_50')),
+      findsOneWidget,
     );
     semanticsHandle.dispose();
   });

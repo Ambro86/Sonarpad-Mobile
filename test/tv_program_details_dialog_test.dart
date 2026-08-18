@@ -1,33 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/screens/tv_channel_screen.dart';
 import 'package:sonarpad_mobile_starter/services/tv_service.dart';
 
 void main() {
-  testWidgets('costruisce tutti i programmi per VoiceOver', (tester) async {
-    final programs = List.generate(
-      30,
-      (index) => TvProgram(
-        title: 'Programma ${index + 1}',
-        hour: '${index.toString().padLeft(2, '0')}:00',
-        startTime: index * 3600,
-        endTime: (index + 1) * 3600,
-      ),
-    );
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: TvProgramGuideList(programs: programs, onOpenProgram: (_) {}),
-        ),
-      ),
-    );
-
-    expect(find.text('Programma 1'), findsOneWidget);
-    expect(find.text('Programma 30'), findsOneWidget);
-  });
-
   testWidgets('selezionare un giorno chiude e conferma subito', (tester) async {
     final today = DateTime(2026, 8, 18);
     DateTime? selected;
@@ -103,6 +81,32 @@ void main() {
     expect(
       tester.getTopLeft(find.text('Indietro')).dy,
       lessThan(tester.getTopLeft(find.text('Programma di prova')).dy),
+    );
+    expect(
+      tester
+          .getSemantics(
+            find.byKey(const ValueKey('tv_program_details_back_semantics')),
+          )
+          .sortKey,
+      const OrdinalSortKey(1),
+    );
+    expect(
+      tester
+          .getSemantics(
+            find.byKey(const ValueKey('tv_program_details_title_semantics')),
+          )
+          .sortKey,
+      const OrdinalSortKey(2),
+    );
+    expect(
+      tester
+          .getSemantics(
+            find.byKey(
+              const ValueKey('tv_program_details_description_semantics'),
+            ),
+          )
+          .sortKey,
+      const OrdinalSortKey(3),
     );
 
     semanticsHandle.dispose();

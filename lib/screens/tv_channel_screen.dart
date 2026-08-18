@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
@@ -57,27 +58,58 @@ Future<void> showTvProgramDetailsDialog(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: TextButton.icon(
-                  autofocus: true,
-                  onPressed: () => Navigator.pop(dialogContext),
-                  icon: const Icon(Icons.arrow_back),
-                  label: Text(l10n.back),
+              Semantics(
+                key: const ValueKey('tv_program_details_back_semantics'),
+                container: true,
+                button: true,
+                label: l10n.back,
+                sortKey: const OrdinalSortKey(1),
+                onTap: () => Navigator.pop(dialogContext),
+                child: ExcludeSemantics(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: TextButton.icon(
+                      autofocus: true,
+                      onPressed: () => Navigator.pop(dialogContext),
+                      icon: const Icon(Icons.arrow_back),
+                      label: Text(l10n.back),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                program.title,
-                style: Theme.of(dialogContext).textTheme.headlineSmall,
+              Semantics(
+                key: const ValueKey('tv_program_details_title_semantics'),
+                container: true,
+                sortKey: const OrdinalSortKey(2),
+                header: true,
+                label: program.title,
+                child: ExcludeSemantics(
+                  child: Text(
+                    program.title,
+                    style: Theme.of(dialogContext).textTheme.headlineSmall,
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               Flexible(
-                child: SingleChildScrollView(
-                  child: Text(
-                    description.isEmpty
-                        ? l10n.noPodcastDescription
-                        : description,
+                child: Semantics(
+                  key: const ValueKey(
+                    'tv_program_details_description_semantics',
+                  ),
+                  container: true,
+                  sortKey: const OrdinalSortKey(3),
+                  label: description.isEmpty
+                      ? l10n.noPodcastDescription
+                      : description,
+                  child: ExcludeSemantics(
+                    child: SingleChildScrollView(
+                      child: Text(
+                        description.isEmpty
+                            ? l10n.noPodcastDescription
+                            : description,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -87,53 +119,6 @@ Future<void> showTvProgramDetailsDialog(
       ),
     ),
   );
-}
-
-class TvProgramGuideList extends StatelessWidget {
-  const TvProgramGuideList({
-    super.key,
-    required this.programs,
-    required this.onOpenProgram,
-  });
-
-  final List<TvProgram> programs;
-  final ValueChanged<TvProgram> onOpenProgram;
-
-  @override
-  Widget build(BuildContext context) {
-    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    return SingleChildScrollView(
-      child: Column(
-        children: programs.map((program) {
-          final isCurrent =
-              program.startTime <= now && program.endTime > now;
-          return ListTile(
-            key: ValueKey('tv_program_${program.startTime}_${program.title}'),
-            tileColor: isCurrent
-                ? Theme.of(context).colorScheme.primaryContainer
-                : null,
-            leading: Text(
-              program.hour,
-              style: TextStyle(
-                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                fontSize: 16,
-              ),
-            ),
-            title: Text(
-              program.title,
-              style: TextStyle(
-                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-            trailing: isCurrent
-                ? const Icon(Icons.live_tv, color: Colors.red)
-                : null,
-            onTap: () => onOpenProgram(program),
-          );
-        }).toList(growable: false),
-      ),
-    );
-  }
 }
 
 class TvChannelScreen extends StatefulWidget {
@@ -305,15 +290,11 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     ];
     for (final path in vlcPaths) {
       if (await File(path).exists()) {
-        await Process.start(
-          path,
-          [
-            '--http-user-agent=${widget.channel.playbackUserAgent}',
-            if (preferAudioDescription) '--audio-track=2',
-            url,
-          ],
-          mode: ProcessStartMode.detached,
-        );
+        await Process.start(path, [
+          '--http-user-agent=${widget.channel.playbackUserAgent}',
+          if (preferAudioDescription) '--audio-track=2',
+          url,
+        ], mode: ProcessStartMode.detached);
         return;
       }
     }
@@ -333,11 +314,14 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
               hint: 'Guarda ${widget.channel.name} in diretta',
               child: FilledButton.icon(
                 style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(64)),
+                  minimumSize: const Size.fromHeight(64),
+                ),
                 onPressed: _play,
                 icon: const Icon(Icons.play_circle_fill, size: 32),
-                label: const Text('Riproduci Diretta',
-                    style: TextStyle(fontSize: 20)),
+                label: const Text(
+                  'Riproduci Diretta',
+                  style: TextStyle(fontSize: 20),
+                ),
               ),
             ),
           ),
@@ -361,16 +345,51 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
             child: _loading
                 ? const Center(
                     child: CircularProgressIndicator(
-                        semanticsLabel: 'Caricamento guida in corso'))
+                      semanticsLabel: 'Caricamento guida in corso',
+                    ),
+                  )
                 : _error != null
-                    ? Center(child: Text(_error!))
-                    : _guide.isEmpty
-                        ? const Center(
-                            child: Text('Nessun programma trovato per oggi.'))
-                        : TvProgramGuideList(
-                            programs: _guide,
-                            onOpenProgram: _showProgramDetails,
+                ? Center(child: Text(_error!))
+                : _guide.isEmpty
+                ? const Center(
+                    child: Text('Nessun programma trovato per oggi.'),
+                  )
+                : ListView.builder(
+                    itemCount: _guide.length,
+                    itemBuilder: (context, index) {
+                      final program = _guide[index];
+                      final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+                      final isCurrent =
+                          program.startTime <= now && program.endTime > now;
+
+                      return ListTile(
+                        tileColor: isCurrent
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : null,
+                        leading: Text(
+                          program.hour,
+                          style: TextStyle(
+                            fontWeight: isCurrent
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            fontSize: 16,
                           ),
+                        ),
+                        title: Text(
+                          program.title,
+                          style: TextStyle(
+                            fontWeight: isCurrent
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        trailing: isCurrent
+                            ? const Icon(Icons.live_tv, color: Colors.red)
+                            : null,
+                        onTap: () => _showProgramDetails(program),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
