@@ -171,3 +171,5 @@ MODIFICA_MPD_VLC.md
 MODIFICA_NOTIZIE_TINYFISH_FALLBACK.md
 crea_zip_sorgenti.bat
 test/failures/
+la7cinema_proxy.php
+tools/generate_dsp_previews.dart
