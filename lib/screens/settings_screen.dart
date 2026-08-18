@@ -1095,6 +1095,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliderMin: 0.5,
             sliderMax: 2.0,
             sliderStep: 0.1,
+            sliderIncreasedValueLabel:
+                '${_sliderStep(_ttsSpeed, 0.1).toStringAsFixed(1)}x',
+            sliderDecreasedValueLabel:
+                '${_sliderStep(_ttsSpeed, -0.1).toStringAsFixed(1)}x',
           ),
           AccessibleListRow(
             id: 'tts_pitch',
@@ -1106,6 +1110,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliderMin: 0.5,
             sliderMax: 2.0,
             sliderStep: 0.1,
+            sliderIncreasedValueLabel:
+                '${_sliderStep(_ttsPitch, 0.1).toStringAsFixed(1)}x',
+            sliderDecreasedValueLabel:
+                '${_sliderStep(_ttsPitch, -0.1).toStringAsFixed(1)}x',
           ),
           AccessibleListRow(
             id: 'test_voice',
@@ -1152,6 +1160,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliderMin: 0,
             sliderMax: (AppSettingsService.documentReadingSleepTimerMinutesOptions.length - 1).toDouble(),
             sliderStep: 1,
+            sliderIncreasedValueLabel: _formatSleepTimerMinutes(
+              _documentReadingSleepTimerAt(
+                _documentReadingSleepTimerOptionIndex + 1,
+              ),
+            ),
+            sliderDecreasedValueLabel: _formatSleepTimerMinutes(
+              _documentReadingSleepTimerAt(
+                _documentReadingSleepTimerOptionIndex - 1,
+              ),
+            ),
           ),
           AccessibleListRow(
             id: 'document_slider_step',
@@ -1164,6 +1182,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliderMin: 0,
             sliderMax: (AppSettingsService.documentSliderStepPercentOptions.length - 1).toDouble(),
             sliderStep: 1,
+            sliderIncreasedValueLabel: _formatPercent(
+              _documentSliderStepAt(_documentSliderStepOptionIndex + 1),
+            ),
+            sliderDecreasedValueLabel: _formatPercent(
+              _documentSliderStepAt(_documentSliderStepOptionIndex - 1),
+            ),
           ),
           AccessibleListRow(
             id: 'video_portrait',
@@ -1207,6 +1231,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               sliderMin: 10,
               sliderMax: 300,
               sliderStep: 10,
+              sliderIncreasedValueLabel:
+                  _formatTime((_seekSliderStep + 10).clamp(10, 300)),
+              sliderDecreasedValueLabel:
+                  _formatTime((_seekSliderStep - 10).clamp(10, 300)),
             ),
             AccessibleListRow(
               id: 'tv_secret_code',

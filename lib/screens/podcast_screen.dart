@@ -800,16 +800,21 @@ class _PodcastPositionSliderDialogState
     final l10n = AppLocalizations.of(context);
     final pos = _value.toInt();
 
-    String label;
-    if (pos == widget.subscriptions.length - 1) {
-      label = l10n.positionLabelLast;
-    } else {
-      final targetIndex = pos >= widget.currentIndex ? pos + 1 : pos;
+    String positionLabel(int requestedPosition) {
+      final position =
+          requestedPosition.clamp(0, widget.subscriptions.length - 1).toInt();
+      if (position == widget.subscriptions.length - 1) {
+        return l10n.positionLabelLast;
+      }
+      final targetIndex =
+          position >= widget.currentIndex ? position + 1 : position;
       final targetName = targetIndex < widget.subscriptions.length
           ? widget.subscriptions[targetIndex].title
           : '';
-      label = l10n.positionLabel(pos + 1, targetName);
+      return l10n.positionLabel(position + 1, targetName);
     }
+
+    final label = positionLabel(pos);
 
     return AlertDialog(
       title: Text(l10n.moveToPosition),
@@ -820,19 +825,34 @@ class _PodcastPositionSliderDialogState
               textAlign: TextAlign.center,
               style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
-          Slider(
-            value: _value,
-            min: 0,
-            max: (widget.subscriptions.length - 1).toDouble(),
-            divisions: widget.subscriptions.length > 1
-                ? widget.subscriptions.length - 1
-                : 1,
-            label: (pos + 1).toString(),
-            onChanged: (val) {
-              setState(() {
-                _value = val;
-              });
-            },
+          Semantics(
+            slider: true,
+            label: l10n.moveToPosition,
+            value: label,
+            increasedValue: positionLabel(pos + 1),
+            decreasedValue: positionLabel(pos - 1),
+            onIncrease: pos < widget.subscriptions.length - 1
+                ? () => setState(() => _value = (pos + 1).toDouble())
+                : null,
+            onDecrease: pos > 0
+                ? () => setState(() => _value = (pos - 1).toDouble())
+                : null,
+            child: ExcludeSemantics(
+              child: Slider(
+                value: _value,
+                min: 0,
+                max: (widget.subscriptions.length - 1).toDouble(),
+                divisions: widget.subscriptions.length > 1
+                    ? widget.subscriptions.length - 1
+                    : 1,
+                label: (pos + 1).toString(),
+                onChanged: (val) {
+                  setState(() {
+                    _value = val;
+                  });
+                },
+              ),
+            ),
           ),
         ],
       ),

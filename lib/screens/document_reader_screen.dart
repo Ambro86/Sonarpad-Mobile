@@ -224,8 +224,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         final shouldScrollToBookmark =
             _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length;
         if (shouldScrollToBookmark) {
-          Future.delayed(const Duration(milliseconds: 300), () {
-            if (mounted) _scrollToChunk(_bookmarkIndex);
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) unawaited(_focusChunk(_bookmarkIndex));
           });
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -257,6 +257,29 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       preferPosition: AutoScrollPosition.begin,
       duration: const Duration(milliseconds: 350),
     );
+  }
+
+  Future<void> _focusChunk(int index) async {
+    if (index < 0 || index >= _chunks.length) return;
+    if (!useSharedAccessibleViewModel) {
+      _scrollToChunk(index);
+      return;
+    }
+
+    // The platform view can attach a few frames after the document data has
+    // finished loading. Wait for the active renderer before asking VoiceOver
+    // to move to the paragraph, otherwise the request can be silently lost.
+    for (var attempt = 0; attempt < 16; attempt++) {
+      if (!mounted) return;
+      if (_accessibleDocumentListController.hasAttachedRenderer) {
+        await _accessibleDocumentListController.focusTo(
+          'paragraph_$index',
+          animated: false,
+        );
+        return;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 75));
+    }
   }
 
   List<String> _splitTextForDocumentDisplay(String text) {
@@ -1096,7 +1119,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _focusedChunkIndex = index;
       _playingChunkIndex = index;
     });
-    _scrollToChunk(index);
+    unawaited(_focusChunk(index));
   }
 
   // ---------------------------------------------------------------------------
@@ -1857,9 +1880,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final shouldResumeReading = _speaking && !_ttsPaused;
     if (!positionChanged && !_speaking) return;
     setState(() {
-      _bookmarkIndex = targetIndex;
+      // Seeking changes the current reading/navigation position, not the
+      // saved bookmark. Keeping these concepts separate also prevents the
+      // native paragraph list from changing underneath the focused slider.
       _focusedChunkIndex = targetIndex;
-      _playingChunkIndex = targetIndex;
+      if (_speaking) _playingChunkIndex = targetIndex;
     });
     _scrollToChunk(targetIndex);
     if (shouldRealignReading) {
@@ -1915,7 +1940,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (!mounted || seekToken != _documentSeekToken) return;
 
     setState(() {
-      _bookmarkIndex = targetIndex;
       _focusedChunkIndex = targetIndex;
       _playingChunkIndex = targetIndex;
       _speaking = false;
@@ -2258,6 +2282,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             ? l10n.documentParagraphSelectionTapHint
             : (canInteract ? l10n.documentEditParagraphActionHint : null),
         actions: actions,
+        onAccessibilityFocus: () =>
+            _syncDocumentPositionFromAccessibilityFocus(i),
       ));
     }
     return UniversalAccessibleList(
@@ -2461,6 +2487,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         context,
         AppLocalizations.of(context).bookmarkSet(index + 1),
       );
+      // Saving changes the row decoration and therefore refreshes the native
+      // table. Put VoiceOver back on the paragraph that invoked the action.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_focusChunk(index));
+      });
     }
   }
 

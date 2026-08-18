@@ -28,6 +28,8 @@ private struct SonarpadNativeRow {
   var sliderMin: Double
   var sliderMax: Double
   var sliderStep: Double
+  var sliderIncreasedValueLabel: String?
+  var sliderDecreasedValueLabel: String?
   var secure: Bool
   var placeholder: String?
   var options: [SonarpadNativeOption]
@@ -49,6 +51,8 @@ private struct SonarpadNativeRow {
     sliderMin = (map["sliderMin"] as? NSNumber)?.doubleValue ?? 0
     sliderMax = (map["sliderMax"] as? NSNumber)?.doubleValue ?? 1
     sliderStep = max((map["sliderStep"] as? NSNumber)?.doubleValue ?? 0.1, 0.000001)
+    sliderIncreasedValueLabel = map["sliderIncreasedValueLabel"] as? String
+    sliderDecreasedValueLabel = map["sliderDecreasedValueLabel"] as? String
     secure = map["secure"] as? Bool ?? false
     placeholder = map["placeholder"] as? String
     options = (map["options"] as? [[String: Any]] ?? []).map {
@@ -73,10 +77,132 @@ private struct SonarpadNativeSection {
   }
 }
 
+private func sonarpadValuesEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+  if let left = lhs as? NSObject, let right = rhs as? NSObject {
+    return left.isEqual(right)
+  }
+  return String(describing: lhs) == String(describing: rhs)
+}
+
+private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRow) -> Bool {
+  guard lhs.id == rhs.id,
+        lhs.title == rhs.title,
+        lhs.subtitle == rhs.subtitle,
+        lhs.value == rhs.value,
+        lhs.valueLabel == rhs.valueLabel,
+        lhs.accessibilityLabel == rhs.accessibilityLabel,
+        lhs.hint == rhs.hint,
+        lhs.kind == rhs.kind,
+        lhs.enabled == rhs.enabled,
+        lhs.selected == rhs.selected,
+        lhs.toggleValue == rhs.toggleValue,
+        lhs.sliderValue == rhs.sliderValue,
+        lhs.sliderMin == rhs.sliderMin,
+        lhs.sliderMax == rhs.sliderMax,
+        lhs.sliderStep == rhs.sliderStep,
+        lhs.sliderIncreasedValueLabel == rhs.sliderIncreasedValueLabel,
+        lhs.sliderDecreasedValueLabel == rhs.sliderDecreasedValueLabel,
+        lhs.secure == rhs.secure,
+        lhs.placeholder == rhs.placeholder,
+        lhs.options.count == rhs.options.count,
+        lhs.actions.count == rhs.actions.count else { return false }
+
+  for (left, right) in zip(lhs.options, rhs.options) {
+    if left.label != right.label || !sonarpadValuesEqual(left.value, right.value) { return false }
+  }
+  for (left, right) in zip(lhs.actions, rhs.actions) {
+    if left.id != right.id || left.label != right.label { return false }
+  }
+  return true
+}
+
+private func sonarpadRowsHaveSameStructure(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRow) -> Bool {
+  guard lhs.id == rhs.id,
+        lhs.subtitle == rhs.subtitle,
+        lhs.accessibilityLabel == rhs.accessibilityLabel,
+        lhs.hint == rhs.hint,
+        lhs.kind == rhs.kind,
+        lhs.enabled == rhs.enabled,
+        lhs.selected == rhs.selected,
+        lhs.toggleValue == rhs.toggleValue,
+        lhs.sliderMin == rhs.sliderMin,
+        lhs.sliderMax == rhs.sliderMax,
+        lhs.sliderStep == rhs.sliderStep,
+        lhs.secure == rhs.secure,
+        lhs.placeholder == rhs.placeholder,
+        lhs.options.count == rhs.options.count,
+        lhs.actions.count == rhs.actions.count else { return false }
+
+  if lhs.kind != "slider" {
+    guard lhs.title == rhs.title,
+          lhs.value == rhs.value,
+          lhs.valueLabel == rhs.valueLabel,
+          lhs.sliderValue == rhs.sliderValue,
+          lhs.sliderIncreasedValueLabel == rhs.sliderIncreasedValueLabel,
+          lhs.sliderDecreasedValueLabel == rhs.sliderDecreasedValueLabel else { return false }
+  }
+
+  for (left, right) in zip(lhs.options, rhs.options) {
+    if left.label != right.label || !sonarpadValuesEqual(left.value, right.value) { return false }
+  }
+  for (left, right) in zip(lhs.actions, rhs.actions) {
+    if left.id != right.id || left.label != right.label { return false }
+  }
+  return true
+}
+
+private func sonarpadSectionsHaveSameStructure(_ lhs: [SonarpadNativeSection], _ rhs: [SonarpadNativeSection]) -> Bool {
+  guard lhs.count == rhs.count else { return false }
+  for (leftSection, rightSection) in zip(lhs, rhs) {
+    guard leftSection.header == rightSection.header,
+          leftSection.footer == rightSection.footer,
+          leftSection.rows.count == rightSection.rows.count else { return false }
+    for (leftRow, rightRow) in zip(leftSection.rows, rightSection.rows) {
+      if !sonarpadRowsHaveSameStructure(leftRow, rightRow) { return false }
+    }
+  }
+  return true
+}
+
+private func sonarpadSectionsEqual(_ lhs: [SonarpadNativeSection], _ rhs: [SonarpadNativeSection]) -> Bool {
+  guard lhs.count == rhs.count else { return false }
+  for (leftSection, rightSection) in zip(lhs, rhs) {
+    guard leftSection.header == rightSection.header,
+          leftSection.footer == rightSection.footer,
+          leftSection.rows.count == rightSection.rows.count else { return false }
+    for (leftRow, rightRow) in zip(leftSection.rows, rightSection.rows) {
+      if !sonarpadRowsEqual(leftRow, rightRow) { return false }
+    }
+  }
+  return true
+}
+
+private final class SonarpadAccessibleSlider: UISlider {
+  var rowId = ""
+  var incrementHandler: (() -> Void)?
+  var decrementHandler: (() -> Void)?
+  var accessibilityFocusHandler: ((String) -> Void)?
+
+  override func accessibilityIncrement() {
+    if let incrementHandler = incrementHandler { incrementHandler() } else { super.accessibilityIncrement() }
+  }
+
+  override func accessibilityDecrement() {
+    if let decrementHandler = decrementHandler { decrementHandler() } else { super.accessibilityDecrement() }
+  }
+
+  override func accessibilityElementDidBecomeFocused() {
+    super.accessibilityElementDidBecomeFocused()
+    if !rowId.isEmpty { accessibilityFocusHandler?(rowId) }
+  }
+}
+
 private final class SonarpadAccessibleTableCell: UITableViewCell {
+  var rowId = ""
   var activationHandler: (() -> Void)?
   var incrementHandler: (() -> Void)?
   var decrementHandler: (() -> Void)?
+  var accessibilityFocusHandler: ((String) -> Void)?
 
   override func accessibilityActivate() -> Bool {
     guard let activationHandler = activationHandler else { return super.accessibilityActivate() }
@@ -92,11 +218,18 @@ private final class SonarpadAccessibleTableCell: UITableViewCell {
     if let decrementHandler = decrementHandler { decrementHandler() } else { super.accessibilityDecrement() }
   }
 
+  override func accessibilityElementDidBecomeFocused() {
+    super.accessibilityElementDidBecomeFocused()
+    if !rowId.isEmpty { accessibilityFocusHandler?(rowId) }
+  }
+
   override func prepareForReuse() {
     super.prepareForReuse()
+    rowId = ""
     activationHandler = nil
     incrementHandler = nil
     decrementHandler = nil
+    accessibilityFocusHandler = nil
     accessoryView = nil
     accessibilityCustomActions = nil
     accessibilityTraits = []
@@ -202,7 +335,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private func apply(arguments: Any?) {
     guard let map = arguments as? [String: Any] else { return }
     let rawSections = map["sections"] as? [[String: Any]] ?? []
-    sections = rawSections.map(SonarpadNativeSection.init)
+    let newSections = rawSections.map(SonarpadNativeSection.init)
+    let focusedRowBeforeReload = voiceOverFocusedRowId()
+    let sectionsChanged = !sonarpadSectionsEqual(sections, newSections)
+    let sliderOnlyDynamicChange = sectionsChanged && sonarpadSectionsHaveSameStructure(sections, newSections)
+    sections = newSections
 
     let wantsRefresh = map["refreshEnabled"] as? Bool ?? false
     if wantsRefresh != refreshEnabled {
@@ -217,14 +354,25 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         refreshControl = nil
       }
     }
-    tableView.reloadData()
+
+    if sliderOnlyDynamicChange {
+      updateVisibleSlidersFromModel()
+    } else if sectionsChanged {
+      tableView.reloadData()
+      tableView.layoutIfNeeded()
+    }
 
     let requestedInitialFocusId = map["initialFocusId"] as? String
     if requestedInitialFocusId != lastInitialFocusId {
       lastInitialFocusId = requestedInitialFocusId
       if let id = requestedInitialFocusId, !id.isEmpty {
         focusRow(id: id, animated: false)
+        return
       }
+    }
+
+    if sectionsChanged, let id = focusedRowBeforeReload, indexPath(forRowId: id) != nil {
+      restoreFocusRow(id: id)
     }
   }
 
@@ -270,6 +418,10 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   }
 
   private func configure(cell: SonarpadAccessibleTableCell, with row: SonarpadNativeRow, at indexPath: IndexPath) {
+    cell.rowId = row.id
+    cell.accessibilityFocusHandler = { [weak self] id in
+      self?.channel.invokeMethod("event", arguments: ["type": "focus", "id": id])
+    }
     cell.isAccessibilityElement = true
     cell.textLabel?.isAccessibilityElement = false
     cell.detailTextLabel?.isAccessibilityElement = false
@@ -308,16 +460,33 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.isAccessibilityElement = false
       cell.activationHandler = nil
     case "slider":
-      let slider = UISlider(frame: CGRect(x: 0, y: 0, width: 120, height: 32))
+      let slider = SonarpadAccessibleSlider(frame: CGRect(x: 0, y: 0, width: 140, height: 32))
+      slider.rowId = row.id
       slider.minimumValue = Float(row.sliderMin)
       slider.maximumValue = Float(row.sliderMax)
       slider.value = Float(row.sliderValue)
-      slider.isUserInteractionEnabled = false
-      slider.isAccessibilityElement = false
+      slider.isEnabled = row.enabled
+      slider.isUserInteractionEnabled = row.enabled
+      slider.isAccessibilityElement = true
+      slider.accessibilityLabel = row.accessibilityLabel ?? row.title
+      slider.accessibilityHint = row.hint
+      slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+      slider.accessibilityFocusHandler = { [weak self] id in
+        self?.channel.invokeMethod("event", arguments: ["type": "focus", "id": id])
+      }
+      slider.incrementHandler = { [weak self] in
+        self?.adjustSlider(at: indexPath, delta: row.sliderStep)
+      }
+      slider.decrementHandler = { [weak self] in
+        self?.adjustSlider(at: indexPath, delta: -row.sliderStep)
+      }
+      slider.addTarget(self, action: #selector(sliderControlChanged(_:)), for: .valueChanged)
       cell.accessoryView = slider
+      cell.isAccessibilityElement = false
+      cell.selectionStyle = .none
       cell.activationHandler = nil
-      cell.incrementHandler = { [weak self] in self?.adjustSlider(at: indexPath, delta: row.sliderStep) }
-      cell.decrementHandler = { [weak self] in self?.adjustSlider(at: indexPath, delta: -row.sliderStep) }
+      cell.incrementHandler = nil
+      cell.decrementHandler = nil
     case "picker":
       cell.activationHandler = { [weak self] in self?.presentPicker(for: indexPath) }
     case "action", "button":
@@ -378,6 +547,20 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     channel.invokeMethod("event", arguments: ["type": "toggle", "id": row.id, "value": row.toggleValue])
   }
 
+  @objc private func sliderControlChanged(_ sender: SonarpadAccessibleSlider) {
+    guard let indexPath = indexPath(forRowId: sender.rowId),
+          sections.indices.contains(indexPath.section),
+          sections[indexPath.section].rows.indices.contains(indexPath.row) else { return }
+    var row = sections[indexPath.section].rows[indexPath.row]
+    let raw = min(max(Double(sender.value), row.sliderMin), row.sliderMax)
+    let steps = ((raw - row.sliderMin) / row.sliderStep).rounded()
+    row.sliderValue = min(max(row.sliderMin + steps * row.sliderStep, row.sliderMin), row.sliderMax)
+    sender.value = Float(row.sliderValue)
+    sender.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+    sections[indexPath.section].rows[indexPath.row] = row
+    channel.invokeMethod("event", arguments: ["type": "slider", "id": row.id, "value": row.sliderValue])
+  }
+
   private func toggleRow(at indexPath: IndexPath) {
     guard sections.indices.contains(indexPath.section), sections[indexPath.section].rows.indices.contains(indexPath.row) else { return }
     sections[indexPath.section].rows[indexPath.row].toggleValue.toggle()
@@ -390,15 +573,24 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private func adjustSlider(at indexPath: IndexPath, delta: Double) {
     guard sections.indices.contains(indexPath.section), sections[indexPath.section].rows.indices.contains(indexPath.row) else { return }
     var row = sections[indexPath.section].rows[indexPath.row]
+    let announcedValue = delta >= 0 ? row.sliderIncreasedValueLabel : row.sliderDecreasedValueLabel
     let raw = min(max(row.sliderValue + delta, row.sliderMin), row.sliderMax)
     let steps = ((raw - row.sliderMin) / row.sliderStep).rounded()
     row.sliderValue = min(max(row.sliderMin + steps * row.sliderStep, row.sliderMin), row.sliderMax)
-    row.value = formatSliderValue(row.sliderValue)
-    row.valueLabel = row.value
+    let spokenValue = announcedValue ?? formatSliderValue(row.sliderValue)
+    row.value = spokenValue
+    row.valueLabel = spokenValue
     sections[indexPath.section].rows[indexPath.row] = row
+
+    // VoiceOver is focused on the UISlider itself. Updating the same object
+    // synchronously lets the adjustable gesture announce the new value while
+    // keeping focus on the slider. Never reload the row for a value change.
+    if let cell = tableView.cellForRow(at: indexPath),
+       let slider = cell.accessoryView as? SonarpadAccessibleSlider {
+      slider.value = Float(row.sliderValue)
+      slider.accessibilityValue = spokenValue
+    }
     channel.invokeMethod("event", arguments: ["type": "slider", "id": row.id, "value": row.sliderValue])
-    tableView.reloadRows(at: [indexPath], with: .none)
-    UIAccessibility.post(notification: .layoutChanged, argument: tableView.cellForRow(at: indexPath))
   }
 
   private func formatSliderValue(_ value: Double) -> String {
@@ -425,6 +617,70 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   }
 
 
+  private func updateVisibleSlidersFromModel() {
+    guard let visible = tableView.indexPathsForVisibleRows else { return }
+    for indexPath in visible {
+      guard sections.indices.contains(indexPath.section),
+            sections[indexPath.section].rows.indices.contains(indexPath.row) else { continue }
+      let row = sections[indexPath.section].rows[indexPath.row]
+      guard row.kind == "slider",
+            let cell = tableView.cellForRow(at: indexPath),
+            let slider = cell.accessoryView as? SonarpadAccessibleSlider else { continue }
+      cell.textLabel?.text = row.title
+      cell.detailTextLabel?.text = row.subtitle ?? row.value
+      slider.minimumValue = Float(row.sliderMin)
+      slider.maximumValue = Float(row.sliderMax)
+      slider.value = Float(row.sliderValue)
+      slider.isEnabled = row.enabled
+      slider.isUserInteractionEnabled = row.enabled
+      slider.accessibilityLabel = row.accessibilityLabel ?? row.title
+      slider.accessibilityHint = row.hint
+      slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+    }
+  }
+
+  private func accessibilityTarget(at indexPath: IndexPath) -> Any? {
+    guard let cell = tableView.cellForRow(at: indexPath) else { return nil }
+    if sections.indices.contains(indexPath.section),
+       sections[indexPath.section].rows.indices.contains(indexPath.row),
+       sections[indexPath.section].rows[indexPath.row].kind == "slider",
+       let slider = cell.accessoryView as? SonarpadAccessibleSlider {
+      return slider
+    }
+    return cell
+  }
+
+  private func voiceOverFocusedRowId() -> String? {
+    guard let focused = UIAccessibility.focusedElement(using: .notificationVoiceOver) else { return nil }
+    if let cell = focused as? SonarpadAccessibleTableCell, !cell.rowId.isEmpty {
+      return cell.rowId
+    }
+    if let view = focused as? UIView {
+      var current: UIView? = view
+      while let candidate = current {
+        if let cell = candidate as? SonarpadAccessibleTableCell, !cell.rowId.isEmpty {
+          return cell.rowId
+        }
+        current = candidate.superview
+      }
+    }
+    return nil
+  }
+
+  private func restoreFocusRow(id: String, attempt: Int = 0) {
+    guard let indexPath = indexPath(forRowId: id) else { return }
+    tableView.scrollToRow(at: indexPath, at: .none, animated: false)
+    tableView.layoutIfNeeded()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) { [weak self] in
+      guard let self = self else { return }
+      if let target = self.accessibilityTarget(at: indexPath) {
+        UIAccessibility.post(notification: .layoutChanged, argument: target)
+      } else if attempt < 12 {
+        self.restoreFocusRow(id: id, attempt: attempt + 1)
+      }
+    }
+  }
+
   private func scrollToRow(id: String, animated: Bool) {
     guard let indexPath = indexPath(forRowId: id) else { return }
     tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
@@ -439,8 +695,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
       guard let self = self else { return }
       self.tableView.layoutIfNeeded()
-      if self.rootView.window != nil, let cell = self.tableView.cellForRow(at: indexPath) {
-        UIAccessibility.post(notification: .screenChanged, argument: cell)
+      if self.rootView.window != nil, let target = self.accessibilityTarget(at: indexPath) {
+        UIAccessibility.post(notification: .screenChanged, argument: target)
       } else if attempt < 20 {
         self.focusRow(id: id, animated: false, attempt: attempt + 1)
       }

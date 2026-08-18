@@ -3011,6 +3011,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         sliderMax: 200,
                         sliderStep: 10,
                         valueLabel: '$volumePercent%',
+                        sliderIncreasedValueLabel:
+                            '${(volumePercent + 10).clamp(0, 200)}%',
+                        sliderDecreasedValueLabel:
+                            '${(volumePercent - 10).clamp(0, 200)}%',
                       ),
                       for (var slot = 0; slot < _visibleEffectSlots(effectSlots); slot++) ...[
                         AccessibleListRow(
@@ -3037,6 +3041,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             sliderMax: 100,
                             sliderStep: 10,
                             valueLabel: '${effectSlots[slot].amountPercent}%',
+                            sliderIncreasedValueLabel:
+                                '${(effectSlots[slot].amountPercent + 10).clamp(0, 100)}%',
+                            sliderDecreasedValueLabel:
+                                '${(effectSlots[slot].amountPercent - 10).clamp(0, 100)}%',
                           ),
                       ],
                       AccessibleListRow(

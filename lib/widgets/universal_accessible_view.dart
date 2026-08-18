@@ -53,6 +53,7 @@ class AccessibleCustomAction {
 typedef AccessibleActivateCallback = FutureOr<void> Function();
 typedef AccessibleValueChangedCallback = FutureOr<void> Function(Object? value);
 typedef AccessibleCustomActionCallback = FutureOr<void> Function(String actionId);
+typedef AccessibleFocusCallback = FutureOr<void> Function();
 
 /// Platform-neutral description of one accessible row.
 ///
@@ -77,6 +78,8 @@ class AccessibleListRow {
     this.sliderMin = 0,
     this.sliderMax = 1,
     this.sliderStep = 0.1,
+    this.sliderIncreasedValueLabel,
+    this.sliderDecreasedValueLabel,
     this.secure = false,
     this.placeholder,
     this.options = const [],
@@ -84,6 +87,7 @@ class AccessibleListRow {
     this.onActivate,
     this.onValueChanged,
     this.onCustomAction,
+    this.onAccessibilityFocus,
     this.flutterChild,
   });
 
@@ -102,6 +106,8 @@ class AccessibleListRow {
   final double sliderMin;
   final double sliderMax;
   final double sliderStep;
+  final String? sliderIncreasedValueLabel;
+  final String? sliderDecreasedValueLabel;
   final bool secure;
   final String? placeholder;
   final List<AccessibleOption> options;
@@ -110,6 +116,7 @@ class AccessibleListRow {
   final AccessibleActivateCallback? onActivate;
   final AccessibleValueChangedCallback? onValueChanged;
   final AccessibleCustomActionCallback? onCustomAction;
+  final AccessibleFocusCallback? onAccessibilityFocus;
 
   /// Optional exact Flutter presentation used on Android and when the UIKit
   /// renderer is disabled on iOS.
@@ -131,6 +138,10 @@ class AccessibleListRow {
         'sliderMin': sliderMin,
         'sliderMax': sliderMax,
         'sliderStep': sliderStep,
+        if (sliderIncreasedValueLabel != null)
+          'sliderIncreasedValueLabel': sliderIncreasedValueLabel,
+        if (sliderDecreasedValueLabel != null)
+          'sliderDecreasedValueLabel': sliderDecreasedValueLabel,
         'secure': secure,
         if (placeholder != null) 'placeholder': placeholder,
         'options': options.map((e) => e.toMap()).toList(),
@@ -313,6 +324,15 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
             await row.onCustomAction!.call(event.action!);
           }
           break;
+        case 'focus':
+          // Native UIKit can report VoiceOver focus changes directly. Keep
+          // these events local to the row so screens that do not care about
+          // focus do not receive a new event type unexpectedly.
+          handledByRow = true;
+          if (row.onAccessibilityFocus != null) {
+            await row.onAccessibilityFocus!.call();
+          }
+          break;
       }
     }
     if (!handledByRow) {
@@ -472,8 +492,13 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   }
 
   Widget _withCustomActions(AccessibleListRow row, Widget child) {
-    if (row.actions.isEmpty) return child;
+    if (row.actions.isEmpty && row.onAccessibilityFocus == null) return child;
     return Semantics(
+      onDidGainAccessibilityFocus: row.onAccessibilityFocus == null
+          ? null
+          : () => unawaited(
+              Future<void>.sync(row.onAccessibilityFocus!),
+            ),
       customSemanticsActions: {
         for (final action in row.actions)
           CustomSemanticsAction(label: action.label): () {
@@ -555,25 +580,50 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         final divisions = row.sliderStep > 0 && span > 0
             ? (span / row.sliderStep).round()
             : null;
-        result = Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ListTile(
-              title: Text(row.title),
-              subtitle: subtitle,
-              trailing: displayValue == null ? null : Text(displayValue),
+        final currentValue =
+            row.sliderValue.clamp(row.sliderMin, row.sliderMax).toDouble();
+        final increasedRaw =
+            (currentValue + row.sliderStep).clamp(row.sliderMin, row.sliderMax);
+        final decreasedRaw =
+            (currentValue - row.sliderStep).clamp(row.sliderMin, row.sliderMax);
+        result = Semantics(
+          slider: true,
+          label: row.accessibilityLabel ?? row.title,
+          value: displayValue,
+          increasedValue: row.sliderIncreasedValueLabel,
+          decreasedValue: row.sliderDecreasedValueLabel,
+          hint: row.hint,
+          enabled: enabled,
+          onIncrease: enabled
+              ? () => _change(row, 'slider', increasedRaw.toDouble())
+              : null,
+          onDecrease: enabled
+              ? () => _change(row, 'slider', decreasedRaw.toDouble())
+              : null,
+          child: ExcludeSemantics(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ListTile(
+                  title: Text(row.title),
+                  subtitle: subtitle,
+                  trailing:
+                      displayValue == null ? null : Text(displayValue),
+                ),
+                Slider(
+                  value: currentValue,
+                  min: row.sliderMin,
+                  max: row.sliderMax,
+                  divisions:
+                      divisions != null && divisions > 0 ? divisions : null,
+                  label: displayValue,
+                  onChanged: enabled
+                      ? (value) => _change(row, 'slider', value)
+                      : null,
+                ),
+              ],
             ),
-            Slider(
-              value: row.sliderValue.clamp(row.sliderMin, row.sliderMax).toDouble(),
-              min: row.sliderMin,
-              max: row.sliderMax,
-              divisions: divisions != null && divisions > 0 ? divisions : null,
-              label: displayValue,
-              onChanged: enabled
-                  ? (value) => _change(row, 'slider', value)
-                  : null,
-            ),
-          ],
+          ),
         );
         break;
       case 'picker':
