@@ -434,7 +434,6 @@ class _AddCommunityNewsSourceScreenState
     return Scaffold(
       appBar: AppBar(title: Text(l10n.newsAddCommunitySource)),
       body: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           Text(l10n.newsAddCommunityInstructions),
@@ -571,7 +570,6 @@ class _CommunityNewsSourcesScreenState
             return Center(child: Text(l10n.newsCommunitySourcesEmpty));
           }
           return ListView.separated(
-            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             itemCount: sources.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
@@ -1358,7 +1356,6 @@ class _NewsArticleListState extends State<_NewsArticleList> {
         }
 
         return ListView.separated(
-          scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
           controller: _scrollController,
           itemCount: itemCount,
           separatorBuilder: (_, _) => const Divider(height: 1),
@@ -1499,7 +1496,6 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
           : _articles.isEmpty
               ? Center(child: Text(l10n.noNewsFound))
               : ListView.separated(
-                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   itemCount: _articles.length,
                   separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {

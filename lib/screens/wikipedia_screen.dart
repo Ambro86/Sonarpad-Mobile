@@ -7,7 +7,6 @@ import '../services/recent_searches_service.dart';
 import 'document_reader_screen.dart';
 import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class WikipediaScreen extends StatefulWidget {
   const WikipediaScreen({super.key});
@@ -122,7 +121,6 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.importFromWikipedia)),
       body: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -230,7 +228,6 @@ class _WikipediaResultsScreenState extends State<_WikipediaResultsScreen> {
             return Center(child: Text(l10n.noWikipediaResults));
           }
           return ListView.separated(
-            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             itemCount: results.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
@@ -300,7 +297,6 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(widget.result.title)),
       body: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           if (_importing)

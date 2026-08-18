@@ -6,7 +6,6 @@ import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/radio_service.dart';
-import '../utils/accessibility_list_behavior.dart';
 import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/tv_service.dart';
@@ -256,7 +255,6 @@ class _RadioScreenState extends State<RadioScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioTitle)),
       body: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           FilledButton.icon(
@@ -648,10 +646,6 @@ class RadioTile extends StatelessWidget {
       child: Semantics(
         key: ValueKey('radio_tile_semantics_${station.streamUrl}'),
         container: true,
-        onDidGainAccessibilityFocus: () => keepAccessibilityFocusVisible(
-          context,
-          debugLabel: 'Radio: ${station.name}',
-        ),
         customSemanticsActions: {
           CustomSemanticsAction(
               label: isFavorite

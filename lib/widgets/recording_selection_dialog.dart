@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 enum RecordingSelectionAction { share, delete }
 
@@ -39,7 +38,6 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
             child: recordings.isEmpty
                 ? Text(l10n.noRecordings)
                 : ListView.builder(
-                    scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                     shrinkWrap: true,
                     itemCount: recordings.length,
                     itemBuilder: (context, index) {

@@ -6,7 +6,6 @@ import '../services/raiplay_service.dart';
 import '../services/recent_searches_service.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class RaiPlayScreen extends StatefulWidget {
   final String? pathId;
@@ -226,7 +225,6 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                       ),
                     Expanded(
                       child: ListView.builder(
-                        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                         padding: const EdgeInsets.all(16),
                         itemCount: _page!.items.length,
                         itemBuilder: (context, index) {

@@ -21,7 +21,6 @@ import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 /// Schermata di lettura/ascolto di un documento della libreria.
 ///
@@ -686,7 +685,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
-                scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                 shrinkWrap: true,
                 itemCount: bookmarks.length,
                 itemBuilder: (context, index) {
@@ -771,7 +769,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
               SizedBox(
                 height: 320,
                 child: ListView.builder(
-                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   shrinkWrap: true,
                   itemCount: existing.length,
                   itemBuilder: (context, index) {
@@ -2038,7 +2035,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                       explicitChildNodes: true,
                       child: CustomScrollView(
                         controller: _scrollController,
-                        scrollCacheExtent: accessibilityListCacheExtentForPlatform(), // Precarica i blocchi successivi per VoiceOver
+                        scrollCacheExtent: const ScrollCacheExtent.pixels(
+                            4000), // Precarica i blocchi successivi per VoiceOver
                         // BouncingScrollPhysics → flick naturale su iPhone
                         physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics(),
@@ -2220,85 +2218,78 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           key: ValueKey(i),
           controller: _scrollController,
           index: i,
-          child: Builder(
-            builder: (paragraphContext) => Semantics(
-              key: ValueKey('document_chunk_semantics_$i'),
-              container: true,
-              onDidGainAccessibilityFocus: () {
-                _syncDocumentPositionFromAccessibilityFocus(i);
-                keepAccessibilityFocusVisible(
-                  paragraphContext,
-                  debugLabel: 'Documento paragrafo ${i + 1}',
-                );
-              },
-              hint: hintText,
-              selected: _paragraphSelectionMode ? isSelected : null,
+          child: Semantics(
+            key: ValueKey('document_chunk_semantics_$i'),
+            container: true,
+            onDidGainAccessibilityFocus: () =>
+                _syncDocumentPositionFromAccessibilityFocus(i),
+            hint: hintText,
+            selected: _paragraphSelectionMode ? isSelected : null,
+            onTap: canInteract
+                ? (_paragraphSelectionMode
+                    ? () => _toggleParagraphSelection(i)
+                    : () => _editParagraph(i))
+                : null,
+            customSemanticsActions: actions,
+            child: GestureDetector(
+              excludeFromSemantics: true,
               onTap: canInteract
                   ? (_paragraphSelectionMode
                       ? () => _toggleParagraphSelection(i)
                       : () => _editParagraph(i))
                   : null,
-              customSemanticsActions: actions,
-              child: GestureDetector(
-                excludeFromSemantics: true,
-                onTap: canInteract
-                    ? (_paragraphSelectionMode
-                        ? () => _toggleParagraphSelection(i)
-                        : () => _editParagraph(i))
-                    : null,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                  margin: const EdgeInsets.only(bottom: 6),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? colorScheme.secondaryContainer
-                        : (isPlaying
-                            ? colorScheme.primaryContainer
-                            : Colors.transparent),
-                    borderRadius: BorderRadius.circular(8),
-                    border: isSelected
-                        ? Border.all(
-                            color: colorScheme.secondary,
-                            width: 2,
-                          )
-                        : (isPlaying
-                            ? Border.all(
-                                color: colorScheme.primary.withAlpha(128),
-                                width: 1.5,
-                              )
-                            : (isBookmarked
-                                ? Border.all(
-                                    color: Colors.red.withAlpha(128),
-                                    width: 1.5,
-                                  )
-                                : null)),
-                  ),
-                  child: Stack(
-                    children: [
-                      Text(
-                        _chunks[i],
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight:
-                              isPlaying ? FontWeight.w600 : FontWeight.normal,
-                          color: isSelected
-                              ? colorScheme.onSecondaryContainer
-                              : (isPlaying
-                                  ? colorScheme.onPrimaryContainer
-                                  : null),
-                        ),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                margin: const EdgeInsets.only(bottom: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? colorScheme.secondaryContainer
+                      : (isPlaying
+                          ? colorScheme.primaryContainer
+                          : Colors.transparent),
+                  borderRadius: BorderRadius.circular(8),
+                  border: isSelected
+                      ? Border.all(
+                          color: colorScheme.secondary,
+                          width: 2,
+                        )
+                      : (isPlaying
+                          ? Border.all(
+                              color: colorScheme.primary.withAlpha(128),
+                              width: 1.5,
+                            )
+                          : (isBookmarked
+                              ? Border.all(
+                                  color: Colors.red.withAlpha(128),
+                                  width: 1.5,
+                                )
+                              : null)),
+                ),
+                child: Stack(
+                  children: [
+                    Text(
+                      _chunks[i],
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight:
+                            isPlaying ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected
+                            ? colorScheme.onSecondaryContainer
+                            : (isPlaying
+                                ? colorScheme.onPrimaryContainer
+                                : null),
                       ),
-                      if (isBookmarked && !isPlaying)
-                        const Positioned(
-                          top: 0,
-                          right: 0,
-                          child:
-                              Icon(Icons.bookmark, color: Colors.red, size: 16),
-                        ),
-                    ],
-                  ),
+                    ),
+                    if (isBookmarked && !isPlaying)
+                      const Positioned(
+                        top: 0,
+                        right: 0,
+                        child:
+                            Icon(Icons.bookmark, color: Colors.red, size: 16),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -2539,7 +2530,6 @@ class _DocumentIndexScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.documentIndex)),
       body: ListView.separated(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         itemCount: entries.length,
         separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {
@@ -2674,7 +2664,6 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.searchInDocument)),
       body: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -2721,7 +2710,6 @@ class _DocumentSearchResultsScreen extends StatelessWidget {
       body: results.isEmpty
           ? Center(child: Text(l10n.noDocumentSearchResults(query)))
           : ListView.separated(
-              scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
               itemCount: results.length,
               separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {

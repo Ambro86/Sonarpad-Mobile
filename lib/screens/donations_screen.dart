@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class DonationsScreen extends StatelessWidget {
   const DonationsScreen({super.key});
@@ -13,7 +12,6 @@ class DonationsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.donations)),
       body: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           Text(l10n.donationsIntro,

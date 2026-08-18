@@ -11,7 +11,6 @@ import '../services/document_library_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/status_message.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class ItaliaOnlineDetailScreen extends StatefulWidget {
   final DetailResponse detail;
@@ -163,7 +162,6 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
         ],
       ),
       body: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           if (detail.description != null && detail.description!.isNotEmpty) ...[

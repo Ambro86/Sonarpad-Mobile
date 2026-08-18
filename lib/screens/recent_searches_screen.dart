@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import '../l10n/app_localizations.dart';
 import '../services/recent_searches_service.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class RecentSearchesScreen extends StatefulWidget {
   final String title;
@@ -89,7 +88,6 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
               ? Center(
                   child: Text(AppLocalizations.of(context).noRecentSearches))
               : ListView.builder(
-                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   itemCount: _searches.length,
                   itemBuilder: (context, index) {
                     final query = _searches[index];

@@ -7,7 +7,6 @@ import '../models/podcast.dart';
 import '../services/podcast_service.dart';
 import '../utils/list_timestamp_formatter.dart';
 import 'podcast_episode_player_screen.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 /// Schermata che mostra gli episodi di un singolo podcast iscritto.
 class PodcastEpisodesScreen extends StatefulWidget {
@@ -181,7 +180,6 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
             return RefreshIndicator(
               onRefresh: _refresh,
               child: ListView.separated(
-                scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                 controller: _scrollController,
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                 itemCount: itemCount,
@@ -294,7 +292,6 @@ class _PodcastDateSelectorScreen extends StatelessWidget {
         child: dateEpisodes.isEmpty
             ? Center(child: Text(l10n.podcastNoDatesAvailable))
             : ListView.separated(
-                scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                 padding: const EdgeInsets.all(16),
                 itemCount: dateEpisodes.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
@@ -394,7 +391,6 @@ class _PlayedEpisodesScreenState extends State<_PlayedEpisodesScreen> {
           : _episodes.isEmpty
               ? Center(child: Text(l10n.noAudioEpisodesFound))
               : ListView.separated(
-                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   padding: const EdgeInsets.all(16),
                   itemCount: _episodes.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 8),

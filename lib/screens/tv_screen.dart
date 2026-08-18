@@ -4,7 +4,6 @@ import 'package:flutter/semantics.dart';
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
-import '../utils/accessibility_list_behavior.dart';
 import '../utils/app_logger.dart';
 import 'favorite_tvs_screen.dart';
 import 'tv_channel_screen.dart';
@@ -343,7 +342,6 @@ class _TvScreenState extends State<TvScreen> {
     }
 
     return ListView(
-      scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
       padding: const EdgeInsets.all(16),
       children: listChildren,
     );
@@ -382,7 +380,6 @@ class _TvRegionalScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Regionali')),
       body: ListView.builder(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         itemCount: regionNames.length,
         itemBuilder: (context, index) {
@@ -475,7 +472,6 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(widget.category)),
       body: ListView.builder(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         itemCount: widget.channels.length,
         itemBuilder: (context, index) {
@@ -573,7 +569,6 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxHeight: 420),
       child: ListView.builder(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         shrinkWrap: true,
         itemCount: widget.channels.length,
         itemBuilder: (context, index) {
@@ -648,10 +643,6 @@ class _TvChannelButton extends StatelessWidget {
           container: true,
           button: true,
           enabled: true,
-          onDidGainAccessibilityFocus: () => keepAccessibilityFocusVisible(
-            context,
-            debugLabel: 'TV canali: $semanticsLabel',
-          ),
           label: semanticsLabel,
           hint: l10n.tvOpenChannelHint,
           onTap: onOpen,

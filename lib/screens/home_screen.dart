@@ -8,7 +8,6 @@ import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/tv_service.dart';
 import 'category_screen.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -361,7 +360,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
           padding: const EdgeInsets.all(16),
           children: [
             Semantics(

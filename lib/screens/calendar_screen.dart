@@ -4,7 +4,6 @@ import '../l10n/app_localizations.dart';
 import '../services/calendar/calendar_service.dart';
 import '../models/calendar_event.dart';
 import 'calendar_day_screen.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -71,7 +70,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ],
       ),
       body: ListView.builder(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         controller: _scrollController,
         // Usiamo un itemExtent per un'altezza fissa che aiuta lo scroll
         itemExtent: 80.0,

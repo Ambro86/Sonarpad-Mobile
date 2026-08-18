@@ -6,7 +6,6 @@ import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/news/weather_service.dart';
 import '../utils/text_input_normalizer.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 WeatherGeocodingResult? _deserializeCity(String data) {
   try {
@@ -292,7 +291,6 @@ class _WeatherCityResultsView extends StatelessWidget {
 
     return Expanded(
       child: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16.0),
         children: [
           Text(
@@ -424,7 +422,6 @@ class _WeatherForecastView extends StatelessWidget {
 
     return Expanded(
       child: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16.0),
         children: [
           DropdownButtonFormField<int>(
@@ -791,7 +788,6 @@ class _WeatherRecentCitiesScreenState
           : _cities.isEmpty
               ? Center(child: Text(l10n.weatherCityNotFound)) // Or another localized string
               : ListView.separated(
-                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   itemCount: _cities.length,
                   separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {

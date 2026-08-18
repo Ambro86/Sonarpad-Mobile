@@ -14,7 +14,6 @@ import '../widgets/volume_slider.dart';
 import 'package:video_player/video_player.dart';
 import '../utils/app_logger.dart';
 import 'podcast_chapters_screen.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class PodcastEpisodePlayerScreen extends StatefulWidget {
   const PodcastEpisodePlayerScreen({
@@ -715,7 +714,6 @@ class _PodcastEpisodePlayerScreenState
           container: Platform.isIOS,
           explicitChildNodes: Platform.isIOS,
           child: ListView(
-            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             padding: const EdgeInsets.all(16),
             children: [
               Text(

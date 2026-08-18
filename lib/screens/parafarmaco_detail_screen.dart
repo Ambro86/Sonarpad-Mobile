@@ -5,7 +5,6 @@ import '../models/document_item.dart';
 import '../services/parafarmaco_service.dart';
 import '../utils/status_message.dart';
 import 'document_reader_screen.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class ParafarmacoDetailScreen extends StatefulWidget {
   final ParafarmacoSearchResult product;
@@ -171,7 +170,6 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
                     ),
                   )
                 : ListView(
-                    scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                     children: [
                       Container(
                         width: double.infinity,

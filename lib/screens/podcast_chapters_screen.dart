@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/podcast_service.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class PodcastChaptersScreen extends StatelessWidget {
   PodcastChaptersScreen({
@@ -53,7 +52,6 @@ class PodcastChaptersScreen extends StatelessWidget {
               return Center(child: Text(l10n.podcastChaptersUnavailable));
             }
             return ListView.separated(
-              scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               itemCount: chapters.length,
               separatorBuilder: (_, _) => const SizedBox(height: 8),

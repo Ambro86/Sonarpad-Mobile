@@ -17,7 +17,6 @@ import 'podcast_episodes_screen.dart';
 import '../utils/country_name_helper.dart';
 import '../utils/status_message.dart';
 import '../widgets/letter_jump_option_picker_screen.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class PodcastScreen extends StatefulWidget {
   const PodcastScreen({super.key});
@@ -419,7 +418,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.podcasts)),
       body: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           Text(l10n.searchPodcasts,
@@ -788,7 +786,6 @@ class _PodcastSearchResultsScreenState
             return Center(child: Text(l10n.noPodcastResults));
           }
           return ListView.separated(
-            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             itemCount: results.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
@@ -926,7 +923,6 @@ class _PodcastSearchDetail extends StatelessWidget {
         );
 
         return ListView(
-          scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
           padding: const EdgeInsets.all(16),
           children: [
             if (artworkUrl != null) ...[

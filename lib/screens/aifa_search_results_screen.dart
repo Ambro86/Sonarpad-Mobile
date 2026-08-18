@@ -7,7 +7,6 @@ import '../services/parafarmaco_service.dart';
 import '../services/recent_searches_service.dart';
 import 'aifa_confezioni_screen.dart';
 import 'parafarmaco_detail_screen.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class AifaSearchResultsScreen extends StatefulWidget {
   final String query;
@@ -205,7 +204,6 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
           children: _buildResultsChildren(),
         ),
       ),

@@ -5,7 +5,6 @@ import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_service.dart';
-import '../utils/accessibility_list_behavior.dart';
 import '../utils/status_message.dart';
 import 'podcast_episode_player_screen.dart';
 
@@ -316,7 +315,6 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                       ),
                     )
                   : ListView.builder(
-                      scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
                       itemCount: _items.length + (_nextToken == null ? 0 : 1),
                       itemBuilder: (context, index) {
@@ -424,11 +422,6 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                           ),
                           container: true,
                           button: true,
-                          onDidGainAccessibilityFocus: () => keepAccessibilityFocusVisible(
-                            context,
-                            debugLabel:
-                                'SonarTube risultati: ${item.title}',
-                          ),
                           label: [
                             item.title,
                             if (subtitle?.isNotEmpty ?? false) subtitle!,
@@ -513,7 +506,6 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                 ),
               )
             : ListView.builder(
-                scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                 padding: const EdgeInsets.all(12),
                 itemCount: _favorites.length,
                 itemBuilder: (context, index) {
@@ -522,10 +514,6 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                       ? l10n.sonarTubeChannel
                       : l10n.sonarTubePlaylist;
                   return Semantics(
-                    onDidGainAccessibilityFocus: () => keepAccessibilityFocusVisible(
-                      context,
-                      debugLabel: 'SonarTube preferiti: ${item.title}',
-                    ),
                     customSemanticsActions: {
                       CustomSemanticsAction(
                         label: l10n.sonarTubeRemoveFavorite,

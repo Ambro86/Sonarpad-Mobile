@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
   final String title;
@@ -136,7 +135,6 @@ class _LetterJumpOptionPickerScreenState<T>
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
       body: ListView.separated(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         controller: _scrollController,
         itemCount: widget.options.length + (showLetterPicker ? 1 : 0),
         separatorBuilder: (_, _) => const Divider(height: 1),
@@ -189,7 +187,6 @@ class _LetterPickerScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: ListView.separated(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         itemCount: letters.length,
         separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {

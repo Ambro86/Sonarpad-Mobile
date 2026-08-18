@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/changelog_service.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class ChangelogScreen extends StatelessWidget {
   final ChangelogEntry entry;
@@ -23,7 +22,6 @@ class ChangelogScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.whatIsNew)),
       body: SafeArea(
         child: ListView.separated(
-          scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
           padding: const EdgeInsets.all(16),
           itemCount: changes.length + 1,
           separatorBuilder: (context, index) => const SizedBox(height: 12),

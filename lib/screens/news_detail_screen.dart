@@ -16,7 +16,6 @@ import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'news_webview_screen.dart';
 import '../utils/status_message.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsArticle article;
@@ -275,7 +274,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.article)),
       body: ListView(
-        scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
         padding: const EdgeInsets.all(16),
         children: [
           Text(article.title, style: Theme.of(context).textTheme.headlineSmall),

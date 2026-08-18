@@ -15,7 +15,6 @@ import '../services/tv_service.dart';
 import '../utils/status_message.dart';
 import '../widgets/recording_selection_dialog.dart';
 import 'podcast_episode_player_screen.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class RadioRecordingsScreen extends StatefulWidget {
   const RadioRecordingsScreen({super.key});
@@ -185,7 +184,6 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
             return Center(child: Text(l10n.noRecordings));
           }
           return ListView.separated(
-            scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
             itemCount: files.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {

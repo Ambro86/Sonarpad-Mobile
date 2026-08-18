@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class AppLogScreen extends StatefulWidget {
   const AppLogScreen({super.key});
@@ -93,7 +92,6 @@ class _AppLogScreenState extends State<AppLogScreen> {
               hint: '${l10n.copySystemLog}. ${l10n.clearSystemLog}.',
               child: ExcludeSemantics(
                 child: ListView.separated(
-                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   padding: const EdgeInsets.all(16),
                   itemCount: _logLines.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 8),

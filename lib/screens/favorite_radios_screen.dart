@@ -7,7 +7,6 @@ import '../services/radio_service.dart';
 import '../utils/status_message.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart'; // Per RadioTile
-import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 
 class FavoriteRadiosScreen extends StatefulWidget {
   const FavoriteRadiosScreen({super.key});
@@ -116,7 +115,6 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
           : _favorites.isEmpty
               ? Center(child: Text(l10n.radioNoFavorites))
               : ListView(
-                  scrollCacheExtent: accessibilityListCacheExtentForPlatform(),
                   padding: const EdgeInsets.all(16),
                   children: [
                     if (_favorites.length > 1) ...[
