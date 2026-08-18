@@ -11,7 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 enum _MediaFormat {
   mp3('mp3', 'MP3'),
@@ -611,28 +611,28 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         showStatusMessage(context, message);
   }
 
-  Widget _buildNativeIosConvertForm(AppLocalizations l10n) {
-    final rows = <NativeIosListRow>[
-      NativeIosListRow(
+  Widget _buildSharedAccessibleConvertForm(AppLocalizations l10n) {
+    final rows = <AccessibleListRow>[
+      AccessibleListRow(
         id: 'input',
         title: l10n.convertMediaInput,
         subtitle: _inputController.text.isEmpty ? null : _inputController.text,
         enabled: !_running,
       ),
-      NativeIosListRow(
+      AccessibleListRow(
         id: 'output',
         title: l10n.convertMediaOutput,
         subtitle: _outputController.text.isEmpty ? null : _outputController.text,
         enabled: !_running,
       ),
       if (_requiresImage(_inputPath))
-        NativeIosListRow(
+        AccessibleListRow(
           id: 'image',
           title: l10n.convertMediaImage,
           subtitle: _imageController.text.isEmpty ? null : _imageController.text,
           enabled: !_running,
         ),
-      NativeIosListRow(
+      AccessibleListRow(
         id: 'format',
         title: l10n.convertMediaFormat,
         kind: 'picker',
@@ -640,11 +640,11 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         enabled: !_running,
         options: [
           for (final format in _MediaFormat.values)
-            NativeIosOption(value: format.name, label: format.label),
+            AccessibleOption(value: format.name, label: format.label),
         ],
       ),
       if (_usesBitrate(_format))
-        NativeIosListRow(
+        AccessibleListRow(
           id: 'bitrate',
           title: l10n.convertMediaBitrate,
           kind: 'textField',
@@ -652,25 +652,25 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
           enabled: !_running,
         )
       else if (_format == _MediaFormat.ogg)
-        NativeIosListRow(
+        AccessibleListRow(
           id: 'ogg',
           title: l10n.convertMediaOggQuality,
           kind: 'picker',
           value: _oggQuality.toString(),
           enabled: !_running,
-          options: [for (var i = 0; i <= 10; i++) NativeIosOption(value: i, label: 'q$i')],
+          options: [for (var i = 0; i <= 10; i++) AccessibleOption(value: i, label: 'q$i')],
         )
       else if (_format == _MediaFormat.flac)
-        NativeIosListRow(
+        AccessibleListRow(
           id: 'flac',
           title: l10n.convertMediaFlacCompression,
           kind: 'picker',
           value: _flacCompression.toString(),
           enabled: !_running,
-          options: [for (var i = 0; i <= 12; i++) NativeIosOption(value: i, label: '$i')],
+          options: [for (var i = 0; i <= 12; i++) AccessibleOption(value: i, label: '$i')],
         )
       else if (_format == _MediaFormat.wav)
-        NativeIosListRow(
+        AccessibleListRow(
           id: 'wav',
           title: l10n.convertMediaWavBitDepth,
           kind: 'picker',
@@ -678,11 +678,11 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
           enabled: !_running,
           options: [
             for (final value in _WavBitDepth.values)
-              NativeIosOption(value: value.name, label: value.label),
+              AccessibleOption(value: value.name, label: value.label),
           ],
         ),
-      NativeIosListRow(id: 'status', kind: 'text', title: _status ?? l10n.convertMediaReady),
-      NativeIosListRow(
+      AccessibleListRow(id: 'status', kind: 'text', title: _status ?? l10n.convertMediaReady),
+      AccessibleListRow(
         id: 'convert',
         title: l10n.convertMediaButton,
         kind: 'button',
@@ -690,8 +690,8 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       ),
     ];
 
-    return NativeIosAccessibleList(
-      sections: [NativeIosListSection(rows: rows)],
+    return UniversalAccessibleList(
+      sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.id == 'input' && event.type == 'activate') {
           await _pickInput();
@@ -729,8 +729,8 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.convertMediaTitle)),
       body: SafeArea(
-        child: useNativeIosAccessibleViews
-            ? _buildNativeIosConvertForm(l10n)
+        child: useSharedAccessibleViewModel
+            ? _buildSharedAccessibleConvertForm(l10n)
             : ListView(
           padding: const EdgeInsets.all(16),
           children: [

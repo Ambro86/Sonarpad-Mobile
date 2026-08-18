@@ -19,7 +19,7 @@ import 'package:video_player/video_player.dart';
 import '../services/app_settings_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class RadioPlayerScreen extends StatefulWidget {
   final RadioStation station;
@@ -1122,23 +1122,23 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 content: SizedBox(
                   width: double.maxFinite,
                   height: 360,
-                  child: useNativeIosAccessibleViews
-                      ? NativeIosAccessibleList(
-                          sections: [NativeIosListSection(rows: [
-                            const NativeIosListRow(
+                  child: useSharedAccessibleViewModel
+                      ? UniversalAccessibleList(
+                          sections: [AccessibleListSection(rows: [
+                            const AccessibleListRow(
                               id: 'info',
                               kind: 'text',
                               title: 'In questa versione la registrazione programmata parte solo se Sonarpad resta aperto su questo player. Se chiudi l’app o questa schermata, la registrazione non può partire da sola.',
                             ),
-                            NativeIosListRow(
+                            AccessibleListRow(
                               id: 'start',
                               title: 'Ora di inizio: ${_formatTimeOfDay(startTime)}',
                             ),
-                            NativeIosListRow(
+                            AccessibleListRow(
                               id: 'end',
                               title: 'Ora di fine: ${_formatTimeOfDay(endTime)}',
                             ),
-                            NativeIosListRow(
+                            AccessibleListRow(
                               id: 'title',
                               kind: 'textField',
                               title: 'Titolo facoltativo',
@@ -1722,39 +1722,39 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
-  Widget _buildNativeIosPlayerBody(AppLocalizations l10n, bool showStationDetails) {
+  Widget _buildSharedAccessiblePlayerBody(AppLocalizations l10n, bool showStationDetails) {
     Widget buildControls(bool audioPlaying) {
       final videoMode = _mediaKitPlayer != null || _videoController != null;
-      final rows = <NativeIosListRow>[
-        NativeIosListRow(id: 'title', kind: 'header', title: widget.station.name),
-        if (showStationDetails) NativeIosListRow(id: 'details', kind: 'text', title: widget.station.detailsText),
-        if (_loading) NativeIosListRow(id: 'loading', kind: 'text', title: l10n.loading),
-        if (_error != null) NativeIosListRow(id: 'error', kind: 'text', title: _error!),
-        if (widget.isVideoSupported) NativeIosListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
-        NativeIosListRow(
+      final rows = <AccessibleListRow>[
+        AccessibleListRow(id: 'title', kind: 'header', title: widget.station.name),
+        if (showStationDetails) AccessibleListRow(id: 'details', kind: 'text', title: widget.station.detailsText),
+        if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loading),
+        if (_error != null) AccessibleListRow(id: 'error', kind: 'text', title: _error!),
+        if (widget.isVideoSupported) AccessibleListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
+        AccessibleListRow(
           id: 'play_pause',
           title: videoMode ? (_isVideoPlaying ? l10n.pause : l10n.play) : (audioPlaying ? l10n.pause : l10n.play),
           kind: 'button',
           enabled: !_loading,
         ),
         if (_canRecordStream)
-          NativeIosListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: !_loading),
+          AccessibleListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: !_loading),
         if (_canRecordStream)
-          NativeIosListRow(id: 'schedule', title: 'Programma registrazione', enabled: !_loading && !_recording),
+          AccessibleListRow(id: 'schedule', title: 'Programma registrazione', enabled: !_loading && !_recording),
         if (_recordingOutput != null)
-          NativeIosListRow(id: 'recording_name', kind: 'text', title: p.basenameWithoutExtension(_recordingOutput!.path)),
+          AccessibleListRow(id: 'recording_name', kind: 'text', title: p.basenameWithoutExtension(_recordingOutput!.path)),
         if (_scheduledRecordingSummary != null)
-          NativeIosListRow(id: 'schedule_summary', kind: 'text', title: _scheduledRecordingSummary!),
+          AccessibleListRow(id: 'schedule_summary', kind: 'text', title: _scheduledRecordingSummary!),
         if (_hasPendingScheduledRecording)
-          const NativeIosListRow(id: 'cancel_schedule', title: 'Annulla registrazione programmata'),
-        NativeIosListRow(
+          const AccessibleListRow(id: 'cancel_schedule', title: 'Annulla registrazione programmata'),
+        AccessibleListRow(
           id: 'favorite',
           title: _isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
           kind: 'button',
         ),
       ];
-      return NativeIosAccessibleList(
-        sections: [NativeIosListSection(rows: rows)],
+      return UniversalAccessibleList(
+        sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
           if (event.id == 'video' && event.type == 'toggle') {
             _toggleVideo(event.value == true);
@@ -1829,8 +1829,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           },
         ),
       ),
-      body: useNativeIosAccessibleViews
-          ? _buildNativeIosPlayerBody(l10n, showStationDetails)
+      body: useSharedAccessibleViewModel
+          ? _buildSharedAccessiblePlayerBody(l10n, showStationDetails)
           : ListView(
         padding: const EdgeInsets.all(16),
         children: [

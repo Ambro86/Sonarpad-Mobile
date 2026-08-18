@@ -5,7 +5,7 @@ import '../services/aifa_pdf_parser.dart';
 import '../services/aifa_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class AifaConfezioniScreen extends StatefulWidget {
   final AifaDrugResult drugGroup;
@@ -219,17 +219,17 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
                 ),
               ),
             Expanded(
-              child: useNativeIosAccessibleViews
-                  ? NativeIosAccessibleList(
+              child: useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
                       sections: [
-                        NativeIosListSection(
+                        AccessibleListSection(
                           header: 'Confezioni',
                           rows: widget.drugGroup.confezioni
                               .asMap()
                               .entries
                               .map((entry) {
                                 final isDownloading = _downloadingConf == entry.value;
-                                return NativeIosListRow(
+                                return AccessibleListRow(
                                   id: 'confezione_${entry.key}',
                                   title: entry.value.name,
                                   subtitle: isDownloading ? 'Apertura in corso' : 'Apri foglio illustrativo',

@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
-class CategoryNativeItem {
-  const CategoryNativeItem({required this.label, required this.onPressed});
+class CategoryAccessibleItem {
+  const CategoryAccessibleItem({
+    required this.label,
+    required this.onPressed,
+    this.flutterChild,
+  });
   final String label;
   final VoidCallback onPressed;
+  final Widget? flutterChild;
 }
 
 class CategoryScreen extends StatelessWidget {
   final String title;
   final List<Widget> children;
-  final List<CategoryNativeItem> nativeItems;
+  final List<CategoryAccessibleItem> accessibleItems;
 
   const CategoryScreen({
     super.key,
     required this.title,
     required this.children,
-    this.nativeItems = const [],
+    this.accessibleItems = const [],
   });
 
   @override
@@ -25,29 +30,23 @@ class CategoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: SafeArea(
-        child: useNativeIosAccessibleViews && nativeItems.isNotEmpty
-            ? NativeIosAccessibleList(
+        child: useSharedAccessibleViewModel && accessibleItems.isNotEmpty
+            ? UniversalAccessibleList(
                 sections: [
-                  NativeIosListSection(
-                    rows: nativeItems
+                  AccessibleListSection(
+                    rows: accessibleItems
                         .asMap()
                         .entries
-                        .map((entry) => NativeIosListRow(
+                        .map((entry) => AccessibleListRow(
                               id: 'category_${entry.key}',
                               title: entry.value.label,
+                              onActivate: entry.value.onPressed,
+                              flutterChild: entry.value.flutterChild,
                             ))
                         .toList(growable: false),
                   ),
                 ],
-                onEvent: (event) {
-                  if (event.type != 'activate' || event.id == null) return;
-                  final index = int.tryParse(
-                    event.id!.replaceFirst('category_', ''),
-                  );
-                  if (index != null && index >= 0 && index < nativeItems.length) {
-                    nativeItems[index].onPressed();
-                  }
-                },
+                padding: const EdgeInsets.all(16),
               )
             : ListView(
                 padding: const EdgeInsets.all(16),

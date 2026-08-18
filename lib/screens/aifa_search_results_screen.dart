@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 import '../services/aifa_service.dart';
 import '../services/parafarmaco_service.dart';
@@ -197,7 +197,7 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
     return children;
   }
 
-  Widget _buildNativeIosResults() {
+  Widget _buildSharedAccessibleResults() {
     final l10n = AppLocalizations.of(context);
     final visibleParafarmacoResults = _aifaLoading
         ? _parafarmacoResults
@@ -208,17 +208,17 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
             _results,
           );
 
-    final aifaRows = <NativeIosListRow>[];
+    final aifaRows = <AccessibleListRow>[];
     if (_aifaLoading) {
-      aifaRows.add(const NativeIosListRow(id: 'aifa_status', title: 'Ricerca farmaci AIFA in corso...', subtitle: 'Sto cercando tra i medicinali AIFA.', kind: 'text'));
+      aifaRows.add(const AccessibleListRow(id: 'aifa_status', title: 'Ricerca farmaci AIFA in corso...', subtitle: 'Sto cercando tra i medicinali AIFA.', kind: 'text'));
     } else if (_aifaError != null && _results.isEmpty) {
-      aifaRows.add(NativeIosListRow(id: 'aifa_status', title: 'Errore nella ricerca AIFA', subtitle: _aifaError!, kind: 'text'));
+      aifaRows.add(AccessibleListRow(id: 'aifa_status', title: 'Errore nella ricerca AIFA', subtitle: _aifaError!, kind: 'text'));
     } else if (_results.isEmpty) {
-      aifaRows.add(const NativeIosListRow(id: 'aifa_status', title: 'Nessun farmaco AIFA trovato', subtitle: 'La ricerca negli altri prodotti può comunque dare risultati.', kind: 'text'));
+      aifaRows.add(const AccessibleListRow(id: 'aifa_status', title: 'Nessun farmaco AIFA trovato', subtitle: 'La ricerca negli altri prodotti può comunque dare risultati.', kind: 'text'));
     } else {
       for (var i = 0; i < _results.length; i++) {
         final group = _results[i];
-        aifaRows.add(NativeIosListRow(
+        aifaRows.add(AccessibleListRow(
           id: 'aifa_$i',
           title: '${group.denominazione} - ${group.principiAttivi} - AIC ${group.aic9}',
           subtitle: '${group.confezioni.length} confezioni associate',
@@ -226,17 +226,17 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
       }
     }
 
-    final productRows = <NativeIosListRow>[];
+    final productRows = <AccessibleListRow>[];
     if (_parafarmacoLoading) {
-      productRows.add(NativeIosListRow(id: 'product_status', title: l10n.pharmacyProductsLoadingTitle, subtitle: 'Sto cercando parafarmaci, integratori e dispositivi.', kind: 'text'));
+      productRows.add(AccessibleListRow(id: 'product_status', title: l10n.pharmacyProductsLoadingTitle, subtitle: 'Sto cercando parafarmaci, integratori e dispositivi.', kind: 'text'));
     } else if (_parafarmacoError != null && visibleParafarmacoResults.isEmpty) {
-      productRows.add(NativeIosListRow(id: 'product_status', title: l10n.pharmacyProductsErrorTitle, subtitle: _parafarmacoError!, kind: 'text'));
+      productRows.add(AccessibleListRow(id: 'product_status', title: l10n.pharmacyProductsErrorTitle, subtitle: _parafarmacoError!, kind: 'text'));
     } else if (visibleParafarmacoResults.isEmpty) {
-      productRows.add(NativeIosListRow(id: 'product_status', title: l10n.pharmacyProductsNoResultsTitle, subtitle: 'Non sono disponibili schede prodotto per questa ricerca.', kind: 'text'));
+      productRows.add(AccessibleListRow(id: 'product_status', title: l10n.pharmacyProductsNoResultsTitle, subtitle: 'Non sono disponibili schede prodotto per questa ricerca.', kind: 'text'));
     } else {
       for (var i = 0; i < visibleParafarmacoResults.length; i++) {
         final product = visibleParafarmacoResults[i];
-        productRows.add(NativeIosListRow(
+        productRows.add(AccessibleListRow(
           id: 'product_$i',
           title: product.name,
           subtitle: [
@@ -248,10 +248,10 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
       }
     }
 
-    return NativeIosAccessibleList(
+    return UniversalAccessibleList(
       sections: [
-        NativeIosListSection(header: 'Farmaci AIFA', footer: 'Medicinali con dati AIFA e foglio illustrativo ufficiale.', rows: aifaRows),
-        NativeIosListSection(header: l10n.pharmacyProductsSectionTitle, footer: 'Schede prodotto non AIFA quando disponibili.', rows: productRows),
+        AccessibleListSection(header: 'Farmaci AIFA', footer: 'Medicinali con dati AIFA e foglio illustrativo ufficiale.', rows: aifaRows),
+        AccessibleListSection(header: l10n.pharmacyProductsSectionTitle, footer: 'Schede prodotto non AIFA quando disponibili.', rows: productRows),
       ],
       onEvent: (event) {
         if (event.type != 'activate' || event.id == null) return;
@@ -276,8 +276,8 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
         title: Text('Risultati: ${widget.query}'),
       ),
       body: SafeArea(
-        child: useNativeIosAccessibleViews
-            ? _buildNativeIosResults()
+        child: useSharedAccessibleViewModel
+            ? _buildSharedAccessibleResults()
             : ListView(
                 children: _buildResultsChildren(),
               ),

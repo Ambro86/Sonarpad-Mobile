@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 import 'recent_searches_screen.dart';
 
@@ -44,22 +44,22 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
         title: Text(AppLocalizations.of(context).pharmacyFeatureTitle),
       ),
       body: SafeArea(
-        child: useNativeIosAccessibleViews
-            ? NativeIosAccessibleList(
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
                 sections: [
-                  NativeIosListSection(
+                  AccessibleListSection(
                     rows: [
-                      NativeIosListRow(
+                      AccessibleListRow(
                         id: 'recent',
                         title: _recentSearchesTitle,
                       ),
-                      const NativeIosListRow(
+                      const AccessibleListRow(
                         id: 'query',
                         title: 'Nome, principio attivo, ingrediente o codice AIC',
                         kind: 'textField',
                         placeholder: 'Nome, principio attivo, ingrediente o codice AIC',
                       ),
-                      const NativeIosListRow(
+                      const AccessibleListRow(
                         id: 'search',
                         title: 'Cerca',
                         kind: 'button',

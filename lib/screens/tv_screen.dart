@@ -9,7 +9,7 @@ import 'favorite_tvs_screen.dart';
 import 'tv_channel_screen.dart';
 import 'tv_recordings_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class TvScreen extends StatefulWidget {
   const TvScreen({super.key});
@@ -342,34 +342,34 @@ class _TvScreenState extends State<TvScreen> {
       );
     }
 
-    if (useNativeIosAccessibleViews) {
-      final rows = <NativeIosListRow>[
+    if (useSharedAccessibleViewModel) {
+      final rows = <AccessibleListRow>[
         if (_cacheWarning != null)
-          NativeIosListRow(
+          AccessibleListRow(
             id: '__warning__',
             title: _cacheWarning!,
             kind: 'text',
             enabled: false,
           ),
-        NativeIosListRow(
+        AccessibleListRow(
           id: '__search_text__',
           title: l10n.tvSearchFieldLabel,
           kind: 'textField',
           value: _searchController.text,
           placeholder: l10n.tvSearchFieldHint,
         ),
-        NativeIosListRow(id: '__search__', title: l10n.tvSearchButton, kind: 'button'),
-        const NativeIosListRow(id: '__favorites__', title: 'TV preferite', kind: 'action'),
-        NativeIosListRow(id: '__recordings__', title: l10n.recordings, kind: 'action'),
+        AccessibleListRow(id: '__search__', title: l10n.tvSearchButton, kind: 'button'),
+        const AccessibleListRow(id: '__favorites__', title: 'TV preferite', kind: 'action'),
+        AccessibleListRow(id: '__recordings__', title: l10n.recordings, kind: 'action'),
         ...categories.where((c) => map.containsKey(c)).map(
-          (c) => NativeIosListRow(id: 'category:$c', title: c, kind: 'action'),
+          (c) => AccessibleListRow(id: 'category:$c', title: c, kind: 'action'),
         ),
         if (regionalMap.isNotEmpty)
-          const NativeIosListRow(id: '__regional__', title: 'Regionali', kind: 'action'),
+          const AccessibleListRow(id: '__regional__', title: 'Regionali', kind: 'action'),
       ];
-      return NativeIosAccessibleList(
-        key: ValueKey('native-tv-main-${rows.length}-${_channels.length}'),
-        sections: [NativeIosListSection(rows: rows)],
+      return UniversalAccessibleList(
+        key: ValueKey('shared-tv-main-${rows.length}-${_channels.length}'),
+        sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
           if (event.type == 'textChanged' && event.id == '__search_text__') {
             final value = event.value?.toString() ?? '';
@@ -452,12 +452,12 @@ class _TvRegionalScreen extends StatelessWidget {
     final regionNames = regions.keys.toList();
     return Scaffold(
       appBar: AppBar(title: const Text('Regionali')),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: regionNames
-                      .map((region) => NativeIosListRow(
+                      .map((region) => AccessibleListRow(
                             id: region,
                             title: region,
                             kind: 'action',
@@ -563,16 +563,16 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.category)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              key: ValueKey('native-tv-category-${widget.category}-${widget.channels.length}'),
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              key: ValueKey('shared-tv-category-${widget.category}-${widget.channels.length}'),
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: widget.channels.map((channel) {
                     final program = _currentProgramFor(channel);
                     final favorite = _isFavorite(channel);
                     final title = program?.title.trim();
-                    return NativeIosListRow(
+                    return AccessibleListRow(
                       id: channel.name,
                       title: channel.name,
                       subtitle: title != null && title.isNotEmpty
@@ -584,7 +584,7 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                       hint: AppLocalizations.of(context).tvOpenChannelHint,
                       kind: 'action',
                       actions: [
-                        NativeIosCustomAction(
+                        AccessibleCustomAction(
                           id: 'favorite',
                           label: favorite
                               ? AppLocalizations.of(context).radioRemoveFavorite
@@ -705,16 +705,16 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
 
     return SizedBox(
       height: 420,
-      child: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              key: ValueKey('native-tv-search-${widget.channels.length}'),
+      child: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              key: ValueKey('shared-tv-search-${widget.channels.length}'),
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: widget.channels.map((channel) {
                     final program = _currentProgramFor(channel);
                     final favorite = _isFavorite(channel);
                     final title = program?.title.trim();
-                    return NativeIosListRow(
+                    return AccessibleListRow(
                       id: channel.name,
                       title: channel.name,
                       subtitle: title != null && title.isNotEmpty
@@ -722,7 +722,7 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                           : null,
                       kind: 'action',
                       actions: [
-                        NativeIosCustomAction(
+                        AccessibleCustomAction(
                           id: 'favorite',
                           label: favorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
                         ),

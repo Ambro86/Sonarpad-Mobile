@@ -17,7 +17,7 @@ import 'podcast_episodes_screen.dart';
 import '../utils/country_name_helper.dart';
 import '../utils/status_message.dart';
 import '../widgets/letter_jump_option_picker_screen.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class PodcastScreen extends StatefulWidget {
   const PodcastScreen({super.key});
@@ -413,53 +413,53 @@ class _PodcastScreenState extends State<PodcastScreen> {
     super.dispose();
   }
 
-  Widget _buildNativeIosPodcastHome(AppLocalizations l10n) {
-    final searchRows = <NativeIosListRow>[
-      NativeIosListRow(
+  Widget _buildSharedAccessiblePodcastHome(AppLocalizations l10n) {
+    final searchRows = <AccessibleListRow>[
+      AccessibleListRow(
         id: 'search_query',
         title: l10n.podcastName,
         kind: 'textField',
         value: _searchController.text,
         placeholder: l10n.podcastSearchHint,
       ),
-      NativeIosListRow(
+      AccessibleListRow(
         id: 'countries',
         title: l10n.browsePodcastCountries,
         subtitle: _podcastCountryLabel(_selectedPodcastCountry(), l10n),
       ),
-      NativeIosListRow(
+      AccessibleListRow(
         id: 'categories',
         title: l10n.browsePodcastCategories,
         subtitle: _category.nameForLanguage(l10n.localeName),
       ),
-      NativeIosListRow(id: 'search', title: l10n.searchPodcasts, kind: 'button'),
+      AccessibleListRow(id: 'search', title: l10n.searchPodcasts, kind: 'button'),
     ];
 
-    final manualRows = <NativeIosListRow>[
-      NativeIosListRow(
+    final manualRows = <AccessibleListRow>[
+      AccessibleListRow(
         id: 'feed_url',
         title: l10n.podcastFeedUrl,
         kind: 'textField',
         value: _feedController.text,
         placeholder: 'https://example.com/feed.xml',
       ),
-      NativeIosListRow(
+      AccessibleListRow(
         id: 'subscribe_url',
         title: l10n.subscribeFromUrl,
         kind: 'button',
       ),
     ];
 
-    final subscriptionRows = <NativeIosListRow>[];
+    final subscriptionRows = <AccessibleListRow>[];
     if (_subscriptions.length > 1) {
-      subscriptionRows.add(NativeIosListRow(
+      subscriptionRows.add(AccessibleListRow(
         id: 'sort_subscriptions',
         title: l10n.sortPodcastsAlphabetically,
         kind: 'button',
       ));
     }
     if (_subscriptions.isEmpty) {
-      subscriptionRows.add(NativeIosListRow(
+      subscriptionRows.add(AccessibleListRow(
         id: 'no_subscriptions',
         title: l10n.noSubscribedPodcasts,
         kind: 'text',
@@ -467,47 +467,47 @@ class _PodcastScreenState extends State<PodcastScreen> {
     } else {
       for (var i = 0; i < _subscriptions.length; i++) {
         final subscription = _subscriptions[i];
-        subscriptionRows.add(NativeIosListRow(
+        subscriptionRows.add(AccessibleListRow(
           id: 'subscription_$i',
           title: subscription.title,
           actions: [
-            NativeIosCustomAction(id: 'remove', label: l10n.removePodcast),
-            if (i > 0) NativeIosCustomAction(id: 'move_up', label: l10n.moveUp),
+            AccessibleCustomAction(id: 'remove', label: l10n.removePodcast),
+            if (i > 0) AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
             if (i < _subscriptions.length - 1)
-              NativeIosCustomAction(id: 'move_down', label: l10n.moveDown),
-            NativeIosCustomAction(id: 'move_position', label: l10n.moveToPosition),
+              AccessibleCustomAction(id: 'move_down', label: l10n.moveDown),
+            AccessibleCustomAction(id: 'move_position', label: l10n.moveToPosition),
           ],
         ));
       }
     }
 
-    final localRows = <NativeIosListRow>[];
+    final localRows = <AccessibleListRow>[];
     if (_localAudioFiles.isEmpty) {
-      localRows.add(NativeIosListRow(
+      localRows.add(AccessibleListRow(
         id: 'no_local',
         title: l10n.noLocalAudioFiles,
         kind: 'text',
       ));
     } else {
       for (var i = 0; i < _localAudioFiles.length; i++) {
-        localRows.add(NativeIosListRow(
+        localRows.add(AccessibleListRow(
           id: 'local_$i',
           title: p.basenameWithoutExtension(_localAudioFiles[i].path),
         ));
       }
     }
     localRows.addAll([
-      NativeIosListRow(id: 'refresh_local', title: l10n.importAudioFromITunes, kind: 'button'),
-      NativeIosListRow(id: 'import_opml', title: l10n.importPodcastsFromFile, kind: 'button'),
-      NativeIosListRow(id: 'export_opml', title: l10n.exportPodcastsToFile, kind: 'button'),
+      AccessibleListRow(id: 'refresh_local', title: l10n.importAudioFromITunes, kind: 'button'),
+      AccessibleListRow(id: 'import_opml', title: l10n.importPodcastsFromFile, kind: 'button'),
+      AccessibleListRow(id: 'export_opml', title: l10n.exportPodcastsToFile, kind: 'button'),
     ]);
 
-    return NativeIosAccessibleList(
+    return UniversalAccessibleList(
       sections: [
-        NativeIosListSection(header: l10n.searchPodcasts, rows: searchRows),
-        NativeIosListSection(header: l10n.addFeedUrlManually, rows: manualRows),
-        NativeIosListSection(header: l10n.subscribedPodcasts, rows: subscriptionRows),
-        NativeIosListSection(header: l10n.localAudioFiles, rows: localRows),
+        AccessibleListSection(header: l10n.searchPodcasts, rows: searchRows),
+        AccessibleListSection(header: l10n.addFeedUrlManually, rows: manualRows),
+        AccessibleListSection(header: l10n.subscribedPodcasts, rows: subscriptionRows),
+        AccessibleListSection(header: l10n.localAudioFiles, rows: localRows),
       ],
       onEvent: (event) async {
         if (event.type == 'textChanged') {
@@ -585,8 +585,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.podcasts)),
-      body: useNativeIosAccessibleViews
-          ? _buildNativeIosPodcastHome(l10n)
+      body: useSharedAccessibleViewModel
+          ? _buildSharedAccessiblePodcastHome(l10n)
           : ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -955,27 +955,27 @@ class _PodcastSearchResultsScreenState
           if (results.isEmpty) {
             return Center(child: Text(l10n.noPodcastResults));
           }
-          if (useNativeIosAccessibleViews) {
+          if (useSharedAccessibleViewModel) {
             final rows = results.map((result) {
               final isSubscribed = _isSubscribed(result);
               final secondaryActionLabel =
                   isSubscribed ? l10n.openPodcast : l10n.subscribe;
-              return NativeIosListRow(
+              return AccessibleListRow(
                 id: result.feedUrl,
                 title: result.title,
                 subtitle: result.author.isEmpty ? result.feedUrl : result.author,
                 kind: 'action',
                 actions: [
-                  NativeIosCustomAction(
+                  AccessibleCustomAction(
                     id: 'secondary',
                     label: secondaryActionLabel,
                   ),
                 ],
               );
             }).toList();
-            return NativeIosAccessibleList(
-              key: ValueKey('native-podcast-search-${rows.length}'),
-              sections: [NativeIosListSection(rows: rows)],
+            return UniversalAccessibleList(
+              key: ValueKey('shared-podcast-search-${rows.length}'),
+              sections: [AccessibleListSection(rows: rows)],
               onEvent: (event) async {
                 final id = event.id;
                 if (id == null) return;
@@ -1132,15 +1132,15 @@ class _PodcastSearchDetail extends StatelessWidget {
           artworkUrl: artworkUrl,
         );
 
-        if (useNativeIosAccessibleViews) {
-          return NativeIosAccessibleList(
+        if (useSharedAccessibleViewModel) {
+          return UniversalAccessibleList(
             sections: [
-              NativeIosListSection(
+              AccessibleListSection(
                 rows: [
-                  NativeIosListRow(id: 'title', title: title, kind: 'text'),
+                  AccessibleListRow(id: 'title', title: title, kind: 'text'),
                   if (author.isNotEmpty)
-                    NativeIosListRow(id: 'author', title: '${l10n.podcastAuthor}: $author', kind: 'text'),
-                  NativeIosListRow(
+                    AccessibleListRow(id: 'author', title: '${l10n.podcastAuthor}: $author', kind: 'text'),
+                  AccessibleListRow(
                     id: 'description',
                     title: snapshot.connectionState != ConnectionState.done
                         ? l10n.loadingPodcastInfo
@@ -1149,9 +1149,9 @@ class _PodcastSearchDetail extends StatelessWidget {
                             : (description.isEmpty ? l10n.noPodcastDescription : description),
                     kind: 'text',
                   ),
-                  NativeIosListRow(id: 'feed', title: feedUrl, kind: 'text'),
-                  NativeIosListRow(id: 'subscribe', title: l10n.subscribe, kind: 'button'),
-                  NativeIosListRow(id: 'episodes', title: l10n.viewEpisodes, kind: 'button'),
+                  AccessibleListRow(id: 'feed', title: feedUrl, kind: 'text'),
+                  AccessibleListRow(id: 'subscribe', title: l10n.subscribe, kind: 'button'),
+                  AccessibleListRow(id: 'episodes', title: l10n.viewEpisodes, kind: 'button'),
                 ],
               ),
             ],

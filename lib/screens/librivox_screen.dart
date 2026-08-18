@@ -7,7 +7,7 @@ import '../services/document_library_service.dart';
 import '../services/librivox_service.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class LibrivoxScreen extends StatefulWidget {
   final String? parentId;
@@ -57,11 +57,11 @@ class _LibrivoxScreenState extends State<LibrivoxScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('LibriVox')),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(id: 'query', title: l10n.librivoxSearchLabel, kind: 'textField', value: _controller.text),
-                NativeIosListRow(id: 'search', title: l10n.search, kind: 'button'),
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(id: 'query', title: l10n.librivoxSearchLabel, kind: 'textField', value: _controller.text),
+                AccessibleListRow(id: 'search', title: l10n.search, kind: 'button'),
               ])],
               onEvent: (event) {
                 if (event.id == 'query' && event.type == 'textChanged') {
@@ -187,13 +187,13 @@ class _LibrivoxResultsScreenState extends State<_LibrivoxResultsScreen> {
           if (_books.isEmpty) {
             return Center(child: Text(l10n.noLibrivoxAudiobooksFound));
           }
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
                 for (var i = 0; i < _books.length; i++)
-                  NativeIosListRow(id: 'book_$i', title: _books[i].title, subtitle: _books[i].authorLabel),
+                  AccessibleListRow(id: 'book_$i', title: _books[i].title, subtitle: _books[i].authorLabel),
                 if (_hasMore)
-                  NativeIosListRow(id: 'more', title: _loadingMore ? l10n.loading : l10n.loadMore, kind: 'button', enabled: !_loadingMore),
+                  AccessibleListRow(id: 'more', title: _loadingMore ? l10n.loading : l10n.loadMore, kind: 'button', enabled: !_loadingMore),
               ])],
               onEvent: (event) {
                 if (event.type != 'activate' || event.id == null) return;
@@ -328,20 +328,20 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
             return Center(child: Text(l10n.error(snapshot.error!)));
           }
           final book = snapshot.data ?? widget.book;
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(id: 'title', kind: 'header', title: book.title),
-                NativeIosListRow(id: 'author', kind: 'text', title: book.authorLabel),
-                if (book.language.isNotEmpty) NativeIosListRow(id: 'language', kind: 'text', title: l10n.sourceLanguageValue(book.language)),
-                if (book.totalTime.isNotEmpty) NativeIosListRow(id: 'duration', kind: 'text', title: l10n.sourceDurationValue(book.totalTime)),
-                if (book.description.isNotEmpty) NativeIosListRow(id: 'description', kind: 'text', title: book.description),
-                if (widget.allowSave) NativeIosListRow(id: 'save', title: _saving ? l10n.librivoxSaving : l10n.librivoxSaveAudiobook, kind: 'button', enabled: !_saving),
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(id: 'title', kind: 'header', title: book.title),
+                AccessibleListRow(id: 'author', kind: 'text', title: book.authorLabel),
+                if (book.language.isNotEmpty) AccessibleListRow(id: 'language', kind: 'text', title: l10n.sourceLanguageValue(book.language)),
+                if (book.totalTime.isNotEmpty) AccessibleListRow(id: 'duration', kind: 'text', title: l10n.sourceDurationValue(book.totalTime)),
+                if (book.description.isNotEmpty) AccessibleListRow(id: 'description', kind: 'text', title: book.description),
+                if (widget.allowSave) AccessibleListRow(id: 'save', title: _saving ? l10n.librivoxSaving : l10n.librivoxSaveAudiobook, kind: 'button', enabled: !_saving),
                 if (book.sections.isEmpty)
-                  NativeIosListRow(id: 'empty', kind: 'text', title: l10n.librivoxNoAudioTracks)
+                  AccessibleListRow(id: 'empty', kind: 'text', title: l10n.librivoxNoAudioTracks)
                 else
                   for (var i = 0; i < book.sections.length; i++)
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'track_$i',
                       title: book.sections[i].number > 0 ? '${book.sections[i].number}. ${book.sections[i].title}' : book.sections[i].title,
                     ),

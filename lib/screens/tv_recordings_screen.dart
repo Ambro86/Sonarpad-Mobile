@@ -10,7 +10,7 @@ import '../models/podcast.dart';
 import '../services/radio_recording_service.dart';
 import '../utils/status_message.dart';
 import '../widgets/recording_selection_dialog.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
 
 class TvRecordingsScreen extends StatefulWidget {
@@ -167,20 +167,20 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
           if (files.isEmpty) {
             return Center(child: Text(l10n.noRecordings));
           }
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: files
                       .asMap()
                       .entries
-                      .map((entry) => NativeIosListRow(
+                      .map((entry) => AccessibleListRow(
                             id: 'recording_${entry.key}',
                             title: p.basenameWithoutExtension(entry.value.path),
                             actions: [
-                              NativeIosCustomAction(id: 'open', label: _openLabel(l10n.localeName)),
-                              NativeIosCustomAction(id: 'share', label: l10n.share),
-                              NativeIosCustomAction(id: 'delete', label: _deleteLabel(l10n.localeName)),
+                              AccessibleCustomAction(id: 'open', label: _openLabel(l10n.localeName)),
+                              AccessibleCustomAction(id: 'share', label: l10n.share),
+                              AccessibleCustomAction(id: 'delete', label: _deleteLabel(l10n.localeName)),
                             ],
                           ))
                       .toList(growable: false),

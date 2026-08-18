@@ -6,7 +6,7 @@ import '../services/recent_routes_service.dart';
 import '../services/route_service.dart';
 import 'route_result_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class RouteScreen extends StatefulWidget {
   const RouteScreen({super.key});
@@ -149,18 +149,18 @@ class _RouteScreenState extends State<RouteScreen> {
     return showDialog<GeocodeCandidate>(
       context: context,
       builder: (dialogContext) {
-        if (useNativeIosAccessibleViews) {
+        if (useSharedAccessibleViewModel) {
           return AlertDialog(
             title: Text(title),
             content: SizedBox(
               width: double.maxFinite,
               height: 420,
-              child: NativeIosAccessibleList(
+              child: UniversalAccessibleList(
                 sections: [
-                  NativeIosListSection(
+                  AccessibleListSection(
                     rows: [
                       for (var i = 0; i < candidates.length; i++)
-                        NativeIosListRow(
+                        AccessibleListRow(
                           id: 'candidate_$i',
                           title: candidates[i].displayLabel,
                         ),
@@ -212,51 +212,51 @@ class _RouteScreenState extends State<RouteScreen> {
     );
   }
 
-  Widget _buildNativeIosRouteForm(AppLocalizations l10n) {
+  Widget _buildSharedAccessibleRouteForm(AppLocalizations l10n) {
     final countries = [
-      NativeIosOption(value: 'it', label: l10n.routeCountryItaly),
-      NativeIosOption(value: 'fr', label: l10n.routeCountryFrance),
-      NativeIosOption(value: 'es', label: l10n.routeCountrySpain),
-      NativeIosOption(value: 'pt', label: l10n.radioCountryOptionPt),
-      NativeIosOption(value: 'pl', label: l10n.radioCountryOptionPl),
-      NativeIosOption(value: 'cz', label: l10n.routeCountryCzechRepublic),
-      NativeIosOption(value: 'au', label: l10n.radioCountryOptionAu),
-      NativeIosOption(value: 'ca', label: l10n.radioCountryOptionCa),
-      NativeIosOption(value: 'de', label: l10n.radioCountryOptionDe),
-      NativeIosOption(value: 'gb', label: l10n.radioCountryOptionGb),
-      NativeIosOption(value: 'us', label: l10n.radioCountryOptionUs),
+      AccessibleOption(value: 'it', label: l10n.routeCountryItaly),
+      AccessibleOption(value: 'fr', label: l10n.routeCountryFrance),
+      AccessibleOption(value: 'es', label: l10n.routeCountrySpain),
+      AccessibleOption(value: 'pt', label: l10n.radioCountryOptionPt),
+      AccessibleOption(value: 'pl', label: l10n.radioCountryOptionPl),
+      AccessibleOption(value: 'cz', label: l10n.routeCountryCzechRepublic),
+      AccessibleOption(value: 'au', label: l10n.radioCountryOptionAu),
+      AccessibleOption(value: 'ca', label: l10n.radioCountryOptionCa),
+      AccessibleOption(value: 'de', label: l10n.radioCountryOptionDe),
+      AccessibleOption(value: 'gb', label: l10n.radioCountryOptionGb),
+      AccessibleOption(value: 'us', label: l10n.radioCountryOptionUs),
     ];
-    return NativeIosAccessibleList(
+    return UniversalAccessibleList(
       sections: [
-        NativeIosListSection(rows: [
-          NativeIosListRow(id: 'recent', title: l10n.routeRecentRoutes, enabled: !_calculating),
-          NativeIosListRow(id: 'from', title: l10n.routeFrom, kind: 'textField', value: _fromController.text),
-          NativeIosListRow(id: 'to', title: l10n.routeTo, kind: 'textField', value: _toController.text),
-          NativeIosListRow(id: 'country', title: l10n.routeCountry, kind: 'picker', value: _countryCode, options: countries),
-          NativeIosListRow(
+        AccessibleListSection(rows: [
+          AccessibleListRow(id: 'recent', title: l10n.routeRecentRoutes, enabled: !_calculating),
+          AccessibleListRow(id: 'from', title: l10n.routeFrom, kind: 'textField', value: _fromController.text),
+          AccessibleListRow(id: 'to', title: l10n.routeTo, kind: 'textField', value: _toController.text),
+          AccessibleListRow(id: 'country', title: l10n.routeCountry, kind: 'picker', value: _countryCode, options: countries),
+          AccessibleListRow(
             id: 'profile',
             title: l10n.routeVehicle,
             kind: 'picker',
             value: _profile.name,
             options: [
-              NativeIosOption(value: RouteProfile.walking.name, label: l10n.routeWalking),
-              NativeIosOption(value: RouteProfile.cycling.name, label: l10n.routeCycling),
-              NativeIosOption(value: RouteProfile.driving.name, label: l10n.routeDriving),
-              NativeIosOption(value: RouteProfile.wheelchair.name, label: l10n.routeWheelchair),
+              AccessibleOption(value: RouteProfile.walking.name, label: l10n.routeWalking),
+              AccessibleOption(value: RouteProfile.cycling.name, label: l10n.routeCycling),
+              AccessibleOption(value: RouteProfile.driving.name, label: l10n.routeDriving),
+              AccessibleOption(value: RouteProfile.wheelchair.name, label: l10n.routeWheelchair),
             ],
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'preference',
             title: l10n.routeType,
             kind: 'picker',
             value: _preference.name,
             options: [
-              NativeIosOption(value: RoutePreference.fastest.name, label: l10n.routeFastest),
-              NativeIosOption(value: RoutePreference.shortest.name, label: l10n.routeShortest),
+              AccessibleOption(value: RoutePreference.fastest.name, label: l10n.routeFastest),
+              AccessibleOption(value: RoutePreference.shortest.name, label: l10n.routeShortest),
             ],
           ),
-          NativeIosListRow(id: 'municipalities', title: l10n.routeIncludeMunicipalities, kind: 'toggle', toggleValue: _includeMunicipalities),
-          NativeIosListRow(
+          AccessibleListRow(id: 'municipalities', title: l10n.routeIncludeMunicipalities, kind: 'toggle', toggleValue: _includeMunicipalities),
+          AccessibleListRow(
             id: 'calculate',
             title: _calculating ? l10n.routeCalculating : l10n.routeCalculate,
             kind: 'button',
@@ -297,7 +297,7 @@ class _RouteScreenState extends State<RouteScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.routeTitle)),
-      body: useNativeIosAccessibleViews ? _buildNativeIosRouteForm(l10n) : ListView(
+      body: useSharedAccessibleViewModel ? _buildSharedAccessibleRouteForm(l10n) : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           OutlinedButton.icon(
@@ -510,18 +510,18 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
           if (routes.isEmpty) {
             return Center(child: Text(l10n.routeRecentRoutesEmpty));
           }
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: [
                     for (var i = 0; i < routes.length; i++)
-                      NativeIosListRow(
+                      AccessibleListRow(
                         id: 'route_$i',
                         title: '${routes[i].fromDisplayLabel} → ${routes[i].toDisplayLabel}',
                         subtitle: _formattedDate(routes[i].createdAt),
                         enabled: !_calculating,
-                        actions: [NativeIosCustomAction(id: 'delete', label: l10n.deleteItem)],
+                        actions: [AccessibleCustomAction(id: 'delete', label: l10n.deleteItem)],
                       ),
                   ],
                 ),

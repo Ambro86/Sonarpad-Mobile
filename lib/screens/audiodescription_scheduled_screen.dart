@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/audiodescription_service.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 const _scheduledAudiodescriptionsTitle = 'Audiodescrizioni in programma';
 const _scheduledAudiodescriptionsEmpty =
@@ -100,16 +100,16 @@ class _AudiodescriptionScheduledScreenState
               ? Center(child: Text('${l10n.audiodescriptionError}: $_error'))
               : _days.isEmpty
                   ? const Center(child: Text(_scheduledAudiodescriptionsEmpty))
-                  : useNativeIosAccessibleViews
-                      ? NativeIosAccessibleList(
+                  : useSharedAccessibleViewModel
+                      ? UniversalAccessibleList(
                           refreshEnabled: true,
                           sections: _days
-                              .map((day) => NativeIosListSection(
+                              .map((day) => AccessibleListSection(
                                     header: day.label,
                                     rows: day.programs
                                         .asMap()
                                         .entries
-                                        .map((entry) => NativeIosListRow(
+                                        .map((entry) => AccessibleListRow(
                                               id: 'program_${day.label}_${entry.key}',
                                               title: '${entry.value.time} - ${entry.value.channel}'.trim(),
                                               subtitle: entry.value.title,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/podcast_service.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class PodcastChaptersScreen extends StatelessWidget {
   PodcastChaptersScreen({
@@ -52,14 +52,14 @@ class PodcastChaptersScreen extends StatelessWidget {
             if (chapters.isEmpty) {
               return Center(child: Text(l10n.podcastChaptersUnavailable));
             }
-            if (useNativeIosAccessibleViews) {
-              return NativeIosAccessibleList(
+            if (useSharedAccessibleViewModel) {
+              return UniversalAccessibleList(
                 sections: [
-                  NativeIosListSection(
+                  AccessibleListSection(
                     rows: chapters
                         .asMap()
                         .entries
-                        .map((entry) => NativeIosListRow(
+                        .map((entry) => AccessibleListRow(
                               id: 'chapter_${entry.key}',
                               title: entry.value.title,
                               subtitle: _format(entry.value.start),

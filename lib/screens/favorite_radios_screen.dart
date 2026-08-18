@@ -7,7 +7,7 @@ import '../services/radio_service.dart';
 import '../utils/status_message.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart';
-import '../widgets/native_ios_accessible_view.dart'; // Per RadioTile
+import '../widgets/universal_accessible_view.dart'; // Per RadioTile
 
 class FavoriteRadiosScreen extends StatefulWidget {
   const FavoriteRadiosScreen({super.key});
@@ -115,14 +115,14 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
               child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : _favorites.isEmpty
               ? Center(child: Text(l10n.radioNoFavorites))
-              : useNativeIosAccessibleViews
-                  ? NativeIosAccessibleList(
-                      key: ValueKey('native-favorite-radios-${_favorites.length}'),
+              : useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
+                      key: ValueKey('shared-favorite-radios-${_favorites.length}'),
                       sections: [
-                        NativeIosListSection(
+                        AccessibleListSection(
                           rows: [
                             if (_favorites.length > 1)
-                              NativeIosListRow(
+                              AccessibleListRow(
                                 id: '__sort__',
                                 title: l10n.sortRadioFavoritesAlphabetically,
                                 kind: 'button',
@@ -130,17 +130,17 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                             ..._favorites.asMap().entries.map((entry) {
                               final index = entry.key;
                               final station = entry.value;
-                              return NativeIosListRow(
+                              return AccessibleListRow(
                                 id: station.streamUrl,
                                 title: station.name,
                                 subtitle: station.detailsText,
                                 accessibilityLabel: station.accessibilityLabel,
                                 kind: 'action',
                                 actions: [
-                                  NativeIosCustomAction(id: 'favorite', label: l10n.radioRemoveFavorite),
-                                  if (index > 0) NativeIosCustomAction(id: 'move_up', label: l10n.moveUp),
-                                  if (index < _favorites.length - 1) NativeIosCustomAction(id: 'move_down', label: l10n.moveDown),
-                                  NativeIosCustomAction(id: 'move_position', label: l10n.moveToPosition),
+                                  AccessibleCustomAction(id: 'favorite', label: l10n.radioRemoveFavorite),
+                                  if (index > 0) AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
+                                  if (index < _favorites.length - 1) AccessibleCustomAction(id: 'move_down', label: l10n.moveDown),
+                                  AccessibleCustomAction(id: 'move_position', label: l10n.moveToPosition),
                                 ],
                               );
                             }),

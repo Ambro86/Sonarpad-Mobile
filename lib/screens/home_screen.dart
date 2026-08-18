@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../main.dart';
 import '../services/accessibility_feedback_service.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 import '../services/app_settings_service.dart';
 import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
@@ -205,9 +205,19 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
               builder: (_) => CategoryScreen(
-                  title: l10n.categoryReading,
-                  children: readingItems,
-                  nativeItems: readingItems.whereType<_HomeButton>().map((item) => CategoryNativeItem(label: item.label, onPressed: item.onPressed)).toList(growable: false)),
+                title: l10n.categoryReading,
+                accessibleItems: readingItems
+                    .whereType<_HomeButton>()
+                    .map(
+                      (item) => CategoryAccessibleItem(
+                        label: item.label,
+                        onPressed: item.onPressed,
+                        flutterChild: item,
+                      ),
+                    )
+                    .toList(growable: false),
+                children: readingItems,
+              ),
             ));
           },
         ),
@@ -216,9 +226,19 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
               builder: (_) => CategoryScreen(
-                  title: l10n.categoryMedia,
-                  children: mediaItems,
-                  nativeItems: mediaItems.whereType<_HomeButton>().map((item) => CategoryNativeItem(label: item.label, onPressed: item.onPressed)).toList(growable: false)),
+                title: l10n.categoryMedia,
+                accessibleItems: mediaItems
+                    .whereType<_HomeButton>()
+                    .map(
+                      (item) => CategoryAccessibleItem(
+                        label: item.label,
+                        onPressed: item.onPressed,
+                        flutterChild: item,
+                      ),
+                    )
+                    .toList(growable: false),
+                children: mediaItems,
+              ),
             ));
           },
         ),
@@ -227,9 +247,19 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
               builder: (_) => CategoryScreen(
-                  title: l10n.categoryUtilities,
-                  children: utilityItems,
-                  nativeItems: utilityItems.whereType<_HomeButton>().map((item) => CategoryNativeItem(label: item.label, onPressed: item.onPressed)).toList(growable: false)),
+                title: l10n.categoryUtilities,
+                accessibleItems: utilityItems
+                    .whereType<_HomeButton>()
+                    .map(
+                      (item) => CategoryAccessibleItem(
+                        label: item.label,
+                        onPressed: item.onPressed,
+                        flutterChild: item,
+                      ),
+                    )
+                    .toList(growable: false),
+                children: utilityItems,
+              ),
             ));
           },
         ),
@@ -366,32 +396,49 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(l10n.appTitle),
       ),
       body: SafeArea(
-        child: useNativeIosAccessibleViews
-            ? NativeIosAccessibleList(
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
                 sections: [
-                  NativeIosListSection(
+                  AccessibleListSection(
+                    flutterHeader: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Semantics(
+                          excludeSemantics: true,
+                          child: Image.asset(
+                            'assets/images/Sonarpad_Logo.png',
+                            height: 92,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.centerLeft,
+                            errorBuilder: (context, error, stackTrace) => Text(
+                              l10n.appTitle,
+                              style: const TextStyle(
+                                fontSize: 34,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
                     rows: children
                         .whereType<_HomeButton>()
                         .toList(growable: false)
                         .asMap()
                         .entries
                         .map(
-                          (entry) => NativeIosListRow(
+                          (entry) => AccessibleListRow(
                             id: 'home_${entry.key}',
                             title: entry.value.label,
+                            onActivate: entry.value.onPressed,
+                            flutterChild: entry.value,
                           ),
                         )
                         .toList(growable: false),
                   ),
                 ],
-                onEvent: (event) async {
-                  if (event.type != 'activate' || event.id == null) return;
-                  final index = int.tryParse(event.id!.replaceFirst('home_', ''));
-                  final buttons = children.whereType<_HomeButton>().toList(growable: false);
-                  if (index != null && index >= 0 && index < buttons.length) {
-                    buttons[index].onPressed();
-                  }
-                },
+                padding: const EdgeInsets.all(16),
               )
             : ListView(
                 padding: const EdgeInsets.all(16),

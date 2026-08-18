@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import '../l10n/app_localizations.dart';
 import '../services/recent_searches_service.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class RecentSearchesScreen extends StatefulWidget {
   final String title;
@@ -88,18 +88,18 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
           : _searches.isEmpty
               ? Center(
                   child: Text(AppLocalizations.of(context).noRecentSearches))
-              : useNativeIosAccessibleViews
-                  ? NativeIosAccessibleList(
+              : useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
                       sections: [
-                        NativeIosListSection(
+                        AccessibleListSection(
                           rows: _searches
                               .asMap()
                               .entries
-                              .map((entry) => NativeIosListRow(
+                              .map((entry) => AccessibleListRow(
                                     id: 'search_${entry.key}',
                                     title: entry.value,
                                     actions: [
-                                      NativeIosCustomAction(
+                                      AccessibleCustomAction(
                                         id: 'delete',
                                         label: AppLocalizations.of(context).deleteItem,
                                       ),

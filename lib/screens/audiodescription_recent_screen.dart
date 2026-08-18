@@ -8,7 +8,7 @@ import 'audiodescription_scheduled_screen.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 const _scheduledAudiodescriptionsTitle = 'Audiodescrizioni in programma';
 
@@ -134,14 +134,14 @@ class _AudiodescriptionRecentScreenState
             )
           : _error.isNotEmpty
               ? Center(child: Text('${l10n.audiodescriptionError}: $_error'))
-              : useNativeIosAccessibleViews
-                  ? NativeIosAccessibleList(
+              : useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
                       sections: [
-                        NativeIosListSection(
+                        AccessibleListSection(
                           rows: [
-                            const NativeIosListRow(id: 'scheduled', title: _scheduledAudiodescriptionsTitle),
-                            NativeIosListRow(id: 'all', title: l10n.audiodescriptionAll),
-                            ..._filteredItems.asMap().entries.map((entry) => NativeIosListRow(
+                            const AccessibleListRow(id: 'scheduled', title: _scheduledAudiodescriptionsTitle),
+                            AccessibleListRow(id: 'all', title: l10n.audiodescriptionAll),
+                            ..._filteredItems.asMap().entries.map((entry) => AccessibleListRow(
                                   id: 'item_${entry.key}',
                                   title: entry.value.title,
                                   subtitle: '${entry.value.date} ${entry.value.description}'.trim(),

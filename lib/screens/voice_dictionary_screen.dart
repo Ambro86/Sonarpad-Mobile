@@ -3,7 +3,7 @@ import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/voice_dictionary_service.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class VoiceDictionaryScreen extends StatefulWidget {
   const VoiceDictionaryScreen({super.key});
@@ -54,24 +54,24 @@ class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.voiceDictionaryTitle)),
       body: SafeArea(
-        child: useNativeIosAccessibleViews
-            ? NativeIosAccessibleList(
-                sections: [NativeIosListSection(
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [AccessibleListSection(
                   header: l10n.voiceDictionaryEntries,
                   rows: [
-                    NativeIosListRow(id: 'add', title: l10n.voiceDictionaryAdd, kind: 'button'),
+                    AccessibleListRow(id: 'add', title: l10n.voiceDictionaryAdd, kind: 'button'),
                     if (_loading)
-                      NativeIosListRow(id: 'loading', kind: 'text', title: l10n.loading)
+                      AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loading)
                     else if (_entries.isEmpty)
-                      NativeIosListRow(id: 'empty', kind: 'text', title: l10n.voiceDictionaryEmpty)
+                      AccessibleListRow(id: 'empty', kind: 'text', title: l10n.voiceDictionaryEmpty)
                     else
                       for (var i = 0; i < _entries.length; i++)
-                        NativeIosListRow(
+                        AccessibleListRow(
                           id: 'entry_$i',
                           kind: 'text',
                           title: '${_entries[i].original} -> ${_entries[i].replacement}',
                           subtitle: _entries[i].matchCase ? l10n.voiceDictionaryMatchCase : l10n.voiceDictionaryIgnoreCase,
-                          actions: [NativeIosCustomAction(id: 'remove', label: l10n.voiceDictionaryRemove)],
+                          actions: [AccessibleCustomAction(id: 'remove', label: l10n.voiceDictionaryRemove)],
                         ),
                   ],
                 )],
@@ -160,7 +160,7 @@ class _VoiceDictionaryEntryDialogState
   }
 
   void _submit() {
-    if (useNativeIosAccessibleViews) {
+    if (useSharedAccessibleViewModel) {
       if (_originalController.text.trim().isEmpty) return;
     } else if (!_formKey.currentState!.validate()) {
       return;
@@ -179,15 +179,15 @@ class _VoiceDictionaryEntryDialogState
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(l10n.voiceDictionaryAdd),
-      content: useNativeIosAccessibleViews
+      content: useSharedAccessibleViewModel
           ? SizedBox(
               width: 420,
               height: 300,
-              child: NativeIosAccessibleList(
-                sections: [NativeIosListSection(rows: [
-                  NativeIosListRow(id: 'original', title: l10n.voiceDictionaryOriginalWord, kind: 'textField', value: _originalController.text),
-                  NativeIosListRow(id: 'replacement', title: l10n.voiceDictionaryReplacementWord, kind: 'textField', value: _replacementController.text),
-                  NativeIosListRow(id: 'match', title: l10n.voiceDictionaryMatchCase, kind: 'toggle', toggleValue: _matchCase),
+              child: UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: [
+                  AccessibleListRow(id: 'original', title: l10n.voiceDictionaryOriginalWord, kind: 'textField', value: _originalController.text),
+                  AccessibleListRow(id: 'replacement', title: l10n.voiceDictionaryReplacementWord, kind: 'textField', value: _replacementController.text),
+                  AccessibleListRow(id: 'match', title: l10n.voiceDictionaryMatchCase, kind: 'toggle', toggleValue: _matchCase),
                 ])],
                 onEvent: (event) {
                   if (event.id == 'original' && event.type == 'textChanged') {

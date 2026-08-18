@@ -5,7 +5,7 @@ import '../services/audiodescription_service.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class AudiodescriptionFilmScreen extends StatefulWidget {
   final AudiodescriptionGroup filmGroup;
@@ -95,14 +95,14 @@ class _AudiodescriptionFilmScreenState
           ),
         ),
       ),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: _filteredItems
                       .asMap()
                       .entries
-                      .map((entry) => NativeIosListRow(
+                      .map((entry) => AccessibleListRow(
                             id: 'film_${entry.key}',
                             title: entry.value.title,
                           ))

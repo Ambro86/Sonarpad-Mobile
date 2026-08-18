@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/orari_apertura_service.dart';
 import 'orari_apertura_detail_screen.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class OrariAperturaResultsScreen extends StatefulWidget {
   final String cosa;
@@ -64,13 +64,13 @@ class _OrariAperturaResultsScreenState
               ? Center(
                   child: Text(_errorMessage!,
                       style: TextStyle(color: Colors.red, fontSize: 18)))
-              : useNativeIosAccessibleViews
-                  ? NativeIosAccessibleList(
+              : useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
                       sections: [
-                        NativeIosListSection(
+                        AccessibleListSection(
                           rows: [
                             for (var i = 0; i < _results.length; i++)
-                              NativeIosListRow(
+                              AccessibleListRow(
                                 id: 'result_$i',
                                 title: _results[i].title,
                                 subtitle: [

@@ -5,7 +5,7 @@ import '../services/app_settings_service.dart';
 import '../services/document_library_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class BdCiechiDashboardScreen extends StatefulWidget {
   final String username;
@@ -30,7 +30,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   List<String> _fullCatalog = [];
   bool _isLoadingCatalog = true;
   String _quotaInfo = '';
-  String _nativeSearchQuery = '';
+  String _accessibleSearchQuery = '';
 
   @override
   void initState() {
@@ -200,13 +200,13 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Testo d\'assaggio'),
-        content: useNativeIosAccessibleViews
+        content: useSharedAccessibleViewModel
             ? SizedBox(
                 width: 520,
                 height: 420,
-                child: NativeIosAccessibleList(
-                  sections: [NativeIosListSection(rows: [
-                    NativeIosListRow(id: 'preview', kind: 'text', title: content),
+                child: UniversalAccessibleList(
+                  sections: [AccessibleListSection(rows: [
+                    AccessibleListRow(id: 'preview', kind: 'text', title: content),
                   ])],
                   onEvent: (_) {},
                 ),
@@ -327,15 +327,15 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
         title: const Text('Accesso alla Biblioteca Digitale completato.'),
       ),
       body: SafeArea(
-        child: useNativeIosAccessibleViews
-            ? NativeIosAccessibleList(
-                sections: [NativeIosListSection(rows: [
-                  NativeIosListRow(id: 'quota', kind: 'text', title: _quotaInfo),
-                  const NativeIosListRow(id: 'latest', title: 'Ultime novità'),
-                  const NativeIosListRow(id: 'search', title: 'Cerca nel catalogo...', kind: 'textField'),
-                  const NativeIosListRow(id: 'search_button', title: 'Cerca', kind: 'button'),
-                  NativeIosListRow(id: 'catalog', title: _isLoadingCatalog ? 'Caricamento catalogo in corso...' : 'Visualizza il catalogo completo', enabled: !_isLoadingCatalog),
-                  const NativeIosListRow(id: 'logout', title: 'Esci', kind: 'button'),
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: [
+                  AccessibleListRow(id: 'quota', kind: 'text', title: _quotaInfo),
+                  const AccessibleListRow(id: 'latest', title: 'Ultime novità'),
+                  const AccessibleListRow(id: 'search', title: 'Cerca nel catalogo...', kind: 'textField'),
+                  const AccessibleListRow(id: 'search_button', title: 'Cerca', kind: 'button'),
+                  AccessibleListRow(id: 'catalog', title: _isLoadingCatalog ? 'Caricamento catalogo in corso...' : 'Visualizza il catalogo completo', enabled: !_isLoadingCatalog),
+                  const AccessibleListRow(id: 'logout', title: 'Esci', kind: 'button'),
                 ])],
                 onEvent: (event) {
                   if (event.id == 'latest' && event.type == 'activate') {
@@ -350,9 +350,9 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
                       ),
                     );
                   } else if (event.id == 'search' && event.type == 'textChanged') {
-                    _nativeSearchQuery = event.value?.toString() ?? '';
+                    _accessibleSearchQuery = event.value?.toString() ?? '';
                   } else if (event.id == 'search_button' && event.type == 'activate') {
-                    _performSearch(_nativeSearchQuery.trim());
+                    _performSearch(_accessibleSearchQuery.trim());
                   } else if (event.id == 'catalog' && event.type == 'activate' && !_isLoadingCatalog) {
                     Navigator.push(
                       context,
@@ -546,11 +546,11 @@ class _BdCiechiListScreenState extends State<BdCiechiListScreen> {
                 )
               : _displayList.isEmpty
                   ? const Center(child: Text('Nessun risultato trovato.'))
-                  : useNativeIosAccessibleViews
-                      ? NativeIosAccessibleList(
-                          sections: [NativeIosListSection(rows: [
+                  : useSharedAccessibleViewModel
+                      ? UniversalAccessibleList(
+                          sections: [AccessibleListSection(rows: [
                             for (var i = 0; i < _displayList.length; i++)
-                              NativeIosListRow(id: 'item_$i', title: _displayList[i]),
+                              AccessibleListRow(id: 'item_$i', title: _displayList[i]),
                           ])],
                           onEvent: (event) {
                             if (event.type != 'activate' || event.id == null) return;

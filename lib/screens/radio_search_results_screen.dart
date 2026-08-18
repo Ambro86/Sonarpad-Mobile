@@ -5,7 +5,7 @@ import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart';
-import '../widgets/native_ios_accessible_view.dart'; // Per RadioTile
+import '../widgets/universal_accessible_view.dart'; // Per RadioTile
 import '../utils/status_message.dart';
 
 class RadioSearchResultsScreen extends StatefulWidget {
@@ -152,21 +152,21 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
                 ),
               ),
               Expanded(
-                child: useNativeIosAccessibleViews
-                    ? NativeIosAccessibleList(
-                        key: ValueKey('native-radio-results-$currentPage-${visibleResults.length}'),
+                child: useSharedAccessibleViewModel
+                    ? UniversalAccessibleList(
+                        key: ValueKey('shared-radio-results-$currentPage-${visibleResults.length}'),
                         sections: [
-                          NativeIosListSection(
+                          AccessibleListSection(
                             rows: visibleResults.map((station) {
                               final isFavorite = _favorites.any((item) => item.streamUrl == station.streamUrl);
-                              return NativeIosListRow(
+                              return AccessibleListRow(
                                 id: station.streamUrl,
                                 title: station.name,
                                 subtitle: station.detailsText,
                                 accessibilityLabel: station.accessibilityLabel,
                                 kind: 'action',
                                 actions: [
-                                  NativeIosCustomAction(
+                                  AccessibleCustomAction(
                                     id: 'favorite',
                                     label: isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
                                   ),

@@ -6,7 +6,7 @@ import '../services/raiplay_service.dart';
 import '../services/recent_searches_service.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class RaiPlayScreen extends StatefulWidget {
   final String? pathId;
@@ -170,23 +170,23 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
     }
   }
 
-  Widget _buildNativeIosBody() {
+  Widget _buildSharedAccessibleBody() {
     final items = _page?.items ?? const <RaiPlayItem>[];
-    final rows = <NativeIosListRow>[
+    final rows = <AccessibleListRow>[
       if (_isRoot)
-        NativeIosListRow(id: 'search_query', title: 'Cerca su RaiPlay', kind: 'textField', value: _searchController.text),
-      if (_isRoot) const NativeIosListRow(id: 'search', title: 'Cerca', kind: 'button'),
-      if (_isRoot) const NativeIosListRow(id: 'recent', title: 'Ricerche recenti'),
-      if (_error != null) NativeIosListRow(id: 'error', kind: 'text', title: _error!),
+        AccessibleListRow(id: 'search_query', title: 'Cerca su RaiPlay', kind: 'textField', value: _searchController.text),
+      if (_isRoot) const AccessibleListRow(id: 'search', title: 'Cerca', kind: 'button'),
+      if (_isRoot) const AccessibleListRow(id: 'recent', title: 'Ricerche recenti'),
+      if (_error != null) AccessibleListRow(id: 'error', kind: 'text', title: _error!),
       for (var i = 0; i < items.length; i++)
-        NativeIosListRow(
+        AccessibleListRow(
           id: 'item_$i',
           title: items[i].title,
           subtitle: items[i].description.isNotEmpty ? items[i].description : null,
         ),
     ];
-    return NativeIosAccessibleList(
-      sections: [NativeIosListSection(rows: rows)],
+    return UniversalAccessibleList(
+      sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.id == 'search_query' && event.type == 'textChanged') {
           _searchController.text = event.value?.toString() ?? '';
@@ -210,8 +210,8 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _error != null && _page == null
               ? Center(child: Text(_error!))
-              : useNativeIosAccessibleViews
-                  ? _buildNativeIosBody()
+              : useSharedAccessibleViewModel
+                  ? _buildSharedAccessibleBody()
                   : Column(
                   children: [
                     // Casella di ricerca: visibile solo nella root

@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/app_settings_service.dart';
 import '../services/bdciechi_service.dart';
 import 'bdciechi_dashboard_screen.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class BdCiechiLoginScreen extends StatefulWidget {
   const BdCiechiLoginScreen({super.key});
@@ -111,16 +111,16 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
                   child: const CircularProgressIndicator(),
                 ),
               )
-            : useNativeIosAccessibleViews
-                ? NativeIosAccessibleList(
-                    sections: [NativeIosListSection(rows: [
-                      const NativeIosListRow(id: 'title', kind: 'header', title: 'Biblioteca dei Ciechi'),
-                      if (_errorMessage != null) NativeIosListRow(id: 'error', kind: 'text', title: _errorMessage!),
-                      NativeIosListRow(id: 'username', title: 'Nome Utente', kind: 'textField', value: _usernameController.text),
-                      NativeIosListRow(id: 'password', title: 'Password', kind: 'textField', secure: true, value: _passwordController.text),
-                      const NativeIosListRow(id: 'login', title: 'Accedi', kind: 'button'),
-                      const NativeIosListRow(id: 'signup_salotto', title: 'Iscriviti a salottopertutti.it'),
-                      const NativeIosListRow(id: 'signup_bdciechi', title: 'Iscriviti a bdciechi.it'),
+            : useSharedAccessibleViewModel
+                ? UniversalAccessibleList(
+                    sections: [AccessibleListSection(rows: [
+                      const AccessibleListRow(id: 'title', kind: 'header', title: 'Biblioteca dei Ciechi'),
+                      if (_errorMessage != null) AccessibleListRow(id: 'error', kind: 'text', title: _errorMessage!),
+                      AccessibleListRow(id: 'username', title: 'Nome Utente', kind: 'textField', value: _usernameController.text),
+                      AccessibleListRow(id: 'password', title: 'Password', kind: 'textField', secure: true, value: _passwordController.text),
+                      const AccessibleListRow(id: 'login', title: 'Accedi', kind: 'button'),
+                      const AccessibleListRow(id: 'signup_salotto', title: 'Iscriviti a salottopertutti.it'),
+                      const AccessibleListRow(id: 'signup_bdciechi', title: 'Iscriviti a bdciechi.it'),
                     ])],
                     onEvent: (event) async {
                       if (event.id == 'username' && event.type == 'textChanged') {

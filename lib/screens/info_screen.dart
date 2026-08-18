@@ -8,7 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/changelog_service.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class InfoScreen extends StatelessWidget {
   const InfoScreen({super.key});
@@ -49,16 +49,16 @@ class InfoScreen extends StatelessWidget {
                   )
                 : '';
 
-            if (useNativeIosAccessibleViews) {
-              return NativeIosAccessibleList(
-                sections: [NativeIosListSection(rows: [
-                  NativeIosListRow(id: 'title', kind: 'header', title: l10n.appTitle),
-                  if (versionText.isNotEmpty) NativeIosListRow(id: 'version', kind: 'text', title: versionText),
-                  NativeIosListRow(id: 'donations', title: l10n.donations),
-                  NativeIosListRow(id: 'changelog', title: l10n.whatIsNew),
-                  NativeIosListRow(id: 'description', kind: 'text', title: l10n.infoDescription),
-                  NativeIosListRow(id: 'website', title: l10n.visitSonarpadSiteWithUrl('https://sonarpad.com')),
-                  NativeIosListRow(id: 'author', kind: 'text', title: l10n.infoAuthor),
+            if (useSharedAccessibleViewModel) {
+              return UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: [
+                  AccessibleListRow(id: 'title', kind: 'header', title: l10n.appTitle),
+                  if (versionText.isNotEmpty) AccessibleListRow(id: 'version', kind: 'text', title: versionText),
+                  AccessibleListRow(id: 'donations', title: l10n.donations),
+                  AccessibleListRow(id: 'changelog', title: l10n.whatIsNew),
+                  AccessibleListRow(id: 'description', kind: 'text', title: l10n.infoDescription),
+                  AccessibleListRow(id: 'website', title: l10n.visitSonarpadSiteWithUrl('https://sonarpad.com')),
+                  AccessibleListRow(id: 'author', kind: 'text', title: l10n.infoAuthor),
                 ])],
                 onEvent: (event) async {
                   if (event.type != 'activate') return;

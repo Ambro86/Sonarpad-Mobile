@@ -6,7 +6,7 @@ import '../services/audiodescription_service.dart';
 import 'audiodescription_film_screen.dart';
 import 'audiodescription_series_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class AudiodescriptionAllScreen extends StatefulWidget {
   const AudiodescriptionAllScreen({super.key});
@@ -104,13 +104,13 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
             )
           : _error.isNotEmpty
               ? Center(child: Text('${l10n.audiodescriptionError}: $_error'))
-              : useNativeIosAccessibleViews
-                  ? NativeIosAccessibleList(
+              : useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
                       sections: [
-                        NativeIosListSection(
+                        AccessibleListSection(
                           rows: [
-                            NativeIosListRow(id: 'film', title: l10n.audiodescriptionFilm),
-                            ..._filteredGroups.asMap().entries.map((entry) => NativeIosListRow(
+                            AccessibleListRow(id: 'film', title: l10n.audiodescriptionFilm),
+                            ..._filteredGroups.asMap().entries.map((entry) => AccessibleListRow(
                                   id: 'group_${entry.key}',
                                   title: entry.value.title,
                                 )),

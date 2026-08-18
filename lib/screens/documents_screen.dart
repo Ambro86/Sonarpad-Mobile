@@ -24,7 +24,7 @@ import '../services/librivox_service.dart';
 import '../utils/app_logger.dart';
 import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 import '../utils/document_unicode_normalizer.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 import 'document_editor_screen.dart';
 import 'document_reader_screen.dart';
 import 'dropbox_browser_screen.dart';
@@ -330,11 +330,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
               content: SizedBox(
                 width: double.maxFinite,
                 height: 360,
-                child: useNativeIosAccessibleViews
-                    ? NativeIosAccessibleList(
-                        sections: [NativeIosListSection(rows: [
+                child: useSharedAccessibleViewModel
+                    ? UniversalAccessibleList(
+                        sections: [AccessibleListSection(rows: [
                           for (final folder in folders)
-                            NativeIosListRow(
+                            AccessibleListRow(
                               id: folder.id,
                               title: folder.name,
                             ),
@@ -1022,7 +1022,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
 
-  Widget _buildNativeIosDocumentsList(
+  Widget _buildSharedAccessibleDocumentsList(
     List<DocumentItem> docs,
     AppLocalizations l10n,
   ) {
@@ -1030,11 +1030,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         '${dt.day.toString().padLeft(2, '0')}/'
         '${dt.month.toString().padLeft(2, '0')}/${dt.year}';
 
-    final rows = <NativeIosListRow>[];
+    final rows = <AccessibleListRow>[];
     for (var index = 0; index < docs.length; index++) {
       final doc = docs[index];
-      final actions = <NativeIosCustomAction>[
-        NativeIosCustomAction(
+      final actions = <AccessibleCustomAction>[
+        AccessibleCustomAction(
           id: 'remove',
           label: doc.isFolder ? l10n.removeFolder : l10n.removeDocument,
         ),
@@ -1042,17 +1042,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             doc.extension != 'archiveaudio' &&
             doc.extension != 'mp3' &&
             doc.extension != 'm4b')
-          NativeIosCustomAction(id: 'export', label: l10n.exportDocument),
+          AccessibleCustomAction(id: 'export', label: l10n.exportDocument),
         if (index > 0)
-          NativeIosCustomAction(id: 'move_up', label: l10n.moveUp),
+          AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
         if (index < docs.length - 1)
-          NativeIosCustomAction(id: 'move_down', label: l10n.moveDown),
-        NativeIosCustomAction(
+          AccessibleCustomAction(id: 'move_down', label: l10n.moveDown),
+        AccessibleCustomAction(
           id: 'move_position',
           label: l10n.moveToPosition,
         ),
       ];
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: doc.id,
         title: doc.displayName,
         subtitle: doc.isFolder
@@ -1068,9 +1068,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       ));
     }
 
-    return NativeIosAccessibleList(
-      key: ValueKey('native-documents-${widget.folderId ?? 'root'}-${docs.length}'),
-      sections: [NativeIosListSection(rows: rows)],
+    return UniversalAccessibleList(
+      key: ValueKey('shared-documents-${widget.folderId ?? 'root'}-${docs.length}'),
+      sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id;
         if (id == null) return;
@@ -1167,8 +1167,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 ? _ErrorState(message: _errorMessage!)
                 : docs.isEmpty
                     ? const _EmptyState()
-                    : useNativeIosAccessibleViews
-                        ? _buildNativeIosDocumentsList(docs, l10n)
+                    : useSharedAccessibleViewModel
+                        ? _buildSharedAccessibleDocumentsList(docs, l10n)
                         : ListView.separated(
                         key: PageStorageKey<String>(
                           'documents_${widget.folderId ?? 'root'}',

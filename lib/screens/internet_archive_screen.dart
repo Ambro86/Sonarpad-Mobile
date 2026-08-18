@@ -7,7 +7,7 @@ import '../services/document_library_service.dart';
 import '../services/internet_archive_service.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class InternetArchiveScreen extends StatefulWidget {
   final String? parentId;
@@ -63,22 +63,22 @@ class _InternetArchiveScreenState extends State<InternetArchiveScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.internetArchiveTitle)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(id: 'query', title: l10n.internetArchiveSearchLabel, kind: 'textField', value: _controller.text),
-                NativeIosListRow(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(id: 'query', title: l10n.internetArchiveSearchLabel, kind: 'textField', value: _controller.text),
+                AccessibleListRow(
                   id: 'source',
                   title: l10n.internetArchiveSourceLabel,
                   kind: 'picker',
                   value: _source.name,
                   options: [
-                    NativeIosOption(value: InternetArchiveSource.oldTimeRadio.name, label: l10n.internetArchiveOldTimeRadio),
-                    NativeIosOption(value: InternetArchiveSource.speeches.name, label: l10n.internetArchiveSpeeches),
-                    NativeIosOption(value: InternetArchiveSource.liveMusic.name, label: l10n.internetArchiveLiveMusic),
+                    AccessibleOption(value: InternetArchiveSource.oldTimeRadio.name, label: l10n.internetArchiveOldTimeRadio),
+                    AccessibleOption(value: InternetArchiveSource.speeches.name, label: l10n.internetArchiveSpeeches),
+                    AccessibleOption(value: InternetArchiveSource.liveMusic.name, label: l10n.internetArchiveLiveMusic),
                   ],
                 ),
-                NativeIosListRow(id: 'search', title: l10n.search, kind: 'button'),
+                AccessibleListRow(id: 'search', title: l10n.search, kind: 'button'),
               ])],
               onEvent: (event) {
                 if (event.id == 'query' && event.type == 'textChanged') {
@@ -238,12 +238,12 @@ class _InternetArchiveResultsScreenState
           if (_items.isEmpty) {
             return Center(child: Text(l10n.internetArchiveNoItemsFound));
           }
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
                 for (var i = 0; i < _items.length; i++)
-                  NativeIosListRow(id: 'item_$i', title: _items[i].title, subtitle: _items[i].creatorLabel),
-                if (_hasMore) NativeIosListRow(id: 'more', title: _loadingMore ? l10n.loading : l10n.loadMore, kind: 'button', enabled: !_loadingMore),
+                  AccessibleListRow(id: 'item_$i', title: _items[i].title, subtitle: _items[i].creatorLabel),
+                if (_hasMore) AccessibleListRow(id: 'more', title: _loadingMore ? l10n.loading : l10n.loadMore, kind: 'button', enabled: !_loadingMore),
               ])],
               onEvent: (event) {
                 if (event.type != 'activate' || event.id == null) return;
@@ -392,12 +392,12 @@ class _InternetArchiveItemScreenState
             );
           }
           if (snapshot.hasError) {
-            if (useNativeIosAccessibleViews) {
-              return NativeIosAccessibleList(
-                sections: [NativeIosListSection(rows: [
-                  NativeIosListRow(id: 'error', kind: 'text', title: l10n.error(snapshot.error!)),
-                  NativeIosListRow(id: 'retry', title: l10n.retry, kind: 'button'),
-                  if (widget.allowSave) NativeIosListRow(id: 'save', title: l10n.saveAudioInDocuments, kind: 'button', enabled: !_saving),
+            if (useSharedAccessibleViewModel) {
+              return UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: [
+                  AccessibleListRow(id: 'error', kind: 'text', title: l10n.error(snapshot.error!)),
+                  AccessibleListRow(id: 'retry', title: l10n.retry, kind: 'button'),
+                  if (widget.allowSave) AccessibleListRow(id: 'save', title: l10n.saveAudioInDocuments, kind: 'button', enabled: !_saving),
                 ])],
                 onEvent: (event) {
                   if (event.type != 'activate') return;
@@ -428,18 +428,18 @@ class _InternetArchiveItemScreenState
             );
           }
           final item = snapshot.data ?? widget.item;
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(id: 'title', kind: 'header', title: item.title),
-                if (item.creator.isNotEmpty) NativeIosListRow(id: 'creator', kind: 'text', title: item.creator),
-                if (item.description.isNotEmpty) NativeIosListRow(id: 'description', kind: 'text', title: item.description),
-                if (widget.allowSave) NativeIosListRow(id: 'save', title: _saving ? l10n.librivoxSaving : l10n.saveAudioInDocuments, kind: 'button', enabled: !_saving),
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(id: 'title', kind: 'header', title: item.title),
+                if (item.creator.isNotEmpty) AccessibleListRow(id: 'creator', kind: 'text', title: item.creator),
+                if (item.description.isNotEmpty) AccessibleListRow(id: 'description', kind: 'text', title: item.description),
+                if (widget.allowSave) AccessibleListRow(id: 'save', title: _saving ? l10n.librivoxSaving : l10n.saveAudioInDocuments, kind: 'button', enabled: !_saving),
                 if (item.tracks.isEmpty)
-                  NativeIosListRow(id: 'empty', kind: 'text', title: l10n.noAudioTracksAvailable)
+                  AccessibleListRow(id: 'empty', kind: 'text', title: l10n.noAudioTracksAvailable)
                 else
                   for (var i = 0; i < item.tracks.length; i++)
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'track_$i',
                       title: item.tracks[i].title,
                       subtitle: item.tracks[i].length.isEmpty ? item.tracks[i].format : '${item.tracks[i].format} - ${item.tracks[i].length}',

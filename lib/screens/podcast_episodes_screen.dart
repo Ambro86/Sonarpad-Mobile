@@ -7,7 +7,7 @@ import '../models/podcast.dart';
 import '../services/podcast_service.dart';
 import '../utils/list_timestamp_formatter.dart';
 import 'podcast_episode_player_screen.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 /// Schermata che mostra gli episodi di un singolo podcast iscritto.
 class PodcastEpisodesScreen extends StatefulWidget {
@@ -178,21 +178,21 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
             if (itemCount == 0) {
               return Center(child: Text(l10n.noAudioEpisodesFound));
             }
-            if (useNativeIosAccessibleViews) {
-              final rows = <NativeIosListRow>[
+            if (useSharedAccessibleViewModel) {
+              final rows = <AccessibleListRow>[
                 if (_playedAudioUrls.isNotEmpty)
-                  NativeIosListRow(
+                  AccessibleListRow(
                     id: '__played__',
                     title: l10n.podcastPlayedEpisodes,
                     kind: 'action',
                   ),
                 if (hasDateButton)
-                  NativeIosListRow(
+                  AccessibleListRow(
                     id: '__date__',
                     title: l10n.podcastSelectDate,
                     kind: 'action',
                   ),
-                ...unplayedEpisodes.map((episode) => NativeIosListRow(
+                ...unplayedEpisodes.map((episode) => AccessibleListRow(
                       id: episode.id ?? episode.audioUrl,
                       title: titleWithListTimestamp(
                         episode.title,
@@ -203,10 +203,10 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
                       kind: 'action',
                     )),
               ];
-              return NativeIosAccessibleList(
-                key: ValueKey('native-podcast-episodes-${widget.subscription.feedUrl}-${rows.length}'),
+              return UniversalAccessibleList(
+                key: ValueKey('shared-podcast-episodes-${widget.subscription.feedUrl}-${rows.length}'),
                 refreshEnabled: true,
-                sections: [NativeIosListSection(rows: rows)],
+                sections: [AccessibleListSection(rows: rows)],
                 onEvent: (event) async {
                   if (event.type == 'refresh') {
                     await _refresh();
@@ -342,12 +342,12 @@ class _PodcastDateSelectorScreen extends StatelessWidget {
       body: SafeArea(
         child: dateEpisodes.isEmpty
             ? Center(child: Text(l10n.podcastNoDatesAvailable))
-            : useNativeIosAccessibleViews
-                ? NativeIosAccessibleList(
+            : useSharedAccessibleViewModel
+                ? UniversalAccessibleList(
                     sections: [
-                      NativeIosListSection(
+                      AccessibleListSection(
                         rows: dateEpisodes.asMap().entries.map((entry) =>
-                          NativeIosListRow(
+                          AccessibleListRow(
                             id: entry.key.toString(),
                             title: formatter.format(entry.value.date),
                             kind: 'action',
@@ -461,14 +461,14 @@ class _PlayedEpisodesScreenState extends State<_PlayedEpisodesScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _episodes.isEmpty
               ? Center(child: Text(l10n.noAudioEpisodesFound))
-              : useNativeIosAccessibleViews
-                  ? NativeIosAccessibleList(
-                      key: ValueKey('native-played-podcast-${_episodes.length}'),
+              : useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
+                      key: ValueKey('shared-played-podcast-${_episodes.length}'),
                       sections: [
-                        NativeIosListSection(
+                        AccessibleListSection(
                           rows: _episodes.asMap().entries.map((entry) {
                             final episode = entry.value;
-                            return NativeIosListRow(
+                            return AccessibleListRow(
                               id: entry.key.toString(),
                               title: titleWithListTimestamp(
                                 episode.title,

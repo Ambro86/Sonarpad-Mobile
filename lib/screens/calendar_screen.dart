@@ -4,7 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../services/calendar/calendar_service.dart';
 import '../models/calendar_event.dart';
 import 'calendar_day_screen.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -19,9 +19,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   final int _todayIndex =
       10000; // Un numero grande per simulare uno scroll infinito indietro
   List<CalendarEvent> _allEvents = [];
-  final NativeIosListController _nativeListController = NativeIosListController();
-  static const int _nativePastDays = 2000;
-  static const int _nativeTotalDays = 4001;
+  final AccessibleListController _accessibleListController = AccessibleListController();
+  static const int _accessiblePastDays = 2000;
+  static const int _accessibleTotalDays = 4001;
 
   @override
   void initState() {
@@ -48,8 +48,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _scrollToToday() async {
-    if (useNativeIosAccessibleViews) {
-      await _nativeListController.scrollTo('day_$_nativePastDays');
+    if (useSharedAccessibleViewModel) {
+      await _accessibleListController.focusTo('day_$_accessiblePastDays');
       return;
     }
     _scrollController.animateTo(
@@ -59,7 +59,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  String _nativeDayTitle(DateTime date, DateTime baseToday, AppLocalizations l10n) {
+  String _accessibleDayTitle(DateTime date, DateTime baseToday, AppLocalizations l10n) {
     final dayFormat = DateFormat('EEEE d MMMM yyyy', l10n.localeName);
     final titleStr = dayFormat.format(date);
     final capTitle = titleStr[0].toUpperCase() + titleStr.substring(1);
@@ -70,7 +70,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return capTitle;
   }
 
-  String? _nativeDaySubtitle(DateTime date, AppLocalizations l10n) {
+  String? _accessibleDaySubtitle(DateTime date, AppLocalizations l10n) {
     final parts = <String>[];
     final holiday = _service.getHoliday(date, l10n.localeName);
     final saint = _service.getSaint(date, l10n.localeName);
@@ -100,22 +100,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
           )
         ],
       ),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              controller: _nativeListController,
-              sections: [NativeIosListSection(rows: [
-                for (var i = 0; i < _nativeTotalDays; i++)
-                  NativeIosListRow(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              controller: _accessibleListController,
+              initialFocusId: 'day_$_accessiblePastDays',
+              sections: [AccessibleListSection(rows: [
+                for (var i = 0; i < _accessibleTotalDays; i++)
+                  AccessibleListRow(
                     id: 'day_$i',
-                    title: _nativeDayTitle(baseToday.add(Duration(days: i - _nativePastDays)), baseToday, l10n),
-                    subtitle: _nativeDaySubtitle(baseToday.add(Duration(days: i - _nativePastDays)), l10n),
+                    title: _accessibleDayTitle(baseToday.add(Duration(days: i - _accessiblePastDays)), baseToday, l10n),
+                    subtitle: _accessibleDaySubtitle(baseToday.add(Duration(days: i - _accessiblePastDays)), l10n),
                   ),
               ])],
               onEvent: (event) async {
                 if (event.type != 'activate' || event.id == null) return;
                 final i = int.tryParse(event.id!.replaceFirst('day_', ''));
-                if (i == null || i < 0 || i >= _nativeTotalDays) return;
-                final date = baseToday.add(Duration(days: i - _nativePastDays));
+                if (i == null || i < 0 || i >= _accessibleTotalDays) return;
+                final date = baseToday.add(Duration(days: i - _accessiblePastDays));
                 await Navigator.of(context).push(MaterialPageRoute(builder: (_) => CalendarDayScreen(date: date)));
                 await _loadEvents();
               },

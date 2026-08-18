@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
 import 'cinema_detail_screen.dart';
@@ -72,15 +72,15 @@ class _CinemaUpcomingScreenState extends State<CinemaUpcomingScreen> {
               ? Center(child: Text('${l10n.cinemaError}\n$_error'))
               : _movies.isEmpty
                   ? Center(child: Text(l10n.cinemaNoMovies))
-                  : useNativeIosAccessibleViews
-                      ? NativeIosAccessibleList(
+                  : useSharedAccessibleViewModel
+                      ? UniversalAccessibleList(
                           sections: [
-                            NativeIosListSection(
+                            AccessibleListSection(
                               rows: _movies.asMap().entries.map((entry) {
                                 final formattedDate = _formatDate(entry.value.releaseDate, localeName);
                                 bool isFuture = false;
                                 try { isFuture = DateTime.parse(entry.value.releaseDate).isAfter(DateTime.now()); } catch (_) {}
-                                return NativeIosListRow(
+                                return AccessibleListRow(
                                   id: 'movie_${entry.key}',
                                   title: entry.value.title,
                                   subtitle: isFuture ? l10n.cinemaWillRelease(formattedDate) : l10n.cinemaReleased(formattedDate),

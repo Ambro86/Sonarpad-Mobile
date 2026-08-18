@@ -5,7 +5,7 @@ import '../services/document_library_service.dart';
 import '../services/poetrydb_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class PoetryDbScreen extends StatefulWidget {
   final String? parentId;
@@ -47,21 +47,21 @@ class _PoetryDbScreenState extends State<PoetryDbScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('PoetryDB')),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(id: 'query', title: l10n.poetryDbSearchLabel, kind: 'textField', value: _controller.text),
-                NativeIosListRow(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(id: 'query', title: l10n.poetryDbSearchLabel, kind: 'textField', value: _controller.text),
+                AccessibleListRow(
                   id: 'field',
                   title: l10n.poetryDbSearchBy,
                   kind: 'picker',
                   value: _field.name,
                   options: [
-                    NativeIosOption(value: PoetryDbSearchField.title.name, label: l10n.poetryDbSearchByTitle),
-                    NativeIosOption(value: PoetryDbSearchField.author.name, label: l10n.poetryDbSearchByAuthor),
+                    AccessibleOption(value: PoetryDbSearchField.title.name, label: l10n.poetryDbSearchByTitle),
+                    AccessibleOption(value: PoetryDbSearchField.author.name, label: l10n.poetryDbSearchByAuthor),
                   ],
                 ),
-                NativeIosListRow(id: 'search', title: l10n.search, kind: 'button'),
+                AccessibleListRow(id: 'search', title: l10n.search, kind: 'button'),
               ])],
               onEvent: (event) {
                 if (event.id == 'query' && event.type == 'textChanged') {
@@ -184,11 +184,11 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
           if (poems.isEmpty) {
             return Center(child: Text(l10n.poetryDbNoPoemsFound));
           }
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
                 for (var i = 0; i < poems.length; i++)
-                  NativeIosListRow(
+                  AccessibleListRow(
                     id: 'poem_$i',
                     title: poems[i].title,
                     subtitle: poems[i].lineCount > 0

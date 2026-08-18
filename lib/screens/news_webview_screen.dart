@@ -19,7 +19,7 @@ import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
   const NewsWebViewScreen(
@@ -1747,15 +1747,15 @@ class _ReaderArticleView extends StatelessWidget {
     final paragraphs =
         _dropLeadingDuplicateTitle(title, readerParagraphs(text));
 
-    if (useNativeIosAccessibleViews) {
-      return NativeIosAccessibleList(
+    if (useSharedAccessibleViewModel) {
+      return UniversalAccessibleList(
         sections: [
-          NativeIosListSection(
+          AccessibleListSection(
             header: title,
             rows: paragraphs
                 .asMap()
                 .entries
-                .map((entry) => NativeIosListRow(
+                .map((entry) => AccessibleListRow(
                       id: 'paragraph_${entry.key}',
                       title: entry.value,
                       kind: 'text',

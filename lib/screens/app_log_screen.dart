@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class AppLogScreen extends StatefulWidget {
   const AppLogScreen({super.key});
@@ -87,15 +87,15 @@ class _AppLogScreenState extends State<AppLogScreen> {
       body: _loading
           ? Center(
               child: CircularProgressIndicator(semanticsLabel: l10n.loading))
-          : useNativeIosAccessibleViews
-              ? NativeIosAccessibleList(
+          : useSharedAccessibleViewModel
+              ? UniversalAccessibleList(
                   sections: [
-                    NativeIosListSection(
+                    AccessibleListSection(
                       header: l10n.systemLog,
                       rows: _logLines
                           .asMap()
                           .entries
-                          .map((entry) => NativeIosListRow(
+                          .map((entry) => AccessibleListRow(
                                 id: 'log_${entry.key}',
                                 title: entry.value,
                                 kind: 'text',

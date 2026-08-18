@@ -146,6 +146,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var sections: [SonarpadNativeSection] = []
   private var refreshControl: UIRefreshControl?
   private var refreshEnabled = false
+  private var lastInitialFocusId: String?
 
   init(frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, messenger: FlutterBinaryMessenger) {
     rootView = UIView(frame: frame)
@@ -181,9 +182,13 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         self.refreshControl?.endRefreshing()
         result(nil)
       case "scrollTo":
-        if let map = call.arguments as? [String: Any], let id = map["id"] as? String,
-           let indexPath = self.indexPath(forRowId: id) {
-          self.tableView.scrollToRow(at: indexPath, at: .middle, animated: map["animated"] as? Bool ?? true)
+        if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
+          self.scrollToRow(id: id, animated: map["animated"] as? Bool ?? true)
+        }
+        result(nil)
+      case "focusTo":
+        if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
+          self.focusRow(id: id, animated: map["animated"] as? Bool ?? false)
         }
         result(nil)
       default:
@@ -213,6 +218,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
     }
     tableView.reloadData()
+
+    let requestedInitialFocusId = map["initialFocusId"] as? String
+    if requestedInitialFocusId != lastInitialFocusId {
+      lastInitialFocusId = requestedInitialFocusId
+      if let id = requestedInitialFocusId, !id.isEmpty {
+        focusRow(id: id, animated: false)
+      }
+    }
   }
 
   @objc private func refreshRequested() {
@@ -411,6 +424,29 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     controller.present(nav, animated: true)
   }
 
+
+  private func scrollToRow(id: String, animated: Bool) {
+    guard let indexPath = indexPath(forRowId: id) else { return }
+    tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
+  }
+
+  private func focusRow(id: String, animated: Bool, attempt: Int = 0) {
+    guard let indexPath = indexPath(forRowId: id) else { return }
+    tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
+    tableView.layoutIfNeeded()
+
+    let delay: TimeInterval = animated ? 0.45 : 0.05
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+      guard let self = self else { return }
+      self.tableView.layoutIfNeeded()
+      if self.rootView.window != nil, let cell = self.tableView.cellForRow(at: indexPath) {
+        UIAccessibility.post(notification: .screenChanged, argument: cell)
+      } else if attempt < 20 {
+        self.focusRow(id: id, animated: false, attempt: attempt + 1)
+      }
+    }
+  }
+
   private func indexPath(forRowId id: String) -> IndexPath? {
     for (sectionIndex, section) in sections.enumerated() {
       if let rowIndex = section.rows.firstIndex(where: { $0.id == id }) {
@@ -450,9 +486,17 @@ private final class SonarpadNativePickerController: UITableViewController {
     let option = options[indexPath.row]
     cell.textLabel?.text = option.label
     cell.textLabel?.numberOfLines = 0
+    cell.isAccessibilityElement = true
+    cell.textLabel?.isAccessibilityElement = false
+    cell.accessibilityLabel = option.label
+    cell.accessibilityValue = nil
     let isSelected = String(describing: option.value) == selectedValue
     cell.accessoryType = isSelected ? .checkmark : .none
-    if isSelected { cell.accessibilityTraits.insert(.selected) }
+    if isSelected {
+      cell.accessibilityTraits.insert(.selected)
+    } else {
+      cell.accessibilityTraits.remove(.selected)
+    }
     return cell
   }
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

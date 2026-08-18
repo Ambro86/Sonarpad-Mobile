@@ -16,7 +16,7 @@ import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
 import '../widgets/letter_jump_option_picker_screen.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class SettingsScreen extends StatefulWidget {
   final ValueChanged<SonarpadThemeMode>? onThemeModeChanged;
@@ -938,7 +938,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
 
-  Widget _buildNativeIosSettings(
+  Widget _buildSharedAccessibleSettings(
     AppLocalizations l10n,
     bool showItalianOnlySettings,
   ) {
@@ -959,11 +959,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         .where((v) => v['locale'] == _systemTtsLanguage)
         .toList();
 
-    final sections = <NativeIosListSection>[
-      NativeIosListSection(
-        header: l10n.settings,
+    final sections = <AccessibleListSection>[
+      AccessibleListSection(
         rows: [
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'app_language',
             title: l10n.appLanguage,
             kind: 'picker',
@@ -978,16 +977,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _ => l10n.italian,
             },
             options: [
-              NativeIosOption(value: 'it', label: l10n.italian),
-              NativeIosOption(value: 'en', label: l10n.english),
-              NativeIosOption(value: 'fr', label: l10n.french),
-              NativeIosOption(value: 'es', label: l10n.spanish),
-              NativeIosOption(value: 'pt', label: l10n.radioLanguagePt),
-              NativeIosOption(value: 'pl', label: l10n.radioLanguagePl),
-              NativeIosOption(value: 'cs', label: l10n.radioLanguageCs),
+              AccessibleOption(value: 'it', label: l10n.italian),
+              AccessibleOption(value: 'en', label: l10n.english),
+              AccessibleOption(value: 'fr', label: l10n.french),
+              AccessibleOption(value: 'es', label: l10n.spanish),
+              AccessibleOption(value: 'pt', label: l10n.radioLanguagePt),
+              AccessibleOption(value: 'pl', label: l10n.radioLanguagePl),
+              AccessibleOption(value: 'cs', label: l10n.radioLanguageCs),
             ],
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'theme',
             title: l10n.settingsTheme,
             kind: 'picker',
@@ -998,12 +997,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _ => l10n.settingsThemeSystem,
             },
             options: [
-              NativeIosOption(value: 'system', label: l10n.settingsThemeSystem),
-              NativeIosOption(value: 'light', label: l10n.settingsThemeLight),
-              NativeIosOption(value: 'dark', label: l10n.settingsThemeDark),
+              AccessibleOption(value: 'system', label: l10n.settingsThemeSystem),
+              AccessibleOption(value: 'light', label: l10n.settingsThemeLight),
+              AccessibleOption(value: 'dark', label: l10n.settingsThemeDark),
             ],
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'temperature_unit',
             title: l10n.settingsWeatherTemperatureUnit,
             kind: 'picker',
@@ -1012,16 +1011,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ? l10n.weatherTemperatureCelsius
                 : l10n.weatherTemperatureFahrenheit,
             options: [
-              NativeIosOption(value: 'celsius', label: l10n.weatherTemperatureCelsius),
-              NativeIosOption(value: 'fahrenheit', label: l10n.weatherTemperatureFahrenheit),
+              AccessibleOption(value: 'celsius', label: l10n.weatherTemperatureCelsius),
+              AccessibleOption(value: 'fahrenheit', label: l10n.weatherTemperatureFahrenheit),
             ],
           ),
         ],
       ),
-      NativeIosListSection(
-        header: l10n.settingsReadingEngine,
+      AccessibleListSection(
         rows: [
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'tts_engine',
             title: l10n.settingsReadingEngine,
             kind: 'picker',
@@ -1030,22 +1028,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ? l10n.settingsEdgeTtsQuality
                 : l10n.settingsSystemVoices,
             options: [
-              NativeIosOption(value: 'edge', label: l10n.settingsEdgeTtsQuality),
-              NativeIosOption(value: 'system', label: l10n.settingsSystemVoices),
+              AccessibleOption(value: 'edge', label: l10n.settingsEdgeTtsQuality),
+              AccessibleOption(value: 'system', label: l10n.settingsSystemVoices),
             ],
           ),
           if (_ttsEngine == 'edge') ...[
-            NativeIosListRow(
+            AccessibleListRow(
               id: 'edge_language',
               title: l10n.ttsVoiceLanguage,
               kind: 'picker',
               value: _languageCode,
               valueLabel: _selectedEdgeLanguage?.label ?? _languageCode,
               options: edgeLanguages
-                  .map((e) => NativeIosOption(value: e.code, label: e.label))
+                  .map((e) => AccessibleOption(value: e.code, label: e.label))
                   .toList(),
             ),
-            NativeIosListRow(
+            AccessibleListRow(
               id: 'edge_voice',
               title: l10n.ttsVoice,
               kind: 'picker',
@@ -1054,7 +1052,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ? _voice
                   : '${_selectedEdgeVoice!.label} (${_selectedEdgeVoice!.voice})',
               options: edgeVoices
-                  .map((e) => NativeIosOption(
+                  .map((e) => AccessibleOption(
                         value: e.voice,
                         label: '${e.label} (${e.voice})',
                       ))
@@ -1062,32 +1060,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ] else ...[
             if (systemLocales.isNotEmpty)
-              NativeIosListRow(
+              AccessibleListRow(
                 id: 'system_language',
                 title: l10n.settingsSystemLanguage,
                 kind: 'picker',
                 value: _systemTtsLanguage,
                 valueLabel: _systemTtsLanguage,
                 options: systemLocales
-                    .map((e) => NativeIosOption(value: e, label: e))
+                    .map((e) => AccessibleOption(value: e, label: e))
                     .toList(),
               ),
-            NativeIosListRow(
+            AccessibleListRow(
               id: 'system_voice',
               title: l10n.settingsSystemVoice,
               kind: 'picker',
               value: _systemTtsVoice ?? '',
               valueLabel: _systemTtsVoice ?? l10n.settingsDefaultVoice,
               options: [
-                NativeIosOption(value: '', label: l10n.settingsDefaultVoice),
-                ...systemVoices.map((e) => NativeIosOption(
+                AccessibleOption(value: '', label: l10n.settingsDefaultVoice),
+                ...systemVoices.map((e) => AccessibleOption(
                       value: e['name'] ?? '',
                       label: e['name'] ?? '',
                     )),
               ],
             ),
           ],
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'tts_speed',
             title: l10n.settingsVoiceSpeedLabel,
             kind: 'slider',
@@ -1098,7 +1096,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliderMax: 2.0,
             sliderStep: 0.1,
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'tts_pitch',
             title: l10n.settingsVoicePitchLabel,
             kind: 'slider',
@@ -1109,7 +1107,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliderMax: 2.0,
             sliderStep: 0.1,
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'test_voice',
             title: _testingVoice ? l10n.settingsTestingVoice : l10n.settingsTestVoice,
             kind: 'button',
@@ -1117,10 +1115,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
-      NativeIosListSection(
-        header: l10n.documents,
+      AccessibleListSection(
         rows: [
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'auto_bookmark',
             title: l10n.settingsAutoBookmark,
             subtitle: l10n.settingsAutoBookmarkHint,
@@ -1128,7 +1125,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             toggleValue: _autoBookmark,
             valueLabel: toggleLabel(_autoBookmark),
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'epub_footnotes',
             title: l10n.settingsIncludeFootnotesInText,
             subtitle: l10n.settingsIncludeFootnotesInTextHint,
@@ -1136,7 +1133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             toggleValue: _includeEpubFootnotesInText,
             valueLabel: toggleLabel(_includeEpubFootnotesInText),
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'multiple_bookmarks',
             title: _multipleDocumentBookmarksTitle,
             subtitle: _multipleDocumentBookmarksHint,
@@ -1144,7 +1141,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             toggleValue: _multipleDocumentBookmarks,
             valueLabel: toggleLabel(_multipleDocumentBookmarks),
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'reading_sleep_timer',
             title: l10n.settingsReadingSleepTimer,
             subtitle: l10n.settingsReadingSleepTimerHint,
@@ -1156,7 +1153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliderMax: (AppSettingsService.documentReadingSleepTimerMinutesOptions.length - 1).toDouble(),
             sliderStep: 1,
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'document_slider_step',
             title: l10n.settingsDocumentSliderStep,
             subtitle: l10n.settingsDocumentSliderStepHint,
@@ -1168,7 +1165,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliderMax: (AppSettingsService.documentSliderStepPercentOptions.length - 1).toDouble(),
             sliderStep: 1,
           ),
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'video_portrait',
             title: l10n.settingsVideoLandscapeFullscreen,
             subtitle: l10n.settingsVideoLandscapeFullscreenHint,
@@ -1178,11 +1175,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
-      NativeIosListSection(
-        header: l10n.settingsPodcastCacheTitle,
+      AccessibleListSection(
         footer: '${l10n.settingsPodcastCacheHint} ${l10n.settingsPodcastCacheSize(_formatBytes(_podcastCacheBytes))}',
         rows: [
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'clear_podcast_cache',
             title: _clearingPodcastCache ? l10n.loading : l10n.clearPodcastCache,
             kind: 'button',
@@ -1191,9 +1187,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
       if (showItalianOnlySettings)
-        NativeIosListSection(
+        AccessibleListSection(
           rows: [
-            NativeIosListRow(
+            AccessibleListRow(
               id: 'home_grouping',
               title: l10n.settingsHomeGrouping,
               subtitle: l10n.settingsHomeGroupingHint,
@@ -1201,7 +1197,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               toggleValue: _homeGroupingEnabled,
               valueLabel: toggleLabel(_homeGroupingEnabled),
             ),
-            NativeIosListRow(
+            AccessibleListRow(
               id: 'seek_step',
               title: l10n.settingsSeekStep,
               kind: 'slider',
@@ -1212,7 +1208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               sliderMax: 300,
               sliderStep: 10,
             ),
-            NativeIosListRow(
+            AccessibleListRow(
               id: 'tv_secret_code',
               title: l10n.settingsSecretCode,
               kind: 'textField',
@@ -1220,25 +1216,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
               placeholder: l10n.settingsSecretCode,
               secure: true,
             ),
-            NativeIosListRow(id: 'paste_secret_code', title: l10n.settingsPasteCode, kind: 'button'),
-            NativeIosListRow(id: 'request_secret_code', title: l10n.settingsRequestCode, kind: 'button'),
+            AccessibleListRow(id: 'paste_secret_code', title: l10n.settingsPasteCode, kind: 'button'),
+            AccessibleListRow(id: 'request_secret_code', title: l10n.settingsRequestCode, kind: 'button'),
           ],
         ),
-      NativeIosListSection(
+      AccessibleListSection(
         rows: [
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'save',
             title: _isSaving ? l10n.settingsVerifyCodeAndSave : l10n.saveSettings,
             kind: 'button',
             enabled: !_isSaving,
           ),
-          NativeIosListRow(id: 'view_log', title: l10n.settingsViewSysLog, kind: 'button'),
+          AccessibleListRow(id: 'view_log', title: l10n.settingsViewSysLog, kind: 'button'),
         ],
       ),
     ];
 
-    return NativeIosAccessibleList(
-      key: const ValueKey('settings-native-ios-list'),
+    return UniversalAccessibleList(
+      key: const ValueKey('settings-shared-accessible-list'),
       sections: sections,
       onEvent: (event) async {
         final id = event.id;
@@ -1339,8 +1335,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: _loading
             ? Center(
                 child: CircularProgressIndicator(semanticsLabel: l10n.loading))
-            : useNativeIosAccessibleViews
-                ? _buildNativeIosSettings(l10n, showItalianOnlySettings)
+            : useSharedAccessibleViewModel
+                ? _buildSharedAccessibleSettings(l10n, showItalianOnlySettings)
                 : ListView(
                   key: const PageStorageKey<String>('settings-list'),
                   padding: const EdgeInsets.all(16),

@@ -7,7 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../services/dropbox_service.dart';
 import '../services/document_library_service.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class DropboxBrowserScreen extends StatefulWidget {
   final DocumentLibraryService documentService;
@@ -276,20 +276,20 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       );
     }
 
-    if (useNativeIosAccessibleViews) {
-      final rows = <NativeIosListRow>[
-        NativeIosListRow(
+    if (useSharedAccessibleViewModel) {
+      final rows = <AccessibleListRow>[
+        AccessibleListRow(
           id: 'search',
           title: l10n.search,
           kind: 'textField',
           value: _searchController.text,
         ),
         if (_searchQuery.isNotEmpty)
-          NativeIosListRow(id: 'clear_search', title: 'Cancella ricerca', kind: 'button'),
+          AccessibleListRow(id: 'clear_search', title: 'Cancella ricerca', kind: 'button'),
         if (_currentPath.isNotEmpty)
-          NativeIosListRow(id: 'back', title: l10n.goBack),
+          AccessibleListRow(id: 'back', title: l10n.goBack),
         if (visibleEntries.isEmpty)
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'empty',
             kind: 'text',
             title: _searchQuery.trim().isEmpty
@@ -298,14 +298,14 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           )
         else
           for (var i = 0; i < visibleEntries.length; i++)
-            NativeIosListRow(
+            AccessibleListRow(
               id: 'entry_$i',
               title: visibleEntries[i]['name'] as String,
               subtitle: visibleEntries[i]['.tag'] == 'folder' ? 'Cartella' : 'File',
             ),
       ];
-      return NativeIosAccessibleList(
-        sections: [NativeIosListSection(rows: rows)],
+      return UniversalAccessibleList(
+        sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
           if (event.id == 'search' && event.type == 'textChanged') {
             final value = event.value?.toString() ?? '';

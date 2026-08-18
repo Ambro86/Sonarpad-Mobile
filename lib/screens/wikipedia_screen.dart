@@ -7,7 +7,7 @@ import '../services/recent_searches_service.dart';
 import 'document_reader_screen.dart';
 import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class WikipediaScreen extends StatefulWidget {
   const WikipediaScreen({super.key});
@@ -121,20 +121,20 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.importFromWikipedia)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              key: ValueKey('native-wikipedia-main-${_language ?? 'it'}'),
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              key: ValueKey('shared-wikipedia-main-${_language ?? 'it'}'),
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: [
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'query',
                       title: l10n.searchWikipedia,
                       kind: 'textField',
                       value: _controller.text,
                       placeholder: l10n.searchWikipedia,
                     ),
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'language',
                       title: l10n.wikipediaLanguage,
                       kind: 'picker',
@@ -146,14 +146,14 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
                           )
                           .$2,
                       options: _languages
-                          .map((entry) => NativeIosOption(
+                          .map((entry) => AccessibleOption(
                                 value: entry.$1,
                                 label: '${entry.$2} (${entry.$1})',
                               ))
                           .toList(),
                     ),
-                    NativeIosListRow(id: 'recent', title: l10n.recentArticles, kind: 'action'),
-                    NativeIosListRow(id: 'search', title: l10n.search, kind: 'button'),
+                    AccessibleListRow(id: 'recent', title: l10n.recentArticles, kind: 'action'),
+                    AccessibleListRow(id: 'search', title: l10n.search, kind: 'button'),
                   ],
                 ),
               ],
@@ -294,13 +294,13 @@ class _WikipediaResultsScreenState extends State<_WikipediaResultsScreen> {
           if (results.isEmpty) {
             return Center(child: Text(l10n.noWikipediaResults));
           }
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
-              key: ValueKey('native-wikipedia-results-${results.length}'),
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
+              key: ValueKey('shared-wikipedia-results-${results.length}'),
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: results.asMap().entries.map((entry) =>
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: entry.key.toString(),
                       title: entry.value.title,
                       kind: 'action',
@@ -385,20 +385,20 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
     final article = _article;
     return Scaffold(
       appBar: AppBar(title: Text(widget.result.title)),
-      body: useNativeIosAccessibleViews && !_importing && _importError == null && article != null
-          ? NativeIosAccessibleList(
-              key: ValueKey('native-wikipedia-article-${article.sections.length}'),
+      body: useSharedAccessibleViewModel && !_importing && _importError == null && article != null
+          ? UniversalAccessibleList(
+              key: ValueKey('shared-wikipedia-article-${article.sections.length}'),
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   header: article.title,
                   rows: [
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: '0',
                       title: l10n.wikipediaImportWholeArticle,
                       kind: 'action',
                     ),
                     ...article.sections.asMap().entries.map((entry) =>
-                      NativeIosListRow(
+                      AccessibleListRow(
                         id: '${entry.key + 1}',
                         title: _sectionLabel(entry.value),
                         kind: 'action',

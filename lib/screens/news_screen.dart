@@ -17,7 +17,7 @@ import 'news_webview_screen.dart';
 import '../utils/status_message.dart';
 import '../utils/list_timestamp_formatter.dart';
 import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class NewsScreen extends StatefulWidget {
   final String? folderId;
@@ -434,32 +434,32 @@ class _AddCommunityNewsSourceScreenState
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.newsAddCommunitySource)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(
                   id: 'instructions',
                   kind: 'text',
                   title: l10n.newsAddCommunityInstructions,
                 ),
-                NativeIosListRow(
+                AccessibleListRow(
                   id: 'name',
                   kind: 'textField',
                   title: l10n.newsCommunitySourceName,
                   value: _nameController.text,
                 ),
-                NativeIosListRow(
+                AccessibleListRow(
                   id: 'url',
                   kind: 'textField',
                   title: l10n.newsCommunitySourceUrl,
                   value: _urlController.text,
                 ),
-                NativeIosListRow(
+                AccessibleListRow(
                   id: 'language',
                   kind: 'text',
                   title: l10n.newsCommunitySelectedLanguage(widget.language.label(l10n)),
                 ),
-                NativeIosListRow(
+                AccessibleListRow(
                   id: 'submit',
                   kind: 'button',
                   title: _submitting ? l10n.newsCommunityChecking : l10n.newsCommunitySubmit,
@@ -612,11 +612,11 @@ class _CommunityNewsSourcesScreenState
           if (sources.isEmpty) {
             return Center(child: Text(l10n.newsCommunitySourcesEmpty));
           }
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
                 for (var index = 0; index < sources.length; index++)
-                  NativeIosListRow(
+                  AccessibleListRow(
                     id: 'source_$index',
                     title: sources[index].name,
                     subtitle: sources[index].uri.toString(),
@@ -819,23 +819,23 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
           if (showCategories &&
               widget.source.categories != null &&
               widget.source.categories!.isNotEmpty)
-            useNativeIosAccessibleViews
+            useSharedAccessibleViewModel
                 ? SizedBox(
                     height: 72,
-                    child: NativeIosAccessibleList(
-                      sections: [NativeIosListSection(rows: [
-                        NativeIosListRow(
+                    child: UniversalAccessibleList(
+                      sections: [AccessibleListSection(rows: [
+                        AccessibleListRow(
                           id: 'category',
                           title: AppLocalizations.of(context).newsCategoryTop,
                           kind: 'picker',
                           value: _currentUri.toString(),
                           options: [
-                            NativeIosOption(
+                            AccessibleOption(
                               value: widget.source.uri.toString(),
                               label: AppLocalizations.of(context).newsCategoryTop,
                             ),
                             for (final cat in widget.source.categories!)
-                              NativeIosOption(
+                              AccessibleOption(
                                 value: cat.uri.toString(),
                                 label: cat.name,
                               ),
@@ -898,19 +898,19 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                     ),
                   ),
           if (isLocalCategory)
-            useNativeIosAccessibleViews
+            useSharedAccessibleViewModel
                 ? SizedBox(
                     height: 132,
-                    child: NativeIosAccessibleList(
-                      sections: [NativeIosListSection(rows: [
-                        NativeIosListRow(
+                    child: UniversalAccessibleList(
+                      sections: [AccessibleListSection(rows: [
+                        AccessibleListRow(
                           id: 'local_city',
                           kind: 'textField',
                           title: AppLocalizations.of(context).newsLocalCityLabel,
                           placeholder: AppLocalizations.of(context).newsLocalCityHint,
                           value: _localCityController.text,
                         ),
-                        NativeIosListRow(
+                        AccessibleListRow(
                           id: 'local_update',
                           kind: 'button',
                           title: AppLocalizations.of(context).update,
@@ -1015,11 +1015,11 @@ class _NewsSourceList extends StatelessWidget {
         content: SizedBox(
           width: double.maxFinite,
           height: 360,
-          child: useNativeIosAccessibleViews
-              ? NativeIosAccessibleList(
-                  sections: [NativeIosListSection(rows: [
+          child: useSharedAccessibleViewModel
+              ? UniversalAccessibleList(
+                  sections: [AccessibleListSection(rows: [
                     for (final folder in folders)
-                      NativeIosListRow(id: folder.id, title: folder.name),
+                      AccessibleListRow(id: folder.id, title: folder.name),
                   ])],
                   onEvent: (event) {
                     if (event.type == 'activate' && event.id != null) {
@@ -1134,30 +1134,30 @@ class _NewsSourceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    if (useNativeIosAccessibleViews) {
-      final rows = <NativeIosListRow>[];
+    if (useSharedAccessibleViewModel) {
+      final rows = <AccessibleListRow>[];
       for (var index = 0; index < sources.length; index++) {
         final source = sources[index];
-        final actions = <NativeIosCustomAction>[
+        final actions = <AccessibleCustomAction>[
           if (onCreateFolder != null)
-            NativeIosCustomAction(id: 'create_folder', label: l10n.createNewFolder),
+            AccessibleCustomAction(id: 'create_folder', label: l10n.createNewFolder),
           if (index > 0)
-            NativeIosCustomAction(id: 'move_up', label: l10n.moveUp),
+            AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
           if (index < sources.length - 1)
-            NativeIosCustomAction(id: 'move_down', label: l10n.moveDown),
-          NativeIosCustomAction(id: 'move_position', label: l10n.moveToPosition),
+            AccessibleCustomAction(id: 'move_down', label: l10n.moveDown),
+          AccessibleCustomAction(id: 'move_position', label: l10n.moveToPosition),
           if (!source.isFolder && currentFolderId != null)
-            NativeIosCustomAction(id: 'move_out', label: l10n.outOfFolder),
+            AccessibleCustomAction(id: 'move_out', label: l10n.outOfFolder),
           if (!source.isFolder)
-            NativeIosCustomAction(id: 'move_folder', label: l10n.moveToAnotherFolder),
+            AccessibleCustomAction(id: 'move_folder', label: l10n.moveToAnotherFolder),
           if (!source.isFolder)
-            NativeIosCustomAction(id: 'hide', label: l10n.hide),
+            AccessibleCustomAction(id: 'hide', label: l10n.hide),
           if (source.isFolder)
-            NativeIosCustomAction(id: 'delete', label: l10n.removeFolder),
+            AccessibleCustomAction(id: 'delete', label: l10n.removeFolder),
           if (source.isCustom && !source.isFolder)
-            NativeIosCustomAction(id: 'delete', label: l10n.deleteNewsSource),
+            AccessibleCustomAction(id: 'delete', label: l10n.deleteNewsSource),
         ];
-        rows.add(NativeIosListRow(
+        rows.add(AccessibleListRow(
           id: _newsSourceStableId(source),
           title: source.name,
           accessibilityLabel: source.isFolder
@@ -1168,9 +1168,9 @@ class _NewsSourceList extends StatelessWidget {
           actions: actions,
         ));
       }
-      return NativeIosAccessibleList(
-        key: ValueKey('native-news-sources-${language.code}-${currentFolderId ?? 'root'}-${sources.length}'),
-        sections: [NativeIosListSection(rows: rows)],
+      return UniversalAccessibleList(
+        key: ValueKey('shared-news-sources-${language.code}-${currentFolderId ?? 'root'}-${sources.length}'),
+        sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
           final id = event.id;
           if (id == null) return;
@@ -1561,10 +1561,10 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           return Center(child: Text(l10n.noNewsFound));
         }
 
-        if (useNativeIosAccessibleViews) {
-          final rows = <NativeIosListRow>[
+        if (useSharedAccessibleViewModel) {
+          final rows = <AccessibleListRow>[
             if (_readUris.isNotEmpty)
-              NativeIosListRow(
+              AccessibleListRow(
                 id: '__read_articles__',
                 title: l10n.newsReadArticles,
                 kind: 'action',
@@ -1579,7 +1579,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
               final subtitleText = isSummaryDuplicate
                   ? article.source
                   : '${article.source}. ${article.summary}';
-              return NativeIosListRow(
+              return AccessibleListRow(
                 id: article.id,
                 title: titleWithListTimestamp(
                   article.title,
@@ -1591,9 +1591,9 @@ class _NewsArticleListState extends State<_NewsArticleList> {
               );
             }),
           ];
-          return NativeIosAccessibleList(
-            key: ValueKey('native-news-articles-${widget.sourceName}-${rows.length}'),
-            sections: [NativeIosListSection(rows: rows)],
+          return UniversalAccessibleList(
+            key: ValueKey('shared-news-articles-${widget.sourceName}-${rows.length}'),
+            sections: [AccessibleListSection(rows: rows)],
             onEvent: (event) async {
               if (event.type != 'activate' || event.id == null) return;
               if (event.id == '__read_articles__') {
@@ -1728,7 +1728,7 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
   }
 
 
-  Widget _buildNativeIosReadArticles(AppLocalizations l10n) {
+  Widget _buildSharedAccessibleReadArticles(AppLocalizations l10n) {
     final rows = _articles.map((article) {
       final summaryTrimmed = article.summary.trim();
       final titleTrimmed = article.title.trim();
@@ -1739,7 +1739,7 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
       final subtitleText = isSummaryDuplicate
           ? article.source
           : '${article.source}. ${article.summary}';
-      return NativeIosListRow(
+      return AccessibleListRow(
         id: article.id,
         title: titleWithListTimestamp(
           article.title,
@@ -1749,13 +1749,13 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
         subtitle: subtitleText,
         kind: 'action',
         actions: [
-          NativeIosCustomAction(id: 'delete', label: l10n.deleteItem),
+          AccessibleCustomAction(id: 'delete', label: l10n.deleteItem),
         ],
       );
     }).toList();
-    return NativeIosAccessibleList(
-      key: ValueKey('native-read-news-${rows.length}'),
-      sections: [NativeIosListSection(rows: rows)],
+    return UniversalAccessibleList(
+      key: ValueKey('shared-read-news-${rows.length}'),
+      sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id;
         if (id == null) return;
@@ -1801,8 +1801,8 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _articles.isEmpty
               ? Center(child: Text(l10n.noNewsFound))
-              : useNativeIosAccessibleViews
-                  ? _buildNativeIosReadArticles(l10n)
+              : useSharedAccessibleViewModel
+                  ? _buildSharedAccessibleReadArticles(l10n)
                   : ListView.separated(
                   itemCount: _articles.length,
                   separatorBuilder: (_, _) => const Divider(height: 1),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
-import 'native_ios_accessible_view.dart';
+import 'universal_accessible_view.dart';
 
 enum RecordingSelectionAction { share, delete }
 
@@ -38,11 +38,11 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
             ),
             child: recordings.isEmpty
                 ? Text(l10n.noRecordings)
-                : useNativeIosAccessibleViews
-                    ? NativeIosAccessibleList(
-                        sections: [NativeIosListSection(rows: [
+                : useSharedAccessibleViewModel
+                    ? UniversalAccessibleList(
+                        sections: [AccessibleListSection(rows: [
                           for (var i = 0; i < recordings.length; i++)
-                            NativeIosListRow(
+                            AccessibleListRow(
                               id: 'recording_$i',
                               title: p.basenameWithoutExtension(recordings[i].path),
                               kind: 'toggle',

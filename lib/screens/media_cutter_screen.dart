@@ -24,7 +24,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 enum _MediaCutterDoneAction { share, close }
 
@@ -2082,28 +2082,28 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               content: SizedBox(
                 width: double.maxFinite,
                 height: 520,
-                child: useNativeIosAccessibleViews
-                    ? NativeIosAccessibleList(
-                        sections: [NativeIosListSection(rows: [
-                          NativeIosListRow(id: 'summary', kind: 'text', title: summary),
-                          NativeIosListRow(
+                child: useSharedAccessibleViewModel
+                    ? UniversalAccessibleList(
+                        sections: [AccessibleListSection(rows: [
+                          AccessibleListRow(id: 'summary', kind: 'text', title: summary),
+                          AccessibleListRow(
                             id: 'precision',
                             kind: 'picker',
                             title: _cutEditStepLabel(editStep),
                             value: _cutEditStepIndex(editStep).toString(),
                             options: [
                               for (var i = 0; i < _cutEditStepOptions.length; i++)
-                                NativeIosOption(
+                                AccessibleOption(
                                   value: i,
                                   label: _cutEditStepLabel(_cutEditStepOptions[i]),
                                 ),
                             ],
                           ),
-                          NativeIosListRow(id: 'start_back', title: _moveStartBackLabel(editStep)),
-                          NativeIosListRow(id: 'start_forward', title: _moveStartForwardLabel(editStep)),
-                          NativeIosListRow(id: 'end_back', title: _moveEndBackLabel(editStep)),
-                          NativeIosListRow(id: 'end_forward', title: _moveEndForwardLabel(editStep)),
-                          NativeIosListRow(id: 'listen', kind: 'button', title: _guidedListenCutLabel),
+                          AccessibleListRow(id: 'start_back', title: _moveStartBackLabel(editStep)),
+                          AccessibleListRow(id: 'start_forward', title: _moveStartForwardLabel(editStep)),
+                          AccessibleListRow(id: 'end_back', title: _moveEndBackLabel(editStep)),
+                          AccessibleListRow(id: 'end_forward', title: _moveEndForwardLabel(editStep)),
+                          AccessibleListRow(id: 'listen', kind: 'button', title: _guidedListenCutLabel),
                         ])],
                         onEvent: (event) async {
                           if (event.id == 'precision' && event.type == 'picker') {
@@ -2302,29 +2302,29 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               content: SizedBox(
                 width: double.maxFinite,
                 height: 560,
-                child: useNativeIosAccessibleViews
-                    ? NativeIosAccessibleList(
-                        sections: [NativeIosListSection(rows: [
-                          NativeIosListRow(id: 'description', kind: 'text', title: _partEditDescription),
-                          NativeIosListRow(id: 'summary', kind: 'text', title: summary),
-                          NativeIosListRow(
+                child: useSharedAccessibleViewModel
+                    ? UniversalAccessibleList(
+                        sections: [AccessibleListSection(rows: [
+                          AccessibleListRow(id: 'description', kind: 'text', title: _partEditDescription),
+                          AccessibleListRow(id: 'summary', kind: 'text', title: summary),
+                          AccessibleListRow(
                             id: 'precision',
                             kind: 'picker',
                             title: _cutEditStepLabel(editStep),
                             value: _cutEditStepIndex(editStep).toString(),
                             options: [
                               for (var i = 0; i < _cutEditStepOptions.length; i++)
-                                NativeIosOption(
+                                AccessibleOption(
                                   value: i,
                                   label: _cutEditStepLabel(_cutEditStepOptions[i]),
                                 ),
                             ],
                           ),
-                          NativeIosListRow(id: 'start_back', title: _moveStartBackLabel(editStep)),
-                          NativeIosListRow(id: 'start_forward', title: _moveStartForwardLabel(editStep)),
-                          NativeIosListRow(id: 'end_back', title: _moveEndBackLabel(editStep)),
-                          NativeIosListRow(id: 'end_forward', title: _moveEndForwardLabel(editStep)),
-                          NativeIosListRow(id: 'listen', kind: 'button', title: _guidedListenCutLabel),
+                          AccessibleListRow(id: 'start_back', title: _moveStartBackLabel(editStep)),
+                          AccessibleListRow(id: 'start_forward', title: _moveStartForwardLabel(editStep)),
+                          AccessibleListRow(id: 'end_back', title: _moveEndBackLabel(editStep)),
+                          AccessibleListRow(id: 'end_forward', title: _moveEndForwardLabel(editStep)),
+                          AccessibleListRow(id: 'listen', kind: 'button', title: _guidedListenCutLabel),
                         ])],
                         onEvent: (event) async {
                           if (event.id == 'precision' && event.type == 'picker') {
@@ -2919,11 +2919,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         content: SizedBox(
           width: double.maxFinite,
           height: 420,
-          child: useNativeIosAccessibleViews
-              ? NativeIosAccessibleList(
-                  sections: [NativeIosListSection(rows: [
+          child: useSharedAccessibleViewModel
+              ? UniversalAccessibleList(
+                  sections: [AccessibleListSection(rows: [
                     for (var index = 0; index < _availableEffects.length; index++)
-                      NativeIosListRow(
+                      AccessibleListRow(
                         id: 'effect_$index',
                         title: _effectLabel(l10n, _availableEffects[index]),
                         selected: _availableEffects[index] == current,
@@ -2992,17 +2992,17 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           content: SizedBox(
             width: double.maxFinite,
             height: 600,
-            child: useNativeIosAccessibleViews
-                ? NativeIosAccessibleList(
-                    sections: [NativeIosListSection(rows: [
-                      NativeIosListRow(
+            child: useSharedAccessibleViewModel
+                ? UniversalAccessibleList(
+                    sections: [AccessibleListSection(rows: [
+                      AccessibleListRow(
                         id: 'description',
                         kind: 'text',
                         title: applyToWholeFile
                             ? _guidedEffectsDescription
                             : l10n.mediaCutterPartEffectsDescription,
                       ),
-                      NativeIosListRow(
+                      AccessibleListRow(
                         id: 'volume',
                         kind: 'slider',
                         title: l10n.mediaCutterPartVolumeValue(volumePercent),
@@ -3013,7 +3013,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         valueLabel: '$volumePercent%',
                       ),
                       for (var slot = 0; slot < _visibleEffectSlots(effectSlots); slot++) ...[
-                        NativeIosListRow(
+                        AccessibleListRow(
                           id: 'effect_$slot',
                           kind: 'picker',
                           title: _effectSlotLabel(l10n, slot + 1),
@@ -3021,14 +3021,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                           valueLabel: _effectLabel(l10n, effectSlots[slot].effect),
                           options: [
                             for (final effect in _availableEffects)
-                              NativeIosOption(
+                              AccessibleOption(
                                 value: effect.name,
                                 label: _effectLabel(l10n, effect),
                               ),
                           ],
                         ),
                         if (effectSlots[slot].effect != _MediaPartEffect.none)
-                          NativeIosListRow(
+                          AccessibleListRow(
                             id: 'amount_$slot',
                             kind: 'slider',
                             title: '${_effectSlotLabel(l10n, slot + 1)}, ${l10n.mediaCutterPartEffectAmountValue(effectSlots[slot].amountPercent)}',
@@ -3039,7 +3039,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             valueLabel: '${effectSlots[slot].amountPercent}%',
                           ),
                       ],
-                      NativeIosListRow(
+                      AccessibleListRow(
                         id: 'preview',
                         kind: 'button',
                         title: l10n.mediaCutterPartPreviewAction,
@@ -3081,7 +3081,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         if (slot == null ||
                             slot < 0 ||
                             slot >= effectSlots.length ||
-                            value is! num) return;
+                            value is! num) {
+                          return;
+                        }
                         setDialogState(() {
                           effectSlots[slot] = effectSlots[slot].copyWith(
                             amountPercent: value.round().clamp(0, 100).toInt(),
@@ -6720,11 +6722,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       appBar:
           AppBar(title: Text(AppLocalizations.of(context).mediaCutterTitle)),
       body: SafeArea(
-        child: useNativeIosAccessibleViews
-            ? NativeIosAccessibleList(
-                sections: [NativeIosListSection(rows: [
-                  NativeIosListRow(id: 'guided', title: _guidedModeTitle, subtitle: _guidedModeDescription),
-                  NativeIosListRow(id: 'advanced', title: _advancedModeTitle, subtitle: _advancedModeDescription),
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: [
+                  AccessibleListRow(id: 'guided', title: _guidedModeTitle, subtitle: _guidedModeDescription),
+                  AccessibleListRow(id: 'advanced', title: _advancedModeTitle, subtitle: _advancedModeDescription),
                 ])],
                 onEvent: (event) {
                   if (event.type != 'activate') return;
@@ -6793,33 +6795,33 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
-  Widget _buildNativeIosEditorList(AppLocalizations l10n, bool canUseMedia) {
+  Widget _buildSharedAccessibleEditorList(AppLocalizations l10n, bool canUseMedia) {
     final visibleParts = <MapEntry<int, _MediaPart>>[
       for (var i = 0; i < _parts.length; i++)
         if (_parts[i].keep) MapEntry(i, _parts[i]),
     ];
-    final rows = <NativeIosListRow>[
-      NativeIosListRow(
+    final rows = <AccessibleListRow>[
+      AccessibleListRow(
         id: 'mode_title',
         kind: 'header',
         title: _isGuidedMode ? _guidedModeTitle : _advancedModeTitle,
         subtitle: _isGuidedMode ? _guidedModeDescription : _advancedModeDescription,
       ),
-      NativeIosListRow(id: 'change_mode', title: _changeCutModeLabel, enabled: !_loading && !_saving),
-      NativeIosListRow(id: 'open', title: l10n.mediaCutterOpenFile, kind: 'button', enabled: !_loading && !_saving),
+      AccessibleListRow(id: 'change_mode', title: _changeCutModeLabel, enabled: !_loading && !_saving),
+      AccessibleListRow(id: 'open', title: l10n.mediaCutterOpenFile, kind: 'button', enabled: !_loading && !_saving),
       if (_displayName.isNotEmpty)
-        NativeIosListRow(id: 'selected', kind: 'text', title: l10n.mediaCutterSelectedFile(_displayName)),
-      NativeIosListRow(
+        AccessibleListRow(id: 'selected', kind: 'text', title: l10n.mediaCutterSelectedFile(_displayName)),
+      AccessibleListRow(
         id: 'output',
         title: l10n.convertMediaOutput,
         subtitle: _outputController.text.isEmpty ? null : _outputController.text,
         enabled: !_loading && !_saving,
       ),
-      if (_loading) NativeIosListRow(id: 'loading', kind: 'text', title: l10n.loading),
+      if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loading),
       if (_inputPath.isNotEmpty && _duration != Duration.zero)
-        NativeIosListRow(id: 'seek_step', title: _mediaSeekStepButtonLabel(), enabled: canUseMedia),
+        AccessibleListRow(id: 'seek_step', title: _mediaSeekStepButtonLabel(), enabled: canUseMedia),
       if (_isVideo)
-        NativeIosListRow(
+        AccessibleListRow(
           id: 'rotation',
           title: l10n.mediaCutterVideoRotation,
           kind: 'picker',
@@ -6827,50 +6829,50 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           enabled: !_loading && !_saving,
           options: [
             for (final rotation in _VideoRotation.values)
-              NativeIosOption(value: rotation.name, label: _videoRotationLabel(l10n, rotation)),
+              AccessibleOption(value: rotation.name, label: _videoRotationLabel(l10n, rotation)),
           ],
         ),
       if (_isVideo)
-        NativeIosListRow(
+        AccessibleListRow(
           id: 'video_preview',
           title: _showVideoPreview ? l10n.mediaCutterHideVideoPreview : l10n.enableVideo,
           kind: 'toggle',
           toggleValue: _showVideoPreview,
           enabled: canUseMedia,
         ),
-      NativeIosListRow(
+      AccessibleListRow(
         id: 'play_pause',
         title: _playing ? l10n.pause : l10n.play,
         kind: 'button',
         enabled: canUseMedia,
       ),
       if (_isGuidedMode) ...[
-        NativeIosListRow(id: 'guided_cut', title: _guidedPrimaryCutButtonLabel, kind: 'button', enabled: canUseMedia),
-        NativeIosListRow(
+        AccessibleListRow(id: 'guided_cut', title: _guidedPrimaryCutButtonLabel, kind: 'button', enabled: canUseMedia),
+        AccessibleListRow(
           id: 'guided_listen',
           title: _guidedListenCutLabel,
           enabled: canUseMedia && _guidedCutStart != null && _guidedCutEnd != null,
         ),
-        NativeIosListRow(
+        AccessibleListRow(
           id: 'guided_modify',
           title: _guidedModifyCutLabel,
           enabled: canUseMedia && _guidedCutStart != null && _guidedCutEnd != null,
         ),
         if (_inputPath.isNotEmpty && _duration != Duration.zero)
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'guided_summary',
             title: _displayName.isEmpty ? p.basename(_inputPath) : _displayName,
             subtitle: _guidedCurrentSummary,
             enabled: !_saving,
-            actions: [NativeIosCustomAction(id: 'effects', label: _guidedEffectsLabel)],
+            actions: [AccessibleCustomAction(id: 'effects', label: _guidedEffectsLabel)],
           ),
       ] else ...[
-        NativeIosListRow(id: 'split', title: l10n.mediaCutterSplit, kind: 'button', enabled: canUseMedia),
-        NativeIosListRow(id: 'restore', title: l10n.mediaCutterRestoreDeletedPart, enabled: canUseMedia && _hasDeletedParts),
+        AccessibleListRow(id: 'split', title: l10n.mediaCutterSplit, kind: 'button', enabled: canUseMedia),
+        AccessibleListRow(id: 'restore', title: l10n.mediaCutterRestoreDeletedPart, enabled: canUseMedia && _hasDeletedParts),
         if (visibleParts.isNotEmpty)
-          NativeIosListRow(id: 'parts_header', kind: 'header', title: l10n.mediaCutterPartsTitle, subtitle: l10n.mediaCutterPartsHint),
+          AccessibleListRow(id: 'parts_header', kind: 'header', title: l10n.mediaCutterPartsTitle, subtitle: l10n.mediaCutterPartsHint),
         for (var visibleIndex = 0; visibleIndex < visibleParts.length; visibleIndex++)
-          NativeIosListRow(
+          AccessibleListRow(
             id: 'part_${visibleParts[visibleIndex].key}',
             title: '${l10n.mediaCutterPartLabel(visibleIndex + 1)}, ${_partDetailsSummary(l10n, visibleParts[visibleIndex].value)}',
             subtitle: l10n.mediaCutterPartRange(
@@ -6879,18 +6881,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             ),
             enabled: !_saving,
             actions: [
-              NativeIosCustomAction(id: 'edit', label: _partEditActionLabel),
-              NativeIosCustomAction(id: 'effects', label: l10n.mediaCutterPartEffectsAction),
-              NativeIosCustomAction(id: 'delete', label: l10n.mediaCutterPartDeleteAction),
+              AccessibleCustomAction(id: 'edit', label: _partEditActionLabel),
+              AccessibleCustomAction(id: 'effects', label: l10n.mediaCutterPartEffectsAction),
+              AccessibleCustomAction(id: 'delete', label: l10n.mediaCutterPartDeleteAction),
             ],
           ),
       ],
-      NativeIosListRow(id: 'status', kind: 'text', title: _status ?? l10n.mediaCutterReady),
-      NativeIosListRow(id: 'save', title: l10n.mediaCutterSave, kind: 'button', enabled: canUseMedia),
+      AccessibleListRow(id: 'status', kind: 'text', title: _status ?? l10n.mediaCutterReady),
+      AccessibleListRow(id: 'save', title: l10n.mediaCutterSave, kind: 'button', enabled: canUseMedia),
     ];
 
-    return NativeIosAccessibleList(
-      sections: [NativeIosListSection(rows: rows)],
+    return UniversalAccessibleList(
+      sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id;
         if (id == 'change_mode' && event.type == 'activate') {
@@ -6964,7 +6966,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.mediaCutterTitle)),
         body: SafeArea(
-          child: useNativeIosAccessibleViews
+          child: useSharedAccessibleViewModel
               ? Column(
                   children: [
                     if (_isVideo && _showVideoPreview)
@@ -6972,7 +6974,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                         child: _buildVideoPreview(l10n),
                       ),
-                    Expanded(child: _buildNativeIosEditorList(l10n, canUseMedia)),
+                    Expanded(child: _buildSharedAccessibleEditorList(l10n, canUseMedia)),
                     if (_inputPath.isNotEmpty && _duration != Duration.zero)
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),

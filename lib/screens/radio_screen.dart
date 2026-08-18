@@ -17,7 +17,7 @@ import 'radio_search_results_screen.dart';
 import 'recent_radios_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/letter_jump_option_picker_screen.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 enum _RadioBrowseMode { language, country, city }
 
@@ -255,22 +255,22 @@ class _RadioScreenState extends State<RadioScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioTitle)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              key: ValueKey('native-radio-main-${_languageCode}-${_countryCode}-${_genre.value}-${_browseMode.name}'),
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              key: ValueKey('shared-radio-main-$_languageCode-$_countryCode-${_genre.value}-${_browseMode.name}'),
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: [
-                    NativeIosListRow(id: 'favorites', title: l10n.radioFavoritesButton, kind: 'action'),
-                    NativeIosListRow(id: 'recent', title: _recentRadiosLabel(l10n.localeName), kind: 'action'),
+                    AccessibleListRow(id: 'favorites', title: l10n.radioFavoritesButton, kind: 'action'),
+                    AccessibleListRow(id: 'recent', title: _recentRadiosLabel(l10n.localeName), kind: 'action'),
                     if (_isRecordingFeatureUnlocked)
-                      NativeIosListRow(id: 'recordings', title: l10n.recordings, kind: 'action'),
+                      AccessibleListRow(id: 'recordings', title: l10n.recordings, kind: 'action'),
                   ],
                 ),
-                NativeIosListSection(
+                AccessibleListSection(
                   header: l10n.radioSearch,
                   rows: [
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'search_text',
                       title: l10n.radioSearchText,
                       kind: 'textField',
@@ -278,20 +278,20 @@ class _RadioScreenState extends State<RadioScreen> {
                       placeholder: l10n.radioSearchHint,
                     ),
                     if (_loadingDirectory)
-                      NativeIosListRow(
+                      AccessibleListRow(
                         id: 'directory_loading',
                         title: _radioDirectoryLoadingLabel(l10n.localeName),
                         kind: 'text',
                         enabled: false,
                       ),
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'active_filters',
                       title: l10n.radioActiveFilters,
                       subtitle: _activeFiltersSummary(l10n),
                       kind: 'text',
                     ),
-                    NativeIosListRow(id: 'reset_filters', title: l10n.radioResetFilters, kind: 'button'),
-                    NativeIosListRow(
+                    AccessibleListRow(id: 'reset_filters', title: l10n.radioResetFilters, kind: 'button'),
+                    AccessibleListRow(
                       id: 'language',
                       title: l10n.radioBrowseByLanguage,
                       kind: 'picker',
@@ -305,13 +305,13 @@ class _RadioScreenState extends State<RadioScreen> {
                       ),
                       selected: _browseMode == _RadioBrowseMode.language,
                       options: languageItems
-                          .map((e) => NativeIosOption(
+                          .map((e) => AccessibleOption(
                                 value: e.code,
                                 label: _languageOptionLabel(l10n, e),
                               ))
                           .toList(),
                     ),
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'country',
                       title: l10n.radioBrowseByCountry,
                       kind: 'picker',
@@ -324,35 +324,35 @@ class _RadioScreenState extends State<RadioScreen> {
                           .value,
                       selected: _browseMode == _RadioBrowseMode.country,
                       options: countryItems
-                          .map((e) => NativeIosOption(value: e.key, label: e.value))
+                          .map((e) => AccessibleOption(value: e.key, label: e.value))
                           .toList(),
                     ),
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'city',
                       title: _cityLabel(l10n.localeName),
                       kind: 'textField',
                       value: _cityCode ?? '',
                       placeholder: _cityInputHint(l10n.localeName),
                     ),
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'genre',
                       title: l10n.radioGenre,
                       kind: 'picker',
                       value: _genre.value,
                       valueLabel: l10n.radioGenreLabel(_genre.value),
                       options: genreItems
-                          .map((e) => NativeIosOption(
+                          .map((e) => AccessibleOption(
                                 value: e.value,
                                 label: l10n.radioGenreLabel(e.value),
                               ))
                           .toList(),
                     ),
-                    NativeIosListRow(id: 'search', title: l10n.radioSearch, kind: 'button'),
+                    AccessibleListRow(id: 'search', title: l10n.radioSearch, kind: 'button'),
                   ],
                 ),
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: [
-                    NativeIosListRow(id: 'add', title: l10n.radioAddCommunity, kind: 'action'),
+                    AccessibleListRow(id: 'add', title: l10n.radioAddCommunity, kind: 'action'),
                   ],
                 ),
               ],

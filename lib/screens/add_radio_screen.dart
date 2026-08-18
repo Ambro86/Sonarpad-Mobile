@@ -5,7 +5,7 @@ import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class AddRadioScreen extends StatefulWidget {
   const AddRadioScreen({super.key});
@@ -67,32 +67,32 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioAddCommunity)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(id: 'name', title: l10n.radioAddName, kind: 'textField', value: _addNameController.text),
-                NativeIosListRow(id: 'url', title: l10n.radioAddUrl, kind: 'textField', value: _addUrlController.text),
-                NativeIosListRow(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(id: 'name', title: l10n.radioAddName, kind: 'textField', value: _addNameController.text),
+                AccessibleListRow(id: 'url', title: l10n.radioAddUrl, kind: 'textField', value: _addUrlController.text),
+                AccessibleListRow(
                   id: 'language',
                   title: l10n.radioLanguage,
                   kind: 'picker',
                   value: _addLanguage,
                   options: [
                     for (final language in RadioService.communityLanguages)
-                      NativeIosOption(value: language, label: l10n.radioCommunityLanguageLabel(language)),
+                      AccessibleOption(value: language, label: l10n.radioCommunityLanguageLabel(language)),
                   ],
                 ),
-                NativeIosListRow(
+                AccessibleListRow(
                   id: 'genre',
                   title: l10n.radioGenre,
                   kind: 'picker',
                   value: _addGenre.value,
                   options: [
                     for (final genre in RadioService.genres.where((genre) => genre.tag != null))
-                      NativeIosOption(value: genre.value, label: l10n.radioGenreLabel(genre.value)),
+                      AccessibleOption(value: genre.value, label: l10n.radioGenreLabel(genre.value)),
                   ],
                 ),
-                NativeIosListRow(id: 'submit', title: _addingCommunity ? l10n.radioSearching : l10n.radioAddSubmit, kind: 'button', enabled: !_addingCommunity),
+                AccessibleListRow(id: 'submit', title: _addingCommunity ? l10n.radioSearching : l10n.radioAddSubmit, kind: 'button', enabled: !_addingCommunity),
               ])],
               onEvent: (event) {
                 if (event.id == 'name' && event.type == 'textChanged') {

@@ -3,7 +3,7 @@ import 'package:flutter/semantics.dart';
 
 import '../services/tv_service.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class FavoriteTvsScreen extends StatefulWidget {
   const FavoriteTvsScreen({
@@ -82,14 +82,14 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                     style: TextStyle(fontSize: 18),
                   ),
                 )
-              : useNativeIosAccessibleViews
-                  ? NativeIosAccessibleList(
-                      key: ValueKey('native-favorite-tvs-${_favorites.length}'),
+              : useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
+                      key: ValueKey('shared-favorite-tvs-${_favorites.length}'),
                       sections: [
-                        NativeIosListSection(
+                        AccessibleListSection(
                           rows: _favorites.map((channel) {
                             final currentProgram = _currentProgramFor(channel);
-                            return NativeIosListRow(
+                            return AccessibleListRow(
                               id: channel.name,
                               title: channel.name,
                               subtitle: currentProgram == null ? null : 'Ora in onda: ${currentProgram.title}',
@@ -97,7 +97,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                               hint: 'Tocca per aprire il canale TV',
                               kind: 'action',
                               actions: const [
-                                NativeIosCustomAction(id: 'remove', label: 'Rimuovi dai preferiti'),
+                                AccessibleCustomAction(id: 'remove', label: 'Rimuovi dai preferiti'),
                               ],
                             );
                           }).toList(),

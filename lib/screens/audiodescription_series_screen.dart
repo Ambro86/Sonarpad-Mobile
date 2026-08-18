@@ -3,7 +3,7 @@ import '../services/audiodescription_service.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class AudiodescriptionSeriesScreen extends StatefulWidget {
   final AudiodescriptionGroup group;
@@ -63,14 +63,14 @@ class _AudiodescriptionSeriesScreenState
       appBar: AppBar(
         title: Text(widget.group.title),
       ),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: _episodes
                       .asMap()
                       .entries
-                      .map((entry) => NativeIosListRow(
+                      .map((entry) => AccessibleListRow(
                             id: 'episode_${entry.key}',
                             title: entry.value.title,
                             subtitle: entry.value.description.isNotEmpty ? entry.value.description : null,

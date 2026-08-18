@@ -11,7 +11,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/podcast_service.dart';
 import '../widgets/volume_slider.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 import 'package:video_player/video_player.dart';
 import '../utils/app_logger.dart';
 import 'podcast_chapters_screen.dart';
@@ -685,29 +685,29 @@ class _PodcastEpisodePlayerScreenState
     );
   }
 
-  Widget _buildNativeIosPlayerBody(AppLocalizations l10n, bool canSeek) {
+  Widget _buildSharedAccessiblePlayerBody(AppLocalizations l10n, bool canSeek) {
     Widget buildControls(bool isPlaying) {
       final videoReady = _videoController != null && _videoController!.value.isInitialized;
       final videoPlaying = videoReady && _videoController!.value.isPlaying;
-      final rows = <NativeIosListRow>[
-        NativeIosListRow(id: 'title', kind: 'header', title: widget.episode.title),
-        if (_loading) NativeIosListRow(id: 'loading', kind: 'text', title: l10n.loadingEpisodeAudio),
-        if (_error != null) NativeIosListRow(id: 'error', kind: 'text', title: _error!),
+      final rows = <AccessibleListRow>[
+        AccessibleListRow(id: 'title', kind: 'header', title: widget.episode.title),
+        if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loadingEpisodeAudio),
+        if (_error != null) AccessibleListRow(id: 'error', kind: 'text', title: _error!),
         if (_podcastService.hasChapterSource(widget.episode) || (_detectedChapters?.isNotEmpty ?? false))
-          NativeIosListRow(id: 'chapters', title: l10n.podcastChapters),
+          AccessibleListRow(id: 'chapters', title: l10n.podcastChapters),
         if (widget.isVideoSupported)
-          NativeIosListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
-        if (canSeek) NativeIosListRow(id: 'rewind', title: l10n.rewind15s, kind: 'button', enabled: !_loading && _loaded),
-        NativeIosListRow(
+          AccessibleListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
+        if (canSeek) AccessibleListRow(id: 'rewind', title: l10n.rewind15s, kind: 'button', enabled: !_loading && _loaded),
+        AccessibleListRow(
           id: 'play_pause',
           title: _videoController != null ? (videoPlaying ? l10n.pause : l10n.play) : (isPlaying ? l10n.pause : l10n.play),
           kind: 'button',
           enabled: !_loading,
         ),
-        if (canSeek) NativeIosListRow(id: 'forward', title: l10n.forward15s, kind: 'button', enabled: !_loading && _loaded),
+        if (canSeek) AccessibleListRow(id: 'forward', title: l10n.forward15s, kind: 'button', enabled: !_loading && _loaded),
       ];
-      return NativeIosAccessibleList(
-        sections: [NativeIosListSection(rows: rows)],
+      return UniversalAccessibleList(
+        sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
           if (event.id == 'chapters' && event.type == 'activate') {
             await _openChapters();
@@ -801,8 +801,8 @@ class _PodcastEpisodePlayerScreenState
             },
           ),
         ),
-        body: useNativeIosAccessibleViews
-            ? _buildNativeIosPlayerBody(l10n, canSeek)
+        body: useSharedAccessibleViewModel
+            ? _buildSharedAccessiblePlayerBody(l10n, canSeek)
             : Semantics(
           container: Platform.isIOS,
           explicitChildNodes: Platform.isIOS,

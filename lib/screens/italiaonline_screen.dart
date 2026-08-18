@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/italiaonline_service.dart';
 import 'italiaonline_detail_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class ItaliaOnlineScreen extends StatefulWidget {
   const ItaliaOnlineScreen({super.key});
@@ -47,33 +47,33 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
       appBar: AppBar(
         title: const Text('Pagine Bianche e Gialle'),
       ),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
               sections: [
-                NativeIosListSection(rows: [
-                  NativeIosListRow(
+                AccessibleListSection(rows: [
+                  AccessibleListRow(
                     id: 'kind',
                     title: 'Elenco',
                     kind: 'picker',
                     value: _kind.name,
                     options: const [
-                      NativeIosOption(value: 'pagineBianche', label: 'Pagine Bianche'),
-                      NativeIosOption(value: 'pagineGialle', label: 'Pagine Gialle'),
+                      AccessibleOption(value: 'pagineBianche', label: 'Pagine Bianche'),
+                      AccessibleOption(value: 'pagineGialle', label: 'Pagine Gialle'),
                     ],
                   ),
-                  NativeIosListRow(
+                  AccessibleListRow(
                     id: 'what',
                     title: _kind.primaryFieldLabel,
                     kind: 'textField',
                     value: _whatController.text,
                   ),
-                  NativeIosListRow(
+                  AccessibleListRow(
                     id: 'where',
                     title: 'Località, indirizzo (opzionale)',
                     kind: 'textField',
                     value: _whereController.text,
                   ),
-                  const NativeIosListRow(id: 'search', title: 'Cerca', kind: 'button'),
+                  const AccessibleListRow(id: 'search', title: 'Cerca', kind: 'button'),
                 ]),
               ],
               onEvent: (event) {
@@ -287,15 +287,15 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
     if (res == null) return const SizedBox();
 
     if (res.ambiguousPlaces != null && res.ambiguousPlaces!.isNotEmpty) {
-      if (useNativeIosAccessibleViews) {
+      if (useSharedAccessibleViewModel) {
         final places = res.ambiguousPlaces!;
-        return NativeIosAccessibleList(
+        return UniversalAccessibleList(
           sections: [
-            NativeIosListSection(
+            AccessibleListSection(
               header: 'Località ambigua. Scegli tra le seguenti:',
               rows: [
                 for (var i = 0; i < places.length; i++)
-                  NativeIosListRow(id: 'place_$i', title: places[i]),
+                  AccessibleListRow(id: 'place_$i', title: places[i]),
               ],
             ),
           ],
@@ -352,13 +352,13 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
       return const Center(child: Text('Nessun risultato trovato.'));
     }
 
-    if (useNativeIosAccessibleViews) {
-      return NativeIosAccessibleList(
+    if (useSharedAccessibleViewModel) {
+      return UniversalAccessibleList(
         sections: [
-          NativeIosListSection(
+          AccessibleListSection(
             rows: [
               for (var i = 0; i < _results.length; i++)
-                NativeIosListRow(
+                AccessibleListRow(
                   id: 'result_$i',
                   title: _results[i].name,
                   subtitle: [
@@ -368,7 +368,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
                   ].join(' - '),
                 ),
               if (!res.isLastPage)
-                NativeIosListRow(
+                AccessibleListRow(
                   id: 'more',
                   title: _loadingMore ? 'Caricamento...' : 'Carica altri risultati',
                   kind: 'button',

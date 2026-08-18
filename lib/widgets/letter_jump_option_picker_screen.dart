@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
-import 'native_ios_accessible_view.dart';
+import 'universal_accessible_view.dart';
 
 class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
   final String title;
@@ -35,7 +35,7 @@ class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
 class _LetterJumpOptionPickerScreenState<T>
     extends State<LetterJumpOptionPickerScreen<T>> {
   final _scrollController = AutoScrollController();
-  final _nativeController = NativeIosListController();
+  final _accessibleController = AccessibleListController();
 
   bool get _showLetterPicker =>
       widget.options.length >= widget.minimumItemsForLetterPicker &&
@@ -86,9 +86,9 @@ class _LetterJumpOptionPickerScreenState<T>
     final index = _firstIndexForLetter(letter);
     if (index == null || index < 0 || index >= widget.options.length) return;
 
-    if (useNativeIosAccessibleViews) {
+    if (useSharedAccessibleViewModel) {
       await Future<void>.delayed(const Duration(milliseconds: 120));
-      await _nativeController.scrollTo('option_$index');
+      await _accessibleController.focusTo('option_$index');
       return;
     }
 
@@ -143,14 +143,14 @@ class _LetterJumpOptionPickerScreenState<T>
     final showLetterPicker = _showLetterPicker;
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              controller: _nativeController,
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              controller: _accessibleController,
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: [
                     if (showLetterPicker)
-                      NativeIosListRow(
+                      AccessibleListRow(
                         id: 'select_letter',
                         title: widget.selectLetterLabel,
                       ),
@@ -160,7 +160,7 @@ class _LetterJumpOptionPickerScreenState<T>
                       final displayLabel = selected && widget.selectedLabel != null
                           ? '$label, ${widget.selectedLabel}'
                           : label;
-                      return NativeIosListRow(
+                      return AccessibleListRow(
                         id: 'option_${entry.key}',
                         title: displayLabel,
                         selected: selected,
@@ -235,14 +235,14 @@ class _LetterPickerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: letters
                       .asMap()
                       .entries
-                      .map((entry) => NativeIosListRow(
+                      .map((entry) => AccessibleListRow(
                             id: 'letter_${entry.key}',
                             title: entry.value,
                           ))

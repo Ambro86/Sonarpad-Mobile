@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class DonationsScreen extends StatelessWidget {
   const DonationsScreen({super.key});
@@ -12,16 +12,16 @@ class DonationsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.donations)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(id: 'intro', kind: 'text', title: l10n.donationsIntro),
-                const NativeIosListRow(id: 'paypal_header', kind: 'header', title: 'PayPal'),
-                NativeIosListRow(id: 'paypal_desc', kind: 'text', title: l10n.donationsPaypalDesc),
-                NativeIosListRow(id: 'paypal', title: l10n.donateWithPaypal, kind: 'button'),
-                NativeIosListRow(id: 'bank_header', kind: 'header', title: l10n.bankTransferTitle),
-                NativeIosListRow(id: 'bank_desc', kind: 'text', title: l10n.donationsBankDesc),
-                NativeIosListRow(id: 'thanks', kind: 'text', title: l10n.donationsThanks),
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(id: 'intro', kind: 'text', title: l10n.donationsIntro),
+                const AccessibleListRow(id: 'paypal_header', kind: 'header', title: 'PayPal'),
+                AccessibleListRow(id: 'paypal_desc', kind: 'text', title: l10n.donationsPaypalDesc),
+                AccessibleListRow(id: 'paypal', title: l10n.donateWithPaypal, kind: 'button'),
+                AccessibleListRow(id: 'bank_header', kind: 'header', title: l10n.bankTransferTitle),
+                AccessibleListRow(id: 'bank_desc', kind: 'text', title: l10n.donationsBankDesc),
+                AccessibleListRow(id: 'thanks', kind: 'text', title: l10n.donationsThanks),
               ])],
               onEvent: (event) async {
                 if (event.id == 'paypal' && event.type == 'activate') {

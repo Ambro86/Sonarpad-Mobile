@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/changelog_service.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class ChangelogScreen extends StatelessWidget {
   final ChangelogEntry entry;
@@ -22,13 +22,13 @@ class ChangelogScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.whatIsNew)),
       body: SafeArea(
-        child: useNativeIosAccessibleViews
-            ? NativeIosAccessibleList(
-                sections: [NativeIosListSection(
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [AccessibleListSection(
                   header: l10n.whatIsNewInVersion(entry.version),
                   rows: [
                     for (var i = 0; i < changes.length; i++)
-                      NativeIosListRow(id: 'change_$i', kind: 'text', title: changes[i]),
+                      AccessibleListRow(id: 'change_$i', kind: 'text', title: changes[i]),
                   ],
                 )],
                 onEvent: (_) {},
@@ -67,14 +67,14 @@ Future<void> showChangelogDialog({
     context: context,
     builder: (context) => AlertDialog(
       title: Text(l10n.whatIsNewInVersion(entry.version)),
-      content: useNativeIosAccessibleViews
+      content: useSharedAccessibleViewModel
           ? SizedBox(
               width: 500,
               height: 380,
-              child: NativeIosAccessibleList(
-                sections: [NativeIosListSection(rows: [
+              child: UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: [
                   for (var i = 0; i < changes.length; i++)
-                    NativeIosListRow(id: 'change_$i', kind: 'text', title: changes[i]),
+                    AccessibleListRow(id: 'change_$i', kind: 'text', title: changes[i]),
                 ])],
                 onEvent: (_) {},
               ),

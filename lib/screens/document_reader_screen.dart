@@ -21,7 +21,7 @@ import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 /// Schermata di lettura/ascolto di un documento della libreria.
 ///
@@ -45,6 +45,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   final _extractor = DocumentTextExtractor();
   final _voiceDictionary = VoiceDictionaryService();
   final _scrollController = AutoScrollController();
+  final AccessibleListController _accessibleDocumentListController =
+      AccessibleListController();
 
   // Testo e chunks
   bool _loadingText = true;
@@ -241,6 +243,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   void _scrollToChunk(int index) {
     if (index < 0 || index >= _chunks.length) return;
+    if (useSharedAccessibleViewModel) {
+      unawaited(
+        _accessibleDocumentListController.scrollTo(
+          'paragraph_$index',
+          animated: false,
+        ),
+      );
+      return;
+    }
     _scrollController.scrollToIndex(
       index,
       preferPosition: AutoScrollPosition.begin,
@@ -686,14 +697,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             content: SizedBox(
               width: double.maxFinite,
               height: 360,
-              child: useNativeIosAccessibleViews
-                  ? NativeIosAccessibleList(
-                      sections: [NativeIosListSection(rows: [
+              child: useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
+                      sections: [AccessibleListSection(rows: [
                         for (var index = 0; index < bookmarks.length; index++)
-                          NativeIosListRow(
+                          AccessibleListRow(
                             id: 'bookmark_${bookmarks[index]}',
                             title: _bookmarkChoiceLabel(bookmarks[index], index + 1),
-                            actions: [NativeIosCustomAction(
+                            actions: [AccessibleCustomAction(
                               id: 'delete',
                               label: _deleteBookmarkActionLabel,
                             )],
@@ -801,11 +812,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
               const SizedBox(height: 12),
               SizedBox(
                 height: 320,
-                child: useNativeIosAccessibleViews
-                    ? NativeIosAccessibleList(
-                        sections: [NativeIosListSection(rows: [
+                child: useSharedAccessibleViewModel
+                    ? UniversalAccessibleList(
+                        sections: [AccessibleListSection(rows: [
                           for (var index = 0; index < existing.length; index++)
-                            NativeIosListRow(
+                            AccessibleListRow(
                               id: 'bookmark_${existing[index]}',
                               title: _bookmarkChoiceLabel(existing[index], index + 1),
                             ),
@@ -2084,8 +2095,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                     child: Semantics(
                       label: l10n.documentTextLabel,
                       explicitChildNodes: true,
-                      child: useNativeIosAccessibleViews
-                          ? _buildNativeIosDocumentText(l10n)
+                      child: useSharedAccessibleViewModel
+                          ? _buildSharedAccessibleDocumentText(l10n)
                           : CustomScrollView(
                         controller: _scrollController,
                         scrollCacheExtent: const ScrollCacheExtent.pixels(
@@ -2197,47 +2208,47 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
 
-  Widget _buildNativeIosDocumentText(AppLocalizations l10n) {
-    final rows = <NativeIosListRow>[];
+  Widget _buildSharedAccessibleDocumentText(AppLocalizations l10n) {
+    final rows = <AccessibleListRow>[];
     for (var i = 0; i < _chunks.length; i++) {
       final isSelected = _selectedParagraphIndexes.contains(i);
       final canInteract = !_speaking;
       final isBookmarked = _multipleDocumentBookmarksEnabled
           ? _bookmarkIndexes.contains(i)
           : (_hasBookmark && i == _bookmarkIndex);
-      final actions = <NativeIosCustomAction>[];
+      final actions = <AccessibleCustomAction>[];
       if (_paragraphSelectionMode) {
         if (_selectedParagraphIndexes.isNotEmpty) {
-          actions.add(NativeIosCustomAction(
+          actions.add(AccessibleCustomAction(
             id: 'delete_selected',
             label: l10n.documentDeleteSelectedParagraphs,
           ));
         }
-        actions.add(NativeIosCustomAction(
+        actions.add(AccessibleCustomAction(
           id: 'exit_selection',
           label: l10n.documentExitParagraphSelection,
         ));
       } else {
         if (canInteract) {
-          actions.add(NativeIosCustomAction(
+          actions.add(AccessibleCustomAction(
             id: 'start_selection',
             label: l10n.documentParagraphSelectionStartAction,
           ));
         }
-        actions.add(NativeIosCustomAction(
+        actions.add(AccessibleCustomAction(
           id: 'set_bookmark',
           label: _hasBookmark && !_multipleDocumentBookmarksEnabled
               ? l10n.documentReplaceBookmarkAction
               : l10n.documentSetBookmarkAction,
         ));
         if (_multipleDocumentBookmarksEnabled && _bookmarkIndexes.isNotEmpty) {
-          actions.add(NativeIosCustomAction(
+          actions.add(AccessibleCustomAction(
             id: 'go_bookmark',
             label: _goToBookmarkActionLabel,
           ));
         }
       }
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: 'paragraph_$i',
         title: _chunks[i],
         subtitle: isBookmarked ? '🔖' : null,
@@ -2249,9 +2260,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         actions: actions,
       ));
     }
-    return NativeIosAccessibleList(
-      key: ValueKey('native-document-${widget.document.id}-${_chunks.length}'),
-      sections: [NativeIosListSection(rows: rows)],
+    return UniversalAccessibleList(
+      key: ValueKey('shared-document-${widget.document.id}-${_chunks.length}'),
+      controller: _accessibleDocumentListController,
+      initialFocusId: _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length
+          ? 'paragraph_$_bookmarkIndex'
+          : null,
+      sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id;
         if (id == null || !id.startsWith('paragraph_')) return;
@@ -2664,14 +2679,14 @@ class _DocumentIndexScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.documentIndex)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: entries
                       .asMap()
                       .entries
-                      .map((entry) => NativeIosListRow(
+                      .map((entry) => AccessibleListRow(
                             id: 'index_${entry.key}',
                             title: entry.value.title,
                             subtitle: entry.value.level > 0
@@ -2823,12 +2838,12 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.searchInDocument)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
               sections: [
-                NativeIosListSection(
+                AccessibleListSection(
                   rows: [
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'query',
                       title: l10n.documentSearchFieldLabel,
                       kind: 'textField',
@@ -2836,7 +2851,7 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
                       placeholder: l10n.documentSearchFieldHint,
                       subtitle: _error,
                     ),
-                    NativeIosListRow(
+                    AccessibleListRow(
                       id: 'search',
                       title: l10n.search,
                       kind: 'button',
@@ -2899,14 +2914,14 @@ class _DocumentSearchResultsScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.documentSearchResultsTitle)),
       body: results.isEmpty
           ? Center(child: Text(l10n.noDocumentSearchResults(query)))
-          : useNativeIosAccessibleViews
-              ? NativeIosAccessibleList(
+          : useSharedAccessibleViewModel
+              ? UniversalAccessibleList(
                   sections: [
-                    NativeIosListSection(
+                    AccessibleListSection(
                       rows: results
                           .asMap()
                           .entries
-                          .map((entry) => NativeIosListRow(
+                          .map((entry) => AccessibleListRow(
                                 id: 'result_${entry.key}',
                                 title: l10n.documentSearchResultParagraph(
                                   entry.value.chunkIndex + 1,

@@ -9,7 +9,7 @@ import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
 import 'radio_player_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 Future<DateTime?> showTvDaySelectionDialog(
   BuildContext context, {
@@ -94,10 +94,10 @@ Future<void> showTvProgramDetailsDialog(
               ),
               const SizedBox(height: 16),
               Flexible(
-                child: useNativeIosAccessibleViews
-                    ? NativeIosAccessibleList(
-                        sections: [NativeIosListSection(rows: [
-                          NativeIosListRow(
+                child: useSharedAccessibleViewModel
+                    ? UniversalAccessibleList(
+                        sections: [AccessibleListSection(rows: [
+                          AccessibleListRow(
                             id: 'description',
                             kind: 'text',
                             title: description.isEmpty
@@ -368,15 +368,15 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                 ? const Center(
                     child: Text('Nessun programma trovato per oggi.'),
                   )
-                : useNativeIosAccessibleViews
-                    ? NativeIosAccessibleList(
-                        key: ValueKey('native-tv-guide-${widget.channel.name}-${_selectedDate.toIso8601String()}-${_guide.length}'),
+                : useSharedAccessibleViewModel
+                    ? UniversalAccessibleList(
+                        key: ValueKey('shared-tv-guide-${widget.channel.name}-${_selectedDate.toIso8601String()}-${_guide.length}'),
                         sections: [
-                          NativeIosListSection(
+                          AccessibleListSection(
                             rows: _guide.map((program) {
                               final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
                               final isCurrent = program.startTime <= now && program.endTime > now;
-                              return NativeIosListRow(
+                              return AccessibleListRow(
                                 id: '${program.startTime}',
                                 title: '${program.hour} ${program.title}',
                                 subtitle: isCurrent ? 'In onda adesso' : null,

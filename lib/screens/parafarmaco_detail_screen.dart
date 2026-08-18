@@ -4,7 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/parafarmaco_service.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 import 'document_reader_screen.dart';
 
 class ParafarmacoDetailScreen extends StatefulWidget {
@@ -170,10 +170,10 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
                       ),
                     ),
                   )
-                : useNativeIosAccessibleViews
-                    ? NativeIosAccessibleList(
+                : useSharedAccessibleViewModel
+                    ? UniversalAccessibleList(
                         sections: [
-                          NativeIosListSection(
+                          AccessibleListSection(
                             header: detail?.name ?? product.name,
                             footer: [
                               detail?.category ?? product.category,
@@ -181,7 +181,7 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
                               if ((detail?.code ?? product.code)?.trim().isNotEmpty ?? false) 'Codice: ${detail?.code ?? product.code}',
                             ].join(' · '),
                             rows: ParafarmacoSectionType.values
-                                .map((type) => NativeIosListRow(
+                                .map((type) => AccessibleListRow(
                                       id: 'section_${type.name}',
                                       title: type.label,
                                       subtitle: switch (type) {

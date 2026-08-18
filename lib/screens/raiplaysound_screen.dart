@@ -15,7 +15,7 @@ import '../utils/list_timestamp_formatter.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class RaiPlaySoundScreen extends StatefulWidget {
   final String? url;
@@ -39,7 +39,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   final _podcastService = PodcastService();
   final _searchController = TextEditingController();
   final _scrollController = AutoScrollController();
-  final NativeIosListController _nativeListController = NativeIosListController();
+  final AccessibleListController _accessibleListController = AccessibleListController();
 
   RaiPlaySoundPage? _page;
   bool _loading = true;
@@ -208,9 +208,9 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
 
     final itemIndex = items.indexWhere((item) => item.id == selectedItem.id);
     if (itemIndex < 0) return;
-    if (useNativeIosAccessibleViews) {
+    if (useSharedAccessibleViewModel) {
       await Future<void>.delayed(const Duration(milliseconds: 150));
-      await _nativeListController.scrollTo('item_$itemIndex');
+      await _accessibleListController.focusTo('item_$itemIndex');
       return;
     }
 
@@ -287,19 +287,19 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
         item.audioUrl.trim().isNotEmpty);
   }
 
-  Widget _buildNativeIosBody(AppLocalizations l10n, List<RaiPlaySoundItem> items, bool hasDateButton) {
-    return NativeIosAccessibleList(
-      controller: _nativeListController,
+  Widget _buildSharedAccessibleBody(AppLocalizations l10n, List<RaiPlaySoundItem> items, bool hasDateButton) {
+    return UniversalAccessibleList(
+      controller: _accessibleListController,
       sections: [
-        NativeIosListSection(rows: [
+        AccessibleListSection(rows: [
           if (_isRoot)
-            NativeIosListRow(id: 'search_query', title: 'Cerca su RaiPlay Sound', kind: 'textField', value: _searchController.text),
-          if (_isRoot) const NativeIosListRow(id: 'search', title: 'Cerca', kind: 'button'),
-          if (_isRoot) const NativeIosListRow(id: 'recent', title: 'Ricerche recenti'),
-          if (_error != null) NativeIosListRow(id: 'error', kind: 'text', title: _error!),
-          if (hasDateButton) NativeIosListRow(id: 'select_date', title: l10n.podcastSelectDate),
+            AccessibleListRow(id: 'search_query', title: 'Cerca su RaiPlay Sound', kind: 'textField', value: _searchController.text),
+          if (_isRoot) const AccessibleListRow(id: 'search', title: 'Cerca', kind: 'button'),
+          if (_isRoot) const AccessibleListRow(id: 'recent', title: 'Ricerche recenti'),
+          if (_error != null) AccessibleListRow(id: 'error', kind: 'text', title: _error!),
+          if (hasDateButton) AccessibleListRow(id: 'select_date', title: l10n.podcastSelectDate),
           for (var i = 0; i < items.length; i++)
-            NativeIosListRow(
+            AccessibleListRow(
               id: 'item_$i',
               title: items[i].kind == RaiPlaySoundItemKind.audio
                   ? titleWithListTimestamp(items[i].title, items[i].publishedAt, l10n.localeName)
@@ -307,7 +307,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
               subtitle: items[i].description.isNotEmpty ? items[i].description : null,
               actions: [
                 if (items[i].kind == RaiPlaySoundItemKind.audio && _canSubscribeCurrentPage)
-                  const NativeIosCustomAction(id: 'subscribe', label: 'Aggiungi ai podcast'),
+                  const AccessibleCustomAction(id: 'subscribe', label: 'Aggiungi ai podcast'),
               ],
             ),
         ]),
@@ -345,8 +345,8 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _error != null && _page == null
               ? Center(child: Text(_error!))
-              : useNativeIosAccessibleViews
-                  ? _buildNativeIosBody(l10n, items, hasDateButton)
+              : useSharedAccessibleViewModel
+                  ? _buildSharedAccessibleBody(l10n, items, hasDateButton)
                   : Column(
                   children: [
                     if (_isRoot)
@@ -512,11 +512,11 @@ class _RaiPlaySoundDateSelectorScreen extends StatelessWidget {
       body: SafeArea(
         child: datedItems.isEmpty
             ? Center(child: Text(l10n.podcastNoDatesAvailable))
-            : useNativeIosAccessibleViews
-                ? NativeIosAccessibleList(
-                    sections: [NativeIosListSection(rows: [
+            : useSharedAccessibleViewModel
+                ? UniversalAccessibleList(
+                    sections: [AccessibleListSection(rows: [
                       for (var i = 0; i < datedItems.length; i++)
-                        NativeIosListRow(id: 'date_$i', title: formatter.format(datedItems[i].date)),
+                        AccessibleListRow(id: 'date_$i', title: formatter.format(datedItems[i].date)),
                     ])],
                     onEvent: (event) {
                       if (event.type != 'activate' || event.id == null) return;

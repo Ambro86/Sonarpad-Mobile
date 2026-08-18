@@ -6,7 +6,7 @@ import '../models/podcast.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_service.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
 
 class SonarTubeScreen extends StatefulWidget {
@@ -241,21 +241,21 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     return values.isEmpty ? null : values.join(' · ');
   }
 
-  Widget _buildNativeIosSonarTube(AppLocalizations l10n) {
-    final rows = <NativeIosListRow>[];
+  Widget _buildSharedAccessibleSonarTube(AppLocalizations l10n) {
+    final rows = <AccessibleListRow>[];
     if (!_isCollection) {
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: 'favorites',
         title: l10n.sonarTubeFavorites,
       ));
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: 'query',
         title: l10n.sonarTubeSearchLabel,
         kind: 'textField',
         value: _searchController.text,
         placeholder: l10n.sonarTubeSearchPrompt,
       ));
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: 'search',
         title: l10n.search,
         kind: 'button',
@@ -263,21 +263,21 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       ));
     }
     if (_loading) {
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: 'loading',
         title: l10n.loading,
         kind: 'text',
       ));
     }
     if (_error != null) {
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: 'error',
         title: l10n.error(_error!),
         kind: 'text',
       ));
     }
     if (!_loading && _items.isEmpty) {
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: 'empty',
         title: _query == null && !_isCollection
             ? l10n.sonarTubeSearchPrompt
@@ -294,7 +294,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           ? l10n.sonarTubeRemoveFavorite
           : l10n.sonarTubeAddFavorite;
       final subtitle = resolving ? l10n.sonarTubeResolving : _subtitle(l10n, item);
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: 'item_$i',
         title: item.title,
         subtitle: subtitle,
@@ -304,12 +304,12 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         ].join(', '),
         enabled: _resolvingId == null,
         actions: canFavorite
-            ? [NativeIosCustomAction(id: 'favorite', label: favoriteLabel)]
+            ? [AccessibleCustomAction(id: 'favorite', label: favoriteLabel)]
             : const [],
       ));
     }
     if (_nextToken != null) {
-      rows.add(NativeIosListRow(
+      rows.add(AccessibleListRow(
         id: 'load_more',
         title: _loadingMore ? l10n.loading : l10n.sonarTubeLoadMore,
         kind: 'button',
@@ -317,8 +317,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       ));
     }
 
-    return NativeIosAccessibleList(
-      sections: [NativeIosListSection(rows: rows)],
+    return UniversalAccessibleList(
+      sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.id == 'query' && event.type == 'textChanged') {
           _searchController.text = event.value?.toString() ?? '';
@@ -358,8 +358,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         title: Text(widget.collection?.title ?? l10n.sonarTubeTitle),
       ),
       body: SafeArea(
-        child: useNativeIosAccessibleViews
-            ? _buildNativeIosSonarTube(l10n)
+        child: useSharedAccessibleViewModel
+            ? _buildSharedAccessibleSonarTube(l10n)
             : Column(
           children: [
             if (!_isCollection)
@@ -617,10 +617,10 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                   textAlign: TextAlign.center,
                 ),
               )
-            : useNativeIosAccessibleViews
-                ? NativeIosAccessibleList(
+            : useSharedAccessibleViewModel
+                ? UniversalAccessibleList(
                     sections: [
-                      NativeIosListSection(
+                      AccessibleListSection(
                         rows: _favorites
                             .asMap()
                             .entries
@@ -629,12 +629,12 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                               final type = item.kind == SonarTubeItemKind.channel
                                   ? l10n.sonarTubeChannel
                                   : l10n.sonarTubePlaylist;
-                              return NativeIosListRow(
+                              return AccessibleListRow(
                                 id: 'favorite_${entry.key}',
                                 title: item.title,
                                 subtitle: type,
                                 actions: [
-                                  NativeIosCustomAction(
+                                  AccessibleCustomAction(
                                     id: 'remove',
                                     label: l10n.sonarTubeRemoveFavorite,
                                   ),

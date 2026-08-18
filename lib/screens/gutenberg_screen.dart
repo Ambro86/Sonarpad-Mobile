@@ -11,7 +11,7 @@ import '../services/gutendex_service.dart';
 import '../utils/app_logger.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
-import '../widgets/native_ios_accessible_view.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class GutenbergScreen extends StatefulWidget {
   final String? parentId;
@@ -74,21 +74,21 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Project Gutenberg')),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(id: 'query', title: l10n.gutenbergSearchLabel, kind: 'textField', value: _controller.text),
-                NativeIosListRow(
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(id: 'query', title: l10n.gutenbergSearchLabel, kind: 'textField', value: _controller.text),
+                AccessibleListRow(
                   id: 'language',
                   title: l10n.sourceLanguageLabel,
                   kind: 'picker',
                   value: _language,
                   options: [
                     for (final entry in _languages)
-                      NativeIosOption(value: entry.$1, label: '${entry.$2} (${entry.$1})'),
+                      AccessibleOption(value: entry.$1, label: '${entry.$2} (${entry.$1})'),
                   ],
                 ),
-                NativeIosListRow(id: 'search', title: l10n.search, kind: 'button'),
+                AccessibleListRow(id: 'search', title: l10n.search, kind: 'button'),
               ])],
               onEvent: (event) {
                 if (event.id == 'query' && event.type == 'textChanged') {
@@ -240,13 +240,13 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
           if (_books.isEmpty) {
             return Center(child: Text(l10n.noGutenbergBooksFound));
           }
-          if (useNativeIosAccessibleViews) {
-            return NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
+          if (useSharedAccessibleViewModel) {
+            return UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
                 for (var i = 0; i < _books.length; i++)
-                  NativeIosListRow(id: 'book_$i', title: _books[i].title, subtitle: _books[i].authorLabel),
+                  AccessibleListRow(id: 'book_$i', title: _books[i].title, subtitle: _books[i].authorLabel),
                 if (_nextPage != null)
-                  NativeIosListRow(
+                  AccessibleListRow(
                     id: 'more',
                     title: _loadingMore ? l10n.loading : l10n.loadMore,
                     kind: 'button',
@@ -388,16 +388,16 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
     final summary = book.summaries.isEmpty ? null : book.summaries.first;
     return Scaffold(
       appBar: AppBar(title: Text(book.title)),
-      body: useNativeIosAccessibleViews
-          ? NativeIosAccessibleList(
-              sections: [NativeIosListSection(rows: [
-                NativeIosListRow(id: 'title', kind: 'header', title: book.title),
-                NativeIosListRow(id: 'author', kind: 'text', title: book.authorLabel),
+      body: useSharedAccessibleViewModel
+          ? UniversalAccessibleList(
+              sections: [AccessibleListSection(rows: [
+                AccessibleListRow(id: 'title', kind: 'header', title: book.title),
+                AccessibleListRow(id: 'author', kind: 'text', title: book.authorLabel),
                 if (book.languageLabel.isNotEmpty)
-                  NativeIosListRow(id: 'language', kind: 'text', title: l10n.sourceLanguageValue(book.languageLabel)),
+                  AccessibleListRow(id: 'language', kind: 'text', title: l10n.sourceLanguageValue(book.languageLabel)),
                 if (summary != null && summary.trim().isNotEmpty)
-                  NativeIosListRow(id: 'summary', kind: 'text', title: summary),
-                NativeIosListRow(
+                  AccessibleListRow(id: 'summary', kind: 'text', title: summary),
+                AccessibleListRow(
                   id: 'import',
                   title: _importing ? l10n.gutenbergImporting : l10n.gutenbergImportAndRead,
                   kind: 'button',
