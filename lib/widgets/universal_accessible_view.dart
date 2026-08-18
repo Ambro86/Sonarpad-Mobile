@@ -190,9 +190,12 @@ typedef AccessibleListEventCallback = FutureOr<void> Function(
 class AccessibleListController {
   MethodChannel? _channel;
   Object? _flutterOwner;
+  ({String id, bool animated})? _pendingScroll;
+  ({String id, bool animated})? _pendingFocus;
 
   bool get hasAttachedRenderer =>
       _channel != null || _flutterScrollTo != null || _flutterFocusTo != null;
+  bool get hasAttachedNativeRenderer => _channel != null;
   Future<void> Function(String id, bool animated)? _flutterScrollTo;
   Future<void> Function(String id, bool animated)? _flutterFocusTo;
 
@@ -205,7 +208,12 @@ class AccessibleListController {
       });
       return;
     }
-    await _flutterScrollTo?.call(id, animated);
+    final flutterScrollTo = _flutterScrollTo;
+    if (flutterScrollTo != null) {
+      await flutterScrollTo(id, animated);
+      return;
+    }
+    _pendingScroll = (id: id, animated: animated);
   }
 
   Future<void> focusTo(String id, {bool animated = false}) async {
@@ -217,10 +225,33 @@ class AccessibleListController {
       });
       return;
     }
-    await _flutterFocusTo?.call(id, animated);
+    final flutterFocusTo = _flutterFocusTo;
+    if (flutterFocusTo != null) {
+      await flutterFocusTo(id, animated);
+      return;
+    }
+    _pendingFocus = (id: id, animated: animated);
   }
 
-  void _attach(MethodChannel channel) => _channel = channel;
+  void _attach(MethodChannel channel) {
+    _channel = channel;
+    final pendingScroll = _pendingScroll;
+    final pendingFocus = _pendingFocus;
+    _pendingScroll = null;
+    _pendingFocus = null;
+    if (pendingScroll != null) {
+      unawaited(channel.invokeMethod<void>('scrollTo', {
+        'id': pendingScroll.id,
+        'animated': pendingScroll.animated,
+      }));
+    }
+    if (pendingFocus != null) {
+      unawaited(channel.invokeMethod<void>('focusTo', {
+        'id': pendingFocus.id,
+        'animated': pendingFocus.animated,
+      }));
+    }
+  }
   void _detach(MethodChannel channel) {
     if (identical(_channel, channel)) _channel = null;
   }
@@ -344,7 +375,9 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   @override
   void initState() {
     super.initState();
-    widget.controller?._attachFlutter(this, _flutterScrollTo, _flutterFocusTo);
+    if (!useNativeIosAccessibleViews) {
+      widget.controller?._attachFlutter(this, _flutterScrollTo, _flutterFocusTo);
+    }
   }
 
   List<AccessibleListRow> get _flatRows => [
@@ -426,7 +459,9 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.controller, widget.controller)) {
       oldWidget.controller?._detachFlutter(this);
-      widget.controller?._attachFlutter(this, _flutterScrollTo, _flutterFocusTo);
+      if (!useNativeIosAccessibleViews) {
+        widget.controller?._attachFlutter(this, _flutterScrollTo, _flutterFocusTo);
+      }
     }
     if (oldWidget.initialFocusId != widget.initialFocusId) {
       _initialFocusScheduled = false;

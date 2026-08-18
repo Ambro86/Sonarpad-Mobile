@@ -67,6 +67,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       AppSettingsService.defaultDocumentReadingSleepTimerMinutes;
   int _playingChunkIndex = -1;
   int _focusedChunkIndex = -1;
+  int _initialBookmarkFocusIndex = -1;
   StreamController<File>? _edgeFileController;
   // (chunkKeys rimosso, usiamo scroll_to_index)
   late int _bookmarkIndex;
@@ -203,6 +204,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _rebuildRemainingReadingEstimateCache();
         _focusedChunkIndex = -1;
         _refreshBookmarkStateForCurrentMode();
+        _initialBookmarkFocusIndex =
+            _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length
+                ? _bookmarkIndex
+                : -1;
         // Le chiavi vengono gestite da AutoScrollTag
       }
 
@@ -221,11 +226,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } finally {
       if (mounted) {
         setState(() => _loadingText = false);
-        final shouldScrollToBookmark =
-            _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length;
-        if (shouldScrollToBookmark) {
+        final initialBookmarkIndex = _initialBookmarkFocusIndex;
+        if (initialBookmarkIndex >= 0) {
           Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted) unawaited(_focusChunk(_bookmarkIndex));
+            if (mounted) unawaited(_focusChunk(initialBookmarkIndex));
           });
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -271,7 +275,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     // to move to the paragraph, otherwise the request can be silently lost.
     for (var attempt = 0; attempt < 16; attempt++) {
       if (!mounted) return;
-      if (_accessibleDocumentListController.hasAttachedRenderer) {
+      if (!useNativeIosAccessibleViews ||
+          _accessibleDocumentListController.hasAttachedNativeRenderer) {
         await _accessibleDocumentListController.focusTo(
           'paragraph_$index',
           animated: false,
@@ -2289,8 +2294,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     return UniversalAccessibleList(
       key: ValueKey('shared-document-${widget.document.id}-${_chunks.length}'),
       controller: _accessibleDocumentListController,
-      initialFocusId: _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length
-          ? 'paragraph_$_bookmarkIndex'
+      initialFocusId: _initialBookmarkFocusIndex >= 0
+          ? 'paragraph_$_initialBookmarkFocusIndex'
           : null,
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
@@ -2487,11 +2492,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         context,
         AppLocalizations.of(context).bookmarkSet(index + 1),
       );
-      // Saving changes the row decoration and therefore refreshes the native
-      // table. Put VoiceOver back on the paragraph that invoked the action.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) unawaited(_focusChunk(index));
-      });
+      // The paragraph list keeps the same row structure. The native renderer
+      // updates the visible row in place, so VoiceOver can remain on the
+      // paragraph that invoked the action without a synthetic focus jump.
     }
   }
 

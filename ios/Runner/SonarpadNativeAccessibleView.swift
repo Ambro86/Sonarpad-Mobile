@@ -338,7 +338,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     let newSections = rawSections.map(SonarpadNativeSection.init)
     let focusedRowBeforeReload = voiceOverFocusedRowId()
     let sectionsChanged = !sonarpadSectionsEqual(sections, newSections)
-    let sliderOnlyDynamicChange = sectionsChanged && sonarpadSectionsHaveSameStructure(sections, newSections)
+    let sameStructureDynamicChange =
+      sectionsChanged && sonarpadSectionsHaveSameStructure(sections, newSections)
     sections = newSections
 
     let wantsRefresh = map["refreshEnabled"] as? Bool ?? false
@@ -355,8 +356,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
     }
 
-    if sliderOnlyDynamicChange {
-      updateVisibleSlidersFromModel()
+    if sameStructureDynamicChange {
+      updateVisibleRowsFromModel()
     } else if sectionsChanged {
       tableView.reloadData()
       tableView.layoutIfNeeded()
@@ -639,6 +640,66 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
+  private func updateVisibleRowsFromModel() {
+    guard let visible = tableView.indexPathsForVisibleRows else { return }
+
+    for indexPath in visible {
+      guard sections.indices.contains(indexPath.section),
+            sections[indexPath.section].rows.indices.contains(indexPath.row) else { continue }
+
+      let row = sections[indexPath.section].rows[indexPath.row]
+
+      if row.kind == "textField" {
+        guard let cell = tableView.cellForRow(at: indexPath) as? SonarpadTextFieldCell else { continue }
+        cell.rowId = row.id
+        if cell.field.text != (row.value ?? "") && !cell.field.isFirstResponder {
+          cell.field.text = row.value ?? ""
+        }
+        cell.field.placeholder = row.placeholder ?? row.title
+        cell.field.accessibilityLabel = row.accessibilityLabel ?? row.title
+        cell.field.accessibilityHint = row.hint
+        cell.field.isSecureTextEntry = row.secure
+        cell.field.isEnabled = row.enabled
+        continue
+      }
+
+      guard let cell = tableView.cellForRow(at: indexPath) as? SonarpadAccessibleTableCell else { continue }
+
+      if row.kind == "slider" {
+        cell.textLabel?.text = row.title
+        cell.detailTextLabel?.text = row.subtitle ?? row.value
+        if let slider = cell.accessoryView as? SonarpadAccessibleSlider {
+          slider.minimumValue = Float(row.sliderMin)
+          slider.maximumValue = Float(row.sliderMax)
+          slider.value = Float(row.sliderValue)
+          slider.isEnabled = row.enabled
+          slider.isUserInteractionEnabled = row.enabled
+          slider.accessibilityLabel = row.accessibilityLabel ?? row.title
+          slider.accessibilityHint = row.hint
+          slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+        }
+        continue
+      }
+
+      if row.kind == "toggle" {
+        cell.textLabel?.text = row.title
+        cell.detailTextLabel?.text = row.subtitle ?? row.value
+        if let toggle = cell.accessoryView as? UISwitch {
+          toggle.isOn = row.toggleValue
+          toggle.isEnabled = row.enabled
+          toggle.accessibilityLabel = row.accessibilityLabel ?? row.title
+          toggle.accessibilityHint = row.hint
+        }
+        continue
+      }
+
+      // Reconfigure the existing cell object instead of reloading it. This
+      // updates text, bookmark decoration and custom actions while preserving
+      // the accessibility element VoiceOver is currently focused on.
+      configure(cell: cell, with: row, at: indexPath)
+    }
+  }
+
   private func accessibilityTarget(at indexPath: IndexPath) -> Any? {
     guard let cell = tableView.cellForRow(at: indexPath) else { return nil }
     if sections.indices.contains(indexPath.section),
@@ -681,9 +742,20 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
-  private func scrollToRow(id: String, animated: Bool) {
+  private func scrollToRow(id: String, animated: Bool, attempt: Int = 0) {
     guard let indexPath = indexPath(forRowId: id) else { return }
+    tableView.layoutIfNeeded()
     tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
+
+    let delay: TimeInterval = animated ? 0.40 : 0.03
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+      guard let self = self else { return }
+      self.tableView.layoutIfNeeded()
+      let isVisible = self.tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false
+      if !isVisible && attempt < 12 {
+        self.scrollToRow(id: id, animated: false, attempt: attempt + 1)
+      }
+    }
   }
 
   private func focusRow(id: String, animated: Bool, attempt: Int = 0) {
@@ -691,14 +763,32 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
     tableView.layoutIfNeeded()
 
-    let delay: TimeInterval = animated ? 0.45 : 0.05
+    let delay: TimeInterval = animated ? 0.45 : 0.06
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
       guard let self = self else { return }
       self.tableView.layoutIfNeeded()
-      if self.rootView.window != nil, let target = self.accessibilityTarget(at: indexPath) {
-        UIAccessibility.post(notification: .screenChanged, argument: target)
-      } else if attempt < 20 {
-        self.focusRow(id: id, animated: false, attempt: attempt + 1)
+
+      guard self.rootView.window != nil,
+            let target = self.accessibilityTarget(at: indexPath) else {
+        if attempt < 24 {
+          self.focusRow(id: id, animated: false, attempt: attempt + 1)
+        }
+        return
+      }
+
+      // This is an in-screen focus move, not a navigation to a new screen.
+      // layoutChanged is less likely than screenChanged to let Flutter's
+      // navigation bar reclaim VoiceOver focus.
+      UIAccessibility.post(notification: .layoutChanged, argument: target)
+
+      // Platform views can receive a competing Flutter accessibility update
+      // in the same frame. Verify the real VoiceOver focus and retry briefly
+      // until the requested row actually owns it.
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.10) { [weak self] in
+        guard let self = self else { return }
+        if self.voiceOverFocusedRowId() != id && attempt < 24 {
+          self.focusRow(id: id, animated: false, attempt: attempt + 1)
+        }
       }
     }
   }
