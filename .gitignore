@@ -161,3 +161,15 @@ tinyfish_response.json
 tinyfish_response.md
 tinyfish_fetch_corriere.bat
 server/
+
+# Local/generated development files
+.tmp_effect_reference/
+media_effect_tests/
+sonarpad_mobile_source*.zip
+IOS27_*.md
+MODIFICA_*.md
+crea_zip_sorgenti.bat
+la7cinema_proxy.php
+lib/screens/*.before_*
+tools/generate_dsp_previews.dart
+test/failures/
