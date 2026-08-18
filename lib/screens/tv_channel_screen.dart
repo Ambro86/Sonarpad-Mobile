@@ -6,7 +6,6 @@ import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
-import '../utils/accessibility_list_behavior.dart';
 import 'radio_player_screen.dart';
 import '../utils/status_message.dart';
 
@@ -88,6 +87,53 @@ Future<void> showTvProgramDetailsDialog(
       ),
     ),
   );
+}
+
+class TvProgramGuideList extends StatelessWidget {
+  const TvProgramGuideList({
+    super.key,
+    required this.programs,
+    required this.onOpenProgram,
+  });
+
+  final List<TvProgram> programs;
+  final ValueChanged<TvProgram> onOpenProgram;
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    return SingleChildScrollView(
+      child: Column(
+        children: programs.map((program) {
+          final isCurrent =
+              program.startTime <= now && program.endTime > now;
+          return ListTile(
+            key: ValueKey('tv_program_${program.startTime}_${program.title}'),
+            tileColor: isCurrent
+                ? Theme.of(context).colorScheme.primaryContainer
+                : null,
+            leading: Text(
+              program.hour,
+              style: TextStyle(
+                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                fontSize: 16,
+              ),
+            ),
+            title: Text(
+              program.title,
+              style: TextStyle(
+                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            trailing: isCurrent
+                ? const Icon(Icons.live_tv, color: Colors.red)
+                : null,
+            onTap: () => onOpenProgram(program),
+          );
+        }).toList(growable: false),
+      ),
+    );
+  }
 }
 
 class TvChannelScreen extends StatefulWidget {
@@ -321,47 +367,9 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                     : _guide.isEmpty
                         ? const Center(
                             child: Text('Nessun programma trovato per oggi.'))
-                        : ListView.builder(
-                            scrollCacheExtent:
-                                accessibilityListCacheExtent(context),
-                            itemCount: _guide.length,
-                            itemBuilder: (context, index) {
-                              final program = _guide[index];
-                              final now =
-                                  DateTime.now().millisecondsSinceEpoch ~/ 1000;
-                              final isCurrent = program.startTime <= now &&
-                                  program.endTime > now;
-
-                              return ListTile(
-                                tileColor: isCurrent
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer
-                                    : null,
-                                leading: Text(
-                                  program.hour,
-                                  style: TextStyle(
-                                    fontWeight: isCurrent
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                title: Text(
-                                  program.title,
-                                  style: TextStyle(
-                                    fontWeight: isCurrent
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                                trailing: isCurrent
-                                    ? const Icon(Icons.live_tv,
-                                        color: Colors.red)
-                                    : null,
-                                onTap: () => _showProgramDetails(program),
-                              );
-                            },
+                        : TvProgramGuideList(
+                            programs: _guide,
+                            onOpenProgram: _showProgramDetails,
                           ),
           ),
         ],

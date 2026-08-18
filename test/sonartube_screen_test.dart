@@ -48,20 +48,13 @@ void main() {
         locale: const Locale('it'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(accessibleNavigation: true),
-          child: child!,
-        ),
         home: SonarTubeScreen(collection: playlist, service: service),
       ),
     );
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(
-        const ValueKey('sonartube_video_video_50'),
-        skipOffstage: false,
-      ),
+      find.byKey(const ValueKey('sonartube_video_video_50')),
       findsOneWidget,
     );
     final firstVideoSemantics = tester.getSemantics(

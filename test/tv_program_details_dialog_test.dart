@@ -5,6 +5,29 @@ import 'package:sonarpad_mobile_starter/screens/tv_channel_screen.dart';
 import 'package:sonarpad_mobile_starter/services/tv_service.dart';
 
 void main() {
+  testWidgets('costruisce tutti i programmi per VoiceOver', (tester) async {
+    final programs = List.generate(
+      30,
+      (index) => TvProgram(
+        title: 'Programma ${index + 1}',
+        hour: '${index.toString().padLeft(2, '0')}:00',
+        startTime: index * 3600,
+        endTime: (index + 1) * 3600,
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: TvProgramGuideList(programs: programs, onOpenProgram: (_) {}),
+        ),
+      ),
+    );
+
+    expect(find.text('Programma 1'), findsOneWidget);
+    expect(find.text('Programma 30'), findsOneWidget);
+  });
+
   testWidgets('selezionare un giorno chiude e conferma subito', (tester) async {
     final today = DateTime(2026, 8, 18);
     DateTime? selected;

@@ -5,7 +5,6 @@ import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_service.dart';
-import '../utils/accessibility_list_behavior.dart';
 import '../utils/status_message.dart';
 import 'podcast_episode_player_screen.dart';
 
@@ -315,11 +314,12 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                         ),
                       ),
                     )
-                  : ListView.builder(
+                  : SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
-                      scrollCacheExtent: accessibilityListCacheExtent(context),
-                      itemCount: _items.length + (_nextToken == null ? 0 : 1),
-                      itemBuilder: (context, index) {
+                      child: Column(
+                        children: List.generate(
+                          _items.length + (_nextToken == null ? 0 : 1),
+                          (index) {
                         if (index == _items.length) {
                           return Padding(
                             padding: const EdgeInsets.all(12),
@@ -439,7 +439,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                                 : null,
                             child: ExcludeSemantics(child: card),
                         );
-                      },
+                          },
+                        ),
+                      ),
                     ),
             ),
           ],
