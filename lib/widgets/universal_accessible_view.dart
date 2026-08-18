@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
+import '../utils/app_logger.dart';
+
 /// Global renderer mode.
 ///
 /// Values:
@@ -188,6 +190,9 @@ typedef AccessibleListEventCallback = FutureOr<void> Function(
 );
 
 class AccessibleListController {
+  AccessibleListController({this.debugName});
+
+  final String? debugName;
   MethodChannel? _channel;
   Object? _flutterOwner;
   ({String id, bool animated})? _pendingScroll;
@@ -199,9 +204,17 @@ class AccessibleListController {
   Future<void> Function(String id, bool animated)? _flutterScrollTo;
   Future<void> Function(String id, bool animated)? _flutterFocusTo;
 
+  void _debug(String message) {
+    final name = debugName;
+    if (name == null || name.isEmpty) return;
+    unawaited(AppLogger.log('ACCESSIBLE[$name] $message'));
+  }
+
   Future<void> scrollTo(String id, {bool animated = true}) async {
+    _debug('scrollTo requested id=$id animated=$animated native=${_channel != null} flutter=${_flutterScrollTo != null}');
     final channel = _channel;
     if (channel != null) {
+      _debug('scrollTo dispatch native id=$id');
       await channel.invokeMethod<void>('scrollTo', {
         'id': id,
         'animated': animated,
@@ -210,15 +223,19 @@ class AccessibleListController {
     }
     final flutterScrollTo = _flutterScrollTo;
     if (flutterScrollTo != null) {
+      _debug('scrollTo dispatch flutter id=$id');
       await flutterScrollTo(id, animated);
       return;
     }
+    _debug('scrollTo queued id=$id');
     _pendingScroll = (id: id, animated: animated);
   }
 
   Future<void> focusTo(String id, {bool animated = false}) async {
+    _debug('focusTo requested id=$id animated=$animated native=${_channel != null} flutter=${_flutterFocusTo != null}');
     final channel = _channel;
     if (channel != null) {
+      _debug('focusTo dispatch native id=$id');
       await channel.invokeMethod<void>('focusTo', {
         'id': id,
         'animated': animated,
@@ -227,25 +244,30 @@ class AccessibleListController {
     }
     final flutterFocusTo = _flutterFocusTo;
     if (flutterFocusTo != null) {
+      _debug('focusTo dispatch flutter id=$id');
       await flutterFocusTo(id, animated);
       return;
     }
+    _debug('focusTo queued id=$id');
     _pendingFocus = (id: id, animated: animated);
   }
 
   void _attach(MethodChannel channel) {
+    _debug('native renderer attach pendingScroll=${_pendingScroll?.id} pendingFocus=${_pendingFocus?.id}');
     _channel = channel;
     final pendingScroll = _pendingScroll;
     final pendingFocus = _pendingFocus;
     _pendingScroll = null;
     _pendingFocus = null;
     if (pendingScroll != null) {
+      _debug('replay queued native scroll id=${pendingScroll.id}');
       unawaited(channel.invokeMethod<void>('scrollTo', {
         'id': pendingScroll.id,
         'animated': pendingScroll.animated,
       }));
     }
     if (pendingFocus != null) {
+      _debug('replay queued native focus id=${pendingFocus.id}');
       unawaited(channel.invokeMethod<void>('focusTo', {
         'id': pendingFocus.id,
         'animated': pendingFocus.animated,
@@ -253,7 +275,10 @@ class AccessibleListController {
     }
   }
   void _detach(MethodChannel channel) {
-    if (identical(_channel, channel)) _channel = null;
+    if (identical(_channel, channel)) {
+      _debug('native renderer detach');
+      _channel = null;
+    }
   }
 
   void _attachFlutter(
@@ -261,6 +286,7 @@ class AccessibleListController {
     Future<void> Function(String id, bool animated) scrollTo,
     Future<void> Function(String id, bool animated) focusTo,
   ) {
+    _debug('flutter renderer attach');
     _flutterOwner = owner;
     _flutterScrollTo = scrollTo;
     _flutterFocusTo = focusTo;
@@ -268,6 +294,7 @@ class AccessibleListController {
 
   void _detachFlutter(Object owner) {
     if (!identical(_flutterOwner, owner)) return;
+    _debug('flutter renderer detach');
     _flutterOwner = null;
     _flutterScrollTo = null;
     _flutterFocusTo = null;
@@ -288,6 +315,7 @@ class UniversalAccessibleList extends StatefulWidget {
     this.refreshEnabled = false,
     this.controller,
     this.initialFocusId,
+    this.debugTag,
     this.padding = EdgeInsets.zero,
   });
 
@@ -297,6 +325,7 @@ class UniversalAccessibleList extends StatefulWidget {
   final bool refreshEnabled;
   final AccessibleListController? controller;
   final String? initialFocusId;
+  final String? debugTag;
   final EdgeInsetsGeometry padding;
 
   @override
@@ -317,6 +346,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'sections': widget.sections.map((e) => e.toMap()).toList(),
         'refreshEnabled': widget.refreshEnabled,
         if (widget.initialFocusId != null) 'initialFocusId': widget.initialFocusId,
+        if (widget.debugTag != null) 'debugTag': widget.debugTag,
       };
 
   AccessibleListRow? _rowForId(String? id) {
@@ -479,8 +509,15 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   Future<dynamic> _handleMethod(MethodCall call) async {
     if (call.method != 'event') return null;
     final raw = Map<Object?, Object?>.from(call.arguments as Map);
+    final eventType = raw['type']?.toString() ?? '';
+    if (eventType == 'debug') {
+      final tag = widget.debugTag ?? widget.controller?.debugName ?? 'list';
+      final message = raw['message']?.toString() ?? raw.toString();
+      await AppLogger.log('DOC_NATIVE[$tag] $message');
+      return null;
+    }
     final event = AccessibleListEvent(
-      type: raw['type']?.toString() ?? '',
+      type: eventType,
       id: raw['id']?.toString(),
       value: raw['value'],
       action: raw['action']?.toString(),
@@ -497,6 +534,9 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   }
 
   void _created(int id) {
+    if (widget.debugTag != null || widget.controller?.debugName != null) {
+      unawaited(AppLogger.log('DOC_NATIVE[${widget.debugTag ?? widget.controller?.debugName}] platform view created id=$id initialFocusId=${widget.initialFocusId} rows=${_flatRows.length}'));
+    }
     final channel = MethodChannel('sonarpad/native_accessible_list/$id');
     _channel = channel;
     widget.controller?._attach(channel);

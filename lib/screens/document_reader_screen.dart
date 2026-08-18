@@ -46,7 +46,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   final _voiceDictionary = VoiceDictionaryService();
   final _scrollController = AutoScrollController();
   final AccessibleListController _accessibleDocumentListController =
-      AccessibleListController();
+      AccessibleListController(debugName: 'document');
 
   // Testo e chunks
   bool _loadingText = true;
@@ -68,6 +68,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   int _playingChunkIndex = -1;
   int _focusedChunkIndex = -1;
   int _initialBookmarkFocusIndex = -1;
+  String? _lastLoggedInitialFocusId;
   StreamController<File>? _edgeFileController;
   // (chunkKeys rimosso, usiamo scroll_to_index)
   late int _bookmarkIndex;
@@ -88,6 +89,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   StreamSubscription<bool>? _playingSub;
 
   static const int _maxChunkChars = 650;
+
+  void _docLog(String message) {
+    unawaited(AppLogger.log('DOC_READER $message'));
+  }
   static const int _epubIndexCacheVersion = 1;
 
   late DocumentItem _currentDoc;
@@ -103,6 +108,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _bookmarkIndex = _currentDoc.bookmarkIndex;
     _hasBookmark = _currentDoc.bookmarkIndex > 0;
     _bookmarkIndexes = _normalizeBookmarkIndexes(_currentDoc.bookmarkIndexes);
+    _docLog('init id=${_currentDoc.id} name=${_currentDoc.displayName} widgetBookmark=${_currentDoc.bookmarkIndex} widgetBookmarks=${_currentDoc.bookmarkIndexes} temporary=${_currentDoc.isTemporary}');
     _playingSub = _audio.playingStream.listen((playing) {
       if (_speaking && _activeTtsEngine != 'system' && mounted) {
         setState(() => _ttsPaused = !playing);
@@ -166,6 +172,39 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final documentReadingSleepTimerMinutes =
         await _settings.loadDocumentReadingSleepTimerMinutes();
     final ttsSpeed = await _settings.loadTtsSpeed();
+
+    // Do not trust the route argument to contain the latest bookmark state.
+    // Some callers can keep an older DocumentItem instance alive. Reload the
+    // persisted library copy before extracting text so resume always starts
+    // from the authoritative bookmark saved on disk.
+    if (!_currentDoc.isTemporary) {
+      try {
+        final persistedLibrary = DocumentLibraryService();
+        await persistedLibrary.load();
+        DocumentItem? persisted;
+        for (final candidate in persistedLibrary.documents) {
+          if (candidate.id == _currentDoc.id) {
+            persisted = candidate;
+            break;
+          }
+        }
+        if (persisted != null) {
+          _docLog('DOC_BOOKMARK persisted copy found id=${persisted.id} bookmark=${persisted.bookmarkIndex} bookmarks=${persisted.bookmarkIndexes} routeBookmark=${_currentDoc.bookmarkIndex}');
+          _currentDoc = persisted;
+          _bookmarkIndex = persisted.bookmarkIndex;
+          _hasBookmark = persisted.bookmarkIndex > 0;
+          _bookmarkIndexes =
+              _normalizeBookmarkIndexes(persisted.bookmarkIndexes);
+        } else {
+          _docLog('DOC_BOOKMARK persisted copy NOT FOUND id=${_currentDoc.id}; using route bookmark=${_currentDoc.bookmarkIndex}');
+        }
+      } catch (error, stack) {
+        _docLog('DOC_BOOKMARK persisted reload ERROR $error stack=$stack');
+      }
+    } else {
+      _docLog('DOC_BOOKMARK temporary document; using route bookmark=${_currentDoc.bookmarkIndex}');
+    }
+
     try {
       final editedPath =
           await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
@@ -208,6 +247,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length
                 ? _bookmarkIndex
                 : -1;
+        _docLog('DOC_BOOKMARK extraction complete chunks=${_chunks.length} multiple=$_multipleDocumentBookmarksEnabled bookmarkIndex=$_bookmarkIndex bookmarkIndexes=$_bookmarkIndexes hasBookmark=$_hasBookmark initialFocusIndex=$_initialBookmarkFocusIndex');
         // Le chiavi vengono gestite da AutoScrollTag
       }
 
@@ -226,10 +266,17 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } finally {
       if (mounted) {
         setState(() => _loadingText = false);
+        _docLog('DOC_BOOKMARK loading=false build requested initialFocusIndex=$_initialBookmarkFocusIndex');
         final initialBookmarkIndex = _initialBookmarkFocusIndex;
         if (initialBookmarkIndex >= 0) {
+          _docLog('DOC_FOCUS scheduling delayed initial focus index=$initialBookmarkIndex delayMs=500');
           Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted) unawaited(_focusChunk(initialBookmarkIndex));
+            if (mounted) {
+              _docLog('DOC_FOCUS delayed initial focus firing index=$initialBookmarkIndex');
+              unawaited(_focusChunk(initialBookmarkIndex));
+            } else {
+              _docLog('DOC_FOCUS delayed initial focus cancelled: reader unmounted');
+            }
           });
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -246,7 +293,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   // ---------------------------------------------------------------------------
 
   void _scrollToChunk(int index) {
-    if (index < 0 || index >= _chunks.length) return;
+    if (index < 0 || index >= _chunks.length) {
+      _docLog('DOC_SCROLL reject index=$index chunks=${_chunks.length}');
+      return;
+    }
+    _docLog('DOC_SCROLL request index=$index id=paragraph_$index shared=$useSharedAccessibleViewModel nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
     if (useSharedAccessibleViewModel) {
       unawaited(
         _accessibleDocumentListController.scrollTo(
@@ -264,7 +315,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _focusChunk(int index) async {
-    if (index < 0 || index >= _chunks.length) return;
+    if (index < 0 || index >= _chunks.length) {
+      _docLog('DOC_FOCUS reject index=$index chunks=${_chunks.length}');
+      return;
+    }
+    _docLog('DOC_FOCUS request index=$index id=paragraph_$index shared=$useSharedAccessibleViewModel nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
     if (!useSharedAccessibleViewModel) {
       _scrollToChunk(index);
       return;
@@ -278,6 +333,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       'paragraph_$index',
       animated: false,
     );
+    _docLog('DOC_FOCUS controller call returned index=$index nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
   }
 
   List<String> _splitTextForDocumentDisplay(String text) {
@@ -1858,6 +1914,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   void _syncDocumentPositionFromAccessibilityFocus(int index) {
+    _docLog('DOC_FOCUS accessibility focus event index=$index mounted=$mounted speaking=$_speaking paused=$_ttsPaused previous=$_focusedChunkIndex');
     if (!mounted || index < 0 || index >= _chunks.length) return;
     // Durante la lettura attiva lo slider deve seguire il TTS, non il focus VO.
     // Se la lettura è ferma o in pausa, invece il flick tra paragrafi aggiorna
@@ -1870,12 +1927,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   void _seekDocumentToPercent(double percent) {
-    if (_chunks.isEmpty) return;
+    if (_chunks.isEmpty) {
+      _docLog('DOC_SCROLL slider seek ignored: no chunks percent=$percent');
+      return;
+    }
     final targetIndex = _indexForDocumentPercent(percent);
     final currentIndex = _activeDocumentPositionIndex;
     final positionChanged = targetIndex != currentIndex;
     final shouldRealignReading = _speaking && positionChanged;
     final shouldResumeReading = _speaking && !_ttsPaused;
+    _docLog('DOC_SCROLL slider seek percent=$percent targetIndex=$targetIndex currentIndex=$currentIndex changed=$positionChanged speaking=$_speaking nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer}');
     if (!positionChanged && !_speaking) return;
     setState(() {
       // Seeking changes the current reading/navigation position, not the
@@ -2284,12 +2345,18 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             _syncDocumentPositionFromAccessibilityFocus(i),
       ));
     }
+    final initialFocusId = _initialBookmarkFocusIndex >= 0
+        ? 'paragraph_$_initialBookmarkFocusIndex'
+        : null;
+    if (_lastLoggedInitialFocusId != initialFocusId) {
+      _lastLoggedInitialFocusId = initialFocusId;
+      _docLog('DOC_FOCUS UniversalAccessibleList build initialFocusId=$initialFocusId rows=${rows.length} nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer}');
+    }
     return UniversalAccessibleList(
       key: ValueKey('shared-document-${widget.document.id}-${_chunks.length}'),
       controller: _accessibleDocumentListController,
-      initialFocusId: _initialBookmarkFocusIndex >= 0
-          ? 'paragraph_$_initialBookmarkFocusIndex'
-          : null,
+      initialFocusId: initialFocusId,
+      debugTag: 'document',
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id;
@@ -2475,11 +2542,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _setBookmark(int index) async {
+    _docLog('DOC_BOOKMARK set requested index=$index currentBookmark=$_bookmarkIndex multiple=$_multipleDocumentBookmarksEnabled focused=$_focusedChunkIndex');
     if (_multipleDocumentBookmarksEnabled) {
       await _addMultipleBookmark(index, showSnack: false);
     } else {
       await _saveSingleBookmark(index, showSnack: false);
     }
+    _docLog('DOC_BOOKMARK set completed index=$index storedCurrentBookmark=${_currentDoc.bookmarkIndex} bookmarks=${_currentDoc.bookmarkIndexes}');
     if (mounted) {
       showStatusMessage(
         context,
@@ -2506,6 +2575,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     bool clearMultiple = false,
     bool preserveMultipleState = false,
   }) async {
+    _docLog('DOC_BOOKMARK saveSingle start index=$index oldCurrent=${_currentDoc.bookmarkIndex} clearMultiple=$clearMultiple preserveMultiple=$preserveMultipleState temporary=${_currentDoc.isTemporary}');
     final nextBookmarkIndexes = clearMultiple
         ? const <int>[]
         : (preserveMultipleState
@@ -2541,7 +2611,26 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (!_currentDoc.isTemporary) {
       final lib = DocumentLibraryService();
       await lib.load();
+      DocumentItem? before;
+      for (final candidate in lib.documents) {
+        if (candidate.id == newDoc.id) {
+          before = candidate;
+          break;
+        }
+      }
+      _docLog('DOC_BOOKMARK persist before id=${newDoc.id} found=${before != null} bookmark=${before?.bookmarkIndex} bookmarks=${before?.bookmarkIndexes}');
       await lib.update(newDoc);
+      await lib.load();
+      DocumentItem? verified;
+      for (final candidate in lib.documents) {
+        if (candidate.id == newDoc.id) {
+          verified = candidate;
+          break;
+        }
+      }
+      _docLog('DOC_BOOKMARK persist after id=${newDoc.id} found=${verified != null} bookmark=${verified?.bookmarkIndex} bookmarks=${verified?.bookmarkIndexes}');
+    } else {
+      _docLog('DOC_BOOKMARK persistence skipped for temporary document id=${newDoc.id}');
     }
 
     if (showSnack && mounted) {

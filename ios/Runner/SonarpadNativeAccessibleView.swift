@@ -280,6 +280,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var refreshControl: UIRefreshControl?
   private var refreshEnabled = false
   private var lastInitialFocusId: String?
+  private var debugTag: String?
+
+  private func emitDebug(_ message: String) {
+    guard debugTag == "document" else { return }
+    let line = "DOC_NATIVE_SWIFT \(message)"
+    print(line)
+    channel.invokeMethod("event", arguments: ["type": "debug", "message": line])
+  }
 
   init(frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, messenger: FlutterBinaryMessenger) {
     rootView = UIView(frame: frame)
@@ -316,12 +324,16 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         result(nil)
       case "scrollTo":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
-          self.scrollToRow(id: id, animated: map["animated"] as? Bool ?? true)
+          let animated = map["animated"] as? Bool ?? true
+          self.emitDebug("method scrollTo id=\(id) animated=\(animated) window=\(self.rootView.window != nil)")
+          self.scrollToRow(id: id, animated: animated)
         }
         result(nil)
       case "focusTo":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
-          self.focusRow(id: id, animated: map["animated"] as? Bool ?? false)
+          let animated = map["animated"] as? Bool ?? false
+          self.emitDebug("method focusTo id=\(id) animated=\(animated) window=\(self.rootView.window != nil)")
+          self.focusRow(id: id, animated: animated)
         }
         result(nil)
       default:
@@ -334,6 +346,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
 
   private func apply(arguments: Any?) {
     guard let map = arguments as? [String: Any] else { return }
+    debugTag = map["debugTag"] as? String
     let rawSections = map["sections"] as? [[String: Any]] ?? []
     let newSections = rawSections.map(SonarpadNativeSection.init)
     let focusedRowBeforeReload = voiceOverFocusedRowId()
@@ -341,6 +354,10 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     let sameStructureDynamicChange =
       sectionsChanged && sonarpadSectionsHaveSameStructure(sections, newSections)
     sections = newSections
+    let rowCount = newSections.reduce(0) { $0 + $1.rows.count }
+    let focusedBeforeLabel = focusedRowBeforeReload ?? "nil"
+    let initialFocusLabel = (map["initialFocusId"] as? String) ?? "nil"
+    emitDebug("apply rows=\(rowCount) sectionsChanged=\(sectionsChanged) sameStructureDynamicChange=\(sameStructureDynamicChange) focusedBefore=\(focusedBeforeLabel) initialFocus=\(initialFocusLabel) window=\(rootView.window != nil)")
 
     let wantsRefresh = map["refreshEnabled"] as? Bool ?? false
     if wantsRefresh != refreshEnabled {
@@ -357,17 +374,21 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
 
     if sameStructureDynamicChange {
+      emitDebug("apply updateVisibleRowsFromModel visible=\(tableView.indexPathsForVisibleRows?.count ?? 0)")
       updateVisibleRowsFromModel()
     } else if sectionsChanged {
+      emitDebug("apply reloadData begin contentOffsetY=\(tableView.contentOffset.y)")
       tableView.reloadData()
       tableView.layoutIfNeeded()
+      emitDebug("apply reloadData end visible=\(tableView.indexPathsForVisibleRows?.count ?? 0) contentOffsetY=\(tableView.contentOffset.y)")
     }
 
     let requestedInitialFocusId = map["initialFocusId"] as? String
     if requestedInitialFocusId != lastInitialFocusId {
       lastInitialFocusId = requestedInitialFocusId
       if let id = requestedInitialFocusId, !id.isEmpty {
-        focusRow(id: id, animated: false)
+        emitDebug("apply initialFocusId changed -> focus id=\(id) using screenChanged")
+        focusRow(id: id, animated: false, screenChanged: true)
         return
       }
     }
@@ -421,6 +442,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private func configure(cell: SonarpadAccessibleTableCell, with row: SonarpadNativeRow, at indexPath: IndexPath) {
     cell.rowId = row.id
     cell.accessibilityFocusHandler = { [weak self] id in
+      self?.emitDebug("VoiceOver didBecomeFocused row=\(id)")
       self?.channel.invokeMethod("event", arguments: ["type": "focus", "id": id])
     }
     cell.isAccessibilityElement = true
@@ -729,12 +751,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   }
 
   private func restoreFocusRow(id: String, attempt: Int = 0) {
-    guard let indexPath = indexPath(forRowId: id) else { return }
+    guard let indexPath = indexPath(forRowId: id) else {
+      emitDebug("restoreFocusRow id=\(id) attempt=\(attempt) indexPath NOT FOUND")
+      return
+    }
+    emitDebug("restoreFocusRow id=\(id) attempt=\(attempt) indexPath=\(indexPath)")
     tableView.scrollToRow(at: indexPath, at: .none, animated: false)
     tableView.layoutIfNeeded()
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) { [weak self] in
       guard let self = self else { return }
       if let target = self.accessibilityTarget(at: indexPath) {
+        self.emitDebug("restoreFocusRow POST id=\(id) attempt=\(attempt) targetType=\(String(describing: type(of: target)))")
         UIAccessibility.post(notification: .layoutChanged, argument: target)
       } else if attempt < 12 {
         self.restoreFocusRow(id: id, attempt: attempt + 1)
@@ -743,7 +770,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   }
 
   private func scrollToRow(id: String, animated: Bool, attempt: Int = 0) {
-    guard let indexPath = indexPath(forRowId: id) else { return }
+    guard let indexPath = indexPath(forRowId: id) else {
+      emitDebug("scrollToRow id=\(id) attempt=\(attempt) indexPath NOT FOUND rows=\(sections.reduce(0) { $0 + $1.rows.count })")
+      return
+    }
+    emitDebug("scrollToRow id=\(id) attempt=\(attempt) indexPath=\(indexPath) animated=\(animated) beforeOffsetY=\(tableView.contentOffset.y) visible=\(tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false)")
     tableView.layoutIfNeeded()
     tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
 
@@ -752,14 +783,20 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       guard let self = self else { return }
       self.tableView.layoutIfNeeded()
       let isVisible = self.tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false
+      self.emitDebug("scrollToRow verify id=\(id) attempt=\(attempt) visible=\(isVisible) offsetY=\(self.tableView.contentOffset.y) cellExists=\(self.tableView.cellForRow(at: indexPath) != nil)")
       if !isVisible && attempt < 12 {
         self.scrollToRow(id: id, animated: false, attempt: attempt + 1)
       }
     }
   }
 
-  private func focusRow(id: String, animated: Bool, attempt: Int = 0) {
-    guard let indexPath = indexPath(forRowId: id) else { return }
+  private func focusRow(id: String, animated: Bool, attempt: Int = 0, screenChanged: Bool = false) {
+    guard let indexPath = indexPath(forRowId: id) else {
+      emitDebug("focusRow id=\(id) attempt=\(attempt) indexPath NOT FOUND rows=\(sections.reduce(0) { $0 + $1.rows.count }) screenChanged=\(screenChanged)")
+      return
+    }
+    let focusedBefore = voiceOverFocusedRowId() ?? "nil"
+    emitDebug("focusRow id=\(id) attempt=\(attempt) indexPath=\(indexPath) animated=\(animated) screenChanged=\(screenChanged) window=\(rootView.window != nil) beforeFocused=\(focusedBefore) beforeOffsetY=\(tableView.contentOffset.y)")
     tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
     tableView.layoutIfNeeded()
 
@@ -771,23 +808,30 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       guard self.rootView.window != nil,
             let target = self.accessibilityTarget(at: indexPath) else {
         if attempt < 24 {
-          self.focusRow(id: id, animated: false, attempt: attempt + 1)
+          self.emitDebug("focusRow target unavailable id=\(id) attempt=\(attempt) window=\(self.rootView.window != nil) cellExists=\(self.tableView.cellForRow(at: indexPath) != nil) -> retry")
+          self.focusRow(id: id, animated: false, attempt: attempt + 1, screenChanged: screenChanged)
         }
         return
       }
 
-      // This is an in-screen focus move, not a navigation to a new screen.
-      // layoutChanged is less likely than screenChanged to let Flutter's
-      // navigation bar reclaim VoiceOver focus.
-      UIAccessibility.post(notification: .layoutChanged, argument: target)
+      // Initial screen entry needs the stronger screenChanged notification
+      // to move VoiceOver from Flutter's navigation bar into the UIKit table.
+      // In-screen jumps keep using layoutChanged.
+      let notification: UIAccessibility.Notification = screenChanged ? .screenChanged : .layoutChanged
+      let notificationName = screenChanged ? "screenChanged" : "layoutChanged"
+      self.emitDebug("focusRow POST id=\(id) attempt=\(attempt) notification=\(notificationName) targetType=\(String(describing: type(of: target))) offsetY=\(self.tableView.contentOffset.y)")
+      UIAccessibility.post(notification: notification, argument: target)
 
       // Platform views can receive a competing Flutter accessibility update
       // in the same frame. Verify the real VoiceOver focus and retry briefly
       // until the requested row actually owns it.
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.10) { [weak self] in
         guard let self = self else { return }
-        if self.voiceOverFocusedRowId() != id && attempt < 24 {
-          self.focusRow(id: id, animated: false, attempt: attempt + 1)
+        let focusedAfter = self.voiceOverFocusedRowId()
+        let focusedAfterLabel = focusedAfter ?? "nil"
+        self.emitDebug("focusRow VERIFY id=\(id) attempt=\(attempt) focusedAfter=\(focusedAfterLabel) expected=\(id)")
+        if focusedAfter != id && attempt < 24 {
+          self.focusRow(id: id, animated: false, attempt: attempt + 1, screenChanged: screenChanged)
         }
       }
     }
