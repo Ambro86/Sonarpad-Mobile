@@ -7,6 +7,7 @@ import '../services/recent_searches_service.dart';
 import 'document_reader_screen.dart';
 import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class WikipediaScreen extends StatefulWidget {
   const WikipediaScreen({super.key});
@@ -120,7 +121,73 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.importFromWikipedia)),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              key: ValueKey('native-wikipedia-main-${_language ?? 'it'}'),
+              sections: [
+                NativeIosListSection(
+                  rows: [
+                    NativeIosListRow(
+                      id: 'query',
+                      title: l10n.searchWikipedia,
+                      kind: 'textField',
+                      value: _controller.text,
+                      placeholder: l10n.searchWikipedia,
+                    ),
+                    NativeIosListRow(
+                      id: 'language',
+                      title: l10n.wikipediaLanguage,
+                      kind: 'picker',
+                      value: _language ?? 'it',
+                      valueLabel: _languages
+                          .firstWhere(
+                            (entry) => entry.$1 == (_language ?? 'it'),
+                            orElse: () => _languages.first,
+                          )
+                          .$2,
+                      options: _languages
+                          .map((entry) => NativeIosOption(
+                                value: entry.$1,
+                                label: '${entry.$2} (${entry.$1})',
+                              ))
+                          .toList(),
+                    ),
+                    NativeIosListRow(id: 'recent', title: l10n.recentArticles, kind: 'action'),
+                    NativeIosListRow(id: 'search', title: l10n.search, kind: 'button'),
+                  ],
+                ),
+              ],
+              onEvent: (event) async {
+                if (event.type == 'textChanged' && event.id == 'query') {
+                  final value = event.value?.toString() ?? '';
+                  _controller.value = TextEditingValue(
+                    text: value,
+                    selection: TextSelection.collapsed(offset: value.length),
+                  );
+                  return;
+                }
+                if (event.type == 'picker' && event.id == 'language') {
+                  final value = event.value?.toString();
+                  if (value != null) setState(() => _language = value);
+                  return;
+                }
+                if (event.type != 'activate') return;
+                if (event.id == 'search') {
+                  _search();
+                } else if (event.id == 'recent') {
+                  final q = await Navigator.of(context).push<String>(
+                    MaterialPageRoute(
+                      builder: (ctx) => RecentSearchesScreen(
+                        title: l10n.recentArticles,
+                        domain: 'wikipedia',
+                      ),
+                    ),
+                  );
+                  if (q != null && mounted) await _openRecentArticle(q);
+                }
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -227,6 +294,28 @@ class _WikipediaResultsScreenState extends State<_WikipediaResultsScreen> {
           if (results.isEmpty) {
             return Center(child: Text(l10n.noWikipediaResults));
           }
+          if (useNativeIosAccessibleViews) {
+            return NativeIosAccessibleList(
+              key: ValueKey('native-wikipedia-results-${results.length}'),
+              sections: [
+                NativeIosListSection(
+                  rows: results.asMap().entries.map((entry) =>
+                    NativeIosListRow(
+                      id: entry.key.toString(),
+                      title: entry.value.title,
+                      kind: 'action',
+                    )).toList(),
+                ),
+              ],
+              onEvent: (event) {
+                if (event.type != 'activate' || event.id == null) return;
+                final index = int.tryParse(event.id!);
+                if (index != null && index >= 0 && index < results.length) {
+                  _openArticle(results[index]);
+                }
+              },
+            );
+          }
           return ListView.separated(
             itemCount: results.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
@@ -296,7 +385,34 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
     final article = _article;
     return Scaffold(
       appBar: AppBar(title: Text(widget.result.title)),
-      body: ListView(
+      body: useNativeIosAccessibleViews && !_importing && _importError == null && article != null
+          ? NativeIosAccessibleList(
+              key: ValueKey('native-wikipedia-article-${article.sections.length}'),
+              sections: [
+                NativeIosListSection(
+                  header: article.title,
+                  rows: [
+                    NativeIosListRow(
+                      id: '0',
+                      title: l10n.wikipediaImportWholeArticle,
+                      kind: 'action',
+                    ),
+                    ...article.sections.asMap().entries.map((entry) =>
+                      NativeIosListRow(
+                        id: '${entry.key + 1}',
+                        title: _sectionLabel(entry.value),
+                        kind: 'action',
+                      )),
+                  ],
+                ),
+              ],
+              onEvent: (event) async {
+                if (event.type != 'activate' || event.id == null) return;
+                final index = int.tryParse(event.id!);
+                if (index != null) await _importToLibrary(index);
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           if (_importing)

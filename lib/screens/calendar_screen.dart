@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../services/calendar/calendar_service.dart';
 import '../models/calendar_event.dart';
 import 'calendar_day_screen.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -18,6 +19,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   final int _todayIndex =
       10000; // Un numero grande per simulare uno scroll infinito indietro
   List<CalendarEvent> _allEvents = [];
+  final NativeIosListController _nativeListController = NativeIosListController();
+  static const int _nativePastDays = 2000;
+  static const int _nativeTotalDays = 4001;
 
   @override
   void initState() {
@@ -43,12 +47,39 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.dispose();
   }
 
-  void _scrollToToday() {
+  Future<void> _scrollToToday() async {
+    if (useNativeIosAccessibleViews) {
+      await _nativeListController.scrollTo('day_$_nativePastDays');
+      return;
+    }
     _scrollController.animateTo(
       _todayIndex * 80.0,
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
+  }
+
+  String _nativeDayTitle(DateTime date, DateTime baseToday, AppLocalizations l10n) {
+    final dayFormat = DateFormat('EEEE d MMMM yyyy', l10n.localeName);
+    final titleStr = dayFormat.format(date);
+    final capTitle = titleStr[0].toUpperCase() + titleStr.substring(1);
+    final offset = date.difference(baseToday).inDays;
+    if (offset == 0) return '${l10n.calendarToday}, $capTitle';
+    if (offset == 1) return '${l10n.calendarTomorrow}, $capTitle';
+    if (offset == -1) return '${l10n.calendarYesterday}, $capTitle';
+    return capTitle;
+  }
+
+  String? _nativeDaySubtitle(DateTime date, AppLocalizations l10n) {
+    final parts = <String>[];
+    final holiday = _service.getHoliday(date, l10n.localeName);
+    final saint = _service.getSaint(date, l10n.localeName);
+    final dayEvents = _allEvents.where((e) =>
+      e.date.year == date.year && e.date.month == date.month && e.date.day == date.day).toList();
+    if (holiday != null) parts.add(holiday);
+    if (saint != null) parts.add('${l10n.saintOfTheDay}: $saint');
+    if (dayEvents.isNotEmpty) parts.add(l10n.reminderSaved(dayEvents.length));
+    return parts.isEmpty ? null : parts.join(' - ');
   }
 
   @override
@@ -69,7 +100,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
           )
         ],
       ),
-      body: ListView.builder(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              controller: _nativeListController,
+              sections: [NativeIosListSection(rows: [
+                for (var i = 0; i < _nativeTotalDays; i++)
+                  NativeIosListRow(
+                    id: 'day_$i',
+                    title: _nativeDayTitle(baseToday.add(Duration(days: i - _nativePastDays)), baseToday, l10n),
+                    subtitle: _nativeDaySubtitle(baseToday.add(Duration(days: i - _nativePastDays)), l10n),
+                  ),
+              ])],
+              onEvent: (event) async {
+                if (event.type != 'activate' || event.id == null) return;
+                final i = int.tryParse(event.id!.replaceFirst('day_', ''));
+                if (i == null || i < 0 || i >= _nativeTotalDays) return;
+                final date = baseToday.add(Duration(days: i - _nativePastDays));
+                await Navigator.of(context).push(MaterialPageRoute(builder: (_) => CalendarDayScreen(date: date)));
+                await _loadEvents();
+              },
+            )
+          : ListView.builder(
         controller: _scrollController,
         // Usiamo un itemExtent per un'altezza fissa che aiuta lo scroll
         itemExtent: 80.0,

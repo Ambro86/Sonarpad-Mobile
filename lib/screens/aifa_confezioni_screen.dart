@@ -5,6 +5,7 @@ import '../services/aifa_pdf_parser.dart';
 import '../services/aifa_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class AifaConfezioniScreen extends StatefulWidget {
   final AifaDrugResult drugGroup;
@@ -218,25 +219,53 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
                 ),
               ),
             Expanded(
-              child: ListView.builder(
-                itemCount: widget.drugGroup.confezioni.length,
-                itemBuilder: (context, index) {
-                  final conf = widget.drugGroup.confezioni[index];
-                  final isDownloading = _downloadingConf == conf;
-                  return ListTile(
-                    title: Text(conf.name),
-                    trailing: isDownloading
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.picture_as_pdf),
-                    onTap:
-                        isDownloading ? null : () => _showReadingOptions(conf),
-                  );
-                },
-              ),
+              child: useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      sections: [
+                        NativeIosListSection(
+                          header: 'Confezioni',
+                          rows: widget.drugGroup.confezioni
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                                final isDownloading = _downloadingConf == entry.value;
+                                return NativeIosListRow(
+                                  id: 'confezione_${entry.key}',
+                                  title: entry.value.name,
+                                  subtitle: isDownloading ? 'Apertura in corso' : 'Apri foglio illustrativo',
+                                  enabled: !isDownloading,
+                                );
+                              })
+                              .toList(growable: false),
+                        ),
+                      ],
+                      onEvent: (event) {
+                        if (event.type != 'activate' || event.id == null) return;
+                        final index = int.tryParse(event.id!.replaceFirst('confezione_', ''));
+                        if (index != null && index >= 0 && index < widget.drugGroup.confezioni.length) {
+                          final conf = widget.drugGroup.confezioni[index];
+                          if (_downloadingConf != conf) _showReadingOptions(conf);
+                        }
+                      },
+                    )
+                  : ListView.builder(
+                      itemCount: widget.drugGroup.confezioni.length,
+                      itemBuilder: (context, index) {
+                        final conf = widget.drugGroup.confezioni[index];
+                        final isDownloading = _downloadingConf == conf;
+                        return ListTile(
+                          title: Text(conf.name),
+                          trailing: isDownloading
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : const Icon(Icons.picture_as_pdf),
+                          onTap: isDownloading ? null : () => _showReadingOptions(conf),
+                        );
+                      },
+                    ),
             ),
           ],
         ),

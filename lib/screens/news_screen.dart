@@ -17,6 +17,7 @@ import 'news_webview_screen.dart';
 import '../utils/status_message.dart';
 import '../utils/list_timestamp_formatter.dart';
 import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class NewsScreen extends StatefulWidget {
   final String? folderId;
@@ -433,42 +434,84 @@ class _AddCommunityNewsSourceScreenState
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.newsAddCommunitySource)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(l10n.newsAddCommunityInstructions),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: l10n.newsCommunitySourceName,
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [NativeIosListSection(rows: [
+                NativeIosListRow(
+                  id: 'instructions',
+                  kind: 'text',
+                  title: l10n.newsAddCommunityInstructions,
+                ),
+                NativeIosListRow(
+                  id: 'name',
+                  kind: 'textField',
+                  title: l10n.newsCommunitySourceName,
+                  value: _nameController.text,
+                ),
+                NativeIosListRow(
+                  id: 'url',
+                  kind: 'textField',
+                  title: l10n.newsCommunitySourceUrl,
+                  value: _urlController.text,
+                ),
+                NativeIosListRow(
+                  id: 'language',
+                  kind: 'text',
+                  title: l10n.newsCommunitySelectedLanguage(widget.language.label(l10n)),
+                ),
+                NativeIosListRow(
+                  id: 'submit',
+                  kind: 'button',
+                  title: _submitting ? l10n.newsCommunityChecking : l10n.newsCommunitySubmit,
+                  enabled: !_submitting,
+                ),
+              ])],
+              onEvent: (event) {
+                if (event.id == 'name' && event.type == 'textChanged') {
+                  _nameController.text = event.value?.toString() ?? '';
+                } else if (event.id == 'url' && event.type == 'textChanged') {
+                  _urlController.text = event.value?.toString() ?? '';
+                } else if (event.id == 'submit' && event.type == 'activate' && !_submitting) {
+                  _submit();
+                }
+              },
+            )
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(l10n.newsAddCommunityInstructions),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: l10n.newsCommunitySourceName,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _urlController,
+                  decoration: InputDecoration(
+                    labelText: l10n.newsCommunitySourceUrl,
+                  ),
+                  keyboardType: TextInputType.url,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.newsCommunitySelectedLanguage(widget.language.label(l10n)),
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: _submitting ? null : _submit,
+                  icon: const Icon(Icons.cloud_upload),
+                  label: Text(_submitting
+                      ? l10n.newsCommunityChecking
+                      : l10n.newsCommunitySubmit),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _urlController,
-            decoration: InputDecoration(
-              labelText: l10n.newsCommunitySourceUrl,
-            ),
-            keyboardType: TextInputType.url,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            l10n.newsCommunitySelectedLanguage(widget.language.label(l10n)),
-          ),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: _submitting ? null : _submit,
-            icon: const Icon(Icons.cloud_upload),
-            label: Text(_submitting
-                ? l10n.newsCommunityChecking
-                : l10n.newsCommunitySubmit),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -568,6 +611,28 @@ class _CommunityNewsSourcesScreenState
           final sources = snapshot.data ?? const <NewsRssSource>[];
           if (sources.isEmpty) {
             return Center(child: Text(l10n.newsCommunitySourcesEmpty));
+          }
+          if (useNativeIosAccessibleViews) {
+            return NativeIosAccessibleList(
+              sections: [NativeIosListSection(rows: [
+                for (var index = 0; index < sources.length; index++)
+                  NativeIosListRow(
+                    id: 'source_$index',
+                    title: sources[index].name,
+                    subtitle: sources[index].uri.toString(),
+                    accessibilityLabel: '${sources[index].name}, ${sources[index].uri}',
+                    hint: l10n.newsCommunitySourceTapHint,
+                    enabled: !_addingUrls.contains(sources[index].uri.toString()),
+                  ),
+              ])],
+              onEvent: (event) {
+                if (event.type != 'activate' || event.id == null) return;
+                final index = int.tryParse(event.id!.replaceFirst('source_', ''));
+                if (index != null && index >= 0 && index < sources.length) {
+                  _addToLibrary(sources[index]);
+                }
+              },
+            );
           }
           return ListView.separated(
             itemCount: sources.length,
@@ -754,69 +819,134 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
           if (showCategories &&
               widget.source.categories != null &&
               widget.source.categories!.isNotEmpty)
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                children: [
-                  ChoiceChip(
-                    label: Text(AppLocalizations.of(context).newsCategoryTop),
-                    selected: _currentUri == widget.source.uri,
-                    onSelected: (selected) {
-                      if (selected) {
-                        _openCategory(
-                          widget.source.uri,
-                          widget.source.name,
-                        );
-                      }
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  ...widget.source.categories!.map((cat) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ChoiceChip(
-                        label: Text(cat.name),
-                        selected: _currentUri == cat.uri,
-                        onSelected: (selected) {
-                          if (selected) {
-                            _openCategory(
-                              cat.uri,
-                              '${widget.source.name}: ${cat.name}',
-                            );
-                          }
-                        },
-                      ),
-                    );
-                  }),
-                ],
-              ),
-            ),
-          if (isLocalCategory)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    controller: _localCityController,
-                    decoration: InputDecoration(
-                      labelText:
-                          AppLocalizations.of(context).newsLocalCityLabel,
-                      hintText:
-                          AppLocalizations.of(context).newsLocalCityHint,
+            useNativeIosAccessibleViews
+                ? SizedBox(
+                    height: 72,
+                    child: NativeIosAccessibleList(
+                      sections: [NativeIosListSection(rows: [
+                        NativeIosListRow(
+                          id: 'category',
+                          title: AppLocalizations.of(context).newsCategoryTop,
+                          kind: 'picker',
+                          value: _currentUri.toString(),
+                          options: [
+                            NativeIosOption(
+                              value: widget.source.uri.toString(),
+                              label: AppLocalizations.of(context).newsCategoryTop,
+                            ),
+                            for (final cat in widget.source.categories!)
+                              NativeIosOption(
+                                value: cat.uri.toString(),
+                                label: cat.name,
+                              ),
+                          ],
+                        ),
+                      ])],
+                      onEvent: (event) {
+                        if (event.id != 'category' || event.type != 'picker') return;
+                        final selected = event.value?.toString();
+                        if (selected == null) return;
+                        if (selected == widget.source.uri.toString()) {
+                          _openCategory(widget.source.uri, widget.source.name);
+                          return;
+                        }
+                        final category = widget.source.categories!
+                            .where((cat) => cat.uri.toString() == selected)
+                            .firstOrNull;
+                        if (category != null) {
+                          _openCategory(
+                            category.uri,
+                            '${widget.source.name}: ${category.name}',
+                          );
+                        }
+                      },
                     ),
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (_) => _reloadLocalCategory(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Row(
+                      children: [
+                        ChoiceChip(
+                          label: Text(AppLocalizations.of(context).newsCategoryTop),
+                          selected: _currentUri == widget.source.uri,
+                          onSelected: (selected) {
+                            if (selected) {
+                              _openCategory(widget.source.uri, widget.source.name);
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        ...widget.source.categories!.map((cat) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: ChoiceChip(
+                              label: Text(cat.name),
+                              selected: _currentUri == cat.uri,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  _openCategory(
+                                    cat.uri,
+                                    '${widget.source.name}: ${cat.name}',
+                                  );
+                                }
+                              },
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  FilledButton(
-                    onPressed: _reloadLocalCategory,
-                    child: Text(AppLocalizations.of(context).update),
+          if (isLocalCategory)
+            useNativeIosAccessibleViews
+                ? SizedBox(
+                    height: 132,
+                    child: NativeIosAccessibleList(
+                      sections: [NativeIosListSection(rows: [
+                        NativeIosListRow(
+                          id: 'local_city',
+                          kind: 'textField',
+                          title: AppLocalizations.of(context).newsLocalCityLabel,
+                          placeholder: AppLocalizations.of(context).newsLocalCityHint,
+                          value: _localCityController.text,
+                        ),
+                        NativeIosListRow(
+                          id: 'local_update',
+                          kind: 'button',
+                          title: AppLocalizations.of(context).update,
+                        ),
+                      ])],
+                      onEvent: (event) {
+                        if (event.id == 'local_city' && event.type == 'textChanged') {
+                          _localCityController.text = event.value?.toString() ?? '';
+                        } else if (event.id == 'local_update' && event.type == 'activate') {
+                          _reloadLocalCategory();
+                        }
+                      },
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextField(
+                          controller: _localCityController,
+                          decoration: InputDecoration(
+                            labelText: AppLocalizations.of(context).newsLocalCityLabel,
+                            hintText: AppLocalizations.of(context).newsLocalCityHint,
+                          ),
+                          textInputAction: TextInputAction.search,
+                          onSubmitted: (_) => _reloadLocalCategory(),
+                        ),
+                        const SizedBox(height: 8),
+                        FilledButton(
+                          onPressed: _reloadLocalCategory,
+                          child: Text(AppLocalizations.of(context).update),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refresh,
@@ -882,20 +1012,36 @@ class _NewsSourceList extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.selectFolder),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: folders
-                .map(
-                  (folder) => ListTile(
-                    key: ValueKey('news_move_folder_${folder.id}'),
-                    leading: const Icon(Icons.folder, color: Colors.amber),
-                    title: Text(folder.name),
-                    onTap: () => Navigator.pop(ctx, folder.id),
-                  ),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 360,
+          child: useNativeIosAccessibleViews
+              ? NativeIosAccessibleList(
+                  sections: [NativeIosListSection(rows: [
+                    for (final folder in folders)
+                      NativeIosListRow(id: folder.id, title: folder.name),
+                  ])],
+                  onEvent: (event) {
+                    if (event.type == 'activate' && event.id != null) {
+                      Navigator.pop(ctx, event.id);
+                    }
+                  },
                 )
-                .toList(),
-          ),
+              : SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: folders
+                        .map(
+                          (folder) => ListTile(
+                            key: ValueKey('news_move_folder_${folder.id}'),
+                            leading: const Icon(Icons.folder, color: Colors.amber),
+                            title: Text(folder.name),
+                            onTap: () => Navigator.pop(ctx, folder.id),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
         ),
         actions: [
           TextButton(
@@ -988,6 +1134,66 @@ class _NewsSourceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    if (useNativeIosAccessibleViews) {
+      final rows = <NativeIosListRow>[];
+      for (var index = 0; index < sources.length; index++) {
+        final source = sources[index];
+        final actions = <NativeIosCustomAction>[
+          if (onCreateFolder != null)
+            NativeIosCustomAction(id: 'create_folder', label: l10n.createNewFolder),
+          if (index > 0)
+            NativeIosCustomAction(id: 'move_up', label: l10n.moveUp),
+          if (index < sources.length - 1)
+            NativeIosCustomAction(id: 'move_down', label: l10n.moveDown),
+          NativeIosCustomAction(id: 'move_position', label: l10n.moveToPosition),
+          if (!source.isFolder && currentFolderId != null)
+            NativeIosCustomAction(id: 'move_out', label: l10n.outOfFolder),
+          if (!source.isFolder)
+            NativeIosCustomAction(id: 'move_folder', label: l10n.moveToAnotherFolder),
+          if (!source.isFolder)
+            NativeIosCustomAction(id: 'hide', label: l10n.hide),
+          if (source.isFolder)
+            NativeIosCustomAction(id: 'delete', label: l10n.removeFolder),
+          if (source.isCustom && !source.isFolder)
+            NativeIosCustomAction(id: 'delete', label: l10n.deleteNewsSource),
+        ];
+        rows.add(NativeIosListRow(
+          id: _newsSourceStableId(source),
+          title: source.name,
+          accessibilityLabel: source.isFolder
+              ? '${l10n.folderTypeLabel} ${source.name}'
+              : source.name,
+          hint: source.isFolder ? l10n.openFolderHint : null,
+          kind: 'action',
+          actions: actions,
+        ));
+      }
+      return NativeIosAccessibleList(
+        key: ValueKey('native-news-sources-${language.code}-${currentFolderId ?? 'root'}-${sources.length}'),
+        sections: [NativeIosListSection(rows: rows)],
+        onEvent: (event) async {
+          final id = event.id;
+          if (id == null) return;
+          final index = sources.indexWhere((source) => _newsSourceStableId(source) == id);
+          if (index < 0) return;
+          if (event.type == 'activate') {
+            onSourceSelected(sources[index]);
+            return;
+          }
+          if (event.type != 'customAction') return;
+          switch (event.action) {
+            case 'create_folder': onCreateFolder?.call(); break;
+            case 'move_up': _handleAction(context, _NewsSourceAction.moveUp, index); break;
+            case 'move_down': _handleAction(context, _NewsSourceAction.moveDown, index); break;
+            case 'move_position': _handleAction(context, _NewsSourceAction.moveToPosition, index); break;
+            case 'move_out': _handleAction(context, _NewsSourceAction.moveOutOfFolder, index); break;
+            case 'move_folder': _handleAction(context, _NewsSourceAction.moveToFolder, index); break;
+            case 'hide': _handleAction(context, _NewsSourceAction.hide, index); break;
+            case 'delete': _handleAction(context, _NewsSourceAction.delete, index); break;
+          }
+        },
+      );
+    }
     return ListView.separated(
       key: PageStorageKey<String>(
         'news_sources_${language.code}_${currentFolderId ?? 'root'}',
@@ -1355,6 +1561,51 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           return Center(child: Text(l10n.noNewsFound));
         }
 
+        if (useNativeIosAccessibleViews) {
+          final rows = <NativeIosListRow>[
+            if (_readUris.isNotEmpty)
+              NativeIosListRow(
+                id: '__read_articles__',
+                title: l10n.newsReadArticles,
+                kind: 'action',
+              ),
+            ...articles.map((article) {
+              final summaryTrimmed = article.summary.trim();
+              final titleTrimmed = article.title.trim();
+              final isSummaryDuplicate = summaryTrimmed.isNotEmpty &&
+                  (summaryTrimmed == titleTrimmed ||
+                      summaryTrimmed.contains(titleTrimmed) ||
+                      titleTrimmed.contains(summaryTrimmed));
+              final subtitleText = isSummaryDuplicate
+                  ? article.source
+                  : '${article.source}. ${article.summary}';
+              return NativeIosListRow(
+                id: article.id,
+                title: titleWithListTimestamp(
+                  article.title,
+                  article.publishedAt,
+                  l10n.localeName,
+                ),
+                subtitle: subtitleText,
+                kind: 'action',
+              );
+            }),
+          ];
+          return NativeIosAccessibleList(
+            key: ValueKey('native-news-articles-${widget.sourceName}-${rows.length}'),
+            sections: [NativeIosListSection(rows: rows)],
+            onEvent: (event) async {
+              if (event.type != 'activate' || event.id == null) return;
+              if (event.id == '__read_articles__') {
+                _openReadArticles();
+                return;
+              }
+              final index = articles.indexWhere((article) => article.id == event.id);
+              if (index >= 0) await _openArticle(articles[index], articles);
+            },
+          );
+        }
+
         return ListView.separated(
           controller: _scrollController,
           itemCount: itemCount,
@@ -1476,6 +1727,61 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
     _load();
   }
 
+
+  Widget _buildNativeIosReadArticles(AppLocalizations l10n) {
+    final rows = _articles.map((article) {
+      final summaryTrimmed = article.summary.trim();
+      final titleTrimmed = article.title.trim();
+      final isSummaryDuplicate = summaryTrimmed.isNotEmpty &&
+          (summaryTrimmed == titleTrimmed ||
+              summaryTrimmed.contains(titleTrimmed) ||
+              titleTrimmed.contains(summaryTrimmed));
+      final subtitleText = isSummaryDuplicate
+          ? article.source
+          : '${article.source}. ${article.summary}';
+      return NativeIosListRow(
+        id: article.id,
+        title: titleWithListTimestamp(
+          article.title,
+          article.publishedAt,
+          l10n.localeName,
+        ),
+        subtitle: subtitleText,
+        kind: 'action',
+        actions: [
+          NativeIosCustomAction(id: 'delete', label: l10n.deleteItem),
+        ],
+      );
+    }).toList();
+    return NativeIosAccessibleList(
+      key: ValueKey('native-read-news-${rows.length}'),
+      sections: [NativeIosListSection(rows: rows)],
+      onEvent: (event) async {
+        final id = event.id;
+        if (id == null) return;
+        final index = _articles.indexWhere((article) => article.id == id);
+        if (index < 0) return;
+        final article = _articles[index];
+        if (event.type == 'customAction' && event.action == 'delete') {
+          await _deleteArticle(article);
+        } else if (event.type == 'activate') {
+          if (!mounted) return;
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              settings: const RouteSettings(name: '/news/article'),
+              builder: (_) => NewsWebViewScreen(
+                article: article,
+                language: widget.language,
+                readSourceName: widget.sourceName,
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -1495,7 +1801,9 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _articles.isEmpty
               ? Center(child: Text(l10n.noNewsFound))
-              : ListView.separated(
+              : useNativeIosAccessibleViews
+                  ? _buildNativeIosReadArticles(l10n)
+                  : ListView.separated(
                   itemCount: _articles.length,
                   separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {

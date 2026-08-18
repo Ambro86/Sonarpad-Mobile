@@ -208,5 +208,6 @@ class SonarpadSharedMediaPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     SonarpadTTSPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadTTSPlugin")!)
     SonarpadSharedMediaPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadSharedMediaPlugin")!)
+    engineBridge.pluginRegistry.registerSonarpadNativeAccessibleViews()
   }
 }

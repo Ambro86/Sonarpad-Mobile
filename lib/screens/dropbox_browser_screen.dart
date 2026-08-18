@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../services/dropbox_service.dart';
 import '../services/document_library_service.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class DropboxBrowserScreen extends StatefulWidget {
   final DocumentLibraryService documentService;
@@ -272,6 +273,60 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             ),
           ],
         ),
+      );
+    }
+
+    if (useNativeIosAccessibleViews) {
+      final rows = <NativeIosListRow>[
+        NativeIosListRow(
+          id: 'search',
+          title: l10n.search,
+          kind: 'textField',
+          value: _searchController.text,
+        ),
+        if (_searchQuery.isNotEmpty)
+          NativeIosListRow(id: 'clear_search', title: 'Cancella ricerca', kind: 'button'),
+        if (_currentPath.isNotEmpty)
+          NativeIosListRow(id: 'back', title: l10n.goBack),
+        if (visibleEntries.isEmpty)
+          NativeIosListRow(
+            id: 'empty',
+            kind: 'text',
+            title: _searchQuery.trim().isEmpty
+                ? l10n.noSupportedFilesInFolder
+                : l10n.noDocumentSearchResults(_searchQuery.trim()),
+          )
+        else
+          for (var i = 0; i < visibleEntries.length; i++)
+            NativeIosListRow(
+              id: 'entry_$i',
+              title: visibleEntries[i]['name'] as String,
+              subtitle: visibleEntries[i]['.tag'] == 'folder' ? 'Cartella' : 'File',
+            ),
+      ];
+      return NativeIosAccessibleList(
+        sections: [NativeIosListSection(rows: rows)],
+        onEvent: (event) async {
+          if (event.id == 'search' && event.type == 'textChanged') {
+            final value = event.value?.toString() ?? '';
+            _searchController.text = value;
+            setState(() => _searchQuery = value);
+          } else if (event.id == 'clear_search' && event.type == 'activate') {
+            _clearSearch();
+          } else if (event.id == 'back' && event.type == 'activate') {
+            final parent = p.dirname(_currentPath);
+            await _loadFolder(parent == '/' ? '' : parent);
+          } else if (event.type == 'activate' && event.id?.startsWith('entry_') == true) {
+            final i = int.tryParse(event.id!.substring(6));
+            if (i == null || i >= visibleEntries.length) return;
+            final entry = visibleEntries[i];
+            if (entry['.tag'] == 'folder') {
+              await _loadFolder(entry['path_display'] as String);
+            } else {
+              await _importFile(entry);
+            }
+          }
+        },
       );
     }
 

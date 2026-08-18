@@ -6,6 +6,7 @@ import '../services/recent_routes_service.dart';
 import '../services/route_service.dart';
 import 'route_result_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class RouteScreen extends StatefulWidget {
   const RouteScreen({super.key});
@@ -148,6 +149,42 @@ class _RouteScreenState extends State<RouteScreen> {
     return showDialog<GeocodeCandidate>(
       context: context,
       builder: (dialogContext) {
+        if (useNativeIosAccessibleViews) {
+          return AlertDialog(
+            title: Text(title),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 420,
+              child: NativeIosAccessibleList(
+                sections: [
+                  NativeIosListSection(
+                    rows: [
+                      for (var i = 0; i < candidates.length; i++)
+                        NativeIosListRow(
+                          id: 'candidate_$i',
+                          title: candidates[i].displayLabel,
+                        ),
+                    ],
+                  ),
+                ],
+                onEvent: (event) {
+                  if (event.type == 'activate' && event.id != null) {
+                    final index = int.tryParse(event.id!.split('_').last);
+                    if (index != null && index < candidates.length) {
+                      Navigator.pop(dialogContext, candidates[index]);
+                    }
+                  }
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(l10n.routeCancel),
+              ),
+            ],
+          );
+        }
         return AlertDialog(
           title: Text(title),
           content: SizedBox(
@@ -175,13 +212,92 @@ class _RouteScreenState extends State<RouteScreen> {
     );
   }
 
+  Widget _buildNativeIosRouteForm(AppLocalizations l10n) {
+    final countries = [
+      NativeIosOption(value: 'it', label: l10n.routeCountryItaly),
+      NativeIosOption(value: 'fr', label: l10n.routeCountryFrance),
+      NativeIosOption(value: 'es', label: l10n.routeCountrySpain),
+      NativeIosOption(value: 'pt', label: l10n.radioCountryOptionPt),
+      NativeIosOption(value: 'pl', label: l10n.radioCountryOptionPl),
+      NativeIosOption(value: 'cz', label: l10n.routeCountryCzechRepublic),
+      NativeIosOption(value: 'au', label: l10n.radioCountryOptionAu),
+      NativeIosOption(value: 'ca', label: l10n.radioCountryOptionCa),
+      NativeIosOption(value: 'de', label: l10n.radioCountryOptionDe),
+      NativeIosOption(value: 'gb', label: l10n.radioCountryOptionGb),
+      NativeIosOption(value: 'us', label: l10n.radioCountryOptionUs),
+    ];
+    return NativeIosAccessibleList(
+      sections: [
+        NativeIosListSection(rows: [
+          NativeIosListRow(id: 'recent', title: l10n.routeRecentRoutes, enabled: !_calculating),
+          NativeIosListRow(id: 'from', title: l10n.routeFrom, kind: 'textField', value: _fromController.text),
+          NativeIosListRow(id: 'to', title: l10n.routeTo, kind: 'textField', value: _toController.text),
+          NativeIosListRow(id: 'country', title: l10n.routeCountry, kind: 'picker', value: _countryCode, options: countries),
+          NativeIosListRow(
+            id: 'profile',
+            title: l10n.routeVehicle,
+            kind: 'picker',
+            value: _profile.name,
+            options: [
+              NativeIosOption(value: RouteProfile.walking.name, label: l10n.routeWalking),
+              NativeIosOption(value: RouteProfile.cycling.name, label: l10n.routeCycling),
+              NativeIosOption(value: RouteProfile.driving.name, label: l10n.routeDriving),
+              NativeIosOption(value: RouteProfile.wheelchair.name, label: l10n.routeWheelchair),
+            ],
+          ),
+          NativeIosListRow(
+            id: 'preference',
+            title: l10n.routeType,
+            kind: 'picker',
+            value: _preference.name,
+            options: [
+              NativeIosOption(value: RoutePreference.fastest.name, label: l10n.routeFastest),
+              NativeIosOption(value: RoutePreference.shortest.name, label: l10n.routeShortest),
+            ],
+          ),
+          NativeIosListRow(id: 'municipalities', title: l10n.routeIncludeMunicipalities, kind: 'toggle', toggleValue: _includeMunicipalities),
+          NativeIosListRow(
+            id: 'calculate',
+            title: _calculating ? l10n.routeCalculating : l10n.routeCalculate,
+            kind: 'button',
+            enabled: !_calculating,
+          ),
+        ]),
+      ],
+      onEvent: (event) async {
+        final id = event.id;
+        if (id == 'recent' && event.type == 'activate' && !_calculating) {
+          await _openRecentRoutes();
+        } else if (id == 'from' && event.type == 'textChanged') {
+          _fromController.text = event.value?.toString() ?? '';
+        } else if (id == 'to' && event.type == 'textChanged') {
+          _toController.text = event.value?.toString() ?? '';
+        } else if (id == 'country' && event.type == 'picker' && event.value != null) {
+          setState(() => _countryCode = event.value.toString());
+        } else if (id == 'profile' && event.type == 'picker') {
+          final value = event.value?.toString();
+          final found = RouteProfile.values.where((e) => e.name == value);
+          if (found.isNotEmpty) setState(() => _profile = found.first);
+        } else if (id == 'preference' && event.type == 'picker') {
+          final value = event.value?.toString();
+          final found = RoutePreference.values.where((e) => e.name == value);
+          if (found.isNotEmpty) setState(() => _preference = found.first);
+        } else if (id == 'municipalities' && event.type == 'toggle') {
+          setState(() => _includeMunicipalities = event.value == true);
+        } else if (id == 'calculate' && event.type == 'activate' && !_calculating) {
+          await _calculateRoute();
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.routeTitle)),
-      body: ListView(
+      body: useNativeIosAccessibleViews ? _buildNativeIosRouteForm(l10n) : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           OutlinedButton.icon(
@@ -393,6 +509,35 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
           final routes = snapshot.data ?? const <RecentRouteItem>[];
           if (routes.isEmpty) {
             return Center(child: Text(l10n.routeRecentRoutesEmpty));
+          }
+          if (useNativeIosAccessibleViews) {
+            return NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: [
+                    for (var i = 0; i < routes.length; i++)
+                      NativeIosListRow(
+                        id: 'route_$i',
+                        title: '${routes[i].fromDisplayLabel} → ${routes[i].toDisplayLabel}',
+                        subtitle: _formattedDate(routes[i].createdAt),
+                        enabled: !_calculating,
+                        actions: [NativeIosCustomAction(id: 'delete', label: l10n.deleteItem)],
+                      ),
+                  ],
+                ),
+              ],
+              onEvent: (event) async {
+                final id = event.id;
+                if (id == null || !id.startsWith('route_')) return;
+                final index = int.tryParse(id.substring(6));
+                if (index == null || index >= routes.length || _calculating) return;
+                if (event.type == 'customAction' && event.action == 'delete') {
+                  await _deleteRoute(routes[index]);
+                } else if (event.type == 'activate') {
+                  await _openRoute(routes[index]);
+                }
+              },
+            );
           }
           return ListView.separated(
             padding: const EdgeInsets.all(16),

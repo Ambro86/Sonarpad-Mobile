@@ -5,6 +5,7 @@ import '../services/app_settings_service.dart';
 import '../services/document_library_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class BdCiechiDashboardScreen extends StatefulWidget {
   final String username;
@@ -29,6 +30,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   List<String> _fullCatalog = [];
   bool _isLoadingCatalog = true;
   String _quotaInfo = '';
+  String _nativeSearchQuery = '';
 
   @override
   void initState() {
@@ -198,9 +200,20 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Testo d\'assaggio'),
-        content: SingleChildScrollView(
-          child: Text(content),
-        ),
+        content: useNativeIosAccessibleViews
+            ? SizedBox(
+                width: 520,
+                height: 420,
+                child: NativeIosAccessibleList(
+                  sections: [NativeIosListSection(rows: [
+                    NativeIosListRow(id: 'preview', kind: 'text', title: content),
+                  ])],
+                  onEvent: (_) {},
+                ),
+              )
+            : SingleChildScrollView(
+                child: Text(content),
+              ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -314,7 +327,49 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
         title: const Text('Accesso alla Biblioteca Digitale completato.'),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: useNativeIosAccessibleViews
+            ? NativeIosAccessibleList(
+                sections: [NativeIosListSection(rows: [
+                  NativeIosListRow(id: 'quota', kind: 'text', title: _quotaInfo),
+                  const NativeIosListRow(id: 'latest', title: 'Ultime novità'),
+                  const NativeIosListRow(id: 'search', title: 'Cerca nel catalogo...', kind: 'textField'),
+                  const NativeIosListRow(id: 'search_button', title: 'Cerca', kind: 'button'),
+                  NativeIosListRow(id: 'catalog', title: _isLoadingCatalog ? 'Caricamento catalogo in corso...' : 'Visualizza il catalogo completo', enabled: !_isLoadingCatalog),
+                  const NativeIosListRow(id: 'logout', title: 'Esci', kind: 'button'),
+                ])],
+                onEvent: (event) {
+                  if (event.id == 'latest' && event.type == 'activate') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BdCiechiListScreen(
+                          title: 'Ultime novità',
+                          loadItems: () => _service.fetchLatestList(widget.identifyResponse.nprov),
+                          onWorkTapped: _onWorkTapped,
+                        ),
+                      ),
+                    );
+                  } else if (event.id == 'search' && event.type == 'textChanged') {
+                    _nativeSearchQuery = event.value?.toString() ?? '';
+                  } else if (event.id == 'search_button' && event.type == 'activate') {
+                    _performSearch(_nativeSearchQuery.trim());
+                  } else if (event.id == 'catalog' && event.type == 'activate' && !_isLoadingCatalog) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BdCiechiListScreen(
+                          title: 'Catalogo completo',
+                          items: _fullCatalog,
+                          onWorkTapped: _onWorkTapped,
+                        ),
+                      ),
+                    );
+                  } else if (event.id == 'logout' && event.type == 'activate') {
+                    _logout();
+                  }
+                },
+              )
+            : SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -491,7 +546,19 @@ class _BdCiechiListScreenState extends State<BdCiechiListScreen> {
                 )
               : _displayList.isEmpty
                   ? const Center(child: Text('Nessun risultato trovato.'))
-                  : ListView.separated(
+                  : useNativeIosAccessibleViews
+                      ? NativeIosAccessibleList(
+                          sections: [NativeIosListSection(rows: [
+                            for (var i = 0; i < _displayList.length; i++)
+                              NativeIosListRow(id: 'item_$i', title: _displayList[i]),
+                          ])],
+                          onEvent: (event) {
+                            if (event.type != 'activate' || event.id == null) return;
+                            final i = int.tryParse(event.id!.replaceFirst('item_', ''));
+                            if (i != null && i < _displayList.length) widget.onWorkTapped(_displayList[i]);
+                          },
+                        )
+                      : ListView.separated(
                       itemCount: _displayList.length,
                       separatorBuilder: (context, index) =>
                           const Divider(height: 1),

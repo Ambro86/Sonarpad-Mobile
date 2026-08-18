@@ -5,6 +5,7 @@ import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart';
+import '../widgets/native_ios_accessible_view.dart';
 import '../utils/status_message.dart';
 
 class RecentRadiosScreen extends StatefulWidget {
@@ -110,7 +111,43 @@ class _RecentRadiosScreenState extends State<RecentRadiosScreen> {
           ? Center(child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : _recent.isEmpty
               ? Center(child: Text(_noRecentRadiosLabel(l10n.localeName)))
-              : ListView.builder(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      key: ValueKey('native-recent-radios-${_recent.length}'),
+                      sections: [
+                        NativeIosListSection(
+                          rows: _recent.map((station) {
+                            final isFavorite = _favorites.any((item) => item.streamUrl == station.streamUrl);
+                            return NativeIosListRow(
+                              id: station.streamUrl,
+                              title: station.name,
+                              subtitle: station.detailsText,
+                              accessibilityLabel: station.accessibilityLabel,
+                              kind: 'action',
+                              actions: [
+                                NativeIosCustomAction(
+                                  id: 'favorite',
+                                  label: isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                      onEvent: (event) async {
+                        final id = event.id;
+                        if (id == null) return;
+                        final index = _recent.indexWhere((e) => e.streamUrl == id);
+                        if (index < 0) return;
+                        final station = _recent[index];
+                        if (event.type == 'activate') {
+                          await _play(station);
+                        } else if (event.type == 'customAction' && event.action == 'favorite') {
+                          await _toggleFavorite(station);
+                        }
+                      },
+                    )
+                  : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _recent.length,
                   itemBuilder: (context, index) {

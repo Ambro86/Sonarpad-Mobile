@@ -9,6 +9,7 @@ import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
 import 'radio_player_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 Future<DateTime?> showTvDaySelectionDialog(
   BuildContext context, {
@@ -93,25 +94,38 @@ Future<void> showTvProgramDetailsDialog(
               ),
               const SizedBox(height: 16),
               Flexible(
-                child: Semantics(
-                  key: const ValueKey(
-                    'tv_program_details_description_semantics',
-                  ),
-                  container: true,
-                  sortKey: const OrdinalSortKey(3),
-                  label: description.isEmpty
-                      ? l10n.noPodcastDescription
-                      : description,
-                  child: ExcludeSemantics(
-                    child: SingleChildScrollView(
-                      child: Text(
-                        description.isEmpty
+                child: useNativeIosAccessibleViews
+                    ? NativeIosAccessibleList(
+                        sections: [NativeIosListSection(rows: [
+                          NativeIosListRow(
+                            id: 'description',
+                            kind: 'text',
+                            title: description.isEmpty
+                                ? l10n.noPodcastDescription
+                                : description,
+                          ),
+                        ])],
+                        onEvent: (_) {},
+                      )
+                    : Semantics(
+                        key: const ValueKey(
+                          'tv_program_details_description_semantics',
+                        ),
+                        container: true,
+                        sortKey: const OrdinalSortKey(3),
+                        label: description.isEmpty
                             ? l10n.noPodcastDescription
                             : description,
+                        child: ExcludeSemantics(
+                          child: SingleChildScrollView(
+                            child: Text(
+                              description.isEmpty
+                                  ? l10n.noPodcastDescription
+                                  : description,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
               ),
             ],
           ),
@@ -354,7 +368,32 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                 ? const Center(
                     child: Text('Nessun programma trovato per oggi.'),
                   )
-                : ListView.builder(
+                : useNativeIosAccessibleViews
+                    ? NativeIosAccessibleList(
+                        key: ValueKey('native-tv-guide-${widget.channel.name}-${_selectedDate.toIso8601String()}-${_guide.length}'),
+                        sections: [
+                          NativeIosListSection(
+                            rows: _guide.map((program) {
+                              final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+                              final isCurrent = program.startTime <= now && program.endTime > now;
+                              return NativeIosListRow(
+                                id: '${program.startTime}',
+                                title: '${program.hour} ${program.title}',
+                                subtitle: isCurrent ? 'In onda adesso' : null,
+                                selected: isCurrent,
+                                kind: 'action',
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                        onEvent: (event) {
+                          if (event.type != 'activate' || event.id == null) return;
+                          final start = int.tryParse(event.id!);
+                          final index = _guide.indexWhere((e) => e.startTime == start);
+                          if (index >= 0) _showProgramDetails(_guide[index]);
+                        },
+                      )
+                    : ListView.builder(
                     itemCount: _guide.length,
                     itemBuilder: (context, index) {
                       final program = _guide[index];

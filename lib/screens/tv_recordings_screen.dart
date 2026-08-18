@@ -10,6 +10,7 @@ import '../models/podcast.dart';
 import '../services/radio_recording_service.dart';
 import '../utils/status_message.dart';
 import '../widgets/recording_selection_dialog.dart';
+import '../widgets/native_ios_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
 
 class TvRecordingsScreen extends StatefulWidget {
@@ -165,6 +166,40 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
           final files = snapshot.data ?? const [];
           if (files.isEmpty) {
             return Center(child: Text(l10n.noRecordings));
+          }
+          if (useNativeIosAccessibleViews) {
+            return NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: files
+                      .asMap()
+                      .entries
+                      .map((entry) => NativeIosListRow(
+                            id: 'recording_${entry.key}',
+                            title: p.basenameWithoutExtension(entry.value.path),
+                            actions: [
+                              NativeIosCustomAction(id: 'open', label: _openLabel(l10n.localeName)),
+                              NativeIosCustomAction(id: 'share', label: l10n.share),
+                              NativeIosCustomAction(id: 'delete', label: _deleteLabel(l10n.localeName)),
+                            ],
+                          ))
+                      .toList(growable: false),
+                ),
+              ],
+              onEvent: (event) async {
+                if (event.id?.startsWith('recording_') != true) return;
+                final index = int.tryParse(event.id!.substring(10));
+                if (index == null || index < 0 || index >= files.length) return;
+                final file = files[index];
+                if (event.type == 'activate' || (event.type == 'customAction' && event.action == 'open')) {
+                  _openRecording(file);
+                } else if (event.type == 'customAction' && event.action == 'share') {
+                  await _shareRecording(file);
+                } else if (event.type == 'customAction' && event.action == 'delete') {
+                  await _deleteRecording(file);
+                }
+              },
+            );
           }
           return ListView.separated(
             itemCount: files.length,

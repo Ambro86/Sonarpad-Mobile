@@ -21,6 +21,7 @@ import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 /// Schermata di lettura/ascolto di un documento della libreria.
 ///
@@ -684,49 +685,81 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             title: Text(_bookmarkDialogTitle),
             content: SizedBox(
               width: double.maxFinite,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: bookmarks.length,
-                itemBuilder: (context, index) {
-                  final bookmarkIndex = bookmarks[index];
-                  return Semantics(
-                    customSemanticsActions: {
-                      CustomSemanticsAction(label: _deleteBookmarkActionLabel):
-                          () async {
-                        await _deleteMultipleBookmark(bookmarkIndex);
-                        bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
-                        if (!dialogContext.mounted) return;
-                        if (bookmarks.isEmpty) {
-                          Navigator.pop(dialogContext);
-                          return;
+              height: 360,
+              child: useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      sections: [NativeIosListSection(rows: [
+                        for (var index = 0; index < bookmarks.length; index++)
+                          NativeIosListRow(
+                            id: 'bookmark_${bookmarks[index]}',
+                            title: _bookmarkChoiceLabel(bookmarks[index], index + 1),
+                            actions: [NativeIosCustomAction(
+                              id: 'delete',
+                              label: _deleteBookmarkActionLabel,
+                            )],
+                          ),
+                      ])],
+                      onEvent: (event) async {
+                        final raw = event.id?.replaceFirst('bookmark_', '');
+                        final bookmarkIndex = int.tryParse(raw ?? '');
+                        if (bookmarkIndex == null) return;
+                        if (event.type == 'activate') {
+                          Navigator.pop(dialogContext, bookmarkIndex);
+                        } else if (event.type == 'customAction' && event.action == 'delete') {
+                          await _deleteMultipleBookmark(bookmarkIndex);
+                          bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
+                          if (!dialogContext.mounted) return;
+                          if (bookmarks.isEmpty) {
+                            Navigator.pop(dialogContext);
+                            return;
+                          }
+                          dialogSetState(() {});
                         }
-                        dialogSetState(() {});
                       },
-                    },
-                    child: ListTile(
-                      leading: const Icon(Icons.bookmark),
-                      title: Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
-                      onTap: () => Navigator.pop(dialogContext, bookmarkIndex),
-                      trailing: ExcludeSemantics(
-                        child: IconButton(
-                          tooltip: _deleteBookmarkActionLabel,
-                          icon: const Icon(Icons.delete_outline),
-                          onPressed: () async {
-                            await _deleteMultipleBookmark(bookmarkIndex);
-                            bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
-                            if (!dialogContext.mounted) return;
-                            if (bookmarks.isEmpty) {
-                              Navigator.pop(dialogContext);
-                              return;
-                            }
-                            dialogSetState(() {});
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: bookmarks.length,
+                      itemBuilder: (context, index) {
+                        final bookmarkIndex = bookmarks[index];
+                        return Semantics(
+                          customSemanticsActions: {
+                            CustomSemanticsAction(label: _deleteBookmarkActionLabel):
+                                () async {
+                              await _deleteMultipleBookmark(bookmarkIndex);
+                              bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
+                              if (!dialogContext.mounted) return;
+                              if (bookmarks.isEmpty) {
+                                Navigator.pop(dialogContext);
+                                return;
+                              }
+                              dialogSetState(() {});
+                            },
                           },
-                        ),
-                      ),
+                          child: ListTile(
+                            leading: const Icon(Icons.bookmark),
+                            title: Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
+                            onTap: () => Navigator.pop(dialogContext, bookmarkIndex),
+                            trailing: ExcludeSemantics(
+                              child: IconButton(
+                                tooltip: _deleteBookmarkActionLabel,
+                                icon: const Icon(Icons.delete_outline),
+                                onPressed: () async {
+                                  await _deleteMultipleBookmark(bookmarkIndex);
+                                  bookmarks = _normalizeBookmarkIndexes(_bookmarkIndexes);
+                                  if (!dialogContext.mounted) return;
+                                  if (bookmarks.isEmpty) {
+                                    Navigator.pop(dialogContext);
+                                    return;
+                                  }
+                                  dialogSetState(() {});
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
             actions: [
               TextButton(
@@ -768,18 +801,36 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
               const SizedBox(height: 12),
               SizedBox(
                 height: 320,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: existing.length,
-                  itemBuilder: (context, index) {
-                    final bookmarkIndex = existing[index];
-                    return ListTile(
-                      leading: const Icon(Icons.bookmark),
-                      title: Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
-                      onTap: () => Navigator.pop(dialogContext, bookmarkIndex),
-                    );
-                  },
-                ),
+                child: useNativeIosAccessibleViews
+                    ? NativeIosAccessibleList(
+                        sections: [NativeIosListSection(rows: [
+                          for (var index = 0; index < existing.length; index++)
+                            NativeIosListRow(
+                              id: 'bookmark_${existing[index]}',
+                              title: _bookmarkChoiceLabel(existing[index], index + 1),
+                            ),
+                        ])],
+                        onEvent: (event) {
+                          if (event.type != 'activate') return;
+                          final raw = event.id?.replaceFirst('bookmark_', '');
+                          final bookmarkIndex = int.tryParse(raw ?? '');
+                          if (bookmarkIndex != null) {
+                            Navigator.pop(dialogContext, bookmarkIndex);
+                          }
+                        },
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: existing.length,
+                        itemBuilder: (context, index) {
+                          final bookmarkIndex = existing[index];
+                          return ListTile(
+                            leading: const Icon(Icons.bookmark),
+                            title: Text(_bookmarkChoiceLabel(bookmarkIndex, index + 1)),
+                            onTap: () => Navigator.pop(dialogContext, bookmarkIndex),
+                          );
+                        },
+                      ),
               ),
             ],
           ),
@@ -2033,7 +2084,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                     child: Semantics(
                       label: l10n.documentTextLabel,
                       explicitChildNodes: true,
-                      child: CustomScrollView(
+                      child: useNativeIosAccessibleViews
+                          ? _buildNativeIosDocumentText(l10n)
+                          : CustomScrollView(
                         controller: _scrollController,
                         scrollCacheExtent: const ScrollCacheExtent.pixels(
                             4000), // Precarica i blocchi successivi per VoiceOver
@@ -2140,6 +2193,88 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
               ),
         ),
       ),
+    );
+  }
+
+
+  Widget _buildNativeIosDocumentText(AppLocalizations l10n) {
+    final rows = <NativeIosListRow>[];
+    for (var i = 0; i < _chunks.length; i++) {
+      final isSelected = _selectedParagraphIndexes.contains(i);
+      final canInteract = !_speaking;
+      final isBookmarked = _multipleDocumentBookmarksEnabled
+          ? _bookmarkIndexes.contains(i)
+          : (_hasBookmark && i == _bookmarkIndex);
+      final actions = <NativeIosCustomAction>[];
+      if (_paragraphSelectionMode) {
+        if (_selectedParagraphIndexes.isNotEmpty) {
+          actions.add(NativeIosCustomAction(
+            id: 'delete_selected',
+            label: l10n.documentDeleteSelectedParagraphs,
+          ));
+        }
+        actions.add(NativeIosCustomAction(
+          id: 'exit_selection',
+          label: l10n.documentExitParagraphSelection,
+        ));
+      } else {
+        if (canInteract) {
+          actions.add(NativeIosCustomAction(
+            id: 'start_selection',
+            label: l10n.documentParagraphSelectionStartAction,
+          ));
+        }
+        actions.add(NativeIosCustomAction(
+          id: 'set_bookmark',
+          label: _hasBookmark && !_multipleDocumentBookmarksEnabled
+              ? l10n.documentReplaceBookmarkAction
+              : l10n.documentSetBookmarkAction,
+        ));
+        if (_multipleDocumentBookmarksEnabled && _bookmarkIndexes.isNotEmpty) {
+          actions.add(NativeIosCustomAction(
+            id: 'go_bookmark',
+            label: _goToBookmarkActionLabel,
+          ));
+        }
+      }
+      rows.add(NativeIosListRow(
+        id: 'paragraph_$i',
+        title: _chunks[i],
+        subtitle: isBookmarked ? '🔖' : null,
+        kind: canInteract ? 'action' : 'text',
+        selected: isSelected,
+        hint: _paragraphSelectionMode
+            ? l10n.documentParagraphSelectionTapHint
+            : (canInteract ? l10n.documentEditParagraphActionHint : null),
+        actions: actions,
+      ));
+    }
+    return NativeIosAccessibleList(
+      key: ValueKey('native-document-${widget.document.id}-${_chunks.length}'),
+      sections: [NativeIosListSection(rows: rows)],
+      onEvent: (event) async {
+        final id = event.id;
+        if (id == null || !id.startsWith('paragraph_')) return;
+        final index = int.tryParse(id.substring('paragraph_'.length));
+        if (index == null || index < 0 || index >= _chunks.length) return;
+        if (event.type == 'activate') {
+          _syncDocumentPositionFromAccessibilityFocus(index);
+          if (_speaking) return;
+          if (_paragraphSelectionMode) {
+            _toggleParagraphSelection(index);
+          } else {
+            _editParagraph(index);
+          }
+        } else if (event.type == 'customAction') {
+          switch (event.action) {
+            case 'delete_selected': await _deleteSelectedParagraphs(); break;
+            case 'exit_selection': _exitParagraphSelection(); break;
+            case 'start_selection': _startParagraphSelection(index); break;
+            case 'set_bookmark': await _setBookmark(index); break;
+            case 'go_bookmark': await _openBookmarkPicker(); break;
+          }
+        }
+      },
     );
   }
 
@@ -2529,7 +2664,32 @@ class _DocumentIndexScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.documentIndex)),
-      body: ListView.separated(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: entries
+                      .asMap()
+                      .entries
+                      .map((entry) => NativeIosListRow(
+                            id: 'index_${entry.key}',
+                            title: entry.value.title,
+                            subtitle: entry.value.level > 0
+                                ? 'Livello ${entry.value.level + 1}'
+                                : null,
+                          ))
+                      .toList(growable: false),
+                ),
+              ],
+              onEvent: (event) {
+                if (event.type != 'activate' || event.id == null) return;
+                final index = int.tryParse(event.id!.replaceFirst('index_', ''));
+                if (index != null && index >= 0 && index < entries.length) {
+                  Navigator.of(context).pop(entries[index].chunkIndex);
+                }
+              },
+            )
+          : ListView.separated(
         itemCount: entries.length,
         separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {
@@ -2663,7 +2823,37 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.searchInDocument)),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: [
+                    NativeIosListRow(
+                      id: 'query',
+                      title: l10n.documentSearchFieldLabel,
+                      kind: 'textField',
+                      value: _controller.text,
+                      placeholder: l10n.documentSearchFieldHint,
+                      subtitle: _error,
+                    ),
+                    NativeIosListRow(
+                      id: 'search',
+                      title: l10n.search,
+                      kind: 'button',
+                    ),
+                  ],
+                ),
+              ],
+              onEvent: (event) async {
+                if (event.id == 'query' && event.type == 'textChanged') {
+                  _controller.text = event.value?.toString() ?? '';
+                  if (_error != null) setState(() => _error = null);
+                } else if (event.id == 'search' && event.type == 'activate') {
+                  await _search();
+                }
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -2709,7 +2899,32 @@ class _DocumentSearchResultsScreen extends StatelessWidget {
       appBar: AppBar(title: Text(l10n.documentSearchResultsTitle)),
       body: results.isEmpty
           ? Center(child: Text(l10n.noDocumentSearchResults(query)))
-          : ListView.separated(
+          : useNativeIosAccessibleViews
+              ? NativeIosAccessibleList(
+                  sections: [
+                    NativeIosListSection(
+                      rows: results
+                          .asMap()
+                          .entries
+                          .map((entry) => NativeIosListRow(
+                                id: 'result_${entry.key}',
+                                title: l10n.documentSearchResultParagraph(
+                                  entry.value.chunkIndex + 1,
+                                ),
+                                subtitle: entry.value.excerpt,
+                              ))
+                          .toList(growable: false),
+                    ),
+                  ],
+                  onEvent: (event) {
+                    if (event.type != 'activate' || event.id == null) return;
+                    final index = int.tryParse(event.id!.replaceFirst('result_', ''));
+                    if (index != null && index >= 0 && index < results.length) {
+                      Navigator.of(context).pop(results[index].chunkIndex);
+                    }
+                  },
+                )
+              : ListView.separated(
               itemCount: results.length,
               separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {

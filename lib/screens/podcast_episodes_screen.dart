@@ -7,6 +7,7 @@ import '../models/podcast.dart';
 import '../services/podcast_service.dart';
 import '../utils/list_timestamp_formatter.dart';
 import 'podcast_episode_player_screen.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 /// Schermata che mostra gli episodi di un singolo podcast iscritto.
 class PodcastEpisodesScreen extends StatefulWidget {
@@ -177,6 +178,56 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
             if (itemCount == 0) {
               return Center(child: Text(l10n.noAudioEpisodesFound));
             }
+            if (useNativeIosAccessibleViews) {
+              final rows = <NativeIosListRow>[
+                if (_playedAudioUrls.isNotEmpty)
+                  NativeIosListRow(
+                    id: '__played__',
+                    title: l10n.podcastPlayedEpisodes,
+                    kind: 'action',
+                  ),
+                if (hasDateButton)
+                  NativeIosListRow(
+                    id: '__date__',
+                    title: l10n.podcastSelectDate,
+                    kind: 'action',
+                  ),
+                ...unplayedEpisodes.map((episode) => NativeIosListRow(
+                      id: episode.id ?? episode.audioUrl,
+                      title: titleWithListTimestamp(
+                        episode.title,
+                        episode.publishedAt,
+                        l10n.localeName,
+                      ),
+                      subtitle: episode.description,
+                      kind: 'action',
+                    )),
+              ];
+              return NativeIosAccessibleList(
+                key: ValueKey('native-podcast-episodes-${widget.subscription.feedUrl}-${rows.length}'),
+                refreshEnabled: true,
+                sections: [NativeIosListSection(rows: rows)],
+                onEvent: (event) async {
+                  if (event.type == 'refresh') {
+                    await _refresh();
+                    return;
+                  }
+                  if (event.type != 'activate' || event.id == null) return;
+                  if (event.id == '__played__') {
+                    _openPlayedEpisodes();
+                    return;
+                  }
+                  if (event.id == '__date__') {
+                    await _openDateSelector(unplayedEpisodes);
+                    return;
+                  }
+                  final index = unplayedEpisodes.indexWhere(
+                    (episode) => (episode.id ?? episode.audioUrl) == event.id,
+                  );
+                  if (index >= 0) await _openEpisode(unplayedEpisodes[index]);
+                },
+              );
+            }
             return RefreshIndicator(
               onRefresh: _refresh,
               child: ListView.separated(
@@ -291,7 +342,27 @@ class _PodcastDateSelectorScreen extends StatelessWidget {
       body: SafeArea(
         child: dateEpisodes.isEmpty
             ? Center(child: Text(l10n.podcastNoDatesAvailable))
-            : ListView.separated(
+            : useNativeIosAccessibleViews
+                ? NativeIosAccessibleList(
+                    sections: [
+                      NativeIosListSection(
+                        rows: dateEpisodes.asMap().entries.map((entry) =>
+                          NativeIosListRow(
+                            id: entry.key.toString(),
+                            title: formatter.format(entry.value.date),
+                            kind: 'action',
+                          )).toList(),
+                      ),
+                    ],
+                    onEvent: (event) {
+                      if (event.type != 'activate' || event.id == null) return;
+                      final index = int.tryParse(event.id!);
+                      if (index != null && index >= 0 && index < dateEpisodes.length) {
+                        Navigator.pop(context, dateEpisodes[index].episode);
+                      }
+                    },
+                  )
+                : ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: dateEpisodes.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
@@ -390,7 +461,40 @@ class _PlayedEpisodesScreenState extends State<_PlayedEpisodesScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _episodes.isEmpty
               ? Center(child: Text(l10n.noAudioEpisodesFound))
-              : ListView.separated(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      key: ValueKey('native-played-podcast-${_episodes.length}'),
+                      sections: [
+                        NativeIosListSection(
+                          rows: _episodes.asMap().entries.map((entry) {
+                            final episode = entry.value;
+                            return NativeIosListRow(
+                              id: entry.key.toString(),
+                              title: titleWithListTimestamp(
+                                episode.title,
+                                episode.publishedAt,
+                                l10n.localeName,
+                              ),
+                              subtitle: episode.description,
+                              kind: 'action',
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                      onEvent: (event) async {
+                        if (event.type != 'activate' || event.id == null) return;
+                        final index = int.tryParse(event.id!);
+                        if (index == null || index < 0 || index >= _episodes.length) return;
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            settings: const RouteSettings(name: '/podcasts/player'),
+                            builder: (_) => PodcastEpisodePlayerScreen(episode: _episodes[index]),
+                          ),
+                        );
+                      },
+                    )
+                  : ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: _episodes.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 8),

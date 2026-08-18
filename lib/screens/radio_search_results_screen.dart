@@ -4,7 +4,8 @@ import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import 'radio_player_screen.dart';
-import 'radio_screen.dart'; // Per RadioTile
+import 'radio_screen.dart';
+import '../widgets/native_ios_accessible_view.dart'; // Per RadioTile
 import '../utils/status_message.dart';
 
 class RadioSearchResultsScreen extends StatefulWidget {
@@ -151,7 +152,43 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
+                child: useNativeIosAccessibleViews
+                    ? NativeIosAccessibleList(
+                        key: ValueKey('native-radio-results-$currentPage-${visibleResults.length}'),
+                        sections: [
+                          NativeIosListSection(
+                            rows: visibleResults.map((station) {
+                              final isFavorite = _favorites.any((item) => item.streamUrl == station.streamUrl);
+                              return NativeIosListRow(
+                                id: station.streamUrl,
+                                title: station.name,
+                                subtitle: station.detailsText,
+                                accessibilityLabel: station.accessibilityLabel,
+                                kind: 'action',
+                                actions: [
+                                  NativeIosCustomAction(
+                                    id: 'favorite',
+                                    label: isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                        onEvent: (event) async {
+                          final id = event.id;
+                          if (id == null) return;
+                          final index = visibleResults.indexWhere((e) => e.streamUrl == id);
+                          if (index < 0) return;
+                          final station = visibleResults[index];
+                          if (event.type == 'activate') {
+                            await _play(station);
+                          } else if (event.type == 'customAction' && event.action == 'favorite') {
+                            await _toggleFavorite(station);
+                          }
+                        },
+                      )
+                    : ListView.builder(
                   key: PageStorageKey('radio_results_page_$currentPage'),
                   padding: const EdgeInsets.all(16),
                   itemCount: visibleResults.length,

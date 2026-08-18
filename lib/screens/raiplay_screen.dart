@@ -6,6 +6,7 @@ import '../services/raiplay_service.dart';
 import '../services/recent_searches_service.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class RaiPlayScreen extends StatefulWidget {
   final String? pathId;
@@ -169,6 +170,38 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
     }
   }
 
+  Widget _buildNativeIosBody() {
+    final items = _page?.items ?? const <RaiPlayItem>[];
+    final rows = <NativeIosListRow>[
+      if (_isRoot)
+        NativeIosListRow(id: 'search_query', title: 'Cerca su RaiPlay', kind: 'textField', value: _searchController.text),
+      if (_isRoot) const NativeIosListRow(id: 'search', title: 'Cerca', kind: 'button'),
+      if (_isRoot) const NativeIosListRow(id: 'recent', title: 'Ricerche recenti'),
+      if (_error != null) NativeIosListRow(id: 'error', kind: 'text', title: _error!),
+      for (var i = 0; i < items.length; i++)
+        NativeIosListRow(
+          id: 'item_$i',
+          title: items[i].title,
+          subtitle: items[i].description.isNotEmpty ? items[i].description : null,
+        ),
+    ];
+    return NativeIosAccessibleList(
+      sections: [NativeIosListSection(rows: rows)],
+      onEvent: (event) async {
+        if (event.id == 'search_query' && event.type == 'textChanged') {
+          _searchController.text = event.value?.toString() ?? '';
+        } else if (event.id == 'search' && event.type == 'activate') {
+          await _search();
+        } else if (event.id == 'recent' && event.type == 'activate') {
+          await _openRecentSearches();
+        } else if (event.type == 'activate' && event.id?.startsWith('item_') == true) {
+          final i = int.tryParse(event.id!.substring(5));
+          if (i != null && i < items.length) _openItem(items[i]);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,7 +210,9 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _error != null && _page == null
               ? Center(child: Text(_error!))
-              : Column(
+              : useNativeIosAccessibleViews
+                  ? _buildNativeIosBody()
+                  : Column(
                   children: [
                     // Casella di ricerca: visibile solo nella root
                     if (_isRoot)

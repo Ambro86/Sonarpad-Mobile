@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/podcast_service.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class PodcastChaptersScreen extends StatelessWidget {
   PodcastChaptersScreen({
@@ -50,6 +51,30 @@ class PodcastChaptersScreen extends StatelessWidget {
             final chapters = snapshot.data ?? const <PodcastChapter>[];
             if (chapters.isEmpty) {
               return Center(child: Text(l10n.podcastChaptersUnavailable));
+            }
+            if (useNativeIosAccessibleViews) {
+              return NativeIosAccessibleList(
+                sections: [
+                  NativeIosListSection(
+                    rows: chapters
+                        .asMap()
+                        .entries
+                        .map((entry) => NativeIosListRow(
+                              id: 'chapter_${entry.key}',
+                              title: entry.value.title,
+                              subtitle: _format(entry.value.start),
+                            ))
+                        .toList(growable: false),
+                  ),
+                ],
+                onEvent: (event) {
+                  if (event.type != 'activate' || event.id == null) return;
+                  final index = int.tryParse(event.id!.replaceFirst('chapter_', ''));
+                  if (index != null && index >= 0 && index < chapters.length) {
+                    Navigator.pop(context, chapters[index].start);
+                  }
+                },
+              );
             }
             return ListView.separated(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),

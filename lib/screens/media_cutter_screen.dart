@@ -24,6 +24,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 enum _MediaCutterDoneAction { share, close }
 
@@ -2078,54 +2079,114 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
             return AlertDialog(
               title: Text(_guidedModifyCutLabel),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(summary),
-                    const SizedBox(height: 16),
-                    _buildCutEditPrecisionSlider(
-                      value: editStep,
-                      onChanged: (value) =>
-                          setDialogState(() => editStep = value),
-                    ),
-                    const SizedBox(height: 16),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          unawaited(adjust(moveStart: true, direction: -1)),
-                      icon: const Icon(Icons.keyboard_double_arrow_left),
-                      label: Text(_moveStartBackLabel(editStep)),
-                    ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          unawaited(adjust(moveStart: true, direction: 1)),
-                      icon: const Icon(Icons.keyboard_double_arrow_right),
-                      label: Text(_moveStartForwardLabel(editStep)),
-                    ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          unawaited(adjust(moveStart: false, direction: -1)),
-                      icon: const Icon(Icons.keyboard_double_arrow_left),
-                      label: Text(_moveEndBackLabel(editStep)),
-                    ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          unawaited(adjust(moveStart: false, direction: 1)),
-                      icon: const Icon(Icons.keyboard_double_arrow_right),
-                      label: Text(_moveEndForwardLabel(editStep)),
-                    ),
-                    const SizedBox(height: 12),
-                    FilledButton.icon(
-                      onPressed: () => unawaited(_listenGuidedCut()),
-                      icon: const Icon(Icons.hearing),
-                      label: Text(_guidedListenCutLabel),
-                    ),
-                  ],
-                ),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: 520,
+                child: useNativeIosAccessibleViews
+                    ? NativeIosAccessibleList(
+                        sections: [NativeIosListSection(rows: [
+                          NativeIosListRow(id: 'summary', kind: 'text', title: summary),
+                          NativeIosListRow(
+                            id: 'precision',
+                            kind: 'picker',
+                            title: _cutEditStepLabel(editStep),
+                            value: _cutEditStepIndex(editStep).toString(),
+                            options: [
+                              for (var i = 0; i < _cutEditStepOptions.length; i++)
+                                NativeIosOption(
+                                  value: i,
+                                  label: _cutEditStepLabel(_cutEditStepOptions[i]),
+                                ),
+                            ],
+                          ),
+                          NativeIosListRow(id: 'start_back', title: _moveStartBackLabel(editStep)),
+                          NativeIosListRow(id: 'start_forward', title: _moveStartForwardLabel(editStep)),
+                          NativeIosListRow(id: 'end_back', title: _moveEndBackLabel(editStep)),
+                          NativeIosListRow(id: 'end_forward', title: _moveEndForwardLabel(editStep)),
+                          NativeIosListRow(id: 'listen', kind: 'button', title: _guidedListenCutLabel),
+                        ])],
+                        onEvent: (event) async {
+                          if (event.id == 'precision' && event.type == 'picker') {
+                            final raw = event.value;
+                            final selected = raw is num
+                                ? raw.toInt()
+                                : int.tryParse(raw?.toString() ?? '');
+                            if (selected != null &&
+                                selected >= 0 &&
+                                selected < _cutEditStepOptions.length) {
+                              setDialogState(() => editStep = _cutEditStepOptions[selected]);
+                            }
+                            return;
+                          }
+                          if (event.type != 'activate') return;
+                          switch (event.id) {
+                            case 'start_back':
+                              await adjust(moveStart: true, direction: -1);
+                              break;
+                            case 'start_forward':
+                              await adjust(moveStart: true, direction: 1);
+                              break;
+                            case 'end_back':
+                              await adjust(moveStart: false, direction: -1);
+                              break;
+                            case 'end_forward':
+                              await adjust(moveStart: false, direction: 1);
+                              break;
+                            case 'listen':
+                              await _listenGuidedCut();
+                              break;
+                          }
+                        },
+                      )
+                    : SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(summary),
+                            const SizedBox(height: 16),
+                            _buildCutEditPrecisionSlider(
+                              value: editStep,
+                              onChanged: (value) =>
+                                  setDialogState(() => editStep = value),
+                            ),
+                            const SizedBox(height: 16),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  unawaited(adjust(moveStart: true, direction: -1)),
+                              icon: const Icon(Icons.keyboard_double_arrow_left),
+                              label: Text(_moveStartBackLabel(editStep)),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  unawaited(adjust(moveStart: true, direction: 1)),
+                              icon: const Icon(Icons.keyboard_double_arrow_right),
+                              label: Text(_moveStartForwardLabel(editStep)),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  unawaited(adjust(moveStart: false, direction: -1)),
+                              icon: const Icon(Icons.keyboard_double_arrow_left),
+                              label: Text(_moveEndBackLabel(editStep)),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  unawaited(adjust(moveStart: false, direction: 1)),
+                              icon: const Icon(Icons.keyboard_double_arrow_right),
+                              label: Text(_moveEndForwardLabel(editStep)),
+                            ),
+                            const SizedBox(height: 12),
+                            FilledButton.icon(
+                              onPressed: () => unawaited(_listenGuidedCut()),
+                              icon: const Icon(Icons.hearing),
+                              label: Text(_guidedListenCutLabel),
+                            ),
+                          ],
+                        ),
+                      ),
               ),
               actions: [
                 TextButton(
@@ -2238,56 +2299,117 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
             return AlertDialog(
               title: Text(_partEditActionLabel),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(_partEditDescription),
-                    const SizedBox(height: 8),
-                    Text(summary),
-                    const SizedBox(height: 16),
-                    _buildCutEditPrecisionSlider(
-                      value: editStep,
-                      onChanged: (value) =>
-                          setDialogState(() => editStep = value),
-                    ),
-                    const SizedBox(height: 16),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          unawaited(adjust(moveStart: true, direction: -1)),
-                      icon: const Icon(Icons.keyboard_double_arrow_left),
-                      label: Text(_moveStartBackLabel(editStep)),
-                    ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          unawaited(adjust(moveStart: true, direction: 1)),
-                      icon: const Icon(Icons.keyboard_double_arrow_right),
-                      label: Text(_moveStartForwardLabel(editStep)),
-                    ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          unawaited(adjust(moveStart: false, direction: -1)),
-                      icon: const Icon(Icons.keyboard_double_arrow_left),
-                      label: Text(_moveEndBackLabel(editStep)),
-                    ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () =>
-                          unawaited(adjust(moveStart: false, direction: 1)),
-                      icon: const Icon(Icons.keyboard_double_arrow_right),
-                      label: Text(_moveEndForwardLabel(editStep)),
-                    ),
-                    const SizedBox(height: 12),
-                    FilledButton.icon(
-                      onPressed: () => unawaited(_playPart(index)),
-                      icon: const Icon(Icons.hearing),
-                      label: Text(_guidedListenCutLabel),
-                    ),
-                  ],
-                ),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: 560,
+                child: useNativeIosAccessibleViews
+                    ? NativeIosAccessibleList(
+                        sections: [NativeIosListSection(rows: [
+                          NativeIosListRow(id: 'description', kind: 'text', title: _partEditDescription),
+                          NativeIosListRow(id: 'summary', kind: 'text', title: summary),
+                          NativeIosListRow(
+                            id: 'precision',
+                            kind: 'picker',
+                            title: _cutEditStepLabel(editStep),
+                            value: _cutEditStepIndex(editStep).toString(),
+                            options: [
+                              for (var i = 0; i < _cutEditStepOptions.length; i++)
+                                NativeIosOption(
+                                  value: i,
+                                  label: _cutEditStepLabel(_cutEditStepOptions[i]),
+                                ),
+                            ],
+                          ),
+                          NativeIosListRow(id: 'start_back', title: _moveStartBackLabel(editStep)),
+                          NativeIosListRow(id: 'start_forward', title: _moveStartForwardLabel(editStep)),
+                          NativeIosListRow(id: 'end_back', title: _moveEndBackLabel(editStep)),
+                          NativeIosListRow(id: 'end_forward', title: _moveEndForwardLabel(editStep)),
+                          NativeIosListRow(id: 'listen', kind: 'button', title: _guidedListenCutLabel),
+                        ])],
+                        onEvent: (event) async {
+                          if (event.id == 'precision' && event.type == 'picker') {
+                            final raw = event.value;
+                            final selected = raw is num
+                                ? raw.toInt()
+                                : int.tryParse(raw?.toString() ?? '');
+                            if (selected != null &&
+                                selected >= 0 &&
+                                selected < _cutEditStepOptions.length) {
+                              setDialogState(() => editStep = _cutEditStepOptions[selected]);
+                            }
+                            return;
+                          }
+                          if (event.type != 'activate') return;
+                          switch (event.id) {
+                            case 'start_back':
+                              await adjust(moveStart: true, direction: -1);
+                              break;
+                            case 'start_forward':
+                              await adjust(moveStart: true, direction: 1);
+                              break;
+                            case 'end_back':
+                              await adjust(moveStart: false, direction: -1);
+                              break;
+                            case 'end_forward':
+                              await adjust(moveStart: false, direction: 1);
+                              break;
+                            case 'listen':
+                              await _playPart(index);
+                              break;
+                          }
+                        },
+                      )
+                    : SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(_partEditDescription),
+                            const SizedBox(height: 8),
+                            Text(summary),
+                            const SizedBox(height: 16),
+                            _buildCutEditPrecisionSlider(
+                              value: editStep,
+                              onChanged: (value) =>
+                                  setDialogState(() => editStep = value),
+                            ),
+                            const SizedBox(height: 16),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  unawaited(adjust(moveStart: true, direction: -1)),
+                              icon: const Icon(Icons.keyboard_double_arrow_left),
+                              label: Text(_moveStartBackLabel(editStep)),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  unawaited(adjust(moveStart: true, direction: 1)),
+                              icon: const Icon(Icons.keyboard_double_arrow_right),
+                              label: Text(_moveStartForwardLabel(editStep)),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  unawaited(adjust(moveStart: false, direction: -1)),
+                              icon: const Icon(Icons.keyboard_double_arrow_left),
+                              label: Text(_moveEndBackLabel(editStep)),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  unawaited(adjust(moveStart: false, direction: 1)),
+                              icon: const Icon(Icons.keyboard_double_arrow_right),
+                              label: Text(_moveEndForwardLabel(editStep)),
+                            ),
+                            const SizedBox(height: 12),
+                            FilledButton.icon(
+                              onPressed: () => unawaited(_playPart(index)),
+                              icon: const Icon(Icons.hearing),
+                              label: Text(_guidedListenCutLabel),
+                            ),
+                          ],
+                        ),
+                      ),
               ),
               actions: [
                 TextButton(
@@ -2796,25 +2918,44 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         title: Text(title),
         content: SizedBox(
           width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: _availableEffects.length,
-            itemBuilder: (context, index) {
-              final effect = _availableEffects[index];
-              final selected = effect == current;
-              final effectLabel = _effectLabel(l10n, effect);
-              return Semantics(
-                selected: selected,
-                button: true,
-                child: ListTile(
-                  selected: selected,
-                  title: Text(effectLabel),
-                  trailing: selected ? const Icon(Icons.check) : null,
-                  onTap: () => Navigator.pop(dialogContext, effect),
+          height: 420,
+          child: useNativeIosAccessibleViews
+              ? NativeIosAccessibleList(
+                  sections: [NativeIosListSection(rows: [
+                    for (var index = 0; index < _availableEffects.length; index++)
+                      NativeIosListRow(
+                        id: 'effect_$index',
+                        title: _effectLabel(l10n, _availableEffects[index]),
+                        selected: _availableEffects[index] == current,
+                      ),
+                  ])],
+                  onEvent: (event) {
+                    if (event.type != 'activate' || event.id == null) return;
+                    final index = int.tryParse(event.id!.replaceFirst('effect_', ''));
+                    if (index != null && index >= 0 && index < _availableEffects.length) {
+                      Navigator.pop(dialogContext, _availableEffects[index]);
+                    }
+                  },
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _availableEffects.length,
+                  itemBuilder: (context, index) {
+                    final effect = _availableEffects[index];
+                    final selected = effect == current;
+                    final effectLabel = _effectLabel(l10n, effect);
+                    return Semantics(
+                      selected: selected,
+                      button: true,
+                      child: ListTile(
+                        selected: selected,
+                        title: Text(effectLabel),
+                        trailing: selected ? const Icon(Icons.check) : null,
+                        onTap: () => Navigator.pop(dialogContext, effect),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
         actions: [
           TextButton(
@@ -2848,7 +2989,123 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           title: Text(applyToWholeFile
               ? _guidedEffectsLabel
               : l10n.mediaCutterPartEffectsTitle),
-          content: SingleChildScrollView(
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 600,
+            child: useNativeIosAccessibleViews
+                ? NativeIosAccessibleList(
+                    sections: [NativeIosListSection(rows: [
+                      NativeIosListRow(
+                        id: 'description',
+                        kind: 'text',
+                        title: applyToWholeFile
+                            ? _guidedEffectsDescription
+                            : l10n.mediaCutterPartEffectsDescription,
+                      ),
+                      NativeIosListRow(
+                        id: 'volume',
+                        kind: 'slider',
+                        title: l10n.mediaCutterPartVolumeValue(volumePercent),
+                        sliderValue: volumePercent.toDouble(),
+                        sliderMin: 0,
+                        sliderMax: 200,
+                        sliderStep: 10,
+                        valueLabel: '$volumePercent%',
+                      ),
+                      for (var slot = 0; slot < _visibleEffectSlots(effectSlots); slot++) ...[
+                        NativeIosListRow(
+                          id: 'effect_$slot',
+                          kind: 'picker',
+                          title: _effectSlotLabel(l10n, slot + 1),
+                          value: effectSlots[slot].effect.name,
+                          valueLabel: _effectLabel(l10n, effectSlots[slot].effect),
+                          options: [
+                            for (final effect in _availableEffects)
+                              NativeIosOption(
+                                value: effect.name,
+                                label: _effectLabel(l10n, effect),
+                              ),
+                          ],
+                        ),
+                        if (effectSlots[slot].effect != _MediaPartEffect.none)
+                          NativeIosListRow(
+                            id: 'amount_$slot',
+                            kind: 'slider',
+                            title: '${_effectSlotLabel(l10n, slot + 1)}, ${l10n.mediaCutterPartEffectAmountValue(effectSlots[slot].amountPercent)}',
+                            sliderValue: effectSlots[slot].amountPercent.toDouble(),
+                            sliderMin: 0,
+                            sliderMax: 100,
+                            sliderStep: 10,
+                            valueLabel: '${effectSlots[slot].amountPercent}%',
+                          ),
+                      ],
+                      NativeIosListRow(
+                        id: 'preview',
+                        kind: 'button',
+                        title: l10n.mediaCutterPartPreviewAction,
+                      ),
+                    ])],
+                    onEvent: (event) async {
+                      if (event.id == 'volume' && event.type == 'slider') {
+                        final value = event.value;
+                        final next = value is num
+                            ? value.round().clamp(0, 200).toInt()
+                            : volumePercent;
+                        setDialogState(() => volumePercent = next);
+                        return;
+                      }
+                      if (event.id != null &&
+                          event.id!.startsWith('effect_') &&
+                          event.type == 'picker') {
+                        final slot = int.tryParse(event.id!.replaceFirst('effect_', ''));
+                        if (slot == null || slot < 0 || slot >= effectSlots.length) return;
+                        final raw = event.value?.toString();
+                        final selected = _availableEffects
+                            .where((effect) => effect.name == raw)
+                            .firstOrNull;
+                        if (selected == null) return;
+                        final updated = [...effectSlots];
+                        updated[slot] = updated[slot].copyWith(effect: selected);
+                        setDialogState(() {
+                          effectSlots = selected == _MediaPartEffect.none
+                              ? _normalizedEffectSlots(updated)
+                              : updated;
+                        });
+                        return;
+                      }
+                      if (event.id != null &&
+                          event.id!.startsWith('amount_') &&
+                          event.type == 'slider') {
+                        final slot = int.tryParse(event.id!.replaceFirst('amount_', ''));
+                        final value = event.value;
+                        if (slot == null ||
+                            slot < 0 ||
+                            slot >= effectSlots.length ||
+                            value is! num) return;
+                        setDialogState(() {
+                          effectSlots[slot] = effectSlots[slot].copyWith(
+                            amountPercent: value.round().clamp(0, 100).toInt(),
+                          );
+                        });
+                        return;
+                      }
+                      if (event.id == 'preview' && event.type == 'activate') {
+                        await _playPartEffectsPreview(
+                          index,
+                          volumePercent: volumePercent,
+                          effect: effectSlots[0].effect,
+                          secondaryEffect: effectSlots[1].effect,
+                          thirdEffect: effectSlots[2].effect,
+                          fourthEffect: effectSlots[3].effect,
+                          effectAmountPercent: effectSlots[0].amountPercent,
+                          secondaryEffectAmountPercent: effectSlots[1].amountPercent,
+                          thirdEffectAmountPercent: effectSlots[2].amountPercent,
+                          fourthEffectAmountPercent: effectSlots[3].amountPercent,
+                        );
+                      }
+                    },
+                  )
+                : SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -3044,6 +3301,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 ),
               ],
             ),
+          ),
           ),
           actions: [
             TextButton(
@@ -6462,7 +6720,19 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       appBar:
           AppBar(title: Text(AppLocalizations.of(context).mediaCutterTitle)),
       body: SafeArea(
-        child: ListView(
+        child: useNativeIosAccessibleViews
+            ? NativeIosAccessibleList(
+                sections: [NativeIosListSection(rows: [
+                  NativeIosListRow(id: 'guided', title: _guidedModeTitle, subtitle: _guidedModeDescription),
+                  NativeIosListRow(id: 'advanced', title: _advancedModeTitle, subtitle: _advancedModeDescription),
+                ])],
+                onEvent: (event) {
+                  if (event.type != 'activate') return;
+                  if (event.id == 'guided') _selectMode(_MediaCutterMode.guided);
+                  if (event.id == 'advanced') _selectMode(_MediaCutterMode.advanced);
+                },
+              )
+            : ListView(
           padding: const EdgeInsets.all(16),
           children: [
             modeCard(
@@ -6523,6 +6793,160 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
+  Widget _buildNativeIosEditorList(AppLocalizations l10n, bool canUseMedia) {
+    final visibleParts = <MapEntry<int, _MediaPart>>[
+      for (var i = 0; i < _parts.length; i++)
+        if (_parts[i].keep) MapEntry(i, _parts[i]),
+    ];
+    final rows = <NativeIosListRow>[
+      NativeIosListRow(
+        id: 'mode_title',
+        kind: 'header',
+        title: _isGuidedMode ? _guidedModeTitle : _advancedModeTitle,
+        subtitle: _isGuidedMode ? _guidedModeDescription : _advancedModeDescription,
+      ),
+      NativeIosListRow(id: 'change_mode', title: _changeCutModeLabel, enabled: !_loading && !_saving),
+      NativeIosListRow(id: 'open', title: l10n.mediaCutterOpenFile, kind: 'button', enabled: !_loading && !_saving),
+      if (_displayName.isNotEmpty)
+        NativeIosListRow(id: 'selected', kind: 'text', title: l10n.mediaCutterSelectedFile(_displayName)),
+      NativeIosListRow(
+        id: 'output',
+        title: l10n.convertMediaOutput,
+        subtitle: _outputController.text.isEmpty ? null : _outputController.text,
+        enabled: !_loading && !_saving,
+      ),
+      if (_loading) NativeIosListRow(id: 'loading', kind: 'text', title: l10n.loading),
+      if (_inputPath.isNotEmpty && _duration != Duration.zero)
+        NativeIosListRow(id: 'seek_step', title: _mediaSeekStepButtonLabel(), enabled: canUseMedia),
+      if (_isVideo)
+        NativeIosListRow(
+          id: 'rotation',
+          title: l10n.mediaCutterVideoRotation,
+          kind: 'picker',
+          value: _videoRotation.name,
+          enabled: !_loading && !_saving,
+          options: [
+            for (final rotation in _VideoRotation.values)
+              NativeIosOption(value: rotation.name, label: _videoRotationLabel(l10n, rotation)),
+          ],
+        ),
+      if (_isVideo)
+        NativeIosListRow(
+          id: 'video_preview',
+          title: _showVideoPreview ? l10n.mediaCutterHideVideoPreview : l10n.enableVideo,
+          kind: 'toggle',
+          toggleValue: _showVideoPreview,
+          enabled: canUseMedia,
+        ),
+      NativeIosListRow(
+        id: 'play_pause',
+        title: _playing ? l10n.pause : l10n.play,
+        kind: 'button',
+        enabled: canUseMedia,
+      ),
+      if (_isGuidedMode) ...[
+        NativeIosListRow(id: 'guided_cut', title: _guidedPrimaryCutButtonLabel, kind: 'button', enabled: canUseMedia),
+        NativeIosListRow(
+          id: 'guided_listen',
+          title: _guidedListenCutLabel,
+          enabled: canUseMedia && _guidedCutStart != null && _guidedCutEnd != null,
+        ),
+        NativeIosListRow(
+          id: 'guided_modify',
+          title: _guidedModifyCutLabel,
+          enabled: canUseMedia && _guidedCutStart != null && _guidedCutEnd != null,
+        ),
+        if (_inputPath.isNotEmpty && _duration != Duration.zero)
+          NativeIosListRow(
+            id: 'guided_summary',
+            title: _displayName.isEmpty ? p.basename(_inputPath) : _displayName,
+            subtitle: _guidedCurrentSummary,
+            enabled: !_saving,
+            actions: [NativeIosCustomAction(id: 'effects', label: _guidedEffectsLabel)],
+          ),
+      ] else ...[
+        NativeIosListRow(id: 'split', title: l10n.mediaCutterSplit, kind: 'button', enabled: canUseMedia),
+        NativeIosListRow(id: 'restore', title: l10n.mediaCutterRestoreDeletedPart, enabled: canUseMedia && _hasDeletedParts),
+        if (visibleParts.isNotEmpty)
+          NativeIosListRow(id: 'parts_header', kind: 'header', title: l10n.mediaCutterPartsTitle, subtitle: l10n.mediaCutterPartsHint),
+        for (var visibleIndex = 0; visibleIndex < visibleParts.length; visibleIndex++)
+          NativeIosListRow(
+            id: 'part_${visibleParts[visibleIndex].key}',
+            title: '${l10n.mediaCutterPartLabel(visibleIndex + 1)}, ${_partDetailsSummary(l10n, visibleParts[visibleIndex].value)}',
+            subtitle: l10n.mediaCutterPartRange(
+              _formatTime(visibleParts[visibleIndex].value.start),
+              _formatTime(visibleParts[visibleIndex].value.end),
+            ),
+            enabled: !_saving,
+            actions: [
+              NativeIosCustomAction(id: 'edit', label: _partEditActionLabel),
+              NativeIosCustomAction(id: 'effects', label: l10n.mediaCutterPartEffectsAction),
+              NativeIosCustomAction(id: 'delete', label: l10n.mediaCutterPartDeleteAction),
+            ],
+          ),
+      ],
+      NativeIosListRow(id: 'status', kind: 'text', title: _status ?? l10n.mediaCutterReady),
+      NativeIosListRow(id: 'save', title: l10n.mediaCutterSave, kind: 'button', enabled: canUseMedia),
+    ];
+
+    return NativeIosAccessibleList(
+      sections: [NativeIosListSection(rows: rows)],
+      onEvent: (event) async {
+        final id = event.id;
+        if (id == 'change_mode' && event.type == 'activate') {
+          await _changeMode();
+        } else if (id == 'open' && event.type == 'activate') {
+          await _pickInput();
+        } else if (id == 'output' && event.type == 'activate') {
+          await _pickOutput();
+        } else if (id == 'seek_step' && event.type == 'activate') {
+          await _showMediaSeekStepDialog();
+        } else if (id == 'rotation' && event.type == 'picker') {
+          final name = event.value?.toString();
+          final found = _VideoRotation.values.where((value) => value.name == name);
+          if (found.isNotEmpty && found.first != _videoRotation) {
+            setState(() {
+              _videoRotation = found.first;
+              _hasUnsavedEdit = true;
+            });
+          }
+        } else if (id == 'video_preview' && event.type == 'toggle') {
+          setState(() => _showVideoPreview = event.value == true);
+        } else if (id == 'play_pause' && event.type == 'activate') {
+          await _togglePlayback();
+        } else if (id == 'guided_cut' && event.type == 'activate') {
+          _guidedCutButtonPressed();
+        } else if (id == 'guided_listen' && event.type == 'activate') {
+          await _listenGuidedCut();
+        } else if (id == 'guided_modify' && event.type == 'activate') {
+          await _showGuidedModifyCutDialog();
+        } else if (id == 'guided_summary') {
+          if (event.type == 'customAction' && event.action == 'effects') {
+            await _showGuidedEffectsDialog();
+          } else if (event.type == 'activate') {
+            await _togglePlayback();
+          }
+        } else if (id == 'split' && event.type == 'activate') {
+          _splitHere();
+        } else if (id == 'restore' && event.type == 'activate') {
+          _restoreDeletedPart();
+        } else if (id?.startsWith('part_') == true) {
+          final index = int.tryParse(id!.substring(5));
+          if (index == null || index >= _parts.length) return;
+          if (event.type == 'customAction') {
+            if (event.action == 'edit') await _showAdvancedPartEditDialog(index);
+            if (event.action == 'effects') await _showPartEffectsDialog(index);
+            if (event.action == 'delete') _deletePart(index);
+          } else if (event.type == 'activate') {
+            await _playPart(index);
+          }
+        } else if (id == 'save' && event.type == 'activate') {
+          await _save();
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -6540,7 +6964,23 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.mediaCutterTitle)),
         body: SafeArea(
-          child: ListView(
+          child: useNativeIosAccessibleViews
+              ? Column(
+                  children: [
+                    if (_isVideo && _showVideoPreview)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                        child: _buildVideoPreview(l10n),
+                      ),
+                    Expanded(child: _buildNativeIosEditorList(l10n, canUseMedia)),
+                    if (_inputPath.isNotEmpty && _duration != Duration.zero)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                        child: _buildPositionSlider(l10n),
+                      ),
+                  ],
+                )
+              : ListView(
             padding: const EdgeInsets.all(16),
             children: [
               Text(_isGuidedMode ? _guidedModeTitle : _advancedModeTitle),

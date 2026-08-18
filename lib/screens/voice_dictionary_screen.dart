@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/voice_dictionary_service.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class VoiceDictionaryScreen extends StatefulWidget {
   const VoiceDictionaryScreen({super.key});
@@ -53,7 +54,37 @@ class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.voiceDictionaryTitle)),
       body: SafeArea(
-        child: ListView(
+        child: useNativeIosAccessibleViews
+            ? NativeIosAccessibleList(
+                sections: [NativeIosListSection(
+                  header: l10n.voiceDictionaryEntries,
+                  rows: [
+                    NativeIosListRow(id: 'add', title: l10n.voiceDictionaryAdd, kind: 'button'),
+                    if (_loading)
+                      NativeIosListRow(id: 'loading', kind: 'text', title: l10n.loading)
+                    else if (_entries.isEmpty)
+                      NativeIosListRow(id: 'empty', kind: 'text', title: l10n.voiceDictionaryEmpty)
+                    else
+                      for (var i = 0; i < _entries.length; i++)
+                        NativeIosListRow(
+                          id: 'entry_$i',
+                          kind: 'text',
+                          title: '${_entries[i].original} -> ${_entries[i].replacement}',
+                          subtitle: _entries[i].matchCase ? l10n.voiceDictionaryMatchCase : l10n.voiceDictionaryIgnoreCase,
+                          actions: [NativeIosCustomAction(id: 'remove', label: l10n.voiceDictionaryRemove)],
+                        ),
+                  ],
+                )],
+                onEvent: (event) async {
+                  if (event.id == 'add' && event.type == 'activate') {
+                    await _showAddEntryDialog();
+                  } else if (event.type == 'customAction' && event.action == 'remove' && event.id?.startsWith('entry_') == true) {
+                    final i = int.tryParse(event.id!.substring(6));
+                    if (i != null && i < _entries.length) await _removeEntry(i);
+                  }
+                },
+              )
+            : ListView(
           padding: const EdgeInsets.all(16),
           children: [
             FilledButton.icon(
@@ -129,7 +160,11 @@ class _VoiceDictionaryEntryDialogState
   }
 
   void _submit() {
-    if (!_formKey.currentState!.validate()) return;
+    if (useNativeIosAccessibleViews) {
+      if (_originalController.text.trim().isEmpty) return;
+    } else if (!_formKey.currentState!.validate()) {
+      return;
+    }
     Navigator.of(context).pop(
       VoiceDictionaryEntry(
         original: _originalController.text,
@@ -144,7 +179,28 @@ class _VoiceDictionaryEntryDialogState
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(l10n.voiceDictionaryAdd),
-      content: Form(
+      content: useNativeIosAccessibleViews
+          ? SizedBox(
+              width: 420,
+              height: 300,
+              child: NativeIosAccessibleList(
+                sections: [NativeIosListSection(rows: [
+                  NativeIosListRow(id: 'original', title: l10n.voiceDictionaryOriginalWord, kind: 'textField', value: _originalController.text),
+                  NativeIosListRow(id: 'replacement', title: l10n.voiceDictionaryReplacementWord, kind: 'textField', value: _replacementController.text),
+                  NativeIosListRow(id: 'match', title: l10n.voiceDictionaryMatchCase, kind: 'toggle', toggleValue: _matchCase),
+                ])],
+                onEvent: (event) {
+                  if (event.id == 'original' && event.type == 'textChanged') {
+                    _originalController.text = event.value?.toString() ?? '';
+                  } else if (event.id == 'replacement' && event.type == 'textChanged') {
+                    _replacementController.text = event.value?.toString() ?? '';
+                  } else if (event.id == 'match' && event.type == 'toggle') {
+                    setState(() => _matchCase = event.value == true);
+                  }
+                },
+              ),
+            )
+          : Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(

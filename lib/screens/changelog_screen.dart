@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/changelog_service.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class ChangelogScreen extends StatelessWidget {
   final ChangelogEntry entry;
@@ -21,7 +22,18 @@ class ChangelogScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.whatIsNew)),
       body: SafeArea(
-        child: ListView.separated(
+        child: useNativeIosAccessibleViews
+            ? NativeIosAccessibleList(
+                sections: [NativeIosListSection(
+                  header: l10n.whatIsNewInVersion(entry.version),
+                  rows: [
+                    for (var i = 0; i < changes.length; i++)
+                      NativeIosListRow(id: 'change_$i', kind: 'text', title: changes[i]),
+                  ],
+                )],
+                onEvent: (_) {},
+              )
+            : ListView.separated(
           padding: const EdgeInsets.all(16),
           itemCount: changes.length + 1,
           separatorBuilder: (context, index) => const SizedBox(height: 12),
@@ -55,7 +67,19 @@ Future<void> showChangelogDialog({
     context: context,
     builder: (context) => AlertDialog(
       title: Text(l10n.whatIsNewInVersion(entry.version)),
-      content: SingleChildScrollView(
+      content: useNativeIosAccessibleViews
+          ? SizedBox(
+              width: 500,
+              height: 380,
+              child: NativeIosAccessibleList(
+                sections: [NativeIosListSection(rows: [
+                  for (var i = 0; i < changes.length; i++)
+                    NativeIosListRow(id: 'change_$i', kind: 'text', title: changes[i]),
+                ])],
+                onEvent: (_) {},
+              ),
+            )
+          : SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

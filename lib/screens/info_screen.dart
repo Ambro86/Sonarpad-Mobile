@@ -8,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/changelog_service.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class InfoScreen extends StatelessWidget {
   const InfoScreen({super.key});
@@ -48,6 +49,30 @@ class InfoScreen extends StatelessWidget {
                   )
                 : '';
 
+            if (useNativeIosAccessibleViews) {
+              return NativeIosAccessibleList(
+                sections: [NativeIosListSection(rows: [
+                  NativeIosListRow(id: 'title', kind: 'header', title: l10n.appTitle),
+                  if (versionText.isNotEmpty) NativeIosListRow(id: 'version', kind: 'text', title: versionText),
+                  NativeIosListRow(id: 'donations', title: l10n.donations),
+                  NativeIosListRow(id: 'changelog', title: l10n.whatIsNew),
+                  NativeIosListRow(id: 'description', kind: 'text', title: l10n.infoDescription),
+                  NativeIosListRow(id: 'website', title: l10n.visitSonarpadSiteWithUrl('https://sonarpad.com')),
+                  NativeIosListRow(id: 'author', kind: 'text', title: l10n.infoAuthor),
+                ])],
+                onEvent: (event) async {
+                  if (event.type != 'activate') return;
+                  if (event.id == 'donations') {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DonationsScreen()));
+                  } else if (event.id == 'changelog') {
+                    await _openChangelog(context);
+                  } else if (event.id == 'website') {
+                    final url = Uri.parse('https://sonarpad.com');
+                    if (await canLaunchUrl(url)) await launchUrl(url);
+                  }
+                },
+              );
+            }
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [

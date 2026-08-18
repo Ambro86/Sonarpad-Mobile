@@ -14,6 +14,7 @@ import '../services/route_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class RouteResultScreen extends StatelessWidget {
   final RouteResult result;
@@ -26,7 +27,39 @@ class RouteResultScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.routeResultsTitle)),
-      body: ListView.separated(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: [
+                    for (var i = 0; i < result.paths.length; i++)
+                      NativeIosListRow(
+                        id: 'path_$i',
+                        title: '${l10n.routeDistance}: ${l10n.formatDistance(result.paths[i].distanceMeters)}',
+                        subtitle: '${l10n.routeDuration}: ${l10n.formatDuration(result.paths[i].durationSeconds)}',
+                      ),
+                  ],
+                ),
+              ],
+              onEvent: (event) {
+                if (event.type != 'activate' || event.id == null) return;
+                final index = int.tryParse(event.id!.replaceFirst('path_', ''));
+                if (index == null || index >= result.paths.length) return;
+                final path = result.paths[index];
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    settings: const RouteSettings(name: '/route/steps'),
+                    builder: (_) => RouteStepsScreen(
+                      path: path,
+                      fromLabel: result.from.displayLabel,
+                      toLabel: result.to.displayLabel,
+                    ),
+                  ),
+                );
+              },
+            )
+          : ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: result.paths.length,
         separatorBuilder: (_, _) => const Divider(),
@@ -409,7 +442,25 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: [
+                    for (var i = 0; i < _items.length; i++)
+                      NativeIosListRow(
+                        id: 'step_$i',
+                        kind: 'text',
+                        title: _items[i].showDistance
+                            ? '${_items[i].instruction} (${l10n.formatDistance(_items[i].distanceMeters)})'
+                            : _items[i].instruction,
+                      ),
+                  ],
+                ),
+              ],
+              onEvent: (_) {},
+            )
+          : ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _items.length,
         itemBuilder: (context, index) {

@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
+import '../widgets/native_ios_accessible_view.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
 import 'trailer_screen.dart';
@@ -99,7 +100,27 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(movie.title)),
-      body: Semantics(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: [
+                    NativeIosListRow(id: 'title', title: movie.title, kind: 'text'),
+                    NativeIosListRow(id: 'date', title: releaseDateText, kind: 'text'),
+                    if (movie.overview.isNotEmpty)
+                      NativeIosListRow(id: 'overview', title: l10n.cinemaOverviewLabel, subtitle: movie.overview, kind: 'text'),
+                    if (_loadingTrailer)
+                      const NativeIosListRow(id: 'trailer_loading', title: 'Caricamento trailer', kind: 'text')
+                    else if (_trailerUrl != null)
+                      NativeIosListRow(id: 'trailer', title: l10n.cinemaOpenTrailer, kind: 'button'),
+                  ],
+                ),
+              ],
+              onEvent: (event) async {
+                if (event.type == 'activate' && event.id == 'trailer') await _openTrailer();
+              },
+            )
+          : Semantics(
         explicitChildNodes: true,
         child: ListView(
           scrollCacheExtent: const ScrollCacheExtent.pixels(4000),

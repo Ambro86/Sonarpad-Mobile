@@ -17,6 +17,7 @@ import 'podcast_episodes_screen.dart';
 import '../utils/country_name_helper.dart';
 import '../utils/status_message.dart';
 import '../widgets/letter_jump_option_picker_screen.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class PodcastScreen extends StatefulWidget {
   const PodcastScreen({super.key});
@@ -412,12 +413,181 @@ class _PodcastScreenState extends State<PodcastScreen> {
     super.dispose();
   }
 
+  Widget _buildNativeIosPodcastHome(AppLocalizations l10n) {
+    final searchRows = <NativeIosListRow>[
+      NativeIosListRow(
+        id: 'search_query',
+        title: l10n.podcastName,
+        kind: 'textField',
+        value: _searchController.text,
+        placeholder: l10n.podcastSearchHint,
+      ),
+      NativeIosListRow(
+        id: 'countries',
+        title: l10n.browsePodcastCountries,
+        subtitle: _podcastCountryLabel(_selectedPodcastCountry(), l10n),
+      ),
+      NativeIosListRow(
+        id: 'categories',
+        title: l10n.browsePodcastCategories,
+        subtitle: _category.nameForLanguage(l10n.localeName),
+      ),
+      NativeIosListRow(id: 'search', title: l10n.searchPodcasts, kind: 'button'),
+    ];
+
+    final manualRows = <NativeIosListRow>[
+      NativeIosListRow(
+        id: 'feed_url',
+        title: l10n.podcastFeedUrl,
+        kind: 'textField',
+        value: _feedController.text,
+        placeholder: 'https://example.com/feed.xml',
+      ),
+      NativeIosListRow(
+        id: 'subscribe_url',
+        title: l10n.subscribeFromUrl,
+        kind: 'button',
+      ),
+    ];
+
+    final subscriptionRows = <NativeIosListRow>[];
+    if (_subscriptions.length > 1) {
+      subscriptionRows.add(NativeIosListRow(
+        id: 'sort_subscriptions',
+        title: l10n.sortPodcastsAlphabetically,
+        kind: 'button',
+      ));
+    }
+    if (_subscriptions.isEmpty) {
+      subscriptionRows.add(NativeIosListRow(
+        id: 'no_subscriptions',
+        title: l10n.noSubscribedPodcasts,
+        kind: 'text',
+      ));
+    } else {
+      for (var i = 0; i < _subscriptions.length; i++) {
+        final subscription = _subscriptions[i];
+        subscriptionRows.add(NativeIosListRow(
+          id: 'subscription_$i',
+          title: subscription.title,
+          actions: [
+            NativeIosCustomAction(id: 'remove', label: l10n.removePodcast),
+            if (i > 0) NativeIosCustomAction(id: 'move_up', label: l10n.moveUp),
+            if (i < _subscriptions.length - 1)
+              NativeIosCustomAction(id: 'move_down', label: l10n.moveDown),
+            NativeIosCustomAction(id: 'move_position', label: l10n.moveToPosition),
+          ],
+        ));
+      }
+    }
+
+    final localRows = <NativeIosListRow>[];
+    if (_localAudioFiles.isEmpty) {
+      localRows.add(NativeIosListRow(
+        id: 'no_local',
+        title: l10n.noLocalAudioFiles,
+        kind: 'text',
+      ));
+    } else {
+      for (var i = 0; i < _localAudioFiles.length; i++) {
+        localRows.add(NativeIosListRow(
+          id: 'local_$i',
+          title: p.basenameWithoutExtension(_localAudioFiles[i].path),
+        ));
+      }
+    }
+    localRows.addAll([
+      NativeIosListRow(id: 'refresh_local', title: l10n.importAudioFromITunes, kind: 'button'),
+      NativeIosListRow(id: 'import_opml', title: l10n.importPodcastsFromFile, kind: 'button'),
+      NativeIosListRow(id: 'export_opml', title: l10n.exportPodcastsToFile, kind: 'button'),
+    ]);
+
+    return NativeIosAccessibleList(
+      sections: [
+        NativeIosListSection(header: l10n.searchPodcasts, rows: searchRows),
+        NativeIosListSection(header: l10n.addFeedUrlManually, rows: manualRows),
+        NativeIosListSection(header: l10n.subscribedPodcasts, rows: subscriptionRows),
+        NativeIosListSection(header: l10n.localAudioFiles, rows: localRows),
+      ],
+      onEvent: (event) async {
+        if (event.type == 'textChanged') {
+          if (event.id == 'search_query') {
+            _searchController.text = event.value?.toString() ?? '';
+          } else if (event.id == 'feed_url') {
+            _feedController.text = event.value?.toString() ?? '';
+          }
+          return;
+        }
+        if (event.type == 'customAction' &&
+            event.id?.startsWith('subscription_') == true) {
+          final index = int.tryParse(event.id!.substring(13));
+          if (index == null || index < 0 || index >= _subscriptions.length) return;
+          switch (event.action) {
+            case 'remove':
+              await _removeSubscription(_subscriptions[index]);
+              return;
+            case 'move_up':
+              await _handleAction(_PodcastAction.moveUp, index);
+              return;
+            case 'move_down':
+              await _handleAction(_PodcastAction.moveDown, index);
+              return;
+            case 'move_position':
+              await _handleAction(_PodcastAction.moveToPosition, index);
+              return;
+          }
+        }
+        if (event.type != 'activate' || event.id == null) return;
+        switch (event.id) {
+          case 'countries':
+            await _openCountries();
+            break;
+          case 'categories':
+            await _openCategories();
+            break;
+          case 'search':
+            _search();
+            break;
+          case 'subscribe_url':
+            await _addByUrl();
+            break;
+          case 'sort_subscriptions':
+            await _sortSubscriptionsAlphabetically();
+            break;
+          case 'refresh_local':
+            await _refreshLocalAudioFiles();
+            break;
+          case 'import_opml':
+            await _importFromFile();
+            break;
+          case 'export_opml':
+            await _exportToFile();
+            break;
+          default:
+            if (event.id!.startsWith('subscription_')) {
+              final index = int.tryParse(event.id!.substring(13));
+              if (index != null && index >= 0 && index < _subscriptions.length) {
+                _openSubscription(_subscriptions[index]);
+              }
+            } else if (event.id!.startsWith('local_')) {
+              final index = int.tryParse(event.id!.substring(6));
+              if (index != null && index >= 0 && index < _localAudioFiles.length) {
+                _openLocalAudioFile(_localAudioFiles[index]);
+              }
+            }
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.podcasts)),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? _buildNativeIosPodcastHome(l10n)
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(l10n.searchPodcasts,
@@ -785,6 +955,46 @@ class _PodcastSearchResultsScreenState
           if (results.isEmpty) {
             return Center(child: Text(l10n.noPodcastResults));
           }
+          if (useNativeIosAccessibleViews) {
+            final rows = results.map((result) {
+              final isSubscribed = _isSubscribed(result);
+              final secondaryActionLabel =
+                  isSubscribed ? l10n.openPodcast : l10n.subscribe;
+              return NativeIosListRow(
+                id: result.feedUrl,
+                title: result.title,
+                subtitle: result.author.isEmpty ? result.feedUrl : result.author,
+                kind: 'action',
+                actions: [
+                  NativeIosCustomAction(
+                    id: 'secondary',
+                    label: secondaryActionLabel,
+                  ),
+                ],
+              );
+            }).toList();
+            return NativeIosAccessibleList(
+              key: ValueKey('native-podcast-search-${rows.length}'),
+              sections: [NativeIosListSection(rows: rows)],
+              onEvent: (event) async {
+                final id = event.id;
+                if (id == null) return;
+                final index = results.indexWhere((e) => e.feedUrl == id);
+                if (index < 0) return;
+                final result = results[index];
+                if (event.type == 'activate') {
+                  await _openResult(result);
+                } else if (event.type == 'customAction' &&
+                    event.action == 'secondary') {
+                  if (_isSubscribed(result)) {
+                    _openSubscribedResult(result);
+                  } else {
+                    await _subscribeFromResult(result);
+                  }
+                }
+              },
+            );
+          }
           return ListView.separated(
             itemCount: results.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
@@ -921,6 +1131,40 @@ class _PodcastSearchDetail extends StatelessWidget {
           feedUrl: feedUrl,
           artworkUrl: artworkUrl,
         );
+
+        if (useNativeIosAccessibleViews) {
+          return NativeIosAccessibleList(
+            sections: [
+              NativeIosListSection(
+                rows: [
+                  NativeIosListRow(id: 'title', title: title, kind: 'text'),
+                  if (author.isNotEmpty)
+                    NativeIosListRow(id: 'author', title: '${l10n.podcastAuthor}: $author', kind: 'text'),
+                  NativeIosListRow(
+                    id: 'description',
+                    title: snapshot.connectionState != ConnectionState.done
+                        ? l10n.loadingPodcastInfo
+                        : snapshot.hasError
+                            ? l10n.error(snapshot.error!)
+                            : (description.isEmpty ? l10n.noPodcastDescription : description),
+                    kind: 'text',
+                  ),
+                  NativeIosListRow(id: 'feed', title: feedUrl, kind: 'text'),
+                  NativeIosListRow(id: 'subscribe', title: l10n.subscribe, kind: 'button'),
+                  NativeIosListRow(id: 'episodes', title: l10n.viewEpisodes, kind: 'button'),
+                ],
+              ),
+            ],
+            onEvent: (event) {
+              if (event.type != 'activate') return;
+              if (event.id == 'subscribe') {
+                onSubscribe();
+              } else if (event.id == 'episodes') {
+                onPreviewEpisodes(previewSubscription);
+              }
+            },
+          );
+        }
 
         return ListView(
           padding: const EdgeInsets.all(16),

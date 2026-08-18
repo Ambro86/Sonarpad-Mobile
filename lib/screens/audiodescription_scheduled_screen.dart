@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/audiodescription_service.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 const _scheduledAudiodescriptionsTitle = 'Audiodescrizioni in programma';
 const _scheduledAudiodescriptionsEmpty =
@@ -99,7 +100,30 @@ class _AudiodescriptionScheduledScreenState
               ? Center(child: Text('${l10n.audiodescriptionError}: $_error'))
               : _days.isEmpty
                   ? const Center(child: Text(_scheduledAudiodescriptionsEmpty))
-                  : RefreshIndicator(
+                  : useNativeIosAccessibleViews
+                      ? NativeIosAccessibleList(
+                          refreshEnabled: true,
+                          sections: _days
+                              .map((day) => NativeIosListSection(
+                                    header: day.label,
+                                    rows: day.programs
+                                        .asMap()
+                                        .entries
+                                        .map((entry) => NativeIosListRow(
+                                              id: 'program_${day.label}_${entry.key}',
+                                              title: '${entry.value.time} - ${entry.value.channel}'.trim(),
+                                              subtitle: entry.value.title,
+                                              accessibilityLabel: _programVoiceLabel(entry.value),
+                                              kind: 'text',
+                                            ))
+                                        .toList(growable: false),
+                                  ))
+                              .toList(growable: false),
+                          onEvent: (event) async {
+                            if (event.type == 'refresh') await _load();
+                          },
+                        )
+                      : RefreshIndicator(
                       onRefresh: _load,
                       child: ListView.builder(
                         padding: const EdgeInsets.all(16),

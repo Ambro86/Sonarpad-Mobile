@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
 import '../services/accessibility_feedback_service.dart';
+import '../widgets/native_ios_accessible_view.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
@@ -273,7 +274,56 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     final summary = _dropLeadingDuplicateTitle(article.title, article.summary);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.article)),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: [
+                    NativeIosListRow(id: 'title', title: article.title, kind: 'text'),
+                    NativeIosListRow(id: 'source', title: l10n.source(article.source), kind: 'text'),
+                    NativeIosListRow(id: 'preview', title: l10n.articlePreview, subtitle: summary, kind: 'text'),
+                    NativeIosListRow(id: 'status', title: _status ?? l10n.readyStatus, kind: 'text'),
+                    NativeIosListRow(
+                      id: 'read',
+                      title: _speaking ? l10n.readingInProgress : l10n.readWithEdgeTts,
+                      kind: 'button',
+                      enabled: !_speaking,
+                    ),
+                    NativeIosListRow(
+                      id: 'stop',
+                      title: l10n.stopReading,
+                      kind: 'button',
+                      enabled: _speaking,
+                    ),
+                    NativeIosListRow(id: 'full', title: l10n.readFullArticle, kind: 'button'),
+                    NativeIosListRow(id: 'original', title: l10n.openOriginalArticle, kind: 'button'),
+                  ],
+                ),
+              ],
+              onEvent: (event) async {
+                if (event.type != 'activate') return;
+                switch (event.id) {
+                  case 'read':
+                    await _readWithEdgeTtsStreaming();
+                    break;
+                  case 'stop':
+                    await _stopReading();
+                    break;
+                  case 'full':
+                    if (!context.mounted) return;
+                    await AccessibilityFeedbackService.push(
+                      context,
+                      builder: (_) => NewsWebViewScreen(article: article, language: widget.language),
+                      routeName: 'news-webview',
+                    );
+                    break;
+                  case 'original':
+                    await launchUrl(Uri.parse(article.link), mode: LaunchMode.externalApplication);
+                    break;
+                }
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(article.title, style: Theme.of(context).textTheme.headlineSmall),

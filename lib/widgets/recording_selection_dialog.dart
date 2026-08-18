@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
+import 'native_ios_accessible_view.dart';
 
 enum RecordingSelectionAction { share, delete }
 
@@ -37,7 +38,31 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
             ),
             child: recordings.isEmpty
                 ? Text(l10n.noRecordings)
-                : ListView.builder(
+                : useNativeIosAccessibleViews
+                    ? NativeIosAccessibleList(
+                        sections: [NativeIosListSection(rows: [
+                          for (var i = 0; i < recordings.length; i++)
+                            NativeIosListRow(
+                              id: 'recording_$i',
+                              title: p.basenameWithoutExtension(recordings[i].path),
+                              kind: 'toggle',
+                              toggleValue: selectedPaths.contains(recordings[i].path),
+                            ),
+                        ])],
+                        onEvent: (event) {
+                          if (event.type != 'toggle' || event.id == null) return;
+                          final i = int.tryParse(event.id!.replaceFirst('recording_', ''));
+                          if (i == null || i >= recordings.length) return;
+                          setDialogState(() {
+                            if (event.value == true) {
+                              selectedPaths.add(recordings[i].path);
+                            } else {
+                              selectedPaths.remove(recordings[i].path);
+                            }
+                          });
+                        },
+                      )
+                    : ListView.builder(
                     shrinkWrap: true,
                     itemCount: recordings.length,
                     itemBuilder: (context, index) {

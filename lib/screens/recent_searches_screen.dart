@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import '../l10n/app_localizations.dart';
 import '../services/recent_searches_service.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class RecentSearchesScreen extends StatefulWidget {
   final String title;
@@ -87,7 +88,39 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
           : _searches.isEmpty
               ? Center(
                   child: Text(AppLocalizations.of(context).noRecentSearches))
-              : ListView.builder(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      sections: [
+                        NativeIosListSection(
+                          rows: _searches
+                              .asMap()
+                              .entries
+                              .map((entry) => NativeIosListRow(
+                                    id: 'search_${entry.key}',
+                                    title: entry.value,
+                                    actions: [
+                                      NativeIosCustomAction(
+                                        id: 'delete',
+                                        label: AppLocalizations.of(context).deleteItem,
+                                      ),
+                                    ],
+                                  ))
+                              .toList(growable: false),
+                        ),
+                      ],
+                      onEvent: (event) async {
+                        if (event.id?.startsWith('search_') != true) return;
+                        final index = int.tryParse(event.id!.substring(7));
+                        if (index == null || index < 0 || index >= _searches.length) return;
+                        final query = _searches[index];
+                        if (event.type == 'customAction' && event.action == 'delete') {
+                          await _deleteSearch(query);
+                        } else if (event.type == 'activate') {
+                          if (mounted) Navigator.of(context).pop(query);
+                        }
+                      },
+                    )
+                  : ListView.builder(
                   itemCount: _searches.length,
                   itemBuilder: (context, index) {
                     final query = _searches[index];

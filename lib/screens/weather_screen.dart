@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/news/weather_service.dart';
 import '../utils/text_input_normalizer.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 WeatherGeocodingResult? _deserializeCity(String data) {
   try {
@@ -289,6 +290,31 @@ class _WeatherCityResultsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
+    if (useNativeIosAccessibleViews) {
+      return Expanded(
+        child: NativeIosAccessibleList(
+          sections: [
+            NativeIosListSection(
+              header: l10n.weatherCity,
+              rows: [
+                for (var i = 0; i < cities.length; i++)
+                  NativeIosListRow(
+                    id: 'city_$i',
+                    title: cities[i].name,
+                    subtitle: _subtitle(cities[i]),
+                  ),
+              ],
+            ),
+          ],
+          onEvent: (event) {
+            if (event.type != 'activate' || event.id == null) return;
+            final i = int.tryParse(event.id!.replaceFirst('city_', ''));
+            if (i != null && i < cities.length) onCitySelected(cities[i]);
+          },
+        ),
+      );
+    }
+
     return Expanded(
       child: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -419,6 +445,44 @@ class _WeatherForecastView extends StatelessWidget {
     final dayCount = _dailyValues('time').length;
     final availableDays = dayCount > 0 ? dayCount : 1;
     final day = selectedDay.clamp(0, availableDays - 1);
+
+    if (useNativeIosAccessibleViews) {
+      final dayOptions = [
+        for (var i = 0; i < availableDays; i++)
+          NativeIosOption(value: i, label: _dayLabel(l10n, i)),
+      ];
+      return Expanded(
+        child: NativeIosAccessibleList(
+          sections: [
+            NativeIosListSection(rows: [
+              NativeIosListRow(
+                id: 'day',
+                title: l10n.weatherChooseDay,
+                kind: 'picker',
+                value: day.toString(),
+                options: dayOptions,
+              ),
+              NativeIosListRow(id: 'day_title', kind: 'header', title: _dayLabel(l10n, day)),
+              if (day == 0)
+                NativeIosListRow(id: 'situation', kind: 'text', title: l10n.weatherCurrentSituation, valueLabel: _currentSituation(l10n)),
+              if (day == 0)
+                NativeIosListRow(id: 'current_temp', kind: 'text', title: l10n.weatherCurrentTemperature, valueLabel: _formatTemperature(forecast.current['temperature_2m'])),
+              NativeIosListRow(id: 'max_temp', kind: 'text', title: l10n.weatherMaxTemperature, valueLabel: _temperatureValue('temperature_2m_max', day)),
+              NativeIosListRow(id: 'min_temp', kind: 'text', title: l10n.weatherMinTemperature, valueLabel: _temperatureValue('temperature_2m_min', day)),
+              NativeIosListRow(id: 'rain', kind: 'text', title: l10n.weatherPrecipitation, valueLabel: _value('precipitation_sum', day, 'mm')),
+              NativeIosListRow(id: 'wind', kind: 'text', title: l10n.weatherWind, valueLabel: _value('wind_speed_10m_max', day, 'km/h')),
+            ]),
+          ],
+          onEvent: (event) {
+            if (event.id == 'day' && event.type == 'picker') {
+              final value = event.value;
+              final i = value is num ? value.toInt() : int.tryParse(value?.toString() ?? '');
+              if (i != null) onDayChanged(i);
+            }
+          },
+        ),
+      );
+    }
 
     return Expanded(
       child: ListView(
@@ -787,7 +851,34 @@ class _WeatherRecentCitiesScreenState
           ? const Center(child: CircularProgressIndicator())
           : _cities.isEmpty
               ? Center(child: Text(l10n.weatherCityNotFound)) // Or another localized string
-              : ListView.separated(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      sections: [NativeIosListSection(rows: [
+                        for (var i = 0; i < _cities.length; i++)
+                          NativeIosListRow(
+                            id: 'city_$i',
+                            title: _deserializeCity(_cities[i])?.name ?? _cities[i],
+                            subtitle: (() {
+                              final cityObj = _deserializeCity(_cities[i]);
+                              if (cityObj == null) return null;
+                              final parts = [cityObj.admin1, cityObj.country].whereType<String>().where((p) => p.isNotEmpty).toList();
+                              return parts.isEmpty ? null : parts.join(', ');
+                            })(),
+                            actions: [NativeIosCustomAction(id: 'delete', label: l10n.deleteItem)],
+                          ),
+                      ])],
+                      onEvent: (event) async {
+                        if (event.id?.startsWith('city_') != true) return;
+                        final i = int.tryParse(event.id!.substring(5));
+                        if (i == null || i >= _cities.length) return;
+                        if (event.type == 'customAction' && event.action == 'delete') {
+                          await _deleteCity(_cities[i]);
+                        } else if (event.type == 'activate') {
+                          Navigator.pop(context, _cities[i]);
+                        }
+                      },
+                    )
+                  : ListView.separated(
                   itemCount: _cities.length,
                   separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {

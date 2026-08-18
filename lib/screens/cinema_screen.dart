@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
+import '../widgets/native_ios_accessible_view.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
 import 'cinema_detail_screen.dart';
@@ -72,7 +73,42 @@ class _CinemaScreenState extends State<CinemaScreen> {
               ? Center(child: Text('${l10n.cinemaError}\n$_error'))
               : _movies.isEmpty
                   ? Center(child: Text(l10n.cinemaNoMovies))
-                  : Semantics(
+                  : useNativeIosAccessibleViews
+                      ? NativeIosAccessibleList(
+                          sections: [
+                            NativeIosListSection(
+                              rows: [
+                                NativeIosListRow(
+                                  id: 'upcoming',
+                                  title: l10n.cinemaUpcomingReleases,
+                                ),
+                                ..._movies.asMap().entries.map((entry) => NativeIosListRow(
+                                      id: 'movie_${entry.key}',
+                                      title: entry.value.title,
+                                      subtitle: l10n.cinemaReleased(_formatDate(entry.value.releaseDate, localeName)),
+                                    )),
+                              ],
+                            ),
+                          ],
+                          onEvent: (event) {
+                            if (event.type != 'activate' || event.id == null) return;
+                            if (event.id == 'upcoming') {
+                              Navigator.push(context, MaterialPageRoute(
+                                settings: const RouteSettings(name: '/cinema/upcoming'),
+                                builder: (_) => const CinemaUpcomingScreen(),
+                              ));
+                            } else if (event.id!.startsWith('movie_')) {
+                              final index = int.tryParse(event.id!.substring(6));
+                              if (index != null && index >= 0 && index < _movies.length) {
+                                Navigator.push(context, MaterialPageRoute(
+                                  settings: const RouteSettings(name: '/cinema/detail'),
+                                  builder: (_) => CinemaDetailScreen(movie: _movies[index]),
+                                ));
+                              }
+                            }
+                          },
+                        )
+                      : Semantics(
                       explicitChildNodes: true,
                       child: ListView.separated(
                         scrollCacheExtent: const ScrollCacheExtent.pixels(4000),

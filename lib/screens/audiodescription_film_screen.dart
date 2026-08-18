@@ -5,6 +5,7 @@ import '../services/audiodescription_service.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class AudiodescriptionFilmScreen extends StatefulWidget {
   final AudiodescriptionGroup filmGroup;
@@ -94,7 +95,27 @@ class _AudiodescriptionFilmScreenState
           ),
         ),
       ),
-      body: ListView.separated(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: _filteredItems
+                      .asMap()
+                      .entries
+                      .map((entry) => NativeIosListRow(
+                            id: 'film_${entry.key}',
+                            title: entry.value.title,
+                          ))
+                      .toList(growable: false),
+                ),
+              ],
+              onEvent: (event) async {
+                if (event.type != 'activate' || event.id == null) return;
+                final index = int.tryParse(event.id!.replaceFirst('film_', ''));
+                if (index != null && index >= 0 && index < _filteredItems.length) await _play(_filteredItems[index]);
+              },
+            )
+          : ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: _filteredItems.length,
         separatorBuilder: (_, _) => const Divider(),

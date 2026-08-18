@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/app_settings_service.dart';
 import '../services/bdciechi_service.dart';
 import 'bdciechi_dashboard_screen.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class BdCiechiLoginScreen extends StatefulWidget {
   const BdCiechiLoginScreen({super.key});
@@ -110,7 +111,32 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
                   child: const CircularProgressIndicator(),
                 ),
               )
-            : SingleChildScrollView(
+            : useNativeIosAccessibleViews
+                ? NativeIosAccessibleList(
+                    sections: [NativeIosListSection(rows: [
+                      const NativeIosListRow(id: 'title', kind: 'header', title: 'Biblioteca dei Ciechi'),
+                      if (_errorMessage != null) NativeIosListRow(id: 'error', kind: 'text', title: _errorMessage!),
+                      NativeIosListRow(id: 'username', title: 'Nome Utente', kind: 'textField', value: _usernameController.text),
+                      NativeIosListRow(id: 'password', title: 'Password', kind: 'textField', secure: true, value: _passwordController.text),
+                      const NativeIosListRow(id: 'login', title: 'Accedi', kind: 'button'),
+                      const NativeIosListRow(id: 'signup_salotto', title: 'Iscriviti a salottopertutti.it'),
+                      const NativeIosListRow(id: 'signup_bdciechi', title: 'Iscriviti a bdciechi.it'),
+                    ])],
+                    onEvent: (event) async {
+                      if (event.id == 'username' && event.type == 'textChanged') {
+                        _usernameController.text = event.value?.toString() ?? '';
+                      } else if (event.id == 'password' && event.type == 'textChanged') {
+                        _passwordController.text = event.value?.toString() ?? '';
+                      } else if (event.id == 'login' && event.type == 'activate') {
+                        _onLoginPressed();
+                      } else if (event.id == 'signup_salotto' && event.type == 'activate') {
+                        await launchUrl(Uri.parse('https://www.salottopertutti.it/login/signupform.asp'));
+                      } else if (event.id == 'signup_bdciechi' && event.type == 'activate') {
+                        await launchUrl(Uri.parse('https://www.bdciechi.it/iscrizione/'));
+                      }
+                    },
+                  )
+                : SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

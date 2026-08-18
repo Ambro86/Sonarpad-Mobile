@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/orari_apertura_service.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class OrariAperturaDetailScreen extends StatefulWidget {
   final String title;
@@ -56,7 +57,31 @@ class _OrariAperturaDetailScreenState extends State<OrariAperturaDetailScreen> {
               ? Center(
                   child: Text(_errorMessage!,
                       style: TextStyle(color: Colors.red, fontSize: 18)))
-              : SingleChildScrollView(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      sections: [
+                        NativeIosListSection(rows: [
+                          NativeIosListRow(
+                            id: 'title',
+                            kind: 'header',
+                            title: _detail!.title.isNotEmpty ? _detail!.title : widget.title,
+                          ),
+                          if (_detail!.status.isNotEmpty)
+                            NativeIosListRow(id: 'status', kind: 'text', title: _detail!.status),
+                          if (_detail!.hours.isEmpty)
+                            const NativeIosListRow(
+                              id: 'empty',
+                              kind: 'text',
+                              title: 'Orari non disponibili o attività chiusa definitivamente.',
+                            )
+                          else
+                            for (var i = 0; i < _detail!.hours.length; i++)
+                              NativeIosListRow(id: 'hour_$i', kind: 'text', title: _detail!.hours[i]),
+                        ]),
+                      ],
+                      onEvent: (_) {},
+                    )
+                  : SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,

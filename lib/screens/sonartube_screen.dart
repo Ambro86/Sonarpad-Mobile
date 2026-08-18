@@ -6,6 +6,7 @@ import '../models/podcast.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_service.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
 
 class SonarTubeScreen extends StatefulWidget {
@@ -240,6 +241,115 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     return values.isEmpty ? null : values.join(' · ');
   }
 
+  Widget _buildNativeIosSonarTube(AppLocalizations l10n) {
+    final rows = <NativeIosListRow>[];
+    if (!_isCollection) {
+      rows.add(NativeIosListRow(
+        id: 'favorites',
+        title: l10n.sonarTubeFavorites,
+      ));
+      rows.add(NativeIosListRow(
+        id: 'query',
+        title: l10n.sonarTubeSearchLabel,
+        kind: 'textField',
+        value: _searchController.text,
+        placeholder: l10n.sonarTubeSearchPrompt,
+      ));
+      rows.add(NativeIosListRow(
+        id: 'search',
+        title: l10n.search,
+        kind: 'button',
+        enabled: !_loading,
+      ));
+    }
+    if (_loading) {
+      rows.add(NativeIosListRow(
+        id: 'loading',
+        title: l10n.loading,
+        kind: 'text',
+      ));
+    }
+    if (_error != null) {
+      rows.add(NativeIosListRow(
+        id: 'error',
+        title: l10n.error(_error!),
+        kind: 'text',
+      ));
+    }
+    if (!_loading && _items.isEmpty) {
+      rows.add(NativeIosListRow(
+        id: 'empty',
+        title: _query == null && !_isCollection
+            ? l10n.sonarTubeSearchPrompt
+            : l10n.sonarTubeNoResults,
+        kind: 'text',
+      ));
+    }
+    for (var i = 0; i < _items.length; i++) {
+      final item = _items[i];
+      final resolving = _resolvingId == item.id;
+      final canFavorite = item.kind != SonarTubeItemKind.video;
+      final isFavorite = _favoriteKeys.contains(_favoritesService.itemKey(item));
+      final favoriteLabel = isFavorite
+          ? l10n.sonarTubeRemoveFavorite
+          : l10n.sonarTubeAddFavorite;
+      final subtitle = resolving ? l10n.sonarTubeResolving : _subtitle(l10n, item);
+      rows.add(NativeIosListRow(
+        id: 'item_$i',
+        title: item.title,
+        subtitle: subtitle,
+        accessibilityLabel: [
+          item.title,
+          if (subtitle?.isNotEmpty ?? false) subtitle!,
+        ].join(', '),
+        enabled: _resolvingId == null,
+        actions: canFavorite
+            ? [NativeIosCustomAction(id: 'favorite', label: favoriteLabel)]
+            : const [],
+      ));
+    }
+    if (_nextToken != null) {
+      rows.add(NativeIosListRow(
+        id: 'load_more',
+        title: _loadingMore ? l10n.loading : l10n.sonarTubeLoadMore,
+        kind: 'button',
+        enabled: !_loadingMore,
+      ));
+    }
+
+    return NativeIosAccessibleList(
+      sections: [NativeIosListSection(rows: rows)],
+      onEvent: (event) async {
+        if (event.id == 'query' && event.type == 'textChanged') {
+          _searchController.text = event.value?.toString() ?? '';
+          return;
+        }
+        if (event.type == 'customAction' &&
+            event.action == 'favorite' &&
+            event.id?.startsWith('item_') == true) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index != null && index >= 0 && index < _items.length) {
+            await _toggleFavorite(_items[index]);
+          }
+          return;
+        }
+        if (event.type != 'activate' || event.id == null) return;
+        if (event.id == 'favorites') {
+          await _openFavorites();
+        } else if (event.id == 'search') {
+          await _search();
+        } else if (event.id == 'load_more') {
+          await _loadMore();
+        } else if (event.id!.startsWith('item_')) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index != null && index >= 0 && index < _items.length) {
+            await _openItem(_items[index]);
+          }
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -248,7 +358,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         title: Text(widget.collection?.title ?? l10n.sonarTubeTitle),
       ),
       body: SafeArea(
-        child: Column(
+        child: useNativeIosAccessibleViews
+            ? _buildNativeIosSonarTube(l10n)
+            : Column(
           children: [
             if (!_isCollection)
               Padding(
@@ -505,7 +617,46 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                   textAlign: TextAlign.center,
                 ),
               )
-            : ListView.builder(
+            : useNativeIosAccessibleViews
+                ? NativeIosAccessibleList(
+                    sections: [
+                      NativeIosListSection(
+                        rows: _favorites
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                              final item = entry.value;
+                              final type = item.kind == SonarTubeItemKind.channel
+                                  ? l10n.sonarTubeChannel
+                                  : l10n.sonarTubePlaylist;
+                              return NativeIosListRow(
+                                id: 'favorite_${entry.key}',
+                                title: item.title,
+                                subtitle: type,
+                                actions: [
+                                  NativeIosCustomAction(
+                                    id: 'remove',
+                                    label: l10n.sonarTubeRemoveFavorite,
+                                  ),
+                                ],
+                              );
+                            })
+                            .toList(growable: false),
+                      ),
+                    ],
+                    onEvent: (event) async {
+                      if (event.id?.startsWith('favorite_') != true) return;
+                      final index = int.tryParse(event.id!.substring(9));
+                      if (index == null || index < 0 || index >= _favorites.length) return;
+                      final item = _favorites[index];
+                      if (event.type == 'customAction' && event.action == 'remove') {
+                        await _remove(item);
+                      } else if (event.type == 'activate') {
+                        if (mounted) Navigator.pop(context, item);
+                      }
+                    },
+                  )
+                : ListView.builder(
                 padding: const EdgeInsets.all(12),
                 itemCount: _favorites.length,
                 itemBuilder: (context, index) {

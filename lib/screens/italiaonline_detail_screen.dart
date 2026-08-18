@@ -11,6 +11,7 @@ import '../services/document_library_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class ItaliaOnlineDetailScreen extends StatefulWidget {
   final DetailResponse detail;
@@ -161,7 +162,49 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
           ),
         ],
       ),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(rows: [
+                  if (detail.description != null && detail.description!.isNotEmpty)
+                    NativeIosListRow(id: 'description', kind: 'text', title: detail.description!),
+                  if (detail.category != null && detail.category!.isNotEmpty)
+                    NativeIosListRow(id: 'category', kind: 'text', title: 'Categoria: ${detail.category}'),
+                  if (detail.address != null && detail.address!.isNotEmpty)
+                    NativeIosListRow(id: 'address', kind: 'text', title: detail.address!),
+                  if (detail.locality != null && detail.locality!.isNotEmpty)
+                    NativeIosListRow(id: 'locality', kind: 'text', title: detail.locality!),
+                  for (var i = 0; i < detail.phones.length; i++)
+                    NativeIosListRow(id: 'phone_$i', title: detail.phones[i], subtitle: 'Telefono'),
+                  for (var i = 0; i < detail.websites.length; i++)
+                    NativeIosListRow(id: 'website_$i', title: detail.websites[i], subtitle: 'Sito web'),
+                  for (var i = 0; i < detail.emails.length; i++)
+                    NativeIosListRow(id: 'email_$i', title: detail.emails[i], subtitle: 'Email'),
+                  if (detail.publicUrl != null && detail.publicUrl!.isNotEmpty)
+                    const NativeIosListRow(id: 'public', title: 'Apri scheda originale'),
+                ]),
+              ],
+              onEvent: (event) {
+                if (event.type != 'activate' || event.id == null) return;
+                if (event.id!.startsWith('phone_')) {
+                  final i = int.tryParse(event.id!.substring(6));
+                  if (i != null && i < detail.phones.length) _launchUrl('tel:${detail.phones[i]}');
+                } else if (event.id!.startsWith('website_')) {
+                  final i = int.tryParse(event.id!.substring(8));
+                  if (i != null && i < detail.websites.length) {
+                    var url = detail.websites[i];
+                    if (!url.startsWith('http')) url = 'https://$url';
+                    _launchUrl(url);
+                  }
+                } else if (event.id!.startsWith('email_')) {
+                  final i = int.tryParse(event.id!.substring(6));
+                  if (i != null && i < detail.emails.length) _launchUrl('mailto:${detail.emails[i]}');
+                } else if (event.id == 'public' && detail.publicUrl != null) {
+                  _launchUrl(detail.publicUrl!);
+                }
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           if (detail.description != null && detail.description!.isNotEmpty) ...[

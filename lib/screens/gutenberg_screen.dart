@@ -11,6 +11,7 @@ import '../services/gutendex_service.dart';
 import '../utils/app_logger.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class GutenbergScreen extends StatefulWidget {
   final String? parentId;
@@ -73,7 +74,33 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Project Gutenberg')),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [NativeIosListSection(rows: [
+                NativeIosListRow(id: 'query', title: l10n.gutenbergSearchLabel, kind: 'textField', value: _controller.text),
+                NativeIosListRow(
+                  id: 'language',
+                  title: l10n.sourceLanguageLabel,
+                  kind: 'picker',
+                  value: _language,
+                  options: [
+                    for (final entry in _languages)
+                      NativeIosOption(value: entry.$1, label: '${entry.$2} (${entry.$1})'),
+                  ],
+                ),
+                NativeIosListRow(id: 'search', title: l10n.search, kind: 'button'),
+              ])],
+              onEvent: (event) {
+                if (event.id == 'query' && event.type == 'textChanged') {
+                  _controller.text = event.value?.toString() ?? '';
+                } else if (event.id == 'language' && event.type == 'picker' && event.value != null) {
+                  setState(() => _language = event.value.toString());
+                } else if (event.id == 'search' && event.type == 'activate') {
+                  _search();
+                }
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -213,6 +240,30 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
           if (_books.isEmpty) {
             return Center(child: Text(l10n.noGutenbergBooksFound));
           }
+          if (useNativeIosAccessibleViews) {
+            return NativeIosAccessibleList(
+              sections: [NativeIosListSection(rows: [
+                for (var i = 0; i < _books.length; i++)
+                  NativeIosListRow(id: 'book_$i', title: _books[i].title, subtitle: _books[i].authorLabel),
+                if (_nextPage != null)
+                  NativeIosListRow(
+                    id: 'more',
+                    title: _loadingMore ? l10n.loading : l10n.loadMore,
+                    kind: 'button',
+                    enabled: !_loadingMore,
+                  ),
+              ])],
+              onEvent: (event) {
+                if (event.type != 'activate' || event.id == null) return;
+                if (event.id == 'more') {
+                  if (!_loadingMore && _nextPage != null) _load(pageUrl: _nextPage);
+                  return;
+                }
+                final i = int.tryParse(event.id!.replaceFirst('book_', ''));
+                if (i != null && i < _books.length) _openBook(_books[i]);
+              },
+            );
+          }
           return ListView.separated(
             itemCount: _books.length + (_nextPage == null ? 0 : 1),
             separatorBuilder: (_, _) => const Divider(height: 1),
@@ -337,7 +388,27 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
     final summary = book.summaries.isEmpty ? null : book.summaries.first;
     return Scaffold(
       appBar: AppBar(title: Text(book.title)),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [NativeIosListSection(rows: [
+                NativeIosListRow(id: 'title', kind: 'header', title: book.title),
+                NativeIosListRow(id: 'author', kind: 'text', title: book.authorLabel),
+                if (book.languageLabel.isNotEmpty)
+                  NativeIosListRow(id: 'language', kind: 'text', title: l10n.sourceLanguageValue(book.languageLabel)),
+                if (summary != null && summary.trim().isNotEmpty)
+                  NativeIosListRow(id: 'summary', kind: 'text', title: summary),
+                NativeIosListRow(
+                  id: 'import',
+                  title: _importing ? l10n.gutenbergImporting : l10n.gutenbergImportAndRead,
+                  kind: 'button',
+                  enabled: !_importing,
+                ),
+              ])],
+              onEvent: (event) {
+                if (event.id == 'import' && event.type == 'activate' && !_importing) _importAndRead();
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(book.title, style: Theme.of(context).textTheme.headlineSmall),

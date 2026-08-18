@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/orari_apertura_service.dart';
 import 'orari_apertura_detail_screen.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class OrariAperturaResultsScreen extends StatefulWidget {
   final String cosa;
@@ -63,7 +64,40 @@ class _OrariAperturaResultsScreenState
               ? Center(
                   child: Text(_errorMessage!,
                       style: TextStyle(color: Colors.red, fontSize: 18)))
-              : ListView.builder(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      sections: [
+                        NativeIosListSection(
+                          rows: [
+                            for (var i = 0; i < _results.length; i++)
+                              NativeIosListRow(
+                                id: 'result_$i',
+                                title: _results[i].title,
+                                subtitle: [
+                                  if (_results[i].address.isNotEmpty) _results[i].address,
+                                  if (_results[i].status.isNotEmpty) _results[i].status,
+                                ].join(' - '),
+                              ),
+                          ],
+                        ),
+                      ],
+                      onEvent: (event) {
+                        if (event.type != 'activate' || event.id == null) return;
+                        final index = int.tryParse(event.id!.replaceFirst('result_', ''));
+                        if (index == null || index >= _results.length) return;
+                        final result = _results[index];
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => OrariAperturaDetailScreen(
+                              title: result.title,
+                              detailUrl: result.url,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : ListView.builder(
                   padding: const EdgeInsets.all(16.0),
                   itemCount: _results.length,
                   itemBuilder: (context, index) {

@@ -9,6 +9,7 @@ import 'favorite_tvs_screen.dart';
 import 'tv_channel_screen.dart';
 import 'tv_recordings_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class TvScreen extends StatefulWidget {
   const TvScreen({super.key});
@@ -341,6 +342,78 @@ class _TvScreenState extends State<TvScreen> {
       );
     }
 
+    if (useNativeIosAccessibleViews) {
+      final rows = <NativeIosListRow>[
+        if (_cacheWarning != null)
+          NativeIosListRow(
+            id: '__warning__',
+            title: _cacheWarning!,
+            kind: 'text',
+            enabled: false,
+          ),
+        NativeIosListRow(
+          id: '__search_text__',
+          title: l10n.tvSearchFieldLabel,
+          kind: 'textField',
+          value: _searchController.text,
+          placeholder: l10n.tvSearchFieldHint,
+        ),
+        NativeIosListRow(id: '__search__', title: l10n.tvSearchButton, kind: 'button'),
+        const NativeIosListRow(id: '__favorites__', title: 'TV preferite', kind: 'action'),
+        NativeIosListRow(id: '__recordings__', title: l10n.recordings, kind: 'action'),
+        ...categories.where((c) => map.containsKey(c)).map(
+          (c) => NativeIosListRow(id: 'category:$c', title: c, kind: 'action'),
+        ),
+        if (regionalMap.isNotEmpty)
+          const NativeIosListRow(id: '__regional__', title: 'Regionali', kind: 'action'),
+      ];
+      return NativeIosAccessibleList(
+        key: ValueKey('native-tv-main-${rows.length}-${_channels.length}'),
+        sections: [NativeIosListSection(rows: rows)],
+        onEvent: (event) async {
+          if (event.type == 'textChanged' && event.id == '__search_text__') {
+            final value = event.value?.toString() ?? '';
+            _searchController.value = TextEditingValue(
+              text: value,
+              selection: TextSelection.collapsed(offset: value.length),
+            );
+            return;
+          }
+          if (event.type != 'activate' || event.id == null) return;
+          final id = event.id!;
+          if (id == '__search__') {
+            await _openSearchResults();
+          } else if (id == '__favorites__') {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                settings: const RouteSettings(name: '/tv/favorites'),
+                builder: (_) => FavoriteTvsScreen(
+                  channels: _channels,
+                  currentPrograms: _currentPrograms,
+                  onOpenChannel: _openChannel,
+                ),
+              ),
+            );
+          } else if (id == '__recordings__') {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                settings: const RouteSettings(name: '/tv/recordings'),
+                builder: (_) => const TvRecordingsScreen(),
+              ),
+            );
+          } else if (id == '__regional__') {
+            _openRegionalCategories(regionalMap);
+          } else if (id.startsWith('category:')) {
+            final category = id.substring('category:'.length);
+            final channels = map[category];
+            if (channels != null) _openCategory(category, channels);
+          }
+        },
+      );
+    }
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: listChildren,
@@ -379,7 +452,26 @@ class _TvRegionalScreen extends StatelessWidget {
     final regionNames = regions.keys.toList();
     return Scaffold(
       appBar: AppBar(title: const Text('Regionali')),
-      body: ListView.builder(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: regionNames
+                      .map((region) => NativeIosListRow(
+                            id: region,
+                            title: region,
+                            kind: 'action',
+                          ))
+                      .toList(),
+                ),
+              ],
+              onEvent: (event) {
+                if (event.type == 'activate' && event.id != null) {
+                  _openRegion(context, event.id!);
+                }
+              },
+            )
+          : ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: regionNames.length,
         itemBuilder: (context, index) {
@@ -471,7 +563,52 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.category)),
-      body: ListView.builder(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              key: ValueKey('native-tv-category-${widget.category}-${widget.channels.length}'),
+              sections: [
+                NativeIosListSection(
+                  rows: widget.channels.map((channel) {
+                    final program = _currentProgramFor(channel);
+                    final favorite = _isFavorite(channel);
+                    final title = program?.title.trim();
+                    return NativeIosListRow(
+                      id: channel.name,
+                      title: channel.name,
+                      subtitle: title != null && title.isNotEmpty
+                          ? AppLocalizations.of(context).tvNowOnAir(title)
+                          : null,
+                      accessibilityLabel: title != null && title.isNotEmpty
+                          ? '${channel.name}. ${AppLocalizations.of(context).tvNowOnAir(title)}'
+                          : channel.name,
+                      hint: AppLocalizations.of(context).tvOpenChannelHint,
+                      kind: 'action',
+                      actions: [
+                        NativeIosCustomAction(
+                          id: 'favorite',
+                          label: favorite
+                              ? AppLocalizations.of(context).radioRemoveFavorite
+                              : AppLocalizations.of(context).radioAddFavorite,
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ],
+              onEvent: (event) async {
+                final id = event.id;
+                if (id == null) return;
+                final index = widget.channels.indexWhere((e) => e.name == id);
+                if (index < 0) return;
+                final channel = widget.channels[index];
+                if (event.type == 'activate') {
+                  widget.onOpenChannel(channel);
+                } else if (event.type == 'customAction' && event.action == 'favorite') {
+                  await _toggleFavorite(channel);
+                }
+              },
+            )
+          : ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: widget.channels.length,
         itemBuilder: (context, index) {
@@ -566,9 +703,48 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
       );
     }
 
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 420),
-      child: ListView.builder(
+    return SizedBox(
+      height: 420,
+      child: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              key: ValueKey('native-tv-search-${widget.channels.length}'),
+              sections: [
+                NativeIosListSection(
+                  rows: widget.channels.map((channel) {
+                    final program = _currentProgramFor(channel);
+                    final favorite = _isFavorite(channel);
+                    final title = program?.title.trim();
+                    return NativeIosListRow(
+                      id: channel.name,
+                      title: channel.name,
+                      subtitle: title != null && title.isNotEmpty
+                          ? l10n.tvNowOnAir(title)
+                          : null,
+                      kind: 'action',
+                      actions: [
+                        NativeIosCustomAction(
+                          id: 'favorite',
+                          label: favorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ],
+              onEvent: (event) async {
+                final id = event.id;
+                if (id == null) return;
+                final index = widget.channels.indexWhere((e) => e.name == id);
+                if (index < 0) return;
+                final channel = widget.channels[index];
+                if (event.type == 'activate') {
+                  Navigator.of(context).pop(channel);
+                } else if (event.type == 'customAction' && event.action == 'favorite') {
+                  await _toggleFavorite(channel);
+                }
+              },
+            )
+          : ListView.builder(
         shrinkWrap: true,
         itemCount: widget.channels.length,
         itemBuilder: (context, index) {

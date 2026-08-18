@@ -6,7 +6,8 @@ import '../models/radio_station.dart';
 import '../services/radio_service.dart';
 import '../utils/status_message.dart';
 import 'radio_player_screen.dart';
-import 'radio_screen.dart'; // Per RadioTile
+import 'radio_screen.dart';
+import '../widgets/native_ios_accessible_view.dart'; // Per RadioTile
 
 class FavoriteRadiosScreen extends StatefulWidget {
   const FavoriteRadiosScreen({super.key});
@@ -114,7 +115,61 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
               child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : _favorites.isEmpty
               ? Center(child: Text(l10n.radioNoFavorites))
-              : ListView(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      key: ValueKey('native-favorite-radios-${_favorites.length}'),
+                      sections: [
+                        NativeIosListSection(
+                          rows: [
+                            if (_favorites.length > 1)
+                              NativeIosListRow(
+                                id: '__sort__',
+                                title: l10n.sortRadioFavoritesAlphabetically,
+                                kind: 'button',
+                              ),
+                            ..._favorites.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final station = entry.value;
+                              return NativeIosListRow(
+                                id: station.streamUrl,
+                                title: station.name,
+                                subtitle: station.detailsText,
+                                accessibilityLabel: station.accessibilityLabel,
+                                kind: 'action',
+                                actions: [
+                                  NativeIosCustomAction(id: 'favorite', label: l10n.radioRemoveFavorite),
+                                  if (index > 0) NativeIosCustomAction(id: 'move_up', label: l10n.moveUp),
+                                  if (index < _favorites.length - 1) NativeIosCustomAction(id: 'move_down', label: l10n.moveDown),
+                                  NativeIosCustomAction(id: 'move_position', label: l10n.moveToPosition),
+                                ],
+                              );
+                            }),
+                          ],
+                        ),
+                      ],
+                      onEvent: (event) async {
+                        if (event.id == '__sort__' && event.type == 'activate') {
+                          await _sortFavoritesAlphabetically();
+                          return;
+                        }
+                        final id = event.id;
+                        if (id == null) return;
+                        final index = _favorites.indexWhere((e) => e.streamUrl == id);
+                        if (index < 0) return;
+                        final station = _favorites[index];
+                        if (event.type == 'activate') {
+                          await _play(station);
+                        } else if (event.type == 'customAction') {
+                          switch (event.action) {
+                            case 'favorite': await _toggleFavorite(station); break;
+                            case 'move_up': await _handleAction(_RadioAction.moveUp, index); break;
+                            case 'move_down': await _handleAction(_RadioAction.moveDown, index); break;
+                            case 'move_position': await _handleAction(_RadioAction.moveToPosition, index); break;
+                          }
+                        }
+                      },
+                    )
+                  : ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
                     if (_favorites.length > 1) ...[

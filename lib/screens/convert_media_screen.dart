@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 enum _MediaFormat {
   mp3('mp3', 'MP3'),
@@ -610,6 +611,117 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         showStatusMessage(context, message);
   }
 
+  Widget _buildNativeIosConvertForm(AppLocalizations l10n) {
+    final rows = <NativeIosListRow>[
+      NativeIosListRow(
+        id: 'input',
+        title: l10n.convertMediaInput,
+        subtitle: _inputController.text.isEmpty ? null : _inputController.text,
+        enabled: !_running,
+      ),
+      NativeIosListRow(
+        id: 'output',
+        title: l10n.convertMediaOutput,
+        subtitle: _outputController.text.isEmpty ? null : _outputController.text,
+        enabled: !_running,
+      ),
+      if (_requiresImage(_inputPath))
+        NativeIosListRow(
+          id: 'image',
+          title: l10n.convertMediaImage,
+          subtitle: _imageController.text.isEmpty ? null : _imageController.text,
+          enabled: !_running,
+        ),
+      NativeIosListRow(
+        id: 'format',
+        title: l10n.convertMediaFormat,
+        kind: 'picker',
+        value: _format.name,
+        enabled: !_running,
+        options: [
+          for (final format in _MediaFormat.values)
+            NativeIosOption(value: format.name, label: format.label),
+        ],
+      ),
+      if (_usesBitrate(_format))
+        NativeIosListRow(
+          id: 'bitrate',
+          title: l10n.convertMediaBitrate,
+          kind: 'textField',
+          value: _bitrateController.text,
+          enabled: !_running,
+        )
+      else if (_format == _MediaFormat.ogg)
+        NativeIosListRow(
+          id: 'ogg',
+          title: l10n.convertMediaOggQuality,
+          kind: 'picker',
+          value: _oggQuality.toString(),
+          enabled: !_running,
+          options: [for (var i = 0; i <= 10; i++) NativeIosOption(value: i, label: 'q$i')],
+        )
+      else if (_format == _MediaFormat.flac)
+        NativeIosListRow(
+          id: 'flac',
+          title: l10n.convertMediaFlacCompression,
+          kind: 'picker',
+          value: _flacCompression.toString(),
+          enabled: !_running,
+          options: [for (var i = 0; i <= 12; i++) NativeIosOption(value: i, label: '$i')],
+        )
+      else if (_format == _MediaFormat.wav)
+        NativeIosListRow(
+          id: 'wav',
+          title: l10n.convertMediaWavBitDepth,
+          kind: 'picker',
+          value: _wavBitDepth.name,
+          enabled: !_running,
+          options: [
+            for (final value in _WavBitDepth.values)
+              NativeIosOption(value: value.name, label: value.label),
+          ],
+        ),
+      NativeIosListRow(id: 'status', kind: 'text', title: _status ?? l10n.convertMediaReady),
+      NativeIosListRow(
+        id: 'convert',
+        title: l10n.convertMediaButton,
+        kind: 'button',
+        enabled: _canConvert,
+      ),
+    ];
+
+    return NativeIosAccessibleList(
+      sections: [NativeIosListSection(rows: rows)],
+      onEvent: (event) async {
+        if (event.id == 'input' && event.type == 'activate') {
+          await _pickInput();
+        } else if (event.id == 'output' && event.type == 'activate') {
+          await _pickOutput();
+        } else if (event.id == 'image' && event.type == 'activate') {
+          await _pickImage();
+        } else if (event.id == 'format' && event.type == 'picker') {
+          final name = event.value?.toString();
+          final found = _MediaFormat.values.where((value) => value.name == name);
+          if (found.isNotEmpty) await _onFormatChanged(found.first);
+        } else if (event.id == 'bitrate' && event.type == 'textChanged') {
+          _bitrateController.text = event.value?.toString() ?? '';
+        } else if (event.id == 'ogg' && event.type == 'picker') {
+          final value = event.value is num ? (event.value as num).toInt() : int.tryParse(event.value?.toString() ?? '');
+          if (value != null) setState(() => _oggQuality = value);
+        } else if (event.id == 'flac' && event.type == 'picker') {
+          final value = event.value is num ? (event.value as num).toInt() : int.tryParse(event.value?.toString() ?? '');
+          if (value != null) setState(() => _flacCompression = value);
+        } else if (event.id == 'wav' && event.type == 'picker') {
+          final name = event.value?.toString();
+          final found = _WavBitDepth.values.where((value) => value.name == name);
+          if (found.isNotEmpty) setState(() => _wavBitDepth = found.first);
+        } else if (event.id == 'convert' && event.type == 'activate' && _canConvert) {
+          await _convert();
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -617,7 +729,9 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.convertMediaTitle)),
       body: SafeArea(
-        child: ListView(
+        child: useNativeIosAccessibleViews
+            ? _buildNativeIosConvertForm(l10n)
+            : ListView(
           padding: const EdgeInsets.all(16),
           children: [
             TextField(

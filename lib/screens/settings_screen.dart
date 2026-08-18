@@ -16,6 +16,7 @@ import 'app_log_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
 import '../widgets/letter_jump_option_picker_screen.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class SettingsScreen extends StatefulWidget {
   final ValueChanged<SonarpadThemeMode>? onThemeModeChanged;
@@ -936,6 +937,385 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+
+  Widget _buildNativeIosSettings(
+    AppLocalizations l10n,
+    bool showItalianOnlySettings,
+  ) {
+    final localeName = l10n.localeName;
+    String toggleLabel(bool value) {
+      if (localeName == 'it') return value ? 'Attivo' : 'Disattivo';
+      return value ? 'On' : 'Off';
+    }
+
+    final edgeLanguages = List<TtsVoiceLanguage>.of(_edgeLanguages)
+      ..sort((a, b) => a.label.compareTo(b.label));
+    final edgeVoices = List<TtsVoiceOption>.of(
+      AppSettingsService.voicesForLanguageFrom(_edgeVoices, _languageCode),
+    )..sort((a, b) => a.label.compareTo(b.label));
+    final systemLocales = _systemVoices.map((v) => v['locale']!).toSet().toList()
+      ..sort();
+    final systemVoices = _systemVoices
+        .where((v) => v['locale'] == _systemTtsLanguage)
+        .toList();
+
+    final sections = <NativeIosListSection>[
+      NativeIosListSection(
+        header: l10n.settings,
+        rows: [
+          NativeIosListRow(
+            id: 'app_language',
+            title: l10n.appLanguage,
+            kind: 'picker',
+            value: _appLanguage,
+            valueLabel: switch (_appLanguage) {
+              'en' => l10n.english,
+              'fr' => l10n.french,
+              'es' => l10n.spanish,
+              'pt' => l10n.radioLanguagePt,
+              'pl' => l10n.radioLanguagePl,
+              'cs' => l10n.radioLanguageCs,
+              _ => l10n.italian,
+            },
+            options: [
+              NativeIosOption(value: 'it', label: l10n.italian),
+              NativeIosOption(value: 'en', label: l10n.english),
+              NativeIosOption(value: 'fr', label: l10n.french),
+              NativeIosOption(value: 'es', label: l10n.spanish),
+              NativeIosOption(value: 'pt', label: l10n.radioLanguagePt),
+              NativeIosOption(value: 'pl', label: l10n.radioLanguagePl),
+              NativeIosOption(value: 'cs', label: l10n.radioLanguageCs),
+            ],
+          ),
+          NativeIosListRow(
+            id: 'theme',
+            title: l10n.settingsTheme,
+            kind: 'picker',
+            value: _themeMode.value,
+            valueLabel: switch (_themeMode) {
+              SonarpadThemeMode.light => l10n.settingsThemeLight,
+              SonarpadThemeMode.dark => l10n.settingsThemeDark,
+              _ => l10n.settingsThemeSystem,
+            },
+            options: [
+              NativeIosOption(value: 'system', label: l10n.settingsThemeSystem),
+              NativeIosOption(value: 'light', label: l10n.settingsThemeLight),
+              NativeIosOption(value: 'dark', label: l10n.settingsThemeDark),
+            ],
+          ),
+          NativeIosListRow(
+            id: 'temperature_unit',
+            title: l10n.settingsWeatherTemperatureUnit,
+            kind: 'picker',
+            value: _weatherTemperatureUnit.value,
+            valueLabel: _weatherTemperatureUnit == WeatherTemperatureUnit.celsius
+                ? l10n.weatherTemperatureCelsius
+                : l10n.weatherTemperatureFahrenheit,
+            options: [
+              NativeIosOption(value: 'celsius', label: l10n.weatherTemperatureCelsius),
+              NativeIosOption(value: 'fahrenheit', label: l10n.weatherTemperatureFahrenheit),
+            ],
+          ),
+        ],
+      ),
+      NativeIosListSection(
+        header: l10n.settingsReadingEngine,
+        rows: [
+          NativeIosListRow(
+            id: 'tts_engine',
+            title: l10n.settingsReadingEngine,
+            kind: 'picker',
+            value: _ttsEngine,
+            valueLabel: _ttsEngine == 'edge'
+                ? l10n.settingsEdgeTtsQuality
+                : l10n.settingsSystemVoices,
+            options: [
+              NativeIosOption(value: 'edge', label: l10n.settingsEdgeTtsQuality),
+              NativeIosOption(value: 'system', label: l10n.settingsSystemVoices),
+            ],
+          ),
+          if (_ttsEngine == 'edge') ...[
+            NativeIosListRow(
+              id: 'edge_language',
+              title: l10n.ttsVoiceLanguage,
+              kind: 'picker',
+              value: _languageCode,
+              valueLabel: _selectedEdgeLanguage?.label ?? _languageCode,
+              options: edgeLanguages
+                  .map((e) => NativeIosOption(value: e.code, label: e.label))
+                  .toList(),
+            ),
+            NativeIosListRow(
+              id: 'edge_voice',
+              title: l10n.ttsVoice,
+              kind: 'picker',
+              value: _voice,
+              valueLabel: _selectedEdgeVoice == null
+                  ? _voice
+                  : '${_selectedEdgeVoice!.label} (${_selectedEdgeVoice!.voice})',
+              options: edgeVoices
+                  .map((e) => NativeIosOption(
+                        value: e.voice,
+                        label: '${e.label} (${e.voice})',
+                      ))
+                  .toList(),
+            ),
+          ] else ...[
+            if (systemLocales.isNotEmpty)
+              NativeIosListRow(
+                id: 'system_language',
+                title: l10n.settingsSystemLanguage,
+                kind: 'picker',
+                value: _systemTtsLanguage,
+                valueLabel: _systemTtsLanguage,
+                options: systemLocales
+                    .map((e) => NativeIosOption(value: e, label: e))
+                    .toList(),
+              ),
+            NativeIosListRow(
+              id: 'system_voice',
+              title: l10n.settingsSystemVoice,
+              kind: 'picker',
+              value: _systemTtsVoice ?? '',
+              valueLabel: _systemTtsVoice ?? l10n.settingsDefaultVoice,
+              options: [
+                NativeIosOption(value: '', label: l10n.settingsDefaultVoice),
+                ...systemVoices.map((e) => NativeIosOption(
+                      value: e['name'] ?? '',
+                      label: e['name'] ?? '',
+                    )),
+              ],
+            ),
+          ],
+          NativeIosListRow(
+            id: 'tts_speed',
+            title: l10n.settingsVoiceSpeedLabel,
+            kind: 'slider',
+            value: '${_ttsSpeed.toStringAsFixed(1)}x',
+            valueLabel: '${_ttsSpeed.toStringAsFixed(1)}x',
+            sliderValue: _ttsSpeed,
+            sliderMin: 0.5,
+            sliderMax: 2.0,
+            sliderStep: 0.1,
+          ),
+          NativeIosListRow(
+            id: 'tts_pitch',
+            title: l10n.settingsVoicePitchLabel,
+            kind: 'slider',
+            value: '${_ttsPitch.toStringAsFixed(1)}x',
+            valueLabel: '${_ttsPitch.toStringAsFixed(1)}x',
+            sliderValue: _ttsPitch,
+            sliderMin: 0.5,
+            sliderMax: 2.0,
+            sliderStep: 0.1,
+          ),
+          NativeIosListRow(
+            id: 'test_voice',
+            title: _testingVoice ? l10n.settingsTestingVoice : l10n.settingsTestVoice,
+            kind: 'button',
+            enabled: !_testingVoice,
+          ),
+        ],
+      ),
+      NativeIosListSection(
+        header: l10n.documents,
+        rows: [
+          NativeIosListRow(
+            id: 'auto_bookmark',
+            title: l10n.settingsAutoBookmark,
+            subtitle: l10n.settingsAutoBookmarkHint,
+            kind: 'toggle',
+            toggleValue: _autoBookmark,
+            valueLabel: toggleLabel(_autoBookmark),
+          ),
+          NativeIosListRow(
+            id: 'epub_footnotes',
+            title: l10n.settingsIncludeFootnotesInText,
+            subtitle: l10n.settingsIncludeFootnotesInTextHint,
+            kind: 'toggle',
+            toggleValue: _includeEpubFootnotesInText,
+            valueLabel: toggleLabel(_includeEpubFootnotesInText),
+          ),
+          NativeIosListRow(
+            id: 'multiple_bookmarks',
+            title: _multipleDocumentBookmarksTitle,
+            subtitle: _multipleDocumentBookmarksHint,
+            kind: 'toggle',
+            toggleValue: _multipleDocumentBookmarks,
+            valueLabel: toggleLabel(_multipleDocumentBookmarks),
+          ),
+          NativeIosListRow(
+            id: 'reading_sleep_timer',
+            title: l10n.settingsReadingSleepTimer,
+            subtitle: l10n.settingsReadingSleepTimerHint,
+            kind: 'slider',
+            value: _formatSleepTimerMinutes(_documentReadingSleepTimerMinutes),
+            valueLabel: _formatSleepTimerMinutes(_documentReadingSleepTimerMinutes),
+            sliderValue: _documentReadingSleepTimerOptionIndex.toDouble(),
+            sliderMin: 0,
+            sliderMax: (AppSettingsService.documentReadingSleepTimerMinutesOptions.length - 1).toDouble(),
+            sliderStep: 1,
+          ),
+          NativeIosListRow(
+            id: 'document_slider_step',
+            title: l10n.settingsDocumentSliderStep,
+            subtitle: l10n.settingsDocumentSliderStepHint,
+            kind: 'slider',
+            value: _formatPercent(_documentSliderStepPercent),
+            valueLabel: _formatPercent(_documentSliderStepPercent),
+            sliderValue: _documentSliderStepOptionIndex.toDouble(),
+            sliderMin: 0,
+            sliderMax: (AppSettingsService.documentSliderStepPercentOptions.length - 1).toDouble(),
+            sliderStep: 1,
+          ),
+          NativeIosListRow(
+            id: 'video_portrait',
+            title: l10n.settingsVideoLandscapeFullscreen,
+            subtitle: l10n.settingsVideoLandscapeFullscreenHint,
+            kind: 'toggle',
+            toggleValue: _displayVideoInPortrait,
+            valueLabel: toggleLabel(_displayVideoInPortrait),
+          ),
+        ],
+      ),
+      NativeIosListSection(
+        header: l10n.settingsPodcastCacheTitle,
+        footer: '${l10n.settingsPodcastCacheHint} ${l10n.settingsPodcastCacheSize(_formatBytes(_podcastCacheBytes))}',
+        rows: [
+          NativeIosListRow(
+            id: 'clear_podcast_cache',
+            title: _clearingPodcastCache ? l10n.loading : l10n.clearPodcastCache,
+            kind: 'button',
+            enabled: !_clearingPodcastCache,
+          ),
+        ],
+      ),
+      if (showItalianOnlySettings)
+        NativeIosListSection(
+          rows: [
+            NativeIosListRow(
+              id: 'home_grouping',
+              title: l10n.settingsHomeGrouping,
+              subtitle: l10n.settingsHomeGroupingHint,
+              kind: 'toggle',
+              toggleValue: _homeGroupingEnabled,
+              valueLabel: toggleLabel(_homeGroupingEnabled),
+            ),
+            NativeIosListRow(
+              id: 'seek_step',
+              title: l10n.settingsSeekStep,
+              kind: 'slider',
+              value: _formatTime(_seekSliderStep),
+              valueLabel: _formatTime(_seekSliderStep),
+              sliderValue: _seekSliderStep.toDouble(),
+              sliderMin: 10,
+              sliderMax: 300,
+              sliderStep: 10,
+            ),
+            NativeIosListRow(
+              id: 'tv_secret_code',
+              title: l10n.settingsSecretCode,
+              kind: 'textField',
+              value: _tvSecretCodeController.text,
+              placeholder: l10n.settingsSecretCode,
+              secure: true,
+            ),
+            NativeIosListRow(id: 'paste_secret_code', title: l10n.settingsPasteCode, kind: 'button'),
+            NativeIosListRow(id: 'request_secret_code', title: l10n.settingsRequestCode, kind: 'button'),
+          ],
+        ),
+      NativeIosListSection(
+        rows: [
+          NativeIosListRow(
+            id: 'save',
+            title: _isSaving ? l10n.settingsVerifyCodeAndSave : l10n.saveSettings,
+            kind: 'button',
+            enabled: !_isSaving,
+          ),
+          NativeIosListRow(id: 'view_log', title: l10n.settingsViewSysLog, kind: 'button'),
+        ],
+      ),
+    ];
+
+    return NativeIosAccessibleList(
+      key: const ValueKey('settings-native-ios-list'),
+      sections: sections,
+      onEvent: (event) async {
+        final id = event.id;
+        if (event.type == 'picker') {
+          final value = event.value?.toString() ?? '';
+          switch (id) {
+            case 'app_language':
+              if (value.isNotEmpty && value != _appLanguage) setState(() => _appLanguage = value);
+              break;
+            case 'theme':
+              setState(() => _themeMode = SonarpadThemeMode.values.firstWhere((e) => e.value == value, orElse: () => SonarpadThemeMode.system));
+              break;
+            case 'temperature_unit':
+              setState(() => _weatherTemperatureUnit = WeatherTemperatureUnit.values.firstWhere((e) => e.value == value, orElse: () => WeatherTemperatureUnit.celsius));
+              break;
+            case 'tts_engine':
+              setState(() => _ttsEngine = value);
+              break;
+            case 'edge_language':
+              if (value != _languageCode) {
+                setState(() {
+                  _languageCode = value;
+                  _voice = AppSettingsService.defaultVoiceForLanguageFrom(_edgeVoices, value);
+                });
+              }
+              break;
+            case 'edge_voice':
+              setState(() => _voice = value);
+              break;
+            case 'system_language':
+              setState(() { _systemTtsLanguage = value; _systemTtsVoice = null; });
+              break;
+            case 'system_voice':
+              setState(() => _systemTtsVoice = value.isEmpty ? null : value);
+              break;
+          }
+        } else if (event.type == 'toggle') {
+          final value = event.value == true;
+          setState(() {
+            switch (id) {
+              case 'auto_bookmark': _autoBookmark = value; break;
+              case 'epub_footnotes': _includeEpubFootnotesInText = value; break;
+              case 'multiple_bookmarks': _multipleDocumentBookmarks = value; break;
+              case 'video_portrait': _displayVideoInPortrait = value; break;
+              case 'home_grouping': _homeGroupingEnabled = value; break;
+            }
+          });
+        } else if (event.type == 'slider') {
+          final value = (event.value as num?)?.toDouble();
+          if (value == null) return;
+          switch (id) {
+            case 'tts_speed': _setTtsSpeed(value); break;
+            case 'tts_pitch': _setTtsPitch(value); break;
+            case 'reading_sleep_timer': _setDocumentReadingSleepTimerByIndex(value); break;
+            case 'document_slider_step': _setDocumentSliderStepByIndex(value); break;
+            case 'seek_step': setState(() => _seekSliderStep = value.round().clamp(10, 300).toInt()); break;
+          }
+        } else if (event.type == 'textChanged' && id == 'tv_secret_code') {
+          final text = event.value?.toString() ?? '';
+          _tvSecretCodeController.value = TextEditingValue(text: text, selection: TextSelection.collapsed(offset: text.length));
+        } else if (event.type == 'activate') {
+          switch (id) {
+            case 'test_voice': await _testVoice(); break;
+            case 'clear_podcast_cache': await _clearPodcastCache(); break;
+            case 'paste_secret_code': await _pasteSecretCode(); setState(() {}); break;
+            case 'request_secret_code': await _requestSecretCode(); break;
+            case 'save': await _save(); break;
+            case 'view_log':
+              if (!mounted) return;
+              await Navigator.of(context).push(MaterialPageRoute<void>(settings: const RouteSettings(name: '/settings/app-log'), builder: (_) => const AppLogScreen()));
+              break;
+          }
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -959,7 +1339,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: _loading
             ? Center(
                 child: CircularProgressIndicator(semanticsLabel: l10n.loading))
-            : ListView(
+            : useNativeIosAccessibleViews
+                ? _buildNativeIosSettings(l10n, showItalianOnlySettings)
+                : ListView(
                   key: const PageStorageKey<String>('settings-list'),
                   padding: const EdgeInsets.all(16),
                   children: [

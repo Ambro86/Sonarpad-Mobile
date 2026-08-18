@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/italiaonline_service.dart';
 import 'italiaonline_detail_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class ItaliaOnlineScreen extends StatefulWidget {
   const ItaliaOnlineScreen({super.key});
@@ -46,7 +47,49 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
       appBar: AppBar(
         title: const Text('Pagine Bianche e Gialle'),
       ),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(rows: [
+                  NativeIosListRow(
+                    id: 'kind',
+                    title: 'Elenco',
+                    kind: 'picker',
+                    value: _kind.name,
+                    options: const [
+                      NativeIosOption(value: 'pagineBianche', label: 'Pagine Bianche'),
+                      NativeIosOption(value: 'pagineGialle', label: 'Pagine Gialle'),
+                    ],
+                  ),
+                  NativeIosListRow(
+                    id: 'what',
+                    title: _kind.primaryFieldLabel,
+                    kind: 'textField',
+                    value: _whatController.text,
+                  ),
+                  NativeIosListRow(
+                    id: 'where',
+                    title: 'Località, indirizzo (opzionale)',
+                    kind: 'textField',
+                    value: _whereController.text,
+                  ),
+                  const NativeIosListRow(id: 'search', title: 'Cerca', kind: 'button'),
+                ]),
+              ],
+              onEvent: (event) {
+                if (event.id == 'kind' && event.type == 'picker') {
+                  final v = event.value?.toString();
+                  setState(() => _kind = v == 'pagineGialle' ? DirectoryKind.pagineGialle : DirectoryKind.pagineBianche);
+                } else if (event.id == 'what' && event.type == 'textChanged') {
+                  _whatController.text = event.value?.toString() ?? '';
+                } else if (event.id == 'where' && event.type == 'textChanged') {
+                  _whereController.text = event.value?.toString() ?? '';
+                } else if (event.id == 'search' && event.type == 'activate') {
+                  _search();
+                }
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           SegmentedButton<DirectoryKind>(
@@ -244,6 +287,37 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
     if (res == null) return const SizedBox();
 
     if (res.ambiguousPlaces != null && res.ambiguousPlaces!.isNotEmpty) {
+      if (useNativeIosAccessibleViews) {
+        final places = res.ambiguousPlaces!;
+        return NativeIosAccessibleList(
+          sections: [
+            NativeIosListSection(
+              header: 'Località ambigua. Scegli tra le seguenti:',
+              rows: [
+                for (var i = 0; i < places.length; i++)
+                  NativeIosListRow(id: 'place_$i', title: places[i]),
+              ],
+            ),
+          ],
+          onEvent: (event) {
+            if (event.type != 'activate' || event.id == null) return;
+            final i = int.tryParse(event.id!.replaceFirst('place_', ''));
+            if (i == null || i >= places.length) return;
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => ItaliaOnlineResultsScreen(
+                  query: SearchQuery(
+                    kind: _actualKind,
+                    what: widget.query.what,
+                    where: places[i],
+                    page: 1,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }
       return ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -276,6 +350,43 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
 
     if (_results.isEmpty) {
       return const Center(child: Text('Nessun risultato trovato.'));
+    }
+
+    if (useNativeIosAccessibleViews) {
+      return NativeIosAccessibleList(
+        sections: [
+          NativeIosListSection(
+            rows: [
+              for (var i = 0; i < _results.length; i++)
+                NativeIosListRow(
+                  id: 'result_$i',
+                  title: _results[i].name,
+                  subtitle: [
+                    if (_results[i].category != null) _results[i].category!,
+                    if (_results[i].address != null) _results[i].address!,
+                    if (_results[i].city != null) _results[i].city!,
+                  ].join(' - '),
+                ),
+              if (!res.isLastPage)
+                NativeIosListRow(
+                  id: 'more',
+                  title: _loadingMore ? 'Caricamento...' : 'Carica altri risultati',
+                  kind: 'button',
+                  enabled: !_loadingMore,
+                ),
+            ],
+          ),
+        ],
+        onEvent: (event) {
+          if (event.type != 'activate' || event.id == null) return;
+          if (event.id == 'more') {
+            _loadNextPage();
+            return;
+          }
+          final i = int.tryParse(event.id!.replaceFirst('result_', ''));
+          if (i != null && i < _results.length) _openDetail(_results[i]);
+        },
+      );
     }
 
     return ListView.builder(

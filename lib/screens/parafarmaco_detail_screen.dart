@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/parafarmaco_service.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 import 'document_reader_screen.dart';
 
 class ParafarmacoDetailScreen extends StatefulWidget {
@@ -169,7 +170,44 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
                       ),
                     ),
                   )
-                : ListView(
+                : useNativeIosAccessibleViews
+                    ? NativeIosAccessibleList(
+                        sections: [
+                          NativeIosListSection(
+                            header: detail?.name ?? product.name,
+                            footer: [
+                              detail?.category ?? product.category,
+                              if ((detail?.sourceName ?? product.sourceName) != 'Codifa/Farmadati') 'Fonte: ${detail?.sourceName ?? product.sourceName}',
+                              if ((detail?.code ?? product.code)?.trim().isNotEmpty ?? false) 'Codice: ${detail?.code ?? product.code}',
+                            ].join(' · '),
+                            rows: ParafarmacoSectionType.values
+                                .map((type) => NativeIosListRow(
+                                      id: 'section_${type.name}',
+                                      title: type.label,
+                                      subtitle: switch (type) {
+                                        ParafarmacoSectionType.indications => 'Indicazioni, descrizione o a cosa serve.',
+                                        ParafarmacoSectionType.usage => 'Modalità d’uso, dosaggio o posologia se presenti.',
+                                        ParafarmacoSectionType.warnings => 'Avvertenze, precauzioni o controindicazioni se presenti.',
+                                        ParafarmacoSectionType.composition => 'Componenti, ingredienti o composizione.',
+                                        ParafarmacoSectionType.complete => 'Scheda completa o bugiardino disponibile.',
+                                      },
+                                      enabled: _openingSection != type,
+                                    ))
+                                .toList(growable: false),
+                          ),
+                        ],
+                        onEvent: (event) {
+                          if (event.type != 'activate' || event.id == null) return;
+                          final name = event.id!.replaceFirst('section_', '');
+                          for (final type in ParafarmacoSectionType.values) {
+                            if (type.name == name && _openingSection != type) {
+                              _openSection(type);
+                              return;
+                            }
+                          }
+                        },
+                      )
+                    : ListView(
                     children: [
                       Container(
                         width: double.infinity,

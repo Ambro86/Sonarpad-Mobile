@@ -5,6 +5,7 @@ import '../services/document_library_service.dart';
 import '../services/poetrydb_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class PoetryDbScreen extends StatefulWidget {
   final String? parentId;
@@ -46,7 +47,35 @@ class _PoetryDbScreenState extends State<PoetryDbScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('PoetryDB')),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [NativeIosListSection(rows: [
+                NativeIosListRow(id: 'query', title: l10n.poetryDbSearchLabel, kind: 'textField', value: _controller.text),
+                NativeIosListRow(
+                  id: 'field',
+                  title: l10n.poetryDbSearchBy,
+                  kind: 'picker',
+                  value: _field.name,
+                  options: [
+                    NativeIosOption(value: PoetryDbSearchField.title.name, label: l10n.poetryDbSearchByTitle),
+                    NativeIosOption(value: PoetryDbSearchField.author.name, label: l10n.poetryDbSearchByAuthor),
+                  ],
+                ),
+                NativeIosListRow(id: 'search', title: l10n.search, kind: 'button'),
+              ])],
+              onEvent: (event) {
+                if (event.id == 'query' && event.type == 'textChanged') {
+                  _controller.text = event.value?.toString() ?? '';
+                } else if (event.id == 'field' && event.type == 'picker') {
+                  final value = event.value?.toString();
+                  final found = PoetryDbSearchField.values.where((e) => e.name == value);
+                  if (found.isNotEmpty) setState(() => _field = found.first);
+                } else if (event.id == 'search' && event.type == 'activate') {
+                  _search();
+                }
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
@@ -154,6 +183,25 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
           final poems = snapshot.data ?? const [];
           if (poems.isEmpty) {
             return Center(child: Text(l10n.poetryDbNoPoemsFound));
+          }
+          if (useNativeIosAccessibleViews) {
+            return NativeIosAccessibleList(
+              sections: [NativeIosListSection(rows: [
+                for (var i = 0; i < poems.length; i++)
+                  NativeIosListRow(
+                    id: 'poem_$i',
+                    title: poems[i].title,
+                    subtitle: poems[i].lineCount > 0
+                        ? '${poems[i].author} - ${l10n.poetryDbLineCount(poems[i].lineCount)}'
+                        : poems[i].author,
+                  ),
+              ])],
+              onEvent: (event) {
+                if (event.type != 'activate' || event.id == null) return;
+                final i = int.tryParse(event.id!.replaceFirst('poem_', ''));
+                if (i != null && i < poems.length) _importPoem(poems[i]);
+              },
+            );
           }
           return ListView.separated(
             itemCount: poems.length,

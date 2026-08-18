@@ -10,6 +10,7 @@ import '../services/app_settings_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class CalendarDayScreen extends StatefulWidget {
   final DateTime date;
@@ -267,7 +268,37 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
           ),
         ],
       ),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [NativeIosListSection(rows: [
+                NativeIosListRow(id: 'title', kind: 'header', title: capTitle),
+                if (holiday != null) NativeIosListRow(id: 'holiday', kind: 'text', title: holiday),
+                if (_events.isNotEmpty) NativeIosListRow(id: 'reminders_header', kind: 'header', title: l10n.reminders),
+                for (var i = 0; i < _events.length; i++)
+                  NativeIosListRow(
+                    id: 'event_$i',
+                    kind: 'text',
+                    title: _events[i].text,
+                    actions: [NativeIosCustomAction(id: 'remove', label: l10n.removeReminder)],
+                  ),
+                NativeIosListRow(id: 'add', title: l10n.addReminder, kind: 'button'),
+                if (_saint != null) NativeIosListRow(id: 'saint', kind: 'text', title: '${l10n.saintOfTheDay}: $_saint'),
+                NativeIosListRow(id: 'quote_header', kind: 'header', title: l10n.quoteOfTheDay),
+                NativeIosListRow(id: 'quote', kind: 'text', title: quote),
+              ])],
+              onEvent: (event) async {
+                if (event.id == 'add' && event.type == 'activate') {
+                  await _addReminder();
+                } else if (event.type == 'customAction' && event.action == 'remove' && event.id?.startsWith('event_') == true) {
+                  final i = int.tryParse(event.id!.substring(6));
+                  if (i != null && i < _events.length) {
+                    await _service.removeEvent(_events[i].id);
+                    await _loadEvents();
+                  }
+                }
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(capTitle, style: Theme.of(context).textTheme.headlineMedium),

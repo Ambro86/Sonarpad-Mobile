@@ -6,6 +6,7 @@ import '../services/audiodescription_service.dart';
 import 'audiodescription_film_screen.dart';
 import 'audiodescription_series_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class AudiodescriptionAllScreen extends StatefulWidget {
   const AudiodescriptionAllScreen({super.key});
@@ -103,7 +104,45 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
             )
           : _error.isNotEmpty
               ? Center(child: Text('${l10n.audiodescriptionError}: $_error'))
-              : ListView.builder(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      sections: [
+                        NativeIosListSection(
+                          rows: [
+                            NativeIosListRow(id: 'film', title: l10n.audiodescriptionFilm),
+                            ..._filteredGroups.asMap().entries.map((entry) => NativeIosListRow(
+                                  id: 'group_${entry.key}',
+                                  title: entry.value.title,
+                                )),
+                          ],
+                        ),
+                      ],
+                      onEvent: (event) {
+                        if (event.type != 'activate' || event.id == null) return;
+                        if (event.id == 'film') {
+                          final filmGroup = _groups.where((g) => g.title == 'Film').firstOrNull;
+                          if (filmGroup != null) {
+                            Navigator.push(context, MaterialPageRoute(
+                              settings: const RouteSettings(name: '/audiodescriptions/film'),
+                              builder: (_) => AudiodescriptionFilmScreen(filmGroup: filmGroup),
+                            ));
+                          } else {
+                            showStatusMessage(context, l10n.audiodescriptionEmpty);
+                          }
+                          return;
+                        }
+                        if (event.id!.startsWith('group_')) {
+                          final index = int.tryParse(event.id!.substring(6));
+                          if (index != null && index >= 0 && index < _filteredGroups.length) {
+                            Navigator.push(context, MaterialPageRoute(
+                              settings: const RouteSettings(name: '/audiodescriptions/series'),
+                              builder: (_) => AudiodescriptionSeriesScreen(group: _filteredGroups[index]),
+                            ));
+                          }
+                        }
+                      },
+                    )
+                  : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _filteredGroups.length + 1,
                   itemBuilder: (context, index) {

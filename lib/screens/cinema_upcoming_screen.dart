@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
+import '../widgets/native_ios_accessible_view.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
 import 'cinema_detail_screen.dart';
@@ -71,7 +72,34 @@ class _CinemaUpcomingScreenState extends State<CinemaUpcomingScreen> {
               ? Center(child: Text('${l10n.cinemaError}\n$_error'))
               : _movies.isEmpty
                   ? Center(child: Text(l10n.cinemaNoMovies))
-                  : Semantics(
+                  : useNativeIosAccessibleViews
+                      ? NativeIosAccessibleList(
+                          sections: [
+                            NativeIosListSection(
+                              rows: _movies.asMap().entries.map((entry) {
+                                final formattedDate = _formatDate(entry.value.releaseDate, localeName);
+                                bool isFuture = false;
+                                try { isFuture = DateTime.parse(entry.value.releaseDate).isAfter(DateTime.now()); } catch (_) {}
+                                return NativeIosListRow(
+                                  id: 'movie_${entry.key}',
+                                  title: entry.value.title,
+                                  subtitle: isFuture ? l10n.cinemaWillRelease(formattedDate) : l10n.cinemaReleased(formattedDate),
+                                );
+                              }).toList(growable: false),
+                            ),
+                          ],
+                          onEvent: (event) {
+                            if (event.type != 'activate' || event.id == null) return;
+                            final index = int.tryParse(event.id!.replaceFirst('movie_', ''));
+                            if (index != null && index >= 0 && index < _movies.length) {
+                              Navigator.push(context, MaterialPageRoute(
+                                settings: const RouteSettings(name: '/cinema/detail'),
+                                builder: (_) => CinemaDetailScreen(movie: _movies[index]),
+                              ));
+                            }
+                          },
+                        )
+                      : Semantics(
                       explicitChildNodes: true,
                       child: ListView.separated(
                         scrollCacheExtent: const ScrollCacheExtent.pixels(4000),

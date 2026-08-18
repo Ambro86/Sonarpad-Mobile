@@ -19,6 +19,7 @@ import 'package:video_player/video_player.dart';
 import '../services/app_settings_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class RadioPlayerScreen extends StatefulWidget {
   final RadioStation station;
@@ -1118,40 +1119,75 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
               return AlertDialog(
                 title: const Text('Programma registrazione'),
-                content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        'In questa versione la registrazione programmata parte solo se Sonarpad resta aperto su questo player. Se chiudi l’app o questa schermata, la registrazione non può partire da sola.',
-                      ),
-                      const SizedBox(height: 16),
-                      OutlinedButton.icon(
-                        onPressed: pickStart,
-                        icon: const Icon(Icons.schedule),
-                        label: Text(
-                            'Ora di inizio: ${_formatTimeOfDay(startTime)}'),
-                      ),
-                      const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        onPressed: pickEnd,
-                        icon: const Icon(Icons.schedule),
-                        label:
-                            Text('Ora di fine: ${_formatTimeOfDay(endTime)}'),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: titleController,
-                        decoration: const InputDecoration(
-                          labelText: 'Titolo facoltativo',
-                          hintText:
-                              'Lascia vuoto per usare il nome della radio o TV',
+                content: SizedBox(
+                  width: double.maxFinite,
+                  height: 360,
+                  child: useNativeIosAccessibleViews
+                      ? NativeIosAccessibleList(
+                          sections: [NativeIosListSection(rows: [
+                            const NativeIosListRow(
+                              id: 'info',
+                              kind: 'text',
+                              title: 'In questa versione la registrazione programmata parte solo se Sonarpad resta aperto su questo player. Se chiudi l’app o questa schermata, la registrazione non può partire da sola.',
+                            ),
+                            NativeIosListRow(
+                              id: 'start',
+                              title: 'Ora di inizio: ${_formatTimeOfDay(startTime)}',
+                            ),
+                            NativeIosListRow(
+                              id: 'end',
+                              title: 'Ora di fine: ${_formatTimeOfDay(endTime)}',
+                            ),
+                            NativeIosListRow(
+                              id: 'title',
+                              kind: 'textField',
+                              title: 'Titolo facoltativo',
+                              placeholder: 'Lascia vuoto per usare il nome della radio o TV',
+                              value: titleController.text,
+                            ),
+                          ])],
+                          onEvent: (event) {
+                            if (event.id == 'start' && event.type == 'activate') {
+                              pickStart();
+                            } else if (event.id == 'end' && event.type == 'activate') {
+                              pickEnd();
+                            } else if (event.id == 'title' && event.type == 'textChanged') {
+                              titleController.text = event.value?.toString() ?? '';
+                            }
+                          },
+                        )
+                      : SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const Text(
+                                'In questa versione la registrazione programmata parte solo se Sonarpad resta aperto su questo player. Se chiudi l’app o questa schermata, la registrazione non può partire da sola.',
+                              ),
+                              const SizedBox(height: 16),
+                              OutlinedButton.icon(
+                                onPressed: pickStart,
+                                icon: const Icon(Icons.schedule),
+                                label: Text('Ora di inizio: ${_formatTimeOfDay(startTime)}'),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton.icon(
+                                onPressed: pickEnd,
+                                icon: const Icon(Icons.schedule),
+                                label: Text('Ora di fine: ${_formatTimeOfDay(endTime)}'),
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: titleController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Titolo facoltativo',
+                                  hintText: 'Lascia vuoto per usare il nome della radio o TV',
+                                ),
+                                textInputAction: TextInputAction.done,
+                              ),
+                            ],
+                          ),
                         ),
-                        textInputAction: TextInputAction.done,
-                      ),
-                    ],
-                  ),
                 ),
                 actions: [
                   TextButton(
@@ -1686,6 +1722,93 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
+  Widget _buildNativeIosPlayerBody(AppLocalizations l10n, bool showStationDetails) {
+    Widget buildControls(bool audioPlaying) {
+      final videoMode = _mediaKitPlayer != null || _videoController != null;
+      final rows = <NativeIosListRow>[
+        NativeIosListRow(id: 'title', kind: 'header', title: widget.station.name),
+        if (showStationDetails) NativeIosListRow(id: 'details', kind: 'text', title: widget.station.detailsText),
+        if (_loading) NativeIosListRow(id: 'loading', kind: 'text', title: l10n.loading),
+        if (_error != null) NativeIosListRow(id: 'error', kind: 'text', title: _error!),
+        if (widget.isVideoSupported) NativeIosListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
+        NativeIosListRow(
+          id: 'play_pause',
+          title: videoMode ? (_isVideoPlaying ? l10n.pause : l10n.play) : (audioPlaying ? l10n.pause : l10n.play),
+          kind: 'button',
+          enabled: !_loading,
+        ),
+        if (_canRecordStream)
+          NativeIosListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: !_loading),
+        if (_canRecordStream)
+          NativeIosListRow(id: 'schedule', title: 'Programma registrazione', enabled: !_loading && !_recording),
+        if (_recordingOutput != null)
+          NativeIosListRow(id: 'recording_name', kind: 'text', title: p.basenameWithoutExtension(_recordingOutput!.path)),
+        if (_scheduledRecordingSummary != null)
+          NativeIosListRow(id: 'schedule_summary', kind: 'text', title: _scheduledRecordingSummary!),
+        if (_hasPendingScheduledRecording)
+          const NativeIosListRow(id: 'cancel_schedule', title: 'Annulla registrazione programmata'),
+        NativeIosListRow(
+          id: 'favorite',
+          title: _isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
+          kind: 'button',
+        ),
+      ];
+      return NativeIosAccessibleList(
+        sections: [NativeIosListSection(rows: rows)],
+        onEvent: (event) async {
+          if (event.id == 'video' && event.type == 'toggle') {
+            _toggleVideo(event.value == true);
+          } else if (event.id == 'play_pause' && event.type == 'activate') {
+            if (videoMode) {
+              await _toggleVideoPlayback();
+            } else if (audioPlaying) {
+              await _stop();
+            } else {
+              await _play();
+            }
+          } else if (event.id == 'record' && event.type == 'activate') {
+            await _toggleRecording();
+          } else if (event.id == 'schedule' && event.type == 'activate' && !_recording) {
+            await _showScheduleRecordingDialog();
+          } else if (event.id == 'cancel_schedule' && event.type == 'activate') {
+            _cancelScheduledRecording();
+          } else if (event.id == 'favorite' && event.type == 'activate') {
+            await _toggleFavorite();
+          }
+        },
+      );
+    }
+
+    final nativeList = (_mediaKitPlayer == null && _videoController == null)
+        ? StreamBuilder<bool>(
+            stream: _audio.playingStream,
+            builder: (context, snapshot) => buildControls(snapshot.data ?? false),
+          )
+        : buildControls(false);
+
+    return Column(
+      children: [
+        if (_videoController != null && _videoController!.value.isInitialized)
+          Padding(padding: const EdgeInsets.all(12), child: _buildVideoPlayerSurface(_videoController!)),
+        if (_mediaKitController != null && _isVideoEnabled)
+          Padding(padding: const EdgeInsets.all(12), child: _buildMediaKitVideoSurface()),
+        Expanded(child: nativeList),
+        if (_videoController == null && _mediaKitPlayer == null)
+          Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 12), child: VolumeSlider(audioPlayer: _audio)),
+        if (_videoController != null && _videoController!.value.isInitialized)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: _PlayerVolumeSlider(volume: _videoPlayerVolume, onChanged: _setVideoPlayerVolume),
+          ),
+        if (_mediaKitPlayer != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: _PlayerVolumeSlider(volume: _mediaKitVolume, onChanged: _setMediaKitVolume),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLogger.log(
@@ -1706,7 +1829,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           },
         ),
       ),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? _buildNativeIosPlayerBody(l10n, showStationDetails)
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(

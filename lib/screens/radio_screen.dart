@@ -17,6 +17,7 @@ import 'radio_search_results_screen.dart';
 import 'recent_radios_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/letter_jump_option_picker_screen.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 enum _RadioBrowseMode { language, country, city }
 
@@ -254,7 +255,164 @@ class _RadioScreenState extends State<RadioScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.radioTitle)),
-      body: ListView(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              key: ValueKey('native-radio-main-${_languageCode}-${_countryCode}-${_genre.value}-${_browseMode.name}'),
+              sections: [
+                NativeIosListSection(
+                  rows: [
+                    NativeIosListRow(id: 'favorites', title: l10n.radioFavoritesButton, kind: 'action'),
+                    NativeIosListRow(id: 'recent', title: _recentRadiosLabel(l10n.localeName), kind: 'action'),
+                    if (_isRecordingFeatureUnlocked)
+                      NativeIosListRow(id: 'recordings', title: l10n.recordings, kind: 'action'),
+                  ],
+                ),
+                NativeIosListSection(
+                  header: l10n.radioSearch,
+                  rows: [
+                    NativeIosListRow(
+                      id: 'search_text',
+                      title: l10n.radioSearchText,
+                      kind: 'textField',
+                      value: _searchController.text,
+                      placeholder: l10n.radioSearchHint,
+                    ),
+                    if (_loadingDirectory)
+                      NativeIosListRow(
+                        id: 'directory_loading',
+                        title: _radioDirectoryLoadingLabel(l10n.localeName),
+                        kind: 'text',
+                        enabled: false,
+                      ),
+                    NativeIosListRow(
+                      id: 'active_filters',
+                      title: l10n.radioActiveFilters,
+                      subtitle: _activeFiltersSummary(l10n),
+                      kind: 'text',
+                    ),
+                    NativeIosListRow(id: 'reset_filters', title: l10n.radioResetFilters, kind: 'button'),
+                    NativeIosListRow(
+                      id: 'language',
+                      title: l10n.radioBrowseByLanguage,
+                      kind: 'picker',
+                      value: _languageCode,
+                      valueLabel: _languageOptionLabel(
+                        l10n,
+                        _languageOptions.firstWhere(
+                          (e) => e.code == _languageCode,
+                          orElse: () => _languageOptions.first,
+                        ),
+                      ),
+                      selected: _browseMode == _RadioBrowseMode.language,
+                      options: languageItems
+                          .map((e) => NativeIosOption(
+                                value: e.code,
+                                label: _languageOptionLabel(l10n, e),
+                              ))
+                          .toList(),
+                    ),
+                    NativeIosListRow(
+                      id: 'country',
+                      title: l10n.radioBrowseByCountry,
+                      kind: 'picker',
+                      value: _countryCode,
+                      valueLabel: countryItems
+                          .firstWhere(
+                            (e) => e.key == _countryCode,
+                            orElse: () => countryItems.first,
+                          )
+                          .value,
+                      selected: _browseMode == _RadioBrowseMode.country,
+                      options: countryItems
+                          .map((e) => NativeIosOption(value: e.key, label: e.value))
+                          .toList(),
+                    ),
+                    NativeIosListRow(
+                      id: 'city',
+                      title: _cityLabel(l10n.localeName),
+                      kind: 'textField',
+                      value: _cityCode ?? '',
+                      placeholder: _cityInputHint(l10n.localeName),
+                    ),
+                    NativeIosListRow(
+                      id: 'genre',
+                      title: l10n.radioGenre,
+                      kind: 'picker',
+                      value: _genre.value,
+                      valueLabel: l10n.radioGenreLabel(_genre.value),
+                      options: genreItems
+                          .map((e) => NativeIosOption(
+                                value: e.value,
+                                label: l10n.radioGenreLabel(e.value),
+                              ))
+                          .toList(),
+                    ),
+                    NativeIosListRow(id: 'search', title: l10n.radioSearch, kind: 'button'),
+                  ],
+                ),
+                NativeIosListSection(
+                  rows: [
+                    NativeIosListRow(id: 'add', title: l10n.radioAddCommunity, kind: 'action'),
+                  ],
+                ),
+              ],
+              onEvent: (event) async {
+                if (event.type == 'textChanged') {
+                  final value = event.value?.toString() ?? '';
+                  if (event.id == 'search_text') {
+                    _searchController.value = TextEditingValue(
+                      text: value,
+                      selection: TextSelection.collapsed(offset: value.length),
+                    );
+                  } else if (event.id == 'city') {
+                    setState(() {
+                      _cityCode = value.trim().isEmpty ? null : value.trim();
+                      if (_cityCode != null) _browseMode = _RadioBrowseMode.city;
+                    });
+                  }
+                  return;
+                }
+                if (event.type == 'picker') {
+                  final value = event.value?.toString() ?? '';
+                  if (event.id == 'language') {
+                    setState(() { _languageCode = value; _browseMode = _RadioBrowseMode.language; });
+                    await _settings.saveRadioLanguage(value);
+                    if (mounted) _search();
+                  } else if (event.id == 'country') {
+                    setState(() { _countryCode = value; _browseMode = _RadioBrowseMode.country; });
+                    await _settings.saveRadioCountry(value.replaceFirst('country:', ''));
+                    if (mounted) _search();
+                  } else if (event.id == 'genre') {
+                    final found = RadioService.genres.firstWhere(
+                      (e) => e.value == value,
+                      orElse: () => RadioService.genres.first,
+                    );
+                    setState(() => _genre = found);
+                    await _settings.saveRadioGenre(found.value);
+                    if (mounted) _search();
+                  }
+                  return;
+                }
+                if (event.type != 'activate') return;
+                switch (event.id) {
+                  case 'favorites':
+                    await Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: '/radio/favorites'), builder: (_) => const FavoriteRadiosScreen()));
+                    break;
+                  case 'recent':
+                    await Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: '/radio/recent'), builder: (_) => const RecentRadiosScreen()));
+                    break;
+                  case 'recordings':
+                    await Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: '/radio/recordings'), builder: (_) => const RadioRecordingsScreen()));
+                    break;
+                  case 'reset_filters': _resetFilters(); break;
+                  case 'search': _search(); break;
+                  case 'add':
+                    await Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: '/radio/add'), builder: (_) => const AddRadioScreen()));
+                    break;
+                }
+              },
+            )
+          : ListView(
         padding: const EdgeInsets.all(16),
         children: [
           FilledButton.icon(

@@ -15,6 +15,7 @@ import '../utils/list_timestamp_formatter.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class RaiPlaySoundScreen extends StatefulWidget {
   final String? url;
@@ -38,6 +39,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   final _podcastService = PodcastService();
   final _searchController = TextEditingController();
   final _scrollController = AutoScrollController();
+  final NativeIosListController _nativeListController = NativeIosListController();
 
   RaiPlaySoundPage? _page;
   bool _loading = true;
@@ -206,8 +208,13 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
 
     final itemIndex = items.indexWhere((item) => item.id == selectedItem.id);
     if (itemIndex < 0) return;
-    final listIndex = itemIndex + (_hasDatedAudioItems(items) ? 1 : 0);
+    if (useNativeIosAccessibleViews) {
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+      await _nativeListController.scrollTo('item_$itemIndex');
+      return;
+    }
 
+    final listIndex = itemIndex + (_hasDatedAudioItems(items) ? 1 : 0);
     await Future<void>.delayed(const Duration(milliseconds: 300));
     await _tryScrollToItemIndex(listIndex);
   }
@@ -280,6 +287,53 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
         item.audioUrl.trim().isNotEmpty);
   }
 
+  Widget _buildNativeIosBody(AppLocalizations l10n, List<RaiPlaySoundItem> items, bool hasDateButton) {
+    return NativeIosAccessibleList(
+      controller: _nativeListController,
+      sections: [
+        NativeIosListSection(rows: [
+          if (_isRoot)
+            NativeIosListRow(id: 'search_query', title: 'Cerca su RaiPlay Sound', kind: 'textField', value: _searchController.text),
+          if (_isRoot) const NativeIosListRow(id: 'search', title: 'Cerca', kind: 'button'),
+          if (_isRoot) const NativeIosListRow(id: 'recent', title: 'Ricerche recenti'),
+          if (_error != null) NativeIosListRow(id: 'error', kind: 'text', title: _error!),
+          if (hasDateButton) NativeIosListRow(id: 'select_date', title: l10n.podcastSelectDate),
+          for (var i = 0; i < items.length; i++)
+            NativeIosListRow(
+              id: 'item_$i',
+              title: items[i].kind == RaiPlaySoundItemKind.audio
+                  ? titleWithListTimestamp(items[i].title, items[i].publishedAt, l10n.localeName)
+                  : items[i].title,
+              subtitle: items[i].description.isNotEmpty ? items[i].description : null,
+              actions: [
+                if (items[i].kind == RaiPlaySoundItemKind.audio && _canSubscribeCurrentPage)
+                  const NativeIosCustomAction(id: 'subscribe', label: 'Aggiungi ai podcast'),
+              ],
+            ),
+        ]),
+      ],
+      onEvent: (event) async {
+        if (event.id == 'search_query' && event.type == 'textChanged') {
+          _searchController.text = event.value?.toString() ?? '';
+        } else if (event.id == 'search' && event.type == 'activate') {
+          await _search();
+        } else if (event.id == 'recent' && event.type == 'activate') {
+          await _openRecentSearches();
+        } else if (event.id == 'select_date' && event.type == 'activate') {
+          await _openDateSelector(items);
+        } else if (event.id?.startsWith('item_') == true) {
+          final i = int.tryParse(event.id!.substring(5));
+          if (i == null || i >= items.length) return;
+          if (event.type == 'customAction' && event.action == 'subscribe') {
+            await _subscribeCurrentPageToPodcasts();
+          } else if (event.type == 'activate') {
+            _openItem(items[i]);
+          }
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -291,7 +345,9 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _error != null && _page == null
               ? Center(child: Text(_error!))
-              : Column(
+              : useNativeIosAccessibleViews
+                  ? _buildNativeIosBody(l10n, items, hasDateButton)
+                  : Column(
                   children: [
                     if (_isRoot)
                       Padding(
@@ -456,7 +512,19 @@ class _RaiPlaySoundDateSelectorScreen extends StatelessWidget {
       body: SafeArea(
         child: datedItems.isEmpty
             ? Center(child: Text(l10n.podcastNoDatesAvailable))
-            : ListView.separated(
+            : useNativeIosAccessibleViews
+                ? NativeIosAccessibleList(
+                    sections: [NativeIosListSection(rows: [
+                      for (var i = 0; i < datedItems.length; i++)
+                        NativeIosListRow(id: 'date_$i', title: formatter.format(datedItems[i].date)),
+                    ])],
+                    onEvent: (event) {
+                      if (event.type != 'activate' || event.id == null) return;
+                      final i = int.tryParse(event.id!.replaceFirst('date_', ''));
+                      if (i != null && i < datedItems.length) Navigator.pop(context, datedItems[i].item);
+                    },
+                  )
+                : ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: datedItems.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),

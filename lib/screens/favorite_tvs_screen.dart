@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 
 import '../services/tv_service.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 class FavoriteTvsScreen extends StatefulWidget {
   const FavoriteTvsScreen({
@@ -81,7 +82,41 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                     style: TextStyle(fontSize: 18),
                   ),
                 )
-              : ListView.builder(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      key: ValueKey('native-favorite-tvs-${_favorites.length}'),
+                      sections: [
+                        NativeIosListSection(
+                          rows: _favorites.map((channel) {
+                            final currentProgram = _currentProgramFor(channel);
+                            return NativeIosListRow(
+                              id: channel.name,
+                              title: channel.name,
+                              subtitle: currentProgram == null ? null : 'Ora in onda: ${currentProgram.title}',
+                              accessibilityLabel: _channelLabel(channel, currentProgram),
+                              hint: 'Tocca per aprire il canale TV',
+                              kind: 'action',
+                              actions: const [
+                                NativeIosCustomAction(id: 'remove', label: 'Rimuovi dai preferiti'),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                      onEvent: (event) async {
+                        final id = event.id;
+                        if (id == null) return;
+                        final index = _favorites.indexWhere((e) => e.name == id);
+                        if (index < 0) return;
+                        final channel = _favorites[index];
+                        if (event.type == 'activate') {
+                          widget.onOpenChannel(channel);
+                        } else if (event.type == 'customAction' && event.action == 'remove') {
+                          await _removeFromFavorites(channel);
+                        }
+                      },
+                    )
+                  : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _favorites.length,
                   itemBuilder: (context, index) {

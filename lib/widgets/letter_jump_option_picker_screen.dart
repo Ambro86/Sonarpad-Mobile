@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import 'native_ios_accessible_view.dart';
+
 class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
   final String title;
   final List<T> options;
@@ -33,6 +35,7 @@ class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
 class _LetterJumpOptionPickerScreenState<T>
     extends State<LetterJumpOptionPickerScreen<T>> {
   final _scrollController = AutoScrollController();
+  final _nativeController = NativeIosListController();
 
   bool get _showLetterPicker =>
       widget.options.length >= widget.minimumItemsForLetterPicker &&
@@ -82,6 +85,12 @@ class _LetterJumpOptionPickerScreenState<T>
   Future<void> _jumpToLetter(String letter) async {
     final index = _firstIndexForLetter(letter);
     if (index == null || index < 0 || index >= widget.options.length) return;
+
+    if (useNativeIosAccessibleViews) {
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+      await _nativeController.scrollTo('option_$index');
+      return;
+    }
 
     final listIndex = index + (_showLetterPicker ? 1 : 0);
     await Future<void>.delayed(const Duration(milliseconds: 300));
@@ -134,7 +143,47 @@ class _LetterJumpOptionPickerScreenState<T>
     final showLetterPicker = _showLetterPicker;
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: ListView.separated(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              controller: _nativeController,
+              sections: [
+                NativeIosListSection(
+                  rows: [
+                    if (showLetterPicker)
+                      NativeIosListRow(
+                        id: 'select_letter',
+                        title: widget.selectLetterLabel,
+                      ),
+                    ...widget.options.asMap().entries.map((entry) {
+                      final selected = widget.selectedBuilder?.call(entry.value) ?? false;
+                      final label = widget.labelBuilder(entry.value);
+                      final displayLabel = selected && widget.selectedLabel != null
+                          ? '$label, ${widget.selectedLabel}'
+                          : label;
+                      return NativeIosListRow(
+                        id: 'option_${entry.key}',
+                        title: displayLabel,
+                        selected: selected,
+                      );
+                    }),
+                  ],
+                ),
+              ],
+              onEvent: (event) async {
+                if (event.type != 'activate' || event.id == null) return;
+                if (event.id == 'select_letter') {
+                  await _openLetterPicker();
+                  return;
+                }
+                if (event.id!.startsWith('option_')) {
+                  final index = int.tryParse(event.id!.substring(7));
+                  if (index != null && index >= 0 && index < widget.options.length) {
+                    if (mounted) Navigator.pop(context, widget.options[index]);
+                  }
+                }
+              },
+            )
+          : ListView.separated(
         controller: _scrollController,
         itemCount: widget.options.length + (showLetterPicker ? 1 : 0),
         separatorBuilder: (_, _) => const Divider(height: 1),
@@ -186,7 +235,29 @@ class _LetterPickerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: ListView.separated(
+      body: useNativeIosAccessibleViews
+          ? NativeIosAccessibleList(
+              sections: [
+                NativeIosListSection(
+                  rows: letters
+                      .asMap()
+                      .entries
+                      .map((entry) => NativeIosListRow(
+                            id: 'letter_${entry.key}',
+                            title: entry.value,
+                          ))
+                      .toList(growable: false),
+                ),
+              ],
+              onEvent: (event) {
+                if (event.type != 'activate' || event.id == null) return;
+                final index = int.tryParse(event.id!.replaceFirst('letter_', ''));
+                if (index != null && index >= 0 && index < letters.length) {
+                  Navigator.pop(context, letters[index]);
+                }
+              },
+            )
+          : ListView.separated(
         itemCount: letters.length,
         separatorBuilder: (_, _) => const Divider(height: 1),
         itemBuilder: (context, index) {

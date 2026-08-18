@@ -8,6 +8,7 @@ import 'audiodescription_scheduled_screen.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/native_ios_accessible_view.dart';
 
 const _scheduledAudiodescriptionsTitle = 'Audiodescrizioni in programma';
 
@@ -133,7 +134,40 @@ class _AudiodescriptionRecentScreenState
             )
           : _error.isNotEmpty
               ? Center(child: Text('${l10n.audiodescriptionError}: $_error'))
-              : ListView.separated(
+              : useNativeIosAccessibleViews
+                  ? NativeIosAccessibleList(
+                      sections: [
+                        NativeIosListSection(
+                          rows: [
+                            const NativeIosListRow(id: 'scheduled', title: _scheduledAudiodescriptionsTitle),
+                            NativeIosListRow(id: 'all', title: l10n.audiodescriptionAll),
+                            ..._filteredItems.asMap().entries.map((entry) => NativeIosListRow(
+                                  id: 'item_${entry.key}',
+                                  title: entry.value.title,
+                                  subtitle: '${entry.value.date} ${entry.value.description}'.trim(),
+                                )),
+                          ],
+                        ),
+                      ],
+                      onEvent: (event) async {
+                        if (event.type != 'activate' || event.id == null) return;
+                        if (event.id == 'scheduled') {
+                          Navigator.push(context, MaterialPageRoute(
+                            settings: const RouteSettings(name: '/audiodescriptions/scheduled'),
+                            builder: (_) => const AudiodescriptionScheduledScreen(),
+                          ));
+                        } else if (event.id == 'all') {
+                          Navigator.push(context, MaterialPageRoute(
+                            settings: const RouteSettings(name: '/audiodescriptions/all'),
+                            builder: (_) => const AudiodescriptionAllScreen(),
+                          ));
+                        } else if (event.id!.startsWith('item_')) {
+                          final index = int.tryParse(event.id!.substring(5));
+                          if (index != null && index >= 0 && index < _filteredItems.length) await _play(_filteredItems[index]);
+                        }
+                      },
+                    )
+                  : ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: _filteredItems.length + 2,
                   separatorBuilder: (_, _) => const Divider(),

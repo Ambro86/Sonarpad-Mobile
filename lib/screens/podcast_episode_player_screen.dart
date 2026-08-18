@@ -11,6 +11,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/podcast_service.dart';
 import '../widgets/volume_slider.dart';
+import '../widgets/native_ios_accessible_view.dart';
 import 'package:video_player/video_player.dart';
 import '../utils/app_logger.dart';
 import 'podcast_chapters_screen.dart';
@@ -684,6 +685,96 @@ class _PodcastEpisodePlayerScreenState
     );
   }
 
+  Widget _buildNativeIosPlayerBody(AppLocalizations l10n, bool canSeek) {
+    Widget buildControls(bool isPlaying) {
+      final videoReady = _videoController != null && _videoController!.value.isInitialized;
+      final videoPlaying = videoReady && _videoController!.value.isPlaying;
+      final rows = <NativeIosListRow>[
+        NativeIosListRow(id: 'title', kind: 'header', title: widget.episode.title),
+        if (_loading) NativeIosListRow(id: 'loading', kind: 'text', title: l10n.loadingEpisodeAudio),
+        if (_error != null) NativeIosListRow(id: 'error', kind: 'text', title: _error!),
+        if (_podcastService.hasChapterSource(widget.episode) || (_detectedChapters?.isNotEmpty ?? false))
+          NativeIosListRow(id: 'chapters', title: l10n.podcastChapters),
+        if (widget.isVideoSupported)
+          NativeIosListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
+        if (canSeek) NativeIosListRow(id: 'rewind', title: l10n.rewind15s, kind: 'button', enabled: !_loading && _loaded),
+        NativeIosListRow(
+          id: 'play_pause',
+          title: _videoController != null ? (videoPlaying ? l10n.pause : l10n.play) : (isPlaying ? l10n.pause : l10n.play),
+          kind: 'button',
+          enabled: !_loading,
+        ),
+        if (canSeek) NativeIosListRow(id: 'forward', title: l10n.forward15s, kind: 'button', enabled: !_loading && _loaded),
+      ];
+      return NativeIosAccessibleList(
+        sections: [NativeIosListSection(rows: rows)],
+        onEvent: (event) async {
+          if (event.id == 'chapters' && event.type == 'activate') {
+            await _openChapters();
+          } else if (event.id == 'video' && event.type == 'toggle') {
+            _toggleVideo(event.value == true);
+          } else if (event.id == 'rewind' && event.type == 'activate') {
+            await _seekBackward();
+          } else if (event.id == 'forward' && event.type == 'activate') {
+            await _seekForward();
+          } else if (event.id == 'play_pause' && event.type == 'activate') {
+            if (_videoController != null) {
+              await _toggleVideoPlayback();
+            } else if (isPlaying) {
+              await _pause();
+            } else {
+              await _play();
+            }
+          }
+        },
+      );
+    }
+
+    final nativeList = _videoController == null
+        ? StreamBuilder<bool>(
+            stream: _audio.playingStream,
+            builder: (context, snapshot) => buildControls(snapshot.data ?? false),
+          )
+        : buildControls(false);
+
+    return Column(
+      children: [
+        if (_videoController != null && _videoController!.value.isInitialized)
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: _videoUsesExternalAudio
+                ? Semantics(
+                    label: l10n.nowPlayingTitle(widget.episode.title),
+                    value: _videoController!.value.isPlaying ? l10n.pause : l10n.play,
+                    child: _buildVideoPlayerSurface(_videoController!),
+                  )
+                : _buildVideoPlayerSurface(_videoController!),
+          ),
+        Expanded(child: nativeList),
+        if (_videoController != null && canSeek)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _VideoPositionControl(
+              controller: _videoController!,
+              audio: _videoUsesExternalAudio ? _audio : null,
+              seekStep: _seekStep,
+              logSubject: _logSubject,
+            ),
+          )
+        else if (_videoController == null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _PodcastPositionControl(audio: _audio, seekStep: _seekStep, logSubject: _logSubject),
+          ),
+        if (_videoController == null || _videoUsesExternalAudio)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: VolumeSlider(audioPlayer: _audio),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppLogger.log(
@@ -710,7 +801,9 @@ class _PodcastEpisodePlayerScreenState
             },
           ),
         ),
-        body: Semantics(
+        body: useNativeIosAccessibleViews
+            ? _buildNativeIosPlayerBody(l10n, canSeek)
+            : Semantics(
           container: Platform.isIOS,
           explicitChildNodes: Platform.isIOS,
           child: ListView(
