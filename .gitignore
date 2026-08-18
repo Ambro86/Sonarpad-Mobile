@@ -161,3 +161,13 @@ tinyfish_response.json
 tinyfish_response.md
 tinyfish_fetch_corriere.bat
 server/
+.tmp_effect_reference/
+*.before_native_dsp
+sonarpad_mobile_source.zip
+media_effect_tests/
+IOS27_VOICEOVER_LOGGING.md
+MODIFICA_MPD_AVVIO_CONTINUO_E_WEBVIEW_PULITA.md
+MODIFICA_MPD_VLC.md
+MODIFICA_NOTIZIE_TINYFISH_FALLBACK.md
+crea_zip_sorgenti.bat
+test/failures/
