@@ -212,7 +212,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     if (useSharedAccessibleViewModel) {
       await _accessibleListController.focusAccessibleRow(
         'item_$itemIndex',
-        mode: AccessibleFocusMode.inPlaceJump,
+        mode: AccessibleFocusMode.routeReturnJump,
       );
       return;
     }

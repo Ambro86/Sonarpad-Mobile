@@ -89,7 +89,7 @@ class _LetterJumpOptionPickerScreenState<T>
     if (useSharedAccessibleViewModel) {
       await _accessibleController.focusAccessibleRow(
         'option_$index',
-        mode: AccessibleFocusMode.inPlaceJump,
+        mode: AccessibleFocusMode.routeReturnJump,
       );
       return;
     }

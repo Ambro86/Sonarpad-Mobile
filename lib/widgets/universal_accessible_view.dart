@@ -199,6 +199,7 @@ typedef AccessibleListEventCallback = FutureOr<void> Function(
 enum AccessibleFocusMode {
   screenEntry,
   inPlaceJump,
+  routeReturnJump,
   returnFocus,
 }
 
@@ -675,10 +676,20 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     return pass;
   }
 
-  Future<void> _waitForRouteAndFrameToSettle() async {
-    // Picker/dialog result Futures can resolve before the outgoing route has
-    // finished its final composited frame. Waiting for the rendering pipeline
-    // itself is more reliable than polling ModalRoute.isCurrent.
+  Future<void> _waitForRouteAndFrameToSettle(
+    AccessibleFocusMode mode,
+  ) async {
+    // Runtime focus requested immediately after Navigator.pop() is different
+    // from an ordinary in-list jump: the previous route may still be finishing
+    // its transition while the already-live PlatformView is being re-exposed.
+    // The legacy Flutter renderer already used a 300 ms post-return settle
+    // window for letter/date jumps. Keep that behavior centralized in the
+    // shared renderer instead of duplicating iOS timing in screen code.
+    if (mode == AccessibleFocusMode.routeReturnJump) {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      if (!mounted) return;
+    }
+
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return;
     await WidgetsBinding.instance.endOfFrame;
@@ -702,7 +713,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       ));
     }
 
-    await _waitForRouteAndFrameToSettle();
+    await _waitForRouteAndFrameToSettle(mode);
     if (!await _focusGuard(
       channel,
       rendererGeneration: rendererGeneration,

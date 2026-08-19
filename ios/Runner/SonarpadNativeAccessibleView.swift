@@ -1357,23 +1357,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
 
       let targetInRoot = targetView?.isDescendant(of: self.rootView) ?? false
 
-      // Runtime jumps happen after a picker/modal returns. The target UIView can
-      // already be visible while VoiceOver has not yet re-entered Flutter's
-      // PlatformView accessibility subtree. For inPlaceJump only, force one
-      // bounded re-entry handshake and wait for UIKit's real focus notification
-      // before posting the specific target. Document/screenEntry is deliberately
-      // left on the already device-validated direct path.
-      if mode == "inPlaceJump" {
-        self.performInPlaceTwoStageHandoff(
-          id: id,
-          requestId: requestId,
-          rendererGeneration: rendererGeneration,
-          completion: completion
-        )
-        return
-      }
-
-      let usesScreenChanged = mode == "screenEntry"
+      // Keep ordinary in-place jumps (for example Document slider jumps) on
+      // their established direct path. A routeReturnJump has already waited for
+      // the popped picker route to settle on Dart, so use the same strong,
+      // one-shot target post as screen entry without the failed nil/ACK gate.
+      let usesScreenChanged = mode == "screenEntry" || mode == "routeReturnJump"
       let notification: UIAccessibility.Notification = usesScreenChanged ? .screenChanged : .layoutChanged
       let notificationName = usesScreenChanged ? "screenChanged" : "layoutChanged"
       self.currentRequestedFocusRowId = id
@@ -1400,7 +1388,10 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         "targetInRoot": targetInRoot
       ])
 
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.60) { [weak self] in
+      // The golden Document trace shows VoiceOver may confirm the target
+      // roughly 0.86 s after the post. Keep diagnostics alive beyond that real
+      // device latency so a slow but valid focus is not mislabeled as failure.
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1.50) { [weak self] in
         guard let self = self else { return }
         if self.currentRequestedFocusRowId == id {
           self.emitDebug("FOCUS_TIMEOUT id=\(id) requestId=\(requestId)")
