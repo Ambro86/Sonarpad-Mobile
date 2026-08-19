@@ -87,7 +87,10 @@ class _LetterJumpOptionPickerScreenState<T>
     if (index == null || index < 0 || index >= widget.options.length) return;
 
     if (useSharedAccessibleViewModel) {
-      await _accessibleController.focusToScreenEntry('option_$index');
+      await _accessibleController.focusAccessibleRow(
+        'option_$index',
+        mode: AccessibleFocusMode.inPlaceJump,
+      );
       return;
     }
 

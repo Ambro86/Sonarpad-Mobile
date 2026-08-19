@@ -97,8 +97,9 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
     if (episodeIndex < 0) return;
 
     if (useSharedAccessibleViewModel) {
-      await _accessibleListController.focusToScreenEntry(
+      await _accessibleListController.focusAccessibleRow(
         selectedEpisode.id ?? selectedEpisode.audioUrl,
+        mode: AccessibleFocusMode.inPlaceJump,
       );
       return;
     }

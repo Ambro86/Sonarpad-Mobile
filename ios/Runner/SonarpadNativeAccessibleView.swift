@@ -259,6 +259,9 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var refreshEnabled = false
   private var lastInitialFocusId: String?
   private var debugTag: String?
+  private var currentRendererGeneration = 0
+  private var currentFocusRequestId = 0
+  private var currentRequestedFocusRowId: String?
 
   private func emitDebug(_ message: String) {
     guard debugTag?.isEmpty == false else { return }
@@ -307,45 +310,86 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           self.scrollToRow(id: id, animated: animated)
         }
         result(nil)
+      case "setRendererGeneration":
+        if let map = call.arguments as? [String: Any],
+           let generation = map["rendererGeneration"] as? Int {
+          let oldGeneration = self.currentRendererGeneration
+          self.currentRendererGeneration = generation
+          self.currentFocusRequestId = 0
+          self.emitDebug("FOCUS_GEN_BUMP reason=attach old=\(oldGeneration) new=\(generation)")
+        }
+        result(nil)
+      case "prepareAccessibleFocus":
+        guard let map = call.arguments as? [String: Any],
+              let id = map["id"] as? String,
+              let requestId = map["requestId"] as? Int,
+              let rendererGeneration = map["rendererGeneration"] as? Int else {
+          result(false)
+          break
+        }
+        let animated = map["animated"] as? Bool ?? false
+        guard rendererGeneration == self.currentRendererGeneration,
+              requestId >= self.currentFocusRequestId else {
+          self.emitDebug(
+            "NATIVE_PREPARE_REJECT id=\(id) requestId=\(requestId) " +
+            "currentRequestId=\(self.currentFocusRequestId) rendererGeneration=\(rendererGeneration) " +
+            "currentRendererGeneration=\(self.currentRendererGeneration)"
+          )
+          result(false)
+          break
+        }
+        self.currentFocusRequestId = requestId
+        self.emitDebug(
+          "NATIVE_PREPARE id=\(id) requestId=\(requestId) " +
+          "rendererGeneration=\(rendererGeneration) window=\(self.rootView.window != nil)"
+        )
+        self.prepareAccessibleFocus(
+          id: id,
+          animated: animated,
+          requestId: requestId,
+          rendererGeneration: rendererGeneration,
+          completion: { prepared in result(prepared) }
+        )
+      case "focusAccessibleRow":
+        guard let map = call.arguments as? [String: Any],
+              let id = map["id"] as? String,
+              let mode = map["mode"] as? String,
+              let requestId = map["requestId"] as? Int,
+              let rendererGeneration = map["rendererGeneration"] as? Int else {
+          result(nil)
+          break
+        }
+        let animated = map["animated"] as? Bool ?? false
+        self.emitDebug(
+          "NATIVE_RECEIVED id=\(id) mode=\(mode) requestId=\(requestId) " +
+          "rendererGeneration=\(rendererGeneration)"
+        )
+        self.focusAccessibleRow(
+          id: id,
+          mode: mode,
+          animated: animated,
+          requestId: requestId,
+          rendererGeneration: rendererGeneration
+        )
+        result(nil)
       case "focusInitial":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
-          self.emitDebug("method focusInitial id=\(id) window=\(self.rootView.window != nil)")
-          if self.debugTag == "document" {
-            // Document rows live deep inside a long native table. Once Flutter
-            // has handed accessibility to the platform view and the target
-            // cell is materialized, make one screen-entry request and stop.
-            // Never retry or redirect subsequent VoiceOver navigation.
-            self.focusRow(
-              id: id,
-              animated: false,
-              maxAttempts: 0,
-              screenChanged: true
-            )
-          } else {
-            self.focusRow(id: id, animated: false, maxAttempts: 4)
-          }
+          self.emitDebug("method focusInitial compatibility id=\(id) window=\(self.rootView.window != nil)")
+          self.focusRow(id: id, animated: false, maxAttempts: 0, screenChanged: true)
         }
         result(nil)
       case "focusScreenEntry":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? false
-          self.emitDebug("method focusScreenEntry id=\(id) animated=\(animated) window=\(self.rootView.window != nil)")
-          // Same proven handoff used by Document bookmark entry: one
-          // screenChanged request against the materialized target cell, with
-          // no verification retry and no redirect of later VoiceOver flicks.
-          self.focusRow(
-            id: id,
-            animated: animated,
-            maxAttempts: 0,
-            screenChanged: true
-          )
+          self.emitDebug("method focusScreenEntry compatibility id=\(id) animated=\(animated)")
+          self.focusRow(id: id, animated: animated, maxAttempts: 0, screenChanged: true)
         }
         result(nil)
       case "focusTo":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? false
-          self.emitDebug("method focusTo id=\(id) animated=\(animated) window=\(self.rootView.window != nil)")
-          self.focusRow(id: id, animated: animated, maxAttempts: 4)
+          self.emitDebug("method focusTo compatibility id=\(id) animated=\(animated)")
+          self.focusRow(id: id, animated: animated, maxAttempts: 0, screenChanged: false)
         }
         result(nil)
       default:
@@ -740,7 +784,13 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   }
 
   private func handleAccessibilityFocus(_ id: String) {
-    emitDebug("VoiceOver didBecomeFocused row=\(id)")
+    let expected = currentRequestedFocusRowId
+    let matchesTarget = expected == id
+    emitDebug(
+      "VOICEOVER_FOCUSED row=\(id) expected=\(expected ?? "nil") " +
+      "matchesTarget=\(matchesTarget)"
+    )
+    if expected != nil { currentRequestedFocusRowId = nil }
     channel.invokeMethod("event", arguments: ["type": "focus", "id": id])
   }
 
@@ -787,6 +837,147 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         UIAccessibility.post(notification: .layoutChanged, argument: target)
       } else if attempt < 12 {
         self.restoreFocusRow(id: id, attempt: attempt + 1)
+      }
+    }
+  }
+
+  private func focusTokensAreCurrent(
+    requestId: Int,
+    rendererGeneration: Int
+  ) -> Bool {
+    requestId == currentFocusRequestId &&
+      rendererGeneration == currentRendererGeneration &&
+      rootView.window != nil
+  }
+
+  private func prepareAccessibleFocus(
+    id: String,
+    animated: Bool,
+    requestId: Int,
+    rendererGeneration: Int,
+    attempt: Int = 0,
+    completion: @escaping (Bool) -> Void
+  ) {
+    guard requestId == currentFocusRequestId,
+          rendererGeneration == currentRendererGeneration else {
+      emitDebug(
+        "NATIVE_PREPARE_CANCEL id=\(id) attempt=\(attempt) requestId=\(requestId) " +
+        "currentRequestId=\(currentFocusRequestId) rendererGeneration=\(rendererGeneration) " +
+        "currentRendererGeneration=\(currentRendererGeneration)"
+      )
+      completion(false)
+      return
+    }
+    guard let indexPath = indexPath(forRowId: id) else {
+      emitDebug("NATIVE_PREPARE_FAIL id=\(id) reason=indexPathNotFound")
+      completion(false)
+      return
+    }
+
+    tableView.layoutIfNeeded()
+    tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
+    let delay: TimeInterval = animated ? 0.40 : 0.03
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+      guard let self = self else {
+        completion(false)
+        return
+      }
+      guard requestId == self.currentFocusRequestId,
+            rendererGeneration == self.currentRendererGeneration else {
+        self.emitDebug("NATIVE_PREPARE_CANCEL id=\(id) attempt=\(attempt) reason=superseded")
+        completion(false)
+        return
+      }
+
+      self.tableView.layoutIfNeeded()
+      let visible = self.tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false
+      let cellExists = self.tableView.cellForRow(at: indexPath) != nil
+      let windowReady = self.rootView.window != nil
+      self.emitDebug(
+        "NATIVE_PREPARED_CHECK id=\(id) attempt=\(attempt) visible=\(visible) " +
+        "cellExists=\(cellExists) window=\(windowReady) offsetY=\(self.tableView.contentOffset.y)"
+      )
+
+      if visible && cellExists && windowReady {
+        completion(true)
+        return
+      }
+      if attempt < 12 {
+        self.prepareAccessibleFocus(
+          id: id,
+          animated: false,
+          requestId: requestId,
+          rendererGeneration: rendererGeneration,
+          attempt: attempt + 1,
+          completion: completion
+        )
+      } else {
+        completion(false)
+      }
+    }
+  }
+
+  private func focusAccessibleRow(
+    id: String,
+    mode: String,
+    animated: Bool,
+    requestId: Int,
+    rendererGeneration: Int
+  ) {
+    guard focusTokensAreCurrent(
+      requestId: requestId,
+      rendererGeneration: rendererGeneration
+    ) else {
+      emitDebug(
+        "NATIVE_FOCUS_REJECT id=\(id) mode=\(mode) requestId=\(requestId) " +
+        "currentRequestId=\(currentFocusRequestId) rendererGeneration=\(rendererGeneration) " +
+        "currentRendererGeneration=\(currentRendererGeneration) window=\(rootView.window != nil)"
+      )
+      return
+    }
+    guard let indexPath = indexPath(forRowId: id) else {
+      emitDebug("NATIVE_FOCUS_REJECT id=\(id) mode=\(mode) reason=indexPathNotFound")
+      return
+    }
+
+    tableView.layoutIfNeeded()
+    if !(tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false) {
+      tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
+      tableView.layoutIfNeeded()
+    }
+    guard accessibilityTarget(at: indexPath) != nil else {
+      emitDebug("NATIVE_FOCUS_REJECT id=\(id) mode=\(mode) reason=targetUnavailable")
+      return
+    }
+
+    // Defer the UIAccessibility notification to the next run-loop turn so
+    // UIKit/VoiceOver can observe the fully committed table/accessibility tree.
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self,
+            self.focusTokensAreCurrent(
+              requestId: requestId,
+              rendererGeneration: rendererGeneration
+            ),
+            let target = self.accessibilityTarget(at: indexPath) else {
+        return
+      }
+
+      let isScreenEntry = mode == "screenEntry"
+      let notification: UIAccessibility.Notification = isScreenEntry ? .screenChanged : .layoutChanged
+      let notificationName = isScreenEntry ? "screenChanged" : "layoutChanged"
+      self.currentRequestedFocusRowId = id
+      self.emitDebug(
+        "ACCESSIBILITY_POST id=\(id) mode=\(mode) notification=\(notificationName) " +
+        "requestId=\(requestId) rendererGeneration=\(rendererGeneration) " +
+        "offsetY=\(self.tableView.contentOffset.y)"
+      )
+      UIAccessibility.post(notification: notification, argument: target)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.60) { [weak self] in
+        guard let self = self else { return }
+        if self.currentRequestedFocusRowId == id {
+          self.emitDebug("FOCUS_TIMEOUT id=\(id) requestId=\(requestId)")
+          self.currentRequestedFocusRowId = nil
+        }
       }
     }
   }

@@ -196,6 +196,12 @@ typedef AccessibleListEventCallback = FutureOr<void> Function(
   AccessibleListEvent event,
 );
 
+enum AccessibleFocusMode {
+  screenEntry,
+  inPlaceJump,
+  returnFocus,
+}
+
 class AccessibleListController {
   AccessibleListController({this.debugName});
 
@@ -203,12 +209,16 @@ class AccessibleListController {
   MethodChannel? _channel;
   Object? _flutterOwner;
   ({String id, bool animated})? _pendingScroll;
-  ({String id, bool animated, bool screenEntry})? _pendingFocus;
+  ({String id, bool animated, AccessibleFocusMode mode})? _pendingFocus;
 
   bool get hasAttachedRenderer =>
       _channel != null || _flutterScrollTo != null || _flutterFocusTo != null;
   bool get hasAttachedNativeRenderer => _channel != null;
-  Future<void> Function(String id, bool animated, bool screenEntry)? _nativeFocusTo;
+  Future<void> Function(
+    String id,
+    bool animated,
+    AccessibleFocusMode mode,
+  )? _nativeFocusTo;
   Future<void> Function(String id, bool animated)? _flutterScrollTo;
   Future<void> Function(String id, bool animated)? _flutterFocusTo;
 
@@ -245,45 +255,60 @@ class AccessibleListController {
     );
   }
 
-  Future<void> focusTo(String id, {bool animated = false}) async {
-    _debug('focusTo requested id=$id animated=$animated native=${_channel != null} flutter=${_flutterFocusTo != null}');
+  Future<void> focusAccessibleRow(
+    String id, {
+    AccessibleFocusMode mode = AccessibleFocusMode.inPlaceJump,
+    bool animated = false,
+  }) async {
+    _debug(
+      'focusAccessibleRow requested id=$id mode=${mode.name} '
+      'animated=$animated native=${_channel != null} '
+      'flutter=${_flutterFocusTo != null}',
+    );
     final nativeFocusTo = _nativeFocusTo;
     if (_channel != null && nativeFocusTo != null) {
-      _debug('focusTo dispatch native calendar-path id=$id');
-      await nativeFocusTo(id, animated, false);
+      _debug('focusAccessibleRow dispatch native id=$id mode=${mode.name}');
+      await nativeFocusTo(id, animated, mode);
       return;
     }
     final flutterFocusTo = _flutterFocusTo;
     if (flutterFocusTo != null) {
-      _debug('focusTo dispatch flutter id=$id');
+      _debug('focusAccessibleRow dispatch flutter id=$id mode=${mode.name}');
       await flutterFocusTo(id, animated);
       return;
     }
-    _debug('focusTo queued id=$id');
-    _pendingFocus = (id: id, animated: animated, screenEntry: false);
+    _debug('focusAccessibleRow queued id=$id mode=${mode.name}');
+    _pendingFocus = (id: id, animated: animated, mode: mode);
   }
 
-  Future<void> focusToScreenEntry(String id, {bool animated = false}) async {
-    _debug('focusToScreenEntry requested id=$id animated=$animated native=${_channel != null} flutter=${_flutterFocusTo != null}');
-    final nativeFocusTo = _nativeFocusTo;
-    if (_channel != null && nativeFocusTo != null) {
-      _debug('focusToScreenEntry dispatch native document-path id=$id');
-      await nativeFocusTo(id, animated, true);
-      return;
-    }
-    final flutterFocusTo = _flutterFocusTo;
-    if (flutterFocusTo != null) {
-      _debug('focusToScreenEntry dispatch flutter id=$id');
-      await flutterFocusTo(id, animated);
-      return;
-    }
-    _debug('focusToScreenEntry queued id=$id');
-    _pendingFocus = (id: id, animated: animated, screenEntry: true);
-  }
+  Future<void> focusTo(String id, {bool animated = false}) =>
+      focusAccessibleRow(
+        id,
+        mode: AccessibleFocusMode.inPlaceJump,
+        animated: animated,
+      );
+
+  Future<void> focusToScreenEntry(String id, {bool animated = false}) =>
+      focusAccessibleRow(
+        id,
+        mode: AccessibleFocusMode.screenEntry,
+        animated: animated,
+      );
+
+  Future<void> focusToReturn(String id, {bool animated = false}) =>
+      focusAccessibleRow(
+        id,
+        mode: AccessibleFocusMode.returnFocus,
+        animated: animated,
+      );
 
   void _attach(
     MethodChannel channel,
-    Future<void> Function(String id, bool animated, bool screenEntry) nativeFocusTo,
+    Future<void> Function(
+      String id,
+      bool animated,
+      AccessibleFocusMode mode,
+    ) nativeFocusTo,
   ) {
     _debug('native renderer attach pendingScroll=${_pendingScroll?.id} pendingFocus=${_pendingFocus?.id}');
     _channel = channel;
@@ -300,8 +325,17 @@ class AccessibleListController {
       }));
     }
     if (pendingFocus != null) {
-      _debug('replay queued native focus via calendar-path id=${pendingFocus.id}');
-      unawaited(nativeFocusTo(pendingFocus.id, pendingFocus.animated, pendingFocus.screenEntry));
+      _debug(
+        'replay queued native focus id=${pendingFocus.id} '
+        'mode=${pendingFocus.mode.name}',
+      );
+      unawaited(
+        nativeFocusTo(
+          pendingFocus.id,
+          pendingFocus.animated,
+          pendingFocus.mode,
+        ),
+      );
     }
   }
 
@@ -372,19 +406,16 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       <String, TextEditingController>{};
   final GlobalKey _flutterTargetKey = GlobalKey(debugLabel: 'accessible_target_row');
   final GlobalKey _nativeViewKey = GlobalKey(debugLabel: 'accessible_native_view');
-  int _nativeInitialFocusGeneration = 0;
+  int _rendererGeneration = 0;
+  int _focusRequestId = 0;
   String? _flutterTargetId;
-  String? _runtimeInitialFocusId;
   bool _initialFocusScheduled = false;
-
-  String? get _effectiveInitialFocusId =>
-      _runtimeInitialFocusId ?? widget.initialFocusId;
 
   Map<String, Object?> get _data => {
         'sections': widget.sections.map((e) => e.toMap()).toList(),
         'refreshEnabled': widget.refreshEnabled,
-        if (_effectiveInitialFocusId != null)
-          'initialFocusId': _effectiveInitialFocusId,
+        if (widget.initialFocusId != null)
+          'initialFocusId': widget.initialFocusId,
         if (widget.debugTag != null) 'debugTag': widget.debugTag,
       };
 
@@ -533,7 +564,6 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       }
     }
     if (oldWidget.initialFocusId != widget.initialFocusId) {
-      _runtimeInitialFocusId = null;
       _initialFocusScheduled = false;
       final currentChannel = _channel;
       if (currentChannel != null && useNativeIosAccessibleViews) {
@@ -546,18 +576,12 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         oldWidget.controller?._detach(channel);
         widget.controller?._attach(
           channel,
-          (targetId, animated, screenEntry) => screenEntry
-              ? _focusNativeThroughInitialPipeline(
-                  channel,
-                  targetId,
-                  animated: animated,
-                )
-              : _focusNativeLikeCalendar(
-                  channel,
-                  targetId,
-                  animated: animated,
-                  method: 'focusTo',
-                ),
+          (targetId, animated, mode) => _focusAccessibleNative(
+            channel,
+            targetId,
+            mode: mode,
+            animated: animated,
+          ),
         );
       }
       unawaited(channel.invokeMethod<void>('setData', _data));
@@ -598,153 +622,184 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     final channel = MethodChannel('sonarpad/native_accessible_list/$id');
     _channel = channel;
     channel.setMethodCallHandler(_handleMethod);
+    _rendererGeneration += 1;
+    final rendererGeneration = _rendererGeneration;
+    unawaited(_completeNativeAttach(channel, rendererGeneration));
+  }
+
+  Future<void> _completeNativeAttach(
+    MethodChannel channel,
+    int rendererGeneration,
+  ) async {
+    await channel.invokeMethod<void>('setRendererGeneration', {
+      'rendererGeneration': rendererGeneration,
+    });
+    if (!mounted ||
+        !identical(_channel, channel) ||
+        rendererGeneration != _rendererGeneration) {
+      return;
+    }
     widget.controller?._attach(
       channel,
-      (targetId, animated, screenEntry) => screenEntry
-          ? _focusNativeThroughInitialPipeline(
-              channel,
-              targetId,
-              animated: animated,
-            )
-          : _focusNativeLikeCalendar(
-              channel,
-              targetId,
-              animated: animated,
-              method: 'focusTo',
-            ),
+      (targetId, animated, mode) => _focusAccessibleNative(
+        channel,
+        targetId,
+        mode: mode,
+        animated: animated,
+      ),
     );
     _scheduleNativeInitialFocus(channel);
   }
 
-  Future<void> _waitForCurrentRoute() async {
-    if (!mounted) return;
-
-    // Capture the route before the first async gap. The route object remains
-    // valid while we wait for the picker/modal transition to finish, and this
-    // avoids reading BuildContext after an await.
-    final route = ModalRoute.of(context);
-    if (route == null || route.isCurrent) {
-      await WidgetsBinding.instance.endOfFrame;
-      return;
-    }
-
-    for (var attempt = 0; attempt < 30 && mounted; attempt++) {
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted) return;
-      if (route.isCurrent) {
-        await WidgetsBinding.instance.endOfFrame;
-        return;
-      }
-    }
-  }
-
-  Future<void> _focusNativeThroughInitialPipeline(
-    MethodChannel channel,
-    String id, {
-    required bool animated,
+  Future<bool> _focusGuard(
+    MethodChannel channel, {
+    required int rendererGeneration,
+    required int requestId,
+    required String id,
+    required String stage,
   }) async {
-    if (!mounted || _channel != channel) return;
-
-    // Runtime screen-entry jumps (letter/date pickers) deliberately reuse the
-    // exact proven Document initial-focus pipeline. Publishing the target as
-    // initialFocusId makes native apply() position/materialize the row first.
-    // We then wait until the returning route is current and run the same
-    // Flutter -> PlatformView -> focusInitial handoff used when opening a
-    // bookmarked document.
-    _initialFocusScheduled = false;
-    final generation = ++_nativeInitialFocusGeneration;
-
+    final channelMatches = identical(_channel, channel);
+    final generationMatches = rendererGeneration == _rendererGeneration;
+    final requestMatches = requestId == _focusRequestId;
+    final pass = mounted && channelMatches && generationMatches && requestMatches;
     final tag = widget.debugTag ?? widget.controller?.debugName;
     if (tag != null && tag.isNotEmpty) {
       unawaited(AppLogger.log(
-        'DOC_NATIVE[$tag] runtime initialFocusId -> document pipeline '
-        'id=$id generation=$generation',
+        'DOC_NATIVE[$tag] GUARD_CHECK stage=$stage id=$id '
+        'requestId=$requestId currentRequestId=$_focusRequestId '
+        'rendererGeneration=$rendererGeneration '
+        'currentRendererGeneration=$_rendererGeneration mounted=$mounted '
+        'channelMatches=$channelMatches result=${pass ? 'pass' : 'fail'}',
+      ));
+    }
+    return pass;
+  }
+
+  Future<void> _waitForRouteAndFrameToSettle() async {
+    // Picker/dialog result Futures can resolve before the outgoing route has
+    // finished its final composited frame. Waiting for the rendering pipeline
+    // itself is more reliable than polling ModalRoute.isCurrent.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await WidgetsBinding.instance.endOfFrame;
+  }
+
+  Future<void> _focusAccessibleNative(
+    MethodChannel channel,
+    String id, {
+    required AccessibleFocusMode mode,
+    required bool animated,
+  }) async {
+    if (!mounted || !identical(_channel, channel)) return;
+
+    final rendererGeneration = _rendererGeneration;
+    final requestId = ++_focusRequestId;
+    final tag = widget.debugTag ?? widget.controller?.debugName;
+    if (tag != null && tag.isNotEmpty) {
+      unawaited(AppLogger.log(
+        'DOC_NATIVE[$tag] FOCUS_REQUEST id=$id mode=${mode.name} '
+        'requestId=$requestId rendererGeneration=$rendererGeneration',
       ));
     }
 
-    // Clear the native initial-focus marker first so requesting the same row
-    // twice still re-materializes it. Then publish the runtime target exactly
-    // as Document does through initialFocusId.
-    final resetData = Map<String, Object?>.from(_data)
-      ..remove('initialFocusId');
-    await channel.invokeMethod<void>('setData', resetData);
-    _runtimeInitialFocusId = id;
-    await channel.invokeMethod<void>('setData', _data);
-
-    await _waitForCurrentRoute();
-    if (!mounted ||
-        _channel != channel ||
-        generation != _nativeInitialFocusGeneration) {
-      return;
-    }
-
-    await _focusNativeLikeCalendar(
+    await _waitForRouteAndFrameToSettle();
+    if (!await _focusGuard(
       channel,
-      id,
-      animated: animated,
-      method: 'focusInitial',
-      generation: generation,
-    );
-  }
-
-  Future<void> _focusNativeLikeCalendar(
-    MethodChannel channel,
-    String id, {
-    required bool animated,
-    required String method,
-    int? generation,
-  }) async {
-    // Shared Flutter -> PlatformView -> native focus handoff. Runtime
-    // screen-entry jumps are converted to the proven Document initial-focus
-    // pipeline before reaching this method.
-    await WidgetsBinding.instance.endOfFrame;
-    await Future<void>.delayed(const Duration(milliseconds: 120));
-    if (!mounted ||
-        _channel != channel ||
-        (generation != null && generation != _nativeInitialFocusGeneration)) {
+      rendererGeneration: rendererGeneration,
+      requestId: requestId,
+      id: id,
+      stage: 'routeReady',
+    )) {
       return;
     }
-
-    // This is the exact handoff already used successfully by Calendar:
-    // first move accessibility focus from Flutter onto the embedded UIKit
-    // view, then ask UIKit to focus the requested native row.
-    final nativeRenderObject = _nativeViewKey.currentContext?.findRenderObject();
-    final tag = widget.debugTag ?? widget.controller?.debugName;
     if (tag != null && tag.isNotEmpty) {
       unawaited(AppLogger.log(
-        'DOC_NATIVE[$tag] Flutter semantics focus -> platform view '
-        'id=$id render=${nativeRenderObject?.runtimeType}',
+        'DOC_NATIVE[$tag] ROUTE_READY id=$id signal=endOfFrame '
+        'requestId=$requestId rendererGeneration=$rendererGeneration',
+      ));
+    }
+
+    // Runtime jumps never mutate initialFocusId. Ask UIKit to scroll and
+    // materialize the row in the already-live renderer instance first.
+    final prepared = await channel.invokeMethod<bool>(
+          'prepareAccessibleFocus',
+          {
+            'id': id,
+            'animated': animated,
+            'requestId': requestId,
+            'rendererGeneration': rendererGeneration,
+          },
+        ) ??
+        false;
+    if (!prepared ||
+        !await _focusGuard(
+          channel,
+          rendererGeneration: rendererGeneration,
+          requestId: requestId,
+          id: id,
+          stage: 'nativePrepared',
+        )) {
+      return;
+    }
+
+    final nativeRenderObject = _nativeViewKey.currentContext?.findRenderObject();
+    if (tag != null && tag.isNotEmpty) {
+      unawaited(AppLogger.log(
+        'DOC_NATIVE[$tag] SEMANTICS_FOCUS_SENT id=$id '
+        'requestId=$requestId render=${nativeRenderObject?.runtimeType}',
       ));
     }
     nativeRenderObject?.sendSemanticsEvent(const FocusSemanticEvent());
 
-    await Future<void>.delayed(const Duration(milliseconds: 120));
-    if (!mounted ||
-        _channel != channel ||
-        (generation != null && generation != _nativeInitialFocusGeneration)) {
+    // Let Flutter commit the semantics update instead of guessing with a
+    // fixed millisecond delay. The native side has already guaranteed that
+    // the PlatformView is in a window and the target cell is materialized.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!await _focusGuard(
+      channel,
+      rendererGeneration: rendererGeneration,
+      requestId: requestId,
+      id: id,
+      stage: 'afterSemantics',
+    )) {
       return;
     }
+
+    if (tag != null && tag.isNotEmpty) {
+      unawaited(AppLogger.log(
+        'DOC_NATIVE[$tag] NATIVE_DISPATCH id=$id method=focusAccessibleRow '
+        'mode=${mode.name} requestId=$requestId '
+        'rendererGeneration=$rendererGeneration',
+      ));
+    }
     await channel.invokeMethod<void>(
-      method,
+      'focusAccessibleRow',
       {
         'id': id,
+        'mode': mode.name,
         'animated': animated,
+        'requestId': requestId,
+        'rendererGeneration': rendererGeneration,
       },
     );
   }
 
   void _scheduleNativeInitialFocus(MethodChannel channel) {
-    final id = _effectiveInitialFocusId;
-    if (id == null || id.isEmpty || !useNativeIosAccessibleViews) return;
-    final generation = ++_nativeInitialFocusGeneration;
+    final id = widget.initialFocusId;
+    if (_initialFocusScheduled ||
+        id == null ||
+        id.isEmpty ||
+        !useNativeIosAccessibleViews) {
+      return;
+    }
+    _initialFocusScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       unawaited(
-        _focusNativeLikeCalendar(
+        _focusAccessibleNative(
           channel,
           id,
+          mode: AccessibleFocusMode.screenEntry,
           animated: false,
-          method: 'focusInitial',
-          generation: generation,
         ),
       );
     });
@@ -752,7 +807,8 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
 
   @override
   void dispose() {
-    _nativeInitialFocusGeneration += 1;
+    _focusRequestId += 1;
+    _rendererGeneration += 1;
     final channel = _channel;
     if (channel != null) {
       widget.controller?._detach(channel);

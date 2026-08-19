@@ -1524,7 +1524,11 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     }
 
     try {
-      await _accessibleListController.focusTo(id, animated: false);
+      await _accessibleListController.focusAccessibleRow(
+        id,
+        mode: AccessibleFocusMode.returnFocus,
+        animated: false,
+      );
       if (!mounted || _pendingArticleScrollId != id) return;
       _pendingArticleScrollId = null;
       _pendingArticleScrollScheduled = false;

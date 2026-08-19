@@ -210,7 +210,10 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     final itemIndex = items.indexWhere((item) => item.id == selectedItem.id);
     if (itemIndex < 0) return;
     if (useSharedAccessibleViewModel) {
-      await _accessibleListController.focusToScreenEntry('item_$itemIndex');
+      await _accessibleListController.focusAccessibleRow(
+        'item_$itemIndex',
+        mode: AccessibleFocusMode.inPlaceJump,
+      );
       return;
     }
 
