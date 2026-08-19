@@ -765,23 +765,37 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       return;
     }
 
+    // Reuse the native method names that are already proven on this exact
+    // per-PlatformView MethodChannel. The payload still carries the unified
+    // focus mode and request/renderer tokens; Swift routes both names through
+    // the same generic one-shot focus implementation.
+    final nativeMethod = mode == AccessibleFocusMode.screenEntry
+        ? 'focusInitial'
+        : 'focusTo';
     if (tag != null && tag.isNotEmpty) {
       unawaited(AppLogger.log(
-        'DOC_NATIVE[$tag] NATIVE_DISPATCH id=$id method=focusAccessibleRow '
+        'DOC_NATIVE[$tag] NATIVE_DISPATCH id=$id method=$nativeMethod '
         'mode=${mode.name} requestId=$requestId '
-        'rendererGeneration=$rendererGeneration',
+        'rendererGeneration=$rendererGeneration channelIdentity=${identityHashCode(channel)}',
       ));
     }
-    await channel.invokeMethod<void>(
-      'focusAccessibleRow',
-      {
-        'id': id,
-        'mode': mode.name,
-        'animated': animated,
-        'requestId': requestId,
-        'rendererGeneration': rendererGeneration,
-      },
-    );
+    final accepted = await channel.invokeMethod<bool>(
+          nativeMethod,
+          {
+            'id': id,
+            'mode': mode.name,
+            'animated': animated,
+            'requestId': requestId,
+            'rendererGeneration': rendererGeneration,
+          },
+        ) ??
+        false;
+    if (tag != null && tag.isNotEmpty) {
+      unawaited(AppLogger.log(
+        'DOC_NATIVE[$tag] NATIVE_RESULT id=$id method=$nativeMethod '
+        'mode=${mode.name} requestId=$requestId accepted=$accepted',
+      ));
+    }
   }
 
   void _scheduleNativeInitialFocus(MethodChannel channel) {

@@ -296,6 +296,10 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
 
     channel.setMethodCallHandler { [weak self] call, result in
       guard let self = self else { return }
+      // Unconditional transport-level trace before any parsing/switch branch.
+      // print() is deliberate here: it does not depend on a reverse channel
+      // callback succeeding while this inbound MethodChannel call is active.
+      print("DOC_NATIVE_SWIFT NATIVE_METHOD_RECEIVED method=\(call.method)")
       switch call.method {
       case "setData":
         self.apply(arguments: call.arguments)
@@ -351,47 +355,87 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           completion: { prepared in result(prepared) }
         )
       case "focusAccessibleRow":
+        // Backward-compatible alias for builds that still dispatch the newer
+        // method name. The established focusInitial/focusTo names below are
+        // preferred by Dart so there is only one proven transport path.
         guard let map = call.arguments as? [String: Any],
               let id = map["id"] as? String,
               let mode = map["mode"] as? String,
               let requestId = map["requestId"] as? Int,
               let rendererGeneration = map["rendererGeneration"] as? Int else {
-          result(nil)
+          result(false)
           break
         }
         let animated = map["animated"] as? Bool ?? false
-        self.emitDebug(
-          "NATIVE_RECEIVED id=\(id) mode=\(mode) requestId=\(requestId) " +
-          "rendererGeneration=\(rendererGeneration)"
-        )
-        self.focusAccessibleRow(
+        let accepted = self.focusAccessibleRow(
           id: id,
           mode: mode,
           animated: animated,
           requestId: requestId,
           rendererGeneration: rendererGeneration
         )
-        result(nil)
+        result(accepted)
       case "focusInitial":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
-          self.emitDebug("method focusInitial compatibility id=\(id) window=\(self.rootView.window != nil)")
-          self.focusRow(id: id, animated: false, maxAttempts: 0, screenChanged: true)
+          let animated = map["animated"] as? Bool ?? false
+          if let requestId = map["requestId"] as? Int,
+             let rendererGeneration = map["rendererGeneration"] as? Int {
+            let mode = map["mode"] as? String ?? "screenEntry"
+            self.emitDebug(
+              "NATIVE_RECEIVED id=\(id) method=focusInitial mode=\(mode) requestId=\(requestId) " +
+              "rendererGeneration=\(rendererGeneration)"
+            )
+            let accepted = self.focusAccessibleRow(
+              id: id,
+              mode: mode,
+              animated: animated,
+              requestId: requestId,
+              rendererGeneration: rendererGeneration
+            )
+            result(accepted)
+          } else {
+            self.emitDebug("method focusInitial compatibility id=\(id) window=\(self.rootView.window != nil)")
+            self.focusRow(id: id, animated: false, maxAttempts: 0, screenChanged: true)
+            result(true)
+          }
+        } else {
+          result(false)
         }
-        result(nil)
       case "focusScreenEntry":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? false
           self.emitDebug("method focusScreenEntry compatibility id=\(id) animated=\(animated)")
           self.focusRow(id: id, animated: animated, maxAttempts: 0, screenChanged: true)
+          result(true)
+        } else {
+          result(false)
         }
-        result(nil)
       case "focusTo":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? false
-          self.emitDebug("method focusTo compatibility id=\(id) animated=\(animated)")
-          self.focusRow(id: id, animated: animated, maxAttempts: 0, screenChanged: false)
+          if let requestId = map["requestId"] as? Int,
+             let rendererGeneration = map["rendererGeneration"] as? Int {
+            let mode = map["mode"] as? String ?? "inPlaceJump"
+            self.emitDebug(
+              "NATIVE_RECEIVED id=\(id) method=focusTo mode=\(mode) requestId=\(requestId) " +
+              "rendererGeneration=\(rendererGeneration)"
+            )
+            let accepted = self.focusAccessibleRow(
+              id: id,
+              mode: mode,
+              animated: animated,
+              requestId: requestId,
+              rendererGeneration: rendererGeneration
+            )
+            result(accepted)
+          } else {
+            self.emitDebug("method focusTo compatibility id=\(id) animated=\(animated)")
+            self.focusRow(id: id, animated: animated, maxAttempts: 0, screenChanged: false)
+            result(true)
+          }
+        } else {
+          result(false)
         }
-        result(nil)
       default:
         result(FlutterMethodNotImplemented)
       }
@@ -917,13 +961,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
+  @discardableResult
   private func focusAccessibleRow(
     id: String,
     mode: String,
     animated: Bool,
     requestId: Int,
     rendererGeneration: Int
-  ) {
+  ) -> Bool {
     guard focusTokensAreCurrent(
       requestId: requestId,
       rendererGeneration: rendererGeneration
@@ -933,11 +978,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         "currentRequestId=\(currentFocusRequestId) rendererGeneration=\(rendererGeneration) " +
         "currentRendererGeneration=\(currentRendererGeneration) window=\(rootView.window != nil)"
       )
-      return
+      return false
     }
     guard let indexPath = indexPath(forRowId: id) else {
       emitDebug("NATIVE_FOCUS_REJECT id=\(id) mode=\(mode) reason=indexPathNotFound")
-      return
+      return false
     }
 
     tableView.layoutIfNeeded()
@@ -947,7 +992,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
     guard accessibilityTarget(at: indexPath) != nil else {
       emitDebug("NATIVE_FOCUS_REJECT id=\(id) mode=\(mode) reason=targetUnavailable")
-      return
+      return false
     }
 
     // Defer the UIAccessibility notification to the next run-loop turn so
@@ -980,6 +1025,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         }
       }
     }
+    return true
   }
 
   private func scrollToRow(id: String, animated: Bool, attempt: Int = 0) {
