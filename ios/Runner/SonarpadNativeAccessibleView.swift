@@ -1007,13 +1007,27 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         return
       }
 
-      let isScreenEntry = mode == "screenEntry"
-      let notification: UIAccessibility.Notification = isScreenEntry ? .screenChanged : .layoutChanged
-      let notificationName = isScreenEntry ? "screenChanged" : "layoutChanged"
+      // Device experiment: use the stronger one-shot screenChanged primitive for
+      // live in-place jumps as well as true screen entry. Letter/date jumps were
+      // reaching this native pipeline but .layoutChanged was not moving VoiceOver
+      // to the supplied cell. Keep returnFocus on layoutChanged to avoid changing
+      // the already-working News behavior during this single-variable test.
+      let usesScreenChanged = mode == "screenEntry" || mode == "inPlaceJump"
+      let notification: UIAccessibility.Notification = usesScreenChanged ? .screenChanged : .layoutChanged
+      let notificationName = usesScreenChanged ? "screenChanged" : "layoutChanged"
+      let cell = self.tableView.cellForRow(at: indexPath)
+      let targetView = target as? UIView
+      let visible = self.tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false
+      let cellWindow = cell?.window != nil
+      let targetWindow = targetView?.window != nil
+      let targetInRoot = targetView?.isDescendant(of: self.rootView) ?? false
       self.currentRequestedFocusRowId = id
       self.emitDebug(
         "ACCESSIBILITY_POST id=\(id) mode=\(mode) notification=\(notificationName) " +
         "requestId=\(requestId) rendererGeneration=\(rendererGeneration) " +
+        "indexPath=\(indexPath) visible=\(visible) cellExists=\(cell != nil) " +
+        "cellWindow=\(cellWindow) targetWindow=\(targetWindow) rootWindow=\(self.rootView.window != nil) " +
+        "targetInRoot=\(targetInRoot) targetType=\(String(describing: type(of: target))) " +
         "offsetY=\(self.tableView.contentOffset.y)"
       )
       UIAccessibility.post(notification: notification, argument: target)
