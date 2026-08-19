@@ -159,6 +159,7 @@ class _LetterJumpOptionPickerScreenState<T>
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               controller: _accessibleController,
+              routeReturnSemanticsSettleDelay: Duration.zero,
               sections: [
                 AccessibleListSection(
                   rows: [

@@ -383,6 +383,7 @@ class UniversalAccessibleList extends StatefulWidget {
     this.controller,
     this.initialFocusId,
     this.debugTag,
+    this.routeReturnSemanticsSettleDelay = const Duration(milliseconds: 80),
     this.padding = EdgeInsets.zero,
   });
 
@@ -393,6 +394,7 @@ class UniversalAccessibleList extends StatefulWidget {
   final AccessibleListController? controller;
   final String? initialFocusId;
   final String? debugTag;
+  final Duration routeReturnSemanticsSettleDelay;
   final EdgeInsetsGeometry padding;
 
   @override
@@ -844,21 +846,20 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     }
     nativeRenderObject?.sendSemanticsEvent(const FocusSemanticEvent());
 
-    // A freshly recreated UiKitView after a picker pop needs a little more
-    // than a single endOfFrame. In device traces that Future sometimes
-    // completed only 1-6 ms after FocusSemanticEvent, while the proven
-    // Document handoff had enough time for Flutter's PlatformView semantics
-    // container to settle. Give only this fresh-renderer path one bounded
-    // settling window; ordinary screen entry and in-place focus are unchanged.
+    // Some picker-return flows benefit from a short semantics settling
+    // window after recreating the UiKitView, while others (notably alphabetic
+    // jumps) work better when the native target is posted immediately. Keep
+    // the policy configurable per list and leave ordinary focus paths alone.
     await WidgetsBinding.instance.endOfFrame;
-    if (isFreshRouteReturnFocus) {
+    final routeReturnSettleDelay = widget.routeReturnSemanticsSettleDelay;
+    if (isFreshRouteReturnFocus && routeReturnSettleDelay > Duration.zero) {
       if (tag != null && tag.isNotEmpty) {
         unawaited(AppLogger.log(
           'DOC_NATIVE[$tag] ROUTE_RETURN_SEMANTICS_SETTLE_BEGIN id=$id '
-          'requestId=$requestId',
+          'requestId=$requestId delayMs=${routeReturnSettleDelay.inMilliseconds}',
         ));
       }
-      await Future<void>.delayed(const Duration(milliseconds: 80));
+      await Future<void>.delayed(routeReturnSettleDelay);
       if (!mounted) return;
       await WidgetsBinding.instance.endOfFrame;
       if (tag != null && tag.isNotEmpty) {
