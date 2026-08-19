@@ -250,6 +250,12 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   }
 }
 
+private final class SonarpadFocusHandoffState {
+  var completed = false
+  var observer: NSObjectProtocol?
+  var timeoutWorkItem: DispatchWorkItem?
+}
+
 private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDataSource, UITableViewDelegate {
   private let rootView: UIView
   private let tableView: UITableView
@@ -961,6 +967,135 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
+  private func accessibilityElementIsInNativeSubtree(_ element: Any?) -> Bool {
+    guard let element = element else { return false }
+    if let view = element as? UIView {
+      return view === rootView || view.isDescendant(of: rootView)
+    }
+    if let accessibilityElement = element as? UIAccessibilityElement {
+      var container: AnyObject? = accessibilityElement.accessibilityContainer
+      var depth = 0
+      while let current = container, depth < 16 {
+        if let view = current as? UIView,
+           view === rootView || view.isDescendant(of: rootView) {
+          return true
+        }
+        if let parentElement = current as? UIAccessibilityElement {
+          container = parentElement.accessibilityContainer
+        } else {
+          break
+        }
+        depth += 1
+      }
+    }
+    return false
+  }
+
+  private func performInPlaceTwoStageHandoff(
+    id: String,
+    requestId: Int,
+    rendererGeneration: Int,
+    completion: @escaping ([String: Any]) -> Void
+  ) {
+    let state = SonarpadFocusHandoffState()
+
+    func finish(_ outcome: [String: Any]) {
+      guard !state.completed else { return }
+      state.completed = true
+      if let observer = state.observer {
+        NotificationCenter.default.removeObserver(observer)
+        state.observer = nil
+      }
+      state.timeoutWorkItem?.cancel()
+      state.timeoutWorkItem = nil
+      completion(outcome)
+    }
+
+    state.observer = NotificationCenter.default.addObserver(
+      forName: UIAccessibility.elementFocusedNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let self = self, !state.completed else { return }
+      let focusedElement = notification.userInfo?[UIAccessibility.focusedElementUserInfoKey]
+      let focusedType = focusedElement.map { String(describing: type(of: $0)) } ?? "nil"
+      let inNativeSubtree = self.accessibilityElementIsInNativeSubtree(focusedElement)
+      let focusLine =
+        "NATIVE_FOCUS_NOTIFICATION id=\(id) focusedType=\(focusedType) " +
+        "inNativeSubtree=\(inNativeSubtree) requestId=\(requestId)"
+      print("DOC_NATIVE_SWIFT \(focusLine)")
+      self.emitDebug(focusLine)
+      guard inNativeSubtree else { return }
+
+      guard self.focusTokensAreCurrent(
+        requestId: requestId,
+        rendererGeneration: rendererGeneration
+      ) else {
+        self.emitDebug("NATIVE_HANDOFF_STALE id=\(id) phase=entryAck")
+        finish(["posted": false, "reason": "staleAfterEntryAck", "entryAck": true])
+        return
+      }
+
+      self.emitDebug("NATIVE_SUBTREE_ENTERED id=\(id) requestId=\(requestId)")
+      print("DOC_NATIVE_SWIFT NATIVE_SUBTREE_ENTERED id=\(id) requestId=\(requestId)")
+
+      DispatchQueue.main.async { [weak self] in
+        guard let self = self else {
+          finish(["posted": false, "reason": "selfReleasedAfterEntryAck", "entryAck": true])
+          return
+        }
+        guard self.focusTokensAreCurrent(
+          requestId: requestId,
+          rendererGeneration: rendererGeneration
+        ) else {
+          self.emitDebug("NATIVE_HANDOFF_STALE id=\(id) phase=specificPost")
+          finish(["posted": false, "reason": "staleBeforeSpecificPost", "entryAck": true])
+          return
+        }
+        guard let liveIndexPath = self.indexPath(forRowId: id),
+              let target = self.accessibilityTarget(at: liveIndexPath) else {
+          self.emitDebug("NATIVE_HANDOFF_TARGET_LOST id=\(id) phase=specificPost")
+          finish(["posted": false, "reason": "targetLostBeforeSpecificPost", "entryAck": true])
+          return
+        }
+        self.currentRequestedFocusRowId = id
+        let specificLine =
+          "ACCESSIBILITY_POST id=\(id) mode=inPlaceJump notification=screenChanged " +
+          "phase=specific requestId=\(requestId) indexPath=\(liveIndexPath)"
+        print("DOC_NATIVE_SWIFT \(specificLine)")
+        self.emitDebug(specificLine)
+        UIAccessibility.post(notification: .screenChanged, argument: target)
+        finish([
+          "posted": true,
+          "reason": "specificPostedAfterEntryAck",
+          "notification": "screenChanged",
+          "entryAck": true
+        ])
+      }
+    }
+
+    let timeout = DispatchWorkItem { [weak self] in
+      guard let self = self, !state.completed else { return }
+      self.emitDebug("NATIVE_SUBTREE_ENTRY_TIMEOUT id=\(id) requestId=\(requestId)")
+      print("DOC_NATIVE_SWIFT NATIVE_SUBTREE_ENTRY_TIMEOUT id=\(id) requestId=\(requestId)")
+      finish([
+        "posted": false,
+        "reason": "subtreeEntryTimeout",
+        "notification": "screenChanged",
+        "entryAck": false
+      ])
+    }
+    state.timeoutWorkItem = timeout
+
+    let resetLine =
+      "ACCESSIBILITY_POST id=\(id) mode=inPlaceJump notification=screenChanged " +
+      "phase=entryReset argument=nil requestId=\(requestId) rendererGeneration=\(rendererGeneration)"
+    print("DOC_NATIVE_SWIFT \(resetLine)")
+    emitDebug(resetLine)
+    UIAccessibility.post(notification: .screenChanged, argument: nil)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.40, execute: timeout)
+  }
+
   private func focusAccessibleRow(
     id: String,
     mode: String,
@@ -1097,17 +1232,31 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         "cellWindow=\(cellWindow) targetWindow=\(targetWindow) rootWindow=\(rootWindow)"
       )
 
-      // Keep the current single-variable experiment: screenEntry and inPlaceJump
-      // use screenChanged; returnFocus remains layoutChanged so working News
-      // behaviour is not changed by this diagnostic patch.
-      let usesScreenChanged = mode == "screenEntry" || mode == "inPlaceJump"
+      let targetInRoot = targetView?.isDescendant(of: self.rootView) ?? false
+
+      // Runtime jumps happen after a picker/modal returns. The target UIView can
+      // already be visible while VoiceOver has not yet re-entered Flutter's
+      // PlatformView accessibility subtree. For inPlaceJump only, force one
+      // bounded re-entry handshake and wait for UIKit's real focus notification
+      // before posting the specific target. Document/screenEntry is deliberately
+      // left on the already device-validated direct path.
+      if mode == "inPlaceJump" {
+        self.performInPlaceTwoStageHandoff(
+          id: id,
+          requestId: requestId,
+          rendererGeneration: rendererGeneration,
+          completion: completion
+        )
+        return
+      }
+
+      let usesScreenChanged = mode == "screenEntry"
       let notification: UIAccessibility.Notification = usesScreenChanged ? .screenChanged : .layoutChanged
       let notificationName = usesScreenChanged ? "screenChanged" : "layoutChanged"
-      let targetInRoot = targetView?.isDescendant(of: self.rootView) ?? false
       self.currentRequestedFocusRowId = id
       let postLine =
         "ACCESSIBILITY_POST id=\(id) mode=\(mode) notification=\(notificationName) " +
-        "requestId=\(requestId) rendererGeneration=\(rendererGeneration) " +
+        "phase=direct requestId=\(requestId) rendererGeneration=\(rendererGeneration) " +
         "indexPath=\(liveIndexPath) visible=\(visible) cellExists=\(cell != nil) " +
         "cellWindow=\(cellWindow) targetWindow=\(targetWindow) rootWindow=\(rootWindow) " +
         "targetInRoot=\(targetInRoot) targetType=\(String(describing: type(of: target))) " +
@@ -1116,8 +1265,6 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       self.emitDebug(postLine)
       UIAccessibility.post(notification: notification, argument: target)
 
-      // The MethodChannel result now means the post really executed. It is no
-      // longer an optimistic receipt acknowledgement.
       completion([
         "posted": true,
         "reason": "posted",
