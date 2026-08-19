@@ -268,12 +268,120 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var currentRendererGeneration = 0
   private var currentFocusRequestId = 0
   private var currentRequestedFocusRowId: String?
+  private var focusTraceExpectedRowId: String?
+  private var globalFocusTraceObserver: NSObjectProtocol?
+  private var focusTraceSequence = 0
 
   private func emitDebug(_ message: String) {
     guard debugTag?.isEmpty == false else { return }
     let line = "DOC_NATIVE_SWIFT \(message)"
     print(line)
     channel.invokeMethod("event", arguments: ["type": "debug", "message": line])
+  }
+
+  private func focusTraceText(_ value: String?) -> String {
+    let normalized = (value ?? "nil")
+      .replacingOccurrences(of: "\r", with: "\\r")
+      .replacingOccurrences(of: "\n", with: "\\n")
+    return String(normalized.prefix(160))
+  }
+
+  private func focusTraceAccessibilityContainer(of element: Any?) -> Any? {
+    if let view = element as? UIView { return view.accessibilityContainer }
+    if let accessibilityElement = element as? UIAccessibilityElement {
+      return accessibilityElement.accessibilityContainer
+    }
+    if let object = element as? NSObject { return object.accessibilityContainer }
+    return nil
+  }
+
+  private func focusTraceContainerChain(_ element: Any?) -> String {
+    guard element != nil else { return "nil" }
+    var parts: [String] = []
+    var current = element
+    var seen: Set<ObjectIdentifier> = []
+    var depth = 0
+
+    while let value = current, depth < 10 {
+      let object = value as AnyObject
+      let identifier = ObjectIdentifier(object)
+      if seen.contains(identifier) {
+        parts.append("<cycle>")
+        break
+      }
+      seen.insert(identifier)
+      parts.append(String(describing: type(of: value)))
+      current = focusTraceAccessibilityContainer(of: value)
+      depth += 1
+    }
+
+    return parts.joined(separator: ">")
+  }
+
+  private func focusTraceUIViewChain(_ element: Any?) -> String {
+    guard let startView = element as? UIView else { return "nonUIView" }
+    var parts: [String] = []
+    var current: UIView? = startView
+    var depth = 0
+    while let view = current, depth < 10 {
+      parts.append(String(describing: type(of: view)))
+      current = view.superview
+      depth += 1
+    }
+    return parts.joined(separator: ">")
+  }
+
+  private func installGlobalFocusTraceObserver() {
+    guard globalFocusTraceObserver == nil else { return }
+    globalFocusTraceObserver = NotificationCenter.default.addObserver(
+      forName: UIAccessibility.elementFocusedNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let self = self,
+            let tag = self.debugTag,
+            ["document", "letter_jump", "podcast_episodes", "raiplaysound"].contains(tag) else {
+        return
+      }
+
+      self.focusTraceSequence += 1
+      let element = notification.userInfo?[UIAccessibility.focusedElementUserInfoKey]
+      let elementType = element.map { String(describing: type(of: $0)) } ?? "nil"
+      let isUIView = element is UIView
+      let isAccessibilityElement = element is UIAccessibilityElement
+      let object = element as? NSObject
+      let label = self.focusTraceText(object?.accessibilityLabel)
+      let accessibilityIdentifier = self.focusTraceText(object?.accessibilityIdentifier)
+      let container = self.focusTraceAccessibilityContainer(of: element)
+      let containerType = container.map { String(describing: type(of: $0)) } ?? "nil"
+      let viewInRoot: Bool
+      if let view = element as? UIView {
+        viewInRoot = view === self.rootView || view.isDescendant(of: self.rootView)
+      } else {
+        viewInRoot = false
+      }
+      let nativeClassifier = self.accessibilityElementIsInNativeSubtree(element)
+
+      var equalsExpectedTarget = false
+      if let expectedId = self.focusTraceExpectedRowId,
+         let expectedIndexPath = self.indexPath(forRowId: expectedId),
+         let expectedTarget = self.accessibilityTarget(at: expectedIndexPath),
+         let focusedObject = element as AnyObject? {
+        equalsExpectedTarget = focusedObject === (expectedTarget as AnyObject)
+      }
+
+      let line =
+        "FOCUS_TRACE seq=\(self.focusTraceSequence) tag=\(tag) " +
+        "expected=\(self.focusTraceExpectedRowId ?? "nil") type=\(elementType) " +
+        "isUIView=\(isUIView) isA11yElement=\(isAccessibilityElement) " +
+        "label=\(label) identifier=\(accessibilityIdentifier) container=\(containerType) " +
+        "viewInRoot=\(viewInRoot) nativeClassifier=\(nativeClassifier) " +
+        "equalsExpectedTarget=\(equalsExpectedTarget) " +
+        "containerChain=\(self.focusTraceContainerChain(element)) " +
+        "viewChain=\(self.focusTraceUIViewChain(element))"
+      print("DOC_NATIVE_SWIFT \(line)")
+      self.emitDebug(line)
+    }
   }
 
   init(frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, messenger: FlutterBinaryMessenger) {
@@ -299,6 +407,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     ])
 
     apply(arguments: args)
+    installGlobalFocusTraceObserver()
 
     channel.setMethodCallHandler { [weak self] call, result in
       guard let self = self else { return }
@@ -445,6 +554,12 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       default:
         result(FlutterMethodNotImplemented)
       }
+    }
+  }
+
+  deinit {
+    if let observer = globalFocusTraceObserver {
+      NotificationCenter.default.removeObserver(observer)
     }
   }
 
@@ -1104,6 +1219,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     rendererGeneration: Int,
     completion: @escaping ([String: Any]) -> Void
   ) {
+    focusTraceExpectedRowId = id
     print(
       "DOC_NATIVE_SWIFT NATIVE_FOCUS_ENTER id=\(id) mode=\(mode) " +
       "requestId=\(requestId) rendererGeneration=\(rendererGeneration)"
@@ -1316,6 +1432,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     maxAttempts: Int = 4,
     screenChanged: Bool = false
   ) {
+    focusTraceExpectedRowId = id
     guard let indexPath = indexPath(forRowId: id) else {
       emitDebug("focusRow id=\(id) attempt=\(attempt) indexPath NOT FOUND rows=\(sections.reduce(0) { $0 + $1.rows.count })")
       return
