@@ -779,21 +779,46 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'rendererGeneration=$rendererGeneration channelIdentity=${identityHashCode(channel)}',
       ));
     }
-    final accepted = await channel.invokeMethod<bool>(
-          nativeMethod,
-          {
-            'id': id,
-            'mode': mode.name,
-            'animated': animated,
-            'requestId': requestId,
-            'rendererGeneration': rendererGeneration,
-          },
-        ) ??
-        false;
+    Map<Object?, Object?> outcome;
+    try {
+      final rawOutcome = await channel.invokeMethod<dynamic>(
+        nativeMethod,
+        {
+          'id': id,
+          'mode': mode.name,
+          'animated': animated,
+          'requestId': requestId,
+          'rendererGeneration': rendererGeneration,
+        },
+      ).timeout(const Duration(seconds: 2));
+      if (rawOutcome is Map) {
+        outcome = Map<Object?, Object?>.from(rawOutcome);
+      } else if (rawOutcome is bool) {
+        // Compatibility with an older native build.
+        outcome = <Object?, Object?>{
+          'posted': rawOutcome,
+          'reason': rawOutcome ? 'legacyAccepted' : 'legacyRejected',
+        };
+      } else {
+        outcome = <Object?, Object?>{
+          'posted': false,
+          'reason': 'unexpectedNativeResult:${rawOutcome.runtimeType}',
+        };
+      }
+    } on TimeoutException {
+      outcome = <Object?, Object?>{
+        'posted': false,
+        'reason': 'nativeResultTimeout',
+      };
+    }
     if (tag != null && tag.isNotEmpty) {
+      final posted = outcome['posted'] == true;
+      final reason = outcome['reason']?.toString() ?? 'unknown';
+      final notification = outcome['notification']?.toString() ?? 'unknown';
       unawaited(AppLogger.log(
         'DOC_NATIVE[$tag] NATIVE_RESULT id=$id method=$nativeMethod '
-        'mode=${mode.name} requestId=$requestId accepted=$accepted',
+        'mode=${mode.name} requestId=$requestId posted=$posted '
+        'reason=$reason notification=$notification outcome=$outcome',
       ));
     }
   }

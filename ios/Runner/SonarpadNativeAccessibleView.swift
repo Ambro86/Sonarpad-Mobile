@@ -356,25 +356,25 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         )
       case "focusAccessibleRow":
         // Backward-compatible alias for builds that still dispatch the newer
-        // method name. The established focusInitial/focusTo names below are
-        // preferred by Dart so there is only one proven transport path.
+        // method name. Report the terminal outcome of the actual native attempt
+        // rather than acknowledging receipt before the async post executes.
         guard let map = call.arguments as? [String: Any],
               let id = map["id"] as? String,
               let mode = map["mode"] as? String,
               let requestId = map["requestId"] as? Int,
               let rendererGeneration = map["rendererGeneration"] as? Int else {
-          result(false)
+          result(["posted": false, "reason": "invalidArguments"])
           break
         }
         let animated = map["animated"] as? Bool ?? false
-        let accepted = self.focusAccessibleRow(
+        self.focusAccessibleRow(
           id: id,
           mode: mode,
           animated: animated,
           requestId: requestId,
-          rendererGeneration: rendererGeneration
+          rendererGeneration: rendererGeneration,
+          completion: { outcome in result(outcome) }
         )
-        result(accepted)
       case "focusInitial":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? false
@@ -385,14 +385,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
               "NATIVE_RECEIVED id=\(id) method=focusInitial mode=\(mode) requestId=\(requestId) " +
               "rendererGeneration=\(rendererGeneration)"
             )
-            let accepted = self.focusAccessibleRow(
+            self.focusAccessibleRow(
               id: id,
               mode: mode,
               animated: animated,
               requestId: requestId,
-              rendererGeneration: rendererGeneration
+              rendererGeneration: rendererGeneration,
+              completion: { outcome in result(outcome) }
             )
-            result(accepted)
           } else {
             self.emitDebug("method focusInitial compatibility id=\(id) window=\(self.rootView.window != nil)")
             self.focusRow(id: id, animated: false, maxAttempts: 0, screenChanged: true)
@@ -420,14 +420,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
               "NATIVE_RECEIVED id=\(id) method=focusTo mode=\(mode) requestId=\(requestId) " +
               "rendererGeneration=\(rendererGeneration)"
             )
-            let accepted = self.focusAccessibleRow(
+            self.focusAccessibleRow(
               id: id,
               mode: mode,
               animated: animated,
               requestId: requestId,
-              rendererGeneration: rendererGeneration
+              rendererGeneration: rendererGeneration,
+              completion: { outcome in result(outcome) }
             )
-            result(accepted)
           } else {
             self.emitDebug("method focusTo compatibility id=\(id) animated=\(animated)")
             self.focusRow(id: id, animated: animated, maxAttempts: 0, screenChanged: false)
@@ -961,29 +961,47 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
-  @discardableResult
   private func focusAccessibleRow(
     id: String,
     mode: String,
     animated: Bool,
     requestId: Int,
-    rendererGeneration: Int
-  ) -> Bool {
+    rendererGeneration: Int,
+    completion: @escaping ([String: Any]) -> Void
+  ) {
+    print(
+      "DOC_NATIVE_SWIFT NATIVE_FOCUS_ENTER id=\(id) mode=\(mode) " +
+      "requestId=\(requestId) rendererGeneration=\(rendererGeneration)"
+    )
+
     guard focusTokensAreCurrent(
       requestId: requestId,
       rendererGeneration: rendererGeneration
     ) else {
+      let reason = "tokenOrWindowMismatch"
+      print(
+        "DOC_NATIVE_SWIFT NATIVE_GUARD_TOKENS result=fail id=\(id) " +
+        "requestId=\(requestId) currentRequestId=\(currentFocusRequestId) " +
+        "rendererGeneration=\(rendererGeneration) currentRendererGeneration=\(currentRendererGeneration) " +
+        "window=\(rootView.window != nil)"
+      )
       emitDebug(
-        "NATIVE_FOCUS_REJECT id=\(id) mode=\(mode) requestId=\(requestId) " +
+        "NATIVE_GUARD_TOKENS result=fail id=\(id) requestId=\(requestId) " +
         "currentRequestId=\(currentFocusRequestId) rendererGeneration=\(rendererGeneration) " +
         "currentRendererGeneration=\(currentRendererGeneration) window=\(rootView.window != nil)"
       )
-      return false
+      completion(["posted": false, "reason": reason])
+      return
     }
+    print("DOC_NATIVE_SWIFT NATIVE_GUARD_TOKENS result=pass id=\(id)")
+
     guard let indexPath = indexPath(forRowId: id) else {
-      emitDebug("NATIVE_FOCUS_REJECT id=\(id) mode=\(mode) reason=indexPathNotFound")
-      return false
+      print("DOC_NATIVE_SWIFT NATIVE_GUARD_INDEXPATH result=fail id=\(id)")
+      emitDebug("NATIVE_GUARD_INDEXPATH result=fail id=\(id)")
+      completion(["posted": false, "reason": "indexPathNotFound"])
+      return
     }
+    print("DOC_NATIVE_SWIFT NATIVE_GUARD_INDEXPATH result=pass id=\(id) indexPath=\(indexPath)")
 
     tableView.layoutIfNeeded()
     if !(tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false) {
@@ -991,55 +1009,136 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       tableView.layoutIfNeeded()
     }
     guard accessibilityTarget(at: indexPath) != nil else {
-      emitDebug("NATIVE_FOCUS_REJECT id=\(id) mode=\(mode) reason=targetUnavailable")
-      return false
+      print("DOC_NATIVE_SWIFT NATIVE_GUARD_TARGET_PREASYNC result=fail id=\(id) indexPath=\(indexPath)")
+      emitDebug("NATIVE_GUARD_TARGET_PREASYNC result=fail id=\(id) indexPath=\(indexPath)")
+      completion(["posted": false, "reason": "targetUnavailableBeforeAsync"])
+      return
     }
+    print("DOC_NATIVE_SWIFT NATIVE_GUARD_TARGET_PREASYNC result=pass id=\(id) indexPath=\(indexPath)")
+    print("DOC_NATIVE_SWIFT NATIVE_DISPATCH_SCHEDULED queue=main.async id=\(id)")
+    emitDebug("NATIVE_DISPATCH_SCHEDULED queue=main.async id=\(id)")
 
     // Defer the UIAccessibility notification to the next run-loop turn so
     // UIKit/VoiceOver can observe the fully committed table/accessibility tree.
     DispatchQueue.main.async { [weak self] in
-      guard let self = self,
-            self.focusTokensAreCurrent(
-              requestId: requestId,
-              rendererGeneration: rendererGeneration
-            ),
-            let target = self.accessibilityTarget(at: indexPath) else {
+      print("DOC_NATIVE_SWIFT NATIVE_ASYNC_ENTERED id=\(id)")
+      guard let self = self else {
+        print("DOC_NATIVE_SWIFT NATIVE_GUARD_SELF result=fail id=\(id)")
+        completion(["posted": false, "reason": "selfReleased"])
         return
       }
+      self.emitDebug("NATIVE_ASYNC_ENTERED id=\(id)")
+      print("DOC_NATIVE_SWIFT NATIVE_GUARD_SELF result=pass id=\(id)")
 
-      // Device experiment: use the stronger one-shot screenChanged primitive for
-      // live in-place jumps as well as true screen entry. Letter/date jumps were
-      // reaching this native pipeline but .layoutChanged was not moving VoiceOver
-      // to the supplied cell. Keep returnFocus on layoutChanged to avoid changing
-      // the already-working News behavior during this single-variable test.
+      guard self.focusTokensAreCurrent(
+        requestId: requestId,
+        rendererGeneration: rendererGeneration
+      ) else {
+        print(
+          "DOC_NATIVE_SWIFT NATIVE_GUARD_GENERATION result=fail id=\(id) " +
+          "requestId=\(requestId) currentRequestId=\(self.currentFocusRequestId) " +
+          "rendererGeneration=\(rendererGeneration) currentRendererGeneration=\(self.currentRendererGeneration) " +
+          "window=\(self.rootView.window != nil)"
+        )
+        self.emitDebug(
+          "NATIVE_GUARD_GENERATION result=fail id=\(id) requestId=\(requestId) " +
+          "currentRequestId=\(self.currentFocusRequestId) rendererGeneration=\(rendererGeneration) " +
+          "currentRendererGeneration=\(self.currentRendererGeneration) window=\(self.rootView.window != nil)"
+        )
+        completion(["posted": false, "reason": "generationMismatchAfterAsync"])
+        return
+      }
+      print("DOC_NATIVE_SWIFT NATIVE_GUARD_GENERATION result=pass id=\(id)")
+
+      guard let liveIndexPath = self.indexPath(forRowId: id) else {
+        print("DOC_NATIVE_SWIFT NATIVE_GUARD_INDEXPATH_ASYNC result=fail id=\(id)")
+        self.emitDebug("NATIVE_GUARD_INDEXPATH_ASYNC result=fail id=\(id)")
+        completion(["posted": false, "reason": "indexPathLostAfterAsync"])
+        return
+      }
+      self.tableView.layoutIfNeeded()
+      let visible = self.tableView.indexPathsForVisibleRows?.contains(liveIndexPath) ?? false
+      let cell = self.tableView.cellForRow(at: liveIndexPath)
+      guard let target = self.accessibilityTarget(at: liveIndexPath) else {
+        print(
+          "DOC_NATIVE_SWIFT NATIVE_GUARD_CELL result=fail id=\(id) indexPath=\(liveIndexPath) " +
+          "visible=\(visible) cellExists=\(cell != nil)"
+        )
+        self.emitDebug(
+          "NATIVE_GUARD_CELL result=fail id=\(id) indexPath=\(liveIndexPath) " +
+          "visible=\(visible) cellExists=\(cell != nil)"
+        )
+        completion(["posted": false, "reason": "targetUnavailableAfterAsync"])
+        return
+      }
+      print(
+        "DOC_NATIVE_SWIFT NATIVE_GUARD_CELL result=pass id=\(id) indexPath=\(liveIndexPath) " +
+        "visible=\(visible) cellExists=\(cell != nil)"
+      )
+
+      let targetView = target as? UIView
+      let cellWindow = cell?.window != nil
+      let targetWindow = targetView?.window != nil
+      let rootWindow = self.rootView.window != nil
+      guard rootWindow else {
+        print(
+          "DOC_NATIVE_SWIFT NATIVE_GUARD_WINDOW result=fail id=\(id) " +
+          "cellWindow=\(cellWindow) targetWindow=\(targetWindow) rootWindow=\(rootWindow)"
+        )
+        self.emitDebug(
+          "NATIVE_GUARD_WINDOW result=fail id=\(id) cellWindow=\(cellWindow) " +
+          "targetWindow=\(targetWindow) rootWindow=\(rootWindow)"
+        )
+        completion(["posted": false, "reason": "windowMissingAfterAsync"])
+        return
+      }
+      print(
+        "DOC_NATIVE_SWIFT NATIVE_GUARD_WINDOW result=pass id=\(id) " +
+        "cellWindow=\(cellWindow) targetWindow=\(targetWindow) rootWindow=\(rootWindow)"
+      )
+
+      // Keep the current single-variable experiment: screenEntry and inPlaceJump
+      // use screenChanged; returnFocus remains layoutChanged so working News
+      // behaviour is not changed by this diagnostic patch.
       let usesScreenChanged = mode == "screenEntry" || mode == "inPlaceJump"
       let notification: UIAccessibility.Notification = usesScreenChanged ? .screenChanged : .layoutChanged
       let notificationName = usesScreenChanged ? "screenChanged" : "layoutChanged"
-      let cell = self.tableView.cellForRow(at: indexPath)
-      let targetView = target as? UIView
-      let visible = self.tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false
-      let cellWindow = cell?.window != nil
-      let targetWindow = targetView?.window != nil
       let targetInRoot = targetView?.isDescendant(of: self.rootView) ?? false
       self.currentRequestedFocusRowId = id
-      self.emitDebug(
+      let postLine =
         "ACCESSIBILITY_POST id=\(id) mode=\(mode) notification=\(notificationName) " +
         "requestId=\(requestId) rendererGeneration=\(rendererGeneration) " +
-        "indexPath=\(indexPath) visible=\(visible) cellExists=\(cell != nil) " +
-        "cellWindow=\(cellWindow) targetWindow=\(targetWindow) rootWindow=\(self.rootView.window != nil) " +
+        "indexPath=\(liveIndexPath) visible=\(visible) cellExists=\(cell != nil) " +
+        "cellWindow=\(cellWindow) targetWindow=\(targetWindow) rootWindow=\(rootWindow) " +
         "targetInRoot=\(targetInRoot) targetType=\(String(describing: type(of: target))) " +
         "offsetY=\(self.tableView.contentOffset.y)"
-      )
+      print("DOC_NATIVE_SWIFT \(postLine)")
+      self.emitDebug(postLine)
       UIAccessibility.post(notification: notification, argument: target)
+
+      // The MethodChannel result now means the post really executed. It is no
+      // longer an optimistic receipt acknowledgement.
+      completion([
+        "posted": true,
+        "reason": "posted",
+        "notification": notificationName,
+        "visible": visible,
+        "cellExists": cell != nil,
+        "cellWindow": cellWindow,
+        "targetWindow": targetWindow,
+        "rootWindow": rootWindow,
+        "targetInRoot": targetInRoot
+      ])
+
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.60) { [weak self] in
         guard let self = self else { return }
         if self.currentRequestedFocusRowId == id {
           self.emitDebug("FOCUS_TIMEOUT id=\(id) requestId=\(requestId)")
+          print("DOC_NATIVE_SWIFT FOCUS_TIMEOUT id=\(id) requestId=\(requestId)")
           self.currentRequestedFocusRowId = nil
         }
       }
     }
-    return true
   }
 
   private func scrollToRow(id: String, animated: Bool, attempt: Int = 0) {
