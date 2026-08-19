@@ -276,6 +276,8 @@ class _RadioScreenState extends State<RadioScreen> {
                       kind: 'textField',
                       value: _searchController.text,
                       placeholder: l10n.radioSearchHint,
+                      textInputAction: 'search',
+                      onSubmitted: (_) => _search(),
                     ),
                     if (_loadingDirectory)
                       AccessibleListRow(

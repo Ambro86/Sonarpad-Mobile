@@ -56,6 +56,7 @@ typedef AccessibleActivateCallback = FutureOr<void> Function();
 typedef AccessibleValueChangedCallback = FutureOr<void> Function(Object? value);
 typedef AccessibleCustomActionCallback = FutureOr<void> Function(String actionId);
 typedef AccessibleFocusCallback = FutureOr<void> Function();
+typedef AccessibleSubmittedCallback = FutureOr<void> Function(String value);
 
 /// Platform-neutral description of one accessible row.
 ///
@@ -91,6 +92,8 @@ class AccessibleListRow {
     this.onValueChanged,
     this.onCustomAction,
     this.onAccessibilityFocus,
+    this.onSubmitted,
+    this.textInputAction,
     this.flutterChild,
   });
 
@@ -125,6 +128,12 @@ class AccessibleListRow {
   final AccessibleValueChangedCallback? onValueChanged;
   final AccessibleCustomActionCallback? onCustomAction;
   final AccessibleFocusCallback? onAccessibilityFocus;
+  final AccessibleSubmittedCallback? onSubmitted;
+
+  /// Optional native/Flutter keyboard return-key intent for text fields.
+  /// Supported values are `search`, `done` and `next`. When [onSubmitted]
+  /// is provided, UIKit sends the same logical submit event that Flutter does.
+  final String? textInputAction;
 
   /// Optional exact Flutter presentation used on Android and when the UIKit
   /// renderer is disabled on iOS.
@@ -153,6 +162,8 @@ class AccessibleListRow {
           'sliderDecreasedValueLabel': sliderDecreasedValueLabel,
         'secure': secure,
         if (placeholder != null) 'placeholder': placeholder,
+        'submitOnReturn': onSubmitted != null,
+        if (textInputAction != null) 'textInputAction': textInputAction,
         'options': options.map((e) => e.toMap()).toList(),
         'actions': actions.map((e) => e.toMap()).toList(),
       };
@@ -384,6 +395,7 @@ class UniversalAccessibleList extends StatefulWidget {
     this.initialFocusId,
     this.debugTag,
     this.routeReturnSemanticsSettleDelay = const Duration(milliseconds: 80),
+    this.routeReturnUseFocusProxy = false,
     this.padding = EdgeInsets.zero,
   });
 
@@ -395,6 +407,11 @@ class UniversalAccessibleList extends StatefulWidget {
   final String? initialFocusId;
   final String? debugTag;
   final Duration routeReturnSemanticsSettleDelay;
+  /// Use a one-shot native accessibility proxy during a fresh renderer return.
+  /// The proxy is inserted before the UITableView only until VoiceOver enters
+  /// it, then UIKit immediately hands focus to the real target row and restores
+  /// the natural table traversal order.
+  final bool routeReturnUseFocusProxy;
   final EdgeInsetsGeometry padding;
 
   @override
@@ -456,6 +473,12 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           if (row.onValueChanged != null) {
             handledByRow = true;
             await row.onValueChanged!.call(event.value);
+          }
+          break;
+        case 'textSubmitted':
+          if (row.onSubmitted != null) {
+            handledByRow = true;
+            await row.onSubmitted!.call(event.value?.toString() ?? '');
           }
           break;
         case 'customAction':
@@ -903,6 +926,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           'animated': animated,
           'requestId': requestId,
           'rendererGeneration': rendererGeneration,
+          'useFocusProxy': isFreshRouteReturnFocus && widget.routeReturnUseFocusProxy,
         },
       ).timeout(const Duration(seconds: 2));
       if (rawOutcome is Map) {
@@ -1175,8 +1199,17 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
               hintText: row.placeholder,
               helperText: row.subtitle,
             ),
+            textInputAction: switch (row.textInputAction) {
+              'search' => TextInputAction.search,
+              'next' => TextInputAction.next,
+              'done' => TextInputAction.done,
+              _ => null,
+            },
             onChanged: enabled
                 ? (value) => _change(row, 'textChanged', value)
+                : null,
+            onFieldSubmitted: enabled && row.onSubmitted != null
+                ? (value) => _change(row, 'textSubmitted', value)
                 : null,
           ),
         );

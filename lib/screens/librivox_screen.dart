@@ -60,7 +60,7 @@ class _LibrivoxScreenState extends State<LibrivoxScreen> {
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
-                AccessibleListRow(id: 'query', title: l10n.librivoxSearchLabel, kind: 'textField', value: _controller.text),
+                AccessibleListRow(id: 'query', title: l10n.librivoxSearchLabel, kind: 'textField', value: _controller.text, textInputAction: 'search', onSubmitted: (_) => _search()),
                 AccessibleListRow(id: 'search', title: l10n.search, kind: 'button'),
               ])],
               onEvent: (event) {

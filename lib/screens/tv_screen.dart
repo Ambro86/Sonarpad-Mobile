@@ -357,6 +357,8 @@ class _TvScreenState extends State<TvScreen> {
           kind: 'textField',
           value: _searchController.text,
           placeholder: l10n.tvSearchFieldHint,
+          textInputAction: 'search',
+          onSubmitted: (_) => _openSearchResults(),
         ),
         AccessibleListRow(id: '__search__', title: l10n.tvSearchButton, kind: 'button'),
         const AccessibleListRow(id: '__favorites__', title: 'TV preferite', kind: 'action'),

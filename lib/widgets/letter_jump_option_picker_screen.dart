@@ -160,6 +160,7 @@ class _LetterJumpOptionPickerScreenState<T>
           ? UniversalAccessibleList(
               controller: _accessibleController,
               routeReturnSemanticsSettleDelay: Duration.zero,
+              routeReturnUseFocusProxy: true,
               sections: [
                 AccessibleListSection(
                   rows: [

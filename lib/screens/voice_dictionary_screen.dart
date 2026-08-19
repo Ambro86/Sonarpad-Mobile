@@ -186,7 +186,7 @@ class _VoiceDictionaryEntryDialogState
               child: UniversalAccessibleList(
                 sections: [AccessibleListSection(rows: [
                   AccessibleListRow(id: 'original', title: l10n.voiceDictionaryOriginalWord, kind: 'textField', value: _originalController.text),
-                  AccessibleListRow(id: 'replacement', title: l10n.voiceDictionaryReplacementWord, kind: 'textField', value: _replacementController.text),
+                  AccessibleListRow(id: 'replacement', title: l10n.voiceDictionaryReplacementWord, kind: 'textField', value: _replacementController.text, textInputAction: 'done', onSubmitted: (_) => _submit()),
                   AccessibleListRow(id: 'match', title: l10n.voiceDictionaryMatchCase, kind: 'toggle', toggleValue: _matchCase),
                 ])],
                 onEvent: (event) {

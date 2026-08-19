@@ -33,6 +33,8 @@ private struct SonarpadNativeRow {
   var sliderDecreasedValueLabel: String?
   var secure: Bool
   var placeholder: String?
+  var submitOnReturn: Bool
+  var textInputAction: String?
   var options: [SonarpadNativeOption]
   var actions: [SonarpadNativeAction]
 
@@ -57,6 +59,8 @@ private struct SonarpadNativeRow {
     sliderDecreasedValueLabel = map["sliderDecreasedValueLabel"] as? String
     secure = map["secure"] as? Bool ?? false
     placeholder = map["placeholder"] as? String
+    submitOnReturn = map["submitOnReturn"] as? Bool ?? false
+    textInputAction = map["textInputAction"] as? String
     options = (map["options"] as? [[String: Any]] ?? []).map {
       SonarpadNativeOption(value: $0["value"] as Any, label: $0["label"] as? String ?? String(describing: $0["value"] ?? ""))
     }
@@ -107,6 +111,8 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.sliderDecreasedValueLabel == rhs.sliderDecreasedValueLabel,
         lhs.secure == rhs.secure,
         lhs.placeholder == rhs.placeholder,
+        lhs.submitOnReturn == rhs.submitOnReturn,
+        lhs.textInputAction == rhs.textInputAction,
         lhs.options.count == rhs.options.count,
         lhs.actions.count == rhs.actions.count else { return false }
 
@@ -217,7 +223,9 @@ private final class SonarpadAccessibleTableCell: UITableViewCell {
 private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate {
   let field = UITextField(frame: .zero)
   var rowId = ""
+  var submitOnReturn = false
   var onChanged: ((String, String) -> Void)?
+  var onSubmitted: ((String, String) -> Void)?
 
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -245,6 +253,15 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   }
 
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    let value = textField.text ?? ""
+    // Keep Dart's model synchronized with the exact final value before the
+    // logical submit callback runs. This restores Flutter's onSubmitted
+    // behavior for native UIKit text fields instead of merely dismissing the
+    // keyboard.
+    onChanged?(rowId, value)
+    if submitOnReturn {
+      onSubmitted?(rowId, value)
+    }
     textField.resignFirstResponder()
     return true
   }
@@ -489,12 +506,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           break
         }
         let animated = map["animated"] as? Bool ?? false
+        let useFocusProxy = map["useFocusProxy"] as? Bool ?? false
         self.focusAccessibleRow(
           id: id,
           mode: mode,
           animated: animated,
           requestId: requestId,
           rendererGeneration: rendererGeneration,
+          useFocusProxy: useFocusProxy,
           completion: { outcome in result(outcome) }
         )
       case "focusInitial":
@@ -507,12 +526,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
               "NATIVE_RECEIVED id=\(id) method=focusInitial mode=\(mode) requestId=\(requestId) " +
               "rendererGeneration=\(rendererGeneration)"
             )
+            let useFocusProxy = map["useFocusProxy"] as? Bool ?? false
             self.focusAccessibleRow(
               id: id,
               mode: mode,
               animated: animated,
               requestId: requestId,
               rendererGeneration: rendererGeneration,
+              useFocusProxy: useFocusProxy,
               completion: { outcome in result(outcome) }
             )
           } else {
@@ -542,12 +563,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
               "NATIVE_RECEIVED id=\(id) method=focusTo mode=\(mode) requestId=\(requestId) " +
               "rendererGeneration=\(rendererGeneration)"
             )
+            let useFocusProxy = map["useFocusProxy"] as? Bool ?? false
             self.focusAccessibleRow(
               id: id,
               mode: mode,
               animated: animated,
               requestId: requestId,
               rendererGeneration: rendererGeneration,
+              useFocusProxy: useFocusProxy,
               completion: { outcome in result(outcome) }
             )
           } else {
@@ -658,8 +681,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.field.accessibilityHint = row.hint
       cell.field.isSecureTextEntry = row.secure
       cell.field.isEnabled = row.enabled
+      cell.submitOnReturn = row.submitOnReturn
+      switch row.textInputAction {
+      case "search": cell.field.returnKeyType = .search
+      case "next": cell.field.returnKeyType = .next
+      default: cell.field.returnKeyType = .done
+      }
       cell.onChanged = { [weak self] id, value in
         self?.channel.invokeMethod("event", arguments: ["type": "textChanged", "id": id, "value": value])
+      }
+      cell.onSubmitted = { [weak self] id, value in
+        self?.channel.invokeMethod("event", arguments: ["type": "textSubmitted", "id": id, "value": value])
       }
       return cell
     }
@@ -915,6 +947,12 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         cell.field.accessibilityHint = row.hint
         cell.field.isSecureTextEntry = row.secure
         cell.field.isEnabled = row.enabled
+        cell.submitOnReturn = row.submitOnReturn
+        switch row.textInputAction {
+        case "search": cell.field.returnKeyType = .search
+        case "next": cell.field.returnKeyType = .next
+        default: cell.field.returnKeyType = .done
+        }
         continue
       }
 
@@ -1218,12 +1256,169 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.40, execute: timeout)
   }
 
+  private func performProxyFirstFocusHandoff(
+    id: String,
+    target: Any,
+    requestId: Int,
+    rendererGeneration: Int,
+    completion: @escaping ([String: Any]) -> Void
+  ) {
+    guard let targetView = target as? UIView else {
+      emitDebug("PROXY_HANDOFF_SKIP id=\(id) reason=targetNotUIView")
+      currentRequestedFocusRowId = id
+      UIAccessibility.post(notification: .screenChanged, argument: target)
+      completion([
+        "posted": true,
+        "reason": "proxyUnsupportedDirectFallback",
+        "notification": "screenChanged",
+        "proxy": false
+      ])
+      return
+    }
+
+    let state = SonarpadFocusHandoffState()
+    let proxy = UIAccessibilityElement(accessibilityContainer: rootView)
+    proxy.accessibilityLabel = targetView.accessibilityLabel
+    proxy.accessibilityHint = targetView.accessibilityHint
+    proxy.accessibilityValue = targetView.accessibilityValue
+    proxy.accessibilityTraits = targetView.accessibilityTraits
+    let targetFrame = targetView.accessibilityFrame
+    proxy.accessibilityFrame = targetFrame.isEmpty
+      ? UIAccessibility.convertToScreenCoordinates(targetView.bounds, in: targetView)
+      : targetFrame
+
+    func restoreNaturalOrder() {
+      // nil hands traversal ownership straight back to UITableView/UIKit.
+      rootView.accessibilityElements = nil
+    }
+
+    func finish(_ outcome: [String: Any]) {
+      guard !state.completed else { return }
+      state.completed = true
+      if let observer = state.observer {
+        NotificationCenter.default.removeObserver(observer)
+        state.observer = nil
+      }
+      state.timeoutWorkItem?.cancel()
+      state.timeoutWorkItem = nil
+      restoreNaturalOrder()
+      completion(outcome)
+    }
+
+    // During this very short handoff window the proxy is the first direct
+    // accessibility child, but the entire UITableView remains the second child
+    // and therefore fully reachable. Nothing is hidden or persistently
+    // redirected. As soon as VoiceOver enters the proxy we restore the natural
+    // table order before posting to the real cell.
+    rootView.accessibilityElements = [proxy, tableView]
+    emitDebug(
+      "PROXY_HANDOFF_BEGIN id=\(id) requestId=\(requestId) " +
+      "rendererGeneration=\(rendererGeneration)"
+    )
+    print("DOC_NATIVE_SWIFT PROXY_HANDOFF_BEGIN id=\(id) requestId=\(requestId)")
+
+    state.observer = NotificationCenter.default.addObserver(
+      forName: UIAccessibility.elementFocusedNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let self = self, !state.completed else { return }
+      guard let focused = notification.userInfo?[UIAccessibility.focusedElementUserInfoKey] else { return }
+      guard (focused as AnyObject) === proxy else { return }
+
+      self.emitDebug("PROXY_HANDOFF_FOCUSED id=\(id) requestId=\(requestId)")
+      print("DOC_NATIVE_SWIFT PROXY_HANDOFF_FOCUSED id=\(id) requestId=\(requestId)")
+
+      if let observer = state.observer {
+        NotificationCenter.default.removeObserver(observer)
+        state.observer = nil
+      }
+      state.timeoutWorkItem?.cancel()
+      state.timeoutWorkItem = nil
+      restoreNaturalOrder()
+
+      DispatchQueue.main.async { [weak self] in
+        guard let self = self else {
+          finish(["posted": false, "reason": "selfReleasedAfterProxy", "proxy": true])
+          return
+        }
+        guard self.focusTokensAreCurrent(
+          requestId: requestId,
+          rendererGeneration: rendererGeneration
+        ) else {
+          self.emitDebug("PROXY_HANDOFF_STALE id=\(id) phase=realTarget")
+          finish(["posted": false, "reason": "staleAfterProxy", "proxy": true])
+          return
+        }
+        guard let liveIndexPath = self.indexPath(forRowId: id),
+              let liveTarget = self.accessibilityTarget(at: liveIndexPath) else {
+          self.emitDebug("PROXY_HANDOFF_TARGET_LOST id=\(id)")
+          finish(["posted": false, "reason": "targetLostAfterProxy", "proxy": true])
+          return
+        }
+
+        self.currentRequestedFocusRowId = id
+        let line =
+          "ACCESSIBILITY_POST id=\(id) mode=screenEntry notification=layoutChanged " +
+          "phase=proxyToReal requestId=\(requestId) indexPath=\(liveIndexPath)"
+        self.emitDebug(line)
+        print("DOC_NATIVE_SWIFT \(line)")
+        UIAccessibility.post(notification: .layoutChanged, argument: liveTarget)
+        finish([
+          "posted": true,
+          "reason": "proxyFocusedThenRealPosted",
+          "notification": "layoutChanged",
+          "proxy": true
+        ])
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.50) { [weak self] in
+          guard let self = self else { return }
+          if self.currentRequestedFocusRowId == id {
+            self.emitDebug("FOCUS_TIMEOUT id=\(id) requestId=\(requestId) via=proxy")
+            self.currentRequestedFocusRowId = nil
+          }
+        }
+      }
+    }
+
+    let timeout = DispatchWorkItem { [weak self] in
+      guard let self = self, !state.completed else { return }
+      self.emitDebug("PROXY_HANDOFF_TIMEOUT id=\(id) requestId=\(requestId)")
+      print("DOC_NATIVE_SWIFT PROXY_HANDOFF_TIMEOUT id=\(id) requestId=\(requestId)")
+      restoreNaturalOrder()
+
+      // Preserve the first fresh-renderer behavior as a single safe fallback.
+      // This is not a retry loop: one proxy entry attempt, then one direct post.
+      guard self.focusTokensAreCurrent(
+        requestId: requestId,
+        rendererGeneration: rendererGeneration
+      ), let liveIndexPath = self.indexPath(forRowId: id),
+         let liveTarget = self.accessibilityTarget(at: liveIndexPath) else {
+        finish(["posted": false, "reason": "proxyTimeoutNoLiveTarget", "proxy": true])
+        return
+      }
+      self.currentRequestedFocusRowId = id
+      UIAccessibility.post(notification: .screenChanged, argument: liveTarget)
+      finish([
+        "posted": true,
+        "reason": "proxyTimeoutDirectFallback",
+        "notification": "screenChanged",
+        "proxy": true
+      ])
+    }
+    state.timeoutWorkItem = timeout
+
+    UIAccessibility.post(notification: .screenChanged, argument: proxy)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.55, execute: timeout)
+  }
+
   private func focusAccessibleRow(
     id: String,
     mode: String,
     animated: Bool,
     requestId: Int,
     rendererGeneration: Int,
+    useFocusProxy: Bool,
     completion: @escaping ([String: Any]) -> Void
   ) {
     focusTraceExpectedRowId = id
@@ -1356,6 +1551,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       )
 
       let targetInRoot = targetView?.isDescendant(of: self.rootView) ?? false
+
+      if useFocusProxy && mode == "screenEntry" {
+        self.performProxyFirstFocusHandoff(
+          id: id,
+          target: target,
+          requestId: requestId,
+          rendererGeneration: rendererGeneration,
+          completion: completion
+        )
+        return
+      }
 
       // Keep ordinary in-place jumps (for example Document slider jumps) on
       // their established direct path. A routeReturnJump has already waited for

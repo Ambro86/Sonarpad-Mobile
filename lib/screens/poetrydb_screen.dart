@@ -50,7 +50,7 @@ class _PoetryDbScreenState extends State<PoetryDbScreen> {
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
-                AccessibleListRow(id: 'query', title: l10n.poetryDbSearchLabel, kind: 'textField', value: _controller.text),
+                AccessibleListRow(id: 'query', title: l10n.poetryDbSearchLabel, kind: 'textField', value: _controller.text, textInputAction: 'search', onSubmitted: (_) => _search()),
                 AccessibleListRow(
                   id: 'field',
                   title: l10n.poetryDbSearchBy,

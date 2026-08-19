@@ -133,6 +133,8 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
                       kind: 'textField',
                       value: _controller.text,
                       placeholder: l10n.searchWikipedia,
+                      textInputAction: 'search',
+                      onSubmitted: (_) => _search(),
                     ),
                     AccessibleListRow(
                       id: 'language',

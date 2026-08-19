@@ -332,7 +332,16 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
                 sections: [AccessibleListSection(rows: [
                   AccessibleListRow(id: 'quota', kind: 'text', title: _quotaInfo),
                   const AccessibleListRow(id: 'latest', title: 'Ultime novità'),
-                  const AccessibleListRow(id: 'search', title: 'Cerca nel catalogo...', kind: 'textField'),
+                  AccessibleListRow(
+                    id: 'search',
+                    title: 'Cerca nel catalogo...',
+                    kind: 'textField',
+                    textInputAction: 'search',
+                    onSubmitted: (value) {
+                      final query = value.trim();
+                      if (query.isNotEmpty) _performSearch(query);
+                    },
+                  ),
                   const AccessibleListRow(id: 'search_button', title: 'Cerca', kind: 'button'),
                   AccessibleListRow(id: 'catalog', title: _isLoadingCatalog ? 'Caricamento catalogo in corso...' : 'Visualizza il catalogo completo', enabled: !_isLoadingCatalog),
                   const AccessibleListRow(id: 'logout', title: 'Esci', kind: 'button'),

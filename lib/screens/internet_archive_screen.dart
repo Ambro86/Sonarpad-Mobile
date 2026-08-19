@@ -66,7 +66,7 @@ class _InternetArchiveScreenState extends State<InternetArchiveScreen> {
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
-                AccessibleListRow(id: 'query', title: l10n.internetArchiveSearchLabel, kind: 'textField', value: _controller.text),
+                AccessibleListRow(id: 'query', title: l10n.internetArchiveSearchLabel, kind: 'textField', value: _controller.text, textInputAction: 'search', onSubmitted: (_) => _search()),
                 AccessibleListRow(
                   id: 'source',
                   title: l10n.internetArchiveSourceLabel,

@@ -53,11 +53,13 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                         id: 'recent',
                         title: _recentSearchesTitle,
                       ),
-                      const AccessibleListRow(
+                      AccessibleListRow(
                         id: 'query',
                         title: 'Nome, principio attivo, ingrediente o codice AIC',
                         kind: 'textField',
                         placeholder: 'Nome, principio attivo, ingrediente o codice AIC',
+                        textInputAction: 'search',
+                        onSubmitted: (value) => _submitSearch(value),
                       ),
                       const AccessibleListRow(
                         id: 'search',

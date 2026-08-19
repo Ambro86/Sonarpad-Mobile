@@ -2967,6 +2967,8 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
                       value: _controller.text,
                       placeholder: l10n.documentSearchFieldHint,
                       subtitle: _error,
+                      textInputAction: 'search',
+                      onSubmitted: (_) => _search(),
                     ),
                     AccessibleListRow(
                       id: 'search',

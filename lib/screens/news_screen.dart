@@ -909,6 +909,8 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                           title: AppLocalizations.of(context).newsLocalCityLabel,
                           placeholder: AppLocalizations.of(context).newsLocalCityHint,
                           value: _localCityController.text,
+                          textInputAction: 'search',
+                          onSubmitted: (_) => _reloadLocalCategory(),
                         ),
                         AccessibleListRow(
                           id: 'local_update',

@@ -421,6 +421,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
         kind: 'textField',
         value: _searchController.text,
         placeholder: l10n.podcastSearchHint,
+        textInputAction: 'search',
+        onSubmitted: (_) => _search(),
       ),
       AccessibleListRow(
         id: 'countries',

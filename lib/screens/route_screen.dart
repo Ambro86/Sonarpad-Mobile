@@ -231,7 +231,7 @@ class _RouteScreenState extends State<RouteScreen> {
         AccessibleListSection(rows: [
           AccessibleListRow(id: 'recent', title: l10n.routeRecentRoutes, enabled: !_calculating),
           AccessibleListRow(id: 'from', title: l10n.routeFrom, kind: 'textField', value: _fromController.text),
-          AccessibleListRow(id: 'to', title: l10n.routeTo, kind: 'textField', value: _toController.text),
+          AccessibleListRow(id: 'to', title: l10n.routeTo, kind: 'textField', value: _toController.text, textInputAction: 'done', onSubmitted: (_) { if (!_calculating) _calculateRoute(); }),
           AccessibleListRow(id: 'country', title: l10n.routeCountry, kind: 'picker', value: _countryCode, options: countries),
           AccessibleListRow(
             id: 'profile',

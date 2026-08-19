@@ -174,7 +174,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
     final items = _page?.items ?? const <RaiPlayItem>[];
     final rows = <AccessibleListRow>[
       if (_isRoot)
-        AccessibleListRow(id: 'search_query', title: 'Cerca su RaiPlay', kind: 'textField', value: _searchController.text),
+        AccessibleListRow(id: 'search_query', title: 'Cerca su RaiPlay', kind: 'textField', value: _searchController.text, textInputAction: 'search', onSubmitted: (_) => _search()),
       if (_isRoot) const AccessibleListRow(id: 'search', title: 'Cerca', kind: 'button'),
       if (_isRoot) const AccessibleListRow(id: 'recent', title: 'Ricerche recenti'),
       if (_error != null) AccessibleListRow(id: 'error', kind: 'text', title: _error!),

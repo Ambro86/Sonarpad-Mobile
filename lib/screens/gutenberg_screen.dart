@@ -77,7 +77,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
-                AccessibleListRow(id: 'query', title: l10n.gutenbergSearchLabel, kind: 'textField', value: _controller.text),
+                AccessibleListRow(id: 'query', title: l10n.gutenbergSearchLabel, kind: 'textField', value: _controller.text, textInputAction: 'search', onSubmitted: (_) => _search()),
                 AccessibleListRow(
                   id: 'language',
                   title: l10n.sourceLanguageLabel,

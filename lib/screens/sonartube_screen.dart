@@ -337,6 +337,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         kind: 'textField',
         value: _searchController.text,
         placeholder: l10n.sonarTubeSearchPrompt,
+        textInputAction: 'search',
+        onSubmitted: (_) => _search(),
         flutterChild: TextField(
           key: const ValueKey('sonartube_search_field'),
           controller: _searchController,

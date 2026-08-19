@@ -72,6 +72,8 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                     title: 'Località, indirizzo (opzionale)',
                     kind: 'textField',
                     value: _whereController.text,
+                    textInputAction: 'search',
+                    onSubmitted: (_) => _search(),
                   ),
                   const AccessibleListRow(id: 'search', title: 'Cerca', kind: 'button'),
                 ]),

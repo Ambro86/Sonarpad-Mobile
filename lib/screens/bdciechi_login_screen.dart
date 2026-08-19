@@ -117,7 +117,7 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
                       const AccessibleListRow(id: 'title', kind: 'header', title: 'Biblioteca dei Ciechi'),
                       if (_errorMessage != null) AccessibleListRow(id: 'error', kind: 'text', title: _errorMessage!),
                       AccessibleListRow(id: 'username', title: 'Nome Utente', kind: 'textField', value: _usernameController.text),
-                      AccessibleListRow(id: 'password', title: 'Password', kind: 'textField', secure: true, value: _passwordController.text),
+                      AccessibleListRow(id: 'password', title: 'Password', kind: 'textField', secure: true, value: _passwordController.text, textInputAction: 'done', onSubmitted: (_) => _onLoginPressed()),
                       const AccessibleListRow(id: 'login', title: 'Accedi', kind: 'button'),
                       const AccessibleListRow(id: 'signup_salotto', title: 'Iscriviti a salottopertutti.it'),
                       const AccessibleListRow(id: 'signup_bdciechi', title: 'Iscriviti a bdciechi.it'),
