@@ -406,17 +406,22 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   final Map<String, TextEditingController> _flutterTextControllers =
       <String, TextEditingController>{};
   final GlobalKey _flutterTargetKey = GlobalKey(debugLabel: 'accessible_target_row');
-  final GlobalKey _nativeViewKey = GlobalKey(debugLabel: 'accessible_native_view');
+  GlobalKey _nativeViewKey = GlobalKey(debugLabel: 'accessible_native_view');
   int _rendererGeneration = 0;
   int _focusRequestId = 0;
+  int _nativeViewRecreationId = 0;
   String? _flutterTargetId;
+  String? _runtimeInitialFocusId;
   bool _initialFocusScheduled = false;
+
+  String? get _effectiveInitialFocusId =>
+      _runtimeInitialFocusId ?? widget.initialFocusId;
 
   Map<String, Object?> get _data => {
         'sections': widget.sections.map((e) => e.toMap()).toList(),
         'refreshEnabled': widget.refreshEnabled,
-        if (widget.initialFocusId != null)
-          'initialFocusId': widget.initialFocusId,
+        if (_effectiveInitialFocusId != null)
+          'initialFocusId': _effectiveInitialFocusId,
         if (widget.debugTag != null) 'debugTag': widget.debugTag,
       };
 
@@ -565,6 +570,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       }
     }
     if (oldWidget.initialFocusId != widget.initialFocusId) {
+      _runtimeInitialFocusId = null;
       _initialFocusScheduled = false;
       final currentChannel = _channel;
       if (currentChannel != null && useNativeIosAccessibleViews) {
@@ -618,7 +624,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
 
   void _created(int id) {
     if (widget.debugTag != null || widget.controller?.debugName != null) {
-      unawaited(AppLogger.log('DOC_NATIVE[${widget.debugTag ?? widget.controller?.debugName}] platform view created id=$id initialFocusId=${widget.initialFocusId} rows=${_flatRows.length}'));
+      unawaited(AppLogger.log('DOC_NATIVE[${widget.debugTag ?? widget.controller?.debugName}] platform view created id=$id initialFocusId=$_effectiveInitialFocusId rows=${_flatRows.length}'));
     }
     final channel = MethodChannel('sonarpad/native_accessible_list/$id');
     _channel = channel;
@@ -679,20 +685,78 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   Future<void> _waitForRouteAndFrameToSettle(
     AccessibleFocusMode mode,
   ) async {
-    // Runtime focus requested immediately after Navigator.pop() is different
-    // from an ordinary in-list jump: the previous route may still be finishing
-    // its transition while the already-live PlatformView is being re-exposed.
-    // The legacy Flutter renderer already used a 300 ms post-return settle
-    // window for letter/date jumps. Keep that behavior centralized in the
-    // shared renderer instead of duplicating iOS timing in screen code.
     if (mode == AccessibleFocusMode.routeReturnJump) {
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      if (!mounted) return;
+      // Navigator.push() completes as soon as the child route pops, while its
+      // reverse transition can still be running. On iOS 27 VoiceOver this is
+      // enough to leave an already-existing UiKitView temporarily detached
+      // from Flutter's active accessibility container chain. Wait for the
+      // parent route's secondary animation to be fully dismissed rather than
+      // guessing with a fixed 300 ms delay.
+      final route = ModalRoute.of(context);
+      final deadline = DateTime.now().add(const Duration(seconds: 2));
+      while (mounted && route != null && DateTime.now().isBefore(deadline)) {
+        final primaryStable = route.animation == null ||
+            route.animation!.status == AnimationStatus.completed;
+        final secondaryStable = route.secondaryAnimation == null ||
+            route.secondaryAnimation!.status == AnimationStatus.dismissed;
+        if (route.isCurrent && primaryStable && secondaryStable) break;
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+        await Future<void>.delayed(const Duration(milliseconds: 16));
+      }
     }
 
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return;
     await WidgetsBinding.instance.endOfFrame;
+  }
+
+  Future<void> _recreateNativeRendererForRouteReturn(String id) async {
+    await _waitForRouteAndFrameToSettle(AccessibleFocusMode.routeReturnJump);
+    if (!mounted || !useNativeIosAccessibleViews) return;
+
+    final tag = widget.debugTag ?? widget.controller?.debugName;
+    final oldChannel = _channel;
+    if (tag != null && tag.isNotEmpty) {
+      final route = ModalRoute.of(context);
+      unawaited(AppLogger.log(
+        'DOC_NATIVE[$tag] ROUTE_RETURN_RECREATE_BEGIN id=$id '
+        'routeCurrent=${route?.isCurrent} '
+        'primary=${route?.animation?.status} '
+        'secondary=${route?.secondaryAnimation?.status} '
+        'oldRendererGeneration=$_rendererGeneration',
+      ));
+    }
+
+    // A fresh UiKitView is intentional here. Initial focus on a newly-created
+    // renderer is already device-validated by Document and Calendar, whereas
+    // VoiceOver refuses programmatic entry into the old renderer immediately
+    // after a picker route returns. Recreate only for this route-return mode;
+    // normal in-place focus, state updates and Android are unchanged.
+    _focusRequestId += 1;
+    if (oldChannel != null) {
+      widget.controller?._detach(oldChannel);
+      oldChannel.setMethodCallHandler(null);
+    }
+    _channel = null;
+    _initialFocusScheduled = false;
+
+    setState(() {
+      _runtimeInitialFocusId = id;
+      _nativeViewRecreationId += 1;
+      _nativeViewKey = GlobalKey(
+        debugLabel: 'accessible_native_view_route_return_$_nativeViewRecreationId',
+      );
+    });
+
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    if (tag != null && tag.isNotEmpty) {
+      unawaited(AppLogger.log(
+        'DOC_NATIVE[$tag] ROUTE_RETURN_RECREATE_COMMITTED id=$id '
+        'recreationId=$_nativeViewRecreationId',
+      ));
+    }
   }
 
   Future<void> _focusAccessibleNative(
@@ -702,6 +766,11 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     required bool animated,
   }) async {
     if (!mounted || !identical(_channel, channel)) return;
+
+    if (mode == AccessibleFocusMode.routeReturnJump) {
+      await _recreateNativeRendererForRouteReturn(id);
+      return;
+    }
 
     final rendererGeneration = _rendererGeneration;
     final requestId = ++_focusRequestId;
@@ -835,7 +904,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   }
 
   void _scheduleNativeInitialFocus(MethodChannel channel) {
-    final id = widget.initialFocusId;
+    final id = _effectiveInitialFocusId;
     if (_initialFocusScheduled ||
         id == null ||
         id.isEmpty ||
