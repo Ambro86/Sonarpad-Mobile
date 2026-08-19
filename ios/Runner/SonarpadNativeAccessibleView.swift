@@ -261,7 +261,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var debugTag: String?
 
   private func emitDebug(_ message: String) {
-    guard debugTag == "document" else { return }
+    guard debugTag?.isEmpty == false else { return }
     let line = "DOC_NATIVE_SWIFT \(message)"
     print(line)
     channel.invokeMethod("event", arguments: ["type": "debug", "message": line])

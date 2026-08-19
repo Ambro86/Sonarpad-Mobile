@@ -374,12 +374,17 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   final GlobalKey _nativeViewKey = GlobalKey(debugLabel: 'accessible_native_view');
   int _nativeInitialFocusGeneration = 0;
   String? _flutterTargetId;
+  String? _runtimeInitialFocusId;
   bool _initialFocusScheduled = false;
+
+  String? get _effectiveInitialFocusId =>
+      _runtimeInitialFocusId ?? widget.initialFocusId;
 
   Map<String, Object?> get _data => {
         'sections': widget.sections.map((e) => e.toMap()).toList(),
         'refreshEnabled': widget.refreshEnabled,
-        if (widget.initialFocusId != null) 'initialFocusId': widget.initialFocusId,
+        if (_effectiveInitialFocusId != null)
+          'initialFocusId': _effectiveInitialFocusId,
         if (widget.debugTag != null) 'debugTag': widget.debugTag,
       };
 
@@ -528,6 +533,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       }
     }
     if (oldWidget.initialFocusId != widget.initialFocusId) {
+      _runtimeInitialFocusId = null;
       _initialFocusScheduled = false;
       final currentChannel = _channel;
       if (currentChannel != null && useNativeIosAccessibleViews) {
@@ -540,12 +546,18 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         oldWidget.controller?._detach(channel);
         widget.controller?._attach(
           channel,
-          (targetId, animated, screenEntry) => _focusNativeLikeCalendar(
-            channel,
-            targetId,
-            animated: animated,
-            method: screenEntry ? 'focusScreenEntry' : 'focusTo',
-          ),
+          (targetId, animated, screenEntry) => screenEntry
+              ? _focusNativeThroughInitialPipeline(
+                  channel,
+                  targetId,
+                  animated: animated,
+                )
+              : _focusNativeLikeCalendar(
+                  channel,
+                  targetId,
+                  animated: animated,
+                  method: 'focusTo',
+                ),
         );
       }
       unawaited(channel.invokeMethod<void>('setData', _data));
@@ -588,14 +600,91 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     channel.setMethodCallHandler(_handleMethod);
     widget.controller?._attach(
       channel,
-      (targetId, animated, screenEntry) => _focusNativeLikeCalendar(
-        channel,
-        targetId,
-        animated: animated,
-        method: screenEntry ? 'focusScreenEntry' : 'focusTo',
-      ),
+      (targetId, animated, screenEntry) => screenEntry
+          ? _focusNativeThroughInitialPipeline(
+              channel,
+              targetId,
+              animated: animated,
+            )
+          : _focusNativeLikeCalendar(
+              channel,
+              targetId,
+              animated: animated,
+              method: 'focusTo',
+            ),
     );
     _scheduleNativeInitialFocus(channel);
+  }
+
+  Future<void> _waitForCurrentRoute() async {
+    if (!mounted) return;
+
+    // Capture the route before the first async gap. The route object remains
+    // valid while we wait for the picker/modal transition to finish, and this
+    // avoids reading BuildContext after an await.
+    final route = ModalRoute.of(context);
+    if (route == null || route.isCurrent) {
+      await WidgetsBinding.instance.endOfFrame;
+      return;
+    }
+
+    for (var attempt = 0; attempt < 30 && mounted; attempt++) {
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+      if (route.isCurrent) {
+        await WidgetsBinding.instance.endOfFrame;
+        return;
+      }
+    }
+  }
+
+  Future<void> _focusNativeThroughInitialPipeline(
+    MethodChannel channel,
+    String id, {
+    required bool animated,
+  }) async {
+    if (!mounted || _channel != channel) return;
+
+    // Runtime screen-entry jumps (letter/date pickers) deliberately reuse the
+    // exact proven Document initial-focus pipeline. Publishing the target as
+    // initialFocusId makes native apply() position/materialize the row first.
+    // We then wait until the returning route is current and run the same
+    // Flutter -> PlatformView -> focusInitial handoff used when opening a
+    // bookmarked document.
+    _initialFocusScheduled = false;
+    final generation = ++_nativeInitialFocusGeneration;
+
+    final tag = widget.debugTag ?? widget.controller?.debugName;
+    if (tag != null && tag.isNotEmpty) {
+      unawaited(AppLogger.log(
+        'DOC_NATIVE[$tag] runtime initialFocusId -> document pipeline '
+        'id=$id generation=$generation',
+      ));
+    }
+
+    // Clear the native initial-focus marker first so requesting the same row
+    // twice still re-materializes it. Then publish the runtime target exactly
+    // as Document does through initialFocusId.
+    final resetData = Map<String, Object?>.from(_data)
+      ..remove('initialFocusId');
+    await channel.invokeMethod<void>('setData', resetData);
+    _runtimeInitialFocusId = id;
+    await channel.invokeMethod<void>('setData', _data);
+
+    await _waitForCurrentRoute();
+    if (!mounted ||
+        _channel != channel ||
+        generation != _nativeInitialFocusGeneration) {
+      return;
+    }
+
+    await _focusNativeLikeCalendar(
+      channel,
+      id,
+      animated: animated,
+      method: 'focusInitial',
+      generation: generation,
+    );
   }
 
   Future<void> _focusNativeLikeCalendar(
@@ -605,19 +694,9 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     required String method,
     int? generation,
   }) async {
-    // Returning from a letter/date picker is a screen re-entry just like the
-    // proven Document bookmark path: materialize the target row first, then
-    // hand Flutter accessibility to the PlatformView, then post one native
-    // screenChanged notification to that already-visible cell.
-    if (method == 'focusScreenEntry') {
-      await channel.invokeMethod<void>('scrollTo', {
-        'id': id,
-        'animated': false,
-      });
-      await Future<void>.delayed(const Duration(milliseconds: 120));
-      if (!mounted || _channel != channel) return;
-    }
-
+    // Shared Flutter -> PlatformView -> native focus handoff. Runtime
+    // screen-entry jumps are converted to the proven Document initial-focus
+    // pipeline before reaching this method.
     await WidgetsBinding.instance.endOfFrame;
     await Future<void>.delayed(const Duration(milliseconds: 120));
     if (!mounted ||
@@ -655,7 +734,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   }
 
   void _scheduleNativeInitialFocus(MethodChannel channel) {
-    final id = widget.initialFocusId;
+    final id = _effectiveInitialFocusId;
     if (id == null || id.isEmpty || !useNativeIosAccessibleViews) return;
     final generation = ++_nativeInitialFocusGeneration;
     WidgetsBinding.instance.addPostFrameCallback((_) {
