@@ -22,7 +22,8 @@ class PodcastEpisodesScreen extends StatefulWidget {
 class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
   final _service = PodcastService();
   final _scrollController = AutoScrollController();
-  final _accessibleListController = AccessibleListController();
+  final AccessibleListController _accessibleListController =
+      AccessibleListController();
   late Future<List<PodcastEpisode>> _episodes;
   Set<String> _playedAudioUrls = {};
 
@@ -96,18 +97,8 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
     if (episodeIndex < 0) return;
 
     if (useSharedAccessibleViewModel) {
-      final targetId = visibleEpisodes[episodeIndex].id ??
-          visibleEpisodes[episodeIndex].audioUrl;
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      await _accessibleListController.scrollTo(
-        targetId,
-        duration: const Duration(milliseconds: 300),
-      );
-      await Future<void>.delayed(const Duration(milliseconds: 180));
-      if (!mounted) return;
-      await _accessibleListController.scrollTo(
-        targetId,
-        duration: const Duration(milliseconds: 120),
+      await _accessibleListController.focusTo(
+        selectedEpisode.id ?? selectedEpisode.audioUrl,
       );
       return;
     }

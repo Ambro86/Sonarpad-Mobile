@@ -68,6 +68,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   int _playingChunkIndex = -1;
   int _focusedChunkIndex = -1;
   final ValueNotifier<int> _documentPositionRevision = ValueNotifier<int>(0);
+  int _initialBookmarkFocusIndex = -1;
+  String? _lastLoggedInitialFocusId;
   StreamController<File>? _edgeFileController;
   // (chunkKeys rimosso, usiamo scroll_to_index)
   late int _bookmarkIndex;
@@ -243,7 +245,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _rebuildRemainingReadingEstimateCache();
         _focusedChunkIndex = -1;
         _refreshBookmarkStateForCurrentMode();
-        _docLog('DOC_BOOKMARK extraction complete chunks=${_chunks.length} multiple=$_multipleDocumentBookmarksEnabled bookmarkIndex=$_bookmarkIndex bookmarkIndexes=$_bookmarkIndexes hasBookmark=$_hasBookmark');
+        _initialBookmarkFocusIndex =
+            _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length
+                ? _bookmarkIndex
+                : -1;
+        _docLog('DOC_BOOKMARK extraction complete chunks=${_chunks.length} multiple=$_multipleDocumentBookmarksEnabled bookmarkIndex=$_bookmarkIndex bookmarkIndexes=$_bookmarkIndexes hasBookmark=$_hasBookmark initialFocusIndex=$_initialBookmarkFocusIndex');
         // Le chiavi vengono gestite da AutoScrollTag
       }
 
@@ -262,19 +268,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } finally {
       if (mounted) {
         setState(() => _loadingText = false);
-        final shouldScrollToBookmark =
-            _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length;
-        _docLog('DOC_BOOKMARK loading=false shouldScrollToBookmark=$shouldScrollToBookmark bookmarkIndex=$_bookmarkIndex');
-        if (shouldScrollToBookmark) {
-          // Faithful to the original Flutter reader: wait for the route/list to
-          // settle, then scroll the saved chunk to the beginning. Do not issue
-          // any explicit accessibility-focus request.
-          Future.delayed(const Duration(milliseconds: 300), () {
-            if (mounted) {
-              _docLog('DOC_BOOKMARK legacy-compatible delayed scroll firing index=$_bookmarkIndex');
-              _scrollToChunk(_bookmarkIndex);
-            }
-          });
+        _docLog('DOC_BOOKMARK loading=false build requested initialFocusIndex=$_initialBookmarkFocusIndex');
+        if (_initialBookmarkFocusIndex >= 0) {
+          _docLog('DOC_FOCUS initial focus delegated to UniversalAccessibleList id=paragraph_$_initialBookmarkFocusIndex');
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -299,8 +295,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       unawaited(
         _accessibleDocumentListController.scrollTo(
           'paragraph_$index',
-          animated: true,
-          duration: const Duration(milliseconds: 350),
+          animated: false,
         ),
       );
       return;
@@ -310,6 +305,28 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       preferPosition: AutoScrollPosition.begin,
       duration: const Duration(milliseconds: 350),
     );
+  }
+
+  Future<void> _focusChunk(int index) async {
+    if (index < 0 || index >= _chunks.length) {
+      _docLog('DOC_FOCUS reject index=$index chunks=${_chunks.length}');
+      return;
+    }
+    _docLog('DOC_FOCUS request index=$index id=paragraph_$index shared=$useSharedAccessibleViewModel nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
+    if (!useSharedAccessibleViewModel) {
+      _scrollToChunk(index);
+      return;
+    }
+
+    // The controller is renderer-neutral: if the active renderer has not
+    // attached yet, focusTo() queues the request and replays it as soon as
+    // either UIKit or Flutter becomes available. Screens never need to know
+    // which renderer is active.
+    await _accessibleDocumentListController.focusTo(
+      'paragraph_$index',
+      animated: false,
+    );
+    _docLog('DOC_FOCUS controller call returned index=$index nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
   }
 
   List<String> _splitTextForDocumentDisplay(String text) {
@@ -1149,7 +1166,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _focusedChunkIndex = index;
       _playingChunkIndex = index;
     });
-    _scrollToChunk(index);
+    unawaited(_focusChunk(index));
   }
 
   // ---------------------------------------------------------------------------
@@ -1918,8 +1935,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (!positionChanged && !_speaking) return;
     // Seeking changes the current reading/navigation position, not the saved
     // bookmark. Do not rebuild the whole document list while the position
-    // slider owns VoiceOver focus: update only the position control, then move
-    // the native table and remember where VoiceOver should enter it next.
+    // slider owns VoiceOver focus: update only the position control and scroll
+    // the native table without stealing accessibility focus from the slider.
     _focusedChunkIndex = targetIndex;
     if (_speaking) _playingChunkIndex = targetIndex;
     _documentPositionRevision.value += 1;
@@ -2328,12 +2345,17 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             _syncDocumentPositionFromAccessibilityFocus(i),
       ));
     }
+    final initialFocusId = _initialBookmarkFocusIndex >= 0
+        ? 'paragraph_$_initialBookmarkFocusIndex'
+        : null;
+    if (_lastLoggedInitialFocusId != initialFocusId) {
+      _lastLoggedInitialFocusId = initialFocusId;
+      _docLog('DOC_FOCUS UniversalAccessibleList build initialFocusId=$initialFocusId rows=${rows.length} nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer}');
+    }
     return UniversalAccessibleList(
       key: ValueKey('shared-document-${widget.document.id}-${_chunks.length}'),
       controller: _accessibleDocumentListController,
-      // Deliberately no initialFocusId here. The original Flutter reader did
-      // not force accessibility focus; it only scrolled the saved paragraph to
-      // the beginning after 300 ms and let VoiceOver traverse naturally.
+      initialFocusId: initialFocusId,
       debugTag: 'document',
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {

@@ -279,7 +279,6 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var sections: [SonarpadNativeSection] = []
   private var refreshControl: UIRefreshControl?
   private var refreshEnabled = false
-  private var lastInitialScrollId: String?
   private var lastInitialFocusId: String?
   private var debugTag: String?
 
@@ -326,18 +325,10 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       case "scrollTo":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? true
-          let durationMs = (map["durationMs"] as? NSNumber)?.intValue
-          self.emitDebug("method scrollTo id=\(id) animated=\(animated) durationMs=\(durationMs.map { String($0) } ?? "nil") window=\(self.rootView.window != nil)")
-          self.scrollToRow(
-            id: id,
-            animated: animated,
-            durationMs: durationMs
-          ) {
-            result(nil)
-          }
-        } else {
-          result(nil)
+          self.emitDebug("method scrollTo id=\(id) animated=\(animated) window=\(self.rootView.window != nil)")
+          self.scrollToRow(id: id, animated: animated)
         }
+        result(nil)
       case "focusInitial":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           self.emitDebug("method focusInitial id=\(id) window=\(self.rootView.window != nil)")
@@ -398,18 +389,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       emitDebug("apply reloadData end visible=\(tableView.indexPathsForVisibleRows?.count ?? 0) contentOffsetY=\(tableView.contentOffset.y)")
     }
 
-    let requestedInitialScrollId = map["initialScrollId"] as? String
-    if requestedInitialScrollId != lastInitialScrollId {
-      lastInitialScrollId = requestedInitialScrollId
-      if let id = requestedInitialScrollId, !id.isEmpty {
-        scrollToRow(id: id, animated: false)
-      }
-    }
-
     let requestedInitialFocusId = map["initialFocusId"] as? String
     if requestedInitialFocusId != lastInitialFocusId {
       lastInitialFocusId = requestedInitialFocusId
       if let id = requestedInitialFocusId, !id.isEmpty {
+        // Same behaviour for every screen, including Document Reader:
+        // position the row first, then UniversalAccessibleList performs the
+        // same Flutter -> UIKit focus handoff already proven by Calendar.
+        emitDebug("apply initialFocusId changed -> generic scroll id=\(id)")
         scrollToRow(id: id, animated: false)
       }
     }
@@ -794,68 +781,23 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
-  private func scrollToRow(
-    id: String,
-    animated: Bool,
-    durationMs: Int? = nil,
-    attempt: Int = 0,
-    completion: (() -> Void)? = nil
-  ) {
+  private func scrollToRow(id: String, animated: Bool, attempt: Int = 0) {
     guard let indexPath = indexPath(forRowId: id) else {
       emitDebug("scrollToRow id=\(id) attempt=\(attempt) indexPath NOT FOUND rows=\(sections.reduce(0) { $0 + $1.rows.count })")
-      completion?()
       return
     }
-
+    emitDebug("scrollToRow id=\(id) attempt=\(attempt) indexPath=\(indexPath) animated=\(animated) beforeOffsetY=\(tableView.contentOffset.y) visible=\(tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false)")
     tableView.layoutIfNeeded()
-    let duration: TimeInterval =
-      animated ? Double(durationMs ?? 300) / 1000.0 : 0.0
-    emitDebug("scrollToRow id=\(id) attempt=\(attempt) indexPath=\(indexPath) animated=\(animated) duration=\(duration) position=top beforeOffsetY=\(tableView.contentOffset.y) visible=\(tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false)")
+    tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
 
-    if animated {
-      let rect = tableView.rectForRow(at: indexPath)
-      let minOffsetY = -tableView.adjustedContentInset.top
-      let maxOffsetY = max(
-        minOffsetY,
-        tableView.contentSize.height
-          - tableView.bounds.height
-          + tableView.adjustedContentInset.bottom
-      )
-      let targetOffsetY = min(
-        max(rect.minY - tableView.adjustedContentInset.top, minOffsetY),
-        maxOffsetY
-      )
-      UIView.animate(
-        withDuration: duration,
-        delay: 0,
-        options: [.beginFromCurrentState, .curveEaseOut, .allowUserInteraction],
-        animations: {
-          self.tableView.setContentOffset(
-            CGPoint(x: self.tableView.contentOffset.x, y: targetOffsetY),
-            animated: false
-          )
-        }
-      )
-    } else {
-      tableView.scrollToRow(at: indexPath, at: .top, animated: false)
-    }
-
-    let verifyDelay = animated ? duration + 0.03 : 0.03
-    DispatchQueue.main.asyncAfter(deadline: .now() + verifyDelay) { [weak self] in
+    let delay: TimeInterval = animated ? 0.40 : 0.03
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
       guard let self = self else { return }
       self.tableView.layoutIfNeeded()
       let isVisible = self.tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false
       self.emitDebug("scrollToRow verify id=\(id) attempt=\(attempt) visible=\(isVisible) offsetY=\(self.tableView.contentOffset.y) cellExists=\(self.tableView.cellForRow(at: indexPath) != nil)")
-      if !isVisible && attempt < 3 {
-        self.scrollToRow(
-          id: id,
-          animated: false,
-          durationMs: durationMs,
-          attempt: attempt + 1,
-          completion: completion
-        )
-      } else {
-        completion?()
+      if !isVisible && attempt < 12 {
+        self.scrollToRow(id: id, animated: false, attempt: attempt + 1)
       }
     }
   }

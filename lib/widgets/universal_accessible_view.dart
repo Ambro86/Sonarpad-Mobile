@@ -195,13 +195,14 @@ class AccessibleListController {
   final String? debugName;
   MethodChannel? _channel;
   Object? _flutterOwner;
-  ({String id, bool animated, bool focusOnNextEntry, int? durationMs})? _pendingScroll;
+  ({String id, bool animated})? _pendingScroll;
   ({String id, bool animated})? _pendingFocus;
 
   bool get hasAttachedRenderer =>
       _channel != null || _flutterScrollTo != null || _flutterFocusTo != null;
   bool get hasAttachedNativeRenderer => _channel != null;
-  Future<void> Function(String id, bool animated, Duration? duration)? _flutterScrollTo;
+  Future<void> Function(String id, bool animated)? _nativeFocusTo;
+  Future<void> Function(String id, bool animated)? _flutterScrollTo;
   Future<void> Function(String id, bool animated)? _flutterFocusTo;
 
   void _debug(String message) {
@@ -213,46 +214,36 @@ class AccessibleListController {
   Future<void> scrollTo(
     String id, {
     bool animated = true,
-    bool focusOnNextEntry = false,
-    Duration? duration,
   }) async {
-    final durationMs = duration?.inMilliseconds;
-    _debug('scrollTo requested id=$id animated=$animated durationMs=$durationMs focusOnNextEntry=$focusOnNextEntry native=${_channel != null} flutter=${_flutterScrollTo != null}');
+    _debug('scrollTo requested id=$id animated=$animated native=${_channel != null} flutter=${_flutterScrollTo != null}');
     final channel = _channel;
     if (channel != null) {
       _debug('scrollTo dispatch native id=$id');
       await channel.invokeMethod<void>('scrollTo', {
         'id': id,
         'animated': animated,
-        if (durationMs != null) 'durationMs': durationMs,
-        'focusOnNextEntry': focusOnNextEntry,
       });
       return;
     }
     final flutterScrollTo = _flutterScrollTo;
     if (flutterScrollTo != null) {
       _debug('scrollTo dispatch flutter id=$id');
-      await flutterScrollTo(id, animated, duration);
+      await flutterScrollTo(id, animated);
       return;
     }
     _debug('scrollTo queued id=$id');
     _pendingScroll = (
       id: id,
       animated: animated,
-      focusOnNextEntry: focusOnNextEntry,
-      durationMs: durationMs,
     );
   }
 
   Future<void> focusTo(String id, {bool animated = false}) async {
     _debug('focusTo requested id=$id animated=$animated native=${_channel != null} flutter=${_flutterFocusTo != null}');
-    final channel = _channel;
-    if (channel != null) {
-      _debug('focusTo dispatch native id=$id');
-      await channel.invokeMethod<void>('focusTo', {
-        'id': id,
-        'animated': animated,
-      });
+    final nativeFocusTo = _nativeFocusTo;
+    if (_channel != null && nativeFocusTo != null) {
+      _debug('focusTo dispatch native calendar-path id=$id');
+      await nativeFocusTo(id, animated);
       return;
     }
     final flutterFocusTo = _flutterFocusTo;
@@ -265,9 +256,13 @@ class AccessibleListController {
     _pendingFocus = (id: id, animated: animated);
   }
 
-  void _attach(MethodChannel channel) {
+  void _attach(
+    MethodChannel channel,
+    Future<void> Function(String id, bool animated) nativeFocusTo,
+  ) {
     _debug('native renderer attach pendingScroll=${_pendingScroll?.id} pendingFocus=${_pendingFocus?.id}');
     _channel = channel;
+    _nativeFocusTo = nativeFocusTo;
     final pendingScroll = _pendingScroll;
     final pendingFocus = _pendingFocus;
     _pendingScroll = null;
@@ -277,29 +272,25 @@ class AccessibleListController {
       unawaited(channel.invokeMethod<void>('scrollTo', {
         'id': pendingScroll.id,
         'animated': pendingScroll.animated,
-        if (pendingScroll.durationMs != null)
-          'durationMs': pendingScroll.durationMs,
-        'focusOnNextEntry': pendingScroll.focusOnNextEntry,
       }));
     }
     if (pendingFocus != null) {
-      _debug('replay queued native focus id=${pendingFocus.id}');
-      unawaited(channel.invokeMethod<void>('focusTo', {
-        'id': pendingFocus.id,
-        'animated': pendingFocus.animated,
-      }));
+      _debug('replay queued native focus via calendar-path id=${pendingFocus.id}');
+      unawaited(nativeFocusTo(pendingFocus.id, pendingFocus.animated));
     }
   }
+
   void _detach(MethodChannel channel) {
     if (identical(_channel, channel)) {
       _debug('native renderer detach');
       _channel = null;
+      _nativeFocusTo = null;
     }
   }
 
   void _attachFlutter(
     Object owner,
-    Future<void> Function(String id, bool animated, Duration? duration) scrollTo,
+    Future<void> Function(String id, bool animated) scrollTo,
     Future<void> Function(String id, bool animated) focusTo,
   ) {
     _debug('flutter renderer attach');
@@ -330,7 +321,6 @@ class UniversalAccessibleList extends StatefulWidget {
     this.onRefresh,
     this.refreshEnabled = false,
     this.controller,
-    this.initialScrollId,
     this.initialFocusId,
     this.debugTag,
     this.padding = EdgeInsets.zero,
@@ -341,7 +331,6 @@ class UniversalAccessibleList extends StatefulWidget {
   final FutureOr<void> Function()? onRefresh;
   final bool refreshEnabled;
   final AccessibleListController? controller;
-  final String? initialScrollId;
   final String? initialFocusId;
   final String? debugTag;
   final EdgeInsetsGeometry padding;
@@ -360,13 +349,11 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   final GlobalKey _nativeViewKey = GlobalKey(debugLabel: 'accessible_native_view');
   int _nativeInitialFocusGeneration = 0;
   String? _flutterTargetId;
-  bool _initialScrollScheduled = false;
   bool _initialFocusScheduled = false;
 
   Map<String, Object?> get _data => {
         'sections': widget.sections.map((e) => e.toMap()).toList(),
         'refreshEnabled': widget.refreshEnabled,
-        if (widget.initialScrollId != null) 'initialScrollId': widget.initialScrollId,
         if (widget.initialFocusId != null) 'initialFocusId': widget.initialFocusId,
         if (widget.debugTag != null) 'debugTag': widget.debugTag,
       };
@@ -436,11 +423,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         for (final section in widget.sections) ...section.rows,
       ];
 
-  Future<void> _flutterScrollTo(
-    String id,
-    bool animated,
-    Duration? duration,
-  ) async {
+  Future<void> _flutterScrollTo(String id, bool animated) async {
     if (!mounted) return;
     if (_flutterTargetId != id) {
       setState(() => _flutterTargetId = id);
@@ -459,7 +442,15 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           final target = (position.maxScrollExtent * ratio)
               .clamp(position.minScrollExtent, position.maxScrollExtent)
               .toDouble();
-          _flutterScrollController.jumpTo(target);
+          if (animated && attempt == 0) {
+            await _flutterScrollController.animateTo(
+              target,
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOut,
+            );
+          } else {
+            _flutterScrollController.jumpTo(target);
+          }
           await WidgetsBinding.instance.endOfFrame;
           if (!mounted) return;
           context = _flutterTargetKey.currentContext;
@@ -470,17 +461,15 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     if (targetContext != null && targetContext.mounted) {
       await Scrollable.ensureVisible(
         targetContext,
-        alignment: 0.0,
-        duration: animated
-            ? (duration ?? const Duration(milliseconds: 300))
-            : Duration.zero,
+        alignment: 0.35,
+        duration: animated ? const Duration(milliseconds: 180) : Duration.zero,
         curve: Curves.easeOut,
       );
     }
   }
 
   Future<void> _flutterFocusTo(String id, bool animated) async {
-    await _flutterScrollTo(id, animated, null);
+    await _flutterScrollTo(id, animated);
     if (!mounted) return;
 
     // FocusNode.requestFocus() moves input/keyboard focus, not the
@@ -492,16 +481,6 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     _flutterTargetKey.currentContext
         ?.findRenderObject()
         ?.sendSemanticsEvent(const FocusSemanticEvent());
-  }
-
-  void _scheduleInitialScroll() {
-    final id = widget.initialScrollId;
-    if (_initialScrollScheduled || id == null || id.isEmpty) return;
-    _initialScrollScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || useNativeIosAccessibleViews) return;
-      unawaited(_flutterScrollTo(id, false, null));
-    });
   }
 
   void _scheduleInitialFocus() {
@@ -523,9 +502,6 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         widget.controller?._attachFlutter(this, _flutterScrollTo, _flutterFocusTo);
       }
     }
-    if (oldWidget.initialScrollId != widget.initialScrollId) {
-      _initialScrollScheduled = false;
-    }
     if (oldWidget.initialFocusId != widget.initialFocusId) {
       _initialFocusScheduled = false;
       final currentChannel = _channel;
@@ -537,7 +513,15 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     if (channel != null) {
       if (!identical(oldWidget.controller, widget.controller)) {
         oldWidget.controller?._detach(channel);
-        widget.controller?._attach(channel);
+        widget.controller?._attach(
+          channel,
+          (targetId, animated) => _focusNativeLikeCalendar(
+            channel,
+            targetId,
+            animated: animated,
+            initial: false,
+          ),
+        );
       }
       unawaited(channel.invokeMethod<void>('setData', _data));
     }
@@ -576,44 +560,76 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     }
     final channel = MethodChannel('sonarpad/native_accessible_list/$id');
     _channel = channel;
-    widget.controller?._attach(channel);
     channel.setMethodCallHandler(_handleMethod);
+    widget.controller?._attach(
+      channel,
+      (targetId, animated) => _focusNativeLikeCalendar(
+        channel,
+        targetId,
+        animated: animated,
+        initial: false,
+      ),
+    );
     _scheduleNativeInitialFocus(channel);
+  }
+
+  Future<void> _focusNativeLikeCalendar(
+    MethodChannel channel,
+    String id, {
+    required bool animated,
+    required bool initial,
+    int? generation,
+  }) async {
+    await WidgetsBinding.instance.endOfFrame;
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    if (!mounted ||
+        _channel != channel ||
+        (generation != null && generation != _nativeInitialFocusGeneration)) {
+      return;
+    }
+
+    // This is the exact handoff already used successfully by Calendar:
+    // first move accessibility focus from Flutter onto the embedded UIKit
+    // view, then ask UIKit to focus the requested native row.
+    final nativeRenderObject = _nativeViewKey.currentContext?.findRenderObject();
+    final tag = widget.debugTag ?? widget.controller?.debugName;
+    if (tag != null && tag.isNotEmpty) {
+      unawaited(AppLogger.log(
+        'DOC_NATIVE[$tag] Flutter semantics focus -> platform view '
+        'id=$id render=${nativeRenderObject?.runtimeType}',
+      ));
+    }
+    nativeRenderObject?.sendSemanticsEvent(const FocusSemanticEvent());
+
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    if (!mounted ||
+        _channel != channel ||
+        (generation != null && generation != _nativeInitialFocusGeneration)) {
+      return;
+    }
+    await channel.invokeMethod<void>(
+      initial ? 'focusInitial' : 'focusTo',
+      {
+        'id': id,
+        'animated': animated,
+      },
+    );
   }
 
   void _scheduleNativeInitialFocus(MethodChannel channel) {
     final id = widget.initialFocusId;
     if (id == null || id.isEmpty || !useNativeIosAccessibleViews) return;
     final generation = ++_nativeInitialFocusGeneration;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await WidgetsBinding.instance.endOfFrame;
-      await Future<void>.delayed(const Duration(milliseconds: 120));
-      if (!mounted || _channel != channel || generation != _nativeInitialFocusGeneration) {
-        return;
-      }
-
-      // First move Flutter accessibility focus onto the embedded platform
-      // view. A UIKit notification alone can be ignored while VoiceOver still
-      // owns the surrounding Flutter AppBar semantics node.
-      final nativeRenderObject =
-          _nativeViewKey.currentContext?.findRenderObject();
-      final tag = widget.debugTag ?? widget.controller?.debugName;
-      if (tag != null && tag.isNotEmpty) {
-        unawaited(AppLogger.log(
-          'DOC_NATIVE[$tag] Flutter semantics focus -> platform view '
-          'id=$id render=${nativeRenderObject?.runtimeType}',
-        ));
-      }
-      nativeRenderObject?.sendSemanticsEvent(const FocusSemanticEvent());
-
-      await Future<void>.delayed(const Duration(milliseconds: 120));
-      if (!mounted || _channel != channel || generation != _nativeInitialFocusGeneration) {
-        return;
-      }
-      await channel.invokeMethod<void>('focusInitial', {
-        'id': id,
-        'animated': false,
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(
+        _focusNativeLikeCalendar(
+          channel,
+          id,
+          animated: false,
+          initial: true,
+          generation: generation,
+        ),
+      );
     });
   }
 
@@ -937,7 +953,6 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   @override
   Widget build(BuildContext context) {
     if (!useNativeIosAccessibleViews) {
-      _scheduleInitialScroll();
       _scheduleInitialFocus();
       return _buildFlutterModel(context);
     }
