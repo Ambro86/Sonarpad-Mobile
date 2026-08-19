@@ -61,11 +61,22 @@ class _LetterJumpOptionPickerScreenState<T>
   }
 
   int? _firstIndexForLetter(String letter) {
+    int? selectedFallback;
     for (var index = 0; index < widget.options.length; index++) {
-      final optionLetter = _initialLetter(widget.labelBuilder(widget.options[index]));
-      if (optionLetter == letter) return index;
+      final option = widget.options[index];
+      final optionLetter = _initialLetter(widget.labelBuilder(option));
+      if (optionLetter != letter) continue;
+
+      // Several pickers pin the most recently selected option at the top
+      // of the list. That row must not become the alphabetical anchor for
+      // its letter (for example recent Italia before India/Indonesia).
+      // Prefer the first ordinary option and use the selected one only when
+      // it is the sole option available for that letter.
+      final selected = widget.selectedBuilder?.call(option) ?? false;
+      if (!selected) return index;
+      selectedFallback ??= index;
     }
-    return null;
+    return selectedFallback;
   }
 
   Future<void> _openLetterPicker() async {

@@ -412,6 +412,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   int _nativeViewRecreationId = 0;
   String? _flutterTargetId;
   String? _runtimeInitialFocusId;
+  String? _routeReturnFreshFocusId;
   bool _initialFocusScheduled = false;
 
   String? get _effectiveInitialFocusId =>
@@ -611,6 +612,14 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       value: raw['value'],
       action: raw['action']?.toString(),
     );
+    if (event.type == 'focus') {
+      final tag = widget.debugTag ?? widget.controller?.debugName;
+      if (tag != null && tag.isNotEmpty) {
+        unawaited(AppLogger.log(
+          'DOC_NATIVE[$tag] DART_FOCUS_EVENT id=${event.id}',
+        ));
+      }
+    }
     if (event.type == 'refresh') {
       final refresh = widget.onRefresh;
       if (refresh != null) await refresh();
@@ -741,6 +750,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     _channel = null;
     _initialFocusScheduled = false;
 
+    _routeReturnFreshFocusId = id;
     setState(() {
       _runtimeInitialFocusId = id;
       _nativeViewRecreationId += 1;
@@ -823,6 +833,9 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     }
 
     final nativeRenderObject = _nativeViewKey.currentContext?.findRenderObject();
+    final isFreshRouteReturnFocus =
+        mode == AccessibleFocusMode.screenEntry &&
+        _routeReturnFreshFocusId == id;
     if (tag != null && tag.isNotEmpty) {
       unawaited(AppLogger.log(
         'DOC_NATIVE[$tag] SEMANTICS_FOCUS_SENT id=$id '
@@ -831,10 +844,30 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     }
     nativeRenderObject?.sendSemanticsEvent(const FocusSemanticEvent());
 
-    // Let Flutter commit the semantics update instead of guessing with a
-    // fixed millisecond delay. The native side has already guaranteed that
-    // the PlatformView is in a window and the target cell is materialized.
+    // A freshly recreated UiKitView after a picker pop needs a little more
+    // than a single endOfFrame. In device traces that Future sometimes
+    // completed only 1-6 ms after FocusSemanticEvent, while the proven
+    // Document handoff had enough time for Flutter's PlatformView semantics
+    // container to settle. Give only this fresh-renderer path one bounded
+    // settling window; ordinary screen entry and in-place focus are unchanged.
     await WidgetsBinding.instance.endOfFrame;
+    if (isFreshRouteReturnFocus) {
+      if (tag != null && tag.isNotEmpty) {
+        unawaited(AppLogger.log(
+          'DOC_NATIVE[$tag] ROUTE_RETURN_SEMANTICS_SETTLE_BEGIN id=$id '
+          'requestId=$requestId',
+        ));
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      if (!mounted) return;
+      await WidgetsBinding.instance.endOfFrame;
+      if (tag != null && tag.isNotEmpty) {
+        unawaited(AppLogger.log(
+          'DOC_NATIVE[$tag] ROUTE_RETURN_SEMANTICS_SETTLE_END id=$id '
+          'requestId=$requestId',
+        ));
+      }
+    }
     if (!await _focusGuard(
       channel,
       rendererGeneration: rendererGeneration,
@@ -900,6 +933,9 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'mode=${mode.name} requestId=$requestId posted=$posted '
         'reason=$reason notification=$notification outcome=$outcome',
       ));
+    }
+    if (isFreshRouteReturnFocus && _routeReturnFreshFocusId == id) {
+      _routeReturnFreshFocusId = null;
     }
   }
 
