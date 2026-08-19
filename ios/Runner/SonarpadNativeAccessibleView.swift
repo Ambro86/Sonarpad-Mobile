@@ -287,11 +287,12 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   }
 
   private func focusTraceAccessibilityContainer(of element: Any?) -> Any? {
-    if let view = element as? UIView { return view.accessibilityContainer }
     if let accessibilityElement = element as? UIAccessibilityElement {
       return accessibilityElement.accessibilityContainer
     }
-    if let object = element as? NSObject { return object.accessibilityContainer }
+    // UIView does not expose UIAccessibilityElement.accessibilityContainer.
+    // For trace purposes, its superview is the useful UIKit containment step.
+    if let view = element as? UIView { return view.superview }
     return nil
   }
 
@@ -351,7 +352,13 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       let isAccessibilityElement = element is UIAccessibilityElement
       let object = element as? NSObject
       let label = self.focusTraceText(object?.accessibilityLabel)
-      let accessibilityIdentifier = self.focusTraceText(object?.accessibilityIdentifier)
+      let rawAccessibilityIdentifier: String?
+      if let identifiable = element as? UIAccessibilityIdentification {
+        rawAccessibilityIdentifier = identifiable.accessibilityIdentifier
+      } else {
+        rawAccessibilityIdentifier = nil
+      }
+      let accessibilityIdentifier = self.focusTraceText(rawAccessibilityIdentifier)
       let container = self.focusTraceAccessibilityContainer(of: element)
       let containerType = container.map { String(describing: type(of: $0)) } ?? "nil"
       let viewInRoot: Bool
