@@ -326,6 +326,21 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           }
         }
         result(nil)
+      case "focusScreenEntry":
+        if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
+          let animated = map["animated"] as? Bool ?? false
+          self.emitDebug("method focusScreenEntry id=\(id) animated=\(animated) window=\(self.rootView.window != nil)")
+          // Same proven handoff used by Document bookmark entry: one
+          // screenChanged request against the materialized target cell, with
+          // no verification retry and no redirect of later VoiceOver flicks.
+          self.focusRow(
+            id: id,
+            animated: animated,
+            maxAttempts: 0,
+            screenChanged: true
+          )
+        }
+        result(nil)
       case "focusTo":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           let animated = map["animated"] as? Bool ?? false

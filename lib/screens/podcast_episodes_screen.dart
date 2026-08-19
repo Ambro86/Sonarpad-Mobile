@@ -23,7 +23,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
   final _service = PodcastService();
   final _scrollController = AutoScrollController();
   final AccessibleListController _accessibleListController =
-      AccessibleListController();
+      AccessibleListController(debugName: 'podcast_episodes');
   late Future<List<PodcastEpisode>> _episodes;
   Set<String> _playedAudioUrls = {};
 
@@ -97,7 +97,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
     if (episodeIndex < 0) return;
 
     if (useSharedAccessibleViewModel) {
-      await _accessibleListController.focusTo(
+      await _accessibleListController.focusToScreenEntry(
         selectedEpisode.id ?? selectedEpisode.audioUrl,
       );
       return;

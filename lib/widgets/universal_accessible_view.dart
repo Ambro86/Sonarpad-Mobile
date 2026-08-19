@@ -203,12 +203,12 @@ class AccessibleListController {
   MethodChannel? _channel;
   Object? _flutterOwner;
   ({String id, bool animated})? _pendingScroll;
-  ({String id, bool animated})? _pendingFocus;
+  ({String id, bool animated, bool screenEntry})? _pendingFocus;
 
   bool get hasAttachedRenderer =>
       _channel != null || _flutterScrollTo != null || _flutterFocusTo != null;
   bool get hasAttachedNativeRenderer => _channel != null;
-  Future<void> Function(String id, bool animated)? _nativeFocusTo;
+  Future<void> Function(String id, bool animated, bool screenEntry)? _nativeFocusTo;
   Future<void> Function(String id, bool animated)? _flutterScrollTo;
   Future<void> Function(String id, bool animated)? _flutterFocusTo;
 
@@ -250,7 +250,7 @@ class AccessibleListController {
     final nativeFocusTo = _nativeFocusTo;
     if (_channel != null && nativeFocusTo != null) {
       _debug('focusTo dispatch native calendar-path id=$id');
-      await nativeFocusTo(id, animated);
+      await nativeFocusTo(id, animated, false);
       return;
     }
     final flutterFocusTo = _flutterFocusTo;
@@ -260,12 +260,30 @@ class AccessibleListController {
       return;
     }
     _debug('focusTo queued id=$id');
-    _pendingFocus = (id: id, animated: animated);
+    _pendingFocus = (id: id, animated: animated, screenEntry: false);
+  }
+
+  Future<void> focusToScreenEntry(String id, {bool animated = false}) async {
+    _debug('focusToScreenEntry requested id=$id animated=$animated native=${_channel != null} flutter=${_flutterFocusTo != null}');
+    final nativeFocusTo = _nativeFocusTo;
+    if (_channel != null && nativeFocusTo != null) {
+      _debug('focusToScreenEntry dispatch native document-path id=$id');
+      await nativeFocusTo(id, animated, true);
+      return;
+    }
+    final flutterFocusTo = _flutterFocusTo;
+    if (flutterFocusTo != null) {
+      _debug('focusToScreenEntry dispatch flutter id=$id');
+      await flutterFocusTo(id, animated);
+      return;
+    }
+    _debug('focusToScreenEntry queued id=$id');
+    _pendingFocus = (id: id, animated: animated, screenEntry: true);
   }
 
   void _attach(
     MethodChannel channel,
-    Future<void> Function(String id, bool animated) nativeFocusTo,
+    Future<void> Function(String id, bool animated, bool screenEntry) nativeFocusTo,
   ) {
     _debug('native renderer attach pendingScroll=${_pendingScroll?.id} pendingFocus=${_pendingFocus?.id}');
     _channel = channel;
@@ -283,7 +301,7 @@ class AccessibleListController {
     }
     if (pendingFocus != null) {
       _debug('replay queued native focus via calendar-path id=${pendingFocus.id}');
-      unawaited(nativeFocusTo(pendingFocus.id, pendingFocus.animated));
+      unawaited(nativeFocusTo(pendingFocus.id, pendingFocus.animated, pendingFocus.screenEntry));
     }
   }
 
@@ -522,11 +540,11 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         oldWidget.controller?._detach(channel);
         widget.controller?._attach(
           channel,
-          (targetId, animated) => _focusNativeLikeCalendar(
+          (targetId, animated, screenEntry) => _focusNativeLikeCalendar(
             channel,
             targetId,
             animated: animated,
-            initial: false,
+            method: screenEntry ? 'focusScreenEntry' : 'focusTo',
           ),
         );
       }
@@ -570,11 +588,11 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     channel.setMethodCallHandler(_handleMethod);
     widget.controller?._attach(
       channel,
-      (targetId, animated) => _focusNativeLikeCalendar(
+      (targetId, animated, screenEntry) => _focusNativeLikeCalendar(
         channel,
         targetId,
         animated: animated,
-        initial: false,
+        method: screenEntry ? 'focusScreenEntry' : 'focusTo',
       ),
     );
     _scheduleNativeInitialFocus(channel);
@@ -584,9 +602,22 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     MethodChannel channel,
     String id, {
     required bool animated,
-    required bool initial,
+    required String method,
     int? generation,
   }) async {
+    // Returning from a letter/date picker is a screen re-entry just like the
+    // proven Document bookmark path: materialize the target row first, then
+    // hand Flutter accessibility to the PlatformView, then post one native
+    // screenChanged notification to that already-visible cell.
+    if (method == 'focusScreenEntry') {
+      await channel.invokeMethod<void>('scrollTo', {
+        'id': id,
+        'animated': false,
+      });
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+      if (!mounted || _channel != channel) return;
+    }
+
     await WidgetsBinding.instance.endOfFrame;
     await Future<void>.delayed(const Duration(milliseconds: 120));
     if (!mounted ||
@@ -615,7 +646,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       return;
     }
     await channel.invokeMethod<void>(
-      initial ? 'focusInitial' : 'focusTo',
+      method,
       {
         'id': id,
         'animated': animated,
@@ -633,7 +664,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           channel,
           id,
           animated: false,
-          initial: true,
+          method: 'focusInitial',
           generation: generation,
         ),
       );

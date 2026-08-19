@@ -2154,7 +2154,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                           const SizedBox(height: 8),
                           ValueListenableBuilder<int>(
                             valueListenable: _documentPositionRevision,
-                            builder: (context, _, __) => _DocumentPositionSlider(
+                            builder: (context, _, _) => _DocumentPositionSlider(
                               value: _documentProgressPercent,
                               label: l10n.documentPosition,
                               remainingTimeLabel:

@@ -39,7 +39,8 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   final _podcastService = PodcastService();
   final _searchController = TextEditingController();
   final _scrollController = AutoScrollController();
-  final AccessibleListController _accessibleListController = AccessibleListController();
+  final AccessibleListController _accessibleListController =
+      AccessibleListController(debugName: 'raiplaysound');
 
   RaiPlaySoundPage? _page;
   bool _loading = true;
@@ -209,7 +210,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     final itemIndex = items.indexWhere((item) => item.id == selectedItem.id);
     if (itemIndex < 0) return;
     if (useSharedAccessibleViewModel) {
-      await _accessibleListController.focusTo('item_$itemIndex');
+      await _accessibleListController.focusToScreenEntry('item_$itemIndex');
       return;
     }
 

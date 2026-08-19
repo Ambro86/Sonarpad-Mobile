@@ -35,7 +35,7 @@ class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
 class _LetterJumpOptionPickerScreenState<T>
     extends State<LetterJumpOptionPickerScreen<T>> {
   final _scrollController = AutoScrollController();
-  final _accessibleController = AccessibleListController();
+  final _accessibleController = AccessibleListController(debugName: 'letter_jump');
 
   bool get _showLetterPicker =>
       widget.options.length >= widget.minimumItemsForLetterPicker &&
@@ -87,7 +87,7 @@ class _LetterJumpOptionPickerScreenState<T>
     if (index == null || index < 0 || index >= widget.options.length) return;
 
     if (useSharedAccessibleViewModel) {
-      await _accessibleController.focusTo('option_$index');
+      await _accessibleController.focusToScreenEntry('option_$index');
       return;
     }
 
