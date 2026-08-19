@@ -75,6 +75,7 @@ class AccessibleListRow {
     this.kind = 'action',
     this.enabled = true,
     this.selected = false,
+    this.accessibilityButtonTrait = true,
     this.toggleValue = false,
     this.sliderValue = 0,
     this.sliderMin = 0,
@@ -103,6 +104,11 @@ class AccessibleListRow {
   final String kind;
   final bool enabled;
   final bool selected;
+  /// Whether native accessibility should expose the row with the button trait.
+  /// Keep this false for activatable text, such as document paragraphs, where
+  /// double-tap/custom actions remain available without VoiceOver announcing
+  /// every row as a button.
+  final bool accessibilityButtonTrait;
   final bool toggleValue;
   final double sliderValue;
   final double sliderMin;
@@ -135,6 +141,7 @@ class AccessibleListRow {
         'kind': kind,
         'enabled': enabled,
         'selected': selected,
+        'accessibilityButtonTrait': accessibilityButtonTrait,
         'toggleValue': toggleValue,
         'sliderValue': sliderValue,
         'sliderMin': sliderMin,

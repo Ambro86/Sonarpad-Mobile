@@ -23,6 +23,7 @@ private struct SonarpadNativeRow {
   var kind: String
   var enabled: Bool
   var selected: Bool
+  var accessibilityButtonTrait: Bool
   var toggleValue: Bool
   var sliderValue: Double
   var sliderMin: Double
@@ -46,6 +47,7 @@ private struct SonarpadNativeRow {
     kind = map["kind"] as? String ?? "action"
     enabled = map["enabled"] as? Bool ?? true
     selected = map["selected"] as? Bool ?? false
+    accessibilityButtonTrait = map["accessibilityButtonTrait"] as? Bool ?? true
     toggleValue = map["toggleValue"] as? Bool ?? false
     sliderValue = (map["sliderValue"] as? NSNumber)?.doubleValue ?? 0
     sliderMin = (map["sliderMin"] as? NSNumber)?.doubleValue ?? 0
@@ -95,6 +97,7 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.kind == rhs.kind,
         lhs.enabled == rhs.enabled,
         lhs.selected == rhs.selected,
+        lhs.accessibilityButtonTrait == rhs.accessibilityButtonTrait,
         lhs.toggleValue == rhs.toggleValue,
         lhs.sliderValue == rhs.sliderValue,
         lhs.sliderMin == rhs.sliderMin,
@@ -117,37 +120,12 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
 }
 
 private func sonarpadRowsHaveSameStructure(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRow) -> Bool {
-  guard lhs.id == rhs.id,
-        lhs.subtitle == rhs.subtitle,
-        lhs.accessibilityLabel == rhs.accessibilityLabel,
-        lhs.hint == rhs.hint,
-        lhs.kind == rhs.kind,
-        lhs.enabled == rhs.enabled,
-        lhs.selected == rhs.selected,
-        lhs.toggleValue == rhs.toggleValue,
-        lhs.sliderMin == rhs.sliderMin,
-        lhs.sliderMax == rhs.sliderMax,
-        lhs.sliderStep == rhs.sliderStep,
-        lhs.secure == rhs.secure,
-        lhs.placeholder == rhs.placeholder,
-        lhs.options.count == rhs.options.count,
-        lhs.actions.count == rhs.actions.count else { return false }
-
-  if lhs.kind != "slider" {
-    guard lhs.title == rhs.title,
-          lhs.value == rhs.value,
-          lhs.valueLabel == rhs.valueLabel,
-          lhs.sliderValue == rhs.sliderValue,
-          lhs.sliderIncreasedValueLabel == rhs.sliderIncreasedValueLabel,
-          lhs.sliderDecreasedValueLabel == rhs.sliderDecreasedValueLabel else { return false }
-  }
-
-  for (left, right) in zip(lhs.options, rhs.options) {
-    if left.label != right.label || !sonarpadValuesEqual(left.value, right.value) { return false }
-  }
-  for (left, right) in zip(lhs.actions, rhs.actions) {
-    if left.id != right.id || left.label != right.label { return false }
-  }
+  // UITableView only needs a full reload when the identity or the native cell
+  // class changes. Text, bookmark decoration, traits, values and custom
+  // actions are dynamic row state and can be reapplied to the existing cell.
+  // Keeping those changes in-place is essential for VoiceOver: reloadData()
+  // destroys the focused accessibility element and resets the document offset.
+  guard lhs.id == rhs.id, lhs.kind == rhs.kind else { return false }
   return true
 }
 
@@ -332,7 +310,20 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       case "focusInitial":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
           self.emitDebug("method focusInitial id=\(id) window=\(self.rootView.window != nil)")
-          self.focusRow(id: id, animated: false, maxAttempts: 4)
+          if self.debugTag == "document" {
+            // Document rows live deep inside a long native table. Once Flutter
+            // has handed accessibility to the platform view and the target
+            // cell is materialized, make one screen-entry request and stop.
+            // Never retry or redirect subsequent VoiceOver navigation.
+            self.focusRow(
+              id: id,
+              animated: false,
+              maxAttempts: 0,
+              screenChanged: true
+            )
+          } else {
+            self.focusRow(id: id, animated: false, maxAttempts: 4)
+          }
         }
         result(nil)
       case "focusTo":
@@ -401,7 +392,9 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
     }
 
-    if sectionsChanged, let id = focusedRowBeforeReload, indexPath(forRowId: id) != nil {
+    if sectionsChanged && !sameStructureDynamicChange,
+       let id = focusedRowBeforeReload,
+       indexPath(forRowId: id) != nil {
       restoreFocusRow(id: id)
     }
   }
@@ -469,7 +462,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     cell.accessibilityHint = row.hint
     cell.accessibilityValue = row.valueLabel ?? row.value
     var traits: UIAccessibilityTraits = []
-    if row.kind == "action" || row.kind == "picker" || row.kind == "button" || row.kind == "toggle" { traits.insert(.button) }
+    if row.accessibilityButtonTrait && (row.kind == "action" || row.kind == "picker" || row.kind == "button" || row.kind == "toggle") { traits.insert(.button) }
     if row.kind == "slider" { traits.insert(.adjustable) }
     if row.kind == "header" { traits.insert(.header) }
     if row.selected { traits.insert(.selected) }
@@ -535,6 +528,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           objc_setAssociatedObject(action, &AssociatedKeys.actionId, matching.id, .OBJC_ASSOCIATION_COPY_NONATOMIC)
         }
       }
+    } else {
+      cell.accessibilityCustomActions = nil
     }
   }
 
@@ -806,7 +801,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     id: String,
     animated: Bool,
     attempt: Int = 0,
-    maxAttempts: Int = 4
+    maxAttempts: Int = 4,
+    screenChanged: Bool = false
   ) {
     guard let indexPath = indexPath(forRowId: id) else {
       emitDebug("focusRow id=\(id) attempt=\(attempt) indexPath NOT FOUND rows=\(sections.reduce(0) { $0 + $1.rows.count })")
@@ -826,20 +822,34 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
             let target = self.accessibilityTarget(at: indexPath) else {
         if attempt < maxAttempts {
           self.emitDebug("focusRow target unavailable id=\(id) attempt=\(attempt) -> retry")
-          self.focusRow(id: id, animated: false, attempt: attempt + 1, maxAttempts: maxAttempts)
+          self.focusRow(
+            id: id,
+            animated: false,
+            attempt: attempt + 1,
+            maxAttempts: maxAttempts,
+            screenChanged: screenChanged
+          )
         }
         return
       }
 
-      self.emitDebug("focusRow POST id=\(id) attempt=\(attempt) notification=layoutChanged offsetY=\(self.tableView.contentOffset.y)")
-      UIAccessibility.post(notification: .layoutChanged, argument: target)
+      let notification: UIAccessibility.Notification = screenChanged ? .screenChanged : .layoutChanged
+      let notificationName = screenChanged ? "screenChanged" : "layoutChanged"
+      self.emitDebug("focusRow POST id=\(id) attempt=\(attempt) notification=\(notificationName) offsetY=\(self.tableView.contentOffset.y)")
+      UIAccessibility.post(notification: notification, argument: target)
 
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.10) { [weak self] in
         guard let self = self else { return }
         let focusedAfter = self.voiceOverFocusedRowId()
         self.emitDebug("focusRow VERIFY id=\(id) attempt=\(attempt) focusedAfter=\(focusedAfter ?? "nil") expected=\(id)")
         if focusedAfter != id && attempt < maxAttempts {
-          self.focusRow(id: id, animated: false, attempt: attempt + 1, maxAttempts: maxAttempts)
+          self.focusRow(
+            id: id,
+            animated: false,
+            attempt: attempt + 1,
+            maxAttempts: maxAttempts,
+            screenChanged: screenChanged
+          )
         }
       }
     }

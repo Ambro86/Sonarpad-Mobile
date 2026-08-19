@@ -2175,12 +2175,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   ),
                   const Divider(height: 1),
                   Expanded(
-                    child: Semantics(
-                      label: l10n.documentTextLabel,
-                      explicitChildNodes: true,
-                      child: useSharedAccessibleViewModel
-                          ? _buildSharedAccessibleDocumentText(l10n)
-                          : CustomScrollView(
+                    child: useSharedAccessibleViewModel
+                        ? _buildSharedAccessibleDocumentText(l10n)
+                        : Semantics(
+                            label: l10n.documentTextLabel,
+                            explicitChildNodes: true,
+                            child: CustomScrollView(
                         controller: _scrollController,
                         scrollCacheExtent: const ScrollCacheExtent.pixels(
                             4000), // Precarica i blocchi successivi per VoiceOver
@@ -2336,6 +2336,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         title: _chunks[i],
         subtitle: isBookmarked ? '🔖' : null,
         kind: canInteract ? 'action' : 'text',
+        accessibilityButtonTrait: false,
         selected: isSelected,
         hint: _paragraphSelectionMode
             ? l10n.documentParagraphSelectionTapHint
