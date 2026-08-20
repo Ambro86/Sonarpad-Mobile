@@ -156,6 +156,10 @@
   "english": "Inglés",
   "french": "Francés",
   "spanish": "Español",
+  "german": "Alemán",
+  "@german": {
+    "description": "Localized text for german."
+  },
   "newsSource": "Fuente de noticias",
   "article": "Artículo",
   "articlePreview": "Vista previa del artículo",
@@ -1608,5 +1612,409 @@
   "developerUseExperimentalFlutterRendererHint": "Desactiva temporalmente UIKit para comparar VoiceOver con Flutter puro.",
   "@developerUseExperimentalFlutterRendererHint": {
     "description": "Localized text for developerUseExperimentalFlutterRendererHint."
+  },
+  "letterJumpSelectLetter": "Seleccionar letra",
+  "@letterJumpSelectLetter": {
+    "description": "Localized text for letterJumpSelectLetter."
+  },
+  "letterJumpSelected": "seleccionada",
+  "@letterJumpSelected": {
+    "description": "Localized text for letterJumpSelected."
+  },
+  "settingsToggleOn": "Activado",
+  "@settingsToggleOn": {
+    "description": "Localized text for settingsToggleOn."
+  },
+  "settingsToggleOff": "Desactivado",
+  "@settingsToggleOff": {
+    "description": "Localized text for settingsToggleOff."
+  },
+  "radioDirectoryLoading": "Actualizando países e idiomas de radio...",
+  "@radioDirectoryLoading": {
+    "description": "Localized text for radioDirectoryLoading."
+  },
+  "recentRadios": "Radios recientes",
+  "@recentRadios": {
+    "description": "Localized text for recentRadios."
+  },
+  "radioNextPage": "Siguiente",
+  "@radioNextPage": {
+    "description": "Localized text for radioNextPage."
+  },
+  "radioPageOf": "Página {current} de {total}",
+  "@radioPageOf": {
+    "description": "Localized text for radioPageOf.",
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "radioNoResultsWithQuery": "No se encontraron radios. Prueba solo con el nombre de la emisora, sin género, o cambia idioma/país.",
+  "@radioNoResultsWithQuery": {
+    "description": "Localized text for radioNoResultsWithQuery."
+  },
+  "radioNoResultsGeneric": "No se encontraron radios. Prueba con otro idioma, país o género.",
+  "@radioNoResultsGeneric": {
+    "description": "Localized text for radioNoResultsGeneric."
+  },
+  "radioSearchRawError": "Error en la búsqueda de radio: {error}",
+  "@radioSearchRawError": {
+    "description": "Localized text for radioSearchRawError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioBrowserConnectionError": "Error de conexión con Radio Browser. Inténtalo de nuevo más tarde.",
+  "@radioBrowserConnectionError": {
+    "description": "Localized text for radioBrowserConnectionError."
+  },
+  "documentIndexLoadingMessage": "Cargando índice... Espera, por favor.",
+  "@documentIndexLoadingMessage": {
+    "description": "Localized text for documentIndexLoadingMessage."
+  },
+  "documentIndexUnavailableMessage": "Índice no disponible para este EPUB.",
+  "@documentIndexUnavailableMessage": {
+    "description": "Localized text for documentIndexUnavailableMessage."
+  },
+  "mediaCutterVolumeSummary": "volumen {percent}%",
+  "@mediaCutterVolumeSummary": {
+    "description": "Localized text for mediaCutterVolumeSummary.",
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "mediaCutterDurationSummary": "duración {duration}",
+  "@mediaCutterDurationSummary": {
+    "description": "Localized text for mediaCutterDurationSummary.",
+    "placeholders": {
+      "duration": {}
+    }
+  },
+  "mediaCutterDurationHourOne": "hora",
+  "@mediaCutterDurationHourOne": {
+    "description": "Localized text for mediaCutterDurationHourOne."
+  },
+  "mediaCutterDurationHourFew": "horas",
+  "@mediaCutterDurationHourFew": {
+    "description": "Localized text for mediaCutterDurationHourFew."
+  },
+  "mediaCutterDurationHourMany": "horas",
+  "@mediaCutterDurationHourMany": {
+    "description": "Localized text for mediaCutterDurationHourMany."
+  },
+  "mediaCutterDurationMinuteOne": "minuto",
+  "@mediaCutterDurationMinuteOne": {
+    "description": "Localized text for mediaCutterDurationMinuteOne."
+  },
+  "mediaCutterDurationMinuteFew": "minutos",
+  "@mediaCutterDurationMinuteFew": {
+    "description": "Localized text for mediaCutterDurationMinuteFew."
+  },
+  "mediaCutterDurationMinuteMany": "minutos",
+  "@mediaCutterDurationMinuteMany": {
+    "description": "Localized text for mediaCutterDurationMinuteMany."
+  },
+  "mediaCutterDurationSecondOne": "segundo",
+  "@mediaCutterDurationSecondOne": {
+    "description": "Localized text for mediaCutterDurationSecondOne."
+  },
+  "mediaCutterDurationSecondFew": "segundos",
+  "@mediaCutterDurationSecondFew": {
+    "description": "Localized text for mediaCutterDurationSecondFew."
+  },
+  "mediaCutterDurationSecondMany": "segundos",
+  "@mediaCutterDurationSecondMany": {
+    "description": "Localized text for mediaCutterDurationSecondMany."
+  },
+  "mediaCutterDurationAnd": "y",
+  "@mediaCutterDurationAnd": {
+    "description": "Localized text for mediaCutterDurationAnd."
+  },
+  "mediaCutterSeekStepButton": "Ajustar el desplazamiento del archivo multimedia: {step}",
+  "@mediaCutterSeekStepButton": {
+    "description": "Localized text for mediaCutterSeekStepButton.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterSeekStepTitle": "Desplazamiento del archivo multimedia",
+  "@mediaCutterSeekStepTitle": {
+    "description": "Localized text for mediaCutterSeekStepTitle."
+  },
+  "mediaCutterSeekStepSelected": "Desplazamiento del archivo multimedia ajustado a {step}.",
+  "@mediaCutterSeekStepSelected": {
+    "description": "Localized text for mediaCutterSeekStepSelected.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterPartEffectBackwards": "Al revés",
+  "@mediaCutterPartEffectBackwards": {
+    "description": "Localized text for mediaCutterPartEffectBackwards."
+  },
+  "mediaCutterPartEffectTalkingGuitar": "Guitarra parlante",
+  "@mediaCutterPartEffectTalkingGuitar": {
+    "description": "Localized text for mediaCutterPartEffectTalkingGuitar."
+  },
+  "mediaCutterPartEffectMosquito": "Mosquito",
+  "@mediaCutterPartEffectMosquito": {
+    "description": "Localized text for mediaCutterPartEffectMosquito."
+  },
+  "mediaCutterPartEffectOneOfMany": "Una voz, muchos cantantes",
+  "@mediaCutterPartEffectOneOfMany": {
+    "description": "Localized text for mediaCutterPartEffectOneOfMany."
+  },
+  "mediaCutterPartEffectOrganVocoder": "Órgano parlante",
+  "@mediaCutterPartEffectOrganVocoder": {
+    "description": "Localized text for mediaCutterPartEffectOrganVocoder."
+  },
+  "mediaCutterPartEffectWarped": "Deformado",
+  "@mediaCutterPartEffectWarped": {
+    "description": "Localized text for mediaCutterPartEffectWarped."
+  },
+  "mediaCutterPartEffectSwirling": "Vórtice estéreo",
+  "@mediaCutterPartEffectSwirling": {
+    "description": "Localized text for mediaCutterPartEffectSwirling."
+  },
+  "mediaCutterPartEffectVader": "Voz oscura cinematográfica",
+  "@mediaCutterPartEffectVader": {
+    "description": "Localized text for mediaCutterPartEffectVader."
+  },
+  "mediaCutterPartEffectMetallic": "Metálico",
+  "@mediaCutterPartEffectMetallic": {
+    "description": "Localized text for mediaCutterPartEffectMetallic."
+  },
+  "mediaCutterPartEffectSongbird": "Pájaro cantor",
+  "@mediaCutterPartEffectSongbird": {
+    "description": "Localized text for mediaCutterPartEffectSongbird."
+  },
+  "mediaCutterPartEffectExterminator": "Exterminator",
+  "@mediaCutterPartEffectExterminator": {
+    "description": "Localized text for mediaCutterPartEffectExterminator."
+  },
+  "mediaCutterPartEffectRainAndThunder": "Lluvia y truenos",
+  "@mediaCutterPartEffectRainAndThunder": {
+    "description": "Localized text for mediaCutterPartEffectRainAndThunder."
+  },
+  "mediaCutterPartEffectJungle": "Selva",
+  "@mediaCutterPartEffectJungle": {
+    "description": "Localized text for mediaCutterPartEffectJungle."
+  },
+  "mediaCutterPartEffectCrowd": "Multitud",
+  "@mediaCutterPartEffectCrowd": {
+    "description": "Localized text for mediaCutterPartEffectCrowd."
+  },
+  "mediaCutterPartEffectSlotMachines": "Máquinas tragamonedas",
+  "@mediaCutterPartEffectSlotMachines": {
+    "description": "Localized text for mediaCutterPartEffectSlotMachines."
+  },
+  "mediaCutterPartEffectTraffic": "Tráfico",
+  "@mediaCutterPartEffectTraffic": {
+    "description": "Localized text for mediaCutterPartEffectTraffic."
+  },
+  "mediaCutterPartEffectSpaceship": "Nave espacial",
+  "@mediaCutterPartEffectSpaceship": {
+    "description": "Localized text for mediaCutterPartEffectSpaceship."
+  },
+  "mediaCutterPartEffectCricket": "Grillo",
+  "@mediaCutterPartEffectCricket": {
+    "description": "Localized text for mediaCutterPartEffectCricket."
+  },
+  "mediaCutterPartEffectSiren": "Sirena",
+  "@mediaCutterPartEffectSiren": {
+    "description": "Localized text for mediaCutterPartEffectSiren."
+  },
+  "mediaCutterPartEffectSleighBells": "Cascabeles",
+  "@mediaCutterPartEffectSleighBells": {
+    "description": "Localized text for mediaCutterPartEffectSleighBells."
+  },
+  "mediaCutterPartEffectDj": "DJ y scratch",
+  "@mediaCutterPartEffectDj": {
+    "description": "Localized text for mediaCutterPartEffectDj."
+  },
+  "mediaCutterPartEffectApplause": "Aplausos",
+  "@mediaCutterPartEffectApplause": {
+    "description": "Localized text for mediaCutterPartEffectApplause."
+  },
+  "mediaCutterPartEffectBadMelody": "Melodía desafinada",
+  "@mediaCutterPartEffectBadMelody": {
+    "description": "Localized text for mediaCutterPartEffectBadMelody."
+  },
+  "mediaCutterPartEffectBadHarmony": "Armonía disonante",
+  "@mediaCutterPartEffectBadHarmony": {
+    "description": "Localized text for mediaCutterPartEffectBadHarmony."
+  },
+  "mediaCutterPartEffectWarmVoice": "Voz cálida",
+  "@mediaCutterPartEffectWarmVoice": {
+    "description": "Localized text for mediaCutterPartEffectWarmVoice."
+  },
+  "mediaCutterPartEffectTurtle": "Tortuga",
+  "@mediaCutterPartEffectTurtle": {
+    "description": "Localized text for mediaCutterPartEffectTurtle."
+  },
+  "mediaCutterPartEffectHaunting": "Embrujado",
+  "@mediaCutterPartEffectHaunting": {
+    "description": "Localized text for mediaCutterPartEffectHaunting."
+  },
+  "radioPreviousPage": "Anterior",
+  "@radioPreviousPage": {
+    "description": "Localized text for radioPreviousPage."
+  },
+  "noRecentRadios": "No hay radios recientes.",
+  "@noRecentRadios": {
+    "description": "Localized text for noRecentRadios."
+  },
+  "radioBrowseByCity": "Explorar por ciudad",
+  "@radioBrowseByCity": {
+    "description": "Localized text for radioBrowseByCity."
+  },
+  "radioCityInputHint": "Introduce la ciudad...",
+  "@radioCityInputHint": {
+    "description": "Localized text for radioCityInputHint."
+  },
+  "openItem": "Abrir",
+  "@openItem": {
+    "description": "Localized text for openItem."
+  },
+  "clearSearch": "Borrar búsqueda",
+  "@clearSearch": {
+    "description": "Localized text for clearSearch."
+  },
+  "fileTypeLabel": "Archivo",
+  "@fileTypeLabel": {
+    "description": "Localized text for fileTypeLabel."
+  },
+  "cinemaTrailerLoading": "Cargando tráiler",
+  "@cinemaTrailerLoading": {
+    "description": "Localized text for cinemaTrailerLoading."
+  },
+  "cinemaNoTrailer": "No hay ningún tráiler disponible para esta película",
+  "@cinemaNoTrailer": {
+    "description": "Localized text for cinemaNoTrailer."
+  },
+  "radioScheduleHours": "Horas",
+  "@radioScheduleHours": {
+    "description": "Localized text for radioScheduleHours."
+  },
+  "radioScheduleSelectHours": "Seleccionar las horas",
+  "@radioScheduleSelectHours": {
+    "description": "Localized text for radioScheduleSelectHours."
+  },
+  "radioScheduleMinutes": "Minutos",
+  "@radioScheduleMinutes": {
+    "description": "Localized text for radioScheduleMinutes."
+  },
+  "radioScheduleSelectMinutes": "Seleccionar los minutos",
+  "@radioScheduleSelectMinutes": {
+    "description": "Localized text for radioScheduleSelectMinutes."
+  },
+  "radioScheduleStopCurrentFirst": "Detén la grabación en curso antes de programar una nueva.",
+  "@radioScheduleStopCurrentFirst": {
+    "description": "Localized text for radioScheduleStopCurrentFirst."
+  },
+  "radioScheduleStartTime": "Hora de inicio",
+  "@radioScheduleStartTime": {
+    "description": "Localized text for radioScheduleStartTime."
+  },
+  "radioScheduleEndTime": "Hora de fin",
+  "@radioScheduleEndTime": {
+    "description": "Localized text for radioScheduleEndTime."
+  },
+  "radioScheduleDialogTitle": "Programar grabación",
+  "@radioScheduleDialogTitle": {
+    "description": "Localized text for radioScheduleDialogTitle."
+  },
+  "radioScheduleOpenRequirement": "En esta versión, la grabación programada solo comienza si Sonarpad permanece abierto en este reproductor. Si cierras la aplicación o esta pantalla, la grabación no puede comenzar automáticamente.",
+  "@radioScheduleOpenRequirement": {
+    "description": "Localized text for radioScheduleOpenRequirement."
+  },
+  "radioScheduleStartTimeValue": "Hora de inicio: {time}",
+  "@radioScheduleStartTimeValue": {
+    "description": "Localized text for radioScheduleStartTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleEndTimeValue": "Hora de fin: {time}",
+  "@radioScheduleEndTimeValue": {
+    "description": "Localized text for radioScheduleEndTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleOptionalTitle": "Título opcional",
+  "@radioScheduleOptionalTitle": {
+    "description": "Localized text for radioScheduleOptionalTitle."
+  },
+  "radioScheduleTitleHint": "Déjalo vacío para usar el nombre de la radio o TV",
+  "@radioScheduleTitleHint": {
+    "description": "Localized text for radioScheduleTitleHint."
+  },
+  "radioScheduleAction": "Programar",
+  "@radioScheduleAction": {
+    "description": "Localized text for radioScheduleAction."
+  },
+  "radioScheduledRecordingRange": "Grabación programada: {start} - {end}.",
+  "@radioScheduledRecordingRange": {
+    "description": "Localized text for radioScheduledRecordingRange.",
+    "placeholders": {
+      "start": {},
+      "end": {}
+    }
+  },
+  "radioScheduledRecordingAlreadyActive": "Grabación programada no iniciada: ya hay otra grabación en curso.",
+  "@radioScheduledRecordingAlreadyActive": {
+    "description": "Localized text for radioScheduledRecordingAlreadyActive."
+  },
+  "radioScheduledRecordingStarted": "Grabación programada iniciada.",
+  "@radioScheduledRecordingStarted": {
+    "description": "Localized text for radioScheduledRecordingStarted."
+  },
+  "radioScheduledRecordingError": "Error de grabación programada: {error}",
+  "@radioScheduledRecordingError": {
+    "description": "Localized text for radioScheduledRecordingError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingSaved": "Grabación programada guardada.",
+  "@radioScheduledRecordingSaved": {
+    "description": "Localized text for radioScheduledRecordingSaved."
+  },
+  "radioScheduledRecordingSaveError": "Error al guardar la grabación programada: {error}",
+  "@radioScheduledRecordingSaveError": {
+    "description": "Localized text for radioScheduledRecordingSaveError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingCancelled": "Grabación programada cancelada.",
+  "@radioScheduledRecordingCancelled": {
+    "description": "Localized text for radioScheduledRecordingCancelled."
+  },
+  "radioScheduledRecordingRangeWithTitle": "Grabación programada: {start} - {end}. Título: {title}.",
+  "@radioScheduledRecordingRangeWithTitle": {
+    "description": "Localized text for radioScheduledRecordingRangeWithTitle.",
+    "placeholders": {
+      "start": {},
+      "end": {},
+      "title": {}
+    }
+  },
+  "radioScheduleCancelAction": "Cancelar grabación programada",
+  "@radioScheduleCancelAction": {
+    "description": "Localized text for radioScheduleCancelAction."
+  },
+  "radioLanguageTr": "Turco",
+  "@radioLanguageTr": {
+    "description": "Localized text for radioLanguageTr."
+  },
+  "radioCountryOptionTr": "Turquía",
+  "@radioCountryOptionTr": {
+    "description": "Localized text for radioCountryOptionTr."
+  },
+  "radioCommunityLanguageTurkish": "Turco",
+  "@radioCommunityLanguageTurkish": {
+    "description": "Localized text for radioCommunityLanguageTurkish."
   }
 }

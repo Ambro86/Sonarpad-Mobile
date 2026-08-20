@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_cs.dart';
+import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 import 'app_localizations_fr.dart';
@@ -101,6 +102,7 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('it'),
     Locale('cs'),
+    Locale('de'),
     Locale('en'),
     Locale('es'),
     Locale('fr'),
@@ -839,6 +841,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Spagnolo'**
   String get spanish;
+
+  /// Localized text for german.
+  ///
+  /// In it, this message translates to:
+  /// **'Tedesco'**
+  String get german;
 
   /// Localized text for newsSource.
   ///
@@ -5495,6 +5503,104 @@ abstract class AppLocalizations {
 
   /// Explanation of the experimental pure-Flutter accessibility renderer toggle.
   String get developerUseExperimentalFlutterRendererHint;
+  // Shared labels that previously lived as manual per-locale strings.
+  String get letterJumpSelectLetter;
+  String get letterJumpSelected;
+  String get settingsToggleOn;
+  String get settingsToggleOff;
+  String get radioDirectoryLoading;
+  String get recentRadios;
+  String get radioNextPage;
+  String radioPageOf(int current, int total);
+  String get radioNoResultsWithQuery;
+  String get radioNoResultsGeneric;
+  String radioSearchRawError(Object error);
+  String get radioBrowserConnectionError;
+  String get documentIndexLoadingMessage;
+  String get documentIndexUnavailableMessage;
+  String mediaCutterVolumeSummary(int percent);
+  String mediaCutterDurationSummary(String duration);
+  String get mediaCutterDurationHourOne;
+  String get mediaCutterDurationHourFew;
+  String get mediaCutterDurationHourMany;
+  String get mediaCutterDurationMinuteOne;
+  String get mediaCutterDurationMinuteFew;
+  String get mediaCutterDurationMinuteMany;
+  String get mediaCutterDurationSecondOne;
+  String get mediaCutterDurationSecondFew;
+  String get mediaCutterDurationSecondMany;
+  String get mediaCutterDurationAnd;
+  String mediaCutterSeekStepButton(String step);
+  String get mediaCutterSeekStepTitle;
+  String mediaCutterSeekStepSelected(String step);
+  String get mediaCutterPartEffectBackwards;
+  String get mediaCutterPartEffectTalkingGuitar;
+  String get mediaCutterPartEffectMosquito;
+  String get mediaCutterPartEffectOneOfMany;
+  String get mediaCutterPartEffectOrganVocoder;
+  String get mediaCutterPartEffectWarped;
+  String get mediaCutterPartEffectSwirling;
+  String get mediaCutterPartEffectVader;
+  String get mediaCutterPartEffectMetallic;
+  String get mediaCutterPartEffectSongbird;
+  String get mediaCutterPartEffectExterminator;
+  String get mediaCutterPartEffectRainAndThunder;
+  String get mediaCutterPartEffectJungle;
+  String get mediaCutterPartEffectCrowd;
+  String get mediaCutterPartEffectSlotMachines;
+  String get mediaCutterPartEffectTraffic;
+  String get mediaCutterPartEffectSpaceship;
+  String get mediaCutterPartEffectCricket;
+  String get mediaCutterPartEffectSiren;
+  String get mediaCutterPartEffectSleighBells;
+  String get mediaCutterPartEffectDj;
+  String get mediaCutterPartEffectApplause;
+  String get mediaCutterPartEffectBadMelody;
+  String get mediaCutterPartEffectBadHarmony;
+  String get mediaCutterPartEffectWarmVoice;
+  String get mediaCutterPartEffectTurtle;
+  String get mediaCutterPartEffectHaunting;
+
+  String get radioPreviousPage;
+
+  String get noRecentRadios;
+
+  String get radioBrowseByCity;
+  String get radioCityInputHint;
+  String get openItem;
+
+
+  // Additional shared UI labels moved into ARB localization.
+  String get clearSearch;
+  String get fileTypeLabel;
+  String get cinemaTrailerLoading;
+  String get cinemaNoTrailer;
+  String get radioScheduleHours;
+  String get radioScheduleSelectHours;
+  String get radioScheduleMinutes;
+  String get radioScheduleSelectMinutes;
+  String get radioScheduleStopCurrentFirst;
+  String get radioScheduleStartTime;
+  String get radioScheduleEndTime;
+  String get radioScheduleDialogTitle;
+  String get radioScheduleOpenRequirement;
+  String radioScheduleStartTimeValue(String time);
+  String radioScheduleEndTimeValue(String time);
+  String get radioScheduleOptionalTitle;
+  String get radioScheduleTitleHint;
+  String get radioScheduleAction;
+  String radioScheduledRecordingRange(String start, String end);
+  String get radioScheduledRecordingAlreadyActive;
+  String get radioScheduledRecordingStarted;
+  String radioScheduledRecordingError(Object error);
+  String get radioScheduledRecordingSaved;
+  String radioScheduledRecordingSaveError(Object error);
+  String get radioScheduledRecordingCancelled;
+  String radioScheduledRecordingRangeWithTitle(String start, String end, String title);
+  String get radioScheduleCancelAction;
+  String get radioLanguageTr;
+  String get radioCountryOptionTr;
+  String get radioCommunityLanguageTurkish;
 }
 
 class _AppLocalizationsDelegate
@@ -5509,6 +5615,7 @@ class _AppLocalizationsDelegate
   @override
   bool isSupported(Locale locale) => <String>[
     'cs',
+    'de',
     'en',
     'es',
     'fr',
@@ -5526,6 +5633,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'cs':
       return AppLocalizationsCs();
+    case 'de':
+      return AppLocalizationsDe();
     case 'en':
       return AppLocalizationsEn();
     case 'es':

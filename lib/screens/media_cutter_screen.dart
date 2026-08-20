@@ -6139,50 +6139,42 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       case _MediaPartEffect.warmVoice:
       case _MediaPartEffect.turtle:
       case _MediaPartEffect.haunting:
-        return _nativeEffectLabel(effect);
+        return _nativeEffectLabel(l10n, effect);
     }
   }
 
-  String _nativeEffectLabel(_MediaPartEffect effect) {
-    final language = Localizations.localeOf(context).languageCode;
-    String tr(String it, String en, {String? es, String? fr, String? pt}) {
-      return switch (language) {
-        'it' => it,
-        'es' => es ?? en,
-        'fr' => fr ?? en,
-        'pt' => pt ?? en,
-        _ => en,
-      };
-    }
-
+  String _nativeEffectLabel(
+    AppLocalizations l10n,
+    _MediaPartEffect effect,
+  ) {
     return switch (effect) {
-      _MediaPartEffect.backwards => tr('Al contrario', 'Backwards', es: 'Al revés', fr: 'À l’envers', pt: 'Ao contrário'),
-      _MediaPartEffect.talkingGuitar => tr('Chitarra parlante', 'Talking guitar', es: 'Guitarra parlante', fr: 'Guitare parlante', pt: 'Guitarra falante'),
-      _MediaPartEffect.mosquito => tr('Zanzara', 'Mosquito', es: 'Mosquito', fr: 'Moustique', pt: 'Mosquito'),
-      _MediaPartEffect.oneOfMany => tr('Una voce in molte', 'One voice, many singers', es: 'Una voz, muchos cantantes', fr: 'Une voix, plusieurs chanteurs', pt: 'Uma voz, vários cantores'),
-      _MediaPartEffect.organVocoder => tr('Organo parlante', 'Talking organ', es: 'Órgano parlante', fr: 'Orgue parlant', pt: 'Órgão falante'),
-      _MediaPartEffect.warped => tr('Deformato', 'Warped', es: 'Deformado', fr: 'Déformé', pt: 'Deformado'),
-      _MediaPartEffect.swirling => tr('Vortice stereo', 'Stereo vortex', es: 'Vórtice estéreo', fr: 'Tourbillon stéréo', pt: 'Vórtice estéreo'),
-      _MediaPartEffect.vader => tr('Voce oscura cinematografica', 'Cinematic dark voice', es: 'Voz oscura cinematográfica', fr: 'Voix sombre cinématographique', pt: 'Voz escura cinematográfica'),
-      _MediaPartEffect.metallic => tr('Metallico', 'Metallic', es: 'Metálico', fr: 'Métallique', pt: 'Metálico'),
-      _MediaPartEffect.songbird => tr('Uccellino', 'Songbird', es: 'Pájaro cantor', fr: 'Oiseau chanteur', pt: 'Pássaro cantor'),
-      _MediaPartEffect.exterminator => tr('Exterminator', 'Exterminator'),
-      _MediaPartEffect.rainAndThunder => tr('Pioggia e tuoni', 'Rain and thunder', es: 'Lluvia y truenos', fr: 'Pluie et tonnerre', pt: 'Chuva e trovões'),
-      _MediaPartEffect.jungle => tr('Giungla', 'Jungle', es: 'Selva', fr: 'Jungle', pt: 'Selva'),
-      _MediaPartEffect.crowd => tr('Folla', 'Crowd', es: 'Multitud', fr: 'Foule', pt: 'Multidão'),
-      _MediaPartEffect.slotMachines => tr('Slot machine', 'Slot machines', es: 'Máquinas tragamonedas', fr: 'Machines à sous', pt: 'Caça-níqueis'),
-      _MediaPartEffect.traffic => tr('Traffico', 'Traffic', es: 'Tráfico', fr: 'Circulation', pt: 'Trânsito'),
-      _MediaPartEffect.spaceship => tr('Astronave', 'Spaceship', es: 'Nave espacial', fr: 'Vaisseau spatial', pt: 'Nave espacial'),
-      _MediaPartEffect.cricket => tr('Grillo', 'Cricket', es: 'Grillo', fr: 'Grillon', pt: 'Grilo'),
-      _MediaPartEffect.siren => tr('Sirena', 'Siren', es: 'Sirena', fr: 'Sirène', pt: 'Sirene'),
-      _MediaPartEffect.sleighBells => tr('Campanelli', 'Sleigh bells', es: 'Cascabeles', fr: 'Grelots', pt: 'Sinos'),
-      _MediaPartEffect.dj => tr('DJ e scratch', 'DJ scratch', es: 'DJ y scratch', fr: 'DJ et scratch', pt: 'DJ e scratch'),
-      _MediaPartEffect.applause => tr('Applausi', 'Applause', es: 'Aplausos', fr: 'Applaudissements', pt: 'Aplausos'),
-      _MediaPartEffect.badMelody => tr('Melodia stonata', 'Off-key melody', es: 'Melodía desafinada', fr: 'Mélodie fausse', pt: 'Melodia desafinada'),
-      _MediaPartEffect.badHarmony => tr('Armonia dissonante', 'Dissonant harmony', es: 'Armonía disonante', fr: 'Harmonie dissonante', pt: 'Harmonia dissonante'),
-      _MediaPartEffect.warmVoice => tr('Voce calda', 'Warm voice', es: 'Voz cálida', fr: 'Voix chaude', pt: 'Voz quente'),
-      _MediaPartEffect.turtle => tr('Tartaruga', 'Turtle', es: 'Tortuga', fr: 'Tortue', pt: 'Tartaruga'),
-      _MediaPartEffect.haunting => tr('Infestato', 'Haunting', es: 'Embrujado', fr: 'Hanté', pt: 'Assombrado'),
+      _MediaPartEffect.backwards => l10n.mediaCutterPartEffectBackwards,
+      _MediaPartEffect.talkingGuitar => l10n.mediaCutterPartEffectTalkingGuitar,
+      _MediaPartEffect.mosquito => l10n.mediaCutterPartEffectMosquito,
+      _MediaPartEffect.oneOfMany => l10n.mediaCutterPartEffectOneOfMany,
+      _MediaPartEffect.organVocoder => l10n.mediaCutterPartEffectOrganVocoder,
+      _MediaPartEffect.warped => l10n.mediaCutterPartEffectWarped,
+      _MediaPartEffect.swirling => l10n.mediaCutterPartEffectSwirling,
+      _MediaPartEffect.vader => l10n.mediaCutterPartEffectVader,
+      _MediaPartEffect.metallic => l10n.mediaCutterPartEffectMetallic,
+      _MediaPartEffect.songbird => l10n.mediaCutterPartEffectSongbird,
+      _MediaPartEffect.exterminator => l10n.mediaCutterPartEffectExterminator,
+      _MediaPartEffect.rainAndThunder => l10n.mediaCutterPartEffectRainAndThunder,
+      _MediaPartEffect.jungle => l10n.mediaCutterPartEffectJungle,
+      _MediaPartEffect.crowd => l10n.mediaCutterPartEffectCrowd,
+      _MediaPartEffect.slotMachines => l10n.mediaCutterPartEffectSlotMachines,
+      _MediaPartEffect.traffic => l10n.mediaCutterPartEffectTraffic,
+      _MediaPartEffect.spaceship => l10n.mediaCutterPartEffectSpaceship,
+      _MediaPartEffect.cricket => l10n.mediaCutterPartEffectCricket,
+      _MediaPartEffect.siren => l10n.mediaCutterPartEffectSiren,
+      _MediaPartEffect.sleighBells => l10n.mediaCutterPartEffectSleighBells,
+      _MediaPartEffect.dj => l10n.mediaCutterPartEffectDj,
+      _MediaPartEffect.applause => l10n.mediaCutterPartEffectApplause,
+      _MediaPartEffect.badMelody => l10n.mediaCutterPartEffectBadMelody,
+      _MediaPartEffect.badHarmony => l10n.mediaCutterPartEffectBadHarmony,
+      _MediaPartEffect.warmVoice => l10n.mediaCutterPartEffectWarmVoice,
+      _MediaPartEffect.turtle => l10n.mediaCutterPartEffectTurtle,
+      _MediaPartEffect.haunting => l10n.mediaCutterPartEffectHaunting,
       _ => effect.name,
     };
   }
@@ -6210,7 +6202,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final pieces = <String>[];
 
     if (part.volumePercent != 100) {
-      pieces.add(_localizedVolumeSummary(part.volumePercent));
+      pieces.add(l10n.mediaCutterVolumeSummary(part.volumePercent));
     }
     _addEffectSlotSummary(
       l10n,
@@ -6240,49 +6232,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       part.fourthEffect,
       part.fourthEffectAmountPercent,
     );
-    pieces.add(_localizedDurationSummary(duration));
+    pieces.add(l10n.mediaCutterDurationSummary(duration));
 
     return pieces.join(', ');
-  }
-
-  String _localizedVolumeSummary(int percent) {
-    final lang = Localizations.localeOf(context).languageCode;
-    switch (lang) {
-      case 'en':
-        return 'volume $percent%';
-      case 'fr':
-        return 'volume $percent %';
-      case 'es':
-        return 'volumen $percent%';
-      case 'pt':
-        return 'volume $percent%';
-      case 'pl':
-        return 'głośność $percent%';
-      case 'cs':
-        return 'hlasitost $percent %';
-      default:
-        return 'volume $percent%';
-    }
-  }
-
-  String _localizedDurationSummary(String duration) {
-    final lang = Localizations.localeOf(context).languageCode;
-    switch (lang) {
-      case 'en':
-        return 'duration $duration';
-      case 'fr':
-        return 'durée $duration';
-      case 'es':
-        return 'duración $duration';
-      case 'pt':
-        return 'duração $duration';
-      case 'pl':
-        return 'czas trwania $duration';
-      case 'cs':
-        return 'délka $duration';
-      default:
-        return 'durata $duration';
-    }
   }
 
   String _formatHumanDuration(Duration duration) {
@@ -6305,126 +6257,54 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   String _humanDurationUnit(String unit, int value) {
-    final lang = Localizations.localeOf(context).languageCode;
-    final word = switch (lang) {
-      'en' => switch (unit) {
-          'hour' => value == 1 ? 'hour' : 'hours',
-          'minute' => value == 1 ? 'minute' : 'minutes',
-          _ => value == 1 ? 'second' : 'seconds',
-        },
-      'fr' => switch (unit) {
-          'hour' => value == 1 ? 'heure' : 'heures',
-          'minute' => value == 1 ? 'minute' : 'minutes',
-          _ => value == 1 ? 'seconde' : 'secondes',
-        },
-      'es' => switch (unit) {
-          'hour' => value == 1 ? 'hora' : 'horas',
-          'minute' => value == 1 ? 'minuto' : 'minutos',
-          _ => value == 1 ? 'segundo' : 'segundos',
-        },
-      'pt' => switch (unit) {
-          'hour' => value == 1 ? 'hora' : 'horas',
-          'minute' => value == 1 ? 'minuto' : 'minutos',
-          _ => value == 1 ? 'segundo' : 'segundos',
-        },
-      'pl' => _polishDurationUnit(unit, value),
-      'cs' => _czechDurationUnit(unit, value),
-      _ => switch (unit) {
-          'hour' => value == 1 ? 'ora' : 'ore',
-          'minute' => value == 1 ? 'minuto' : 'minuti',
-          _ => value == 1 ? 'secondo' : 'secondi',
-        },
+    final l10n = AppLocalizations.of(context);
+    final lang = l10n.localeName;
+    final form = switch (lang) {
+      'pl' => () {
+          final mod10 = value % 10;
+          final mod100 = value % 100;
+          if (value == 1) return 0;
+          if (mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14)) {
+            return 1;
+          }
+          return 2;
+        }(),
+      'cs' => value == 1 ? 0 : (value >= 2 && value <= 4 ? 1 : 2),
+      _ => value == 1 ? 0 : 2,
+    };
+
+    final word = switch ((unit, form)) {
+      ('hour', 0) => l10n.mediaCutterDurationHourOne,
+      ('hour', 1) => l10n.mediaCutterDurationHourFew,
+      ('hour', _) => l10n.mediaCutterDurationHourMany,
+      ('minute', 0) => l10n.mediaCutterDurationMinuteOne,
+      ('minute', 1) => l10n.mediaCutterDurationMinuteFew,
+      ('minute', _) => l10n.mediaCutterDurationMinuteMany,
+      ('second', 0) => l10n.mediaCutterDurationSecondOne,
+      ('second', 1) => l10n.mediaCutterDurationSecondFew,
+      _ => l10n.mediaCutterDurationSecondMany,
     };
     return '$value $word';
   }
 
-  String _polishDurationUnit(String unit, int value) {
-    final mod10 = value % 10;
-    final mod100 = value % 100;
-    final few = mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14);
-    switch (unit) {
-      case 'hour':
-        if (value == 1) return 'godzina';
-        return few ? 'godziny' : 'godzin';
-      case 'minute':
-        if (value == 1) return 'minuta';
-        return few ? 'minuty' : 'minut';
-      default:
-        if (value == 1) return 'sekunda';
-        return few ? 'sekundy' : 'sekund';
-    }
-  }
-
-  String _czechDurationUnit(String unit, int value) {
-    final few = value >= 2 && value <= 4;
-    switch (unit) {
-      case 'hour':
-        if (value == 1) return 'hodina';
-        return few ? 'hodiny' : 'hodin';
-      case 'minute':
-        if (value == 1) return 'minuta';
-        return few ? 'minuty' : 'minut';
-      default:
-        if (value == 1) return 'sekunda';
-        return few ? 'sekundy' : 'sekund';
-    }
-  }
-
   String _joinHumanDurationUnits(List<String> units) {
     if (units.length <= 1) return units.first;
-    final lang = Localizations.localeOf(context).languageCode;
-    final connector = switch (lang) {
-      'en' => ' and ',
-      'fr' => ' et ',
-      'es' => ' y ',
-      'pt' => ' e ',
-      'pl' => ' i ',
-      'cs' => ' a ',
-      _ => ' e ',
-    };
+    final connector = ' ${AppLocalizations.of(context).mediaCutterDurationAnd} ';
     if (units.length == 2) return '${units[0]}$connector${units[1]}';
     return '${units.sublist(0, units.length - 1).join(', ')}$connector${units.last}';
   }
 
   String _mediaSeekStepButtonLabel() {
-    final step = _formatHumanDuration(_mediaSeekStep);
-    final lang = Localizations.localeOf(context).languageCode;
-    return switch (lang) {
-      'en' => 'Adjust media file movement: $step',
-      'fr' => 'Régler le déplacement du fichier média : $step',
-      'es' => 'Ajustar el desplazamiento del archivo multimedia: $step',
-      'pt' => 'Regular o deslocamento do arquivo de mídia: $step',
-      'pl' => 'Dostosuj przesuwanie pliku multimedialnego: $step',
-      'cs' => 'Nastavit posun mediálního souboru: $step',
-      _ => 'Regola lo spostamento del file media: $step',
-    };
+    final l10n = AppLocalizations.of(context);
+    return l10n.mediaCutterSeekStepButton(_formatHumanDuration(_mediaSeekStep));
   }
 
-  String _mediaSeekStepDialogTitle() {
-    final lang = Localizations.localeOf(context).languageCode;
-    return switch (lang) {
-      'en' => 'Media file movement',
-      'fr' => 'Déplacement du fichier média',
-      'es' => 'Desplazamiento del archivo multimedia',
-      'pt' => 'Deslocamento do arquivo de mídia',
-      'pl' => 'Przesuwanie pliku multimedialnego',
-      'cs' => 'Posun mediálního souboru',
-      _ => 'Spostamento del file media',
-    };
-  }
+  String _mediaSeekStepDialogTitle() =>
+      AppLocalizations.of(context).mediaCutterSeekStepTitle;
 
   String _mediaSeekStepSelectedMessage(Duration step) {
-    final formatted = _formatHumanDuration(step);
-    final lang = Localizations.localeOf(context).languageCode;
-    return switch (lang) {
-      'en' => 'Media file movement set to $formatted.',
-      'fr' => 'Déplacement du fichier média réglé sur $formatted.',
-      'es' => 'Desplazamiento del archivo multimedia ajustado a $formatted.',
-      'pt' => 'Deslocamento do arquivo de mídia definido para $formatted.',
-      'pl' => 'Przesuwanie pliku multimedialnego ustawione na $formatted.',
-      'cs' => 'Posun mediálního souboru nastaven na $formatted.',
-      _ => 'Spostamento del file media impostato a $formatted.',
-    };
+    final l10n = AppLocalizations.of(context);
+    return l10n.mediaCutterSeekStepSelected(_formatHumanDuration(step));
   }
 
   Future<void> _showMediaSeekStepDialog() async {

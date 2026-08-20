@@ -23,6 +23,8 @@ class TmdbService {
       'es' => 'es-ES',
       'pt' => 'pt-PT',
       'pl' => 'pl-PL',
+      'cs' => 'cs-CZ',
+      'de' => 'de-DE',
       _ => 'en-US',
     };
   }

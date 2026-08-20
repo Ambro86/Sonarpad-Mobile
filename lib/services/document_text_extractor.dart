@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
@@ -36,6 +38,45 @@ class DocumentTableOfContentsEntry {
     required this.chunkIndex,
     this.level = 0,
   });
+}
+
+Future<void> _epubTableOfContentsIsolateMain(
+  Map<String, Object?> arguments,
+) async {
+  final sendPort = arguments['sendPort'] as SendPort;
+  try {
+    final path = arguments['path'] as String;
+    final chunks = List<String>.from(arguments['chunks']! as List);
+    final extractor = DocumentTextExtractor();
+    final entries = await extractor.extractEpubTableOfContents(
+      path: path,
+      chunks: chunks,
+      onProgress: (progress) {
+        sendPort.send(<String, Object?>{
+          'type': 'progress',
+          'value': progress,
+        });
+      },
+    );
+    sendPort.send(<String, Object?>{
+      'type': 'result',
+      'entries': entries
+          .map(
+            (entry) => <String, Object?>{
+              'title': entry.title,
+              'chunkIndex': entry.chunkIndex,
+              'level': entry.level,
+            },
+          )
+          .toList(growable: false),
+    });
+  } catch (error, stackTrace) {
+    sendPort.send(<String, Object?>{
+      'type': 'error',
+      'message': error.toString(),
+      'stack': stackTrace.toString(),
+    });
+  }
 }
 
 /// Servizio che estrae il testo da documenti di vari formati.
@@ -799,10 +840,22 @@ class DocumentTextExtractor {
   Future<List<DocumentTableOfContentsEntry>> extractEpubTableOfContents({
     required String path,
     required List<String> chunks,
+    void Function(double progress)? onProgress,
   }) async {
     if (chunks.isEmpty) return const [];
+    var lastProgress = -1.0;
+    void report(double value) {
+      final progress = value.clamp(0.0, 1.0).toDouble();
+      if (progress <= lastProgress) return;
+      lastProgress = progress;
+      onProgress?.call(progress);
+    }
+
+    report(0.03);
     final bytes = await File(path).readAsBytes();
+    report(0.12);
     final book = await EpubReader.readBook(bytes);
+    report(0.30);
     final entries = <DocumentTableOfContentsEntry>[];
 
     // Prima leggiamo direttamente l'indice EPUB ufficiale (NCX/nav HTML).
@@ -811,6 +864,7 @@ class DocumentTextExtractor {
     // punto corretto nel testo estratto. La lettura diretta dell'archivio ZIP
     // permette di usare href + frammento e funziona meglio con indici lunghi.
     _collectEpubArchiveIndex(bytes, chunks, entries);
+    report(0.68);
 
     final chapters = book.Chapters;
     if (chapters != null) {
@@ -818,10 +872,12 @@ class DocumentTextExtractor {
         _collectEpubChapterIndex(chapter, chunks, entries, 0);
       }
     }
+    report(0.86);
 
     if (entries.isEmpty) {
       _collectEpubHeadingIndex(book, chunks, entries);
     }
+    report(0.95);
 
     final seen = <String>{};
     final deduped = <DocumentTableOfContentsEntry>[];
@@ -829,7 +885,113 @@ class DocumentTextExtractor {
       final key = '${entry.chunkIndex}|${entry.title.toLowerCase()}';
       if (seen.add(key)) deduped.add(entry);
     }
+    report(1.0);
     return deduped;
+  }
+
+  /// Estrae l'indice EPUB in un isolate dedicato, così parsing e ricerca
+  /// delle voci nei blocchi del documento non bloccano il thread UI.
+  Future<List<DocumentTableOfContentsEntry>>
+      extractEpubTableOfContentsInBackground({
+    required String path,
+    required List<String> chunks,
+    void Function(double progress)? onProgress,
+  }) async {
+    if (chunks.isEmpty) return const [];
+
+    final receivePort = ReceivePort();
+    final errorPort = ReceivePort();
+    final exitPort = ReceivePort();
+    final completer = Completer<List<DocumentTableOfContentsEntry>>();
+
+    late final Isolate isolate;
+    isolate = await Isolate.spawn<Map<String, Object?>>(
+      _epubTableOfContentsIsolateMain,
+      <String, Object?>{
+        'sendPort': receivePort.sendPort,
+        'path': path,
+        'chunks': chunks,
+      },
+      onError: errorPort.sendPort,
+      onExit: exitPort.sendPort,
+      errorsAreFatal: true,
+      debugName: 'sonarpad_epub_index',
+    );
+
+    late final StreamSubscription<dynamic> resultSubscription;
+    late final StreamSubscription<dynamic> errorSubscription;
+    late final StreamSubscription<dynamic> exitSubscription;
+
+    resultSubscription = receivePort.listen((message) {
+      if (message is! Map) return;
+      final type = message['type'];
+      if (type == 'progress') {
+        final value = message['value'];
+        if (value is num) onProgress?.call(value.toDouble());
+        return;
+      }
+      if (type == 'result' && !completer.isCompleted) {
+        final rawEntries = message['entries'];
+        final entries = <DocumentTableOfContentsEntry>[];
+        if (rawEntries is List) {
+          for (final raw in rawEntries) {
+            if (raw is! Map) continue;
+            final title = raw['title'];
+            final chunkIndex = raw['chunkIndex'];
+            final level = raw['level'];
+            if (title is String && chunkIndex is int) {
+              entries.add(
+                DocumentTableOfContentsEntry(
+                  title: title,
+                  chunkIndex: chunkIndex,
+                  level: level is int ? level : 0,
+                ),
+              );
+            }
+          }
+        }
+        completer.complete(entries);
+        return;
+      }
+      if (type == 'error' && !completer.isCompleted) {
+        completer.completeError(
+          StateError(message['message']?.toString() ?? 'EPUB index error'),
+          StackTrace.fromString(message['stack']?.toString() ?? ''),
+        );
+      }
+    });
+
+    errorSubscription = errorPort.listen((message) {
+      if (completer.isCompleted) return;
+      completer.completeError(
+        StateError('EPUB index isolate error: $message'),
+      );
+    });
+
+    exitSubscription = exitPort.listen((_) {
+      unawaited(
+        Future<void>.delayed(const Duration(milliseconds: 100), () {
+          if (completer.isCompleted) return;
+          completer.completeError(
+            StateError(
+              'EPUB index isolate terminated before producing a result',
+            ),
+          );
+        }),
+      );
+    });
+
+    try {
+      return await completer.future;
+    } finally {
+      await resultSubscription.cancel();
+      await errorSubscription.cancel();
+      await exitSubscription.cancel();
+      receivePort.close();
+      errorPort.close();
+      exitPort.close();
+      isolate.kill(priority: Isolate.immediate);
+    }
   }
 
   // ---------------------------------------------------------------------------

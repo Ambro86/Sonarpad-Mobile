@@ -116,6 +116,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
         return 'pl';
       case 'cs':
         return 'cz';
+      case 'de':
+        return 'de';
       case 'it':
       default:
         return 'it';
@@ -191,8 +193,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
           selectedBuilder: (country) => country.code == _country,
           selectedLabel: l10n.selectedRecently,
           leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.public),
-          selectLetterLabel: _selectLetterLabel(l10n.localeName),
-          selectLetterTitle: _selectLetterTitle(l10n.localeName),
+          selectLetterLabel: l10n.letterJumpSelectLetter,
+          selectLetterTitle: l10n.letterJumpSelectLetter,
         ),
       ),
     );
@@ -229,8 +231,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
           selectedBuilder: (category) => category.genreId == _category.genreId,
           selectedLabel: l10n.selectedRecently,
           leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.category),
-          selectLetterLabel: _selectLetterLabel(l10n.localeName),
-          selectLetterTitle: _selectLetterTitle(l10n.localeName),
+          selectLetterLabel: l10n.letterJumpSelectLetter,
+          selectLetterTitle: l10n.letterJumpSelectLetter,
         ),
       ),
     );
@@ -753,25 +755,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
 }
 
 
-String _selectLetterLabel(String localeName) => switch (localeName) {
-      'en' => 'Select letter',
-      'es' => 'Seleccionar letra',
-      'fr' => 'Sélectionner une lettre',
-      'pt' => 'Selecionar letra',
-      'pl' => 'Wybierz literę',
-      'cs' => 'Vybrat písmeno',
-      _ => 'Seleziona lettera',
-    };
-
-String _selectLetterTitle(String localeName) => switch (localeName) {
-      'en' => 'Select letter',
-      'es' => 'Seleccionar letra',
-      'fr' => 'Sélectionner une lettre',
-      'pt' => 'Selecionar letra',
-      'pl' => 'Wybierz literę',
-      'cs' => 'Vybrat písmeno',
-      _ => 'Seleziona lettera',
-    };
 
 enum _PodcastAction { moveUp, moveDown, moveToPosition }
 

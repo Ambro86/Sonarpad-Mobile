@@ -597,7 +597,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     } else {
       widget.controller?._detachFlutter(this);
       _nativeViewKey = GlobalKey(
-        debugLabel: 'accessible_native_view_runtime_${_rendererGeneration}',
+        debugLabel: 'accessible_native_view_runtime_$_rendererGeneration',
       );
     }
 

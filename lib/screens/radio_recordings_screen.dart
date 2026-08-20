@@ -126,24 +126,6 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
     }
   }
 
-  String _openLabel(String localeName) => switch (localeName) {
-        'en' => 'Open',
-        'es' => 'Abrir',
-        'fr' => 'Ouvrir',
-        'pt' => 'Abrir',
-        'pl' => 'Otwórz',
-        _ => 'Apri',
-      };
-
-  String _deleteLabel(String localeName) => switch (localeName) {
-        'en' => 'Delete',
-        'es' => 'Eliminar',
-        'fr' => 'Supprimer',
-        'pt' => 'Eliminar',
-        'pl' => 'Usuń',
-        _ => 'Elimina',
-      };
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -195,9 +177,9 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
                             id: 'recording_${entry.key}',
                             title: p.basenameWithoutExtension(entry.value.path),
                             actions: [
-                              AccessibleCustomAction(id: 'open', label: _openLabel(l10n.localeName)),
+                              AccessibleCustomAction(id: 'open', label: l10n.openItem),
                               AccessibleCustomAction(id: 'share', label: l10n.share),
-                              AccessibleCustomAction(id: 'delete', label: _deleteLabel(l10n.localeName)),
+                              AccessibleCustomAction(id: 'delete', label: l10n.deleteItem),
                             ],
                           ))
                       .toList(growable: false),
@@ -227,11 +209,11 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
               return Semantics(
                 key: ValueKey('radio_recording_semantics_${file.path}'),
                 customSemanticsActions: {
-                  CustomSemanticsAction(label: _openLabel(l10n.localeName)): () =>
+                  CustomSemanticsAction(label: l10n.openItem): () =>
                       _openRecording(file),
                   CustomSemanticsAction(label: l10n.share): () =>
                       _shareRecording(file),
-                  CustomSemanticsAction(label: _deleteLabel(l10n.localeName)): () =>
+                  CustomSemanticsAction(label: l10n.deleteItem): () =>
                       _deleteRecording(file),
                 },
                 child: ListTile(
@@ -256,7 +238,7 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
                       itemBuilder: (context) => [
                         PopupMenuItem(
                           value: _RecordingAction.open,
-                          child: Text(_openLabel(l10n.localeName)),
+                          child: Text(l10n.openItem),
                         ),
                         PopupMenuItem(
                           value: _RecordingAction.share,
@@ -264,7 +246,7 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
                         ),
                         PopupMenuItem(
                           value: _RecordingAction.delete,
-                          child: Text(_deleteLabel(l10n.localeName)),
+                          child: Text(l10n.deleteItem),
                         ),
                       ],
                     ),

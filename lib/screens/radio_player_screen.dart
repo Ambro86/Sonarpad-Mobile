@@ -966,6 +966,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
+            final l10n = AppLocalizations.of(context);
             final nextHour = twoDigits(clampInt(selectedHour + 1, 0, 23));
             final previousHour = twoDigits(clampInt(selectedHour - 1, 0, 23));
             final nextMinute = twoDigits(clampInt(selectedMinute + 1, 0, 59));
@@ -1031,8 +1032,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   buildValueSlider(
-                    visibleLabel: 'Ore',
-                    semanticsLabel: 'Seleziona le ore',
+                    visibleLabel: l10n.radioScheduleHours,
+                    semanticsLabel: l10n.radioScheduleSelectHours,
                     value: selectedHour,
                     min: 0,
                     max: 23,
@@ -1042,8 +1043,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   ),
                   const SizedBox(height: 16),
                   buildValueSlider(
-                    visibleLabel: 'Minuti',
-                    semanticsLabel: 'Seleziona i minuti',
+                    visibleLabel: l10n.radioScheduleMinutes,
+                    semanticsLabel: l10n.radioScheduleSelectMinutes,
                     value: selectedMinute,
                     min: 0,
                     max: 59,
@@ -1056,14 +1057,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text('Annulla'),
+                  child: Text(l10n.cancel),
                 ),
                 FilledButton(
                   onPressed: () => Navigator.pop(
                     dialogContext,
                     TimeOfDay(hour: selectedHour, minute: selectedMinute),
                   ),
-                  child: const Text('OK'),
+                  child: Text(l10n.ok),
                 ),
               ],
             );
@@ -1074,10 +1075,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _showScheduleRecordingDialog() async {
+    final l10n = AppLocalizations.of(context);
     if (_recording) {
       showStatusMessage(
         context,
-        'Termina la registrazione in corso prima di programmarne una nuova.',
+        l10n.radioScheduleStopCurrentFirst,
       );
       return;
     }
@@ -1099,7 +1101,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 final picked = await _showScheduledRecordingTimePicker(
                   context: context,
                   initialTime: startTime,
-                  title: 'Ora di inizio',
+                  title: l10n.radioScheduleStartTime,
                 );
                 if (picked != null) {
                   setDialogState(() => startTime = picked);
@@ -1110,7 +1112,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 final picked = await _showScheduledRecordingTimePicker(
                   context: context,
                   initialTime: endTime,
-                  title: 'Ora di fine',
+                  title: l10n.radioScheduleEndTime,
                 );
                 if (picked != null) {
                   setDialogState(() => endTime = picked);
@@ -1118,31 +1120,31 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               }
 
               return AlertDialog(
-                title: const Text('Programma registrazione'),
+                title: Text(l10n.radioScheduleDialogTitle),
                 content: SizedBox(
                   width: double.maxFinite,
                   height: 360,
                   child: useSharedAccessibleViewModel
                       ? UniversalAccessibleList(
                           sections: [AccessibleListSection(rows: [
-                            const AccessibleListRow(
+                            AccessibleListRow(
                               id: 'info',
                               kind: 'text',
-                              title: 'In questa versione la registrazione programmata parte solo se Sonarpad resta aperto su questo player. Se chiudi l’app o questa schermata, la registrazione non può partire da sola.',
+                              title: l10n.radioScheduleOpenRequirement,
                             ),
                             AccessibleListRow(
                               id: 'start',
-                              title: 'Ora di inizio: ${_formatTimeOfDay(startTime)}',
+                              title: l10n.radioScheduleStartTimeValue(_formatTimeOfDay(startTime)),
                             ),
                             AccessibleListRow(
                               id: 'end',
-                              title: 'Ora di fine: ${_formatTimeOfDay(endTime)}',
+                              title: l10n.radioScheduleEndTimeValue(_formatTimeOfDay(endTime)),
                             ),
                             AccessibleListRow(
                               id: 'title',
                               kind: 'textField',
-                              title: 'Titolo facoltativo',
-                              placeholder: 'Lascia vuoto per usare il nome della radio o TV',
+                              title: l10n.radioScheduleOptionalTitle,
+                              placeholder: l10n.radioScheduleTitleHint,
                               value: titleController.text,
                             ),
                           ])],
@@ -1161,27 +1163,25 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const Text(
-                                'In questa versione la registrazione programmata parte solo se Sonarpad resta aperto su questo player. Se chiudi l’app o questa schermata, la registrazione non può partire da sola.',
-                              ),
+                              Text(l10n.radioScheduleOpenRequirement),
                               const SizedBox(height: 16),
                               OutlinedButton.icon(
                                 onPressed: pickStart,
                                 icon: const Icon(Icons.schedule),
-                                label: Text('Ora di inizio: ${_formatTimeOfDay(startTime)}'),
+                                label: Text(l10n.radioScheduleStartTimeValue(_formatTimeOfDay(startTime))),
                               ),
                               const SizedBox(height: 8),
                               OutlinedButton.icon(
                                 onPressed: pickEnd,
                                 icon: const Icon(Icons.schedule),
-                                label: Text('Ora di fine: ${_formatTimeOfDay(endTime)}'),
+                                label: Text(l10n.radioScheduleEndTimeValue(_formatTimeOfDay(endTime))),
                               ),
                               const SizedBox(height: 16),
                               TextField(
                                 controller: titleController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Titolo facoltativo',
-                                  hintText: 'Lascia vuoto per usare il nome della radio o TV',
+                                decoration: InputDecoration(
+                                  labelText: l10n.radioScheduleOptionalTitle,
+                                  hintText: l10n.radioScheduleTitleHint,
                                 ),
                                 textInputAction: TextInputAction.done,
                               ),
@@ -1192,7 +1192,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(dialogContext),
-                    child: const Text('Annulla'),
+                    child: Text(l10n.cancel),
                   ),
                   FilledButton(
                     onPressed: () {
@@ -1205,7 +1205,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                         ),
                       );
                     },
-                    child: const Text('Programma'),
+                    child: Text(l10n.radioScheduleAction),
                   ),
                 ],
               );
@@ -1221,6 +1221,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   void _scheduleRecording(_ScheduledRecordingRequest request) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     var start = DateTime(
       now.year,
@@ -1259,12 +1260,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     ));
     showStatusMessage(
       context,
-      'Registrazione programmata: ${_formatScheduledDateTime(start)} - ${_formatScheduledDateTime(end)}.',
+      l10n.radioScheduledRecordingRange(
+        _formatScheduledDateTime(start),
+        _formatScheduledDateTime(end),
+      ),
     );
   }
 
   Future<void> _startScheduledRecording() async {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     final end = _scheduledRecordingEnd;
     final title = _scheduledRecordingTitle;
     try {
@@ -1274,7 +1279,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         );
         showStatusMessage(
           context,
-          'Registrazione programmata non avviata: una registrazione è già in corso.',
+          l10n.radioScheduledRecordingAlreadyActive,
         );
         _clearScheduledRecordingState();
         return;
@@ -1284,7 +1289,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       );
       await _startRecordingNow(titleOverride: title, showMessage: false);
       if (!mounted) return;
-      showStatusMessage(context, 'Registrazione programmata avviata.');
+      showStatusMessage(context, l10n.radioScheduledRecordingStarted);
       if (end == null) {
         _clearScheduledRecordingState();
         return;
@@ -1312,23 +1317,26 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         _recordingOutput = null;
       });
       _clearScheduledRecordingState();
-      showStatusMessage(context, 'Errore registrazione programmata: $error');
+      showStatusMessage(context, l10n.radioScheduledRecordingError(error));
     }
   }
 
   Future<void> _stopScheduledRecording() async {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     try {
       await AppLogger.log('RadioPlayer: scheduled recording stop');
       if (_recording) {
         await _stopRecordingNow(showMessage: false);
         if (!mounted) return;
-        showStatusMessage(context, 'Registrazione programmata salvata.');
+        showStatusMessage(context, l10n.radioScheduledRecordingSaved);
       }
     } catch (error) {
       if (!mounted) return;
       showStatusMessage(
-          context, 'Errore salvataggio registrazione programmata: $error');
+        context,
+        l10n.radioScheduledRecordingSaveError(error),
+      );
     } finally {
       if (mounted) {
         _clearScheduledRecordingState();
@@ -1346,7 +1354,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     if (mounted) {
       setState(() {});
       if (showMessage && hadSchedule) {
-        showStatusMessage(context, 'Registrazione programmata annullata.');
+        showStatusMessage(
+          context,
+          AppLocalizations.of(context).radioScheduledRecordingCancelled,
+        );
       }
     }
     if (hadSchedule) {
@@ -1390,9 +1401,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final start = _scheduledRecordingStart;
     final end = _scheduledRecordingEnd;
     if (start == null || end == null) return null;
+    final l10n = AppLocalizations.of(context);
+    final startText = _formatScheduledDateTime(start);
+    final endText = _formatScheduledDateTime(end);
     final title = _scheduledRecordingTitle;
-    final titlePart = title == null || title.isEmpty ? '' : ' Titolo: $title.';
-    return 'Registrazione programmata: ${_formatScheduledDateTime(start)} - ${_formatScheduledDateTime(end)}.$titlePart';
+    if (title == null || title.isEmpty) {
+      return l10n.radioScheduledRecordingRange(startText, endText);
+    }
+    return l10n.radioScheduledRecordingRangeWithTitle(
+      startText,
+      endText,
+      title,
+    );
   }
 
   bool get _hasPendingScheduledRecording =>
@@ -1630,7 +1650,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                           ? null
                           : _showScheduleRecordingDialog,
                       icon: const Icon(Icons.schedule),
-                      label: const Text('Programma registrazione'),
+                      label: Text(l10n.radioScheduleDialogTitle),
                     ),
                 ],
               ),
@@ -1653,9 +1673,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   TextButton.icon(
                     onPressed: () => _cancelScheduledRecording(),
                     icon: const Icon(Icons.cancel, color: Colors.white),
-                    label: const Text(
-                      'Annulla registrazione programmata',
-                      style: TextStyle(color: Colors.white),
+                    label: Text(
+                      l10n.radioScheduleCancelAction,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
               ],
@@ -1740,13 +1760,20 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         if (_canRecordStream)
           AccessibleListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: !_loading),
         if (_canRecordStream)
-          AccessibleListRow(id: 'schedule', title: 'Programma registrazione', enabled: !_loading && !_recording),
+          AccessibleListRow(
+            id: 'schedule',
+            title: l10n.radioScheduleDialogTitle,
+            enabled: !_loading && !_recording,
+          ),
         if (_recordingOutput != null)
           AccessibleListRow(id: 'recording_name', kind: 'text', title: p.basenameWithoutExtension(_recordingOutput!.path)),
         if (_scheduledRecordingSummary != null)
           AccessibleListRow(id: 'schedule_summary', kind: 'text', title: _scheduledRecordingSummary!),
         if (_hasPendingScheduledRecording)
-          const AccessibleListRow(id: 'cancel_schedule', title: 'Annulla registrazione programmata'),
+          AccessibleListRow(
+            id: 'cancel_schedule',
+            title: l10n.radioScheduleCancelAction,
+          ),
         AccessibleListRow(
           id: 'favorite',
           title: _isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
@@ -1913,7 +1940,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                       ? null
                       : _showScheduleRecordingDialog,
                   icon: const Icon(Icons.schedule),
-                  label: const Text('Programma registrazione'),
+                  label: Text(l10n.radioScheduleDialogTitle),
                 ),
             ],
           ),
@@ -1934,7 +1961,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               TextButton.icon(
                 onPressed: () => _cancelScheduledRecording(),
                 icon: const Icon(Icons.cancel),
-                label: const Text('Annulla registrazione programmata'),
+                label: Text(l10n.radioScheduleCancelAction),
               ),
           ],
           if (_videoController == null && _mediaKitPlayer == null) ...[

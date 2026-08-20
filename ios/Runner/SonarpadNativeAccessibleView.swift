@@ -860,9 +860,9 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     cell.detailTextLabel?.text = row.subtitle ?? row.value
     cell.detailTextLabel?.numberOfLines = 0
     cell.detailTextLabel?.textColor = .secondaryLabel
-    cell.selectionStyle = row.enabled && row.kind != "text" ? .default : .none
+    cell.selectionStyle = row.enabled && row.kind != "text" && row.accessibilityButtonTrait ? .default : .none
     cell.isUserInteractionEnabled = row.enabled
-    cell.accessoryType = (row.kind == "action" || row.kind == "picker" || row.kind == "button") ? .disclosureIndicator : .none
+    cell.accessoryType = row.accessibilityButtonTrait && (row.kind == "action" || row.kind == "picker" || row.kind == "button") ? .disclosureIndicator : .none
     cell.isAccessibilityElement = true
     cell.accessibilityLabel = row.accessibilityLabel ?? row.title
     cell.accessibilityHint = row.hint

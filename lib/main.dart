@@ -388,6 +388,12 @@ class _SonarpadAppState extends State<SonarpadApp> {
       });
     }
 
+    Widget italianOnlyRoute(BuildContext routeContext, Widget child) {
+      return AppLocalizations.of(routeContext).localeName == 'it'
+          ? child
+          : const HomeScreen();
+    }
+
     return MaterialApp(
       navigatorKey: _navigatorKey,
       title: 'Sonarpad',
@@ -410,29 +416,32 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/media_cutter': (_) => const MediaCutterScreen(),
         '/radio': (_) => const RadioScreen(),
         '/radio/recordings': (_) => const RadioRecordingsScreen(),
-        '/tv': (_) => const TvScreen(),
-        '/tv/recordings': (_) => const TvRecordingsScreen(),
-        '/raiplaysound': (_) => const RaiPlaySoundScreen(),
-        '/raiplay': (_) => const RaiPlayScreen(),
-        '/la7play': (_) => const La7PlayScreen(),
+        '/tv': (context) => italianOnlyRoute(context, const TvScreen()),
+        '/tv/recordings': (context) =>
+            italianOnlyRoute(context, const TvRecordingsScreen()),
+        '/raiplaysound': (context) =>
+            italianOnlyRoute(context, const RaiPlaySoundScreen()),
+        '/raiplay': (context) =>
+            italianOnlyRoute(context, const RaiPlayScreen()),
+        '/la7play': (context) =>
+            italianOnlyRoute(context, const La7PlayScreen()),
         '/wikipedia': (_) => const WikipediaScreen(),
         '/gutenberg': (_) => const GutenbergScreen(),
         '/internet_archive': (_) => const InternetArchiveScreen(),
         '/librivox': (_) => const LibrivoxScreen(),
         '/poetrydb': (_) => const PoetryDbScreen(),
-        '/bdciechi': (_) => const BdCiechiLoginScreen(),
+        '/bdciechi': (context) =>
+            italianOnlyRoute(context, const BdCiechiLoginScreen()),
         '/settings': (_) => SettingsScreen(onThemeModeChanged: setThemeMode),
-        '/aifa': (context) {
-          final l10n = AppLocalizations.of(context);
-          if (l10n.localeName != 'it') {
-            return const HomeScreen();
-          }
-          return const AifaSearchScreen();
-        },
-        '/orari_apertura': (_) => OrariAperturaSearchScreen(),
-        '/italiaonline': (_) => const ItaliaOnlineScreen(),
+        '/aifa': (context) =>
+            italianOnlyRoute(context, const AifaSearchScreen()),
+        '/orari_apertura': (context) =>
+            italianOnlyRoute(context, OrariAperturaSearchScreen()),
+        '/italiaonline': (context) =>
+            italianOnlyRoute(context, const ItaliaOnlineScreen()),
         '/route': (_) => const RouteScreen(),
-        '/audiodescriptions': (_) => const AudiodescriptionRecentScreen(),
+        '/audiodescriptions': (context) =>
+            italianOnlyRoute(context, const AudiodescriptionRecentScreen()),
         '/info': (_) => const InfoScreen(),
         '/calendar': (_) => const CalendarScreen(),
         '/voice_dictionary': (_) => const VoiceDictionaryScreen(),

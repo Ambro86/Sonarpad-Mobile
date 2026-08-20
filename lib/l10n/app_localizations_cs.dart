@@ -408,6 +408,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get spanish => 'Španělština';
 
   @override
+  String get german => 'Němčina';
+
+  @override
   String get newsSource => 'Zdroj zpráv';
 
   @override
@@ -3062,4 +3065,300 @@ class AppLocalizationsCs extends AppLocalizations {
   String get developerUseExperimentalFlutterRendererHint =>
       'Dočasně vypne UIKit, abyste mohli porovnat VoiceOver s čistým Flutterem.';
 
+  // Shared labels generated from ARB entries.
+  @override
+  String get letterJumpSelectLetter => 'Vybrat písmeno';
+
+  @override
+  String get letterJumpSelected => 'vybráno';
+
+  @override
+  String get settingsToggleOn => 'Zapnuto';
+
+  @override
+  String get settingsToggleOff => 'Vypnuto';
+
+  @override
+  String get radioDirectoryLoading => 'Aktualizuji země a jazyky rádia...';
+
+  @override
+  String get recentRadios => 'Nedávná rádia';
+
+  @override
+  String get radioNextPage => 'Další';
+
+  @override
+  String radioPageOf(int current, int total) {
+    return 'Stránka $current z $total';
+  }
+
+  @override
+  String get radioNoResultsWithQuery => 'Nebyly nalezeny žádné stanice. Zkuste zadat pouze název stanice bez žánru nebo změňte jazyk či zemi.';
+
+  @override
+  String get radioNoResultsGeneric => 'Nebyly nalezeny žádné stanice. Zkuste jiný jazyk, zemi nebo žánr.';
+
+  @override
+  String radioSearchRawError(Object error) {
+    return 'Chyba při hledání rádia: $error';
+  }
+
+  @override
+  String get radioBrowserConnectionError => 'Chyba připojení k Radio Browseru. Zkuste to prosím později.';
+
+  @override
+  String get documentIndexLoadingMessage => 'Načítání obsahu... Čekejte prosím.';
+
+  @override
+  String get documentIndexUnavailableMessage => 'Obsah není pro tento EPUB dostupný.';
+
+  @override
+  String mediaCutterVolumeSummary(int percent) {
+    return 'hlasitost $percent %';
+  }
+
+  @override
+  String mediaCutterDurationSummary(String duration) {
+    return 'délka $duration';
+  }
+
+  @override
+  String get mediaCutterDurationHourOne => 'hodina';
+
+  @override
+  String get mediaCutterDurationHourFew => 'hodiny';
+
+  @override
+  String get mediaCutterDurationHourMany => 'hodin';
+
+  @override
+  String get mediaCutterDurationMinuteOne => 'minuta';
+
+  @override
+  String get mediaCutterDurationMinuteFew => 'minuty';
+
+  @override
+  String get mediaCutterDurationMinuteMany => 'minut';
+
+  @override
+  String get mediaCutterDurationSecondOne => 'sekunda';
+
+  @override
+  String get mediaCutterDurationSecondFew => 'sekundy';
+
+  @override
+  String get mediaCutterDurationSecondMany => 'sekund';
+
+  @override
+  String get mediaCutterDurationAnd => 'a';
+
+  @override
+  String mediaCutterSeekStepButton(String step) {
+    return 'Nastavit posun mediálního souboru: $step';
+  }
+
+  @override
+  String get mediaCutterSeekStepTitle => 'Posun mediálního souboru';
+
+  @override
+  String mediaCutterSeekStepSelected(String step) {
+    return 'Posun mediálního souboru nastaven na $step.';
+  }
+
+  @override
+  String get mediaCutterPartEffectBackwards => 'Pozpátku';
+
+  @override
+  String get mediaCutterPartEffectTalkingGuitar => 'Mluvící kytara';
+
+  @override
+  String get mediaCutterPartEffectMosquito => 'Komár';
+
+  @override
+  String get mediaCutterPartEffectOneOfMany => 'Jeden hlas, mnoho zpěváků';
+
+  @override
+  String get mediaCutterPartEffectOrganVocoder => 'Mluvící varhany';
+
+  @override
+  String get mediaCutterPartEffectWarped => 'Deformovaný';
+
+  @override
+  String get mediaCutterPartEffectSwirling => 'Stereo vír';
+
+  @override
+  String get mediaCutterPartEffectVader => 'Filmový temný hlas';
+
+  @override
+  String get mediaCutterPartEffectMetallic => 'Kovový';
+
+  @override
+  String get mediaCutterPartEffectSongbird => 'Zpěvný pták';
+
+  @override
+  String get mediaCutterPartEffectExterminator => 'Likvidátor';
+
+  @override
+  String get mediaCutterPartEffectRainAndThunder => 'Déšť a hromy';
+
+  @override
+  String get mediaCutterPartEffectJungle => 'Džungle';
+
+  @override
+  String get mediaCutterPartEffectCrowd => 'Dav';
+
+  @override
+  String get mediaCutterPartEffectSlotMachines => 'Výherní automaty';
+
+  @override
+  String get mediaCutterPartEffectTraffic => 'Doprava';
+
+  @override
+  String get mediaCutterPartEffectSpaceship => 'Vesmírná loď';
+
+  @override
+  String get mediaCutterPartEffectCricket => 'Cvrček';
+
+  @override
+  String get mediaCutterPartEffectSiren => 'Siréna';
+
+  @override
+  String get mediaCutterPartEffectSleighBells => 'Rolničky';
+
+  @override
+  String get mediaCutterPartEffectDj => 'DJ a scratch';
+
+  @override
+  String get mediaCutterPartEffectApplause => 'Potlesk';
+
+  @override
+  String get mediaCutterPartEffectBadMelody => 'Falešná melodie';
+
+  @override
+  String get mediaCutterPartEffectBadHarmony => 'Disonantní harmonie';
+
+  @override
+  String get mediaCutterPartEffectWarmVoice => 'Teplý hlas';
+
+  @override
+  String get mediaCutterPartEffectTurtle => 'Želva';
+
+  @override
+  String get mediaCutterPartEffectHaunting => 'Strašidelný';
+
+  @override
+  String get radioPreviousPage => 'Předchozí';
+
+  @override
+  String get noRecentRadios => 'Žádné nedávno poslouchané rádio.';
+
+  @override
+  String get radioBrowseByCity => 'Procházet podle města';
+
+  @override
+  String get radioCityInputHint => 'Zadejte město...';
+
+  @override
+  String get openItem => 'Otevřít';
+
+  @override
+  String get clearSearch => 'Vymazat hledání';
+
+  @override
+  String get fileTypeLabel => 'Soubor';
+
+  @override
+  String get cinemaTrailerLoading => 'Načítání upoutávky';
+
+  @override
+  String get cinemaNoTrailer => 'Pro tento film není k dispozici žádná upoutávka';
+
+  @override
+  String get radioScheduleHours => 'Hodiny';
+
+  @override
+  String get radioScheduleSelectHours => 'Vyberte hodiny';
+
+  @override
+  String get radioScheduleMinutes => 'Minuty';
+
+  @override
+  String get radioScheduleSelectMinutes => 'Vyberte minuty';
+
+  @override
+  String get radioScheduleStopCurrentFirst => 'Před naplánováním nového záznamu ukončete probíhající nahrávání.';
+
+  @override
+  String get radioScheduleStartTime => 'Čas začátku';
+
+  @override
+  String get radioScheduleEndTime => 'Čas konce';
+
+  @override
+  String get radioScheduleDialogTitle => 'Naplánovat nahrávání';
+
+  @override
+  String get radioScheduleOpenRequirement => 'V této verzi se naplánované nahrávání spustí pouze tehdy, když Sonarpad zůstane otevřený na tomto přehrávači. Pokud zavřete aplikaci nebo tuto obrazovku, nahrávání se nemůže spustit automaticky.';
+
+  @override
+  String radioScheduleStartTimeValue(String time) {
+    return 'Čas začátku: $time';
+  }
+
+  @override
+  String radioScheduleEndTimeValue(String time) {
+    return 'Čas konce: $time';
+  }
+
+  @override
+  String get radioScheduleOptionalTitle => 'Volitelný název';
+
+  @override
+  String get radioScheduleTitleHint => 'Ponechte prázdné pro použití názvu rádia nebo TV';
+
+  @override
+  String get radioScheduleAction => 'Naplánovat';
+
+  @override
+  String radioScheduledRecordingRange(String start, String end) {
+    return 'Naplánované nahrávání: $start - $end.';
+  }
+
+  @override
+  String get radioScheduledRecordingAlreadyActive => 'Naplánované nahrávání nebylo spuštěno: již probíhá jiné nahrávání.';
+
+  @override
+  String get radioScheduledRecordingStarted => 'Naplánované nahrávání spuštěno.';
+
+  @override
+  String radioScheduledRecordingError(Object error) {
+    return 'Chyba naplánovaného nahrávání: $error';
+  }
+
+  @override
+  String get radioScheduledRecordingSaved => 'Naplánované nahrávání uloženo.';
+
+  @override
+  String radioScheduledRecordingSaveError(Object error) {
+    return 'Chyba při ukládání naplánovaného nahrávání: $error';
+  }
+
+  @override
+  String get radioScheduledRecordingCancelled => 'Naplánované nahrávání zrušeno.';
+
+  @override
+  String radioScheduledRecordingRangeWithTitle(String start, String end, String title) {
+    return 'Naplánované nahrávání: $start - $end. Název: $title.';
+  }
+
+  @override
+  String get radioScheduleCancelAction => 'Zrušit naplánované nahrávání';
+  @override
+  String get radioLanguageTr => 'Turečtina';
+
+  @override
+  String get radioCountryOptionTr => 'Turecko';
+
+  @override
+  String get radioCommunityLanguageTurkish => 'Turečtina';
 }

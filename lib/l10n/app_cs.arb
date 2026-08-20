@@ -153,6 +153,10 @@
   "english": "Angličtina",
   "french": "Francouzština",
   "spanish": "Španělština",
+  "german": "Němčina",
+  "@german": {
+    "description": "Localized text for german."
+  },
   "newsSource": "Zdroj zpráv",
   "article": "Článek",
   "articlePreview": "Náhled článku",
@@ -1605,5 +1609,409 @@
   "developerUseExperimentalFlutterRendererHint": "Dočasně vypne UIKit, abyste mohli porovnat VoiceOver s čistým Flutterem.",
   "@developerUseExperimentalFlutterRendererHint": {
     "description": "Localized text for developerUseExperimentalFlutterRendererHint."
+  },
+  "letterJumpSelectLetter": "Vybrat písmeno",
+  "@letterJumpSelectLetter": {
+    "description": "Localized text for letterJumpSelectLetter."
+  },
+  "letterJumpSelected": "vybráno",
+  "@letterJumpSelected": {
+    "description": "Localized text for letterJumpSelected."
+  },
+  "settingsToggleOn": "Zapnuto",
+  "@settingsToggleOn": {
+    "description": "Localized text for settingsToggleOn."
+  },
+  "settingsToggleOff": "Vypnuto",
+  "@settingsToggleOff": {
+    "description": "Localized text for settingsToggleOff."
+  },
+  "radioDirectoryLoading": "Aktualizuji země a jazyky rádia...",
+  "@radioDirectoryLoading": {
+    "description": "Localized text for radioDirectoryLoading."
+  },
+  "recentRadios": "Nedávná rádia",
+  "@recentRadios": {
+    "description": "Localized text for recentRadios."
+  },
+  "radioNextPage": "Další",
+  "@radioNextPage": {
+    "description": "Localized text for radioNextPage."
+  },
+  "radioPageOf": "Stránka {current} z {total}",
+  "@radioPageOf": {
+    "description": "Localized text for radioPageOf.",
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "radioNoResultsWithQuery": "Nebyly nalezeny žádné stanice. Zkuste zadat pouze název stanice bez žánru nebo změňte jazyk či zemi.",
+  "@radioNoResultsWithQuery": {
+    "description": "Localized text for radioNoResultsWithQuery."
+  },
+  "radioNoResultsGeneric": "Nebyly nalezeny žádné stanice. Zkuste jiný jazyk, zemi nebo žánr.",
+  "@radioNoResultsGeneric": {
+    "description": "Localized text for radioNoResultsGeneric."
+  },
+  "radioSearchRawError": "Chyba při hledání rádia: {error}",
+  "@radioSearchRawError": {
+    "description": "Localized text for radioSearchRawError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioBrowserConnectionError": "Chyba připojení k Radio Browseru. Zkuste to prosím později.",
+  "@radioBrowserConnectionError": {
+    "description": "Localized text for radioBrowserConnectionError."
+  },
+  "documentIndexLoadingMessage": "Načítání obsahu... Čekejte prosím.",
+  "@documentIndexLoadingMessage": {
+    "description": "Localized text for documentIndexLoadingMessage."
+  },
+  "documentIndexUnavailableMessage": "Obsah není pro tento EPUB dostupný.",
+  "@documentIndexUnavailableMessage": {
+    "description": "Localized text for documentIndexUnavailableMessage."
+  },
+  "mediaCutterVolumeSummary": "hlasitost {percent} %",
+  "@mediaCutterVolumeSummary": {
+    "description": "Localized text for mediaCutterVolumeSummary.",
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "mediaCutterDurationSummary": "délka {duration}",
+  "@mediaCutterDurationSummary": {
+    "description": "Localized text for mediaCutterDurationSummary.",
+    "placeholders": {
+      "duration": {}
+    }
+  },
+  "mediaCutterDurationHourOne": "hodina",
+  "@mediaCutterDurationHourOne": {
+    "description": "Localized text for mediaCutterDurationHourOne."
+  },
+  "mediaCutterDurationHourFew": "hodiny",
+  "@mediaCutterDurationHourFew": {
+    "description": "Localized text for mediaCutterDurationHourFew."
+  },
+  "mediaCutterDurationHourMany": "hodin",
+  "@mediaCutterDurationHourMany": {
+    "description": "Localized text for mediaCutterDurationHourMany."
+  },
+  "mediaCutterDurationMinuteOne": "minuta",
+  "@mediaCutterDurationMinuteOne": {
+    "description": "Localized text for mediaCutterDurationMinuteOne."
+  },
+  "mediaCutterDurationMinuteFew": "minuty",
+  "@mediaCutterDurationMinuteFew": {
+    "description": "Localized text for mediaCutterDurationMinuteFew."
+  },
+  "mediaCutterDurationMinuteMany": "minut",
+  "@mediaCutterDurationMinuteMany": {
+    "description": "Localized text for mediaCutterDurationMinuteMany."
+  },
+  "mediaCutterDurationSecondOne": "sekunda",
+  "@mediaCutterDurationSecondOne": {
+    "description": "Localized text for mediaCutterDurationSecondOne."
+  },
+  "mediaCutterDurationSecondFew": "sekundy",
+  "@mediaCutterDurationSecondFew": {
+    "description": "Localized text for mediaCutterDurationSecondFew."
+  },
+  "mediaCutterDurationSecondMany": "sekund",
+  "@mediaCutterDurationSecondMany": {
+    "description": "Localized text for mediaCutterDurationSecondMany."
+  },
+  "mediaCutterDurationAnd": "a",
+  "@mediaCutterDurationAnd": {
+    "description": "Localized text for mediaCutterDurationAnd."
+  },
+  "mediaCutterSeekStepButton": "Nastavit posun mediálního souboru: {step}",
+  "@mediaCutterSeekStepButton": {
+    "description": "Localized text for mediaCutterSeekStepButton.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterSeekStepTitle": "Posun mediálního souboru",
+  "@mediaCutterSeekStepTitle": {
+    "description": "Localized text for mediaCutterSeekStepTitle."
+  },
+  "mediaCutterSeekStepSelected": "Posun mediálního souboru nastaven na {step}.",
+  "@mediaCutterSeekStepSelected": {
+    "description": "Localized text for mediaCutterSeekStepSelected.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterPartEffectBackwards": "Pozpátku",
+  "@mediaCutterPartEffectBackwards": {
+    "description": "Localized text for mediaCutterPartEffectBackwards."
+  },
+  "mediaCutterPartEffectTalkingGuitar": "Mluvící kytara",
+  "@mediaCutterPartEffectTalkingGuitar": {
+    "description": "Localized text for mediaCutterPartEffectTalkingGuitar."
+  },
+  "mediaCutterPartEffectMosquito": "Komár",
+  "@mediaCutterPartEffectMosquito": {
+    "description": "Localized text for mediaCutterPartEffectMosquito."
+  },
+  "mediaCutterPartEffectOneOfMany": "Jeden hlas, mnoho zpěváků",
+  "@mediaCutterPartEffectOneOfMany": {
+    "description": "Localized text for mediaCutterPartEffectOneOfMany."
+  },
+  "mediaCutterPartEffectOrganVocoder": "Mluvící varhany",
+  "@mediaCutterPartEffectOrganVocoder": {
+    "description": "Localized text for mediaCutterPartEffectOrganVocoder."
+  },
+  "mediaCutterPartEffectWarped": "Deformovaný",
+  "@mediaCutterPartEffectWarped": {
+    "description": "Localized text for mediaCutterPartEffectWarped."
+  },
+  "mediaCutterPartEffectSwirling": "Stereo vír",
+  "@mediaCutterPartEffectSwirling": {
+    "description": "Localized text for mediaCutterPartEffectSwirling."
+  },
+  "mediaCutterPartEffectVader": "Filmový temný hlas",
+  "@mediaCutterPartEffectVader": {
+    "description": "Localized text for mediaCutterPartEffectVader."
+  },
+  "mediaCutterPartEffectMetallic": "Kovový",
+  "@mediaCutterPartEffectMetallic": {
+    "description": "Localized text for mediaCutterPartEffectMetallic."
+  },
+  "mediaCutterPartEffectSongbird": "Zpěvný pták",
+  "@mediaCutterPartEffectSongbird": {
+    "description": "Localized text for mediaCutterPartEffectSongbird."
+  },
+  "mediaCutterPartEffectExterminator": "Likvidátor",
+  "@mediaCutterPartEffectExterminator": {
+    "description": "Localized text for mediaCutterPartEffectExterminator."
+  },
+  "mediaCutterPartEffectRainAndThunder": "Déšť a hromy",
+  "@mediaCutterPartEffectRainAndThunder": {
+    "description": "Localized text for mediaCutterPartEffectRainAndThunder."
+  },
+  "mediaCutterPartEffectJungle": "Džungle",
+  "@mediaCutterPartEffectJungle": {
+    "description": "Localized text for mediaCutterPartEffectJungle."
+  },
+  "mediaCutterPartEffectCrowd": "Dav",
+  "@mediaCutterPartEffectCrowd": {
+    "description": "Localized text for mediaCutterPartEffectCrowd."
+  },
+  "mediaCutterPartEffectSlotMachines": "Výherní automaty",
+  "@mediaCutterPartEffectSlotMachines": {
+    "description": "Localized text for mediaCutterPartEffectSlotMachines."
+  },
+  "mediaCutterPartEffectTraffic": "Doprava",
+  "@mediaCutterPartEffectTraffic": {
+    "description": "Localized text for mediaCutterPartEffectTraffic."
+  },
+  "mediaCutterPartEffectSpaceship": "Vesmírná loď",
+  "@mediaCutterPartEffectSpaceship": {
+    "description": "Localized text for mediaCutterPartEffectSpaceship."
+  },
+  "mediaCutterPartEffectCricket": "Cvrček",
+  "@mediaCutterPartEffectCricket": {
+    "description": "Localized text for mediaCutterPartEffectCricket."
+  },
+  "mediaCutterPartEffectSiren": "Siréna",
+  "@mediaCutterPartEffectSiren": {
+    "description": "Localized text for mediaCutterPartEffectSiren."
+  },
+  "mediaCutterPartEffectSleighBells": "Rolničky",
+  "@mediaCutterPartEffectSleighBells": {
+    "description": "Localized text for mediaCutterPartEffectSleighBells."
+  },
+  "mediaCutterPartEffectDj": "DJ a scratch",
+  "@mediaCutterPartEffectDj": {
+    "description": "Localized text for mediaCutterPartEffectDj."
+  },
+  "mediaCutterPartEffectApplause": "Potlesk",
+  "@mediaCutterPartEffectApplause": {
+    "description": "Localized text for mediaCutterPartEffectApplause."
+  },
+  "mediaCutterPartEffectBadMelody": "Falešná melodie",
+  "@mediaCutterPartEffectBadMelody": {
+    "description": "Localized text for mediaCutterPartEffectBadMelody."
+  },
+  "mediaCutterPartEffectBadHarmony": "Disonantní harmonie",
+  "@mediaCutterPartEffectBadHarmony": {
+    "description": "Localized text for mediaCutterPartEffectBadHarmony."
+  },
+  "mediaCutterPartEffectWarmVoice": "Teplý hlas",
+  "@mediaCutterPartEffectWarmVoice": {
+    "description": "Localized text for mediaCutterPartEffectWarmVoice."
+  },
+  "mediaCutterPartEffectTurtle": "Želva",
+  "@mediaCutterPartEffectTurtle": {
+    "description": "Localized text for mediaCutterPartEffectTurtle."
+  },
+  "mediaCutterPartEffectHaunting": "Strašidelný",
+  "@mediaCutterPartEffectHaunting": {
+    "description": "Localized text for mediaCutterPartEffectHaunting."
+  },
+  "radioPreviousPage": "Předchozí",
+  "@radioPreviousPage": {
+    "description": "Localized text for radioPreviousPage."
+  },
+  "noRecentRadios": "Žádné nedávno poslouchané rádio.",
+  "@noRecentRadios": {
+    "description": "Localized text for noRecentRadios."
+  },
+  "radioBrowseByCity": "Procházet podle města",
+  "@radioBrowseByCity": {
+    "description": "Localized text for radioBrowseByCity."
+  },
+  "radioCityInputHint": "Zadejte město...",
+  "@radioCityInputHint": {
+    "description": "Localized text for radioCityInputHint."
+  },
+  "openItem": "Otevřít",
+  "@openItem": {
+    "description": "Localized text for openItem."
+  },
+  "clearSearch": "Vymazat hledání",
+  "@clearSearch": {
+    "description": "Localized text for clearSearch."
+  },
+  "fileTypeLabel": "Soubor",
+  "@fileTypeLabel": {
+    "description": "Localized text for fileTypeLabel."
+  },
+  "cinemaTrailerLoading": "Načítání upoutávky",
+  "@cinemaTrailerLoading": {
+    "description": "Localized text for cinemaTrailerLoading."
+  },
+  "cinemaNoTrailer": "Pro tento film není k dispozici žádná upoutávka",
+  "@cinemaNoTrailer": {
+    "description": "Localized text for cinemaNoTrailer."
+  },
+  "radioScheduleHours": "Hodiny",
+  "@radioScheduleHours": {
+    "description": "Localized text for radioScheduleHours."
+  },
+  "radioScheduleSelectHours": "Vyberte hodiny",
+  "@radioScheduleSelectHours": {
+    "description": "Localized text for radioScheduleSelectHours."
+  },
+  "radioScheduleMinutes": "Minuty",
+  "@radioScheduleMinutes": {
+    "description": "Localized text for radioScheduleMinutes."
+  },
+  "radioScheduleSelectMinutes": "Vyberte minuty",
+  "@radioScheduleSelectMinutes": {
+    "description": "Localized text for radioScheduleSelectMinutes."
+  },
+  "radioScheduleStopCurrentFirst": "Před naplánováním nového záznamu ukončete probíhající nahrávání.",
+  "@radioScheduleStopCurrentFirst": {
+    "description": "Localized text for radioScheduleStopCurrentFirst."
+  },
+  "radioScheduleStartTime": "Čas začátku",
+  "@radioScheduleStartTime": {
+    "description": "Localized text for radioScheduleStartTime."
+  },
+  "radioScheduleEndTime": "Čas konce",
+  "@radioScheduleEndTime": {
+    "description": "Localized text for radioScheduleEndTime."
+  },
+  "radioScheduleDialogTitle": "Naplánovat nahrávání",
+  "@radioScheduleDialogTitle": {
+    "description": "Localized text for radioScheduleDialogTitle."
+  },
+  "radioScheduleOpenRequirement": "V této verzi se naplánované nahrávání spustí pouze tehdy, když Sonarpad zůstane otevřený na tomto přehrávači. Pokud zavřete aplikaci nebo tuto obrazovku, nahrávání se nemůže spustit automaticky.",
+  "@radioScheduleOpenRequirement": {
+    "description": "Localized text for radioScheduleOpenRequirement."
+  },
+  "radioScheduleStartTimeValue": "Čas začátku: {time}",
+  "@radioScheduleStartTimeValue": {
+    "description": "Localized text for radioScheduleStartTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleEndTimeValue": "Čas konce: {time}",
+  "@radioScheduleEndTimeValue": {
+    "description": "Localized text for radioScheduleEndTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleOptionalTitle": "Volitelný název",
+  "@radioScheduleOptionalTitle": {
+    "description": "Localized text for radioScheduleOptionalTitle."
+  },
+  "radioScheduleTitleHint": "Ponechte prázdné pro použití názvu rádia nebo TV",
+  "@radioScheduleTitleHint": {
+    "description": "Localized text for radioScheduleTitleHint."
+  },
+  "radioScheduleAction": "Naplánovat",
+  "@radioScheduleAction": {
+    "description": "Localized text for radioScheduleAction."
+  },
+  "radioScheduledRecordingRange": "Naplánované nahrávání: {start} - {end}.",
+  "@radioScheduledRecordingRange": {
+    "description": "Localized text for radioScheduledRecordingRange.",
+    "placeholders": {
+      "start": {},
+      "end": {}
+    }
+  },
+  "radioScheduledRecordingAlreadyActive": "Naplánované nahrávání nebylo spuštěno: již probíhá jiné nahrávání.",
+  "@radioScheduledRecordingAlreadyActive": {
+    "description": "Localized text for radioScheduledRecordingAlreadyActive."
+  },
+  "radioScheduledRecordingStarted": "Naplánované nahrávání spuštěno.",
+  "@radioScheduledRecordingStarted": {
+    "description": "Localized text for radioScheduledRecordingStarted."
+  },
+  "radioScheduledRecordingError": "Chyba naplánovaného nahrávání: {error}",
+  "@radioScheduledRecordingError": {
+    "description": "Localized text for radioScheduledRecordingError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingSaved": "Naplánované nahrávání uloženo.",
+  "@radioScheduledRecordingSaved": {
+    "description": "Localized text for radioScheduledRecordingSaved."
+  },
+  "radioScheduledRecordingSaveError": "Chyba při ukládání naplánovaného nahrávání: {error}",
+  "@radioScheduledRecordingSaveError": {
+    "description": "Localized text for radioScheduledRecordingSaveError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingCancelled": "Naplánované nahrávání zrušeno.",
+  "@radioScheduledRecordingCancelled": {
+    "description": "Localized text for radioScheduledRecordingCancelled."
+  },
+  "radioScheduledRecordingRangeWithTitle": "Naplánované nahrávání: {start} - {end}. Název: {title}.",
+  "@radioScheduledRecordingRangeWithTitle": {
+    "description": "Localized text for radioScheduledRecordingRangeWithTitle.",
+    "placeholders": {
+      "start": {},
+      "end": {},
+      "title": {}
+    }
+  },
+  "radioScheduleCancelAction": "Zrušit naplánované nahrávání",
+  "@radioScheduleCancelAction": {
+    "description": "Localized text for radioScheduleCancelAction."
+  },
+  "radioLanguageTr": "Turečtina",
+  "@radioLanguageTr": {
+    "description": "Localized text for radioLanguageTr."
+  },
+  "radioCountryOptionTr": "Turecko",
+  "@radioCountryOptionTr": {
+    "description": "Localized text for radioCountryOptionTr."
+  },
+  "radioCommunityLanguageTurkish": "Turečtina",
+  "@radioCommunityLanguageTurkish": {
+    "description": "Localized text for radioCommunityLanguageTurkish."
   }
 }

@@ -362,6 +362,7 @@ class RouteService {
         'es' => 'Dirección no válida',
         'pt' => 'Endereço inválido',
         'pl' => 'Nieprawidłowy adres',
+        'de' => 'Ungültige Adresse',
         _ => 'Indirizzo non valido',
       };
 
@@ -372,6 +373,7 @@ class RouteService {
         'es' => 'Error de red de geocodificación: HTTP $statusCode',
         'pt' => 'Erro de rede de geocodificação: HTTP $statusCode',
         'pl' => 'Błąd sieci geokodowania: HTTP $statusCode',
+        'de' => 'Netzwerkfehler bei der Geokodierung: HTTP $statusCode',
         _ => 'Errore di rete geocode: HTTP $statusCode',
       };
 
@@ -382,6 +384,7 @@ class RouteService {
         'es' => 'Error de red de ruta: HTTP $statusCode',
         'pt' => 'Erro de rede de rota: HTTP $statusCode',
         'pl' => 'Błąd sieci trasy: HTTP $statusCode',
+        'de' => 'Netzwerkfehler bei der Routenberechnung: HTTP $statusCode',
         _ => 'Errore di rete route: HTTP $statusCode',
       };
 
@@ -391,6 +394,7 @@ class RouteService {
         'es' => 'Error del servidor',
         'pt' => 'Erro do servidor',
         'pl' => 'Błąd serwera',
+        'de' => 'Serverfehler',
         _ => 'Errore dal server',
       };
 
@@ -400,6 +404,7 @@ class RouteService {
         'es' => 'Error de cálculo de ruta del servidor',
         'pt' => 'Erro de cálculo de rota do servidor',
         'pl' => 'Błąd obliczania trasy po stronie serwera',
+        'de' => 'Fehler bei der Routenberechnung auf dem Server',
         _ => 'Errore di calcolo percorso dal server',
       };
 
@@ -414,6 +419,8 @@ class RouteService {
           'Cliente não autorizado. Atualize o Sonarpad ou verifique a configuração da app.',
         'pl' =>
           'Klient nieautoryzowany. Zaktualizuj Sonarpad albo sprawdź konfigurację aplikacji.',
+        'de' =>
+          'Nicht autorisierter Client. Aktualisiere Sonarpad oder überprüfe die App-Konfiguration.',
         _ =>
           'Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell\'app.',
       };
@@ -434,6 +441,9 @@ class RouteService {
         'pl' => isStart
             ? 'Nie znaleziono adresu początkowego'
             : 'Nie znaleziono adresu docelowego',
+        'de' => isStart
+            ? 'Startadresse nicht gefunden'
+            : 'Zieladresse nicht gefunden',
         _ => isStart
             ? 'Indirizzo di partenza non trovato'
             : 'Indirizzo di arrivo non trovato',

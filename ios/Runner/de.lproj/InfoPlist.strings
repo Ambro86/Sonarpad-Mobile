@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "Sonarpad kann die Kamera nur für Scan- oder Bilderfassungsfunktionen verwenden, die du selbst startest.";
+"NSCalendarsUsageDescription" = "Sonarpad benötigt Zugriff auf deinen Kalender, um Erinnerungen und Termine hinzuzufügen.";
+"NSCalendarsFullAccessUsageDescription" = "Sonarpad benötigt vollständigen Kalenderzugriff, um deine Erinnerungen und Termine direkt im Systemkalender erstellen und speichern zu können.";
+"NSContactsUsageDescription" = "Sonarpad benötigt Zugriff auf deine Kontakte, um Termineinladungen Personen zuordnen zu können.";

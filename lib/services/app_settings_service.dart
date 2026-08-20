@@ -46,7 +46,7 @@ enum WeatherTemperatureUnit {
 }
 
 class AppSettingsService {
-  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pl', 'cs'};
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pl', 'cs', 'de'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -98,7 +98,7 @@ class AppSettingsService {
     TtsVoiceLanguage('pt', 'Portoghese'),
     TtsVoiceLanguage('pl', 'Polski'),
     TtsVoiceLanguage('cs', 'Čeština'),
-    TtsVoiceLanguage('de', 'Tedesco'),
+    TtsVoiceLanguage('de', 'Deutsch'),
   ];
 
   static const ttsVoices = [

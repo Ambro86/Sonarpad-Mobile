@@ -772,11 +772,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           options: languages,
           labelBuilder: (language) => language.label,
           selectedBuilder: (language) => language.code == _languageCode,
-          selectedLabel: _selectedOptionLabel(l10n.localeName),
+          selectedLabel: l10n.letterJumpSelected,
           leadingBuilder: (selected) =>
               Icon(selected ? Icons.check : Icons.language),
-          selectLetterLabel: _selectLetterLabel(l10n.localeName),
-          selectLetterTitle: _selectLetterLabel(l10n.localeName),
+          selectLetterLabel: l10n.letterJumpSelectLetter,
+          selectLetterTitle: l10n.letterJumpSelectLetter,
         ),
       ),
     );
@@ -811,11 +811,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           options: voices,
           labelBuilder: (voice) => '${voice.label} (${voice.voice})',
           selectedBuilder: (voice) => voice.voice == _voice,
-          selectedLabel: _selectedOptionLabel(l10n.localeName),
+          selectedLabel: l10n.letterJumpSelected,
           leadingBuilder: (selected) =>
               Icon(selected ? Icons.check : Icons.record_voice_over),
-          selectLetterLabel: _selectLetterLabel(l10n.localeName),
-          selectLetterTitle: _selectLetterLabel(l10n.localeName),
+          selectLetterLabel: l10n.letterJumpSelectLetter,
+          selectLetterTitle: l10n.letterJumpSelectLetter,
         ),
       ),
     );
@@ -952,11 +952,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     AppLocalizations l10n,
     bool showItalianOnlySettings,
   ) {
-    final localeName = l10n.localeName;
-    String toggleLabel(bool value) {
-      if (localeName == 'it') return value ? 'Attivo' : 'Disattivo';
-      return value ? 'On' : 'Off';
-    }
+    String toggleLabel(bool value) =>
+        value ? l10n.settingsToggleOn : l10n.settingsToggleOff;
 
     final edgeLanguages = List<TtsVoiceLanguage>.of(_edgeLanguages)
       ..sort((a, b) => a.label.compareTo(b.label));
@@ -984,6 +981,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'pt' => l10n.radioLanguagePt,
               'pl' => l10n.radioLanguagePl,
               'cs' => l10n.radioLanguageCs,
+              'de' => l10n.german,
               _ => l10n.italian,
             },
             options: [
@@ -994,6 +992,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AccessibleOption(value: 'pt', label: l10n.radioLanguagePt),
               AccessibleOption(value: 'pl', label: l10n.radioLanguagePl),
               AccessibleOption(value: 'cs', label: l10n.radioLanguageCs),
+              AccessibleOption(value: 'de', label: l10n.german),
             ],
           ),
           AccessibleListRow(
@@ -1417,6 +1416,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             value: 'pl', child: Text(l10n.radioLanguagePl)),
                         DropdownMenuItem(
                             value: 'cs', child: Text(l10n.radioLanguageCs)),
+                        DropdownMenuItem(
+                            value: 'de', child: Text(l10n.german)),
                       ],
                       onChanged: (value) {
                         if (value == null || value == _appLanguage) return;
@@ -2025,23 +2026,3 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
-
-String _selectLetterLabel(String localeName) => switch (localeName) {
-      'en' => 'Select letter',
-      'es' => 'Seleccionar letra',
-      'fr' => 'Sélectionner une lettre',
-      'pt' => 'Selecionar letra',
-      'pl' => 'Wybierz literę',
-      'cs' => 'Vybrat písmeno',
-      _ => 'Seleziona lettera',
-    };
-
-String _selectedOptionLabel(String localeName) => switch (localeName) {
-      'en' => 'selected',
-      'es' => 'seleccionada',
-      'fr' => 'sélectionnée',
-      'pt' => 'selecionada',
-      'pl' => 'wybrano',
-      'cs' => 'vybráno',
-      _ => 'selezionata',
-    };

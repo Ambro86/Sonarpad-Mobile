@@ -156,6 +156,10 @@
   "english": "English",
   "french": "French",
   "spanish": "Spanish",
+  "german": "German",
+  "@german": {
+    "description": "Localized text for german."
+  },
   "newsSource": "News source",
   "article": "Article",
   "articlePreview": "Article preview",
@@ -1602,5 +1606,409 @@
   "developerUseExperimentalFlutterRendererHint": "Temporarily disables UIKit to compare VoiceOver with pure Flutter.",
   "@developerUseExperimentalFlutterRendererHint": {
     "description": "Localized text for developerUseExperimentalFlutterRendererHint."
+  },
+  "letterJumpSelectLetter": "Select letter",
+  "@letterJumpSelectLetter": {
+    "description": "Localized text for letterJumpSelectLetter."
+  },
+  "letterJumpSelected": "selected",
+  "@letterJumpSelected": {
+    "description": "Localized text for letterJumpSelected."
+  },
+  "settingsToggleOn": "On",
+  "@settingsToggleOn": {
+    "description": "Localized text for settingsToggleOn."
+  },
+  "settingsToggleOff": "Off",
+  "@settingsToggleOff": {
+    "description": "Localized text for settingsToggleOff."
+  },
+  "radioDirectoryLoading": "Updating radio countries and languages...",
+  "@radioDirectoryLoading": {
+    "description": "Localized text for radioDirectoryLoading."
+  },
+  "recentRadios": "Recent radios",
+  "@recentRadios": {
+    "description": "Localized text for recentRadios."
+  },
+  "radioNextPage": "Next",
+  "@radioNextPage": {
+    "description": "Localized text for radioNextPage."
+  },
+  "radioPageOf": "Page {current} of {total}",
+  "@radioPageOf": {
+    "description": "Localized text for radioPageOf.",
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "radioNoResultsWithQuery": "No radios found. Try only the station name, without genre, or change language/country.",
+  "@radioNoResultsWithQuery": {
+    "description": "Localized text for radioNoResultsWithQuery."
+  },
+  "radioNoResultsGeneric": "No radios found. Try another language, country, or genre.",
+  "@radioNoResultsGeneric": {
+    "description": "Localized text for radioNoResultsGeneric."
+  },
+  "radioSearchRawError": "Radio search error: {error}",
+  "@radioSearchRawError": {
+    "description": "Localized text for radioSearchRawError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioBrowserConnectionError": "Connection error with Radio Browser. Please try again later.",
+  "@radioBrowserConnectionError": {
+    "description": "Localized text for radioBrowserConnectionError."
+  },
+  "documentIndexLoadingMessage": "Loading table of contents... Please wait.",
+  "@documentIndexLoadingMessage": {
+    "description": "Localized text for documentIndexLoadingMessage."
+  },
+  "documentIndexUnavailableMessage": "Table of contents not available for this EPUB.",
+  "@documentIndexUnavailableMessage": {
+    "description": "Localized text for documentIndexUnavailableMessage."
+  },
+  "mediaCutterVolumeSummary": "volume {percent}%",
+  "@mediaCutterVolumeSummary": {
+    "description": "Localized text for mediaCutterVolumeSummary.",
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "mediaCutterDurationSummary": "duration {duration}",
+  "@mediaCutterDurationSummary": {
+    "description": "Localized text for mediaCutterDurationSummary.",
+    "placeholders": {
+      "duration": {}
+    }
+  },
+  "mediaCutterDurationHourOne": "hour",
+  "@mediaCutterDurationHourOne": {
+    "description": "Localized text for mediaCutterDurationHourOne."
+  },
+  "mediaCutterDurationHourFew": "hours",
+  "@mediaCutterDurationHourFew": {
+    "description": "Localized text for mediaCutterDurationHourFew."
+  },
+  "mediaCutterDurationHourMany": "hours",
+  "@mediaCutterDurationHourMany": {
+    "description": "Localized text for mediaCutterDurationHourMany."
+  },
+  "mediaCutterDurationMinuteOne": "minute",
+  "@mediaCutterDurationMinuteOne": {
+    "description": "Localized text for mediaCutterDurationMinuteOne."
+  },
+  "mediaCutterDurationMinuteFew": "minutes",
+  "@mediaCutterDurationMinuteFew": {
+    "description": "Localized text for mediaCutterDurationMinuteFew."
+  },
+  "mediaCutterDurationMinuteMany": "minutes",
+  "@mediaCutterDurationMinuteMany": {
+    "description": "Localized text for mediaCutterDurationMinuteMany."
+  },
+  "mediaCutterDurationSecondOne": "second",
+  "@mediaCutterDurationSecondOne": {
+    "description": "Localized text for mediaCutterDurationSecondOne."
+  },
+  "mediaCutterDurationSecondFew": "seconds",
+  "@mediaCutterDurationSecondFew": {
+    "description": "Localized text for mediaCutterDurationSecondFew."
+  },
+  "mediaCutterDurationSecondMany": "seconds",
+  "@mediaCutterDurationSecondMany": {
+    "description": "Localized text for mediaCutterDurationSecondMany."
+  },
+  "mediaCutterDurationAnd": "and",
+  "@mediaCutterDurationAnd": {
+    "description": "Localized text for mediaCutterDurationAnd."
+  },
+  "mediaCutterSeekStepButton": "Adjust media file movement: {step}",
+  "@mediaCutterSeekStepButton": {
+    "description": "Localized text for mediaCutterSeekStepButton.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterSeekStepTitle": "Media file movement",
+  "@mediaCutterSeekStepTitle": {
+    "description": "Localized text for mediaCutterSeekStepTitle."
+  },
+  "mediaCutterSeekStepSelected": "Media file movement set to {step}.",
+  "@mediaCutterSeekStepSelected": {
+    "description": "Localized text for mediaCutterSeekStepSelected.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterPartEffectBackwards": "Backwards",
+  "@mediaCutterPartEffectBackwards": {
+    "description": "Localized text for mediaCutterPartEffectBackwards."
+  },
+  "mediaCutterPartEffectTalkingGuitar": "Talking guitar",
+  "@mediaCutterPartEffectTalkingGuitar": {
+    "description": "Localized text for mediaCutterPartEffectTalkingGuitar."
+  },
+  "mediaCutterPartEffectMosquito": "Mosquito",
+  "@mediaCutterPartEffectMosquito": {
+    "description": "Localized text for mediaCutterPartEffectMosquito."
+  },
+  "mediaCutterPartEffectOneOfMany": "One voice, many singers",
+  "@mediaCutterPartEffectOneOfMany": {
+    "description": "Localized text for mediaCutterPartEffectOneOfMany."
+  },
+  "mediaCutterPartEffectOrganVocoder": "Talking organ",
+  "@mediaCutterPartEffectOrganVocoder": {
+    "description": "Localized text for mediaCutterPartEffectOrganVocoder."
+  },
+  "mediaCutterPartEffectWarped": "Warped",
+  "@mediaCutterPartEffectWarped": {
+    "description": "Localized text for mediaCutterPartEffectWarped."
+  },
+  "mediaCutterPartEffectSwirling": "Stereo vortex",
+  "@mediaCutterPartEffectSwirling": {
+    "description": "Localized text for mediaCutterPartEffectSwirling."
+  },
+  "mediaCutterPartEffectVader": "Cinematic dark voice",
+  "@mediaCutterPartEffectVader": {
+    "description": "Localized text for mediaCutterPartEffectVader."
+  },
+  "mediaCutterPartEffectMetallic": "Metallic",
+  "@mediaCutterPartEffectMetallic": {
+    "description": "Localized text for mediaCutterPartEffectMetallic."
+  },
+  "mediaCutterPartEffectSongbird": "Songbird",
+  "@mediaCutterPartEffectSongbird": {
+    "description": "Localized text for mediaCutterPartEffectSongbird."
+  },
+  "mediaCutterPartEffectExterminator": "Exterminator",
+  "@mediaCutterPartEffectExterminator": {
+    "description": "Localized text for mediaCutterPartEffectExterminator."
+  },
+  "mediaCutterPartEffectRainAndThunder": "Rain and thunder",
+  "@mediaCutterPartEffectRainAndThunder": {
+    "description": "Localized text for mediaCutterPartEffectRainAndThunder."
+  },
+  "mediaCutterPartEffectJungle": "Jungle",
+  "@mediaCutterPartEffectJungle": {
+    "description": "Localized text for mediaCutterPartEffectJungle."
+  },
+  "mediaCutterPartEffectCrowd": "Crowd",
+  "@mediaCutterPartEffectCrowd": {
+    "description": "Localized text for mediaCutterPartEffectCrowd."
+  },
+  "mediaCutterPartEffectSlotMachines": "Slot machines",
+  "@mediaCutterPartEffectSlotMachines": {
+    "description": "Localized text for mediaCutterPartEffectSlotMachines."
+  },
+  "mediaCutterPartEffectTraffic": "Traffic",
+  "@mediaCutterPartEffectTraffic": {
+    "description": "Localized text for mediaCutterPartEffectTraffic."
+  },
+  "mediaCutterPartEffectSpaceship": "Spaceship",
+  "@mediaCutterPartEffectSpaceship": {
+    "description": "Localized text for mediaCutterPartEffectSpaceship."
+  },
+  "mediaCutterPartEffectCricket": "Cricket",
+  "@mediaCutterPartEffectCricket": {
+    "description": "Localized text for mediaCutterPartEffectCricket."
+  },
+  "mediaCutterPartEffectSiren": "Siren",
+  "@mediaCutterPartEffectSiren": {
+    "description": "Localized text for mediaCutterPartEffectSiren."
+  },
+  "mediaCutterPartEffectSleighBells": "Sleigh bells",
+  "@mediaCutterPartEffectSleighBells": {
+    "description": "Localized text for mediaCutterPartEffectSleighBells."
+  },
+  "mediaCutterPartEffectDj": "DJ scratch",
+  "@mediaCutterPartEffectDj": {
+    "description": "Localized text for mediaCutterPartEffectDj."
+  },
+  "mediaCutterPartEffectApplause": "Applause",
+  "@mediaCutterPartEffectApplause": {
+    "description": "Localized text for mediaCutterPartEffectApplause."
+  },
+  "mediaCutterPartEffectBadMelody": "Off-key melody",
+  "@mediaCutterPartEffectBadMelody": {
+    "description": "Localized text for mediaCutterPartEffectBadMelody."
+  },
+  "mediaCutterPartEffectBadHarmony": "Dissonant harmony",
+  "@mediaCutterPartEffectBadHarmony": {
+    "description": "Localized text for mediaCutterPartEffectBadHarmony."
+  },
+  "mediaCutterPartEffectWarmVoice": "Warm voice",
+  "@mediaCutterPartEffectWarmVoice": {
+    "description": "Localized text for mediaCutterPartEffectWarmVoice."
+  },
+  "mediaCutterPartEffectTurtle": "Turtle",
+  "@mediaCutterPartEffectTurtle": {
+    "description": "Localized text for mediaCutterPartEffectTurtle."
+  },
+  "mediaCutterPartEffectHaunting": "Haunting",
+  "@mediaCutterPartEffectHaunting": {
+    "description": "Localized text for mediaCutterPartEffectHaunting."
+  },
+  "radioPreviousPage": "Previous",
+  "@radioPreviousPage": {
+    "description": "Localized text for radioPreviousPage."
+  },
+  "noRecentRadios": "No recent radios.",
+  "@noRecentRadios": {
+    "description": "Localized text for noRecentRadios."
+  },
+  "radioBrowseByCity": "Browse by city",
+  "@radioBrowseByCity": {
+    "description": "Localized text for radioBrowseByCity."
+  },
+  "radioCityInputHint": "Enter city name...",
+  "@radioCityInputHint": {
+    "description": "Localized text for radioCityInputHint."
+  },
+  "openItem": "Open",
+  "@openItem": {
+    "description": "Localized text for openItem."
+  },
+  "clearSearch": "Clear search",
+  "@clearSearch": {
+    "description": "Localized text for clearSearch."
+  },
+  "fileTypeLabel": "File",
+  "@fileTypeLabel": {
+    "description": "Localized text for fileTypeLabel."
+  },
+  "cinemaTrailerLoading": "Loading trailer",
+  "@cinemaTrailerLoading": {
+    "description": "Localized text for cinemaTrailerLoading."
+  },
+  "cinemaNoTrailer": "No trailer is available for this movie",
+  "@cinemaNoTrailer": {
+    "description": "Localized text for cinemaNoTrailer."
+  },
+  "radioScheduleHours": "Hours",
+  "@radioScheduleHours": {
+    "description": "Localized text for radioScheduleHours."
+  },
+  "radioScheduleSelectHours": "Select hours",
+  "@radioScheduleSelectHours": {
+    "description": "Localized text for radioScheduleSelectHours."
+  },
+  "radioScheduleMinutes": "Minutes",
+  "@radioScheduleMinutes": {
+    "description": "Localized text for radioScheduleMinutes."
+  },
+  "radioScheduleSelectMinutes": "Select minutes",
+  "@radioScheduleSelectMinutes": {
+    "description": "Localized text for radioScheduleSelectMinutes."
+  },
+  "radioScheduleStopCurrentFirst": "Stop the current recording before scheduling a new one.",
+  "@radioScheduleStopCurrentFirst": {
+    "description": "Localized text for radioScheduleStopCurrentFirst."
+  },
+  "radioScheduleStartTime": "Start time",
+  "@radioScheduleStartTime": {
+    "description": "Localized text for radioScheduleStartTime."
+  },
+  "radioScheduleEndTime": "End time",
+  "@radioScheduleEndTime": {
+    "description": "Localized text for radioScheduleEndTime."
+  },
+  "radioScheduleDialogTitle": "Schedule recording",
+  "@radioScheduleDialogTitle": {
+    "description": "Localized text for radioScheduleDialogTitle."
+  },
+  "radioScheduleOpenRequirement": "In this version, the scheduled recording starts only if Sonarpad remains open on this player. If you close the app or this screen, the recording cannot start automatically.",
+  "@radioScheduleOpenRequirement": {
+    "description": "Localized text for radioScheduleOpenRequirement."
+  },
+  "radioScheduleStartTimeValue": "Start time: {time}",
+  "@radioScheduleStartTimeValue": {
+    "description": "Localized text for radioScheduleStartTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleEndTimeValue": "End time: {time}",
+  "@radioScheduleEndTimeValue": {
+    "description": "Localized text for radioScheduleEndTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleOptionalTitle": "Optional title",
+  "@radioScheduleOptionalTitle": {
+    "description": "Localized text for radioScheduleOptionalTitle."
+  },
+  "radioScheduleTitleHint": "Leave blank to use the radio or TV name",
+  "@radioScheduleTitleHint": {
+    "description": "Localized text for radioScheduleTitleHint."
+  },
+  "radioScheduleAction": "Schedule",
+  "@radioScheduleAction": {
+    "description": "Localized text for radioScheduleAction."
+  },
+  "radioScheduledRecordingRange": "Scheduled recording: {start} - {end}.",
+  "@radioScheduledRecordingRange": {
+    "description": "Localized text for radioScheduledRecordingRange.",
+    "placeholders": {
+      "start": {},
+      "end": {}
+    }
+  },
+  "radioScheduledRecordingAlreadyActive": "Scheduled recording not started: another recording is already in progress.",
+  "@radioScheduledRecordingAlreadyActive": {
+    "description": "Localized text for radioScheduledRecordingAlreadyActive."
+  },
+  "radioScheduledRecordingStarted": "Scheduled recording started.",
+  "@radioScheduledRecordingStarted": {
+    "description": "Localized text for radioScheduledRecordingStarted."
+  },
+  "radioScheduledRecordingError": "Scheduled recording error: {error}",
+  "@radioScheduledRecordingError": {
+    "description": "Localized text for radioScheduledRecordingError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingSaved": "Scheduled recording saved.",
+  "@radioScheduledRecordingSaved": {
+    "description": "Localized text for radioScheduledRecordingSaved."
+  },
+  "radioScheduledRecordingSaveError": "Error saving scheduled recording: {error}",
+  "@radioScheduledRecordingSaveError": {
+    "description": "Localized text for radioScheduledRecordingSaveError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingCancelled": "Scheduled recording cancelled.",
+  "@radioScheduledRecordingCancelled": {
+    "description": "Localized text for radioScheduledRecordingCancelled."
+  },
+  "radioScheduledRecordingRangeWithTitle": "Scheduled recording: {start} - {end}. Title: {title}.",
+  "@radioScheduledRecordingRangeWithTitle": {
+    "description": "Localized text for radioScheduledRecordingRangeWithTitle.",
+    "placeholders": {
+      "start": {},
+      "end": {},
+      "title": {}
+    }
+  },
+  "radioScheduleCancelAction": "Cancel scheduled recording",
+  "@radioScheduleCancelAction": {
+    "description": "Localized text for radioScheduleCancelAction."
+  },
+  "radioLanguageTr": "Turkish",
+  "@radioLanguageTr": {
+    "description": "Localized text for radioLanguageTr."
+  },
+  "radioCountryOptionTr": "Turkey",
+  "@radioCountryOptionTr": {
+    "description": "Localized text for radioCountryOptionTr."
+  },
+  "radioCommunityLanguageTurkish": "Turkish",
+  "@radioCommunityLanguageTurkish": {
+    "description": "Localized text for radioCommunityLanguageTurkish."
   }
 }

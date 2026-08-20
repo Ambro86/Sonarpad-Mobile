@@ -78,6 +78,13 @@ String? _relativeDayLabel(int dayDiff, String localeName) {
         1: 'zítra',
         2: 'pozítří',
       },
+    'de' => const {
+        0: 'heute',
+        -1: 'gestern',
+        -2: 'vorgestern',
+        1: 'morgen',
+        2: 'übermorgen',
+      },
     _ => const {
         0: 'today',
         -1: 'yesterday',
@@ -93,7 +100,7 @@ DateFormat _dateFormatter(String localeName) {
   final language = _languageCode(localeName);
   final pattern = language == 'en'
       ? 'MM/dd/yyyy'
-      : (language == 'pl' || language == 'cs')
+      : (language == 'pl' || language == 'cs' || language == 'de')
           ? 'dd.MM.yyyy'
           : 'dd/MM/yyyy';
   return DateFormat(pattern, localeName);

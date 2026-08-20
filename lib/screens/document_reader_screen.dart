@@ -4,6 +4,7 @@ import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:audio_session/audio_session.dart';
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -58,6 +59,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   bool _documentIndexLoading = false;
   final ValueNotifier<bool> _documentIndexLoadingNotifier =
       ValueNotifier<bool>(false);
+  final ValueNotifier<double> _documentIndexProgressNotifier =
+      ValueNotifier<double>(0);
 
   // TTS state
   bool _speaking = false;
@@ -157,6 +160,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _scrollController.dispose();
     _documentPositionRevision.dispose();
     _documentIndexLoadingNotifier.dispose();
+    _documentIndexProgressNotifier.dispose();
     super.dispose();
   }
 
@@ -970,6 +974,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
 
     BuildContext? dialogContext;
+    _setDocumentIndexProgress(0);
     _setDocumentIndexLoading(true);
 
     unawaited(
@@ -979,23 +984,26 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         builder: (ctx) {
           dialogContext = ctx;
           return _DocumentIndexLoadingDialog(
-            message: _documentIndexLoadingMessage(ctx),
+            message: AppLocalizations.of(ctx).documentIndexLoadingMessage,
+            progressListenable: _documentIndexProgressNotifier,
           );
         },
       ),
     );
 
     try {
-      // Lascia tempo a Flutter di mostrare il dialog prima dell'analisi EPUB.
-      await Future<void>.delayed(const Duration(milliseconds: 80));
-      final entries = await _extractor.extractEpubTableOfContents(
+      // Il parsing EPUB e la ricerca delle voci nei chunks possono essere
+      // costosi sui libri grandi: eseguiamoli in un isolate separato.
+      await WidgetsBinding.instance.endOfFrame;
+      final entries = await _extractor.extractEpubTableOfContentsInBackground(
         path: sourcePath,
         chunks: _chunks,
+        onProgress: _setDocumentIndexProgress,
       );
       if (!mounted) return;
       _documentIndex = entries;
       if (entries.isEmpty) {
-        showStatusMessage(context, _documentIndexUnavailableMessage(context));
+        showStatusMessage(context, AppLocalizations.of(context).documentIndexUnavailableMessage);
       } else {
         unawaited(_writeCachedEpubIndex(sourcePath, entries));
       }
@@ -1006,7 +1014,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         stackTrace: st,
       );
       if (mounted) {
-        showStatusMessage(context, _documentIndexUnavailableMessage(context));
+        showStatusMessage(context, AppLocalizations.of(context).documentIndexUnavailableMessage);
       }
     } finally {
       final activeDialogContext = dialogContext;
@@ -1026,6 +1034,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     if (_documentIndexLoadingNotifier.value != value) {
       _documentIndexLoadingNotifier.value = value;
     }
+  }
+
+  void _setDocumentIndexProgress(double value) {
+    if (!mounted) return;
+    final progress = value.clamp(0.0, 1.0).toDouble();
+    if ((_documentIndexProgressNotifier.value - progress).abs() < 0.001) {
+      return;
+    }
+    _documentIndexProgressNotifier.value = progress;
   }
 
   Future<List<DocumentTableOfContentsEntry>?> _readCachedEpubIndex(
@@ -1124,47 +1141,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     return hash.toRadixString(16).padLeft(8, '0');
   }
 
-  String _documentIndexLoadingMessage(BuildContext context) {
-    final lang = Localizations.localeOf(context).languageCode.toLowerCase();
-    switch (lang) {
-      case 'fr':
-        return 'Chargement de l’indice en cours... Veuillez patienter.';
-      case 'es':
-        return 'Cargando índice... Espera, por favor.';
-      case 'pt':
-        return 'A carregar índice... Aguarde.';
-      case 'pl':
-        return 'Ładowanie spisu treści... Proszę czekać.';
-      case 'cs':
-        return 'Načítání obsahu... Čekejte prosím.';
-      case 'en':
-        return 'Loading table of contents... Please wait.';
-      case 'it':
-      default:
-        return 'Caricamento indice in corso... Attendere.';
-    }
-  }
-
-  String _documentIndexUnavailableMessage(BuildContext context) {
-    final lang = Localizations.localeOf(context).languageCode.toLowerCase();
-    switch (lang) {
-      case 'fr':
-        return 'Indice non disponible pour cet EPUB.';
-      case 'es':
-        return 'Índice no disponible para este EPUB.';
-      case 'pt':
-        return 'Índice não disponível para este EPUB.';
-      case 'pl':
-        return 'Spis treści nie jest dostępny dla tego EPUB-a.';
-      case 'cs':
-        return 'Obsah není pro tento EPUB dostupný.';
-      case 'en':
-        return 'Table of contents not available for this EPUB.';
-      case 'it':
-      default:
-        return 'Indice non disponibile per questo EPUB.';
-    }
-  }
 
   void _openChunkAt(int index) {
     if (index < 0 || index >= _chunks.length) return;
@@ -2301,7 +2277,16 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
 
   Widget _buildSharedAccessibleDocumentText(AppLocalizations l10n) {
-    final rows = <AccessibleListRow>[];
+    final rows = <AccessibleListRow>[
+      if (!_speaking && _chunks.isNotEmpty)
+        AccessibleListRow(
+          id: 'reader_instruction',
+          title: _paragraphSelectionMode
+              ? l10n.documentParagraphSelectionTapHint
+              : l10n.documentReaderEditHint,
+          kind: 'text',
+        ),
+    ];
     for (var i = 0; i < _chunks.length; i++) {
       final isSelected = _selectedParagraphIndexes.contains(i);
       final canInteract = !_speaking;
@@ -2349,9 +2334,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         selected: isSelected,
         hint: _paragraphSelectionMode
             ? l10n.documentParagraphSelectionTapHint
-            : (canInteract && i == 0
-                ? l10n.documentEditParagraphActionHint
-                : null),
+            : null,
         actions: actions,
         onAccessibilityFocus: () =>
             _syncDocumentPositionFromAccessibilityFocus(i),
@@ -2418,9 +2401,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (_paragraphSelectionMode) {
         hintText = l10n.documentParagraphSelectionTapHint;
       } else {
-        hintText = canInteract && i == 0
-            ? l10n.documentEditParagraphActionHint
-            : '';
+        hintText = '';
         if (_multipleDocumentBookmarksEnabled) {
           hintText += l10n.documentBookmarkHintSet;
           if (_bookmarkIndexes.isNotEmpty) {
@@ -2857,23 +2838,44 @@ class _DocumentIndexScreen extends StatelessWidget {
 
 class _DocumentIndexLoadingDialog extends StatelessWidget {
   final String message;
+  final ValueListenable<double> progressListenable;
 
-  const _DocumentIndexLoadingDialog({required this.message});
+  const _DocumentIndexLoadingDialog({
+    required this.message,
+    required this.progressListenable,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      content: Semantics(
-        liveRegion: true,
-        container: true,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(width: 20),
-            Expanded(child: Text(message)),
-          ],
-        ),
+      content: ValueListenableBuilder<double>(
+        valueListenable: progressListenable,
+        builder: (context, progress, _) {
+          final percent = (progress * 100).round().clamp(0, 100);
+          return Semantics(
+            liveRegion: true,
+            container: true,
+            label: message,
+            value: '$percent%',
+            child: ExcludeSemantics(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(message),
+                  const SizedBox(height: 16),
+                  LinearProgressIndicator(value: progress),
+                  const SizedBox(height: 12),
+                  Text(
+                    '$percent%',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

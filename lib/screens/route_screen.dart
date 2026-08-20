@@ -35,6 +35,7 @@ class _RouteScreenState extends State<RouteScreen> {
         'pt' => 'pt',
         'pl' => 'pl',
         'cs' => 'cz',
+        'de' => 'de',
         _ => 'it',
       };
     }

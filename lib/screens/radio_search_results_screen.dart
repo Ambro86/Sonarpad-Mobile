@@ -70,12 +70,13 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
             : l10n.radioFavoriteAdded(station.name));
   }
 
-  void _changePage(int page, int totalPages, String localeName) {
+  void _changePage(int page, int totalPages) {
+    final l10n = AppLocalizations.of(context);
     final nextPage = page.clamp(0, totalPages - 1).toInt();
     setState(() => _page = nextPage);
     showStatusMessage(
       context,
-      _radioPageLabel(localeName, nextPage + 1, totalPages),
+      l10n.radioPageOf(nextPage + 1, totalPages),
     );
   }
 
@@ -104,10 +105,7 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  _radioSearchErrorMessage(
-                    l10n.localeName,
-                    snapshot.error,
-                  ),
+                  _radioSearchErrorMessage(l10n, snapshot.error),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
@@ -120,7 +118,7 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  _radioNoResultsMessage(l10n.localeName, widget.query),
+                  widget.query.trim().isNotEmpty ? l10n.radioNoResultsWithQuery : l10n.radioNoResultsGeneric,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -133,11 +131,7 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               ? start + _pageSize
               : results.length;
           final visibleResults = results.sublist(start, end);
-          final pageLabel = _radioPageLabel(
-            l10n.localeName,
-            currentPage + 1,
-            totalPages,
-          );
+          final pageLabel = l10n.radioPageOf(currentPage + 1, totalPages);
 
           return Column(
             children: [
@@ -226,16 +220,10 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
                           child: OutlinedButton.icon(
                             key: const ValueKey('radio_previous_page'),
                             onPressed: currentPage > 0
-                                ? () => _changePage(
-                                      currentPage - 1,
-                                      totalPages,
-                                      l10n.localeName,
-                                    )
+                                ? () => _changePage(currentPage - 1, totalPages)
                                 : null,
                             icon: const Icon(Icons.navigate_before),
-                            label: Text(
-                              _radioPreviousLabel(l10n.localeName),
-                            ),
+                            label: Text(l10n.radioPreviousPage),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -243,14 +231,10 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
                           child: FilledButton.icon(
                             key: const ValueKey('radio_next_page'),
                             onPressed: currentPage + 1 < totalPages
-                                ? () => _changePage(
-                                      currentPage + 1,
-                                      totalPages,
-                                      l10n.localeName,
-                                    )
+                                ? () => _changePage(currentPage + 1, totalPages)
                                 : null,
                             icon: const Icon(Icons.navigate_next),
-                            label: Text(_radioNextLabel(l10n.localeName)),
+                            label: Text(l10n.radioNextPage),
                           ),
                         ),
                       ],
@@ -265,75 +249,7 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
   }
 }
 
-String _radioPreviousLabel(String localeName) {
-  return switch (localeName) {
-    'en' => 'Previous',
-    'es' => 'Anterior',
-    'fr' => 'Précédents',
-    'pt' => 'Anteriores',
-    'pl' => 'Poprzednie',
-    'cs' => 'Předchozí',
-    _ => 'Precedenti',
-  };
-}
-
-String _radioNextLabel(String localeName) {
-  return switch (localeName) {
-    'en' => 'Next',
-    'es' => 'Siguiente',
-    'fr' => 'Suivants',
-    'pt' => 'Seguintes',
-    'pl' => 'Następne',
-    'cs' => 'Další',
-    _ => 'Successivi',
-  };
-}
-
-String _radioPageLabel(String localeName, int current, int total) {
-  return switch (localeName) {
-    'en' => 'Page $current of $total',
-    'es' => 'Página $current de $total',
-    'fr' => 'Page $current sur $total',
-    'pt' => 'Página $current de $total',
-    'pl' => 'Strona $current z $total',
-    'cs' => 'Stránka $current z $total',
-    _ => 'Pagina $current di $total',
-  };
-}
-
-String _radioNoResultsMessage(String localeName, String query) {
-  final hasQuery = query.trim().isNotEmpty;
-  if (localeName == 'en') {
-    return hasQuery
-        ? 'No radios found. Try only the station name, without genre, or change language/country.'
-        : 'No radios found. Try another language, country, or genre.';
-  }
-  if (localeName == 'es') {
-    return hasQuery
-        ? 'No se encontraron radios. Prueba solo con el nombre de la emisora, sin género, o cambia idioma/país.'
-        : 'No se encontraron radios. Prueba con otro idioma, país o género.';
-  }
-  if (localeName == 'fr') {
-    return hasQuery
-        ? 'Aucune radio trouvée. Essayez seulement le nom de la station, sans genre, ou changez langue/pays.'
-        : 'Aucune radio trouvée. Essayez une autre langue, un autre pays ou un autre genre.';
-  }
-  if (localeName == 'pt') {
-    return hasQuery
-        ? 'Nenhuma rádio encontrada. Tente só o nome da estação, sem gênero, ou mude idioma/país.'
-        : 'Nenhuma rádio encontrada. Tente outro idioma, país ou gênero.';
-  }
-  if (localeName == 'pl') {
-    return hasQuery
-        ? 'Nie znaleziono stacji. Spróbuj wpisać tylko nazwę stacji, bez gatunku, albo zmień język/kraj.'
-        : 'Nie znaleziono stacji. Spróbuj innego języka, kraju albo gatunku.';
-  }
-  return hasQuery
-      ? 'Nessuna radio trovata. Prova solo con il nome della stazione, senza genere, oppure cambia lingua o nazione.'
-      : 'Nessuna radio trovata. Prova con un’altra lingua, nazione o genere.';
-}
-
-String _radioSearchErrorMessage(String localeName, Object? error) {
+String _radioSearchErrorMessage(AppLocalizations l10n, Object? error) {
   final raw = error.toString();
   final normalized = raw.toLowerCase();
   final isRadioBrowserConnectionError =
@@ -348,33 +264,8 @@ String _radioSearchErrorMessage(String localeName, Object? error) {
           normalized.contains('http 503') ||
           normalized.contains('http 504');
 
-  if (!isRadioBrowserConnectionError) {
-    if (localeName == 'en') return 'Radio search error: $raw';
-    if (localeName == 'es') return 'Error en la búsqueda de radio: $raw';
-    if (localeName == 'fr') return 'Erreur de recherche radio : $raw';
-    if (localeName == 'pt') return 'Erro na pesquisa de rádio: $raw';
-    if (localeName == 'pl') return 'Błąd wyszukiwania radia: $raw';
-    if (localeName == 'cs') return 'Chyba při hledání rádia: $raw';
-    return 'Errore ricerca radio: $raw';
+  if (isRadioBrowserConnectionError) {
+    return l10n.radioBrowserConnectionError;
   }
-
-  if (localeName == 'en') {
-    return 'Connection error with Radio Browser. Please try again later.';
-  }
-  if (localeName == 'es') {
-    return 'Error de conexión con Radio Browser. Inténtalo de nuevo más tarde.';
-  }
-  if (localeName == 'fr') {
-    return 'Erreur de connexion à Radio Browser. Réessayez plus tard.';
-  }
-  if (localeName == 'pt') {
-    return 'Erro de ligação ao Radio Browser. Tente novamente mais tarde.';
-  }
-  if (localeName == 'pl') {
-    return 'Błąd połączenia z Radio Browser. Spróbuj ponownie później.';
-  }
-  if (localeName == 'cs') {
-    return 'Chyba připojení k Radio Browseru. Zkuste to prosím později.';
-  }
-  return 'Errore di connessione a Radio Browser. Riprova più tardi.';
+  return l10n.radioSearchRawError(raw);
 }

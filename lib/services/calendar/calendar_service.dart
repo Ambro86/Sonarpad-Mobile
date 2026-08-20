@@ -139,6 +139,15 @@ class CalendarService {
       return null;
     }
 
+    if (lang == 'de') {
+      if (day == 1 && month == 1) return "Neujahr";
+      if (day == 1 && month == 5) return "Tag der Arbeit";
+      if (day == 3 && month == 10) return "Tag der Deutschen Einheit";
+      if (day == 25 && month == 12) return "1. Weihnachtstag";
+      if (day == 26 && month == 12) return "2. Weihnachtstag";
+      return null;
+    }
+
     if (lang == 'pt') {
       if (day == 1 && month == 1) return "Ano Novo";
       if (day == 6 && month == 1) return "Epifania";
@@ -220,6 +229,7 @@ class CalendarService {
     if (lang == 'pt') return "Não disponível";
     if (lang == 'pl') return "Niedostępne";
     if (lang == 'cs') return "Není dostupné";
+    if (lang == 'de') return "Nicht verfügbar";
 
     // 3. Per le altre lingue, se il dizionario non ha dati restituisce null
     return null;
@@ -1180,6 +1190,137 @@ class CalendarService {
       "Gdzie jest miłość, tam jest życie. - Mahatma Gandhi",
     ];
 
+    final quotesDe = [
+      'Glück bedeutet nicht, zu haben, was man will, sondern zu wollen, was man hat. - Oscar Wilde',
+      'Erfolg ist die Summe kleiner Anstrengungen, die Tag für Tag wiederholt werden. - Robert Collier',
+      'Es ist nie zu spät, das zu werden, was man hätte sein können. - George Eliot',
+      'Das Leben ist das, was passiert, während du eifrig dabei bist, andere Pläne zu machen. - John Lennon',
+      'Der beste Weg, die Zukunft vorherzusagen, ist, sie zu erfinden. - Alan Kay',
+      'Die wahre Entdeckungsreise besteht nicht darin, neue Landschaften zu suchen, sondern mit neuen Augen zu sehen. - Marcel Proust',
+      'Der einzige Weg, großartige Arbeit zu leisten, ist zu lieben, was man tut. - Steve Jobs',
+      'Das Wesentliche ist für die Augen unsichtbar. - Antoine de Saint-Exupéry',
+      'Auch der längste Weg beginnt mit einem einzigen Schritt. - Laozi',
+      'Hoffnung ist ein Wachtraum. - Aristoteles',
+      'Geduld ist bitter, aber ihre Frucht ist süß. - Jean-Jacques Rousseau',
+      'Man muss noch Chaos in sich haben, um einen tanzenden Stern gebären zu können. - Friedrich Nietzsche',
+      'Schönheit wird die Welt retten. - Fjodor Dostojewski',
+      'Ich weiß, dass ich nichts weiß. - Sokrates',
+      'Steter Tropfen höhlt den Stein, nicht durch Kraft, sondern durch häufiges Fallen. - Ovid',
+      'Die Natur tut nichts vergeblich. - Aristoteles',
+      'Das Glück ist mit den Mutigen. - Vergil',
+      'Wissen ist Macht. - Francis Bacon',
+      'Kein Wind ist günstig für den, der nicht weiß, wohin er segeln will. - Seneca',
+      'Tue alles ruhig und in guter Ordnung. - Marc Aurel',
+      'Einfachheit ist die höchste Form der Raffinesse. - Leonardo da Vinci',
+      'Das Herz hat seine Gründe, die der Verstand nicht kennt. - Blaise Pascal',
+      'Die Zeit enthüllt alles. - Tertullian',
+      'Werde, der du bist. - Friedrich Nietzsche',
+      'Wer ein Warum zum Leben hat, erträgt fast jedes Wie. - Friedrich Nietzsche',
+      'Nichts ist beständiger als der Wandel. - Heraklit',
+      'Alles fließt. - Heraklit',
+      'Es scheint immer unmöglich, bis es vollbracht ist. - Nelson Mandela',
+      'Maßhalten ist der größte Schatz. - Hesiod',
+      'Im Leben gibt es nichts zu fürchten, nur zu verstehen. - Marie Curie',
+      'Phantasie ist wichtiger als Wissen. - Albert Einstein',
+      'Keine noch so kleine freundliche Tat ist jemals vergebens. - Äsop',
+      'Gut begonnen ist halb gewonnen. - Aristoteles',
+      'Wir sitzen alle in der Gosse, aber einige von uns betrachten die Sterne. - Oscar Wilde',
+      'Nicht weil die Dinge schwierig sind, wagen wir sie nicht, sondern weil wir sie nicht wagen, sind sie schwierig. - Seneca',
+      'Menschen sind wie Fahrräder: Sie können das Gleichgewicht nur halten, solange sie in Bewegung bleiben. - Albert Einstein',
+      'Das Maß der Intelligenz ist die Fähigkeit, sich zu verändern. - Albert Einstein',
+      'Ihr seid nicht geschaffen, um wie Tiere zu leben, sondern um Tugend und Erkenntnis zu folgen. - Dante Alighieri',
+      'Liebe, die keinem Geliebten das Lieben erspart. - Dante Alighieri',
+      'Auf halbem Weg unseres Lebens fand ich mich in einem dunklen Wald wieder. - Dante Alighieri',
+      'Sein oder Nichtsein, das ist hier die Frage. - William Shakespeare',
+      'Wir wissen, was wir sind, aber nicht, was wir sein könnten. - William Shakespeare',
+      'Niemand kann dir ohne deine Zustimmung das Gefühl geben, minderwertig zu sein. - Eleanor Roosevelt',
+      'Wir leben alle unter demselben Himmel, aber wir haben nicht alle denselben Horizont. - Konrad Adenauer',
+      'Liebe alle, vertraue wenigen, tue niemandem Unrecht. - William Shakespeare',
+      'In der Kürze liegt die Würze. - William Shakespeare',
+      'Nicht die Dinge selbst beunruhigen uns, sondern unsere Urteile über die Dinge. - Epiktet',
+      'Inmitten jeder Schwierigkeit liegt eine Gelegenheit. - Albert Einstein',
+      'Kein Mensch ist frei, der nicht Herr über sich selbst ist. - Epiktet',
+      'Beständigkeit verwandelt Ziele in Ergebnisse. - Jim Rohn',
+      'Das Glück deines Lebens hängt von der Beschaffenheit deiner Gedanken ab. - Marc Aurel',
+      'Unser Leben ist das, wozu unsere Gedanken es machen. - Marc Aurel',
+      'Zeit ist das Kostbarste, was ein Mensch ausgeben kann. - Theophrast',
+      'Wer wenig denkt, irrt viel. - Leonardo da Vinci',
+      'Weisheit ist die Tochter der Erfahrung. - Leonardo da Vinci',
+      'Man sieht nur mit dem Herzen gut. - Antoine de Saint-Exupéry',
+      'Alle Erwachsenen waren einmal Kinder. - Antoine de Saint-Exupéry',
+      'Die Sterne leuchten, damit jeder eines Tages seinen eigenen finden kann. - Antoine de Saint-Exupéry',
+      'Freiheit beginnt mit Ironie. - Victor Hugo',
+      'Das Gewissen ist die Stimme der Seele. - Jean-Jacques Rousseau',
+      'Der Mensch ist frei geboren, und überall liegt er in Ketten. - Jean-Jacques Rousseau',
+      'Zweifel ist der Anfang der Weisheit. - René Descartes',
+      'Ich denke, also bin ich. - René Descartes',
+      'Staunen ist der Anfang der Erkenntnis. - Platon',
+      'Musik gibt dem Universum eine Seele, dem Geist Flügel und der Phantasie Flugkraft. - Platon',
+      'Der Mensch ist ein soziales Wesen. - Aristoteles',
+      'Das Glück hängt von uns selbst ab. - Aristoteles',
+      'Wähle einen Beruf, den du liebst, und du brauchst keinen Tag in deinem Leben zu arbeiten. - Konfuzius',
+      'Wohin du auch gehst, geh mit ganzem Herzen. - Konfuzius',
+      'Es spielt keine Rolle, wie langsam du gehst, solange du nicht stehen bleibst. - Konfuzius',
+      'Studiere die Vergangenheit, wenn du die Zukunft bestimmen willst. - Konfuzius',
+      'Wer andere kennt, ist klug; wer sich selbst kennt, ist erleuchtet. - Laozi',
+      'Wer zufrieden ist, ist reich. - Laozi',
+      'Freundliche Worte können kurz und leicht auszusprechen sein, doch ihr Echo ist wahrhaft endlos. - Mutter Teresa',
+      'Wir können keine großen Dinge tun, nur kleine Dinge mit großer Liebe. - Mutter Teresa',
+      'Frieden beginnt mit einem Lächeln. - Mutter Teresa',
+      'Auge um Auge macht die ganze Welt blind. - Mahatma Gandhi',
+      'Stärke kommt nicht aus körperlicher Kraft, sondern aus unbeugsamem Willen. - Mahatma Gandhi',
+      'Das Leben ist ein Geheimnis, das gelebt werden will, kein Problem, das gelöst werden muss. - Søren Kierkegaard',
+      'Das Leben kann nur rückwärts verstanden, muss aber vorwärts gelebt werden. - Søren Kierkegaard',
+      'Wer kämpft, kann verlieren; wer nicht kämpft, hat schon verloren. - Bertolt Brecht',
+      'Wo aber Gefahr ist, wächst das Rettende auch. - Friedrich Hölderlin',
+      'Zwei Dinge erfüllen das Gemüt mit Bewunderung: der bestirnte Himmel über mir und das moralische Gesetz in mir. - Immanuel Kant',
+      'Habe Mut, dich deines eigenen Verstandes zu bedienen. - Immanuel Kant',
+      'Der Mensch ist das, woran er glaubt. - Anton Tschechow',
+      'Schönheit ist das Versprechen des Glücks. - Stendhal',
+      'Die Zukunft gehört denen, die an die Schönheit ihrer Träume glauben. - Eleanor Roosevelt',
+      'Man wird nicht als Frau geboren, man wird dazu. - Simone de Beauvoir',
+      'Kultur ist das einzige Gut der Menschheit, das größer wird, wenn alle daran teilhaben. - Hans-Georg Gadamer',
+      'Wenn Verstehen unmöglich ist, ist Erkennen notwendig. - Primo Levi',
+      'Erinnerung ist notwendig; wir müssen uns erinnern. - Primo Levi',
+      'Nimm das Leben leicht, denn Leichtigkeit ist nicht Oberflächlichkeit. - Italo Calvino',
+      'Die Hölle der Lebenden ist nichts, was erst kommen wird; wenn es sie gibt, ist sie schon hier. - Italo Calvino',
+      'Phantasie ist ein Ort, an dem es von innen regnet. - Italo Calvino',
+      'Die Wirklichkeit ist nie so, wie wir sie sehen: Wahrheit ist vor allem Vorstellung. - René Magritte',
+      'Das Leben ahmt die Kunst weit mehr nach als die Kunst das Leben. - Oscar Wilde',
+      'Sei du selbst; alle anderen gibt es schon. - Oscar Wilde',
+      'Keine Nacht ist so lang, dass sie verhindern könnte, dass die Sonne wieder aufgeht. - Khalil Gibran',
+      'Arbeit ist sichtbar gemachte Liebe. - Khalil Gibran',
+      'Zärtlichkeit und Güte sind keine Zeichen von Schwäche, sondern Ausdruck von Stärke. - Khalil Gibran',
+      'Weine nicht, weil es vorbei ist; lächle, weil es geschehen ist. - Dr. Seuss',
+      'Bildung ist die mächtigste Waffe, die du einsetzen kannst, um die Welt zu verändern. - Nelson Mandela',
+      'Was wir wissen, ist ein Tropfen; was wir nicht wissen, ein Ozean. - Isaac Newton',
+      'Wenn ich weiter gesehen habe, dann deshalb, weil ich auf den Schultern von Riesen stand. - Isaac Newton',
+      'Ein Tag ohne Lachen ist ein verlorener Tag. - Charlie Chaplin',
+      'Das Leben ist zu wichtig, um es ernst zu nehmen. - Oscar Wilde',
+      'Wir müssen unseren Garten bestellen. - Voltaire',
+      'Der Schlaf der Vernunft gebiert Ungeheuer. - Francisco Goya',
+      'Ohne Musik wäre das Leben ein Irrtum. - Friedrich Nietzsche',
+      'Was mich nicht umbringt, macht mich stärker. - Friedrich Nietzsche',
+      'Die Grenzen meiner Sprache bedeuten die Grenzen meiner Welt. - Ludwig Wittgenstein',
+      'Wovon man nicht sprechen kann, darüber muss man schweigen. - Ludwig Wittgenstein',
+      'Der Mensch ist zur Freiheit verurteilt. - Jean-Paul Sartre',
+      'Alles, was du dir vorstellen kannst, ist wirklich. - Pablo Picasso',
+      'Jedes Kind ist ein Künstler. Das Problem ist, ein Künstler zu bleiben, wenn man erwachsen wird. - Pablo Picasso',
+      'Kunst wäscht den Staub des Alltags von der Seele. - Pablo Picasso',
+      'Ein ungeprüftes Leben ist nicht lebenswert. - Sokrates',
+      'Wichtig ist nicht zu leben, sondern gut zu leben. - Sokrates',
+      'Die Wahrheit ist die Tochter der Zeit. - Francis Bacon',
+      'Wer es wagt, eine Stunde Zeit zu verschwenden, hat den Wert des Lebens noch nicht erkannt. - Charles Darwin',
+      'Die Geschichte ist die Lehrmeisterin des Lebens. - Cicero',
+      'Solange Leben da ist, ist Hoffnung. - Cicero',
+      'Die Zukunft hängt davon ab, was wir in der Gegenwart tun. - Mahatma Gandhi',
+      'Freiheit ist wie Luft: Man erkennt ihren Wert, wenn sie knapp wird. - Piero Calamandrei',
+      'Wenn wir wollen, dass alles bleibt, wie es ist, muss sich alles ändern. - Giuseppe Tomasi di Lampedusa',
+      'Wer eine Schultür öffnet, schließt ein Gefängnis. - Victor Hugo',
+      'Die Wurzeln der Bildung sind bitter, aber ihre Frucht ist süß. - Aristoteles',
+      'Wo Liebe ist, da ist Leben. - Mahatma Gandhi',
+    ];
+
     List<String> list;
     switch (lang) {
       case 'it':
@@ -1199,6 +1340,9 @@ class CalendarService {
         break;
       case 'cs':
         list = quotesCs;
+        break;
+      case 'de':
+        list = quotesDe;
         break;
       default:
         list = quotesEn;

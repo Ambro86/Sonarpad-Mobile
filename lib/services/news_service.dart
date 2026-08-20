@@ -23,6 +23,7 @@ import 'news_sources/spanish_news_sources.dart';
 import 'news_sources/portuguese_news_sources.dart';
 import 'news_sources/polish_news_sources.dart';
 import 'news_sources/czech_news_sources.dart';
+import 'news_sources/german_news_sources.dart';
 
 enum NewsLanguage {
   italian,
@@ -31,7 +32,8 @@ enum NewsLanguage {
   spanish,
   portuguese,
   polish,
-  czech
+  czech,
+  german
 }
 
 class _TinyfishArticleFetchResult {
@@ -53,6 +55,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.portuguese => 'pt',
         NewsLanguage.polish => 'pl',
         NewsLanguage.czech => 'cs',
+        NewsLanguage.german => 'de',
       };
 
   String get communityKey => switch (this) {
@@ -63,6 +66,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.portuguese => 'portuguese',
         NewsLanguage.polish => 'polish',
         NewsLanguage.czech => 'czech',
+        NewsLanguage.german => 'german',
       };
 
   String label(AppLocalizations l10n) => switch (this) {
@@ -73,6 +77,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.portuguese => l10n.radioLanguagePt,
         NewsLanguage.polish => l10n.radioLanguagePl,
         NewsLanguage.czech => l10n.radioLanguageCs,
+        NewsLanguage.german => l10n.german,
       };
 
   List<NewsRssSource> get rssSources => switch (this) {
@@ -83,6 +88,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.portuguese => portugueseNewsSources,
         NewsLanguage.polish => polishNewsSources,
         NewsLanguage.czech => czechNewsSources,
+        NewsLanguage.german => germanNewsSources,
       };
 }
 
@@ -554,6 +560,11 @@ class NewsService {
             hl = 'cs';
             gl = 'CZ';
             ceid = 'CZ:cs';
+            break;
+          case NewsLanguage.german:
+            hl = 'de';
+            gl = 'DE';
+            ceid = 'DE:de';
             break;
         }
         finalUrl =
@@ -1955,6 +1966,7 @@ class NewsService {
       NewsLanguage.portuguese => 'pt-PT,pt;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.polish => 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.czech => 'cs-CZ,cs;q=0.9,en-US;q=0.8,en;q=0.7',
+      NewsLanguage.german => 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
     };
   }
 

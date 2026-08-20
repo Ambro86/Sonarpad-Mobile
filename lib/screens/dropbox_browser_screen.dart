@@ -285,7 +285,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           value: _searchController.text,
         ),
         if (_searchQuery.isNotEmpty)
-          AccessibleListRow(id: 'clear_search', title: 'Cancella ricerca', kind: 'button'),
+          AccessibleListRow(id: 'clear_search', title: l10n.clearSearch, kind: 'button'),
         if (_currentPath.isNotEmpty)
           AccessibleListRow(id: 'back', title: l10n.goBack),
         if (visibleEntries.isEmpty)
@@ -301,7 +301,9 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             AccessibleListRow(
               id: 'entry_$i',
               title: visibleEntries[i]['name'] as String,
-              subtitle: visibleEntries[i]['.tag'] == 'folder' ? 'Cartella' : 'File',
+              subtitle: visibleEntries[i]['.tag'] == 'folder'
+                  ? l10n.folderTypeLabel
+                  : l10n.fileTypeLabel,
             ),
       ];
       return UniversalAccessibleList(

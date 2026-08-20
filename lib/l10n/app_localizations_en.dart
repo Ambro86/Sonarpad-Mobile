@@ -406,6 +406,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spanish => 'Spanish';
 
   @override
+  String get german => 'German';
+
+  @override
   String get newsSource => 'News source';
 
   @override
@@ -3054,4 +3057,300 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get developerUseExperimentalFlutterRendererHint => 'Temporarily disables UIKit to compare VoiceOver with pure Flutter.';
 
+  // Shared labels generated from ARB entries.
+  @override
+  String get letterJumpSelectLetter => 'Select letter';
+
+  @override
+  String get letterJumpSelected => 'selected';
+
+  @override
+  String get settingsToggleOn => 'On';
+
+  @override
+  String get settingsToggleOff => 'Off';
+
+  @override
+  String get radioDirectoryLoading => 'Updating radio countries and languages...';
+
+  @override
+  String get recentRadios => 'Recent radios';
+
+  @override
+  String get radioNextPage => 'Next';
+
+  @override
+  String radioPageOf(int current, int total) {
+    return 'Page $current of $total';
+  }
+
+  @override
+  String get radioNoResultsWithQuery => 'No radios found. Try only the station name, without genre, or change language/country.';
+
+  @override
+  String get radioNoResultsGeneric => 'No radios found. Try another language, country, or genre.';
+
+  @override
+  String radioSearchRawError(Object error) {
+    return 'Radio search error: $error';
+  }
+
+  @override
+  String get radioBrowserConnectionError => 'Connection error with Radio Browser. Please try again later.';
+
+  @override
+  String get documentIndexLoadingMessage => 'Loading table of contents... Please wait.';
+
+  @override
+  String get documentIndexUnavailableMessage => 'Table of contents not available for this EPUB.';
+
+  @override
+  String mediaCutterVolumeSummary(int percent) {
+    return 'volume $percent%';
+  }
+
+  @override
+  String mediaCutterDurationSummary(String duration) {
+    return 'duration $duration';
+  }
+
+  @override
+  String get mediaCutterDurationHourOne => 'hour';
+
+  @override
+  String get mediaCutterDurationHourFew => 'hours';
+
+  @override
+  String get mediaCutterDurationHourMany => 'hours';
+
+  @override
+  String get mediaCutterDurationMinuteOne => 'minute';
+
+  @override
+  String get mediaCutterDurationMinuteFew => 'minutes';
+
+  @override
+  String get mediaCutterDurationMinuteMany => 'minutes';
+
+  @override
+  String get mediaCutterDurationSecondOne => 'second';
+
+  @override
+  String get mediaCutterDurationSecondFew => 'seconds';
+
+  @override
+  String get mediaCutterDurationSecondMany => 'seconds';
+
+  @override
+  String get mediaCutterDurationAnd => 'and';
+
+  @override
+  String mediaCutterSeekStepButton(String step) {
+    return 'Adjust media file movement: $step';
+  }
+
+  @override
+  String get mediaCutterSeekStepTitle => 'Media file movement';
+
+  @override
+  String mediaCutterSeekStepSelected(String step) {
+    return 'Media file movement set to $step.';
+  }
+
+  @override
+  String get mediaCutterPartEffectBackwards => 'Backwards';
+
+  @override
+  String get mediaCutterPartEffectTalkingGuitar => 'Talking guitar';
+
+  @override
+  String get mediaCutterPartEffectMosquito => 'Mosquito';
+
+  @override
+  String get mediaCutterPartEffectOneOfMany => 'One voice, many singers';
+
+  @override
+  String get mediaCutterPartEffectOrganVocoder => 'Talking organ';
+
+  @override
+  String get mediaCutterPartEffectWarped => 'Warped';
+
+  @override
+  String get mediaCutterPartEffectSwirling => 'Stereo vortex';
+
+  @override
+  String get mediaCutterPartEffectVader => 'Cinematic dark voice';
+
+  @override
+  String get mediaCutterPartEffectMetallic => 'Metallic';
+
+  @override
+  String get mediaCutterPartEffectSongbird => 'Songbird';
+
+  @override
+  String get mediaCutterPartEffectExterminator => 'Exterminator';
+
+  @override
+  String get mediaCutterPartEffectRainAndThunder => 'Rain and thunder';
+
+  @override
+  String get mediaCutterPartEffectJungle => 'Jungle';
+
+  @override
+  String get mediaCutterPartEffectCrowd => 'Crowd';
+
+  @override
+  String get mediaCutterPartEffectSlotMachines => 'Slot machines';
+
+  @override
+  String get mediaCutterPartEffectTraffic => 'Traffic';
+
+  @override
+  String get mediaCutterPartEffectSpaceship => 'Spaceship';
+
+  @override
+  String get mediaCutterPartEffectCricket => 'Cricket';
+
+  @override
+  String get mediaCutterPartEffectSiren => 'Siren';
+
+  @override
+  String get mediaCutterPartEffectSleighBells => 'Sleigh bells';
+
+  @override
+  String get mediaCutterPartEffectDj => 'DJ scratch';
+
+  @override
+  String get mediaCutterPartEffectApplause => 'Applause';
+
+  @override
+  String get mediaCutterPartEffectBadMelody => 'Off-key melody';
+
+  @override
+  String get mediaCutterPartEffectBadHarmony => 'Dissonant harmony';
+
+  @override
+  String get mediaCutterPartEffectWarmVoice => 'Warm voice';
+
+  @override
+  String get mediaCutterPartEffectTurtle => 'Turtle';
+
+  @override
+  String get mediaCutterPartEffectHaunting => 'Haunting';
+
+  @override
+  String get radioPreviousPage => 'Previous';
+
+  @override
+  String get noRecentRadios => 'No recent radios.';
+
+  @override
+  String get radioBrowseByCity => 'Browse by city';
+
+  @override
+  String get radioCityInputHint => 'Enter city name...';
+
+  @override
+  String get openItem => 'Open';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String get fileTypeLabel => 'File';
+
+  @override
+  String get cinemaTrailerLoading => 'Loading trailer';
+
+  @override
+  String get cinemaNoTrailer => 'No trailer is available for this movie';
+
+  @override
+  String get radioScheduleHours => 'Hours';
+
+  @override
+  String get radioScheduleSelectHours => 'Select hours';
+
+  @override
+  String get radioScheduleMinutes => 'Minutes';
+
+  @override
+  String get radioScheduleSelectMinutes => 'Select minutes';
+
+  @override
+  String get radioScheduleStopCurrentFirst => 'Stop the current recording before scheduling a new one.';
+
+  @override
+  String get radioScheduleStartTime => 'Start time';
+
+  @override
+  String get radioScheduleEndTime => 'End time';
+
+  @override
+  String get radioScheduleDialogTitle => 'Schedule recording';
+
+  @override
+  String get radioScheduleOpenRequirement => 'In this version, the scheduled recording starts only if Sonarpad remains open on this player. If you close the app or this screen, the recording cannot start automatically.';
+
+  @override
+  String radioScheduleStartTimeValue(String time) {
+    return 'Start time: $time';
+  }
+
+  @override
+  String radioScheduleEndTimeValue(String time) {
+    return 'End time: $time';
+  }
+
+  @override
+  String get radioScheduleOptionalTitle => 'Optional title';
+
+  @override
+  String get radioScheduleTitleHint => 'Leave blank to use the radio or TV name';
+
+  @override
+  String get radioScheduleAction => 'Schedule';
+
+  @override
+  String radioScheduledRecordingRange(String start, String end) {
+    return 'Scheduled recording: $start - $end.';
+  }
+
+  @override
+  String get radioScheduledRecordingAlreadyActive => 'Scheduled recording not started: another recording is already in progress.';
+
+  @override
+  String get radioScheduledRecordingStarted => 'Scheduled recording started.';
+
+  @override
+  String radioScheduledRecordingError(Object error) {
+    return 'Scheduled recording error: $error';
+  }
+
+  @override
+  String get radioScheduledRecordingSaved => 'Scheduled recording saved.';
+
+  @override
+  String radioScheduledRecordingSaveError(Object error) {
+    return 'Error saving scheduled recording: $error';
+  }
+
+  @override
+  String get radioScheduledRecordingCancelled => 'Scheduled recording cancelled.';
+
+  @override
+  String radioScheduledRecordingRangeWithTitle(String start, String end, String title) {
+    return 'Scheduled recording: $start - $end. Title: $title.';
+  }
+
+  @override
+  String get radioScheduleCancelAction => 'Cancel scheduled recording';
+  @override
+  String get radioLanguageTr => 'Turkish';
+
+  @override
+  String get radioCountryOptionTr => 'Turkey';
+
+  @override
+  String get radioCommunityLanguageTurkish => 'Turkish';
 }

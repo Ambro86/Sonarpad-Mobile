@@ -16,6 +16,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Solenidade de Santa Maria, Mãe de Deus",
     "pl": "Święta Boża Rodzicielka Maryja",
     "cs": "Panna Maria, Matka Boží",
+    "de": "Hochfest der Gottesmutter Maria",
   },
   "2-1": {
     "it": "Santi Basilio Magno e Gregorio Nazianzeno",
@@ -25,6 +26,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Gregório Nacianceno",
     "pl": "Święci Basilio Magno e Gregorio Nazianzeno",
     "cs": "sv. Basilio Magno e Gregorio Nazianzeno",
+    "de": "Hll. Basilius der Große und Gregor von Nazianz",
   },
   "3-1": {
     "it": "Santissimo Nome di Gesù",
@@ -34,6 +36,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Festa do Santíssimo Nome de Jesus",
     "pl": "Najświętsze Imię Jezus",
     "cs": "Nejsvětější Jméno Ježíš",
+    "de": "Heiligster Name Jesu",
   },
   "4-1": {
     "it": "Sant'Angela da Foligno",
@@ -43,6 +46,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ângela de Foligno",
     "pl": "Św. Angela da Foligno",
     "cs": "sv. Angela da Foligno",
+    "de": "Hl. Angela von Foligno",
   },
   "5-1": {
     "it": "Sant' Amelia",
@@ -52,6 +56,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Diocese de Terni-Narni-Amelia",
     "pl": "Św. Amelia",
     "cs": "sv. Amelia",
+    "de": "Hl. Amelia",
   },
   "6-1": {
     "it": "Epifania del Signore",
@@ -61,6 +66,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Epifania",
     "pl": "Objawienie Pańskie",
     "cs": "Zjevení Páně",
+    "de": "Erscheinung des Herrn",
   },
   "7-1": {
     "it": "San Raimondo de Penafort",
@@ -70,6 +76,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Raimundo de Peñafort",
     "pl": "Św. Raimondo de Penafort",
     "cs": "sv. Raimondo de Penafort",
+    "de": "Hl. Raimund von Peñafort",
   },
   "8-1": {
     "it": "San Massimo di Pavia",
@@ -79,6 +86,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Universidade de Pavía",
     "pl": "Św. Massimo di Pavia",
     "cs": "sv. Massimo di Pavia",
+    "de": "Hl. Maximus von Pavia",
   },
   "9-1": {
     "it": "San Marcellino di Ancona",
@@ -88,6 +96,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Marcelino de Ancona",
     "pl": "Św. Marcellino di Ancona",
     "cs": "sv. Marcellino di Ancona",
+    "de": "Hl. Marcellinus von Ancona",
   },
   "10-1": {
     "it": "Sant' Aldo",
@@ -97,6 +106,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "São Aldo",
     "pl": "Św. Aldo",
     "cs": "sv. Aldo",
+    "de": "Hl. Aldo",
   },
   "11-1": {
     "it": "Battesimo di Gesù",
@@ -106,6 +116,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Batismo do Senhor",
     "pl": "Battesimo di Gesù",
     "cs": "Křest Páně",
+    "de": "Taufe des Herrn",
   },
   "12-1": {
     "it": "San Bernardo da Corleone",
@@ -115,6 +126,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bernardo de Corleone",
     "pl": "Św. Bernardo da Corleone",
     "cs": "sv. Bernardo da Corleone",
+    "de": "Hl. Bernhard von Corleone",
   },
   "13-1": {
     "it": "Sant' Ilario di Poitiers",
@@ -124,6 +136,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Hilario de Poitiers",
     "pl": "Św. Ilario di Poitiers",
     "cs": "sv. Ilario di Poitiers",
+    "de": "Hl. Hilarius von Poitiers",
   },
   "14-1": {
     "it": "San Felice da Nola",
@@ -133,6 +146,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Félix de Nola",
     "pl": "Św. Felice da Nola",
     "cs": "sv. Felice da Nola",
+    "de": "Hl. Felix von Nola",
   },
   "15-1": {
     "it": "San Mauro",
@@ -142,6 +156,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "São Mauro Castelverde",
     "pl": "Św. Mauro",
     "cs": "sv. Mauro",
+    "de": "Hl. Maurus",
   },
   "16-1": {
     "it": "San Marcello I",
@@ -151,6 +166,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Marcelo I",
     "pl": "Św. Marcello I",
     "cs": "sv. Marcello I",
+    "de": "Hl. Marcellus I",
   },
   "17-1": {
     "it": "Sant' Antonio",
@@ -160,6 +176,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "António de Padua",
     "pl": "Św. Antonio",
     "cs": "sv. Antonio",
+    "de": "Hl. Antonius",
   },
   "18-1": {
     "it": "Santa Margherita d'Ungheria",
@@ -169,6 +186,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Margarita de Luxemburgo",
     "pl": "Św. Margherita d'Ungheria",
     "cs": "sv. Margherita d'Ungheria",
+    "de": "Hl. Margareta von Ungarn",
   },
   "19-1": {
     "it": "Santi Mario, Marta, Abaco e Audiface",
@@ -178,6 +196,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Mario, Marta, Audifax e Ábaco",
     "pl": "Święci Mario, Marta, Abaco e Audiface",
     "cs": "sv. Mario, Marta, Abaco e Audiface",
+    "de": "Hll. Marius, Martha, Abachum und Audifax",
   },
   "20-1": {
     "it": "Santi Sebastiano e Fabiano",
@@ -187,6 +206,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Sebastián de Milán",
     "pl": "Święci Sebastiano e Fabiano",
     "cs": "sv. Sebastiano e Fabiano",
+    "de": "Hll. Sebastian und Fabian",
   },
   "21-1": {
     "it": "Sant' Agnese",
@@ -196,6 +216,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Inês de Francia",
     "pl": "Św. Agnese",
     "cs": "sv. Agnese",
+    "de": "Hl. Agnes",
   },
   "22-1": {
     "it": "San Vincenzo di Saragozza",
@@ -205,6 +226,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Vicente de Huesca",
     "pl": "Św. Vincenzo di Saragozza",
     "cs": "sv. Vincenzo di Saragozza",
+    "de": "Hl. Vinzenz von Saragossa",
   },
   "23-1": {
     "it": "Sposalizio di Maria e Giuseppe",
@@ -214,6 +236,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Los desposorios da Virgem",
     "pl": "Sposalizio di Maria e Giuseppe",
     "cs": "Sposalizio di Maria e Giuseppe",
+    "de": "Vermählung Mariens mit Josef",
   },
   "24-1": {
     "it": "San Francesco di Sales",
@@ -223,6 +246,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Francisco de Sales",
     "pl": "Św. Francesco di Sales",
     "cs": "sv. Francesco di Sales",
+    "de": "Hl. Franz von Sales",
   },
   "25-1": {
     "it": "Conversione di San Paolo Apostolo",
@@ -232,6 +256,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Conversão de São Paulo Apóstoloo",
     "pl": "Conversione di San Paolo Apostolo",
     "cs": "Conversione di San Paolo Apostolo",
+    "de": "Bekehrung des Apostels Paulus",
   },
   "26-1": {
     "it": "Santi Timoteo e Tito",
@@ -241,6 +266,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Timoteo de Éfeso",
     "pl": "Święci Timoteo e Tito",
     "cs": "sv. Timoteo e Tito",
+    "de": "Hll. Timotheus und Titus",
   },
   "27-1": {
     "it": "Sant' Angela Merici",
@@ -250,6 +276,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ângela de Mérici",
     "pl": "Św. Angela Merici",
     "cs": "sv. Angela Merici",
+    "de": "Hl. Angela Merici",
   },
   "28-1": {
     "it": "San Tommaso d'Aquino",
@@ -259,6 +286,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Tomás de Aquino",
     "pl": "Św. Tommaso d'Aquino",
     "cs": "sv. Tommaso d'Aquino",
+    "de": "Hl. Thomas von Aquin",
   },
   "29-1": {
     "it": "San Costanzo di Perugia",
@@ -268,6 +296,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Constancio de Perugia",
     "pl": "Św. Costanzo di Perugia",
     "cs": "sv. Costanzo di Perugia",
+    "de": "Hl. Constantius von Perugia",
   },
   "30-1": {
     "it": "Santa Martina",
@@ -277,6 +306,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Martina Navrátilová",
     "pl": "Św. Martina",
     "cs": "sv. Martina",
+    "de": "Hl. Martina",
   },
   "31-1": {
     "it": "San Giovanni Bosco",
@@ -286,6 +316,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pía Sociedad de São Francisco de Sales",
     "pl": "Św. Giovanni Bosco",
     "cs": "sv. Giovanni Bosco",
+    "de": "Hl. Johannes Bosco",
   },
   "1-2": {
     "it": "Santa Brigida d'Irlanda",
@@ -295,6 +326,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Brígida de Kildare",
     "pl": "Św. Brigida d'Irlanda",
     "cs": "sv. Brigida d'Irlanda",
+    "de": "Hl. Brigitta von Irland",
   },
   "2-2": {
     "it": "Presentazione del Signore",
@@ -304,6 +336,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Candelária",
     "pl": "Presentazione del Signore",
     "cs": "Presentazione del Signore",
+    "de": "Darstellung des Herrn",
   },
   "3-2": {
     "it": "San Biagio",
@@ -313,6 +346,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Brás de Sebaste",
     "pl": "Św. Biagio",
     "cs": "sv. Biagio",
+    "de": "Hl. Blasius",
   },
   "4-2": {
     "it": "San Giuseppe da Leonessa",
@@ -322,6 +356,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "José de Leonisa",
     "pl": "Św. Giuseppe da Leonessa",
     "cs": "sv. Giuseppe da Leonessa",
+    "de": "Hl. Josef von Leonessa",
   },
   "5-2": {
     "it": "Sant' Agata",
@@ -331,6 +366,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Águeda de Catania",
     "pl": "Św. Agata",
     "cs": "sv. Agata",
+    "de": "Hl. Agatha",
   },
   "6-2": {
     "it": "San Paolo Miki e compagni",
@@ -340,6 +376,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Paulo Miki",
     "pl": "Św. Paolo Miki e compagni",
     "cs": "sv. Paolo Miki e compagni",
+    "de": "Hl. Paul Miki und Gefährten",
   },
   "7-2": {
     "it": "San Riccardo",
@@ -349,6 +386,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ricardo de Andria",
     "pl": "Św. Riccardo",
     "cs": "sv. Riccardo",
+    "de": "Hl. Richard",
   },
   "8-2": {
     "it": "San Girolamo Emiliani",
@@ -358,6 +396,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Jerônimo Emiliani",
     "pl": "Św. Girolamo Emiliani",
     "cs": "sv. Girolamo Emiliani",
+    "de": "Hl. Hieronymus Ämiliani",
   },
   "9-2": {
     "it": "Sant' Apollonia",
@@ -367,6 +406,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Apolonio de Alejandría",
     "pl": "Św. Apollonia",
     "cs": "sv. Apollonia",
+    "de": "Hl. Apollonia",
   },
   "10-2": {
     "it": "Santa Scolastica",
@@ -376,6 +416,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Escolástica de Nursia",
     "pl": "Św. Scolastica",
     "cs": "sv. Scolastica",
+    "de": "Hl. Scholastika",
   },
   "11-2": {
     "it": "Beata Vergine Maria di Lourdes",
@@ -385,6 +426,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nuestra Señora de Lourdes",
     "pl": "Bł. Vergine Maria di Lourdes",
     "cs": "blahoslavená Vergine Maria di Lourdes",
+    "de": "Unsere Liebe Frau von Lourdes",
   },
   "12-2": {
     "it": "Santi Martiri di Abitina",
@@ -394,6 +436,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Mártires de Abitinia",
     "pl": "Święci Martiri di Abitina",
     "cs": "sv. Martiri di Abitina",
+    "de": "Hll. Märtyrer von Abitina",
   },
   "13-2": {
     "it": "Sante Fosca e Maura",
@@ -403,6 +446,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Fosca e Maura",
     "pl": "Święte Fosca e Maura",
     "cs": "sv. Fosca e Maura",
+    "de": "Hll. Fosca und Maura",
   },
   "14-2": {
     "it": "San Valentino",
@@ -412,6 +456,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Valentín de Roma",
     "pl": "Św. Valentino",
     "cs": "sv. Valentino",
+    "de": "Hl. Valentin",
   },
   "15-2": {
     "it": "Santi Faustino e Giovita",
@@ -421,6 +466,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Faustino e Jovita",
     "pl": "Święci Faustino e Giovita",
     "cs": "sv. Faustino e Giovita",
+    "de": "Hll. Faustinus und Jovita",
   },
   "16-2": {
     "it": "Santa Giuliana di Nicomedia",
@@ -430,6 +476,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Juliana de Nicomedia",
     "pl": "Św. Giuliana di Nicomedia",
     "cs": "sv. Giuliana di Nicomedia",
+    "de": "Hl. Juliana von Nicomedia",
   },
   "17-2": {
     "it": "Santi Sette Fondatori dell'Ordine dei Servi di Maria",
@@ -439,6 +486,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Orden dos Servitas",
     "pl": "Święci Sette Fondatori dell'Ordine dei Servi di Maria",
     "cs": "sv. Sette Fondatori dell'Ordine dei Servi di Maria",
+    "de": "Hll. Sieben Gründer des Servitenordens",
   },
   "18-2": {
     "it": "Sacre Ceneri",
@@ -448,6 +496,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Miércoles de Ceniza",
     "pl": "Sacre Ceneri",
     "cs": "Sacre Ceneri",
+    "de": "Aschermittwoch",
   },
   "19-2": {
     "it": "San Corrado Confalonieri",
@@ -457,6 +506,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Conrado de Piacenza",
     "pl": "Św. Corrado Confalonieri",
     "cs": "sv. Corrado Confalonieri",
+    "de": "Hl. Konrad von Piacenza",
   },
   "20-2": {
     "it": "Santa Giacinta Marto",
@@ -466,6 +516,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Jacinta Marto",
     "pl": "Św. Giacinta Marto",
     "cs": "sv. Giacinta Marto",
+    "de": "Hl. Jacinta Marto",
   },
   "21-2": {
     "it": "Sant' Eleonora",
@@ -475,6 +526,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Leonor de Provenza",
     "pl": "Św. Eleonora",
     "cs": "sv. Eleonora",
+    "de": "Hl. Eleonora",
   },
   "22-2": {
     "it": "Cattedra di San Pietro Apostolo",
@@ -484,6 +536,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cátedra de São Pedro",
     "pl": "Cattedra di San Pietro Apostolo",
     "cs": "Cattedra di San Pietro Apostolo",
+    "de": "Kathedra Petri",
   },
   "23-2": {
     "it": "San Policarpo",
@@ -493,6 +546,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Policarpo de Esmirna",
     "pl": "Św. Policarpo",
     "cs": "sv. Policarpo",
+    "de": "Hl. Polykarp",
   },
   "24-2": {
     "it": "Sant' Etelberto",
@@ -502,6 +556,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Etelberto de Kent",
     "pl": "Św. Etelberto",
     "cs": "sv. Etelberto",
+    "de": "Hl. Ethelbert",
   },
   "25-2": {
     "it": "San Gerlando di Agrigento",
@@ -511,6 +566,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Gerlando de Agrigento",
     "pl": "Św. Gerlando di Agrigento",
     "cs": "sv. Gerlando di Agrigento",
+    "de": "Hl. Gerlando von Agrigent",
   },
   "26-2": {
     "it": "Sant' Alessandro di Alessandria",
@@ -520,6 +576,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Alexandre de Alejandría",
     "pl": "Św. Alessandro di Alessandria",
     "cs": "sv. Alessandro di Alessandria",
+    "de": "Hl. Alexander von Alexandrien",
   },
   "27-2": {
     "it": "San Gabriele dell'Addolorata",
@@ -529,6 +586,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Gabriel da Dolorosa",
     "pl": "Św. Gabriele dell'Addolorata",
     "cs": "sv. Gabriele dell'Addolorata",
+    "de": "Hl. Gabriel von der Schmerzhaften Muttergottes",
   },
   "28-2": {
     "it": "San Romano di Condat",
@@ -538,6 +596,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Román de Condat",
     "pl": "Św. Romano di Condat",
     "cs": "sv. Romano di Condat",
+    "de": "Hl. Romanus von Condat",
   },
   "1-3": {
     "it": "Sant' Albino di Angers",
@@ -547,6 +606,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Albino de Angers",
     "pl": "Św. Albino di Angers",
     "cs": "sv. Albino di Angers",
+    "de": "Hl. Albinus von Angers",
   },
   "2-3": {
     "it": "Sant' Agnese di Boemia",
@@ -556,6 +616,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Inês de Bohemia",
     "pl": "Św. Agnese di Boemia",
     "cs": "sv. Agnese di Boemia",
+    "de": "Hl. Agnes von Böhmen",
   },
   "3-3": {
     "it": "Santa Cunegonda",
@@ -565,6 +626,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cunegunda de Luxemburgo",
     "pl": "Św. Cunegonda",
     "cs": "sv. Cunegonda",
+    "de": "Hl. Kunigunde",
   },
   "4-3": {
     "it": "San Casimiro",
@@ -574,6 +636,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Casimiro el Santo",
     "pl": "Św. Casimiro",
     "cs": "sv. Casimiro",
+    "de": "Hl. Kasimir",
   },
   "5-3": {
     "it": "Sant' Adriano di Cesarea",
@@ -583,6 +646,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Adriano de Cesarea",
     "pl": "Św. Adriano di Cesarea",
     "cs": "sv. Adriano di Cesarea",
+    "de": "Hl. Adrian von Caesarea",
   },
   "6-3": {
     "it": "Santa Rosa da Viterbo",
@@ -592,6 +656,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Santa Rosa de Viterbo",
     "pl": "Św. Rosa da Viterbo",
     "cs": "sv. Rosa da Viterbo",
+    "de": "Hl. Rosa von Viterbo",
   },
   "7-3": {
     "it": "Sante Perpetua e Felicita",
@@ -601,6 +666,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Perpetua e Felicidad",
     "pl": "Święte Perpetua e Felicita",
     "cs": "sv. Perpetua e Felicita",
+    "de": "Hll. Perpetua und Felicitas",
   },
   "8-3": {
     "it": "San Giovanni di Dio",
@@ -610,6 +676,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João de Dios",
     "pl": "Św. Giovanni di Dio",
     "cs": "sv. Giovanni di Dio",
+    "de": "Hl. Johannes von Gott",
   },
   "9-3": {
     "it": "Santa Francesca Romana",
@@ -619,6 +686,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Francisca Romana",
     "pl": "Św. Francesca Romana",
     "cs": "sv. Francesca Romana",
+    "de": "Hl. Franziska von Rom",
   },
   "10-3": {
     "it": "San Macario di Gerusalemme",
@@ -628,6 +696,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Macario I de Jerusalén",
     "pl": "Św. Macario di Gerusalemme",
     "cs": "sv. Macario di Gerusalemme",
+    "de": "Hl. Makarios von Jerusalem",
   },
   "11-3": {
     "it": "San Costantino",
@@ -637,6 +706,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Constantino de Escocia",
     "pl": "Św. Costantino",
     "cs": "sv. Costantino",
+    "de": "Hl. Konstantin",
   },
   "12-3": {
     "it": "San Luigi Orione",
@@ -646,6 +716,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Luís Orione",
     "pl": "Św. Luigi Orione",
     "cs": "sv. Luigi Orione",
+    "de": "Hl. Luigi Orione",
   },
   "13-3": {
     "it": "San Rodrigo di Cordova",
@@ -655,6 +726,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Rodrigo de Córdoba",
     "pl": "Św. Rodrigo di Cordova",
     "cs": "sv. Rodrigo di Cordova",
+    "de": "Hl. Roderich von Córdoba",
   },
   "14-3": {
     "it": "Santa Matilde di Germania",
@@ -664,6 +736,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Matilde de Alemania",
     "pl": "Św. Matilde di Germania",
     "cs": "sv. Matilde di Germania",
+    "de": "Hl. Mathilde von Deutschland",
   },
   "15-3": {
     "it": "Santa Luisa de Marillac",
@@ -673,6 +746,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Luísa de Marillac",
     "pl": "Św. Luisa de Marillac",
     "cs": "sv. Luisa de Marillac",
+    "de": "Hl. Luise von Marillac",
   },
   "16-3": {
     "it": "Sant' Eriberto di Colonia",
@@ -682,6 +756,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Heriberto de Colonia",
     "pl": "Św. Eriberto di Colonia",
     "cs": "sv. Eriberto di Colonia",
+    "de": "Hl. Heribert von Köln",
   },
   "17-3": {
     "it": "San Patrizio",
@@ -691,6 +766,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "São Patricio",
     "pl": "Św. Patrizio",
     "cs": "sv. Patrizio",
+    "de": "Hl. Patrick",
   },
   "18-3": {
     "it": "San Cirillo di Gerusalemme",
@@ -700,6 +776,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cirilo de Jerusalén",
     "pl": "Św. Cirillo di Gerusalemme",
     "cs": "sv. Cirillo di Gerusalemme",
+    "de": "Hl. Kyrill von Jerusalem",
   },
   "19-3": {
     "it": "San Giuseppe",
@@ -709,6 +786,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "José de Nazaret",
     "pl": "Św. Giuseppe",
     "cs": "sv. Giuseppe",
+    "de": "Hl. Josef",
   },
   "20-3": {
     "it": "Sant' Alessandra di Amiso e compagne",
@@ -718,6 +796,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Alexandra de Amiso",
     "pl": "Św. Alessandra di Amiso e compagne",
     "cs": "sv. Alessandra di Amiso e compagne",
+    "de": "Hl. Alexandra von Amiso und Gefährtinnen",
   },
   "21-3": {
     "it": "San Serapione di Thmuis",
@@ -727,6 +806,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Serapión de Thmuis",
     "pl": "Św. Serapione di Thmuis",
     "cs": "sv. Serapione di Thmuis",
+    "de": "Hl. Serapion von Thmuis",
   },
   "22-3": {
     "it": "Santa Lea di Roma",
@@ -736,6 +816,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Lea de Roma",
     "pl": "Św. Lea di Roma",
     "cs": "sv. Lea di Roma",
+    "de": "Hl. Lea von Rom",
   },
   "23-3": {
     "it": "San Turibio de Mogrovejo",
@@ -745,6 +826,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Toribio de Mogrovejo",
     "pl": "Św. Turibio de Mogrovejo",
     "cs": "sv. Turibio de Mogrovejo",
+    "de": "Hl. Turibio von Mogrovejo",
   },
   "24-3": {
     "it": "Santa Caterina di Svezia",
@@ -754,6 +836,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Catarina de Vadstena",
     "pl": "Św. Caterina di Svezia",
     "cs": "sv. Caterina di Svezia",
+    "de": "Hl. Katharina von Schweden",
   },
   "25-3": {
     "it": "Annunciazione del Signore",
@@ -763,6 +846,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Anunciação do Senhor",
     "pl": "Annunciazione del Signore",
     "cs": "Annunciazione del Signore",
+    "de": "Verkündigung des Herrn",
   },
   "26-3": {
     "it": "Sant' Emanuele",
@@ -772,6 +856,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Víctor Manuel II de Italia",
     "pl": "Św. Emanuele",
     "cs": "sv. Emanuele",
+    "de": "Hl. Emanuel",
   },
   "27-3": {
     "it": "San Ruperto",
@@ -781,6 +866,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ruperto de Bingen",
     "pl": "Św. Ruperto",
     "cs": "sv. Ruperto",
+    "de": "Hl. Rupert",
   },
   "28-3": {
     "it": "Santo Stefano Harding",
@@ -790,6 +876,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Estêvão Harding",
     "pl": "Św. Stefano Harding",
     "cs": "sv. Stefano Harding",
+    "de": "Hl. Stephan Harding",
   },
   "29-3": {
     "it": "Domenica delle Palme",
@@ -799,6 +886,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Domingos de Ramos",
     "pl": "Domenica delle Palme",
     "cs": "Domenica delle Palme",
+    "de": "Palmsonntag",
   },
   "30-3": {
     "it": "Beato Amedeo IX di Savoia",
@@ -808,6 +896,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Amadeo IX de Saboya",
     "pl": "Bł. Amedeo IX di Savoia",
     "cs": "blahoslavený Amedeo IX di Savoia",
+    "de": "Sel. Amadeus IX. von Savoyen",
   },
   "31-3": {
     "it": "San Beniamino",
@@ -817,6 +906,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Benjamín el Diácono",
     "pl": "Św. Beniamino",
     "cs": "sv. Beniamino",
+    "de": "Hl. Benjamin",
   },
   "1-4": {
     "it": "Sant' Ugo di Grenoble",
@@ -826,6 +916,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Hugo de Grenoble",
     "pl": "Św. Ugo di Grenoble",
     "cs": "sv. Ugo di Grenoble",
+    "de": "Hl. Hugo von Grenoble",
   },
   "2-4": {
     "it": "Giovedì Santo",
@@ -835,6 +926,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Jueves Santo",
     "pl": "Giovedì Santo",
     "cs": "Giovedì Santo",
+    "de": "Gründonnerstag",
   },
   "3-4": {
     "it": "Venerdì Santo",
@@ -844,6 +936,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Viernes Santo",
     "pl": "Venerdì Santo",
     "cs": "Venerdì Santo",
+    "de": "Karfreitag",
   },
   "4-4": {
     "it": "Sabato Santo",
@@ -853,6 +946,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Sábado Santo",
     "pl": "Sabato Santo",
     "cs": "Sabato Santo",
+    "de": "Karsamstag",
   },
   "5-4": {
     "it": "Domenica di Pasqua",
@@ -862,6 +956,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Domingos de Resurrección",
     "pl": "Domenica di Pasqua",
     "cs": "Domenica di Pasqua",
+    "de": "Ostersonntag",
   },
   "6-4": {
     "it": "San Pietro da Verona",
@@ -871,6 +966,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pedro de Verona",
     "pl": "Św. Pietro da Verona",
     "cs": "sv. Pietro da Verona",
+    "de": "Hl. Petrus von Verona",
   },
   "7-4": {
     "it": "San Giovanni Battista de La Salle",
@@ -880,6 +976,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João Bautista de La Salle",
     "pl": "Św. Giovanni Battista de La Salle",
     "cs": "sv. Giovanni Battista de La Salle",
+    "de": "Hl. Johannes Baptist de La Salle",
   },
   "8-4": {
     "it": "San Dionigi di Corinto",
@@ -889,6 +986,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Dionisio de Corinto",
     "pl": "Św. Dionigi di Corinto",
     "cs": "sv. Dionigi di Corinto",
+    "de": "Hl. Dionysius von Korinth",
   },
   "9-4": {
     "it": "San Demetrio di Tessalonica",
@@ -898,6 +996,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Demetrio de Tesalónica",
     "pl": "Św. Demetrio di Tessalonica",
     "cs": "sv. Demetrio di Tessalonica",
+    "de": "Hl. Demetrius von Thessaloniki",
   },
   "10-4": {
     "it": "Santa Maddalena di Canossa",
@@ -907,6 +1006,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Magdalena de Canossa",
     "pl": "Św. Maddalena di Canossa",
     "cs": "sv. Maddalena di Canossa",
+    "de": "Hl. Magdalena von Canossa",
   },
   "11-4": {
     "it": "Santa Gemma Galgani",
@@ -916,6 +1016,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Gema Galgani",
     "pl": "Św. Gemma Galgani",
     "cs": "sv. Gemma Galgani",
+    "de": "Hl. Gemma Galgani",
   },
   "12-4": {
     "it": "Domenica della Divina Misericordia",
@@ -925,6 +1026,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Domingos da Divina Misericordia",
     "pl": "Domenica della Divina Misericordia",
     "cs": "Domenica della Divina Misericordia",
+    "de": "Sonntag der Göttlichen Barmherzigkeit",
   },
   "13-4": {
     "it": "San Martino I",
@@ -934,6 +1036,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Martinho I",
     "pl": "Św. Martino I",
     "cs": "sv. Martino I",
+    "de": "Hl. Martin I",
   },
   "14-4": {
     "it": "Santa Liduina",
@@ -943,6 +1046,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Lidwina",
     "pl": "Św. Liduina",
     "cs": "sv. Liduina",
+    "de": "Hl. Lidwina",
   },
   "15-4": {
     "it": "San Damiano de Veuster",
@@ -952,6 +1056,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Damián de Molokai",
     "pl": "Św. Damiano de Veuster",
     "cs": "sv. Damiano de Veuster",
+    "de": "Hl. Damian de Veuster",
   },
   "16-4": {
     "it": "Santa Bernardetta Soubirous",
@@ -961,6 +1066,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bernadette Soubirous",
     "pl": "Św. Bernardetta Soubirous",
     "cs": "sv. Bernardetta Soubirous",
+    "de": "Hl. Bernadette Soubirous",
   },
   "17-4": {
     "it": "San Roberto di La Chaise-Dieu",
@@ -970,6 +1076,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Roberto de Chaise-Dieu",
     "pl": "Św. Roberto di La Chaise-Dieu",
     "cs": "sv. Roberto di La Chaise-Dieu",
+    "de": "Hl. Robert von La Chaise-Dieu",
   },
   "18-4": {
     "it": "San Galdino",
@@ -979,6 +1086,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Galdino de Milán",
     "pl": "Św. Galdino",
     "cs": "sv. Galdino",
+    "de": "Hl. Galdinus",
   },
   "19-4": {
     "it": "Sant' Emma di Sassonia",
@@ -988,6 +1096,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Emma de Sajonia",
     "pl": "Św. Emma di Sassonia",
     "cs": "sv. Emma di Sassonia",
+    "de": "Hl. Emma von Sachsen",
   },
   "20-4": {
     "it": "Santa Sara di Antiochia",
@@ -997,6 +1106,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Sara de Antioquía",
     "pl": "Św. Sara di Antiochia",
     "cs": "sv. Sara di Antiochia",
+    "de": "Hl. Sara von Antiochia",
   },
   "21-4": {
     "it": "Sant' Anselmo d'Aosta",
@@ -1006,6 +1116,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Anselmo de Canterbury",
     "pl": "Św. Anselmo d'Aosta",
     "cs": "sv. Anselmo d'Aosta",
+    "de": "Hl. Anselm von Aosta",
   },
   "22-4": {
     "it": "San Leonida di Alessandria",
@@ -1015,6 +1126,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Leónidas de Alejandría (poeta)",
     "pl": "Św. Leonida di Alessandria",
     "cs": "sv. Leonida di Alessandria",
+    "de": "Hl. Leonidas von Alexandrien",
   },
   "23-4": {
     "it": "San Giorgio",
@@ -1024,6 +1136,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cruz de São Jorge",
     "pl": "Św. Giorgio",
     "cs": "sv. Giorgio",
+    "de": "Hl. Georg",
   },
   "24-4": {
     "it": "San Fedele da Sigmaringen",
@@ -1033,6 +1146,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Fidel de Sigmaringa",
     "pl": "Św. Fedele da Sigmaringen",
     "cs": "sv. Fedele da Sigmaringen",
+    "de": "Hl. Fidelis von Sigmaringen",
   },
   "25-4": {
     "it": "San Marco",
@@ -1042,6 +1156,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Marcos el Evangelista",
     "pl": "Św. Marco",
     "cs": "sv. Marco",
+    "de": "Hl. Markus",
   },
   "26-4": {
     "it": "Madonna del Buon Consiglio",
@@ -1051,6 +1166,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nuestra Señora do Buen Consejo",
     "pl": "Madonna del Buon Consiglio",
     "cs": "Madonna del Buon Consiglio",
+    "de": "Unsere Liebe Frau vom Guten Rat",
   },
   "27-4": {
     "it": "Santa Zita",
@@ -1060,6 +1176,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Zita de Borbón-Parma",
     "pl": "Św. Zita",
     "cs": "sv. Zita",
+    "de": "Hl. Zita",
   },
   "28-4": {
     "it": "Santa Valeria di Milano",
@@ -1069,6 +1186,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Valeria de Milán",
     "pl": "Św. Valeria di Milano",
     "cs": "sv. Valeria di Milano",
+    "de": "Hl. Valeria von Mailand",
   },
   "29-4": {
     "it": "Santa Caterina da Siena",
@@ -1078,6 +1196,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Laura Montoya",
     "pl": "Św. Caterina da Siena",
     "cs": "sv. Caterina da Siena",
+    "de": "Hl. Katharina von Siena",
   },
   "30-4": {
     "it": "San Pio V",
@@ -1087,6 +1206,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pío V",
     "pl": "Św. Pio V",
     "cs": "sv. Pio V",
+    "de": "Hl. Pius V",
   },
   "1-5": {
     "it": "San Giuseppe",
@@ -1096,6 +1216,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "José de Nazaret",
     "pl": "Św. Giuseppe",
     "cs": "sv. Giuseppe",
+    "de": "Hl. Josef",
   },
   "2-5": {
     "it": "Sant' Atanasio",
@@ -1105,6 +1226,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Atanasio de Alejandría",
     "pl": "Św. Atanasio",
     "cs": "sv. Atanasio",
+    "de": "Hl. Athanasius",
   },
   "3-5": {
     "it": "Santi Filippo e Giacomo",
@@ -1114,6 +1236,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Filipe e Tiago Apóstoloes",
     "pl": "Święci Filippo e Giacomo",
     "cs": "sv. Filippo e Giacomo",
+    "de": "Hll. Philipp und Jakobus",
   },
   "4-5": {
     "it": "San Ciriaco di Gerusalemme",
@@ -1123,6 +1246,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ciriaco de Jerusalén",
     "pl": "Św. Ciriaco di Gerusalemme",
     "cs": "sv. Ciriaco di Gerusalemme",
+    "de": "Hl. Cyriakus von Jerusalem",
   },
   "5-5": {
     "it": "Sant' Angelo da Gerusalemme",
@@ -1132,6 +1256,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Anjo de Sicilia",
     "pl": "Św. Angelo da Gerusalemme",
     "cs": "sv. Angelo da Gerusalemme",
+    "de": "Hl. Angelus von Jerusalem",
   },
   "6-5": {
     "it": "San Pietro Nolasco",
@@ -1141,6 +1266,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pedro Nolasco",
     "pl": "Św. Pietro Nolasco",
     "cs": "sv. Pietro Nolasco",
+    "de": "Hl. Petrus Nolaskus",
   },
   "7-5": {
     "it": "Santa Flavia Domitilla",
@@ -1150,6 +1276,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Flavia Domitila",
     "pl": "Św. Flavia Domitilla",
     "cs": "sv. Flavia Domitilla",
+    "de": "Hl. Flavia Domitilla",
   },
   "8-5": {
     "it": "Madonna del Rosario di Pompei",
@@ -1159,6 +1286,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nuestra Señora do Rosario de Pompeya",
     "pl": "Madonna del Rosario di Pompei",
     "cs": "Madonna del Rosario di Pompei",
+    "de": "Unsere Liebe Frau vom Rosenkranz von Pompeji",
   },
   "9-5": {
     "it": "Sant'Isaia",
@@ -1168,6 +1296,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Libro de Isaías",
     "pl": "Św. Isaia",
     "cs": "sv. Isaia",
+    "de": "Hl. Jesaja",
   },
   "10-5": {
     "it": "San Cataldo di Rachau",
@@ -1177,6 +1306,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cataldo de Tarento",
     "pl": "Św. Cataldo di Rachau",
     "cs": "sv. Cataldo di Rachau",
+    "de": "Hl. Cataldus von Rachau",
   },
   "11-5": {
     "it": "Sant' Ignazio da Laconi",
@@ -1186,6 +1316,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Inácio de Láconi",
     "pl": "Św. Ignazio da Laconi",
     "cs": "sv. Ignazio da Laconi",
+    "de": "Hl. Ignatius von Laconi",
   },
   "12-5": {
     "it": "Santi Nereo e Achilleo",
@@ -1195,6 +1326,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nereo e Aquileo",
     "pl": "Święci Nereo e Achilleo",
     "cs": "sv. Nereo e Achilleo",
+    "de": "Hll. Nereus und Achilleo",
   },
   "13-5": {
     "it": "Beata Vergine Maria di Fatima",
@@ -1204,6 +1336,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Maria (madre de Jesús)",
     "pl": "Bł. Vergine Maria di Fatima",
     "cs": "blahoslavená Vergine Maria di Fatima",
+    "de": "Unsere Liebe Frau von Fatima",
   },
   "14-5": {
     "it": "San Mattia",
@@ -1213,6 +1346,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Matías el Apóstolo",
     "pl": "Św. Mattia",
     "cs": "sv. Mattia",
+    "de": "Hl. Matthias",
   },
   "15-5": {
     "it": "Sant' Isidoro l'agricoltore",
@@ -1222,6 +1356,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Isidro Labrador",
     "pl": "Św. Isidoro l'agricoltore",
     "cs": "sv. Isidoro l'agricoltore",
+    "de": "Hl. Isidor der Bauer",
   },
   "16-5": {
     "it": "Sant' Ubaldo di Gubbio",
@@ -1231,6 +1366,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ubaldo de Gubbio",
     "pl": "Św. Ubaldo di Gubbio",
     "cs": "sv. Ubaldo di Gubbio",
+    "de": "Hl. Ubald von Gubbio",
   },
   "17-5": {
     "it": "Ascensione di Gesù",
@@ -1240,6 +1376,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ascensión de Jesús",
     "pl": "Ascensione di Gesù",
     "cs": "Ascensione di Gesù",
+    "de": "Christi Himmelfahrt",
   },
   "18-5": {
     "it": "San Giovanni I",
@@ -1249,6 +1386,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João I",
     "pl": "Św. Giovanni I",
     "cs": "sv. Giovanni I",
+    "de": "Hl. Johannes I",
   },
   "19-5": {
     "it": "San Celestino V",
@@ -1258,6 +1396,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Celestino V",
     "pl": "Św. Celestino V",
     "cs": "sv. Celestino V",
+    "de": "Hl. Coelestin V",
   },
   "20-5": {
     "it": "San Bernardino da Siena",
@@ -1267,6 +1406,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bernardino de Siena",
     "pl": "Św. Bernardino da Siena",
     "cs": "sv. Bernardino da Siena",
+    "de": "Hl. Bernhardin von Siena",
   },
   "21-5": {
     "it": "San Vittorio di Cesarea",
@@ -1276,6 +1416,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Víctor de Cesarea",
     "pl": "Św. Vittorio di Cesarea",
     "cs": "sv. Vittorio di Cesarea",
+    "de": "Hl. Viktor von Caesarea",
   },
   "22-5": {
     "it": "Santa Rita da Cascia",
@@ -1285,6 +1426,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Rita de Casia",
     "pl": "Św. Rita da Cascia",
     "cs": "sv. Rita da Cascia",
+    "de": "Hl. Rita von Cascia",
   },
   "23-5": {
     "it": "San Desiderio di Langres",
@@ -1294,6 +1436,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Desiderio de Langres",
     "pl": "Św. Desiderio di Langres",
     "cs": "sv. Desiderio di Langres",
+    "de": "Hl. Desiderius von Langres",
   },
   "24-5": {
     "it": "Pentecoste",
@@ -1303,6 +1446,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pentecostés (Tiziano)",
     "pl": "Pentecoste",
     "cs": "Pentecoste",
+    "de": "Pfingsten",
   },
   "25-5": {
     "it": "Maria Madre della Chiesa",
@@ -1312,6 +1456,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Maria (madre de Jesús)",
     "pl": "Maria Madre della Chiesa",
     "cs": "Maria Madre della Chiesa",
+    "de": "Maria, Mutter der Kirche",
   },
   "26-5": {
     "it": "San Filippo Neri",
@@ -1321,6 +1466,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Congregación do Oratorio de São Filipe Neri",
     "pl": "Św. Filippo Neri",
     "cs": "sv. Filippo Neri",
+    "de": "Hl. Philipp Neri",
   },
   "27-5": {
     "it": "Sant' Agostino di Canterbury",
@@ -1330,6 +1476,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Agostinho de Canterbury",
     "pl": "Św. Agostino di Canterbury",
     "cs": "sv. Agostino di Canterbury",
+    "de": "Hl. Augustinus von Canterbury",
   },
   "28-5": {
     "it": "San Germano di Parigi",
@@ -1339,6 +1486,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Germán de París",
     "pl": "Św. Germano di Parigi",
     "cs": "sv. Germano di Parigi",
+    "de": "Hl. Germanus von Paris",
   },
   "29-5": {
     "it": "San Paolo VI",
@@ -1348,6 +1496,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Paulo VI",
     "pl": "Św. Paolo VI",
     "cs": "sv. Paolo VI",
+    "de": "Hl. Paul VI",
   },
   "30-5": {
     "it": "Santa Giovanna d'Arco",
@@ -1357,6 +1506,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "El proceso de Juana de Arco",
     "pl": "Św. Giovanna d'Arco",
     "cs": "sv. Giovanna d'Arco",
+    "de": "Hl. Johanna von Orléans",
   },
   "31-5": {
     "it": "Santissima Trinità",
@@ -1366,6 +1516,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Santísima Trinidad",
     "pl": "Santissima Trinità",
     "cs": "Santissima Trinità",
+    "de": "Dreifaltigkeitssonntag",
   },
   "1-6": {
     "it": "San Giustino",
@@ -1375,6 +1526,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Justino de Chieti",
     "pl": "Św. Giustino",
     "cs": "sv. Giustino",
+    "de": "Hl. Justin",
   },
   "2-6": {
     "it": "Santi Marcellino e Pietro",
@@ -1384,6 +1536,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Marcelino e Pedro",
     "pl": "Święci Marcellino e Pietro",
     "cs": "sv. Marcellino e Pietro",
+    "de": "Hll. Marcellinus und Petrus",
   },
   "3-6": {
     "it": "Santi Carlo Lwanga e 12 compagni",
@@ -1393,6 +1546,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Carlos Lwanga e compañeros",
     "pl": "Święci Carlo Lwanga e 12 compagni",
     "cs": "sv. Carlo Lwanga e 12 compagni",
+    "de": "Hll. Karl Lwanga und 12 Gefährten",
   },
   "4-6": {
     "it": "San Francesco Caracciolo",
@@ -1402,6 +1556,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Francesco Caracciolo",
     "pl": "Św. Francesco Caracciolo",
     "cs": "sv. Francesco Caracciolo",
+    "de": "Hl. Franz von Caracciolo",
   },
   "5-6": {
     "it": "San Bonifacio",
@@ -1411,6 +1566,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bonifacio de Tarso",
     "pl": "Św. Bonifacio",
     "cs": "sv. Bonifacio",
+    "de": "Hl. Bonifatius",
   },
   "6-6": {
     "it": "San Norberto",
@@ -1420,6 +1576,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Norberto de Xanten",
     "pl": "Św. Norberto",
     "cs": "sv. Norberto",
+    "de": "Hl. Norbert",
   },
   "7-6": {
     "it": "Corpus Domini",
@@ -1429,6 +1586,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Corpus Christi",
     "pl": "Corpus Domini",
     "cs": "Corpus Domini",
+    "de": "Fronleichnam",
   },
   "8-6": {
     "it": "San Medardo",
@@ -1438,6 +1596,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Medardo de Noyon",
     "pl": "Św. Medardo",
     "cs": "sv. Medardo",
+    "de": "Hl. Medardus",
   },
   "9-6": {
     "it": "Sant' Efrem",
@@ -1447,6 +1606,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Efrén el Sirio",
     "pl": "Św. Efrem",
     "cs": "sv. Efrem",
+    "de": "Hl. Ephräm",
   },
   "10-6": {
     "it": "Beata Diana degli Andalò",
@@ -1456,6 +1616,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Diana de Andalo",
     "pl": "Bł. Diana degli Andalò",
     "cs": "blahoslavená Diana degli Andalò",
+    "de": "Sel. Diana degli Andalò",
   },
   "11-6": {
     "it": "San Barnaba",
@@ -1465,6 +1626,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Epístola de Bernabé",
     "pl": "Św. Barnaba",
     "cs": "sv. Barnaba",
+    "de": "Hl. Barnabas",
   },
   "12-6": {
     "it": "Sacro Cuore di Gesù",
@@ -1474,6 +1636,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Sagrado Corazón de Jesús",
     "pl": "Sacro Cuore di Gesù",
     "cs": "Sacro Cuore di Gesù",
+    "de": "Heiligstes Herz Jesu",
   },
   "13-6": {
     "it": "Sant' Antonio di Padova",
@@ -1483,6 +1646,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "António de Padua",
     "pl": "Św. Antonio di Padova",
     "cs": "sv. Antonio di Padova",
+    "de": "Hl. Antonius von Padua",
   },
   "14-6": {
     "it": "Sant' Eliseo",
@@ -1492,6 +1656,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Eliseo",
     "pl": "Św. Eliseo",
     "cs": "sv. Eliseo",
+    "de": "Hl. Elischa",
   },
   "15-6": {
     "it": "San Vito",
@@ -1501,6 +1666,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Vito de Lucania",
     "pl": "Św. Vito",
     "cs": "sv. Vito",
+    "de": "Hl. Vitus",
   },
   "16-6": {
     "it": "Santi Quirico e Giulitta",
@@ -1510,6 +1676,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Julita e Quirico",
     "pl": "Święci Quirico e Giulitta",
     "cs": "sv. Quirico e Giulitta",
+    "de": "Hll. Quiricus und Julitta",
   },
   "17-6": {
     "it": "San Ranieri di Pisa",
@@ -1519,6 +1686,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Torre de Pisa",
     "pl": "Św. Ranieri di Pisa",
     "cs": "sv. Ranieri di Pisa",
+    "de": "Hl. Rainerius von Pisa",
   },
   "18-6": {
     "it": "Santa Marina",
@@ -1528,6 +1696,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Marina de Antioquía",
     "pl": "Św. Marina",
     "cs": "sv. Marina",
+    "de": "Hl. Marina",
   },
   "19-6": {
     "it": "San Romualdo",
@@ -1537,6 +1706,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Romualdo",
     "pl": "Św. Romualdo",
     "cs": "sv. Romualdo",
+    "de": "Hl. Romuald",
   },
   "20-6": {
     "it": "Beata Vergine Maria Consolatrice",
@@ -1546,6 +1716,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Maria (madre de Jesús)",
     "pl": "Bł. Vergine Maria Consolatrice",
     "cs": "blahoslavená Vergine Maria Consolatrice",
+    "de": "Unsere Liebe Frau, Trösterin der Betrübten",
   },
   "21-6": {
     "it": "San Luigi Gonzaga",
@@ -1555,6 +1726,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Luís Gonzaga",
     "pl": "Św. Luigi Gonzaga",
     "cs": "sv. Luigi Gonzaga",
+    "de": "Hl. Aloisius von Gonzaga",
   },
   "22-6": {
     "it": "San Paolino di Nola",
@@ -1564,6 +1736,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Paulino de Nola",
     "pl": "Św. Paolino di Nola",
     "cs": "sv. Paolino di Nola",
+    "de": "Hl. Paulinus von Nola",
   },
   "23-6": {
     "it": "San Lanfranco Beccari",
@@ -1573,6 +1746,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Lanfranco de Pavía",
     "pl": "Św. Lanfranco Beccari",
     "cs": "sv. Lanfranco Beccari",
+    "de": "Hl. Lanfrank Beccari",
   },
   "24-6": {
     "it": "Natività di San Giovanni Battista",
@@ -1582,6 +1756,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Natividad de São João Bautista",
     "pl": "Natività di San Giovanni Battista",
     "cs": "Natività di San Giovanni Battista",
+    "de": "Geburt Johannes des Täufers",
   },
   "25-6": {
     "it": "San Guglielmo da Vercelli",
@@ -1591,6 +1766,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Guillermo de Vercelli",
     "pl": "Św. Guglielmo da Vercelli",
     "cs": "sv. Guglielmo da Vercelli",
+    "de": "Hl. Wilhelm von Vercelli",
   },
   "26-6": {
     "it": "San Vigilio",
@@ -1600,6 +1776,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Vigilio de Trento",
     "pl": "Św. Vigilio",
     "cs": "sv. Vigilio",
+    "de": "Hl. Vigilius",
   },
   "27-6": {
     "it": "San Cirillo d'Alessandria",
@@ -1609,6 +1786,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cirilo de Alejandría",
     "pl": "Św. Cirillo d'Alessandria",
     "cs": "sv. Cirillo d'Alessandria",
+    "de": "Hl. Kyrill von Alexandrien",
   },
   "28-6": {
     "it": "Sant' Ireneo di Lione",
@@ -1618,6 +1796,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ireneo de Lyon",
     "pl": "Św. Ireneo di Lione",
     "cs": "sv. Ireneo di Lione",
+    "de": "Hl. Irenäus von Lyon",
   },
   "29-6": {
     "it": "Santi Pietro e Paolo",
@@ -1627,6 +1806,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Fortaleza de São Pedro e São Paulo",
     "pl": "Święci Pietro e Paolo",
     "cs": "sv. Pietro e Paolo",
+    "de": "Hll. Petrus und Paulus",
   },
   "30-6": {
     "it": "Santi Primi martiri della santa Chiesa di Roma",
@@ -1636,6 +1816,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Iglesias de Roma",
     "pl": "Święci Primi martiri della santa Chiesa di Roma",
     "cs": "sv. Primi martiri della santa Chiesa di Roma",
+    "de": "Hll. Erste Märtyrer der Kirche von Rom",
   },
   "1-7": {
     "it": "Sant' Aronne",
@@ -1645,6 +1826,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "São Aarón",
     "pl": "Św. Aronne",
     "cs": "sv. Aronne",
+    "de": "Hl. Aaron",
   },
   "2-7": {
     "it": "San Bernardino Realino",
@@ -1654,6 +1836,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bernardino Realino",
     "pl": "Św. Bernardino Realino",
     "cs": "sv. Bernardino Realino",
+    "de": "Hl. Bernhardin Realino",
   },
   "3-7": {
     "it": "San Tommaso",
@@ -1663,6 +1846,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Tomás el Apóstolo",
     "pl": "Św. Tommaso",
     "cs": "sv. Tommaso",
+    "de": "Hl. Thomas",
   },
   "4-7": {
     "it": "Sant' Elisabetta del Portogallo",
@@ -1672,6 +1856,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Isabel de York",
     "pl": "Św. Elisabetta del Portogallo",
     "cs": "sv. Elisabetta del Portogallo",
+    "de": "Hl. Elisabeth von Portugal",
   },
   "5-7": {
     "it": "Sant' Antonio Maria Zaccaria",
@@ -1681,6 +1866,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "António Maria Zaccaría",
     "pl": "Św. Antonio Maria Zaccaria",
     "cs": "sv. Antonio Maria Zaccaria",
+    "de": "Hl. Antonius Maria Zacharias",
   },
   "6-7": {
     "it": "Santa Maria Goretti",
@@ -1690,6 +1876,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Maria Goretti",
     "pl": "Św. Maria Goretti",
     "cs": "sv. Maria Goretti",
+    "de": "Hl. Maria Goretti",
   },
   "7-7": {
     "it": "Beato Benedetto XI",
@@ -1699,6 +1886,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Benedicto XI",
     "pl": "Bł. Benedetto XI",
     "cs": "blahoslavený Benedetto XI",
+    "de": "Sel. Benedikt XI",
   },
   "8-7": {
     "it": "Santi Aquila e Priscilla",
@@ -1708,6 +1896,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Priscila e Aquila",
     "pl": "Święci Aquila e Priscilla",
     "cs": "sv. Aquila e Priscilla",
+    "de": "Hll. Aquila und Priszilla",
   },
   "9-7": {
     "it": "Santa Veronica Giuliani",
@@ -1717,6 +1906,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Verónica Giuliani",
     "pl": "Św. Veronica Giuliani",
     "cs": "sv. Veronica Giuliani",
+    "de": "Hl. Veronika Giuliani",
   },
   "10-7": {
     "it": "Sante Rufina e Seconda",
@@ -1726,6 +1916,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Rufina e Segunda",
     "pl": "Święte Rufina e Seconda",
     "cs": "sv. Rufina e Seconda",
+    "de": "Hll. Rufina und Seconda",
   },
   "11-7": {
     "it": "San Benedetto da Norcia",
@@ -1735,6 +1926,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bento de Nursia",
     "pl": "Św. Benedetto da Norcia",
     "cs": "sv. Benedetto da Norcia",
+    "de": "Hl. Benedikt von Nursia",
   },
   "12-7": {
     "it": "Santi Ermagora e Fortunato di Aquileia",
@@ -1744,6 +1936,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Hermágoras e Fortunato",
     "pl": "Święci Ermagora e Fortunato di Aquileia",
     "cs": "sv. Ermagora e Fortunato di Aquileia",
+    "de": "Hll. Hermagoras und Fortunatus von Aquileia",
   },
   "13-7": {
     "it": "Sant' Enrico II",
@@ -1753,6 +1946,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Enrique II de Francia",
     "pl": "Św. Enrico II",
     "cs": "sv. Enrico II",
+    "de": "Hl. Heinrich II",
   },
   "14-7": {
     "it": "San Camillo de Lellis",
@@ -1762,6 +1956,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Camilo de Lelis",
     "pl": "Św. Camillo de Lellis",
     "cs": "sv. Camillo de Lellis",
+    "de": "Hl. Kamillus von Lellis",
   },
   "15-7": {
     "it": "San Bonaventura",
@@ -1771,6 +1966,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Buenaventura de Bagnoregio",
     "pl": "Św. Bonaventura",
     "cs": "sv. Bonaventura",
+    "de": "Hl. Bonaventura",
   },
   "16-7": {
     "it": "Beata Vergine Maria del Monte Carmelo",
@@ -1780,6 +1976,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nuestra Señora do Monte Carmelo",
     "pl": "Bł. Vergine Maria del Monte Carmelo",
     "cs": "blahoslavená Vergine Maria del Monte Carmelo",
+    "de": "Unsere Liebe Frau vom Berge Karmel",
   },
   "17-7": {
     "it": "Sant' Alessio",
@@ -1789,6 +1986,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Alejo de Roma",
     "pl": "Św. Alessio",
     "cs": "sv. Alessio",
+    "de": "Hl. Alexius",
   },
   "18-7": {
     "it": "San Federico di Utrecht",
@@ -1798,6 +1996,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Federico de Utrecht",
     "pl": "Św. Federico di Utrecht",
     "cs": "sv. Federico di Utrecht",
+    "de": "Hl. Friedrich von Utrecht",
   },
   "19-7": {
     "it": "Sant' Arsenio il Grande",
@@ -1807,6 +2006,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Arsenio, el Grande",
     "pl": "Św. Arsenio il Grande",
     "cs": "sv. Arsenio il Grande",
+    "de": "Hl. Arsenius der Große",
   },
   "20-7": {
     "it": "Sant' Elia",
@@ -1816,6 +2016,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Elías el Joven",
     "pl": "Św. Elia",
     "cs": "sv. Elia",
+    "de": "Hl. Elija",
   },
   "21-7": {
     "it": "San Lorenzo da Brindisi",
@@ -1825,6 +2026,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Lourenço de Brindis",
     "pl": "Św. Lorenzo da Brindisi",
     "cs": "sv. Lorenzo da Brindisi",
+    "de": "Hl. Laurentius von Brindisi",
   },
   "22-7": {
     "it": "Santa Maria Maddalena",
@@ -1834,6 +2036,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Maria Magdalena",
     "pl": "Św. Maria Maddalena",
     "cs": "sv. Maria Maddalena",
+    "de": "Hl. Maria Magdalena",
   },
   "23-7": {
     "it": "Santa Brigida di Svezia",
@@ -1843,6 +2046,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Brígida de Suecia",
     "pl": "Św. Brigida di Svezia",
     "cs": "sv. Brigida di Svezia",
+    "de": "Hl. Birgitta von Schweden",
   },
   "24-7": {
     "it": "Santa Cristina di Bolsena",
@@ -1852,6 +2056,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cristina de Bolsena",
     "pl": "Św. Cristina di Bolsena",
     "cs": "sv. Cristina di Bolsena",
+    "de": "Hl. Christina von Bolsena",
   },
   "25-7": {
     "it": "San Giacomo il Maggiore",
@@ -1861,6 +2066,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Tiago el Mayor",
     "pl": "Św. Giacomo il Maggiore",
     "cs": "sv. Giacomo il Maggiore",
+    "de": "Hl. Jakobus der Ältere",
   },
   "26-7": {
     "it": "Santi Anna e Gioacchino",
@@ -1870,6 +2076,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Santos Joaquín e Ana",
     "pl": "Święci Anna e Gioacchino",
     "cs": "sv. Anna e Gioacchino",
+    "de": "Hll. Anna und Joachim",
   },
   "27-7": {
     "it": "San Pantaleone",
@@ -1879,6 +2086,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pantaleón de Nicomedia",
     "pl": "Św. Pantaleone",
     "cs": "sv. Pantaleone",
+    "de": "Hl. Pantaleon",
   },
   "28-7": {
     "it": "Santi Nazario e Celso",
@@ -1888,6 +2096,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nazario e Celso",
     "pl": "Święci Nazario e Celso",
     "cs": "sv. Nazario e Celso",
+    "de": "Hll. Nazarius und Celsus",
   },
   "29-7": {
     "it": "Santa Marta di Betania",
@@ -1897,6 +2106,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Marta de Betania",
     "pl": "Św. Marta di Betania",
     "cs": "sv. Marta di Betania",
+    "de": "Hl. Martha von Bethanien",
   },
   "30-7": {
     "it": "San Pietro Crisologo",
@@ -1906,6 +2116,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pedro Crisólogo",
     "pl": "Św. Pietro Crisologo",
     "cs": "sv. Pietro Crisologo",
+    "de": "Hl. Petrus Chrysologus",
   },
   "31-7": {
     "it": "Sant' Ignazio di Loyola",
@@ -1915,6 +2126,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Inácio de Loyola",
     "pl": "Św. Ignazio di Loyola",
     "cs": "sv. Ignazio di Loyola",
+    "de": "Hl. Ignatius von Loyola",
   },
   "1-8": {
     "it": "Sant' Alfonso Maria de' Liguori",
@@ -1924,6 +2136,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Alfonso Maria de Ligorio",
     "pl": "Św. Alfonso Maria de' Liguori",
     "cs": "sv. Alfonso Maria de' Liguori",
+    "de": "Hl. Alfons Maria von Liguori",
   },
   "2-8": {
     "it": "Santa Maria degli Angeli",
@@ -1933,6 +2146,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Virgem dos Ángeles",
     "pl": "Św. Maria degli Angeli",
     "cs": "sv. Maria degli Angeli",
+    "de": "Hl. Maria von den Engeln",
   },
   "3-8": {
     "it": "Sant' Aspreno di Napoli",
@@ -1942,6 +2156,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Asprenato de Nápoles",
     "pl": "Św. Aspreno di Napoli",
     "cs": "sv. Aspreno di Napoli",
+    "de": "Hl. Asprenas von Neapel",
   },
   "4-8": {
     "it": "San Giovanni Maria Vianney",
@@ -1951,6 +2166,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João Maria Vianney",
     "pl": "Św. Giovanni Maria Vianney",
     "cs": "sv. Giovanni Maria Vianney",
+    "de": "Hl. Johannes Maria Vianney",
   },
   "5-8": {
     "it": "Santa Maria della Neve",
@@ -1960,6 +2176,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nuestra Señora das Nieves",
     "pl": "Św. Maria della Neve",
     "cs": "sv. Maria della Neve",
+    "de": "Maria Schnee",
   },
   "6-8": {
     "it": "Trasfigurazione del Signore",
@@ -1969,6 +2186,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Catedral basílica de São Salvador (Salvador de Bahía)",
     "pl": "Trasfigurazione del Signore",
     "cs": "Trasfigurazione del Signore",
+    "de": "Verklärung des Herrn",
   },
   "7-8": {
     "it": "San Gaetano Thiene",
@@ -1978,6 +2196,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cayetano de Thiene",
     "pl": "Św. Gaetano Thiene",
     "cs": "sv. Gaetano Thiene",
+    "de": "Hl. Kajetan Thiene",
   },
   "8-8": {
     "it": "San Domenico di Guzman",
@@ -1987,6 +2206,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Domingos de Guzmán",
     "pl": "Św. Domenico di Guzman",
     "cs": "sv. Domenico di Guzman",
+    "de": "Hl. Dominikus von Guzmán",
   },
   "9-8": {
     "it": "Santa Teresa Benedetta della Croce",
@@ -1996,6 +2216,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João da Cruz",
     "pl": "Św. Teresa Benedetta della Croce",
     "cs": "sv. Teresa Benedetta della Croce",
+    "de": "Hl. Teresia Benedicta vom Kreuz",
   },
   "10-8": {
     "it": "San Lorenzo",
@@ -2005,6 +2226,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Lourenço de Roma",
     "pl": "Św. Lorenzo",
     "cs": "sv. Lorenzo",
+    "de": "Hl. Laurentius",
   },
   "11-8": {
     "it": "Santa Chiara",
@@ -2014,6 +2236,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Clara de Asís",
     "pl": "Św. Chiara",
     "cs": "sv. Chiara",
+    "de": "Hl. Klara",
   },
   "12-8": {
     "it": "Santa Giovanna Francesca de Chantal",
@@ -2023,6 +2246,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Juana Francisca Frémyot de Chantal",
     "pl": "Św. Giovanna Francesca de Chantal",
     "cs": "sv. Giovanna Francesca de Chantal",
+    "de": "Hl. Johanna Franziska von Chantal",
   },
   "13-8": {
     "it": "Santa Filomena di Roma",
@@ -2032,6 +2256,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Filomena (santa)",
     "pl": "Św. Filomena di Roma",
     "cs": "sv. Filomena di Roma",
+    "de": "Hl. Philomena von Rom",
   },
   "14-8": {
     "it": "San Massimiliano Maria Kolbe",
@@ -2041,6 +2266,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Maximiliano Kolbe",
     "pl": "Św. Massimiliano Maria Kolbe",
     "cs": "sv. Massimiliano Maria Kolbe",
+    "de": "Hl. Maximilian Maria Kolbe",
   },
   "15-8": {
     "it": "Assunzione della Beata Vergine Maria",
@@ -2050,6 +2276,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Assunção de Maria",
     "pl": "Assunzione della Beata Vergine Maria",
     "cs": "Nanebevzetí Panny Marie",
+    "de": "Mariä Himmelfahrt",
   },
   "16-8": {
     "it": "San Rocco",
@@ -2059,6 +2286,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Roque",
     "pl": "Św. Rocco",
     "cs": "sv. Rocco",
+    "de": "Hl. Rochus",
   },
   "17-8": {
     "it": "Santa Beatrice de Silva",
@@ -2068,6 +2296,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Beatriz de Silva",
     "pl": "Św. Beatrice de Silva",
     "cs": "sv. Beatrice de Silva",
+    "de": "Hl. Beatrix da Silva",
   },
   "18-8": {
     "it": "Sant'Elena Imperatrice",
@@ -2077,6 +2306,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Helena Cantacucena (emperatriz de Trebisonda)",
     "pl": "Św. Elena Imperatrice",
     "cs": "sv. Elena Imperatrice",
+    "de": "Hl. Kaiserin Helena",
   },
   "19-8": {
     "it": "San Giovanni Eudes",
@@ -2086,6 +2316,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João Eudes",
     "pl": "Św. Giovanni Eudes",
     "cs": "sv. Giovanni Eudes",
+    "de": "Hl. Johannes Eudes",
   },
   "20-8": {
     "it": "San Samuele",
@@ -2095,6 +2326,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Samuel de Bulgaria",
     "pl": "Św. Samuele",
     "cs": "sv. Samuele",
+    "de": "Hl. Samuel",
   },
   "21-8": {
     "it": "San Pio X",
@@ -2104,6 +2336,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pío X",
     "pl": "Św. Pio X",
     "cs": "sv. Pio X",
+    "de": "Hl. Pius X",
   },
   "22-8": {
     "it": "Beata Vergine Maria Regina",
@@ -2113,6 +2346,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Reina dos Cielos",
     "pl": "Bł. Vergine Maria Regina",
     "cs": "blahoslavená Vergine Maria Regina",
+    "de": "Maria Königin",
   },
   "23-8": {
     "it": "Santa Rosa da Lima",
@@ -2122,6 +2356,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Rosa de Lima",
     "pl": "Św. Rosa da Lima",
     "cs": "sv. Rosa da Lima",
+    "de": "Hl. Rosa von Lima",
   },
   "24-8": {
     "it": "San Bartolomeo",
@@ -2131,6 +2366,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bartolomé I",
     "pl": "Św. Bartolomeo",
     "cs": "sv. Bartolomeo",
+    "de": "Hl. Bartholomäus",
   },
   "25-8": {
     "it": "Santa Patrizia di Costantinopoli",
@@ -2140,6 +2376,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Patricia de Constantinopla",
     "pl": "Św. Patrizia di Costantinopoli",
     "cs": "sv. Patrizia di Costantinopoli",
+    "de": "Hl. Patricia von Konstantinopel",
   },
   "26-8": {
     "it": "Sant' Alessandro di Bergamo",
@@ -2149,6 +2386,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Alexandre de Bérgamo",
     "pl": "Św. Alessandro di Bergamo",
     "cs": "sv. Alessandro di Bergamo",
+    "de": "Hl. Alexander von Bergamo",
   },
   "27-8": {
     "it": "Santa Monica",
@@ -2158,6 +2396,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Mónica de Hipona",
     "pl": "Św. Monica",
     "cs": "sv. Monica",
+    "de": "Hl. Monika",
   },
   "28-8": {
     "it": "Sant' Agostino",
@@ -2167,6 +2406,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Agostinho de Canterbury",
     "pl": "Św. Agostino",
     "cs": "sv. Agostino",
+    "de": "Hl. Augustinus",
   },
   "29-8": {
     "it": "Martirio di San Giovanni Battista",
@@ -2176,6 +2416,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Martirio de san João Bautista (Masaccio)",
     "pl": "Martirio di San Giovanni Battista",
     "cs": "Martirio di San Giovanni Battista",
+    "de": "Enthauptung Johannes des Täufers",
   },
   "30-8": {
     "it": "Santi Felice e Adautto",
@@ -2185,6 +2426,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Félix e Adaucto",
     "pl": "Święci Felice e Adautto",
     "cs": "sv. Felice e Adautto",
+    "de": "Hll. Felix und Adauctus",
   },
   "31-8": {
     "it": "San Raimondo Nonnato",
@@ -2194,6 +2436,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ramón Nonato",
     "pl": "Św. Raimondo Nonnato",
     "cs": "sv. Raimondo Nonnato",
+    "de": "Hl. Raimund Nonnatus",
   },
   "1-9": {
     "it": "Sant' Egidio",
@@ -2203,6 +2446,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Gil Maria de São José",
     "pl": "Św. Egidio",
     "cs": "sv. Egidio",
+    "de": "Hl. Ägidius",
   },
   "2-9": {
     "it": "Sant' Elpidio",
@@ -2212,6 +2456,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "São Elpidio",
     "pl": "Św. Elpidio",
     "cs": "sv. Elpidio",
+    "de": "Hl. Elpidius",
   },
   "3-9": {
     "it": "San Gregorio Magno",
@@ -2221,6 +2466,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Orden de São Gregório Magno",
     "pl": "Św. Gregorio Magno",
     "cs": "sv. Gregorio Magno",
+    "de": "Hl. Gregor der Große",
   },
   "4-9": {
     "it": "Santa Rosalia",
@@ -2230,6 +2476,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Rosalía de Palermo",
     "pl": "Św. Rosalia",
     "cs": "sv. Rosalia",
+    "de": "Hl. Rosalia",
   },
   "5-9": {
     "it": "Santa Teresa di Calcutta",
@@ -2239,6 +2486,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Teresa de Calcuta",
     "pl": "Św. Teresa di Calcutta",
     "cs": "sv. Teresa di Calcutta",
+    "de": "Hl. Teresa von Calcutta",
   },
   "6-9": {
     "it": "San Zaccaria",
@@ -2248,6 +2496,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Zacarías (padre de João el Bautista)",
     "pl": "Św. Zaccaria",
     "cs": "sv. Zaccaria",
+    "de": "Hl. Zacharias",
   },
   "7-9": {
     "it": "Santa Regina di Alise",
@@ -2257,6 +2506,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Regina de Alesia",
     "pl": "Św. Regina di Alise",
     "cs": "sv. Regina di Alise",
+    "de": "Hl. Regina von Alise",
   },
   "8-9": {
     "it": "Natività della Beata Vergine Maria",
@@ -2266,6 +2516,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Natividad da Virgem",
     "pl": "Natività della Beata Vergine Maria",
     "cs": "Natività della Beata Vergine Maria",
+    "de": "Mariä Geburt",
   },
   "9-9": {
     "it": "San Pietro Claver",
@@ -2275,6 +2526,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pedro Claver",
     "pl": "Św. Pietro Claver",
     "cs": "sv. Pietro Claver",
+    "de": "Hl. Petrus Claver",
   },
   "10-9": {
     "it": "San Nicola da Tolentino",
@@ -2284,6 +2536,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nicolau de Tolentino",
     "pl": "Św. Nicola da Tolentino",
     "cs": "sv. Nicola da Tolentino",
+    "de": "Hl. Nikolaus von Tolentino",
   },
   "11-9": {
     "it": "Santi Proto e Giacinto",
@@ -2293,6 +2546,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Proto e Jacinto",
     "pl": "Święci Proto e Giacinto",
     "cs": "sv. Proto e Giacinto",
+    "de": "Hll. Protus und Hyacinthus",
   },
   "12-9": {
     "it": "Santissimo Nome di Maria",
@@ -2302,6 +2556,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Dulce Nombre da Virgem Maria",
     "pl": "Santissimo Nome di Maria",
     "cs": "Santissimo Nome di Maria",
+    "de": "Heiligster Name Mariens",
   },
   "13-9": {
     "it": "San Giovanni Crisostomo",
@@ -2311,6 +2566,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João Crisóstomo",
     "pl": "Św. Giovanni Crisostomo",
     "cs": "sv. Giovanni Crisostomo",
+    "de": "Hl. Johannes Chrysostomos",
   },
   "14-9": {
     "it": "Esaltazione della Santa Croce",
@@ -2320,6 +2576,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Exaltação da Santa Cruz",
     "pl": "Esaltazione della Santa Croce",
     "cs": "Esaltazione della Santa Croce",
+    "de": "Kreuzerhöhung",
   },
   "15-9": {
     "it": "Beata Vergine Maria Addolorata",
@@ -2329,6 +2586,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nuestra Señora dos Dolores",
     "pl": "Bł. Vergine Maria Addolorata",
     "cs": "blahoslavená Vergine Maria Addolorata",
+    "de": "Gedächtnis der Schmerzen Mariens",
   },
   "16-9": {
     "it": "Santi Cipriano e Cornelio",
@@ -2338,6 +2596,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cipriano e Cornelio",
     "pl": "Święci Cipriano e Cornelio",
     "cs": "sv. Cipriano e Cornelio",
+    "de": "Hll. Cyprian und Cornelius",
   },
   "17-9": {
     "it": "San Roberto Bellarmino",
@@ -2347,6 +2606,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Roberto Belarmino",
     "pl": "Św. Roberto Bellarmino",
     "cs": "sv. Roberto Bellarmino",
+    "de": "Hl. Robert Bellarmino",
   },
   "18-9": {
     "it": "San Giuseppe da Copertino",
@@ -2356,6 +2616,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "José de Cupertino",
     "pl": "Św. Giuseppe da Copertino",
     "cs": "sv. Giuseppe da Copertino",
+    "de": "Hl. Josef von Copertino",
   },
   "19-9": {
     "it": "San Gennaro",
@@ -2365,6 +2626,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Capilla Real do Tesoro di São Gennaro",
     "pl": "Św. Gennaro",
     "cs": "sv. Gennaro",
+    "de": "Hl. Januarius",
   },
   "20-9": {
     "it": "Santi Martiri Coreani",
@@ -2374,6 +2636,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Mártires de Corea",
     "pl": "Święci Martiri Coreani",
     "cs": "sv. Martiri Coreani",
+    "de": "Hll. koreanische Märtyrer",
   },
   "21-9": {
     "it": "San Matteo",
@@ -2383,6 +2646,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Santino di Matteo",
     "pl": "Św. Matteo",
     "cs": "sv. Matteo",
+    "de": "Hl. Matthäus",
   },
   "22-9": {
     "it": "San Maurizio",
@@ -2392,6 +2656,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Mauricio el Tebano",
     "pl": "Św. Maurizio",
     "cs": "sv. Maurizio",
+    "de": "Hl. Mauritius",
   },
   "23-9": {
     "it": "San Pio da Pietrelcina",
@@ -2401,6 +2666,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pío de Pietrelcina",
     "pl": "Św. Pio da Pietrelcina",
     "cs": "sv. Pio da Pietrelcina",
+    "de": "Hl. Pius von Pietrelcina",
   },
   "24-9": {
     "it": "Beata Vergine Maria della Mercede",
@@ -2410,6 +2676,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Orden da Merced",
     "pl": "Bł. Vergine Maria della Mercede",
     "cs": "blahoslavená Vergine Maria della Mercede",
+    "de": "Unsere Liebe Frau von der Barmherzigkeit",
   },
   "25-9": {
     "it": "San Cleofa",
@@ -2419,6 +2686,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cleofás",
     "pl": "Św. Cleofa",
     "cs": "sv. Cleofa",
+    "de": "Hl. Kleopas",
   },
   "26-9": {
     "it": "Santi Cosma e Damiano",
@@ -2428,6 +2696,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cosme e Damián",
     "pl": "Święci Cosma e Damiano",
     "cs": "sv. Cosma e Damiano",
+    "de": "Hll. Kosmas und Damian",
   },
   "27-9": {
     "it": "San Vincenzo de' Paoli",
@@ -2437,6 +2706,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Hijas da Caridad de São Vicente de Paúl",
     "pl": "Św. Vincenzo de' Paoli",
     "cs": "sv. Vincenzo de' Paoli",
+    "de": "Hl. Vinzenz von Paoli",
   },
   "28-9": {
     "it": "San Venceslao",
@@ -2446,6 +2716,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Wenceslao de Luxemburgo",
     "pl": "Św. Venceslao",
     "cs": "sv. Venceslao",
+    "de": "Hl. Wenzel",
   },
   "29-9": {
     "it": "Santi Michele, Gabriele e Raffaele",
@@ -2455,6 +2726,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Arcanjo Gabriel",
     "pl": "Święci Michele, Gabriele e Raffaele",
     "cs": "sv. Michele, Gabriele e Raffaele",
+    "de": "Hll. Michael, Gabriel und Raphael",
   },
   "30-9": {
     "it": "San Girolamo",
@@ -2464,6 +2736,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Jerônimo (santo)",
     "pl": "Św. Girolamo",
     "cs": "sv. Girolamo",
+    "de": "Hl. Hieronymus",
   },
   "1-10": {
     "it": "Santa Teresa di Lisieux",
@@ -2473,6 +2746,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Teresa de Lisieux",
     "pl": "Św. Teresa di Lisieux",
     "cs": "sv. Teresa di Lisieux",
+    "de": "Hl. Teresa von Lisieux",
   },
   "2-10": {
     "it": "Santi Angeli Custodi",
@@ -2482,6 +2756,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Santos Ángeles Custodios",
     "pl": "Święci Angeli Custodi",
     "cs": "sv. Angeli Custodi",
+    "de": "Heilige Schutzengel",
   },
   "3-10": {
     "it": "San Gerardo di Brogne",
@@ -2491,6 +2766,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Gerardo de Namur",
     "pl": "Św. Gerardo di Brogne",
     "cs": "sv. Gerardo di Brogne",
+    "de": "Hl. Gerhard von Brogne",
   },
   "4-10": {
     "it": "San Francesco d'Assisi",
@@ -2500,6 +2776,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Francisco de Asís de Borbón",
     "pl": "Św. Francesco d'Assisi",
     "cs": "sv. Francesco d'Assisi",
+    "de": "Hl. Franziskus von Assisi",
   },
   "5-10": {
     "it": "Santa Maria Faustina Kowalska",
@@ -2509,6 +2786,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Maria Faustina Kowalska",
     "pl": "Św. Maria Faustina Kowalska",
     "cs": "sv. Maria Faustina Kowalska",
+    "de": "Hl. Maria Faustina Kowalska",
   },
   "6-10": {
     "it": "San Bruno di Colonia",
@@ -2518,6 +2796,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bruno de Colonia",
     "pl": "Św. Bruno di Colonia",
     "cs": "sv. Bruno di Colonia",
+    "de": "Hl. Bruno von Köln",
   },
   "7-10": {
     "it": "Beata Vergine Maria del Rosario",
@@ -2527,6 +2806,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Santuario da Beata Virgem do Rosario",
     "pl": "Bł. Vergine Maria del Rosario",
     "cs": "blahoslavená Vergine Maria del Rosario",
+    "de": "Unsere Liebe Frau vom Rosenkranz",
   },
   "8-10": {
     "it": "Santa Pelagia di Antiochia",
@@ -2536,6 +2816,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pelagia de Antioquía",
     "pl": "Św. Pelagia di Antiochia",
     "cs": "sv. Pelagia di Antiochia",
+    "de": "Hl. Pelagia von Antiochia",
   },
   "9-10": {
     "it": "San Dionigi e compagni",
@@ -2545,6 +2826,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Dionisio de París",
     "pl": "Św. Dionigi e compagni",
     "cs": "sv. Dionigi e compagni",
+    "de": "Hl. Dionysius und Gefährten",
   },
   "10-10": {
     "it": "San Daniele Comboni",
@@ -2554,6 +2836,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Daniel Comboni",
     "pl": "Św. Daniele Comboni",
     "cs": "sv. Daniele Comboni",
+    "de": "Hl. Daniel Comboni",
   },
   "11-10": {
     "it": "San Giovanni XXIII",
@@ -2563,6 +2846,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João XXIII",
     "pl": "Św. Giovanni XXIII",
     "cs": "sv. Giovanni XXIII",
+    "de": "Hl. Johannes XXIII",
   },
   "12-10": {
     "it": "San Carlo Acutis",
@@ -2572,6 +2856,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Carlo Acutis",
     "pl": "Św. Carlo Acutis",
     "cs": "sv. Carlo Acutis",
+    "de": "Hl. Karl Acutis",
   },
   "13-10": {
     "it": "San Teofilo di Antiochia",
@@ -2581,6 +2866,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Teófilo de Antioquía",
     "pl": "Św. Teofilo di Antiochia",
     "cs": "sv. Teofilo di Antiochia",
+    "de": "Hl. Theophilus von Antiochia",
   },
   "14-10": {
     "it": "San Callisto I",
@@ -2590,6 +2876,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Calixto I",
     "pl": "Św. Callisto I",
     "cs": "sv. Callisto I",
+    "de": "Hl. Callistus I",
   },
   "15-10": {
     "it": "Santa Teresa d'Avila",
@@ -2599,6 +2886,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Éxtasis de Santa Teresa",
     "pl": "Św. Teresa d'Avila",
     "cs": "sv. Teresa d'Avila",
+    "de": "Hl. Teresa von Ávila",
   },
   "16-10": {
     "it": "Santa Margherita Maria Alacoque",
@@ -2608,6 +2896,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Margarita Maria Alacoque",
     "pl": "Św. Margherita Maria Alacoque",
     "cs": "sv. Margherita Maria Alacoque",
+    "de": "Hl. Margareta Maria Alacoque",
   },
   "17-10": {
     "it": "Sant' Ignazio di Antiochia",
@@ -2617,6 +2906,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Inácio de Antioquía",
     "pl": "Św. Ignazio di Antiochia",
     "cs": "sv. Ignazio di Antiochia",
+    "de": "Hl. Ignatius von Antiochien",
   },
   "18-10": {
     "it": "San Luca",
@@ -2626,6 +2916,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Lucas el Evangelista",
     "pl": "Św. Luca",
     "cs": "sv. Luca",
+    "de": "Hl. Lukas",
   },
   "19-10": {
     "it": "San Paolo della Croce",
@@ -2635,6 +2926,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Hermanas Pasionistas de São Paulo da Cruz",
     "pl": "Św. Paolo della Croce",
     "cs": "sv. Paolo della Croce",
+    "de": "Hl. Paul vom Kreuz",
   },
   "20-10": {
     "it": "Santa Maria Bertilla Boscardin",
@@ -2644,6 +2936,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Maria Bertila Boscardin",
     "pl": "Św. Maria Bertilla Boscardin",
     "cs": "sv. Maria Bertilla Boscardin",
+    "de": "Hl. Maria Bertilla Boscardin",
   },
   "21-10": {
     "it": "Beato Giuseppe Puglisi",
@@ -2653,6 +2946,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Beato Giuseppe Puglisi",
     "pl": "Bł. Giuseppe Puglisi",
     "cs": "blahoslavený Giuseppe Puglisi",
+    "de": "Sel. Josef Puglisi",
   },
   "22-10": {
     "it": "San Giovanni Paolo II",
@@ -2662,6 +2956,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Muerte e funeral de João Paulo II",
     "pl": "Św. Giovanni Paolo II",
     "cs": "sv. Giovanni Paolo II",
+    "de": "Hl. Johannes Paul II",
   },
   "23-10": {
     "it": "San Giovanni da Capestrano",
@@ -2671,6 +2966,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João de Capistrano",
     "pl": "Św. Giovanni da Capestrano",
     "cs": "sv. Giovanni da Capestrano",
+    "de": "Hl. Johannes von Capestrano",
   },
   "24-10": {
     "it": "Sant' Antonio Maria Claret",
@@ -2680,6 +2976,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "António Maria Claret",
     "pl": "Św. Antonio Maria Claret",
     "cs": "sv. Antonio Maria Claret",
+    "de": "Hl. Antonius Maria Claret",
   },
   "25-10": {
     "it": "Santi Crisante e Daria",
@@ -2689,6 +2986,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Crisanto e Daría",
     "pl": "Święci Crisante e Daria",
     "cs": "sv. Crisante e Daria",
+    "de": "Hll. Chrysanthus und Daria",
   },
   "26-10": {
     "it": "San Folco Scotti",
@@ -2698,6 +2996,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Fulco de Pavía",
     "pl": "Św. Folco Scotti",
     "cs": "sv. Folco Scotti",
+    "de": "Hl. Fulko Scotti",
   },
   "27-10": {
     "it": "Sant' Evaristo",
@@ -2707,6 +3006,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Evaristo",
     "pl": "Św. Evaristo",
     "cs": "sv. Evaristo",
+    "de": "Hl. Evaristus",
   },
   "28-10": {
     "it": "Santi Simone e Giuda",
@@ -2716,6 +3016,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Judas Tadeo",
     "pl": "Święci Simone e Giuda",
     "cs": "sv. Simone e Giuda",
+    "de": "Hll. Simon und Judas",
   },
   "29-10": {
     "it": "Beata Chiara Luce Badano",
@@ -2725,6 +3026,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Chiara Badano",
     "pl": "Bł. Chiara Luce Badano",
     "cs": "blahoslavená Chiara Luce Badano",
+    "de": "Sel. Klara Luce Badano",
   },
   "30-10": {
     "it": "San Germano di Capua",
@@ -2734,6 +3036,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Germán de Capua",
     "pl": "Św. Germano di Capua",
     "cs": "sv. Germano di Capua",
+    "de": "Hl. Germanus von Capua",
   },
   "31-10": {
     "it": "Santa Lucilla di Roma",
@@ -2743,6 +3046,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Lucila de Roma",
     "pl": "Św. Lucilla di Roma",
     "cs": "sv. Lucilla di Roma",
+    "de": "Hl. Lucilla von Rom",
   },
   "1-11": {
     "it": "Tutti i Santi",
@@ -2752,6 +3056,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Todos os Santos",
     "pl": "Wszystkich Świętych",
     "cs": "Všichni svatí",
+    "de": "Allerheiligen",
   },
   "2-11": {
     "it": "Commemorazione di tutti i fedeli defunti",
@@ -2761,6 +3066,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Día dos Fieles Difuntos",
     "pl": "Commemorazione di tutti i fedeli defunti",
     "cs": "Commemorazione di tutti i fedeli defunti",
+    "de": "Allerseelen",
   },
   "3-11": {
     "it": "Santa Silvia",
@@ -2770,6 +3076,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Silvia de Roma",
     "pl": "Św. Silvia",
     "cs": "sv. Silvia",
+    "de": "Hl. Silvia",
   },
   "4-11": {
     "it": "San Carlo Borromeo",
@@ -2779,6 +3086,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Coloso de São Carlo Borromeo",
     "pl": "Św. Carlo Borromeo",
     "cs": "sv. Carlo Borromeo",
+    "de": "Hl. Karl Borromeo",
   },
   "5-11": {
     "it": "San Guido Maria Conforti",
@@ -2788,6 +3096,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Guido Maria Conforti",
     "pl": "Św. Guido Maria Conforti",
     "cs": "sv. Guido Maria Conforti",
+    "de": "Hl. Guido Maria Conforti",
   },
   "6-11": {
     "it": "San Leonardo di Noblac",
@@ -2797,6 +3106,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Leonardo de Noblat",
     "pl": "Św. Leonardo di Noblac",
     "cs": "sv. Leonardo di Noblac",
+    "de": "Hl. Leonhard von Noblac",
   },
   "7-11": {
     "it": "San Prosdocimo di Padova",
@@ -2806,6 +3116,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Prosdócimo de Padua",
     "pl": "Św. Prosdocimo di Padova",
     "cs": "sv. Prosdocimo di Padova",
+    "de": "Hl. Prosdocimus von Padua",
   },
   "8-11": {
     "it": "San Goffredo di Amiens",
@@ -2815,6 +3126,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Godofredo de Amiens",
     "pl": "Św. Goffredo di Amiens",
     "cs": "sv. Goffredo di Amiens",
+    "de": "Hl. Gottfried von Amiens",
   },
   "9-11": {
     "it": "Dedicazione della Basilica Lateranense",
@@ -2824,6 +3136,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Dedicación da Basílica de Letrán",
     "pl": "Dedicazione della Basilica Lateranense",
     "cs": "Dedicazione della Basilica Lateranense",
+    "de": "Weihetag der Lateranbasilika",
   },
   "10-11": {
     "it": "San Leone Magno",
@@ -2833,6 +3146,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "León I",
     "pl": "Św. Leone Magno",
     "cs": "sv. Leone Magno",
+    "de": "Hl. Leo der Große",
   },
   "11-11": {
     "it": "San Martino di Tours",
@@ -2842,6 +3156,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Martinho de Tours",
     "pl": "Św. Martino di Tours",
     "cs": "sv. Martino di Tours",
+    "de": "Hl. Martin von Tours",
   },
   "12-11": {
     "it": "San Giosafat Kuncewycz",
@@ -2851,6 +3166,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Josafat Kuncewicz",
     "pl": "Św. Giosafat Kuncewycz",
     "cs": "sv. Giosafat Kuncewycz",
+    "de": "Hl. Josaphat Kuncewycz",
   },
   "13-11": {
     "it": "San Diego di Alcalà",
@@ -2860,6 +3176,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Diego de Alcalá",
     "pl": "Św. Diego di Alcalà",
     "cs": "sv. Diego di Alcalà",
+    "de": "Hl. Didakus von Alcalà",
   },
   "14-11": {
     "it": "San Lorenzo O'Toole",
@@ -2869,6 +3186,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Lourenço O'Toole",
     "pl": "Św. Lorenzo O'Toole",
     "cs": "sv. Lorenzo O'Toole",
+    "de": "Hl. Laurentius O'Toole",
   },
   "15-11": {
     "it": "Sant' Alberto Magno",
@@ -2878,6 +3196,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Alberto Magno",
     "pl": "Św. Alberto Magno",
     "cs": "sv. Alberto Magno",
+    "de": "Hl. Albert der Große",
   },
   "16-11": {
     "it": "Santa Margherita di Scozia",
@@ -2887,6 +3206,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Margarita I de Escocia",
     "pl": "Św. Margherita di Scozia",
     "cs": "sv. Margherita di Scozia",
+    "de": "Hl. Margareta von Schottland",
   },
   "17-11": {
     "it": "Sant' Elisabetta d'Ungheria",
@@ -2896,6 +3216,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Isabel de Hungría",
     "pl": "Św. Elisabetta d'Ungheria",
     "cs": "sv. Elisabetta d'Ungheria",
+    "de": "Hl. Elisabeth von Ungarn",
   },
   "18-11": {
     "it": "Dedicazione delle basiliche dei Santi Pietro e Paolo",
@@ -2905,6 +3226,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Paulo de Tarso",
     "pl": "Dedicazione delle basiliche dei Santi Pietro e Paolo",
     "cs": "Dedicazione delle basiliche dei Santi Pietro e Paolo",
+    "de": "Weihetag der Basiliken St. Peter und St. Paul",
   },
   "19-11": {
     "it": "Santa Matilde di Hackeborn",
@@ -2914,6 +3236,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Matilde de Hackeborn",
     "pl": "Św. Matilde di Hackeborn",
     "cs": "sv. Matilde di Hackeborn",
+    "de": "Hl. Mathilde von Hackeborn",
   },
   "20-11": {
     "it": "Sant' Edmondo",
@@ -2923,6 +3246,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Edmundo de Abingdon",
     "pl": "Św. Edmondo",
     "cs": "sv. Edmondo",
+    "de": "Hl. Edmund",
   },
   "21-11": {
     "it": "Presentazione della Beata Vergine Maria",
@@ -2932,6 +3256,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Presentación de Maria",
     "pl": "Presentazione della Beata Vergine Maria",
     "cs": "Presentazione della Beata Vergine Maria",
+    "de": "Gedenktag Unserer Lieben Frau in Jerusalem",
   },
   "22-11": {
     "it": "Solennità di Cristo Re",
@@ -2941,6 +3266,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Cristo Rey",
     "pl": "Solennità di Cristo Re",
     "cs": "Solennità di Cristo Re",
+    "de": "Christkönigssonntag",
   },
   "23-11": {
     "it": "San Clemente I Romano",
@@ -2950,6 +3276,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Clemente de Roma",
     "pl": "Św. Clemente I Romano",
     "cs": "sv. Clemente I Romano",
+    "de": "Hl. Clemens I",
   },
   "24-11": {
     "it": "Santa Flora di Cordova",
@@ -2959,6 +3286,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Flora de Córdoba",
     "pl": "Św. Flora di Cordova",
     "cs": "sv. Flora di Cordova",
+    "de": "Hl. Flora von Córdoba",
   },
   "25-11": {
     "it": "Santa Caterina d'Alessandria",
@@ -2968,6 +3296,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Catarina de Alejandría",
     "pl": "Św. Caterina d'Alessandria",
     "cs": "sv. Caterina d'Alessandria",
+    "de": "Hl. Katharina von Alexandrien",
   },
   "26-11": {
     "it": "San Leonardo da Porto Maurizio",
@@ -2977,6 +3306,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Leonardo de Puerto Mauricio",
     "pl": "Św. Leonardo da Porto Maurizio",
     "cs": "sv. Leonardo da Porto Maurizio",
+    "de": "Hl. Leonhard von Porto Mauritius",
   },
   "27-11": {
     "it": "Beata Vergine della Medaglia Miracolosa",
@@ -2986,6 +3316,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Medalla Milagrosa",
     "pl": "Bł. Vergine della Medaglia Miracolosa",
     "cs": "blahoslavená Vergine della Medaglia Miracolosa",
+    "de": "Unsere Liebe Frau von der Wundertätigen Medaille",
   },
   "28-11": {
     "it": "San Giacomo della Marca",
@@ -2995,6 +3326,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Tiago da Marca",
     "pl": "Św. Giacomo della Marca",
     "cs": "sv. Giacomo della Marca",
+    "de": "Hl. Jakobus vom Marca",
   },
   "29-11": {
     "it": "San Saturnino di Tolosa",
@@ -3004,6 +3336,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Saturnino de Tolosa",
     "pl": "Św. Saturnino di Tolosa",
     "cs": "sv. Saturnino di Tolosa",
+    "de": "Hl. Saturnino von Tolosa",
   },
   "30-11": {
     "it": "Sant' Andrea",
@@ -3013,6 +3346,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "André el Apóstolo",
     "pl": "Św. Andrea",
     "cs": "sv. Andrea",
+    "de": "Hl. Andreas",
   },
   "1-12": {
     "it": "Sant' Eligio",
@@ -3022,6 +3356,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Eligio",
     "pl": "Św. Eligio",
     "cs": "sv. Eligio",
+    "de": "Hl. Eligius",
   },
   "2-12": {
     "it": "Santa Bibiana",
@@ -3031,6 +3366,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bibiana (santa)",
     "pl": "Św. Bibiana",
     "cs": "sv. Bibiana",
+    "de": "Hl. Bibiana",
   },
   "3-12": {
     "it": "San Francesco Saverio",
@@ -3040,6 +3376,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Francisco Xavier",
     "pl": "Św. Francesco Saverio",
     "cs": "sv. Francesco Saverio",
+    "de": "Hl. Franz Xaver",
   },
   "4-12": {
     "it": "Santa Barbara",
@@ -3049,6 +3386,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Bárbara de Nicomedia",
     "pl": "Św. Barbara",
     "cs": "sv. Barbara",
+    "de": "Hl. Barbara",
   },
   "5-12": {
     "it": "San Saba Archimandrita",
@@ -3058,6 +3396,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Sabas el Santificado",
     "pl": "Św. Saba Archimandrita",
     "cs": "sv. Saba Archimandrita",
+    "de": "Hl. Sabbas der Archimandrit",
   },
   "6-12": {
     "it": "San Nicola di Bari",
@@ -3067,6 +3406,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nicolau de Bari",
     "pl": "Św. Nicola di Bari",
     "cs": "sv. Nicola di Bari",
+    "de": "Hl. Nikolaus von Myra",
   },
   "7-12": {
     "it": "Sant' Ambrogio",
@@ -3076,6 +3416,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Ambrogio",
     "pl": "Św. Ambrogio",
     "cs": "sv. Ambrogio",
+    "de": "Hl. Ambrosius",
   },
   "8-12": {
     "it": "Immacolata Concezione della Beata Vergine Maria",
@@ -3085,6 +3426,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Imaculada Conceição",
     "pl": "Immacolata Concezione della Beata Vergine Maria",
     "cs": "Immacolata Concezione della Beata Vergine Maria",
+    "de": "Unbefleckte Empfängnis Mariens",
   },
   "9-12": {
     "it": "San Siro di Pavia",
@@ -3094,6 +3436,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Siro de Pavía",
     "pl": "Św. Siro di Pavia",
     "cs": "sv. Siro di Pavia",
+    "de": "Hl. Syrus von Pavia",
   },
   "10-12": {
     "it": "Beata Vergine Maria di Loreto",
@@ -3103,6 +3446,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Nuestra Señora de Loreto",
     "pl": "Bł. Vergine Maria di Loreto",
     "cs": "blahoslavená Vergine Maria di Loreto",
+    "de": "Unsere Liebe Frau von Loreto",
   },
   "11-12": {
     "it": "San Damaso I",
@@ -3112,6 +3456,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Dámaso I",
     "pl": "Św. Damaso I",
     "cs": "sv. Damaso I",
+    "de": "Hl. Damasus I",
   },
   "12-12": {
     "it": "Beata Maria Vergine di Guadalupe",
@@ -3121,6 +3466,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Virgem de Guadalupe",
     "pl": "Bł. Maria Vergine di Guadalupe",
     "cs": "blahoslavená Maria Vergine di Guadalupe",
+    "de": "Unsere Liebe Frau von Guadalupe",
   },
   "13-12": {
     "it": "Santa Lucia",
@@ -3130,6 +3476,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Lucía de Siracusa",
     "pl": "Św. Lucia",
     "cs": "sv. Lucia",
+    "de": "Hl. Lucia",
   },
   "14-12": {
     "it": "San Giovanni della Croce",
@@ -3139,6 +3486,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João da Cruz",
     "pl": "Św. Giovanni della Croce",
     "cs": "sv. Giovanni della Croce",
+    "de": "Hl. Johannes vom Kreuz",
   },
   "15-12": {
     "it": "Santa Virginia Centurione Bracelli",
@@ -3148,6 +3496,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Virginia Centurione Bracelli",
     "pl": "Św. Virginia Centurione Bracelli",
     "cs": "sv. Virginia Centurione Bracelli",
+    "de": "Hl. Virginia Centurione Bracelli",
   },
   "16-12": {
     "it": "Sant' Adelaide",
@@ -3157,6 +3506,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Adelaida de Italia",
     "pl": "Św. Adelaide",
     "cs": "sv. Adelaide",
+    "de": "Hl. Adelheid",
   },
   "17-12": {
     "it": "San Giovanni de Matha",
@@ -3166,6 +3516,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "João de Mata",
     "pl": "Św. Giovanni de Matha",
     "cs": "sv. Giovanni de Matha",
+    "de": "Hl. Johannes von Matha",
   },
   "18-12": {
     "it": "San Gaziano di Tours",
@@ -3175,6 +3526,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Gaciano de Tours",
     "pl": "Św. Gaziano di Tours",
     "cs": "sv. Gaziano di Tours",
+    "de": "Hl. Gatianus von Tours",
   },
   "19-12": {
     "it": "San Dario",
@@ -3184,6 +3536,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Darío de Nicomedia",
     "pl": "Św. Dario",
     "cs": "sv. Dario",
+    "de": "Hl. Darius",
   },
   "20-12": {
     "it": "San Liberato (Liberale)",
@@ -3193,6 +3546,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "São Liberato",
     "pl": "Św. Liberato (Liberale)",
     "cs": "sv. Liberato (Liberale)",
+    "de": "Hl. Liberatus (Liberale)",
   },
   "21-12": {
     "it": "San Pietro Canisio",
@@ -3202,6 +3556,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Pedro Canisio",
     "pl": "Św. Pietro Canisio",
     "cs": "sv. Pietro Canisio",
+    "de": "Hl. Petrus Canisius",
   },
   "22-12": {
     "it": "Santa Francesca Saverio Cabrini",
@@ -3211,6 +3566,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Francisca Xaviera Cabrini",
     "pl": "Św. Francesca Saverio Cabrini",
     "cs": "sv. Francesca Saverio Cabrini",
+    "de": "Hl. Franziska Xaviera Cabrini",
   },
   "23-12": {
     "it": "Santa Vittoria",
@@ -3220,6 +3576,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Victoria de Roma",
     "pl": "Św. Vittoria",
     "cs": "sv. Vittoria",
+    "de": "Hl. Victoria",
   },
   "24-12": {
     "it": "San Delfino di Bordeaux",
@@ -3229,6 +3586,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Delfín de Burdeos",
     "pl": "Św. Delfino di Bordeaux",
     "cs": "sv. Delfino di Bordeaux",
+    "de": "Hl. Delphinus von Bordeaux",
   },
   "25-12": {
     "it": "Natale del Signore",
@@ -3238,6 +3596,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Natal",
     "pl": "Boże Narodzenie",
     "cs": "Narození Páně",
+    "de": "Weihnachten",
   },
   "26-12": {
     "it": "Santo Stefano",
@@ -3247,6 +3606,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "São Estêvão",
     "pl": "Św. Szczepan",
     "cs": "sv. Štěpán",
+    "de": "Hl. Stephan",
   },
   "27-12": {
     "it": "Santa Famiglia di Gesù, Maria e Giuseppe",
@@ -3256,6 +3616,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Sagrada Família",
     "pl": "Święta Rodzina Jezusa, Maryi i Józefa",
     "cs": "sv. Famiglia di Gesù, Maria e Giuseppe",
+    "de": "Heilige Familie Jesus, Maria und Josef",
   },
   "28-12": {
     "it": "Santi Innocenti",
@@ -3265,6 +3626,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Santos Inocentes",
     "pl": "Święci Młodziankowie",
     "cs": "sv. Innocenti",
+    "de": "Unschuldige Kinder",
   },
   "29-12": {
     "it": "San Davide",
@@ -3274,6 +3636,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "São David",
     "pl": "Św. Davide",
     "cs": "sv. Davide",
+    "de": "Hl. David",
   },
   "30-12": {
     "it": "Sant' Eugenio di Milano",
@@ -3283,6 +3646,7 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Eugenio de Milán",
     "pl": "Św. Eugenio di Milano",
     "cs": "sv. Eugenio di Milano",
+    "de": "Hl. Eugenius von Mailand",
   },
   "31-12": {
     "it": "San Silvestro I",
@@ -3292,5 +3656,6 @@ const Map<String, Map<String, String>> kSaintsData = {
     "pt": "Silvestre I",
     "pl": "Św. Silvestro I",
     "cs": "sv. Silvestro I",
+    "de": "Hl. Silvester I",
   },
 };

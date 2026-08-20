@@ -99,7 +99,7 @@ class SonarTubeService {
       'kind': collection.kind.name,
       'title': collection.title,
       'format': 'json',
-      if (seedVideoId != null) 'seed': seedVideoId,
+      'seed': ?seedVideoId,
       if (token != null && token.isNotEmpty) 'token': token,
       'page': '$page',
     });

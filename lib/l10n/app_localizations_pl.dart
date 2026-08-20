@@ -408,6 +408,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get spanish => 'Hiszpański';
 
   @override
+  String get german => 'Niemiecki';
+
+  @override
   String get newsSource => 'Źródło wiadomości';
 
   @override
@@ -3062,4 +3065,300 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get developerUseExperimentalFlutterRendererHint => 'Tymczasowo wyłącza UIKit, aby porównać VoiceOver z czystym Flutterem.';
 
+  // Shared labels generated from ARB entries.
+  @override
+  String get letterJumpSelectLetter => 'Wybierz literę';
+
+  @override
+  String get letterJumpSelected => 'wybrano';
+
+  @override
+  String get settingsToggleOn => 'Włączone';
+
+  @override
+  String get settingsToggleOff => 'Wyłączone';
+
+  @override
+  String get radioDirectoryLoading => 'Aktualizuję kraje i języki radia...';
+
+  @override
+  String get recentRadios => 'Ostatnie radia';
+
+  @override
+  String get radioNextPage => 'Następne';
+
+  @override
+  String radioPageOf(int current, int total) {
+    return 'Strona $current z $total';
+  }
+
+  @override
+  String get radioNoResultsWithQuery => 'Nie znaleziono stacji. Spróbuj wpisać tylko nazwę stacji, bez gatunku, albo zmień język/kraj.';
+
+  @override
+  String get radioNoResultsGeneric => 'Nie znaleziono stacji. Spróbuj innego języka, kraju albo gatunku.';
+
+  @override
+  String radioSearchRawError(Object error) {
+    return 'Błąd wyszukiwania radia: $error';
+  }
+
+  @override
+  String get radioBrowserConnectionError => 'Błąd połączenia z Radio Browser. Spróbuj ponownie później.';
+
+  @override
+  String get documentIndexLoadingMessage => 'Ładowanie spisu treści... Proszę czekać.';
+
+  @override
+  String get documentIndexUnavailableMessage => 'Spis treści nie jest dostępny dla tego EPUB-a.';
+
+  @override
+  String mediaCutterVolumeSummary(int percent) {
+    return 'głośność $percent%';
+  }
+
+  @override
+  String mediaCutterDurationSummary(String duration) {
+    return 'czas trwania $duration';
+  }
+
+  @override
+  String get mediaCutterDurationHourOne => 'godzina';
+
+  @override
+  String get mediaCutterDurationHourFew => 'godziny';
+
+  @override
+  String get mediaCutterDurationHourMany => 'godzin';
+
+  @override
+  String get mediaCutterDurationMinuteOne => 'minuta';
+
+  @override
+  String get mediaCutterDurationMinuteFew => 'minuty';
+
+  @override
+  String get mediaCutterDurationMinuteMany => 'minut';
+
+  @override
+  String get mediaCutterDurationSecondOne => 'sekunda';
+
+  @override
+  String get mediaCutterDurationSecondFew => 'sekundy';
+
+  @override
+  String get mediaCutterDurationSecondMany => 'sekund';
+
+  @override
+  String get mediaCutterDurationAnd => 'i';
+
+  @override
+  String mediaCutterSeekStepButton(String step) {
+    return 'Dostosuj przesuwanie pliku multimedialnego: $step';
+  }
+
+  @override
+  String get mediaCutterSeekStepTitle => 'Przesuwanie pliku multimedialnego';
+
+  @override
+  String mediaCutterSeekStepSelected(String step) {
+    return 'Przesuwanie pliku multimedialnego ustawione na $step.';
+  }
+
+  @override
+  String get mediaCutterPartEffectBackwards => 'Wstecz';
+
+  @override
+  String get mediaCutterPartEffectTalkingGuitar => 'Mówiąca gitara';
+
+  @override
+  String get mediaCutterPartEffectMosquito => 'Komar';
+
+  @override
+  String get mediaCutterPartEffectOneOfMany => 'Jeden głos, wielu śpiewaków';
+
+  @override
+  String get mediaCutterPartEffectOrganVocoder => 'Mówiące organy';
+
+  @override
+  String get mediaCutterPartEffectWarped => 'Zniekształcony';
+
+  @override
+  String get mediaCutterPartEffectSwirling => 'Wir stereo';
+
+  @override
+  String get mediaCutterPartEffectVader => 'Filmowy ciemny głos';
+
+  @override
+  String get mediaCutterPartEffectMetallic => 'Metaliczny';
+
+  @override
+  String get mediaCutterPartEffectSongbird => 'Ptak śpiewający';
+
+  @override
+  String get mediaCutterPartEffectExterminator => 'Eksterminator';
+
+  @override
+  String get mediaCutterPartEffectRainAndThunder => 'Deszcz i grzmoty';
+
+  @override
+  String get mediaCutterPartEffectJungle => 'Dżungla';
+
+  @override
+  String get mediaCutterPartEffectCrowd => 'Tłum';
+
+  @override
+  String get mediaCutterPartEffectSlotMachines => 'Automaty do gry';
+
+  @override
+  String get mediaCutterPartEffectTraffic => 'Ruch uliczny';
+
+  @override
+  String get mediaCutterPartEffectSpaceship => 'Statek kosmiczny';
+
+  @override
+  String get mediaCutterPartEffectCricket => 'Świerszcz';
+
+  @override
+  String get mediaCutterPartEffectSiren => 'Syrena';
+
+  @override
+  String get mediaCutterPartEffectSleighBells => 'Dzwonki sań';
+
+  @override
+  String get mediaCutterPartEffectDj => 'DJ i scratch';
+
+  @override
+  String get mediaCutterPartEffectApplause => 'Oklaski';
+
+  @override
+  String get mediaCutterPartEffectBadMelody => 'Fałszywa melodia';
+
+  @override
+  String get mediaCutterPartEffectBadHarmony => 'Dysonansowa harmonia';
+
+  @override
+  String get mediaCutterPartEffectWarmVoice => 'Ciepły głos';
+
+  @override
+  String get mediaCutterPartEffectTurtle => 'Żółw';
+
+  @override
+  String get mediaCutterPartEffectHaunting => 'Nawiedzony';
+
+  @override
+  String get radioPreviousPage => 'Poprzednie';
+
+  @override
+  String get noRecentRadios => 'Brak ostatnich stacji radiowych.';
+
+  @override
+  String get radioBrowseByCity => 'Przeglądaj według miasta';
+
+  @override
+  String get radioCityInputHint => 'Wpisz miasto...';
+
+  @override
+  String get openItem => 'Otwórz';
+
+  @override
+  String get clearSearch => 'Wyczyść wyszukiwanie';
+
+  @override
+  String get fileTypeLabel => 'Plik';
+
+  @override
+  String get cinemaTrailerLoading => 'Ładowanie zwiastuna';
+
+  @override
+  String get cinemaNoTrailer => 'Brak dostępnego zwiastuna dla tego filmu';
+
+  @override
+  String get radioScheduleHours => 'Godziny';
+
+  @override
+  String get radioScheduleSelectHours => 'Wybierz godziny';
+
+  @override
+  String get radioScheduleMinutes => 'Minuty';
+
+  @override
+  String get radioScheduleSelectMinutes => 'Wybierz minuty';
+
+  @override
+  String get radioScheduleStopCurrentFirst => 'Zakończ bieżące nagrywanie przed zaplanowaniem nowego.';
+
+  @override
+  String get radioScheduleStartTime => 'Godzina rozpoczęcia';
+
+  @override
+  String get radioScheduleEndTime => 'Godzina zakończenia';
+
+  @override
+  String get radioScheduleDialogTitle => 'Zaplanuj nagrywanie';
+
+  @override
+  String get radioScheduleOpenRequirement => 'W tej wersji zaplanowane nagrywanie rozpocznie się tylko wtedy, gdy Sonarpad pozostanie otwarty na tym odtwarzaczu. Jeśli zamkniesz aplikację lub ten ekran, nagrywanie nie może rozpocząć się automatycznie.';
+
+  @override
+  String radioScheduleStartTimeValue(String time) {
+    return 'Godzina rozpoczęcia: $time';
+  }
+
+  @override
+  String radioScheduleEndTimeValue(String time) {
+    return 'Godzina zakończenia: $time';
+  }
+
+  @override
+  String get radioScheduleOptionalTitle => 'Tytuł opcjonalny';
+
+  @override
+  String get radioScheduleTitleHint => 'Pozostaw puste, aby użyć nazwy radia lub TV';
+
+  @override
+  String get radioScheduleAction => 'Zaplanuj';
+
+  @override
+  String radioScheduledRecordingRange(String start, String end) {
+    return 'Zaplanowane nagrywanie: $start - $end.';
+  }
+
+  @override
+  String get radioScheduledRecordingAlreadyActive => 'Zaplanowane nagrywanie nie zostało uruchomione: trwa już inne nagrywanie.';
+
+  @override
+  String get radioScheduledRecordingStarted => 'Zaplanowane nagrywanie rozpoczęte.';
+
+  @override
+  String radioScheduledRecordingError(Object error) {
+    return 'Błąd zaplanowanego nagrywania: $error';
+  }
+
+  @override
+  String get radioScheduledRecordingSaved => 'Zaplanowane nagrywanie zapisane.';
+
+  @override
+  String radioScheduledRecordingSaveError(Object error) {
+    return 'Błąd zapisywania zaplanowanego nagrywania: $error';
+  }
+
+  @override
+  String get radioScheduledRecordingCancelled => 'Zaplanowane nagrywanie anulowane.';
+
+  @override
+  String radioScheduledRecordingRangeWithTitle(String start, String end, String title) {
+    return 'Zaplanowane nagrywanie: $start - $end. Tytuł: $title.';
+  }
+
+  @override
+  String get radioScheduleCancelAction => 'Anuluj zaplanowane nagrywanie';
+  @override
+  String get radioLanguageTr => 'Turecki';
+
+  @override
+  String get radioCountryOptionTr => 'Turcja';
+
+  @override
+  String get radioCommunityLanguageTurkish => 'Turecki';
 }

@@ -21,26 +21,6 @@ import '../widgets/universal_accessible_view.dart';
 
 enum _RadioBrowseMode { language, country, city }
 
-String _cityLabel(String localeName) => switch (localeName) {
-      'en' => 'Browse by city',
-      'es' => 'Explorar por ciudad',
-      'fr' => 'Parcourir par ville',
-      'pt' => 'Explorar por cidade',
-      'pl' => 'Przeglądaj według miasta',
-      'cs' => 'Procházet podle města',
-      _ => 'Sfoglia per città',
-    };
-
-String _cityInputHint(String localeName) => switch (localeName) {
-      'en' => 'Enter city name...',
-      'es' => 'Introduce la ciudad...',
-      'fr' => 'Entrez le nom de la ville...',
-      'pt' => 'Digite a cidade...',
-      'pl' => 'Wpisz miasto...',
-      'cs' => 'Zadejte město...',
-      _ => 'Inserisci il nome della città...',
-    };
-
 class RadioScreen extends StatefulWidget {
   const RadioScreen({super.key});
 
@@ -262,7 +242,7 @@ class _RadioScreenState extends State<RadioScreen> {
                 AccessibleListSection(
                   rows: [
                     AccessibleListRow(id: 'favorites', title: l10n.radioFavoritesButton, kind: 'action'),
-                    AccessibleListRow(id: 'recent', title: _recentRadiosLabel(l10n.localeName), kind: 'action'),
+                    AccessibleListRow(id: 'recent', title: l10n.recentRadios, kind: 'action'),
                     if (_isRecordingFeatureUnlocked)
                       AccessibleListRow(id: 'recordings', title: l10n.recordings, kind: 'action'),
                   ],
@@ -282,7 +262,7 @@ class _RadioScreenState extends State<RadioScreen> {
                     if (_loadingDirectory)
                       AccessibleListRow(
                         id: 'directory_loading',
-                        title: _radioDirectoryLoadingLabel(l10n.localeName),
+                        title: l10n.radioDirectoryLoading,
                         kind: 'text',
                         enabled: false,
                       ),
@@ -321,9 +301,9 @@ class _RadioScreenState extends State<RadioScreen> {
                                 selected ? Icons.check : Icons.language,
                               ),
                               selectLetterLabel:
-                                  _selectLetterLabel(l10n.localeName),
+                                  l10n.letterJumpSelectLetter,
                               selectLetterTitle:
-                                  _selectLetterTitle(l10n.localeName),
+                                  l10n.letterJumpSelectLetter,
                             ),
                           ),
                         );
@@ -364,9 +344,9 @@ class _RadioScreenState extends State<RadioScreen> {
                                 selected ? Icons.check : Icons.public,
                               ),
                               selectLetterLabel:
-                                  _selectLetterLabel(l10n.localeName),
+                                  l10n.letterJumpSelectLetter,
                               selectLetterTitle:
-                                  _selectLetterTitle(l10n.localeName),
+                                  l10n.letterJumpSelectLetter,
                             ),
                           ),
                         );
@@ -383,10 +363,10 @@ class _RadioScreenState extends State<RadioScreen> {
                     ),
                     AccessibleListRow(
                       id: 'city',
-                      title: _cityLabel(l10n.localeName),
+                      title: l10n.radioBrowseByCity,
                       kind: 'textField',
                       value: _cityCode ?? '',
-                      placeholder: _cityInputHint(l10n.localeName),
+                      placeholder: l10n.radioCityInputHint,
                       textInputAction: 'search',
                       onSubmitted: (value) {
                         final city = value.trim();
@@ -521,7 +501,7 @@ class _RadioScreenState extends State<RadioScreen> {
               children: [
                 const Icon(Icons.history),
                 const SizedBox(width: 8),
-                Text(_recentRadiosLabel(l10n.localeName)),
+                Text(l10n.recentRadios),
               ],
             ),
           ),
@@ -566,7 +546,7 @@ class _RadioScreenState extends State<RadioScreen> {
           ),
           if (_loadingDirectory) ...[
             const SizedBox(height: 8),
-            Text(_radioDirectoryLoadingLabel(l10n.localeName)),
+            Text(l10n.radioDirectoryLoading),
           ],
           const SizedBox(height: 8),
           Card(
@@ -603,8 +583,8 @@ class _RadioScreenState extends State<RadioScreen> {
                     selectedBuilder: (o) => o.code == _languageCode,
                     selectedLabel: l10n.selectedRecently,
                     leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.language),
-                    selectLetterLabel: _selectLetterLabel(l10n.localeName),
-                    selectLetterTitle: _selectLetterTitle(l10n.localeName),
+                    selectLetterLabel: l10n.letterJumpSelectLetter,
+                    selectLetterTitle: l10n.letterJumpSelectLetter,
                   ),
                 ),
               );
@@ -634,8 +614,8 @@ class _RadioScreenState extends State<RadioScreen> {
                     selectedBuilder: (o) => o.key == _countryCode,
                     selectedLabel: l10n.selectedRecently,
                     leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.public),
-                    selectLetterLabel: _selectLetterLabel(l10n.localeName),
-                    selectLetterTitle: _selectLetterTitle(l10n.localeName),
+                    selectLetterLabel: l10n.letterJumpSelectLetter,
+                    selectLetterTitle: l10n.letterJumpSelectLetter,
                   ),
                 ),
               );
@@ -652,7 +632,7 @@ class _RadioScreenState extends State<RadioScreen> {
             },
           ),
           ListTile(
-            title: Text(_cityLabel(l10n.localeName)),
+            title: Text(l10n.radioBrowseByCity),
             subtitle: Text(_browseMode == _RadioBrowseMode.city ? (_cityCode ?? '---') : '---'),
             trailing: const Icon(Icons.chevron_right),
             selected: _browseMode == _RadioBrowseMode.city,
@@ -662,11 +642,11 @@ class _RadioScreenState extends State<RadioScreen> {
                 builder: (context) {
                   final controller = TextEditingController(text: _cityCode);
                   return AlertDialog(
-                    title: Text(_cityLabel(l10n.localeName)),
+                    title: Text(l10n.radioBrowseByCity),
                     content: TextField(
                       controller: controller,
                       autofocus: true,
-                      decoration: InputDecoration(hintText: _cityInputHint(l10n.localeName)),
+                      decoration: InputDecoration(hintText: l10n.radioCityInputHint),
                       onSubmitted: (v) => Navigator.pop(context, v),
                     ),
                     actions: [
@@ -706,8 +686,8 @@ class _RadioScreenState extends State<RadioScreen> {
                     selectedBuilder: (o) => o.value == _genre.value,
                     selectedLabel: l10n.selectedRecently,
                     leadingBuilder: (selected) => Icon(selected ? Icons.check : Icons.category),
-                    selectLetterLabel: _selectLetterLabel(l10n.localeName),
-                    selectLetterTitle: _selectLetterTitle(l10n.localeName),
+                    selectLetterLabel: l10n.letterJumpSelectLetter,
+                    selectLetterTitle: l10n.letterJumpSelectLetter,
                   ),
                 ),
               );
@@ -787,46 +767,6 @@ String _titleCaseRadioDirectoryLabel(String value) {
       .join(' ');
 }
 
-String _radioDirectoryLoadingLabel(String localeName) => switch (localeName) {
-      'en' => 'Updating radio countries and languages...',
-      'es' => 'Actualizando países e idiomas de radio...',
-      'fr' => 'Mise à jour des pays et langues radio...',
-      'pt' => 'A atualizar países e idiomas de rádio...',
-      'pl' => 'Aktualizuję kraje i języki radia...',
-      'cs' => 'Aktualizuji země a jazyky rádia...',
-      _ => 'Aggiornamento di paesi e lingue radio...',
-    };
-
-String _recentRadiosLabel(String localeName) => switch (localeName) {
-      'en' => 'Recent radios',
-      'es' => 'Radios recientes',
-      'fr' => 'Radios récentes',
-      'pt' => 'Rádios recentes',
-      'pl' => 'Ostatnie radia',
-      'cs' => 'Nedávná rádia',
-      _ => 'Radio recenti',
-    };
-
-
-String _selectLetterLabel(String localeName) => switch (localeName) {
-      'en' => 'Select letter',
-      'es' => 'Seleccionar letra',
-      'fr' => 'Sélectionner une lettre',
-      'pt' => 'Selecionar letra',
-      'pl' => 'Wybierz literę',
-      'cs' => 'Vybrat písmeno',
-      _ => 'Seleziona lettera',
-    };
-
-String _selectLetterTitle(String localeName) => switch (localeName) {
-      'en' => 'Select letter',
-      'es' => 'Seleccionar letra',
-      'fr' => 'Sélectionner une lettre',
-      'pt' => 'Selecionar letra',
-      'pl' => 'Wybierz literę',
-      'cs' => 'Vybrat písmeno',
-      _ => 'Seleziona lettera',
-    };
 
 String _defaultRadioLanguageForLocale(String localeName) => switch (localeName) {
       'en' => 'en',
@@ -835,6 +775,7 @@ String _defaultRadioLanguageForLocale(String localeName) => switch (localeName) 
       'pt' => 'pt',
       'pl' => 'pl',
       'cs' => 'cs',
+      'de' => 'de',
       _ => 'it',
     };
 
@@ -845,6 +786,7 @@ String _defaultRadioCountryForLocale(String localeName) => switch (localeName) {
       'pt' => 'pt',
       'pl' => 'pl',
       'cs' => 'cz',
+      'de' => 'de',
       _ => 'it',
     };
 

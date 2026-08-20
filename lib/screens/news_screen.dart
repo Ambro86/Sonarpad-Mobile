@@ -52,6 +52,7 @@ class _NewsScreenState extends State<NewsScreen> {
         'pt' => NewsLanguage.portuguese,
         'pl' => NewsLanguage.polish,
         'cs' => NewsLanguage.czech,
+        'de' => NewsLanguage.german,
         _ => NewsLanguage.italian,
       };
       _service.prefetchTinyfishFallbackOnlyPolicy();
@@ -792,6 +793,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         NewsLanguage.portuguese => 'PT',
         NewsLanguage.polish => 'PL',
         NewsLanguage.czech => 'CZ',
+        NewsLanguage.german => 'DE',
         NewsLanguage.italian => 'IT',
       };
 

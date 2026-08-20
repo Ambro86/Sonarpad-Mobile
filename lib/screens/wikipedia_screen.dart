@@ -31,6 +31,8 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
         'fr' => 'fr',
         'pt' => 'pt',
         'pl' => 'pl',
+        'cs' => 'cs',
+        'de' => 'de',
         _ => 'it',
       };
     }

@@ -434,6 +434,7 @@ class _WeatherForecastView extends StatelessWidget {
       'es' => _weatherCodeLabelsEs,
       'pt' => _weatherCodeLabelsPt,
       'pl' => _weatherCodeLabelsPl,
+      'de' => _weatherCodeLabelsDe,
       _ => _weatherCodeLabelsIt,
     };
     return labels[code] ?? code.toString();
@@ -729,6 +730,38 @@ const Map<int, String> _weatherCodeLabelsPl = {
   96: 'Burza z lekkim gradem',
   99: 'Burza z silnym gradem',
 };
+
+const Map<int, String> _weatherCodeLabelsDe = {
+  0: 'Klarer Himmel',
+  1: 'Überwiegend klar',
+  2: 'Teilweise bewölkt',
+  3: 'Bedeckt',
+  45: 'Nebel',
+  48: 'Reifnebel',
+  51: 'Leichter Nieselregen',
+  53: 'Mäßiger Nieselregen',
+  55: 'Starker Nieselregen',
+  56: 'Leichter gefrierender Nieselregen',
+  57: 'Starker gefrierender Nieselregen',
+  61: 'Leichter Regen',
+  63: 'Mäßiger Regen',
+  65: 'Starker Regen',
+  66: 'Leichter gefrierender Regen',
+  67: 'Starker gefrierender Regen',
+  71: 'Leichter Schneefall',
+  73: 'Mäßiger Schneefall',
+  75: 'Starker Schneefall',
+  77: 'Schneegriesel',
+  80: 'Leichte Regenschauer',
+  81: 'Mäßige Regenschauer',
+  82: 'Heftige Regenschauer',
+  85: 'Leichte Schneeschauer',
+  86: 'Starke Schneeschauer',
+  95: 'Gewitter',
+  96: 'Gewitter mit leichtem Hagel',
+  99: 'Gewitter mit starkem Hagel',
+};
+
 
 const Map<int, String> _weatherCodeLabelsPt = {
   0: 'Céu limpo',

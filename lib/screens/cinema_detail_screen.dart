@@ -63,11 +63,11 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
         );
       } else {
         if (!mounted) return;
-                showStatusMessage(context, 'Nessun trailer disponibile per questo film');
+                showStatusMessage(context, AppLocalizations.of(context).cinemaNoTrailer);
       }
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, 'Errore: $e');
+            showStatusMessage(context, AppLocalizations.of(context).error(e));
     }
   }
 
@@ -110,7 +110,7 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
                     if (movie.overview.isNotEmpty)
                       AccessibleListRow(id: 'overview', title: l10n.cinemaOverviewLabel, subtitle: movie.overview, kind: 'text'),
                     if (_loadingTrailer)
-                      const AccessibleListRow(id: 'trailer_loading', title: 'Caricamento trailer', kind: 'text')
+                      AccessibleListRow(id: 'trailer_loading', title: l10n.cinemaTrailerLoading, kind: 'text')
                     else if (_trailerUrl != null)
                       AccessibleListRow(id: 'trailer', title: l10n.cinemaOpenTrailer, kind: 'button'),
                   ],

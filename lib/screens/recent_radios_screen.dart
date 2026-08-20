@@ -94,7 +94,7 @@ class _RecentRadiosScreenState extends State<RecentRadiosScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(_recentRadiosLabel(l10n.localeName)),
+        title: Text(l10n.recentRadios),
         actions: [
           if (_recent.isNotEmpty)
             IconButton(
@@ -110,7 +110,7 @@ class _RecentRadiosScreenState extends State<RecentRadiosScreen> {
       body: _loading
           ? Center(child: CircularProgressIndicator(semanticsLabel: l10n.loading))
           : _recent.isEmpty
-              ? Center(child: Text(_noRecentRadiosLabel(l10n.localeName)))
+              ? Center(child: Text(l10n.noRecentRadios))
               : useSharedAccessibleViewModel
                   ? UniversalAccessibleList(
                       key: ValueKey('shared-recent-radios-${_recent.length}'),
@@ -171,21 +171,3 @@ class _RecentRadiosScreenState extends State<RecentRadiosScreen> {
     );
   }
 }
-
-String _recentRadiosLabel(String localeName) => switch (localeName) {
-      'en' => 'Recent radios',
-      'es' => 'Radios recientes',
-      'fr' => 'Radios récentes',
-      'pt' => 'Rádios recentes',
-      'pl' => 'Ostatnie radia',
-      _ => 'Radio recenti',
-    };
-
-String _noRecentRadiosLabel(String localeName) => switch (localeName) {
-      'en' => 'No recent radios.',
-      'es' => 'No hay radios recientes.',
-      'fr' => 'Aucune radio récente.',
-      'pt' => 'Não há rádios recentes.',
-      'pl' => 'Brak ostatnich stacji radiowych.',
-      _ => 'Nessuna radio recente.',
-    };
