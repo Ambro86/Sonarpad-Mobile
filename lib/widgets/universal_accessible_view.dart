@@ -94,6 +94,7 @@ class AccessibleListRow {
     this.onAccessibilityFocus,
     this.onSubmitted,
     this.textInputAction,
+    this.stabilizeNativeTextFieldFocusOnBegin = false,
     this.flutterChild,
   });
 
@@ -135,6 +136,12 @@ class AccessibleListRow {
   /// is provided, UIKit sends the same logical submit event that Flutter does.
   final String? textInputAction;
 
+  /// iOS-only VoiceOver safeguard for text fields that are activated inside a
+  /// native UITableView. When true, UIKit restores accessibility focus to the
+  /// same UITextField after the keyboard is actually shown, as long as that
+  /// field is still first responder. Flutter/Android ignores this flag.
+  final bool stabilizeNativeTextFieldFocusOnBegin;
+
   /// Optional exact Flutter presentation used on Android and when the UIKit
   /// renderer is disabled on iOS.
   final Widget? flutterChild;
@@ -164,6 +171,8 @@ class AccessibleListRow {
         if (placeholder != null) 'placeholder': placeholder,
         'submitOnReturn': onSubmitted != null,
         if (textInputAction != null) 'textInputAction': textInputAction,
+        'stabilizeNativeTextFieldFocusOnBegin':
+            stabilizeNativeTextFieldFocusOnBegin,
         'options': options.map((e) => e.toMap()).toList(),
         'actions': actions.map((e) => e.toMap()).toList(),
       };

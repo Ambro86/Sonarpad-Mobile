@@ -35,6 +35,7 @@ private struct SonarpadNativeRow {
   var placeholder: String?
   var submitOnReturn: Bool
   var textInputAction: String?
+  var stabilizeTextFieldFocusOnBegin: Bool
   var options: [SonarpadNativeOption]
   var actions: [SonarpadNativeAction]
 
@@ -61,6 +62,8 @@ private struct SonarpadNativeRow {
     placeholder = map["placeholder"] as? String
     submitOnReturn = map["submitOnReturn"] as? Bool ?? false
     textInputAction = map["textInputAction"] as? String
+    stabilizeTextFieldFocusOnBegin =
+      map["stabilizeNativeTextFieldFocusOnBegin"] as? Bool ?? false
     options = (map["options"] as? [[String: Any]] ?? []).map {
       SonarpadNativeOption(value: $0["value"] as Any, label: $0["label"] as? String ?? String(describing: $0["value"] ?? ""))
     }
@@ -113,6 +116,7 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.placeholder == rhs.placeholder,
         lhs.submitOnReturn == rhs.submitOnReturn,
         lhs.textInputAction == rhs.textInputAction,
+        lhs.stabilizeTextFieldFocusOnBegin == rhs.stabilizeTextFieldFocusOnBegin,
         lhs.options.count == rhs.options.count,
         lhs.actions.count == rhs.actions.count else { return false }
 
@@ -224,8 +228,10 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   let field = UITextField(frame: .zero)
   var rowId = ""
   var submitOnReturn = false
+  var stabilizeFocusOnBegin = false
   var onChanged: ((String, String) -> Void)?
   var onSubmitted: ((String, String) -> Void)?
+  var onFocusStabilized: ((String, String) -> Void)?
 
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -244,12 +250,42 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
       field.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
     ])
     field.addTarget(self, action: #selector(valueChanged), for: .editingChanged)
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(keyboardDidShow),
+      name: UIResponder.keyboardDidShowNotification,
+      object: nil
+    )
   }
 
   required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+  deinit {
+    NotificationCenter.default.removeObserver(self)
+  }
+
   @objc private func valueChanged() {
     onChanged?(rowId, field.text ?? "")
+  }
+
+  func textFieldDidBeginEditing(_ textField: UITextField) {
+    guard stabilizeFocusOnBegin else { return }
+    // Keep the initial double-tap attached to the real editable control while
+    // iOS starts presenting the keyboard. The keyboardDidShow notification
+    // below is the authoritative handoff point; this next-runloop post covers
+    // the case where a hardware/existing keyboard produces no new show event.
+    DispatchQueue.main.async { [weak self, weak textField] in
+      guard let self = self, let textField = textField,
+            self.stabilizeFocusOnBegin, textField.isFirstResponder else { return }
+      UIAccessibility.post(notification: .layoutChanged, argument: textField)
+      self.onFocusStabilized?(self.rowId, "beginEditing")
+    }
+  }
+
+  @objc private func keyboardDidShow() {
+    guard stabilizeFocusOnBegin, field.isFirstResponder else { return }
+    UIAccessibility.post(notification: .layoutChanged, argument: field)
+    onFocusStabilized?(rowId, "keyboardDidShow")
   }
 
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -742,6 +778,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.field.isSecureTextEntry = row.secure
       cell.field.isEnabled = row.enabled
       cell.submitOnReturn = row.submitOnReturn
+      cell.stabilizeFocusOnBegin = row.stabilizeTextFieldFocusOnBegin
       switch row.textInputAction {
       case "search": cell.field.returnKeyType = .search
       case "next": cell.field.returnKeyType = .next
@@ -752,6 +789,9 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
       cell.onSubmitted = { [weak self] id, value in
         self?.channel.invokeMethod("event", arguments: ["type": "textSubmitted", "id": id, "value": value])
+      }
+      cell.onFocusStabilized = { [weak self] id, phase in
+        self?.emitDebug("TEXTFIELD_FOCUS_STABILIZED id=\(id) phase=\(phase) firstResponder=true")
       }
       return cell
     }
@@ -1008,6 +1048,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         cell.field.isSecureTextEntry = row.secure
         cell.field.isEnabled = row.enabled
         cell.submitOnReturn = row.submitOnReturn
+        cell.stabilizeFocusOnBegin = row.stabilizeTextFieldFocusOnBegin
         switch row.textInputAction {
         case "search": cell.field.returnKeyType = .search
         case "next": cell.field.returnKeyType = .next
@@ -1260,9 +1301,19 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
     }
 
-    // Flutter semantics objects and unrelated UIKit controls are not the stale
-    // native list focus we are gating. Only an element belonging to another
-    // Sonarpad native list can trigger this wait.
+    // The alphabet picker itself is deliberately Flutter/non-lazy now. During
+    // its dismissal VoiceOver can keep the selected one-letter semantics node
+    // ("H", "I", "L", ...) focused for ~0.8 s even though the parent UIKit
+    // table is already visible. If we treat that as "clear" too early, iOS may
+    // subsequently transfer focus to the parent's initial select_letter row and
+    // reset its contentOffset to zero. This gate is only requested by the
+    // letter-jump screen, so a one-grapheme FlutterSemanticsObject is the exact
+    // stale picker focus we need to wait out; other Flutter controls remain
+    // non-blocking.
+    if typeName == "FlutterSemanticsObject", label != "nil", label.count == 1 {
+      return (true, "flutterLetter:\(label)", typeName, label)
+    }
+
     return (false, "nil", typeName, label)
   }
 

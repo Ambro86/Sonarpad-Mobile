@@ -296,7 +296,7 @@ class _RadioScreenState extends State<RadioScreen> {
                     AccessibleListRow(
                       id: 'language',
                       title: l10n.radioBrowseByLanguage,
-                      kind: 'picker',
+                      kind: 'action',
                       value: _languageCode,
                       valueLabel: _languageOptionLabel(
                         l10n,
@@ -306,17 +306,40 @@ class _RadioScreenState extends State<RadioScreen> {
                         ),
                       ),
                       selected: _browseMode == _RadioBrowseMode.language,
-                      options: languageItems
-                          .map((e) => AccessibleOption(
-                                value: e.code,
-                                label: _languageOptionLabel(l10n, e),
-                              ))
-                          .toList(),
+                      onActivate: () async {
+                        final result = await Navigator.push<RadioLanguageOption>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                LetterJumpOptionPickerScreen<RadioLanguageOption>(
+                              title: l10n.radioBrowseByLanguage,
+                              options: languageItems,
+                              labelBuilder: (o) => _languageOptionLabel(l10n, o),
+                              selectedBuilder: (o) => o.code == _languageCode,
+                              selectedLabel: l10n.selectedRecently,
+                              leadingBuilder: (selected) => Icon(
+                                selected ? Icons.check : Icons.language,
+                              ),
+                              selectLetterLabel:
+                                  _selectLetterLabel(l10n.localeName),
+                              selectLetterTitle:
+                                  _selectLetterTitle(l10n.localeName),
+                            ),
+                          ),
+                        );
+                        if (!mounted || result == null) return;
+                        setState(() {
+                          _languageCode = result.code;
+                          _browseMode = _RadioBrowseMode.language;
+                        });
+                        await _settings.saveRadioLanguage(result.code);
+                        if (mounted) _search();
+                      },
                     ),
                     AccessibleListRow(
                       id: 'country',
                       title: l10n.radioBrowseByCountry,
-                      kind: 'picker',
+                      kind: 'action',
                       value: _countryCode,
                       valueLabel: countryItems
                           .firstWhere(
@@ -325,9 +348,38 @@ class _RadioScreenState extends State<RadioScreen> {
                           )
                           .value,
                       selected: _browseMode == _RadioBrowseMode.country,
-                      options: countryItems
-                          .map((e) => AccessibleOption(value: e.key, label: e.value))
-                          .toList(),
+                      onActivate: () async {
+                        final result =
+                            await Navigator.push<MapEntry<String, String>>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => LetterJumpOptionPickerScreen<
+                                MapEntry<String, String>>(
+                              title: l10n.radioBrowseByCountry,
+                              options: countryItems,
+                              labelBuilder: (o) => o.value,
+                              selectedBuilder: (o) => o.key == _countryCode,
+                              selectedLabel: l10n.selectedRecently,
+                              leadingBuilder: (selected) => Icon(
+                                selected ? Icons.check : Icons.public,
+                              ),
+                              selectLetterLabel:
+                                  _selectLetterLabel(l10n.localeName),
+                              selectLetterTitle:
+                                  _selectLetterTitle(l10n.localeName),
+                            ),
+                          ),
+                        );
+                        if (!mounted || result == null) return;
+                        setState(() {
+                          _countryCode = result.key;
+                          _browseMode = _RadioBrowseMode.country;
+                        });
+                        await _settings.saveRadioCountry(
+                          result.key.replaceFirst('country:', ''),
+                        );
+                        if (mounted) _search();
+                      },
                     ),
                     AccessibleListRow(
                       id: 'city',
@@ -335,6 +387,17 @@ class _RadioScreenState extends State<RadioScreen> {
                       kind: 'textField',
                       value: _cityCode ?? '',
                       placeholder: _cityInputHint(l10n.localeName),
+                      textInputAction: 'search',
+                      stabilizeNativeTextFieldFocusOnBegin: true,
+                      onSubmitted: (value) {
+                        final city = value.trim();
+                        if (city.isEmpty) return;
+                        setState(() {
+                          _cityCode = city;
+                          _browseMode = _RadioBrowseMode.city;
+                        });
+                        _search();
+                      },
                     ),
                     AccessibleListRow(
                       id: 'genre',
