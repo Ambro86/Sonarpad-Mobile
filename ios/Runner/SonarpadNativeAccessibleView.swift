@@ -502,6 +502,22 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           rendererGeneration: rendererGeneration,
           completion: { prepared in result(prepared) }
         )
+      case "waitForForeignFocusClear":
+        guard let map = call.arguments as? [String: Any],
+              let id = map["id"] as? String,
+              let requestId = map["requestId"] as? Int,
+              let rendererGeneration = map["rendererGeneration"] as? Int else {
+          result(["cleared": false, "reason": "invalidArguments"])
+          break
+        }
+        let timeoutMs = map["timeoutMs"] as? Int ?? 2400
+        self.waitForForeignNativeVoiceOverFocusToClear(
+          id: id,
+          requestId: requestId,
+          rendererGeneration: rendererGeneration,
+          timeoutMs: timeoutMs,
+          completion: { outcome in result(outcome) }
+        )
       case "focusAccessibleRow":
         // Backward-compatible alias for builds that still dispatch the newer
         // method name. Report the terminal outcome of the actual native attempt
@@ -516,6 +532,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         }
         let animated = map["animated"] as? Bool ?? false
         let useFocusProxy = map["useFocusProxy"] as? Bool ?? false
+        let postFocusDiagnostics = map["postFocusDiagnostics"] as? Bool ?? false
         self.focusAccessibleRow(
           id: id,
           mode: mode,
@@ -525,7 +542,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           useFocusProxy: useFocusProxy,
           completion: { outcome in
             result(outcome)
-            if useFocusProxy {
+            if useFocusProxy || postFocusDiagnostics {
               self.schedulePostFocusDiagnostics(
                 id: id,
                 requestId: requestId,
@@ -542,9 +559,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
              let rendererGeneration = map["rendererGeneration"] as? Int {
             let mode = map["mode"] as? String ?? "screenEntry"
             let useFocusProxy = map["useFocusProxy"] as? Bool ?? false
+            let postFocusDiagnostics = map["postFocusDiagnostics"] as? Bool ?? false
             self.emitDebug(
               "NATIVE_RECEIVED id=\(id) method=focusInitial mode=\(mode) requestId=\(requestId) " +
-              "rendererGeneration=\(rendererGeneration) useFocusProxy=\(useFocusProxy)"
+              "rendererGeneration=\(rendererGeneration) useFocusProxy=\(useFocusProxy) " +
+              "postFocusDiagnostics=\(postFocusDiagnostics)"
             )
             self.focusAccessibleRow(
               id: id,
@@ -555,7 +574,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
               useFocusProxy: useFocusProxy,
               completion: { outcome in
                 result(outcome)
-                if useFocusProxy {
+                if useFocusProxy || postFocusDiagnostics {
                   self.schedulePostFocusDiagnostics(
                     id: id,
                     requestId: requestId,
@@ -589,9 +608,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
              let rendererGeneration = map["rendererGeneration"] as? Int {
             let mode = map["mode"] as? String ?? "inPlaceJump"
             let useFocusProxy = map["useFocusProxy"] as? Bool ?? false
+            let postFocusDiagnostics = map["postFocusDiagnostics"] as? Bool ?? false
             self.emitDebug(
               "NATIVE_RECEIVED id=\(id) method=focusTo mode=\(mode) requestId=\(requestId) " +
-              "rendererGeneration=\(rendererGeneration) useFocusProxy=\(useFocusProxy)"
+              "rendererGeneration=\(rendererGeneration) useFocusProxy=\(useFocusProxy) " +
+              "postFocusDiagnostics=\(postFocusDiagnostics)"
             )
             self.focusAccessibleRow(
               id: id,
@@ -602,7 +623,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
               useFocusProxy: useFocusProxy,
               completion: { outcome in
                 result(outcome)
-                if useFocusProxy {
+                if useFocusProxy || postFocusDiagnostics {
                   self.schedulePostFocusDiagnostics(
                     id: id,
                     requestId: requestId,
@@ -1056,7 +1077,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       "rootWindow": rootView.window != nil,
       "tableWindow": tableView.window != nil
     ]
-    if expected != nil { currentRequestedFocusRowId = nil }
+    if matchesTarget { currentRequestedFocusRowId = nil }
     channel.invokeMethod("event", arguments: payload)
   }
 
@@ -1214,6 +1235,129 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       } else if attempt < 12 {
         self.restoreFocusRow(id: id, attempt: attempt + 1)
       }
+    }
+  }
+
+  private func foreignFocusedNativeRowSummary() -> (isForeign: Bool, rowId: String, type: String, label: String) {
+    guard let focused = UIAccessibility.focusedElement(using: .notificationVoiceOver) else {
+      return (false, "nil", "nil", "nil")
+    }
+
+    let object = focused as? NSObject
+    let typeName = String(describing: type(of: focused))
+    let label = focusTraceText(object?.accessibilityLabel)
+
+    if let view = focused as? UIView {
+      var current: UIView? = view
+      while let candidate = current {
+        if let cell = candidate as? SonarpadAccessibleTableCell, !cell.rowId.isEmpty {
+          return (!cell.isDescendant(of: rootView), cell.rowId, typeName, label)
+        }
+        if let slider = candidate as? SonarpadAccessibleSlider, !slider.rowId.isEmpty {
+          return (!slider.isDescendant(of: rootView), slider.rowId, typeName, label)
+        }
+        current = candidate.superview
+      }
+    }
+
+    // Flutter semantics objects and unrelated UIKit controls are not the stale
+    // native list focus we are gating. Only an element belonging to another
+    // Sonarpad native list can trigger this wait.
+    return (false, "nil", typeName, label)
+  }
+
+  private func waitForForeignNativeVoiceOverFocusToClear(
+    id: String,
+    requestId: Int,
+    rendererGeneration: Int,
+    timeoutMs: Int,
+    attempt: Int = 0,
+    clearSamples: Int = 0,
+    completion: @escaping ([String: Any]) -> Void
+  ) {
+    guard focusTokensAreCurrent(
+      requestId: requestId,
+      rendererGeneration: rendererGeneration
+    ) else {
+      completion([
+        "cleared": false,
+        "reason": "staleRequest",
+        "attempt": attempt
+      ])
+      return
+    }
+
+    let summary = foreignFocusedNativeRowSummary()
+    let elapsedMs = attempt * 50
+    emitDebug(
+      "FOREIGN_FOCUS_GATE_CHECK id=\(id) attempt=\(attempt) elapsedMs=\(elapsedMs) " +
+      "foreign=\(summary.isForeign) foreignRow=\(summary.rowId) focusedType=\(summary.type) " +
+      "focusedLabel=\(summary.label) clearSamples=\(clearSamples) offsetY=\(tableView.contentOffset.y)"
+    )
+
+    if !summary.isForeign {
+      // Require two consecutive clear observations so we do not race the exact
+      // run-loop turn in which the dismissed PlatformView is being detached.
+      if clearSamples >= 1 {
+        completion([
+          "cleared": true,
+          "reason": "foreignNativeFocusCleared",
+          "waitedMs": elapsedMs,
+          "focusedType": summary.type,
+          "focusedLabel": summary.label,
+          "offsetY": Double(tableView.contentOffset.y)
+        ])
+        return
+      }
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+        guard let self = self else {
+          completion(["cleared": false, "reason": "selfReleased"])
+          return
+        }
+        self.waitForForeignNativeVoiceOverFocusToClear(
+          id: id,
+          requestId: requestId,
+          rendererGeneration: rendererGeneration,
+          timeoutMs: timeoutMs,
+          attempt: attempt + 1,
+          clearSamples: clearSamples + 1,
+          completion: completion
+        )
+      }
+      return
+    }
+
+    if elapsedMs >= timeoutMs {
+      emitDebug(
+        "FOREIGN_FOCUS_GATE_TIMEOUT id=\(id) waitedMs=\(elapsedMs) " +
+        "foreignRow=\(summary.rowId) focusedType=\(summary.type) focusedLabel=\(summary.label)"
+      )
+      completion([
+        "cleared": false,
+        "reason": "foreignNativeFocusTimeout",
+        "waitedMs": elapsedMs,
+        "foreignRow": summary.rowId,
+        "focusedType": summary.type,
+        "focusedLabel": summary.label,
+        "offsetY": Double(tableView.contentOffset.y)
+      ])
+      return
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+      guard let self = self else {
+        completion(["cleared": false, "reason": "selfReleased"])
+        return
+      }
+      self.waitForForeignNativeVoiceOverFocusToClear(
+        id: id,
+        requestId: requestId,
+        rendererGeneration: rendererGeneration,
+        timeoutMs: timeoutMs,
+        attempt: attempt + 1,
+        clearSamples: 0,
+        completion: completion
+      )
     }
   }
 

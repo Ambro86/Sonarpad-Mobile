@@ -160,7 +160,8 @@ class _LetterJumpOptionPickerScreenState<T>
           ? UniversalAccessibleList(
               controller: _accessibleController,
               routeReturnSemanticsSettleDelay: Duration.zero,
-              routeReturnUseFocusProxy: true,
+              routeReturnUseFocusProxy: false,
+              routeReturnWaitForForeignFocusClear: true,
               sections: [
                 AccessibleListSection(
                   rows: [
@@ -250,40 +251,25 @@ class _LetterPickerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: useSharedAccessibleViewModel
-          ? UniversalAccessibleList(
-              sections: [
-                AccessibleListSection(
-                  rows: letters
-                      .asMap()
-                      .entries
-                      .map((entry) => AccessibleListRow(
-                            id: 'letter_${entry.key}',
-                            title: entry.value,
-                          ))
-                      .toList(growable: false),
-                ),
-              ],
-              onEvent: (event) {
-                if (event.type != 'activate' || event.id == null) return;
-                final index = int.tryParse(event.id!.replaceFirst('letter_', ''));
-                if (index != null && index >= 0 && index < letters.length) {
-                  Navigator.pop(context, letters[index]);
-                }
-              },
-            )
-          : ListView.separated(
-        itemCount: letters.length,
-        separatorBuilder: (_, _) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final letter = letters[index];
-          return ListTile(
-            leading: const Icon(Icons.sort_by_alpha),
-            title: Text(letter),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.pop(context, letter),
-          );
-        },
+      // Deliberately keep the tiny A-Z picker in Flutter and materialize all
+      // rows at once. The iOS 27 regression affects lazy/virtualized long lists;
+      // this picker has at most a few dozen entries. Avoiding a second UIKit
+      // PlatformView also prevents VoiceOver from remaining focused on the
+      // dismissed `letter_N` cell while the parent native list is being focused.
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            for (var index = 0; index < letters.length; index++) ...[
+              ListTile(
+                leading: const Icon(Icons.sort_by_alpha),
+                title: Text(letters[index]),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pop(context, letters[index]),
+              ),
+              if (index != letters.length - 1) const Divider(height: 1),
+            ],
+          ],
+        ),
       ),
     );
   }

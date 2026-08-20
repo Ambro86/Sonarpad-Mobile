@@ -396,6 +396,7 @@ class UniversalAccessibleList extends StatefulWidget {
     this.debugTag,
     this.routeReturnSemanticsSettleDelay = const Duration(milliseconds: 80),
     this.routeReturnUseFocusProxy = false,
+    this.routeReturnWaitForForeignFocusClear = false,
     this.padding = EdgeInsets.zero,
   });
 
@@ -412,6 +413,10 @@ class UniversalAccessibleList extends StatefulWidget {
   /// it, then UIKit immediately hands focus to the real target row and restores
   /// the natural table traversal order.
   final bool routeReturnUseFocusProxy;
+  /// For fresh renderer returns from another native PlatformView, wait until
+  /// VoiceOver is no longer focused inside the dismissed native subtree.
+  /// The target is then re-prepared before the one-shot accessibility post.
+  final bool routeReturnWaitForForeignFocusClear;
   final EdgeInsetsGeometry padding;
 
   @override
@@ -888,6 +893,83 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     final isFreshRouteReturnFocus =
         mode == AccessibleFocusMode.screenEntry &&
         _routeReturnFreshFocusId == id;
+    final waitForForeignFocusClear = isFreshRouteReturnFocus &&
+        widget.routeReturnWaitForForeignFocusClear;
+
+    if (waitForForeignFocusClear) {
+      if (tag != null && tag.isNotEmpty) {
+        unawaited(AppLogger.log(
+          'DOC_NATIVE[$tag] FOREIGN_FOCUS_GATE_BEGIN id=$id '
+          'requestId=$requestId rendererGeneration=$rendererGeneration',
+        ));
+      }
+      Map<Object?, Object?> gateOutcome;
+      try {
+        final rawGate = await channel.invokeMethod<dynamic>(
+          'waitForForeignFocusClear',
+          {
+            'id': id,
+            'requestId': requestId,
+            'rendererGeneration': rendererGeneration,
+            'timeoutMs': 2400,
+          },
+        ).timeout(const Duration(seconds: 3));
+        gateOutcome = rawGate is Map
+            ? Map<Object?, Object?>.from(rawGate)
+            : <Object?, Object?>{'cleared': false, 'reason': 'unexpectedGateResult'};
+      } on TimeoutException {
+        gateOutcome = <Object?, Object?>{
+          'cleared': false,
+          'reason': 'foreignFocusGateTimeout',
+        };
+      }
+      if (tag != null && tag.isNotEmpty) {
+        unawaited(AppLogger.log(
+          'DOC_NATIVE[$tag] FOREIGN_FOCUS_GATE_END id=$id '
+          'requestId=$requestId outcome=$gateOutcome',
+        ));
+      }
+      if (!await _focusGuard(
+        channel,
+        rendererGeneration: rendererGeneration,
+        requestId: requestId,
+        id: id,
+        stage: 'afterForeignFocusGate',
+      )) {
+        return;
+      }
+
+      // The dismissed native letter picker may have caused UIKit to adjust the
+      // table while its stale VoiceOver focus was being torn down. Re-center
+      // and materialize the real target only after that old focus is gone.
+      final reprepared = await channel.invokeMethod<bool>(
+            'prepareAccessibleFocus',
+            {
+              'id': id,
+              'animated': false,
+              'requestId': requestId,
+              'rendererGeneration': rendererGeneration,
+            },
+          ) ??
+          false;
+      if (!reprepared ||
+          !await _focusGuard(
+            channel,
+            rendererGeneration: rendererGeneration,
+            requestId: requestId,
+            id: id,
+            stage: 'afterForeignFocusReprepare',
+          )) {
+        return;
+      }
+      if (tag != null && tag.isNotEmpty) {
+        unawaited(AppLogger.log(
+          'DOC_NATIVE[$tag] FOREIGN_FOCUS_REPREPARED id=$id '
+          'requestId=$requestId',
+        ));
+      }
+    }
+
     if (tag != null && tag.isNotEmpty) {
       unawaited(AppLogger.log(
         'DOC_NATIVE[$tag] SEMANTICS_FOCUS_SENT id=$id '
@@ -938,10 +1020,12 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         : 'focusTo';
     final useFocusProxy =
         isFreshRouteReturnFocus && widget.routeReturnUseFocusProxy;
+    final postFocusDiagnostics = waitForForeignFocusClear || useFocusProxy;
     if (tag != null && tag.isNotEmpty) {
       unawaited(AppLogger.log(
         'DOC_NATIVE[$tag] NATIVE_DISPATCH id=$id method=$nativeMethod '
-        'mode=${mode.name} useFocusProxy=$useFocusProxy requestId=$requestId '
+        'mode=${mode.name} useFocusProxy=$useFocusProxy '
+        'waitForForeignFocusClear=$waitForForeignFocusClear requestId=$requestId '
         'rendererGeneration=$rendererGeneration channelIdentity=${identityHashCode(channel)}',
       ));
     }
@@ -956,6 +1040,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           'requestId': requestId,
           'rendererGeneration': rendererGeneration,
           'useFocusProxy': useFocusProxy,
+          'postFocusDiagnostics': postFocusDiagnostics,
         },
       ).timeout(const Duration(seconds: 2));
       if (rawOutcome is Map) {
