@@ -264,12 +264,35 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
     NotificationCenter.default.removeObserver(self)
   }
 
+  private func focusDiagnosticSummary(_ phase: String) -> String {
+    let focused = UIAccessibility.focusedElement(using: .notificationVoiceOver)
+    let focusedObject = focused as? NSObject
+    let focusedType = focused.map { String(describing: type(of: $0)) } ?? "nil"
+    let rawLabel = focusedObject?.accessibilityLabel ?? "nil"
+    let focusedLabel = rawLabel
+      .replacingOccurrences(of: "\r", with: "\\r")
+      .replacingOccurrences(of: "\n", with: "\\n")
+    let fieldFrameWindow = field.window != nil
+      ? field.convert(field.bounds, to: nil)
+      : .zero
+    return
+      "phase=\(phase) firstResponder=\(field.isFirstResponder) fieldWindow=\(field.window != nil) " +
+      "cellWindow=\(window != nil) fieldBounds=\(NSCoder.string(for: field.bounds)) " +
+      "fieldFrameWindow=\(NSCoder.string(for: fieldFrameWindow)) " +
+      "textLength=\((field.text ?? "").count) focusedType=\(focusedType) " +
+      "focusedLabel=\(String(focusedLabel.prefix(120)))"
+  }
+
   @objc private func valueChanged() {
+    if stabilizeFocusOnBegin {
+      onFocusStabilized?(rowId, focusDiagnosticSummary("editingChanged"))
+    }
     onChanged?(rowId, field.text ?? "")
   }
 
   func textFieldDidBeginEditing(_ textField: UITextField) {
     guard stabilizeFocusOnBegin else { return }
+    onFocusStabilized?(rowId, focusDiagnosticSummary("didBeginEditing.beforeAsync"))
     // Keep the initial double-tap attached to the real editable control while
     // iOS starts presenting the keyboard. The keyboardDidShow notification
     // below is the authoritative handoff point; this next-runloop post covers
@@ -277,18 +300,33 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
     DispatchQueue.main.async { [weak self, weak textField] in
       guard let self = self, let textField = textField,
             self.stabilizeFocusOnBegin, textField.isFirstResponder else { return }
+      self.onFocusStabilized?(self.rowId, self.focusDiagnosticSummary("didBeginEditing.beforeLayoutChanged"))
       UIAccessibility.post(notification: .layoutChanged, argument: textField)
-      self.onFocusStabilized?(self.rowId, "beginEditing")
+      self.onFocusStabilized?(self.rowId, self.focusDiagnosticSummary("didBeginEditing.afterLayoutChanged"))
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) { [weak self] in
+        guard let self = self, self.stabilizeFocusOnBegin else { return }
+        self.onFocusStabilized?(self.rowId, self.focusDiagnosticSummary("didBeginEditing.after80ms"))
+      }
     }
   }
 
   @objc private func keyboardDidShow() {
-    guard stabilizeFocusOnBegin, field.isFirstResponder else { return }
+    guard stabilizeFocusOnBegin else { return }
+    onFocusStabilized?(rowId, focusDiagnosticSummary("keyboardDidShow.beforeGuard"))
+    guard field.isFirstResponder else { return }
+    onFocusStabilized?(rowId, focusDiagnosticSummary("keyboardDidShow.beforeLayoutChanged"))
     UIAccessibility.post(notification: .layoutChanged, argument: field)
-    onFocusStabilized?(rowId, "keyboardDidShow")
+    onFocusStabilized?(rowId, focusDiagnosticSummary("keyboardDidShow.afterLayoutChanged"))
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) { [weak self] in
+      guard let self = self, self.stabilizeFocusOnBegin else { return }
+      self.onFocusStabilized?(self.rowId, self.focusDiagnosticSummary("keyboardDidShow.after80ms"))
+    }
   }
 
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    if stabilizeFocusOnBegin {
+      onFocusStabilized?(rowId, focusDiagnosticSummary("shouldReturn"))
+    }
     let value = textField.text ?? ""
     // Keep Dart's model synchronized with the exact final value before the
     // logical submit callback runs. This restores Flutter's onSubmitted
@@ -790,8 +828,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.onSubmitted = { [weak self] id, value in
         self?.channel.invokeMethod("event", arguments: ["type": "textSubmitted", "id": id, "value": value])
       }
-      cell.onFocusStabilized = { [weak self] id, phase in
-        self?.emitDebug("TEXTFIELD_FOCUS_STABILIZED id=\(id) phase=\(phase) firstResponder=true")
+      cell.onFocusStabilized = { [weak self] id, diagnostic in
+        self?.emitDebug("TEXTFIELD_DIAGNOSTIC id=\(id) \(diagnostic)")
       }
       return cell
     }
@@ -1347,12 +1385,18 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     )
 
     if !summary.isForeign {
-      // Require two consecutive clear observations so we do not race the exact
-      // run-loop turn in which the dismissed PlatformView is being detached.
-      if clearSamples >= 1 {
+      // Once the one-letter picker semantics has disappeared and VoiceOver is
+      // already on an ordinary Flutter element (typically the parent route's
+      // Back button), the dismissed picker is no longer the focused owner.
+      // Do not hold that harmless parent focus for an extra sample: on-device
+      // logs show the extra 50 ms is enough for VoiceOver to start announcing
+      // "Back" before the real row focus arrives.
+      let stableParentFlutterFocus =
+        summary.type == "FlutterSemanticsObject" && summary.label != "nil" && summary.label.count > 1
+      if stableParentFlutterFocus || clearSamples >= 1 {
         completion([
           "cleared": true,
-          "reason": "foreignNativeFocusCleared",
+          "reason": stableParentFlutterFocus ? "parentFlutterFocusReady" : "foreignNativeFocusCleared",
           "waitedMs": elapsedMs,
           "focusedType": summary.type,
           "focusedLabel": summary.label,
@@ -2145,16 +2189,30 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
 
       // Keep ordinary in-place jumps (for example Document slider jumps) on
-      // their established direct path. A routeReturnJump has already waited for
-      // the popped picker route to settle on Dart, so use the same strong,
-      // one-shot target post as screen entry without the failed nil/ACK gate.
+      // their established direct path. For a fresh route-return renderer there
+      // are two distinct real-device states:
+      // 1) VoiceOver is still outside this UITableView (for example on the
+      //    Flutter Back button): screenChanged is the correct entry post.
+      // 2) VoiceOver has already entered this exact UITableView on select_letter
+      //    or another wrong row: posting screenChanged races UIKit's current-row
+      //    ownership and can snap the table back to the top. In that state the
+      //    target is an in-subtree correction, so use one layoutChanged instead.
       let usesScreenChanged = mode == "screenEntry" || mode == "routeReturnJump"
-      let notification: UIAccessibility.Notification = usesScreenChanged ? .screenChanged : .layoutChanged
-      let notificationName = usesScreenChanged ? "screenChanged" : "layoutChanged"
+      let focusedRowBeforePost = self.voiceOverFocusedRowId()
+      let correctingWrongRowInCurrentTable =
+        usesScreenChanged && focusedRowBeforePost != nil && focusedRowBeforePost != id
+      let notification: UIAccessibility.Notification = correctingWrongRowInCurrentTable
+        ? .layoutChanged
+        : (usesScreenChanged ? .screenChanged : .layoutChanged)
+      let notificationName = correctingWrongRowInCurrentTable
+        ? "layoutChanged"
+        : (usesScreenChanged ? "screenChanged" : "layoutChanged")
+      let postPhase = correctingWrongRowInCurrentTable ? "currentTableCorrection" : "direct"
       self.currentRequestedFocusRowId = id
       let postLine =
         "ACCESSIBILITY_POST id=\(id) mode=\(mode) notification=\(notificationName) " +
-        "phase=direct requestId=\(requestId) rendererGeneration=\(rendererGeneration) " +
+        "phase=\(postPhase) requestId=\(requestId) rendererGeneration=\(rendererGeneration) " +
+        "focusedRowBeforePost=\(focusedRowBeforePost ?? "nil") " +
         "indexPath=\(liveIndexPath) visible=\(visible) cellExists=\(cell != nil) " +
         "cellWindow=\(cellWindow) targetWindow=\(targetWindow) rootWindow=\(rootWindow) " +
         "targetInRoot=\(targetInRoot) targetType=\(String(describing: type(of: target))) " +
@@ -2165,7 +2223,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
 
       completion([
         "posted": true,
-        "reason": "posted",
+        "reason": correctingWrongRowInCurrentTable ? "postedCurrentTableCorrection" : "posted",
         "notification": notificationName,
         "visible": visible,
         "cellExists": cell != nil,
