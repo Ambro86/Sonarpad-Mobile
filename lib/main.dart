@@ -12,6 +12,7 @@ import 'l10n/app_localizations.dart';
 import 'models/podcast.dart';
 import 'utils/app_logger.dart';
 import 'services/app_settings_service.dart';
+import 'widgets/universal_accessible_view.dart';
 import 'services/changelog_service.dart';
 import 'services/document_library_service.dart';
 import 'screens/changelog_screen.dart';
@@ -24,6 +25,7 @@ import 'screens/home_screen.dart';
 import 'screens/info_screen.dart';
 import 'screens/internet_archive_screen.dart';
 import 'screens/librivox_screen.dart';
+import 'screens/la7_play_screen.dart';
 import 'screens/news_screen.dart';
 import 'screens/cinema_screen.dart';
 import 'screens/podcast_screen.dart';
@@ -125,11 +127,21 @@ ThemeMode _materialThemeMode(SonarpadThemeMode mode) => switch (mode) {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final startupSettings = AppSettingsService();
+  final developerModeEnabled =
+      await startupSettings.isDeveloperModeEnabled();
+  final useFlutterRendererOnIos = developerModeEnabled &&
+      await startupSettings.useFlutterAccessibleRendererOnIos();
+  configureAccessibleRendererRuntime(
+    useFlutterOnIos: useFlutterRendererOnIos,
+  );
   MediaKit.ensureInitialized();
   await AppLogger.cleanupVisibleDebugArtifacts();
   await AppLogger.log(
     'Sonarpad bootstrap start platform=${Platform.operatingSystem} '
-    'version=${Platform.operatingSystemVersion} pid=$pid',
+    'version=${Platform.operatingSystemVersion} pid=$pid '
+    'developerMode=$developerModeEnabled '
+    'accessibleRenderer=$effectiveAccessibleRendererMode',
   );
   tz_data.initializeTimeZones();
   await AppLogger.log('Sonarpad bootstrap timezone data initialized');
@@ -402,6 +414,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/tv/recordings': (_) => const TvRecordingsScreen(),
         '/raiplaysound': (_) => const RaiPlaySoundScreen(),
         '/raiplay': (_) => const RaiPlayScreen(),
+        '/la7play': (_) => const La7PlayScreen(),
         '/wikipedia': (_) => const WikipediaScreen(),
         '/gutenberg': (_) => const GutenbergScreen(),
         '/internet_archive': (_) => const InternetArchiveScreen(),

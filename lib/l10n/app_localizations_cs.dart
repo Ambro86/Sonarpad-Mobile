@@ -3046,4 +3046,20 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get newsCommunitySourceTapHint =>
       'Klepnutím přidáte zdroj do své knihovny zpráv.';
+  @override
+  String get developerModeEnabled => 'Vývojářský režim zapnut.';
+
+  @override
+  String get developerModeDisabled => 'Vývojářský režim vypnut.';
+
+  @override
+  String get developerSectionTitle => 'Vývojář';
+
+  @override
+  String get developerUseExperimentalFlutterRenderer => 'Použít experimentální renderer Flutteru';
+
+  @override
+  String get developerUseExperimentalFlutterRendererHint =>
+      'Dočasně vypne UIKit, abyste mohli porovnat VoiceOver s čistým Flutterem.';
+
 }

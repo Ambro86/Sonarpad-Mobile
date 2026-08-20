@@ -1582,5 +1582,25 @@
   "newsCommunitySourceTapHint": "Tap to add it to your news library.",
   "@newsCommunitySourceTapHint": {
     "description": "Localized text for newsCommunitySourceTapHint."
+  },
+  "developerModeEnabled": "Developer mode enabled.",
+  "@developerModeEnabled": {
+    "description": "Localized text for developerModeEnabled."
+  },
+  "developerModeDisabled": "Developer mode disabled.",
+  "@developerModeDisabled": {
+    "description": "Localized text for developerModeDisabled."
+  },
+  "developerSectionTitle": "Developer",
+  "@developerSectionTitle": {
+    "description": "Localized text for developerSectionTitle."
+  },
+  "developerUseExperimentalFlutterRenderer": "Use experimental Flutter renderer",
+  "@developerUseExperimentalFlutterRenderer": {
+    "description": "Localized text for developerUseExperimentalFlutterRenderer."
+  },
+  "developerUseExperimentalFlutterRendererHint": "Temporarily disables UIKit to compare VoiceOver with pure Flutter.",
+  "@developerUseExperimentalFlutterRendererHint": {
+    "description": "Localized text for developerUseExperimentalFlutterRendererHint."
   }
 }

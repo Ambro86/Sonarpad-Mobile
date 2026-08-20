@@ -3047,4 +3047,19 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get newsCommunitySourceTapHint =>
       'Stuknij, aby dodać do swojej biblioteki wiadomości.';
+  @override
+  String get developerModeEnabled => 'Tryb programisty włączony.';
+
+  @override
+  String get developerModeDisabled => 'Tryb programisty wyłączony.';
+
+  @override
+  String get developerSectionTitle => 'Deweloper';
+
+  @override
+  String get developerUseExperimentalFlutterRenderer => 'Użyj eksperymentalnego renderera Flutter';
+
+  @override
+  String get developerUseExperimentalFlutterRendererHint => 'Tymczasowo wyłącza UIKit, aby porównać VoiceOver z czystym Flutterem.';
+
 }

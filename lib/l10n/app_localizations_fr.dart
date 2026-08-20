@@ -3071,4 +3071,20 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get newsCommunitySourceTapHint =>
       'Touchez pour l’ajouter à votre bibliothèque d’actualités.';
+  @override
+  String get developerModeEnabled => 'Mode développeur activé.';
+
+  @override
+  String get developerModeDisabled => 'Mode développeur désactivé.';
+
+  @override
+  String get developerSectionTitle => 'Développeur';
+
+  @override
+  String get developerUseExperimentalFlutterRenderer => 'Utiliser le moteur de rendu Flutter expérimental';
+
+  @override
+  String get developerUseExperimentalFlutterRendererHint =>
+      'Désactive temporairement UIKit pour comparer VoiceOver avec Flutter pur.';
+
 }

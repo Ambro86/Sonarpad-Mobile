@@ -142,6 +142,12 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () => AccessibilityFeedbackService.goNamed(context,
               routeName: '/raiplay'),
         ),
+      if (_isRaiPlayValid && isItalian)
+        _HomeButton(
+          label: 'LA7 Play',
+          onPressed: () => AccessibilityFeedbackService.goNamed(context,
+              routeName: '/la7play'),
+        ),
       if (_isSecretCodeValid && isItalian)
         _HomeButton(
           label: 'RaiPlay Sound',
@@ -321,6 +327,11 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'RaiPlay',
               onPressed: () => AccessibilityFeedbackService.goNamed(context,
                   routeName: '/raiplay')),
+        if (_isRaiPlayValid && isItalian)
+          _HomeButton(
+              label: 'LA7 Play',
+              onPressed: () => AccessibilityFeedbackService.goNamed(context,
+                  routeName: '/la7play')),
         if (_isSecretCodeValid && isItalian)
           _HomeButton(
               label: l10n.audiodescriptionTitle,

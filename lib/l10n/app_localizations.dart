@@ -5480,6 +5480,21 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Tocca per aggiungerla alla tua libreria notizie.'**
   String get newsCommunitySourceTapHint;
+
+  /// Localized text shown when hidden developer mode is enabled.
+  String get developerModeEnabled;
+
+  /// Localized text shown when hidden developer mode is disabled.
+  String get developerModeDisabled;
+
+  /// Title of the hidden developer settings section.
+  String get developerSectionTitle;
+
+  /// Label for the experimental pure-Flutter accessibility renderer toggle.
+  String get developerUseExperimentalFlutterRenderer;
+
+  /// Explanation of the experimental pure-Flutter accessibility renderer toggle.
+  String get developerUseExperimentalFlutterRendererHint;
 }
 
 class _AppLocalizationsDelegate

@@ -388,7 +388,6 @@ class _RadioScreenState extends State<RadioScreen> {
                       value: _cityCode ?? '',
                       placeholder: _cityInputHint(l10n.localeName),
                       textInputAction: 'search',
-                      stabilizeNativeTextFieldFocusOnBegin: true,
                       onSubmitted: (value) {
                         final city = value.trim();
                         if (city.isEmpty) return;

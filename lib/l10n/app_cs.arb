@@ -1585,5 +1585,25 @@
   "newsCommunitySourceTapHint": "Klepnutím přidáte zdroj do své knihovny zpráv.",
   "@newsCommunitySourceTapHint": {
     "description": "Localized text for newsCommunitySourceTapHint."
+  },
+  "developerModeEnabled": "Vývojářský režim zapnut.",
+  "@developerModeEnabled": {
+    "description": "Localized text for developerModeEnabled."
+  },
+  "developerModeDisabled": "Vývojářský režim vypnut.",
+  "@developerModeDisabled": {
+    "description": "Localized text for developerModeDisabled."
+  },
+  "developerSectionTitle": "Vývojář",
+  "@developerSectionTitle": {
+    "description": "Localized text for developerSectionTitle."
+  },
+  "developerUseExperimentalFlutterRenderer": "Použít experimentální renderer Flutteru",
+  "@developerUseExperimentalFlutterRenderer": {
+    "description": "Localized text for developerUseExperimentalFlutterRenderer."
+  },
+  "developerUseExperimentalFlutterRendererHint": "Dočasně vypne UIKit, abyste mohli porovnat VoiceOver s čistým Flutterem.",
+  "@developerUseExperimentalFlutterRendererHint": {
+    "description": "Localized text for developerUseExperimentalFlutterRendererHint."
   }
 }

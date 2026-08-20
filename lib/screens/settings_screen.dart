@@ -62,6 +62,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _multipleDocumentBookmarks = false;
   bool _displayVideoInPortrait = false;
   bool _homeGroupingEnabled = false;
+  bool _developerModeEnabled = false;
+  bool _useFlutterAccessibleRendererOnIos = false;
   int _seekSliderStep = 60;
   int _documentSliderStepPercent =
       AppSettingsService.defaultDocumentSliderStepPercent;
@@ -249,6 +251,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final displayVideoInPortrait =
         await _settings.displayVideoInPortrait();
     final homeGrouping = await _settings.isHomeGroupingEnabled();
+    final developerModeEnabled = await _settings.isDeveloperModeEnabled();
+    final useFlutterAccessibleRendererOnIos = developerModeEnabled &&
+            canChooseAccessibleRendererAtRuntime
+        ? await _settings.useFlutterAccessibleRendererOnIos()
+        : false;
     final seekSliderStep = await _settings.loadSeekSliderStep();
     final documentSliderStepPercent =
         await _settings.loadDocumentSliderStepPercent();
@@ -303,6 +310,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedDisplayVideoInPortrait = displayVideoInPortrait;
       _homeGroupingEnabled = homeGrouping;
       _savedHomeGroupingEnabled = homeGrouping;
+      _developerModeEnabled = developerModeEnabled;
+      _useFlutterAccessibleRendererOnIos =
+          useFlutterAccessibleRendererOnIos;
       _seekSliderStep = seekSliderStep;
       _savedSeekSliderStep = seekSliderStep;
       _documentSliderStepPercent = documentSliderStepPercent;
@@ -1248,6 +1258,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
             AccessibleListRow(id: 'request_secret_code', title: l10n.settingsRequestCode, kind: 'button'),
           ],
         ),
+      if (_developerModeEnabled && canChooseAccessibleRendererAtRuntime)
+        AccessibleListSection(
+          header: l10n.developerSectionTitle,
+          rows: [
+            AccessibleListRow(
+              id: 'developer_flutter_renderer',
+              title: l10n.developerUseExperimentalFlutterRenderer,
+              subtitle: l10n.developerUseExperimentalFlutterRendererHint,
+              kind: 'toggle',
+              toggleValue: _useFlutterAccessibleRendererOnIos,
+            ),
+          ],
+        ),
       AccessibleListSection(
         rows: [
           AccessibleListRow(
@@ -1301,6 +1324,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
         } else if (event.type == 'toggle') {
           final value = event.value == true;
+          if (id == 'developer_flutter_renderer') {
+            await _settings.setFlutterAccessibleRendererOnIos(value);
+            if (!mounted) return;
+            setState(() => _useFlutterAccessibleRendererOnIos = value);
+            configureAccessibleRendererRuntime(useFlutterOnIos: value);
+            return;
+          }
           setState(() {
             switch (id) {
               case 'auto_bookmark': _autoBookmark = value; break;

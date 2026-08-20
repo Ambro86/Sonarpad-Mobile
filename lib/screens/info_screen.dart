@@ -10,8 +10,16 @@ import '../services/changelog_service.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
-class InfoScreen extends StatelessWidget {
+class InfoScreen extends StatefulWidget {
   const InfoScreen({super.key});
+
+  @override
+  State<InfoScreen> createState() => _InfoScreenState();
+}
+
+class _InfoScreenState extends State<InfoScreen> {
+  int _versionTapCount = 0;
+  bool _versionToggleInProgress = false;
 
   Future<void> _openChangelog(BuildContext context) async {
     try {
@@ -30,7 +38,39 @@ class InfoScreen extends StatelessWidget {
     } catch (error) {
       if (!context.mounted) return;
       final l10n = AppLocalizations.of(context);
-            showStatusMessage(context, l10n.changelogLoadError(error));
+      showStatusMessage(context, l10n.changelogLoadError(error));
+    }
+  }
+
+  Future<void> _activateVersion(BuildContext context) async {
+    if (_versionToggleInProgress) return;
+    _versionTapCount += 1;
+    if (_versionTapCount < 7) return;
+
+    _versionTapCount = 0;
+    _versionToggleInProgress = true;
+    try {
+      final settings = AppSettingsService();
+      final wasEnabled = await settings.isDeveloperModeEnabled();
+      final enabled = !wasEnabled;
+      await settings.setDeveloperModeEnabled(enabled);
+
+      if (!enabled) {
+        // Developer-only renderer overrides must never survive after the
+        // hidden mode is turned off. Production behavior immediately returns
+        // to the compile-time default (UIKit in ordinary iOS builds).
+        await settings.setFlutterAccessibleRendererOnIos(false);
+        configureAccessibleRendererRuntime(useFlutterOnIos: false);
+      }
+
+      if (!mounted || !context.mounted) return;
+      final l10n = AppLocalizations.of(context);
+      showStatusMessage(
+        context,
+        enabled ? l10n.developerModeEnabled : l10n.developerModeDisabled,
+      );
+    } finally {
+      _versionToggleInProgress = false;
     }
   }
 
@@ -51,19 +91,56 @@ class InfoScreen extends StatelessWidget {
 
             if (useSharedAccessibleViewModel) {
               return UniversalAccessibleList(
-                sections: [AccessibleListSection(rows: [
-                  AccessibleListRow(id: 'title', kind: 'header', title: l10n.appTitle),
-                  if (versionText.isNotEmpty) AccessibleListRow(id: 'version', kind: 'text', title: versionText),
-                  AccessibleListRow(id: 'donations', title: l10n.donations),
-                  AccessibleListRow(id: 'changelog', title: l10n.whatIsNew),
-                  AccessibleListRow(id: 'description', kind: 'text', title: l10n.infoDescription),
-                  AccessibleListRow(id: 'website', title: l10n.visitSonarpadSiteWithUrl('https://sonarpad.com')),
-                  AccessibleListRow(id: 'author', kind: 'text', title: l10n.infoAuthor),
-                ])],
+                sections: [
+                  AccessibleListSection(rows: [
+                    AccessibleListRow(
+                      id: 'title',
+                      kind: 'header',
+                      title: l10n.appTitle,
+                    ),
+                    if (versionText.isNotEmpty)
+                      AccessibleListRow(
+                        id: 'version',
+                        kind: 'action',
+                        title: versionText,
+                        accessibilityButtonTrait: false,
+                      ),
+                    AccessibleListRow(
+                      id: 'donations',
+                      title: l10n.donations,
+                    ),
+                    AccessibleListRow(
+                      id: 'changelog',
+                      title: l10n.whatIsNew,
+                    ),
+                    AccessibleListRow(
+                      id: 'description',
+                      kind: 'text',
+                      title: l10n.infoDescription,
+                    ),
+                    AccessibleListRow(
+                      id: 'website',
+                      title: l10n.visitSonarpadSiteWithUrl(
+                        'https://sonarpad.com',
+                      ),
+                    ),
+                    AccessibleListRow(
+                      id: 'author',
+                      kind: 'text',
+                      title: l10n.infoAuthor,
+                    ),
+                  ]),
+                ],
                 onEvent: (event) async {
                   if (event.type != 'activate') return;
-                  if (event.id == 'donations') {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DonationsScreen()));
+                  if (event.id == 'version') {
+                    await _activateVersion(context);
+                  } else if (event.id == 'donations') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const DonationsScreen(),
+                      ),
+                    );
                   } else if (event.id == 'changelog') {
                     await _openChangelog(context);
                   } else if (event.id == 'website') {
@@ -76,19 +153,30 @@ class InfoScreen extends StatelessWidget {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(l10n.appTitle,
-                    style: Theme.of(context).textTheme.headlineMedium),
+                Text(
+                  l10n.appTitle,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
                 if (versionText.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  Text(versionText,
-                      style: Theme.of(context).textTheme.titleMedium),
+                  Semantics(
+                    button: false,
+                    child: InkWell(
+                      onTap: () => _activateVersion(context),
+                      child: Text(
+                        versionText,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                  ),
                 ],
                 const SizedBox(height: 24),
                 FilledButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (_) => const DonationsScreen()),
+                        builder: (_) => const DonationsScreen(),
+                      ),
                     );
                   },
                   icon: const Icon(Icons.favorite),
@@ -107,8 +195,10 @@ class InfoScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Text(l10n.infoDescription,
-                    style: Theme.of(context).textTheme.bodyLarge),
+                Text(
+                  l10n.infoDescription,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
                 const SizedBox(height: 16),
                 Semantics(
                   button: true,
@@ -132,8 +222,10 @@ class InfoScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(l10n.infoAuthor,
-                    style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  l10n.infoAuthor,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ],
             );
           }),

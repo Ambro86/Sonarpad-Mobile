@@ -67,6 +67,9 @@ class AppSettingsService {
       'sonarpad_document_slider_step_percent';
   static const _documentReadingSleepTimerMinutesKey =
       'sonarpad_document_reading_sleep_timer_minutes';
+  static const _developerModeKey = 'sonarpad_developer_mode';
+  static const _iosFlutterAccessibleRendererKey =
+      'sonarpad_ios_flutter_accessible_renderer';
 
   static const documentSliderStepPercentOptions = <int>[2, 5, 10, 15, 20, 30];
   static const defaultDocumentSliderStepPercent = 10;
@@ -287,6 +290,26 @@ class AppSettingsService {
   Future<void> saveThemeMode(SonarpadThemeMode mode) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_themeModeKey, mode.value);
+  }
+
+  Future<bool> isDeveloperModeEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_developerModeKey) ?? false;
+  }
+
+  Future<void> setDeveloperModeEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_developerModeKey, enabled);
+  }
+
+  Future<bool> useFlutterAccessibleRendererOnIos() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_iosFlutterAccessibleRendererKey) ?? false;
+  }
+
+  Future<void> setFlutterAccessibleRendererOnIos(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_iosFlutterAccessibleRendererKey, enabled);
   }
 
   Future<String> loadTtsLanguage() async {

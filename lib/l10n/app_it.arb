@@ -3775,5 +3775,25 @@
   "newsCommunitySourceTapHint": "Tocca per aggiungerla alla tua libreria notizie.",
   "@newsCommunitySourceTapHint": {
     "description": "Localized text for newsCommunitySourceTapHint."
+  },
+  "developerModeEnabled": "Modalità sviluppatore attiva.",
+  "@developerModeEnabled": {
+    "description": "Localized text for developerModeEnabled."
+  },
+  "developerModeDisabled": "Modalità sviluppatore disattivata.",
+  "@developerModeDisabled": {
+    "description": "Localized text for developerModeDisabled."
+  },
+  "developerSectionTitle": "Sviluppatore",
+  "@developerSectionTitle": {
+    "description": "Localized text for developerSectionTitle."
+  },
+  "developerUseExperimentalFlutterRenderer": "Usa renderer Flutter sperimentale",
+  "@developerUseExperimentalFlutterRenderer": {
+    "description": "Localized text for developerUseExperimentalFlutterRenderer."
+  },
+  "developerUseExperimentalFlutterRendererHint": "Disattiva temporaneamente UIKit per confrontare VoiceOver con Flutter puro.",
+  "@developerUseExperimentalFlutterRendererHint": {
+    "description": "Localized text for developerUseExperimentalFlutterRendererHint."
   }
 }

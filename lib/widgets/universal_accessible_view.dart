@@ -24,6 +24,28 @@ const String accessibleRendererMode = String.fromEnvironment(
   defaultValue: 'native',
 );
 
+// Developer-only runtime override. The compile-time value above remains the
+// default used by production builds; this notifier only lets an explicitly
+// unlocked developer session compare the shared Flutter renderer with UIKit
+// without rebuilding the app.
+final ValueNotifier<bool> _forceFlutterAccessibleRendererOnIos =
+    ValueNotifier<bool>(false);
+
+void configureAccessibleRendererRuntime({required bool useFlutterOnIos}) {
+  if (_forceFlutterAccessibleRendererOnIos.value == useFlutterOnIos) return;
+  _forceFlutterAccessibleRendererOnIos.value = useFlutterOnIos;
+}
+
+String get effectiveAccessibleRendererMode {
+  if (accessibleRendererMode == 'legacy') return 'legacy';
+  if (isIosPlatform && _forceFlutterAccessibleRendererOnIos.value) {
+    return 'flutter';
+  }
+  if (accessibleRendererMode == 'flutter') return 'flutter';
+  if (accessibleRendererMode == 'native') return 'native';
+  return accessibleRendererMode;
+}
+
 bool get isIosPlatform =>
     !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
@@ -31,12 +53,20 @@ bool get isAndroidPlatform =>
     !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
 bool get useSharedAccessibleViewModel =>
-    (accessibleRendererMode == 'native' ||
-        accessibleRendererMode == 'flutter') &&
+    (effectiveAccessibleRendererMode == 'native' ||
+        effectiveAccessibleRendererMode == 'flutter') &&
     (isIosPlatform || isAndroidPlatform);
 
 bool get useNativeIosAccessibleViews =>
-    isIosPlatform && accessibleRendererMode == 'native';
+    isIosPlatform && effectiveAccessibleRendererMode == 'native';
+
+/// Platform-neutral capability for the hidden developer setting. Screens do
+/// not need to know which platform/renderer implements the capability.
+bool get canChooseAccessibleRendererAtRuntime =>
+    isIosPlatform && accessibleRendererMode != 'legacy';
+
+bool get isUsingFlutterAccessibleRendererAtRuntime =>
+    isIosPlatform && effectiveAccessibleRendererMode == 'flutter';
 
 /// Platform-neutral capability used by shared screens during a route-return
 /// focus handoff. Platform/renderer selection stays centralized here.
@@ -452,6 +482,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   String? _runtimeInitialFocusId;
   String? _routeReturnFreshFocusId;
   bool _initialFocusScheduled = false;
+  late bool _rendererUsesNative;
 
   String? get _effectiveInitialFocusId =>
       _runtimeInitialFocusId ?? widget.initialFocusId;
@@ -526,9 +557,38 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   @override
   void initState() {
     super.initState();
-    if (!useNativeIosAccessibleViews) {
+    _rendererUsesNative = useNativeIosAccessibleViews;
+    _forceFlutterAccessibleRendererOnIos.addListener(_rendererModeChanged);
+    if (!_rendererUsesNative) {
       widget.controller?._attachFlutter(this, _flutterScrollTo, _flutterFocusTo);
     }
+  }
+
+  void _rendererModeChanged() {
+    final nextUsesNative = useNativeIosAccessibleViews;
+    if (nextUsesNative == _rendererUsesNative) return;
+
+    _focusRequestId += 1;
+    _rendererGeneration += 1;
+    _initialFocusScheduled = false;
+
+    if (_rendererUsesNative) {
+      final channel = _channel;
+      if (channel != null) {
+        widget.controller?._detach(channel);
+        channel.setMethodCallHandler(null);
+      }
+      _channel = null;
+      widget.controller?._attachFlutter(this, _flutterScrollTo, _flutterFocusTo);
+    } else {
+      widget.controller?._detachFlutter(this);
+      _nativeViewKey = GlobalKey(
+        debugLabel: 'accessible_native_view_runtime_${_rendererGeneration}',
+      );
+    }
+
+    _rendererUsesNative = nextUsesNative;
+    if (mounted) setState(() {});
   }
 
   List<AccessibleListRow> get _flatRows => [
@@ -610,7 +670,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.controller, widget.controller)) {
       oldWidget.controller?._detachFlutter(this);
-      if (!useNativeIosAccessibleViews) {
+      if (!_rendererUsesNative) {
         widget.controller?._attachFlutter(this, _flutterScrollTo, _flutterFocusTo);
       }
     }
@@ -1115,6 +1175,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
 
   @override
   void dispose() {
+    _forceFlutterAccessibleRendererOnIos.removeListener(_rendererModeChanged);
     _focusRequestId += 1;
     _rendererGeneration += 1;
     final channel = _channel;
@@ -1442,7 +1503,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
 
   @override
   Widget build(BuildContext context) {
-    if (!useNativeIosAccessibleViews) {
+    if (!_rendererUsesNative) {
       _scheduleInitialFocus();
       return _buildFlutterModel(context);
     }
@@ -1506,6 +1567,7 @@ class UniversalAccessibleGrid extends StatefulWidget {
 
 class _UniversalAccessibleGridState extends State<UniversalAccessibleGrid> {
   MethodChannel? _channel;
+  late bool _rendererUsesNative;
   Map<String, Object?> get _data => {
         'items': widget.items.map((e) => e.toMap()).toList(),
         'columns': widget.columns,
@@ -1516,6 +1578,24 @@ class _UniversalAccessibleGridState extends State<UniversalAccessibleGrid> {
       if (item.id == id) return item;
     }
     return null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _rendererUsesNative = useNativeIosAccessibleViews;
+    _forceFlutterAccessibleRendererOnIos.addListener(_rendererModeChanged);
+  }
+
+  void _rendererModeChanged() {
+    final nextUsesNative = useNativeIosAccessibleViews;
+    if (nextUsesNative == _rendererUsesNative) return;
+    if (_rendererUsesNative) {
+      _channel?.setMethodCallHandler(null);
+      _channel = null;
+    }
+    _rendererUsesNative = nextUsesNative;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -1547,6 +1627,7 @@ class _UniversalAccessibleGridState extends State<UniversalAccessibleGrid> {
 
   @override
   void dispose() {
+    _forceFlutterAccessibleRendererOnIos.removeListener(_rendererModeChanged);
     _channel?.setMethodCallHandler(null);
     _channel = null;
     super.dispose();
@@ -1583,7 +1664,7 @@ class _UniversalAccessibleGridState extends State<UniversalAccessibleGrid> {
 
   @override
   Widget build(BuildContext context) {
-    if (!useNativeIosAccessibleViews) {
+    if (!_rendererUsesNative) {
       return _buildFlutterModel();
     }
     return UiKitView(
