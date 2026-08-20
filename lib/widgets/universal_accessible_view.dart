@@ -909,10 +909,12 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     final nativeMethod = mode == AccessibleFocusMode.screenEntry
         ? 'focusInitial'
         : 'focusTo';
+    final useFocusProxy =
+        isFreshRouteReturnFocus && widget.routeReturnUseFocusProxy;
     if (tag != null && tag.isNotEmpty) {
       unawaited(AppLogger.log(
         'DOC_NATIVE[$tag] NATIVE_DISPATCH id=$id method=$nativeMethod '
-        'mode=${mode.name} requestId=$requestId '
+        'mode=${mode.name} useFocusProxy=$useFocusProxy requestId=$requestId '
         'rendererGeneration=$rendererGeneration channelIdentity=${identityHashCode(channel)}',
       ));
     }
@@ -926,7 +928,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           'animated': animated,
           'requestId': requestId,
           'rendererGeneration': rendererGeneration,
-          'useFocusProxy': isFreshRouteReturnFocus && widget.routeReturnUseFocusProxy,
+          'useFocusProxy': useFocusProxy,
         },
       ).timeout(const Duration(seconds: 2));
       if (rawOutcome is Map) {
