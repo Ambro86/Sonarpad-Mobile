@@ -85,7 +85,7 @@ class _LetterJumpOptionPickerScreenState<T>
     // The native jump is already reliable. On iOS, only silence the parent
     // Back button while the A-Z picker is returning, so VoiceOver does not
     // announce it immediately before the real target row.
-    if (useNativeIosAccessibleViews) {
+    if (suppressBackSemanticsDuringRouteReturn) {
       _suppressBackSemantics.value = true;
     }
 
@@ -107,7 +107,7 @@ class _LetterJumpOptionPickerScreenState<T>
 
     // Safety only. Normally the actual target focus event below restores the
     // Back button semantics much earlier.
-    if (useNativeIosAccessibleViews) {
+    if (suppressBackSemanticsDuringRouteReturn) {
       Future<void>.delayed(const Duration(seconds: 3), () {
         if (mounted && _suppressBackSemantics.value) {
           _suppressBackSemantics.value = false;

@@ -38,6 +38,11 @@ bool get useSharedAccessibleViewModel =>
 bool get useNativeIosAccessibleViews =>
     isIosPlatform && accessibleRendererMode == 'native';
 
+/// Platform-neutral capability used by shared screens during a route-return
+/// focus handoff. Platform/renderer selection stays centralized here.
+bool get suppressBackSemanticsDuringRouteReturn =>
+    useNativeIosAccessibleViews;
+
 class AccessibleOption {
   const AccessibleOption({required this.value, required this.label});
   final Object? value;
