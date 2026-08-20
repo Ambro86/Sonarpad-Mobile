@@ -1052,7 +1052,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       "visibleIds": visibleIds.prefix(24).joined(separator: ","),
       "targetVisible": targetIndexPath.map { visibleIndexPaths.contains($0) } ?? false,
       "targetExists": target != nil,
-      "targetFrameRoot": NSStringFromCGRect(targetFrameRoot),
+      "targetFrameRoot": NSCoder.string(for: targetFrameRoot),
       "rootWindow": rootView.window != nil,
       "tableWindow": tableView.window != nil
     ]
@@ -1165,8 +1165,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       "targetExists": target != nil,
       "targetWindow": targetView?.window != nil,
       "targetInRoot": targetView?.isDescendant(of: rootView) ?? false,
-      "targetFrameRoot": NSStringFromCGRect(targetFrameRoot),
-      "targetFrameWindow": NSStringFromCGRect(targetFrameWindow),
+      "targetFrameRoot": NSCoder.string(for: targetFrameRoot),
+      "targetFrameWindow": NSCoder.string(for: targetFrameWindow),
       "focusedRow": focusedRow,
       "focusedType": focusedType,
       "focusedLabel": focusedLabel,
@@ -1541,7 +1541,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       "offsetY": Double(tableView.contentOffset.y),
       "visibleFirst": visibleIds.first ?? "nil",
       "visibleLast": visibleIds.last ?? "nil",
-      "targetFrameRoot": NSStringFromCGRect(targetFrameRoot)
+      "targetFrameRoot": NSCoder.string(for: targetFrameRoot)
     ])
   }
 
