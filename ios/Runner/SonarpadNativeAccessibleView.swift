@@ -523,7 +523,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           requestId: requestId,
           rendererGeneration: rendererGeneration,
           useFocusProxy: useFocusProxy,
-          completion: { outcome in result(outcome) }
+          completion: { outcome in
+            result(outcome)
+            if useFocusProxy {
+              self.schedulePostFocusDiagnostics(
+                id: id,
+                requestId: requestId,
+                rendererGeneration: rendererGeneration,
+                phase: "focusAccessibleRow"
+              )
+            }
+          }
         )
       case "focusInitial":
         if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
@@ -543,7 +553,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
               requestId: requestId,
               rendererGeneration: rendererGeneration,
               useFocusProxy: useFocusProxy,
-              completion: { outcome in result(outcome) }
+              completion: { outcome in
+                result(outcome)
+                if useFocusProxy {
+                  self.schedulePostFocusDiagnostics(
+                    id: id,
+                    requestId: requestId,
+                    rendererGeneration: rendererGeneration,
+                    phase: "focusInitial"
+                  )
+                }
+              }
             )
           } else {
             self.emitDebug("method focusInitial compatibility id=\(id) window=\(self.rootView.window != nil)")
@@ -580,7 +600,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
               requestId: requestId,
               rendererGeneration: rendererGeneration,
               useFocusProxy: useFocusProxy,
-              completion: { outcome in result(outcome) }
+              completion: { outcome in
+                result(outcome)
+                if useFocusProxy {
+                  self.schedulePostFocusDiagnostics(
+                    id: id,
+                    requestId: requestId,
+                    rendererGeneration: rendererGeneration,
+                    phase: "focusTo"
+                  )
+                }
+              }
             )
           } else {
             self.emitDebug("method focusTo compatibility id=\(id) animated=\(animated)")
@@ -1005,12 +1035,29 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private func handleAccessibilityFocus(_ id: String) {
     let expected = currentRequestedFocusRowId
     let matchesTarget = expected == id
-    emitDebug(
-      "VOICEOVER_FOCUSED row=\(id) expected=\(expected ?? "nil") " +
-      "matchesTarget=\(matchesTarget)"
-    )
+    let visibleIndexPaths = sortedVisibleIndexPaths()
+    let visibleIds = visibleIndexPaths.compactMap { rowId(at: $0) }
+    let targetIndexPath = expected.flatMap { indexPath(forRowId: $0) }
+    let target = targetIndexPath.flatMap { accessibilityTarget(at: $0) }
+    let targetView = target as? UIView
+    let targetFrameRoot = targetView.map { $0.convert($0.bounds, to: rootView) } ?? .zero
+    let payload: [String: Any] = [
+      "type": "focus",
+      "id": id,
+      "expected": expected ?? "nil",
+      "matchesTarget": matchesTarget,
+      "offsetY": Double(tableView.contentOffset.y),
+      "visibleFirst": visibleIds.first ?? "nil",
+      "visibleLast": visibleIds.last ?? "nil",
+      "visibleIds": visibleIds.prefix(24).joined(separator: ","),
+      "targetVisible": targetIndexPath.map { visibleIndexPaths.contains($0) } ?? false,
+      "targetExists": target != nil,
+      "targetFrameRoot": NSStringFromCGRect(targetFrameRoot),
+      "rootWindow": rootView.window != nil,
+      "tableWindow": tableView.window != nil
+    ]
     if expected != nil { currentRequestedFocusRowId = nil }
-    channel.invokeMethod("event", arguments: ["type": "focus", "id": id])
+    channel.invokeMethod("event", arguments: payload)
   }
 
   private func accessibilityTarget(at indexPath: IndexPath) -> Any? {
@@ -1039,6 +1086,116 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
     }
     return nil
+  }
+
+  private func rowId(at indexPath: IndexPath) -> String? {
+    guard sections.indices.contains(indexPath.section),
+          sections[indexPath.section].rows.indices.contains(indexPath.row) else {
+      return nil
+    }
+    return sections[indexPath.section].rows[indexPath.row].id
+  }
+
+  private func sortedVisibleIndexPaths() -> [IndexPath] {
+    (tableView.indexPathsForVisibleRows ?? []).sorted { left, right in
+      if left.section != right.section { return left.section < right.section }
+      return left.row < right.row
+    }
+  }
+
+  private func focusDiagnosticSnapshot(
+    id: String,
+    requestId: Int,
+    rendererGeneration: Int,
+    phase: String,
+    delayMs: Int
+  ) -> [String: Any] {
+    tableView.layoutIfNeeded()
+    let visibleIndexPaths = sortedVisibleIndexPaths()
+    let visibleIds = visibleIndexPaths.compactMap { rowId(at: $0) }
+    let firstVisibleId = visibleIds.first ?? "nil"
+    let lastVisibleId = visibleIds.last ?? "nil"
+    let visibleIdList = visibleIds.prefix(24).joined(separator: ",")
+
+    let targetIndexPath = indexPath(forRowId: id)
+    let targetVisible = targetIndexPath.map { visibleIndexPaths.contains($0) } ?? false
+    let target = targetIndexPath.flatMap { accessibilityTarget(at: $0) }
+    let targetView = target as? UIView
+    let targetFrameRoot = targetView.map { $0.convert($0.bounds, to: rootView) } ?? .zero
+    let targetFrameWindow = targetView.flatMap { view -> CGRect? in
+      guard let window = rootView.window else { return nil }
+      return view.convert(view.bounds, to: window)
+    } ?? .zero
+
+    let focused = UIAccessibility.focusedElement(using: .notificationVoiceOver)
+    let focusedObject = focused as? NSObject
+    let focusedType = focused.map { String(describing: type(of: $0)) } ?? "nil"
+    let focusedLabel = focusTraceText(focusedObject?.accessibilityLabel)
+    let focusedRow = voiceOverFocusedRowId() ?? "nil"
+    let focusedEqualsTarget: Bool
+    if let focusedObjectIdentity = focused as AnyObject?, let targetObject = target as AnyObject? {
+      focusedEqualsTarget = focusedObjectIdentity === targetObject
+    } else {
+      focusedEqualsTarget = false
+    }
+
+    return [
+      "type": "focusDiagnostic",
+      "phase": phase,
+      "id": id,
+      "requestId": requestId,
+      "rendererGeneration": rendererGeneration,
+      "delayMs": delayMs,
+      "tokensCurrent": focusTokensAreCurrent(
+        requestId: requestId,
+        rendererGeneration: rendererGeneration
+      ),
+      "voiceOverRunning": UIAccessibility.isVoiceOverRunning,
+      "offsetY": Double(tableView.contentOffset.y),
+      "contentSizeHeight": Double(tableView.contentSize.height),
+      "boundsHeight": Double(tableView.bounds.height),
+      "adjustedInsetTop": Double(tableView.adjustedContentInset.top),
+      "adjustedInsetBottom": Double(tableView.adjustedContentInset.bottom),
+      "visibleCount": visibleIndexPaths.count,
+      "visibleFirst": firstVisibleId,
+      "visibleLast": lastVisibleId,
+      "visibleIds": visibleIdList,
+      "targetIndexPath": targetIndexPath.map { "s\($0.section)r\($0.row)" } ?? "nil",
+      "targetVisible": targetVisible,
+      "targetExists": target != nil,
+      "targetWindow": targetView?.window != nil,
+      "targetInRoot": targetView?.isDescendant(of: rootView) ?? false,
+      "targetFrameRoot": NSStringFromCGRect(targetFrameRoot),
+      "targetFrameWindow": NSStringFromCGRect(targetFrameWindow),
+      "focusedRow": focusedRow,
+      "focusedType": focusedType,
+      "focusedLabel": focusedLabel,
+      "focusedEqualsTarget": focusedEqualsTarget,
+      "rootWindow": rootView.window != nil,
+      "tableWindow": tableView.window != nil
+    ]
+  }
+
+  private func schedulePostFocusDiagnostics(
+    id: String,
+    requestId: Int,
+    rendererGeneration: Int,
+    phase: String
+  ) {
+    let delaysMs = [0, 50, 150, 350, 650, 1000, 1500, 2200, 3000]
+    for delayMs in delaysMs {
+      DispatchQueue.main.asyncAfter(deadline: .now() + (Double(delayMs) / 1000.0)) { [weak self] in
+        guard let self = self else { return }
+        let payload = self.focusDiagnosticSnapshot(
+          id: id,
+          requestId: requestId,
+          rendererGeneration: rendererGeneration,
+          phase: phase,
+          delayMs: delayMs
+        )
+        self.channel.invokeMethod("event", arguments: payload)
+      }
+    }
   }
 
   private func restoreFocusRow(id: String, attempt: Int = 0) {
@@ -1367,6 +1524,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       "offsetY=\(tableView.contentOffset.y)"
     emitDebug(line)
     print("DOC_NATIVE_SWIFT \(line)")
+    let visibleIds = sortedVisibleIndexPaths().compactMap { rowId(at: $0) }
+    let targetFrameRoot = targetView.map { $0.convert($0.bounds, to: rootView) } ?? .zero
     UIAccessibility.post(notification: .screenChanged, argument: liveTarget)
     completion([
       "posted": true,
@@ -1378,7 +1537,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       "cellWindow": cellWindow,
       "targetWindow": targetWindow,
       "rootWindow": rootWindow,
-      "targetInRoot": targetInRoot
+      "targetInRoot": targetInRoot,
+      "offsetY": Double(tableView.contentOffset.y),
+      "visibleFirst": visibleIds.first ?? "nil",
+      "visibleLast": visibleIds.last ?? "nil",
+      "targetFrameRoot": NSStringFromCGRect(targetFrameRoot)
     ])
   }
 

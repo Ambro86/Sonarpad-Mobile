@@ -631,6 +631,27 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       await AppLogger.log('DOC_NATIVE[$tag] $message');
       return null;
     }
+    if (eventType == 'focusDiagnostic') {
+      final tag = widget.debugTag ?? widget.controller?.debugName ?? 'list';
+      await AppLogger.log(
+        'DOC_NATIVE[$tag] FOCUS_DIAGNOSTIC '
+        'phase=${raw['phase']} id=${raw['id']} delayMs=${raw['delayMs']} '
+        'requestId=${raw['requestId']} rendererGeneration=${raw['rendererGeneration']} '
+        'tokensCurrent=${raw['tokensCurrent']} voiceOverRunning=${raw['voiceOverRunning']} '
+        'offsetY=${raw['offsetY']} contentSizeHeight=${raw['contentSizeHeight']} '
+        'boundsHeight=${raw['boundsHeight']} insetTop=${raw['adjustedInsetTop']} '
+        'insetBottom=${raw['adjustedInsetBottom']} visibleCount=${raw['visibleCount']} '
+        'visibleFirst=${raw['visibleFirst']} visibleLast=${raw['visibleLast']} '
+        'visibleIds=${raw['visibleIds']} targetIndexPath=${raw['targetIndexPath']} '
+        'targetVisible=${raw['targetVisible']} targetExists=${raw['targetExists']} '
+        'targetWindow=${raw['targetWindow']} targetInRoot=${raw['targetInRoot']} '
+        'targetFrameRoot=${raw['targetFrameRoot']} targetFrameWindow=${raw['targetFrameWindow']} '
+        'focusedRow=${raw['focusedRow']} focusedType=${raw['focusedType']} '
+        'focusedLabel=${raw['focusedLabel']} focusedEqualsTarget=${raw['focusedEqualsTarget']} '
+        'rootWindow=${raw['rootWindow']} tableWindow=${raw['tableWindow']}',
+      );
+      return null;
+    }
     final event = AccessibleListEvent(
       type: eventType,
       id: raw['id']?.toString(),
@@ -641,7 +662,13 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       final tag = widget.debugTag ?? widget.controller?.debugName;
       if (tag != null && tag.isNotEmpty) {
         unawaited(AppLogger.log(
-          'DOC_NATIVE[$tag] DART_FOCUS_EVENT id=${event.id}',
+          'DOC_NATIVE[$tag] DART_FOCUS_EVENT id=${event.id} '
+          'expected=${raw['expected']} matchesTarget=${raw['matchesTarget']} '
+          'offsetY=${raw['offsetY']} visibleFirst=${raw['visibleFirst']} '
+          'visibleLast=${raw['visibleLast']} visibleIds=${raw['visibleIds']} '
+          'targetVisible=${raw['targetVisible']} targetExists=${raw['targetExists']} '
+          'targetFrameRoot=${raw['targetFrameRoot']} rootWindow=${raw['rootWindow']} '
+          'tableWindow=${raw['tableWindow']}',
         ));
       }
     }
