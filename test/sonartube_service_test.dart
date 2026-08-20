@@ -140,4 +140,29 @@ void main() {
       expect(media.title, 'Video risolto');
     },
   );
+  test('browse sends the seed video for a generated YouTube Mix', () async {
+    late Uri requestedUri;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        requestedUri = request.url;
+        return http.Response(
+          jsonEncode({'ok': true, 'page': 1, 'items': []}),
+          200,
+        );
+      }),
+    );
+    const mix = SonarTubeItem(
+      kind: SonarTubeItemKind.playlist,
+      id: 'RDabcdefghijk',
+      title: 'Mix',
+      url: 'https://www.youtube.com/watch?v=abcdefghijk&list=RDabcdefghijk',
+    );
+
+    await service.browse(mix);
+
+    expect(requestedUri.queryParameters['browse'], 'RDabcdefghijk');
+    expect(requestedUri.queryParameters['seed'], 'abcdefghijk');
+  });
+
 }

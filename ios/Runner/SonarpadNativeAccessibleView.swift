@@ -526,6 +526,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       case "setData":
         self.apply(arguments: call.arguments)
         result(nil)
+      case "refreshAccessibilityRow":
+        if let map = call.arguments as? [String: Any], let id = map["id"] as? String {
+          self.refreshAccessibilityRow(id: id)
+        }
+        result(nil)
       case "endRefresh":
         self.refreshControl?.endRefreshing()
         result(nil)
@@ -944,6 +949,23 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           let actionId = objc_getAssociatedObject(action, &AssociatedKeys.actionId) as? String else { return false }
     channel.invokeMethod("event", arguments: ["type": "customAction", "id": rowId, "action": actionId])
     return true
+  }
+
+  private func refreshAccessibilityRow(id: String) {
+    guard let indexPath = indexPath(forRowId: id),
+          indexPath.section < sections.count,
+          indexPath.row < sections[indexPath.section].rows.count,
+          let cell = tableView.cellForRow(at: indexPath) as? SonarpadAccessibleTableCell else {
+      emitDebug("A11Y_ROW_REFRESH id=\(id) visible=false")
+      return
+    }
+    let wasFocused = cell.accessibilityElementIsFocused()
+    let row = sections[indexPath.section].rows[indexPath.row]
+    configure(cell: cell, with: row, at: indexPath)
+    emitDebug("A11Y_ROW_REFRESH id=\(id) visible=true focused=\(wasFocused) actions=\(row.actions.map { $0.label }.joined(separator: ","))")
+    if wasFocused && UIAccessibility.isVoiceOverRunning {
+      UIAccessibility.post(notification: .layoutChanged, argument: cell)
+    }
   }
 
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

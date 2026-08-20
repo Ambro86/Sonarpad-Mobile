@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:sonarpad_mobile_starter/services/aifa_service.dart';
 import 'package:sonarpad_mobile_starter/services/parafarmaco_service.dart';
 
@@ -60,4 +62,55 @@ void main() {
       expect(filtered, const [medicine]);
     });
   });
+
+  group('ParafarmacoService indici Codifa/Farmadati', () {
+    late ParafarmacoService service;
+
+    setUp(() {
+      service = ParafarmacoService(
+        client: MockClient((request) async {
+          if (request.url.path == '/integratori/m') {
+            return http.Response(
+              '<html><body>'
+              '<a href="https://codifa-legacy.farmadati.it/integratori/m/massigen-integratori-di-vitamine-e-minerali">Massigen</a>'
+              '</body></html>',
+              200,
+              headers: const {'content-type': 'text/html; charset=utf-8'},
+            );
+          }
+          if (request.url.path == '/integratori/q') {
+            return http.Response(
+              '<html><body>'
+              '<a href="http://codifa-legacy.farmadati.it/integratori/q/quetidia-integratori-per-sonno-e-stress">Quetidia</a>'
+              '</body></html>',
+              200,
+              headers: const {'content-type': 'text/html; charset=utf-8'},
+            );
+          }
+          return http.Response('<html><body></body></html>', 200);
+        }),
+      );
+    });
+
+    test('accetta i link assoluti del dominio legacy Farmadati', () async {
+      final results = await service.searchProducts('massigen');
+
+      expect(results.any((result) => result.name == 'Massigen'), isTrue);
+      expect(
+        results.firstWhere((result) => result.name == 'Massigen').sourceUrl,
+        startsWith('https://codifa-legacy.farmadati.it/integratori/m/'),
+      );
+    });
+
+    test('canonicalizza in HTTPS anche i link legacy scritti in HTTP', () async {
+      final results = await service.searchProducts('quetidia');
+
+      expect(results.any((result) => result.name == 'Quetidia'), isTrue);
+      expect(
+        results.firstWhere((result) => result.name == 'Quetidia').sourceUrl,
+        startsWith('https://codifa-legacy.farmadati.it/integratori/q/'),
+      );
+    });
+  });
+
 }

@@ -31,6 +31,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       widget.favoritesService ?? SonarTubeFavoritesService();
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
+  final AccessibleListController _accessibleListController =
+      AccessibleListController(debugName: 'sonartube');
   List<SonarTubeItem> _items = const [];
   Set<String> _favoriteKeys = const {};
   String? _query;
@@ -60,10 +62,26 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     });
   }
 
-  Future<void> _toggleFavorite(SonarTubeItem item) async {
+  Future<void> _toggleFavorite(
+    SonarTubeItem item, {
+    String? accessibleRowId,
+  }) async {
+    final key = _favoritesService.itemKey(item);
     final added = await _favoritesService.toggleFavorite(item);
     if (!mounted) return;
-    await _loadFavoriteKeys();
+    setState(() {
+      final next = Set<String>.from(_favoriteKeys);
+      if (added) {
+        next.add(key);
+      } else {
+        next.remove(key);
+      }
+      _favoriteKeys = next;
+    });
+    await WidgetsBinding.instance.endOfFrame;
+    if (accessibleRowId != null) {
+      await _accessibleListController.refreshAccessibilityRow(accessibleRowId);
+    }
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
     showStatusMessage(
@@ -146,26 +164,56 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   }
 
   Future<void> _loadMore() async {
-    final token = _nextToken;
-    if (token == null || _loadingMore) return;
+    var token = _nextToken;
+    if (token == null || token.isEmpty || _loadingMore) return;
     setState(() {
       _loadingMore = true;
       _error = null;
     });
     try {
-      final nextPage = _page + 1;
-      final result = _isCollection
-          ? await _service.browse(
-              widget.collection!,
-              token: token,
-              page: nextPage,
-            )
-          : await _service.search(_query!, token: token, page: nextPage);
+      final known = _items.map(_sonarTubeItemKey).toSet();
+      final appended = <SonarTubeItem>[];
+      var currentPage = _page;
+      final visitedTokens = <String>{};
+
+      // YouTube continuation pages can occasionally contain only items that
+      // were already present. Follow a few consecutive continuation tokens
+      // in the same user action, but never loop forever on a stale token.
+      for (var attempt = 0; attempt < 3 && token != null; attempt++) {
+        if (!visitedTokens.add(token)) {
+          token = null;
+          break;
+        }
+        final nextPage = currentPage + 1;
+        final result = _isCollection
+            ? await _service.browse(
+                widget.collection!,
+                token: token,
+                page: nextPage,
+              )
+            : await _service.search(_query!, token: token, page: nextPage);
+        currentPage = result.page;
+        for (final item in result.items) {
+          if (known.add(_sonarTubeItemKey(item))) {
+            appended.add(item);
+          }
+        }
+        final nextToken = result.nextToken;
+        token = nextToken == null ||
+                nextToken.isEmpty ||
+                visitedTokens.contains(nextToken)
+            ? null
+            : nextToken;
+        if (appended.isNotEmpty) break;
+      }
+
       if (!mounted) return;
       setState(() {
-        _items = [..._items, ...result.items];
-        _nextToken = result.nextToken;
-        _page = result.page;
+        if (appended.isNotEmpty) {
+          _items = [..._items, ...appended];
+        }
+        _nextToken = appended.isEmpty ? null : token;
+        _page = currentPage;
       });
     } catch (error) {
       if (mounted) setState(() => _error = error);
@@ -173,6 +221,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       if (mounted) setState(() => _loadingMore = false);
     }
   }
+
+  String _sonarTubeItemKey(SonarTubeItem item) =>
+      '${item.kind.name}:${item.id}';
 
   Future<void> _openItem(SonarTubeItem item) async {
     if (item.kind != SonarTubeItemKind.video) {
@@ -195,15 +246,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       _error = null;
     });
     try {
-      final media = await _service.resolve(item);
+      final episode = await _resolveEpisode(item);
       if (!mounted) return;
-      final episode = PodcastEpisode(
-        id: 'sonartube:${item.id}',
-        title: media.title,
-        description: media.channel ?? '',
-        audioUrl: media.audioUrl,
-        videoUrl: media.videoUrl,
-      );
       await Navigator.push<void>(
         context,
         MaterialPageRoute(
@@ -211,7 +255,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           builder: (_) => PodcastEpisodePlayerScreen(
             episode: episode,
             isVideoSupported: true,
-            startWithVideo: true,
+            startWithVideoThenRestorePreference: true,
+            refreshEpisode: () => _resolveEpisode(item),
           ),
         ),
       );
@@ -220,6 +265,17 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     } finally {
       if (mounted) setState(() => _resolvingId = null);
     }
+  }
+
+  Future<PodcastEpisode> _resolveEpisode(SonarTubeItem item) async {
+    final media = await _service.resolve(item);
+    return PodcastEpisode(
+      id: 'sonartube:${item.id}',
+      title: media.title,
+      description: media.channel ?? '',
+      audioUrl: media.audioUrl,
+      videoUrl: media.videoUrl,
+    );
   }
 
   String _itemType(AppLocalizations l10n, SonarTubeItem item) {
@@ -442,6 +498,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     }
 
     return UniversalAccessibleList(
+      controller: _accessibleListController,
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.id == 'query' && event.type == 'textChanged') {
@@ -453,7 +510,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             event.id?.startsWith('item_') == true) {
           final index = int.tryParse(event.id!.substring(5));
           if (index != null && index >= 0 && index < _items.length) {
-            await _toggleFavorite(_items[index]);
+            await _toggleFavorite(
+              _items[index],
+              accessibleRowId: event.id,
+            );
           }
           return;
         }

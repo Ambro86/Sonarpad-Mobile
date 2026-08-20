@@ -107,6 +107,16 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
     );
   }
 
+  bool _hideEmptyProductsSection(
+    List<ParafarmacoSearchResult> visibleProducts,
+  ) {
+    return !_aifaLoading &&
+        _results.isNotEmpty &&
+        !_parafarmacoLoading &&
+        _parafarmacoError == null &&
+        visibleProducts.isEmpty;
+  }
+
   List<Widget> _buildResultsChildren() {
     final l10n = AppLocalizations.of(context);
     final children = <Widget>[];
@@ -155,42 +165,44 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
       }
     }
 
-    children.add(_SectionHeader(
-      title: l10n.pharmacyProductsSectionTitle,
-      subtitle: 'Schede prodotto non AIFA quando disponibili.',
-    ));
+    if (!_hideEmptyProductsSection(visibleParafarmacoResults)) {
+      children.add(_SectionHeader(
+        title: l10n.pharmacyProductsSectionTitle,
+        subtitle: 'Schede prodotto non AIFA quando disponibili.',
+      ));
 
-    if (_parafarmacoLoading) {
-      children.add(_StatusTile.loading(
-        title: l10n.pharmacyProductsLoadingTitle,
-        subtitle: 'Sto cercando parafarmaci, integratori e dispositivi.',
-      ));
-    } else if (_parafarmacoError != null && visibleParafarmacoResults.isEmpty) {
-      children.add(_StatusTile.error(
-        title: l10n.pharmacyProductsErrorTitle,
-        subtitle: _parafarmacoError!,
-      ));
-    } else if (visibleParafarmacoResults.isEmpty) {
-      children.add(_StatusTile.info(
-        title: l10n.pharmacyProductsNoResultsTitle,
-        subtitle: 'Non sono disponibili schede prodotto per questa ricerca.',
-      ));
-    } else {
-      for (final product in visibleParafarmacoResults) {
-        children.add(ListTile(
-          title: Text(
-            product.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text([
-            product.category,
-            if (product.sourceName != 'Codifa/Farmadati') product.sourceName,
-            if (product.snippet != null && product.snippet!.trim().isNotEmpty)
-              product.snippet!.trim(),
-          ].join(' - ')),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => _openParafarmaco(product),
+      if (_parafarmacoLoading) {
+        children.add(_StatusTile.loading(
+          title: l10n.pharmacyProductsLoadingTitle,
+          subtitle: 'Sto cercando parafarmaci, integratori e dispositivi.',
         ));
+      } else if (_parafarmacoError != null && visibleParafarmacoResults.isEmpty) {
+        children.add(_StatusTile.error(
+          title: l10n.pharmacyProductsErrorTitle,
+          subtitle: _parafarmacoError!,
+        ));
+      } else if (visibleParafarmacoResults.isEmpty) {
+        children.add(_StatusTile.info(
+          title: l10n.pharmacyProductsNoResultsTitle,
+          subtitle: 'Non sono disponibili schede prodotto per questa ricerca.',
+        ));
+      } else {
+        for (final product in visibleParafarmacoResults) {
+          children.add(ListTile(
+            title: Text(
+              product.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text([
+              product.category,
+              if (product.sourceName != 'Codifa/Farmadati') product.sourceName,
+              if (product.snippet != null && product.snippet!.trim().isNotEmpty)
+                product.snippet!.trim(),
+            ].join(' - ')),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _openParafarmaco(product),
+          ));
+        }
       }
     }
 
@@ -251,7 +263,8 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
     return UniversalAccessibleList(
       sections: [
         AccessibleListSection(header: 'Farmaci AIFA', footer: 'Medicinali con dati AIFA e foglio illustrativo ufficiale.', rows: aifaRows),
-        AccessibleListSection(header: l10n.pharmacyProductsSectionTitle, footer: 'Schede prodotto non AIFA quando disponibili.', rows: productRows),
+        if (!_hideEmptyProductsSection(visibleParafarmacoResults))
+          AccessibleListSection(header: l10n.pharmacyProductsSectionTitle, footer: 'Schede prodotto non AIFA quando disponibili.', rows: productRows),
       ],
       onEvent: (event) {
         if (event.type != 'activate' || event.id == null) return;

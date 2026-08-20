@@ -56,6 +56,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   List<DocumentTableOfContentsEntry> _documentIndex = [];
   String? _epubIndexSourcePath;
   bool _documentIndexLoading = false;
+  final ValueNotifier<bool> _documentIndexLoadingNotifier =
+      ValueNotifier<bool>(false);
 
   // TTS state
   bool _speaking = false;
@@ -154,6 +156,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     unawaited(_audio.stopAndDispose());
     _scrollController.dispose();
     _documentPositionRevision.dispose();
+    _documentIndexLoadingNotifier.dispose();
     super.dispose();
   }
 
@@ -962,14 +965,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final cachedEntries = await _readCachedEpubIndex(sourcePath);
     if (!mounted) return;
     if (cachedEntries != null) {
-      setState(() {
-        _documentIndex = cachedEntries;
-      });
+      _documentIndex = cachedEntries;
       return;
     }
 
     BuildContext? dialogContext;
-    setState(() => _documentIndexLoading = true);
+    _setDocumentIndexLoading(true);
 
     unawaited(
       showDialog<void>(
@@ -992,9 +993,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         chunks: _chunks,
       );
       if (!mounted) return;
-      setState(() {
-        _documentIndex = entries;
-      });
+      _documentIndex = entries;
       if (entries.isEmpty) {
         showStatusMessage(context, _documentIndexUnavailableMessage(context));
       } else {
@@ -1017,8 +1016,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         } catch (_) {}
       }
       if (mounted) {
-        setState(() => _documentIndexLoading = false);
+        _setDocumentIndexLoading(false);
       }
+    }
+  }
+
+  void _setDocumentIndexLoading(bool value) {
+    _documentIndexLoading = value;
+    if (_documentIndexLoadingNotifier.value != value) {
+      _documentIndexLoadingNotifier.value = value;
     }
   }
 
@@ -2072,18 +2078,21 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           if (!_paragraphSelectionMode &&
               (_documentIndex.isNotEmpty ||
                   (_epubIndexSourcePath != null && _chunks.isNotEmpty)))
-            IconButton(
-              icon: _documentIndexLoading
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.list_alt),
-              tooltip: l10n.documentIndex,
-              onPressed: _documentIndexLoading
-                  ? null
-                  : () => unawaited(_openDocumentIndex()),
+            ValueListenableBuilder<bool>(
+              valueListenable: _documentIndexLoadingNotifier,
+              builder: (context, loadingIndex, _) => IconButton(
+                icon: loadingIndex
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.list_alt),
+                tooltip: l10n.documentIndex,
+                onPressed: loadingIndex
+                    ? null
+                    : () => unawaited(_openDocumentIndex()),
+              ),
             ),
           if (!_paragraphSelectionMode && doc.isTemporary)
             IconButton(
@@ -2340,7 +2349,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         selected: isSelected,
         hint: _paragraphSelectionMode
             ? l10n.documentParagraphSelectionTapHint
-            : (canInteract ? l10n.documentEditParagraphActionHint : null),
+            : (canInteract && i == 0
+                ? l10n.documentEditParagraphActionHint
+                : null),
         actions: actions,
         onAccessibilityFocus: () =>
             _syncDocumentPositionFromAccessibilityFocus(i),
@@ -2407,7 +2418,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (_paragraphSelectionMode) {
         hintText = l10n.documentParagraphSelectionTapHint;
       } else {
-        hintText = canInteract ? l10n.documentEditParagraphActionHint : '';
+        hintText = canInteract && i == 0
+            ? l10n.documentEditParagraphActionHint
+            : '';
         if (_multipleDocumentBookmarksEnabled) {
           hintText += l10n.documentBookmarkHintSet;
           if (_bookmarkIndexes.isNotEmpty) {

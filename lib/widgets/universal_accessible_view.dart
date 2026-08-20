@@ -358,6 +358,20 @@ class AccessibleListController {
         animated: animated,
       );
 
+  /// Refreshes the accessibility metadata of one already-visible row without
+  /// moving or recreating the list. Flutter semantics are rebuilt normally by
+  /// the owning widget; UIKit uses this to invalidate VoiceOver's cached
+  /// custom-action names for the currently focused cell.
+  Future<void> refreshAccessibilityRow(String id) async {
+    final channel = _channel;
+    if (channel == null) {
+      _debug('refreshAccessibilityRow flutter/no-op id=$id');
+      return;
+    }
+    _debug('refreshAccessibilityRow native id=$id');
+    await channel.invokeMethod<void>('refreshAccessibilityRow', {'id': id});
+  }
+
   void _attach(
     MethodChannel channel,
     Future<void> Function(

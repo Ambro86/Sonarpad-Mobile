@@ -86,8 +86,13 @@ extension ParafarmacoSectionTypeLabel on ParafarmacoSectionType {
 class ParafarmacoService {
   static const _userAgent =
       'Mozilla/5.0 (compatible; SonarpadMobile/1.0; +https://sonarpad.com)';
+  static const _legacyCodifaBase = 'https://codifa-legacy.farmadati.it';
+  static const _publicCodifaBase = 'https://www.codifa.it';
 
+  final http.Client? _client;
   final Map<String, dom.Document> _indexCache = {};
+
+  ParafarmacoService({http.Client? client}) : _client = client;
 
   /// Rimuove soltanto le schede di medicinali Codifa già rappresentate dai
   /// risultati ufficiali AIFA. Integratori, dispositivi e parafarmaci con lo
@@ -191,11 +196,18 @@ class ParafarmacoService {
 
     final urls = <String>[];
     for (final letter in letters) {
-      urls.add('https://www.codifa.it/parafarmaci/$letter');
-      urls.add('https://www.codifa.it/integratori/$letter');
-      // Farmaci Codifa resta un supporto secondario: i medicinali veri passano
-      // comunque dalla ricerca AIFA, che non viene modificata.
-      urls.add('https://www.codifa.it/farmaci/$letter');
+      // Dal 2026 www.codifa.it reindirizza gli indici alfabetici al dominio
+      // legacy di Farmadati. Usiamo direttamente la variante HTTPS ufficiale:
+      // evita redirect fragili su iOS e, soprattutto, mantiene coerenti gli
+      // href assoluti restituiti dalla pagina. Il dominio pubblico resta come
+      // fallback nel caso Farmadati cambi nuovamente instradamento.
+      for (final base in const [_legacyCodifaBase, _publicCodifaBase]) {
+        urls.add('$base/parafarmaci/$letter');
+        urls.add('$base/integratori/$letter');
+        // Farmaci Codifa resta un supporto secondario: i medicinali veri
+        // passano comunque dalla ricerca AIFA, che non viene modificata.
+        urls.add('$base/farmaci/$letter');
+      }
     }
     return urls;
   }
@@ -236,7 +248,7 @@ class ParafarmacoService {
     final cached = _indexCache[key];
     if (cached != null) return cached;
 
-    final response = await http.get(uri, headers: {'User-Agent': _userAgent});
+    final response = await _get(uri);
     if (response.statusCode != 200) {
       throw Exception('HTTP ${response.statusCode}');
     }
@@ -246,6 +258,14 @@ class ParafarmacoService {
     _removeNoise(document);
     _indexCache[key] = document;
     return document;
+  }
+
+  Future<http.Response> _get(Uri uri) {
+    final client = _client;
+    if (client != null) {
+      return client.get(uri, headers: {'User-Agent': _userAgent});
+    }
+    return http.get(uri, headers: {'User-Agent': _userAgent});
   }
 
   List<ParafarmacoSearchResult> _deduplicateResults(
@@ -278,10 +298,7 @@ class ParafarmacoService {
 
     http.Response response;
     try {
-      response = await http.get(
-        Uri.parse(result.sourceUrl),
-        headers: {'User-Agent': _userAgent},
-      );
+      response = await _get(Uri.parse(result.sourceUrl));
     } catch (_) {
       final fallback = _detailFromFallbackSnippet(
         result,
@@ -1201,9 +1218,7 @@ class ParafarmacoService {
   bool _isCodifaProductHref(String href) {
     final url = _absoluteCodifaUrl(href);
     final uri = Uri.tryParse(url);
-    if (uri == null || !uri.host.toLowerCase().contains('codifa.it')) {
-      return false;
-    }
+    if (uri == null || !_isSupportedCodifaHost(uri.host)) return false;
     final segments = uri.pathSegments.map((s) => s.toLowerCase()).toList();
     if (segments.length < 3) return false;
     return segments.first == 'parafarmaci' ||
@@ -1211,11 +1226,33 @@ class ParafarmacoService {
         segments.first == 'farmaci';
   }
 
+  bool _isSupportedCodifaHost(String rawHost) {
+    final host = rawHost.toLowerCase();
+    return host == 'codifa.it' ||
+        host == 'www.codifa.it' ||
+        host == 'codifa-legacy.farmadati.it';
+  }
+
   String _absoluteCodifaUrl(String href) {
-    if (href.startsWith('http://') || href.startsWith('https://')) return href;
-    if (href.startsWith('//')) return 'https:$href';
-    if (href.startsWith('/')) return 'https://www.codifa.it$href';
-    return 'https://www.codifa.it/$href';
+    final trimmed = href.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      final uri = Uri.tryParse(trimmed);
+      if (uri != null && _isSupportedCodifaHost(uri.host)) {
+        // Alcuni href legacy sono ancora scritti in HTTP. Il medesimo host
+        // espone HTTPS: lo canonicalizziamo per non introdurre clear-text.
+        return uri.replace(scheme: 'https').toString();
+      }
+      return trimmed;
+    }
+    if (trimmed.startsWith('//')) {
+      final uri = Uri.tryParse('https:$trimmed');
+      if (uri != null && _isSupportedCodifaHost(uri.host)) {
+        return uri.replace(scheme: 'https').toString();
+      }
+      return 'https:$trimmed';
+    }
+    if (trimmed.startsWith('/')) return '$_legacyCodifaBase$trimmed';
+    return '$_legacyCodifaBase/$trimmed';
   }
 
   String _categoryFromCodifaUrl(String url) {

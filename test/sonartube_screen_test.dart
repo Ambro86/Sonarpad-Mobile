@@ -216,6 +216,7 @@ void main() {
       find.byKey(const ValueKey('sonartube_favorite_channel_UC123')),
     );
     await tester.pumpAndSettle();
+    expect(find.byTooltip('Rimuovi dai preferiti'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('sonartube_favorites_button')));
     await tester.pumpAndSettle();
 
@@ -225,4 +226,88 @@ void main() {
 
     expect(find.text('Video preferito del canale'), findsOneWidget);
   });
+
+  testWidgets('load more skips duplicate continuation pages', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    var requestCount = 0;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        requestCount++;
+        final token = request.url.queryParameters['token'];
+        if (token == null) {
+          return http.Response(
+            jsonEncode({
+              'ok': true,
+              'page': 1,
+              'next_token': 'page-2',
+              'items': [
+                {
+                  'kind': 'video',
+                  'id': 'abcdefghijk',
+                  'title': 'Primo video',
+                  'url': 'https://www.youtube.com/watch?v=abcdefghijk',
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        if (token == 'page-2') {
+          return http.Response(
+            jsonEncode({
+              'ok': true,
+              'page': 2,
+              'next_token': 'page-3',
+              'items': [
+                {
+                  'kind': 'video',
+                  'id': 'abcdefghijk',
+                  'title': 'Primo video',
+                  'url': 'https://www.youtube.com/watch?v=abcdefghijk',
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response(
+          jsonEncode({
+            'ok': true,
+            'page': 3,
+            'items': [
+              {
+                'kind': 'video',
+                'id': 'lmnopqrstuv',
+                'title': 'Secondo video',
+                'url': 'https://www.youtube.com/watch?v=lmnopqrstuv',
+              },
+            ],
+          }),
+          200,
+        );
+      }),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SonarTubeScreen(service: service),
+      ),
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('sonartube_search_field')),
+      'test',
+    );
+    await tester.tap(find.byKey(const ValueKey('sonartube_search_button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('sonartube_load_more')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Secondo video'), findsOneWidget);
+    expect(requestCount, 3);
+  });
+
 }

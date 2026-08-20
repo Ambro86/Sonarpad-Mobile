@@ -22,11 +22,23 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
     required this.episode,
     this.isVideoSupported = false,
     this.startWithVideo = false,
+    this.startWithVideoThenRestorePreference = false,
+    this.refreshEpisode,
   });
 
   final PodcastEpisode episode;
   final bool isVideoSupported;
   final bool startWithVideo;
+
+  /// Used by SonarTube: when the saved preference is audio-only, initialize
+  /// and start the video stream first, then immediately switch back to audio.
+  /// This avoids asking the audio backend to bootstrap a progressive YouTube
+  /// video URL directly on iOS.
+  final bool startWithVideoThenRestorePreference;
+
+  /// Optional one-shot media refresh used when a temporary signed stream URL
+  /// fails. Other players leave this null and preserve their old behavior.
+  final Future<PodcastEpisode?> Function()? refreshEpisode;
 
   @override
   State<PodcastEpisodePlayerScreen> createState() =>
@@ -57,16 +69,21 @@ class _PodcastEpisodePlayerScreenState
   int _lastVideoBookmarkSecond = -1;
   Timer? _diagnosticHeartbeat;
   AppLifecycleState? _lastLifecycleState;
+  PodcastEpisode? _refreshedEpisode;
+  bool _restoreVideoOffAfterBootstrap = false;
+  bool _refreshingEpisode = false;
+
+  PodcastEpisode get _episode => _refreshedEpisode ?? widget.episode;
 
   String get _logSubject =>
-      'episodeTitle="${widget.episode.title}", url=${widget.episode.audioUrl}, '
+      'episodeTitle="${_episode.title}", url=${_episode.audioUrl}, '
       'stableId=${_getStableId()}';
 
   String _getStableId() {
-    if (widget.episode.id != null) {
-      return widget.episode.id!;
+    if (_episode.id != null) {
+      return _episode.id!;
     }
-    final uri = Uri.parse(widget.episode.audioUrl);
+    final uri = Uri.parse(_episode.audioUrl);
     return 'media:${uri.scheme}://${uri.host}${uri.path}';
   }
 
@@ -96,7 +113,7 @@ class _PodcastEpisodePlayerScreenState
     }
   }
 
-  Future<void> _play() async {
+  Future<void> _play({bool allowMediaRefresh = true}) async {
     AppLogger.log(
       'PodcastPlayer: _play start mounted=$mounted loaded=$_loaded '
       'loading=$_loading videoEnabled=$_isVideoEnabled '
@@ -115,13 +132,13 @@ class _PodcastEpisodePlayerScreenState
         );
         if (_loaded) await _audio.stop();
         _videoController?.dispose();
-        final playbackUrl = widget.episode.videoUrl ?? widget.episode.audioUrl;
-        final useExternalAudio = widget.episode.videoUrl != null &&
-            widget.episode.videoUrl != widget.episode.audioUrl;
+        final playbackUrl = _episode.videoUrl ?? _episode.audioUrl;
+        final useExternalAudio = _episode.videoUrl != null &&
+            _episode.videoUrl != _episode.audioUrl;
         _videoUsesExternalAudio = useExternalAudio;
         AppLogger.log(
           'PodcastPlayer: video playback url selected url=$playbackUrl, '
-          'audioUrl=${widget.episode.audioUrl}, '
+          'audioUrl=${_episode.audioUrl}, '
           'externalAudio=$useExternalAudio, $_logSubject',
         );
         final uri = Uri.parse(playbackUrl);
@@ -142,8 +159,8 @@ class _PodcastEpisodePlayerScreenState
         if (useExternalAudio) {
           await _videoController!.setVolume(0);
           await _audio.setUrl(
-            widget.episode.audioUrl,
-            title: l10n.nowPlayingTitle(widget.episode.title),
+            _episode.audioUrl,
+            title: l10n.nowPlayingTitle(_episode.title),
             mediaId: _getStableId(),
           );
           _loaded = true;
@@ -157,7 +174,7 @@ class _PodcastEpisodePlayerScreenState
         if (Platform.isIOS) {
           await _mediaCommands.invokeMethod(
             'setupMagicTap',
-            widget.episode.title,
+            _episode.title,
           );
         }
 
@@ -195,6 +212,16 @@ class _PodcastEpisodePlayerScreenState
           await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
         }
         AppLogger.log('PodcastPlayer: video play completed, $_logSubject');
+        if (_restoreVideoOffAfterBootstrap) {
+          _restoreVideoOffAfterBootstrap = false;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted || !_isVideoEnabled) return;
+            AppLogger.log(
+              'PodcastPlayer: SonarTube bootstrap completed; restoring audio-only preference, $_logSubject',
+            );
+            _toggleVideo(false);
+          });
+        }
       } else {
         AppLogger.log(
           'PodcastPlayer: audio branch start loaded=$_loaded, $_logSubject',
@@ -211,19 +238,19 @@ class _PodcastEpisodePlayerScreenState
         if (!_loaded) {
           AppLogger.log('PodcastPlayer: audio setUrl start, $_logSubject');
           await _audio.setUrl(
-            widget.episode.audioUrl,
-            title: l10n.nowPlayingTitle(widget.episode.title),
+            _episode.audioUrl,
+            title: l10n.nowPlayingTitle(_episode.title),
             mediaId: _getStableId(),
           );
           _loaded = true;
           AppLogger.log(
             'PodcastPlayer: audio setUrl completed loaded=$_loaded, '
-            'title="In riproduzione: ${widget.episode.title}", $_logSubject',
+            'title="In riproduzione: ${_episode.title}", $_logSubject',
           );
         }
         AppLogger.log(
           'PodcastPlayer: audio play scheduled, '
-          'title="In riproduzione: ${widget.episode.title}", $_logSubject',
+          'title="In riproduzione: ${_episode.title}", $_logSubject',
         );
         unawaited(_audio.play().catchError((Object e, StackTrace stackTrace) {
           AppLogger.log(
@@ -234,6 +261,15 @@ class _PodcastEpisodePlayerScreenState
       if (!mounted) return;
     } catch (e) {
       if (!mounted) return;
+      if (allowMediaRefresh && await _refreshEpisodeAfterPlaybackFailure(e)) {
+        if (!mounted) return;
+        setState(() {
+          _loading = false;
+          _error = null;
+        });
+        await _play(allowMediaRefresh: false);
+        return;
+      }
       AppLogger.log('PodcastPlayer: Error during _play: $e, $_logSubject');
       setState(() => _error = l10n.episodeError(e));
     } finally {
@@ -244,6 +280,38 @@ class _PodcastEpisodePlayerScreenState
           'isVideo=${_videoController != null}, $_logSubject',
         );
       }
+    }
+  }
+
+  Future<bool> _refreshEpisodeAfterPlaybackFailure(Object error) async {
+    final refresh = widget.refreshEpisode;
+    if (refresh == null || _refreshingEpisode) return false;
+    _refreshingEpisode = true;
+    AppLogger.log(
+      'PodcastPlayer: refreshing temporary media after playback failure: $error, $_logSubject',
+    );
+    try {
+      final refreshed = await refresh();
+      if (!mounted || refreshed == null) return false;
+      await _saveVideoBookmark();
+      _videoController?.pause();
+      _videoController?.dispose();
+      _videoController = null;
+      _videoUsesExternalAudio = false;
+      if (_loaded) {
+        await _audio.stop();
+      }
+      _loaded = false;
+      _refreshedEpisode = refreshed;
+      AppLogger.log('PodcastPlayer: temporary media refreshed, $_logSubject');
+      return true;
+    } catch (refreshError) {
+      AppLogger.log(
+        'PodcastPlayer: temporary media refresh failed: $refreshError, $_logSubject',
+      );
+      return false;
+    } finally {
+      _refreshingEpisode = false;
     }
   }
 
@@ -330,7 +398,7 @@ class _PodcastEpisodePlayerScreenState
       MaterialPageRoute(
         settings: const RouteSettings(name: '/podcasts/chapters'),
         builder: (_) => PodcastChaptersScreen(
-          episode: widget.episode,
+          episode: _episode,
           chapters: _detectedChapters,
         ),
       ),
@@ -352,12 +420,13 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _detectChapters() async {
-    final chapters = await _podcastService.fetchEpisodeChapters(widget.episode);
+    final chapters = await _podcastService.fetchEpisodeChapters(_episode);
     if (!mounted) return;
     setState(() => _detectedChapters = chapters);
   }
 
   void _toggleVideo(bool enable) {
+    _restoreVideoOffAfterBootstrap = false;
     AppLogger.log('PodcastPlayer: _toggleVideo enable=$enable, $_logSubject');
     setState(() => _isVideoEnabled = enable);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -415,8 +484,8 @@ class _PodcastEpisodePlayerScreenState
     _lastLifecycleState = WidgetsBinding.instance.lifecycleState;
     _startDiagnosticHeartbeat();
     AppLogger.log(
-      'PodcastPlayer: initState title=${widget.episode.title} '
-      'url=${widget.episode.audioUrl} isVideoSupported=${widget.isVideoSupported}, '
+      'PodcastPlayer: initState title=${_episode.title} '
+      'url=${_episode.audioUrl} isVideoSupported=${widget.isVideoSupported}, '
       '$_logSubject',
     );
     _loadSettings();
@@ -425,8 +494,15 @@ class _PodcastEpisodePlayerScreenState
       AppLogger.log(
         'PodcastPlayer: postFrame callback start mounted=$mounted, $_logSubject',
       );
+      final savedVideoEnabled = await _settings.isVideoEnabled();
+      _restoreVideoOffAfterBootstrap =
+          widget.isVideoSupported &&
+          widget.startWithVideoThenRestorePreference &&
+          !savedVideoEnabled;
       _isVideoEnabled =
-          widget.startWithVideo || await _settings.isVideoEnabled();
+          widget.startWithVideo ||
+          savedVideoEnabled ||
+          _restoreVideoOffAfterBootstrap;
       _displayVideoInPortrait =
           await _settings.displayVideoInPortrait();
       if (!mounted) return;
@@ -637,7 +713,7 @@ class _PodcastEpisodePlayerScreenState
     final surface = _videoUsesExternalAudio
         ? Semantics(
             key: const ValueKey('podcast_video_fullscreen_external_audio'),
-            label: l10n.nowPlayingTitle(widget.episode.title),
+            label: l10n.nowPlayingTitle(_episode.title),
             value: _videoController!.value.isPlaying ? l10n.pause : l10n.play,
             child: _buildVideoPlayerFullscreenSurface(_videoController!),
           )
@@ -690,10 +766,10 @@ class _PodcastEpisodePlayerScreenState
       final videoReady = _videoController != null && _videoController!.value.isInitialized;
       final videoPlaying = videoReady && _videoController!.value.isPlaying;
       final rows = <AccessibleListRow>[
-        AccessibleListRow(id: 'title', kind: 'header', title: widget.episode.title),
+        AccessibleListRow(id: 'title', kind: 'header', title: _episode.title),
         if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loadingEpisodeAudio),
         if (_error != null) AccessibleListRow(id: 'error', kind: 'text', title: _error!),
-        if (_podcastService.hasChapterSource(widget.episode) || (_detectedChapters?.isNotEmpty ?? false))
+        if (_podcastService.hasChapterSource(_episode) || (_detectedChapters?.isNotEmpty ?? false))
           AccessibleListRow(id: 'chapters', title: l10n.podcastChapters),
         if (widget.isVideoSupported)
           AccessibleListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
@@ -744,7 +820,7 @@ class _PodcastEpisodePlayerScreenState
             padding: const EdgeInsets.all(12),
             child: _videoUsesExternalAudio
                 ? Semantics(
-                    label: l10n.nowPlayingTitle(widget.episode.title),
+                    label: l10n.nowPlayingTitle(_episode.title),
                     value: _videoController!.value.isPlaying ? l10n.pause : l10n.play,
                     child: _buildVideoPlayerSurface(_videoController!),
                   )
@@ -793,7 +869,7 @@ class _PodcastEpisodePlayerScreenState
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.nowPlayingTitle(widget.episode.title)),
+        title: Text(l10n.nowPlayingTitle(_episode.title)),
           leading: BackButton(
             onPressed: () {
               AppLogger.log('PodcastPlayer: appbar back pressed, $_logSubject');
@@ -810,7 +886,7 @@ class _PodcastEpisodePlayerScreenState
             padding: const EdgeInsets.all(16),
             children: [
               Text(
-                widget.episode.title,
+                _episode.title,
                 style: Theme.of(context).textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
@@ -825,7 +901,7 @@ class _PodcastEpisodePlayerScreenState
                   textAlign: TextAlign.center,
                 ),
               ],
-              if (_podcastService.hasChapterSource(widget.episode) ||
+              if (_podcastService.hasChapterSource(_episode) ||
                   (_detectedChapters?.isNotEmpty ?? false)) ...[
                 const SizedBox(height: 16),
                 Center(
@@ -852,7 +928,7 @@ class _PodcastEpisodePlayerScreenState
                 if (_videoUsesExternalAudio)
                   Semantics(
                     key: const ValueKey('podcast_video_external_audio'),
-                    label: l10n.nowPlayingTitle(widget.episode.title),
+                    label: l10n.nowPlayingTitle(_episode.title),
                     value: _videoController!.value.isPlaying
                         ? l10n.pause
                         : l10n.play,

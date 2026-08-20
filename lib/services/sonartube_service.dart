@@ -93,14 +93,35 @@ class SonarTubeService {
     if (collection.kind == SonarTubeItemKind.video) {
       throw ArgumentError('Un video non è una raccolta SonarTube.');
     }
+    final seedVideoId = _mixSeedVideoId(collection);
     return _loadPage({
       'browse': collection.id,
       'kind': collection.kind.name,
       'title': collection.title,
       'format': 'json',
+      if (seedVideoId != null) 'seed': seedVideoId,
       if (token != null && token.isNotEmpty) 'token': token,
       'page': '$page',
     });
+  }
+
+  String? _mixSeedVideoId(SonarTubeItem collection) {
+    if (collection.kind != SonarTubeItemKind.playlist ||
+        !collection.id.startsWith('RD')) {
+      return null;
+    }
+    final uri = Uri.tryParse(collection.url);
+    final seed = uri?.queryParameters['v'];
+    if (seed != null && RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(seed)) {
+      return seed;
+    }
+    if (collection.id.length == 13) {
+      final derived = collection.id.substring(2);
+      if (RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(derived)) {
+        return derived;
+      }
+    }
+    return null;
   }
 
   Future<SonarTubeResolvedMedia> resolve(SonarTubeItem item) async {
