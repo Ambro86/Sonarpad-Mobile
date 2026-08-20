@@ -205,8 +205,16 @@ class _PodcastEpisodePlayerScreenState
 
         AppLogger.log('PodcastPlayer: video play start, $_logSubject');
         await _videoController!.play();
+        _loaded = true;
         if (useExternalAudio) {
-          await _audio.play();
+          unawaited(_audio.play().catchError((Object e, StackTrace stackTrace) {
+            AppLogger.log(
+              'PodcastPlayer: external audio play async error: $e, $_logSubject',
+            );
+            if (mounted) {
+              setState(() => _error = l10n.episodeError(e));
+            }
+          }));
         }
         if (Platform.isIOS) {
           await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
@@ -766,7 +774,6 @@ class _PodcastEpisodePlayerScreenState
       final videoReady = _videoController != null && _videoController!.value.isInitialized;
       final videoPlaying = videoReady && _videoController!.value.isPlaying;
       final rows = <AccessibleListRow>[
-        AccessibleListRow(id: 'title', kind: 'header', title: _episode.title),
         if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loadingEpisodeAudio),
         if (_error != null) AccessibleListRow(id: 'error', kind: 'text', title: _error!),
         if (_podcastService.hasChapterSource(_episode) || (_detectedChapters?.isNotEmpty ?? false))
@@ -818,13 +825,9 @@ class _PodcastEpisodePlayerScreenState
         if (_videoController != null && _videoController!.value.isInitialized)
           Padding(
             padding: const EdgeInsets.all(12),
-            child: _videoUsesExternalAudio
-                ? Semantics(
-                    label: l10n.nowPlayingTitle(_episode.title),
-                    value: _videoController!.value.isPlaying ? l10n.pause : l10n.play,
-                    child: _buildVideoPlayerSurface(_videoController!),
-                  )
-                : _buildVideoPlayerSurface(_videoController!),
+            child: ExcludeSemantics(
+              child: _buildVideoPlayerSurface(_videoController!),
+            ),
           ),
         Expanded(child: nativeList),
         if (_videoController != null && canSeek)
