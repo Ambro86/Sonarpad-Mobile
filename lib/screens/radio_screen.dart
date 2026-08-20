@@ -430,10 +430,15 @@ class _RadioScreenState extends State<RadioScreen> {
                       selection: TextSelection.collapsed(offset: value.length),
                     );
                   } else if (event.id == 'city') {
-                    setState(() {
-                      _cityCode = value.trim().isEmpty ? null : value.trim();
-                      if (_cityCode != null) _browseMode = _RadioBrowseMode.city;
-                    });
+                    // Keep the native text field alive while editing. The
+                    // UniversalAccessibleList key contains _browseMode, so a
+                    // setState here would recreate the UIKit list on the first
+                    // character, drop first responder and close the keyboard.
+                    final city = value.trim();
+                    _cityCode = city.isEmpty ? null : city;
+                    if (_cityCode != null) {
+                      _browseMode = _RadioBrowseMode.city;
+                    }
                   }
                   return;
                 }

@@ -36,6 +36,7 @@ class _LetterJumpOptionPickerScreenState<T>
     extends State<LetterJumpOptionPickerScreen<T>> {
   final _scrollController = AutoScrollController();
   final _accessibleController = AccessibleListController(debugName: 'letter_jump');
+  final ValueNotifier<bool> _suppressBackSemantics = ValueNotifier<bool>(false);
 
   bool get _showLetterPicker =>
       widget.options.length >= widget.minimumItemsForLetterPicker &&
@@ -44,6 +45,7 @@ class _LetterJumpOptionPickerScreenState<T>
 
   @override
   void dispose() {
+    _suppressBackSemantics.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -80,6 +82,13 @@ class _LetterJumpOptionPickerScreenState<T>
   }
 
   Future<void> _openLetterPicker() async {
+    // The native jump is already reliable. On iOS, only silence the parent
+    // Back button while the A-Z picker is returning, so VoiceOver does not
+    // announce it immediately before the real target row.
+    if (useNativeIosAccessibleViews) {
+      _suppressBackSemantics.value = true;
+    }
+
     final letter = await Navigator.push<String>(
       context,
       MaterialPageRoute(
@@ -89,13 +98,30 @@ class _LetterJumpOptionPickerScreenState<T>
         ),
       ),
     );
-    if (!mounted || letter == null) return;
+    if (!mounted) return;
+    if (letter == null) {
+      _suppressBackSemantics.value = false;
+      return;
+    }
     await _jumpToLetter(letter);
+
+    // Safety only. Normally the actual target focus event below restores the
+    // Back button semantics much earlier.
+    if (useNativeIosAccessibleViews) {
+      Future<void>.delayed(const Duration(seconds: 3), () {
+        if (mounted && _suppressBackSemantics.value) {
+          _suppressBackSemantics.value = false;
+        }
+      });
+    }
   }
 
   Future<void> _jumpToLetter(String letter) async {
     final index = _firstIndexForLetter(letter);
-    if (index == null || index < 0 || index >= widget.options.length) return;
+    if (index == null || index < 0 || index >= widget.options.length) {
+      _suppressBackSemantics.value = false;
+      return;
+    }
 
     if (useSharedAccessibleViewModel) {
       await _accessibleController.focusAccessibleRow(
@@ -154,8 +180,22 @@ class _LetterJumpOptionPickerScreenState<T>
   @override
   Widget build(BuildContext context) {
     final showLetterPicker = _showLetterPicker;
+    final canPop = Navigator.of(context).canPop();
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppBar(
+        automaticallyImplyLeading: !canPop,
+        leading: canPop
+            ? ValueListenableBuilder<bool>(
+                valueListenable: _suppressBackSemantics,
+                builder: (context, suppress, child) => ExcludeSemantics(
+                  excluding: suppress,
+                  child: child,
+                ),
+                child: const BackButton(),
+              )
+            : null,
+        title: Text(widget.title),
+      ),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               controller: _accessibleController,
@@ -186,6 +226,14 @@ class _LetterJumpOptionPickerScreenState<T>
                 ),
               ],
               onEvent: (event) async {
+                if (event.type == 'focus' &&
+                    event.id?.startsWith('option_') == true &&
+                    _suppressBackSemantics.value) {
+                  // Re-enable Back only after UIKit confirms that VoiceOver
+                  // really acquired a row in the target list.
+                  _suppressBackSemantics.value = false;
+                  return;
+                }
                 if (event.type != 'activate' || event.id == null) return;
                 if (event.id == 'select_letter') {
                   await _openLetterPicker();
