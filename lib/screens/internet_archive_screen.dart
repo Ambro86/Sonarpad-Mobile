@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../models/document_item.dart';
 import '../models/podcast.dart';
 import '../services/document_library_service.dart';
@@ -234,7 +233,7 @@ class _InternetArchiveResultsScreenState
             );
           }
           if (_error != null) {
-            return Center(child: Text(l10n.error(l10n.localizeTechnicalError(_error!))));
+            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
           }
           if (_items.isEmpty) {
             return Center(child: Text(l10n.internetArchiveNoItemsFound));
@@ -371,7 +370,7 @@ class _InternetArchiveItemScreenState
       );
     } catch (error) {
       if (!mounted) return;
-      showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).localizeTechnicalError(error)));
+      showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).technicalErrorGeneric));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -396,7 +395,7 @@ class _InternetArchiveItemScreenState
             if (useSharedAccessibleViewModel) {
               return UniversalAccessibleList(
                 sections: [AccessibleListSection(rows: [
-                  AccessibleListRow(id: 'error', kind: 'text', title: l10n.error(l10n.localizeTechnicalError(snapshot.error!))),
+                  AccessibleListRow(id: 'error', kind: 'text', title: l10n.error(l10n.technicalErrorGeneric)),
                   AccessibleListRow(id: 'retry', title: l10n.retry, kind: 'button'),
                   if (widget.allowSave) AccessibleListRow(id: 'save', title: l10n.saveAudioInDocuments, kind: 'button', enabled: !_saving),
                 ])],
@@ -410,7 +409,7 @@ class _InternetArchiveItemScreenState
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))),
+                Text(l10n.error(l10n.technicalErrorGeneric)),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: _retryLoad,

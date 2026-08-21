@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
 import '../services/gutendex_service.dart';
@@ -36,6 +35,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
     ('de', 'Deutsch'),
     ('pt', 'Português'),
     ('pl', 'Polski'),
+    ('zh', '简体中文'),
   ];
 
   @override
@@ -44,7 +44,11 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
     if (_languageInitialized) return;
     _languageInitialized = true;
     final locale = AppLocalizations.of(context).localeName;
-    final contentLanguage = locale == 'pt_BR' ? 'pt' : locale;
+    final contentLanguage = switch (locale) {
+      'pt_BR' => 'pt',
+      'zh_CN' => 'zh',
+      _ => locale,
+    };
     if (_languages.any((entry) => entry.$1 == contentLanguage)) {
       _language = contentLanguage;
     }
@@ -237,7 +241,7 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
             );
           }
           if (_error != null) {
-            return Center(child: Text(l10n.error(l10n.localizeTechnicalError(_error!))));
+            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
           }
           if (_books.isEmpty) {
             return Center(child: Text(l10n.noGutenbergBooksFound));
@@ -350,7 +354,7 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
     } catch (error) {
       await AppLogger.log('Gutenberg import: error $error');
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).localizeTechnicalError(error)));
+            showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).technicalErrorGeneric));
     } finally {
       if (mounted) {
         setState(() => _importing = false);

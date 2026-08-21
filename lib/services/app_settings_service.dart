@@ -46,7 +46,7 @@ enum WeatherTemperatureUnit {
 }
 
 class AppSettingsService {
-  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de'};
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de', 'zh_CN'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -99,6 +99,7 @@ class AppSettingsService {
     TtsVoiceLanguage('pl', 'Polski'),
     TtsVoiceLanguage('cs', 'Čeština'),
     TtsVoiceLanguage('de', 'Deutsch'),
+    TtsVoiceLanguage('zh-CN', '简体中文'),
   ];
 
   static const ttsVoices = [
@@ -192,6 +193,16 @@ class AppSettingsService {
       voice: 'de-DE-ConradNeural',
       label: 'Conrad',
     ),
+    TtsVoiceOption(
+      languageCode: 'zh-CN',
+      voice: 'zh-CN-XiaoxiaoNeural',
+      label: 'Xiaoxiao',
+    ),
+    TtsVoiceOption(
+      languageCode: 'zh-CN',
+      voice: 'zh-CN-YunxiNeural',
+      label: 'Yunxi',
+    ),
   ];
 
   Future<String> loadAppLanguage() async {
@@ -206,6 +217,9 @@ class AppSettingsService {
       final deviceLanguage = locale.languageCode;
       if (deviceLanguage == 'pt' && locale.countryCode?.toUpperCase() == 'BR') {
         return 'pt_BR';
+      }
+      if (deviceLanguage == 'zh') {
+        return 'zh_CN';
       }
       if (_supportedAppLanguages.contains(deviceLanguage)) {
         return deviceLanguage;
@@ -614,6 +628,7 @@ class AppSettingsService {
       'pl' || 'pl-PL' => 'pl-PL-ZofiaNeural',
       'cs' || 'cs-CZ' => 'cs-CZ-VlastaNeural',
       'de' || 'de-DE' => 'de-DE-KatjaNeural',
+      'zh' || 'zh-CN' || 'zh_CN' => 'zh-CN-XiaoxiaoNeural',
       _ => '',
     };
   }

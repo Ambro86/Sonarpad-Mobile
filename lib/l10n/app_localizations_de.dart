@@ -3264,4 +3264,78 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get radioCommunityLanguageTurkish => 'Türkisch';
+  @override
+  String get simplifiedChineseLanguageName => 'Vereinfachtes Chinesisch';
+
+  @override
+  String get chinaCountryName => 'China';
+
+  @override
+  String get technicalErrorGeneric => 'Technischer Fehler. Bitte versuche es erneut.';
+
+  @override
+  String cinemaTrailerTitle(String title) {
+    return 'Trailer: $title';
+  }
+
+  @override
+  String mediaCutterExportPartProgress(int index, int total) {
+    return 'Teil $index von $total';
+  }
+
+  @override
+  String get mediaCutterExportFinalVerification => 'Abschließende Überprüfung';
+
+  @override
+  String get mediaCutterExportMergeParts => 'Teile zusammenführen';
+
+  @override
+  String get mediaCutterExportFileCheck => 'Dateiprüfung';
+
+  @override
+  String get mediaCutterExportPublishing => 'Veröffentlichung';
+
+  @override
+  String get mediaCutterExportCompletion => 'Abschluss';
+
+
+  @override
+  String get mediaCutterAddTrack => 'Neue Spur hinzufügen';
+
+  @override
+  String get mediaCutterChooseAudioTrack => 'Audiodatei auswählen';
+
+  @override
+  String mediaCutterAddedTrackSelected(String name) => 'Ausgewählte Audiodatei: $name';
+
+  @override
+  String get mediaCutterOriginalTrackVolume => 'Lautstärke der Originalspur';
+
+  @override
+  String get mediaCutterNewTrackVolume => 'Lautstärke der neuen Spur';
+
+  @override
+  String get mediaCutterLoopNewTrack => 'Neue Spur in Schleife wiedergeben';
+
+  @override
+  String get mediaCutterPreviewNewTrack => 'Vorschau anhören';
+
+  @override
+  String get mediaCutterFinalizeTrack => 'Fertigstellen';
+
+  @override
+  String mediaCutterAddedTrackApplied(String name) => 'Neue Spur hinzugefügt: $name';
+
+  @override
+  String get mediaCutterAddedTrackInvalidAudio => 'Die ausgewählte Datei enthält keine gültige Audiospur.';
+
+  @override
+  String get mediaCutterAddedTrackPreviewPreparing => 'Vorschau wird vorbereitet…';
+
+  @override
+  String get mediaCutterAddedTrackPreviewFailed => 'Vorschau konnte nicht erstellt werden.';
+
+  @override
+  String get mediaCutterMixingAddedTrack => 'Neue Spur wird gemischt';
+
 }

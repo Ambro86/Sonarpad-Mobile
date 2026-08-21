@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../services/recent_routes_service.dart';
 import '../services/route_service.dart';
 import 'route_result_screen.dart';
@@ -38,6 +37,7 @@ class _RouteScreenState extends State<RouteScreen> {
         'pl' => 'pl',
         'cs' => 'cz',
         'de' => 'de',
+        'zh_CN' => 'cn',
         _ => 'it',
       };
     }
@@ -122,7 +122,7 @@ class _RouteScreenState extends State<RouteScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.routeError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.routeError(l10n.technicalErrorGeneric));
     } finally {
       if (mounted) setState(() => _calculating = false);
     }
@@ -229,6 +229,7 @@ class _RouteScreenState extends State<RouteScreen> {
       AccessibleOption(value: 'de', label: l10n.radioCountryOptionDe),
       AccessibleOption(value: 'gb', label: l10n.radioCountryOptionGb),
       AccessibleOption(value: 'us', label: l10n.radioCountryOptionUs),
+      AccessibleOption(value: 'cn', label: l10n.chinaCountryName),
     ];
     return UniversalAccessibleList(
       sections: [
@@ -354,6 +355,8 @@ class _RouteScreenState extends State<RouteScreen> {
                   value: 'gb', child: Text(l10n.radioCountryOptionGb)),
               DropdownMenuItem(
                   value: 'us', child: Text(l10n.radioCountryOptionUs)),
+              DropdownMenuItem(
+                  value: 'cn', child: Text(l10n.chinaCountryName)),
             ],
             onChanged: (val) {
               if (val != null) setState(() => _countryCode = val);
@@ -479,7 +482,7 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.routeError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.routeError(l10n.technicalErrorGeneric));
     } finally {
       if (mounted) setState(() => _calculating = false);
     }

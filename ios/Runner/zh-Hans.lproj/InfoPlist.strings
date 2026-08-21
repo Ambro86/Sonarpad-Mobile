@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "Sonarpad 仅在您主动使用扫描或图像拍摄功能时访问相机。";
+"NSCalendarsUsageDescription" = "Sonarpad 需要访问日历，以添加您的提醒和日程。";
+"NSCalendarsFullAccessUsageDescription" = "Sonarpad 需要完整访问日历，以便直接在系统日历中创建并保存您的提醒和日程。";
+"NSContactsUsageDescription" = "Sonarpad 需要访问通讯录，以便为日历日程添加受邀者。";

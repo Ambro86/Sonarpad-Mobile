@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../l10n/app_localizations.dart';
 
 class TrailerScreen extends StatefulWidget {
   final String videoUrl;
@@ -53,7 +54,7 @@ class _TrailerScreenState extends State<TrailerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trailer: ${widget.title}'),
+        title: Text(AppLocalizations.of(context).cinemaTrailerTitle(widget.title)),
       ),
       backgroundColor: Colors.black,
       body: SafeArea(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../models/document_item.dart';
 import '../models/podcast.dart';
 import '../services/document_library_service.dart';
@@ -183,7 +182,7 @@ class _LibrivoxResultsScreenState extends State<_LibrivoxResultsScreen> {
             );
           }
           if (_error != null) {
-            return Center(child: Text(l10n.error(l10n.localizeTechnicalError(_error!))));
+            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
           }
           if (_books.isEmpty) {
             return Center(child: Text(l10n.noLibrivoxAudiobooksFound));
@@ -304,7 +303,7 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
             showStatusMessage(context, AppLocalizations.of(context).librivoxAudiobookSaved);
     } catch (error) {
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).localizeTechnicalError(error)));
+            showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).technicalErrorGeneric));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -326,7 +325,7 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))));
+            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
           }
           final book = snapshot.data ?? widget.book;
           if (useSharedAccessibleViewModel) {

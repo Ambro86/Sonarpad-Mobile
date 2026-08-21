@@ -4211,5 +4211,121 @@
   "radioCommunityLanguageTurkish": "Turco",
   "@radioCommunityLanguageTurkish": {
     "description": "Localized text for radioCommunityLanguageTurkish."
+  },
+  "simplifiedChineseLanguageName": "Cinese semplificato",
+  "@simplifiedChineseLanguageName": {
+    "description": "Localized name for Simplified Chinese in the language selector."
+  },
+  "chinaCountryName": "Cina",
+  "@chinaCountryName": {
+    "description": "Localized country name for China."
+  },
+  "technicalErrorGeneric": "Errore tecnico. Riprova.",
+  "@technicalErrorGeneric": {
+    "description": "Generic localized message used when a service returns a legacy non-localized technical error."
+  },
+  "cinemaTrailerTitle": "Trailer: {title}",
+  "@cinemaTrailerTitle": {
+    "description": "Localized title for the trailer player screen.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterExportPartProgress": "Parte {index} di {total}",
+  "@mediaCutterExportPartProgress": {
+    "description": "Progress label while exporting Media Cutter parts.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterExportFinalVerification": "Verifica finale",
+  "@mediaCutterExportFinalVerification": {
+    "description": "Localized text for mediaCutterExportFinalVerification."
+  },
+  "mediaCutterExportMergeParts": "Unione delle parti",
+  "@mediaCutterExportMergeParts": {
+    "description": "Localized text for mediaCutterExportMergeParts."
+  },
+  "mediaCutterExportFileCheck": "Controllo del file",
+  "@mediaCutterExportFileCheck": {
+    "description": "Localized text for mediaCutterExportFileCheck."
+  },
+  "mediaCutterExportPublishing": "Pubblicazione",
+  "@mediaCutterExportPublishing": {
+    "description": "Localized text for mediaCutterExportPublishing."
+  },
+  "mediaCutterExportCompletion": "Completamento",
+  "@mediaCutterExportCompletion": {
+    "description": "Localized text for mediaCutterExportCompletion."
+  },
+  "mediaCutterAddTrack": "Aggiungi nuova traccia",
+  "@mediaCutterAddTrack": {
+    "description": "Localized text for mediaCutterAddTrack."
+  },
+  "mediaCutterChooseAudioTrack": "Scegli file audio",
+  "@mediaCutterChooseAudioTrack": {
+    "description": "Localized text for mediaCutterChooseAudioTrack."
+  },
+  "mediaCutterAddedTrackSelected": "File audio selezionato: {name}",
+  "@mediaCutterAddedTrackSelected": {
+    "description": "Localized text for mediaCutterAddedTrackSelected.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterOriginalTrackVolume": "Volume traccia originale",
+  "@mediaCutterOriginalTrackVolume": {
+    "description": "Localized text for mediaCutterOriginalTrackVolume."
+  },
+  "mediaCutterNewTrackVolume": "Volume nuova traccia",
+  "@mediaCutterNewTrackVolume": {
+    "description": "Localized text for mediaCutterNewTrackVolume."
+  },
+  "mediaCutterLoopNewTrack": "Riproduci la nuova traccia in loop",
+  "@mediaCutterLoopNewTrack": {
+    "description": "Localized text for mediaCutterLoopNewTrack."
+  },
+  "mediaCutterPreviewNewTrack": "Ascolta anteprima",
+  "@mediaCutterPreviewNewTrack": {
+    "description": "Localized text for mediaCutterPreviewNewTrack."
+  },
+  "mediaCutterFinalizeTrack": "Finalizza",
+  "@mediaCutterFinalizeTrack": {
+    "description": "Localized text for mediaCutterFinalizeTrack."
+  },
+  "mediaCutterAddedTrackApplied": "Nuova traccia aggiunta: {name}",
+  "@mediaCutterAddedTrackApplied": {
+    "description": "Localized text for mediaCutterAddedTrackApplied.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterAddedTrackInvalidAudio": "Il file selezionato non contiene una traccia audio valida.",
+  "@mediaCutterAddedTrackInvalidAudio": {
+    "description": "Localized text for mediaCutterAddedTrackInvalidAudio."
+  },
+  "mediaCutterAddedTrackPreviewPreparing": "Preparazione anteprima…",
+  "@mediaCutterAddedTrackPreviewPreparing": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewPreparing."
+  },
+  "mediaCutterAddedTrackPreviewFailed": "Impossibile creare l’anteprima.",
+  "@mediaCutterAddedTrackPreviewFailed": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewFailed."
+  },
+  "mediaCutterMixingAddedTrack": "Mix della nuova traccia",
+  "@mediaCutterMixingAddedTrack": {
+    "description": "Localized text for mediaCutterMixingAddedTrack."
   }
+
 }

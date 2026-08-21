@@ -3359,4 +3359,78 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get radioCommunityLanguageTurkish => 'Turkish';
+  @override
+  String get simplifiedChineseLanguageName => 'Simplified Chinese';
+
+  @override
+  String get chinaCountryName => 'China';
+
+  @override
+  String get technicalErrorGeneric => 'Technical error. Please try again.';
+
+  @override
+  String cinemaTrailerTitle(String title) {
+    return 'Trailer: $title';
+  }
+
+  @override
+  String mediaCutterExportPartProgress(int index, int total) {
+    return 'Part $index of $total';
+  }
+
+  @override
+  String get mediaCutterExportFinalVerification => 'Final verification';
+
+  @override
+  String get mediaCutterExportMergeParts => 'Merging parts';
+
+  @override
+  String get mediaCutterExportFileCheck => 'File check';
+
+  @override
+  String get mediaCutterExportPublishing => 'Publishing';
+
+  @override
+  String get mediaCutterExportCompletion => 'Completion';
+
+
+  @override
+  String get mediaCutterAddTrack => 'Add new track';
+
+  @override
+  String get mediaCutterChooseAudioTrack => 'Choose audio file';
+
+  @override
+  String mediaCutterAddedTrackSelected(String name) => 'Selected audio file: $name';
+
+  @override
+  String get mediaCutterOriginalTrackVolume => 'Original track volume';
+
+  @override
+  String get mediaCutterNewTrackVolume => 'New track volume';
+
+  @override
+  String get mediaCutterLoopNewTrack => 'Loop the new track';
+
+  @override
+  String get mediaCutterPreviewNewTrack => 'Listen to preview';
+
+  @override
+  String get mediaCutterFinalizeTrack => 'Finalize';
+
+  @override
+  String mediaCutterAddedTrackApplied(String name) => 'New track added: $name';
+
+  @override
+  String get mediaCutterAddedTrackInvalidAudio => 'The selected file does not contain a valid audio track.';
+
+  @override
+  String get mediaCutterAddedTrackPreviewPreparing => 'Preparing preview…';
+
+  @override
+  String get mediaCutterAddedTrackPreviewFailed => 'Unable to create the preview.';
+
+  @override
+  String get mediaCutterMixingAddedTrack => 'Mixing the new track';
+
 }

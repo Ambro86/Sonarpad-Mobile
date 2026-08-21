@@ -435,6 +435,7 @@ class _WeatherForecastView extends StatelessWidget {
       'pt' || 'pt_BR' => _weatherCodeLabelsPt,
       'pl' => _weatherCodeLabelsPl,
       'de' => _weatherCodeLabelsDe,
+      'zh' => _weatherCodeLabelsZh,
       _ => _weatherCodeLabelsIt,
     };
     return labels[code] ?? code.toString();
@@ -794,6 +795,38 @@ const Map<int, String> _weatherCodeLabelsPt = {
   99: 'Trovoada com granizo intenso',
 };
 
+
+
+const Map<int, String> _weatherCodeLabelsZh = {
+  0: '晴朗',
+  1: '大部晴朗',
+  2: '局部多云',
+  3: '阴天',
+  45: '雾',
+  48: '冻雾',
+  51: '小毛毛雨',
+  53: '中等毛毛雨',
+  55: '强毛毛雨',
+  56: '轻微冻毛毛雨',
+  57: '强冻毛毛雨',
+  61: '小雨',
+  63: '中雨',
+  65: '大雨',
+  66: '轻微冻雨',
+  67: '强冻雨',
+  71: '小雪',
+  73: '中雪',
+  75: '大雪',
+  77: '米雪',
+  80: '小阵雨',
+  81: '中等阵雨',
+  82: '强阵雨',
+  85: '小阵雪',
+  86: '强阵雪',
+  95: '雷暴',
+  96: '伴有小冰雹的雷暴',
+  99: '伴有强冰雹的雷暴',
+};
 
 enum _WeatherError {
   cityNotFound,

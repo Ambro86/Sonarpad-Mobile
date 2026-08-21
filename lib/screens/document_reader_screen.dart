@@ -11,7 +11,6 @@ import 'package:flutter/services.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:path_provider/path_provider.dart';
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
@@ -236,7 +235,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           footnoteLabel: l10n.documentFootnoteLabel,
         );
         _documentText = normalizeDocumentUnicode(result.text);
-        _loadError = result.error == null ? null : l10n.localizeTechnicalError(result.error);
+        _loadError = result.error == null ? null : l10n.technicalErrorGeneric;
       }
 
       if (_documentText.isNotEmpty) {
@@ -272,7 +271,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
     } catch (e) {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
-      _loadError = l10n.fileOpenError(l10n.localizeTechnicalError(e));
+      _loadError = l10n.fileOpenError(l10n.technicalErrorGeneric);
     } finally {
       if (mounted) {
         setState(() => _loadingText = false);
@@ -1314,10 +1313,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (readingToken != _readingToken) return;
       setState(() {
         _playingChunkIndex = -1;
-        _ttsStatus = '${AppLocalizations.of(context).ttsError}: $e';
+        final l10n = AppLocalizations.of(context);
+        _ttsStatus = '${l10n.ttsError}: ${l10n.technicalErrorGeneric}';
         _activeTtsEngine = null;
       });
-            showStatusMessage(context, '${AppLocalizations.of(context).ttsError}: $e');
+            final l10n = AppLocalizations.of(context);
+      showStatusMessage(context, '${l10n.ttsError}: ${l10n.technicalErrorGeneric}');
     } finally {
       if (mounted && readingToken == _readingToken) {
         setState(() => _speaking = false);
@@ -1641,7 +1642,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         'DocumentReaderScreen: errore eliminazione paragrafi: $error',
       );
       if (!mounted) return;
-      showStatusMessage(context, '${l10n.saveError}: $error');
+      showStatusMessage(context, '${l10n.saveError}: ${l10n.technicalErrorGeneric}');
     }
   }
 
@@ -1748,7 +1749,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } catch (e) {
       dev.log('DocumentReaderScreen: Errore fatale durante il salvataggio: $e');
       if (!mounted) return;
-            showStatusMessage(context, '${AppLocalizations.of(context).saveError}: $e');
+            final l10n = AppLocalizations.of(context);
+      showStatusMessage(context, '${l10n.saveError}: ${l10n.technicalErrorGeneric}');
     }
   }
 

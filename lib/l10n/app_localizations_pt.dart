@@ -3265,6 +3265,80 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radioCommunityLanguageTurkish => 'Turco';
 
 
+
+  @override
+  String get simplifiedChineseLanguageName => 'Chinês simplificado';
+
+  @override
+  String get chinaCountryName => 'China';
+
+  @override
+  String get technicalErrorGeneric => 'Erro técnico. Tente novamente.';
+
+  @override
+  String cinemaTrailerTitle(String title) {
+    return 'Trailer: $title';
+  }
+
+  @override
+  String mediaCutterExportPartProgress(int index, int total) {
+    return 'Parte $index de $total';
+  }
+
+  @override
+  String get mediaCutterExportFinalVerification => 'Verificação final';
+
+  @override
+  String get mediaCutterExportMergeParts => 'União das partes';
+
+  @override
+  String get mediaCutterExportFileCheck => 'Verificação do ficheiro';
+
+  @override
+  String get mediaCutterExportPublishing => 'Publicação';
+
+  @override
+  String get mediaCutterExportCompletion => 'Conclusão';
+
+  @override
+  String get mediaCutterAddTrack => 'Adicionar nova faixa';
+
+  @override
+  String get mediaCutterChooseAudioTrack => 'Escolher ficheiro de áudio';
+
+  @override
+  String mediaCutterAddedTrackSelected(String name) => 'Ficheiro de áudio selecionado: $name';
+
+  @override
+  String get mediaCutterOriginalTrackVolume => 'Volume da faixa original';
+
+  @override
+  String get mediaCutterNewTrackVolume => 'Volume da nova faixa';
+
+  @override
+  String get mediaCutterLoopNewTrack => 'Reproduzir a nova faixa em ciclo';
+
+  @override
+  String get mediaCutterPreviewNewTrack => 'Ouvir pré-visualização';
+
+  @override
+  String get mediaCutterFinalizeTrack => 'Finalizar';
+
+  @override
+  String mediaCutterAddedTrackApplied(String name) => 'Nova faixa adicionada: $name';
+
+  @override
+  String get mediaCutterAddedTrackInvalidAudio => 'O ficheiro selecionado não contém uma faixa de áudio válida.';
+
+  @override
+  String get mediaCutterAddedTrackPreviewPreparing => 'A preparar a pré-visualização…';
+
+  @override
+  String get mediaCutterAddedTrackPreviewFailed => 'Não foi possível criar a pré-visualização.';
+
+  @override
+  String get mediaCutterMixingAddedTrack => 'A misturar a nova faixa';
+
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -6527,5 +6601,79 @@ class AppLocalizationsPtBr extends AppLocalizations {
   @override
   String get radioCommunityLanguageTurkish => 'Turco';
 
+
+
+  @override
+  String get simplifiedChineseLanguageName => 'Chinês simplificado';
+
+  @override
+  String get chinaCountryName => 'China';
+
+  @override
+  String get technicalErrorGeneric => 'Erro técnico. Tente novamente.';
+
+  @override
+  String cinemaTrailerTitle(String title) {
+    return 'Trailer: $title';
+  }
+
+  @override
+  String mediaCutterExportPartProgress(int index, int total) {
+    return 'Parte $index de $total';
+  }
+
+  @override
+  String get mediaCutterExportFinalVerification => 'Verificação final';
+
+  @override
+  String get mediaCutterExportMergeParts => 'União das partes';
+
+  @override
+  String get mediaCutterExportFileCheck => 'Verificação do arquivo';
+
+  @override
+  String get mediaCutterExportPublishing => 'Publicação';
+
+  @override
+  String get mediaCutterExportCompletion => 'Conclusão';
+
+  @override
+  String get mediaCutterAddTrack => 'Adicionar nova faixa';
+
+  @override
+  String get mediaCutterChooseAudioTrack => 'Escolher arquivo de áudio';
+
+  @override
+  String mediaCutterAddedTrackSelected(String name) => 'Arquivo de áudio selecionado: $name';
+
+  @override
+  String get mediaCutterOriginalTrackVolume => 'Volume da faixa original';
+
+  @override
+  String get mediaCutterNewTrackVolume => 'Volume da nova faixa';
+
+  @override
+  String get mediaCutterLoopNewTrack => 'Reproduzir a nova faixa em loop';
+
+  @override
+  String get mediaCutterPreviewNewTrack => 'Ouvir prévia';
+
+  @override
+  String get mediaCutterFinalizeTrack => 'Finalizar';
+
+  @override
+  String mediaCutterAddedTrackApplied(String name) => 'Nova faixa adicionada: $name';
+
+  @override
+  String get mediaCutterAddedTrackInvalidAudio => 'O arquivo selecionado não contém uma faixa de áudio válida.';
+
+  @override
+  String get mediaCutterAddedTrackPreviewPreparing => 'Preparando a prévia…';
+
+  @override
+  String get mediaCutterAddedTrackPreviewFailed => 'Não foi possível criar a prévia.';
+
+  @override
+  String get mediaCutterMixingAddedTrack => 'Mixando a nova faixa';
 
 }

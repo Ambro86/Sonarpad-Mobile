@@ -2018,5 +2018,745 @@
   "radioCommunityLanguageTurkish": "Turco",
   "@radioCommunityLanguageTurkish": {
     "description": "Localized text for radioCommunityLanguageTurkish."
+  },
+  "simplifiedChineseLanguageName": "Chinês simplificado",
+  "@simplifiedChineseLanguageName": {
+    "description": "Localized name for Simplified Chinese in the language selector."
+  },
+  "chinaCountryName": "China",
+  "@chinaCountryName": {
+    "description": "Localized country name for China."
+  },
+  "technicalErrorGeneric": "Erro técnico. Tente novamente.",
+  "@technicalErrorGeneric": {
+    "description": "Generic localized message used when a service returns a legacy non-localized technical error."
+  },
+  "cinemaTrailerTitle": "Trailer: {title}",
+  "@cinemaTrailerTitle": {
+    "description": "Localized title for the trailer player screen.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@sonarTubeFavoriteAdded": {
+    "description": "Localized text for sonarTubeFavoriteAdded.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@sonarTubeFavoriteRemoved": {
+    "description": "Localized text for sonarTubeFavoriteRemoved.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@convertMediaFailed": {
+    "description": "Localized text for convertMediaFailed.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@positionLabel": {
+    "description": "Localized text for positionLabel.",
+    "placeholders": {
+      "position": {
+        "example": "3",
+        "type": "int"
+      },
+      "targetName": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@error": {
+    "description": "Localized text for error.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@source": {
+    "description": "Localized text for source.",
+    "placeholders": {
+      "source": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@chunkCreated": {
+    "description": "Localized text for chunkCreated.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@playingChunk": {
+    "description": "Localized text for playingChunk.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      },
+      "size": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@readingFinished": {
+    "description": "Localized text for readingFinished.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "libraryPath": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "@edgeTtsError": {
+    "description": "Localized text for edgeTtsError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@audioChunksReady": {
+    "description": "Localized text for audioChunksReady.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastResultsFound": {
+    "description": "Localized text for podcastResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastSearchError": {
+    "description": "Localized text for podcastSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@subscribedTo": {
+    "description": "Localized text for subscribedTo.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "@subscriptionError": {
+    "description": "Localized text for subscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@podcastSubscriptionError": {
+    "description": "Localized text for podcastSubscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@localAudioFilesFound": {
+    "description": "Localized text for localAudioFilesFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastImportComplete": {
+    "description": "Localized text for podcastImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastImportError": {
+    "description": "Localized text for podcastImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@podcastExportError": {
+    "description": "Localized text for podcastExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@downloaded": {
+    "description": "Localized text for downloaded.",
+    "placeholders": {
+      "path": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "@episodeError": {
+    "description": "Localized text for episodeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@nowPlayingTitle": {
+    "description": "Localized text for nowPlayingTitle.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "@playbackPositionValue": {
+    "description": "Localized text for playbackPositionValue.",
+    "placeholders": {
+      "position": {
+        "example": "01:23",
+        "type": "String"
+      },
+      "duration": {
+        "example": "01:23",
+        "type": "String"
+      }
+    }
+  },
+  "@volumeValue": {
+    "description": "Localized text for volumeValue.",
+    "placeholders": {
+      "percentage": {
+        "example": "80",
+        "type": "int"
+      }
+    }
+  },
+  "@sharedDocumentsImportComplete": {
+    "description": "Localized text for sharedDocumentsImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@libraryLoadError": {
+    "description": "Localized text for libraryLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@fileOpenError": {
+    "description": "Localized text for fileOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@fileInaccessible": {
+    "description": "Localized text for fileInaccessible.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@documentAddError": {
+    "description": "Localized text for documentAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@documentRemoveError": {
+    "description": "Localized text for documentRemoveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@documentAddedOn": {
+    "description": "Localized text for documentAddedOn.",
+    "placeholders": {
+      "date": {
+        "example": "1 gennaio 2026",
+        "type": "String"
+      }
+    }
+  },
+  "@documentTypeDescription": {
+    "description": "Localized text for documentTypeDescription.",
+    "placeholders": {
+      "extension": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@removeItem": {
+    "description": "Localized text for removeItem.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@noDocumentSearchResults": {
+    "description": "Localized text for noDocumentSearchResults.",
+    "placeholders": {
+      "query": {
+        "example": "testo",
+        "type": "String"
+      }
+    }
+  },
+  "@documentSearchResultParagraph": {
+    "description": "Localized text for documentSearchResultParagraph.",
+    "placeholders": {
+      "number": {
+        "example": "4",
+        "type": "int"
+      }
+    }
+  },
+  "@settingsVoiceTestError": {
+    "description": "Localized text for settingsVoiceTestError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@settingsVoiceSaveError": {
+    "description": "Localized text for settingsVoiceSaveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@settingsCodeRequestBody": {
+    "description": "Localized text for settingsCodeRequestBody.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "surname": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "email": {
+        "example": "Example",
+        "type": "String"
+      },
+      "os": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@settingsMailOpenError": {
+    "description": "Localized text for settingsMailOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@sourceLanguageValue": {
+    "description": "Localized text for sourceLanguageValue.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "@sourceDurationValue": {
+    "description": "Localized text for sourceDurationValue.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "@poetryDbLineCount": {
+    "description": "Localized text for poetryDbLineCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@bookmarkSet": {
+    "description": "Localized text for bookmarkSet.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@versionBuild": {
+    "description": "Localized text for versionBuild.",
+    "placeholders": {
+      "version": {
+        "example": "Example",
+        "type": "String"
+      },
+      "buildNumber": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@whatIsNewInVersion": {
+    "description": "Localized text for whatIsNewInVersion.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@changelogLoadError": {
+    "description": "Localized text for changelogLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@visitSonarpadSiteWithUrl": {
+    "description": "Localized text for visitSonarpadSiteWithUrl.",
+    "placeholders": {
+      "url": {
+        "example": "https://example.com",
+        "type": "String"
+      }
+    }
+  },
+  "@importZipError": {
+    "description": "Localized text for importZipError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@dropboxLoadFolderError": {
+    "description": "Localized text for dropboxLoadFolderError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@dropboxImportError": {
+    "description": "Localized text for dropboxImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@reminderSaved": {
+    "description": "Localized text for reminderSaved.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@radioResultsFound": {
+    "description": "Localized text for radioResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@radioSearchError": {
+    "description": "Localized text for radioSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@radioNowPlaying": {
+    "description": "Localized text for radioNowPlaying.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@radioPlayError": {
+    "description": "Localized text for radioPlayError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@radioFavoriteAdded": {
+    "description": "Localized text for radioFavoriteAdded.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@radioFavoriteRemoved": {
+    "description": "Localized text for radioFavoriteRemoved.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@radioCommunityAddError": {
+    "description": "Localized text for radioCommunityAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@deleteRecordingsConfirmation": {
+    "description": "Localized text for deleteRecordingsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@routeError": {
+    "description": "Localized text for routeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@routeDistanceMeters": {
+    "description": "Localized text for routeDistanceMeters.",
+    "placeholders": {
+      "meters": {
+        "type": "int",
+        "example": "250"
+      }
+    }
+  },
+  "@routeDistanceKilometers": {
+    "description": "Localized text for routeDistanceKilometers.",
+    "placeholders": {
+      "kilometers": {
+        "type": "String",
+        "example": "1.5"
+      }
+    }
+  },
+  "@routeDurationMinutes": {
+    "description": "Localized text for routeDurationMinutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "@routeDurationHoursMinutes": {
+    "description": "Localized text for routeDurationHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "1"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "@cinemaReleased": {
+    "description": "Localized text for cinemaReleased.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
+    }
+  },
+  "@cinemaWillRelease": {
+    "description": "Localized text for cinemaWillRelease.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
+    }
+  },
+  "mediaCutterExportPartProgress": "Parte {index} de {total}",
+  "@mediaCutterExportPartProgress": {
+    "description": "Progress label while exporting Media Cutter parts.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterExportFinalVerification": "Verificação final",
+  "@mediaCutterExportFinalVerification": {
+    "description": "Localized text for mediaCutterExportFinalVerification."
+  },
+  "mediaCutterExportMergeParts": "União das partes",
+  "@mediaCutterExportMergeParts": {
+    "description": "Localized text for mediaCutterExportMergeParts."
+  },
+  "mediaCutterExportFileCheck": "Verificação do arquivo",
+  "@mediaCutterExportFileCheck": {
+    "description": "Localized text for mediaCutterExportFileCheck."
+  },
+  "mediaCutterExportPublishing": "Publicação",
+  "@mediaCutterExportPublishing": {
+    "description": "Localized text for mediaCutterExportPublishing."
+  },
+  "mediaCutterExportCompletion": "Conclusão",
+  "@mediaCutterExportCompletion": {
+    "description": "Localized text for mediaCutterExportCompletion."
+  },
+  "mediaCutterAddTrack": "Adicionar nova faixa",
+  "@mediaCutterAddTrack": {
+    "description": "Localized text for mediaCutterAddTrack."
+  },
+  "mediaCutterChooseAudioTrack": "Escolher arquivo de áudio",
+  "@mediaCutterChooseAudioTrack": {
+    "description": "Localized text for mediaCutterChooseAudioTrack."
+  },
+  "mediaCutterAddedTrackSelected": "Arquivo de áudio selecionado: {name}",
+  "@mediaCutterAddedTrackSelected": {
+    "description": "Localized text for mediaCutterAddedTrackSelected.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterOriginalTrackVolume": "Volume da faixa original",
+  "@mediaCutterOriginalTrackVolume": {
+    "description": "Localized text for mediaCutterOriginalTrackVolume."
+  },
+  "mediaCutterNewTrackVolume": "Volume da nova faixa",
+  "@mediaCutterNewTrackVolume": {
+    "description": "Localized text for mediaCutterNewTrackVolume."
+  },
+  "mediaCutterLoopNewTrack": "Reproduzir a nova faixa em loop",
+  "@mediaCutterLoopNewTrack": {
+    "description": "Localized text for mediaCutterLoopNewTrack."
+  },
+  "mediaCutterPreviewNewTrack": "Ouvir prévia",
+  "@mediaCutterPreviewNewTrack": {
+    "description": "Localized text for mediaCutterPreviewNewTrack."
+  },
+  "mediaCutterFinalizeTrack": "Finalizar",
+  "@mediaCutterFinalizeTrack": {
+    "description": "Localized text for mediaCutterFinalizeTrack."
+  },
+  "mediaCutterAddedTrackApplied": "Nova faixa adicionada: {name}",
+  "@mediaCutterAddedTrackApplied": {
+    "description": "Localized text for mediaCutterAddedTrackApplied.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterAddedTrackInvalidAudio": "O arquivo selecionado não contém uma faixa de áudio válida.",
+  "@mediaCutterAddedTrackInvalidAudio": {
+    "description": "Localized text for mediaCutterAddedTrackInvalidAudio."
+  },
+  "mediaCutterAddedTrackPreviewPreparing": "Preparando a prévia…",
+  "@mediaCutterAddedTrackPreviewPreparing": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewPreparing."
+  },
+  "mediaCutterAddedTrackPreviewFailed": "Não foi possível criar a prévia.",
+  "@mediaCutterAddedTrackPreviewFailed": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewFailed."
+  },
+  "mediaCutterMixingAddedTrack": "Mixando a nova faixa",
+  "@mediaCutterMixingAddedTrack": {
+    "description": "Localized text for mediaCutterMixingAddedTrack."
   }
+
 }

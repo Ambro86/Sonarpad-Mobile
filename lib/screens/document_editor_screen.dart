@@ -52,7 +52,8 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, '${AppLocalizations.of(context).saveError}: $e');
+            final l10n = AppLocalizations.of(context);
+      showStatusMessage(context, '${l10n.saveError}: ${l10n.technicalErrorGeneric}');
     } finally {
       if (mounted) setState(() => _saving = false);
     }

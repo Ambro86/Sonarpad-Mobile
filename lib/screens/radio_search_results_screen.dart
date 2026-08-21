@@ -267,5 +267,5 @@ String _radioSearchErrorMessage(AppLocalizations l10n, Object? error) {
   if (isRadioBrowserConnectionError) {
     return l10n.radioBrowserConnectionError;
   }
-  return l10n.radioSearchRawError(raw);
+  return l10n.radioSearchRawError(l10n.technicalErrorGeneric);
 }

@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import '../services/audio_player_service.dart';
@@ -676,7 +675,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       showStatusMessage(context, message);
     } catch (e) {
       if (!mounted) return;
-      showStatusMessage(context, l10n.error(l10n.localizeTechnicalError(e)));
+      showStatusMessage(context, l10n.error(l10n.technicalErrorGeneric));
     } finally {
       if (mounted) {
         setState(() => _clearingPodcastCache = false);
@@ -720,7 +719,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      showStatusMessage(context, l10n.settingsVoiceTestError(l10n.localizeTechnicalError(e)));
+      showStatusMessage(context, l10n.settingsVoiceTestError(l10n.technicalErrorGeneric));
     } finally {
       if (mounted) {
         setState(() => _testingVoice = false);
@@ -955,7 +954,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await launchUrl(url);
       } catch (e) {
         if (!mounted) return;
-                showStatusMessage(context, l10n.settingsMailOpenError(l10n.localizeTechnicalError(e)));
+                showStatusMessage(context, l10n.settingsMailOpenError(l10n.technicalErrorGeneric));
       }
     }
   }
@@ -1006,6 +1005,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'pl' => l10n.radioLanguagePl,
               'cs' => l10n.radioLanguageCs,
               'de' => l10n.german,
+              'zh_CN' => l10n.simplifiedChineseLanguageName,
               _ => l10n.italian,
             },
             options: [
@@ -1018,6 +1018,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AccessibleOption(value: 'pl', label: l10n.radioLanguagePl),
               AccessibleOption(value: 'cs', label: l10n.radioLanguageCs),
               AccessibleOption(value: 'de', label: l10n.german),
+              AccessibleOption(value: 'zh_CN', label: l10n.simplifiedChineseLanguageName),
             ],
           ),
           AccessibleListRow(
@@ -1445,6 +1446,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             value: 'cs', child: Text(l10n.radioLanguageCs)),
                         DropdownMenuItem(
                             value: 'de', child: Text(l10n.german)),
+                        DropdownMenuItem(
+                            value: 'zh_CN', child: Text(l10n.simplifiedChineseLanguageName)),
                       ],
                       onChanged: (value) {
                         if (value == null || value == _appLanguage) return;

@@ -158,3 +158,7 @@ Gli asset originali del Media Cutter sono in `assets/audio/effect_sources/`.
 Sono inclusi nel bundle Flutter, convertiti in PCM soltanto al primo utilizzo e
 gestiti dal motore C++ con crossfade e ducking. Nessun campione audio di terze
 parti è incorporato.
+
+## Localizzazioni
+
+Le regole per ARB, Calendario/citazioni e controllo delle stringhe hard-coded sono documentate in `LOCALIZATION_ARCHITECTURE.md`.

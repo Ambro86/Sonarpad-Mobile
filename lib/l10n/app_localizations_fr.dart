@@ -3392,4 +3392,78 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get radioCommunityLanguageTurkish => 'Turc';
+  @override
+  String get simplifiedChineseLanguageName => 'Chinois simplifié';
+
+  @override
+  String get chinaCountryName => 'Chine';
+
+  @override
+  String get technicalErrorGeneric => 'Erreur technique. Réessayez.';
+
+  @override
+  String cinemaTrailerTitle(String title) {
+    return 'Bande-annonce : $title';
+  }
+
+  @override
+  String mediaCutterExportPartProgress(int index, int total) {
+    return 'Partie $index sur $total';
+  }
+
+  @override
+  String get mediaCutterExportFinalVerification => 'Vérification finale';
+
+  @override
+  String get mediaCutterExportMergeParts => 'Fusion des parties';
+
+  @override
+  String get mediaCutterExportFileCheck => 'Vérification du fichier';
+
+  @override
+  String get mediaCutterExportPublishing => 'Publication';
+
+  @override
+  String get mediaCutterExportCompletion => 'Finalisation';
+
+
+  @override
+  String get mediaCutterAddTrack => 'Ajouter une nouvelle piste';
+
+  @override
+  String get mediaCutterChooseAudioTrack => 'Choisir un fichier audio';
+
+  @override
+  String mediaCutterAddedTrackSelected(String name) => 'Fichier audio sélectionné : $name';
+
+  @override
+  String get mediaCutterOriginalTrackVolume => 'Volume de la piste d’origine';
+
+  @override
+  String get mediaCutterNewTrackVolume => 'Volume de la nouvelle piste';
+
+  @override
+  String get mediaCutterLoopNewTrack => 'Lire la nouvelle piste en boucle';
+
+  @override
+  String get mediaCutterPreviewNewTrack => 'Écouter l’aperçu';
+
+  @override
+  String get mediaCutterFinalizeTrack => 'Finaliser';
+
+  @override
+  String mediaCutterAddedTrackApplied(String name) => 'Nouvelle piste ajoutée : $name';
+
+  @override
+  String get mediaCutterAddedTrackInvalidAudio => 'Le fichier sélectionné ne contient pas de piste audio valide.';
+
+  @override
+  String get mediaCutterAddedTrackPreviewPreparing => 'Préparation de l’aperçu…';
+
+  @override
+  String get mediaCutterAddedTrackPreviewFailed => 'Impossible de créer l’aperçu.';
+
+  @override
+  String get mediaCutterMixingAddedTrack => 'Mixage de la nouvelle piste';
+
 }

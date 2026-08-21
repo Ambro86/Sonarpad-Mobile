@@ -9,7 +9,6 @@ import 'package:flutter/semantics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../models/news_article.dart';
 import '../services/app_settings_service.dart';
 import '../services/news_service.dart';
@@ -55,6 +54,7 @@ class _NewsScreenState extends State<NewsScreen> {
         'pl' => NewsLanguage.polish,
         'cs' => NewsLanguage.czech,
         'de' => NewsLanguage.german,
+        'zh_CN' => NewsLanguage.chineseSimplified,
         _ => NewsLanguage.italian,
       };
       _service.prefetchTinyfishFallbackOnlyPolicy();
@@ -166,7 +166,8 @@ class _NewsScreenState extends State<NewsScreen> {
       await _loadSources();
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, '${AppLocalizations.of(context).errorPrefix}: $e');
+            final l10n = AppLocalizations.of(context);
+      showStatusMessage(context, '${l10n.errorPrefix}: ${l10n.technicalErrorGeneric}');
     }
   }
 
@@ -260,7 +261,7 @@ class _NewsScreenState extends State<NewsScreen> {
             showStatusMessage(context, l10n.rssImportComplete(added));
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.rssImportError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.rssImportError(l10n.technicalErrorGeneric));
     }
   }
 
@@ -285,7 +286,7 @@ class _NewsScreenState extends State<NewsScreen> {
             showStatusMessage(context, l10n.rssExportComplete);
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.rssExportError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.rssExportError(l10n.technicalErrorGeneric));
     }
   }
 
@@ -426,7 +427,7 @@ class _AddCommunityNewsSourceScreenState
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      showStatusMessage(context, l10n.newsCommunityAddError(l10n.localizeTechnicalError(e)));
+      showStatusMessage(context, l10n.newsCommunityAddError(l10n.technicalErrorGeneric));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -574,7 +575,7 @@ class _CommunityNewsSourcesScreenState
       if (!mounted) return;
       showStatusMessage(
         context,
-        AppLocalizations.of(context).newsCommunityAddToLibraryError(AppLocalizations.of(context).localizeTechnicalError(e)),
+        AppLocalizations.of(context).newsCommunityAddToLibraryError(AppLocalizations.of(context).technicalErrorGeneric),
       );
     } finally {
       if (mounted) {
@@ -607,7 +608,7 @@ class _CommunityNewsSourcesScreenState
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(l10n.newsCommunitySourcesError(l10n.localizeTechnicalError(snapshot.error!))),
+                child: Text(l10n.newsCommunitySourcesError(l10n.technicalErrorGeneric)),
               ),
             );
           }
@@ -770,11 +771,13 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     final lang = switch (widget.language) {
       NewsLanguage.portuguese => 'pt-PT',
       NewsLanguage.portugueseBrazil => 'pt-BR',
+      NewsLanguage.chineseSimplified => 'zh-CN',
       _ => widget.language.code,
     };
     final ceidLanguage = switch (widget.language) {
       NewsLanguage.portuguese => 'pt-150',
       NewsLanguage.portugueseBrazil => 'pt-419',
+      NewsLanguage.chineseSimplified => 'zh-Hans',
       _ => widget.language.code,
     };
     final savedCity = await _settings.getNewsLocalCity();
@@ -813,6 +816,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         NewsLanguage.polish => 'PL',
         NewsLanguage.czech => 'CZ',
         NewsLanguage.german => 'DE',
+        NewsLanguage.chineseSimplified => 'CN',
         NewsLanguage.italian => 'IT',
       };
 
@@ -1150,7 +1154,8 @@ class _NewsSourceList extends StatelessWidget {
       }
     } catch (e) {
       if (!context.mounted) return;
-            showStatusMessage(context, '${AppLocalizations.of(context).errorPrefix}: $e');
+            final l10n = AppLocalizations.of(context);
+      showStatusMessage(context, '${l10n.errorPrefix}: ${l10n.technicalErrorGeneric}');
     }
   }
 
@@ -1634,7 +1639,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           );
         }
         if (snapshot.hasError) {
-          return Center(child: Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))));
+          return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
         }
         final allArticles = snapshot.data ?? const [];
         final articles = allArticles.where((a) => !_readUris.contains(a.id)).toList();

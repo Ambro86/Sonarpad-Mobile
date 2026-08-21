@@ -182,6 +182,9 @@ class SonarpadApp extends StatefulWidget {
     if (normalized.toLowerCase() == 'pt_br') {
       return const Locale('pt', 'BR');
     }
+    if (normalized.toLowerCase() == 'zh_cn') {
+      return const Locale('zh', 'CN');
+    }
     return Locale(normalized.split('_').first);
   }
 

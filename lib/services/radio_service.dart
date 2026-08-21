@@ -444,13 +444,13 @@ class RadioService {
   }
 
   int _preferredLanguagePriority(String code) {
-    const preferred = ['it', 'en', 'tr', 'de', 'es', 'fr', 'pt', 'pl'];
+    const preferred = ['it', 'en', 'tr', 'de', 'es', 'fr', 'pt', 'pl', 'zh'];
     final index = preferred.indexOf(code.toLowerCase());
     return index < 0 ? 1000 : index;
   }
 
   int _preferredCountryPriority(String code) {
-    const preferred = ['it', 'us', 'gb', 'tr', 'de', 'fr', 'es', 'pt', 'pl'];
+    const preferred = ['it', 'us', 'gb', 'tr', 'de', 'fr', 'es', 'pt', 'pl', 'cn'];
     final normalized = code.toLowerCase();
     final index = preferred.indexOf(normalized);
     return index < 0 ? 1000 : index;
@@ -705,7 +705,7 @@ class RadioService {
         'uk' => 'ukrainian',
         'lt' => 'lithuanian',
         'ru' => 'russian',
-        'zh' => 'chinese',
+        'zh' || 'country:cn' => 'chinese',
         'hi' => 'hindi',
         'country:de' || 'country:at' || 'de' => 'german',
         _ => null,

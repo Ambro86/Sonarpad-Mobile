@@ -50,15 +50,16 @@ void main() {
   });
 
   test('calendar has German saints, holidays and daily quotes', () {
-    final saints = File('lib/services/calendar/saints_data.dart').readAsStringSync();
-    final calendar =
-        File('lib/services/calendar/calendar_service.dart').readAsStringSync();
+    final calendar = jsonDecode(
+      File('assets/calendar/de.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final saints = calendar['saints'] as Map<String, dynamic>;
+    final quotes = calendar['quotes'] as List<dynamic>;
+    final holidays = calendar['holidays'] as Map<String, dynamic>;
 
-    expect(RegExp(r'^    "de":', multiLine: true).allMatches(saints).length, 365);
-    expect(calendar, contains("if (lang == 'de')"));
-    expect(calendar, contains('Tag der Deutschen Einheit'));
-    expect(calendar, contains('final quotesDe = ['));
-    expect(calendar, contains("case 'de':\n        list = quotesDe;"));
+    expect(saints.length, 365);
+    expect(quotes.length, 128);
+    expect(holidays.values, contains('Tag der Deutschen Einheit'));
   });
 
   test('German dynamic services do not fall back to Italian', () {

@@ -22,7 +22,7 @@ import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
+import 'media_cutter_add_track_screen.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -468,6 +468,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool _skippingDeletedPart = false;
   bool _hasUnsavedEdit = false;
   bool _effectPreviewPreparing = false;
+  MediaCutterAddedTrackSettings? _addedTrackSettings;
   Future<String>? _underwaterBubblesSourcePath;
   final Map<_MediaPartEffect, Future<String?>> _nativeDspAssetPcmPaths = {};
   final Set<String> _nativeDspAssetCachePaths = {};
@@ -878,6 +879,37 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
+  Future<void> _openAddTrackScreen() async {
+    if (_inputPath.isEmpty || _loading || _saving) return;
+    final l10n = AppLocalizations.of(context);
+    await _pause();
+    if (!mounted) return;
+    final source = _inputProbe ??
+        await _probeMedia(_inputPath, purpose: 'add track source');
+    if (!mounted) return;
+    final result = await Navigator.of(context)
+        .push<MediaCutterAddedTrackSettings>(
+      MaterialPageRoute<MediaCutterAddedTrackSettings>(
+        builder: (_) => MediaCutterAddTrackScreen(
+          sourcePath: _inputPath,
+          sourceHasAudio: source.hasAudio,
+          initialSettings: _addedTrackSettings,
+        ),
+      ),
+    );
+    if (!mounted || result == null) return;
+    setState(() {
+      _addedTrackSettings = result;
+      _hasUnsavedEdit = true;
+      _status = l10n.mediaCutterAddedTrackApplied(p.basename(result.path));
+    });
+    unawaited(_logMediaCutter(
+      'added track configured path="${result.path}" '
+      'originalVolume=${result.originalVolumePercent}% '
+      'newTrackVolume=${result.newTrackVolumePercent}% loop=${result.loop}',
+    ));
+  }
+
   Future<void> _pickOutput() async {
     final l10n = AppLocalizations.of(context);
     final initialDirectory = _outputDirectory.isEmpty
@@ -1055,6 +1087,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _restoringOriginalAudioSource = false;
       _stoppingPartPreview = false;
       _hasUnsavedEdit = false;
+      _addedTrackSettings = null;
     });
 
     unawaited(_logMediaCutter(
@@ -1138,7 +1171,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await AppLogger.log(
           'Media cutter: load failed path="$path" error=$error');
       if (!mounted) return;
-      setState(() => _status = l10n.mediaCutterLoadFailed(l10n.localizeTechnicalError(error)));
+      setState(() => _status = l10n.mediaCutterLoadFailed(l10n.technicalErrorGeneric));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -1596,7 +1629,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await AppLogger.log('Media cutter: effects preview failed error=$error');
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      _showSnack(l10n.mediaCutterSaveFailed(l10n.localizeTechnicalError(error)));
+      _showSnack(l10n.mediaCutterSaveFailed(l10n.technicalErrorGeneric));
     } finally {
       _effectPreviewPreparing = false;
       final dspDirectory = previewDspWorkDir;
@@ -1941,6 +1974,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _parts = [];
       _deletedPartHistory.clear();
       _hasUnsavedEdit = false;
+      _addedTrackSettings = null;
       _status = null;
       _showVideoPreview = false;
       _isVideo = false;
@@ -2562,7 +2596,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         _showSnack(
-          l10n.mediaCutterSaveFailed(l10n.localizeTechnicalError(error)),
+          l10n.mediaCutterSaveFailed(l10n.technicalErrorGeneric),
         );
       }
     }
@@ -3518,7 +3552,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await AppLogger.log('Media cutter: save failed error=$error');
       if (!mounted) return;
       setState(() => _status = l10n.mediaCutterReady);
-      _showSnack(l10n.mediaCutterSaveFailed(l10n.localizeTechnicalError(error)));
+      _showSnack(l10n.mediaCutterSaveFailed(l10n.technicalErrorGeneric));
     } finally {
       if (wakelockEnabled) {
         await _disableExportWakelock();
@@ -3783,6 +3817,143 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       ]);
     }
     return args;
+  }
+
+  String _addedTrackVolumeValue(int percent) =>
+      (percent / 100).clamp(0.0, 1.0).toStringAsFixed(3);
+
+  Future<void> _mixAddedTrackIntoExport({
+    required String assembledPath,
+    required String pendingOutput,
+    required Duration expectedDuration,
+    required _MediaProbeInfo source,
+    required MediaCutterAddedTrackSettings settings,
+    required _MediaCutterExportController exportController,
+    required AppLocalizations l10n,
+  }) async {
+    final trackFile = File(settings.path);
+    if (!await trackFile.exists()) {
+      throw StateError('La nuova traccia audio non è più disponibile.');
+    }
+    final trackProbe = await _probeMedia(
+      settings.path,
+      purpose: 'added track export',
+    );
+    if (!trackProbe.hasAudio) {
+      throw StateError('La nuova traccia non contiene audio utilizzabile.');
+    }
+
+    final pendingFile = File(pendingOutput);
+    if (await pendingFile.exists()) await pendingFile.delete();
+    final args = <String>[
+      '-y',
+      '-fflags',
+      '+genpts',
+      '-i',
+      assembledPath,
+    ];
+    if (settings.loop) args.addAll(['-stream_loop', '-1']);
+    args.addAll(['-i', settings.path]);
+
+    final originalVolume = _addedTrackVolumeValue(
+      settings.originalVolumePercent,
+    );
+    final addedVolume = _addedTrackVolumeValue(
+      settings.newTrackVolumePercent,
+    );
+    if (source.hasAudio) {
+      args.addAll([
+        '-filter_complex',
+        '[0:a:0]volume=$originalVolume,aresample=44100,'
+            'aformat=sample_fmts=fltp:sample_rates=44100:'
+            'channel_layouts=stereo[orig];'
+            '[1:a:0]volume=$addedVolume,aresample=44100,'
+            'aformat=sample_fmts=fltp:sample_rates=44100:'
+            'channel_layouts=stereo[added];'
+            '[orig][added]amix=inputs=2:duration=first:'
+            'dropout_transition=0:normalize=0,'
+            'alimiter=limit=0.98[outa]',
+      ]);
+    } else {
+      args.addAll([
+        '-filter_complex',
+        '[1:a:0]volume=$addedVolume,aresample=44100,'
+            'aformat=sample_fmts=fltp:sample_rates=44100:'
+            'channel_layouts=stereo,'
+            'apad=pad_dur=${_ffmpegTime(expectedDuration)}[outa]',
+      ]);
+    }
+
+    if (source.hasVideo) {
+      args.addAll([
+        '-map',
+        '0:v:0',
+        '-map',
+        '[outa]',
+        '-c:v',
+        'copy',
+        '-c:a',
+        'aac',
+        '-b:a',
+        '192k',
+        '-ar',
+        '44100',
+        '-ac',
+        '2',
+        '-metadata:s:v:0',
+        'rotate=0',
+        '-movflags',
+        '+faststart',
+      ]);
+    } else {
+      args.addAll([
+        '-map',
+        '[outa]',
+        ..._productionCodecArguments(
+          inputPath: pendingOutput,
+          hasVideo: false,
+          hasAudio: true,
+        ),
+      ]);
+    }
+    args.addAll([
+      '-t',
+      _ffmpegTime(expectedDuration),
+      '-sn',
+      '-dn',
+      '-map_metadata',
+      '-1',
+      '-map_chapters',
+      '-1',
+      '-avoid_negative_ts',
+      'make_zero',
+      pendingOutput,
+    ]);
+
+    _updateExportProgress(
+      exportController,
+      0.93,
+      l10n.mediaCutterMixingAddedTrack,
+    );
+    await _runFfmpeg(
+      args,
+      'mix added track',
+      exportController,
+      onStatistics: (statistics) {
+        final elapsed = statistics.getTime().clamp(
+              0,
+              expectedDuration.inMilliseconds,
+            );
+        final fraction = expectedDuration.inMilliseconds <= 0
+            ? 1.0
+            : elapsed / expectedDuration.inMilliseconds;
+        _updateExportProgress(
+          exportController,
+          0.93 + (fraction * 0.035),
+          l10n.mediaCutterMixingAddedTrack,
+        );
+      },
+    );
   }
 
   String _pendingOutputPath(String output) {
@@ -4102,6 +4273,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     await _cleanupStalePendingOutputs(p.dirname(output));
     final ext = source.hasVideo ? '.mp4' : _outputExtension(input);
     final pendingOutput = _pendingOutputPath(output);
+    final addedTrack = _addedTrackSettings;
+    final assemblyOutput = addedTrack == null
+        ? pendingOutput
+        : p.join(workDir.path, 'assembled$ext');
     final segmentPaths = <String>[];
     final totalDurationMs = keptParts.fold<int>(
       0,
@@ -4349,12 +4524,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (exportController.cancelled) {
         throw const _MediaCutterExportCancelled();
       }
-      final pendingFile = File(pendingOutput);
-      if (await pendingFile.exists()) await pendingFile.delete();
+      final assemblyFile = File(assemblyOutput);
+      if (await assemblyFile.exists()) await assemblyFile.delete();
 
       if (segmentPaths.length == 1) {
         try {
-          await File(segmentPaths.single).copy(pendingOutput);
+          await File(segmentPaths.single).copy(assemblyOutput);
         } on FileSystemException catch (error) {
           throw _MediaCutterOutputWriteException(
             'Impossibile scrivere il file temporaneo nella cartella scelta: '
@@ -4367,7 +4542,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           l10n.mediaCutterExportFinalVerification,
         );
         unawaited(_logMediaCutter(
-          'export single segment staged pending="$pendingOutput"',
+          'export single segment staged assembly="$assemblyOutput"',
         ));
       } else {
         final listFile = File(p.join(workDir.path, 'concat.txt'));
@@ -4395,7 +4570,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             '-movflags',
             '+faststart',
           ],
-          pendingOutput,
+          assemblyOutput,
         ];
         _updateExportProgress(
           exportController,
@@ -4410,7 +4585,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             exportController,
           );
           await _validateExportFile(
-            path: pendingOutput,
+            path: assemblyOutput,
             expectedVideo: source.hasVideo,
             expectedAudio: source.hasAudio,
             expectedDuration: expectedDuration,
@@ -4425,7 +4600,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             'Media cutter: concat stream copy rejected; '
             'retrying with re-encode error=$error',
           );
-          if (await pendingFile.exists()) await pendingFile.delete();
+          if (await assemblyFile.exists()) await assemblyFile.delete();
         }
 
         if (needsReencode) {
@@ -4464,7 +4639,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               '-movflags',
               '+faststart',
             ],
-            pendingOutput,
+            assemblyOutput,
           ]);
           await _runFfmpeg(
             concatReencodeArgs,
@@ -4472,6 +4647,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             exportController,
           );
         }
+      }
+
+      if (addedTrack != null) {
+        await _mixAddedTrackIntoExport(
+          assembledPath: assemblyOutput,
+          pendingOutput: pendingOutput,
+          expectedDuration: expectedDuration,
+          source: source,
+          settings: addedTrack,
+          exportController: exportController,
+          l10n: l10n,
+        );
       }
 
       final currentInputStat = await inputFile.stat();
@@ -4486,13 +4673,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
       _updateExportProgress(
         exportController,
-        0.95,
+        0.97,
         l10n.mediaCutterExportFileCheck,
       );
       await _validateExportFile(
         path: pendingOutput,
         expectedVideo: source.hasVideo,
-        expectedAudio: source.hasAudio,
+        expectedAudio: source.hasAudio || addedTrack != null,
         expectedDuration: expectedDuration,
         label: 'file finale',
         exportController: exportController,
@@ -6725,6 +6912,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       AccessibleListRow(id: 'open', title: l10n.mediaCutterOpenFile, kind: 'button', enabled: !_loading && !_saving),
       if (_displayName.isNotEmpty)
         AccessibleListRow(id: 'selected', kind: 'text', title: l10n.mediaCutterSelectedFile(_displayName)),
+      if (_inputPath.isNotEmpty)
+        AccessibleListRow(
+          id: 'add_track',
+          title: l10n.mediaCutterAddTrack,
+          subtitle: _addedTrackSettings == null
+              ? null
+              : p.basename(_addedTrackSettings!.path),
+          kind: 'button',
+          enabled: canUseMedia,
+        ),
       AccessibleListRow(
         id: 'output',
         title: l10n.convertMediaOutput,
@@ -6813,6 +7010,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           await _changeMode();
         } else if (id == 'open' && event.type == 'activate') {
           await _pickInput();
+        } else if (id == 'add_track' && event.type == 'activate') {
+          await _openAddTrackScreen();
         } else if (id == 'output' && event.type == 'activate') {
           await _pickOutput();
         } else if (id == 'seek_step' && event.type == 'activate') {
@@ -6920,6 +7119,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               if (_displayName.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text(l10n.mediaCutterSelectedFile(_displayName)),
+              ],
+              if (_inputPath.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: canUseMedia ? _openAddTrackScreen : null,
+                  icon: const Icon(Icons.library_music),
+                  label: Text(l10n.mediaCutterAddTrack),
+                ),
+                if (_addedTrackSettings != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.mediaCutterAddedTrackSelected(
+                      p.basename(_addedTrackSettings!.path),
+                    ),
+                  ),
+                ],
               ],
               const SizedBox(height: 12),
               TextField(

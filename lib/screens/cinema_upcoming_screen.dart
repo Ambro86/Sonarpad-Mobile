@@ -3,7 +3,6 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../widgets/universal_accessible_view.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
@@ -44,7 +43,7 @@ class _CinemaUpcomingScreenState extends State<CinemaUpcomingScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = AppLocalizations.of(context).localizeTechnicalError(e);
+        _error = AppLocalizations.of(context).technicalErrorGeneric;
         _loading = false;
       });
     }

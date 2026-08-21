@@ -4,7 +4,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../services/dropbox_service.dart';
 import '../services/document_library_service.dart';
 import '../utils/status_message.dart';
@@ -142,7 +141,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = l10n.dropboxLoadFolderError(l10n.localizeTechnicalError(e));
+          _error = l10n.dropboxLoadFolderError(l10n.technicalErrorGeneric);
           _loading = false;
           _isAuthenticating = false;
         });
@@ -190,7 +189,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = l10n.dropboxImportError(l10n.localizeTechnicalError(e));
+          _error = l10n.dropboxImportError(l10n.technicalErrorGeneric);
           _loading = false;
         });
       }

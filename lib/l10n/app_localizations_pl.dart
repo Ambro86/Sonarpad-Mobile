@@ -3367,4 +3367,78 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get radioCommunityLanguageTurkish => 'Turecki';
+  @override
+  String get simplifiedChineseLanguageName => 'Chiński uproszczony';
+
+  @override
+  String get chinaCountryName => 'Chiny';
+
+  @override
+  String get technicalErrorGeneric => 'Błąd techniczny. Spróbuj ponownie.';
+
+  @override
+  String cinemaTrailerTitle(String title) {
+    return 'Zwiastun: $title';
+  }
+
+  @override
+  String mediaCutterExportPartProgress(int index, int total) {
+    return 'Część $index z $total';
+  }
+
+  @override
+  String get mediaCutterExportFinalVerification => 'Końcowa weryfikacja';
+
+  @override
+  String get mediaCutterExportMergeParts => 'Łączenie części';
+
+  @override
+  String get mediaCutterExportFileCheck => 'Sprawdzanie pliku';
+
+  @override
+  String get mediaCutterExportPublishing => 'Publikowanie';
+
+  @override
+  String get mediaCutterExportCompletion => 'Kończenie';
+
+
+  @override
+  String get mediaCutterAddTrack => 'Dodaj nową ścieżkę';
+
+  @override
+  String get mediaCutterChooseAudioTrack => 'Wybierz plik audio';
+
+  @override
+  String mediaCutterAddedTrackSelected(String name) => 'Wybrany plik audio: $name';
+
+  @override
+  String get mediaCutterOriginalTrackVolume => 'Głośność oryginalnej ścieżki';
+
+  @override
+  String get mediaCutterNewTrackVolume => 'Głośność nowej ścieżki';
+
+  @override
+  String get mediaCutterLoopNewTrack => 'Odtwarzaj nową ścieżkę w pętli';
+
+  @override
+  String get mediaCutterPreviewNewTrack => 'Odsłuchaj podgląd';
+
+  @override
+  String get mediaCutterFinalizeTrack => 'Zakończ';
+
+  @override
+  String mediaCutterAddedTrackApplied(String name) => 'Dodano nową ścieżkę: $name';
+
+  @override
+  String get mediaCutterAddedTrackInvalidAudio => 'Wybrany plik nie zawiera prawidłowej ścieżki audio.';
+
+  @override
+  String get mediaCutterAddedTrackPreviewPreparing => 'Przygotowywanie podglądu…';
+
+  @override
+  String get mediaCutterAddedTrackPreviewFailed => 'Nie można utworzyć podglądu.';
+
+  @override
+  String get mediaCutterMixingAddedTrack => 'Miksowanie nowej ścieżki';
+
 }

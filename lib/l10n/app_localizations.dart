@@ -13,6 +13,7 @@ import 'app_localizations_fr.dart';
 import 'app_localizations_it.dart';
 import 'app_localizations_pl.dart';
 import 'app_localizations_pt.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -109,6 +110,7 @@ abstract class AppLocalizations {
     Locale('pl'),
     Locale('pt'),
     Locale('pt', 'BR'),
+    Locale('zh', 'CN'),
   ];
 
   /// Localized text for appTitle.
@@ -5614,6 +5616,38 @@ abstract class AppLocalizations {
   String get radioLanguageTr;
   String get radioCountryOptionTr;
   String get radioCommunityLanguageTurkish;
+
+  /// Localized name of Simplified Chinese in the language selector.
+  String get simplifiedChineseLanguageName;
+
+  /// Localized country name for China.
+  String get chinaCountryName;
+
+  /// Generic localized message for legacy technical errors.
+  String get technicalErrorGeneric;
+
+  /// Localized title for the trailer player screen.
+  String cinemaTrailerTitle(String title);
+
+  String mediaCutterExportPartProgress(int index, int total);
+  String get mediaCutterExportFinalVerification;
+  String get mediaCutterExportMergeParts;
+  String get mediaCutterExportFileCheck;
+  String get mediaCutterExportPublishing;
+  String get mediaCutterExportCompletion;
+  String get mediaCutterAddTrack;
+  String get mediaCutterChooseAudioTrack;
+  String mediaCutterAddedTrackSelected(String name);
+  String get mediaCutterOriginalTrackVolume;
+  String get mediaCutterNewTrackVolume;
+  String get mediaCutterLoopNewTrack;
+  String get mediaCutterPreviewNewTrack;
+  String get mediaCutterFinalizeTrack;
+  String mediaCutterAddedTrackApplied(String name);
+  String get mediaCutterAddedTrackInvalidAudio;
+  String get mediaCutterAddedTrackPreviewPreparing;
+  String get mediaCutterAddedTrackPreviewFailed;
+  String get mediaCutterMixingAddedTrack;
 }
 
 class _AppLocalizationsDelegate
@@ -5635,6 +5669,7 @@ class _AppLocalizationsDelegate
     'it',
     'pl',
     'pt',
+    'zh',
   ].contains(locale.languageCode);
 
   @override
@@ -5663,6 +5698,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
         return AppLocalizationsPtBr();
       }
       return AppLocalizationsPt();
+    case 'zh':
+      return AppLocalizationsZhCn();
   }
 
   throw FlutterError(

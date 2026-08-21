@@ -327,7 +327,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
       }
     } catch (e) {
       if (!mounted || readingToken != _readingToken) return;
-            showStatusMessage(context, l10n.edgeTtsError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.edgeTtsError(l10n.technicalErrorGeneric));
     } finally {
       if (mounted && readingToken == _readingToken) {
         setState(() {

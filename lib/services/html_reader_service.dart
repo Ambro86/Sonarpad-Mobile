@@ -549,6 +549,7 @@ class HtmlReaderService {
       'pl' => 'Nieznany tytuł',
       'cs' => 'Neznámý název',
       'de' => 'Unbekannter Titel',
+      'zh' || 'zh_CN' => '未知标题',
       _ => 'Titolo sconosciuto',
     };
     for (var line in rawContent.split('\n')) {
@@ -609,6 +610,10 @@ class HtmlReaderService {
         return "Von";
       case 'en':
         return "By";
+      case 'zh':
+      case 'zh_CN':
+      case 'zh-CN':
+        return "作者：";
       default:
         return "Di";
     }
@@ -637,6 +642,7 @@ class HtmlReaderService {
       'pl' => 'Nie znaleziono tytułu',
       'cs' => 'Název nenalezen',
       'de' => 'Titel nicht gefunden',
+      'zh' || 'zh_CN' => '未找到标题',
       _ => 'Titolo non trovato',
     };
   }

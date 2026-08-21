@@ -9,7 +9,6 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/podcast_service.dart';
@@ -121,6 +120,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
         return 'cz';
       case 'de':
         return 'de';
+      case 'zh_CN':
+        return 'cn';
       case 'it':
       default:
         return 'it';
@@ -301,7 +302,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
       } catch (_) {}
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.podcastSubscriptionError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.podcastSubscriptionError(l10n.technicalErrorGeneric));
     }
   }
 
@@ -329,7 +330,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
             showStatusMessage(context, l10n.podcastImportComplete(added));
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.podcastImportError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.podcastImportError(l10n.technicalErrorGeneric));
     }
   }
 
@@ -351,7 +352,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
             showStatusMessage(context, l10n.podcastExportComplete);
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.podcastExportError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.podcastExportError(l10n.technicalErrorGeneric));
     }
   }
 
@@ -377,7 +378,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
       showStatusMessage(context, l10n.podcastRemoved);
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, '${AppLocalizations.of(context).errorPrefix}: $e');
+            final l10n = AppLocalizations.of(context);
+      showStatusMessage(context, '${l10n.errorPrefix}: ${l10n.technicalErrorGeneric}');
     }
   }
 
@@ -920,7 +922,7 @@ class _PodcastSearchResultsScreenState
       Navigator.pop(context, result.feedUrl);
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.subscriptionError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.subscriptionError(l10n.technicalErrorGeneric));
     }
   }
 
@@ -957,7 +959,7 @@ class _PodcastSearchResultsScreenState
           }
           if (snapshot.hasError) {
             return Center(
-                child: Text(l10n.podcastSearchError(l10n.localizeTechnicalError(snapshot.error!))));
+                child: Text(l10n.podcastSearchError(l10n.technicalErrorGeneric)));
           }
           final results = snapshot.data ?? const [];
           if (results.isEmpty) {
@@ -1080,7 +1082,7 @@ class _PodcastSearchDetailScreenState
       Navigator.pop(context, widget.result.feedUrl);
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.subscriptionError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.subscriptionError(l10n.technicalErrorGeneric));
     }
   }
 
@@ -1153,7 +1155,7 @@ class _PodcastSearchDetail extends StatelessWidget {
                     title: snapshot.connectionState != ConnectionState.done
                         ? l10n.loadingPodcastInfo
                         : snapshot.hasError
-                            ? l10n.error(l10n.localizeTechnicalError(snapshot.error!))
+                            ? l10n.error(l10n.technicalErrorGeneric)
                             : (description.isEmpty ? l10n.noPodcastDescription : description),
                     kind: 'text',
                   ),
@@ -1201,7 +1203,7 @@ class _PodcastSearchDetail extends StatelessWidget {
                 ),
               )
             else if (snapshot.hasError)
-              Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!)))
+              Text(l10n.error(l10n.technicalErrorGeneric))
             else
               Text(description.isEmpty
                   ? l10n.noPodcastDescription

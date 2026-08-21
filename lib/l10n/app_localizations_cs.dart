@@ -3367,4 +3367,78 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get radioCommunityLanguageTurkish => 'Turečtina';
+  @override
+  String get simplifiedChineseLanguageName => 'Zjednodušená čínština';
+
+  @override
+  String get chinaCountryName => 'Čína';
+
+  @override
+  String get technicalErrorGeneric => 'Technická chyba. Zkuste to znovu.';
+
+  @override
+  String cinemaTrailerTitle(String title) {
+    return 'Upoutávka: $title';
+  }
+
+  @override
+  String mediaCutterExportPartProgress(int index, int total) {
+    return 'Část $index z $total';
+  }
+
+  @override
+  String get mediaCutterExportFinalVerification => 'Závěrečná kontrola';
+
+  @override
+  String get mediaCutterExportMergeParts => 'Slučování částí';
+
+  @override
+  String get mediaCutterExportFileCheck => 'Kontrola souboru';
+
+  @override
+  String get mediaCutterExportPublishing => 'Publikování';
+
+  @override
+  String get mediaCutterExportCompletion => 'Dokončení';
+
+
+  @override
+  String get mediaCutterAddTrack => 'Přidat novou stopu';
+
+  @override
+  String get mediaCutterChooseAudioTrack => 'Vybrat zvukový soubor';
+
+  @override
+  String mediaCutterAddedTrackSelected(String name) => 'Vybraný zvukový soubor: $name';
+
+  @override
+  String get mediaCutterOriginalTrackVolume => 'Hlasitost původní stopy';
+
+  @override
+  String get mediaCutterNewTrackVolume => 'Hlasitost nové stopy';
+
+  @override
+  String get mediaCutterLoopNewTrack => 'Přehrávat novou stopu ve smyčce';
+
+  @override
+  String get mediaCutterPreviewNewTrack => 'Poslechnout náhled';
+
+  @override
+  String get mediaCutterFinalizeTrack => 'Dokončit';
+
+  @override
+  String mediaCutterAddedTrackApplied(String name) => 'Nová stopa přidána: $name';
+
+  @override
+  String get mediaCutterAddedTrackInvalidAudio => 'Vybraný soubor neobsahuje platnou zvukovou stopu.';
+
+  @override
+  String get mediaCutterAddedTrackPreviewPreparing => 'Příprava náhledu…';
+
+  @override
+  String get mediaCutterAddedTrackPreviewFailed => 'Náhled se nepodařilo vytvořit.';
+
+  @override
+  String get mediaCutterMixingAddedTrack => 'Míchání nové stopy';
+
 }

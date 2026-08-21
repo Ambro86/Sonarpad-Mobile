@@ -54,6 +54,7 @@
 		DE100002DE100002DE100002 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B5C /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B1C2D3E4F5061728394A5B6C /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		C1D2E3F40516273849A5B6C7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		A11Y0002A11Y0002A11Y0002 /* SonarpadNativeAccessibleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SonarpadNativeAccessibleView.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
@@ -201,6 +202,7 @@
 				de,
 				pt,
 				"pt-BR",
+				"zh-Hans",
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
@@ -323,6 +325,7 @@
 				DE100002DE100002DE100002 /* de */,
 				A1B2C3D4E5F60718293A4B5C /* pt */,
 				B1C2D3E4F5061728394A5B6C /* pt-BR */,
+				C1D2E3F40516273849A5B6C7 /* zh-Hans */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

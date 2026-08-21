@@ -4190,5 +4190,145 @@
   "radioCommunityLanguageTurkish": "Turecki",
   "@radioCommunityLanguageTurkish": {
     "description": "Localized text for radioCommunityLanguageTurkish."
+  },
+  "simplifiedChineseLanguageName": "Chiński uproszczony",
+  "@simplifiedChineseLanguageName": {
+    "description": "Localized name for Simplified Chinese in the language selector."
+  },
+  "chinaCountryName": "Chiny",
+  "@chinaCountryName": {
+    "description": "Localized country name for China."
+  },
+  "technicalErrorGeneric": "Błąd techniczny. Spróbuj ponownie.",
+  "@technicalErrorGeneric": {
+    "description": "Generic localized message used when a service returns a legacy non-localized technical error."
+  },
+  "cinemaTrailerTitle": "Zwiastun: {title}",
+  "@cinemaTrailerTitle": {
+    "description": "Localized title for the trailer player screen.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@sonarTubeFavoriteAdded": {
+    "description": "Localized text for sonarTubeFavoriteAdded.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@sonarTubeFavoriteRemoved": {
+    "description": "Localized text for sonarTubeFavoriteRemoved.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@deleteRecordingsConfirmation": {
+    "description": "Localized text for deleteRecordingsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterExportPartProgress": "Część {index} z {total}",
+  "@mediaCutterExportPartProgress": {
+    "description": "Progress label while exporting Media Cutter parts.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterExportFinalVerification": "Końcowa weryfikacja",
+  "@mediaCutterExportFinalVerification": {
+    "description": "Localized text for mediaCutterExportFinalVerification."
+  },
+  "mediaCutterExportMergeParts": "Łączenie części",
+  "@mediaCutterExportMergeParts": {
+    "description": "Localized text for mediaCutterExportMergeParts."
+  },
+  "mediaCutterExportFileCheck": "Sprawdzanie pliku",
+  "@mediaCutterExportFileCheck": {
+    "description": "Localized text for mediaCutterExportFileCheck."
+  },
+  "mediaCutterExportPublishing": "Publikowanie",
+  "@mediaCutterExportPublishing": {
+    "description": "Localized text for mediaCutterExportPublishing."
+  },
+  "mediaCutterExportCompletion": "Kończenie",
+  "@mediaCutterExportCompletion": {
+    "description": "Localized text for mediaCutterExportCompletion."
+  },
+  "mediaCutterAddTrack": "Dodaj nową ścieżkę",
+  "@mediaCutterAddTrack": {
+    "description": "Localized text for mediaCutterAddTrack."
+  },
+  "mediaCutterChooseAudioTrack": "Wybierz plik audio",
+  "@mediaCutterChooseAudioTrack": {
+    "description": "Localized text for mediaCutterChooseAudioTrack."
+  },
+  "mediaCutterAddedTrackSelected": "Wybrany plik audio: {name}",
+  "@mediaCutterAddedTrackSelected": {
+    "description": "Localized text for mediaCutterAddedTrackSelected.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterOriginalTrackVolume": "Głośność oryginalnej ścieżki",
+  "@mediaCutterOriginalTrackVolume": {
+    "description": "Localized text for mediaCutterOriginalTrackVolume."
+  },
+  "mediaCutterNewTrackVolume": "Głośność nowej ścieżki",
+  "@mediaCutterNewTrackVolume": {
+    "description": "Localized text for mediaCutterNewTrackVolume."
+  },
+  "mediaCutterLoopNewTrack": "Odtwarzaj nową ścieżkę w pętli",
+  "@mediaCutterLoopNewTrack": {
+    "description": "Localized text for mediaCutterLoopNewTrack."
+  },
+  "mediaCutterPreviewNewTrack": "Odsłuchaj podgląd",
+  "@mediaCutterPreviewNewTrack": {
+    "description": "Localized text for mediaCutterPreviewNewTrack."
+  },
+  "mediaCutterFinalizeTrack": "Zakończ",
+  "@mediaCutterFinalizeTrack": {
+    "description": "Localized text for mediaCutterFinalizeTrack."
+  },
+  "mediaCutterAddedTrackApplied": "Dodano nową ścieżkę: {name}",
+  "@mediaCutterAddedTrackApplied": {
+    "description": "Localized text for mediaCutterAddedTrackApplied.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterAddedTrackInvalidAudio": "Wybrany plik nie zawiera prawidłowej ścieżki audio.",
+  "@mediaCutterAddedTrackInvalidAudio": {
+    "description": "Localized text for mediaCutterAddedTrackInvalidAudio."
+  },
+  "mediaCutterAddedTrackPreviewPreparing": "Przygotowywanie podglądu…",
+  "@mediaCutterAddedTrackPreviewPreparing": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewPreparing."
+  },
+  "mediaCutterAddedTrackPreviewFailed": "Nie można utworzyć podglądu.",
+  "@mediaCutterAddedTrackPreviewFailed": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewFailed."
+  },
+  "mediaCutterMixingAddedTrack": "Miksowanie nowej ścieżki",
+  "@mediaCutterMixingAddedTrack": {
+    "description": "Localized text for mediaCutterMixingAddedTrack."
   }
+
 }

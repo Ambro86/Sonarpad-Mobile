@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -31,7 +30,7 @@ class _AppLogScreenState extends State<AppLogScreen> {
     final logs = await AppLogger.readLogs();
     if (!mounted) return;
     setState(() {
-      _logContent = AppLocalizations.of(context).localizeTechnicalError(logs);
+      _logContent = logs;
       _loading = false;
     });
   }

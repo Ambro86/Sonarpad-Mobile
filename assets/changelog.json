@@ -56,6 +56,13 @@
       "Efeitos de áudio: todas as famílias do arquivo experimental foram recuperadas e as variantes quase idênticas foram agrupadas.",
       "Efeitos de áudio: adicionados recursos originais para coro, guitarra e órgão falantes, rádio antiga e ambientes, com loop suave, redução sob a voz e fallback procedural.",
       "Adicionada uma localização alemã completa do Sonarpad, incluindo as telas principais, o Calendário com santos e citações, o Clima, as Notícias, Podcasts, Rádio e as descrições de permissões do iOS. As funções exclusivas da Itália continuam disponíveis apenas com a interface em italiano."
+    ],
+    "zh_CN": [
+      "媒体剪辑器：为 iPhone 和 Android 添加了共享的 C++ DSP 引擎，用于合唱、声码器、声音变换、机器人、老式收音机和程序化环境音。预览和导出现在使用同一个原生引擎，而 FFmpeg 仍负责解码、编码和视频重封装。",
+      "音频效果：恢复了实验存档中的所有效果系列，并将近似重复的变体合并为更清晰的听感目录。合唱、会说话的吉他、会说话的风琴、一声变多声、机器人、超级机器人和老式收音机均使用专用 DSP 重建。",
+      "媒体剪辑器：使用原生 DSP 效果时，面向正式使用的轨道、时长和解码验证仍然保持启用。",
+      "音频效果：为合唱、会说话的吉他和风琴、老式收音机、丛林、人群、雨声、交通、老虎机、蟋蟀、铃声和掌声添加了原始素材。DSP 会通过交叉淡化循环播放，并在语音出现时自动降低背景音量；如果素材不可用，则使用程序化备用效果。",
+      "新增完整的德语本地化，包括主要界面、带圣人和名言的日历、天气、新闻、播客、广播以及 iOS 权限说明。仅限意大利的功能仍只在意大利语界面中提供。"
     ]
   },
   {
@@ -523,6 +530,57 @@
       "Notícias: removida uma chamada redundante ao leitor durante o carregamento da WebView, reduzindo extrações duplicadas e logs desnecessários.",
       "Notícias: quando o modo Tinyfish apenas como último recurso está ativo, o Sonarpad tenta, nesta ordem, o leitor HTTP, a extração da WebView e por fim o Tinyfish. O Tinyfish não inicia quando a WebView já recuperou o artigo e também é evitado durante os redirecionamentos do Google Notícias.",
       "TV MPD/DASH: corrigida a reprodução sem áudio com o novo leitor VLC. O Sonarpad aguarda agora a PlatformView nativa, inicializa o VLC apenas quando o canal está pronto, seleciona explicitamente a faixa de áudio e usa o MediaKit como alternativa se o VLC não estiver disponível."
+    ],
+    "zh_CN": [
+      "剪辑媒体文件：强化了面向正式使用的导出流程。Sonarpad 现在使用 FFprobe 检测实际流，处理无声视频和带封面的音频文件，在拼接前规范化片段，在快速拼接不可靠时自动重新编码，在开始、结束和拼接位置验证流、时长和解码，并仅在验证通过后通过原子重命名发布输出。发生错误或取消后会清理未完成的临时文件。",
+      "剪辑媒体文件：修复裁剪后的视频可能保存为 0 秒且无音频的问题。FFmpeg 不再误删视频轨道；MP4 文件针对 iOS 进行了优化，并在最终保存前验证每个视频片段。",
+      "TV MPD/DASH：禁用视频时，Sonarpad 会先挂载隐藏的视频表面并启动流，然后才禁用视频轨道；VLC 回退到 MediaKit 后的视频切换问题也已修复。",
+      "TV MPD/DASH：短时 HBBTV 直播窗口会在结束前或停滞后于同一播放器中续期，避免播放卡住；新闻中的原始 WebView 会一直隐藏，直到 Cookie 和同意横幅被处理并清理。",
+      "文档：新增多段落选择模式。可从段落的辅助操作启动；模式启用时，双击可选择或取消选择段落，显示已选数量，并可在确认后一起删除。返回操作会先退出选择模式，而不是关闭文档。",
+      "剪辑媒体文件：为音频效果槽位添加详细诊断日志，以便明确双击是在编辑“音频效果 1/2”，还是错误地创建了新槽位。",
+      "剪辑媒体文件：应用剪辑后，使用滑块播放时会在精确的剪切边界主动跳过已删除区域；在效果界面中，点击“效果 1”会编辑现有效果，而不是创建“效果 2”。",
+      "文档：改进 RTF 文件打开方式；Sonarpad 现在会解析格式并显示可读文本，而不是 RTF 代码。",
+      "新闻：统一 Tinyfish 超时设置；服务器最多等待 15 秒，应用最多等待 20 秒，从而减少卡住的请求和过早触发的备用流程。",
+      "剪辑媒体文件：效果界面现在避免 VoiceOver 重复朗读，并保持所选效果的顺序；在高级剪辑中，每个片段都可通过将起点或终点移动 1 秒进行编辑，并立即预览结果。",
+      "引导剪辑：如果设置了起点或终点但尚未应用就尝试离开，Sonarpad 会先警告，避免丢失已准备的剪辑；引导流程中仍可使用视频旋转。",
+      "引导剪辑现已加入“编辑剪辑”：可将起点或终点向前或向后移动 1 秒并再次试听，无需从头开始。",
+      "改进文档阅读：某些带有特殊重音符号的文本现在朗读更可靠，包括使用 VoiceOver 逐字符移动时。",
+      "改进从数字图书馆打开意大利语 TXT 文件：从“文档”导入时，Sonarpad 现在会修正此前显示错误的重音元音。",
+      "修复“设置”中的语音测试：更改语速或音调后，“测试语音”按钮会立即使用新数值。",
+      "播客新增“选择日期”按钮，更容易查找某一天发布的节目。",
+      "改进新闻阅读后的返回：读完文章后，列表会尝试移动到下一篇文章附近。",
+      "新增按钮，可按字母顺序排列已订阅播客和收藏的广播电台。",
+      "明确了播客中导入本地音频文件的按钮名称，避免与播客导入混淆。",
+      "长字母列表新增“选择字母”按钮，可更快跳转到国家、语言和类别。",
+      "路线新增可选国家：澳大利亚、加拿大、德国、英国和美国。",
+      "新增播客章节的初步支持，适用于节目提供章节信息的情况。",
+      "修复 TTS 设置中的部分西班牙语语音：来自西班牙的语音现在显示为“西班牙语（西班牙）”。",
+      "改进 EPUB 目录支持：Sonarpad 能更可靠地打开章节，并保存索引以便后续更快访问。",
+      "新增选项，可将受支持 EPUB 书籍的脚注包含在正文中，使注释能在其引用位置附近阅读。",
+      "新增选项，可在同一文档中使用多个书签并选择要返回的书签。",
+      "新增“文档滑块步长”选项，可选择使用文档位置滑块前进或后退的距离。",
+      "文档正在朗读时，移动文档位置滑块现在会立即将 TTS 播放重新对齐到新选择的位置。",
+      "新增选项：启用视频时可在横屏中全屏显示视频。",
+      "新闻和播客节目列表现在会在标题旁显示日期和时间，并在可用时使用“今天、昨天、明天、后天”等标签。",
+      "新增查看和清理播客缓存的设置。Sonarpad 还会在缓存过大或包含旧文件时自动清理，但不会删除订阅或历史记录。",
+      "新增文档朗读睡眠定时器：可在选择的时间后自动停止当前文档朗读，支持 Edge 和系统语音，并保存停止位置。开始朗读另一个文档时会重新开始倒计时。",
+      "改进使用耳机暂停/继续文档朗读：使用系统语音时，播放/暂停命令会像 Magic Tap 一样处理，因此无需关闭并重新打开书籍即可继续朗读。",
+      "文档位置滑块现在还会显示预计剩余朗读时间，根据尚未朗读的文本量和所选 TTS 语速计算。",
+      "日历现在包含大幅扩充的每日名言集合，新增大量语句并翻译成所有可用语言。",
+      "新增“剪辑媒体文件”：可打开音频或视频文件、选择分割点、关闭不需要的片段，并只保存希望保留的部分。",
+      "在“剪辑媒体文件”中，现在可以点击已启用片段，从原始文件中预览；已禁用片段不会播放或保存。",
+      "改进“剪辑媒体文件”：删除的片段会从列表中消失、播放时被跳过，并可通过专用按钮恢复。",
+      "改进“剪辑媒体文件”的保存：现在使用与“转换媒体”相同的目标位置流程，显示进度条；如果所选文件夹不可写，会先在 Sonarpad 文件夹准备文件，再打开系统共享面板。",
+      "“剪辑媒体文件”现在可为每个片段调节音量和音频效果，通过一个 VoiceOver 操作“调整效果”完成，最终处理由 FFmpeg 执行。",
+      "新闻新增按钮，可向 Sonarpad 社区提交来源，并浏览所选语言的共享来源，一次点击即可添加到资料库。",
+      "新闻中的 Sonarpad 社区现在始终使用当前选择的新闻语言；提交来源时可输入 RSS Feed 或网站，并在可能时自动发现 Feed。",
+      "媒体剪辑器新增“调整媒体文件移动距离”按钮，可选择滑块每次前进或后退的距离。",
+      "媒体剪辑器得到改进：使用 VoiceOver 时，移动、视频和旋转控件现在显示在滑块之前；靠近现有边界进行分割时可分割附近的保留片段，Sonarpad 会朗读新增了哪个片段。",
+      "在“剪辑媒体文件”中，在现有片段内部进行分割时，现在会把该片段分成两部分，并正确重新编号后续片段。",
+      "“剪辑媒体文件”现在可在“引导剪辑”和“高级剪辑”之间选择。引导剪辑允许设置起点和终点、试听要删除的部分并应用剪辑，同时提供单个文件摘要卡，并将效果应用于整个结果。",
+      "新闻：移除了 WebView 加载页面时一次多余的阅读器调用，减少重复提取尝试和不必要的日志。",
+      "新闻：启用 Tinyfish 仅备用模式时，Sonarpad 现在依次尝试 HTTP 阅读器、WebView 提取，最后才尝试 Tinyfish。WebView 已成功恢复文章时不会再启动 Tinyfish，Google News 重定向期间也会避免启动。",
+      "MPD/DASH 电视：修复新 VLC 播放器无声的问题。Sonarpad 现在会等待原生 PlatformView，只在其通道准备好后初始化 VLC，显式选择音轨，并在 VLC 不可用时回退到 MediaKit。"
     ]
   },
   {
@@ -645,6 +703,19 @@
       "Adicionado um botão para redefinir os filtros de rádio e iniciar uma nova pesquisa limpa.",
       "Os resultados da pesquisa de podcasts incluem agora uma ação secundária para assinar diretamente; se o podcast já estiver presente, a ação abre o podcast.",
       "Adicionada uma configuração para escolher a unidade de temperatura do clima: Celsius ou Fahrenheit."
+    ],
+    "zh_CN": [
+      "Sonarpad Mobile 首次在 App Store 公开发布。包含主要功能：阅读和整理文档，从 Project Gutenberg、LibriVox、PoetryDB、Internet Archive 和 iTunes / Apple Devices 导入，导出 DOCX、EPUB、MP3 和 M4B，支持 RSS、OPML 和文件夹的新闻，播客、广播、路线、天气、日历，以及浅色、深色或自动主题。",
+      "当广播搜索因连接问题无法返回结果时，Sonarpad 现在会向用户显示更清楚的提示，而不是技术错误。",
+      "修复文件转换器中的保存：当 Sonarpad 无法直接保存到所选目标位置时，会使用系统共享面板，让用户自行选择保存位置。",
+      "修复了所有本地化中的多个问题。",
+      "修复广播搜索问题：输入第一个字符后，用户不再需要重新回到文本框才能继续输入。",
+      "改进从 iTunes / Apple Devices 导入：Sonarpad 现在也会保留导入文件夹及其子文件夹结构。",
+      "改进广播搜索：国家现在显示完整名称和代码，例如“土耳其（TR）”，不再只显示代码。",
+      "广播搜索新增当前筛选条件摘要，更容易了解正在使用哪些条件。",
+      "新增按钮，可重置广播筛选条件并开始一次全新的搜索。",
+      "播客搜索结果新增辅助操作，可直接订阅；如果播客已经存在，则该操作会打开播客。",
+      "新增设置，可选择天气温度单位：摄氏度或华氏度。"
     ]
   },
   {
@@ -857,6 +928,29 @@
       "Adicionada a escolha do tema nas configurações: o Sonarpad pode seguir o tema do sistema ou usar sempre o modo claro ou escuro.",
       "Adicionada a exportação de documentos para DOCX, EPUB e formato de audiolivro MP3 ou M4B, usando o motor de voz, a voz, a velocidade e o tom já escolhidos pelo usuário.",
       "Melhorado o marcador automático durante a leitura de documentos: agora a posição também é salva ao pausar, para que o Sonarpad possa retomar no parágrafo correto mesmo que o app seja fechado por engano."
+    ],
+    "zh_CN": [
+      "新增波兰语、葡萄牙语和捷克语本地化。",
+      "改进广播搜索：现在可按语言、国家、城市和类型搜索，并保存最近使用的选择。",
+      "文档中新增从 Project Gutenberg、LibriVox、PoetryDB 和 Internet Archive 导入，也支持导入通过 Apple 设备上的 iTunes 添加的文档。",
+      "改进媒体转换器，增加更多转换选项，并可选择转换后文件的保存文件夹。",
+      "新增文档搜索：结果会显示匹配段落的开头，双击结果可直接跳到包含搜索文本的段落。",
+      "“我的城市”中现在可以手动更改城市，以修正 Sonarpad 检测到的大致位置。",
+      "改进天气：选择城市更加方便，并新增最近城市，可快速在城市之间切换。",
+      "修复关闭本地媒体文件时未保存播放位置的问题。",
+      "路线新增按钮，可将导航说明保存到文档，并通过语音合成朗读导航说明。",
+      "新闻中，阅读某来源的一篇文章后会出现“已读文章”按钮。已读文章会从主列表移出，并保存在每个来源的独立历史记录中，可随时清空。",
+      "改进文档编码：Sonarpad 现在能更好地处理 UTF-8、ANSI、欧洲编码及其他编码，使更多文档可以正确打开。",
+      "修复媒体播放启用视频后音量控制消失的问题。",
+      "修复新闻中停止朗读并未真正停止播放的问题。",
+      "修复新闻文章最后一个段落被朗读两次的问题。",
+      "日历中分享包含提醒的日期时，Sonarpad 会询问是否同时包含提醒，帮助避免误分享私人信息。",
+      "新闻新增 OPML 格式的来源导入和导出按钮。导入也支持复杂文件，例如 Lire 文件，其中来源按文件夹组织。",
+      "新闻新增来源文件夹管理，可将来源移入或移出文件夹，并删除文件夹。",
+      "新闻的辅助操作中新增“创建新文件夹”。",
+      "设置中新增主题选择：Sonarpad 可跟随系统主题，也可始终使用浅色或深色模式。",
+      "新增文档导出为 DOCX、EPUB，以及 MP3 或 M4B 有声书，并使用用户已选择的语音引擎、声音、语速和音调设置。",
+      "改进文档朗读时的自动书签：暂停时也会保存位置，因此即使应用意外关闭，Sonarpad 也能从正确段落继续。"
     ]
   },
   {
@@ -882,6 +976,9 @@
     ],
     "pt_BR": [
       "Corrigida a detecção do idioma no primeiro início: se o usuário ainda não tiver escolhido o idioma do aplicativo, o Sonarpad passa a usar o primeiro idioma preferido e compatível do dispositivo."
+    ],
+    "zh_CN": [
+      "修复首次启动时的语言检测：如果用户尚未选择应用语言，Sonarpad 现在会使用设备首个受支持的首选语言。"
     ]
   },
   {
@@ -1091,6 +1188,34 @@
       "Melhoradas as traduções em inglês, francês e espanhol.",
       "Melhorada a clareza de várias telas e mensagens do aplicativo.",
       "Adicionada a função Cinema para descobrir os filmes atualmente em cartaz nos cinemas, com a possibilidade de ler o enredo e ver o trailer, quando disponível. Existe também o botão «Próximos lançamentos» para consultar os próximos filmes."
+    ],
+    "zh_CN": [
+      "新增直接在 Sonarpad 中创建新文档的功能。",
+      "新增 Dropbox 导入：登录后可直接在 Sonarpad 中浏览 Dropbox 文件，并导入到文档资料库。",
+      "现在可以从手机“文件”应用共享文档并直接用 Sonarpad 打开，从而导入资料库。",
+      "新增 ZIP 文件支持：导入压缩包时，Sonarpad 会自动创建一个包含文件内容的文件夹。",
+      "新增创建文件夹和将文档移动到文件夹的功能，更便于整理书籍和文档。",
+      "新增 OCR 支持，可识别并朗读仅包含图像的文档。",
+      "新增滑块，可在阅读文档时快速向前或向后移动。",
+      "改进文档书签管理：根据当前是否已存在书签，选项会自动变化。",
+      "新增设置选项：停止朗读时可自动设置新书签。",
+      "新增“天气”区域，包括城市搜索、日期选择、当前天气、降水、最低和最高温度等实用信息。",
+      "新增无障碍日历，包含每日圣人和每天不同的名言。",
+      "新增自动续播：文档、播客和媒体文件可从上次停止的位置继续。可在设置中关闭此功能。",
+      "新增滑块，用于调节媒体文件的音量和播放位置。",
+      "设置中可以选择媒体文件每次快进或快退的距离，默认值为一分钟。",
+      "新增从其他应用共享媒体文件并直接用 Sonarpad 打开的功能。",
+      "视频内容新增复选框，可启用或禁用视频显示。",
+      "新增播客导入和导出，可将已订阅播客传输到 Sonarpad Mobile，包括来自 Windows 或 Mac 版 Sonarpad 的订阅。",
+      "广播搜索现在更宽容：只需输入电台名称的前几个字母即可获得结果。",
+      "改进新闻阅读体验，比上一版本更加简洁。",
+      "Sonarpad 会尝试跳过网页中插入的区块和不必要元素，使文章更易阅读。",
+      "新增音频和视频媒体转换器：例如可将 MP3 转换为 WAV，或通过添加图片把音频文件转换为 MP4 视频。",
+      "新增按类别分组界面的功能，使主屏幕图标更易整理。",
+      "设置中可选择按类别显示界面，或保留经典视图。",
+      "改进英语、法语和西班牙语翻译。",
+      "提高了多个界面和应用消息的清晰度。",
+      "新增“电影”功能，可发现影院当前上映影片、阅读剧情并在可用时观看预告片；还提供“即将上映”按钮查看未来上映影片。"
     ]
   }
 ]

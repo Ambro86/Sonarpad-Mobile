@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../services/document_library_service.dart';
 import '../services/poetrydb_service.dart';
 import 'document_reader_screen.dart';
@@ -159,7 +158,7 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
       );
     } catch (error) {
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).localizeTechnicalError(error)));
+            showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).technicalErrorGeneric));
     }
   }
 
@@ -179,7 +178,7 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))));
+            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
           }
           final poems = snapshot.data ?? const [];
           if (poems.isEmpty) {

@@ -7,7 +7,6 @@ import 'package:media_kit_video/media_kit_video.dart' as mkv;
 import 'package:path/path.dart' as p;
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
 import '../services/global_recording_service.dart';
@@ -234,7 +233,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         if (!mounted) return;
         unawaited(_audio.play().catchError((e) {
           if (!mounted) return;
-          setState(() => _error = e.toString());
+          setState(() => _error = l10n.technicalErrorGeneric);
         }));
       }
     } catch (e) {
@@ -243,7 +242,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
       if (!mounted) return;
       AppLogger.log('RadioPlayer: Error during _play: $e');
-      setState(() => _error = e.toString());
+      setState(() => _error = l10n.technicalErrorGeneric);
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -334,7 +333,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'RadioPlayer: MediaKit error station="${widget.station.name}" error=$error position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
       );
       if (!mounted) return;
-      setState(() => _error = error);
+      setState(() => _error = AppLocalizations.of(context).technicalErrorGeneric);
     });
     _mediaKitPositionSubscription = player.stream.position.listen((position) {
       final previous = _mediaKitLastPosition;
@@ -888,7 +887,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (!mounted) return;
       showStatusMessage(
         context,
-        AppLocalizations.of(context).recordingError(AppLocalizations.of(context).localizeTechnicalError(error)),
+        AppLocalizations.of(context).recordingError(AppLocalizations.of(context).technicalErrorGeneric),
       );
     }
   }
@@ -1227,7 +1226,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         title: title,
       );
     } catch (error) {
-      showStatusMessage(context, l10n.radioScheduledRecordingError(l10n.localizeTechnicalError(error)));
+      showStatusMessage(context, l10n.radioScheduledRecordingError(l10n.technicalErrorGeneric));
       return;
     }
     showStatusMessage(

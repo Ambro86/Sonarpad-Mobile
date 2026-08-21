@@ -70,6 +70,7 @@ class PodcastCategory {
   final String? polishName;
   final String? czechName;
   final String? germanName;
+  final String? chineseName;
 
   const PodcastCategory(
     this.genreId,
@@ -81,6 +82,7 @@ class PodcastCategory {
     this.polishName,
     this.czechName,
     this.germanName,
+    this.chineseName,
   });
 
   String nameForLanguage(String languageCode) => switch (languageCode) {
@@ -91,6 +93,7 @@ class PodcastCategory {
         'pl' => polishName ?? englishName ?? name,
         'cs' => czechName ?? englishName ?? name,
         'de' => germanName ?? englishName ?? name,
+        'zh' || 'zh_CN' => chineseName ?? englishName ?? name,
         _ => name,
       };
 }

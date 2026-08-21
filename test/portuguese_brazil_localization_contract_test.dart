@@ -9,24 +9,10 @@ Map<String, dynamic> _arb(String path) =>
 Set<String> _messageKeys(Map<String, dynamic> arb) =>
     arb.keys.where((key) => !key.startsWith('@')).toSet();
 
-int _arrayStringCount(String source, String name) {
-  final start = source.indexOf('final $name = [');
-  if (start < 0) return 0;
-  final end = source.indexOf('];', start);
-  if (end < 0) return 0;
-  final body = source.substring(start, end);
-  return RegExp(r'^\s*"', multiLine: true).allMatches(body).length;
-}
-
 String _arbText(Map<String, dynamic> arb) => _messageKeys(arb)
     .map((key) => arb[key])
     .whereType<String>()
     .join('\n');
-
-String _portugueseSaintText(String source) => RegExp(
-      r'^    "(?:pt|pt_BR)": "(.*)",$',
-      multiLine: true,
-    ).allMatches(source).map((match) => match.group(1) ?? '').join('\n');
 
 void main() {
   test('Brazilian Portuguese ARB covers every Portuguese message', () {
@@ -36,7 +22,7 @@ void main() {
     expect(portugal['@@locale'], 'pt');
     expect(brazil['@@locale'], 'pt_BR');
     expect(_messageKeys(brazil), _messageKeys(portugal));
-    expect(_messageKeys(brazil).length, 993);
+    expect(_messageKeys(brazil).length, 1016);
   });
 
   test('Portugal and Brazil are distinct app language choices', () {
@@ -103,37 +89,52 @@ void main() {
     expect(cinemaDetail,
         isNot(contains('Localizations.localeOf(context).languageCode')));
     expect(wikipedia, contains("'pt_BR' => 'pt'"));
-    expect(gutenberg, contains("locale == 'pt_BR' ? 'pt' : locale"));
+    expect(gutenberg, contains("'pt_BR' => 'pt'"));
   });
 
   test('calendar has separate Brazilian saints, holidays and quotes', () {
-    final saints = File('lib/services/calendar/saints_data.dart').readAsStringSync();
-    final calendar =
-        File('lib/services/calendar/calendar_service.dart').readAsStringSync();
+    final portugal = jsonDecode(
+      File('assets/calendar/pt_PT.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final brazil = jsonDecode(
+      File('assets/calendar/pt_BR.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final ptSaints = portugal['saints'] as Map<String, dynamic>;
+    final brSaints = brazil['saints'] as Map<String, dynamic>;
+    final ptQuotes = (portugal['quotes'] as List<dynamic>).cast<String>();
+    final brQuotes = (brazil['quotes'] as List<dynamic>).cast<String>();
+    final holidays = brazil['holidays'] as Map<String, dynamic>;
 
-    expect(RegExp(r'^    "pt_BR":', multiLine: true).allMatches(saints).length, 365);
-    expect(calendar, contains('Confraternização Universal'));
-    expect(calendar, contains('Tiradentes'));
-    expect(calendar, contains('Independência do Brasil'));
-    expect(calendar, contains('Nossa Senhora Aparecida'));
-    expect(calendar, contains('Proclamação da República'));
-    expect(calendar, contains('Consciência Negra'));
-    expect(calendar, contains('final quotesPtBr = ['));
-    expect(_arrayStringCount(calendar, 'quotesPt'), 128);
-    expect(_arrayStringCount(calendar, 'quotesPtBr'), 128);
-    expect(calendar, contains('isBrazilianPortuguese ? quotesPtBr : quotesPt'));
-    expect(calendar, contains('Séneca'));
-    expect(calendar, contains('Sêneca'));
-    expect(calendar, contains('Faça cada coisa com calma e ordem.'));
-    expect(calendar, contains('Não chore porque acabou, sorria porque aconteceu.'));
-    expect(calendar, contains('A vida é importante demais para ser levada a sério.'));
-    expect(saints, contains('"pt": "Santo Antão, abade"'));
-    expect(saints, contains('"pt_BR": "Santo Antão, abade"'));
+    expect(ptSaints.length, 365);
+    expect(brSaints.length, 365);
+    expect(ptQuotes.length, 128);
+    expect(brQuotes.length, 128);
+    expect(holidays.values, contains('Confraternização Universal'));
+    expect(holidays.values, contains('Tiradentes'));
+    expect(holidays.values, contains('Independência do Brasil'));
+    expect(holidays.values, contains('Nossa Senhora Aparecida'));
+    expect(holidays.values, contains('Proclamação da República'));
+    expect(holidays.values.any((value) => value.toString().contains('Consciência Negra')), isTrue);
+    expect(ptQuotes.join('\n'), contains('Séneca'));
+    expect(brQuotes.join('\n'), contains('Sêneca'));
+    expect(brQuotes.join('\n'), contains('Faça cada coisa com calma e ordem.'));
+    expect(brQuotes.join('\n'), contains('Não chore porque acabou, sorria porque aconteceu.'));
+    expect(brQuotes.join('\n'), contains('A vida é importante demais para ser levada a sério.'));
+    expect(ptSaints.values, contains('Santo Antão, abade'));
+    expect(brSaints.values, contains('Santo Antão, abade'));
   });
 
   test('Portuguese saint data is free of known Spanish contamination', () {
-    final saints = File('lib/services/calendar/saints_data.dart').readAsStringSync();
-    final portuguese = _portugueseSaintText(saints);
+    final portugal = jsonDecode(
+      File('assets/calendar/pt_PT.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final brazil = jsonDecode(
+      File('assets/calendar/pt_BR.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final portuguese = [
+      ...(portugal['saints'] as Map<String, dynamic>).values,
+      ...(brazil['saints'] as Map<String, dynamic>).values,
+    ].join('\n');
     const forbidden = <String>[
       'Nuestra Señora',
       'Miércoles de Ceniza',
@@ -252,26 +253,16 @@ void main() {
     expect(settings, contains('mediaCutterDurationSecondOne'));
     expect(settings, contains('mediaCutterDurationMinuteOne'));
 
-    expect(mediaCutter, contains('localizeTechnicalError(error)'));
+    expect(mediaCutter, isNot(contains('localizeTechnicalError')));
+    expect(mediaCutter, contains('technicalErrorGeneric'));
     expect(mediaCutter, contains('mediaCutterExportFinalVerification'));
     expect(mediaCutter, contains('mediaCutterExportMergeParts'));
     expect(mediaCutter, contains('mediaCutterExportFileCheck'));
     expect(mediaCutter, contains('mediaCutterExportPublishing'));
     expect(mediaCutter, contains('mediaCutterExportCompletion'));
 
-    expect(helper, contains('Nessun testo trovato nel documento DOCX.'));
-    expect(helper, contains('Audiolibro non trovato.'));
-    expect(helper, contains('Errore nel login Dropbox:'));
-    expect(helper, contains('Errore Gutenberg'));
-    expect(helper, contains('Nessun flusso riproducibile disponibile.'));
-    expect(helper, contains('Errore feed podcast:'));
-    expect(helper, contains('Errore RSS'));
-    expect(helper, contains('Errore PoetryDB'));
-    expect(helper, contains('Cartella inaccessibile per via delle protezioni di sistema'));
-    expect(helper, contains('Impossibile generare il pacchetto EPUB.'));
-    expect(helper, contains('Impossibile generare il pacchetto DOCX.'));
-    expect(helper,
-        contains('Impossibile analizzare le tracce del file multimediale.'));
+    expect(helper, isNot(contains('localizeTechnicalError')));
+    expect(helper, isNot(contains('_localizeChineseTechnicalError')));
 
     final sonarTube =
         File('lib/screens/sonartube_screen.dart').readAsStringSync();
@@ -281,10 +272,10 @@ void main() {
     final poetry = File('lib/screens/poetrydb_screen.dart').readAsStringSync();
     final audio =
         File('lib/services/audio_player_service.dart').readAsStringSync();
-    expect(sonarTube, contains('localizeTechnicalError(_error!)'));
-    expect(podcasts, contains('localizeTechnicalError(snapshot.error!)'));
-    expect(news, contains('localizeTechnicalError(snapshot.error!)'));
-    expect(poetry, contains('localizeTechnicalError(snapshot.error!)'));
+    expect(sonarTube, isNot(contains('localizeTechnicalError')));
+    expect(podcasts, isNot(contains('localizeTechnicalError')));
+    expect(news, isNot(contains('localizeTechnicalError')));
+    expect(poetry, isNot(contains('localizeTechnicalError')));
     expect(audio, isNot(contains('Lettura Documento')));
     expect(audio, isNot(contains('Lettura Vocale')));
     expect(audio, isNot(contains('Riproduzione Audio')));

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../l10n/localized_dynamic_labels.dart';
 import '../services/wikipedia_service.dart';
 import '../services/document_library_service.dart';
 import '../services/recent_searches_service.dart';
@@ -35,6 +34,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
         'pl' => 'pl',
         'cs' => 'cs',
         'de' => 'de',
+        'zh_CN' => 'zh',
         _ => 'it',
       };
     }
@@ -55,7 +55,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     ('pl', 'Polski'),
     ('sr', 'Srpski'),
     ('ru', 'Русский'),
-    ('zh', '中文'),
+    ('zh', '简体中文'),
     ('hi', 'हिन्दी'),
   ];
 
@@ -115,7 +115,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     } catch (e) {
       if (mounted) Navigator.of(context).pop();
       if (mounted) {
-                showStatusMessage(context, "${l10n.errorOpening}: $e");
+                showStatusMessage(context, "${l10n.errorOpening}: ${l10n.technicalErrorGeneric}");
       }
     }
   }
@@ -294,7 +294,7 @@ class _WikipediaResultsScreenState extends State<_WikipediaResultsScreen> {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))));
+            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
           }
           final results = snapshot.data ?? const [];
           if (results.isEmpty) {
@@ -427,7 +427,8 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
                 semanticsLabel: l10n.wikipediaImporting,
               ),
             ),
-          if (_importError != null) Text(l10n.error(_importError!)),
+          if (_importError != null)
+            Text(l10n.error(l10n.technicalErrorGeneric)),
           if (article != null) ...[
             Text(article.title,
                 style: Theme.of(context).textTheme.headlineSmall),
@@ -523,7 +524,8 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
       );
     } catch (e) {
       if (mounted) {
-                showStatusMessage(context, '${AppLocalizations.of(context).saveError}: $e');
+                final l10n = AppLocalizations.of(context);
+        showStatusMessage(context, '${l10n.saveError}: ${l10n.technicalErrorGeneric}');
       }
     }
   }

@@ -93,7 +93,10 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
                   date: widget.date,
                   text: ctrl.text.trim(),
                 );
-                await _service.addEvent(ev);
+                await _service.addEvent(
+                  ev,
+                  deviceCalendarDescription: l10n.reminders,
+                );
                 if (!context.mounted) return;
                 Navigator.of(context).pop();
                 _loadEvents();
