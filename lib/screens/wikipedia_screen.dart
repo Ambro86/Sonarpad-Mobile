@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../services/wikipedia_service.dart';
 import '../services/document_library_service.dart';
 import '../services/recent_searches_service.dart';
@@ -30,6 +31,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
         'es' => 'es',
         'fr' => 'fr',
         'pt' => 'pt',
+        'pt_BR' => 'pt',
         'pl' => 'pl',
         'cs' => 'cs',
         'de' => 'de',
@@ -292,7 +294,7 @@ class _WikipediaResultsScreenState extends State<_WikipediaResultsScreen> {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.error(snapshot.error!)));
+            return Center(child: Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))));
           }
           final results = snapshot.data ?? const [];
           if (results.isEmpty) {

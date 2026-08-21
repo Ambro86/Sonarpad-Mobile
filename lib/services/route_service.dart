@@ -177,6 +177,8 @@ class RouteService {
         return 'ESP';
       case 'pt':
         return 'PRT';
+      case 'br':
+        return 'BRA';
       case 'pl':
         return 'POL';
       case 'cz':
@@ -360,7 +362,7 @@ class RouteService {
         'en' => 'Invalid address',
         'fr' => 'Adresse non valide',
         'es' => 'Dirección no válida',
-        'pt' => 'Endereço inválido',
+        'pt' || 'pt_BR' => 'Endereço inválido',
         'pl' => 'Nieprawidłowy adres',
         'de' => 'Ungültige Adresse',
         _ => 'Indirizzo non valido',
@@ -371,7 +373,7 @@ class RouteService {
         'en' => 'Geocoding network error: HTTP $statusCode',
         'fr' => 'Erreur réseau de géocodage : HTTP $statusCode',
         'es' => 'Error de red de geocodificación: HTTP $statusCode',
-        'pt' => 'Erro de rede de geocodificação: HTTP $statusCode',
+        'pt' || 'pt_BR' => 'Erro de rede de geocodificação: HTTP $statusCode',
         'pl' => 'Błąd sieci geokodowania: HTTP $statusCode',
         'de' => 'Netzwerkfehler bei der Geokodierung: HTTP $statusCode',
         _ => 'Errore di rete geocode: HTTP $statusCode',
@@ -382,7 +384,7 @@ class RouteService {
         'en' => 'Route network error: HTTP $statusCode',
         'fr' => 'Erreur réseau de calcul d\'itinéraire : HTTP $statusCode',
         'es' => 'Error de red de ruta: HTTP $statusCode',
-        'pt' => 'Erro de rede de rota: HTTP $statusCode',
+        'pt' || 'pt_BR' => 'Erro de rede de rota: HTTP $statusCode',
         'pl' => 'Błąd sieci trasy: HTTP $statusCode',
         'de' => 'Netzwerkfehler bei der Routenberechnung: HTTP $statusCode',
         _ => 'Errore di rete route: HTTP $statusCode',
@@ -392,7 +394,7 @@ class RouteService {
         'en' => 'Server error',
         'fr' => 'Erreur du serveur',
         'es' => 'Error del servidor',
-        'pt' => 'Erro do servidor',
+        'pt' || 'pt_BR' => 'Erro do servidor',
         'pl' => 'Błąd serwera',
         'de' => 'Serverfehler',
         _ => 'Errore dal server',
@@ -402,7 +404,7 @@ class RouteService {
         'en' => 'Route calculation error from server',
         'fr' => 'Erreur de calcul d\'itinéraire du serveur',
         'es' => 'Error de cálculo de ruta del servidor',
-        'pt' => 'Erro de cálculo de rota do servidor',
+        'pt' || 'pt_BR' => 'Erro de cálculo de rota do servidor',
         'pl' => 'Błąd obliczania trasy po stronie serwera',
         'de' => 'Fehler bei der Routenberechnung auf dem Server',
         _ => 'Errore di calcolo percorso dal server',
@@ -417,6 +419,8 @@ class RouteService {
           'Cliente no autorizado. Actualiza Sonarpad o comprueba la configuración de la app.',
         'pt' =>
           'Cliente não autorizado. Atualize o Sonarpad ou verifique a configuração da app.',
+        'pt_BR' || 'pt-BR' =>
+          'Cliente não autorizado. Atualize o Sonarpad ou verifique a configuração do aplicativo.',
         'pl' =>
           'Klient nieautoryzowany. Zaktualizuj Sonarpad albo sprawdź konfigurację aplikacji.',
         'de' =>
@@ -435,7 +439,7 @@ class RouteService {
         'es' => isStart
             ? 'Dirección de salida no encontrada'
             : 'Dirección de llegada no encontrada',
-        'pt' => isStart
+        'pt' || 'pt_BR' => isStart
             ? 'Endereço de partida não encontrado'
             : 'Endereço de destino não encontrado',
         'pl' => isStart

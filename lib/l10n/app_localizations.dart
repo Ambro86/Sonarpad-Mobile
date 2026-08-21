@@ -108,6 +108,7 @@ abstract class AppLocalizations {
     Locale('fr'),
     Locale('pl'),
     Locale('pt'),
+    Locale('pt', 'BR'),
   ];
 
   /// Localized text for appTitle.
@@ -4901,6 +4902,12 @@ abstract class AppLocalizations {
   /// **'Regola volume ed effetto solo per questa parte.'**
   String get mediaCutterPartEffectsDescription;
 
+  /// No description provided for @mediaCutterPartVolumeLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume parte'**
+  String get mediaCutterPartVolumeLabel;
+
   /// No description provided for @mediaCutterPartVolumeValue.
   ///
   /// In it, this message translates to:
@@ -5134,6 +5141,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Fade out'**
   String get mediaCutterPartEffectFadeOut;
+
+  /// No description provided for @mediaCutterPartEffectAmountLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Intensità effetto'**
+  String get mediaCutterPartEffectAmountLabel;
 
   /// No description provided for @mediaCutterPartEffectAmountValue.
   ///
@@ -5646,6 +5659,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     case 'pl':
       return AppLocalizationsPl();
     case 'pt':
+      if (locale.countryCode?.toUpperCase() == 'BR') {
+        return AppLocalizationsPtBr();
+      }
       return AppLocalizationsPt();
   }
 

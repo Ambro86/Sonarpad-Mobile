@@ -7,9 +7,10 @@ import 'package:media_kit_video/media_kit_video.dart' as mkv;
 import 'package:path/path.dart' as p;
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
-import '../services/radio_recording_service.dart';
+import '../services/global_recording_service.dart';
 import '../services/radio_service.dart';
 import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
@@ -42,7 +43,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
-  late final RadioRecordingService _recordingService;
+  final _recordingService = GlobalRecordingService.instance;
+  late final GlobalRecordingTarget _recordingTarget;
   StreamSubscription<dynamic>? _mediaEventsSubscription;
   StreamSubscription<bool>? _mediaKitPlayingSubscription;
   StreamSubscription<String>? _mediaKitErrorSubscription;
@@ -75,14 +77,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _mediaKitAutoRecoveryInProgress = false;
   double _mediaKitVolume = 1.0;
   double _videoPlayerVolume = 1.0;
-  bool _recording = false;
   bool _isRecordingFeatureUnlocked = false;
-  File? _recordingOutput;
-  DateTime? _scheduledRecordingStart;
-  DateTime? _scheduledRecordingEnd;
-  String? _scheduledRecordingTitle;
-  Timer? _scheduledRecordingStartTimer;
-  Timer? _scheduledRecordingStopTimer;
 
   bool _loading = false;
   String? _error;
@@ -90,11 +85,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _recordingService = RadioRecordingService(
-      directoryName:
-          widget.tvChannel == null ? 'Radio Registrazioni' : 'TV Registrazioni',
+    _recordingTarget = GlobalRecordingTarget(
+      id: widget.tvChannel == null
+          ? 'radio:${widget.station.streamUrl}'
+          : 'tv:${widget.tvChannel!.url}|${widget.station.streamUrl}',
+      stationName: widget.station.name,
+      streamUrl: widget.station.streamUrl,
       includeVideo: widget.tvChannel != null,
+      tvChannel: widget.tvChannel,
     );
+    _recordingService.addListener(_onGlobalRecordingChanged);
     if (Platform.isIOS) {
       _mediaEventsSubscription =
           _mediaEvents.receiveBroadcastStream().listen((event) {
@@ -119,6 +119,19 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _play();
     });
   }
+
+  void _onGlobalRecordingChanged() {
+    if (mounted) setState(() {});
+  }
+
+  bool get _recording =>
+      _recordingService.isRecordingFor(_recordingTarget.id);
+
+  bool get _anotherRecordingActive =>
+      _recordingService.hasAnyActiveRecording && !_recording;
+
+  File? get _recordingOutput =>
+      _recordingService.outputFor(_recordingTarget.id);
 
   Future<bool> _loadRecordingFeatureAccess() async {
     final code = await _settings.getTvSecretCode();
@@ -865,37 +878,32 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     try {
       if (_recording) {
         await _stopRecordingNow();
-        if (_scheduledRecordingStopTimer != null) {
-          _cancelScheduledRecording(showMessage: false);
-        }
+        return;
+      }
+      if (_anotherRecordingActive) {
         return;
       }
       await _startRecordingNow();
     } catch (error) {
       if (!mounted) return;
-      setState(() {
-        _recording = false;
-        _recordingOutput = null;
-      });
       showStatusMessage(
-          context, AppLocalizations.of(context).recordingError(error));
+        context,
+        AppLocalizations.of(context).recordingError(AppLocalizations.of(context).localizeTechnicalError(error)),
+      );
     }
   }
 
   Future<File?> _stopRecordingNow({bool showMessage = true}) async {
     final l10n = AppLocalizations.of(context);
-    final file = await _recordingService.stop();
+    final file = await _recordingService.stopActive();
     if (!mounted) return file;
-    setState(() {
-      _recording = false;
-      _recordingOutput = file;
-    });
     if (showMessage) {
       showStatusMessage(
-          context,
-          l10n.recordingSaved(
-            file == null ? '' : p.basenameWithoutExtension(file.path),
-          ));
+        context,
+        l10n.recordingSaved(
+          file == null ? '' : p.basenameWithoutExtension(file.path),
+        ),
+      );
     }
     return file;
   }
@@ -905,49 +913,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     bool showMessage = true,
   }) async {
     final l10n = AppLocalizations.of(context);
-    String? recordingVideoUrl;
-    String? recordingAudioUrl;
-    final tvChannel = widget.tvChannel;
-    if (tvChannel != null &&
-        TvService().isRaiAudioDescriptionChannel(tvChannel) &&
-        !TvService.isDashStreamUrl(widget.station.streamUrl)) {
-      final streams =
-          await TvService().resolveAudioDescriptionStreams(tvChannel);
-      if (streams.hasAudioDescription && streams.videoUrl != streams.audioUrl) {
-        recordingVideoUrl = streams.videoUrl;
-        recordingAudioUrl = streams.audioUrl;
-        await AppLogger.log(
-          'RadioPlayer: RAI AD recording requested videoUrl=$recordingVideoUrl audioUrl=$recordingAudioUrl',
-        );
-      } else {
-        await AppLogger.log(
-          'RadioPlayer: RAI AD recording fallback to normal stream hasAD=${streams.hasAudioDescription}',
-        );
-      }
-    }
-
-    final file = await _recordingService.start(
-      stationName: _scheduledRecordingFileName(titleOverride),
-      streamUrl: widget.station.streamUrl,
-      videoStreamUrl: recordingVideoUrl,
-      audioStreamUrl: recordingAudioUrl,
-      httpUserAgent: widget.tvChannel?.httpUserAgent,
+    final file = await _recordingService.startNow(
+      _recordingTarget,
+      titleOverride: titleOverride,
     );
     if (!mounted) return file;
-    setState(() {
-      _recording = true;
-      _recordingOutput = file;
-    });
     if (showMessage) {
       showStatusMessage(context, l10n.recordingStarted);
     }
     return file;
-  }
-
-  String _scheduledRecordingFileName(String? titleOverride) {
-    final title = titleOverride?.trim();
-    if (title != null && title.isNotEmpty) return title;
-    return widget.station.name;
   }
 
   Future<TimeOfDay?> _showScheduledRecordingTimePicker({
@@ -1076,7 +1050,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   Future<void> _showScheduleRecordingDialog() async {
     final l10n = AppLocalizations.of(context);
-    if (_recording) {
+    if (_recordingService.hasAnyActiveRecording) {
       showStatusMessage(
         context,
         l10n.radioScheduleStopCurrentFirst,
@@ -1244,20 +1218,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       end = end.add(const Duration(days: 1));
     }
 
-    _cancelScheduledRecording(showMessage: false);
     final title = request.title.trim().isEmpty ? null : request.title.trim();
-    setState(() {
-      _scheduledRecordingStart = start;
-      _scheduledRecordingEnd = end;
-      _scheduledRecordingTitle = title;
-      _scheduledRecordingStartTimer = Timer(
-        start.difference(now),
-        () => unawaited(_startScheduledRecording()),
+    try {
+      _recordingService.schedule(
+        target: _recordingTarget,
+        start: start,
+        end: end,
+        title: title,
       );
-    });
-    unawaited(AppLogger.log(
-      'RadioPlayer: scheduled recording set start=$start end=$end title=${title ?? ''} station="${widget.station.name}" tv=${widget.tvChannel != null}',
-    ));
+    } catch (error) {
+      showStatusMessage(context, l10n.radioScheduledRecordingError(l10n.localizeTechnicalError(error)));
+      return;
+    }
     showStatusMessage(
       context,
       l10n.radioScheduledRecordingRange(
@@ -1267,119 +1239,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
-  Future<void> _startScheduledRecording() async {
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context);
-    final end = _scheduledRecordingEnd;
-    final title = _scheduledRecordingTitle;
-    try {
-      if (_recording) {
-        AppLogger.log(
-          'RadioPlayer: scheduled recording skipped because another recording is already active',
-        );
-        showStatusMessage(
-          context,
-          l10n.radioScheduledRecordingAlreadyActive,
-        );
-        _clearScheduledRecordingState();
-        return;
-      }
-      await AppLogger.log(
-        'RadioPlayer: scheduled recording start title=${title ?? ''} end=$end',
-      );
-      await _startRecordingNow(titleOverride: title, showMessage: false);
-      if (!mounted) return;
-      showStatusMessage(context, l10n.radioScheduledRecordingStarted);
-      if (end == null) {
-        _clearScheduledRecordingState();
-        return;
-      }
-      final delay = end.difference(DateTime.now());
-      if (delay <= Duration.zero) {
-        await _stopScheduledRecording();
-      } else {
-        setState(() {
-          _scheduledRecordingStartTimer?.cancel();
-          _scheduledRecordingStartTimer = null;
-          _scheduledRecordingStopTimer = Timer(
-            delay,
-            () => unawaited(_stopScheduledRecording()),
-          );
-        });
-      }
-    } catch (error) {
-      if (!mounted) return;
-      await AppLogger.log(
-          'RadioPlayer: scheduled recording start failed: $error');
-      if (!mounted) return;
-      setState(() {
-        _recording = false;
-        _recordingOutput = null;
-      });
-      _clearScheduledRecordingState();
-      showStatusMessage(context, l10n.radioScheduledRecordingError(error));
-    }
-  }
-
-  Future<void> _stopScheduledRecording() async {
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context);
-    try {
-      await AppLogger.log('RadioPlayer: scheduled recording stop');
-      if (_recording) {
-        await _stopRecordingNow(showMessage: false);
-        if (!mounted) return;
-        showStatusMessage(context, l10n.radioScheduledRecordingSaved);
-      }
-    } catch (error) {
-      if (!mounted) return;
+  void _cancelScheduledRecording({bool showMessage = true}) {
+    final cancelled =
+        _recordingService.cancelSchedule(targetId: _recordingTarget.id);
+    if (showMessage && cancelled && mounted) {
       showStatusMessage(
         context,
-        l10n.radioScheduledRecordingSaveError(error),
+        AppLocalizations.of(context).radioScheduledRecordingCancelled,
       );
-    } finally {
-      if (mounted) {
-        _clearScheduledRecordingState();
-      }
-    }
-  }
-
-  void _cancelScheduledRecording({bool showMessage = true}) {
-    _scheduledRecordingStartTimer?.cancel();
-    _scheduledRecordingStopTimer?.cancel();
-    final hadSchedule = _scheduledRecordingStart != null ||
-        _scheduledRecordingStartTimer != null ||
-        _scheduledRecordingStopTimer != null;
-    _clearScheduledRecordingState(setStateIfMounted: false);
-    if (mounted) {
-      setState(() {});
-      if (showMessage && hadSchedule) {
-        showStatusMessage(
-          context,
-          AppLocalizations.of(context).radioScheduledRecordingCancelled,
-        );
-      }
-    }
-    if (hadSchedule) {
-      unawaited(AppLogger.log('RadioPlayer: scheduled recording cancelled'));
-    }
-  }
-
-  void _clearScheduledRecordingState({bool setStateIfMounted = true}) {
-    void clear() {
-      _scheduledRecordingStartTimer?.cancel();
-      _scheduledRecordingStopTimer?.cancel();
-      _scheduledRecordingStartTimer = null;
-      _scheduledRecordingStopTimer = null;
-      _scheduledRecordingStart = null;
-      _scheduledRecordingEnd = null;
-      _scheduledRecordingTitle = null;
-    }
-
-    if (setStateIfMounted && mounted) {
-      setState(clear);
-    } else {
-      clear();
     }
   }
 
@@ -1398,13 +1265,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   String? get _scheduledRecordingSummary {
-    final start = _scheduledRecordingStart;
-    final end = _scheduledRecordingEnd;
+    final start =
+        _recordingService.scheduledStartFor(_recordingTarget.id);
+    final end = _recordingService.scheduledEndFor(_recordingTarget.id);
     if (start == null || end == null) return null;
     final l10n = AppLocalizations.of(context);
     final startText = _formatScheduledDateTime(start);
     final endText = _formatScheduledDateTime(end);
-    final title = _scheduledRecordingTitle;
+    final title =
+        _recordingService.scheduledTitleFor(_recordingTarget.id);
     if (title == null || title.isEmpty) {
       return l10n.radioScheduledRecordingRange(startText, endText);
     }
@@ -1416,7 +1285,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   bool get _hasPendingScheduledRecording =>
-      _scheduledRecordingStartTimer?.isActive ?? false;
+      _recordingService.hasPendingScheduleFor(_recordingTarget.id);
 
   bool get _requiresRaiAudioDescriptionMediaKitPlayback =>
       widget.isVideoSupported &&
@@ -1477,8 +1346,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   @override
   void dispose() {
-    _scheduledRecordingStartTimer?.cancel();
-    _scheduledRecordingStopTimer?.cancel();
+    _recordingService.removeListener(_onGlobalRecordingChanged);
     FocusManager.instance.primaryFocus?.unfocus();
     if (Platform.isIOS &&
         (_videoController != null || _mediaKitPlayer != null)) {
@@ -1488,13 +1356,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     unawaited(_disableMpdWakelock());
     unawaited(_disposeMediaKitPlayer());
-    if (_recordingService.isRecording) {
-      unawaited(_recordingService.stop().catchError((error) {
-        AppLogger.log(
-            'RadioPlayer: recording stop during dispose failed: $error');
-        return null;
-      }));
-    }
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());
     super.dispose();
@@ -1636,7 +1497,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   ),
                   if (_canRecordStream)
                     FilledButton.icon(
-                      onPressed: _loading ? null : _toggleRecording,
+                      onPressed: _loading || _anotherRecordingActive ? null : _toggleRecording,
                       icon: Icon(
                         _recording ? Icons.stop : Icons.fiber_manual_record,
                       ),
@@ -1646,7 +1507,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                     ),
                   if (_canRecordStream)
                     OutlinedButton.icon(
-                      onPressed: _loading || _recording
+                      onPressed: _loading || _recordingService.hasAnyActiveRecording
                           ? null
                           : _showScheduleRecordingDialog,
                       icon: const Icon(Icons.schedule),
@@ -1758,12 +1619,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           enabled: !_loading,
         ),
         if (_canRecordStream)
-          AccessibleListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: !_loading),
+          AccessibleListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: !_loading && !_anotherRecordingActive),
         if (_canRecordStream)
           AccessibleListRow(
             id: 'schedule',
             title: l10n.radioScheduleDialogTitle,
-            enabled: !_loading && !_recording,
+            enabled: !_loading && !_recordingService.hasAnyActiveRecording,
           ),
         if (_recordingOutput != null)
           AccessibleListRow(id: 'recording_name', kind: 'text', title: p.basenameWithoutExtension(_recordingOutput!.path)),
@@ -1795,7 +1656,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             }
           } else if (event.id == 'record' && event.type == 'activate') {
             await _toggleRecording();
-          } else if (event.id == 'schedule' && event.type == 'activate' && !_recording) {
+          } else if (event.id == 'schedule' && event.type == 'activate' && !_recordingService.hasAnyActiveRecording) {
             await _showScheduleRecordingDialog();
           } else if (event.id == 'cancel_schedule' && event.type == 'activate') {
             _cancelScheduledRecording();
@@ -1928,7 +1789,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 ),
               if (_canRecordStream)
                 FilledButton.icon(
-                  onPressed: _loading ? null : _toggleRecording,
+                  onPressed: _loading || _anotherRecordingActive ? null : _toggleRecording,
                   icon:
                       Icon(_recording ? Icons.stop : Icons.fiber_manual_record),
                   label: Text(
@@ -1936,7 +1797,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 ),
               if (_canRecordStream)
                 OutlinedButton.icon(
-                  onPressed: _loading || _recording
+                  onPressed: _loading || _recordingService.hasAnyActiveRecording
                       ? null
                       : _showScheduleRecordingDialog,
                   icon: const Icon(Icons.schedule),

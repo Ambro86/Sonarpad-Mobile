@@ -106,9 +106,24 @@ class CalendarService {
   }
 
   String? getHoliday(DateTime date, String languageCode) {
-    final lang = languageCode.split('_').first.split('-').first;
+    final normalizedLocale = languageCode.replaceAll('-', '_');
+    final isBrazilianPortuguese = normalizedLocale.toLowerCase() == 'pt_br';
+    final lang = normalizedLocale.split('_').first;
     final day = date.day;
     final month = date.month;
+
+    if (isBrazilianPortuguese) {
+      if (day == 1 && month == 1) return "Confraternização Universal";
+      if (day == 21 && month == 4) return "Tiradentes";
+      if (day == 1 && month == 5) return "Dia do Trabalho";
+      if (day == 7 && month == 9) return "Independência do Brasil";
+      if (day == 12 && month == 10) return "Nossa Senhora Aparecida";
+      if (day == 2 && month == 11) return "Finados";
+      if (day == 15 && month == 11) return "Proclamação da República";
+      if (day == 20 && month == 11) return "Dia Nacional de Zumbi e da Consciência Negra";
+      if (day == 25 && month == 12) return "Natal";
+      return null;
+    }
 
 
     if (lang == 'cs') {
@@ -181,10 +196,12 @@ class CalendarService {
 
   String? getSaint(DateTime date, String languageCode) {
     final key = "${date.day}-${date.month}";
-    final lang = languageCode.split('_').first.split('-').first;
+    final normalizedLocale = languageCode.replaceAll('-', '_');
+    final lang = normalizedLocale.split('_').first;
+    final localeKey = normalizedLocale.toLowerCase() == 'pt_br' ? 'pt_BR' : normalizedLocale;
     final localEntry = kSaintsData[key];
     if (localEntry == null) return null;
-    final localName = localEntry[lang] ?? localEntry[languageCode];
+    final localName = localEntry[localeKey] ?? localEntry[lang];
     if (localName == null || localName.isEmpty) return null;
     return localName;
   }
@@ -276,7 +293,9 @@ class CalendarService {
   }
 
   String getQuote(DateTime date, String languageCode) {
-    final lang = languageCode.split('_').first.split('-').first;
+    final normalizedLocale = languageCode.replaceAll('-', '_');
+    final isBrazilianPortuguese = normalizedLocale.toLowerCase() == 'pt_br';
+    final lang = normalizedLocale.split('_').first;
     // Generiamo una citazione basata sul giorno dell'anno, così è uguale per tutti in quel giorno
     final quotesIt = [
       "La felicità non è avere quello che si desidera, ma desiderare quello che si ha. - Oscar Wilde",
@@ -833,7 +852,7 @@ class CalendarService {
       "Nenhum ato de bondade, por menor que seja, é desperdiçado. - Esopo",
       "Começar bem é ter metade do caminho feito. - Aristóteles",
       "Estamos todos na sarjeta, mas alguns de nós olham para as estrelas. - Oscar Wilde",
-      "Não é porque as coisas são difíceis que não ousamos, mas porque não ousamos que elas são difíceis. - Sêneca",
+      "Não é porque as coisas são difíceis que não ousamos, mas porque não ousamos que elas são difíceis. - Séneca",
       "As pessoas são como as bicicletas: só mantêm o equilíbrio se continuarem em movimento. - Albert Einstein",
       "A medida da inteligência é a capacidade de mudar. - Albert Einstein",
       "Não fostes feitos para viver como brutos, mas para seguir virtude e conhecimento. - Dante Alighieri",
@@ -915,6 +934,137 @@ class CalendarService {
       "Tudo o que podes imaginar é real. - Pablo Picasso",
       "Toda criança é artista. O problema é continuar artista ao crescer. - Pablo Picasso",
       "A arte lava da alma a poeira da vida quotidiana. - Pablo Picasso",
+      "Uma vida sem reflexão não merece ser vivida. - Sócrates",
+      "O importante não é viver, mas viver bem. - Sócrates",
+      "A verdade é filha do tempo. - Francis Bacon",
+      "Um homem que se atreve a desperdiçar uma hora do seu tempo não descobriu o valor da vida. - Charles Darwin",
+      "A história é mestra da vida. - Cícero",
+      "Enquanto há vida, há esperança. - Cícero",
+      "O futuro depende do que fazemos no presente. - Mahatma Gandhi",
+      "A liberdade é como o ar: percebemos o seu valor quando começa a faltar. - Piero Calamandrei",
+      "Se queremos que tudo fique como está, é preciso que tudo mude. - Giuseppe Tomasi di Lampedusa",
+      "Quem abre a porta de uma escola fecha uma prisão. - Victor Hugo",
+      "As raízes da educação são amargas, mas o fruto é doce. - Aristóteles",
+      "Onde há amor, há vida. - Mahatma Gandhi",
+    ];
+
+    final quotesPtBr = [
+      "A felicidade não é ter o que se deseja, mas desejar o que se tem. - Oscar Wilde",
+      "O sucesso é a soma de pequenos esforços repetidos dia após dia. - Robert Collier",
+      "Nunca é tarde demais para ser o que poderia ter sido. - George Eliot",
+      "A vida é o que acontece enquanto está ocupado fazendo outros planos. - John Lennon",
+      "A melhor forma de prever o futuro é inventá-lo. - Alan Kay",
+      "A verdadeira viagem de descoberta não consiste em procurar novas terras, mas em ter novos olhos. - Marcel Proust",
+      "A única forma de fazer um grande trabalho é amar o que você faz. - Steve Jobs",
+      "O essencial é invisível aos olhos. - Antoine de Saint-Exupéry",
+      "Uma viagem de mil milhas começa com um único passo. - Lao Tzu",
+      "A esperança é um sonho acordado. - Aristóteles",
+      "A paciência é amarga, mas o seu fruto é doce. - Jean-Jacques Rousseau",
+      "É preciso ainda ter caos dentro de si para dar à luz uma estrela dançante. - Friedrich Nietzsche",
+      "A beleza salvará o mundo. - Fiódor Dostoiévski",
+      "Só sei que nada sei. - Sócrates",
+      "A gota escava a pedra, não pela força, mas por cair muitas vezes. - Ovídio",
+      "A natureza nada faz em vão. - Aristóteles",
+      "A sorte favorece os audazes. - Virgílio",
+      "Conhecimento é poder. - Francis Bacon",
+      "Nenhum vento é favorável para quem não sabe para onde vai. - Sêneca",
+      "Faça cada coisa com calma e ordem. - Marco Aurélio",
+      "A simplicidade é a maior sofisticação. - Leonardo da Vinci",
+      "O coração tem razões que a razão desconhece. - Blaise Pascal",
+      "O tempo revela todas as coisas. - Tertuliano",
+      "Torne-se quem você é. - Friedrich Nietzsche",
+      "Quem tem um porquê para viver pode suportar quase qualquer como. - Friedrich Nietzsche",
+      "Nada é permanente, exceto a mudança. - Heráclito",
+      "Tudo flui. - Heráclito",
+      "Parece sempre impossível até ser feito. - Nelson Mandela",
+      "A moderação é o maior tesouro. - Hesíodo",
+      "Na vida, nada deve ser temido, apenas compreendido. - Marie Curie",
+      "A imaginação é mais importante do que o conhecimento. - Albert Einstein",
+      "Nenhum ato de bondade, por menor que seja, é desperdiçado. - Esopo",
+      "Começar bem é ter metade do caminho feito. - Aristóteles",
+      "Estamos todos na sarjeta, mas alguns de nós olham para as estrelas. - Oscar Wilde",
+      "Não é porque as coisas são difíceis que não ousamos, mas porque não ousamos que elas são difíceis. - Sêneca",
+      "As pessoas são como as bicicletas: só mantêm o equilíbrio se continuarem em movimento. - Albert Einstein",
+      "A medida da inteligência é a capacidade de mudar. - Albert Einstein",
+      "Vocês não foram feitos para viver como brutos, mas para seguir a virtude e o conhecimento. - Dante Alighieri",
+      "Amor, que a nenhum amado perdoa amar. - Dante Alighieri",
+      "No meio do caminho da nossa vida, encontrei-me numa selva escura. - Dante Alighieri",
+      "Ser ou não ser, eis a questão. - William Shakespeare",
+      "Sabemos o que somos, mas não o que poderemos ser. - William Shakespeare",
+      "Ninguém pode fazer você se sentir inferior sem o seu consentimento. - Eleanor Roosevelt",
+      "Vivemos todos debaixo do mesmo céu, mas nem todos temos o mesmo horizonte. - Konrad Adenauer",
+      "Ame a todos, confie em poucos e não faça mal a ninguém. - William Shakespeare",
+      "A brevidade é a alma do engenho. - William Shakespeare",
+      "Não são as coisas que nos perturbam, mas os juízos que fazemos sobre elas. - Epicteto",
+      "No meio de cada dificuldade encontra-se uma oportunidade. - Albert Einstein",
+      "Nenhum homem é livre se não é senhor de si mesmo. - Epicteto",
+      "A constância transforma objetivos em resultados. - Jim Rohn",
+      "A felicidade da sua vida depende da qualidade dos seus pensamentos. - Marco Aurélio",
+      "A nossa vida é aquilo que os nossos pensamentos fazem dela. - Marco Aurélio",
+      "O tempo é a coisa mais preciosa que um homem pode gastar. - Teofrasto",
+      "Quem pensa pouco erra muito. - Leonardo da Vinci",
+      "A sabedoria é filha da experiência. - Leonardo da Vinci",
+      "Só se vê bem com o coração. - Antoine de Saint-Exupéry",
+      "Todos os adultos foram crianças um dia. - Antoine de Saint-Exupéry",
+      "As estrelas são iluminadas para que cada um possa um dia encontrar a sua. - Antoine de Saint-Exupéry",
+      "A liberdade começa pela ironia. - Victor Hugo",
+      "A consciência é a voz da alma. - Jean-Jacques Rousseau",
+      "O homem nasce livre, mas por toda parte está acorrentado. - Jean-Jacques Rousseau",
+      "A dúvida é o começo da sabedoria. - Descartes",
+      "Penso, logo existo. - Descartes",
+      "O espanto é o princípio do conhecimento. - Platão",
+      "A música dá alma ao universo, asas ao pensamento e impulso à imaginação. - Platão",
+      "O homem é um animal social. - Aristóteles",
+      "A felicidade depende de nós mesmos. - Aristóteles",
+      "Escolha um trabalho que ame e não terá de trabalhar um único dia da sua vida. - Confúcio",
+      "Para onde quer que você vá, vá com todo o coração. - Confúcio",
+      "Não importa quão devagar você vá, desde que não pare. - Confúcio",
+      "Estude o passado se quiser prever o futuro. - Confúcio",
+      "Quem conhece os outros é sábio; quem se conhece a si mesmo é iluminado. - Laozi",
+      "Quem sabe contentar-se é rico. - Laozi",
+      "Palavras gentis podem ser breves e fáceis de dizer, mas seu eco é eterno. - Madre Teresa",
+      "Não podemos fazer grandes coisas, apenas pequenas coisas com grande amor. - Madre Teresa",
+      "A paz começa com um sorriso. - Madre Teresa",
+      "Olho por olho deixa o mundo inteiro cego. - Mahatma Gandhi",
+      "A força não vem da capacidade física, mas de uma vontade indomável. - Mahatma Gandhi",
+      "A vida é um mistério a viver, não um problema a resolver. - Søren Kierkegaard",
+      "A vida só pode ser compreendida olhando para trás, mas deve ser vivida para a frente. - Søren Kierkegaard",
+      "Quem luta pode perder; quem não luta já perdeu. - Bertolt Brecht",
+      "Onde cresce o perigo, cresce também aquilo que salva. - Friedrich Hölderlin",
+      "Duas coisas enchem a alma de admiração: o céu estrelado acima de mim e a lei moral dentro de mim. - Immanuel Kant",
+      "Tenha a coragem de usar a sua própria inteligência. - Immanuel Kant",
+      "O homem é aquilo em que acredita. - Anton Tchékhov",
+      "A beleza é uma promessa de felicidade. - Stendhal",
+      "O futuro pertence àqueles que acreditam na beleza dos seus sonhos. - Eleanor Roosevelt",
+      "Não se nasce mulher: torna-se mulher. - Simone de Beauvoir",
+      "A cultura é o único bem da humanidade que cresce quando é compartilhado por todos. - Hans-Georg Gadamer",
+      "Se compreender é impossível, conhecer é necessário. - Primo Levi",
+      "A memória é necessária; devemos recordar. - Primo Levi",
+      "Levemos a vida com leveza, pois leveza não é superficialidade. - Italo Calvino",
+      "O inferno dos vivos não é algo que será; se há um, é o que já está aqui. - Italo Calvino",
+      "A fantasia é um lugar onde chove por dentro. - Italo Calvino",
+      "A realidade nunca é como a vemos: a verdade é sobretudo imaginação. - René Magritte",
+      "A vida imita a arte muito mais do que a arte imita a vida. - Oscar Wilde",
+      "Seja você mesmo; todos os outros já estão ocupados. - Oscar Wilde",
+      "Não há noite tão longa que impeça o sol de voltar a nascer. - Khalil Gibran",
+      "O trabalho é amor tornado visível. - Khalil Gibran",
+      "A ternura e a gentileza não são sinais de fraqueza, mas manifestações de força. - Khalil Gibran",
+      "Não chore porque acabou, sorria porque aconteceu. - Dr. Seuss",
+      "A educação é a arma mais poderosa que você pode usar para mudar o mundo. - Nelson Mandela",
+      "O que sabemos é uma gota; o que ignoramos é um oceano. - Isaac Newton",
+      "Se vi mais longe, foi por estar sobre ombros de gigantes. - Isaac Newton",
+      "Um dia sem riso é um dia perdido. - Charlie Chaplin",
+      "A vida é importante demais para ser levada a sério. - Oscar Wilde",
+      "Devemos cultivar o nosso jardim. - Voltaire",
+      "O sono da razão produz monstros. - Francisco Goya",
+      "Sem música, a vida seria um erro. - Friedrich Nietzsche",
+      "O que não me mata torna-me mais forte. - Friedrich Nietzsche",
+      "Os limites da minha linguagem são os limites do meu mundo. - Ludwig Wittgenstein",
+      "Daquilo de que não se pode falar, deve-se calar. - Ludwig Wittgenstein",
+      "O homem está condenado a ser livre. - Jean-Paul Sartre",
+      "Tudo o que você pode imaginar é real. - Pablo Picasso",
+      "Toda criança é artista. O problema é continuar artista ao crescer. - Pablo Picasso",
+      "A arte lava da alma a poeira da vida cotidiana. - Pablo Picasso",
       "Uma vida sem reflexão não merece ser vivida. - Sócrates",
       "O importante não é viver, mas viver bem. - Sócrates",
       "A verdade é filha do tempo. - Francis Bacon",
@@ -1333,7 +1483,7 @@ class CalendarService {
         list = quotesEs;
         break;
       case 'pt':
-        list = quotesPt;
+        list = isBrazilianPortuguese ? quotesPtBr : quotesPt;
         break;
       case 'pl':
         list = quotesPl;

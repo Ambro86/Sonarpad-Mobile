@@ -194,7 +194,8 @@ final italianNewsSources = [
   ),
   NewsRssSource(
     name: 'Il Giornale',
-    uri: Uri.parse('https://www.ilgiornale.it/rss.xml'),
+    uri: Uri.parse(
+        'https://news.google.com/rss/search?q=site%3Ailgiornale.it&hl=it&gl=IT&ceid=IT:it'),
   ),
   NewsRssSource(
     name: 'Il Riformista',

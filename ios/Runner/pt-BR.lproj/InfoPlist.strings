@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "O Sonarpad pode usar a câmera apenas para funções de digitalização ou captura de imagens iniciadas por você.";
+"NSCalendarsUsageDescription" = "O Sonarpad precisa de acesso ao calendário para adicionar seus lembretes e eventos.";
+"NSCalendarsFullAccessUsageDescription" = "O Sonarpad precisa de acesso total ao calendário para criar e salvar seus lembretes e eventos diretamente no calendário do sistema.";
+"NSContactsUsageDescription" = "O Sonarpad precisa de acesso aos contatos para associar convidados aos eventos do calendário.";

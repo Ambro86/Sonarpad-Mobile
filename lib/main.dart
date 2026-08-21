@@ -177,6 +177,14 @@ class SonarpadApp extends StatefulWidget {
     context.findAncestorStateOfType<_SonarpadAppState>()?.setLocale(newLocale);
   }
 
+  static Locale localeForLanguageCode(String languageCode) {
+    final normalized = languageCode.replaceAll('-', '_');
+    if (normalized.toLowerCase() == 'pt_br') {
+      return const Locale('pt', 'BR');
+    }
+    return Locale(normalized.split('_').first);
+  }
+
   @override
   State<SonarpadApp> createState() => _SonarpadAppState();
 }
@@ -209,7 +217,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
     if (!mounted) return;
     unawaited(AppLogger.log('SonarpadApp language loaded: $lang'));
     setState(() {
-      _locale = Locale(lang);
+      _locale = SonarpadApp.localeForLanguageCode(lang);
       _themeMode = themeMode;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {

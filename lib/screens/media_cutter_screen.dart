@@ -22,6 +22,7 @@ import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -1137,7 +1138,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await AppLogger.log(
           'Media cutter: load failed path="$path" error=$error');
       if (!mounted) return;
-      setState(() => _status = l10n.mediaCutterLoadFailed(error));
+      setState(() => _status = l10n.mediaCutterLoadFailed(l10n.localizeTechnicalError(error)));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -1594,7 +1595,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     } catch (error) {
       await AppLogger.log('Media cutter: effects preview failed error=$error');
       if (!mounted) return;
-      _showSnack(AppLocalizations.of(context).mediaCutterSaveFailed(error));
+      final l10n = AppLocalizations.of(context);
+      _showSnack(l10n.mediaCutterSaveFailed(l10n.localizeTechnicalError(error)));
     } finally {
       _effectPreviewPreparing = false;
       final dspDirectory = previewDspWorkDir;
@@ -2558,7 +2560,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await AppLogger.log(
           'Media cutter: guided listen cut failed error=$error');
       if (mounted) {
-        _showSnack(AppLocalizations.of(context).mediaCutterSaveFailed(error));
+        final l10n = AppLocalizations.of(context);
+        _showSnack(
+          l10n.mediaCutterSaveFailed(l10n.localizeTechnicalError(error)),
+        );
       }
     }
   }
@@ -3005,7 +3010,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                       AccessibleListRow(
                         id: 'volume',
                         kind: 'slider',
-                        title: l10n.mediaCutterPartVolumeValue(volumePercent),
+                        title: l10n.mediaCutterPartVolumeLabel,
                         sliderValue: volumePercent.toDouble(),
                         sliderMin: 0,
                         sliderMax: 200,
@@ -3035,7 +3040,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                           AccessibleListRow(
                             id: 'amount_$slot',
                             kind: 'slider',
-                            title: '${_effectSlotLabel(l10n, slot + 1)}, ${l10n.mediaCutterPartEffectAmountValue(effectSlots[slot].amountPercent)}',
+                            title: '${_effectSlotLabel(l10n, slot + 1)}, ${l10n.mediaCutterPartEffectAmountLabel}',
                             sliderValue: effectSlots[slot].amountPercent.toDouble(),
                             sliderMin: 0,
                             sliderMax: 100,
@@ -3129,7 +3134,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 ),
                 Semantics(
                   slider: true,
-                  label: l10n.mediaCutterPartVolumeValue(volumePercent),
+                  label: l10n.mediaCutterPartVolumeLabel,
                   value: '$volumePercent%',
                   increasedValue: '${(volumePercent + 10).clamp(0, 200)}%',
                   decreasedValue: '${(volumePercent - 10).clamp(0, 200)}%',
@@ -3235,7 +3240,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         final amountLabel =
                             '${_effectSlotLabel(l10n, slotNumber)}, '
                             '${_effectLabel(l10n, selectedEffect)}, '
-                            '${l10n.mediaCutterPartEffectAmountValue(amount)}';
+                            '${l10n.mediaCutterPartEffectAmountLabel}';
                         children.add(const SizedBox(height: 6));
                         children.add(ExcludeSemantics(
                           child: Text(amountLabel),
@@ -3464,7 +3469,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       var output = await _uniqueOutputPath(outputDir, _inputPath);
       try {
         await _runWithProgressDialog(l10n, exportController, () async {
-          await _exportKeptParts(keptParts, output, exportController);
+          await _exportKeptParts(keptParts, output, exportController, l10n);
         });
       } catch (error) {
         if (error is _MediaCutterExportCancelled) rethrow;
@@ -3491,7 +3496,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         });
         _showSnack(l10n.convertMediaOutputNotWritable);
         await _runWithProgressDialog(l10n, exportController, () async {
-          await _exportKeptParts(keptParts, output, exportController);
+          await _exportKeptParts(keptParts, output, exportController, l10n);
         });
       }
       if (!mounted) return;
@@ -3513,7 +3518,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await AppLogger.log('Media cutter: save failed error=$error');
       if (!mounted) return;
       setState(() => _status = l10n.mediaCutterReady);
-      _showSnack(l10n.mediaCutterSaveFailed(error));
+      _showSnack(l10n.mediaCutterSaveFailed(l10n.localizeTechnicalError(error)));
     } finally {
       if (wakelockEnabled) {
         await _disableExportWakelock();
@@ -4071,6 +4076,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     List<_MediaPart> keptParts,
     String output,
     _MediaCutterExportController exportController,
+    AppLocalizations l10n,
   ) async {
     final input = _inputPath;
     final source =
@@ -4316,7 +4322,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             _updateExportProgress(
               exportController,
               fraction * 0.88,
-              'Parte ${i + 1} di ${keptParts.length}',
+              l10n.mediaCutterExportPartProgress(i + 1, keptParts.length),
             );
           },
         );
@@ -4335,7 +4341,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           totalDurationMs <= 0
               ? 0.88
               : (completedDurationMs / totalDurationMs) * 0.88,
-          'Parte ${i + 1} di ${keptParts.length}',
+          l10n.mediaCutterExportPartProgress(i + 1, keptParts.length),
         );
         segmentPaths.add(segment);
       }
@@ -4355,7 +4361,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             '$error',
           );
         }
-        _updateExportProgress(exportController, 0.93, 'Verifica finale');
+        _updateExportProgress(
+          exportController,
+          0.93,
+          l10n.mediaCutterExportFinalVerification,
+        );
         unawaited(_logMediaCutter(
           'export single segment staged pending="$pendingOutput"',
         ));
@@ -4387,7 +4397,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           ],
           pendingOutput,
         ];
-        _updateExportProgress(exportController, 0.90, 'Unione delle parti');
+        _updateExportProgress(
+          exportController,
+          0.90,
+          l10n.mediaCutterExportMergeParts,
+        );
         var needsReencode = false;
         try {
           await _runFfmpeg(
@@ -4470,7 +4484,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         );
       }
 
-      _updateExportProgress(exportController, 0.95, 'Controllo del file');
+      _updateExportProgress(
+        exportController,
+        0.95,
+        l10n.mediaCutterExportFileCheck,
+      );
       await _validateExportFile(
         path: pendingOutput,
         expectedVideo: source.hasVideo,
@@ -4484,12 +4502,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (exportController.cancelled) {
         throw const _MediaCutterExportCancelled();
       }
-      _updateExportProgress(exportController, 0.99, 'Pubblicazione');
+      _updateExportProgress(
+        exportController,
+        0.99,
+        l10n.mediaCutterExportPublishing,
+      );
       await _publishValidatedOutput(
         pendingOutput: pendingOutput,
         output: output,
       );
-      _updateExportProgress(exportController, 1, 'Completamento');
+      _updateExportProgress(
+        exportController,
+        1,
+        l10n.mediaCutterExportCompletion,
+      );
       unawaited(_logMediaCutter(
         'export production completed output="$output" '
         'segments=${segmentPaths.length} source=${source.logSummary}',

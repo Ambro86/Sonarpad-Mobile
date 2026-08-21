@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'donations_screen.dart';
 import 'changelog_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../services/app_settings_service.dart';
 import '../services/changelog_service.dart';
 import '../utils/status_message.dart';
@@ -38,7 +39,7 @@ class _InfoScreenState extends State<InfoScreen> {
     } catch (error) {
       if (!context.mounted) return;
       final l10n = AppLocalizations.of(context);
-      showStatusMessage(context, l10n.changelogLoadError(error));
+      showStatusMessage(context, l10n.changelogLoadError(l10n.localizeTechnicalError(error)));
     }
   }
 

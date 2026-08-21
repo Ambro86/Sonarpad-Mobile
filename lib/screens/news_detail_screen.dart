@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/news_article.dart';
 import '../services/accessibility_feedback_service.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -255,8 +256,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       debugPrint('Sonarpad TTS: reading error=$e');
       if (!mounted) return;
       if (readingToken != _readingToken) return;
-      setState(() => _status = l10n.edgeTtsError(e));
-            showStatusMessage(context, l10n.edgeTtsError(e));
+      setState(() => _status = l10n.edgeTtsError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.edgeTtsError(l10n.localizeTechnicalError(e)));
     } finally {
       if (mounted && readingToken == _readingToken) {
         setState(() => _speaking = false);

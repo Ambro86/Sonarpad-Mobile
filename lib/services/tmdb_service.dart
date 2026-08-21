@@ -16,7 +16,9 @@ class TmdbService {
       };
 
   String _tmdbLanguage(String languageCode) {
-    final lang = languageCode.split('_').first.split('-').first;
+    final normalized = languageCode.replaceAll('-', '_');
+    if (normalized.toLowerCase() == 'pt_br') return 'pt-BR';
+    final lang = normalized.split('_').first;
     return switch (lang) {
       'it' => 'it-IT',
       'fr' => 'fr-FR',

@@ -2707,6 +2707,9 @@ class AppLocalizationsIt extends AppLocalizations {
       'Regola volume ed effetto solo per questa parte.';
 
   @override
+  String get mediaCutterPartVolumeLabel => 'Volume parte';
+
+  @override
   String mediaCutterPartVolumeValue(int percent) {
     return 'Volume parte: $percent%';
   }
@@ -2824,6 +2827,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get mediaCutterPartEffectFadeOut => 'Fade out';
+
+  @override
+  String get mediaCutterPartEffectAmountLabel => 'Intensità effetto';
 
   @override
   String mediaCutterPartEffectAmountValue(int percent) {
@@ -3307,7 +3313,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get radioScheduleDialogTitle => 'Programma registrazione';
 
   @override
-  String get radioScheduleOpenRequirement => 'In questa versione la registrazione programmata parte solo se Sonarpad resta aperto su questo player. Se chiudi l’app o questa schermata, la registrazione non può partire da sola.';
+  String get radioScheduleOpenRequirement => 'La registrazione programmata continua a funzionare mentre navighi nelle altre schermate di Sonarpad. Sonarpad deve restare aperto; se l’app viene chiusa o sospesa dal sistema, l’avvio non è garantito.';
 
   @override
   String radioScheduleStartTimeValue(String time) {

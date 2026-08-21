@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -319,7 +320,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       await AppLogger.log('Convert media: error $error');
       if (!mounted) return;
       setState(() => _status = l10n.convertMediaReady);
-      _showSnack(l10n.convertMediaFailed(error));
+      _showSnack(l10n.convertMediaFailed(l10n.localizeTechnicalError(error)));
     } finally {
       if (mounted) setState(() => _running = false);
     }

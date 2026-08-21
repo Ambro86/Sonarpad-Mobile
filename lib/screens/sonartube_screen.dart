@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_service.dart';
@@ -430,7 +431,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     if (_error != null) {
       rows.add(AccessibleListRow(
         id: 'error',
-        title: l10n.error(_error!),
+        title: l10n.error(l10n.localizeTechnicalError(_error!)),
         kind: 'text',
       ));
     }
@@ -592,7 +593,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  l10n.error(_error!),
+                  l10n.error(l10n.localizeTechnicalError(_error!)),
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                   textAlign: TextAlign.center,
                 ),

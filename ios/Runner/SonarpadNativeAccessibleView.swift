@@ -874,6 +874,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     if row.selected { traits.insert(.selected) }
     if !row.enabled { traits.insert(.notEnabled) }
     cell.accessibilityTraits = traits
+    cell.incrementHandler = nil
+    cell.decrementHandler = nil
 
     switch row.kind {
     case "toggle":
@@ -896,26 +898,25 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       slider.value = Float(row.sliderValue)
       slider.isEnabled = row.enabled
       slider.isUserInteractionEnabled = row.enabled
-      slider.isAccessibilityElement = true
-      slider.accessibilityLabel = row.accessibilityLabel ?? row.title
-      slider.accessibilityHint = row.hint
-      slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
-      slider.accessibilityFocusHandler = { [weak self] id in
-        self?.channel.invokeMethod("event", arguments: ["type": "focus", "id": id])
-      }
-      slider.incrementHandler = { [weak self] in
-        self?.adjustSlider(at: indexPath, delta: row.sliderStep)
-      }
-      slider.decrementHandler = { [weak self] in
-        self?.adjustSlider(at: indexPath, delta: -row.sliderStep)
-      }
+      // The table row is the single VoiceOver element. Keeping the visual
+      // UISlider out of the accessibility tree avoids UIKit enumerating the
+      // same adjustable control twice (cell + accessory view).
+      slider.isAccessibilityElement = false
+      slider.accessibilityFocusHandler = nil
       slider.addTarget(self, action: #selector(sliderControlChanged(_:)), for: .valueChanged)
       cell.accessoryView = slider
-      cell.isAccessibilityElement = false
+      cell.isAccessibilityElement = true
+      cell.accessibilityLabel = row.accessibilityLabel ?? row.title
+      cell.accessibilityHint = row.hint
+      cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
       cell.selectionStyle = .none
       cell.activationHandler = nil
-      cell.incrementHandler = nil
-      cell.decrementHandler = nil
+      cell.incrementHandler = row.enabled ? { [weak self] in
+        self?.adjustSlider(at: indexPath, delta: row.sliderStep)
+      } : nil
+      cell.decrementHandler = row.enabled ? { [weak self] in
+        self?.adjustSlider(at: indexPath, delta: -row.sliderStep)
+      } : nil
     case "picker":
       cell.activationHandler = { [weak self] in self?.presentPicker(for: indexPath) }
     case "action", "button":
@@ -1004,7 +1005,9 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     let steps = ((raw - row.sliderMin) / row.sliderStep).rounded()
     row.sliderValue = min(max(row.sliderMin + steps * row.sliderStep, row.sliderMin), row.sliderMax)
     sender.value = Float(row.sliderValue)
-    sender.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+    if let cell = tableView.cellForRow(at: indexPath) as? SonarpadAccessibleTableCell {
+      cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+    }
     sections[indexPath.section].rows[indexPath.row] = row
     channel.invokeMethod("event", arguments: ["type": "slider", "id": row.id, "value": row.sliderValue])
   }
@@ -1030,13 +1033,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     row.valueLabel = spokenValue
     sections[indexPath.section].rows[indexPath.row] = row
 
-    // VoiceOver is focused on the UISlider itself. Updating the same object
-    // synchronously lets the adjustable gesture announce the new value while
-    // keeping focus on the slider. Never reload the row for a value change.
-    if let cell = tableView.cellForRow(at: indexPath),
-       let slider = cell.accessoryView as? SonarpadAccessibleSlider {
-      slider.value = Float(row.sliderValue)
-      slider.accessibilityValue = spokenValue
+    // VoiceOver is focused on the table cell, which is the single
+    // adjustable element. Update that same object synchronously and keep the
+    // visual UISlider in sync without reloading the row.
+    if let cell = tableView.cellForRow(at: indexPath) as? SonarpadAccessibleTableCell {
+      cell.accessibilityValue = spokenValue
+      if let slider = cell.accessoryView as? SonarpadAccessibleSlider {
+        slider.value = Float(row.sliderValue)
+      }
     }
     channel.invokeMethod("event", arguments: ["type": "slider", "id": row.id, "value": row.sliderValue])
   }
@@ -1076,14 +1080,15 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
             let slider = cell.accessoryView as? SonarpadAccessibleSlider else { continue }
       cell.textLabel?.text = row.title
       cell.detailTextLabel?.text = row.subtitle ?? row.value
+      cell.accessibilityLabel = row.accessibilityLabel ?? row.title
+      cell.accessibilityHint = row.hint
+      cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
       slider.minimumValue = Float(row.sliderMin)
       slider.maximumValue = Float(row.sliderMax)
       slider.value = Float(row.sliderValue)
       slider.isEnabled = row.enabled
       slider.isUserInteractionEnabled = row.enabled
-      slider.accessibilityLabel = row.accessibilityLabel ?? row.title
-      slider.accessibilityHint = row.hint
-      slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+      slider.isAccessibilityElement = false
     }
   }
 
@@ -1122,15 +1127,16 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       if row.kind == "slider" {
         cell.textLabel?.text = row.title
         cell.detailTextLabel?.text = row.subtitle ?? row.value
+        cell.accessibilityLabel = row.accessibilityLabel ?? row.title
+        cell.accessibilityHint = row.hint
+        cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
         if let slider = cell.accessoryView as? SonarpadAccessibleSlider {
           slider.minimumValue = Float(row.sliderMin)
           slider.maximumValue = Float(row.sliderMax)
           slider.value = Float(row.sliderValue)
           slider.isEnabled = row.enabled
           slider.isUserInteractionEnabled = row.enabled
-          slider.accessibilityLabel = row.accessibilityLabel ?? row.title
-          slider.accessibilityHint = row.hint
-          slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+          slider.isAccessibilityElement = false
         }
         continue
       }
@@ -1184,12 +1190,6 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
 
   private func accessibilityTarget(at indexPath: IndexPath) -> Any? {
     guard let cell = tableView.cellForRow(at: indexPath) else { return nil }
-    if sections.indices.contains(indexPath.section),
-       sections[indexPath.section].rows.indices.contains(indexPath.row),
-       sections[indexPath.section].rows[indexPath.row].kind == "slider",
-       let slider = cell.accessoryView as? SonarpadAccessibleSlider {
-      return slider
-    }
     return cell
   }
 

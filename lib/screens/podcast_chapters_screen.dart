@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../services/podcast_service.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -46,7 +47,7 @@ class PodcastChaptersScreen extends StatelessWidget {
               );
             }
             if (snapshot.hasError) {
-              return Center(child: Text(l10n.error(snapshot.error!)));
+              return Center(child: Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))));
             }
             final chapters = snapshot.data ?? const <PodcastChapter>[];
             if (chapters.isEmpty) {

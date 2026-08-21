@@ -262,10 +262,7 @@ class AudioPlayerService {
       AppLogger.log(
           'Sonarpad audio: previous player dispose completed in setUrl');
     }
-    String itemTitle = title ??
-        (sessionType == AudioSessionType.speech
-            ? 'Lettura Vocale'
-            : 'Riproduzione Audio');
+    String itemTitle = title ?? 'Sonarpad';
 
     _stopRequested = false;
     _currentMediaId = mediaId;
@@ -348,7 +345,7 @@ class AudioPlayerService {
   }
 
   Future<void> startSilentPlaybackSession({
-    String title = 'Lettura Documento',
+    String title = 'Sonarpad',
   }) async {
     _stopRequested = false;
     await _prepareAudioSession(AudioSessionType.speech);
@@ -411,7 +408,7 @@ class AudioPlayerService {
         tag: MediaItem(
           id: file.path,
           album: 'Sonarpad',
-          title: 'Lettura Documento',
+          title: 'Sonarpad',
         ),
       ),
     );
@@ -428,7 +425,7 @@ class AudioPlayerService {
     List<File> files, {
     void Function(int index, File file)? onChunkStarted,
     AudioSessionType sessionType = AudioSessionType.speech,
-    String title = 'Lettura Documento',
+    String title = 'Sonarpad',
     bool resetAfterCompletion = true,
   }) async {
     _stopRequested = false;
@@ -496,6 +493,13 @@ class AudioPlayerService {
         await indexSub.cancel();
         if (!_stopRequested && resetAfterCompletion) {
           try {
+            // just_audio keeps `playing == true` when a source reaches the
+            // completed state. Seeking a completed-but-still-playing playlist
+            // back to zero therefore starts it again immediately. Pause first
+            // so resetting the cursor cannot replay the whole TTS a second time.
+            if (_player.playing) {
+              await _player.pause();
+            }
             await _player.seek(Duration.zero, index: 0);
           } catch (e) {
             AppLogger.log('Sonarpad audio: playlist reset error: $e');
@@ -515,7 +519,7 @@ class AudioPlayerService {
     Stream<File> files, {
     void Function(int index, File file)? onChunkStarted,
     AudioSessionType sessionType = AudioSessionType.speech,
-    String title = 'Lettura Documento',
+    String title = 'Sonarpad',
     int initialBufferCount = 1,
     bool Function()? isPaused,
   }) async {

@@ -432,7 +432,7 @@ class _WeatherForecastView extends StatelessWidget {
       'en' => _weatherCodeLabelsEn,
       'fr' => _weatherCodeLabelsFr,
       'es' => _weatherCodeLabelsEs,
-      'pt' => _weatherCodeLabelsPt,
+      'pt' || 'pt_BR' => _weatherCodeLabelsPt,
       'pl' => _weatherCodeLabelsPl,
       'de' => _weatherCodeLabelsDe,
       _ => _weatherCodeLabelsIt,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../services/recent_routes_service.dart';
 import '../services/route_service.dart';
 import 'route_result_screen.dart';
@@ -33,6 +34,7 @@ class _RouteScreenState extends State<RouteScreen> {
         'es' => 'es',
         'fr' => 'fr',
         'pt' => 'pt',
+        'pt_BR' => 'br',
         'pl' => 'pl',
         'cs' => 'cz',
         'de' => 'de',
@@ -120,7 +122,7 @@ class _RouteScreenState extends State<RouteScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.routeError(e));
+            showStatusMessage(context, l10n.routeError(l10n.localizeTechnicalError(e)));
     } finally {
       if (mounted) setState(() => _calculating = false);
     }
@@ -219,6 +221,7 @@ class _RouteScreenState extends State<RouteScreen> {
       AccessibleOption(value: 'fr', label: l10n.routeCountryFrance),
       AccessibleOption(value: 'es', label: l10n.routeCountrySpain),
       AccessibleOption(value: 'pt', label: l10n.radioCountryOptionPt),
+      AccessibleOption(value: 'br', label: l10n.radioCountryOptionBr),
       AccessibleOption(value: 'pl', label: l10n.radioCountryOptionPl),
       AccessibleOption(value: 'cz', label: l10n.routeCountryCzechRepublic),
       AccessibleOption(value: 'au', label: l10n.radioCountryOptionAu),
@@ -335,6 +338,8 @@ class _RouteScreenState extends State<RouteScreen> {
                   value: 'es', child: Text(l10n.routeCountrySpain)),
               DropdownMenuItem(
                   value: 'pt', child: Text(l10n.radioCountryOptionPt)),
+              DropdownMenuItem(
+                  value: 'br', child: Text(l10n.radioCountryOptionBr)),
               DropdownMenuItem(
                   value: 'pl', child: Text(l10n.radioCountryOptionPl)),
               DropdownMenuItem(
@@ -474,7 +479,7 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.routeError(e));
+            showStatusMessage(context, l10n.routeError(l10n.localizeTechnicalError(e)));
     } finally {
       if (mounted) setState(() => _calculating = false);
     }

@@ -368,6 +368,7 @@ class WikipediaService {
         'en' => 'Wikipedia error: $statusCode',
         'fr' => 'Erreur Wikipedia : $statusCode',
         'es' => 'Error de Wikipedia: $statusCode',
+        'pt' || 'pt_BR' || 'pt-BR' => 'Erro da Wikipédia: $statusCode',
         _ => 'Errore Wikipedia: $statusCode',
       };
 
@@ -375,6 +376,8 @@ class WikipediaService {
         'en' => 'Wikipedia import error: $statusCode',
         'fr' => 'Erreur d\'importation Wikipedia : $statusCode',
         'es' => 'Error de importación de Wikipedia: $statusCode',
+        'pt' || 'pt_BR' || 'pt-BR' =>
+          'Erro ao importar da Wikipédia: $statusCode',
         _ => 'Errore importazione Wikipedia: $statusCode',
       };
 }

@@ -1202,7 +1202,7 @@ class PodcastService {
           if (feedUrl.isEmpty) return null;
           return PodcastSearchResult(
             title:
-                (item['collectionName'] ?? 'Podcast senza titolo').toString(),
+                (item['collectionName'] ?? 'Podcast').toString(),
             author: (item['artistName'] ?? '').toString(),
             feedUrl: feedUrl,
             artworkUrl: item['artworkUrl100']?.toString(),
@@ -1486,7 +1486,7 @@ class PodcastService {
           );
           return PodcastEpisode(
             title: item.findElements('title').firstOrNull?.innerText.trim() ??
-                'Episodio senza titolo',
+                '—',
             description: _cleanHtml(
                 item.findElements('description').firstOrNull?.innerText ?? ''),
             audioUrl: audioUrl,

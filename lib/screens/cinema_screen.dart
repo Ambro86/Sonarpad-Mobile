@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../widgets/universal_accessible_view.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
@@ -30,7 +31,7 @@ class _CinemaScreenState extends State<CinemaScreen> {
 
   Future<void> _loadData() async {
     try {
-      final localeName = Localizations.localeOf(context).languageCode;
+      final localeName = Localizations.localeOf(context).toString();
       final movies = await _service.getNowPlaying(languageCode: localeName);
       
       // Ordina dal più recente al meno recente (discendente)
@@ -44,7 +45,7 @@ class _CinemaScreenState extends State<CinemaScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = AppLocalizations.of(context).localizeTechnicalError(e);
         _loading = false;
       });
     }

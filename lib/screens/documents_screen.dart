@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/document_item.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
@@ -102,7 +103,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       dev.log('DocumentsScreen: errore caricamento: $e');
       if (mounted) {
         setState(() =>
-            _errorMessage = AppLocalizations.of(context).libraryLoadError(e));
+            _errorMessage = AppLocalizations.of(context).libraryLoadError(AppLocalizations.of(context).localizeTechnicalError(e)));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -123,7 +124,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     } catch (e) {
       dev.log('DocumentsScreen: errore apertura file picker: $e');
       if (mounted) {
-        _showSnack(AppLocalizations.of(context).fileOpenError(e));
+        _showSnack(AppLocalizations.of(context).fileOpenError(AppLocalizations.of(context).localizeTechnicalError(e)));
       }
       return;
     }
@@ -160,7 +161,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           dev.log('DocumentsScreen: errore importazione zip: $e');
           await AppLogger.log('DocumentsScreen: errore importazione zip: $e');
           if (mounted) {
-            _showSnack(AppLocalizations.of(context).importZipError(e));
+            _showSnack(AppLocalizations.of(context).importZipError(AppLocalizations.of(context).localizeTechnicalError(e)));
           }
         }
         continue;
@@ -178,7 +179,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         dev.log('DocumentsScreen: errore aggiunta documento: $e');
         await AppLogger.log('DocumentsScreen: errore aggiunta documento: $e');
         if (mounted) {
-          _showSnack(AppLocalizations.of(context).documentAddError(e));
+          _showSnack(AppLocalizations.of(context).documentAddError(AppLocalizations.of(context).localizeTechnicalError(e)));
         }
         continue;
       }
@@ -202,7 +203,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     } catch (e) {
       dev.log('DocumentsScreen: errore importazione documenti condivisi: $e');
       if (mounted) {
-        _showSnack(l10n.documentAddError(e));
+        _showSnack(l10n.documentAddError(l10n.localizeTechnicalError(e)));
       }
     }
   }
@@ -246,7 +247,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       await _service.remove(id);
     } catch (e) {
       dev.log('DocumentsScreen: errore rimozione documento: $e');
-      if (mounted) _showSnack(l10n.documentRemoveError(e));
+      if (mounted) _showSnack(l10n.documentRemoveError(l10n.localizeTechnicalError(e)));
       return;
     }
     if (mounted) {
@@ -509,7 +510,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       dev.log('Errore durante l\'esportazione: $e');
       await AppLogger.log('Errore esportazione: $e');
       if (mounted) {
-                showStatusMessage(context, '${AppLocalizations.of(context).exportError}: $e');
+                showStatusMessage(context, '${AppLocalizations.of(context).exportError}: ${AppLocalizations.of(context).localizeTechnicalError(e)}');
       }
     }
   }
@@ -597,7 +598,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       footnoteLabel: l10n.documentFootnoteLabel,
     );
     if (result.text.trim().isEmpty) {
-      throw Exception(result.error ?? l10n.noExportableTextFound);
+      throw Exception(result.error == null ? l10n.noExportableTextFound : l10n.localizeTechnicalError(result.error));
     }
     return result.text;
   }
@@ -817,7 +818,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           ),
         );
       } catch (e) {
-        if (mounted) _showSnack(AppLocalizations.of(context).error(e));
+        if (mounted) _showSnack(AppLocalizations.of(context).error(AppLocalizations.of(context).localizeTechnicalError(e)));
       }
       return;
     }
@@ -832,7 +833,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           ),
         );
       } catch (e) {
-        if (mounted) _showSnack(AppLocalizations.of(context).error(e));
+        if (mounted) _showSnack(AppLocalizations.of(context).error(AppLocalizations.of(context).localizeTechnicalError(e)));
       }
       return;
     }
@@ -854,7 +855,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           ),
         );
       } catch (e) {
-        if (mounted) _showSnack(AppLocalizations.of(context).error(e));
+        if (mounted) _showSnack(AppLocalizations.of(context).error(AppLocalizations.of(context).localizeTechnicalError(e)));
       }
       return;
     }

@@ -2699,6 +2699,9 @@ class AppLocalizationsCs extends AppLocalizations {
       'Upravte hlasitost a efekt pouze pro tuto část.';
 
   @override
+  String get mediaCutterPartVolumeLabel => 'Hlasitost části';
+
+  @override
   String mediaCutterPartVolumeValue(int percent) {
     return 'Hlasitost části: $percent %';
   }
@@ -2816,6 +2819,9 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaCutterPartEffectFadeOut => 'Zeslabení na konci';
+
+  @override
+  String get mediaCutterPartEffectAmountLabel => 'Intenzita efektu';
 
   @override
   String mediaCutterPartEffectAmountValue(int percent) {
@@ -3298,7 +3304,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get radioScheduleDialogTitle => 'Naplánovat nahrávání';
 
   @override
-  String get radioScheduleOpenRequirement => 'V této verzi se naplánované nahrávání spustí pouze tehdy, když Sonarpad zůstane otevřený na tomto přehrávači. Pokud zavřete aplikaci nebo tuto obrazovku, nahrávání se nemůže spustit automaticky.';
+  String get radioScheduleOpenRequirement => 'Naplánované nahrávání funguje i při přechodu na jiné obrazovky Sonarpadu. Sonarpad musí zůstat otevřený; pokud je aplikace zavřena nebo pozastavena systémem, spuštění nahrávání není zaručeno.';
 
   @override
   String radioScheduleStartTimeValue(String time) {

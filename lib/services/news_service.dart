@@ -21,6 +21,7 @@ import 'html_reader_service.dart';
 import 'news_sources/french_news_sources.dart';
 import 'news_sources/spanish_news_sources.dart';
 import 'news_sources/portuguese_news_sources.dart';
+import 'news_sources/brazilian_portuguese_news_sources.dart';
 import 'news_sources/polish_news_sources.dart';
 import 'news_sources/czech_news_sources.dart';
 import 'news_sources/german_news_sources.dart';
@@ -31,6 +32,7 @@ enum NewsLanguage {
   french,
   spanish,
   portuguese,
+  portugueseBrazil,
   polish,
   czech,
   german
@@ -53,6 +55,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.french => 'fr',
         NewsLanguage.spanish => 'es',
         NewsLanguage.portuguese => 'pt',
+        NewsLanguage.portugueseBrazil => 'pt-BR',
         NewsLanguage.polish => 'pl',
         NewsLanguage.czech => 'cs',
         NewsLanguage.german => 'de',
@@ -64,6 +67,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.french => 'french',
         NewsLanguage.spanish => 'spanish',
         NewsLanguage.portuguese => 'portuguese',
+        NewsLanguage.portugueseBrazil => 'portuguese_brazil',
         NewsLanguage.polish => 'polish',
         NewsLanguage.czech => 'czech',
         NewsLanguage.german => 'german',
@@ -74,7 +78,8 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.english => l10n.english,
         NewsLanguage.french => l10n.french,
         NewsLanguage.spanish => l10n.spanish,
-        NewsLanguage.portuguese => l10n.radioLanguagePt,
+        NewsLanguage.portuguese => '${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})',
+        NewsLanguage.portugueseBrazil => '${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})',
         NewsLanguage.polish => l10n.radioLanguagePl,
         NewsLanguage.czech => l10n.radioLanguageCs,
         NewsLanguage.german => l10n.german,
@@ -86,6 +91,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.french => frenchNewsSources,
         NewsLanguage.spanish => spanishNewsSources,
         NewsLanguage.portuguese => portugueseNewsSources,
+        NewsLanguage.portugueseBrazil => brazilianPortugueseNewsSources,
         NewsLanguage.polish => polishNewsSources,
         NewsLanguage.czech => czechNewsSources,
         NewsLanguage.german => germanNewsSources,
@@ -131,6 +137,29 @@ class NewsService {
   static Future<http.Client>? _iphoneClientFuture;
   static bool? _sessionTinyfishFallbackOnlyPolicy;
   static Future<bool>? _sessionTinyfishPolicyFuture;
+
+  // Circuit breaker in memoria: se una fonte RSS primaria fallisce ma il
+  // fallback Google News funziona, per il resto della sessione saltiamo il
+  // feed primario. Alla riapertura dell'app questo set riparte vuoto.
+  static final Set<String> _sessionGoogleNewsFallbackSites = <String>{};
+
+  // Alcuni feed RSS vivono su host tecnici diversi dal sito editoriale.
+  // Per il fallback `site:` di Google News serve invece il dominio pubblico.
+  static const Map<String, String> _googleNewsSiteOverrides = {
+    'Corriere della Sera': 'corriere.it',
+    'BBC News': 'bbc.co.uk',
+    'NYT > Top Stories': 'nytimes.com',
+    'New York Times – World News': 'nytimes.com',
+    'Sky News – Home': 'news.sky.com',
+    'NPR – News': 'npr.org',
+    'Wall Street Journal – World News': 'wsj.com',
+    'Dow Jones – World News': 'wsj.com',
+    'Público': 'publico.pt',
+    'Diário As Beiras': 'asbeiras.pt',
+    'Xataka – Tecnología': 'xataka.com',
+    'Technika a zajímavosti: Netzin, magazín o internetu a webu': 'netzin.cz',
+    'Mobilní telefony a tablety: Svět Androida': 'svetandroida.cz',
+  };
 
   final http.Client _client;
   final bool _useBrowserClient;
@@ -550,6 +579,11 @@ class NewsService {
             hl = 'pt-PT';
             gl = 'PT';
             ceid = 'PT:pt-150';
+            break;
+          case NewsLanguage.portugueseBrazil:
+            hl = 'pt-BR';
+            gl = 'BR';
+            ceid = 'BR:pt-419';
             break;
           case NewsLanguage.polish:
             hl = 'pl';
@@ -978,7 +1012,7 @@ class NewsService {
     NewsRssSource? source,
   }) async {
     if (source != null) {
-      return fetchSourceNews(source);
+      return fetchSourceNews(source, language: language);
     }
 
     final sources = await getOrderedSources(language);
@@ -1558,7 +1592,181 @@ class NewsService {
     return text.trim();
   }
 
+  @visibleForTesting
+  static void resetNewsSourceFallbacksForTests() {
+    _sessionGoogleNewsFallbackSites.clear();
+  }
+
+  NewsLanguage? _resolvedLanguageForSource(
+    NewsRssSource source,
+    NewsLanguage? language,
+  ) {
+    if (language != null) return language;
+    for (final candidate in NewsLanguage.values) {
+      for (final builtIn in candidate.rssSources) {
+        if (builtIn.name == source.name && builtIn.uri == source.uri) {
+          return candidate;
+        }
+      }
+    }
+    return null;
+  }
+
+  String _googleNewsCountry(NewsLanguage language) => switch (language) {
+        NewsLanguage.italian => 'IT',
+        NewsLanguage.english => 'US',
+        NewsLanguage.french => 'FR',
+        NewsLanguage.spanish => 'ES',
+        NewsLanguage.portuguese => 'PT',
+        NewsLanguage.portugueseBrazil => 'BR',
+        NewsLanguage.polish => 'PL',
+        NewsLanguage.czech => 'CZ',
+        NewsLanguage.german => 'DE',
+      };
+
+  bool _isGoogleNewsUri(Uri uri) =>
+      uri.host.toLowerCase() == 'news.google.com';
+
+  String? _googleNewsSiteForSource(NewsRssSource source) {
+    final override = _googleNewsSiteOverrides[source.name];
+    if (override != null && override.isNotEmpty) return override;
+
+    var host = source.uri.host.toLowerCase().trim();
+    if (host.isEmpty || host == 'news.google.com') return null;
+
+    const technicalPrefixes = <String>[
+      'www.',
+      'rss.',
+      'feeds.',
+      'feed.',
+      'newsfeed.',
+      'services.',
+    ];
+    for (final prefix in technicalPrefixes) {
+      if (host.startsWith(prefix) && host.length > prefix.length) {
+        host = host.substring(prefix.length);
+        break;
+      }
+    }
+
+    // FeedBurner non contiene il dominio editoriale: senza un override
+    // esplicito è meglio non produrre un fallback scorretto.
+    if (host == 'feedburner.com' || host.endsWith('.feedburner.com')) {
+      return null;
+    }
+
+    return host.isEmpty ? null : host;
+  }
+
+  Uri? _googleNewsFallbackUri(
+    NewsRssSource source,
+    NewsLanguage language,
+  ) {
+    if (_isGoogleNewsUri(source.uri)) return null;
+    final site = _googleNewsSiteForSource(source);
+    if (site == null || site.isEmpty) return null;
+    final country = _googleNewsCountry(language);
+    final lang = language.code;
+    return Uri.https('news.google.com', '/rss/search', {
+      'q': 'site:$site',
+      'hl': lang,
+      'gl': country,
+      'ceid': '$country:$lang',
+    });
+  }
+
   Future<List<NewsArticle>> _fetchRssSource(
+    NewsRssSource rssSource, {
+    NewsLanguage? language,
+  }) async {
+    final resolvedLanguage = _resolvedLanguageForSource(rssSource, language);
+    final fallbackUri = resolvedLanguage == null
+        ? null
+        : _googleNewsFallbackUri(rssSource, resolvedLanguage);
+
+    // Google News (o una sorgente per cui non sappiamo determinare la lingua)
+    // viene letta direttamente senza creare fallback ricorsivi.
+    if (fallbackUri == null) {
+      return _fetchRssSourceDirect(rssSource, language: resolvedLanguage);
+    }
+
+    final site = _googleNewsSiteForSource(rssSource)!;
+    final sessionKey = '${resolvedLanguage!.code}|$site';
+    final fallbackSource = NewsRssSource(
+      name: rssSource.name,
+      uri: fallbackUri,
+    );
+
+    if (_sessionGoogleNewsFallbackSites.contains(sessionKey)) {
+      try {
+        final cachedFallback = await _fetchRssSourceDirect(
+          fallbackSource,
+          language: resolvedLanguage,
+        );
+        if (cachedFallback.isNotEmpty) {
+          return cachedFallback;
+        }
+      } catch (e) {
+        unawaited(AppLogger.log(
+          'NEWS_FALLBACK ${rssSource.name}: fallback di sessione fallito, '
+          'riprovo RSS primario error=$e',
+        ));
+      }
+      _sessionGoogleNewsFallbackSites.remove(sessionKey);
+    }
+
+    Object? primaryError;
+    try {
+      final primary = await _fetchRssSourceDirect(
+        rssSource,
+        language: resolvedLanguage,
+      );
+      if (primary.isNotEmpty) return primary;
+      primaryError = StateError('RSS senza articoli');
+      unawaited(AppLogger.log(
+        'NEWS_FALLBACK ${rssSource.name}: RSS primario senza articoli, '
+        'provo Google News site:$site',
+      ));
+    } catch (e) {
+      primaryError = e;
+      unawaited(AppLogger.log(
+        'NEWS_FALLBACK ${rssSource.name}: RSS primario fallito error=$e; '
+        'provo Google News site:$site',
+      ));
+    }
+
+    try {
+      final fallback = await _fetchRssSourceDirect(
+        fallbackSource,
+        language: resolvedLanguage,
+      );
+      if (fallback.isNotEmpty) {
+        _sessionGoogleNewsFallbackSites.add(sessionKey);
+        unawaited(AppLogger.log(
+          'NEWS_FALLBACK ${rssSource.name}: Google News attivo per la sessione '
+          'site:$site articoli=${fallback.length}',
+        ));
+        return fallback;
+      }
+    } catch (fallbackError) {
+      unawaited(AppLogger.log(
+        'NEWS_FALLBACK ${rssSource.name}: anche Google News fallito '
+        'site:$site error=$fallbackError',
+      ));
+      throw Exception(
+        'Impossibile caricare ${rssSource.name}: RSS primario e fallback '
+        'Google News non disponibili. Primario: $primaryError; '
+        'fallback: $fallbackError',
+      );
+    }
+
+    throw Exception(
+      'Impossibile caricare ${rssSource.name}: RSS primario non disponibile '
+      'e fallback Google News senza articoli. Primario: $primaryError',
+    );
+  }
+
+  Future<List<NewsArticle>> _fetchRssSourceDirect(
     NewsRssSource rssSource, {
     NewsLanguage? language,
   }) async {
@@ -1964,6 +2172,7 @@ class NewsService {
       NewsLanguage.french => 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.spanish => 'es-ES,es;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.portuguese => 'pt-PT,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+      NewsLanguage.portugueseBrazil => 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.polish => 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.czech => 'cs-CZ,cs;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.german => 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',

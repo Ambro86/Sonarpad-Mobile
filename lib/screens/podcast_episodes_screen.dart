@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../services/podcast_service.dart';
 import '../utils/list_timestamp_formatter.dart';
@@ -174,7 +175,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
               );
             }
             if (snapshot.hasError) {
-              return Center(child: Text(l10n.error(snapshot.error!)));
+              return Center(child: Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))));
             }
             final allEpisodes = snapshot.data ?? const [];
             final unplayedEpisodes = allEpisodes

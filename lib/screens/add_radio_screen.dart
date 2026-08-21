@@ -48,7 +48,7 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
       Navigator.pop(context); // Chiude la finestra dopo il successo
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.radioCommunityAddError(e));
+            showStatusMessage(context, l10n.radioCommunityAddError(l10n.localizeTechnicalError(e)));
     } finally {
       if (mounted) setState(() => _addingCommunity = false);
     }

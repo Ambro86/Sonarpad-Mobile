@@ -8,6 +8,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/news_article.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
@@ -1610,8 +1611,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       ));
       if (!mounted) return;
       if (readingToken != _readingToken) return;
-      setState(() => _status = l10n.edgeTtsError(e));
-            showStatusMessage(context, l10n.edgeTtsError(e));
+      setState(() => _status = l10n.edgeTtsError(l10n.localizeTechnicalError(e)));
+            showStatusMessage(context, l10n.edgeTtsError(l10n.localizeTechnicalError(e)));
     } finally {
       unawaited(AppLogger.log(
         'News Edge TTS debug [$readingToken]: finally '

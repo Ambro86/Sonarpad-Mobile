@@ -15,6 +15,7 @@ void main() {
   group('NewsService', () {
     setUp(() {
       NewsService.resetTinyfishFallbackOnlyPolicyForTests();
+      NewsService.resetNewsSourceFallbacksForTests();
     });
 
     test('riconosce come insufficiente il testo composto solo dal titolo', () {
@@ -90,6 +91,17 @@ void main() {
       expect(
         ilFoglio.uri.toString(),
         'https://naxos.ilfoglio.it/api/v5/rss/stories/latest',
+      );
+    });
+
+    test('uses Google News directly for Il Giornale', () {
+      final ilGiornale = italianNewsSources.firstWhere(
+        (source) => source.name == 'Il Giornale',
+      );
+
+      expect(
+        ilGiornale.uri.toString(),
+        'https://news.google.com/rss/search?q=site%3Ailgiornale.it&hl=it&gl=IT&ceid=IT:it',
       );
     });
 
@@ -422,6 +434,154 @@ void main() {
 
       expect(articles.single.title, 'Vox story');
       expect(articles.single.summary, 'Vox encoded summary');
+    });
+
+    test('falls back to localized Google News on RSS 404 and remembers it for the session', () async {
+      var primaryRequests = 0;
+      var googleRequests = 0;
+      final client = MockClient((request) async {
+        if (request.url.host == 'news.google.com') {
+          googleRequests++;
+          expect(request.url.queryParameters['q'], 'site:testata.it');
+          expect(request.url.queryParameters['hl'], 'it');
+          expect(request.url.queryParameters['gl'], 'IT');
+          expect(request.url.queryParameters['ceid'], 'IT:it');
+          return http.Response(
+            '''
+<rss version="2.0"><channel><item>
+<title>Articolo di fallback</title>
+<link>https://www.testata.it/articolo</link>
+<pubDate>Thu, 28 May 2026 08:30:00 GMT</pubDate>
+</item></channel></rss>
+''',
+            200,
+          );
+        }
+        primaryRequests++;
+        return http.Response('not found', 404);
+      });
+      final service = NewsService(client: client);
+      final source = NewsRssSource(
+        name: 'Testata',
+        uri: Uri.parse('https://www.testata.it/rss.xml'),
+      );
+
+      final first = await service.fetchSourceNews(
+        source,
+        language: NewsLanguage.italian,
+      );
+      // La memoria è statica e quindi vale anche se la schermata ricrea il
+      // NewsService durante la stessa sessione dell'app.
+      final secondService = NewsService(client: client);
+      final second = await secondService.fetchSourceNews(
+        source,
+        language: NewsLanguage.italian,
+      );
+
+      expect(first.single.title, 'Articolo di fallback');
+      expect(second.single.title, 'Articolo di fallback');
+      expect(primaryRequests, 1);
+      expect(googleRequests, 2);
+    });
+
+    test('falls back to Google News when the primary feed contains no articles', () async {
+      final requested = <Uri>[];
+      final service = NewsService(
+        client: MockClient((request) async {
+          requested.add(request.url);
+          if (request.url.host == 'news.google.com') {
+            return http.Response(
+              '<rss version="2.0"><channel><item><title>Fallback</title>'
+              '<link>https://example.fr/story</link></item></channel></rss>',
+              200,
+            );
+          }
+          return http.Response('<rss version="2.0"><channel></channel></rss>', 200);
+        }),
+      );
+
+      final articles = await service.fetchSourceNews(
+        NewsRssSource(
+          name: 'Journal Exemple',
+          uri: Uri.parse('https://www.example.fr/rss.xml'),
+        ),
+        language: NewsLanguage.french,
+      );
+
+      expect(articles.single.title, 'Fallback');
+      expect(requested, hasLength(2));
+      expect(requested.last.queryParameters['hl'], 'fr');
+      expect(requested.last.queryParameters['gl'], 'FR');
+      expect(requested.last.queryParameters['ceid'], 'FR:fr');
+    });
+
+    test('uses German Google News locale for German source fallback', () async {
+      final requested = <Uri>[];
+      final service = NewsService(
+        client: MockClient((request) async {
+          requested.add(request.url);
+          if (request.url.host == 'news.google.com') {
+            return http.Response(
+              '<rss version="2.0"><channel><item><title>Ersatzartikel</title>'
+              '<link>https://beispiel.de/artikel</link></item></channel></rss>',
+              200,
+            );
+          }
+          return http.Response('kaputt', 500);
+        }),
+      );
+
+      final articles = await service.fetchSourceNews(
+        NewsRssSource(
+          name: 'Beispiel Zeitung',
+          uri: Uri.parse('https://www.beispiel.de/rss.xml'),
+        ),
+        language: NewsLanguage.german,
+      );
+
+      expect(articles.single.title, 'Ersatzartikel');
+      final fallback = requested.last;
+      expect(fallback.queryParameters['q'], 'site:beispiel.de');
+      expect(fallback.queryParameters['hl'], 'de');
+      expect(fallback.queryParameters['gl'], 'DE');
+      expect(fallback.queryParameters['ceid'], 'DE:de');
+    });
+
+    test('every built-in non-Google feed can build a localized Google News fallback', () async {
+      for (final language in NewsLanguage.values) {
+        for (final source in language.rssSources) {
+          if (source.uri.host == 'news.google.com' || source.isFolder) continue;
+          NewsService.resetNewsSourceFallbacksForTests();
+          final requested = <Uri>[];
+          final service = NewsService(
+            client: MockClient((request) async {
+              requested.add(request.url);
+              if (request.url.host == 'news.google.com') {
+                return http.Response(
+                  '<rss version="2.0"><channel><item><title>Fallback</title>'
+                  '<link>https://example.com/story</link></item></channel></rss>',
+                  200,
+                );
+              }
+              return http.Response('primary failed', 503);
+            }),
+          );
+
+          final articles = await service.fetchSourceNews(
+            source,
+            language: language,
+          );
+
+          expect(articles, isNotEmpty, reason: source.name);
+          expect(requested, hasLength(2), reason: source.name);
+          expect(requested.last.host, 'news.google.com', reason: source.name);
+          expect(
+            requested.last.queryParameters['hl'],
+            language.code,
+            reason: source.name,
+          );
+        }
+      }
     });
 
     test('uses Tinyfish markdown before the existing article reader', () async {

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import '../services/audio_player_service.dart';
@@ -99,13 +100,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
       AppLocalizations.of(context).settingsMultipleDocumentBookmarksHint;
 
   String _formatTime(int totalSeconds) {
-    if (totalSeconds < 60) return '$totalSeconds secondi';
-    int m = totalSeconds ~/ 60;
-    int s = totalSeconds % 60;
-    String minStr = m == 1 ? '1 minuto' : '$m minuti';
-    String secStr = s == 1 ? '1 secondo' : '$s secondi';
-    if (s == 0) return minStr;
-    return '$minStr e $secStr';
+    final l10n = AppLocalizations.of(context);
+    if (totalSeconds < 60) {
+      final unit = totalSeconds == 1
+          ? l10n.mediaCutterDurationSecondOne
+          : l10n.mediaCutterDurationSecondFew;
+      return '$totalSeconds $unit';
+    }
+    final minutes = totalSeconds ~/ 60;
+    final seconds = totalSeconds % 60;
+    final minuteUnit = minutes == 1
+        ? l10n.mediaCutterDurationMinuteOne
+        : l10n.mediaCutterDurationMinuteFew;
+    final secondUnit = seconds == 1
+        ? l10n.mediaCutterDurationSecondOne
+        : l10n.mediaCutterDurationSecondFew;
+    final minuteText = '$minutes $minuteUnit';
+    if (seconds == 0) return minuteText;
+    return '$minuteText ${l10n.mediaCutterDurationAnd} $seconds $secondUnit';
   }
 
   String _formatPercent(int value) => '$value%';
@@ -606,7 +618,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
 
-    if (result == _SettingsLeaveAction.discard) return true;
+    if (result == _SettingsLeaveAction.discard) {
+      // The app language is applied by Home from the value returned by
+      // this route. Returning the unsaved picker value would make a
+      // discarded language appear active until Settings is opened again,
+      // while SharedPreferences still contains the previously saved one.
+      // Restore the saved value before popping so discard is immediate and
+      // consistent both on screen and on the next Settings visit.
+      if (_appLanguage != _savedAppLanguage && mounted) {
+        setState(() => _appLanguage = _savedAppLanguage);
+      }
+      return true;
+    }
     if (result == _SettingsLeaveAction.save) {
       await _save(showConfirmation: false);
       return !_hasUnsavedChanges;
@@ -653,7 +676,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       showStatusMessage(context, message);
     } catch (e) {
       if (!mounted) return;
-      showStatusMessage(context, l10n.error(e));
+      showStatusMessage(context, l10n.error(l10n.localizeTechnicalError(e)));
     } finally {
       if (mounted) {
         setState(() => _clearingPodcastCache = false);
@@ -697,7 +720,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      showStatusMessage(context, l10n.settingsVoiceTestError(e));
+      showStatusMessage(context, l10n.settingsVoiceTestError(l10n.localizeTechnicalError(e)));
     } finally {
       if (mounted) {
         setState(() => _testingVoice = false);
@@ -932,7 +955,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await launchUrl(url);
       } catch (e) {
         if (!mounted) return;
-                showStatusMessage(context, l10n.settingsMailOpenError(e));
+                showStatusMessage(context, l10n.settingsMailOpenError(l10n.localizeTechnicalError(e)));
       }
     }
   }
@@ -978,7 +1001,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'en' => l10n.english,
               'fr' => l10n.french,
               'es' => l10n.spanish,
-              'pt' => l10n.radioLanguagePt,
+              'pt' => '${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})',
+              'pt_BR' => '${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})',
               'pl' => l10n.radioLanguagePl,
               'cs' => l10n.radioLanguageCs,
               'de' => l10n.german,
@@ -989,7 +1013,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AccessibleOption(value: 'en', label: l10n.english),
               AccessibleOption(value: 'fr', label: l10n.french),
               AccessibleOption(value: 'es', label: l10n.spanish),
-              AccessibleOption(value: 'pt', label: l10n.radioLanguagePt),
+              AccessibleOption(value: 'pt', label: '${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})'),
+              AccessibleOption(value: 'pt_BR', label: '${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})'),
               AccessibleOption(value: 'pl', label: l10n.radioLanguagePl),
               AccessibleOption(value: 'cs', label: l10n.radioLanguageCs),
               AccessibleOption(value: 'de', label: l10n.german),
@@ -1411,7 +1436,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         DropdownMenuItem(
                             value: 'es', child: Text(l10n.spanish)),
                         DropdownMenuItem(
-                            value: 'pt', child: Text(l10n.radioLanguagePt)),
+                            value: 'pt', child: Text('${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})')),
+                        DropdownMenuItem(
+                            value: 'pt_BR', child: Text('${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})')),
                         DropdownMenuItem(
                             value: 'pl', child: Text(l10n.radioLanguagePl)),
                         DropdownMenuItem(

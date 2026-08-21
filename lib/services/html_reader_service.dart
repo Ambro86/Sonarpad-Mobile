@@ -540,7 +540,17 @@ class HtmlReaderService {
         !rawContent.contains("Title:")) {
       return null;
     }
-    String title = "Titolo sconosciuto";
+    String title = switch (languageCode.replaceAll('-', '_')) {
+      'en' => 'Unknown title',
+      'fr' => 'Titre inconnu',
+      'es' => 'Título desconocido',
+      'pt' => 'Título desconhecido',
+      'pt_BR' => 'Título desconhecido',
+      'pl' => 'Nieznany tytuł',
+      'cs' => 'Neznámý název',
+      'de' => 'Unbekannter Titel',
+      _ => 'Titolo sconosciuto',
+    };
     for (var line in rawContent.split('\n')) {
       if (line.startsWith("Title:")) {
         String t = line.substring(6).trim();
@@ -590,6 +600,8 @@ class HtmlReaderService {
       case 'es':
         return "Por";
       case 'pt':
+      case 'pt_BR':
+      case 'pt-BR':
         return "Por";
       case 'pl':
         return "Autor";
@@ -616,7 +628,17 @@ class HtmlReaderService {
         }
       }
     }
-    return "Titolo non trovato";
+    return switch (languageCode.replaceAll('-', '_')) {
+      'en' => 'Title not found',
+      'fr' => 'Titre introuvable',
+      'es' => 'Título no encontrado',
+      'pt' => 'Título não encontrado',
+      'pt_BR' => 'Título não encontrado',
+      'pl' => 'Nie znaleziono tytułu',
+      'cs' => 'Název nenalezen',
+      'de' => 'Titel nicht gefunden',
+      _ => 'Titolo non trovato',
+    };
   }
 
   static String? pickMetaDescription(Document document) {

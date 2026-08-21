@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
@@ -212,7 +213,7 @@ class _PodcastEpisodePlayerScreenState
               'PodcastPlayer: external audio play async error: $e, $_logSubject',
             );
             if (mounted) {
-              setState(() => _error = l10n.episodeError(e));
+              setState(() => _error = l10n.episodeError(l10n.localizeTechnicalError(e)));
             }
           }));
         }
@@ -279,7 +280,7 @@ class _PodcastEpisodePlayerScreenState
         return;
       }
       AppLogger.log('PodcastPlayer: Error during _play: $e, $_logSubject');
-      setState(() => _error = l10n.episodeError(e));
+      setState(() => _error = l10n.episodeError(l10n.localizeTechnicalError(e)));
     } finally {
       if (mounted) {
         setState(() => _loading = false);

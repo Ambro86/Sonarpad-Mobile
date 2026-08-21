@@ -29,8 +29,8 @@
       "Ajout d’une localisation allemande complète de Sonarpad, y compris les écrans principaux, le Calendrier avec saints et citations, la Météo, les Actualités, les Podcasts, la Radio et les descriptions des autorisations iOS. Les fonctions réservées à l’Italie restent disponibles uniquement avec l’interface italienne."
     ],
     "pt": [
-      "Cortador de mídia: adicionado um motor DSP C++ compartilhado entre iPhone e Android para coro, vocoder, alterações de voz, robô, rádio antiga e ambientes.",
-      "Efeitos de áudio: todas as famílias do arquivo experimental foram recuperadas e as variantes quase idênticas foram agrupadas.",
+      "Cortador multimédia: adicionado um motor DSP C++ partilhado entre iPhone e Android para coro, vocoder, alterações de voz, robô, rádio antiga e ambientes.",
+      "Efeitos de áudio: todas as famílias do ficheiro experimental foram recuperadas e as variantes quase idênticas foram agrupadas.",
       "Efeitos de áudio: adicionados recursos originais para coro, guitarra e órgão falantes, rádio antiga e ambientes, com loop suave, redução sob a voz e fallback procedural.",
       "Adicionada uma localização alemã completa do Sonarpad, incluindo os ecrãs principais, o Calendário com santos e citações, o Tempo, as Notícias, Podcasts, Rádio e as descrições de permissões do iOS. As funções exclusivas de Itália continuam disponíveis apenas com a interface em italiano."
     ],
@@ -50,6 +50,12 @@
       "Media Cutter: Die produktionsreife Prüfung von Spuren, Dauer und Dekodierung bleibt auch bei Verwendung nativer DSP-Effekte aktiv.",
       "Audioeffekte: Original-Assets für Chorus, sprechende Gitarre und Orgel, altes Radio, Dschungel, Menschenmenge, Regen, Verkehr, Spielautomaten, Grillen, Glocken und Applaus hinzugefügt. Der DSP wiederholt sie mit Crossfades und senkt den Hintergrund unter Sprache automatisch ab; falls ein Asset fehlt, wird ein prozeduraler Fallback verwendet.",
       "Vollständige deutsche Lokalisierung von Sonarpad hinzugefügt, einschließlich der Hauptbildschirme, Kalender mit Heiligen und Zitaten, Wetter, Nachrichten, Podcasts, Radio und iOS-Berechtigungsbeschreibungen. Nur für Italien bestimmte Funktionen bleiben ausschließlich in der italienischen Oberfläche verfügbar."
+    ],
+    "pt_BR": [
+      "Cortador de mídia: adicionado um motor DSP C++ compartilhado entre iPhone e Android para coro, vocoder, alterações de voz, robô, rádio antiga e ambientes.",
+      "Efeitos de áudio: todas as famílias do arquivo experimental foram recuperadas e as variantes quase idênticas foram agrupadas.",
+      "Efeitos de áudio: adicionados recursos originais para coro, guitarra e órgão falantes, rádio antiga e ambientes, com loop suave, redução sob a voz e fallback procedural.",
+      "Adicionada uma localização alemã completa do Sonarpad, incluindo as telas principais, o Calendário com santos e citações, o Clima, as Notícias, Podcasts, Rádio e as descrições de permissões do iOS. As funções exclusivas da Itália continuam disponíveis apenas com a interface em italiano."
     ]
   },
   {
@@ -272,7 +278,7 @@
       "Cortar ficheiro multimédia: depois de Aplicar corte, a reprodução com o controlo deslizante passa a saltar preventivamente as partes removidas no limite exato do corte; no ecrã de efeitos, tocar em Efeito 1 edita o efeito existente em vez de criar Efeito 2.",
       "Documentos: melhorada a abertura de ficheiros RTF; o Sonarpad agora interpreta o formato e mostra texto legível em vez de códigos RTF.",
       "Notícias: os tempos limite do Tinyfish foram alinhados; o servidor espera até 15 segundos e a app até 20 segundos, reduzindo chamadas bloqueadas e fallback demasiado rápido.",
-      "Em Cortar ficheiro de mídia, a tela de efeitos agora evita leituras duplicadas com o VoiceOver e mantém os efeitos escolhidos em ordem; no corte avançado cada parte pode ser modificada movendo o início ou o fim em 1 segundo e ouvindo o resultado.",
+      "Em Cortar ficheiro multimédia, o ecrã de efeitos agora evita leituras duplicadas com o VoiceOver e mantém os efeitos escolhidos em ordem; no corte avançado cada parte pode ser modificada movendo o início ou o fim em 1 segundo e ouvindo o resultado.",
       "No corte guiado, se definir um início ou fim e tentar sair sem aplicar, o Sonarpad avisa antes de perder o corte preparado; a rotação de vídeo também fica disponível no fluxo guiado.",
       "O corte guiado inclui agora Modificar corte: avance ou recue o início ou o fim 1 segundo e volte a ouvir sem recomeçar.",
       "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caráter a caráter com o VoiceOver.",
@@ -305,10 +311,10 @@
       "Cortar ficheiro multimédia agora permite ajustar o volume e os efeitos de áudio de cada parte, com uma única ação do VoiceOver “Ajustar efeitos” e processamento final pelo FFmpeg.",
       "As Notícias agora incluem botões para enviar uma fonte para a comunidade Sonarpad e explorar as fontes partilhadas do idioma selecionado, adicionando-as à biblioteca com um toque.",
       "Nas Notícias, a comunidade Sonarpad passa a usar sempre o idioma de notícias selecionado; ao enviar uma fonte, pode introduzir um feed RSS ou um site, com deteção automática do feed quando possível.",
-      "Taglia file media adiciona um botão para regular o deslocamento do arquivo de mídia e escolher quanto avançar ou retroceder com o controle deslizante.",
-      "Taglia file media foi melhorado: com VoiceOver, os controles de deslocamento, vídeo e rotação ficam antes do controle deslizante; divisões perto de uma borda podem cortar a parte mantida, e o Sonarpad anuncia qual parte foi adicionada.",
-      "Em Cortar arquivo de mídia, ao dividir dentro de uma parte existente, essa parte agora é dividida em duas e as partes seguintes são renumeradas corretamente.",
-      "Taglia file media agora permite escolher entre Corte guiado e Corte avançado. O corte guiado permite definir início e fim, ouvir a parte a remover e aplicar o corte, com um único cartão de resumo do ficheiro e efeitos aplicados a todo o resultado.",
+      "Cortar ficheiro multimédia adiciona um botão para regular o deslocamento do ficheiro multimédia e escolher quanto avançar ou retroceder com o controlo deslizante.",
+      "Cortar ficheiro multimédia foi melhorado: com VoiceOver, os controlos de deslocamento, vídeo e rotação ficam antes do controlo deslizante; divisões perto de uma borda podem cortar a parte mantida, e o Sonarpad anuncia qual parte foi adicionada.",
+      "Em Cortar ficheiro multimédia, ao dividir dentro de uma parte existente, essa parte agora é dividida em duas e as partes seguintes são renumeradas corretamente.",
+      "Cortar ficheiro multimédia agora permite escolher entre Corte guiado e Corte avançado. O corte guiado permite definir início e fim, ouvir a parte a remover e aplicar o corte, com um único cartão de resumo do ficheiro e efeitos aplicados a todo o resultado.",
       "Notícias: removida uma chamada redundante ao leitor durante o carregamento da WebView, reduzindo extrações duplicadas e logs desnecessários.",
       "Notícias: quando o modo Tinyfish apenas como último recurso está ativo, o Sonarpad tenta agora, por esta ordem, o leitor HTTP, a extração da WebView e por fim o Tinyfish. O Tinyfish deixa de arrancar quando a WebView já recuperou o artigo e também é evitado durante os redirecionamentos do Google Notícias.",
       "TV MPD/DASH: corrigida a reprodução sem áudio com o novo leitor VLC. O Sonarpad aguarda agora a PlatformView nativa, inicializa o VLC apenas quando o canal está pronto, seleciona explicitamente a faixa de áudio e usa o MediaKit como alternativa se o VLC não estiver disponível."
@@ -466,6 +472,57 @@
       "Nachrichten: Einen redundanten Reader-Aufruf während des Ladens der Seite in der WebView entfernt, wodurch doppelte Extraktionsversuche und unnötige Logs reduziert werden.",
       "Nachrichten: Wenn der Tinyfish-Modus nur als Fallback aktiv ist, versucht Sonarpad nun in dieser Reihenfolge HTTP-Reader, WebView-Extraktion und zuletzt Tinyfish. Tinyfish startet nicht mehr, wenn die WebView den Artikel bereits wiederhergestellt hat, und wird auch bei Google-News-Weiterleitungen vermieden.",
       "MPD/DASH-TV: Stumme Wiedergabe mit dem neuen VLC-Player behoben. Sonarpad wartet nun auf die native PlatformView, initialisiert VLC erst bei bereitem Kanal, wählt die Audiospur ausdrücklich und fällt auf MediaKit zurück, wenn VLC nicht verfügbar ist."
+    ],
+    "pt_BR": [
+      "Cortar arquivo de mídia: a exportação foi reforçada para uso em produção. O Sonarpad detecta as faixas reais com FFprobe, trata vídeos sem áudio e arquivos de áudio com capa, normaliza os segmentos antes de uni-los, recodifica automaticamente quando a concatenação rápida não é confiável, verifica faixas, duração e decodificação no início, no fim e nos pontos de junção e só publica o arquivo depois da validação por meio de uma renomeação atômica. Os arquivos temporários incompletos são removidos após erros ou cancelamentos.",
+      "Cortar arquivo de mídia: corrigidos os vídeos cortados que podiam ser salvos com 0 segundos e sem áudio. O FFmpeg não remove mais por engano a faixa de vídeo; os arquivos MP4 são otimizados para iOS e cada segmento de vídeo é verificado antes do salvamento final.",
+      "TV MPD/DASH: quando o vídeo está desativado, o Sonarpad monta primeiro uma superfície de vídeo oculta, inicia o fluxo e só depois desativa a faixa de vídeo; também foi corrigida a mudança de vídeo após o VLC recorrer ao MediaKit.",
+      "TV MPD/DASH: as janelas curtas de transmissão HBBTV são renovadas no mesmo leitor pouco antes do fim ou após um bloqueio; nas Notícias, a WebView pura permanece oculta até os avisos de cookies e consentimento serem tratados e limpos.",
+      "Documentos: foi adicionado um modo de seleção múltipla de parágrafos. A seleção é iniciada pela ação secundária de um parágrafo; enquanto o modo está ativo, o toque duplo seleciona ou desseleciona parágrafos, anuncia a quantidade selecionada e permite eliminá-los em conjunto após confirmação. O comando Voltar sai primeiro do modo de seleção sem fechar o documento.",
+      "Cortar arquivo de mídia: foi adicionado um registro de diagnóstico detalhado para os espaços dos efeitos de áudio, para verificar se um duplo toque modifica realmente o Efeito de áudio 1/2 ou cria por engano um novo espaço.",
+      "Cortar arquivo de mídia: depois de Aplicar corte, a reprodução com o controle deslizante passa a pular preventivamente as partes removidas no limite exato do corte; na tela de efeitos, tocar em Efeito 1 edita o efeito existente em vez de criar Efeito 2.",
+      "Documentos: melhorada a abertura de arquivos RTF; o Sonarpad agora interpreta o formato e mostra texto legível em vez de códigos RTF.",
+      "Notícias: os tempos limite do Tinyfish foram alinhados; o servidor espera até 15 segundos e o app até 20 segundos, reduzindo chamadas bloqueadas e fallback rápido demais.",
+      "Em Cortar arquivo de mídia, a tela de efeitos agora evita leituras duplicadas com o VoiceOver e mantém os efeitos escolhidos em ordem; no corte avançado, cada parte pode ser modificada movendo o início ou o fim em 1 segundo e ouvindo o resultado.",
+      "No corte guiado, se definir um início ou fim e tentar sair sem aplicar, o Sonarpad avisa antes de perder o corte preparado; a rotação de vídeo também fica disponível no fluxo guiado.",
+      "O corte guiado inclui agora Modificar corte: avance ou recue o início ou o fim 1 segundo e volte a ouvir sem recomeçar.",
+      "Melhorada a leitura de documentos: alguns textos com acentos especiais são agora lidos melhor, também ao navegar caractere por caractere com o VoiceOver.",
+      "Melhorada a abertura de arquivos TXT italianos da Biblioteca Digital: ao importar a partir de Documentos, o Sonarpad corrige melhor as vogais acentuadas apresentadas de forma incorreta.",
+      "Corrigido o teste de voz nas configurações: ao alterar a velocidade ou o tom, o botão Testar voz usa imediatamente os novos valores.",
+      "Adicionado o botão Selecionar data nos podcasts para encontrar com mais facilidade episódios publicados em um dia específico.",
+      "Melhorado o retorno da leitura de notícias: depois de ler um artigo, a lista tenta se posicionar perto do artigo seguinte.",
+      "Adicionados botões para ordenar alfabeticamente os podcasts assinados e as rádios favoritas.",
+      "Esclarecido o botão para importar arquivos de áudio locais nos Podcasts, para não ser confundido com a importação de podcasts.",
+      "Adicionado o botão Selecionar letra nas listas alfabéticas longas, para chegar mais rapidamente a países, idiomas e categorias.",
+      "Adicionados novos países selecionáveis nas Rotas: Austrália, Canadá, Alemanha, Reino Unido e Estados Unidos.",
+      "Adicionado um primeiro suporte para capítulos de podcast quando o episódio os disponibiliza.",
+      "Corrigidas algumas vozes espanholas nas configurações TTS: as vozes de Espanha aparecem agora como Spanish (Spain).",
+      "Melhorado o índice dos EPUB: o Sonarpad abre melhor os capítulos e salva o índice para acesso mais rápido depois.",
+      "Adicionada uma opção para incluir notas de rodapé no texto dos EPUB compatíveis, para que sejam lidas perto do ponto onde são referenciadas.",
+      "Adicionada uma opção para usar vários marcadores no mesmo documento e escolher para qual voltar.",
+      "Adicionada a opção Passo do controle dos documentos, para escolher quanto avançar ou recuar com o controle de posição.",
+      "Durante a leitura de um documento em voz alta, ao mover o controle de posição o Sonarpad realinha imediatamente a leitura TTS com o novo ponto escolhido.",
+      "As listas de notícias e episódios de podcast agora mostram data e hora junto ao título, com indicações como hoje, ontem, amanhã e depois de amanhã quando disponíveis.",
+      "Adicionada uma opção para mostrar vídeos em tela cheia horizontal quando o vídeo está ativo.",
+      "Adicionada uma opção para ver e limpar a cache de podcasts. O Sonarpad agora também a limpa automaticamente quando fica muito grande ou contém arquivos antigos, sem remover assinaturas nem histórico.",
+      "Adicionado um temporizador de suspensão para a leitura de documentos: ele pode parar automaticamente a leitura do documento atual após o tempo escolhido, tanto com Edge quanto com as vozes do sistema, e salvar o ponto de parada. A contagem é reiniciada quando você começa a ler outro documento.",
+      "Melhorada a pausa e a retomada da leitura de documentos com fones de ouvido: com as vozes do sistema, o comando Reproduzir/Pausar é tratado como o toque mágico e a leitura pode ser retomada sem fechar e reabrir o livro.",
+      "O controle deslizante de posição dos documentos agora também mostra uma estimativa do tempo de leitura restante, calculada com base no texto ainda por ler e na velocidade TTS escolhida.",
+      "O Calendário inclui agora uma coleção de citações do dia enormemente ampliada, com muitas frases novas traduzidas para todos os idiomas disponíveis.",
+      "Adicionada a função Cortar arquivo de mídia: você pode abrir um áudio ou vídeo, escolher os pontos de divisão, desativar as partes indesejadas e salvar apenas as que você quer conservar.",
+      "Em Cortar arquivo de mídia, agora você pode tocar numa parte ativa para ouvi-la a partir do arquivo original; as partes desativadas não são reproduzidas nem salvas.",
+      "Melhorada a função Cortar arquivo de mídia: as partes excluídas desaparecem da lista, são ignoradas durante a reprodução e podem ser restauradas com um botão dedicado.",
+      "Melhorado o salvamento em Cortar arquivo de mídia: agora usa o mesmo fluxo de destino de Converter mídia, mostra uma barra de progresso e, se a pasta escolhida não permitir escrita, prepara o arquivo na pasta Sonarpad e abre o compartilhamento do sistema.",
+      "Cortar arquivo de mídia agora permite ajustar o volume e os efeitos de áudio de cada parte, com uma única ação do VoiceOver “Ajustar efeitos” e processamento final pelo FFmpeg.",
+      "As Notícias agora incluem botões para enviar uma fonte para a comunidade Sonarpad e explorar as fontes compartilhadas do idioma selecionado, adicionando-as à biblioteca com um toque.",
+      "Nas Notícias, a comunidade Sonarpad passa a usar sempre o idioma de notícias selecionado; ao enviar uma fonte, você pode digitar um feed RSS ou um site, com detecção automática do feed quando possível.",
+      "Cortar arquivo de mídia adiciona um botão para regular o deslocamento do arquivo de mídia e escolher quanto avançar ou retroceder com o controle deslizante.",
+      "Cortar arquivo de mídia foi melhorado: com VoiceOver, os controles de deslocamento, vídeo e rotação ficam antes do controle deslizante; divisões perto de uma borda podem cortar a parte mantida, e o Sonarpad anuncia qual parte foi adicionada.",
+      "Em Cortar arquivo de mídia, ao dividir dentro de uma parte existente, essa parte agora é dividida em duas e as partes seguintes são renumeradas corretamente.",
+      "Cortar arquivo de mídia agora permite escolher entre Corte guiado e Corte avançado. O corte guiado permite definir início e fim, ouvir a parte a remover e aplicar o corte, com um único cartão de resumo do arquivo e efeitos aplicados a todo o resultado.",
+      "Notícias: removida uma chamada redundante ao leitor durante o carregamento da WebView, reduzindo extrações duplicadas e logs desnecessários.",
+      "Notícias: quando o modo Tinyfish apenas como último recurso está ativo, o Sonarpad tenta, nesta ordem, o leitor HTTP, a extração da WebView e por fim o Tinyfish. O Tinyfish não inicia quando a WebView já recuperou o artigo e também é evitado durante os redirecionamentos do Google Notícias.",
+      "TV MPD/DASH: corrigida a reprodução sem áudio com o novo leitor VLC. O Sonarpad aguarda agora a PlatformView nativa, inicializa o VLC apenas quando o canal está pronto, seleciona explicitamente a faixa de áudio e usa o MediaKit como alternativa se o VLC não estiver disponível."
     ]
   },
   {
@@ -575,6 +632,19 @@
       "Taste zum Zurücksetzen der Radiofilter und Starten einer neuen sauberen Suche hinzugefügt.",
       "Podcast-Suchergebnisse enthalten jetzt eine sekundäre Aktion zum direkten Abonnieren; ist der Podcast bereits vorhanden, öffnet die Aktion den Podcast.",
       "Einstellung zur Wahl der Temperatureinheit im Wetter hinzugefügt: Celsius oder Fahrenheit."
+    ],
+    "pt_BR": [
+      "Primeira versão pública do Sonarpad Mobile na App Store. Inclui as principais funções já disponíveis: leitura e organização de documentos, importações do Project Gutenberg, LibriVox, PoetryDB, Internet Archive e iTunes / Apple Devices, exportação para DOCX, EPUB, MP3 e M4B, Notícias com RSS, OPML e pastas, podcasts, rádio, rotas, clima, calendário e escolha de tema claro, escuro ou automático.",
+      "Quando a pesquisa de rádios não consegue retornar resultados por problemas de conexão, o Sonarpad mostra uma mensagem mais clara ao usuário em vez de um erro técnico.",
+      "Corrigido o salvamento no conversor de arquivos: quando o Sonarpad não consegue salvar diretamente no destino escolhido, usa o compartilhamento do sistema para permitir que o usuário salve o arquivo onde quiser.",
+      "Várias correções para todas as traduções.",
+      "Corrigido um problema na pesquisa de rádio: depois de escrever o primeiro caractere, o usuário precisava voltar ao campo de texto para continuar digitando.",
+      "Melhorada a importação a partir do iTunes / Apple Devices: o Sonarpad agora também preserva a estrutura das pastas e subpastas importadas.",
+      "Melhorada a pesquisa de rádio: os países agora são apresentados com o nome completo e o código, por exemplo “Turquia (TR)”, em vez de apenas o código.",
+      "Adicionado um resumo dos filtros ativos na pesquisa de rádio, para facilitar a identificação dos critérios em uso.",
+      "Adicionado um botão para redefinir os filtros de rádio e iniciar uma nova pesquisa limpa.",
+      "Os resultados da pesquisa de podcasts incluem agora uma ação secundária para assinar diretamente; se o podcast já estiver presente, a ação abre o podcast.",
+      "Adicionada uma configuração para escolher a unidade de temperatura do clima: Celsius ou Fahrenheit."
     ]
   },
   {
@@ -764,6 +834,29 @@
       "Designauswahl in Einstellungen hinzugefügt: Sonarpad kann dem Systemdesign folgen oder immer hell bzw. dunkel verwenden.",
       "Dokumentexport nach DOCX, EPUB und als Hörbuch MP3 oder M4B hinzugefügt; verwendet werden die bereits gewählten Einstellungen für Sprachengine, Stimme, Geschwindigkeit und Tonhöhe.",
       "Automatische Lesezeichen beim Lesen von Dokumenten verbessert: Die Position wird jetzt auch beim Pausieren gespeichert, damit Sonarpad nach versehentlichem Schließen an der richtigen Stelle fortsetzen kann."
+    ],
+    "pt_BR": [
+      "Adicionadas as traduções em polonês, português e tcheco.",
+      "Melhorada a pesquisa de rádios: agora é possível pesquisar por idioma, país, cidade e gênero, com as escolhas recentes salvas.",
+      "Em Documentos, adicionada a importação a partir do Project Gutenberg, LibriVox, PoetryDB e Internet Archive, além da importação de documentos adicionados através do iTunes em dispositivos Apple.",
+      "Melhorado o conversor de mídia com mais opções de conversão e a possibilidade de escolher a pasta onde salvar o arquivo convertido.",
+      "Adicionada a pesquisa nos documentos: os resultados mostram o início do parágrafo encontrado e, com toque duplo, abrem diretamente o parágrafo que contém o texto pesquisado.",
+      "Na seção Minha cidade, agora é possível alterar a cidade manualmente para corrigir a localização aproximada efetuada pelo Sonarpad.",
+      "Melhorada a seção Clima: é mais fácil escolher a cidade e foram adicionadas cidades recentes para alternar rapidamente entre cidades.",
+      "Corrigido um problema em que, ao abrir um arquivo de mídia local, a posição de reprodução não era salva ao fechar.",
+      "Adicionados em Rotas o botão para salvar as indicações em Documentos e a possibilidade de as ouvir com síntese de voz.",
+      "Em Notícias, depois de ler um artigo de uma fonte, fica disponível o botão Artigos lidos. Os artigos lidos são removidos da lista principal e ficam disponíveis em um histórico separado para cada fonte, que pode ser limpo.",
+      "Melhorada a codificação dos documentos: o Sonarpad lida melhor com UTF-8, ANSI, codificações europeias e outras codificações, abrindo corretamente mais tipos de documentos.",
+      "Corrigido um problema em que o controle de volume desaparecia ao ativar o vídeo nos arquivos de mídia.",
+      "Corrigido um problema nas Notícias em que parar a leitura não interrompia realmente a reprodução.",
+      "Corrigido um problema em que o último parágrafo de uma notícia era lido duas vezes.",
+      "No Calendário, ao compartilhar um dia que contém um lembrete, o Sonarpad pergunta se também deve incluir o lembrete, evitando compartilhar informações privadas por engano.",
+      "Em Notícias, adicionados botões para importar e exportar fontes em formato OPML. A importação também suporta arquivos complexos, como os do Lire, com fontes organizadas em pastas.",
+      "Adicionado o gerenciamento de pastas para fontes de Notícias, com possibilidade de mover fontes para dentro e fora das pastas e excluir pastas.",
+      "Adicionada a opção Criar nova pasta às ações secundárias das Notícias.",
+      "Adicionada a escolha do tema nas configurações: o Sonarpad pode seguir o tema do sistema ou usar sempre o modo claro ou escuro.",
+      "Adicionada a exportação de documentos para DOCX, EPUB e formato de audiolivro MP3 ou M4B, usando o motor de voz, a voz, a velocidade e o tom já escolhidos pelo usuário.",
+      "Melhorado o marcador automático durante a leitura de documentos: agora a posição também é salva ao pausar, para que o Sonarpad possa retomar no parágrafo correto mesmo que o app seja fechado por engano."
     ]
   },
   {
@@ -783,6 +876,12 @@
     ],
     "de": [
       "Spracherkennung beim ersten Start korrigiert: Wenn noch keine App-Sprache gewählt wurde, verwendet Sonarpad jetzt die erste unterstützte bevorzugte Gerätesprache."
+    ],
+    "pt": [
+      "Corrigida a deteção do idioma no primeiro arranque: o Sonarpad passa a usar o primeiro idioma preferido do dispositivo que seja suportado, caso o utilizador ainda não tenha escolhido o idioma da aplicação."
+    ],
+    "pt_BR": [
+      "Corrigida a detecção do idioma no primeiro início: se o usuário ainda não tiver escolhido o idioma do aplicativo, o Sonarpad passa a usar o primeiro idioma preferido e compatível do dispositivo."
     ]
   },
   {
@@ -930,6 +1029,68 @@
       "Englische, französische und spanische Übersetzungen verbessert.",
       "Verständlichkeit mehrerer Bildschirme und App-Meldungen verbessert.",
       "Funktion Kino hinzugefügt, um aktuell im Kino laufende Filme zu entdecken, die Handlung zu lesen und, falls verfügbar, den Trailer anzusehen. Außerdem gibt es die Taste „Demnächst“, um kommende Filme zu prüfen."
+    ],
+    "pt": [
+      "Adicionada a possibilidade de criar um novo documento diretamente no Sonarpad.",
+      "Adicionada a importação do Dropbox: depois de iniciar sessão com a sua conta, pode navegar pelos ficheiros do Dropbox diretamente no Sonarpad e importá-los para a biblioteca de documentos.",
+      "Agora pode partilhar um documento a partir da aplicação Ficheiros do telefone e abri-lo diretamente com o Sonarpad, para o importar para a biblioteca.",
+      "Adicionado suporte para ficheiros ZIP: ao importar um ficheiro ZIP, o Sonarpad cria automaticamente uma pasta com o conteúdo do ficheiro.",
+      "Adicionada a possibilidade de criar novas pastas e mover documentos para dentro delas, facilitando a organização de livros e documentos.",
+      "Integrado um sistema OCR para reconhecer e ler documentos que contêm apenas imagens.",
+      "Adicionado um controlo deslizante para avançar ou recuar rapidamente durante a leitura de um documento.",
+      "Melhorada a gestão dos marcadores nos documentos: a opção muda automaticamente consoante exista ou não um marcador.",
+      "Adicionada a possibilidade de definir automaticamente um novo marcador quando a leitura é interrompida, se a opção estiver ativa nas definições.",
+      "Adicionada a nova secção Meteorologia, com pesquisa da cidade, escolha do dia, situação atual, precipitação, temperatura mínima e máxima e outros dados úteis.",
+      "Adicionado o Calendário com indicação das várias festividades, santo do dia, uma citação diferente para cada dia e possibilidade de adicionar um lembrete.",
+      "Adicionada a retoma automática dos conteúdos: documentos, podcasts e ficheiros multimédia podem continuar a partir do ponto onde ficaram. A opção pode ser desativada nas definições.",
+      "Adicionados controlos deslizantes para ajustar o volume e a posição nos ficheiros multimédia.",
+      "Nas definições, pode escolher quanto avançar ou recuar nos ficheiros multimédia. O valor predefinido é de um minuto.",
+      "Adicionada a possibilidade de partilhar ficheiros multimédia a partir de outras aplicações e abri-los diretamente com o Sonarpad.",
+      "Para os conteúdos de vídeo, foi adicionada uma caixa que permite ativar ou desativar a apresentação do vídeo.",
+      "Adicionada uma secção, disponível apenas em italiano, para consultar os conteúdos recentes reproduzidos com o RaiPlay.",
+      "Adicionadas a importação e a exportação de podcasts, para transferir para o Sonarpad Mobile os podcasts subscritos, incluindo a partir do Sonarpad para Windows ou Mac.",
+      "A pesquisa de rádios tornou-se mais tolerante: basta introduzir as primeiras letras do nome de uma rádio para obter resultados.",
+      "Melhorada a leitura das notícias, com uma experiência mais limpa do que na versão anterior.",
+      "O Sonarpad tenta ignorar blocos e elementos desnecessários inseridos nas páginas Web, tornando os artigos mais simples de ler.",
+      "Adicionada a secção Páginas Brancas e Páginas Amarelas.",
+      "Adicionada uma secção dedicada aos horários de abertura de lojas, médicos, farmácias e outros locais úteis.",
+      "Adicionado um conversor para ficheiros de áudio e vídeo: por exemplo, pode converter um ficheiro MP3 em WAV ou transformar um ficheiro de áudio num vídeo MP4 adicionando uma imagem.",
+      "Adicionada a possibilidade de agrupar os ecrãs por categorias, facilitando a organização dos ícones do ecrã principal.",
+      "Nas definições, pode escolher se pretende ver os ecrãs agrupados por categoria ou manter a apresentação clássica.",
+      "Melhoradas as traduções em inglês, francês e espanhol.",
+      "Melhorada a clareza de vários ecrãs e mensagens da aplicação.",
+      "Adicionada a função Cinema para descobrir os filmes atualmente em exibição nas salas, com a possibilidade de ler o enredo e ver o trailer, quando disponível. Existe também o botão «Próximas estreias» para consultar os próximos filmes."
+    ],
+    "pt_BR": [
+      "Adicionada a possibilidade de criar um novo documento diretamente no Sonarpad.",
+      "Adicionada a importação do Dropbox: depois de fazer login com sua conta, você pode navegar pelos arquivos do Dropbox diretamente no Sonarpad e importá-los para a biblioteca de documentos.",
+      "Agora você pode compartilhar um documento a partir do app Arquivos do celular e abri-lo diretamente com o Sonarpad para importá-lo para a biblioteca.",
+      "Adicionado suporte para arquivos ZIP: ao importar um arquivo, o Sonarpad cria automaticamente uma pasta com o conteúdo do arquivo.",
+      "Adicionada a possibilidade de criar novas pastas e mover documentos para dentro delas, facilitando a organização de livros e documentos.",
+      "Integrado um sistema OCR para reconhecer e ler documentos que contêm apenas imagens.",
+      "Adicionado um controle deslizante para avançar ou recuar rapidamente durante a leitura de um documento.",
+      "Melhorado o gerenciamento dos marcadores nos documentos: a opção muda automaticamente dependendo de já existir um marcador.",
+      "Adicionada a possibilidade de definir automaticamente um novo marcador quando a leitura é interrompida, se a opção estiver ativa nas configurações.",
+      "Adicionada a nova seção Clima, com pesquisa da cidade, escolha do dia, condições atuais, precipitação, temperatura mínima e máxima e outros dados úteis.",
+      "Adicionado o Calendário com indicação das várias festividades, santo do dia, uma citação diferente para cada dia e possibilidade de adicionar um lembrete.",
+      "Adicionada a retomada automática dos conteúdos: documentos, podcasts e arquivos de mídia podem continuar a partir do ponto onde ficaram. A opção pode ser desativada nas configurações.",
+      "Adicionados controles deslizantes para ajustar o volume e a posição nos arquivos de mídia.",
+      "Nas configurações, você pode escolher quanto avançar ou retroceder nos arquivos de mídia. O valor padrão é de um minuto.",
+      "Adicionada a possibilidade de compartilhar arquivos de mídia a partir de outros aplicativos e abri-los diretamente com o Sonarpad.",
+      "Para os conteúdos de vídeo, foi adicionada uma caixa que permite ativar ou desativar a exibição do vídeo.",
+      "Adicionada uma seção, disponível apenas em italiano, para consultar os conteúdos recentes reproduzidos com o RaiPlay.",
+      "Adicionadas a importação e a exportação de podcasts, para transferir para o Sonarpad Mobile os podcasts assinados, incluindo a partir do Sonarpad para Windows ou Mac.",
+      "A pesquisa de rádios tornou-se mais tolerante: basta digitar as primeiras letras do nome de uma rádio para obter resultados.",
+      "Melhorada a leitura das notícias, com uma experiência mais limpa do que na versão anterior.",
+      "O Sonarpad tenta ignorar blocos e elementos desnecessários inseridos nas páginas Web, tornando os artigos mais simples de ler.",
+      "Adicionada a seção Páginas Brancas e Páginas Amarelas.",
+      "Adicionada uma seção dedicada aos horários de funcionamento de lojas, médicos, farmácias e outros locais úteis.",
+      "Adicionado um conversor para arquivos de áudio e vídeo: por exemplo, você pode converter um arquivo MP3 em WAV ou transformar um arquivo de áudio em um vídeo MP4 adicionando uma imagem.",
+      "Adicionada a possibilidade de agrupar as telas por categorias, facilitando a organização dos ícones da tela principal.",
+      "Nas configurações, você pode escolher se quer ver as telas agrupadas por categoria ou manter a visualização clássica.",
+      "Melhoradas as traduções em inglês, francês e espanhol.",
+      "Melhorada a clareza de várias telas e mensagens do aplicativo.",
+      "Adicionada a função Cinema para descobrir os filmes atualmente em cartaz nos cinemas, com a possibilidade de ler o enredo e ver o trailer, quando disponível. Existe também o botão «Próximos lançamentos» para consultar os próximos filmes."
     ]
   }
 ]

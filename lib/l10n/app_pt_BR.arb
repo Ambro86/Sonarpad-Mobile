@@ -1,27 +1,27 @@
 {
-  "@@locale": "pt",
+  "@@locale": "pt_BR",
   "appTitle": "Sonarpad",
-  "appLanguage": "Idioma da app",
-  "settingsTheme": "Tema da app",
+  "appLanguage": "Idioma do app",
+  "settingsTheme": "Tema do app",
   "settingsThemeSystem": "Sistema",
   "settingsThemeLight": "Claro",
   "settingsThemeDark": "Escuro",
-  "homeSemanticsLabel": "Sonarpad, ecrã principal",
-  "settings": "Definições",
-  "settingsHint": "Abrir definições",
+  "homeSemanticsLabel": "Sonarpad, tela principal",
+  "settings": "Configurações",
+  "settingsHint": "Abrir configurações",
   "info": "Informações",
-  "infoHint": "Abrir informações sobre a app",
+  "infoHint": "Abrir informações sobre o app",
   "categoryReading": "Leitura e documentos",
-  "categoryMedia": "Multimédia e entretenimento",
+  "categoryMedia": "Mídia e entretenimento",
   "sonarTubeTitle": "SonarTube",
   "sonarTubeSearchLabel": "Pesquisar vídeos, canais ou listas",
-  "sonarTubeSearchPrompt": "Introduza uma pesquisa para encontrar vídeos, canais e listas.",
+  "sonarTubeSearchPrompt": "Digite uma pesquisa para encontrar vídeos, canais ou playlists.",
   "sonarTubeNoResults": "Nenhum vídeo encontrado.",
   "sonarTubeLoadMore": "Carregar mais resultados",
   "sonarTubeChannel": "Canal",
-  "sonarTubePlaylist": "Lista de reprodução",
-  "sonarTubeLive": "Em direto",
-  "sonarTubeResolving": "A preparar o vídeo…",
+  "sonarTubePlaylist": "Playlist",
+  "sonarTubeLive": "Ao vivo",
+  "sonarTubeResolving": "Preparando o vídeo…",
   "sonarTubeFavorites": "Favoritos",
   "sonarTubeNoFavorites": "Nenhum canal ou lista favorito.",
   "sonarTubeAddFavorite": "Adicionar aos favoritos",
@@ -38,10 +38,10 @@
   "voiceDictionaryEntries": "Entradas do dicionário",
   "voiceDictionaryEmpty": "Nenhuma entrada no dicionário.",
   "voiceDictionaryRemove": "Remover entrada selecionada",
-  "voiceDictionaryOriginalRequired": "Introduza a palavra original.",
-  "convertMediaTitle": "Converter multimédia",
-  "convertMediaInput": "Ficheiro a converter",
-  "convertMediaOutput": "Pasta de gravação",
+  "voiceDictionaryOriginalRequired": "Digite a palavra original.",
+  "convertMediaTitle": "Converter mídia",
+  "convertMediaInput": "Arquivo para converter",
+  "convertMediaOutput": "Pasta de destino",
   "convertMediaImage": "Imagem",
   "convertMediaBrowse": "Procurar...",
   "convertMediaFormat": "Formato",
@@ -50,61 +50,61 @@
   "convertMediaFlacCompression": "Nível de compressão",
   "convertMediaWavBitDepth": "Profundidade de bits WAV",
   "convertMediaReady": "Pronto.",
-  "convertMediaRunning": "A converter...",
+  "convertMediaRunning": "Convertendo...",
   "convertMediaDone": "Conversão concluída.",
   "convertMediaButton": "Converter",
-  "convertMediaNoInput": "Selecione um ficheiro para converter.",
-  "convertMediaNoOutput": "Selecione uma pasta de gravação.",
+  "convertMediaNoInput": "Selecione um arquivo para converter.",
+  "convertMediaNoOutput": "Selecione uma pasta de destino.",
   "convertMediaNoImage": "Selecione uma imagem para o vídeo.",
-  "convertMediaSamePath": "O ficheiro convertido deve ser diferente do ficheiro de origem.",
-  "convertMediaInvalidBitrate": "Introduza um bitrate válido entre 64 e 320 kbps.",
+  "convertMediaSamePath": "O arquivo convertido deve ser diferente do arquivo de origem.",
+  "convertMediaInvalidBitrate": "Digite um bitrate válido entre 64 e 320 kbps.",
   "convertMediaFailed": "A conversão falhou: {error}",
-  "convertMediaOutputNotWritable": "A pasta escolhida não está diretamente acessível. O ficheiro será guardado na pasta interna do Sonarpad; quando a conversão terminar, poderá partilhá-lo ou guardá-lo na app Ficheiros.",
+  "convertMediaOutputNotWritable": "A pasta escolhida não está diretamente acessível. O arquivo será salvo na pasta interna do Sonarpad; quando a conversão terminar, você poderá compartilhá-lo ou salvá-lo no app Arquivos.",
   "@convertMediaOutputNotWritable": {
     "description": "Localized text for convertMediaOutputNotWritable."
   },
-  "donations": "Donativos",
+  "donations": "Doações",
   "donationsHint": "Apoiar o desenvolvimento do Sonarpad",
-  "loading": "A carregar",
+  "loading": "Carregando",
   "ttsVoiceLanguage": "Idioma da voz TTS",
   "ttsVoice": "Voz TTS",
-  "saveSettings": "Guardar definições",
-  "settingsSaved": "Definições guardadas.",
-  "settingsSavedTitle": "Definições guardadas",
+  "saveSettings": "Salvar configurações",
+  "settingsSaved": "Configurações salvas.",
+  "settingsSavedTitle": "Configurações salvas",
   "sonarpadCodeValidTitle": "Código válido",
-  "sonarpadCodeValidMessage": "O código Sonarpad está correto. Definições guardadas.",
+  "sonarpadCodeValidMessage": "O código Sonarpad está correto. Configurações salvas.",
   "sonarpadCodeInvalidTitle": "Código inválido",
   "sonarpadCodeInvalidMessage": "O código Sonarpad não é válido. Verifique se o copiou sem espaços adicionais.",
-  "infoDescription": "Sonarpad é uma aplicação simples com muitas funções. Pensada para ser acessível com VoiceOver para pessoas cegas ou com deficiência visual, permite ouvir notícias, pesquisar e subscrever podcasts, importar artigos da Wikipédia, adicionar documentos à biblioteca, guardá-los e editá-los. Sonarpad é atualizado constantemente e cada função foi pensada para facilitar a vida diária.",
+  "infoDescription": "Sonarpad é um aplicativo simples com muitas funções. Pensado para ser acessível com VoiceOver para pessoas cegas ou com deficiência visual, permite ouvir notícias, pesquisar e assinar podcasts, importar artigos da Wikipédia, adicionar documentos à biblioteca, salvá-los e editá-los. Sonarpad é atualizado constantemente e cada função foi pensada para facilitar a vida diária.",
   "infoAuthor": "Autor: Ambrogio Riili",
-  "donationsIntro": "Sonarpad foi criado inicialmente para responder a necessidades pessoais, mas com o tempo tornou-se uma aplicação mais completa. O seu desenvolvimento exige trabalho constante: melhorar funções, corrigir erros, explorar novas ideias e testar cuidadosamente cada função.\n\nSe o Sonarpad lhe for útil e quiser apoiar o seu desenvolvimento, pode fazer um donativo.",
-  "donationsPaypalDesc": "Pode doar através do PayPal usando este link:\nhttps://www.paypal.me/ambrogio86\nPor favor, se possível, adicione \"Sonarpad\" como nota de pagamento.",
-  "donationsBankDesc": "Também pode fazer um donativo por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.",
-  "donationsThanks": "Quem apoiar o projeto será mencionado na aplicação e no repositório GitHub, salvo se preferir ficar anónimo ou usar um pseudónimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução checa, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.",
+  "donationsIntro": "Sonarpad foi criado inicialmente para atender a necessidades pessoais, mas com o tempo se tornou um aplicativo mais completo. Seu desenvolvimento exige trabalho constante: melhorar funções, corrigir erros, explorar novas ideias e testar cuidadosamente cada função.\n\nSe o Sonarpad for útil para você e quiser apoiar seu desenvolvimento, pode fazer uma doação.",
+  "donationsPaypalDesc": "Você pode doar pelo PayPal usando este link:\nhttps://www.paypal.me/ambrogio86\nSe possível, adicione “Sonarpad” como observação do pagamento.",
+  "donationsBankDesc": "Você também pode fazer uma doação por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.",
+  "donationsThanks": "Quem apoiar o projeto será mencionado no aplicativo e no repositório GitHub, a menos que prefira permanecer anônimo ou usar um pseudônimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução tcheca, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.",
   "news": "Notícias",
   "newsHint": "Abrir notícias do Google News RSS",
   "podcasts": "Podcasts",
-  "podcastsHint": "Subscreva podcasts, reproduza ou descarregue episódios",
+  "podcastsHint": "Assine podcasts, reproduza ou baixe episódios",
   "importFromWikipedia": "Wikipedia",
   "wikipediaHint": "Pesquisar um artigo da Wikipédia e importar o texto",
   "newsCategoryTop": "Destaques",
   "settingsHomeGrouping": "Agrupar os ícones da página inicial em categorias",
-  "settingsHomeGroupingHint": "Se desativado, os ícones principais aparecem numa única lista sem subpastas.",
-  "newsCategoryMyCity": "A minha cidade",
-  "newsLocalCityLabel": "Introduza a sua cidade",
+  "settingsHomeGroupingHint": "Se desativado, os ícones principais aparecem em uma única lista, sem subpastas.",
+  "newsCategoryMyCity": "Minha cidade",
+  "newsLocalCityLabel": "Digite sua cidade",
   "newsLocalCityHint": "Corrige a cidade usada para notícias locais",
   "update": "Atualizar",
   "moveUp": "Mover para cima",
   "moveDown": "Mover para baixo",
-  "hide": "Eliminar",
+  "hide": "Excluir",
   "moveToPosition": "Mover para a posição",
   "positionLabel": "Posição {position}: antes de {targetName}",
   "positionLabelLast": "Última posição",
-  "restoreHiddenSources": "Restaurar fontes eliminadas",
+  "restoreHiddenSources": "Restaurar fontes excluídas",
   "addCustomNewsSource": "Adicionar fonte RSS personalizada",
   "newsSourceName": "Nome da fonte ou do site",
   "newsSourceUrlOrSearch": "URL do site, feed RSS ou palavra de pesquisa",
-  "deleteNewsSource": "Eliminar fonte",
+  "deleteNewsSource": "Excluir fonte",
   "importRssSourcesFromOpml": "Importar fontes RSS de OPML",
   "@importRssSourcesFromOpml": {
     "description": "Localized text for importRssSourcesFromOpml."
@@ -147,11 +147,11 @@
   },
   "articleTextSemantics": "Texto do artigo",
   "newsLanguage": "Idioma das notícias",
-  "loadingNews": "A carregar notícias",
+  "loadingNews": "Carregando notícias",
   "error": "Erro: {error}",
   "noNewsFound": "Nenhuma notícia encontrada",
-  "loadingArticle": "A carregar artigo",
-  "noFullArticleFound": "Artigo completo indisponível. A mostrar o resumo do feed.",
+  "loadingArticle": "Carregando artigo",
+  "noFullArticleFound": "Artigo completo indisponível. Mostrando o resumo do feed.",
   "italian": "Italiano",
   "english": "Inglês",
   "french": "Francês",
@@ -162,22 +162,22 @@
   },
   "newsSource": "Fonte de notícias",
   "article": "Artigo",
-  "articlePreview": "Pré-visualização do artigo",
+  "articlePreview": "Prévia do artigo",
   "readFullArticle": "Ler artigo completo",
-  "extractingReaderArticleText": "A extrair texto em modo leitor...",
-  "extractingVisibleArticleText": "A extrair texto visível da página...",
+  "extractingReaderArticleText": "Extraindo texto em modo leitor...",
+  "extractingVisibleArticleText": "Extraindo texto visível da página...",
   "source": "Fonte: {source}",
   "readyStatus": "Pronto.",
-  "preparingEdgeTts": "A preparar leitura Edge TTS em blocos...",
+  "preparingEdgeTts": "Preparando leitura Edge TTS em blocos...",
   "noTextToRead": "Não há texto para ler.",
-  "chunkCreated": "Bloco {index} de {total} criado. Leitura em curso...",
-  "playingChunk": "A reproduzir bloco {index} de {total} ({size} bytes)...",
+  "chunkCreated": "Bloco {index} de {total} criado. Leitura em andamento...",
+  "playingChunk": "Reproduzindo bloco {index} de {total} ({size} bytes)...",
   "readingFinished": "Leitura concluída. Blocos criados: {readyChunks}/{totalChunks}. Biblioteca: {libraryPath}",
   "libraryNotSpecified": "não especificada",
   "readingStopped": "Leitura parada.",
   "edgeTtsError": "Erro de Edge TTS: {error}",
   "audioChunksReady": "Blocos de áudio prontos: {readyChunks} / {totalChunks}",
-  "readingInProgress": "Leitura em curso...",
+  "readingInProgress": "Leitura em andamento...",
   "readWithEdgeTts": "Iniciar leitura",
   "stopReading": "Parar leitura",
   "startReading": "Iniciar leitura",
@@ -201,42 +201,42 @@
   "countryUnitedKingdom": "Reino Unido",
   "countrySpain": "Espanha",
   "countryFrance": "França",
-  "searchInProgress": "Pesquisa em curso...",
+  "searchInProgress": "Pesquisa em andamento...",
   "podcastResultsFound": "{count} podcasts encontrados",
   "podcastSearchError": "Erro na pesquisa de podcasts: {error}",
-  "subscribedTo": "Subscrito a {title}",
-  "subscriptionError": "Erro de subscrição: {error}",
-  "podcastSubscriptionError": "Erro de subscrição de podcast: {error}",
+  "subscribedTo": "Você assinou {title}.",
+  "subscriptionError": "Erro ao assinar: {error}",
+  "podcastSubscriptionError": "Erro ao assinar o podcast: {error}",
   "searchResults": "Resultados da pesquisa",
   "podcastInfo": "Informações do podcast",
-  "subscribe": "Subscrever",
+  "subscribe": "Assinar",
   "openPodcast": "Abrir podcast",
   "viewEpisodes": "Ver episódios",
   "podcastAuthor": "Autor",
   "noPodcastDescription": "Nenhuma descrição disponível.",
   "noPodcastResults": "Nenhum podcast encontrado.",
-  "loadingPodcastInfo": "A carregar informações do podcast",
+  "loadingPodcastInfo": "Carregando informações do podcast",
   "podcastArtwork": "Imagem do podcast",
   "addFeedUrlManually": "Adicionar URL do feed RSS manualmente",
   "podcastFeedUrl": "URL do feed RSS do podcast",
-  "subscribeFromUrl": "Subscrever a partir de URL",
-  "subscribedPodcasts": "Podcasts subscritos",
-  "noSubscribedPodcasts": "Não tem podcasts subscritos. Pesquise um podcast e toque num resultado para subscrever.",
-  "localAudioFiles": "Ficheiros de áudio locais",
-  "noLocalAudioFiles": "Nenhum ficheiro de áudio local encontrado.",
-  "importAudioFromITunes": "Importar ficheiros de áudio locais",
-  "localAudioFilesFound": "Ficheiros de áudio locais encontrados: {count}",
-  "importPodcastsFromFile": "Importar podcasts de ficheiro",
-  "exportPodcastsToFile": "Exportar podcasts para ficheiro OPML",
+  "subscribeFromUrl": "Assinar a partir de uma URL",
+  "subscribedPodcasts": "Podcasts assinados",
+  "noSubscribedPodcasts": "Você ainda não assina nenhum podcast. Pesquise um podcast e toque em um resultado para assinar.",
+  "localAudioFiles": "Arquivos de áudio locais",
+  "noLocalAudioFiles": "Nenhum arquivo de áudio local encontrado.",
+  "importAudioFromITunes": "Importar arquivos de áudio locais",
+  "localAudioFilesFound": "Arquivos de áudio locais encontrados: {count}",
+  "importPodcastsFromFile": "Importar podcasts de arquivo",
+  "exportPodcastsToFile": "Exportar podcasts para arquivo OPML",
   "podcastImportComplete": "Podcasts importados: {count}",
   "podcastImportError": "Erro ao importar podcasts: {error}",
   "podcastExportComplete": "Podcasts exportados",
   "podcastExportError": "Erro ao exportar podcasts: {error}",
-  "loadingEpisodes": "A carregar episódios",
+  "loadingEpisodes": "Carregando episódios",
   "noAudioEpisodesFound": "Nenhum episódio de áudio encontrado no feed.",
   "episodes": "Episódios",
   "episodeActions": "Ações do episódio",
-  "downloaded": "Descarregado: {path}",
+  "downloaded": "Baixado: {path}",
   "episodeError": "Erro do episódio: {error}",
   "play": "Reproduzir",
   "pause": "Pausar",
@@ -245,13 +245,13 @@
   "stop": "Parar",
   "back": "Voltar",
   "episodePlayer": "Leitor de episódios",
-  "nowPlayingTitle": "A reproduzir: {title}",
-  "loadingEpisodeAudio": "A carregar áudio do episódio",
+  "nowPlayingTitle": "Reproduzindo: {title}",
+  "loadingEpisodeAudio": "Carregando áudio do episódio",
   "playbackPosition": "Posição",
   "playbackPositionValue": "{position} de {duration}",
   "adjustVolume": "Ajustar volume",
   "volumeValue": "Volume: {percentage}%",
-  "download": "Descarregar",
+  "download": "Baixar",
   "searchWikipedia": "Pesquisar na Wikipédia",
   "wikipediaLanguage": "Idioma da Wikipédia",
   "search": "Pesquisar",
@@ -267,26 +267,26 @@
   "documentImportSelectionMode": "Quer selecionar um documento ou vários documentos?",
   "documentImportSingle": "Um documento",
   "documentImportMultiple": "Vários documentos",
-  "noDocuments": "Não há documentos. Adicione um ficheiro.",
+  "noDocuments": "Não há documentos. Adicione um arquivo.",
   "noDocumentsInLibrary": "Não há documentos na biblioteca.",
   "documentAdded": "Documento adicionado",
   "documentsAdded": "Documentos adicionados",
   "importDocumentsFromITunes": "Importar documentos do iTunes / Apple Devices",
   "sharedDocumentsImportComplete": "Documentos importados do iTunes / Apple Devices: {count}",
   "libraryLoadError": "Erro ao carregar a biblioteca: {error}",
-  "fileOpenError": "Erro ao abrir o ficheiro: {error}",
-  "filePathUnavailable": "Caminho do ficheiro indisponível.",
-  "fileInaccessible": "Ficheiro inacessível: {name}",
+  "fileOpenError": "Erro ao abrir o arquivo: {error}",
+  "filePathUnavailable": "Caminho do arquivo indisponível.",
+  "fileInaccessible": "Arquivo inacessível: {name}",
   "documentAddError": "Erro ao adicionar o documento: {error}",
-  "documentRemoveError": "Erro ao eliminar: {error}",
+  "documentRemoveError": "Erro ao excluir: {error}",
   "noExportableTextFound": "Nenhum texto exportável encontrado.",
   "modifiedDocumentNoExportableText": "O documento modificado não contém texto exportável.",
-  "documentRemoved": "Documento eliminado",
-  "folderRemoved": "Pasta eliminada",
-  "removeFolder": "Eliminar pasta",
-  "removeDocument": "Eliminar documento",
+  "documentRemoved": "Documento excluído",
+  "folderRemoved": "Pasta excluída",
+  "removeFolder": "Excluir pasta",
+  "removeDocument": "Excluir documento",
   "writeNewDocument": "Escrever novo documento",
-  "addDocumentToLibraryHint": "Adicionar documento à biblioteca. Procura os ficheiros do dispositivo e adiciona-os.",
+  "addDocumentToLibraryHint": "Adicionar documento à biblioteca. Procura os arquivos do dispositivo e adiciona-os.",
   "documentTypeLabel": "Documento",
   "documentPosition": "Posição do documento",
   "documentRemainingLessThanOneMinute": "menos de 1 minuto restante",
@@ -332,10 +332,10 @@
   "documentTypeDescription": "tipo {extension}",
   "openFolderHint": "Toque duas vezes para abrir a pasta",
   "openDocumentHint": "Toque duas vezes para abrir e ler o documento",
-  "removeItem": "Eliminar {name}",
-  "removePodcast": "Eliminar podcast",
-  "podcastRemoved": "Podcast eliminado",
-  "documentPickerError": "Erro ao abrir o ficheiro",
+  "removeItem": "Excluir {name}",
+  "removePodcast": "Excluir podcast",
+  "podcastRemoved": "Podcast excluído",
+  "documentPickerError": "Erro ao abrir o arquivo",
   "readDocument": "Ler documento",
   "documentReaderTitle": "Leitor de documentos",
   "documentReaderEditHint": "Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.",
@@ -378,11 +378,11 @@
       }
     }
   },
-  "documentDeleteSelectedParagraphs": "Eliminar parágrafos selecionados",
+  "documentDeleteSelectedParagraphs": "Excluir parágrafos selecionados",
   "@documentDeleteSelectedParagraphs": {
     "description": "Localized text for documentDeleteSelectedParagraphs."
   },
-  "documentDeleteSelectedParagraphsConfirmation": "Eliminar os parágrafos selecionados? Total: {count}.",
+  "documentDeleteSelectedParagraphsConfirmation": "Excluir os parágrafos selecionados? Total: {count}.",
   "@documentDeleteSelectedParagraphsConfirmation": {
     "description": "Localized text for documentDeleteSelectedParagraphsConfirmation.",
     "placeholders": {
@@ -391,7 +391,7 @@
       }
     }
   },
-  "documentSelectedParagraphsDeleted": "Parágrafos eliminados: {count}.",
+  "documentSelectedParagraphsDeleted": "Parágrafos excluídos: {count}.",
   "@documentSelectedParagraphsDeleted": {
     "description": "Localized text for documentSelectedParagraphsDeleted.",
     "placeholders": {
@@ -410,10 +410,10 @@
   },
   "documentBookmarkHintSet": "Deslize para cima ou para baixo para definir um marcador.",
   "documentEditParagraphActionHint": "Toque duas vezes para editar este parágrafo. ",
-  "documentBookmarkHintReplace": "Deslize para cima ou para baixo para eliminar o marcador existente ou substituí-lo por este parágrafo.",
+  "documentBookmarkHintReplace": "Deslize para cima ou para baixo para excluir o marcador existente ou substituí-lo por este parágrafo.",
   "documentSetBookmarkAction": "Adicionar novo marcador",
-  "documentRemoveBookmarkAction": "Eliminar marcador",
-  "documentReplaceBookmarkAction": "Eliminar e adicionar um novo marcador",
+  "documentRemoveBookmarkAction": "Excluir marcador",
+  "documentReplaceBookmarkAction": "Excluir e adicionar um novo marcador",
   "searchInDocument": "Pesquisar no documento",
   "documentIndex": "Índice",
   "@documentIndex": {
@@ -421,12 +421,12 @@
   },
   "documentSearchFieldLabel": "Texto de pesquisa",
   "documentSearchFieldHint": "Palavra ou frase para pesquisar",
-  "documentSearchEmptyQuery": "Introduza o texto que quer pesquisar.",
+  "documentSearchEmptyQuery": "Digite o texto que quer pesquisar.",
   "documentSearchResultsTitle": "Resultados da pesquisa no documento",
   "noDocumentSearchResults": "Não foram encontrados resultados para {query}.",
   "documentSearchResultParagraph": "Parágrafo {number}",
   "edit": "Editar",
-  "save": "Guardar",
+  "save": "Salvar",
   "cancel": "Cancelar",
   "settingsReadingEngine": "Motor de leitura",
   "settingsEdgeTtsQuality": "Edge TTS (alta qualidade online)",
@@ -439,22 +439,22 @@
   "settingsVoiceSpeedLabel": "Velocidade de leitura",
   "settingsVoicePitchLabel": "Tom",
   "settingsTestVoice": "Testar voz",
-  "settingsTestingVoice": "A testar...",
+  "settingsTestingVoice": "Testando...",
   "settingsVoiceTestText": "Olá, este é um teste de leitura do Sonarpad.",
   "settingsVoiceTestError": "Erro no teste da voz: {error}",
-  "settingsVoiceSaveError": "Erro ao guardar a voz TTS: {error}",
-  "settingsUnsavedTitle": "Alterações não guardadas",
-  "settingsUnsavedMessage": "Tem alterações não guardadas. Quer guardá-las antes de sair?",
-  "settingsExitWithoutSaving": "Sair sem guardar",
+  "settingsVoiceSaveError": "Erro ao salvar a voz TTS: {error}",
+  "settingsUnsavedTitle": "Alterações não salvas",
+  "settingsUnsavedMessage": "Você tem alterações não salvas. Deseja salvá-las antes de sair?",
+  "settingsExitWithoutSaving": "Sair sem salvar",
   "settingsSystemLanguage": "Idioma do sistema",
   "settingsSystemVoice": "Voz do sistema",
-  "settingsAutoBookmark": "Ativar marcador automático em multimédia",
+  "settingsAutoBookmark": "Ativar marcador automático em mídia",
   "settingsAutoBookmarkHint": "O áudio ou vídeo continuará a partir do ponto onde ficou.",
-  "settingsDocumentSliderStep": "Passo do controlo dos documentos",
+  "settingsDocumentSliderStep": "Passo do controle dos documentos",
   "@settingsDocumentSliderStep": {
     "description": "Localized text for settingsDocumentSliderStep."
   },
-  "settingsDocumentSliderStepHint": "Define quanto o controlo da posição do documento avança ou recua ao deslizar para cima ou para baixo.",
+  "settingsDocumentSliderStepHint": "Define quanto o controle da posição do documento avança ou recua ao deslizar para cima ou para baixo.",
   "settingsReadingSleepTimer": "Temporizador de suspensão da leitura",
   "@settingsReadingSleepTimer": {
     "description": "Localized text for settingsReadingSleepTimer."
@@ -472,11 +472,11 @@
       }
     }
   },
-  "settingsReadingSleepTimerHint": "Para automaticamente a leitura do documento atual após o tempo escolhido e guarda o ponto de paragem. A contagem recomeça sempre que inicia a leitura de um documento.",
+  "settingsReadingSleepTimerHint": "Interrompe automaticamente a leitura do documento atual após o tempo escolhido e salva o ponto de parada. A contagem recomeça sempre que a leitura de um documento é iniciada.",
   "@settingsReadingSleepTimerHint": {
     "description": "Localized text for settingsReadingSleepTimerHint."
   },
-  "documentReadingSleepTimerStopped": "Temporizador de suspensão: leitura parada e posição guardada.",
+  "documentReadingSleepTimerStopped": "Temporizador de suspensão: leitura parada e posição salva.",
   "@documentReadingSleepTimerStopped": {
     "description": "Localized text for documentReadingSleepTimerStopped."
   },
@@ -508,22 +508,22 @@
   "settingsSend": "Enviar",
   "settingsFillFieldsCode": "Preencha todos os campos.",
   "settingsName": "Nome",
-  "settingsSurname": "Apelido",
+  "settingsSurname": "Sobrenome",
   "settingsEmail": "E-mail",
-  "settingsOperatingSystem": "Sistema operativo",
-  "settingsCodeRequestBody": "Nome: {name}; Apelido: {surname}; E-mail: {email}; Sistema operativo: {os}",
+  "settingsOperatingSystem": "Sistema operacional",
+  "settingsCodeRequestBody": "Nome: {name}; Sobrenome: {surname}; E-mail: {email}; Sistema operacional: {os}",
   "settingsNameOptional": "Nome (opcional)",
   "settingsMessageOptional": "Mensagem (opcional)",
-  "settingsVerifyCodeAndSave": "A verificar e guardar...",
-  "settingsViewSysLog": "Ver registo do sistema",
+  "settingsVerifyCodeAndSave": "Verificando e salvando...",
+  "settingsViewSysLog": "Ver registro do sistema",
   "settingsMailOpenError": "Erro ao abrir o e-mail: {error}",
   "ok": "OK",
   "yes": "Sim",
   "no": "Não",
   "invia": "Enviar",
-  "saveArticle": "Guardar artigo",
-  "shareArticle": "Partilhar artigo",
-  "articleSavedSuccess": "Artigo guardado em Documentos",
+  "saveArticle": "Salvar artigo",
+  "shareArticle": "Compartilhar artigo",
+  "articleSavedSuccess": "Artigo salvo em Documentos",
   "annulla": "Cancelar",
   "compilaTuttiICampiPerRichiedereIlCodice": "Preencha todos os campos para solicitar o código.",
   "selectFolder": "Selecionar pasta",
@@ -551,8 +551,8 @@
   "internetArchiveSpeeches": "Discursos históricos",
   "internetArchiveLiveMusic": "Live Music Archive",
   "internetArchiveNoItemsFound": "Nenhum áudio encontrado.",
-  "saveAudioInDocuments": "Guardar áudio em Documentos",
-  "audioSavedInDocuments": "Áudio guardado em Documentos.",
+  "saveAudioInDocuments": "Salvar áudio em Documentos",
+  "audioSavedInDocuments": "Áudio salvo em Documentos.",
   "noAudioTracksAvailable": "Não há faixas de áudio disponíveis.",
   "importFromLibriVox": "Importar do LibriVox",
   "gutenbergSearchLabel": "Pesquisar livro ou autor",
@@ -561,12 +561,12 @@
   "loadMore": "Carregar mais",
   "sourceLanguageValue": "Idioma: {language}",
   "gutenbergImportAndRead": "Importar e ler",
-  "gutenbergImporting": "A importar...",
+  "gutenbergImporting": "Importando...",
   "librivoxSearchLabel": "Pesquisar audiolivro",
   "noLibrivoxAudiobooksFound": "Nenhum audiolivro encontrado.",
-  "librivoxAudiobookSaved": "Audiolivro guardado em Documentos.",
-  "librivoxSaveAudiobook": "Guardar audiolivro em Documentos",
-  "librivoxSaving": "A guardar...",
+  "librivoxAudiobookSaved": "Audiolivro salvo em Documentos.",
+  "librivoxSaveAudiobook": "Salvar audiolivro em Documentos",
+  "librivoxSaving": "Salvando...",
   "librivoxNoAudioTracks": "Não há faixas de áudio disponíveis.",
   "librivoxNotTextExportable": "Os audiolivros do LibriVox não podem ser exportados como texto.",
   "sourceDurationValue": "Duração: {duration}",
@@ -585,26 +585,26 @@
   "editParagraph": "Editar parágrafo",
   "editParagraphTextField": "Campo de texto para editar o parágrafo",
   "editParagraphHint": "Editar o texto do parágrafo",
-  "applyAndSave": "Aplicar e guardar",
-  "textEditedAndSaved": "Texto editado e guardado no documento atual.",
-  "saveError": "Erro ao guardar",
-  "docSavedInLibrary": "Documento guardado na biblioteca",
-  "saveInLibrary": "Guardar na biblioteca",
+  "applyAndSave": "Aplicar e salvar",
+  "textEditedAndSaved": "Texto editado e salvo no documento atual.",
+  "saveError": "Erro ao salvar",
+  "docSavedInLibrary": "Documento salvo na biblioteca",
+  "saveInLibrary": "Salvar na biblioteca",
   "documentTextLabel": "Texto do documento",
   "modifiedInSonarpad": "Modificado no Sonarpad",
   "noTextAvailableForDocument": "Não há texto disponível para este documento.",
   "bookmarkSet": "Marcador definido no parágrafo {index}.",
-  "bookmarkRemoved": "Marcador eliminado.",
+  "bookmarkRemoved": "Marcador excluído.",
   "docEmpty": "O documento está vazio",
-  "docSavedSuccessfully": "Documento guardado com sucesso!",
+  "docSavedSuccessfully": "Documento salvo com sucesso!",
   "writeDocument": "Escrever documento",
   "documentTitleOptional": "Título (opcional)",
   "documentTitleHint": "Exemplo: Notas de compra",
   "documentTextField": "Texto do documento",
   "documentTextHint": "Comece a escrever aqui...",
   "newDocumentDefaultName": "Novo_Documento",
-  "saving": "A guardar...",
-  "saveDocument": "Guardar documento",
+  "saving": "Salvando...",
+  "saveDocument": "Salvar documento",
   "addRssSource": "Adicionar fonte RSS",
   "add": "Adicionar",
   "errorPrefix": "Erro",
@@ -614,18 +614,18 @@
   "changelogLoadError": "Erro ao carregar as novidades: {error}",
   "visitSonarpadSite": "Visitar o site do Sonarpad",
   "visitSonarpadSiteWithUrl": "Visitar o site do Sonarpad: {url}",
-  "nowPlaying": "A reproduzir",
-  "fileImported": "Ficheiro importado",
+  "nowPlaying": "Reproduzindo",
+  "fileImported": "Arquivo importado",
   "importZipError": "Erro ao importar ZIP: {error}",
-  "dropboxLoginPrompt": "Inicie sessão no Dropbox para importar os seus documentos.",
-  "loginToDropbox": "Iniciar sessão no Dropbox",
-  "logoutFromDropbox": "Terminar sessão",
-  "dropboxLoginFailed": "Início de sessão falhado ou cancelado",
+  "dropboxLoginPrompt": "Faça login no Dropbox para importar seus documentos.",
+  "loginToDropbox": "Fazer login no Dropbox",
+  "logoutFromDropbox": "Sair do Dropbox",
+  "dropboxLoginFailed": "Falha no login ou login cancelado",
   "dropboxLoadFolderError": "Erro ao carregar a pasta: {error}",
   "dropboxImportError": "Erro de importação: {error}",
   "retry": "Tentar novamente",
   "goBack": ".. Voltar",
-  "noSupportedFilesInFolder": "Não há ficheiros compatíveis nesta pasta.",
+  "noSupportedFilesInFolder": "Não há arquivos compatíveis nesta pasta.",
   "articleNotFound": "Artigo não encontrado.",
   "errorOpening": "Erro ao abrir",
   "recentArticles": "Artigos recentes",
@@ -633,7 +633,7 @@
   "confirmClearHistory": "Quer mesmo limpar todas as pesquisas recentes?",
   "clear": "Limpar",
   "noRecentSearches": "Não há pesquisas recentes.",
-  "logCopiedToClipboard": "Registo copiado para a área de transferência",
+  "logCopiedToClipboard": "Registro copiado para a área de transferência",
   "logCleared": "Log limpo",
   "@logCleared": {
     "description": "Localized text for logCleared."
@@ -642,9 +642,9 @@
   "@parafarmacoDetailReadyAnnouncement": {
     "description": "Announcement spoken after a para-pharmaceutical product detail page has loaded."
   },
-  "systemLog": "Registo do sistema",
-  "clearSystemLog": "Limpar registo",
-  "copySystemLog": "Copiar registo",
+  "systemLog": "Registro do sistema",
+  "clearSystemLog": "Limpar registro",
+  "copySystemLog": "Copiar registro",
   "donateWithPaypal": "Doar com PayPal",
   "bankTransferTitle": "Transferência bancária",
   "enableVideo": "Ativar vídeo",
@@ -656,17 +656,17 @@
   "addReminder": "Adicionar lembrete",
   "removeReminder": "Remover lembrete",
   "noReminders": "Sem lembretes",
-  "writeReminder": "Escreva o seu lembrete aqui...",
-  "saveReminder": "Guardar",
+  "writeReminder": "Escreva seu lembrete aqui...",
+  "saveReminder": "Salvar",
   "cancelReminder": "Cancelar",
   "backToToday": "Voltar a hoje",
   "calendarToday": "Hoje",
   "calendarTomorrow": "Amanhã",
   "calendarYesterday": "Ontem",
-  "share": "Partilhar",
-  "shareCalendarDayOptions": "Opções de partilha",
-  "shareCalendarDayOnly": "Partilhar apenas o dia",
-  "shareCalendarDayWithReminder": "Partilhar dia e lembrete",
+  "share": "Compartilhar",
+  "shareCalendarDayOptions": "Opções de compartilhamento",
+  "shareCalendarDayOnly": "Compartilhar apenas o dia",
+  "shareCalendarDayWithReminder": "Compartilhar dia e lembrete",
   "listenToAll": "Ouvir tudo",
   "reminderSaved": "{count} lembretes",
   "audiodescriptionTitle": "Audiodescrições",
@@ -674,7 +674,7 @@
   "audiodescriptionAll": "Todas as audiodescrições",
   "audiodescriptionFilm": "Filmes",
   "audiodescriptionSearch": "Pesquisar...",
-  "audiodescriptionLoading": "A carregar...",
+  "audiodescriptionLoading": "Carregando...",
   "audiodescriptionError": "Erro ao carregar o catálogo",
   "audiodescriptionEmpty": "Nenhum item encontrado",
   "radio": "Rádio",
@@ -689,18 +689,18 @@
   "radioBrowseByLanguage": "Explorar por idioma",
   "radioBrowseByCountry": "Explorar por país",
   "radioCountry": "País",
-  "radioGenre": "Género",
+  "radioGenre": "Gênero",
   "radioActiveFilters": "Filtros ativos",
   "radioResetFilters": "Repor filtros",
   "radioFiltersReset": "Filtros repostos.",
   "radioCity": "Cidade",
   "radioSearch": "Pesquisar",
-  "radioSearching": "A carregar rádios...",
+  "radioSearching": "Carregando rádios...",
   "radioSearchResults": "Resultados de rádio",
   "radioNoResults": "Nenhuma rádio encontrada.",
   "radioResultsFound": "{count} estações encontradas",
   "radioSearchError": "Erro na pesquisa de rádio: {error}",
-  "radioNowPlaying": "A reproduzir {name}",
+  "radioNowPlaying": "Reproduzindo {name}",
   "radioPlayError": "Erro na transmissão de rádio: {error}",
   "radioAddFavorite": "Adicionar a favoritos",
   "radioRemoveFavorite": "Remover dos favoritos",
@@ -722,7 +722,7 @@
   "@tvSearchResults": {
     "description": "Localized text for tvSearchResults."
   },
-  "tvSearchEmptyQuery": "Introduza o nome de um canal de TV para pesquisar.",
+  "tvSearchEmptyQuery": "Digite o nome de um canal de TV para pesquisar.",
   "@tvSearchEmptyQuery": {
     "description": "Localized text for tvSearchEmptyQuery."
   },
@@ -754,7 +754,7 @@
   "radioAddName": "Nome da rádio",
   "radioAddUrl": "Endereço da transmissão",
   "radioAddSubmit": "Verificar e adicionar",
-  "radioAddMissingFields": "Introduza o nome da rádio e o endereço da transmissão.",
+  "radioAddMissingFields": "Digite o nome da rádio e o endereço da transmissão.",
   "radioCommunityAdded": "Rádio adicionada com sucesso à comunidade Sonarpad.",
   "radioCommunityAddError": "Erro ao adicionar a rádio: {error}",
   "radioPlay": "Reproduzir",
@@ -762,10 +762,10 @@
   "stopRecording": "Parar gravação",
   "recordings": "Gravações",
   "selectRecordings": "Selecionar gravações",
-  "deleteRecordingsConfirmation": "{count, plural, =1{Eliminar permanentemente uma gravação?} other{Eliminar permanentemente {count} gravações?}}",
+  "deleteRecordingsConfirmation": "{count, plural, =1{Excluir permanentemente uma gravação?} other{Excluir permanentemente {count} gravações?}}",
   "noRecordings": "Nenhuma gravação.",
   "recordingStarted": "Gravação iniciada.",
-  "recordingSaved": "Gravação guardada: {path}",
+  "recordingSaved": "Gravação salva: {path}",
   "@recordingSaved": {
     "placeholders": {
       "path": {
@@ -799,11 +799,11 @@
   "routeFastest": "Mais rápido",
   "routeShortest": "Mais curto",
   "routeCalculate": "Calcular percurso",
-  "routeCalculating": "A calcular...",
+  "routeCalculating": "Calculando...",
   "routeChooseFrom": "Escolher ponto de partida",
   "routeChooseTo": "Escolher destino",
   "routeCancel": "Cancelar",
-  "routeErrorMissingFields": "Introduza o ponto de partida e o destino",
+  "routeErrorMissingFields": "Digite o ponto de partida e o destino",
   "routeErrorFromNotFound": "Nenhum resultado encontrado para o endereço de partida",
   "routeErrorToNotFound": "Nenhum resultado encontrado para o endereço de destino",
   "routeResultsTitle": "Percursos disponíveis",
@@ -850,10 +850,10 @@
   "radioCountryOptionSe": "Suécia",
   "radioCountryOptionPl": "Polónia",
   "radioCountryOptionJp": "Japão",
-  "radioGenreOptionAll": "Todos os géneros",
+  "radioGenreOptionAll": "Todos os gêneros",
   "radioGenreOptionNews": "Notícias",
   "radioGenreOptionMusic": "Música",
-  "radioGenreOptionSport": "Desporto",
+  "radioGenreOptionSport": "Esportes",
   "radioGenreOptionTalk": "Conversas e análises",
   "radioGenreOptionPop": "Pop",
   "radioGenreOptionRock": "Rock",
@@ -902,13 +902,13 @@
   "cinemaUpcomingReleases": "Próximas estreias",
   "cinemaWillRelease": "Estreará em: {date}",
   "cinemaOpenTrailer": "Abrir trailer",
-  "concertsTitle": "Concertos e eventos",
-  "concertsSearchHint": "Introduza uma cidade (ex.: Lisboa, Porto)",
-  "concertsSearchLabel": "Pesquisar concertos por cidade",
+  "concertsTitle": "Shows e eventos",
+  "concertsSearchHint": "Digite uma cidade (ex.: São Paulo, Rio de Janeiro)",
+  "concertsSearchLabel": "Pesquisar shows por cidade",
   "concertsSearchTooltip": "Pesquisar",
-  "concertsInitialText": "Escreva acima o nome da sua cidade para ver os concertos musicais programados.",
-  "concertsEmpty": "Nenhum concerto encontrado nesta cidade.",
-  "concertsVenue": "Local do concerto:",
+  "concertsInitialText": "Digite acima o nome da sua cidade para ver os shows programados.",
+  "concertsEmpty": "Nenhum show encontrado nesta cidade.",
+  "concertsVenue": "Local do show:",
   "concertsBuyTickets": "Comprar ou ver detalhes no Ticketmaster",
   "newsReadArticles": "Artigos lidos",
   "weatherRecentCities": "Cidades recentes",
@@ -931,9 +931,9 @@
   },
   "podcastUnplayed": "Episódios não reproduzidos",
   "routeReadAction": "Ler percurso",
-  "routeSaveAction": "Guardar nos documentos",
-  "routeSaveSuccess": "Percurso guardado nos documentos",
-  "deleteItem": "Eliminar",
+  "routeSaveAction": "Salvar nos documentos",
+  "routeSaveSuccess": "Percurso salvo nos documentos",
+  "deleteItem": "Excluir",
   "@deleteItem": {
     "description": "Localized text for deleteItem."
   },
@@ -951,15 +951,15 @@
   "@exportCompleteTitle": {
     "description": "Localized text for exportCompleteTitle."
   },
-  "exportCompleteMessage": "O ficheiro foi criado corretamente. Quer guardá-lo no Sonarpad ou partilhá-lo?",
+  "exportCompleteMessage": "O arquivo foi criado corretamente. Deseja salvá-lo no Sonarpad ou compartilhá-lo?",
   "@exportCompleteMessage": {
     "description": "Localized text for exportCompleteMessage."
   },
-  "saveInSonarpad": "Guardar no Sonarpad",
+  "saveInSonarpad": "Salvar no Sonarpad",
   "@saveInSonarpad": {
     "description": "Localized text for saveInSonarpad."
   },
-  "exportSavedInSonarpad": "Ficheiro guardado nos Documentos do Sonarpad.",
+  "exportSavedInSonarpad": "Arquivo salvo nos Documentos do Sonarpad.",
   "@exportSavedInSonarpad": {
     "description": "Localized text for exportSavedInSonarpad."
   },
@@ -967,19 +967,19 @@
   "@audiobookExportProgressTitle": {
     "description": "Title shown while exporting an audiobook."
   },
-  "audiobookExportPreparing": "A preparar o audiolivro...",
+  "audiobookExportPreparing": "Preparando o audiolivro...",
   "@audiobookExportPreparing": {
     "description": "Progress text shown while preparing audiobook export."
   },
-  "audiobookExportGeneratingAudio": "A gerar áudio",
+  "audiobookExportGeneratingAudio": "Gerando áudio",
   "@audiobookExportGeneratingAudio": {
     "description": "Progress text shown while generating audiobook chunks."
   },
-  "audiobookExportConvertingAudio": "Conversão final do ficheiro de áudio...",
+  "audiobookExportConvertingAudio": "Conversão final do arquivo de áudio...",
   "@audiobookExportConvertingAudio": {
     "description": "Progress text shown while converting/merging audiobook audio."
   },
-  "audiobookExportFinalizing": "A finalizar...",
+  "audiobookExportFinalizing": "Finalizando...",
   "@audiobookExportFinalizing": {
     "description": "Progress text shown while finalizing audiobook export."
   },
@@ -1005,7 +1005,7 @@
   "@weatherTemperatureFahrenheit": {
     "description": "Localized text for weatherTemperatureFahrenheit."
   },
-  "podcastInvalidOpmlFile": "Ficheiro inválido. Selecione um ficheiro OPML ou XML.",
+  "podcastInvalidOpmlFile": "Arquivo inválido. Selecione um arquivo OPML ou XML.",
   "@podcastInvalidOpmlFile": {
     "description": "Shown when the selected podcast import file is not an OPML or XML file."
   },
@@ -1041,7 +1041,7 @@
   "@settingsMultipleDocumentBookmarks": {
     "description": "Title for the setting that enables multiple bookmarks in documents."
   },
-  "settingsMultipleDocumentBookmarksHint": "Se estiver desativado, fica apenas um marcador por documento. Se estiver ativado, pode guardar vários marcadores no mesmo documento.",
+  "settingsMultipleDocumentBookmarksHint": "Se estiver desativado, fica apenas um marcador por documento. Se estiver ativado, pode salvar vários marcadores no mesmo documento.",
   "@settingsMultipleDocumentBookmarksHint": {
     "description": "Description for the setting that enables multiple bookmarks in documents."
   },
@@ -1053,7 +1053,7 @@
   "@documentChooseBookmarkTitle": {
     "description": "Dialog title for choosing a document bookmark."
   },
-  "documentDeleteBookmarkAction": "Eliminar marcador",
+  "documentDeleteBookmarkAction": "Excluir marcador",
   "@documentDeleteBookmarkAction": {
     "description": "Action label to delete a document bookmark."
   },
@@ -1061,7 +1061,7 @@
   "@documentKeepBookmarkTitle": {
     "description": "Dialog title asking which bookmark to keep when multiple bookmarks are disabled."
   },
-  "documentKeepBookmarkMessage": "Os marcadores múltiplos estão desativados. Escolha um marcador para manter: os outros serão eliminados.",
+  "documentKeepBookmarkMessage": "Os marcadores múltiplos estão desativados. Escolha um marcador para manter: os outros serão excluídos.",
   "@documentKeepBookmarkMessage": {
     "description": "Dialog message asking which bookmark to keep when multiple bookmarks are disabled."
   },
@@ -1092,11 +1092,11 @@
       }
     }
   },
-  "settingsVideoLandscapeFullscreen": "Vídeo horizontal em ecrã inteiro",
+  "settingsVideoLandscapeFullscreen": "Vídeo horizontal em tela cheia",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."
   },
-  "settingsVideoLandscapeFullscreenHint": "Quando ativa o vídeo, este é mostrado em ecrã inteiro na orientação horizontal. As rádios só de áudio não mudam.",
+  "settingsVideoLandscapeFullscreenHint": "Quando o vídeo está ativado, ele é exibido em tela cheia na orientação horizontal. As rádios somente de áudio não mudam.",
   "@settingsVideoLandscapeFullscreenHint": {
     "description": "Description for the setting that shows video full-screen in landscape orientation."
   },
@@ -1104,7 +1104,7 @@
   "@settingsPodcastCacheTitle": {
     "description": "Localized text for settingsPodcastCacheTitle."
   },
-  "settingsPodcastCacheHint": "Limpa apenas ficheiros temporários dos podcasts. Subscrições, histórico e áudio importado ficam intactos.",
+  "settingsPodcastCacheHint": "Limpa apenas arquivos temporários dos podcasts. Assinaturas, histórico e áudio importado ficam intactos.",
   "@settingsPodcastCacheHint": {
     "description": "Localized text for settingsPodcastCacheHint."
   },
@@ -1125,7 +1125,7 @@
   "@confirmClearPodcastCacheTitle": {
     "description": "Localized text for confirmClearPodcastCacheTitle."
   },
-  "confirmClearPodcastCacheMessage": "Os ficheiros temporários dos podcasts serão eliminados. As subscrições e o histórico dos episódios não serão removidos.",
+  "confirmClearPodcastCacheMessage": "Os arquivos temporários dos podcasts serão excluídos. As assinaturas e o histórico dos episódios não serão removidos.",
   "@confirmClearPodcastCacheMessage": {
     "description": "Localized text for confirmClearPodcastCacheMessage."
   },
@@ -1150,7 +1150,7 @@
   "@pharmacyProductsSectionTitle": {
     "description": "Title for the parapharmaceuticals and supplements results section."
   },
-  "pharmacyProductsLoadingTitle": "A procurar parafarmácia e suplementos...",
+  "pharmacyProductsLoadingTitle": "Procurando parafarmácia e suplementos...",
   "@pharmacyProductsLoadingTitle": {
     "description": "Loading title for parapharmaceuticals and supplements search."
   },
@@ -1162,11 +1162,11 @@
   "@pharmacyProductsNoResultsTitle": {
     "description": "Empty state title for parapharmaceuticals and supplements search."
   },
-  "mediaCutterTitle": "Cortar ficheiro multimédia",
-  "mediaCutterInstruction1": "Abre um ficheiro de áudio ou vídeo, reproduz e vai até ao ponto onde queres cortar.",
-  "mediaCutterInstruction2": "Coloque em pausa, prima Dividir, depois elimine as partes que não quer na secção Partes a guardar e prima Guardar.",
-  "mediaCutterOpenFile": "Abrir ficheiro multimédia",
-  "mediaCutterSelectedFile": "Ficheiro selecionado: {fileName}",
+  "mediaCutterTitle": "Cortar arquivo de mídia",
+  "mediaCutterInstruction1": "Abra um arquivo de áudio ou vídeo, reproduza e vá até o ponto em que deseja cortar.",
+  "mediaCutterInstruction2": "Pause, toque em Dividir, depois exclua as partes que você não quer na seção Partes a salvar e toque em Salvar.",
+  "mediaCutterOpenFile": "Abrir arquivo de mídia",
+  "mediaCutterSelectedFile": "Arquivo selecionado: {fileName}",
   "@mediaCutterSelectedFile": {
     "placeholders": {
       "fileName": {
@@ -1185,13 +1185,13 @@
   "@mediaCutterHideVideoPreview": {
     "description": "Media cutter video preview label."
   },
-  "mediaCutterVideoPreview": "Pré-visualização do vídeo",
+  "mediaCutterVideoPreview": "Prévia do vídeo",
   "@mediaCutterVideoPreview": {
     "description": "Media cutter video preview label."
   },
   "mediaCutterSplit": "Dividir",
-  "mediaCutterPartsTitle": "Partes a guardar",
-  "mediaCutterPartsHint": "Toque numa parte para a ouvir. As partes eliminadas desaparecem da lista, são ignoradas durante a reprodução e não serão guardadas. Os efeitos são aplicados a toda a parte apenas quando o ficheiro multimédia é guardado.",
+  "mediaCutterPartsTitle": "Partes a salvar",
+  "mediaCutterPartsHint": "Toque em uma parte para ouvi-la. As partes excluídas desaparecem da lista, são ignoradas durante a reprodução e não serão salvas. Os efeitos são aplicados à parte inteira somente quando o arquivo de mídia é salvo.",
   "mediaCutterPartLabel": "Parte {index}",
   "@mediaCutterPartLabel": {
     "placeholders": {
@@ -1211,12 +1211,12 @@
       }
     }
   },
-  "mediaCutterSave": "Guardar",
+  "mediaCutterSave": "Salvar",
   "mediaCutterReady": "Pronto.",
-  "mediaCutterUnsavedExitTitle": "Ficheiro não guardado",
-  "mediaCutterUnsavedExitMessage": "O ficheiro não foi guardado. Tem a certeza de que quer sair?",
-  "mediaCutterNoFile": "Abre primeiro um ficheiro multimédia.",
-  "mediaCutterInvalidSplitPoint": "Escolhe um ponto dentro do ficheiro, não o início nem o fim.",
+  "mediaCutterUnsavedExitTitle": "Arquivo não salvo",
+  "mediaCutterUnsavedExitMessage": "O arquivo não foi salvo. Tem certeza de que deseja sair?",
+  "mediaCutterNoFile": "Abra primeiro um arquivo de mídia.",
+  "mediaCutterInvalidSplitPoint": "Escolha um ponto dentro do arquivo, não o início nem o fim.",
   "mediaCutterSplitAlreadyExists": "Já existe uma divisão neste ponto.",
   "mediaCutterSplitAdded": "Divisão adicionada em {position}.",
   "@mediaCutterSplitAdded": {
@@ -1226,8 +1226,8 @@
       }
     }
   },
-  "mediaCutterSaving": "A guardar o ficheiro...",
-  "mediaCutterSaved": "Ficheiro guardado: {fileName}",
+  "mediaCutterSaving": "Salvando o arquivo...",
+  "mediaCutterSaved": "Arquivo salvo: {fileName}",
   "@mediaCutterSaved": {
     "placeholders": {
       "fileName": {
@@ -1235,7 +1235,7 @@
       }
     }
   },
-  "mediaCutterLoadFailed": "Não foi possível abrir o ficheiro: {error}",
+  "mediaCutterLoadFailed": "Não foi possível abrir o arquivo: {error}",
   "@mediaCutterLoadFailed": {
     "placeholders": {
       "error": {
@@ -1243,7 +1243,7 @@
       }
     }
   },
-  "mediaCutterSaveFailed": "Falha ao guardar: {error}",
+  "mediaCutterSaveFailed": "Falha ao salvar: {error}",
   "@mediaCutterSaveFailed": {
     "placeholders": {
       "error": {
@@ -1251,12 +1251,12 @@
       }
     }
   },
-  "mediaCutterNoPartsToSave": "Mantenha pelo menos uma parte antes de guardar.",
-  "mediaCutterRestoreDeletedPart": "Restaurar parte eliminada",
-  "mediaCutterNoDeletedParts": "Não há partes eliminadas para restaurar.",
-  "mediaCutterPartDeleteAction": "Eliminar",
-  "mediaCutterPartTapHint": "Toque duas vezes para ouvir esta parte. Use as ações Modificar parte, Eliminar ou Ajustar efeitos.",
-  "mediaCutterPartDeleted": "Parte eliminada de {start} a {end}.",
+  "mediaCutterNoPartsToSave": "Mantenha pelo menos uma parte antes de salvar.",
+  "mediaCutterRestoreDeletedPart": "Restaurar parte excluída",
+  "mediaCutterNoDeletedParts": "Não há partes excluídas para restaurar.",
+  "mediaCutterPartDeleteAction": "Excluir",
+  "mediaCutterPartTapHint": "Toque duas vezes para ouvir esta parte. Use as ações Modificar parte, Excluir ou Ajustar efeitos.",
+  "mediaCutterPartDeleted": "Parte excluída de {start} a {end}.",
   "@mediaCutterPartDeleted": {
     "description": "Status shown after a media part is deleted",
     "placeholders": {
@@ -1309,11 +1309,11 @@
   "mediaCutterPartEffectNone": "Sem efeito",
   "mediaCutterPartEffectEcho": "Eco leve",
   "mediaCutterPartEffectEchoRoom": "Eco sala",
-  "mediaCutterPartEffectEchoChamber": "Eco câmara",
+  "mediaCutterPartEffectEchoChamber": "Eco câmera",
   "mediaCutterPartEffectEchoCathedral": "Eco catedral",
   "mediaCutterPartEffectLargeRoom": "Sala grande",
   "mediaCutterPartEffectSmallRoom": "Sala pequena",
-  "mediaCutterPartEffectBathroom": "Casa de banho",
+  "mediaCutterPartEffectBathroom": "Banheiro",
   "mediaCutterPartEffectTunnel": "Túnel",
   "mediaCutterPartEffectRepeatEcho": "Eco repetido",
   "mediaCutterPartEffectCorridor": "Corredor",
@@ -1352,8 +1352,8 @@
       }
     }
   },
-  "mediaCutterPartPreviewAction": "Ouvir pré-visualização",
-  "mediaCutterPartEffectsSavedOnly": "A pré-visualização usa o volume escolhido. Os efeitos de áudio são aplicados ao guardar.",
+  "mediaCutterPartPreviewAction": "Ouvir prévia",
+  "mediaCutterPartEffectsSavedOnly": "A prévia usa o volume escolhido. Os efeitos de áudio são aplicados ao salvar.",
   "mediaCutterPartEffectsApplied": "Efeitos atualizados para a parte de {start} a {end}.",
   "@mediaCutterPartEffectsApplied": {
     "placeholders": {
@@ -1377,9 +1377,9 @@
     }
   },
   "mediaCutterGuidedModeTitle": "Corte guiado",
-  "mediaCutterGuidedModeDescription": "Adequado para quem está a começar. Selecione um ponto inicial e um ponto final, ouça o corte e depois aplique-o.",
+  "mediaCutterGuidedModeDescription": "Adequado para quem está começando. Selecione um ponto inicial e um ponto final, ouça o corte e depois aplique-o.",
   "mediaCutterAdvancedModeTitle": "Corte avançado",
-  "mediaCutterAdvancedModeDescription": "Inspirado nos programas de edição multimédia mais conhecidos. Permite dividir um ficheiro em várias partes e eliminar as partes que não quer.",
+  "mediaCutterAdvancedModeDescription": "Inspirado nos programas de edição de mídia mais conhecidos. Permite dividir um arquivo em várias partes e excluir as partes que você não quer.",
   "mediaCutterChangeCutMode": "Alterar tipo de corte",
   "mediaCutterGuidedSetStart": "Início do corte",
   "mediaCutterGuidedSetEnd": "Fim do corte",
@@ -1447,9 +1447,9 @@
     }
   },
   "mediaCutterGuidedNoCut": "Nenhum corte",
-  "mediaCutterGuidedEffectsAction": "Regular efeitos do ficheiro",
-  "mediaCutterGuidedEffectsDescription": "Regule o volume e os efeitos para todo o ficheiro resultante.",
-  "mediaCutterGuidedFileTapHint": "Toque duas vezes para reproduzir o ficheiro resultante. Use Regular efeitos do ficheiro para aplicar efeitos a todo o ficheiro.",
+  "mediaCutterGuidedEffectsAction": "Ajustar efeitos do arquivo",
+  "mediaCutterGuidedEffectsDescription": "Regule o volume e os efeitos para todo o arquivo resultante.",
+  "mediaCutterGuidedFileTapHint": "Toque duas vezes para reproduzir o arquivo resultante. Use Ajustar efeitos do arquivo para aplicar efeitos a todo o arquivo.",
   "mediaCutterGuidedStartSet": "Início do corte definido em {start}.",
   "@mediaCutterGuidedStartSet": {
     "placeholders": {
@@ -1520,7 +1520,7 @@
   "@newsBrowseCommunitySources": {
     "description": "Localized text for newsBrowseCommunitySources."
   },
-  "newsAddCommunityInstructions": "Introduza o título da fonte e o URL do feed RSS ou do site. O Sonarpad usará o idioma de notícias selecionado e, se introduzir um site, tentará encontrar o feed automaticamente.",
+  "newsAddCommunityInstructions": "Digite o título da fonte e o URL do feed RSS ou do site. O Sonarpad usará o idioma de notícias selecionado e, se digitar um site, tentará encontrar o feed automaticamente.",
   "@newsAddCommunityInstructions": {
     "description": "Localized text for newsAddCommunityInstructions."
   },
@@ -1536,11 +1536,11 @@
   "@newsCommunitySubmit": {
     "description": "Localized text for newsCommunitySubmit."
   },
-  "newsCommunityChecking": "A verificar feed ou site...",
+  "newsCommunityChecking": "Verificando feed ou site...",
   "@newsCommunityChecking": {
     "description": "Localized text for newsCommunityChecking."
   },
-  "newsCommunityMissingFields": "Introduza o título e o URL do feed ou do site.",
+  "newsCommunityMissingFields": "Digite o título e o URL do feed ou do site.",
   "@newsCommunityMissingFields": {
     "description": "Localized text for newsCommunityMissingFields."
   },
@@ -1631,7 +1631,7 @@
   "@settingsToggleOff": {
     "description": "Localized text for settingsToggleOff."
   },
-  "radioDirectoryLoading": "A atualizar países e idiomas de rádio...",
+  "radioDirectoryLoading": "Atualizando países e idiomas de rádio...",
   "@radioDirectoryLoading": {
     "description": "Localized text for radioDirectoryLoading."
   },
@@ -1651,11 +1651,11 @@
       "total": {}
     }
   },
-  "radioNoResultsWithQuery": "Nenhuma rádio encontrada. Tente apenas o nome da estação, sem género, ou mude o idioma/país.",
+  "radioNoResultsWithQuery": "Nenhuma rádio encontrada. Tente apenas o nome da estação, sem gênero, ou mude o idioma/país.",
   "@radioNoResultsWithQuery": {
     "description": "Localized text for radioNoResultsWithQuery."
   },
-  "radioNoResultsGeneric": "Nenhuma rádio encontrada. Tente outro idioma, país ou género.",
+  "radioNoResultsGeneric": "Nenhuma rádio encontrada. Tente outro idioma, país ou gênero.",
   "@radioNoResultsGeneric": {
     "description": "Localized text for radioNoResultsGeneric."
   },
@@ -1670,7 +1670,7 @@
   "@radioBrowserConnectionError": {
     "description": "Localized text for radioBrowserConnectionError."
   },
-  "documentIndexLoadingMessage": "A carregar índice... Aguarde.",
+  "documentIndexLoadingMessage": "Carregando índice... Aguarde.",
   "@documentIndexLoadingMessage": {
     "description": "Localized text for documentIndexLoadingMessage."
   },
@@ -1732,18 +1732,18 @@
   "@mediaCutterDurationAnd": {
     "description": "Localized text for mediaCutterDurationAnd."
   },
-  "mediaCutterSeekStepButton": "Regular o deslocamento do ficheiro multimédia: {step}",
+  "mediaCutterSeekStepButton": "Ajustar o deslocamento do arquivo de mídia: {step}",
   "@mediaCutterSeekStepButton": {
     "description": "Localized text for mediaCutterSeekStepButton.",
     "placeholders": {
       "step": {}
     }
   },
-  "mediaCutterSeekStepTitle": "Deslocamento do ficheiro multimédia",
+  "mediaCutterSeekStepTitle": "Deslocamento do arquivo de mídia",
   "@mediaCutterSeekStepTitle": {
     "description": "Localized text for mediaCutterSeekStepTitle."
   },
-  "mediaCutterSeekStepSelected": "Deslocamento do ficheiro multimédia definido para {step}.",
+  "mediaCutterSeekStepSelected": "Deslocamento do arquivo de mídia definido como {step}.",
   "@mediaCutterSeekStepSelected": {
     "description": "Localized text for mediaCutterSeekStepSelected.",
     "placeholders": {
@@ -1870,7 +1870,7 @@
   "@radioBrowseByCity": {
     "description": "Localized text for radioBrowseByCity."
   },
-  "radioCityInputHint": "Introduza a cidade...",
+  "radioCityInputHint": "Digite a cidade...",
   "@radioCityInputHint": {
     "description": "Localized text for radioCityInputHint."
   },
@@ -1882,11 +1882,11 @@
   "@clearSearch": {
     "description": "Localized text for clearSearch."
   },
-  "fileTypeLabel": "Ficheiro",
+  "fileTypeLabel": "Arquivo",
   "@fileTypeLabel": {
     "description": "Localized text for fileTypeLabel."
   },
-  "cinemaTrailerLoading": "A carregar trailer",
+  "cinemaTrailerLoading": "Carregando trailer",
   "@cinemaTrailerLoading": {
     "description": "Localized text for cinemaTrailerLoading."
   },
@@ -1910,7 +1910,7 @@
   "@radioScheduleSelectMinutes": {
     "description": "Localized text for radioScheduleSelectMinutes."
   },
-  "radioScheduleStopCurrentFirst": "Termina a gravação em curso antes de programares uma nova.",
+  "radioScheduleStopCurrentFirst": "Termine a gravação em andamento antes de programar uma nova.",
   "@radioScheduleStopCurrentFirst": {
     "description": "Localized text for radioScheduleStopCurrentFirst."
   },
@@ -1926,7 +1926,7 @@
   "@radioScheduleDialogTitle": {
     "description": "Localized text for radioScheduleDialogTitle."
   },
-  "radioScheduleOpenRequirement": "A gravação programada continua a funcionar enquanto navegas por outros ecrãs do Sonarpad. O Sonarpad tem de permanecer aberto; se a aplicação for fechada ou suspensa pelo sistema, o início da gravação não é garantido.",
+  "radioScheduleOpenRequirement": "A gravação programada continua funcionando enquanto você navega por outras telas do Sonarpad. O Sonarpad precisa permanecer aberto; se o aplicativo for fechado ou suspenso pelo sistema, o início da gravação não é garantido.",
   "@radioScheduleOpenRequirement": {
     "description": "Localized text for radioScheduleOpenRequirement."
   },
@@ -1964,7 +1964,7 @@
       "end": {}
     }
   },
-  "radioScheduledRecordingAlreadyActive": "Gravação programada não iniciada: já existe outra gravação em curso.",
+  "radioScheduledRecordingAlreadyActive": "Gravação programada não iniciada: já existe outra gravação em andamento.",
   "@radioScheduledRecordingAlreadyActive": {
     "description": "Localized text for radioScheduledRecordingAlreadyActive."
   },
@@ -1979,11 +1979,11 @@
       "error": {}
     }
   },
-  "radioScheduledRecordingSaved": "Gravação programada guardada.",
+  "radioScheduledRecordingSaved": "Gravação programada salva.",
   "@radioScheduledRecordingSaved": {
     "description": "Localized text for radioScheduledRecordingSaved."
   },
-  "radioScheduledRecordingSaveError": "Erro ao guardar a gravação programada: {error}",
+  "radioScheduledRecordingSaveError": "Erro ao salvar a gravação programada: {error}",
   "@radioScheduledRecordingSaveError": {
     "description": "Localized text for radioScheduledRecordingSaveError.",
     "placeholders": {

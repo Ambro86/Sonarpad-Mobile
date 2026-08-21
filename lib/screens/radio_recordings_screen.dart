@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../services/radio_recording_service.dart';
 import '../services/app_settings_service.dart';
@@ -121,7 +122,7 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
       }
     } catch (error) {
       if (mounted) {
-        showStatusMessage(context, AppLocalizations.of(context).error(error));
+        showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).localizeTechnicalError(error)));
       }
     }
   }
@@ -160,7 +161,7 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.error(snapshot.error!)));
+            return Center(child: Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))));
           }
           final files = snapshot.data ?? const [];
           if (files.isEmpty) {

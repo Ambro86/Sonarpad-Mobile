@@ -9,6 +9,7 @@ import 'package:flutter/semantics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/news_article.dart';
 import '../services/app_settings_service.dart';
 import '../services/news_service.dart';
@@ -50,6 +51,7 @@ class _NewsScreenState extends State<NewsScreen> {
         'fr' => NewsLanguage.french,
         'es' => NewsLanguage.spanish,
         'pt' => NewsLanguage.portuguese,
+        'pt_BR' => NewsLanguage.portugueseBrazil,
         'pl' => NewsLanguage.polish,
         'cs' => NewsLanguage.czech,
         'de' => NewsLanguage.german,
@@ -258,7 +260,7 @@ class _NewsScreenState extends State<NewsScreen> {
             showStatusMessage(context, l10n.rssImportComplete(added));
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.rssImportError(e));
+            showStatusMessage(context, l10n.rssImportError(l10n.localizeTechnicalError(e)));
     }
   }
 
@@ -283,7 +285,7 @@ class _NewsScreenState extends State<NewsScreen> {
             showStatusMessage(context, l10n.rssExportComplete);
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.rssExportError(e));
+            showStatusMessage(context, l10n.rssExportError(l10n.localizeTechnicalError(e)));
     }
   }
 
@@ -424,7 +426,7 @@ class _AddCommunityNewsSourceScreenState
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      showStatusMessage(context, l10n.newsCommunityAddError(e));
+      showStatusMessage(context, l10n.newsCommunityAddError(l10n.localizeTechnicalError(e)));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -572,7 +574,7 @@ class _CommunityNewsSourcesScreenState
       if (!mounted) return;
       showStatusMessage(
         context,
-        AppLocalizations.of(context).newsCommunityAddToLibraryError(e),
+        AppLocalizations.of(context).newsCommunityAddToLibraryError(AppLocalizations.of(context).localizeTechnicalError(e)),
       );
     } finally {
       if (mounted) {
@@ -605,7 +607,7 @@ class _CommunityNewsSourcesScreenState
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(l10n.newsCommunitySourcesError(snapshot.error!)),
+                child: Text(l10n.newsCommunitySourcesError(l10n.localizeTechnicalError(snapshot.error!))),
               ),
             );
           }
@@ -736,10 +738,13 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     if (cat != null && cat.isLocal) {
       return _fetchLocalCategory(categorySourceName);
     }
-    return _service.fetchSourceNews(NewsRssSource(
-      name: categorySourceName,
-      uri: _currentUri,
-    ));
+    return _service.fetchSourceNews(
+      NewsRssSource(
+        name: categorySourceName,
+        uri: _currentUri,
+      ),
+      language: widget.language,
+    );
   }
 
   void _fetch() {
@@ -762,7 +767,16 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   }
 
   Future<List<NewsArticle>> _fetchLocalCategory(String categorySourceName) async {
-    final lang = widget.language.code;
+    final lang = switch (widget.language) {
+      NewsLanguage.portuguese => 'pt-PT',
+      NewsLanguage.portugueseBrazil => 'pt-BR',
+      _ => widget.language.code,
+    };
+    final ceidLanguage = switch (widget.language) {
+      NewsLanguage.portuguese => 'pt-150',
+      NewsLanguage.portugueseBrazil => 'pt-419',
+      _ => widget.language.code,
+    };
     final savedCity = await _settings.getNewsLocalCity();
     final loc = await _service.getUserLocationData();
     final detectedCity = loc?['city'] ?? '';
@@ -777,13 +791,17 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     }
     if (city.isNotEmpty) {
       final searchUri = Uri.parse(
-          'https://news.google.com/rss/search?q=${Uri.encodeComponent(city)}&hl=$lang&gl=$country&ceid=$country:$lang');
+          'https://news.google.com/rss/search?q=${Uri.encodeComponent(city)}&hl=$lang&gl=$country&ceid=$country:$ceidLanguage');
       return _service.fetchSourceNews(
-          NewsRssSource(name: categorySourceName, uri: searchUri));
+        NewsRssSource(name: categorySourceName, uri: searchUri),
+        language: widget.language,
+      );
     }
     // Fallback to top news if location fails
     return _service.fetchSourceNews(
-        NewsRssSource(name: categorySourceName, uri: widget.source.uri));
+      NewsRssSource(name: categorySourceName, uri: widget.source.uri),
+      language: widget.language,
+    );
   }
 
   String _defaultCountryCode(NewsLanguage language) => switch (language) {
@@ -791,6 +809,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         NewsLanguage.french => 'FR',
         NewsLanguage.spanish => 'ES',
         NewsLanguage.portuguese => 'PT',
+        NewsLanguage.portugueseBrazil => 'BR',
         NewsLanguage.polish => 'PL',
         NewsLanguage.czech => 'CZ',
         NewsLanguage.german => 'DE',
@@ -1615,7 +1634,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           );
         }
         if (snapshot.hasError) {
-          return Center(child: Text(l10n.error(snapshot.error!)));
+          return Center(child: Text(l10n.error(l10n.localizeTechnicalError(snapshot.error!))));
         }
         final allArticles = snapshot.data ?? const [];
         final articles = allArticles.where((a) => !_readUris.contains(a.id)).toList();

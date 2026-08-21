@@ -3468,6 +3468,7 @@
   },
   "mediaCutterPartEffectsTitle": "Efekty części",
   "mediaCutterPartEffectsDescription": "Dostosuj głośność i efekt tylko dla tej części.",
+  "mediaCutterPartVolumeLabel": "Głośność części",
   "mediaCutterPartVolumeValue": "Głośność części: {percent}%",
   "@mediaCutterPartVolumeValue": {
     "placeholders": {
@@ -3514,6 +3515,7 @@
   "mediaCutterPartEffectReverseEcho": "Odwrócone echo",
   "mediaCutterPartEffectFadeIn": "Narastanie",
   "mediaCutterPartEffectFadeOut": "Wyciszenie",
+  "mediaCutterPartEffectAmountLabel": "Intensywność efektu",
   "mediaCutterPartEffectAmountValue": "Intensywność efektu: {percent}%",
   "@mediaCutterPartEffectAmountValue": {
     "placeholders": {
@@ -4096,7 +4098,7 @@
   "@radioScheduleDialogTitle": {
     "description": "Localized text for radioScheduleDialogTitle."
   },
-  "radioScheduleOpenRequirement": "W tej wersji zaplanowane nagrywanie rozpocznie się tylko wtedy, gdy Sonarpad pozostanie otwarty na tym odtwarzaczu. Jeśli zamkniesz aplikację lub ten ekran, nagrywanie nie może rozpocząć się automatycznie.",
+  "radioScheduleOpenRequirement": "Zaplanowane nagrywanie działa nadal podczas przechodzenia do innych ekranów Sonarpad. Sonarpad musi pozostać otwarty; jeśli aplikacja zostanie zamknięta lub wstrzymana przez system, rozpoczęcie nagrywania nie jest gwarantowane.",
   "@radioScheduleOpenRequirement": {
     "description": "Localized text for radioScheduleOpenRequirement."
   },

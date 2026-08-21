@@ -2701,6 +2701,9 @@ class AppLocalizationsPl extends AppLocalizations {
       'Dostosuj głośność i efekt tylko dla tej części.';
 
   @override
+  String get mediaCutterPartVolumeLabel => 'Głośność części';
+
+  @override
   String mediaCutterPartVolumeValue(int percent) {
     return 'Głośność części: $percent%';
   }
@@ -2818,6 +2821,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get mediaCutterPartEffectFadeOut => 'Wyciszenie';
+
+  @override
+  String get mediaCutterPartEffectAmountLabel => 'Intensywność efektu';
 
   @override
   String mediaCutterPartEffectAmountValue(int percent) {
@@ -3298,7 +3304,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get radioScheduleDialogTitle => 'Zaplanuj nagrywanie';
 
   @override
-  String get radioScheduleOpenRequirement => 'W tej wersji zaplanowane nagrywanie rozpocznie się tylko wtedy, gdy Sonarpad pozostanie otwarty na tym odtwarzaczu. Jeśli zamkniesz aplikację lub ten ekran, nagrywanie nie może rozpocząć się automatycznie.';
+  String get radioScheduleOpenRequirement => 'Zaplanowane nagrywanie działa nadal podczas przechodzenia do innych ekranów Sonarpad. Sonarpad musi pozostać otwarty; jeśli aplikacja zostanie zamknięta lub wstrzymana przez system, rozpoczęcie nagrywania nie jest gwarantowane.';
 
   @override
   String radioScheduleStartTimeValue(String time) {

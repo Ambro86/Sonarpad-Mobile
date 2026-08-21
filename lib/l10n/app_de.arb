@@ -3489,6 +3489,7 @@
   },
   "mediaCutterPartEffectsTitle": "Effekte für Teil",
   "mediaCutterPartEffectsDescription": "Lautstärke und Effekt nur für diesen Teil anpassen.",
+  "mediaCutterPartVolumeLabel": "Lautstärke des Teils",
   "mediaCutterPartVolumeValue": "Lautstärke des Teils: {percent}%",
   "@mediaCutterPartVolumeValue": {
     "placeholders": {
@@ -3535,6 +3536,7 @@
   "mediaCutterPartEffectReverseEcho": "Rückwärtsecho",
   "mediaCutterPartEffectFadeIn": "Einblenden",
   "mediaCutterPartEffectFadeOut": "Ausblenden",
+  "mediaCutterPartEffectAmountLabel": "Effektstärke",
   "mediaCutterPartEffectAmountValue": "Effektstärke: {percent}%",
   "@mediaCutterPartEffectAmountValue": {
     "placeholders": {
@@ -4117,7 +4119,7 @@
   "@radioScheduleDialogTitle": {
     "description": "Localized text for radioScheduleDialogTitle."
   },
-  "radioScheduleOpenRequirement": "In dieser Version startet die geplante Aufnahme nur, wenn Sonarpad in diesem Player geöffnet bleibt. Wenn du die App oder diesen Bildschirm schließt, kann die Aufnahme nicht automatisch starten.",
+  "radioScheduleOpenRequirement": "Die geplante Aufnahme funktioniert weiter, während du zu anderen Sonarpad-Bildschirmen wechselst. Sonarpad muss geöffnet bleiben; wenn die App geschlossen oder vom System angehalten wird, ist der Start der Aufnahme nicht garantiert.",
   "@radioScheduleOpenRequirement": {
     "description": "Localized text for radioScheduleOpenRequirement."
   },

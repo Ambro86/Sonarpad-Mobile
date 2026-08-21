@@ -46,7 +46,7 @@ enum WeatherTemperatureUnit {
 }
 
 class AppSettingsService {
-  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pl', 'cs', 'de'};
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -204,6 +204,9 @@ class AppSettingsService {
 
     for (final locale in PlatformDispatcher.instance.locales) {
       final deviceLanguage = locale.languageCode;
+      if (deviceLanguage == 'pt' && locale.countryCode?.toUpperCase() == 'BR') {
+        return 'pt_BR';
+      }
       if (_supportedAppLanguages.contains(deviceLanguage)) {
         return deviceLanguage;
       }

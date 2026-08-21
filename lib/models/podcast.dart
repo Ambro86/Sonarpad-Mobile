@@ -87,7 +87,7 @@ class PodcastCategory {
         'en' => englishName ?? name,
         'fr' => frenchName ?? englishName ?? name,
         'es' => spanishName ?? englishName ?? name,
-        'pt' => portugueseName ?? englishName ?? name,
+        'pt' || 'pt_BR' => portugueseName ?? englishName ?? name,
         'pl' => polishName ?? englishName ?? name,
         'cs' => czechName ?? englishName ?? name,
         'de' => germanName ?? englishName ?? name,

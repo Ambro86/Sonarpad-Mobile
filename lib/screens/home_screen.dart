@@ -384,11 +384,13 @@ class _HomeScreenState extends State<HomeScreen> {
           if (!context.mounted) return;
           await _load();
           if (!context.mounted) return;
-          if (appLanguage != null &&
-              appLanguage != Localizations.localeOf(context).languageCode) {
-            await Future<void>.delayed(Duration.zero);
-            if (!context.mounted) return;
-            SonarpadApp.setLocale(context, Locale(appLanguage));
+          if (appLanguage != null) {
+            final targetLocale = SonarpadApp.localeForLanguageCode(appLanguage);
+            if (targetLocale != Localizations.localeOf(context)) {
+              await Future<void>.delayed(Duration.zero);
+              if (!context.mounted) return;
+              SonarpadApp.setLocale(context, targetLocale);
+            }
           }
           _restoreSettingsFocus();
         },

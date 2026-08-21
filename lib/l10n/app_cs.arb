@@ -1293,6 +1293,7 @@
   },
   "mediaCutterPartEffectsTitle": "Efekty části",
   "mediaCutterPartEffectsDescription": "Upravte hlasitost a efekt pouze pro tuto část.",
+  "mediaCutterPartVolumeLabel": "Hlasitost části",
   "mediaCutterPartVolumeValue": "Hlasitost části: {percent} %",
   "@mediaCutterPartVolumeValue": {
     "placeholders": {
@@ -1339,6 +1340,7 @@
   "mediaCutterPartEffectReverseEcho": "Obrácená ozvěna",
   "mediaCutterPartEffectFadeIn": "Zesílení na začátku",
   "mediaCutterPartEffectFadeOut": "Zeslabení na konci",
+  "mediaCutterPartEffectAmountLabel": "Intenzita efektu",
   "mediaCutterPartEffectAmountValue": "Intenzita efektu: {percent} %",
   "@mediaCutterPartEffectAmountValue": {
     "placeholders": {
@@ -1921,7 +1923,7 @@
   "@radioScheduleDialogTitle": {
     "description": "Localized text for radioScheduleDialogTitle."
   },
-  "radioScheduleOpenRequirement": "V této verzi se naplánované nahrávání spustí pouze tehdy, když Sonarpad zůstane otevřený na tomto přehrávači. Pokud zavřete aplikaci nebo tuto obrazovku, nahrávání se nemůže spustit automaticky.",
+  "radioScheduleOpenRequirement": "Naplánované nahrávání funguje i při přechodu na jiné obrazovky Sonarpadu. Sonarpad musí zůstat otevřený; pokud je aplikace zavřena nebo pozastavena systémem, spuštění nahrávání není zaručeno.",
   "@radioScheduleOpenRequirement": {
     "description": "Localized text for radioScheduleOpenRequirement."
   },

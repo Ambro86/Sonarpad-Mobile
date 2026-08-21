@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:path_provider/path_provider.dart';
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
@@ -235,7 +236,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           footnoteLabel: l10n.documentFootnoteLabel,
         );
         _documentText = normalizeDocumentUnicode(result.text);
-        _loadError = result.error;
+        _loadError = result.error == null ? null : l10n.localizeTechnicalError(result.error);
       }
 
       if (_documentText.isNotEmpty) {
@@ -271,7 +272,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
     } catch (e) {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
-      _loadError = l10n.fileOpenError(e);
+      _loadError = l10n.fileOpenError(l10n.localizeTechnicalError(e));
     } finally {
       if (mounted) {
         setState(() => _loadingText = false);

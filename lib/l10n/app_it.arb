@@ -3489,6 +3489,7 @@
   },
   "mediaCutterPartEffectsTitle": "Effetti della parte",
   "mediaCutterPartEffectsDescription": "Regola volume ed effetto solo per questa parte.",
+  "mediaCutterPartVolumeLabel": "Volume parte",
   "mediaCutterPartVolumeValue": "Volume parte: {percent}%",
   "@mediaCutterPartVolumeValue": {
     "placeholders": {
@@ -3535,6 +3536,7 @@
   "mediaCutterPartEffectReverseEcho": "Reverse echo",
   "mediaCutterPartEffectFadeIn": "Fade in",
   "mediaCutterPartEffectFadeOut": "Fade out",
+  "mediaCutterPartEffectAmountLabel": "Intensità effetto",
   "mediaCutterPartEffectAmountValue": "Intensità effetto: {percent}%",
   "@mediaCutterPartEffectAmountValue": {
     "placeholders": {
@@ -4117,7 +4119,7 @@
   "@radioScheduleDialogTitle": {
     "description": "Localized text for radioScheduleDialogTitle."
   },
-  "radioScheduleOpenRequirement": "In questa versione la registrazione programmata parte solo se Sonarpad resta aperto su questo player. Se chiudi l’app o questa schermata, la registrazione non può partire da sola.",
+  "radioScheduleOpenRequirement": "La registrazione programmata continua a funzionare mentre navighi nelle altre schermate di Sonarpad. Sonarpad deve restare aperto; se l’app viene chiusa o sospesa dal sistema, l’avvio non è garantito.",
   "@radioScheduleOpenRequirement": {
     "description": "Localized text for radioScheduleOpenRequirement."
   },

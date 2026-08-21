@@ -2611,6 +2611,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mediaCutterPartEffectsDescription => "Lautstärke und Effekt nur für diesen Teil anpassen.";
 
   @override
+  String get mediaCutterPartVolumeLabel => 'Lautstärke des Teils';
+
+  @override
   String mediaCutterPartVolumeValue(int percent) {
     return "Lautstärke des Teils: ${percent}%";
   }
@@ -2728,6 +2731,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get mediaCutterPartEffectFadeOut => "Ausblenden";
+
+  @override
+  String get mediaCutterPartEffectAmountLabel => 'Effektstärke';
 
   @override
   String mediaCutterPartEffectAmountValue(int percent) {
@@ -3195,7 +3201,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get radioScheduleDialogTitle => 'Aufnahme planen';
 
   @override
-  String get radioScheduleOpenRequirement => 'In dieser Version startet die geplante Aufnahme nur, wenn Sonarpad in diesem Player geöffnet bleibt. Wenn du die App oder diesen Bildschirm schließt, kann die Aufnahme nicht automatisch starten.';
+  String get radioScheduleOpenRequirement => 'Die geplante Aufnahme funktioniert weiter, während du zu anderen Sonarpad-Bildschirmen wechselst. Sonarpad muss geöffnet bleiben; wenn die App geschlossen oder vom System angehalten wird, ist der Start der Aufnahme nicht garantiert.';
 
   @override
   String radioScheduleStartTimeValue(String time) {

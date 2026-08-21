@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../widgets/universal_accessible_view.dart';
 import '../models/tmdb_movie.dart';
 import '../services/tmdb_service.dart';
@@ -31,7 +32,7 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
 
   Future<void> _loadTrailer() async {
     try {
-      final localeName = Localizations.localeOf(context).languageCode;
+      final localeName = Localizations.localeOf(context).toString();
       final url = await _service.getTrailerUrl(widget.movie.id, languageCode: localeName);
       if (mounted) {
         setState(() {
@@ -67,7 +68,7 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).error(e));
+            showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).localizeTechnicalError(e)));
     }
   }
 
