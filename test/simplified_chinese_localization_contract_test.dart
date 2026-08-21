@@ -138,11 +138,39 @@ void main() {
   test('Chinese generated localization matches all APIs and placeholders', () {
     final generated =
         File('lib/l10n/app_localizations_zh.dart').readAsStringSync();
-    expect(RegExp(r'^\s*@override\s*$', multiLine: true).allMatches(generated).length,
-        1016);
+
+    // Flutter generates one base zh class plus the zh_CN regional class when
+    // both app_zh.arb and app_zh_CN.arb are present. Each class exposes the
+    // full localized API because the fallback and the regional ARB are kept
+    // intentionally identical.
     expect(generated, contains('class AppLocalizationsZhCn'));
-    expect(generated, contains("routeDurationHoursMinutes(int hours, int minutes)"));
-    expect(generated, contains(r"'${hours} 小时 ${minutes} 分钟'"));
+    final overrideCount =
+        RegExp(r'^\s*@override\s*$', multiLine: true)
+            .allMatches(generated)
+            .length;
+    final durationMethodCount =
+        RegExp(r'routeDurationHoursMinutes\(int hours, int minutes\)')
+            .allMatches(generated)
+            .length;
+    final durationTextCount =
+        RegExp(r"'\$\{hours\} 小时 \$\{minutes\} 分钟'")
+            .allMatches(generated)
+            .length;
+
+    // The committed generated source can still contain only zh_CN until
+    // gen-l10n runs. Flutter 3.47 regenerates both zh and zh_CN and therefore
+    // doubles the overrides. Both forms must expose the complete 1016-message
+    // API and the correct placeholders.
+    expect(overrideCount == 1016 || overrideCount == 2032, isTrue);
+    expect(durationMethodCount == 1 || durationMethodCount == 2, isTrue);
+    expect(durationTextCount, durationMethodCount);
+    if (overrideCount == 2032) {
+      expect(
+        generated,
+        contains('class AppLocalizationsZh extends AppLocalizations'),
+      );
+      expect(durationMethodCount, 2);
+    }
   });
 
   test('Chinese dynamic error localization is wired into shared screens', () {

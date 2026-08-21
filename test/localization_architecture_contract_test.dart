@@ -107,7 +107,13 @@ void main() {
   test('calendar service contains no embedded saints, quotes or holiday translations', () {
     final service =
         File('lib/services/calendar/calendar_service.dart').readAsStringSync();
-    expect(File('lib/services/calendar/saints_data.dart').existsSync(), isFalse);
+    final legacySaints = File('lib/services/calendar/saints_data.dart');
+    expect(legacySaints.existsSync(), isTrue);
+    final legacyText = legacySaints.readAsStringSync();
+    expect(legacyText, contains('Compatibility tombstone'));
+    expect(legacyText, isNot(contains('Map<String, String>')));
+    expect(legacyText, isNot(contains('List<String>')));
+    expect(legacyText.length, lessThan(1000));
     expect(service, isNot(contains('final quotesIt = [')));
     expect(service, isNot(contains('final quotesZhCn = [')));
     expect(service, contains('kCalendarSaintsByLocale'));

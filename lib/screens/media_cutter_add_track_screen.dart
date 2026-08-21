@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class MediaCutterAddedTrackSettings {
   const MediaCutterAddedTrackSettings({
@@ -258,87 +259,202 @@ class _MediaCutterAddTrackScreenState
     return Scaffold(
       appBar: AppBar(title: Text(l10n.mediaCutterAddTrack)),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            FilledButton.icon(
-              onPressed: _busy ? null : _pickTrack,
-              icon: const Icon(Icons.audio_file),
-              label: Text(l10n.mediaCutterChooseAudioTrack),
-            ),
-            if (trackPath != null) ...[
-              const SizedBox(height: 16),
-              Text(l10n.mediaCutterAddedTrackSelected(p.basename(trackPath))),
-              const SizedBox(height: 24),
-              Semantics(
-                label: l10n.mediaCutterOriginalTrackVolume,
-                value: _percentValue(_originalVolume),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.mediaCutterOriginalTrackVolume),
-                    Slider(
-                      value: _originalVolume,
-                      min: 0,
-                      max: 100,
-                      divisions: 100,
-                      label: _percentValue(_originalVolume),
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                padding: const EdgeInsets.all(16),
+                sections: [
+                  AccessibleListSection(
+                    rows: [
+                      AccessibleListRow(
+                        id: 'choose_track',
+                        title: l10n.mediaCutterChooseAudioTrack,
+                        kind: 'button',
+                        enabled: !_busy,
+                      ),
+                      if (trackPath != null) ...[
+                        AccessibleListRow(
+                          id: 'selected_track',
+                          kind: 'text',
+                          title: l10n.mediaCutterAddedTrackSelected(
+                            p.basename(trackPath),
+                          ),
+                        ),
+                        AccessibleListRow(
+                          id: 'original_volume',
+                          title: l10n.mediaCutterOriginalTrackVolume,
+                          kind: 'slider',
+                          enabled: !_busy,
+                          sliderValue: _originalVolume,
+                          sliderMin: 0,
+                          sliderMax: 100,
+                          sliderStep: 1,
+                          valueLabel: _percentValue(_originalVolume),
+                          sliderIncreasedValueLabel:
+                              _percentValue((_originalVolume + 1).clamp(0.0, 100.0).toDouble()),
+                          sliderDecreasedValueLabel:
+                              _percentValue((_originalVolume - 1).clamp(0.0, 100.0).toDouble()),
+                        ),
+                        AccessibleListRow(
+                          id: 'new_track_volume',
+                          title: l10n.mediaCutterNewTrackVolume,
+                          kind: 'slider',
+                          enabled: !_busy,
+                          sliderValue: _newTrackVolume,
+                          sliderMin: 0,
+                          sliderMax: 100,
+                          sliderStep: 1,
+                          valueLabel: _percentValue(_newTrackVolume),
+                          sliderIncreasedValueLabel:
+                              _percentValue((_newTrackVolume + 1).clamp(0.0, 100.0).toDouble()),
+                          sliderDecreasedValueLabel:
+                              _percentValue((_newTrackVolume - 1).clamp(0.0, 100.0).toDouble()),
+                        ),
+                        AccessibleListRow(
+                          id: 'loop',
+                          title: l10n.mediaCutterLoopNewTrack,
+                          kind: 'toggle',
+                          enabled: !_busy,
+                          toggleValue: _loop,
+                        ),
+                        AccessibleListRow(
+                          id: 'preview',
+                          title: l10n.mediaCutterPreviewNewTrack,
+                          kind: 'button',
+                          enabled: !_busy,
+                        ),
+                        AccessibleListRow(
+                          id: 'finalize',
+                          title: l10n.mediaCutterFinalizeTrack,
+                          kind: 'button',
+                          enabled: !_busy,
+                        ),
+                      ],
+                      if (_busy)
+                        AccessibleListRow(
+                          id: 'busy',
+                          kind: 'text',
+                          title: l10n.mediaCutterAddedTrackPreviewPreparing,
+                        ),
+                    ],
+                  ),
+                ],
+                onEvent: (event) async {
+                  final id = event.id;
+                  if (id == 'choose_track' && event.type == 'activate') {
+                    await _pickTrack();
+                  } else if (id == 'original_volume' &&
+                      event.type == 'slider') {
+                    final value = event.value;
+                    if (value is num) {
+                      setState(() {
+                        _originalVolume =
+                            value.toDouble().clamp(0.0, 100.0).toDouble();
+                      });
+                    }
+                  } else if (id == 'new_track_volume' &&
+                      event.type == 'slider') {
+                    final value = event.value;
+                    if (value is num) {
+                      setState(() {
+                        _newTrackVolume =
+                            value.toDouble().clamp(0.0, 100.0).toDouble();
+                      });
+                    }
+                  } else if (id == 'loop' && event.type == 'toggle') {
+                    setState(() => _loop = event.value == true);
+                  } else if (id == 'preview' && event.type == 'activate') {
+                    await _preview();
+                  } else if (id == 'finalize' && event.type == 'activate') {
+                    _finalize();
+                  }
+                },
+              )
+            : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  FilledButton.icon(
+                    onPressed: _busy ? null : _pickTrack,
+                    icon: const Icon(Icons.audio_file),
+                    label: Text(l10n.mediaCutterChooseAudioTrack),
+                  ),
+                  if (trackPath != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.mediaCutterAddedTrackSelected(p.basename(trackPath)),
+                    ),
+                    const SizedBox(height: 24),
+                    Semantics(
+                      label: l10n.mediaCutterOriginalTrackVolume,
+                      value: _percentValue(_originalVolume),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.mediaCutterOriginalTrackVolume),
+                          Slider(
+                            value: _originalVolume,
+                            min: 0,
+                            max: 100,
+                            divisions: 100,
+                            label: _percentValue(_originalVolume),
+                            onChanged: _busy
+                                ? null
+                                : (value) =>
+                                      setState(() => _originalVolume = value),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Semantics(
+                      label: l10n.mediaCutterNewTrackVolume,
+                      value: _percentValue(_newTrackVolume),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.mediaCutterNewTrackVolume),
+                          Slider(
+                            value: _newTrackVolume,
+                            min: 0,
+                            max: 100,
+                            divisions: 100,
+                            label: _percentValue(_newTrackVolume),
+                            onChanged: _busy
+                                ? null
+                                : (value) =>
+                                      setState(() => _newTrackVolume = value),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(l10n.mediaCutterLoopNewTrack),
+                      value: _loop,
                       onChanged: _busy
                           ? null
-                          : (value) => setState(() => _originalVolume = value),
+                          : (value) =>
+                                setState(() => _loop = value ?? false),
+                    ),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      onPressed: _busy ? null : _preview,
+                      icon: const Icon(Icons.hearing),
+                      label: Text(l10n.mediaCutterPreviewNewTrack),
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: _busy ? null : _finalize,
+                      icon: const Icon(Icons.check),
+                      label: Text(l10n.mediaCutterFinalizeTrack),
                     ),
                   ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              Semantics(
-                label: l10n.mediaCutterNewTrackVolume,
-                value: _percentValue(_newTrackVolume),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.mediaCutterNewTrackVolume),
-                    Slider(
-                      value: _newTrackVolume,
-                      min: 0,
-                      max: 100,
-                      divisions: 100,
-                      label: _percentValue(_newTrackVolume),
-                      onChanged: _busy
-                          ? null
-                          : (value) => setState(() => _newTrackVolume = value),
-                    ),
+                  if (_busy) ...[
+                    const SizedBox(height: 20),
+                    const LinearProgressIndicator(),
                   ],
-                ),
+                ],
               ),
-              const SizedBox(height: 8),
-              CheckboxListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(l10n.mediaCutterLoopNewTrack),
-                value: _loop,
-                onChanged: _busy
-                    ? null
-                    : (value) => setState(() => _loop = value ?? false),
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: _busy ? null : _preview,
-                icon: const Icon(Icons.hearing),
-                label: Text(l10n.mediaCutterPreviewNewTrack),
-              ),
-              const SizedBox(height: 12),
-              FilledButton.icon(
-                onPressed: _busy ? null : _finalize,
-                icon: const Icon(Icons.check),
-                label: Text(l10n.mediaCutterFinalizeTrack),
-              ),
-            ],
-            if (_busy) ...[
-              const SizedBox(height: 20),
-              const LinearProgressIndicator(),
-            ],
-          ],
-        ),
       ),
     );
   }
