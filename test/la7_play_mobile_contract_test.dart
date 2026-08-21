@@ -32,6 +32,17 @@ void main() {
     expect(source, isNot(contains('NativeIosAccessibleList')));
   });
 
+  test('LA7 Play search field lives directly on the root page', () {
+    final source = File('lib/screens/la7_play_screen.dart').readAsStringSync();
+    expect(source, contains("id: 'search_query'"));
+    expect(source, contains("labelText: 'Cerca su LA7 Play'"));
+    expect(source, contains("textInputAction: TextInputAction.search"));
+    expect(source, contains("RouteSettings(name: '/la7play/search-results')"));
+    expect(source, contains("domain: 'la7play'"));
+    expect(source, isNot(contains("'/la7play/search-form'")));
+    expect(source, isNot(contains('La7PlaySearchScreen')));
+  });
+
   test('LA7 Play service ports Mac catch-up programs search and VOD resolver', () {
     final source = File('lib/services/la7_play_service.dart').readAsStringSync();
     expect(source, contains("static const _rivedi = 'https://www.la7.it/rivedila7/0/la7'"));

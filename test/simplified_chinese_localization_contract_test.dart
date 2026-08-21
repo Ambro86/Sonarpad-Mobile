@@ -153,9 +153,9 @@ void main() {
             .allMatches(generated)
             .length;
     final durationTextCount =
-        RegExp(r"'\$\{hours\} 小时 \$\{minutes\} 分钟'")
-            .allMatches(generated)
-            .length;
+        RegExp(
+          r"'\$(?:\{hours\}|hours) 小时 \$(?:\{minutes\}|minutes) 分钟'",
+        ).allMatches(generated).length;
 
     // The committed generated source can still contain only zh_CN until
     // gen-l10n runs. Flutter 3.47 regenerates both zh and zh_CN and therefore

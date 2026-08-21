@@ -27,6 +27,7 @@ class La7PlayScreen extends StatefulWidget {
 class _La7PlayScreenState extends State<La7PlayScreen> {
   final _settings = AppSettingsService();
   final _service = La7PlayService();
+  final _searchController = TextEditingController();
 
   La7PlayPage? _page;
   bool _loading = true;
@@ -38,6 +39,12 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -72,13 +79,37 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
     }
   }
 
-  void _openSearch() {
-    Navigator.of(context).push(
+  Future<void> _search() async {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) return;
+
+    await RecentSearchesService().addSearch('la7play', query);
+    if (!mounted) return;
+    _searchController.clear();
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        settings: const RouteSettings(name: '/la7play/search-form'),
-        builder: (_) => const La7PlaySearchScreen(),
+        settings: const RouteSettings(name: '/la7play/search-results'),
+        builder: (_) => La7PlayScreen(
+          searchQuery: query,
+          pageTitle: 'Risultati: $query',
+        ),
       ),
     );
+  }
+
+  Future<void> _openRecentSearches() async {
+    final query = await Navigator.of(context).push<String>(
+      MaterialPageRoute<String>(
+        settings: const RouteSettings(name: '/la7play/recent-searches'),
+        builder: (_) => const RecentSearchesScreen(
+          title: 'Ricerche recenti',
+          domain: 'la7play',
+        ),
+      ),
+    );
+    if (query == null || !mounted) return;
+    _searchController.text = query;
+    await _search();
   }
 
   void _openItem(La7PlayItem item) {
@@ -134,10 +165,25 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
     final items = _page?.items ?? const <La7PlayItem>[];
     final rows = <AccessibleListRow>[
       if (_isRoot)
+        AccessibleListRow(
+          id: 'search_query',
+          title: 'Cerca su LA7 Play',
+          kind: 'textField',
+          value: _searchController.text,
+          placeholder: 'Nome del programma',
+          textInputAction: 'search',
+          onSubmitted: (_) => _search(),
+        ),
+      if (_isRoot)
         const AccessibleListRow(
           id: 'search',
           title: 'Cerca',
-          subtitle: 'Cerca programmi e clip su LA7 Play',
+          kind: 'button',
+        ),
+      if (_isRoot)
+        const AccessibleListRow(
+          id: 'recent',
+          title: 'Ricerche recenti',
           kind: 'button',
         ),
       if (_error != null)
@@ -158,16 +204,24 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
 
     return UniversalAccessibleList(
       sections: [AccessibleListSection(rows: rows)],
-      onEvent: (event) {
-        if (event.type != 'activate') return;
-        if (event.id == 'search') {
-          _openSearch();
-          return;
-        }
-        if (event.id?.startsWith('item_') != true) return;
-        final index = int.tryParse(event.id!.substring(5));
-        if (index != null && index >= 0 && index < items.length) {
-          _openItem(items[index]);
+      onEvent: (event) async {
+        if (event.id == 'search_query' && event.type == 'textChanged') {
+          _searchController.value = TextEditingValue(
+            text: event.value?.toString() ?? '',
+            selection: TextSelection.collapsed(
+              offset: (event.value?.toString() ?? '').length,
+            ),
+          );
+        } else if (event.id == 'search' && event.type == 'activate') {
+          await _search();
+        } else if (event.id == 'recent' && event.type == 'activate') {
+          await _openRecentSearches();
+        } else if (event.type == 'activate' &&
+            event.id?.startsWith('item_') == true) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index != null && index >= 0 && index < items.length) {
+            _openItem(items[index]);
+          }
         }
       },
     );
@@ -175,45 +229,75 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
 
   Widget _buildFlutterBody() {
     final items = _page?.items ?? const <La7PlayItem>[];
-    return ListView(
-      padding: const EdgeInsets.all(16),
+    return Column(
       children: [
         if (_isRoot)
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.search),
-              title: const Text('Cerca'),
-              subtitle: const Text('Cerca programmi e clip su LA7 Play'),
-              onTap: _openSearch,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      labelText: 'Cerca su LA7 Play',
+                      hintText: 'Nome del programma',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
+                    ),
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (_) => _search(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  tooltip: 'Cerca',
+                  onPressed: _search,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.history),
+                  tooltip: 'Ricerche recenti',
+                  onPressed: _openRecentSearches,
+                ),
+              ],
             ),
           ),
         if (_error != null)
           Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Text(
               _error!,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
-        for (final item in items)
-          Card(
-            child: ListTile(
-              leading: Icon(
-                item.kind == La7PlayItemKind.media
-                    ? Icons.play_circle_fill
-                    : Icons.folder,
-              ),
-              title: Text(item.title),
-              subtitle:
-                  item.description == null ? null : Text(item.description!),
-              onTap: () => _openItem(item),
-            ),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              for (final item in items)
+                Card(
+                  child: ListTile(
+                    leading: Icon(
+                      item.kind == La7PlayItemKind.media
+                          ? Icons.play_circle_fill
+                          : Icons.folder,
+                    ),
+                    title: Text(item.title),
+                    subtitle: item.description == null
+                        ? null
+                        : Text(item.description!),
+                    onTap: () => _openItem(item),
+                  ),
+                ),
+              if (_error == null && !_loading && items.isEmpty && !_isRoot)
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text('Nessun contenuto disponibile.'),
+                ),
+            ],
           ),
-        if (_error == null && !_loading && items.isEmpty && !_isRoot)
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('Nessun contenuto disponibile.'),
-          ),
+        ),
       ],
     );
   }
@@ -227,148 +311,6 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
           : useSharedAccessibleViewModel
               ? _buildSharedBody()
               : _buildFlutterBody(),
-    );
-  }
-}
-
-class La7PlaySearchScreen extends StatefulWidget {
-  const La7PlaySearchScreen({super.key});
-
-  @override
-  State<La7PlaySearchScreen> createState() => _La7PlaySearchScreenState();
-}
-
-class _La7PlaySearchScreenState extends State<La7PlaySearchScreen> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _search() async {
-    final query = _controller.text.trim();
-    if (query.isEmpty) return;
-    await RecentSearchesService().addSearch('la7play', query);
-    if (!mounted) return;
-    _controller.clear();
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        settings: const RouteSettings(name: '/la7play/search-results'),
-        builder: (_) => La7PlayScreen(
-          searchQuery: query,
-          pageTitle: 'Risultati: $query',
-        ),
-      ),
-    );
-  }
-
-  Future<void> _openRecentSearches() async {
-    final query = await Navigator.of(context).push<String>(
-      MaterialPageRoute<String>(
-        settings: const RouteSettings(name: '/la7play/recent-searches'),
-        builder: (_) => const RecentSearchesScreen(
-          title: 'Ricerche recenti',
-          domain: 'la7play',
-        ),
-      ),
-    );
-    if (query == null || !mounted) return;
-    _controller.text = query;
-    await _search();
-  }
-
-  Widget _buildSharedBody() {
-    return UniversalAccessibleList(
-      sections: [
-        AccessibleListSection(
-          rows: [
-            AccessibleListRow(
-              id: 'query',
-              title: 'Cerca su LA7 Play',
-              kind: 'textField',
-              value: _controller.text,
-              placeholder: 'Nome del programma',
-              textInputAction: 'search',
-              onSubmitted: (_) => _search(),
-            ),
-            const AccessibleListRow(
-              id: 'search',
-              title: 'Cerca',
-              kind: 'button',
-            ),
-            const AccessibleListRow(
-              id: 'recent',
-              title: 'Ricerche recenti',
-              kind: 'button',
-            ),
-          ],
-        ),
-      ],
-      onEvent: (event) async {
-        if (event.id == 'query' && event.type == 'textChanged') {
-          _controller.value = TextEditingValue(
-            text: event.value?.toString() ?? '',
-            selection: TextSelection.collapsed(
-              offset: (event.value?.toString() ?? '').length,
-            ),
-          );
-        } else if (event.id == 'search' && event.type == 'activate') {
-          await _search();
-        } else if (event.id == 'recent' && event.type == 'activate') {
-          await _openRecentSearches();
-        }
-      },
-    );
-  }
-
-  Widget _buildFlutterBody() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          TextField(
-            controller: _controller,
-            autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Cerca su LA7 Play',
-              hintText: 'Nome del programma',
-              prefixIcon: Icon(Icons.search),
-            ),
-            textInputAction: TextInputAction.search,
-            onSubmitted: (_) => _search(),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: _search,
-              icon: const Icon(Icons.search),
-              label: const Text('Cerca'),
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _openRecentSearches,
-              icon: const Icon(Icons.history),
-              label: const Text('Ricerche recenti'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Cerca su LA7 Play')),
-      body: useSharedAccessibleViewModel
-          ? _buildSharedBody()
-          : _buildFlutterBody(),
     );
   }
 }
