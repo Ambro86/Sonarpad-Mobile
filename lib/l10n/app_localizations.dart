@@ -5648,6 +5648,18 @@ abstract class AppLocalizations {
   String get mediaCutterAddedTrackPreviewPreparing;
   String get mediaCutterAddedTrackPreviewFailed;
   String get mediaCutterMixingAddedTrack;
+
+  /// Secondary action that downloads and preserves a playable MP3.
+  String get preserveMedia;
+
+  /// Status shown while a media file is being downloaded and preserved.
+  String get preserveMediaSaving;
+
+  /// Confirmation shown after saving the media in Sonarpad Documents.
+  String get preserveMediaSaved;
+
+  /// Error shown when a playable media file cannot be preserved.
+  String get preserveMediaError;
 }
 
 class _AppLocalizationsDelegate

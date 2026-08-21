@@ -469,6 +469,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool _hasUnsavedEdit = false;
   bool _effectPreviewPreparing = false;
   MediaCutterAddedTrackSettings? _addedTrackSettings;
+  bool _usingAddedTrackPreviewSource = false;
+  Duration? _addedTrackPreviewRestorePosition;
   Future<String>? _underwaterBubblesSourcePath;
   final Map<_MediaPartEffect, Future<String?>> _nativeDspAssetPcmPaths = {};
   final Set<String> _nativeDspAssetCachePaths = {};
@@ -497,7 +499,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       });
     }
     _audioPositionSubscription = _audioPlayer.positionStream.listen((position) {
-      if (!mounted || _isVideo) return;
+      if (!mounted || _isVideo || _usingAddedTrackPreviewSource) return;
       final renderedStart = _renderedPreviewStart;
       final clamped = _usingRenderedPreviewSource && renderedStart != null
           ? _clampPosition(renderedStart + position)
@@ -512,6 +514,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           _isVideo ||
           duration == null ||
           _usingRenderedPreviewSource ||
+          _usingAddedTrackPreviewSource ||
           _restoringOriginalAudioSource) {
         return;
       }
@@ -522,7 +525,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       });
     });
     _audioPlayingSubscription = _audioPlayer.playingStream.listen((playing) {
-      if (!mounted || _isVideo) return;
+      if (!mounted || _isVideo || _usingAddedTrackPreviewSource) return;
       setState(() => _playing = playing);
     });
   }
@@ -879,34 +882,115 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
+  Future<void> _playAddedTrackPreviewFile(String path) async {
+    if (_inputPath.isEmpty) return;
+    _addedTrackPreviewRestorePosition ??= _position;
+    _usingAddedTrackPreviewSource = true;
+    unawaited(_logMediaCutter(
+      'added track preview playback start path="$path" '
+      'restorePosition=${_logDuration(_addedTrackPreviewRestorePosition!)}',
+    ));
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.setVolume(1);
+      await _audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.file(path),
+          tag: MediaItem(
+            id: 'media_cutter_added_track_preview:${File(path).absolute.path}',
+            album: 'Sonarpad',
+            title: p.basename(path),
+          ),
+        ),
+      );
+      await _audioPlayer.seek(Duration.zero);
+      await _audioPlayer.play();
+    } catch (error) {
+      await AppLogger.log(
+        'Media cutter: added track preview playback failed error=$error',
+      );
+      try {
+        await _stopAddedTrackPreviewPlayback();
+      } catch (_) {
+        // Preserve the original preview error for the caller.
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> _stopAddedTrackPreviewPlayback() async {
+    if (!_usingAddedTrackPreviewSource) return;
+    final restorePosition =
+        _clampPosition(_addedTrackPreviewRestorePosition ?? _position);
+    unawaited(_logMediaCutter(
+      'added track preview playback stop restorePosition=${_logDuration(restorePosition)} '
+      'video=$_isVideo',
+    ));
+    try {
+      await _audioPlayer.stop();
+      if (!_isVideo && _inputPath.isNotEmpty) {
+        _restoringOriginalAudioSource = true;
+        final duration = await _setAudioSourceWithRetry(_inputPath);
+        await _audioPlayer.setVolume(1);
+        await _audioPlayer.seek(restorePosition);
+        if (mounted) {
+          setState(() {
+            _duration = duration ?? _duration;
+            _position = restorePosition;
+            _playing = false;
+          });
+        }
+      }
+    } finally {
+      _restoringOriginalAudioSource = false;
+      _usingAddedTrackPreviewSource = false;
+      _addedTrackPreviewRestorePosition = null;
+    }
+  }
+
   Future<void> _openAddTrackScreen() async {
     if (_inputPath.isEmpty || _loading || _saving) return;
     final l10n = AppLocalizations.of(context);
     await _pause();
+    if (!_isVideo && _usingRenderedPreviewSource) {
+      await _restoreOriginalAudioSource(seekTo: _position);
+    }
     if (!mounted) return;
     final source = _inputProbe ??
         await _probeMedia(_inputPath, purpose: 'add track source');
     if (!mounted) return;
-    final result = await Navigator.of(context)
-        .push<MediaCutterAddedTrackSettings>(
-      MaterialPageRoute<MediaCutterAddedTrackSettings>(
-        builder: (_) => MediaCutterAddTrackScreen(
-          sourcePath: _inputPath,
-          sourceHasAudio: source.hasAudio,
-          initialSettings: _addedTrackSettings,
+
+    MediaCutterAddedTrackSettings? result;
+    try {
+      result = await Navigator.of(context)
+          .push<MediaCutterAddedTrackSettings>(
+        MaterialPageRoute<MediaCutterAddedTrackSettings>(
+          builder: (_) => MediaCutterAddTrackScreen(
+            sourcePath: _inputPath,
+            sourceHasAudio: source.hasAudio,
+            initialSettings: _addedTrackSettings,
+            playPreviewFile: _playAddedTrackPreviewFile,
+            stopPreviewPlayback: _stopAddedTrackPreviewPlayback,
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      // The add-track route borrows this screen's single just_audio instance.
+      // Always stop that temporary source and restore the original audio when
+      // the route closes, including Back/cancel paths.
+      await _stopAddedTrackPreviewPlayback();
+    }
     if (!mounted || result == null) return;
+    final applied = result;
     setState(() {
-      _addedTrackSettings = result;
+      _addedTrackSettings = applied;
       _hasUnsavedEdit = true;
-      _status = l10n.mediaCutterAddedTrackApplied(p.basename(result.path));
+      _status = l10n.mediaCutterAddedTrackApplied(p.basename(applied.path));
     });
     unawaited(_logMediaCutter(
-      'added track configured path="${result.path}" '
-      'originalVolume=${result.originalVolumePercent}% '
-      'newTrackVolume=${result.newTrackVolumePercent}% loop=${result.loop}',
+      'added track configured path="${applied.path}" '
+      'originalVolume=${applied.originalVolumePercent}% '
+      'newTrackVolume=${applied.newTrackVolumePercent}% loop=${applied.loop}',
     ));
   }
 

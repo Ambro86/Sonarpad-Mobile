@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
@@ -5,7 +6,6 @@ import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -33,11 +33,15 @@ class MediaCutterAddTrackScreen extends StatefulWidget {
     required this.sourcePath,
     required this.sourceHasAudio,
     this.initialSettings,
+    required this.playPreviewFile,
+    required this.stopPreviewPlayback,
   });
 
   final String sourcePath;
   final bool sourceHasAudio;
   final MediaCutterAddedTrackSettings? initialSettings;
+  final Future<void> Function(String path) playPreviewFile;
+  final Future<void> Function() stopPreviewPlayback;
 
   @override
   State<MediaCutterAddTrackScreen> createState() =>
@@ -60,7 +64,6 @@ class _MediaCutterAddTrackScreenState
     'wav',
   ];
 
-  final AudioPlayer _previewPlayer = AudioPlayer();
   String? _trackPath;
   double _originalVolume = 100;
   double _newTrackVolume = 30;
@@ -82,10 +85,18 @@ class _MediaCutterAddTrackScreenState
 
   @override
   void dispose() {
-    _previewPlayer.dispose();
     final preview = _previewFile;
     if (preview != null) {
-      preview.delete().catchError((_) => preview);
+      // The parent Media Cutter owns the single just_audio player and stops it
+      // as soon as this route closes. Delay cleanup slightly so iOS never
+      // loses a file that may still be attached to that shared player.
+      unawaited(Future<void>.delayed(const Duration(seconds: 2), () async {
+        try {
+          if (await preview.exists()) await preview.delete();
+        } catch (_) {
+          // Temporary preview cleanup is best effort.
+        }
+      }));
     }
     super.dispose();
   }
@@ -134,7 +145,7 @@ class _MediaCutterAddTrackScreenState
 
   Future<void> _stopPreview() async {
     try {
-      await _previewPlayer.stop();
+      await widget.stopPreviewPlayback();
     } catch (_) {
       // Best effort: a stale preview must not block selecting another track.
     }
@@ -226,8 +237,7 @@ class _MediaCutterAddTrackScreenState
         throw StateError('preview render failed');
       }
       _previewFile = preview;
-      await _previewPlayer.setFilePath(preview.path);
-      await _previewPlayer.play();
+      await widget.playPreviewFile(preview.path);
     } catch (error) {
       await AppLogger.log('Media cutter add track: preview failed error=$error');
       if (!mounted) return;
@@ -239,9 +249,12 @@ class _MediaCutterAddTrackScreenState
     }
   }
 
-  void _finalize() {
+  Future<void> _finalize() async {
     final path = _trackPath;
-    if (path == null) return;
+    if (path == null || _busy) return;
+    setState(() => _busy = true);
+    await _stopPreview();
+    if (!mounted) return;
     Navigator.of(context).pop(
       MediaCutterAddedTrackSettings(
         path: path,
@@ -365,7 +378,7 @@ class _MediaCutterAddTrackScreenState
                   } else if (id == 'preview' && event.type == 'activate') {
                     await _preview();
                   } else if (id == 'finalize' && event.type == 'activate') {
-                    _finalize();
+                    await _finalize();
                   }
                 },
               )

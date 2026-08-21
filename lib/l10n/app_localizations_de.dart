@@ -3338,4 +3338,17 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get mediaCutterMixingAddedTrack => 'Neue Spur wird gemischt';
 
+
+  @override
+  String get preserveMedia => 'Medium speichern';
+
+  @override
+  String get preserveMediaSaving => 'Medium wird gespeichert…';
+
+  @override
+  String get preserveMediaSaved => 'Medium in Sonarpad-Dokumenten gespeichert.';
+
+  @override
+  String get preserveMediaError => 'Das Medium konnte nicht gespeichert werden.';
+
 }

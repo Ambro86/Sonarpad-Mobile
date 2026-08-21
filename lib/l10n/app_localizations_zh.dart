@@ -3067,4 +3067,17 @@ class AppLocalizationsZhCn extends AppLocalizations {
   @override
   String get mediaCutterMixingAddedTrack => '正在混合新音轨';
 
+
+  @override
+  String get preserveMedia => '保存媒体';
+
+  @override
+  String get preserveMediaSaving => '正在保存媒体…';
+
+  @override
+  String get preserveMediaSaved => '媒体已保存到 Sonarpad 文档。';
+
+  @override
+  String get preserveMediaError => '无法保存媒体。';
+
 }

@@ -2751,6 +2751,22 @@
   "mediaCutterMixingAddedTrack": "Mixing the new track",
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
+  },
+  "preserveMedia": "Preserve media",
+  "@preserveMedia": {
+    "description": "Secondary action that downloads and preserves a playable MP3."
+  },
+  "preserveMediaSaving": "Saving media…",
+  "@preserveMediaSaving": {
+    "description": "Status shown while a media file is being downloaded and preserved."
+  },
+  "preserveMediaSaved": "Media saved in Sonarpad Documents.",
+  "@preserveMediaSaved": {
+    "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
+  },
+  "preserveMediaError": "Unable to preserve the media.",
+  "@preserveMediaError": {
+    "description": "Error shown when a playable media file cannot be preserved."
   }
 
 }

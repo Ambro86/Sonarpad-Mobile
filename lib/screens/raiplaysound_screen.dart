@@ -8,6 +8,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
+import '../services/media_preservation_service.dart';
 import '../services/podcast_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/recent_searches_service.dart';
@@ -193,6 +194,43 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     }
   }
 
+  Future<String?> _resolvedAudioUrlForItem(RaiPlaySoundItem item) async {
+    if (item.kind != RaiPlaySoundItemKind.audio) return null;
+    final code = await _settings.getTvSecretCode();
+    final baseUrl = _service.getBaseUrl(code);
+    if (baseUrl == null) return null;
+
+    var audioPath = item.audioUrl.trim();
+    if (audioPath.isEmpty) return null;
+    if (!audioPath.startsWith('http')) {
+      if (!audioPath.startsWith('/')) audioPath = '/$audioPath';
+      audioPath = '$baseUrl$audioPath';
+    }
+    return audioPath;
+  }
+
+  Future<void> _preserveMedia(RaiPlaySoundItem item) async {
+    final l10n = AppLocalizations.of(context);
+    showStatusMessage(context, l10n.preserveMediaSaving);
+    try {
+      final audioUrl = await _resolvedAudioUrlForItem(item);
+      if (audioUrl == null || audioUrl.isEmpty) {
+        throw const FormatException('Missing RaiPlay Sound audio URL');
+      }
+      final result = await MediaPreservationService().preserveMp3(
+        url: audioUrl,
+        title: item.title,
+      );
+      if (!mounted) return;
+      if (result == MediaPreservationResult.savedInSonarpad) {
+        showStatusMessage(context, l10n.preserveMediaSaved);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      showStatusMessage(context, l10n.preserveMediaError);
+    }
+  }
+
   bool _hasDatedAudioItems(List<RaiPlaySoundItem> items) => items.any(
         (item) =>
             item.kind == RaiPlaySoundItemKind.audio && item.publishedAt != null,
@@ -309,9 +347,24 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                   : items[i].title,
               subtitle: items[i].description.isNotEmpty ? items[i].description : null,
               actions: [
-                if (items[i].kind == RaiPlaySoundItemKind.audio && _canSubscribeCurrentPage)
-                  const AccessibleCustomAction(id: 'subscribe', label: 'Aggiungi ai podcast'),
+                if (items[i].kind == RaiPlaySoundItemKind.audio)
+                  AccessibleCustomAction(
+                    id: 'preserve_media',
+                    label: l10n.preserveMedia,
+                  ),
+                if (items[i].kind == RaiPlaySoundItemKind.audio &&
+                    _canSubscribeCurrentPage)
+                  const AccessibleCustomAction(
+                    id: 'subscribe',
+                    label: 'Aggiungi ai podcast',
+                  ),
               ],
+              visualActionId: items[i].kind == RaiPlaySoundItemKind.audio
+                  ? 'preserve_media'
+                  : null,
+              visualActionIcon: items[i].kind == RaiPlaySoundItemKind.audio
+                  ? 'download'
+                  : null,
             ),
         ]),
       ],
@@ -327,7 +380,12 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
         } else if (event.id?.startsWith('item_') == true) {
           final i = int.tryParse(event.id!.substring(5));
           if (i == null || i >= items.length) return;
-          if (event.type == 'customAction' && event.action == 'subscribe') {
+          if (event.type == 'customAction' &&
+              event.action == 'preserve_media' &&
+              items[i].kind == RaiPlaySoundItemKind.audio) {
+            await _preserveMedia(items[i]);
+          } else if (event.type == 'customAction' &&
+              event.action == 'subscribe') {
             await _subscribeCurrentPageToPodcasts();
           } else if (event.type == 'activate') {
             _openItem(items[i]);
@@ -442,6 +500,12 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                                     'raiplaysound_item_semantics_${item.id}'),
                                 container: true,
                                 customSemanticsActions: {
+                                  if (isAudio)
+                                    CustomSemanticsAction(
+                                      label: l10n.preserveMedia,
+                                    ): () => unawaited(
+                                          _preserveMedia(item),
+                                        ),
                                   if (isAudio && _canSubscribeCurrentPage)
                                     const CustomSemanticsAction(
                                       label: 'Aggiungi ai podcast',
@@ -469,6 +533,17 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                                           item.description,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
+                                        )
+                                      : null,
+                                  trailing: isAudio
+                                      ? ExcludeSemantics(
+                                          child: IconButton(
+                                            icon: const Icon(Icons.download),
+                                            tooltip: l10n.preserveMedia,
+                                            onPressed: () => unawaited(
+                                              _preserveMedia(item),
+                                            ),
+                                          ),
                                         )
                                       : null,
                                   onTap: () => _openItem(item),

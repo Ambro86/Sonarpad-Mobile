@@ -2751,6 +2751,22 @@
   "mediaCutterMixingAddedTrack": "正在混合新音轨",
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
+  },
+  "preserveMedia": "保存媒体",
+  "@preserveMedia": {
+    "description": "Secondary action that downloads and preserves a playable MP3."
+  },
+  "preserveMediaSaving": "正在保存媒体…",
+  "@preserveMediaSaving": {
+    "description": "Status shown while a media file is being downloaded and preserved."
+  },
+  "preserveMediaSaved": "媒体已保存到 Sonarpad 文档。",
+  "@preserveMediaSaved": {
+    "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
+  },
+  "preserveMediaError": "无法保存媒体。",
+  "@preserveMediaError": {
+    "description": "Error shown when a playable media file cannot be preserved."
   }
 
 }

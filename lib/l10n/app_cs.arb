@@ -2754,6 +2754,22 @@
   "mediaCutterMixingAddedTrack": "Míchání nové stopy",
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
+  },
+  "preserveMedia": "Uchovat médium",
+  "@preserveMedia": {
+    "description": "Secondary action that downloads and preserves a playable MP3."
+  },
+  "preserveMediaSaving": "Ukládání média…",
+  "@preserveMediaSaving": {
+    "description": "Status shown while a media file is being downloaded and preserved."
+  },
+  "preserveMediaSaved": "Médium bylo uloženo do Dokumentů Sonarpadu.",
+  "@preserveMediaSaved": {
+    "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
+  },
+  "preserveMediaError": "Médium se nepodařilo uchovat.",
+  "@preserveMediaError": {
+    "description": "Error shown when a playable media file cannot be preserved."
   }
 
 }

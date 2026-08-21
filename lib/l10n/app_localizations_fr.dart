@@ -3466,4 +3466,17 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get mediaCutterMixingAddedTrack => 'Mixage de la nouvelle piste';
 
+
+  @override
+  String get preserveMedia => 'Conserver le média';
+
+  @override
+  String get preserveMediaSaving => 'Enregistrement du média…';
+
+  @override
+  String get preserveMediaSaved => 'Média enregistré dans les Documents de Sonarpad.';
+
+  @override
+  String get preserveMediaError => 'Impossible de conserver le média.';
+
 }

@@ -80,4 +80,21 @@ void main() {
       }
     }
   });
+
+  test('preview reuses the Media Cutter player instead of creating a second just_audio instance', () {
+    final screen =
+        File('lib/screens/media_cutter_add_track_screen.dart').readAsStringSync();
+    final cutter =
+        File('lib/screens/media_cutter_screen.dart').readAsStringSync();
+    expect(screen, isNot(contains('AudioPlayer _previewPlayer')));
+    expect(screen, isNot(contains('AudioPlayer()')));
+    expect(screen, contains('required this.playPreviewFile'));
+    expect(screen, contains('required this.stopPreviewPlayback'));
+    expect(screen, contains('await widget.playPreviewFile(preview.path)'));
+    expect(cutter, contains('playPreviewFile: _playAddedTrackPreviewFile'));
+    expect(cutter, contains('stopPreviewPlayback: _stopAddedTrackPreviewPlayback'));
+    expect(cutter, contains('_usingAddedTrackPreviewSource'));
+    expect(cutter, contains("media_cutter_added_track_preview:"));
+    expect(cutter, contains('await _setAudioSourceWithRetry(_inputPath)'));
+  });
 }

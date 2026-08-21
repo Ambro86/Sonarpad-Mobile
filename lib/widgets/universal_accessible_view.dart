@@ -123,6 +123,8 @@ class AccessibleListRow {
     this.placeholder,
     this.options = const [],
     this.actions = const [],
+    this.visualActionId,
+    this.visualActionIcon,
     this.onActivate,
     this.onValueChanged,
     this.onCustomAction,
@@ -159,6 +161,12 @@ class AccessibleListRow {
   final String? placeholder;
   final List<AccessibleOption> options;
   final List<AccessibleCustomAction> actions;
+
+  /// Optional sighted-only accessory action. It is rendered as a visible
+  /// control but deliberately excluded from the accessibility tree. Screen
+  /// reader users invoke the matching entry in [actions] instead.
+  final String? visualActionId;
+  final String? visualActionIcon;
 
   final AccessibleActivateCallback? onActivate;
   final AccessibleValueChangedCallback? onValueChanged;
@@ -210,6 +218,8 @@ class AccessibleListRow {
             stabilizeNativeTextFieldFocusOnBegin,
         'options': options.map((e) => e.toMap()).toList(),
         'actions': actions.map((e) => e.toMap()).toList(),
+        if (visualActionId != null) 'visualActionId': visualActionId,
+        if (visualActionIcon != null) 'visualActionIcon': visualActionIcon,
       };
 }
 
@@ -1250,6 +1260,41 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     return controller;
   }
 
+  IconData _visualActionIcon(String? name) => switch (name) {
+        'download' => Icons.download,
+        'save' => Icons.save_alt,
+        _ => Icons.more_horiz,
+      };
+
+  Widget? _visualActionButton(AccessibleListRow row) {
+    final actionId = row.visualActionId;
+    if (actionId == null || actionId.isEmpty) return null;
+    return ExcludeSemantics(
+      child: IconButton(
+        icon: Icon(_visualActionIcon(row.visualActionIcon)),
+        onPressed: row.enabled
+            ? () => unawaited(_dispatch(AccessibleListEvent(
+                  type: 'customAction',
+                  id: row.id,
+                  action: actionId,
+                )))
+            : null,
+      ),
+    );
+  }
+
+  Widget? _rowTrailing(AccessibleListRow row, String? displayValue) {
+    final visualAction = _visualActionButton(row);
+    if (visualAction == null) {
+      return displayValue == null ? null : Text(displayValue);
+    }
+    if (displayValue == null) return visualAction;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [Text(displayValue), visualAction],
+    );
+  }
+
   Widget _defaultFlutterRow(BuildContext context, AccessibleListRow row) {
     final label = row.accessibilityLabel ?? row.title;
     if (row.flutterChild != null) {
@@ -1433,7 +1478,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           subtitle: subtitle,
           enabled: enabled,
           selected: row.selected,
-          trailing: displayValue == null ? null : Text(displayValue),
+          trailing: _rowTrailing(row, displayValue),
           onTap: enabled ? () => _activate(row) : null,
         );
         break;

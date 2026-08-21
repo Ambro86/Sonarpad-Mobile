@@ -2757,6 +2757,22 @@
   "mediaCutterMixingAddedTrack": "Mezclando la nueva pista",
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
+  },
+  "preserveMedia": "Conservar multimedia",
+  "@preserveMedia": {
+    "description": "Secondary action that downloads and preserves a playable MP3."
+  },
+  "preserveMediaSaving": "Guardando el contenido multimedia…",
+  "@preserveMediaSaving": {
+    "description": "Status shown while a media file is being downloaded and preserved."
+  },
+  "preserveMediaSaved": "Contenido multimedia guardado en Documentos de Sonarpad.",
+  "@preserveMediaSaved": {
+    "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
+  },
+  "preserveMediaError": "No se pudo conservar el contenido multimedia.",
+  "@preserveMediaError": {
+    "description": "Error shown when a playable media file cannot be preserved."
   }
 
 }

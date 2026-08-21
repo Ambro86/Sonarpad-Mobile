@@ -22,7 +22,7 @@ void main() {
     expect(portugal['@@locale'], 'pt');
     expect(brazil['@@locale'], 'pt_BR');
     expect(_messageKeys(brazil), _messageKeys(portugal));
-    expect(_messageKeys(brazil).length, 1016);
+    expect(_messageKeys(brazil).length, 1020);
   });
 
   test('Portugal and Brazil are distinct app language choices', () {

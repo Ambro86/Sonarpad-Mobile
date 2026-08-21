@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
+import '../services/media_preservation_service.dart';
 import 'audiodescription_all_screen.dart';
 import 'audiodescription_scheduled_screen.dart';
 import '../models/podcast.dart';
@@ -97,6 +101,25 @@ class _AudiodescriptionRecentScreenState
     }
   }
 
+  Future<void> _preserveMedia(AudiodescriptionItem item) async {
+    final l10n = AppLocalizations.of(context);
+    showStatusMessage(context, l10n.preserveMediaSaving);
+    try {
+      final resolvedUrl = await _service.resolveAudioUrl(item.audioUrl);
+      final result = await MediaPreservationService().preserveMp3(
+        url: resolvedUrl,
+        title: item.title,
+      );
+      if (!mounted) return;
+      if (result == MediaPreservationResult.savedInSonarpad) {
+        showStatusMessage(context, l10n.preserveMediaSaved);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      showStatusMessage(context, l10n.preserveMediaError);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -145,12 +168,32 @@ class _AudiodescriptionRecentScreenState
                                   id: 'item_${entry.key}',
                                   title: entry.value.title,
                                   subtitle: '${entry.value.date} ${entry.value.description}'.trim(),
+                                  actions: [
+                                    AccessibleCustomAction(
+                                      id: 'preserve_media',
+                                      label: l10n.preserveMedia,
+                                    ),
+                                  ],
+                                  visualActionId: 'preserve_media',
+                                  visualActionIcon: 'download',
                                 )),
                           ],
                         ),
                       ],
                       onEvent: (event) async {
-                        if (event.type != 'activate' || event.id == null) return;
+                        if (event.id == null) return;
+                        if (event.id!.startsWith('item_') &&
+                            event.type == 'customAction' &&
+                            event.action == 'preserve_media') {
+                          final index = int.tryParse(event.id!.substring(5));
+                          if (index != null &&
+                              index >= 0 &&
+                              index < _filteredItems.length) {
+                            await _preserveMedia(_filteredItems[index]);
+                          }
+                          return;
+                        }
+                        if (event.type != 'activate') return;
                         if (event.id == 'scheduled') {
                           Navigator.push(context, MaterialPageRoute(
                             settings: const RouteSettings(name: '/audiodescriptions/scheduled'),
@@ -214,11 +257,31 @@ class _AudiodescriptionRecentScreenState
                     }
 
                     final item = _filteredItems[index - 2];
-                    return ListTile(
-                      title: Text(item.title),
-                      subtitle: Text('${item.date} ${item.description}'.trim()),
-                      trailing: const Icon(Icons.play_arrow),
-                      onTap: () => _play(item),
+                    return Semantics(
+                      container: true,
+                      customSemanticsActions: {
+                        CustomSemanticsAction(label: l10n.preserveMedia): () =>
+                            unawaited(_preserveMedia(item)),
+                      },
+                      child: ListTile(
+                        title: Text(item.title),
+                        subtitle:
+                            Text('${item.date} ${item.description}'.trim()),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.play_arrow),
+                            ExcludeSemantics(
+                              child: IconButton(
+                                icon: const Icon(Icons.download),
+                                tooltip: l10n.preserveMedia,
+                                onPressed: () => unawaited(_preserveMedia(item)),
+                              ),
+                            ),
+                          ],
+                        ),
+                        onTap: () => _play(item),
+                      ),
                     );
                   },
                 ),

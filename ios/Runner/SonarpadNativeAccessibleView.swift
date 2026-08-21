@@ -38,6 +38,8 @@ private struct SonarpadNativeRow {
   var stabilizeTextFieldFocusOnBegin: Bool
   var options: [SonarpadNativeOption]
   var actions: [SonarpadNativeAction]
+  var visualActionId: String?
+  var visualActionIcon: String?
 
   init(_ map: [String: Any]) {
     id = map["id"] as? String ?? UUID().uuidString
@@ -71,6 +73,8 @@ private struct SonarpadNativeRow {
       guard let id = $0["id"] as? String, let label = $0["label"] as? String else { return nil }
       return SonarpadNativeAction(id: id, label: label)
     }
+    visualActionId = map["visualActionId"] as? String
+    visualActionIcon = map["visualActionIcon"] as? String
   }
 }
 
@@ -118,7 +122,9 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.textInputAction == rhs.textInputAction,
         lhs.stabilizeTextFieldFocusOnBegin == rhs.stabilizeTextFieldFocusOnBegin,
         lhs.options.count == rhs.options.count,
-        lhs.actions.count == rhs.actions.count else { return false }
+        lhs.actions.count == rhs.actions.count,
+        lhs.visualActionId == rhs.visualActionId,
+        lhs.visualActionIcon == rhs.visualActionIcon else { return false }
 
   for (left, right) in zip(lhs.options, rhs.options) {
     if left.label != right.label || !sonarpadValuesEqual(left.value, right.value) { return false }
@@ -862,6 +868,9 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     cell.detailTextLabel?.textColor = .secondaryLabel
     cell.selectionStyle = row.enabled && row.kind != "text" && row.accessibilityButtonTrait ? .default : .none
     cell.isUserInteractionEnabled = row.enabled
+    // A visible sighted-only accessory may be reconfigured in place without
+    // cell reuse, so clear any previous accessory before applying this row.
+    cell.accessoryView = nil
     cell.accessoryType = row.accessibilityButtonTrait && (row.kind == "action" || row.kind == "picker" || row.kind == "button") ? .disclosureIndicator : .none
     cell.isAccessibilityElement = true
     cell.accessibilityLabel = row.accessibilityLabel ?? row.title
@@ -925,6 +934,23 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.activationHandler = nil
     }
 
+    if let visualActionId = row.visualActionId, !visualActionId.isEmpty, row.enabled {
+      let button = UIButton(type: .system)
+      let symbolName: String
+      switch row.visualActionIcon {
+      case "save": symbolName = "square.and.arrow.down"
+      case "download": symbolName = "arrow.down.circle"
+      default: symbolName = "ellipsis.circle"
+      }
+      button.setImage(UIImage(systemName: symbolName), for: .normal)
+      button.isAccessibilityElement = false
+      button.accessibilityElementsHidden = true
+      objc_setAssociatedObject(button, &AssociatedKeys.rowId, row.id, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+      objc_setAssociatedObject(button, &AssociatedKeys.actionId, visualActionId, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+      button.addTarget(self, action: #selector(handleVisualAction(_:)), for: .touchUpInside)
+      cell.accessoryView = button
+    }
+
     if !row.actions.isEmpty {
       cell.accessibilityCustomActions = row.actions.map { action in
         UIAccessibilityCustomAction(name: action.label, target: self, selector: #selector(handleCustomAction(_:)))
@@ -943,6 +969,12 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private struct AssociatedKeys {
     static var rowId: UInt8 = 0
     static var actionId: UInt8 = 0
+  }
+
+  @objc private func handleVisualAction(_ sender: UIButton) {
+    guard let rowId = objc_getAssociatedObject(sender, &AssociatedKeys.rowId) as? String,
+          let actionId = objc_getAssociatedObject(sender, &AssociatedKeys.actionId) as? String else { return }
+    channel.invokeMethod("event", arguments: ["type": "customAction", "id": rowId, "action": actionId])
   }
 
   @objc private func handleCustomAction(_ action: UIAccessibilityCustomAction) -> Bool {

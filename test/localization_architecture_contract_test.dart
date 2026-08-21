@@ -48,7 +48,7 @@ void main() {
     final templatePath = 'lib/l10n/${files.first}';
     final templateArb = _readJson(templatePath);
     final template = _arbKeys(templatePath);
-    expect(template.length, 1016);
+    expect(template.length, 1020);
     for (final file in files.skip(1)) {
       final path = 'lib/l10n/$file';
       final arb = _readJson(path);

@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/audiodescription_service.dart';
+import '../services/media_preservation_service.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
@@ -71,6 +75,25 @@ class _AudiodescriptionFilmScreenState
     }
   }
 
+  Future<void> _preserveMedia(AudiodescriptionItem item) async {
+    final l10n = AppLocalizations.of(context);
+    showStatusMessage(context, l10n.preserveMediaSaving);
+    try {
+      final resolvedUrl = await _service.resolveAudioUrl(item.audioUrl);
+      final result = await MediaPreservationService().preserveMp3(
+        url: resolvedUrl,
+        title: item.title,
+      );
+      if (!mounted) return;
+      if (result == MediaPreservationResult.savedInSonarpad) {
+        showStatusMessage(context, l10n.preserveMediaSaved);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      showStatusMessage(context, l10n.preserveMediaError);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -105,14 +128,32 @@ class _AudiodescriptionFilmScreenState
                       .map((entry) => AccessibleListRow(
                             id: 'film_${entry.key}',
                             title: entry.value.title,
+                            actions: [
+                              AccessibleCustomAction(
+                                id: 'preserve_media',
+                                label: l10n.preserveMedia,
+                              ),
+                            ],
+                            visualActionId: 'preserve_media',
+                            visualActionIcon: 'download',
                           ))
                       .toList(growable: false),
                 ),
               ],
               onEvent: (event) async {
-                if (event.type != 'activate' || event.id == null) return;
+                if (event.id == null) return;
                 final index = int.tryParse(event.id!.replaceFirst('film_', ''));
-                if (index != null && index >= 0 && index < _filteredItems.length) await _play(_filteredItems[index]);
+                if (index == null ||
+                    index < 0 ||
+                    index >= _filteredItems.length) {
+                  return;
+                }
+                if (event.type == 'customAction' &&
+                    event.action == 'preserve_media') {
+                  await _preserveMedia(_filteredItems[index]);
+                } else if (event.type == 'activate') {
+                  await _play(_filteredItems[index]);
+                }
               },
             )
           : ListView.separated(
@@ -121,10 +162,29 @@ class _AudiodescriptionFilmScreenState
         separatorBuilder: (_, _) => const Divider(),
         itemBuilder: (context, index) {
           final item = _filteredItems[index];
-          return ListTile(
-            title: Text(item.title),
-            trailing: const Icon(Icons.play_arrow),
-            onTap: () => _play(item),
+          return Semantics(
+            container: true,
+            customSemanticsActions: {
+              CustomSemanticsAction(label: l10n.preserveMedia): () =>
+                  unawaited(_preserveMedia(item)),
+            },
+            child: ListTile(
+              title: Text(item.title),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.play_arrow),
+                  ExcludeSemantics(
+                    child: IconButton(
+                      icon: const Icon(Icons.download),
+                      tooltip: l10n.preserveMedia,
+                      onPressed: () => unawaited(_preserveMedia(item)),
+                    ),
+                  ),
+                ],
+              ),
+              onTap: () => _play(item),
+            ),
           );
         },
       ),

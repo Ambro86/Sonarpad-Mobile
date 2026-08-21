@@ -3441,4 +3441,17 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get mediaCutterMixingAddedTrack => 'Míchání nové stopy';
 
+
+  @override
+  String get preserveMedia => 'Uchovat médium';
+
+  @override
+  String get preserveMediaSaving => 'Ukládání média…';
+
+  @override
+  String get preserveMediaSaved => 'Médium bylo uloženo do Dokumentů Sonarpadu.';
+
+  @override
+  String get preserveMediaError => 'Médium se nepodařilo uchovat.';
+
 }

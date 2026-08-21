@@ -3339,6 +3339,19 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get mediaCutterMixingAddedTrack => 'A misturar a nova faixa';
 
+
+  @override
+  String get preserveMedia => 'Conservar multimédia';
+
+  @override
+  String get preserveMediaSaving => 'A guardar o conteúdo multimédia…';
+
+  @override
+  String get preserveMediaSaved => 'Conteúdo multimédia guardado nos Documentos do Sonarpad.';
+
+  @override
+  String get preserveMediaError => 'Não foi possível conservar o conteúdo multimédia.';
+
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -6675,5 +6688,18 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get mediaCutterMixingAddedTrack => 'Mixando a nova faixa';
+
+
+  @override
+  String get preserveMedia => 'Salvar mídia';
+
+  @override
+  String get preserveMediaSaving => 'Salvando mídia…';
+
+  @override
+  String get preserveMediaSaved => 'Mídia salva nos Documentos do Sonarpad.';
+
+  @override
+  String get preserveMediaError => 'Não foi possível salvar a mídia.';
 
 }
