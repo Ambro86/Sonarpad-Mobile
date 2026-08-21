@@ -5,7 +5,7 @@ import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/audiodescription_service.dart';
-import '../services/media_preservation_service.dart';
+import '../widgets/media_preservation_progress_dialog.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
@@ -76,22 +76,11 @@ class _AudiodescriptionFilmScreenState
   }
 
   Future<void> _preserveMedia(AudiodescriptionItem item) async {
-    final l10n = AppLocalizations.of(context);
-    showStatusMessage(context, l10n.preserveMediaSaving);
-    try {
-      final resolvedUrl = await _service.resolveAudioUrl(item.audioUrl);
-      final result = await MediaPreservationService().preserveMp3(
-        url: resolvedUrl,
-        title: item.title,
-      );
-      if (!mounted) return;
-      if (result == MediaPreservationResult.savedInSonarpad) {
-        showStatusMessage(context, l10n.preserveMediaSaved);
-      }
-    } catch (_) {
-      if (!mounted) return;
-      showStatusMessage(context, l10n.preserveMediaError);
-    }
+    await preserveMediaWithProgress(
+      context,
+      title: item.title,
+      resolveUrl: () => _service.resolveAudioUrl(item.audioUrl),
+    );
   }
 
   @override

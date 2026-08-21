@@ -8,7 +8,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
-import '../services/media_preservation_service.dart';
+import '../widgets/media_preservation_progress_dialog.dart';
 import '../services/podcast_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/recent_searches_service.dart';
@@ -210,25 +210,17 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   }
 
   Future<void> _preserveMedia(RaiPlaySoundItem item) async {
-    final l10n = AppLocalizations.of(context);
-    showStatusMessage(context, l10n.preserveMediaSaving);
-    try {
-      final audioUrl = await _resolvedAudioUrlForItem(item);
-      if (audioUrl == null || audioUrl.isEmpty) {
-        throw const FormatException('Missing RaiPlay Sound audio URL');
-      }
-      final result = await MediaPreservationService().preserveMp3(
-        url: audioUrl,
-        title: item.title,
-      );
-      if (!mounted) return;
-      if (result == MediaPreservationResult.savedInSonarpad) {
-        showStatusMessage(context, l10n.preserveMediaSaved);
-      }
-    } catch (_) {
-      if (!mounted) return;
-      showStatusMessage(context, l10n.preserveMediaError);
-    }
+    await preserveMediaWithProgress(
+      context,
+      title: item.title,
+      resolveUrl: () async {
+        final audioUrl = await _resolvedAudioUrlForItem(item);
+        if (audioUrl == null || audioUrl.isEmpty) {
+          throw const FormatException('Missing RaiPlay Sound audio URL');
+        }
+        return audioUrl;
+      },
+    );
   }
 
   bool _hasDatedAudioItems(List<RaiPlaySoundItem> items) => items.any(

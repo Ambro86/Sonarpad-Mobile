@@ -19,7 +19,7 @@ void main() {
       final source = File(path).readAsStringSync();
       expect(source, contains("id: 'preserve_media'"), reason: path);
       expect(source, contains('l10n.preserveMedia'), reason: path);
-      expect(source, contains('MediaPreservationService'), reason: path);
+      expect(source, contains('preserveMediaWithProgress'), reason: path);
     }
   });
 
@@ -27,11 +27,31 @@ void main() {
     final source = File('lib/services/media_preservation_service.dart')
         .readAsStringSync();
     expect(source, contains("http.Request('GET'"));
-    expect(source, contains('response.stream.pipe'));
+    expect(source, contains('await for (final chunk in response.stream)'));
+    expect(source, contains('MediaPreservationProgress'));
+    expect(source, contains('MediaPreservationCancellationToken'));
+    expect(source, contains('cancellationToken?.throwIfCancelled()'));
+    expect(source, isNot(contains('readAsBytes')));
     expect(source, contains('DocumentLibraryService'));
     expect(source, contains('importFile('));
     expect(source, contains('SharePlus.instance.share'));
     expect(source, contains('MediaPreservationResult.sharedFallback'));
+  });
+
+
+  test('preserve media download uses a cancellable Material progress dialog', () {
+    final source = File('lib/widgets/media_preservation_progress_dialog.dart')
+        .readAsStringSync();
+    expect(source, contains('AlertDialog('));
+    expect(source, contains('barrierDismissible: false'));
+    expect(source, contains('PopScope('));
+    expect(source, contains('LinearProgressIndicator(value: fraction)'));
+    expect(source, contains("'\$percent%'"));
+    expect(source, contains('l10n.download'));
+    expect(source, contains('l10n.preserveMediaSaving'));
+    expect(source, contains('l10n.cancel'));
+    expect(source, contains('token.cancel()'));
+    expect(source, contains('WidgetsBinding.instance.endOfFrame'));
   });
 
   test('preserve media strings are localized in every ARB locale', () {
@@ -53,6 +73,8 @@ void main() {
       'preserveMediaSaving',
       'preserveMediaSaved',
       'preserveMediaError',
+      'download',
+      'cancel',
     ];
     for (final file in files) {
       final data = _arb(file);
