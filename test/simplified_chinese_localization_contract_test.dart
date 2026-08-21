@@ -10,12 +10,18 @@ Set<String> _messageKeys(Map<String, dynamic> arb) =>
     arb.keys.where((key) => !key.startsWith('@')).toSet();
 
 void main() {
-  test('Simplified Chinese ARB covers every app message', () {
+  test('Simplified Chinese ARB and required zh fallback cover every app message', () {
     final template = _arb('lib/l10n/app_it.arb');
     final chinese = _arb('lib/l10n/app_zh_CN.arb');
+    final fallback = _arb('lib/l10n/app_zh.arb');
     expect(chinese['@@locale'], 'zh_CN');
+    expect(fallback['@@locale'], 'zh');
     expect(_messageKeys(chinese), _messageKeys(template));
+    expect(_messageKeys(fallback), _messageKeys(template));
     expect(_messageKeys(chinese).length, 1016);
+    for (final key in _messageKeys(template)) {
+      expect(fallback[key], chinese[key], reason: 'zh fallback must mirror zh_CN for $key');
+    }
   });
 
   test('Simplified Chinese is a real selectable locale', () {

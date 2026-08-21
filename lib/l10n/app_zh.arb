@@ -1,0 +1,2755 @@
+{
+  "@@locale": "zh",
+  "appTitle": "Sonarpad",
+  "appLanguage": "应用语言",
+  "settingsTheme": "应用主题",
+  "settingsThemeSystem": "跟随系统",
+  "settingsThemeLight": "浅色",
+  "settingsThemeDark": "深色",
+  "homeSemanticsLabel": "Sonarpad，主屏幕",
+  "settings": "设置",
+  "settingsHint": "打开设置",
+  "info": "关于",
+  "infoHint": "打开应用信息",
+  "categoryReading": "阅读与文档",
+  "categoryMedia": "媒体与娱乐",
+  "sonarTubeTitle": "SonarTube",
+  "sonarTubeSearchLabel": "搜索视频、频道或播放列表",
+  "sonarTubeSearchPrompt": "输入搜索内容以查找视频、频道和播放列表。",
+  "sonarTubeNoResults": "未找到视频。",
+  "sonarTubeLoadMore": "加载更多结果",
+  "sonarTubeChannel": "频道",
+  "sonarTubePlaylist": "播放列表",
+  "sonarTubeLive": "直播",
+  "sonarTubeResolving": "正在准备视频…",
+  "sonarTubeFavorites": "收藏",
+  "sonarTubeNoFavorites": "没有收藏的频道或播放列表。",
+  "sonarTubeAddFavorite": "添加到收藏",
+  "sonarTubeRemoveFavorite": "从收藏中移除",
+  "sonarTubeFavoriteAdded": "已将 {name} 添加到收藏。",
+  "sonarTubeFavoriteRemoved": "已将 {name} 从收藏中移除。",
+  "categoryUtilities": "搜索与工具",
+  "voiceDictionaryTitle": "语音词典",
+  "voiceDictionaryAdd": "向词典添加条目",
+  "voiceDictionaryOriginalWord": "原词",
+  "voiceDictionaryReplacementWord": "替换词",
+  "voiceDictionaryMatchCase": "区分大小写",
+  "voiceDictionaryIgnoreCase": "忽略大小写",
+  "voiceDictionaryEntries": "词典条目",
+  "voiceDictionaryEmpty": "词典中没有条目。",
+  "voiceDictionaryRemove": "移除所选条目",
+  "voiceDictionaryOriginalRequired": "请输入原词。",
+  "convertMediaTitle": "转换媒体",
+  "convertMediaInput": "要转换的文件",
+  "convertMediaOutput": "保存文件夹",
+  "convertMediaImage": "图像",
+  "convertMediaBrowse": "浏览...",
+  "convertMediaFormat": "格式",
+  "convertMediaBitrate": "比特率（kbps）",
+  "convertMediaOggQuality": "质量（q）",
+  "convertMediaFlacCompression": "压缩级别",
+  "convertMediaWavBitDepth": "WAV 位深度",
+  "convertMediaReady": "就绪。",
+  "convertMediaRunning": "正在转换...",
+  "convertMediaDone": "转换完成。",
+  "convertMediaButton": "转换媒体",
+  "convertMediaNoInput": "请选择要转换的文件。",
+  "convertMediaNoOutput": "请选择保存文件夹。",
+  "convertMediaOutputNotWritable": "无法直接访问所选文件夹。文件将保存在 Sonarpad 的内部文件夹中；转换完成后，你可以分享文件，或将其保存到“文件”应用中。",
+  "@convertMediaOutputNotWritable": {
+    "description": "Localized text for convertMediaOutputNotWritable."
+  },
+  "convertMediaNoImage": "请选择用于视频的图像。",
+  "convertMediaSamePath": "转换后的文件必须与源文件不同。",
+  "convertMediaInvalidBitrate": "比特率无效。请输入 64 到 320 kbps 之间的值。",
+  "convertMediaFailed": "转换失败：{error}",
+  "donations": "捐赠",
+  "donationsHint": "支持 Sonarpad 的开发",
+  "loading": "正在加载",
+  "ttsVoiceLanguage": "TTS 语音语言",
+  "ttsVoice": "TTS 语音",
+  "saveSettings": "保存设置",
+  "settingsSaved": "设置已保存。",
+  "settingsSavedTitle": "设置已保存",
+  "sonarpadCodeValidTitle": "代码有效",
+  "sonarpadCodeValidMessage": "Sonarpad 代码正确。设置已保存。",
+  "sonarpadCodeInvalidTitle": "代码无效",
+  "sonarpadCodeInvalidMessage": "Sonarpad 代码无效。请确认复制时没有多余的空格。",
+  "infoDescription": "Sonarpad 是一款简单但功能丰富的应用。它专为盲人和视障人士使用 VoiceOver 进行无障碍操作而设计，可用于收听新闻、搜索并订阅播客、导入维基百科文章、将文档添加到资料库并进行保存和编辑。Sonarpad 会持续更新，每项功能都旨在让日常生活更轻松。",
+  "infoAuthor": "作者：Ambrogio Riili",
+  "donationsIntro": "Sonarpad 最初是为满足个人需求而创建的，但随着时间推移，它逐渐发展成一款功能更广泛的应用。开发需要持续投入：改进功能、修复错误、探索新想法，并认真测试每一项功能。\n\n如果你觉得 Sonarpad 对你有帮助，并希望支持它的开发，可以进行捐赠。",
+  "donationsPaypalDesc": "你可以通过 PayPal 使用以下链接捐赠：\nhttps://www.paypal.me/ambrogio86\n如有可能，请在付款备注中填写“Sonarpad”。",
+  "donationsBankDesc": "你也可以通过银行转账捐赠至 Ambrogio Riili 名下的银行账户。\nIBAN：IT77W0306901020100000064149\n如有可能，请填写清晰的付款用途，例如“Sonarpad”。",
+  "donationsThanks": "所有支持本项目的人都会在应用和 GitHub 仓库中被提及，除非他们希望保持匿名或使用昵称。\n\n感谢 Jiri Holzinger 和 Paola Vagata 的贡献。\n捷克语翻译感谢 Radek Žalud 和 Jiri Holzinger。\n西班牙语翻译感谢 Arturo Fernandez Rivas。",
+  "news": "新闻",
+  "newsHint": "打开 Google 新闻 RSS",
+  "podcasts": "播客",
+  "podcastsHint": "订阅播客，播放或下载单集",
+  "importFromWikipedia": "维基百科",
+  "wikipediaHint": "搜索维基百科文章并导入文本",
+  "newsCategoryTop": "头条新闻",
+  "settingsHomeGrouping": "将主页图标按类别分组",
+  "settingsHomeGroupingHint": "关闭后，主页图标将以单一列表显示，不再使用子文件夹",
+  "newsCategoryMyCity": "我的城市",
+  "newsLocalCityLabel": "输入你的城市",
+  "newsLocalCityHint": "更正用于本地新闻的城市",
+  "update": "更新",
+  "moveUp": "上移",
+  "moveDown": "下移",
+  "hide": "删除",
+  "moveToPosition": "移动到位置",
+  "positionLabel": "位置 {position}：位于 {targetName} 之前",
+  "positionLabelLast": "最后一个位置",
+  "restoreHiddenSources": "恢复已删除的来源",
+  "addCustomNewsSource": "添加自定义 RSS 来源",
+  "newsSourceName": "来源或网站名称",
+  "newsSourceUrlOrSearch": "网站网址、RSS 源或搜索词",
+  "deleteNewsSource": "删除来源",
+  "importRssSourcesFromOpml": "从 OPML 导入 RSS 来源",
+  "@importRssSourcesFromOpml": {
+    "description": "Localized text for importRssSourcesFromOpml."
+  },
+  "exportRssSourcesToOpml": "将 RSS 来源导出为 OPML",
+  "@exportRssSourcesToOpml": {
+    "description": "Localized text for exportRssSourcesToOpml."
+  },
+  "rssImportComplete": "已导入 RSS 来源：{count}",
+  "@rssImportComplete": {
+    "description": "Localized text for rssImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "rssImportError": "RSS 导入错误：{error}",
+  "@rssImportError": {
+    "description": "Localized text for rssImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "rssExportComplete": "RSS 来源已导出",
+  "@rssExportComplete": {
+    "description": "Localized text for rssExportComplete."
+  },
+  "rssExportError": "RSS 导出错误：{error}",
+  "@rssExportError": {
+    "description": "Localized text for rssExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "articleTextSemantics": "文章正文",
+  "newsLanguage": "新闻语言",
+  "loadingNews": "正在加载新闻",
+  "error": "错误：{error}",
+  "noNewsFound": "未找到新闻",
+  "loadingArticle": "正在加载文章",
+  "noFullArticleFound": "无法获取完整文章。正在显示订阅源摘要。",
+  "italian": "意大利语",
+  "english": "英语",
+  "french": "法语",
+  "spanish": "西班牙语",
+  "german": "德语",
+  "@german": {
+    "description": "Localized text for german."
+  },
+  "newsSource": "新闻来源",
+  "article": "文章",
+  "articlePreview": "文章预览",
+  "readFullArticle": "阅读完整文章",
+  "extractingReaderArticleText": "正在以阅读器模式提取文本...",
+  "extractingVisibleArticleText": "正在提取页面可见文本...",
+  "source": "来源：{source}",
+  "readyStatus": "就绪。",
+  "preparingEdgeTts": "正在准备 Edge TTS 分段朗读...",
+  "noTextToRead": "没有可朗读的文本。",
+  "chunkCreated": "已创建第 {index}/{total} 个分段。正在朗读...",
+  "playingChunk": "正在播放第 {index}/{total} 个分段（{size} 字节）...",
+  "readingFinished": "朗读结束。已创建分段：{readyChunks}/{totalChunks}。资料库：{libraryPath}",
+  "libraryNotSpecified": "未指定",
+  "readingStopped": "朗读已停止。",
+  "edgeTtsError": "Edge TTS 错误：{error}",
+  "audioChunksReady": "音频分段已就绪：{readyChunks} / {totalChunks}",
+  "readingInProgress": "正在朗读...",
+  "readWithEdgeTts": "开始朗读",
+  "stopReading": "停止朗读",
+  "startReading": "开始朗读",
+  "resumeReading": "继续朗读",
+  "pauseReading": "暂停朗读",
+  "openOriginalArticle": "打开原始文章",
+  "searchPodcasts": "搜索播客",
+  "podcastName": "播客名称",
+  "podcastSearchHint": "例如：科技、历史、播客名称...",
+  "searchCountry": "搜索国家/地区",
+  "podcastCategory": "播客类别",
+  "browsePodcastCategories": "浏览类别",
+  "selectedPodcastCategory": "已选类别",
+  "selectedRecently": "最近选择",
+  "@selectedRecently": {
+    "description": "Label appended to the most recently selected podcast country or category."
+  },
+  "podcastCategories": "播客类别",
+  "countryItaly": "意大利",
+  "countryUnitedStatesEnglish": "美国 / 英语",
+  "countryUnitedKingdom": "英国",
+  "countrySpain": "西班牙",
+  "countryFrance": "法国",
+  "searchInProgress": "正在搜索...",
+  "podcastResultsFound": "找到 {count} 个播客",
+  "podcastSearchError": "播客搜索错误：{error}",
+  "subscribedTo": "已订阅 {title}",
+  "subscriptionError": "订阅错误：{error}",
+  "podcastSubscriptionError": "播客订阅错误：{error}",
+  "searchResults": "搜索结果",
+  "podcastInfo": "播客信息",
+  "subscribe": "订阅",
+  "openPodcast": "打开播客",
+  "viewEpisodes": "查看单集",
+  "podcastAuthor": "作者",
+  "noPodcastDescription": "暂无简介。",
+  "noPodcastResults": "未找到播客。",
+  "loadingPodcastInfo": "正在加载播客信息",
+  "podcastArtwork": "播客封面",
+  "addFeedUrlManually": "手动添加 RSS 源网址",
+  "podcastFeedUrl": "播客 RSS 源网址",
+  "subscribeFromUrl": "通过网址订阅",
+  "subscribedPodcasts": "已订阅的播客",
+  "noSubscribedPodcasts": "没有已订阅的播客。搜索播客并轻点结果即可订阅。",
+  "localAudioFiles": "本地音频文件",
+  "noLocalAudioFiles": "未找到本地音频文件。",
+  "importAudioFromITunes": "导入本地音频文件",
+  "localAudioFilesFound": "找到本地音频文件：{count}",
+  "importPodcastsFromFile": "从文件导入播客",
+  "exportPodcastsToFile": "将播客导出为 OPML 文件",
+  "podcastImportComplete": "已导入播客：{count}",
+  "podcastImportError": "播客导入错误：{error}",
+  "podcastExportComplete": "播客已导出",
+  "podcastExportError": "播客导出错误：{error}",
+  "loadingEpisodes": "正在加载单集",
+  "noAudioEpisodesFound": "订阅源中未找到音频单集。",
+  "episodes": "单集",
+  "episodeActions": "单集操作",
+  "downloaded": "已下载：{path}",
+  "episodeError": "单集错误：{error}",
+  "play": "播放",
+  "pause": "暂停",
+  "rewind15s": "后退 15 秒",
+  "forward15s": "前进 15 秒",
+  "stop": "停止",
+  "back": "返回",
+  "episodePlayer": "单集播放器",
+  "nowPlayingTitle": "正在播放：{title}",
+  "loadingEpisodeAudio": "正在加载单集音频",
+  "playbackPosition": "播放位置",
+  "playbackPositionValue": "{position} / {duration}",
+  "adjustVolume": "调节音量",
+  "volumeValue": "音量：{percentage}%",
+  "download": "下载",
+  "searchWikipedia": "在维基百科中搜索",
+  "wikipediaLanguage": "维基百科语言",
+  "search": "搜索",
+  "wikipediaSearch": "维基百科搜索",
+  "wikipediaImporting": "正在导入维基百科内容",
+  "noWikipediaResults": "未找到维基百科结果",
+  "wikipediaImportMode": "导入方式",
+  "wikipediaImportWholeArticle": "整篇文章",
+  "documents": "文档",
+  "documentsHint": "打开文档资料库",
+  "documentLibrary": "文档资料库",
+  "addToLibrary": "添加到资料库",
+  "documentImportSelectionMode": "你要选择一个文档还是多个文档？",
+  "documentImportSingle": "一个文档",
+  "documentImportMultiple": "多个文档",
+  "noDocuments": "没有文档。请添加文件。",
+  "noDocumentsInLibrary": "资料库中没有文档。",
+  "documentAdded": "文档已添加",
+  "documentsAdded": "文档已添加",
+  "importDocumentsFromITunes": "从 iTunes / Apple 设备导入文档",
+  "sharedDocumentsImportComplete": "从 iTunes / Apple 设备导入的文档：{count}",
+  "libraryLoadError": "资料库加载错误：{error}",
+  "fileOpenError": "文件打开错误：{error}",
+  "filePathUnavailable": "文件路径不可用。",
+  "fileInaccessible": "无法访问文件：{name}",
+  "documentAddError": "添加文档错误：{error}",
+  "documentRemoveError": "移除错误：{error}",
+  "noExportableTextFound": "未找到可导出的文本。",
+  "modifiedDocumentNoExportableText": "修改后的文档中没有可导出的文本。",
+  "documentRemoved": "文档已移除",
+  "folderRemoved": "文件夹已移除",
+  "removeFolder": "移除文件夹",
+  "removeDocument": "移除文档",
+  "writeNewDocument": "新建文档",
+  "addDocumentToLibraryHint": "将文档添加到资料库。浏览设备上的文件并添加。",
+  "documentTypeLabel": "文档",
+  "documentPosition": "文档位置",
+  "documentRemainingLessThanOneMinute": "剩余不到 1 分钟",
+  "@documentRemainingLessThanOneMinute": {
+    "description": "Localized text for documentRemainingLessThanOneMinute."
+  },
+  "documentRemainingMinutes": "大约还剩 {minutes} 分钟",
+  "@documentRemainingMinutes": {
+    "description": "Localized text for documentRemainingMinutes.",
+    "placeholders": {
+      "minutes": {
+        "example": "12",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHours": "大约还剩 {hours} 小时",
+  "@documentRemainingHours": {
+    "description": "Localized text for documentRemainingHours.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHoursMinutes": "大约还剩 {hours} 小时 {minutes} 分钟",
+  "@documentRemainingHoursMinutes": {
+    "description": "Localized text for documentRemainingHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      },
+      "minutes": {
+        "example": "15",
+        "type": "int"
+      }
+    }
+  },
+  "folderTypeLabel": "文件夹",
+  "documentAddedOn": "添加于 {date}",
+  "documentTypeDescription": "类型 {extension}",
+  "openFolderHint": "双击打开文件夹",
+  "openDocumentHint": "双击打开并阅读文档",
+  "removeItem": "移除 {name}",
+  "removePodcast": "移除播客",
+  "podcastRemoved": "播客已移除",
+  "documentPickerError": "打开文件时出错",
+  "readDocument": "阅读文档",
+  "documentReaderTitle": "文档阅读器",
+  "documentReaderEditHint": "轻点段落可进行编辑。向上或向下轻扫可添加书签。",
+  "documentParagraphSelectionStartAction": "开始选择段落",
+  "@documentParagraphSelectionStartAction": {
+    "description": "Localized text for documentParagraphSelectionStartAction."
+  },
+  "documentParagraphSelectionTapHint": "选择模式已启用。双击可选择或取消选择此段落。",
+  "@documentParagraphSelectionTapHint": {
+    "description": "Localized text for documentParagraphSelectionTapHint."
+  },
+  "documentParagraphSelectionStarted": "选择模式已启用。已选择段落。双击其他段落可继续选择。",
+  "@documentParagraphSelectionStarted": {
+    "description": "Localized text for documentParagraphSelectionStarted."
+  },
+  "documentParagraphSelectedAnnouncement": "已选择段落。当前共选择：{count}。",
+  "@documentParagraphSelectedAnnouncement": {
+    "description": "Localized text for documentParagraphSelectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphDeselectedAnnouncement": "已取消选择段落。当前共选择：{count}。",
+  "@documentParagraphDeselectedAnnouncement": {
+    "description": "Localized text for documentParagraphDeselectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphSelectionCount": "已选择：{count}",
+  "@documentParagraphSelectionCount": {
+    "description": "Localized text for documentParagraphSelectionCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentDeleteSelectedParagraphs": "删除所选段落",
+  "@documentDeleteSelectedParagraphs": {
+    "description": "Localized text for documentDeleteSelectedParagraphs."
+  },
+  "documentDeleteSelectedParagraphsConfirmation": "删除所选段落吗？共 {count} 个。",
+  "@documentDeleteSelectedParagraphsConfirmation": {
+    "description": "Localized text for documentDeleteSelectedParagraphsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentSelectedParagraphsDeleted": "已删除段落：{count}。",
+  "@documentSelectedParagraphsDeleted": {
+    "description": "Localized text for documentSelectedParagraphsDeleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentExitParagraphSelection": "退出段落选择",
+  "@documentExitParagraphSelection": {
+    "description": "Localized text for documentExitParagraphSelection."
+  },
+  "documentParagraphSelectionExited": "选择模式已关闭。",
+  "@documentParagraphSelectionExited": {
+    "description": "Localized text for documentParagraphSelectionExited."
+  },
+  "documentBookmarkHintSet": "向上或向下轻扫可设置书签。",
+  "documentEditParagraphActionHint": "双击可编辑此段落。",
+  "documentBookmarkHintReplace": "向上或向下轻扫可移除现有书签，或用此段落替换书签。",
+  "documentSetBookmarkAction": "添加新书签",
+  "documentRemoveBookmarkAction": "移除书签",
+  "documentReplaceBookmarkAction": "移除并添加新书签",
+  "searchInDocument": "在文档中搜索",
+  "documentIndex": "目录",
+  "@documentIndex": {
+    "description": "Localized text for documentIndex."
+  },
+  "documentSearchFieldLabel": "搜索文本",
+  "documentSearchFieldHint": "要查找的词语或短语",
+  "documentSearchEmptyQuery": "请输入要搜索的文本。",
+  "documentSearchResultsTitle": "文档搜索结果",
+  "noDocumentSearchResults": "未找到“{query}”的结果。",
+  "documentSearchResultParagraph": "第 {number} 段",
+  "edit": "编辑",
+  "save": "保存",
+  "cancel": "取消",
+  "settingsReadingEngine": "朗读引擎",
+  "settingsEdgeTtsQuality": "Edge TTS（高质量在线语音）",
+  "settingsSystemVoices": "系统语音（VoiceOver / Google）",
+  "settingsNoSystemVoices": "没有可用的系统语音。",
+  "settingsDefaultVoiceHint": "默认语音",
+  "settingsDefaultVoice": "默认",
+  "settingsVoiceSpeed": "速度：",
+  "settingsVoicePitch": "音调：",
+  "settingsVoiceSpeedLabel": "朗读速度",
+  "settingsVoicePitchLabel": "音调",
+  "settingsTestVoice": "测试语音",
+  "settingsTestingVoice": "正在播放...",
+  "settingsVoiceTestText": "这是所选语音的测试。",
+  "settingsVoiceTestError": "语音测试错误：{error}",
+  "settingsVoiceSaveError": "保存 TTS 语音时出错：{error}",
+  "settingsUnsavedTitle": "未保存的更改",
+  "settingsUnsavedMessage": "离开设置前要保存更改吗？",
+  "settingsExitWithoutSaving": "不保存并退出",
+  "settingsSystemLanguage": "系统语言",
+  "settingsSystemVoice": "系统语音",
+  "settingsAutoBookmark": "自动继续",
+  "settingsAutoBookmarkHint": "从上次停止的位置继续文档、播客和媒体。",
+  "settingsDocumentSliderStep": "文档滑块步长",
+  "@settingsDocumentSliderStep": {
+    "description": "Localized text for settingsDocumentSliderStep."
+  },
+  "settingsDocumentSliderStepHint": "控制向上或向下轻扫时，文档位置滑块移动的距离。",
+  "settingsReadingSleepTimer": "朗读睡眠定时器",
+  "@settingsReadingSleepTimer": {
+    "description": "Localized text for settingsReadingSleepTimer."
+  },
+  "settingsReadingSleepTimerOff": "关闭",
+  "@settingsReadingSleepTimerOff": {
+    "description": "Localized text for settingsReadingSleepTimerOff."
+  },
+  "settingsReadingSleepTimerMinutes": "{minutes} 分钟",
+  "@settingsReadingSleepTimerMinutes": {
+    "description": "Localized text for settingsReadingSleepTimerMinutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsReadingSleepTimerHint": "在所选时间后自动停止朗读当前文档并保存停止位置。每次开始朗读文档时都会重新开始倒计时。",
+  "@settingsReadingSleepTimerHint": {
+    "description": "Localized text for settingsReadingSleepTimerHint."
+  },
+  "documentReadingSleepTimerStopped": "睡眠定时器：朗读已停止，位置已保存。",
+  "@documentReadingSleepTimerStopped": {
+    "description": "Localized text for documentReadingSleepTimerStopped."
+  },
+  "@settingsDocumentSliderStepHint": {
+    "description": "Localized text for settingsDocumentSliderStepHint."
+  },
+  "settingsSeekStep": "媒体后退 / 快进步长",
+  "aiChatIntro": "我是 Sonarpad AI。有什么可以帮你？",
+  "cinemaOverviewLabel": "简介：",
+  "cinemaUpcomingReleases": "即将上映",
+  "cinemaWillRelease": "上映日期：{date}",
+  "meteoTitle": "天气",
+  "weatherCity": "城市",
+  "weatherCityHint": "例如：北京",
+  "weatherCityNotFound": "未找到城市",
+  "weatherSearchError": "搜索时出错",
+  "weatherToday": "今天",
+  "weatherCurrentSituation": "当前天气",
+  "weatherTomorrow": "明天",
+  "weatherChooseDay": "选择日期",
+  "weatherCurrentTemperature": "当前温度",
+  "weatherMaxTemperature": "最高温度",
+  "weatherMinTemperature": "最低温度",
+  "weatherPrecipitation": "降水量",
+  "weatherPrecipitationProbability": "降水概率",
+  "weatherWind": "风",
+  "weatherRelativeHumidity": "相对湿度",
+  "settingsSecretCode": "用于额外功能的 Sonarpad 代码",
+  "settingsRequestCode": "向作者申请代码",
+  "settingsPasteCode": "粘贴代码",
+  "settingsCancel": "取消",
+  "settingsSend": "发送",
+  "settingsFillFieldsCode": "请填写所有字段以申请代码。",
+  "settingsName": "名字",
+  "settingsSurname": "姓氏",
+  "settingsEmail": "电子邮件",
+  "settingsOperatingSystem": "操作系统",
+  "settingsCodeRequestBody": "名字：{name}；姓氏：{surname}；电子邮件：{email}；操作系统：{os}",
+  "settingsNameOptional": "名字（可选）",
+  "settingsMessageOptional": "消息（可选）",
+  "settingsVerifyCodeAndSave": "正在验证代码并保存...",
+  "settingsViewSysLog": "查看系统日志",
+  "settingsMailOpenError": "打开电子邮件时出错：{error}",
+  "ok": "确定",
+  "yes": "是",
+  "no": "否",
+  "invia": "发送",
+  "saveArticle": "保存文章",
+  "shareArticle": "分享文章",
+  "articleSavedSuccess": "文章已保存到“文档”",
+  "annulla": "取消",
+  "compilaTuttiICampiPerRichiedereIlCodice": "请填写所有字段以申请代码。",
+  "selectFolder": "选择文件夹",
+  "exportDocument": "导出文档",
+  "exportFormatPrompt": "要以哪种格式导出文档？",
+  "textFormat": "文本（.txt）",
+  "pdfFormat": "PDF（.pdf）",
+  "docxFormat": "DOCX（.docx）",
+  "epubFormat": "EPUB（.epub）",
+  "exportError": "导出错误",
+  "newFolder": "新建文件夹",
+  "folderNameHint": "文件夹名称",
+  "create": "创建",
+  "createNewFolder": "创建新文件夹",
+  "importExternalSources": "从外部来源导入",
+  "importExternalSourcesTitle": "外部来源",
+  "importFromDropbox": "从 Dropbox 导入文档",
+  "importFromProjectGutenberg": "从古登堡计划导入",
+  "projectGutenbergImportUnavailable": "古登堡计划导入功能暂不可用。",
+  "importFromInternetArchive": "从互联网档案馆导入",
+  "internetArchiveTitle": "互联网档案馆",
+  "internetArchiveSearchLabel": "搜索音频",
+  "internetArchiveSourceLabel": "来源",
+  "internetArchiveOldTimeRadio": "经典广播",
+  "internetArchiveSpeeches": "历史演讲",
+  "internetArchiveLiveMusic": "现场音乐档案",
+  "internetArchiveNoItemsFound": "未找到音频项目。",
+  "saveAudioInDocuments": "将音频保存到“文档”",
+  "audioSavedInDocuments": "音频已保存到“文档”。",
+  "noAudioTracksAvailable": "没有可用的音轨。",
+  "importFromLibriVox": "从 LibriVox 导入",
+  "gutenbergSearchLabel": "搜索书名或作者",
+  "sourceLanguageLabel": "语言",
+  "noGutenbergBooksFound": "未找到图书。",
+  "loadMore": "加载更多",
+  "sourceLanguageValue": "语言：{language}",
+  "gutenbergImportAndRead": "导入并阅读",
+  "gutenbergImporting": "正在导入...",
+  "librivoxSearchLabel": "搜索有声书",
+  "noLibrivoxAudiobooksFound": "未找到有声书。",
+  "librivoxAudiobookSaved": "有声书已保存到“文档”。",
+  "librivoxSaveAudiobook": "将有声书保存到“文档”",
+  "librivoxSaving": "正在保存...",
+  "librivoxNoAudioTracks": "没有可用的音轨。",
+  "librivoxNotTextExportable": "LibriVox 有声书不能导出为文本。",
+  "sourceDurationValue": "时长：{duration}",
+  "importFromPoetryDb": "从 PoetryDB 导入",
+  "poetryDbSearchLabel": "搜索诗歌",
+  "poetryDbSearchBy": "搜索方式",
+  "poetryDbSearchByTitle": "标题",
+  "poetryDbSearchByAuthor": "作者",
+  "poetryDbNoPoemsFound": "未找到诗歌。",
+  "poetryDbLineCount": "{count} 行",
+  "moveDocument": "移动文档",
+  "documentMoved": "移动成功",
+  "outOfFolder": "移出文件夹",
+  "moveToAnotherFolder": "移动到其他文件夹...",
+  "ttsError": "TTS 错误",
+  "editParagraph": "编辑段落",
+  "editParagraphTextField": "用于编辑段落的文本框",
+  "editParagraphHint": "编辑段落文本",
+  "applyAndSave": "应用并保存",
+  "textEditedAndSaved": "文本已编辑并保存到当前文档。",
+  "saveError": "保存时出错",
+  "docSavedInLibrary": "文档已保存到资料库",
+  "saveInLibrary": "保存到资料库",
+  "documentTextLabel": "文档文本",
+  "modifiedInSonarpad": "已在 Sonarpad 中修改",
+  "noTextAvailableForDocument": "此文档没有可用文本。",
+  "bookmarkSet": "已在第 {index} 段设置书签。",
+  "bookmarkRemoved": "书签已移除。",
+  "docEmpty": "文档为空",
+  "docSavedSuccessfully": "文档保存成功！",
+  "writeDocument": "编写文档",
+  "documentTitleOptional": "标题（可选）",
+  "documentTitleHint": "例如：购物笔记",
+  "documentTextField": "文档文本",
+  "documentTextHint": "从这里开始输入...",
+  "newDocumentDefaultName": "新建文档",
+  "saving": "正在保存...",
+  "saveDocument": "保存文档",
+  "addRssSource": "添加 RSS 来源",
+  "add": "添加",
+  "errorPrefix": "错误",
+  "versionBuild": "版本 {version}（构建 {buildNumber}）",
+  "whatIsNew": "更新内容",
+  "whatIsNewInVersion": "版本 {version} 的更新内容",
+  "changelogLoadError": "加载更新内容时出错：{error}",
+  "visitSonarpadSite": "访问 Sonarpad 网站",
+  "visitSonarpadSiteWithUrl": "访问 Sonarpad 网站：{url}",
+  "nowPlaying": "正在播放",
+  "fileImported": "文件已导入",
+  "importZipError": "ZIP 导入错误：{error}",
+  "dropboxLoginPrompt": "登录 Dropbox 以导入你的文档。",
+  "loginToDropbox": "登录 Dropbox",
+  "logoutFromDropbox": "退出 Dropbox",
+  "dropboxLoginFailed": "登录失败或已取消",
+  "dropboxLoadFolderError": "文件夹加载错误：{error}",
+  "dropboxImportError": "导入错误：{error}",
+  "retry": "重试",
+  "goBack": "返回",
+  "noSupportedFilesInFolder": "此文件夹中没有支持的文件。",
+  "articleNotFound": "未找到文章。",
+  "errorOpening": "打开时出错",
+  "recentArticles": "最近文章",
+  "clearHistory": "清除历史记录",
+  "confirmClearHistory": "确定要清除所有最近搜索吗？",
+  "clear": "清除",
+  "noRecentSearches": "没有最近搜索。",
+  "logCopiedToClipboard": "日志已复制到剪贴板",
+  "logCleared": "日志已清除",
+  "parafarmacoDetailReadyAnnouncement": "产品信息已加载。向右轻扫以选择各个部分。",
+  "systemLog": "系统日志",
+  "clearSystemLog": "清除日志",
+  "copySystemLog": "复制日志",
+  "donateWithPaypal": "通过 PayPal 捐赠",
+  "bankTransferTitle": "银行转账",
+  "enableVideo": "启用视频",
+  "calendar": "日历",
+  "calendarHint": "查看日历、节假日、今日圣人和你的提醒",
+  "saintOfTheDay": "今日圣人",
+  "quoteOfTheDay": "每日名言",
+  "reminders": "提醒",
+  "addReminder": "添加提醒",
+  "removeReminder": "移除提醒",
+  "noReminders": "没有提醒",
+  "writeReminder": "在这里输入提醒内容...",
+  "saveReminder": "保存",
+  "cancelReminder": "取消",
+  "backToToday": "返回今天",
+  "calendarToday": "今天",
+  "calendarTomorrow": "明天",
+  "calendarYesterday": "昨天",
+  "share": "分享",
+  "shareCalendarDayOptions": "分享选项",
+  "shareCalendarDayOnly": "仅分享日期",
+  "shareCalendarDayWithReminder": "分享日期和提醒",
+  "listenToAll": "全部朗读",
+  "reminderSaved": "{count} 个提醒",
+  "audiodescriptionTitle": "音频描述",
+  "audiodescriptionRecent": "最近",
+  "audiodescriptionAll": "全部音频描述",
+  "audiodescriptionFilm": "电影",
+  "audiodescriptionSearch": "搜索...",
+  "audiodescriptionLoading": "正在加载...",
+  "audiodescriptionError": "加载目录时出错",
+  "audiodescriptionEmpty": "未找到项目",
+  "radio": "广播",
+  "radioHint": "搜索广播电台、收听流媒体并管理收藏",
+  "radioTitle": "世界各地的广播电台",
+  "radioFavoritesButton": "收藏的广播电台",
+  "radioNoFavorites": "没有收藏的广播电台。",
+  "radioSearchText": "搜索广播电台",
+  "radioSearchHint": "电台名称或城市...",
+  "radioLanguage": "语言",
+  "radioBrowseBy": "浏览方式",
+  "radioBrowseByLanguage": "按语言浏览",
+  "radioBrowseByCountry": "按国家/地区浏览",
+  "radioCountry": "国家/地区",
+  "radioGenre": "类型",
+  "radioActiveFilters": "当前筛选条件",
+  "radioResetFilters": "重置筛选条件",
+  "radioFiltersReset": "筛选条件已重置。",
+  "radioCity": "城市",
+  "radioSearch": "搜索",
+  "radioSearching": "正在加载电台...",
+  "radioSearchResults": "电台搜索结果",
+  "radioNoResults": "未找到电台。",
+  "radioResultsFound": "找到 {count} 个广播电台",
+  "radioSearchError": "电台搜索错误：{error}",
+  "radioNowPlaying": "正在播放 {name}",
+  "radioPlayError": "广播流错误：{error}",
+  "radioAddFavorite": "添加到收藏",
+  "radioRemoveFavorite": "从收藏中移除",
+  "radioFavoriteAdded": "已将 {name} 添加到收藏。",
+  "radioFavoriteRemoved": "已将 {name} 从收藏中移除。",
+  "tvSearchFieldLabel": "搜索电视频道",
+  "@tvSearchFieldLabel": {
+    "description": "Localized text for tvSearchFieldLabel."
+  },
+  "tvSearchFieldHint": "频道名称...",
+  "@tvSearchFieldHint": {
+    "description": "Localized text for tvSearchFieldHint."
+  },
+  "tvSearchButton": "搜索",
+  "@tvSearchButton": {
+    "description": "Localized text for tvSearchButton."
+  },
+  "tvSearchResults": "电视频道搜索结果",
+  "@tvSearchResults": {
+    "description": "Localized text for tvSearchResults."
+  },
+  "tvSearchEmptyQuery": "请输入要搜索的电视频道名称。",
+  "@tvSearchEmptyQuery": {
+    "description": "Localized text for tvSearchEmptyQuery."
+  },
+  "tvSearchNoResults": "未找到与 {query} 匹配的电视频道。",
+  "@tvSearchNoResults": {
+    "description": "Localized text for tvSearchNoResults.",
+    "placeholders": {
+      "query": {
+        "example": "Rai",
+        "type": "String"
+      }
+    }
+  },
+  "tvOpenChannelHint": "轻点以播放电视频道",
+  "@tvOpenChannelHint": {
+    "description": "Localized text for tvOpenChannelHint."
+  },
+  "tvNowOnAir": "正在播出：{title}",
+  "@tvNowOnAir": {
+    "description": "Localized text for tvNowOnAir.",
+    "placeholders": {
+      "title": {
+        "example": "Telegiornale",
+        "type": "String"
+      }
+    }
+  },
+  "radioAddCommunity": "将电台添加到 Sonarpad 社区",
+  "radioAddName": "电台名称",
+  "radioAddUrl": "流媒体地址",
+  "radioAddSubmit": "验证并添加",
+  "radioAddMissingFields": "请输入电台名称和流媒体地址。",
+  "radioCommunityAdded": "电台已成功添加到 Sonarpad 社区。",
+  "radioCommunityAddError": "添加电台时出错：{error}",
+  "radioPlay": "播放",
+  "startRecording": "开始录制",
+  "stopRecording": "停止录制",
+  "recordings": "录音",
+  "selectRecordings": "选择录音",
+  "deleteRecordingsConfirmation": "永久删除 {count} 条录音吗？",
+  "noRecordings": "没有录音。",
+  "recordingStarted": "录制已开始。",
+  "recordingSaved": "录音已保存：{path}",
+  "@recordingSaved": {
+    "placeholders": {
+      "path": {
+        "type": "Object"
+      }
+    }
+  },
+  "recordingError": "录制错误：{error}",
+  "@recordingError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "routeTitle": "路线",
+  "routeFrom": "起点",
+  "routeTo": "终点",
+  "routeCountry": "国家/地区",
+  "routeCountryItaly": "意大利",
+  "routeCountryFrance": "法国",
+  "routeCountrySpain": "西班牙",
+  "routeCountryCzechRepublic": "捷克共和国",
+  "routeVehicle": "出行方式",
+  "routeType": "路线类型",
+  "routeIncludeMunicipalities": "包含途经城镇",
+  "routeWalking": "步行",
+  "routeCycling": "骑行",
+  "routeDriving": "驾车",
+  "routeWheelchair": "轮椅",
+  "routeFastest": "最快",
+  "routeShortest": "最短",
+  "routeCalculate": "计算路线",
+  "routeCalculating": "正在计算...",
+  "routeChooseFrom": "选择起点",
+  "routeChooseTo": "选择目的地",
+  "routeCancel": "取消",
+  "routeErrorMissingFields": "请输入起点和目的地",
+  "routeErrorFromNotFound": "未找到起始地址",
+  "routeErrorToNotFound": "未找到目的地地址",
+  "routeResultsTitle": "可用路线",
+  "routeDistance": "距离",
+  "routeDuration": "时长",
+  "routeNavigation": "导航详情",
+  "routeStartMunicipality": "起始城市",
+  "routeEnterMunicipality": "进入城市",
+  "routeError": "错误：{error}",
+  "radioLanguageIt": "意大利语",
+  "radioLanguageEn": "英语",
+  "radioLanguageDe": "德语",
+  "radioLanguageCountryCh": "瑞士",
+  "radioLanguageEs": "西班牙语",
+  "radioLanguagePt": "葡萄牙语",
+  "radioLanguageSv": "瑞典语",
+  "radioLanguageVi": "越南语",
+  "radioLanguageCs": "捷克语",
+  "radioLanguagePl": "波兰语",
+  "radioLanguageFr": "法语",
+  "radioLanguageSr": "塞尔维亚语",
+  "radioLanguageUk": "乌克兰语",
+  "radioLanguageHi": "印地语",
+  "radioLanguageLt": "立陶宛语",
+  "radioLanguageRu": "俄语",
+  "radioLanguageZh": "中文",
+  "radioCountryOptionIt": "意大利",
+  "radioCountryOptionUs": "美国",
+  "radioCountryOptionGb": "英国",
+  "radioCountryOptionFr": "法国",
+  "radioCountryOptionEs": "西班牙",
+  "radioCountryOptionDe": "德国",
+  "radioCountryOptionCh": "瑞士",
+  "radioCountryOptionAt": "奥地利",
+  "radioCountryOptionBe": "比利时",
+  "radioCountryOptionNl": "荷兰",
+  "radioCountryOptionPt": "葡萄牙",
+  "radioCountryOptionBr": "巴西",
+  "radioCountryOptionAr": "阿根廷",
+  "radioCountryOptionMx": "墨西哥",
+  "radioCountryOptionCa": "加拿大",
+  "radioCountryOptionAu": "澳大利亚",
+  "radioCountryOptionIe": "爱尔兰",
+  "radioCountryOptionSe": "瑞典",
+  "radioCountryOptionPl": "波兰",
+  "radioCountryOptionJp": "日本",
+  "radioGenreOptionAll": "所有类型",
+  "radioGenreOptionNews": "新闻",
+  "radioGenreOptionMusic": "音乐",
+  "radioGenreOptionSport": "体育",
+  "radioGenreOptionTalk": "谈话与分析",
+  "radioGenreOptionPop": "流行音乐",
+  "radioGenreOptionRock": "摇滚",
+  "radioGenreOptionClassical": "古典音乐",
+  "radioGenreOptionJazz": "爵士乐",
+  "radioGenreOptionDance": "舞曲",
+  "radioGenreOptionBlues": "蓝调",
+  "radioGenreOptionCountry": "乡村音乐",
+  "radioGenreOptionHiphop": "嘻哈",
+  "radioGenreOptionElectronic": "电子音乐",
+  "radioGenreOptionLatin": "拉丁音乐",
+  "radioGenreOptionReggae": "雷鬼",
+  "radioGenreOptionMetal": "金属",
+  "radioGenreOptionFolk": "民谣",
+  "radioGenreOptionReligion": "宗教",
+  "radioGenreOptionLocal": "本地",
+  "radioGenreOptionCulture": "文化",
+  "radioGenreOptionOldies": "70 / 80 / 90 年代",
+  "radioGenreOptionKids": "儿童",
+  "radioGenreOptionAmbient": "氛围音乐",
+  "radioCommunityLanguageItalian": "意大利语",
+  "radioCommunityLanguageEnglish": "英语",
+  "radioCommunityLanguageSpanish": "西班牙语",
+  "radioCommunityLanguageFrench": "法语",
+  "radioCommunityLanguageGerman": "德语",
+  "radioCommunityLanguagePortuguese": "葡萄牙语",
+  "radioCommunityLanguageSwedish": "瑞典语",
+  "radioCommunityLanguageVietnamese": "越南语",
+  "radioCommunityLanguageCzech": "捷克语",
+  "radioCommunityLanguagePolish": "波兰语",
+  "radioCommunityLanguageSerbian": "塞尔维亚语",
+  "radioCommunityLanguageUkrainian": "乌克兰语",
+  "radioCommunityLanguageLithuanian": "立陶宛语",
+  "radioCommunityLanguageRussian": "俄语",
+  "radioCommunityLanguageChinese": "中文",
+  "radioCommunityLanguageHindi": "印地语",
+  "routeDistanceMeters": "{meters} 米",
+  "routeDistanceKilometers": "{kilometers} 公里",
+  "routeDurationMinutes": "{minutes} 分钟",
+  "routeDurationHoursMinutes": "{hours} 小时 {minutes} 分钟",
+  "cinemaTitle": "院线电影",
+  "cinemaNoMovies": "目前未找到电影。",
+  "cinemaError": "加载电影时出错。",
+  "cinemaReleased": "上映日期：{date}",
+  "cinemaOpenTrailer": "打开预告片",
+  "concertsTitle": "音乐会与活动",
+  "concertsSearchHint": "输入城市（例如北京、上海）",
+  "concertsSearchLabel": "按城市搜索音乐会",
+  "concertsSearchTooltip": "搜索",
+  "concertsInitialText": "在上方输入你的城市名称，以查看即将举行的音乐会。",
+  "concertsEmpty": "此城市未找到音乐会。",
+  "concertsVenue": "演出地点：",
+  "concertsBuyTickets": "在 Ticketmaster 购票或查看详情",
+  "newsReadArticles": "阅读文章",
+  "weatherRecentCities": "最近的城市",
+  "podcastPlayedEpisodes": "已播放单集",
+  "podcastSelectDate": "选择日期",
+  "@podcastSelectDate": {
+    "description": "Button that opens the podcast date selector."
+  },
+  "podcastNoDatesAvailable": "这些单集没有可用日期。",
+  "podcastChapters": "章节",
+  "@podcastChapters": {
+    "description": "Button and screen title for the podcast chapter list."
+  },
+  "podcastChaptersUnavailable": "此单集没有可用章节。",
+  "@podcastChaptersUnavailable": {
+    "description": "Shown when no podcast chapters are available for an episode."
+  },
+  "@podcastNoDatesAvailable": {
+    "description": "Shown when a podcast feed has no publication dates to choose from."
+  },
+  "podcastUnplayed": "未播放单集",
+  "routeReadAction": "朗读路线",
+  "routeSaveAction": "保存到文档",
+  "routeSaveSuccess": "路线已保存到文档",
+  "deleteItem": "删除",
+  "@deleteItem": {
+    "description": "Localized text for deleteItem."
+  },
+  "browsePodcastCountries": "按国家/地区浏览",
+  "podcastCountries": "播客国家/地区",
+  "audiobookMp3Format": "MP3 有声书（.mp3）",
+  "@audiobookMp3Format": {
+    "description": "Export format label for audiobook MP3."
+  },
+  "audiobookM4bFormat": "M4B 有声书（.m4b）",
+  "@audiobookM4bFormat": {
+    "description": "Export format label for audiobook M4B."
+  },
+  "exportCompleteTitle": "导出完成",
+  "@exportCompleteTitle": {
+    "description": "Localized text for exportCompleteTitle."
+  },
+  "exportCompleteMessage": "文件已成功创建。要保存到 Sonarpad 还是分享？",
+  "@exportCompleteMessage": {
+    "description": "Localized text for exportCompleteMessage."
+  },
+  "saveInSonarpad": "保存到 Sonarpad",
+  "@saveInSonarpad": {
+    "description": "Localized text for saveInSonarpad."
+  },
+  "exportSavedInSonarpad": "文件已保存到 Sonarpad 文档。",
+  "@exportSavedInSonarpad": {
+    "description": "Localized text for exportSavedInSonarpad."
+  },
+  "audiobookExportProgressTitle": "正在创建有声书",
+  "@audiobookExportProgressTitle": {
+    "description": "Title shown while exporting an audiobook."
+  },
+  "audiobookExportPreparing": "正在准备有声书...",
+  "@audiobookExportPreparing": {
+    "description": "Progress text shown while preparing audiobook export."
+  },
+  "audiobookExportGeneratingAudio": "正在生成音频",
+  "@audiobookExportGeneratingAudio": {
+    "description": "Progress text shown while generating audiobook chunks."
+  },
+  "audiobookExportConvertingAudio": "正在进行最终音频转换...",
+  "@audiobookExportConvertingAudio": {
+    "description": "Progress text shown while converting/merging audiobook audio."
+  },
+  "audiobookExportFinalizing": "正在完成...",
+  "@audiobookExportFinalizing": {
+    "description": "Progress text shown while finalizing audiobook export."
+  },
+  "routeRecentRoutes": "最近路线",
+  "routeRecentRoutesEmpty": "没有最近路线",
+  "routeNavigationFromTo": "从 {from} 到 {to} 的导航详情 - {date}",
+  "@routeNavigationFromTo": {
+    "placeholders": {
+      "from": {},
+      "to": {},
+      "date": {}
+    }
+  },
+  "settingsWeatherTemperatureUnit": "天气温度单位",
+  "@settingsWeatherTemperatureUnit": {
+    "description": "Localized text for settingsWeatherTemperatureUnit."
+  },
+  "weatherTemperatureCelsius": "摄氏度（°C）",
+  "@weatherTemperatureCelsius": {
+    "description": "Localized text for weatherTemperatureCelsius."
+  },
+  "weatherTemperatureFahrenheit": "华氏度（°F）",
+  "@weatherTemperatureFahrenheit": {
+    "description": "Localized text for weatherTemperatureFahrenheit."
+  },
+  "podcastInvalidOpmlFile": "文件无效。请选择 OPML 或 XML 文件。",
+  "@podcastInvalidOpmlFile": {
+    "description": "Shown when the selected podcast import file is not an OPML or XML file."
+  },
+  "sortPodcastsAlphabetically": "按字母顺序排列播客",
+  "@sortPodcastsAlphabetically": {
+    "description": "Button that sorts the subscribed podcasts alphabetically."
+  },
+  "sortRadioFavoritesAlphabetically": "按字母顺序排列收藏",
+  "@sortRadioFavoritesAlphabetically": {
+    "description": "Button that sorts radio favorites alphabetically."
+  },
+  "podcastsSortedAlphabetically": "播客已按字母顺序排列。",
+  "@podcastsSortedAlphabetically": {
+    "description": "Status message shown after podcasts have been sorted alphabetically."
+  },
+  "radioFavoritesSortedAlphabetically": "收藏的电台已按字母顺序排列。",
+  "@radioFavoritesSortedAlphabetically": {
+    "description": "Status message shown after radio favorites have been sorted alphabetically."
+  },
+  "settingsIncludeFootnotesInText": "在文本中包含脚注",
+  "@settingsIncludeFootnotesInText": {
+    "description": "Localized text for settingsIncludeFootnotesInText."
+  },
+  "settingsIncludeFootnotesInTextHint": "对于支持的 EPUB 图书，在引用脚注的段落后立即显示相应注释。",
+  "@settingsIncludeFootnotesInTextHint": {
+    "description": "Localized text for settingsIncludeFootnotesInTextHint."
+  },
+  "documentFootnoteLabel": "脚注",
+  "@documentFootnoteLabel": {
+    "description": "Localized text for documentFootnoteLabel."
+  },
+  "settingsMultipleDocumentBookmarks": "允许文档使用多个书签",
+  "@settingsMultipleDocumentBookmarks": {
+    "description": "Title for the setting that enables multiple bookmarks in documents."
+  },
+  "settingsMultipleDocumentBookmarksHint": "关闭后，每个文档只保留一个书签。启用后，可以在同一文档中保存多个书签。",
+  "@settingsMultipleDocumentBookmarksHint": {
+    "description": "Description for the setting that enables multiple bookmarks in documents."
+  },
+  "documentGoToBookmarkAction": "转到书签",
+  "@documentGoToBookmarkAction": {
+    "description": "Accessibility action and menu entry to open document bookmarks."
+  },
+  "documentChooseBookmarkTitle": "选择书签",
+  "@documentChooseBookmarkTitle": {
+    "description": "Dialog title for choosing a document bookmark."
+  },
+  "documentDeleteBookmarkAction": "删除书签",
+  "@documentDeleteBookmarkAction": {
+    "description": "Action label to delete a document bookmark."
+  },
+  "documentKeepBookmarkTitle": "要保留哪个书签？",
+  "@documentKeepBookmarkTitle": {
+    "description": "Dialog title asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentKeepBookmarkMessage": "已关闭多个书签。请选择一个要保留的书签，其他书签将被删除。",
+  "@documentKeepBookmarkMessage": {
+    "description": "Dialog message asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentBookmarkChoiceLabel": "书签 {order}，第 {paragraph} 段",
+  "@documentBookmarkChoiceLabel": {
+    "description": "Label for a bookmark in the bookmark chooser.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      }
+    }
+  },
+  "documentBookmarkChoiceLabelWithPreview": "书签 {order}，第 {paragraph} 段。{preview}",
+  "@documentBookmarkChoiceLabelWithPreview": {
+    "description": "Label for a bookmark in the bookmark chooser, including a short text preview.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      },
+      "preview": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsVideoLandscapeFullscreen": "横屏全屏视频",
+  "@settingsVideoLandscapeFullscreen": {
+    "description": "Title for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsVideoLandscapeFullscreenHint": "启用视频后，将以横屏全屏方式显示。仅音频广播不受影响。",
+  "@settingsVideoLandscapeFullscreenHint": {
+    "description": "Description for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsPodcastCacheTitle": "播客缓存",
+  "@settingsPodcastCacheTitle": {
+    "description": "Localized text for settingsPodcastCacheTitle."
+  },
+  "settingsPodcastCacheHint": "仅清除播客临时文件。订阅、历史记录和已导入音频不会被删除。",
+  "@settingsPodcastCacheHint": {
+    "description": "Localized text for settingsPodcastCacheHint."
+  },
+  "settingsPodcastCacheSize": "已用空间：{size}",
+  "@settingsPodcastCacheSize": {
+    "description": "Localized text for settingsPodcastCacheSize.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearPodcastCache": "清除播客缓存",
+  "@clearPodcastCache": {
+    "description": "Localized text for clearPodcastCache."
+  },
+  "confirmClearPodcastCacheTitle": "清除播客缓存？",
+  "@confirmClearPodcastCacheTitle": {
+    "description": "Localized text for confirmClearPodcastCacheTitle."
+  },
+  "confirmClearPodcastCacheMessage": "将删除播客临时文件。订阅和单集历史记录不会被删除。",
+  "@confirmClearPodcastCacheMessage": {
+    "description": "Localized text for confirmClearPodcastCacheMessage."
+  },
+  "podcastCacheCleared": "播客缓存已清除，释放 {size}。",
+  "@podcastCacheCleared": {
+    "description": "Localized text for podcastCacheCleared.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "podcastCacheEmpty": "播客缓存已经为空。",
+  "@podcastCacheEmpty": {
+    "description": "Localized text for podcastCacheEmpty."
+  },
+  "pharmacyFeatureTitle": "药品、保健用品和补充剂",
+  "@pharmacyFeatureTitle": {
+    "description": "Title for the medicines, parapharmaceuticals and supplements feature."
+  },
+  "pharmacyProductsSectionTitle": "保健用品和补充剂",
+  "@pharmacyProductsSectionTitle": {
+    "description": "Title for the parapharmaceuticals and supplements results section."
+  },
+  "pharmacyProductsLoadingTitle": "正在搜索保健用品和补充剂...",
+  "@pharmacyProductsLoadingTitle": {
+    "description": "Loading title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsErrorTitle": "搜索保健用品和补充剂时出错",
+  "@pharmacyProductsErrorTitle": {
+    "description": "Error title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsNoResultsTitle": "未找到保健用品或补充剂",
+  "@pharmacyProductsNoResultsTitle": {
+    "description": "Empty state title for parapharmaceuticals and supplements search."
+  },
+  "mediaCutterTitle": "剪切媒体文件",
+  "mediaCutterInstruction1": "打开音频或视频文件，播放并移动到希望剪切的位置。",
+  "mediaCutterInstruction2": "暂停后按“分割”，然后在“要保存的片段”中删除不需要的片段，再按“保存”。",
+  "mediaCutterOpenFile": "打开媒体文件",
+  "mediaCutterSelectedFile": "已选文件：{fileName}",
+  "@mediaCutterSelectedFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPosition": "剪切位置",
+  "mediaCutterPositionHint": "每次前进或后退 1 秒。",
+  "mediaCutterHideVideoPreview": "隐藏视频",
+  "mediaCutterVideoRotation": "视频旋转",
+  "mediaCutterVideoRotationNone": "不旋转",
+  "mediaCutterVideoRotationRight": "向右旋转",
+  "mediaCutterVideoRotationLeft": "向左旋转",
+  "mediaCutterVideoRotationUpsideDown": "旋转 180 度",
+  "@mediaCutterHideVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterVideoPreview": "视频预览",
+  "@mediaCutterVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterSplit": "分割",
+  "mediaCutterPartsTitle": "要保存的片段",
+  "mediaCutterPartsHint": "轻点片段可试听。已删除的片段会从列表中消失，播放时会跳过，也不会被保存。音频效果只会在保存媒体时应用到整个片段。",
+  "mediaCutterPartLabel": "片段 {index}",
+  "@mediaCutterPartLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartRange": "从 {start} 到 {end}",
+  "@mediaCutterPartRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSave": "保存",
+  "mediaCutterReady": "就绪。",
+  "mediaCutterUnsavedExitTitle": "文件未保存",
+  "mediaCutterUnsavedExitMessage": "文件尚未保存。确定要离开吗？",
+  "mediaCutterNoFile": "请先打开一个媒体文件。",
+  "mediaCutterInvalidSplitPoint": "请选择文件内部的位置，不能是开头或结尾。",
+  "mediaCutterSplitAlreadyExists": "此位置已经有分割点。",
+  "mediaCutterSplitAdded": "已在 {position} 添加分割点。",
+  "@mediaCutterSplitAdded": {
+    "placeholders": {
+      "position": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSaving": "正在保存文件...",
+  "mediaCutterSaved": "文件已保存：{fileName}",
+  "@mediaCutterSaved": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterLoadFailed": "无法打开文件：{error}",
+  "@mediaCutterLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterSaveFailed": "保存失败：{error}",
+  "@mediaCutterSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterNoPartsToSave": "保存前至少保留一个片段。",
+  "mediaCutterRestoreDeletedPart": "恢复已删除片段",
+  "mediaCutterNoDeletedParts": "没有可恢复的已删除片段。",
+  "mediaCutterPartDeleteAction": "删除",
+  "mediaCutterPartTapHint": "双击可预览此片段。可使用“编辑片段”、“删除”或“调整效果”操作。",
+  "mediaCutterPartDeleted": "已删除从 {start} 到 {end} 的片段。",
+  "@mediaCutterPartDeleted": {
+    "description": "Status shown after a media part is deleted",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartRestored": "已恢复从 {start} 到 {end} 的片段。",
+  "@mediaCutterPartRestored": {
+    "description": "Status shown after a deleted media part is restored",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsAction": "调整效果",
+  "mediaCutterPartEditAction": "编辑片段",
+  "mediaCutterPartEditDescription": "将片段开头或结尾移动 1 秒，然后试听编辑后的片段。",
+  "mediaCutterPartAdjusted": "片段已编辑：从 {start} 到 {end}。",
+  "@mediaCutterPartAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsTitle": "片段效果",
+  "mediaCutterPartEffectsDescription": "仅调整此片段的音量和效果。",
+  "mediaCutterPartVolumeLabel": "片段音量",
+  "mediaCutterPartVolumeValue": "片段音量：{percent}%",
+  "@mediaCutterPartVolumeValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartEffect": "音频效果",
+  "mediaCutterPartEffectNone": "无效果",
+  "mediaCutterPartEffectEcho": "轻微回声",
+  "mediaCutterPartEffectEchoRoom": "房间回声",
+  "mediaCutterPartEffectEchoChamber": "回声室",
+  "mediaCutterPartEffectEchoCathedral": "大教堂回声",
+  "mediaCutterPartEffectLargeRoom": "大房间",
+  "mediaCutterPartEffectSmallRoom": "小房间",
+  "mediaCutterPartEffectBathroom": "浴室",
+  "mediaCutterPartEffectTunnel": "隧道",
+  "mediaCutterPartEffectRepeatEcho": "重复回声",
+  "mediaCutterPartEffectCorridor": "走廊",
+  "mediaCutterPartEffectDelay": "延迟",
+  "mediaCutterPartEffectReverb": "轻微混响",
+  "mediaCutterPartEffectChorus": "合唱",
+  "mediaCutterPartEffectPitchLow": "低音调",
+  "mediaCutterPartEffectPitchVeryLow": "极低音调",
+  "mediaCutterPartEffectPitchHigh": "高音调",
+  "mediaCutterPartEffectPitchVeryHigh": "极高音调",
+  "mediaCutterPartEffectRobot": "机器人声音",
+  "mediaCutterPartEffectSuperRobot": "超级机器人",
+  "mediaCutterPartEffectHelicopter": "直升机",
+  "mediaCutterPartEffectAlien": "外星人颤音",
+  "mediaCutterPartEffectBrightVoice": "清亮声音",
+  "mediaCutterPartEffectDarkVoice": "低沉声音",
+  "mediaCutterPartEffectGhost": "幽灵",
+  "mediaCutterPartEffectTelephone": "电话",
+  "mediaCutterPartEffectOldRadio": "老式收音机",
+  "mediaCutterPartEffectMegaphone": "扩音器",
+  "mediaCutterPartEffectUnderwater": "水下",
+  "mediaCutterPartEffectMonster": "怪物",
+  "mediaCutterPartEffectChipmunk": "花栗鼠",
+  "mediaCutterPartEffectDream": "梦境",
+  "mediaCutterPartEffectDistortion": "失真",
+  "mediaCutterPartEffectLoFi": "低保真",
+  "mediaCutterPartEffectReverseEcho": "反向回声",
+  "mediaCutterPartEffectFadeIn": "淡入",
+  "mediaCutterPartEffectFadeOut": "淡出",
+  "mediaCutterPartEffectAmountLabel": "效果强度",
+  "mediaCutterPartEffectAmountValue": "效果强度：{percent}%",
+  "@mediaCutterPartEffectAmountValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartPreviewAction": "预览",
+  "mediaCutterPartEffectsSavedOnly": "预览使用所选音量。音频效果会在保存时应用。",
+  "mediaCutterPartEffectsApplied": "已更新从 {start} 到 {end} 的片段效果。",
+  "@mediaCutterPartEffectsApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsSummary": "音量 {percent}%，效果 {effect}",
+  "@mediaCutterPartEffectsSummary": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedModeTitle": "引导式剪切",
+  "mediaCutterGuidedModeDescription": "适合初学者。选择起点和终点，试听剪切结果，然后应用。",
+  "mediaCutterAdvancedModeTitle": "高级剪切",
+  "mediaCutterAdvancedModeDescription": "参考常见媒体编辑程序设计。可以将媒体文件分成多个片段，并删除不需要的部分。",
+  "mediaCutterChangeCutMode": "更改剪切类型",
+  "mediaCutterGuidedSetStart": "设置剪切起点",
+  "mediaCutterGuidedSetEnd": "设置剪切终点",
+  "mediaCutterGuidedApplyCut": "应用剪切",
+  "mediaCutterGuidedListenCut": "试听剪切",
+  "mediaCutterGuidedModifyCut": "编辑剪切",
+  "mediaCutterGuidedMoveStartBackOneSecond": "将剪切起点后退 1 秒",
+  "mediaCutterGuidedMoveStartForwardOneSecond": "将剪切起点前进 1 秒",
+  "mediaCutterGuidedMoveEndBackOneSecond": "将剪切终点后退 1 秒",
+  "mediaCutterGuidedMoveEndForwardOneSecond": "将剪切终点前进 1 秒",
+  "mediaCutterCutEditPrecisionLabel": "剪切编辑精度",
+  "mediaCutterCutEditPrecisionValue": "剪切编辑精度：{value}",
+  "@mediaCutterCutEditPrecisionValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterCutEditStepOneSecond": "1 秒",
+  "mediaCutterCutEditStepHalfSecond": "0.5 秒",
+  "mediaCutterCutEditStepQuarterSecond": "0.25 秒",
+  "mediaCutterCutEditStepTenthSecond": "0.10 秒",
+  "mediaCutterMoveStartBackBy": "将剪切起点后退 {value}",
+  "@mediaCutterMoveStartBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveStartForwardBy": "将剪切起点前进 {value}",
+  "@mediaCutterMoveStartForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndBackBy": "将剪切终点后退 {value}",
+  "@mediaCutterMoveEndBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndForwardBy": "将剪切终点前进 {value}",
+  "@mediaCutterMoveEndForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutAdjusted": "剪切已更改：从 {start} 到 {end}。",
+  "@mediaCutterGuidedCutAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNoCut": "没有剪切",
+  "mediaCutterGuidedEffectsAction": "调整文件效果",
+  "mediaCutterGuidedEffectsDescription": "调整整个结果文件的音量和效果。",
+  "mediaCutterGuidedFileTapHint": "双击可播放结果文件。使用“调整文件效果”可将效果应用到整个文件。",
+  "mediaCutterGuidedStartSet": "剪切起点已设为 {start}。",
+  "@mediaCutterGuidedStartSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedEndSet": "剪切终点已设为 {end}。剪切范围从 {start} 到 {end}。",
+  "@mediaCutterGuidedEndSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutApplied": "已应用从 {start} 到 {end} 的剪切。",
+  "@mediaCutterGuidedCutApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNeedStartEnd": "请先设置剪切起点和终点。",
+  "mediaCutterGuidedCutSummary": "剪切范围：{start} 到 {end}",
+  "@mediaCutterGuidedCutSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedMultipleCutSummary": "{count} 个剪切：{cuts}",
+  "@mediaCutterGuidedMultipleCutSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cuts": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedPendingCutExitMessage": "你有一个尚未应用的引导式剪切。要在不保留它的情况下离开吗？",
+  "mediaCutterSplitAddedAnnouncement": "已添加分割点。已添加片段 {partNumber}。",
+  "@mediaCutterSplitAddedAnnouncement": {
+    "placeholders": {
+      "partNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "newsAddCommunitySource": "将新闻来源添加到 Sonarpad 社区",
+  "@newsAddCommunitySource": {
+    "description": "Localized text for newsAddCommunitySource."
+  },
+  "newsBrowseCommunitySources": "社区新闻来源",
+  "@newsBrowseCommunitySources": {
+    "description": "Localized text for newsBrowseCommunitySources."
+  },
+  "newsAddCommunityInstructions": "输入来源标题以及 RSS 源网址或网站网址。Sonarpad 会使用所选新闻语言；如果输入的是网站网址，还会尝试自动查找订阅源。",
+  "@newsAddCommunityInstructions": {
+    "description": "Localized text for newsAddCommunityInstructions."
+  },
+  "newsCommunitySourceName": "来源标题",
+  "@newsCommunitySourceName": {
+    "description": "Localized text for newsCommunitySourceName."
+  },
+  "newsCommunitySourceUrl": "RSS 源或网站网址",
+  "@newsCommunitySourceUrl": {
+    "description": "Localized text for newsCommunitySourceUrl."
+  },
+  "newsCommunitySubmit": "检查并添加",
+  "@newsCommunitySubmit": {
+    "description": "Localized text for newsCommunitySubmit."
+  },
+  "newsCommunityChecking": "正在检查订阅源或网站...",
+  "@newsCommunityChecking": {
+    "description": "Localized text for newsCommunityChecking."
+  },
+  "newsCommunityMissingFields": "请输入标题以及订阅源或网站网址。",
+  "@newsCommunityMissingFields": {
+    "description": "Localized text for newsCommunityMissingFields."
+  },
+  "newsCommunityAdded": "新闻来源已成功添加到 Sonarpad 社区。",
+  "@newsCommunityAdded": {
+    "description": "Localized text for newsCommunityAdded."
+  },
+  "newsCommunityAddError": "添加新闻来源时出错：{error}",
+  "@newsCommunityAddError": {
+    "description": "Localized text for newsCommunityAddError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySelectedLanguage": "所选语言：{language}",
+  "@newsCommunitySelectedLanguage": {
+    "description": "Localized text for newsCommunitySelectedLanguage.",
+    "placeholders": {
+      "language": {}
+    }
+  },
+  "newsCommunitySourcesTitle": "社区新闻来源",
+  "@newsCommunitySourcesTitle": {
+    "description": "Localized text for newsCommunitySourcesTitle."
+  },
+  "newsCommunitySourcesEmpty": "此语言暂无社区新闻来源。",
+  "@newsCommunitySourcesEmpty": {
+    "description": "Localized text for newsCommunitySourcesEmpty."
+  },
+  "newsCommunitySourcesError": "加载社区新闻来源时出错：{error}",
+  "@newsCommunitySourcesError": {
+    "description": "Localized text for newsCommunitySourcesError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceAddedToLibrary": "已将 {name} 添加到你的新闻资料库。",
+  "@newsCommunitySourceAddedToLibrary": {
+    "description": "Localized text for newsCommunitySourceAddedToLibrary.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "newsCommunityAddToLibraryError": "添加到资料库时出错：{error}",
+  "@newsCommunityAddToLibraryError": {
+    "description": "Localized text for newsCommunityAddToLibraryError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceTapHint": "轻点可将其添加到你的新闻资料库。",
+  "@newsCommunitySourceTapHint": {
+    "description": "Localized text for newsCommunitySourceTapHint."
+  },
+  "developerModeEnabled": "开发者模式已启用。",
+  "@developerModeEnabled": {
+    "description": "Localized text for developerModeEnabled."
+  },
+  "developerModeDisabled": "开发者模式已关闭。",
+  "@developerModeDisabled": {
+    "description": "Localized text for developerModeDisabled."
+  },
+  "developerSectionTitle": "开发者",
+  "@developerSectionTitle": {
+    "description": "Localized text for developerSectionTitle."
+  },
+  "developerUseExperimentalFlutterRenderer": "使用实验性 Flutter 渲染器",
+  "@developerUseExperimentalFlutterRenderer": {
+    "description": "Localized text for developerUseExperimentalFlutterRenderer."
+  },
+  "developerUseExperimentalFlutterRendererHint": "暂时停用 UIKit，以比较 VoiceOver 在纯 Flutter 下的表现。",
+  "@developerUseExperimentalFlutterRendererHint": {
+    "description": "Localized text for developerUseExperimentalFlutterRendererHint."
+  },
+  "letterJumpSelectLetter": "选择字母",
+  "@letterJumpSelectLetter": {
+    "description": "Localized text for letterJumpSelectLetter."
+  },
+  "letterJumpSelected": "已选择",
+  "@letterJumpSelected": {
+    "description": "Localized text for letterJumpSelected."
+  },
+  "settingsToggleOn": "开启",
+  "@settingsToggleOn": {
+    "description": "Localized text for settingsToggleOn."
+  },
+  "settingsToggleOff": "关闭",
+  "@settingsToggleOff": {
+    "description": "Localized text for settingsToggleOff."
+  },
+  "radioDirectoryLoading": "正在更新广播国家/地区和语言...",
+  "@radioDirectoryLoading": {
+    "description": "Localized text for radioDirectoryLoading."
+  },
+  "recentRadios": "最近电台",
+  "@recentRadios": {
+    "description": "Localized text for recentRadios."
+  },
+  "radioNextPage": "下一页",
+  "@radioNextPage": {
+    "description": "Localized text for radioNextPage."
+  },
+  "radioPageOf": "第 {current} 页，共 {total} 页",
+  "@radioPageOf": {
+    "description": "Localized text for radioPageOf.",
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "radioNoResultsWithQuery": "未找到电台。请尝试只输入电台名称，不要输入类型，或更改语言/国家地区。",
+  "@radioNoResultsWithQuery": {
+    "description": "Localized text for radioNoResultsWithQuery."
+  },
+  "radioNoResultsGeneric": "未找到电台。请尝试其他语言、国家/地区或类型。",
+  "@radioNoResultsGeneric": {
+    "description": "Localized text for radioNoResultsGeneric."
+  },
+  "radioSearchRawError": "电台搜索错误：{error}",
+  "@radioSearchRawError": {
+    "description": "Localized text for radioSearchRawError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioBrowserConnectionError": "连接 Radio Browser 时出错。请稍后重试。",
+  "@radioBrowserConnectionError": {
+    "description": "Localized text for radioBrowserConnectionError."
+  },
+  "documentIndexLoadingMessage": "正在加载目录...请稍候。",
+  "@documentIndexLoadingMessage": {
+    "description": "Localized text for documentIndexLoadingMessage."
+  },
+  "documentIndexUnavailableMessage": "此 EPUB 没有可用目录。",
+  "@documentIndexUnavailableMessage": {
+    "description": "Localized text for documentIndexUnavailableMessage."
+  },
+  "mediaCutterVolumeSummary": "音量 {percent}%",
+  "@mediaCutterVolumeSummary": {
+    "description": "Localized text for mediaCutterVolumeSummary.",
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "mediaCutterDurationSummary": "时长 {duration}",
+  "@mediaCutterDurationSummary": {
+    "description": "Localized text for mediaCutterDurationSummary.",
+    "placeholders": {
+      "duration": {}
+    }
+  },
+  "mediaCutterDurationHourOne": "小时",
+  "@mediaCutterDurationHourOne": {
+    "description": "Localized text for mediaCutterDurationHourOne."
+  },
+  "mediaCutterDurationHourFew": "小时",
+  "@mediaCutterDurationHourFew": {
+    "description": "Localized text for mediaCutterDurationHourFew."
+  },
+  "mediaCutterDurationHourMany": "小时",
+  "@mediaCutterDurationHourMany": {
+    "description": "Localized text for mediaCutterDurationHourMany."
+  },
+  "mediaCutterDurationMinuteOne": "分钟",
+  "@mediaCutterDurationMinuteOne": {
+    "description": "Localized text for mediaCutterDurationMinuteOne."
+  },
+  "mediaCutterDurationMinuteFew": "分钟",
+  "@mediaCutterDurationMinuteFew": {
+    "description": "Localized text for mediaCutterDurationMinuteFew."
+  },
+  "mediaCutterDurationMinuteMany": "分钟",
+  "@mediaCutterDurationMinuteMany": {
+    "description": "Localized text for mediaCutterDurationMinuteMany."
+  },
+  "mediaCutterDurationSecondOne": "秒",
+  "@mediaCutterDurationSecondOne": {
+    "description": "Localized text for mediaCutterDurationSecondOne."
+  },
+  "mediaCutterDurationSecondFew": "秒",
+  "@mediaCutterDurationSecondFew": {
+    "description": "Localized text for mediaCutterDurationSecondFew."
+  },
+  "mediaCutterDurationSecondMany": "秒",
+  "@mediaCutterDurationSecondMany": {
+    "description": "Localized text for mediaCutterDurationSecondMany."
+  },
+  "mediaCutterDurationAnd": "和",
+  "@mediaCutterDurationAnd": {
+    "description": "Localized text for mediaCutterDurationAnd."
+  },
+  "mediaCutterSeekStepButton": "调整媒体文件移动步长：{step}",
+  "@mediaCutterSeekStepButton": {
+    "description": "Localized text for mediaCutterSeekStepButton.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterSeekStepTitle": "媒体文件移动步长",
+  "@mediaCutterSeekStepTitle": {
+    "description": "Localized text for mediaCutterSeekStepTitle."
+  },
+  "mediaCutterSeekStepSelected": "媒体文件移动步长已设为 {step}。",
+  "@mediaCutterSeekStepSelected": {
+    "description": "Localized text for mediaCutterSeekStepSelected.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterPartEffectBackwards": "倒放",
+  "@mediaCutterPartEffectBackwards": {
+    "description": "Localized text for mediaCutterPartEffectBackwards."
+  },
+  "mediaCutterPartEffectTalkingGuitar": "会说话的吉他",
+  "@mediaCutterPartEffectTalkingGuitar": {
+    "description": "Localized text for mediaCutterPartEffectTalkingGuitar."
+  },
+  "mediaCutterPartEffectMosquito": "蚊子",
+  "@mediaCutterPartEffectMosquito": {
+    "description": "Localized text for mediaCutterPartEffectMosquito."
+  },
+  "mediaCutterPartEffectOneOfMany": "一个声音，多位歌手",
+  "@mediaCutterPartEffectOneOfMany": {
+    "description": "Localized text for mediaCutterPartEffectOneOfMany."
+  },
+  "mediaCutterPartEffectOrganVocoder": "会说话的风琴",
+  "@mediaCutterPartEffectOrganVocoder": {
+    "description": "Localized text for mediaCutterPartEffectOrganVocoder."
+  },
+  "mediaCutterPartEffectWarped": "扭曲",
+  "@mediaCutterPartEffectWarped": {
+    "description": "Localized text for mediaCutterPartEffectWarped."
+  },
+  "mediaCutterPartEffectSwirling": "立体声旋涡",
+  "@mediaCutterPartEffectSwirling": {
+    "description": "Localized text for mediaCutterPartEffectSwirling."
+  },
+  "mediaCutterPartEffectVader": "电影感低沉声音",
+  "@mediaCutterPartEffectVader": {
+    "description": "Localized text for mediaCutterPartEffectVader."
+  },
+  "mediaCutterPartEffectMetallic": "金属音",
+  "@mediaCutterPartEffectMetallic": {
+    "description": "Localized text for mediaCutterPartEffectMetallic."
+  },
+  "mediaCutterPartEffectSongbird": "鸣禽",
+  "@mediaCutterPartEffectSongbird": {
+    "description": "Localized text for mediaCutterPartEffectSongbird."
+  },
+  "mediaCutterPartEffectExterminator": "灭绝者",
+  "@mediaCutterPartEffectExterminator": {
+    "description": "Localized text for mediaCutterPartEffectExterminator."
+  },
+  "mediaCutterPartEffectRainAndThunder": "雨声与雷声",
+  "@mediaCutterPartEffectRainAndThunder": {
+    "description": "Localized text for mediaCutterPartEffectRainAndThunder."
+  },
+  "mediaCutterPartEffectJungle": "丛林",
+  "@mediaCutterPartEffectJungle": {
+    "description": "Localized text for mediaCutterPartEffectJungle."
+  },
+  "mediaCutterPartEffectCrowd": "人群",
+  "@mediaCutterPartEffectCrowd": {
+    "description": "Localized text for mediaCutterPartEffectCrowd."
+  },
+  "mediaCutterPartEffectSlotMachines": "老虎机",
+  "@mediaCutterPartEffectSlotMachines": {
+    "description": "Localized text for mediaCutterPartEffectSlotMachines."
+  },
+  "mediaCutterPartEffectTraffic": "交通噪声",
+  "@mediaCutterPartEffectTraffic": {
+    "description": "Localized text for mediaCutterPartEffectTraffic."
+  },
+  "mediaCutterPartEffectSpaceship": "宇宙飞船",
+  "@mediaCutterPartEffectSpaceship": {
+    "description": "Localized text for mediaCutterPartEffectSpaceship."
+  },
+  "mediaCutterPartEffectCricket": "蟋蟀",
+  "@mediaCutterPartEffectCricket": {
+    "description": "Localized text for mediaCutterPartEffectCricket."
+  },
+  "mediaCutterPartEffectSiren": "警报器",
+  "@mediaCutterPartEffectSiren": {
+    "description": "Localized text for mediaCutterPartEffectSiren."
+  },
+  "mediaCutterPartEffectSleighBells": "雪橇铃",
+  "@mediaCutterPartEffectSleighBells": {
+    "description": "Localized text for mediaCutterPartEffectSleighBells."
+  },
+  "mediaCutterPartEffectDj": "DJ 刮碟",
+  "@mediaCutterPartEffectDj": {
+    "description": "Localized text for mediaCutterPartEffectDj."
+  },
+  "mediaCutterPartEffectApplause": "掌声",
+  "@mediaCutterPartEffectApplause": {
+    "description": "Localized text for mediaCutterPartEffectApplause."
+  },
+  "mediaCutterPartEffectBadMelody": "跑调旋律",
+  "@mediaCutterPartEffectBadMelody": {
+    "description": "Localized text for mediaCutterPartEffectBadMelody."
+  },
+  "mediaCutterPartEffectBadHarmony": "不协和和声",
+  "@mediaCutterPartEffectBadHarmony": {
+    "description": "Localized text for mediaCutterPartEffectBadHarmony."
+  },
+  "mediaCutterPartEffectWarmVoice": "温暖声音",
+  "@mediaCutterPartEffectWarmVoice": {
+    "description": "Localized text for mediaCutterPartEffectWarmVoice."
+  },
+  "mediaCutterPartEffectTurtle": "乌龟",
+  "@mediaCutterPartEffectTurtle": {
+    "description": "Localized text for mediaCutterPartEffectTurtle."
+  },
+  "mediaCutterPartEffectHaunting": "阴森",
+  "@mediaCutterPartEffectHaunting": {
+    "description": "Localized text for mediaCutterPartEffectHaunting."
+  },
+  "radioPreviousPage": "上一页",
+  "@radioPreviousPage": {
+    "description": "Localized text for radioPreviousPage."
+  },
+  "noRecentRadios": "没有最近电台。",
+  "@noRecentRadios": {
+    "description": "Localized text for noRecentRadios."
+  },
+  "radioBrowseByCity": "按城市浏览",
+  "@radioBrowseByCity": {
+    "description": "Localized text for radioBrowseByCity."
+  },
+  "radioCityInputHint": "输入城市名称...",
+  "@radioCityInputHint": {
+    "description": "Localized text for radioCityInputHint."
+  },
+  "openItem": "打开",
+  "@openItem": {
+    "description": "Localized text for openItem."
+  },
+  "clearSearch": "清除搜索",
+  "@clearSearch": {
+    "description": "Localized text for clearSearch."
+  },
+  "fileTypeLabel": "文件",
+  "@fileTypeLabel": {
+    "description": "Localized text for fileTypeLabel."
+  },
+  "cinemaTrailerLoading": "正在加载预告片",
+  "@cinemaTrailerLoading": {
+    "description": "Localized text for cinemaTrailerLoading."
+  },
+  "cinemaNoTrailer": "此电影没有可用预告片",
+  "@cinemaNoTrailer": {
+    "description": "Localized text for cinemaNoTrailer."
+  },
+  "radioScheduleHours": "小时",
+  "@radioScheduleHours": {
+    "description": "Localized text for radioScheduleHours."
+  },
+  "radioScheduleSelectHours": "选择小时",
+  "@radioScheduleSelectHours": {
+    "description": "Localized text for radioScheduleSelectHours."
+  },
+  "radioScheduleMinutes": "分钟",
+  "@radioScheduleMinutes": {
+    "description": "Localized text for radioScheduleMinutes."
+  },
+  "radioScheduleSelectMinutes": "选择分钟",
+  "@radioScheduleSelectMinutes": {
+    "description": "Localized text for radioScheduleSelectMinutes."
+  },
+  "radioScheduleStopCurrentFirst": "安排新录制前，请先停止当前录制。",
+  "@radioScheduleStopCurrentFirst": {
+    "description": "Localized text for radioScheduleStopCurrentFirst."
+  },
+  "radioScheduleStartTime": "开始时间",
+  "@radioScheduleStartTime": {
+    "description": "Localized text for radioScheduleStartTime."
+  },
+  "radioScheduleEndTime": "结束时间",
+  "@radioScheduleEndTime": {
+    "description": "Localized text for radioScheduleEndTime."
+  },
+  "radioScheduleDialogTitle": "安排录制",
+  "@radioScheduleDialogTitle": {
+    "description": "Localized text for radioScheduleDialogTitle."
+  },
+  "radioScheduleOpenRequirement": "在你浏览 Sonarpad 的其他屏幕时，计划录制仍会继续工作。Sonarpad 必须保持打开；如果应用被关闭或被系统挂起，则无法保证录制会按时开始。",
+  "@radioScheduleOpenRequirement": {
+    "description": "Localized text for radioScheduleOpenRequirement."
+  },
+  "radioScheduleStartTimeValue": "开始时间：{time}",
+  "@radioScheduleStartTimeValue": {
+    "description": "Localized text for radioScheduleStartTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleEndTimeValue": "结束时间：{time}",
+  "@radioScheduleEndTimeValue": {
+    "description": "Localized text for radioScheduleEndTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleOptionalTitle": "可选标题",
+  "@radioScheduleOptionalTitle": {
+    "description": "Localized text for radioScheduleOptionalTitle."
+  },
+  "radioScheduleTitleHint": "留空则使用广播或电视名称",
+  "@radioScheduleTitleHint": {
+    "description": "Localized text for radioScheduleTitleHint."
+  },
+  "radioScheduleAction": "安排",
+  "@radioScheduleAction": {
+    "description": "Localized text for radioScheduleAction."
+  },
+  "radioScheduledRecordingRange": "计划录制：{start} - {end}。",
+  "@radioScheduledRecordingRange": {
+    "description": "Localized text for radioScheduledRecordingRange.",
+    "placeholders": {
+      "start": {},
+      "end": {}
+    }
+  },
+  "radioScheduledRecordingAlreadyActive": "计划录制未开始：当前已有其他录制正在进行。",
+  "@radioScheduledRecordingAlreadyActive": {
+    "description": "Localized text for radioScheduledRecordingAlreadyActive."
+  },
+  "radioScheduledRecordingStarted": "计划录制已开始。",
+  "@radioScheduledRecordingStarted": {
+    "description": "Localized text for radioScheduledRecordingStarted."
+  },
+  "radioScheduledRecordingError": "计划录制错误：{error}",
+  "@radioScheduledRecordingError": {
+    "description": "Localized text for radioScheduledRecordingError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingSaved": "计划录制已保存。",
+  "@radioScheduledRecordingSaved": {
+    "description": "Localized text for radioScheduledRecordingSaved."
+  },
+  "radioScheduledRecordingSaveError": "保存计划录制时出错：{error}",
+  "@radioScheduledRecordingSaveError": {
+    "description": "Localized text for radioScheduledRecordingSaveError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingCancelled": "计划录制已取消。",
+  "@radioScheduledRecordingCancelled": {
+    "description": "Localized text for radioScheduledRecordingCancelled."
+  },
+  "radioScheduledRecordingRangeWithTitle": "计划录制：{start} - {end}。标题：{title}。",
+  "@radioScheduledRecordingRangeWithTitle": {
+    "description": "Localized text for radioScheduledRecordingRangeWithTitle.",
+    "placeholders": {
+      "start": {},
+      "end": {},
+      "title": {}
+    }
+  },
+  "radioScheduleCancelAction": "取消计划录制",
+  "@radioScheduleCancelAction": {
+    "description": "Localized text for radioScheduleCancelAction."
+  },
+  "radioLanguageTr": "土耳其语",
+  "@radioLanguageTr": {
+    "description": "Localized text for radioLanguageTr."
+  },
+  "radioCountryOptionTr": "土耳其",
+  "@radioCountryOptionTr": {
+    "description": "Localized text for radioCountryOptionTr."
+  },
+  "radioCommunityLanguageTurkish": "土耳其语",
+  "@radioCommunityLanguageTurkish": {
+    "description": "Localized text for radioCommunityLanguageTurkish."
+  },
+  "simplifiedChineseLanguageName": "简体中文",
+  "@simplifiedChineseLanguageName": {
+    "description": "Localized name for Simplified Chinese in the language selector."
+  },
+  "chinaCountryName": "中国",
+  "@chinaCountryName": {
+    "description": "Localized country name for China."
+  },
+  "technicalErrorGeneric": "技术错误。请重试。",
+  "@technicalErrorGeneric": {
+    "description": "Generic localized message used when a service returns a legacy non-localized technical error."
+  },
+  "cinemaTrailerTitle": "预告片：{title}",
+  "@cinemaTrailerTitle": {
+    "description": "Localized title for the trailer player screen.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@sonarTubeFavoriteAdded": {
+    "description": "Localized text for sonarTubeFavoriteAdded.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@sonarTubeFavoriteRemoved": {
+    "description": "Localized text for sonarTubeFavoriteRemoved.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@convertMediaFailed": {
+    "description": "Localized text for convertMediaFailed.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@positionLabel": {
+    "description": "Localized text for positionLabel.",
+    "placeholders": {
+      "position": {
+        "example": "3",
+        "type": "int"
+      },
+      "targetName": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@error": {
+    "description": "Localized text for error.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@source": {
+    "description": "Localized text for source.",
+    "placeholders": {
+      "source": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@chunkCreated": {
+    "description": "Localized text for chunkCreated.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@playingChunk": {
+    "description": "Localized text for playingChunk.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      },
+      "size": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@readingFinished": {
+    "description": "Localized text for readingFinished.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "libraryPath": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "@edgeTtsError": {
+    "description": "Localized text for edgeTtsError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@audioChunksReady": {
+    "description": "Localized text for audioChunksReady.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastResultsFound": {
+    "description": "Localized text for podcastResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastSearchError": {
+    "description": "Localized text for podcastSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@subscribedTo": {
+    "description": "Localized text for subscribedTo.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "@subscriptionError": {
+    "description": "Localized text for subscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@podcastSubscriptionError": {
+    "description": "Localized text for podcastSubscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@localAudioFilesFound": {
+    "description": "Localized text for localAudioFilesFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastImportComplete": {
+    "description": "Localized text for podcastImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastImportError": {
+    "description": "Localized text for podcastImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@podcastExportError": {
+    "description": "Localized text for podcastExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@downloaded": {
+    "description": "Localized text for downloaded.",
+    "placeholders": {
+      "path": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "@episodeError": {
+    "description": "Localized text for episodeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@nowPlayingTitle": {
+    "description": "Localized text for nowPlayingTitle.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "@playbackPositionValue": {
+    "description": "Localized text for playbackPositionValue.",
+    "placeholders": {
+      "position": {
+        "example": "01:23",
+        "type": "String"
+      },
+      "duration": {
+        "example": "01:23",
+        "type": "String"
+      }
+    }
+  },
+  "@volumeValue": {
+    "description": "Localized text for volumeValue.",
+    "placeholders": {
+      "percentage": {
+        "example": "80",
+        "type": "int"
+      }
+    }
+  },
+  "@sharedDocumentsImportComplete": {
+    "description": "Localized text for sharedDocumentsImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@libraryLoadError": {
+    "description": "Localized text for libraryLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@fileOpenError": {
+    "description": "Localized text for fileOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@fileInaccessible": {
+    "description": "Localized text for fileInaccessible.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@documentAddError": {
+    "description": "Localized text for documentAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@documentRemoveError": {
+    "description": "Localized text for documentRemoveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@documentAddedOn": {
+    "description": "Localized text for documentAddedOn.",
+    "placeholders": {
+      "date": {
+        "example": "1 gennaio 2026",
+        "type": "String"
+      }
+    }
+  },
+  "@documentTypeDescription": {
+    "description": "Localized text for documentTypeDescription.",
+    "placeholders": {
+      "extension": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@removeItem": {
+    "description": "Localized text for removeItem.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@noDocumentSearchResults": {
+    "description": "Localized text for noDocumentSearchResults.",
+    "placeholders": {
+      "query": {
+        "example": "testo",
+        "type": "String"
+      }
+    }
+  },
+  "@documentSearchResultParagraph": {
+    "description": "Localized text for documentSearchResultParagraph.",
+    "placeholders": {
+      "number": {
+        "example": "4",
+        "type": "int"
+      }
+    }
+  },
+  "@settingsVoiceTestError": {
+    "description": "Localized text for settingsVoiceTestError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@settingsVoiceSaveError": {
+    "description": "Localized text for settingsVoiceSaveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@settingsCodeRequestBody": {
+    "description": "Localized text for settingsCodeRequestBody.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "surname": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "email": {
+        "example": "Example",
+        "type": "String"
+      },
+      "os": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@settingsMailOpenError": {
+    "description": "Localized text for settingsMailOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@sourceLanguageValue": {
+    "description": "Localized text for sourceLanguageValue.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "@sourceDurationValue": {
+    "description": "Localized text for sourceDurationValue.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "@poetryDbLineCount": {
+    "description": "Localized text for poetryDbLineCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@bookmarkSet": {
+    "description": "Localized text for bookmarkSet.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@versionBuild": {
+    "description": "Localized text for versionBuild.",
+    "placeholders": {
+      "version": {
+        "example": "Example",
+        "type": "String"
+      },
+      "buildNumber": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@whatIsNewInVersion": {
+    "description": "Localized text for whatIsNewInVersion.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@changelogLoadError": {
+    "description": "Localized text for changelogLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@visitSonarpadSiteWithUrl": {
+    "description": "Localized text for visitSonarpadSiteWithUrl.",
+    "placeholders": {
+      "url": {
+        "example": "https://example.com",
+        "type": "String"
+      }
+    }
+  },
+  "@importZipError": {
+    "description": "Localized text for importZipError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@dropboxLoadFolderError": {
+    "description": "Localized text for dropboxLoadFolderError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@dropboxImportError": {
+    "description": "Localized text for dropboxImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@reminderSaved": {
+    "description": "Localized text for reminderSaved.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@radioResultsFound": {
+    "description": "Localized text for radioResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@radioSearchError": {
+    "description": "Localized text for radioSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@radioNowPlaying": {
+    "description": "Localized text for radioNowPlaying.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@radioPlayError": {
+    "description": "Localized text for radioPlayError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@radioFavoriteAdded": {
+    "description": "Localized text for radioFavoriteAdded.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@radioFavoriteRemoved": {
+    "description": "Localized text for radioFavoriteRemoved.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@radioCommunityAddError": {
+    "description": "Localized text for radioCommunityAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@deleteRecordingsConfirmation": {
+    "description": "Localized text for deleteRecordingsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@routeError": {
+    "description": "Localized text for routeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@routeDistanceMeters": {
+    "description": "Localized text for routeDistanceMeters.",
+    "placeholders": {
+      "meters": {
+        "type": "int",
+        "example": "250"
+      }
+    }
+  },
+  "@routeDistanceKilometers": {
+    "description": "Localized text for routeDistanceKilometers.",
+    "placeholders": {
+      "kilometers": {
+        "type": "String",
+        "example": "1.5"
+      }
+    }
+  },
+  "@routeDurationMinutes": {
+    "description": "Localized text for routeDurationMinutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "@routeDurationHoursMinutes": {
+    "description": "Localized text for routeDurationHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "1"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "@cinemaReleased": {
+    "description": "Localized text for cinemaReleased.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
+    }
+  },
+  "@cinemaWillRelease": {
+    "description": "Localized text for cinemaWillRelease.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
+    }
+  },
+  "mediaCutterExportPartProgress": "第 {index}/{total} 部分",
+  "@mediaCutterExportPartProgress": {
+    "description": "Progress label while exporting Media Cutter parts.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterExportFinalVerification": "最终验证",
+  "@mediaCutterExportFinalVerification": {
+    "description": "Localized text for mediaCutterExportFinalVerification."
+  },
+  "mediaCutterExportMergeParts": "合并片段",
+  "@mediaCutterExportMergeParts": {
+    "description": "Localized text for mediaCutterExportMergeParts."
+  },
+  "mediaCutterExportFileCheck": "检查文件",
+  "@mediaCutterExportFileCheck": {
+    "description": "Localized text for mediaCutterExportFileCheck."
+  },
+  "mediaCutterExportPublishing": "发布",
+  "@mediaCutterExportPublishing": {
+    "description": "Localized text for mediaCutterExportPublishing."
+  },
+  "mediaCutterExportCompletion": "完成",
+  "@mediaCutterExportCompletion": {
+    "description": "Localized text for mediaCutterExportCompletion."
+  },
+  "mediaCutterAddTrack": "添加新音轨",
+  "@mediaCutterAddTrack": {
+    "description": "Localized text for mediaCutterAddTrack."
+  },
+  "mediaCutterChooseAudioTrack": "选择音频文件",
+  "@mediaCutterChooseAudioTrack": {
+    "description": "Localized text for mediaCutterChooseAudioTrack."
+  },
+  "mediaCutterAddedTrackSelected": "已选择音频文件：{name}",
+  "@mediaCutterAddedTrackSelected": {
+    "description": "Localized text for mediaCutterAddedTrackSelected.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterOriginalTrackVolume": "原始音轨音量",
+  "@mediaCutterOriginalTrackVolume": {
+    "description": "Localized text for mediaCutterOriginalTrackVolume."
+  },
+  "mediaCutterNewTrackVolume": "新音轨音量",
+  "@mediaCutterNewTrackVolume": {
+    "description": "Localized text for mediaCutterNewTrackVolume."
+  },
+  "mediaCutterLoopNewTrack": "循环播放新音轨",
+  "@mediaCutterLoopNewTrack": {
+    "description": "Localized text for mediaCutterLoopNewTrack."
+  },
+  "mediaCutterPreviewNewTrack": "试听",
+  "@mediaCutterPreviewNewTrack": {
+    "description": "Localized text for mediaCutterPreviewNewTrack."
+  },
+  "mediaCutterFinalizeTrack": "完成",
+  "@mediaCutterFinalizeTrack": {
+    "description": "Localized text for mediaCutterFinalizeTrack."
+  },
+  "mediaCutterAddedTrackApplied": "已添加新音轨：{name}",
+  "@mediaCutterAddedTrackApplied": {
+    "description": "Localized text for mediaCutterAddedTrackApplied.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterAddedTrackInvalidAudio": "所选文件不包含有效的音频轨道。",
+  "@mediaCutterAddedTrackInvalidAudio": {
+    "description": "Localized text for mediaCutterAddedTrackInvalidAudio."
+  },
+  "mediaCutterAddedTrackPreviewPreparing": "正在准备试听…",
+  "@mediaCutterAddedTrackPreviewPreparing": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewPreparing."
+  },
+  "mediaCutterAddedTrackPreviewFailed": "无法创建试听。",
+  "@mediaCutterAddedTrackPreviewFailed": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewFailed."
+  },
+  "mediaCutterMixingAddedTrack": "正在混合新音轨",
+  "@mediaCutterMixingAddedTrack": {
+    "description": "Localized text for mediaCutterMixingAddedTrack."
+  }
+}

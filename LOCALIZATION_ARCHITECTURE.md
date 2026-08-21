@@ -54,3 +54,8 @@ Il test `test/localization_architecture_contract_test.dart` esegue questo contro
 6. Aggiungere la localizzazione nativa iOS quando servono descrizioni dei permessi.
 7. Configurare soltanto i servizi esterni che richiedono davvero un codice lingua/paese specifico, per esempio TMDB, News, Radio, Podcast o Wikipedia.
 8. Eseguire `python tool/check_user_facing_strings.py`, `flutter analyze` e i test di localizzazione.
+
+
+## Chinese fallback required by Flutter gen-l10n
+
+Simplified Chinese is selectable as `zh_CN`, but Flutter requires a base `zh` ARB whenever a regional Chinese ARB exists. Therefore `lib/l10n/app_zh.arb` is a technical fallback and must mirror `app_zh_CN.arb`; it is not an additional user-selectable language. Keep both files synchronized.
