@@ -28,6 +28,16 @@ void main() {
     final melodicChorus = File('${directory.path}/melodic_chorus.f32');
     final robot = File('${directory.path}/robot.f32');
     final superRobot = File('${directory.path}/super_robot.f32');
+    final ghost = File('${directory.path}/ghost.f32');
+    final oldRadio = File('${directory.path}/old_radio.f32');
+    final megaphone = File('${directory.path}/megaphone.f32');
+    final fadeIn = File('${directory.path}/fade_in.f32');
+    final fadeOut = File('${directory.path}/fade_out.f32');
+    final distortion = File('${directory.path}/distortion.f32');
+    final loFi = File('${directory.path}/lofi.f32');
+    final reverseEcho = File('${directory.path}/reverse_echo.f32');
+    final talkingGuitar = File('${directory.path}/talking_guitar.f32');
+    final organVocoder = File('${directory.path}/organ_vocoder.f32');
     try {
       await input.writeAsBytes(data.buffer.asUint8List(), flush: true);
       final assetData = Float32List(frames * channels);
@@ -70,11 +80,83 @@ void main() {
         effect: SonarpadDspEffect.superRobot,
         amount: 0.7,
       );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: ghost.path,
+        effect: SonarpadDspEffect.ghost,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: oldRadio.path,
+        effect: SonarpadDspEffect.oldRadio,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: megaphone.path,
+        effect: SonarpadDspEffect.megaphone,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: fadeIn.path,
+        effect: SonarpadDspEffect.fadeIn,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: fadeOut.path,
+        effect: SonarpadDspEffect.fadeOut,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: distortion.path,
+        effect: SonarpadDspEffect.distortion,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: loFi.path,
+        effect: SonarpadDspEffect.loFi,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: reverseEcho.path,
+        effect: SonarpadDspEffect.reverseEcho,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        assetPath: choirAsset.path,
+        outputPath: talkingGuitar.path,
+        effect: SonarpadDspEffect.talkingGuitar,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        assetPath: choirAsset.path,
+        outputPath: organVocoder.path,
+        effect: SonarpadDspEffect.organVocoder,
+        amount: 0.7,
+      );
 
       expect(await chorus.length(), await input.length());
       expect(await melodicChorus.length(), await input.length());
       expect(await robot.length(), await input.length());
       expect(await superRobot.length(), await input.length());
+      expect(await ghost.length(), await input.length());
+      expect(await oldRadio.length(), await input.length());
+      expect(await megaphone.length(), await input.length());
+      expect(await fadeIn.length(), await input.length());
+      expect(await fadeOut.length(), await input.length());
+      expect(await distortion.length(), await input.length());
+      expect(await loFi.length(), await input.length());
+      expect(await reverseEcho.length(), greaterThan(await input.length()));
+      expect(await talkingGuitar.length(), await input.length());
+      expect(await organVocoder.length(), await input.length());
       expect(
         await chorus.readAsBytes(),
         isNot(equals(await input.readAsBytes())),
@@ -94,6 +176,46 @@ void main() {
       expect(
         await superRobot.readAsBytes(),
         isNot(equals(await robot.readAsBytes())),
+      );
+      expect(
+        await ghost.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await oldRadio.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await megaphone.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await fadeIn.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await fadeOut.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await distortion.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await loFi.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await reverseEcho.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await talkingGuitar.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await organVocoder.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
       );
     } finally {
       await directory.delete(recursive: true);

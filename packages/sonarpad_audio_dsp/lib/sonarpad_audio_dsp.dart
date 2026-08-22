@@ -45,22 +45,30 @@ enum SonarpadDspEffect {
   badHarmony(38),
   warmVoice(39),
   turtle(40),
-  haunting(41);
+  haunting(41),
+  ghost(42),
+  megaphone(43),
+  fadeIn(44),
+  fadeOut(45),
+  distortion(46),
+  loFi(47),
+  reverseEcho(48);
 
   const SonarpadDspEffect(this.id);
   final int id;
 }
 
 @Native<
-    Int32 Function(
-      Pointer<Utf8>,
-      Pointer<Utf8>,
-      Pointer<Utf8>,
-      Int32,
-      Float,
-      Int32,
-      Int32,
-    )>(symbol: 'sonarpad_dsp_process_file')
+  Int32 Function(
+    Pointer<Utf8>,
+    Pointer<Utf8>,
+    Pointer<Utf8>,
+    Int32,
+    Float,
+    Int32,
+    Int32,
+  )
+>(symbol: 'sonarpad_dsp_process_file')
 external int _processFile(
   Pointer<Utf8> inputPath,
   Pointer<Utf8> assetPath,
@@ -117,7 +125,9 @@ final class SonarpadAudioDsp {
           final message = pointer == nullptr
               ? 'Errore DSP nativo $result.'
               : pointer.toDartString();
-          throw StateError(message.isEmpty ? 'Errore DSP nativo $result.' : message);
+          throw StateError(
+            message.isEmpty ? 'Errore DSP nativo $result.' : message,
+          );
         }
       } finally {
         malloc.free(input);

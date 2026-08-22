@@ -319,6 +319,8 @@ class DspProcessor {
         pitch_songbird_(sample_rate, 1.34f), pitch_turtle_(sample_rate, 0.74f),
         many_low_(sample_rate, 0.91f), many_high_(sample_rate, 1.09f),
         many_far_(sample_rate, 1.18f),
+        ghost_pitch_l_(sample_rate, 0.98f - 0.08f * amount_),
+        ghost_pitch_r_(sample_rate, 0.98f - 0.08f * amount_),
         vocoder_(sample_rate, id == 2 ? 28 : 22), rng_(0x534f4e41u + id * 7919u) {
     hp_.configure(Biquad::Type::highpass, sr_, 90.0f);
     lp_.configure(Biquad::Type::lowpass, sr_, 9000.0f);
@@ -326,6 +328,8 @@ class DspProcessor {
     tone_low_.configure(Biquad::Type::lowpass, sr_, 420.0f);
     tone_high_.configure(Biquad::Type::highpass, sr_, 2700.0f);
     choir_consonants_.configure(Biquad::Type::highpass, sr_, 3200.0f, 0.72f);
+    guitar_consonants_.configure(Biquad::Type::highpass, sr_, 3000.0f, 0.72f);
+    organ_consonants_.configure(Biquad::Type::highpass, sr_, 3000.0f, 0.72f);
     robot_consonants_.configure(Biquad::Type::highpass, sr_, 3400.0f, 0.72f);
     robot_output_highpass_.configure(Biquad::Type::highpass, sr_, 185.0f,
                                      0.72f);
@@ -333,6 +337,68 @@ class DspProcessor {
                                       0.72f);
     robot_clarity_lowpass_.configure(Biquad::Type::lowpass, sr_, 4300.0f,
                                      0.72f);
+    radio_hiss_highpass_.configure(Biquad::Type::highpass, sr_, 520.0f,
+                                   0.72f);
+    radio_hiss_lowpass_.configure(Biquad::Type::lowpass, sr_, 6100.0f,
+                                  0.72f);
+    radio_voice_highpass_.configure(Biquad::Type::highpass, sr_, 180.0f,
+                                    0.72f);
+    radio_voice_lowpass_.configure(Biquad::Type::lowpass, sr_, 4200.0f,
+                                   0.72f);
+    const float megaphone_strength = std::sqrt(amount_);
+    megaphone_voice_hp_.configure(Biquad::Type::highpass, sr_,
+                                  180.0f + 260.0f * megaphone_strength);
+    megaphone_voice_lp_.configure(
+        Biquad::Type::lowpass, sr_,
+        std::clamp(8500.0f - 3900.0f * megaphone_strength, 4200.0f, 8500.0f));
+    megaphone_eq_1050_.configure(Biquad::Type::peaking, sr_, 1050.0f, 0.85f,
+                                 6.0f * amount_);
+    megaphone_eq_2350_.configure(Biquad::Type::peaking, sr_, 2350.0f, 0.90f,
+                                 5.0f * amount_);
+    megaphone_eq_4100_.configure(Biquad::Type::peaking, sr_, 4100.0f, 1.10f,
+                                 3.0f * amount_);
+    megaphone_metal_hp_.configure(Biquad::Type::highpass, sr_, 520.0f);
+    megaphone_metal_lp_.configure(Biquad::Type::lowpass, sr_, 5800.0f);
+    megaphone_output_eq_.configure(Biquad::Type::peaking, sr_, 1800.0f, 1.0f,
+                                   2.0f * amount_);
+    distortion_dry_hp_l_.configure(Biquad::Type::highpass, sr_, 90.0f);
+    distortion_dry_hp_r_.configure(Biquad::Type::highpass, sr_, 90.0f);
+    distortion_wet_hp_l_.configure(Biquad::Type::highpass, sr_, 90.0f);
+    distortion_wet_hp_r_.configure(Biquad::Type::highpass, sr_, 90.0f);
+    distortion_eq_2400_l_.configure(Biquad::Type::peaking, sr_, 2400.0f,
+                                    1.0f, 3.5f * amount_);
+    distortion_eq_2400_r_.configure(Biquad::Type::peaking, sr_, 2400.0f,
+                                    1.0f, 3.5f * amount_);
+    distortion_eq_5600_l_.configure(Biquad::Type::peaking, sr_, 5600.0f,
+                                    1.1f, 2.0f * amount_);
+    distortion_eq_5600_r_.configure(Biquad::Type::peaking, sr_, 5600.0f,
+                                    1.1f, 2.0f * amount_);
+    const float lofi_strength = std::sqrt(amount_);
+    lofi_dry_hp_.configure(Biquad::Type::highpass, sr_, 120.0f);
+    lofi_dry_lp_.configure(Biquad::Type::lowpass, sr_, 6800.0f);
+    lofi_chip_hp_.configure(Biquad::Type::highpass, sr_,
+                            80.0f + 100.0f * lofi_strength);
+    lofi_chip_lp_.configure(Biquad::Type::lowpass, sr_,
+                            12000.0f - 7200.0f * lofi_strength);
+    lofi_chip_eq_.configure(Biquad::Type::peaking, sr_, 1250.0f, 1.0f,
+                            6.0f * lofi_strength);
+    const float ghost_highpass = 90.0f + 130.0f * amount_;
+    const float ghost_lowpass =
+        std::clamp(7600.0f - 2400.0f * amount_, 5000.0f, 7600.0f);
+    const float ghost_low_gain = 1.5f + 3.5f * amount_;
+    const float ghost_metal_gain = 2.5f + 5.5f * amount_;
+    ghost_hp_l_.configure(Biquad::Type::highpass, sr_, ghost_highpass);
+    ghost_hp_r_.configure(Biquad::Type::highpass, sr_, ghost_highpass);
+    ghost_lp_l_.configure(Biquad::Type::lowpass, sr_, ghost_lowpass);
+    ghost_lp_r_.configure(Biquad::Type::lowpass, sr_, ghost_lowpass);
+    ghost_low_eq_l_.configure(Biquad::Type::peaking, sr_, 430.0f, 1.1f,
+                              ghost_low_gain);
+    ghost_low_eq_r_.configure(Biquad::Type::peaking, sr_, 430.0f, 1.1f,
+                              ghost_low_gain);
+    ghost_metal_eq_l_.configure(Biquad::Type::peaking, sr_, 2350.0f, 0.85f,
+                                ghost_metal_gain);
+    ghost_metal_eq_r_.configure(Biquad::Type::peaking, sr_, 2350.0f, 0.85f,
+                                ghost_metal_gain);
   }
 
   Stereo process(float l, float r, Stereo asset, bool has_asset) {
@@ -380,12 +446,19 @@ class DspProcessor {
       case 39: wet = warmVoice(mono); break;
       case 40: wet = turtle(mono); break;
       case 41: wet = haunting(mono); break;
+      case 42: wet = ghost(l, r); break;
+      case 43: wet = megaphone(mono); break;
+      case 46: wet = distortion(l, r); break;
+      case 47: wet = loFi(mono); break;
       default: wet = {l, r}; break;
     }
     // With the melodic choir carrier, a conventional dry/wet blend would
     // leave the original speaking pitch in the foreground. Keep the choir
     // almost entirely wet so the articulated voice follows the sung chords.
-    const float mix = id_ == 1 && has_asset
+    const float mix = id_ == 15 || id_ == 18 || id_ == 42 || id_ == 43 ||
+                              id_ == 46 || id_ == 47
+                      ? 1.0f
+                      : id_ == 1 && has_asset
                       ? 0.82f + 0.18f * amount_
                       : id_ == 2
                           ? 0.96f + 0.04f * amount_
@@ -484,10 +557,13 @@ class DspProcessor {
       case 30: voice_gain = 0.72f; bed_gain = 0.52f; break;
       case 32: voice_gain = 0.76f; bed_gain = 0.48f; break;
       case 34: voice_gain = 0.74f; bed_gain = 0.52f; break;
-      case 36: voice_gain = 0.67f; bed_gain = 0.62f; break;
+      case 36: voice_gain = 0.70f; bed_gain = 0.96f; break;
       default: break;
     }
-    const float gain = bed_gain * (0.55f + 0.45f * amount_) * duck;
+    const float effective_duck =
+        effect_id == 36 ? 0.82f + 0.18f * duck : duck;
+    const float gain =
+        bed_gain * (0.55f + 0.45f * amount_) * effective_duck;
     return {clampf(voice_gain * x + gain * asset.l),
             clampf(voice_gain * x + gain * asset.r)};
   }
@@ -535,26 +611,36 @@ class DspProcessor {
   Stereo oldRadio(float x, Stereo asset, bool has_asset) {
     // Voice band, transformer-like saturation and wow/flutter. A pre-rendered
     // static/crackle bed is preferred; deterministic synthesis remains fallback.
-    float y = hp_.process(x);
-    y = lp_.process(y);
+    static_cast<void>(asset);
+    static_cast<void>(has_asset);
+    float y = radio_voice_highpass_.process(x);
+    y = radio_voice_lowpass_.process(y);
     y = std::tanh(y * (2.2f + 2.8f * amount_));
     short_delay_.push(y);
     const float t = static_cast<float>(sample_index_) / sr_;
     const float wow = (2.5f + 8.0f * amount_) * (0.5f + 0.5f * std::sin(kTwoPi * 0.72f * t));
     y = 0.68f * y + 0.32f * short_delay_.read(wow);
-    float noise = rng_.uniform() * (0.012f + 0.028f * amount_);
-    const bool crackle = rng_.positive() > (0.99955f - 0.00020f * amount_);
-    if (crackle) crackle_env_ = 1.0f;
-    crackle_env_ *= 0.86f;
-    noise += rng_.uniform() * crackle_env_ * (0.08f + 0.22f * amount_);
-    if (has_asset) {
-      const float duck = voiceDucking(x);
-      const float bed = (0.055f + 0.095f * amount_) * duck;
-      y = clampf(y * 0.94f + bed * 0.5f * (asset.l + asset.r));
-      return {clampf(y + bed * 0.18f * asset.l),
-              clampf(y + bed * 0.18f * asset.r)};
+    const float white = rng_.uniform();
+    radio_noise_memory_ = 0.982f * radio_noise_memory_ + 0.018f * white;
+    float hiss = radio_hiss_lowpass_.process(
+        radio_hiss_highpass_.process(0.72f * white + 1.55f * radio_noise_memory_));
+    const float drift = 0.70f + 0.30f *
+        std::sin(kTwoPi * 0.21f * t + 0.55f * std::sin(kTwoPi * 0.047f * t));
+    hiss *= (0.22f + 0.14f * amount_) * drift;
+
+    const bool crackle =
+        rng_.positive() > (0.99985f - 0.00008f * amount_);
+    if (crackle) {
+      crackle_env_ = 1.0f;
+      radio_crackle_value_ = rng_.uniform();
     }
-    y = clampf((y * 0.92f + noise) * 0.92f);
+    crackle_env_ *= 0.935f;
+    const float pop = radio_crackle_value_ * crackle_env_ *
+                      (0.16f + 0.30f * amount_);
+    const float hum = (0.007f + 0.012f * amount_) *
+        (std::sin(kTwoPi * 50.0f * t) +
+         0.34f * std::sin(kTwoPi * 100.0f * t));
+    y = clampf(y * 0.78f + hiss + pop + hum);
     return {y, y};
   }
 
@@ -605,10 +691,42 @@ class DspProcessor {
               0.30f * oscillator(base * 1.498f, 2) +
               0.20f * oscillator(base * 2.01f, 2);
     if (!has_asset) carrier *= 0.55f + 0.45f * pluck;
-    carrier = std::tanh(carrier * (has_asset ? 1.8f : 1.0f));
-    float y = vocoder_.process(x, carrier, 5.0f, 95.0f);
-    y = std::tanh(y * 3.2f);
-    return {y * 0.94f, y * 0.86f};
+    carrier = std::tanh(carrier * (has_asset ? 5.5f : 1.8f));
+    const float articulated = vocoder_.process(x, carrier, 3.2f, 115.0f);
+    const float consonants = guitar_consonants_.process(x);
+    const float voiced =
+        std::tanh(articulated * 22.0f + consonants * 0.58f) * 0.78f;
+    const Stereo tuned_voice = chorus(voiced, voiced, false);
+    const float vocoder_lead =
+        std::tanh(articulated * 30.0f + consonants * 0.72f) * 0.72f;
+    const float lower_harmony = many_low_.process(x);
+    const float upper_harmony = many_high_.process(x);
+    const float clear_lead = std::tanh(
+        (0.72f * x + 0.16f * lower_harmony + 0.12f * upper_harmony) *
+        1.85f);
+    const float voice_l = std::tanh(
+        (0.28f * tuned_voice.l + 0.25f * vocoder_lead +
+         1.48f * clear_lead) * 1.35f) * 0.94f;
+    const float voice_r = std::tanh(
+        (0.28f * tuned_voice.r + 0.25f * vocoder_lead +
+         1.48f * clear_lead) * 1.35f) * 0.94f;
+
+    if (!has_asset) {
+      return {clampf(voice_l), clampf(voice_r)};
+    }
+
+    // As in the choir effect, the carrier supplies the notes while the input
+    // voice supplies words and articulation. Keep the original guitar as a
+    // clearly audible stereo bed, ducked under speech instead of replacing it.
+    const float duck = voiceDucking(x);
+    const float bed_gain = (0.003f + 0.004f * amount_) * duck;
+    const float room_l = reverb_.process(asset.l, 0.50f);
+    const float room_r = reverb_.process(asset.r, 0.54f);
+    return {
+        clampf(voice_l +
+               bed_gain * (0.84f * asset.l + 0.16f * room_l)),
+        clampf(voice_r +
+               bed_gain * (0.84f * asset.r - 0.16f * room_r))};
   }
 
   Stereo mosquito(float x) {
@@ -637,12 +755,38 @@ class DspProcessor {
                             0.16f * oscillator(f * 3.0f) +
                             0.10f * oscillator(f * 4.0f);
     const float carrier = has_asset
-        ? std::tanh(0.5f * (asset.l + asset.r) * 1.65f)
+        ? std::tanh(0.5f * (asset.l + asset.r) * 5.0f)
         : synthetic;
-    float y = vocoder_.process(x, carrier, 9.0f, 160.0f);
-    const float rev = reverb_.process(y, 0.52f);
-    y = std::tanh((y + 0.25f * rev) * 2.2f);
-    return {y, y};
+    const float articulated = vocoder_.process(x, carrier, 3.2f, 115.0f);
+    const float consonants = organ_consonants_.process(x);
+    const float voiced =
+        std::tanh(articulated * 22.0f + consonants * 0.58f) * 0.78f;
+    const Stereo tuned_voice = chorus(voiced, voiced, false);
+    const float vocoder_lead =
+        std::tanh(articulated * 30.0f + consonants * 0.72f) * 0.72f;
+    const float lower_harmony = many_low_.process(x);
+    const float upper_harmony = many_high_.process(x);
+    const float clear_lead = std::tanh(
+        (0.72f * x + 0.16f * lower_harmony + 0.12f * upper_harmony) *
+        1.85f);
+    const float voice_l = std::tanh(
+        (0.28f * tuned_voice.l + 0.25f * vocoder_lead +
+         1.48f * clear_lead) * 1.35f) * 0.94f;
+    const float voice_r = std::tanh(
+        (0.28f * tuned_voice.r + 0.25f * vocoder_lead +
+         1.48f * clear_lead) * 1.35f) * 0.94f;
+
+    if (!has_asset) return {clampf(voice_l), clampf(voice_r)};
+
+    const float duck = voiceDucking(x);
+    const float bed_gain = (0.003f + 0.004f * amount_) * duck;
+    const float room_l = reverb_.process(asset.l, 0.50f);
+    const float room_r = reverb_.process(asset.r, 0.54f);
+    return {
+        clampf(voice_l +
+               bed_gain * (0.84f * asset.l + 0.16f * room_l)),
+        clampf(voice_r +
+               bed_gain * (0.84f * asset.r - 0.16f * room_r))};
   }
 
   Stereo warped(float l, float r) {
@@ -843,6 +987,264 @@ class DspProcessor {
     return {clampf(0.43f * low + 0.65f * rev + whisper), clampf(0.43f * low - 0.58f * rev + whisper)};
   }
 
+  float ghostDynamics(float x, float& envelope) {
+    const float detector = std::fabs(x);
+    const float attack = std::exp(-1.0f / (sr_ * 0.005f));
+    const float release = std::exp(-1.0f / (sr_ * 0.150f));
+    const float coefficient = detector > envelope ? attack : release;
+    envelope = coefficient * envelope + (1.0f - coefficient) * detector;
+
+    constexpr float threshold = 0.1f;  // -20 dBFS.
+    constexpr float ratio = 3.4f;
+    float gain = 1.0f;
+    if (envelope > threshold) {
+      gain = std::pow(threshold / envelope, 1.0f - 1.0f / ratio);
+    }
+    const float compressed = x * gain * 1.35f;
+    // Equivalent role to FFmpeg's tanh soft clip followed by a 0.90 limiter.
+    const float softened =
+        0.90f * std::tanh(compressed / 0.86f) / std::tanh(1.0f / 0.86f);
+    return clampf(softened, -0.90f, 0.90f);
+  }
+
+  Stereo ghost(float l, float r) {
+    // Native counterpart of the former FFmpeg chain: pitch with preserved
+    // duration, two-pole filtering/EQ, stereo flanger, tremolo, three echoes,
+    // compression, soft clipping and limiting. Keeping the whole chain here
+    // makes preview and export deterministic on iPhone and desktop.
+    float left = ghost_pitch_l_.process(l);
+    float right = ghost_pitch_r_.process(r);
+    left = ghost_metal_eq_l_.process(
+        ghost_low_eq_l_.process(ghost_lp_l_.process(ghost_hp_l_.process(left))));
+    right = ghost_metal_eq_r_.process(
+        ghost_low_eq_r_.process(ghost_lp_r_.process(ghost_hp_r_.process(right))));
+
+    const float time = static_cast<float>(sample_index_) / sr_;
+    const float flanger_delay_ms = 1.2f + 2.4f * amount_;
+    const float flanger_depth_ms = 1.6f + 3.8f * amount_;
+    const float flanger_speed = 0.13f + 0.16f * amount_;
+    const float left_mod = 0.5f + 0.5f *
+        std::sin(kTwoPi * flanger_speed * time);
+    const float right_mod = 0.5f + 0.5f *
+        std::sin(kTwoPi * flanger_speed * time + kTwoPi * 0.55f);
+    const float delayed_l = ghost_flanger_l_.read(
+        (flanger_delay_ms + flanger_depth_ms * left_mod) * sr_ / 1000.0f);
+    const float delayed_r = ghost_flanger_r_.read(
+        (flanger_delay_ms + flanger_depth_ms * right_mod) * sr_ / 1000.0f);
+    const float feedback = (8.0f + 24.0f * amount_) / 100.0f;
+    ghost_flanger_l_.push(left + delayed_l * feedback);
+    ghost_flanger_r_.push(right + delayed_r * feedback);
+    const float wet = (42.0f + 38.0f * amount_) / 100.0f;
+    left = (1.0f - 0.5f * wet) * left + 0.5f * wet * delayed_l;
+    right = (1.0f - 0.5f * wet) * right + 0.5f * wet * delayed_r;
+
+    const float tremolo_frequency = 3.2f + 2.4f * amount_;
+    const float tremolo_depth = 0.08f + 0.28f * amount_;
+    const float tremolo = 1.0f - 0.5f * tremolo_depth +
+        0.5f * tremolo_depth *
+            std::sin(kTwoPi * tremolo_frequency * time);
+    left *= tremolo;
+    right *= tremolo;
+
+    const float delay1 = (110.0f + 50.0f * amount_) * sr_ / 1000.0f;
+    const float delay2 = (330.0f + 170.0f * amount_) * sr_ / 1000.0f;
+    const float delay3 = (680.0f + 320.0f * amount_) * sr_ / 1000.0f;
+    const float decay1 = 0.18f + 0.18f * amount_;
+    const float decay2 = 0.12f + 0.18f * amount_;
+    const float decay3 = 0.08f + 0.16f * amount_;
+    const float echo_l = 0.78f *
+        (0.78f * left + decay1 * ghost_echo_l_.read(delay1) +
+         decay2 * ghost_echo_l_.read(delay2) +
+         decay3 * ghost_echo_l_.read(delay3));
+    const float echo_r = 0.78f *
+        (0.78f * right + decay1 * ghost_echo_r_.read(delay1) +
+         decay2 * ghost_echo_r_.read(delay2) +
+         decay3 * ghost_echo_r_.read(delay3));
+    ghost_echo_l_.push(left);
+    ghost_echo_r_.push(right);
+
+    return {ghostDynamics(echo_l, ghost_envelope_l_),
+            ghostDynamics(echo_r, ghost_envelope_r_)};
+  }
+
+  float megaphoneDynamics(float x) {
+    const float detector = std::fabs(x);
+    const float attack = std::exp(-1.0f / (sr_ * 0.003f));
+    const float release = std::exp(-1.0f / (sr_ * 0.085f));
+    const float coefficient = detector > megaphone_envelope_ ? attack : release;
+    megaphone_envelope_ = coefficient * megaphone_envelope_ +
+                          (1.0f - coefficient) * detector;
+    constexpr float threshold = 0.07943f;  // -22 dBFS.
+    const float ratio = 1.2f + 3.0f * amount_;
+    float gain = 1.0f;
+    if (megaphone_envelope_ > threshold) {
+      gain = std::pow(threshold / megaphone_envelope_,
+                      1.0f - 1.0f / ratio);
+    }
+    const float makeup = 1.0f + 0.5f * amount_;
+    return clampf(x * gain * makeup, -0.88f, 0.88f);
+  }
+
+  Stereo megaphone(float x) {
+    const float strength = std::sqrt(amount_);
+    float voice = megaphone_voice_hp_.process(x);
+    voice = megaphone_voice_lp_.process(voice);
+    voice = megaphone_eq_1050_.process(voice);
+    voice = megaphone_eq_2350_.process(voice);
+    voice = megaphone_eq_4100_.process(voice);
+    voice *= 1.0f - 0.20f * strength;
+
+    float metal = megaphone_metal_lp_.process(
+        megaphone_metal_hp_.process(x));
+    // A phase-flattened FFT branch in the former FFmpeg effect supplied a
+    // hard metallic edge. Short, asymmetric comb taps reproduce that edge in
+    // a bounded streaming form suitable for the native mobile DSP.
+    megaphone_metal_delay_.push(std::tanh(metal * 3.2f));
+    metal = std::tanh(
+        metal * 1.8f +
+        megaphone_metal_delay_.read(sr_ * 0.005f) * (0.54f * amount_) -
+        megaphone_metal_delay_.read(sr_ * 0.011f) * (0.41f * amount_) +
+        megaphone_metal_delay_.read(sr_ * 0.020f) * (0.28f * amount_));
+    float mixed = voice + metal * (0.38f * strength);
+
+    const float time = static_cast<float>(sample_index_) / sr_;
+    const float flange_delay = (0.4f + 1.4f * amount_) * sr_ / 1000.0f;
+    const float flange_depth = (0.15f + 1.20f * amount_) * sr_ / 1000.0f;
+    const float flange_mod = 0.5f + 0.5f *
+        std::sin(kTwoPi * (0.10f + 0.05f * amount_) * time);
+    const float flanged = megaphone_flanger_.read(
+        flange_delay + flange_depth * flange_mod);
+    megaphone_flanger_.push(mixed + flanged * (0.27f * amount_));
+    const float flange_width = (8.0f + 48.0f * amount_) / 100.0f;
+    mixed = mixed * (1.0f - 0.45f * flange_width) +
+            flanged * (0.45f * flange_width);
+
+    const float echo1 = megaphone_echo_.read(sr_ * 0.118f);
+    const float echo2 = megaphone_echo_.read(sr_ * 0.238f);
+    megaphone_echo_.push(mixed);
+    mixed = 0.86f *
+        (0.64f * mixed + 0.34f * strength * echo1 +
+         0.20f * strength * echo2);
+    mixed = megaphone_output_eq_.process(megaphoneDynamics(mixed));
+    mixed = clampf(mixed, -0.88f, 0.88f);
+    return {mixed, mixed};
+  }
+
+  float distortionDynamics(float x, float& envelope) {
+    const float detector = std::fabs(x);
+    const float attack = std::exp(-1.0f / (sr_ * 0.003f));
+    const float release = std::exp(-1.0f / (sr_ * 0.080f));
+    const float coefficient = detector > envelope ? attack : release;
+    envelope = coefficient * envelope + (1.0f - coefficient) * detector;
+    constexpr float threshold = 0.03981f;  // -28 dBFS.
+    const float ratio = 1.0f + 4.0f * amount_;
+    float gain = 1.0f;
+    if (envelope > threshold) {
+      gain = std::pow(threshold / envelope, 1.0f - 1.0f / ratio);
+    }
+    return x * gain * (1.0f + 1.8f * amount_);
+  }
+
+  float distortionChannel(float x, Biquad& dry_hp, Biquad& wet_hp,
+                          Biquad& eq_2400, Biquad& eq_5600,
+                          float& envelope) {
+    const float dry = dry_hp.process(x) * (1.0f - 0.66f * amount_);
+    float wet = distortionDynamics(wet_hp.process(x), envelope);
+    wet *= 1.0f + 2.2f * amount_;
+
+    const float drive = 1.0f + 6.0f * amount_;
+    const float hard_limit = 0.98f - 0.54f * amount_;
+    wet = clampf(wet * drive, -hard_limit, hard_limit);
+    wet *= 1.0f + 0.65f * amount_;
+
+    // FFmpeg's acrusher branch quantizes only a small share of the signal.
+    const int bits = std::clamp(static_cast<int>(std::lround(16.0f -
+                                  6.0f * amount_)), 10, 16);
+    const float levels = static_cast<float>((1u << (bits - 1)) - 1u);
+    const float crushed = std::round(clampf(wet) * levels) / levels;
+    wet = lerpf(wet, crushed, 0.20f * amount_);
+    wet = eq_5600.process(eq_2400.process(wet));
+
+    const float soft_threshold = 0.98f - 0.22f * amount_;
+    wet = 0.78f * std::atan(wet / soft_threshold) / std::atan(1.0f);
+    wet *= 0.72f * amount_;
+    const float mixed = (dry + wet) * (1.0f - 0.22f * amount_);
+    return clampf(mixed, -0.88f, 0.88f);
+  }
+
+  Stereo distortion(float l, float r) {
+    return {
+        distortionChannel(l, distortion_dry_hp_l_, distortion_wet_hp_l_,
+                          distortion_eq_2400_l_, distortion_eq_5600_l_,
+                          distortion_envelope_l_),
+        distortionChannel(r, distortion_dry_hp_r_, distortion_wet_hp_r_,
+                          distortion_eq_2400_r_, distortion_eq_5600_r_,
+                          distortion_envelope_r_)};
+  }
+
+  float loFiDynamics(float x) {
+    const float detector = std::fabs(x);
+    const float attack = std::exp(-1.0f / (sr_ * 0.004f));
+    const float release = std::exp(-1.0f / (sr_ * 0.100f));
+    const float coefficient = detector > lofi_envelope_ ? attack : release;
+    lofi_envelope_ = coefficient * lofi_envelope_ +
+                     (1.0f - coefficient) * detector;
+    constexpr float threshold = 0.1f;  // -20 dBFS.
+    const float ratio = 1.1f + 2.1f * std::sqrt(amount_);
+    float gain = 1.0f;
+    if (lofi_envelope_ > threshold) {
+      gain = std::pow(threshold / lofi_envelope_, 1.0f - 1.0f / ratio);
+    }
+    return clampf(x * gain, -0.86f, 0.86f);
+  }
+
+  Stereo loFi(float x) {
+    const float strength = std::sqrt(amount_);
+    const float dry = lofi_dry_lp_.process(lofi_dry_hp_.process(x)) *
+                      (1.0f - 0.82f * strength);
+
+    // Downsample-and-hold mirrors the two FFmpeg aresample stages, while the
+    // small extra hold reproduces acrusher's samples parameter.
+    const float target_rate = 44100.0f - 32100.0f * strength;
+    lofi_resample_phase_ += target_rate / static_cast<float>(sr_);
+    if (lofi_resample_phase_ >= 1.0f) {
+      lofi_resample_phase_ -= std::floor(lofi_resample_phase_);
+      lofi_resampled_ = x;
+    }
+    const int hold_frames = std::max(1, static_cast<int>(
+        std::lround(1.0f + 2.0f * strength)));
+    if (lofi_hold_counter_ <= 0) {
+      lofi_held_ = lofi_resampled_;
+      lofi_hold_counter_ = hold_frames;
+    }
+    --lofi_hold_counter_;
+
+    const int bits = std::clamp(static_cast<int>(
+        std::lround(16.0f - 10.0f * strength)), 6, 16);
+    const float levels = static_cast<float>((1u << (bits - 1)) - 1u);
+    const float quantized = std::round(clampf(lofi_held_) * levels) / levels;
+    float chip = lerpf(lofi_resampled_, quantized, 0.88f * strength);
+
+    lofi_vibrato_.push(chip);
+    const float time = static_cast<float>(sample_index_) / sr_;
+    const float vibrato_depth = 0.11f * strength;
+    const float vibrato_delay = (2.0f + 5.0f * vibrato_depth *
+        (0.5f + 0.5f * std::sin(kTwoPi * 4.2f * time))) * sr_ / 1000.0f;
+    chip = lofi_vibrato_.read(vibrato_delay);
+    const float tremolo_depth = 0.11f * strength;
+    chip *= 1.0f - 0.5f * tremolo_depth + 0.5f * tremolo_depth *
+            std::sin(kTwoPi * 9.5f * time);
+    chip = lofi_chip_eq_.process(lofi_chip_lp_.process(
+        lofi_chip_hp_.process(chip)));
+    chip *= 1.0f + 0.6f * strength;
+    const float soft_threshold = 0.96f - 0.24f * strength;
+    chip = 0.72f * std::atan(chip / soft_threshold) / std::atan(1.0f);
+    chip *= 0.86f * strength;
+
+    const float output = loFiDynamics(dry + chip);
+    return {output, output};
+  }
+
   float shortComb(float x, float delay_seconds, float feedback) {
     short_delay_.push(x);
     return short_delay_.read(std::clamp(delay_seconds, 0.001f, 0.22f) * sr_) * feedback;
@@ -856,16 +1258,38 @@ class DspProcessor {
   float voice_envelope_ = 0.0f;
   float crackle_env_ = 0.0f, thunder_env_ = 0.0f, bell_env_ = 0.0f,
         applause_env_ = 0.0f;
+  float radio_noise_memory_ = 0.0f, radio_crackle_value_ = 0.0f;
   DelayLine delay_l_, delay_r_, short_delay_;
+  DelayLine ghost_flanger_l_{2048}, ghost_flanger_r_{2048};
+  DelayLine ghost_echo_l_{200000}, ghost_echo_r_{200000};
+  DelayLine megaphone_metal_delay_{8192}, megaphone_flanger_{2048},
+      megaphone_echo_{65536};
+  DelayLine lofi_vibrato_{4096};
   SimpleReverb reverb_;
   PitchShifter pitch_low_, pitch_very_low_, pitch_high_, pitch_very_high_,
       pitch_vader_, pitch_mosquito_, pitch_songbird_, pitch_turtle_,
-      many_low_, many_high_, many_far_;
+      many_low_, many_high_, many_far_, ghost_pitch_l_, ghost_pitch_r_;
   FilterBankVocoder vocoder_;
   FastRng rng_;
   Biquad hp_, lp_, bp_, tone_low_, tone_high_, choir_consonants_,
+      guitar_consonants_, organ_consonants_,
       robot_consonants_, robot_output_highpass_, robot_clarity_highpass_,
-      robot_clarity_lowpass_;
+      robot_clarity_lowpass_, ghost_hp_l_, ghost_hp_r_, ghost_lp_l_,
+      ghost_lp_r_, ghost_low_eq_l_, ghost_low_eq_r_, ghost_metal_eq_l_,
+      ghost_metal_eq_r_, radio_hiss_highpass_, radio_hiss_lowpass_,
+      radio_voice_highpass_, radio_voice_lowpass_, megaphone_voice_hp_,
+      megaphone_voice_lp_, megaphone_eq_1050_, megaphone_eq_2350_,
+      megaphone_eq_4100_, megaphone_metal_hp_, megaphone_metal_lp_,
+      megaphone_output_eq_, distortion_dry_hp_l_, distortion_dry_hp_r_,
+      distortion_wet_hp_l_, distortion_wet_hp_r_, distortion_eq_2400_l_,
+      distortion_eq_2400_r_, distortion_eq_5600_l_, distortion_eq_5600_r_,
+      lofi_dry_hp_, lofi_dry_lp_, lofi_chip_hp_, lofi_chip_lp_, lofi_chip_eq_;
+  float ghost_envelope_l_ = 0.0f, ghost_envelope_r_ = 0.0f;
+  float megaphone_envelope_ = 0.0f;
+  float distortion_envelope_l_ = 0.0f, distortion_envelope_r_ = 0.0f;
+  float lofi_envelope_ = 0.0f, lofi_resample_phase_ = 1.0f;
+  float lofi_resampled_ = 0.0f, lofi_held_ = 0.0f;
+  int lofi_hold_counter_ = 0;
 };
 
 bool processReverse(FILE* in, FILE* out, int channels) {
@@ -1080,6 +1504,225 @@ bool processNormal(FILE* in, FILE* out, const char* asset_path,
   return true;
 }
 
+bool processFade(FILE* in, FILE* out, int effect_id, float amount,
+                 int sample_rate, int channels) {
+  if (std::fseek(in, 0, SEEK_END) != 0) return false;
+  const long bytes = std::ftell(in);
+  const long frame_bytes = static_cast<long>(channels * sizeof(float));
+  if (bytes <= 0 || frame_bytes <= 0 || bytes % frame_bytes != 0 ||
+      std::fseek(in, 0, SEEK_SET) != 0) {
+    return false;
+  }
+  const int64_t total_frames = bytes / frame_bytes;
+  const float duration = static_cast<float>(total_frames) / sample_rate;
+  const float maximum =
+      duration <= 0.0f ? 0.2f : std::clamp(duration / 3.0f, 0.2f, 3.0f);
+  const float fade_seconds =
+      amount <= 0.0001f ? 0.0f
+                        : std::clamp(maximum * amount, 0.05f, maximum);
+  const int64_t fade_frames = std::max<int64_t>(
+      1, static_cast<int64_t>(std::llround(fade_seconds * sample_rate)));
+  const int64_t fade_out_start = std::max<int64_t>(0, total_frames - fade_frames);
+
+  std::vector<float> buffer(static_cast<size_t>(kBlockFrames * channels));
+  int64_t frame_index = 0;
+  while (true) {
+    if (g_cancel_requested.load(std::memory_order_relaxed)) return false;
+    const size_t samples =
+        std::fread(buffer.data(), sizeof(float), buffer.size(), in);
+    if (samples == 0) {
+      if (std::ferror(in)) return false;
+      break;
+    }
+    if (samples % static_cast<size_t>(channels) != 0) return false;
+    const size_t frames = samples / channels;
+    for (size_t frame = 0; frame < frames; ++frame, ++frame_index) {
+      float gain = 1.0f;
+      if (fade_seconds > 0.0f && effect_id == 44) {
+        gain = std::clamp(static_cast<float>(frame_index) / fade_frames,
+                          0.0f, 1.0f);
+      } else if (fade_seconds > 0.0f && effect_id == 45 &&
+                 frame_index >= fade_out_start) {
+        gain = std::clamp(
+            static_cast<float>(total_frames - frame_index) / fade_frames,
+            0.0f, 1.0f);
+      }
+      for (int channel = 0; channel < channels; ++channel) {
+        buffer[frame * channels + channel] *= gain;
+      }
+    }
+    if (std::fwrite(buffer.data(), sizeof(float), samples, out) != samples) {
+      return false;
+    }
+    if (samples < buffer.size()) break;
+  }
+  return true;
+}
+
+bool processReverseEcho(FILE* in, FILE* out, float amount, int sample_rate,
+                        int channels) {
+  if (std::fseek(in, 0, SEEK_END) != 0) return false;
+  const long bytes = std::ftell(in);
+  const long frame_bytes = static_cast<long>(channels * sizeof(float));
+  if (bytes <= 0 || frame_bytes <= 0 || bytes % frame_bytes != 0 ||
+      std::fseek(in, 0, SEEK_SET) != 0) {
+    return false;
+  }
+  const int64_t input_frames = bytes / frame_bytes;
+  std::vector<float> input(static_cast<size_t>(input_frames * channels));
+  if (std::fread(input.data(), sizeof(float), input.size(), in) !=
+      input.size()) {
+    return false;
+  }
+
+  const int64_t swell_delay =
+      static_cast<int64_t>(std::llround(1.080 * sample_rate));
+  const int64_t swell_tap_1 =
+      static_cast<int64_t>(std::llround(0.320 * sample_rate));
+  const int64_t swell_tap_2 =
+      static_cast<int64_t>(std::llround(0.680 * sample_rate));
+  const int64_t whisper_delay =
+      static_cast<int64_t>(std::llround(0.460 * sample_rate));
+  const int64_t whisper_tap =
+      static_cast<int64_t>(std::llround(0.180 * sample_rate));
+  const int64_t whisper_offset =
+      static_cast<int64_t>(std::llround(0.035 * sample_rate));
+  const int64_t output_frames = input_frames + swell_delay;
+
+  auto source = [&](int64_t frame, int channel) -> float {
+    if (frame < 0 || frame >= input_frames) return 0.0f;
+    const int source_channel = channels > 1 ? std::min(channel, 1) : 0;
+    const float value = input[static_cast<size_t>(frame * channels +
+                                                  source_channel)];
+    return std::isfinite(value) ? value : 0.0f;
+  };
+
+  // The whisper is band-limited before it is reversed in the FFmpeg chain.
+  Biquad whisper_hp, whisper_lp;
+  whisper_hp.configure(Biquad::Type::highpass, sample_rate, 1700.0f);
+  whisper_lp.configure(Biquad::Type::lowpass, sample_rate, 7800.0f);
+  std::vector<float> whisper_source(static_cast<size_t>(input_frames));
+  for (int64_t frame = 0; frame < input_frames; ++frame) {
+    const float mono = 0.5f * (source(frame, 0) + source(frame, 1));
+    whisper_source[static_cast<size_t>(frame)] =
+        whisper_lp.process(whisper_hp.process(mono));
+  }
+  auto whisperAt = [&](int64_t frame) -> float {
+    if (frame < 0 || frame >= input_frames) return 0.0f;
+    return whisper_source[static_cast<size_t>(frame)];
+  };
+
+  Biquad voice_hp_l, voice_hp_r, voice_lp_l, voice_lp_r;
+  Biquad voice_eq_l, voice_eq_r, swell_hp_l, swell_hp_r;
+  Biquad swell_lp_l, swell_lp_r, output_eq_l, output_eq_r;
+  voice_hp_l.configure(Biquad::Type::highpass, sample_rate, 90.0f);
+  voice_hp_r.configure(Biquad::Type::highpass, sample_rate, 90.0f);
+  voice_lp_l.configure(Biquad::Type::lowpass, sample_rate, 7600.0f);
+  voice_lp_r.configure(Biquad::Type::lowpass, sample_rate, 7600.0f);
+  voice_eq_l.configure(Biquad::Type::peaking, sample_rate, 2800.0f, 1.2f,
+                       2.0f * amount);
+  voice_eq_r.configure(Biquad::Type::peaking, sample_rate, 2800.0f, 1.2f,
+                       2.0f * amount);
+  swell_hp_l.configure(Biquad::Type::highpass, sample_rate, 120.0f);
+  swell_hp_r.configure(Biquad::Type::highpass, sample_rate, 120.0f);
+  swell_lp_l.configure(Biquad::Type::lowpass, sample_rate, 6800.0f);
+  swell_lp_r.configure(Biquad::Type::lowpass, sample_rate, 6800.0f);
+  output_eq_l.configure(Biquad::Type::peaking, sample_rate, 3500.0f, 1.1f,
+                        2.5f * amount);
+  output_eq_r.configure(Biquad::Type::peaking, sample_rate, 3500.0f, 1.1f,
+                        2.5f * amount);
+
+  DelayLine width_l(sample_rate / 10 + 16), width_r(sample_rate / 10 + 16);
+  const float width_delay = 0.020f * sample_rate;
+  const float voice_volume = 1.0f - 0.42f * amount;
+  const float swell_volume = 0.72f * amount;
+  const float whisper_volume = 0.30f * amount;
+  const float swell_decay_1 = 0.46f * amount;
+  const float swell_decay_2 = 0.30f * amount;
+  const float swell_decay_3 = 0.18f * amount;
+  const float whisper_decay_1 = 0.34f * amount;
+  const float whisper_decay_2 = 0.20f * amount;
+  const float width_crossfeed = 0.16f * amount;
+  const float width_feedback = 0.10f * amount;
+  float envelope_l = 0.0f, envelope_r = 0.0f;
+  const float attack = std::exp(-1.0f / (sample_rate * 0.007f));
+  const float release = std::exp(-1.0f / (sample_rate * 0.150f));
+  const float ratio = 1.1f + 1.5f * amount;
+  auto dynamics = [&](float x, float& envelope) -> float {
+    const float detector = std::fabs(x);
+    const float coefficient = detector > envelope ? attack : release;
+    envelope = coefficient * envelope + (1.0f - coefficient) * detector;
+    constexpr float threshold = 0.12589f;  // -18 dBFS.
+    float gain = 1.0f;
+    if (envelope > threshold) {
+      gain = std::pow(threshold / envelope, 1.0f - 1.0f / ratio);
+    }
+    return clampf(x * gain, -0.88f, 0.88f);
+  };
+
+  std::vector<float> output(static_cast<size_t>(kBlockFrames * channels));
+  size_t buffered_frames = 0;
+  for (int64_t frame = 0; frame < output_frames; ++frame) {
+    if (g_cancel_requested.load(std::memory_order_relaxed)) return false;
+    float voice_l = voice_eq_l.process(
+        voice_lp_l.process(voice_hp_l.process(source(frame, 0))));
+    float voice_r = voice_eq_r.process(
+        voice_lp_r.process(voice_hp_r.process(source(frame, 1))));
+    voice_l *= voice_volume;
+    voice_r *= voice_volume;
+
+    const int64_t swell_base = frame - swell_delay;
+    float swell_l = 0.76f * source(swell_base, 0) +
+        0.88f * (swell_decay_1 * source(swell_base + swell_tap_1, 0) +
+                 swell_decay_2 * source(swell_base + swell_tap_2, 0) +
+                 swell_decay_3 * source(swell_base + swell_delay, 0));
+    float swell_r = 0.76f * source(swell_base, 1) +
+        0.88f * (swell_decay_1 * source(swell_base + swell_tap_1, 1) +
+                 swell_decay_2 * source(swell_base + swell_tap_2, 1) +
+                 swell_decay_3 * source(swell_base + swell_delay, 1));
+    swell_l = swell_lp_l.process(swell_hp_l.process(swell_l));
+    swell_r = swell_lp_r.process(swell_hp_r.process(swell_r));
+    const float delayed_l = width_l.read(width_delay);
+    const float delayed_r = width_r.read(width_delay);
+    width_l.push(swell_l + width_feedback * delayed_r);
+    width_r.push(swell_r + width_feedback * delayed_l);
+    const float wide_l = 0.80f * swell_l + width_crossfeed * delayed_r;
+    const float wide_r = 0.80f * swell_r - width_crossfeed * delayed_l;
+
+    const int64_t whisper_base = frame - whisper_offset - whisper_delay;
+    float whisper = 0.72f * whisperAt(whisper_base) +
+        0.82f * (whisper_decay_1 * whisperAt(whisper_base + whisper_tap) +
+                 whisper_decay_2 * whisperAt(whisper_base + whisper_delay));
+    const float tremolo_depth = 0.22f * amount;
+    const float time = static_cast<float>(frame) / sample_rate;
+    whisper *= 1.0f - 0.5f * tremolo_depth + 0.5f * tremolo_depth *
+               std::sin(kTwoPi * 4.8f * time);
+
+    float mixed_l = voice_l + swell_volume * wide_l +
+                    0.28f * whisper_volume * whisper;
+    float mixed_r = voice_r + swell_volume * wide_r +
+                    0.92f * whisper_volume * whisper;
+    mixed_l = dynamics(output_eq_l.process(mixed_l), envelope_l);
+    mixed_r = dynamics(output_eq_r.process(mixed_r), envelope_r);
+
+    const size_t base = buffered_frames * static_cast<size_t>(channels);
+    output[base] = mixed_l;
+    if (channels > 1) output[base + 1] = mixed_r;
+    for (int channel = 2; channel < channels; ++channel) {
+      output[base + channel] = 0.5f * (mixed_l + mixed_r);
+    }
+    ++buffered_frames;
+    if (buffered_frames == kBlockFrames || frame + 1 == output_frames) {
+      const size_t samples = buffered_frames * static_cast<size_t>(channels);
+      if (std::fwrite(output.data(), sizeof(float), samples, out) != samples) {
+        return false;
+      }
+      buffered_frames = 0;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 extern "C" int32_t sonarpad_dsp_process_file(
@@ -1140,7 +1783,12 @@ extern "C" int32_t sonarpad_dsp_process_file(
     } else if (effect_id == 2 || effect_id == 3) {
       ok = processSpectralRobot(in, out, effect_id, amount, sample_rate,
                                 channels);
-    } else if (effect_id >= 1 && effect_id <= 41 && effect_id != 20) {
+    } else if (effect_id == 44 || effect_id == 45) {
+      ok = processFade(in, out, effect_id, amount, sample_rate, channels);
+    } else if (effect_id == 48) {
+      ok = processReverseEcho(in, out, amount, sample_rate, channels);
+    } else if (effect_id >= 1 && effect_id <= 47 && effect_id != 20 &&
+               effect_id != 44 && effect_id != 45) {
       // ID 20 (fan) was deliberately merged with the existing helicopter
       // effect during the perceptual deduplication pass.
       ok = processNormal(in, out, asset_path, effect_id, amount, sample_rate, channels);
@@ -1184,4 +1832,4 @@ extern "C" const char* sonarpad_dsp_last_error(void) {
   return g_last_error.c_str();
 }
 
-extern "C" int32_t sonarpad_dsp_version(void) { return 2; }
+extern "C" int32_t sonarpad_dsp_version(void) { return 18; }

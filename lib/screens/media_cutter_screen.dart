@@ -359,7 +359,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _MediaPartEffect.underwater,
     _MediaPartEffect.monster,
     _MediaPartEffect.chipmunk,
-    _MediaPartEffect.dream,
     _MediaPartEffect.distortion,
     _MediaPartEffect.loFi,
     _MediaPartEffect.reverseEcho,
@@ -370,28 +369,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _MediaPartEffect.mosquito,
     _MediaPartEffect.oneOfMany,
     _MediaPartEffect.organVocoder,
-    _MediaPartEffect.warped,
     _MediaPartEffect.swirling,
     _MediaPartEffect.vader,
     _MediaPartEffect.metallic,
     _MediaPartEffect.songbird,
-    _MediaPartEffect.exterminator,
     _MediaPartEffect.rainAndThunder,
     _MediaPartEffect.jungle,
     _MediaPartEffect.crowd,
     _MediaPartEffect.slotMachines,
     _MediaPartEffect.traffic,
-    _MediaPartEffect.spaceship,
     _MediaPartEffect.cricket,
-    _MediaPartEffect.siren,
     _MediaPartEffect.sleighBells,
-    _MediaPartEffect.dj,
     _MediaPartEffect.applause,
     _MediaPartEffect.badMelody,
     _MediaPartEffect.badHarmony,
     _MediaPartEffect.warmVoice,
     _MediaPartEffect.turtle,
-    _MediaPartEffect.haunting,
   ];
 
   static const _mediaExtensions = [
@@ -5266,6 +5259,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _MediaPartEffect.warmVoice => SonarpadDspEffect.warmVoice,
       _MediaPartEffect.turtle => SonarpadDspEffect.turtle,
       _MediaPartEffect.haunting => SonarpadDspEffect.haunting,
+      _MediaPartEffect.ghost => SonarpadDspEffect.ghost,
+      _MediaPartEffect.megaphone => SonarpadDspEffect.megaphone,
+      _MediaPartEffect.distortion => SonarpadDspEffect.distortion,
+      _MediaPartEffect.loFi => SonarpadDspEffect.loFi,
+      _MediaPartEffect.reverseEcho => SonarpadDspEffect.reverseEcho,
+      _MediaPartEffect.fadeIn => SonarpadDspEffect.fadeIn,
+      _MediaPartEffect.fadeOut => SonarpadDspEffect.fadeOut,
       _ => null,
     };
   }
@@ -5350,7 +5350,17 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (!source.hasAudio) {
       throw StateError('L’effetto DSP richiede una traccia audio.');
     }
-    final nativeSlots = _nativeDspSlots(part);
+    final selectedNativeSlots = _nativeDspSlots(part);
+    final nativeSlots = <_MediaEffectSlot>[
+      for (final slot in selectedNativeSlots)
+        if (slot.effect != _MediaPartEffect.fadeIn &&
+            slot.effect != _MediaPartEffect.fadeOut)
+          slot,
+      for (final slot in selectedNativeSlots)
+        if (slot.effect == _MediaPartEffect.fadeIn ||
+            slot.effect == _MediaPartEffect.fadeOut)
+          slot,
+    ];
     if (nativeSlots.isEmpty) {
       throw StateError('Nessun effetto DSP da elaborare.');
     }
