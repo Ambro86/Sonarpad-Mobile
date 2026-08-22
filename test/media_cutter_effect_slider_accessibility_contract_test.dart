@@ -35,10 +35,16 @@ void main() {
     // value synchronously, and avoid a row reload during adjustable gestures.
     expect(native, contains('cell.isAccessibilityElement = !exposeNativeSlider'));
     expect(native, contains('cell.accessibilityValue = spokenValue'));
-    expect(native, contains('channel.invokeMethod("event", arguments: ["type": "slider"'));
     final adjustStart = native.indexOf('private func adjustSlider(at indexPath: IndexPath');
     final adjustEnd = native.indexOf('private func formatSliderValue', adjustStart);
     final adjustBlock = native.substring(adjustStart, adjustEnd);
+    expect(adjustBlock, contains('channel.invokeMethod('));
+    expect(adjustBlock, contains('"event",'));
+    expect(
+      adjustBlock,
+      contains('arguments: ["type": "slider", "id": row.id, "value": row.sliderValue]'),
+    );
+    expect(adjustBlock, contains('SLIDER_DART_ACK source=accessibilityAdjust'));
     expect(adjustBlock, isNot(contains('reloadRows')));
     expect(adjustBlock, isNot(contains('layoutChanged')));
 
