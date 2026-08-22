@@ -38,6 +38,7 @@ void main() {
     final reverseEcho = File('${directory.path}/reverse_echo.f32');
     final talkingGuitar = File('${directory.path}/talking_guitar.f32');
     final organVocoder = File('${directory.path}/organ_vocoder.f32');
+    final turtle = File('${directory.path}/turtle.f32');
     try {
       await input.writeAsBytes(data.buffer.asUint8List(), flush: true);
       final assetData = Float32List(frames * channels);
@@ -142,6 +143,12 @@ void main() {
         effect: SonarpadDspEffect.organVocoder,
         amount: 0.7,
       );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: turtle.path,
+        effect: SonarpadDspEffect.turtle,
+        amount: 0.7,
+      );
 
       expect(await chorus.length(), await input.length());
       expect(await melodicChorus.length(), await input.length());
@@ -157,6 +164,7 @@ void main() {
       expect(await reverseEcho.length(), greaterThan(await input.length()));
       expect(await talkingGuitar.length(), await input.length());
       expect(await organVocoder.length(), await input.length());
+      expect(await turtle.length(), greaterThan(await input.length()));
       expect(
         await chorus.readAsBytes(),
         isNot(equals(await input.readAsBytes())),
@@ -215,6 +223,10 @@ void main() {
       );
       expect(
         await organVocoder.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await turtle.readAsBytes(),
         isNot(equals(await input.readAsBytes())),
       );
     } finally {

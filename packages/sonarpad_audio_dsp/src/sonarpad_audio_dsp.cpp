@@ -1559,6 +1559,54 @@ bool processFade(FILE* in, FILE* out, int effect_id, float amount,
   return true;
 }
 
+bool processTurtleSlow(FILE* in, FILE* out, float amount, int channels) {
+  if (std::fseek(in, 0, SEEK_END) != 0) return false;
+  const long bytes = std::ftell(in);
+  const long frame_bytes = static_cast<long>(channels * sizeof(float));
+  if (bytes <= 0 || frame_bytes <= 0 || bytes % frame_bytes != 0 ||
+      std::fseek(in, 0, SEEK_SET) != 0) {
+    return false;
+  }
+  const int64_t input_frames = bytes / frame_bytes;
+  std::vector<float> input(static_cast<size_t>(input_frames * channels));
+  if (std::fread(input.data(), sizeof(float), input.size(), in) !=
+      input.size()) {
+    return false;
+  }
+
+  const double slowdown = 1.0 + std::clamp(amount, 0.0f, 1.0f);
+  const int64_t output_frames = static_cast<int64_t>(
+      std::llround(static_cast<double>(input_frames) * slowdown));
+  std::vector<float> output(static_cast<size_t>(kBlockFrames * channels));
+  size_t buffered_frames = 0;
+  for (int64_t frame = 0; frame < output_frames; ++frame) {
+    if (g_cancel_requested.load(std::memory_order_relaxed)) return false;
+    const double source_position = static_cast<double>(frame) / slowdown;
+    const int64_t source_0 = std::min<int64_t>(
+        static_cast<int64_t>(source_position), input_frames - 1);
+    const int64_t source_1 = std::min<int64_t>(source_0 + 1, input_frames - 1);
+    const float fraction =
+        static_cast<float>(source_position - static_cast<double>(source_0));
+    const size_t output_base = buffered_frames * static_cast<size_t>(channels);
+    for (int channel = 0; channel < channels; ++channel) {
+      const float a = input[static_cast<size_t>(source_0 * channels + channel)];
+      const float b = input[static_cast<size_t>(source_1 * channels + channel)];
+      const float sample = lerpf(std::isfinite(a) ? a : 0.0f,
+                                 std::isfinite(b) ? b : 0.0f, fraction);
+      output[output_base + channel] = clampf(sample, -0.92f, 0.92f);
+    }
+    ++buffered_frames;
+    if (buffered_frames == kBlockFrames || frame + 1 == output_frames) {
+      const size_t samples = buffered_frames * static_cast<size_t>(channels);
+      if (std::fwrite(output.data(), sizeof(float), samples, out) != samples) {
+        return false;
+      }
+      buffered_frames = 0;
+    }
+  }
+  return true;
+}
+
 bool processReverseEcho(FILE* in, FILE* out, float amount, int sample_rate,
                         int channels) {
   if (std::fseek(in, 0, SEEK_END) != 0) return false;
@@ -1787,8 +1835,10 @@ extern "C" int32_t sonarpad_dsp_process_file(
       ok = processFade(in, out, effect_id, amount, sample_rate, channels);
     } else if (effect_id == 48) {
       ok = processReverseEcho(in, out, amount, sample_rate, channels);
+    } else if (effect_id == 40) {
+      ok = processTurtleSlow(in, out, amount, channels);
     } else if (effect_id >= 1 && effect_id <= 47 && effect_id != 20 &&
-               effect_id != 44 && effect_id != 45) {
+               effect_id != 40 && effect_id != 44 && effect_id != 45) {
       // ID 20 (fan) was deliberately merged with the existing helicopter
       // effect during the perceptual deduplication pass.
       ok = processNormal(in, out, asset_path, effect_id, amount, sample_rate, channels);
@@ -1832,4 +1882,4 @@ extern "C" const char* sonarpad_dsp_last_error(void) {
   return g_last_error.c_str();
 }
 
-extern "C" int32_t sonarpad_dsp_version(void) { return 18; }
+extern "C" int32_t sonarpad_dsp_version(void) { return 19; }

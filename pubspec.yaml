@@ -88,4 +88,13 @@ flutter:
     - assets/rss/feed_cs.txt
     - assets/images/
     - assets/audio/
-    - assets/audio/effect_sources/
+    - assets/audio/effect_sources/choir_bed.mp3
+    - assets/audio/effect_sources/old_radio_static.mp3
+    - assets/audio/effect_sources/rain_thunder.mp3
+    - assets/audio/effect_sources/jungle_ambience.mp3
+    - assets/audio/effect_sources/crowd_ambience.mp3
+    - assets/audio/effect_sources/slot_machines.mp3
+    - assets/audio/effect_sources/traffic_ambience.mp3
+    - assets/audio/effect_sources/crickets.mp3
+    - assets/audio/effect_sources/sleigh_bells.mp3
+    - assets/audio/effect_sources/applause.mp3
