@@ -13,22 +13,48 @@ void main() {
     final data = Float32List(frames * channels);
     for (var frame = 0; frame < frames; frame++) {
       final t = frame / sampleRate;
-      final sample = (0.24 * math.sin(2 * math.pi * 180 * t) +
-              0.10 * math.sin(2 * math.pi * 360 * t))
-          .toDouble();
+      final sample =
+          (0.24 * math.sin(2 * math.pi * 180 * t) +
+                  0.10 * math.sin(2 * math.pi * 360 * t))
+              .toDouble();
       data[frame * channels] = sample;
       data[frame * channels + 1] = sample;
     }
 
     final directory = await Directory.systemTemp.createTemp('sonarpad_dsp_');
     final input = File('${directory.path}/input.f32');
+    final choirAsset = File('${directory.path}/choir_asset.f32');
     final chorus = File('${directory.path}/chorus.f32');
+    final melodicChorus = File('${directory.path}/melodic_chorus.f32');
     final robot = File('${directory.path}/robot.f32');
+    final superRobot = File('${directory.path}/super_robot.f32');
     try {
       await input.writeAsBytes(data.buffer.asUint8List(), flush: true);
+      final assetData = Float32List(frames * channels);
+      for (var frame = 0; frame < frames; frame++) {
+        final t = frame / sampleRate;
+        final sample =
+            (0.16 * math.sin(2 * math.pi * 220 * t) +
+                    0.12 * math.sin(2 * math.pi * 277.18 * t) +
+                    0.10 * math.sin(2 * math.pi * 329.63 * t))
+                .toDouble();
+        assetData[frame * channels] = sample;
+        assetData[frame * channels + 1] = sample;
+      }
+      await choirAsset.writeAsBytes(
+        assetData.buffer.asUint8List(),
+        flush: true,
+      );
       await SonarpadAudioDsp.processFile(
         inputPath: input.path,
         outputPath: chorus.path,
+        effect: SonarpadDspEffect.chorus,
+        amount: 0.7,
+      );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        assetPath: choirAsset.path,
+        outputPath: melodicChorus.path,
         effect: SonarpadDspEffect.chorus,
         amount: 0.7,
       );
@@ -38,12 +64,37 @@ void main() {
         effect: SonarpadDspEffect.robot,
         amount: 0.7,
       );
+      await SonarpadAudioDsp.processFile(
+        inputPath: input.path,
+        outputPath: superRobot.path,
+        effect: SonarpadDspEffect.superRobot,
+        amount: 0.7,
+      );
 
       expect(await chorus.length(), await input.length());
+      expect(await melodicChorus.length(), await input.length());
       expect(await robot.length(), await input.length());
-      expect(await chorus.readAsBytes(), isNot(equals(await input.readAsBytes())));
-      expect(await robot.readAsBytes(), isNot(equals(await input.readAsBytes())));
-      expect(await robot.readAsBytes(), isNot(equals(await chorus.readAsBytes())));
+      expect(await superRobot.length(), await input.length());
+      expect(
+        await chorus.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await melodicChorus.readAsBytes(),
+        isNot(equals(await chorus.readAsBytes())),
+      );
+      expect(
+        await robot.readAsBytes(),
+        isNot(equals(await input.readAsBytes())),
+      );
+      expect(
+        await robot.readAsBytes(),
+        isNot(equals(await chorus.readAsBytes())),
+      );
+      expect(
+        await superRobot.readAsBytes(),
+        isNot(equals(await robot.readAsBytes())),
+      );
     } finally {
       await directory.delete(recursive: true);
     }

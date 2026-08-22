@@ -8,6 +8,7 @@ void main() {
     expect(source, contains("package:sonarpad_audio_dsp/sonarpad_audio_dsp.dart"));
     expect(source, contains('SonarpadDspEffect.chorus'));
     expect(source, contains('SonarpadDspEffect.robot'));
+    expect(source, contains('SonarpadDspEffect.superRobot'));
     expect(source, contains('SonarpadDspEffect.oldRadio'));
     expect(source, contains('SonarpadDspEffect.talkingGuitar'));
     expect(source, contains('SonarpadDspEffect.organVocoder'));

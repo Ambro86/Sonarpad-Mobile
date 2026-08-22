@@ -5,6 +5,7 @@
 #include <array>
 #include <cmath>
 #include <cerrno>
+#include <complex>
 #include <cstdio>
 #include <cstring>
 #include <limits>
@@ -318,12 +319,20 @@ class DspProcessor {
         pitch_songbird_(sample_rate, 1.34f), pitch_turtle_(sample_rate, 0.74f),
         many_low_(sample_rate, 0.91f), many_high_(sample_rate, 1.09f),
         many_far_(sample_rate, 1.18f),
-        vocoder_(sample_rate, id == 2 ? 16 : 22), rng_(0x534f4e41u + id * 7919u) {
+        vocoder_(sample_rate, id == 2 ? 28 : 22), rng_(0x534f4e41u + id * 7919u) {
     hp_.configure(Biquad::Type::highpass, sr_, 90.0f);
     lp_.configure(Biquad::Type::lowpass, sr_, 9000.0f);
     bp_.configure(Biquad::Type::bandpass, sr_, 1600.0f, 0.8f);
     tone_low_.configure(Biquad::Type::lowpass, sr_, 420.0f);
     tone_high_.configure(Biquad::Type::highpass, sr_, 2700.0f);
+    choir_consonants_.configure(Biquad::Type::highpass, sr_, 3200.0f, 0.72f);
+    robot_consonants_.configure(Biquad::Type::highpass, sr_, 3400.0f, 0.72f);
+    robot_output_highpass_.configure(Biquad::Type::highpass, sr_, 185.0f,
+                                     0.72f);
+    robot_clarity_highpass_.configure(Biquad::Type::highpass, sr_, 240.0f,
+                                      0.72f);
+    robot_clarity_lowpass_.configure(Biquad::Type::lowpass, sr_, 4300.0f,
+                                     0.72f);
   }
 
   Stereo process(float l, float r, Stereo asset, bool has_asset) {
@@ -373,7 +382,14 @@ class DspProcessor {
       case 41: wet = haunting(mono); break;
       default: wet = {l, r}; break;
     }
-    const float mix = 0.18f + 0.82f * amount_;
+    // With the melodic choir carrier, a conventional dry/wet blend would
+    // leave the original speaking pitch in the foreground. Keep the choir
+    // almost entirely wet so the articulated voice follows the sung chords.
+    const float mix = id_ == 1 && has_asset
+                      ? 0.82f + 0.18f * amount_
+                      : id_ == 2
+                          ? 0.96f + 0.04f * amount_
+                          : 0.18f + 0.82f * amount_;
     Stereo out;
     out.l = clampf(lerpf(dry_l, wet.l, mix));
     out.r = clampf(lerpf(dry_r, wet.r, mix));
@@ -415,15 +431,45 @@ class DspProcessor {
   }
 
   Stereo chorusWithAsset(float l, float r, Stereo asset, bool has_asset) {
-    Stereo voice = chorus(l, r, false);
-    if (!has_asset) return voice;
+    if (!has_asset) return chorus(l, r, false);
     const float mono = 0.5f * (l + r);
+
+    // The choir asset contains an original four-chord melody. Use it as a
+    // vocoder carrier: the recording supplies words and articulation, while
+    // the carrier supplies the actual sung notes. This is intentionally not
+    // a dry voice laid over a choir bed.
+    const float carrier = std::tanh(0.5f * (asset.l + asset.r) * 6.0f);
+    const float articulated = vocoder_.process(mono, carrier, 3.5f, 105.0f);
+    // A vocoder needs a separate unvoiced path for consonants: without it the
+    // melody is audible but the words disappear. Only the high-frequency
+    // articulation is restored; pitched vowels still come from the carrier.
+    const float consonants = choir_consonants_.process(mono);
+    const float sung =
+        std::tanh(articulated * 14.0f + consonants * 0.42f) * 0.58f;
+    const Stereo tuned_voice = chorus(sung, sung, true);
+
+    // Keep a clearly intelligible lead in front of the vocoder. Two quieter
+    // pitch-shifted copies turn it into a sung ensemble instead of restoring
+    // the untouched speaking voice that the original implementation exposed.
+    const float lower_harmony = many_low_.process(mono);
+    const float upper_harmony = many_high_.process(mono);
+    const float lead = std::tanh(
+        (0.68f * mono + 0.18f * lower_harmony + 0.14f * upper_harmony) *
+        1.18f);
+    const Stereo lead_voice{
+        clampf(lead + 0.07f * lower_harmony),
+        clampf(lead + 0.07f * upper_harmony),
+    };
+
     const float duck = voiceDucking(mono);
-    const float bed = (0.10f + 0.16f * amount_) * duck;
+    const float bed = (0.006f + 0.012f * amount_) * duck;
     const float room_l = reverb_.process(asset.l, 0.62f);
     const float room_r = reverb_.process(asset.r, 0.67f);
-    return {clampf(0.88f * voice.l + bed * (0.72f * asset.l + 0.28f * room_l)),
-            clampf(0.88f * voice.r + bed * (0.72f * asset.r - 0.28f * room_r))};
+    return {
+        clampf(0.56f * tuned_voice.l + 0.78f * lead_voice.l +
+               bed * (0.76f * asset.l + 0.24f * room_l)),
+        clampf(0.56f * tuned_voice.r + 0.78f * lead_voice.r +
+               bed * (0.76f * asset.r - 0.24f * room_r))};
   }
 
   Stereo ambienceAsset(float x, Stereo asset, int effect_id) {
@@ -447,6 +493,33 @@ class DspProcessor {
   }
 
   Stereo robot(float x, bool super) {
+    if (!super) {
+      // A broad, low-pitched carrier supplies the monotone metallic body. A
+      // little noise prevents the filter bank from collapsing into an audible
+      // pure whistle and gives consonants enough excitation.
+      const float fundamental = 92.0f + 10.0f * amount_;
+      const float carrier =
+          0.38f * oscillator(fundamental, 2) +
+          0.22f * oscillator(fundamental * 2.01f, 1) +
+          0.18f * oscillator(fundamental * 3.02f, 2) +
+          0.22f * rng_.uniform();
+      float articulated = vocoder_.process(x, carrier, 2.2f, 58.0f);
+      articulated = robot_output_highpass_.process(articulated);
+      const float consonants = robot_consonants_.process(x);
+      const float clarity = robot_clarity_lowpass_.process(
+          robot_clarity_highpass_.process(x));
+      const float robot_body = std::tanh(articulated * 6.4f) * 0.62f;
+      // The band-limited lead guarantees understandable words. It remains
+      // subordinate to the fixed-pitch body, so the result is robotic rather
+      // than a megaphone or an untouched voice.
+      const float y = clampf(0.72f * robot_body + 0.58f * clarity +
+                             0.12f * consonants);
+      short_delay_.push(y);
+      const float side = short_delay_.read(sr_ * 0.0042f);
+      return {clampf(1.08f * y + 0.07f * side),
+              clampf(1.08f * y - 0.07f * side)};
+    }
+
     const float f = super ? 92.0f : 58.0f;
     const float saw = oscillator(f, super ? 1 : 2);
     const float excitation = super ? 0.65f * saw + 0.35f * oscillator(f * 2.01f, 2)
@@ -790,7 +863,9 @@ class DspProcessor {
       many_low_, many_high_, many_far_;
   FilterBankVocoder vocoder_;
   FastRng rng_;
-  Biquad hp_, lp_, bp_, tone_low_, tone_high_;
+  Biquad hp_, lp_, bp_, tone_low_, tone_high_, choir_consonants_,
+      robot_consonants_, robot_output_highpass_, robot_clarity_highpass_,
+      robot_clarity_lowpass_;
 };
 
 bool processReverse(FILE* in, FILE* out, int channels) {
@@ -815,6 +890,159 @@ bool processReverse(FILE* in, FILE* out, int channels) {
     }
     if (std::fwrite(buffer.data(), frame_bytes, frames, out) != static_cast<size_t>(frames)) return false;
     remaining -= frames;
+  }
+  return true;
+}
+
+void fft(std::vector<std::complex<float>>& values, bool inverse) {
+  const size_t size = values.size();
+  for (size_t i = 1, j = 0; i < size; ++i) {
+    size_t bit = size >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) std::swap(values[i], values[j]);
+  }
+  for (size_t length = 2; length <= size; length <<= 1) {
+    const float angle = (inverse ? kTwoPi : -kTwoPi) /
+                        static_cast<float>(length);
+    const std::complex<float> step(std::cos(angle), std::sin(angle));
+    for (size_t start = 0; start < size; start += length) {
+      std::complex<float> phase(1.0f, 0.0f);
+      const size_t half = length >> 1;
+      for (size_t offset = 0; offset < half; ++offset) {
+        const auto even = values[start + offset];
+        const auto odd = values[start + offset + half] * phase;
+        values[start + offset] = even + odd;
+        values[start + offset + half] = even - odd;
+        phase *= step;
+      }
+    }
+  }
+  if (inverse) {
+    const float scale = 1.0f / static_cast<float>(size);
+    for (auto& value : values) value *= scale;
+  }
+}
+
+bool processSpectralRobot(FILE* in, FILE* out, int effect_id, float amount,
+                          int sample_rate, int channels) {
+  constexpr int frame_size = 1024;
+  constexpr int hop_size = 256;
+  constexpr int leading_padding = frame_size - hop_size;
+  constexpr float robot_pitch_hz = 95.0f;
+  constexpr float robot_pitch_ratio = 1.12f;
+
+  if (std::fseek(in, 0, SEEK_END) != 0) return false;
+  const long bytes = std::ftell(in);
+  const long frame_bytes = static_cast<long>(channels * sizeof(float));
+  if (bytes <= 0 || frame_bytes <= 0 || bytes % frame_bytes != 0 ||
+      std::fseek(in, 0, SEEK_SET) != 0) {
+    return false;
+  }
+  const int64_t total_frames = bytes / frame_bytes;
+  const int64_t iterations =
+      (total_frames + leading_padding + hop_size - 1) / hop_size;
+
+  std::vector<float> input_window(frame_size, 0.0f);
+  std::vector<float> overlap(frame_size, 0.0f);
+  std::vector<float> normalization(frame_size, 0.0f);
+  std::vector<float> interleaved(static_cast<size_t>(hop_size * channels),
+                                 0.0f);
+  std::vector<float> output_frame(static_cast<size_t>(hop_size * channels),
+                                  0.0f);
+  std::vector<float> window(frame_size);
+  std::vector<std::complex<float>> spectrum(frame_size);
+  PitchShifter pitch_lift(static_cast<float>(sample_rate), robot_pitch_ratio);
+  for (int i = 0; i < frame_size; ++i) {
+    window[i] = std::sqrt(0.5f -
+                          0.5f * std::cos(kTwoPi * i / (frame_size - 1)));
+  }
+
+  int64_t input_read = 0;
+  for (int64_t iteration = 0; iteration < iterations; ++iteration) {
+    if (g_cancel_requested.load(std::memory_order_relaxed)) return false;
+    std::move(input_window.begin() + hop_size, input_window.end(),
+              input_window.begin());
+    std::fill(input_window.end() - hop_size, input_window.end(), 0.0f);
+
+    const int frames_to_read = static_cast<int>(
+        std::min<int64_t>(hop_size, total_frames - input_read));
+    if (frames_to_read > 0) {
+      const size_t samples_to_read =
+          static_cast<size_t>(frames_to_read * channels);
+      if (std::fread(interleaved.data(), sizeof(float), samples_to_read, in) !=
+          samples_to_read) {
+        return false;
+      }
+      for (int frame = 0; frame < frames_to_read; ++frame) {
+        const float left = interleaved[frame * channels];
+        const float right =
+            channels > 1 ? interleaved[frame * channels + 1] : left;
+        input_window[frame_size - hop_size + frame] =
+            0.5f * (left + right);
+      }
+      input_read += frames_to_read;
+    }
+
+    for (int i = 0; i < frame_size; ++i) {
+      spectrum[i] = {input_window[i] * window[i], 0.0f};
+    }
+    fft(spectrum, false);
+    for (int bin = 0; bin <= frame_size / 2; ++bin) {
+      const float comb = 0.25f +
+                         0.75f * std::pow(std::fabs(std::cos(
+                             kPi * bin * sample_rate /
+                             (2.0f * frame_size * robot_pitch_hz))),
+                                         8.0f);
+      const float magnitude = std::abs(spectrum[bin]) * comb;
+      spectrum[bin] = {magnitude, 0.0f};
+      if (bin > 0 && bin < frame_size / 2) {
+        spectrum[frame_size - bin] = {magnitude, 0.0f};
+      }
+    }
+    fft(spectrum, true);
+    for (int i = 0; i < frame_size; ++i) {
+      overlap[i] += spectrum[i].real() * window[i];
+      normalization[i] += window[i] * window[i];
+    }
+
+    const int64_t block_start = iteration * hop_size - leading_padding;
+    int frames_written = 0;
+    for (int i = 0; i < hop_size; ++i) {
+      const int64_t absolute_frame = block_start + i;
+      if (absolute_frame < 0 || absolute_frame >= total_frames) continue;
+      const float normalized = normalization[i] > 1.0e-5f
+                                   ? overlap[i] / normalization[i]
+                                   : 0.0f;
+      const float pitched = pitch_lift.process(normalized);
+      const float depth = effect_id == 3
+                              ? 0.55f + 0.20f * amount
+                              : 0.10f + 0.10f * amount;
+      const float tremolo =
+          1.0f - depth * 0.5f + depth * 0.5f *
+                                         std::sin(kTwoPi * 30.0f *
+                                                  absolute_frame /
+                                                  sample_rate);
+      const float y = clampf(pitched * 4.0f * tremolo, -0.88f, 0.88f);
+      const size_t base = static_cast<size_t>(frames_written * channels);
+      output_frame[base] = y;
+      if (channels > 1) output_frame[base + 1] = y;
+      for (int channel = 2; channel < channels; ++channel) {
+        output_frame[base + channel] = y;
+      }
+      ++frames_written;
+    }
+    if (frames_written > 0 &&
+        std::fwrite(output_frame.data(), frame_bytes, frames_written, out) !=
+            static_cast<size_t>(frames_written)) {
+      return false;
+    }
+
+    std::move(overlap.begin() + hop_size, overlap.end(), overlap.begin());
+    std::fill(overlap.end() - hop_size, overlap.end(), 0.0f);
+    std::move(normalization.begin() + hop_size, normalization.end(),
+              normalization.begin());
+    std::fill(normalization.end() - hop_size, normalization.end(), 0.0f);
   }
   return true;
 }
@@ -909,6 +1137,9 @@ extern "C" int32_t sonarpad_dsp_process_file(
     bool ok = false;
     if (effect_id == 14) {
       ok = processReverse(in, out, channels);
+    } else if (effect_id == 2 || effect_id == 3) {
+      ok = processSpectralRobot(in, out, effect_id, amount, sample_rate,
+                                channels);
     } else if (effect_id >= 1 && effect_id <= 41 && effect_id != 20) {
       // ID 20 (fan) was deliberately merged with the existing helicopter
       // effect during the perceptual deduplication pass.
