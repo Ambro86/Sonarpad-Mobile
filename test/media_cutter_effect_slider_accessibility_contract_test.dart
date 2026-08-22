@@ -3,39 +3,43 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Media Cutter effect sliders use native adjustable VoiceOver controls', () {
-    final cutter = File('lib/screens/media_cutter_screen.dart').readAsStringSync();
-    final shared = File('lib/widgets/universal_accessible_view.dart').readAsStringSync();
+  test('Media Cutter effect sliders use the same cell-based UIKit semantics as Settings', () {
+    final source = File('lib/screens/media_cutter_screen.dart').readAsStringSync();
+    final settings = File('lib/screens/settings_screen.dart').readAsStringSync();
     final native = File('ios/Runner/SonarpadNativeAccessibleView.swift').readAsStringSync();
 
-    final volumeStart = cutter.indexOf("id: 'volume'");
-    expect(volumeStart, greaterThanOrEqualTo(0));
-    final volumeBlock = cutter.substring(volumeStart, volumeStart + 900);
+    final volumeStart = source.indexOf("id: 'volume'");
+    final volumeEnd = source.indexOf("id: 'effect_\$slot'", volumeStart);
+    final volumeBlock = source.substring(volumeStart, volumeEnd);
     expect(volumeBlock, contains("kind: 'slider'"));
+    expect(volumeBlock, contains('valueLabel: \'\$volumePercent%\''));
     expect(volumeBlock, contains('sliderStep: 10'));
-    expect(volumeBlock, contains('nativeSliderAccessibilityElement: true'));
-    expect(volumeBlock, contains("valueLabel: '\$volumePercent%'"));
+    expect(volumeBlock, isNot(contains('nativeSliderAccessibilityElement: true')));
 
-    final amountStart = cutter.indexOf("id: 'amount_\$slot'");
-    expect(amountStart, greaterThanOrEqualTo(0));
-    final amountBlock = cutter.substring(amountStart, amountStart + 1100);
+    final amountStart = source.indexOf("id: 'amount_\$slot'");
+    final amountEnd = source.indexOf("id: 'preview'", amountStart);
+    final amountBlock = source.substring(amountStart, amountEnd);
     expect(amountBlock, contains("kind: 'slider'"));
     expect(amountBlock, contains('sliderStep: 10'));
-    expect(amountBlock, contains('nativeSliderAccessibilityElement: true'));
-    expect(amountBlock, contains('amountPercent}%'));
+    expect(amountBlock, isNot(contains('nativeSliderAccessibilityElement: true')));
 
-    expect(shared, contains('nativeSliderAccessibilityElement'));
-    expect(shared, contains("slider: true"));
-    expect(shared, contains('onIncrease: enabled'));
-    expect(shared, contains('onDecrease: enabled'));
+    // The known-good Voice Speed slider in Settings also uses the default
+    // cell-based adjustable element, rather than exposing the accessory UISlider.
+    final speedStart = settings.indexOf("id: 'tts_speed'");
+    final speedEnd = settings.indexOf("id: 'tts_pitch'", speedStart);
+    final speedBlock = settings.substring(speedStart, speedEnd);
+    expect(speedBlock, contains("kind: 'slider'"));
+    expect(speedBlock, isNot(contains('nativeSliderAccessibilityElement: true')));
 
-    expect(native, contains('var nativeSliderAccessibilityElement: Bool'));
-    expect(native, contains('let exposeNativeSlider = row.nativeSliderAccessibilityElement'));
-    expect(native, contains('slider.isAccessibilityElement = exposeNativeSlider'));
+    // UIKit must keep one accessibility element (the table cell), update its
+    // value synchronously, and avoid a row reload during adjustable gestures.
     expect(native, contains('cell.isAccessibilityElement = !exposeNativeSlider'));
-    expect(native, contains('slider.accessibilityTraits = row.enabled ? [.adjustable]'));
-    expect(native, contains('slider.incrementHandler = row.enabled'));
-    expect(native, contains('slider.decrementHandler = row.enabled'));
-    expect(native, contains('slider.accessibilityValue = spokenValue'));
+    expect(native, contains('cell.accessibilityValue = spokenValue'));
+    expect(native, contains('channel.invokeMethod("event", arguments: ["type": "slider"'));
+    final adjustStart = native.indexOf('private func adjustSlider(at indexPath: IndexPath');
+    final adjustEnd = native.indexOf('private func formatSliderValue', adjustStart);
+    final adjustBlock = native.substring(adjustStart, adjustEnd);
+    expect(adjustBlock, isNot(contains('reloadRows')));
+    expect(adjustBlock, isNot(contains('layoutChanged')));
   });
 }

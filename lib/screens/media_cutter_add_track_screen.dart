@@ -301,7 +301,6 @@ class _MediaCutterAddTrackScreenState
                           sliderMin: 0,
                           sliderMax: 100,
                           sliderStep: 1,
-                          nativeSliderAccessibilityElement: true,
                           valueLabel: _percentValue(_originalVolume),
                           sliderIncreasedValueLabel:
                               _percentValue((_originalVolume + 1).clamp(0.0, 100.0).toDouble()),
@@ -317,7 +316,6 @@ class _MediaCutterAddTrackScreenState
                           sliderMin: 0,
                           sliderMax: 100,
                           sliderStep: 1,
-                          nativeSliderAccessibilityElement: true,
                           valueLabel: _percentValue(_newTrackVolume),
                           sliderIncreasedValueLabel:
                               _percentValue((_newTrackVolume + 1).clamp(0.0, 100.0).toDouble()),

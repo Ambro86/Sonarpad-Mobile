@@ -3128,7 +3128,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         sliderStep: 10,
                         value: '$volumePercent%',
                         valueLabel: '$volumePercent%',
-                        nativeSliderAccessibilityElement: true,
                         sliderIncreasedValueLabel:
                             '${(volumePercent + 10).clamp(0, 200)}%',
                         sliderDecreasedValueLabel:
@@ -3160,7 +3159,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             sliderStep: 10,
                             value: '${effectSlots[slot].amountPercent}%',
                             valueLabel: '${effectSlots[slot].amountPercent}%',
-                            nativeSliderAccessibilityElement: true,
                             sliderIncreasedValueLabel:
                                 '${(effectSlots[slot].amountPercent + 10).clamp(0, 100)}%',
                             sliderDecreasedValueLabel:
