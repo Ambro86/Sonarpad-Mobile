@@ -41,5 +41,20 @@ void main() {
     final adjustBlock = native.substring(adjustStart, adjustEnd);
     expect(adjustBlock, isNot(contains('reloadRows')));
     expect(adjustBlock, isNot(contains('layoutChanged')));
+
+    // The effect dialog must not rebuild the native PlatformView while
+    // VoiceOver is inside accessibilityIncrement/accessibilityDecrement.
+    // UIKit has already updated the focused cell synchronously; rebuilding the
+    // dialog here is what made focus escape before the new value was spoken.
+    final eventStart = source.indexOf('onEvent: (event) async {', volumeStart);
+    final previewStart = source.indexOf("if (event.id == 'preview'", eventStart);
+    final sliderEventBlock = source.substring(eventStart, previewStart);
+    expect(sliderEventBlock, contains('if (useNativeIosAccessibleViews)'));
+    expect(sliderEventBlock, contains('volumePercent = next;'));
+    expect(sliderEventBlock, contains('amountPercent: nextAmount'));
+    expect(
+      sliderEventBlock,
+      contains('setDialogState(() => volumePercent = next);'),
+    );
   });
 }

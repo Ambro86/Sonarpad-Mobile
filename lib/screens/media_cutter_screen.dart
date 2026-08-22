@@ -3177,7 +3177,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         final next = value is num
                             ? value.round().clamp(0, 200).toInt()
                             : volumePercent;
-                        setDialogState(() => volumePercent = next);
+                        if (useNativeIosAccessibleViews) {
+                          // Match the working Settings slider interaction on
+                          // the already-focused native adjustable cell. UIKit
+                          // has synchronously updated accessibilityValue and
+                          // the visible UISlider before sending this event.
+                          // Do not rebuild the Material dialog here: rebuilding
+                          // the PlatformView during accessibilityIncrement/
+                          // accessibilityDecrement makes VoiceOver leave the
+                          // adjustable element before it can announce the new
+                          // percentage.
+                          volumePercent = next;
+                        } else {
+                          setDialogState(() => volumePercent = next);
+                        }
                         return;
                       }
                       if (event.id != null &&
@@ -3210,11 +3223,23 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             value is! num) {
                           return;
                         }
-                        setDialogState(() {
+                        final nextAmount =
+                            value.round().clamp(0, 100).toInt();
+                        if (useNativeIosAccessibleViews) {
+                          // Same rule as the Settings voice-speed slider: keep
+                          // the focused UIKit adjustable cell alive while the
+                          // gesture is being handled. The next dialog rebuild
+                          // (picker/other action) will pick up this stored value.
                           effectSlots[slot] = effectSlots[slot].copyWith(
-                            amountPercent: value.round().clamp(0, 100).toInt(),
+                            amountPercent: nextAmount,
                           );
-                        });
+                        } else {
+                          setDialogState(() {
+                            effectSlots[slot] = effectSlots[slot].copyWith(
+                              amountPercent: nextAmount,
+                            );
+                          });
+                        }
                         return;
                       }
                       if (event.id == 'preview' && event.type == 'activate') {
