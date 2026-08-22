@@ -3100,6 +3100,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
     final result = await showDialog<_PartEffectSettings>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
           title: Text(applyToWholeFile
@@ -3183,24 +3184,17 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                           'before=$volumePercent preserveFocus='
                           '$preserveAccessibleSliderFocusDuringValueChange mounted=$mounted',
                         ));
-                        if (preserveAccessibleSliderFocusDuringValueChange) {
-                          // Match the working Settings slider interaction on
-                          // the already-focused native adjustable cell. UIKit
-                          // has synchronously updated accessibilityValue and
-                          // the visible UISlider before sending this event.
-                          // Do not rebuild the Material dialog here: rebuilding
-                          // the PlatformView during accessibilityIncrement/
-                          // accessibilityDecrement makes VoiceOver leave the
-                          // adjustable element before it can announce the new
-                          // percentage.
-                          volumePercent = next;
-                        } else {
-                          setDialogState(() => volumePercent = next);
-                        }
+                        // Keep Dart and the native row model synchronized exactly
+                        // like the Settings sliders. UniversalAccessibleList keeps
+                        // the existing UiKitView alive and sends an in-place setData;
+                        // the native renderer updates same-structure rows without
+                        // reloadData, so the focused adjustable cell is not replaced.
+                        setDialogState(() => volumePercent = next);
                         unawaited(_logMediaCutter(
                           'effects slider dart end id=volume stored=$volumePercent '
                           'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
-                          'dialogRebuilt=${!preserveAccessibleSliderFocusDuringValueChange}',
+                          'dialogRebuilt=true nativeUpdateExpectedInPlace='
+                          '$preserveAccessibleSliderFocusDuringValueChange',
                         ));
                         return;
                       }
@@ -3242,26 +3236,17 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                           'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
                           'mounted=$mounted',
                         ));
-                        if (preserveAccessibleSliderFocusDuringValueChange) {
-                          // Same rule as the Settings voice-speed slider: keep
-                          // the focused UIKit adjustable cell alive while the
-                          // gesture is being handled. The next dialog rebuild
-                          // (picker/other action) will pick up this stored value.
+                        setDialogState(() {
                           effectSlots[slot] = effectSlots[slot].copyWith(
                             amountPercent: nextAmount,
                           );
-                        } else {
-                          setDialogState(() {
-                            effectSlots[slot] = effectSlots[slot].copyWith(
-                              amountPercent: nextAmount,
-                            );
-                          });
-                        }
+                        });
                         unawaited(_logMediaCutter(
                           'effects slider dart end id=amount_$slot '
                           'stored=${effectSlots[slot].amountPercent} '
                           'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
-                          'dialogRebuilt=${!preserveAccessibleSliderFocusDuringValueChange}',
+                          'dialogRebuilt=true nativeUpdateExpectedInPlace='
+                          '$preserveAccessibleSliderFocusDuringValueChange',
                         ));
                         return;
                       }

@@ -1108,6 +1108,71 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     UIAccessibility.post(notification: .layoutChanged, argument: tableView.cellForRow(at: indexPath))
   }
 
+  private func recoverAdjustedSliderFocusIfNeeded(
+    at indexPath: IndexPath,
+    rowId: String,
+    value: Double,
+    phase: String
+  ) {
+    guard UIAccessibility.isVoiceOverRunning,
+          sections.indices.contains(indexPath.section),
+          sections[indexPath.section].rows.indices.contains(indexPath.row),
+          sections[indexPath.section].rows[indexPath.row].id == rowId,
+          let cell = tableView.cellForRow(at: indexPath) as? SonarpadAccessibleTableCell,
+          cell.window != nil else { return }
+
+    let focused = UIAccessibility.focusedElement(using: .notificationVoiceOver)
+    let focusedObject = focused as AnyObject?
+    if let focusedObject = focusedObject {
+      if focusedObject === (cell as AnyObject) {
+        emitDebug(
+          "SLIDER_FOCUS_RECOVERY phase=\(phase) id=\(rowId) action=keep reason=cellStillFocused value=\(value)"
+        )
+        return
+      }
+      if let slider = cell.accessoryView as? SonarpadAccessibleSlider,
+         focusedObject === (slider as AnyObject) {
+        emitDebug(
+          "SLIDER_FOCUS_RECOVERY phase=\(phase) id=\(rowId) action=keep reason=sliderStillFocused value=\(value)"
+        )
+        return
+      }
+      if accessibilityElementIsInNativeSubtree(focused) {
+        emitDebug(
+          "SLIDER_FOCUS_RECOVERY phase=\(phase) id=\(rowId) action=skip reason=otherNativeElement value=\(value) " +
+          "focusedType=\(String(describing: type(of: focusedObject)))"
+        )
+        return
+      }
+    }
+
+    let focusedType = focused.map { String(describing: type(of: $0)) } ?? "nil"
+    let focusedLabel = (focused as? NSObject)?.accessibilityLabel ?? "nil"
+    emitDebug(
+      "SLIDER_FOCUS_RECOVERY phase=\(phase) id=\(rowId) action=restore value=\(value) " +
+      "focusedType=\(focusedType) focusedLabel=\(focusedLabel) cellValue=\(cell.accessibilityValue ?? "nil")"
+    )
+    UIAccessibility.post(notification: .layoutChanged, argument: cell)
+  }
+
+  private func liveSliderSpokenValue(
+    for row: SonarpadNativeRow,
+    newValue: Double,
+    fallback: String?
+  ) -> String {
+    let current = row.valueLabel ?? row.value ?? ""
+    if current.hasSuffix("%") {
+      if abs(newValue.rounded() - newValue) < 0.00001 {
+        return "\(Int(newValue.rounded()))%"
+      }
+      return "\(String(format: "%.1f", newValue))%"
+    }
+    if current.hasSuffix("x") {
+      return "\(String(format: "%.1f", newValue))x"
+    }
+    return fallback ?? formatSliderValue(newValue)
+  }
+
   private func adjustSlider(at indexPath: IndexPath, delta: Double) {
     guard sections.indices.contains(indexPath.section), sections[indexPath.section].rows.indices.contains(indexPath.row) else { return }
     var row = sections[indexPath.section].rows[indexPath.row]
@@ -1121,7 +1186,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     let raw = min(max(row.sliderValue + delta, row.sliderMin), row.sliderMax)
     let steps = ((raw - row.sliderMin) / row.sliderStep).rounded()
     row.sliderValue = min(max(row.sliderMin + steps * row.sliderStep, row.sliderMin), row.sliderMax)
-    let spokenValue = announcedValue ?? formatSliderValue(row.sliderValue)
+    let spokenValue = liveSliderSpokenValue(
+      for: row,
+      newValue: row.sliderValue,
+      fallback: announcedValue
+    )
     row.value = spokenValue
     row.valueLabel = spokenValue
     sections[indexPath.section].rows[indexPath.row] = row
@@ -1151,6 +1220,23 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         )
       }
     )
+
+    // A Flutter AlertDialog and an embedded UiKitView live in two distinct
+    // accessibility subtrees. On iOS 27 VoiceOver can briefly leave the
+    // adjustable native cell after the MethodChannel hop and land on a Flutter
+    // semantics object. Check shortly after the hop and restore only when the
+    // focus actually escaped the native subtree; never fight navigation inside
+    // the UITableView itself.
+    for (phase, delaySeconds) in [("bridge20ms", 0.02), ("bridge80ms", 0.08)] {
+      DispatchQueue.main.asyncAfter(deadline: .now() + delaySeconds) { [weak self] in
+        self?.recoverAdjustedSliderFocusIfNeeded(
+          at: indexPath,
+          rowId: row.id,
+          value: row.sliderValue,
+          phase: phase
+        )
+      }
+    }
 
     for (delayMs, delaySeconds) in [(0, 0.0), (50, 0.05), (250, 0.25), (750, 0.75)] {
       DispatchQueue.main.asyncAfter(deadline: .now() + delaySeconds) { [weak self] in

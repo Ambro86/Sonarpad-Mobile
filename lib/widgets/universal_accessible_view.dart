@@ -796,11 +796,11 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     );
     if (event.type == 'slider') {
       final tag = widget.debugTag ?? widget.controller?.debugName ?? 'list';
-      await AppLogger.log(
+      unawaited(AppLogger.log(
         'DOC_NATIVE[$tag] DART_SLIDER_EVENT_RECEIVED '
         'id=${event.id} value=${event.value} mounted=$mounted '
         'rendererNative=$_rendererUsesNative generation=$_rendererGeneration',
-      );
+      ));
     }
     if (event.type == 'focus') {
       final tag = widget.debugTag ?? widget.controller?.debugName;
@@ -823,11 +823,11 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     await _dispatch(event);
     if (event.type == 'slider') {
       final tag = widget.debugTag ?? widget.controller?.debugName ?? 'list';
-      await AppLogger.log(
+      unawaited(AppLogger.log(
         'DOC_NATIVE[$tag] DART_SLIDER_EVENT_DISPATCHED '
         'id=${event.id} value=${event.value} mounted=$mounted '
         'rendererNative=$_rendererUsesNative generation=$_rendererGeneration',
-      );
+      ));
     }
     if (event.type == 'refresh') {
       await _channel?.invokeMethod<void>('endRefresh');

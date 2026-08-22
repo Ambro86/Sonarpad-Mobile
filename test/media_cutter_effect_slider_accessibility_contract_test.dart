@@ -46,24 +46,36 @@ void main() {
     );
     expect(adjustBlock, contains('SLIDER_DART_ACK source=accessibilityAdjust'));
     expect(adjustBlock, isNot(contains('reloadRows')));
-    expect(adjustBlock, isNot(contains('layoutChanged')));
+    expect(adjustBlock, contains('recoverAdjustedSliderFocusIfNeeded'));
+    expect(native, contains('SLIDER_FOCUS_RECOVERY'));
+    expect(adjustBlock, contains('liveSliderSpokenValue'));
 
-    // The effect dialog must not rebuild the native PlatformView while
-    // VoiceOver is inside accessibilityIncrement/accessibilityDecrement.
-    // UIKit has already updated the focused cell synchronously; rebuilding the
-    // dialog here is what made focus escape before the new value was spoken.
+    // The effects dialog is non-dismissible from the modal barrier so the
+    // Flutter "Dismiss" semantics node cannot steal VoiceOver focus during an
+    // adjustable gesture. Dart still rebuilds the StatefulBuilder, but the
+    // UniversalAccessibleList state survives and same-structure setData updates
+    // the existing native cell in place, exactly like Settings.
+    final dialogStart = source.indexOf('final result = await showDialog<_PartEffectSettings>');
+    final dialogBuilderStart = source.indexOf('builder:', dialogStart);
+    final dialogRouteBlock = source.substring(dialogStart, dialogBuilderStart);
+    expect(dialogRouteBlock, contains('barrierDismissible: false'));
     final eventStart = source.indexOf('onEvent: (event) async {', volumeStart);
     final previewStart = source.indexOf("if (event.id == 'preview'", eventStart);
     final sliderEventBlock = source.substring(eventStart, previewStart);
-    expect(
-      sliderEventBlock,
-      contains('if (preserveAccessibleSliderFocusDuringValueChange)'),
-    );
-    expect(sliderEventBlock, contains('volumePercent = next;'));
+    expect(sliderEventBlock, contains('setDialogState(() => volumePercent = next);'));
     expect(sliderEventBlock, contains('amountPercent: nextAmount'));
     expect(
       sliderEventBlock,
-      contains('setDialogState(() => volumePercent = next);'),
+      isNot(contains('if (preserveAccessibleSliderFocusDuringValueChange) {')),
     );
+
+    final adapter = File('lib/widgets/universal_accessible_view.dart').readAsStringSync();
+    final receivedLogStart = adapter.indexOf("if (event.type == 'slider') {");
+    final dispatchStart = adapter.indexOf('await _dispatch(event);', receivedLogStart);
+    final receivedLogBlock = adapter.substring(receivedLogStart, dispatchStart);
+    expect(receivedLogBlock, contains('unawaited(AppLogger.log('));
+    expect(receivedLogBlock, contains('DART_SLIDER_EVENT_RECEIVED'));
+
+
   });
 }
