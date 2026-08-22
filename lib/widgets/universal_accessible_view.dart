@@ -119,6 +119,7 @@ class AccessibleListRow {
     this.sliderStep = 0.1,
     this.sliderIncreasedValueLabel,
     this.sliderDecreasedValueLabel,
+    this.nativeSliderAccessibilityElement = false,
     this.secure = false,
     this.placeholder,
     this.options = const [],
@@ -157,6 +158,12 @@ class AccessibleListRow {
   final double sliderStep;
   final String? sliderIncreasedValueLabel;
   final String? sliderDecreasedValueLabel;
+
+  /// iOS-only: expose the real native UISlider as the single VoiceOver
+  /// element instead of the containing table cell. Use this for controls
+  /// where native adjustable gestures must behave exactly like a standard
+  /// iOS slider. Flutter/Android ignore this presentation flag.
+  final bool nativeSliderAccessibilityElement;
   final bool secure;
   final String? placeholder;
   final List<AccessibleOption> options;
@@ -210,6 +217,7 @@ class AccessibleListRow {
           'sliderIncreasedValueLabel': sliderIncreasedValueLabel,
         if (sliderDecreasedValueLabel != null)
           'sliderDecreasedValueLabel': sliderDecreasedValueLabel,
+        'nativeSliderAccessibilityElement': nativeSliderAccessibilityElement,
         'secure': secure,
         if (placeholder != null) 'placeholder': placeholder,
         'submitOnReturn': onSubmitted != null,

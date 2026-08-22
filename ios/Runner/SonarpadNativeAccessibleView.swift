@@ -31,6 +31,7 @@ private struct SonarpadNativeRow {
   var sliderStep: Double
   var sliderIncreasedValueLabel: String?
   var sliderDecreasedValueLabel: String?
+  var nativeSliderAccessibilityElement: Bool
   var secure: Bool
   var placeholder: String?
   var submitOnReturn: Bool
@@ -60,6 +61,7 @@ private struct SonarpadNativeRow {
     sliderStep = max((map["sliderStep"] as? NSNumber)?.doubleValue ?? 0.1, 0.000001)
     sliderIncreasedValueLabel = map["sliderIncreasedValueLabel"] as? String
     sliderDecreasedValueLabel = map["sliderDecreasedValueLabel"] as? String
+    nativeSliderAccessibilityElement = map["nativeSliderAccessibilityElement"] as? Bool ?? false
     secure = map["secure"] as? Bool ?? false
     placeholder = map["placeholder"] as? String
     submitOnReturn = map["submitOnReturn"] as? Bool ?? false
@@ -116,6 +118,7 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.sliderStep == rhs.sliderStep,
         lhs.sliderIncreasedValueLabel == rhs.sliderIncreasedValueLabel,
         lhs.sliderDecreasedValueLabel == rhs.sliderDecreasedValueLabel,
+        lhs.nativeSliderAccessibilityElement == rhs.nativeSliderAccessibilityElement,
         lhs.secure == rhs.secure,
         lhs.placeholder == rhs.placeholder,
         lhs.submitOnReturn == rhs.submitOnReturn,
@@ -907,14 +910,32 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       slider.value = Float(row.sliderValue)
       slider.isEnabled = row.enabled
       slider.isUserInteractionEnabled = row.enabled
-      // The table row is the single VoiceOver element. Keeping the visual
-      // UISlider out of the accessibility tree avoids UIKit enumerating the
-      // same adjustable control twice (cell + accessory view).
-      slider.isAccessibilityElement = false
-      slider.accessibilityFocusHandler = nil
+      let exposeNativeSlider = row.nativeSliderAccessibilityElement
+      // Keep the established cell-based slider semantics by default. Media
+      // Cutter effect controls opt into the real UISlider as the single
+      // VoiceOver element so standard adjustable swipe up/down gestures stay
+      // on the control and announce the updated percentage immediately.
+      slider.isAccessibilityElement = exposeNativeSlider
+      slider.accessibilityLabel = row.accessibilityLabel ?? row.title
+      slider.accessibilityHint = row.hint
+      slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+      slider.accessibilityTraits = row.enabled ? [.adjustable] : [.adjustable, .notEnabled]
+      if exposeNativeSlider {
+        slider.accessibilityFocusHandler = { [weak self] id in
+          self?.handleAccessibilityFocus(id)
+        }
+      } else {
+        slider.accessibilityFocusHandler = nil
+      }
+      slider.incrementHandler = row.enabled ? { [weak self] in
+        self?.adjustSlider(at: indexPath, delta: row.sliderStep)
+      } : nil
+      slider.decrementHandler = row.enabled ? { [weak self] in
+        self?.adjustSlider(at: indexPath, delta: -row.sliderStep)
+      } : nil
       slider.addTarget(self, action: #selector(sliderControlChanged(_:)), for: .valueChanged)
       cell.accessoryView = slider
-      cell.isAccessibilityElement = true
+      cell.isAccessibilityElement = !exposeNativeSlider
       cell.accessibilityLabel = row.accessibilityLabel ?? row.title
       cell.accessibilityHint = row.hint
       cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
@@ -1072,6 +1093,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.accessibilityValue = spokenValue
       if let slider = cell.accessoryView as? SonarpadAccessibleSlider {
         slider.value = Float(row.sliderValue)
+        slider.accessibilityValue = spokenValue
       }
     }
     channel.invokeMethod("event", arguments: ["type": "slider", "id": row.id, "value": row.sliderValue])
@@ -1120,7 +1142,12 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       slider.value = Float(row.sliderValue)
       slider.isEnabled = row.enabled
       slider.isUserInteractionEnabled = row.enabled
-      slider.isAccessibilityElement = false
+      slider.isAccessibilityElement = row.nativeSliderAccessibilityElement
+      slider.accessibilityLabel = row.accessibilityLabel ?? row.title
+      slider.accessibilityHint = row.hint
+      slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+      slider.accessibilityTraits = row.enabled ? [.adjustable] : [.adjustable, .notEnabled]
+      cell.isAccessibilityElement = !row.nativeSliderAccessibilityElement
     }
   }
 
@@ -1168,7 +1195,12 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           slider.value = Float(row.sliderValue)
           slider.isEnabled = row.enabled
           slider.isUserInteractionEnabled = row.enabled
-          slider.isAccessibilityElement = false
+          slider.isAccessibilityElement = row.nativeSliderAccessibilityElement
+          slider.accessibilityLabel = row.accessibilityLabel ?? row.title
+          slider.accessibilityHint = row.hint
+          slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
+          slider.accessibilityTraits = row.enabled ? [.adjustable] : [.adjustable, .notEnabled]
+          cell.isAccessibilityElement = !row.nativeSliderAccessibilityElement
         }
         continue
       }
