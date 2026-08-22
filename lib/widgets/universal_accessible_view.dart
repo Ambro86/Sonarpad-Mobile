@@ -131,6 +131,7 @@ class AccessibleListRow {
     this.placeholder,
     this.options = const [],
     this.actions = const [],
+    this.mergeFlutterCustomActions = false,
     this.visualActionId,
     this.visualActionIcon,
     this.onActivate,
@@ -175,6 +176,11 @@ class AccessibleListRow {
   final String? placeholder;
   final List<AccessibleOption> options;
   final List<AccessibleCustomAction> actions;
+
+  /// Flutter-only accessibility safeguard. When true, the row and its custom
+  /// actions are merged into one semantics node so VoiceOver/TalkBack focus
+  /// lands on the same node that exposes the actions. UIKit ignores this.
+  final bool mergeFlutterCustomActions;
 
   /// Optional sighted-only accessory action. It is rendered as a visible
   /// control but deliberately excluded from the accessibility tree. Screen
@@ -723,6 +729,18 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     }
     final channel = _channel;
     if (channel != null) {
+      final tag = widget.debugTag ?? widget.controller?.debugName;
+      if (tag != null && tag.isNotEmpty) {
+        final sliderSnapshot = <String>[
+          for (final section in widget.sections)
+            for (final row in section.rows)
+              if (row.kind == 'slider') '${row.id}=${row.sliderValue}/${row.valueLabel ?? row.value ?? ''}',
+        ].join(',');
+        unawaited(AppLogger.log(
+          'DOC_NATIVE[$tag] DART_WIDGET_UPDATE setDataPending=true '
+          'generation=$_rendererGeneration sliders=$sliderSnapshot',
+        ));
+      }
       if (!identical(oldWidget.controller, widget.controller)) {
         oldWidget.controller?._detach(channel);
         widget.controller?._attach(
@@ -776,6 +794,14 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       value: raw['value'],
       action: raw['action']?.toString(),
     );
+    if (event.type == 'slider') {
+      final tag = widget.debugTag ?? widget.controller?.debugName ?? 'list';
+      await AppLogger.log(
+        'DOC_NATIVE[$tag] DART_SLIDER_EVENT_RECEIVED '
+        'id=${event.id} value=${event.value} mounted=$mounted '
+        'rendererNative=$_rendererUsesNative generation=$_rendererGeneration',
+      );
+    }
     if (event.type == 'focus') {
       final tag = widget.debugTag ?? widget.controller?.debugName;
       if (tag != null && tag.isNotEmpty) {
@@ -795,6 +821,14 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       if (refresh != null) await refresh();
     }
     await _dispatch(event);
+    if (event.type == 'slider') {
+      final tag = widget.debugTag ?? widget.controller?.debugName ?? 'list';
+      await AppLogger.log(
+        'DOC_NATIVE[$tag] DART_SLIDER_EVENT_DISPATCHED '
+        'id=${event.id} value=${event.value} mounted=$mounted '
+        'rendererNative=$_rendererUsesNative generation=$_rendererGeneration',
+      );
+    }
     if (event.type == 'refresh') {
       await _channel?.invokeMethod<void>('endRefresh');
     }
@@ -1240,7 +1274,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
 
   Widget _withCustomActions(AccessibleListRow row, Widget child) {
     if (row.actions.isEmpty && row.onAccessibilityFocus == null) return child;
-    return Semantics(
+    final semantics = Semantics(
       onDidGainAccessibilityFocus: row.onAccessibilityFocus == null
           ? null
           : () => unawaited(
@@ -1258,6 +1292,10 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       },
       child: child,
     );
+    if (row.mergeFlutterCustomActions && row.actions.isNotEmpty) {
+      return MergeSemantics(child: semantics);
+    }
+    return semantics;
   }
 
   TextEditingController _textControllerFor(AccessibleListRow row) {

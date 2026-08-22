@@ -450,7 +450,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     ) { [weak self] notification in
       guard let self = self,
             let tag = self.debugTag,
-            ["document", "letter_jump", "podcast_episodes", "raiplaysound"].contains(tag) else {
+            ["document", "letter_jump", "podcast_episodes", "raiplaysound", "settings", "media_cutter_effects"].contains(tag) else {
         return
       }
 
@@ -928,9 +928,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         slider.accessibilityFocusHandler = nil
       }
       slider.incrementHandler = row.enabled ? { [weak self] in
+        self?.emitDebug(
+          "SLIDER_GESTURE source=accessoryUISlider direction=increment id=\(row.id) " +
+          "modelValue=\(row.sliderValue) step=\(row.sliderStep)"
+        )
         self?.adjustSlider(at: indexPath, delta: row.sliderStep)
       } : nil
       slider.decrementHandler = row.enabled ? { [weak self] in
+        self?.emitDebug(
+          "SLIDER_GESTURE source=accessoryUISlider direction=decrement id=\(row.id) " +
+          "modelValue=\(row.sliderValue) step=\(row.sliderStep)"
+        )
         self?.adjustSlider(at: indexPath, delta: -row.sliderStep)
       } : nil
       slider.addTarget(self, action: #selector(sliderControlChanged(_:)), for: .valueChanged)
@@ -942,9 +950,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.selectionStyle = .none
       cell.activationHandler = nil
       cell.incrementHandler = row.enabled ? { [weak self] in
+        self?.emitDebug(
+          "SLIDER_GESTURE source=adjustableCell direction=increment id=\(row.id) " +
+          "modelValue=\(row.sliderValue) step=\(row.sliderStep)"
+        )
         self?.adjustSlider(at: indexPath, delta: row.sliderStep)
       } : nil
       cell.decrementHandler = row.enabled ? { [weak self] in
+        self?.emitDebug(
+          "SLIDER_GESTURE source=adjustableCell direction=decrement id=\(row.id) " +
+          "modelValue=\(row.sliderValue) step=\(row.sliderStep)"
+        )
         self?.adjustSlider(at: indexPath, delta: -row.sliderStep)
       } : nil
     case "picker":
@@ -1054,6 +1070,10 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           sections.indices.contains(indexPath.section),
           sections[indexPath.section].rows.indices.contains(indexPath.row) else { return }
     var row = sections[indexPath.section].rows[indexPath.row]
+    emitDebug(
+      "SLIDER_CONTROL_CHANGED_BEGIN source=valueChanged id=\(row.id) senderValue=\(sender.value) " +
+      "modelValue=\(row.sliderValue) \(sliderFocusSnapshot(at: indexPath))"
+    )
     let raw = min(max(Double(sender.value), row.sliderMin), row.sliderMax)
     let steps = ((raw - row.sliderMin) / row.sliderStep).rounded()
     row.sliderValue = min(max(row.sliderMin + steps * row.sliderStep, row.sliderMin), row.sliderMax)
@@ -1062,7 +1082,21 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
     }
     sections[indexPath.section].rows[indexPath.row] = row
-    channel.invokeMethod("event", arguments: ["type": "slider", "id": row.id, "value": row.sliderValue])
+    emitDebug(
+      "SLIDER_CONTROL_CHANGED_SYNC id=\(row.id) newValue=\(row.sliderValue) " +
+      "cellValue=\((tableView.cellForRow(at: indexPath) as? SonarpadAccessibleTableCell)?.accessibilityValue ?? "nil") " +
+      "\(sliderFocusSnapshot(at: indexPath))"
+    )
+    channel.invokeMethod(
+      "event",
+      arguments: ["type": "slider", "id": row.id, "value": row.sliderValue],
+      result: { [weak self] result in
+        self?.emitDebug(
+          "SLIDER_DART_ACK source=valueChanged id=\(row.id) value=\(row.sliderValue) " +
+          "result=\(String(describing: result))"
+        )
+      }
+    )
   }
 
   private func toggleRow(at indexPath: IndexPath) {
@@ -1077,7 +1111,13 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private func adjustSlider(at indexPath: IndexPath, delta: Double) {
     guard sections.indices.contains(indexPath.section), sections[indexPath.section].rows.indices.contains(indexPath.row) else { return }
     var row = sections[indexPath.section].rows[indexPath.row]
+    let oldValue = row.sliderValue
     let announcedValue = delta >= 0 ? row.sliderIncreasedValueLabel : row.sliderDecreasedValueLabel
+    emitDebug(
+      "SLIDER_ADJUST_BEGIN id=\(row.id) direction=\(delta >= 0 ? "increment" : "decrement") " +
+      "delta=\(delta) oldValue=\(oldValue) step=\(row.sliderStep) min=\(row.sliderMin) max=\(row.sliderMax) " +
+      "candidateAnnouncement=\(announcedValue ?? "nil") \(sliderFocusSnapshot(at: indexPath))"
+    )
     let raw = min(max(row.sliderValue + delta, row.sliderMin), row.sliderMax)
     let steps = ((raw - row.sliderMin) / row.sliderStep).rounded()
     row.sliderValue = min(max(row.sliderMin + steps * row.sliderStep, row.sliderMin), row.sliderMax)
@@ -1096,7 +1136,57 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         slider.accessibilityValue = spokenValue
       }
     }
-    channel.invokeMethod("event", arguments: ["type": "slider", "id": row.id, "value": row.sliderValue])
+    emitDebug(
+      "SLIDER_ADJUST_SYNC id=\(row.id) oldValue=\(oldValue) newValue=\(row.sliderValue) " +
+      "spokenValue=\(spokenValue) \(sliderFocusSnapshot(at: indexPath))"
+    )
+    channel.invokeMethod(
+      "event",
+      arguments: ["type": "slider", "id": row.id, "value": row.sliderValue],
+      result: { [weak self] result in
+        guard let self = self else { return }
+        self.emitDebug(
+          "SLIDER_DART_ACK source=accessibilityAdjust id=\(row.id) value=\(row.sliderValue) " +
+          "result=\(String(describing: result)) \(self.sliderFocusSnapshot(at: indexPath))"
+        )
+      }
+    )
+
+    for (delayMs, delaySeconds) in [(0, 0.0), (50, 0.05), (250, 0.25), (750, 0.75)] {
+      DispatchQueue.main.asyncAfter(deadline: .now() + delaySeconds) { [weak self] in
+        guard let self = self else { return }
+        self.emitDebug(
+          "SLIDER_FOCUS_AFTER id=\(row.id) delayMs=\(delayMs) modelValue=\(row.sliderValue) " +
+          "\(self.sliderFocusSnapshot(at: indexPath))"
+        )
+      }
+    }
+  }
+
+  private func sliderFocusSnapshot(at indexPath: IndexPath) -> String {
+    let focused = UIAccessibility.focusedElement(using: .notificationVoiceOver)
+    let focusedType = focused.map { String(describing: type(of: $0)) } ?? "nil"
+    let focusedObject = focused as AnyObject?
+    let cell = tableView.cellForRow(at: indexPath) as? SonarpadAccessibleTableCell
+    let slider = cell?.accessoryView as? SonarpadAccessibleSlider
+    let focusedIsCell: Bool
+    if let focusedObject = focusedObject, let cellObject = cell as AnyObject? {
+      focusedIsCell = focusedObject === cellObject
+    } else {
+      focusedIsCell = false
+    }
+    let focusedIsSlider: Bool
+    if let focusedObject = focusedObject, let sliderObject = slider as AnyObject? {
+      focusedIsSlider = focusedObject === sliderObject
+    } else {
+      focusedIsSlider = false
+    }
+    return
+      "focusedType=\(focusedType) focusedRow=\(voiceOverFocusedRowId() ?? "nil") " +
+      "focusedIsCell=\(focusedIsCell) focusedIsSlider=\(focusedIsSlider) " +
+      "cellA11y=\(cell?.isAccessibilityElement ?? false) cellValue=\(cell?.accessibilityValue ?? "nil") " +
+      "sliderA11y=\(slider?.isAccessibilityElement ?? false) sliderValue=\(slider?.value ?? -1) " +
+      "cellWindow=\(cell?.window != nil) sliderWindow=\(slider?.window != nil)"
   }
 
   private func formatSliderValue(_ value: Double) -> String {

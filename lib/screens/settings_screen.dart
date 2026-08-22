@@ -1311,6 +1311,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return UniversalAccessibleList(
       key: const ValueKey('settings-shared-accessible-list'),
+      debugTag: 'settings',
       sections: sections,
       onEvent: (event) async {
         final id = event.id;
@@ -1368,6 +1369,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         } else if (event.type == 'slider') {
           final value = (event.value as num?)?.toDouble();
           if (value == null) return;
+          unawaited(AppLogger.log(
+            'Settings slider dart begin id=$id value=$value '
+            'ttsSpeed=$_ttsSpeed ttsPitch=$_ttsPitch mounted=$mounted',
+          ));
           switch (id) {
             case 'tts_speed': _setTtsSpeed(value); break;
             case 'tts_pitch': _setTtsPitch(value); break;
@@ -1375,6 +1380,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             case 'document_slider_step': _setDocumentSliderStepByIndex(value); break;
             case 'seek_step': setState(() => _seekSliderStep = value.round().clamp(10, 300).toInt()); break;
           }
+          unawaited(AppLogger.log(
+            'Settings slider dart end id=$id value=$value '
+            'ttsSpeed=$_ttsSpeed ttsPitch=$_ttsPitch mounted=$mounted',
+          ));
         } else if (event.type == 'textChanged' && id == 'tv_secret_code') {
           final text = event.value?.toString() ?? '';
           _tvSecretCodeController.value = TextEditingValue(text: text, selection: TextSelection.collapsed(offset: text.length));

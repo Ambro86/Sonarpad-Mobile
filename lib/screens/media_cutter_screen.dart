@@ -3110,6 +3110,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             height: 600,
             child: useSharedAccessibleViewModel
                 ? UniversalAccessibleList(
+                    debugTag: 'media_cutter_effects',
                     sections: [AccessibleListSection(rows: [
                       AccessibleListRow(
                         id: 'description',
@@ -3177,6 +3178,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         final next = value is num
                             ? value.round().clamp(0, 200).toInt()
                             : volumePercent;
+                        unawaited(_logMediaCutter(
+                          'effects slider dart begin id=volume raw=$value next=$next '
+                          'before=$volumePercent preserveFocus='
+                          '$preserveAccessibleSliderFocusDuringValueChange mounted=$mounted',
+                        ));
                         if (preserveAccessibleSliderFocusDuringValueChange) {
                           // Match the working Settings slider interaction on
                           // the already-focused native adjustable cell. UIKit
@@ -3191,6 +3197,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         } else {
                           setDialogState(() => volumePercent = next);
                         }
+                        unawaited(_logMediaCutter(
+                          'effects slider dart end id=volume stored=$volumePercent '
+                          'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
+                          'dialogRebuilt=${!preserveAccessibleSliderFocusDuringValueChange}',
+                        ));
                         return;
                       }
                       if (event.id != null &&
@@ -3225,6 +3236,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         }
                         final nextAmount =
                             value.round().clamp(0, 100).toInt();
+                        unawaited(_logMediaCutter(
+                          'effects slider dart begin id=amount_$slot raw=$value '
+                          'next=$nextAmount before=${effectSlots[slot].amountPercent} '
+                          'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
+                          'mounted=$mounted',
+                        ));
                         if (preserveAccessibleSliderFocusDuringValueChange) {
                           // Same rule as the Settings voice-speed slider: keep
                           // the focused UIKit adjustable cell alive while the
@@ -3240,6 +3257,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             );
                           });
                         }
+                        unawaited(_logMediaCutter(
+                          'effects slider dart end id=amount_$slot '
+                          'stored=${effectSlots[slot].amountPercent} '
+                          'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
+                          'dialogRebuilt=${!preserveAccessibleSliderFocusDuringValueChange}',
+                        ));
                         return;
                       }
                       if (event.id == 'preview' && event.type == 'activate') {
@@ -7097,6 +7120,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             subtitle: _guidedCurrentSummary,
             enabled: !_saving,
             actions: [AccessibleCustomAction(id: 'effects', label: _guidedEffectsLabel)],
+            mergeFlutterCustomActions: true,
           ),
       ] else ...[
         AccessibleListRow(id: 'split', title: l10n.mediaCutterSplit, kind: 'button', enabled: canUseMedia),
@@ -7117,6 +7141,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               AccessibleCustomAction(id: 'effects', label: l10n.mediaCutterPartEffectsAction),
               AccessibleCustomAction(id: 'delete', label: l10n.mediaCutterPartDeleteAction),
             ],
+            mergeFlutterCustomActions: true,
           ),
       ],
       AccessibleListRow(id: 'status', kind: 'text', title: _status ?? l10n.mediaCutterReady),
