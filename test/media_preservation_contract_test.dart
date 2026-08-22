@@ -52,6 +52,14 @@ void main() {
     expect(source, contains('l10n.cancel'));
     expect(source, contains('token.cancel()'));
     expect(source, contains('WidgetsBinding.instance.endOfFrame'));
+    expect(source, contains('value.completed'));
+    expect(source, contains('l10n.preserveMediaSaved'));
+    expect(source, contains('child: Text(l10n.ok)'));
+    expect(source, contains('await dialogFuture'));
+    expect(
+      source,
+      isNot(contains('showStatusMessage(context, l10n.preserveMediaSaved)')),
+    );
   });
 
   test('preserve media strings are localized in every ARB locale', () {

@@ -9,18 +9,22 @@ class _PreserveDialogState {
     required this.progress,
     required this.cancelling,
     required this.stage,
+    this.completed = false,
   });
 
   final double? progress;
   final bool cancelling;
   final MediaPreservationStage stage;
+  final bool completed;
 }
 
 /// Runs a media preservation download behind a clean Material progress dialog.
 /// The transfer itself remains asynchronous and streamed by
 /// [MediaPreservationService], so this dialog never blocks the Flutter UI
 /// thread. The Cancel button aborts the active HTTP transfer and the service
-/// removes any partial temporary file.
+/// removes any partial temporary file. After a successful save, the same
+/// dialog becomes a non-dismissible confirmation and remains on screen until
+/// the user explicitly presses OK.
 Future<MediaPreservationResult?> preserveMediaWithProgress(
   BuildContext context, {
   required String title,
@@ -50,6 +54,17 @@ Future<MediaPreservationResult?> preserveMediaWithProgress(
             content: ValueListenableBuilder<_PreserveDialogState>(
               valueListenable: state,
               builder: (context, value, _) {
+                if (value.completed) {
+                  return Semantics(
+                    liveRegion: true,
+                    container: true,
+                    label: l10n.preserveMediaSaved,
+                    child: ExcludeSemantics(
+                      child: Text(l10n.preserveMediaSaved),
+                    ),
+                  );
+                }
+
                 final fraction = value.progress;
                 final statusLabel =
                     value.stage == MediaPreservationStage.downloading
@@ -86,20 +101,28 @@ Future<MediaPreservationResult?> preserveMediaWithProgress(
             actions: [
               ValueListenableBuilder<_PreserveDialogState>(
                 valueListenable: state,
-                builder: (context, value, _) => TextButton(
-                  onPressed: value.cancelling ||
-                          value.stage == MediaPreservationStage.saving
-                      ? null
-                      : () {
-                          state.value = _PreserveDialogState(
-                            progress: value.progress,
-                            cancelling: true,
-                            stage: value.stage,
-                          );
-                          token.cancel();
-                        },
-                  child: Text(l10n.cancel),
-                ),
+                builder: (context, value, _) {
+                  if (value.completed) {
+                    return TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(l10n.ok),
+                    );
+                  }
+                  return TextButton(
+                    onPressed: value.cancelling ||
+                            value.stage == MediaPreservationStage.saving
+                        ? null
+                        : () {
+                            state.value = _PreserveDialogState(
+                              progress: value.progress,
+                              cancelling: true,
+                              stage: value.stage,
+                            );
+                            token.cancel();
+                          },
+                    child: Text(l10n.cancel),
+                  );
+                },
               ),
             ],
           ),
@@ -145,7 +168,17 @@ Future<MediaPreservationResult?> preserveMediaWithProgress(
     );
     if (!context.mounted) return result;
     if (result == MediaPreservationResult.savedInSonarpad) {
-      showStatusMessage(context, l10n.preserveMediaSaved);
+      state.value = const _PreserveDialogState(
+        progress: 1,
+        cancelling: false,
+        stage: MediaPreservationStage.saving,
+        completed: true,
+      );
+      // The success confirmation intentionally remains modal until the user
+      // presses OK. barrierDismissible and PopScope already prevent every
+      // other dismissal path.
+      await dialogFuture;
+      dialogContext = null;
     }
     return result;
   } on MediaPreservationCancelled {
