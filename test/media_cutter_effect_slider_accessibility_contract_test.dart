@@ -49,7 +49,10 @@ void main() {
     final eventStart = source.indexOf('onEvent: (event) async {', volumeStart);
     final previewStart = source.indexOf("if (event.id == 'preview'", eventStart);
     final sliderEventBlock = source.substring(eventStart, previewStart);
-    expect(sliderEventBlock, contains('if (useNativeIosAccessibleViews)'));
+    expect(
+      sliderEventBlock,
+      contains('if (preserveAccessibleSliderFocusDuringValueChange)'),
+    );
     expect(sliderEventBlock, contains('volumePercent = next;'));
     expect(sliderEventBlock, contains('amountPercent: nextAmount'));
     expect(

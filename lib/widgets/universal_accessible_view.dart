@@ -60,6 +60,13 @@ bool get useSharedAccessibleViewModel =>
 bool get useNativeIosAccessibleViews =>
     isIosPlatform && effectiveAccessibleRendererMode == 'native';
 
+/// Platform-neutral capability for controls that must keep the currently
+/// focused adjustable element alive while its value changes. Renderer
+/// selection remains centralized in this adapter; screens only react to the
+/// focus-preservation capability.
+bool get preserveAccessibleSliderFocusDuringValueChange =>
+    useNativeIosAccessibleViews;
+
 /// Platform-neutral capability for the hidden developer setting. Screens do
 /// not need to know which platform/renderer implements the capability.
 bool get canChooseAccessibleRendererAtRuntime =>

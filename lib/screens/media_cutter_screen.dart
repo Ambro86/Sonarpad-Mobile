@@ -3177,7 +3177,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         final next = value is num
                             ? value.round().clamp(0, 200).toInt()
                             : volumePercent;
-                        if (useNativeIosAccessibleViews) {
+                        if (preserveAccessibleSliderFocusDuringValueChange) {
                           // Match the working Settings slider interaction on
                           // the already-focused native adjustable cell. UIKit
                           // has synchronously updated accessibilityValue and
@@ -3225,7 +3225,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         }
                         final nextAmount =
                             value.round().clamp(0, 100).toInt();
-                        if (useNativeIosAccessibleViews) {
+                        if (preserveAccessibleSliderFocusDuringValueChange) {
                           // Same rule as the Settings voice-speed slider: keep
                           // the focused UIKit adjustable cell alive while the
                           // gesture is being handled. The next dialog rebuild
