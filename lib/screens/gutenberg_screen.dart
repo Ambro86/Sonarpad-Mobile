@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
 import '../services/gutendex_service.dart';
@@ -28,14 +29,14 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
   bool _languageInitialized = false;
 
   static const _languages = [
-    ('it', 'Italiano'),
-    ('en', 'English'),
-    ('es', 'Español'),
-    ('fr', 'Français'),
-    ('de', 'Deutsch'),
-    ('pt', 'Português'),
-    ('pl', 'Polski'),
-    ('zh', '简体中文'),
+    'it',
+    'en',
+    'es',
+    'fr',
+    'de',
+    'pt',
+    'pl',
+    'zh',
   ];
 
   @override
@@ -49,7 +50,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
       'zh_CN' => 'zh',
       _ => locale,
     };
-    if (_languages.any((entry) => entry.$1 == contentLanguage)) {
+    if (_languages.contains(contentLanguage)) {
       _language = contentLanguage;
     }
   }
@@ -90,8 +91,11 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
                   kind: 'picker',
                   value: _language,
                   options: [
-                    for (final entry in _languages)
-                      AccessibleOption(value: entry.$1, label: '${entry.$2} (${entry.$1})'),
+                    for (final code in _languages)
+                      AccessibleOption(
+                        value: code,
+                        label: '${l10n.languageLabel(code)} ($code)',
+                      ),
                   ],
                 ),
                 AccessibleListRow(id: 'search', title: l10n.search, kind: 'button'),
@@ -123,9 +127,9 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
             decoration: InputDecoration(labelText: l10n.sourceLanguageLabel),
             items: _languages
                 .map(
-                  (entry) => DropdownMenuItem(
-                    value: entry.$1,
-                    child: Text('${entry.$2} (${entry.$1})'),
+                  (code) => DropdownMenuItem(
+                    value: code,
+                    child: Text('${l10n.languageLabel(code)} ($code)'),
                   ),
                 )
                 .toList(),

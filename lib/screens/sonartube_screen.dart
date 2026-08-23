@@ -166,6 +166,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   Future<void> _loadMore() async {
     var token = _nextToken;
     if (token == null || token.isEmpty || _loadingMore) return;
+    final firstAppendedIndex = _items.length;
+    var shouldFocusFirstAppendedItem = false;
     setState(() {
       _loadingMore = true;
       _error = null;
@@ -211,6 +213,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       setState(() {
         if (appended.isNotEmpty) {
           _items = [..._items, ...appended];
+          shouldFocusFirstAppendedItem = true;
         }
         _nextToken = appended.isEmpty ? null : token;
         _page = currentPage;
@@ -220,6 +223,23 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     } finally {
       if (mounted) setState(() => _loadingMore = false);
     }
+
+    if (!mounted ||
+        !shouldFocusFirstAppendedItem ||
+        !useSharedAccessibleViewModel) {
+      return;
+    }
+
+    // Keep the screen renderer-neutral. AccessibleListController routes the
+    // same in-place focus request to the shared Flutter renderer or to UIKit.
+    // Waiting for the final frame also ensures the newly appended row exists
+    // before either renderer is asked to focus it.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _accessibleListController.focusTo(
+      'item_$firstAppendedIndex',
+      animated: false,
+    );
   }
 
   String _sonarTubeItemKey(SonarTubeItem item) =>

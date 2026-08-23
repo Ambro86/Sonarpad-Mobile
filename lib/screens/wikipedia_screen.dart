@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../services/wikipedia_service.dart';
 import '../services/document_library_service.dart';
 import '../services/recent_searches_service.dart';
@@ -41,22 +42,22 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
   }
 
   static const _languages = [
-    ('it', 'Italiano'),
-    ('en', 'English'),
-    ('es', 'Español'),
-    ('pt', 'Português'),
-    ('fr', 'Français'),
-    ('de', 'Deutsch'),
-    ('uk', 'Українська'),
-    ('lt', 'Lietuvių'),
-    ('sv', 'Svenska'),
-    ('vi', 'Tiếng Việt'),
-    ('cs', 'Čeština'),
-    ('pl', 'Polski'),
-    ('sr', 'Srpski'),
-    ('ru', 'Русский'),
-    ('zh', '简体中文'),
-    ('hi', 'हिन्दी'),
+    'it',
+    'en',
+    'es',
+    'pt',
+    'fr',
+    'de',
+    'uk',
+    'lt',
+    'sv',
+    'vi',
+    'cs',
+    'pl',
+    'sr',
+    'ru',
+    'zh',
+    'hi',
   ];
 
   @override
@@ -145,16 +146,11 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
                       title: l10n.wikipediaLanguage,
                       kind: 'picker',
                       value: _language ?? 'it',
-                      valueLabel: _languages
-                          .firstWhere(
-                            (entry) => entry.$1 == (_language ?? 'it'),
-                            orElse: () => _languages.first,
-                          )
-                          .$2,
+                      valueLabel: l10n.languageLabel(_language ?? 'it'),
                       options: _languages
-                          .map((entry) => AccessibleOption(
-                                value: entry.$1,
-                                label: '${entry.$2} (${entry.$1})',
+                          .map((code) => AccessibleOption(
+                                value: code,
+                                label: '${l10n.languageLabel(code)} ($code)',
                               ))
                           .toList(),
                     ),
@@ -207,8 +203,9 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
             initialValue: _language,
             decoration: InputDecoration(labelText: l10n.wikipediaLanguage),
             items: _languages
-                .map((entry) => DropdownMenuItem(
-                    value: entry.$1, child: Text('${entry.$2} (${entry.$1})')))
+                .map((code) => DropdownMenuItem(
+                    value: code,
+                    child: Text('${l10n.languageLabel(code)} ($code)')))
                 .toList(),
             onChanged: (value) {
               if (value == null) return;

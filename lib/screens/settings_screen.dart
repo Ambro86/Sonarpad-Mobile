@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
 import '../services/audio_player_service.dart';
@@ -756,6 +757,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return _edgeLanguages.isEmpty ? null : _edgeLanguages.first;
   }
 
+  String _localizedEdgeLanguageLabel(
+    TtsVoiceLanguage language,
+    AppLocalizations l10n,
+  ) {
+    final localized = l10n.languageLabel(language.code);
+    if (localized == language.code) return language.label;
+
+    final normalized = language.code.trim().replaceAll('_', '-');
+    if (!normalized.contains('-')) return localized;
+    return '$localized (${language.code})';
+  }
+
   TtsVoiceOption? get _selectedEdgeVoice {
     final voices = AppSettingsService.voicesForLanguageFrom(
       _edgeVoices,
@@ -784,7 +797,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _openEdgeLanguagePicker() async {
     final l10n = AppLocalizations.of(context);
     final languages = List<TtsVoiceLanguage>.of(_edgeLanguages)
-      ..sort((a, b) => a.label.compareTo(b.label));
+      ..sort(
+        (a, b) => _localizedEdgeLanguageLabel(a, l10n)
+            .compareTo(_localizedEdgeLanguageLabel(b, l10n)),
+      );
 
     final result = await Navigator.of(context).push<TtsVoiceLanguage>(
       MaterialPageRoute(
@@ -792,7 +808,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (_) => LetterJumpOptionPickerScreen<TtsVoiceLanguage>(
           title: l10n.ttsVoiceLanguage,
           options: languages,
-          labelBuilder: (language) => language.label,
+          labelBuilder: (language) =>
+              _localizedEdgeLanguageLabel(language, l10n),
           selectedBuilder: (language) => language.code == _languageCode,
           selectedLabel: l10n.letterJumpSelected,
           leadingBuilder: (selected) =>
@@ -978,7 +995,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         value ? l10n.settingsToggleOn : l10n.settingsToggleOff;
 
     final edgeLanguages = List<TtsVoiceLanguage>.of(_edgeLanguages)
-      ..sort((a, b) => a.label.compareTo(b.label));
+      ..sort(
+        (a, b) => _localizedEdgeLanguageLabel(a, l10n)
+            .compareTo(_localizedEdgeLanguageLabel(b, l10n)),
+      );
     final edgeVoices = List<TtsVoiceOption>.of(
       AppSettingsService.voicesForLanguageFrom(_edgeVoices, _languageCode),
     )..sort((a, b) => a.label.compareTo(b.label));
@@ -1073,9 +1093,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: l10n.ttsVoiceLanguage,
               kind: 'picker',
               value: _languageCode,
-              valueLabel: _selectedEdgeLanguage?.label ?? _languageCode,
+              valueLabel: _selectedEdgeLanguage == null
+                  ? _languageCode
+                  : _localizedEdgeLanguageLabel(_selectedEdgeLanguage!, l10n),
               options: edgeLanguages
-                  .map((e) => AccessibleOption(value: e.code, label: e.label))
+                  .map((e) => AccessibleOption(
+                        value: e.code,
+                        label: _localizedEdgeLanguageLabel(e, l10n),
+                      ))
                   .toList(),
             ),
             AccessibleListRow(
@@ -1536,7 +1561,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         leading: const Icon(Icons.language),
                         title: Text(l10n.ttsVoiceLanguage),
                         subtitle: Text(
-                          _selectedEdgeLanguage?.label ?? _languageCode,
+                          _selectedEdgeLanguage == null
+                              ? _languageCode
+                              : _localizedEdgeLanguageLabel(
+                                  _selectedEdgeLanguage!,
+                                  l10n,
+                                ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),

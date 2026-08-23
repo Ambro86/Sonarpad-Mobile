@@ -1,26 +1,32 @@
 import 'app_localizations.dart';
 
 extension LocalizedDynamicLabels on AppLocalizations {
-  String radioLanguageLabel(String code) => switch (code) {
-        'it' => radioLanguageIt,
-        'en' => radioLanguageEn,
-        'tr' => radioLanguageTr,
-        'de' => radioLanguageDe,
-        'es' => radioLanguageEs,
-        'pt' => radioLanguagePt,
-        'sv' => radioLanguageSv,
-        'vi' => radioLanguageVi,
-        'cs' => radioLanguageCs,
-        'pl' => radioLanguagePl,
-        'fr' => radioLanguageFr,
-        'sr' => radioLanguageSr,
-        'uk' => radioLanguageUk,
-        'hi' => radioLanguageHi,
-        'lt' => radioLanguageLt,
-        'ru' => radioLanguageRu,
-        'zh' => radioLanguageZh,
-        _ => code,
-      };
+  String languageLabel(String code) {
+    final normalized = code.trim().replaceAll('_', '-').toLowerCase();
+    final base = normalized.split('-').first;
+    return switch (base) {
+      'it' => radioLanguageIt,
+      'en' => radioLanguageEn,
+      'tr' => radioLanguageTr,
+      'de' => radioLanguageDe,
+      'es' => radioLanguageEs,
+      'pt' => radioLanguagePt,
+      'sv' => radioLanguageSv,
+      'vi' => radioLanguageVi,
+      'cs' => radioLanguageCs,
+      'pl' => radioLanguagePl,
+      'fr' => radioLanguageFr,
+      'sr' => radioLanguageSr,
+      'uk' => radioLanguageUk,
+      'hi' => radioLanguageHi,
+      'lt' => radioLanguageLt,
+      'ru' => radioLanguageRu,
+      'zh' => radioLanguageZh,
+      _ => code,
+    };
+  }
+
+  String radioLanguageLabel(String code) => languageLabel(code);
 
   String radioCountryLabel(String code) => switch (code) {
         'it' => radioCountryOptionIt,
