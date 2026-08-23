@@ -51,7 +51,12 @@ void main() {
     expect(source, contains('l10n.languageLabel(language.code)'));
     expect(
       source,
-      contains('labelBuilder: (language) => _localizedEdgeLanguageLabel'),
+      matches(
+        RegExp(
+          r'labelBuilder:\s*\(language\)\s*=>\s*'
+          r'_localizedEdgeLanguageLabel\(language,\s*l10n\)',
+        ),
+      ),
     );
   });
 

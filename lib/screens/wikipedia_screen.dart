@@ -150,7 +150,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
                       options: _languages
                           .map((code) => AccessibleOption(
                                 value: code,
-                                label: '${l10n.languageLabel(code)} ($code)',
+                                label: l10n.languageLabel(code),
                               ))
                           .toList(),
                     ),
@@ -205,7 +205,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
             items: _languages
                 .map((code) => DropdownMenuItem(
                     value: code,
-                    child: Text('${l10n.languageLabel(code)} ($code)')))
+                    child: Text(l10n.languageLabel(code))))
                 .toList(),
             onChanged: (value) {
               if (value == null) return;

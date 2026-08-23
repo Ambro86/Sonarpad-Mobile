@@ -94,7 +94,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
                     for (final code in _languages)
                       AccessibleOption(
                         value: code,
-                        label: '${l10n.languageLabel(code)} ($code)',
+                        label: l10n.languageLabel(code),
                       ),
                   ],
                 ),
@@ -129,7 +129,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
                 .map(
                   (code) => DropdownMenuItem(
                     value: code,
-                    child: Text('${l10n.languageLabel(code)} ($code)'),
+                    child: Text(l10n.languageLabel(code)),
                   ),
                 )
                 .toList(),
