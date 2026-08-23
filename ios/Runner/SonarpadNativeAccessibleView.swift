@@ -824,7 +824,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         ?? SonarpadTextFieldCell(style: .default, reuseIdentifier: identifier)
       cell.rowId = row.id
       cell.field.text = row.value ?? ""
-      cell.field.placeholder = row.placeholder ?? row.title
+      cell.field.placeholder = row.placeholder
       cell.field.accessibilityLabel = row.accessibilityLabel ?? row.title
       cell.field.accessibilityHint = row.hint
       cell.field.isSecureTextEntry = row.secure
@@ -1342,7 +1342,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         if cell.field.text != (row.value ?? "") && !cell.field.isFirstResponder {
           cell.field.text = row.value ?? ""
         }
-        cell.field.placeholder = row.placeholder ?? row.title
+        cell.field.placeholder = row.placeholder
         cell.field.accessibilityLabel = row.accessibilityLabel ?? row.title
         cell.field.accessibilityHint = row.hint
         cell.field.isSecureTextEntry = row.secure

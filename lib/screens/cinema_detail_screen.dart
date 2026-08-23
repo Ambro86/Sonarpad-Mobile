@@ -4,9 +4,11 @@ import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import '../widgets/universal_accessible_view.dart';
+import '../models/podcast.dart';
 import '../models/tmdb_movie.dart';
+import '../services/sonartube_service.dart';
 import '../services/tmdb_service.dart';
-import 'trailer_screen.dart';
+import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
 
 class CinemaDetailScreen extends StatefulWidget {
@@ -20,7 +22,9 @@ class CinemaDetailScreen extends StatefulWidget {
 
 class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
   final _service = TmdbService();
+  final _sonarTubeService = SonarTubeService();
   bool _loadingTrailer = true;
+  bool _openingTrailer = false;
   String? _trailerUrl;
 
   @override
@@ -48,26 +52,57 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
     }
   }
 
+  Future<PodcastEpisode> _resolveTrailerEpisode() async {
+    final trailerUrl = _trailerUrl;
+    if (trailerUrl == null || trailerUrl.isEmpty) {
+      throw StateError(AppLocalizations.of(context).cinemaNoTrailer);
+    }
+    final media = await _sonarTubeService.resolveUrl(
+      trailerUrl,
+      fallbackTitle: widget.movie.title,
+    );
+    return PodcastEpisode(
+      id: 'cinema_trailer:${widget.movie.id}',
+      title: media.title,
+      description: media.channel ?? '',
+      audioUrl: media.audioUrl,
+      videoUrl: media.videoUrl,
+    );
+  }
+
   Future<void> _openTrailer() async {
+    if (_openingTrailer) return;
+    final trailerUrl = _trailerUrl;
+    if (trailerUrl == null || trailerUrl.isEmpty) {
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).cinemaNoTrailer,
+      );
+      return;
+    }
+
+    setState(() => _openingTrailer = true);
     try {
-      if (_trailerUrl != null && mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            settings: const RouteSettings(name: '/cinema/trailer'),
-            builder: (_) => TrailerScreen(
-              videoUrl: _trailerUrl!,
-              title: widget.movie.title,
-            ),
-          ),
-        );
-      } else {
-        if (!mounted) return;
-                showStatusMessage(context, AppLocalizations.of(context).cinemaNoTrailer);
-      }
-    } catch (e) {
+      final episode = await _resolveTrailerEpisode();
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).technicalErrorGeneric));
+      await Navigator.push<void>(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/cinema/trailer'),
+          builder: (_) => PodcastEpisodePlayerScreen(
+            episode: episode,
+            isVideoSupported: true,
+            startWithVideoThenRestorePreference: true,
+            refreshEpisode: _resolveTrailerEpisode,
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      showStatusMessage(context, l10n.error(l10n.technicalErrorGeneric));
+    } finally {
+      if (mounted) setState(() => _openingTrailer = false);
     }
   }
 
@@ -109,7 +144,7 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
                     AccessibleListRow(id: 'date', title: releaseDateText, kind: 'text'),
                     if (movie.overview.isNotEmpty)
                       AccessibleListRow(id: 'overview', title: l10n.cinemaOverviewLabel, subtitle: movie.overview, kind: 'text'),
-                    if (_loadingTrailer)
+                    if (_loadingTrailer || _openingTrailer)
                       AccessibleListRow(id: 'trailer_loading', title: l10n.cinemaTrailerLoading, kind: 'text')
                     else if (_trailerUrl != null)
                       AccessibleListRow(id: 'trailer', title: l10n.cinemaOpenTrailer, kind: 'button'),
@@ -162,7 +197,7 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
             ),
             const SizedBox(height: 32),
           ],
-          if (_loadingTrailer)
+          if (_loadingTrailer || _openingTrailer)
             const Center(child: CircularProgressIndicator())
           else if (_trailerUrl != null)
             FilledButton.icon(

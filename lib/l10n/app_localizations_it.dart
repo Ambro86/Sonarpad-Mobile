@@ -1911,6 +1911,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get recordings => 'Registrazioni';
 
   @override
+  String get recordingInProgressStatus => 'Registrazione in corso';
+
+  @override
+  String get scheduledRecordingInProgressStatus => 'Registrazione programmata in corso';
+
+  @override
+  String get recordingCannotOpenWhileInProgress => 'Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.';
+
+  @override
+  String get blindLibrarySearchCatalog => 'Cerca nel catalogo';
+
+  @override
   String get selectRecordings => 'Seleziona registrazioni';
 
   @override

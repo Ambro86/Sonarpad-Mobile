@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/bdciechi_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/document_library_service.dart';
@@ -322,6 +323,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Accesso alla Biblioteca Digitale completato.'),
@@ -334,7 +336,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
                   const AccessibleListRow(id: 'latest', title: 'Ultime novità'),
                   AccessibleListRow(
                     id: 'search',
-                    title: 'Cerca nel catalogo...',
+                    title: l10n.blindLibrarySearchCatalog,
                     kind: 'textField',
                     textInputAction: 'search',
                     onSubmitted: (value) {
@@ -424,10 +426,10 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
 
               // 3. Cerca nel catalogo
               TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Cerca nel catalogo...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.blindLibrarySearchCatalog,
+                  prefixIcon: const Icon(Icons.search),
+                  border: const OutlineInputBorder(),
                 ),
                 textInputAction: TextInputAction.search,
                 onSubmitted: (query) {

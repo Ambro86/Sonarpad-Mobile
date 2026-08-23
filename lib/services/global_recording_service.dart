@@ -26,6 +26,12 @@ class GlobalRecordingTarget {
   final TvChannel? tvChannel;
 }
 
+enum GlobalRecordingOutputState {
+  none,
+  recording,
+  scheduledRecording,
+}
+
 /// App-session recording coordinator.
 ///
 /// Timers and FFmpeg sessions live here instead of inside RadioPlayerScreen,
@@ -62,6 +68,21 @@ class GlobalRecordingService extends ChangeNotifier {
   bool hasPendingScheduleFor(String targetId) =>
       _scheduledTarget?.id == targetId &&
       (_scheduledStartTimer?.isActive ?? false);
+
+  GlobalRecordingOutputState outputStateFor(File file) {
+    final activeOutput = _activeOutput;
+    final activeTarget = _activeTarget;
+    if (activeOutput == null ||
+        activeTarget == null ||
+        !hasAnyActiveRecording ||
+        activeOutput.path != file.path) {
+      return GlobalRecordingOutputState.none;
+    }
+    if (_scheduledTarget?.id == activeTarget.id) {
+      return GlobalRecordingOutputState.scheduledRecording;
+    }
+    return GlobalRecordingOutputState.recording;
+  }
 
   DateTime? scheduledStartFor(String targetId) =>
       _scheduledTarget?.id == targetId ? _scheduledStart : null;

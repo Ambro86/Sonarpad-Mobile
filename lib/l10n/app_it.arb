@@ -2613,6 +2613,10 @@
   "startRecording": "Avvia registrazione",
   "stopRecording": "Ferma registrazione",
   "recordings": "Registrazioni",
+  "recordingInProgressStatus": "Registrazione in corso",
+  "scheduledRecordingInProgressStatus": "Registrazione programmata in corso",
+  "recordingCannotOpenWhileInProgress": "Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.",
+  "blindLibrarySearchCatalog": "Cerca nel catalogo",
   "selectRecordings": "Seleziona registrazioni",
   "deleteRecordingsConfirmation": "{count, plural, =1{Vuoi eliminare definitivamente una registrazione?} other{Vuoi eliminare definitivamente {count} registrazioni?}}",
   "@deleteRecordingsConfirmation": {

@@ -1301,7 +1301,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: l10n.settingsSecretCode,
               kind: 'textField',
               value: _tvSecretCodeController.text,
-              placeholder: l10n.settingsSecretCode,
               secure: true,
             ),
             AccessibleListRow(id: 'paste_secret_code', title: l10n.settingsPasteCode, kind: 'button'),

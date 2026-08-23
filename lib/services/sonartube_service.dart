@@ -124,12 +124,28 @@ class SonarTubeService {
     return null;
   }
 
-  Future<SonarTubeResolvedMedia> resolve(SonarTubeItem item) async {
+  Future<SonarTubeResolvedMedia> resolve(SonarTubeItem item) {
     if (item.kind != SonarTubeItemKind.video) {
       throw ArgumentError('È possibile risolvere soltanto un video.');
     }
+    return resolveUrl(
+      item.url.isEmpty ? item.id : item.url,
+      fallbackTitle: item.title,
+      fallbackChannel: item.channel,
+    );
+  }
+
+  Future<SonarTubeResolvedMedia> resolveUrl(
+    String url, {
+    required String fallbackTitle,
+    String? fallbackChannel,
+  }) async {
+    final trimmedUrl = url.trim();
+    if (trimmedUrl.isEmpty) {
+      throw ArgumentError.value(url, 'url');
+    }
     final data = await _request({
-      'url': item.url.isEmpty ? item.id : item.url,
+      'url': trimmedUrl,
       'quality': 'best',
       'prefer': 'auto',
       'format': 'json',
@@ -145,8 +161,8 @@ class SonarTubeService {
     final hasSeparateStreams =
         streamVideo != null && streamAudio != null && stream == streamVideo;
     return SonarTubeResolvedMedia(
-      title: _string(data['title']) ?? item.title,
-      channel: _string(data['channel']) ?? item.channel,
+      title: _string(data['title']) ?? fallbackTitle,
+      channel: _string(data['channel']) ?? fallbackChannel,
       audioUrl: hasSeparateStreams ? streamAudio : stream,
       videoUrl: hasSeparateStreams ? streamVideo : null,
     );

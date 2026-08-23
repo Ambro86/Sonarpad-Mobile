@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
+import '../services/global_recording_service.dart';
 import '../services/radio_recording_service.dart';
 import '../utils/status_message.dart';
 import '../widgets/recording_selection_dialog.dart';
@@ -21,6 +22,7 @@ class TvRecordingsScreen extends StatefulWidget {
 }
 
 class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
+  final _globalRecordingService = GlobalRecordingService.instance;
   final _service = RadioRecordingService(
     directoryName: 'TV Registrazioni',
     includeVideo: true,
@@ -31,6 +33,18 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
   void initState() {
     super.initState();
     _future = _service.listRecordings();
+    _globalRecordingService.addListener(_onGlobalRecordingChanged);
+  }
+
+  @override
+  void dispose() {
+    _globalRecordingService.removeListener(_onGlobalRecordingChanged);
+    super.dispose();
+  }
+
+  void _onGlobalRecordingChanged() {
+    if (!mounted) return;
+    _reload();
   }
 
   void _reload() {
@@ -39,7 +53,26 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
     });
   }
 
+  GlobalRecordingOutputState _recordingState(File file) =>
+      _globalRecordingService.outputStateFor(file);
+
+  String? _recordingStatus(File file, AppLocalizations l10n) {
+    return switch (_recordingState(file)) {
+      GlobalRecordingOutputState.recording => l10n.recordingInProgressStatus,
+      GlobalRecordingOutputState.scheduledRecording =>
+        l10n.scheduledRecordingInProgressStatus,
+      GlobalRecordingOutputState.none => null,
+    };
+  }
+
   void _openRecording(File file) {
+    if (_recordingState(file) != GlobalRecordingOutputState.none) {
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).recordingCannotOpenWhileInProgress,
+      );
+      return;
+    }
     final basename = p.basename(file.path);
     final uri = file.uri.toString();
     final extension = p.extension(file.path).toLowerCase();
@@ -159,6 +192,7 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                       .map((entry) => AccessibleListRow(
                             id: 'recording_${entry.key}',
                             title: p.basenameWithoutExtension(entry.value.path),
+                            value: _recordingStatus(entry.value, l10n),
                             actions: [
                               AccessibleCustomAction(id: 'open', label: l10n.openItem),
                               AccessibleCustomAction(id: 'share', label: l10n.share),
@@ -189,6 +223,7 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
             itemBuilder: (context, index) {
               final file = files[index];
               final name = p.basenameWithoutExtension(file.path);
+              final status = _recordingStatus(file, l10n);
               return Semantics(
                 key: ValueKey('tv_recording_semantics_${file.path}'),
                 customSemanticsActions: {
@@ -203,6 +238,7 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                   key: ValueKey('tv_recording_${file.path}'),
                   leading: const Icon(Icons.videocam),
                   title: Text(name),
+                  subtitle: status == null ? null : Text(status),
                   trailing: ExcludeSemantics(
                     child: PopupMenuButton<_RecordingAction>(
                       onSelected: (action) {

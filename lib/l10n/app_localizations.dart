@@ -3496,6 +3496,31 @@ abstract class AppLocalizations {
   /// **'Registrazioni'**
   String get recordings;
 
+  /// No description provided for @recordingInProgressStatus.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione in corso'**
+  String get recordingInProgressStatus;
+
+  /// No description provided for @scheduledRecordingInProgressStatus.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione programmata in corso'**
+  String get scheduledRecordingInProgressStatus;
+
+  /// No description provided for @recordingCannotOpenWhileInProgress.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.'**
+  String get recordingCannotOpenWhileInProgress;
+
+
+  /// No description provided for @blindLibrarySearchCatalog.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca nel catalogo'**
+  String get blindLibrarySearchCatalog;
+
   /// No description provided for @selectRecordings.
   ///
   /// In it, this message translates to:

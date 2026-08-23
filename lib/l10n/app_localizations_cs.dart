@@ -1904,6 +1904,18 @@ class AppLocalizationsCs extends AppLocalizations {
   String get recordings => 'Nahrávky';
 
   @override
+  String get recordingInProgressStatus => 'Probíhá nahrávání';
+
+  @override
+  String get scheduledRecordingInProgressStatus => 'Probíhá naplánované nahrávání';
+
+  @override
+  String get recordingCannotOpenWhileInProgress => 'Tuto nahrávku nelze otevřít, protože nahrávání stále probíhá.';
+
+  @override
+  String get blindLibrarySearchCatalog => 'Prohledat katalog';
+
+  @override
   String get selectRecordings => 'Vybrat nahrávky';
 
   @override

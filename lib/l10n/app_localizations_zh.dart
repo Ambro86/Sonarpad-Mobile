@@ -1700,6 +1700,18 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get recordings => '录音';
 
   @override
+  String get recordingInProgressStatus => '录制进行中';
+
+  @override
+  String get scheduledRecordingInProgressStatus => '定时录制进行中';
+
+  @override
+  String get recordingCannotOpenWhileInProgress => '无法打开此录制，因为录制仍在进行中。';
+
+  @override
+  String get blindLibrarySearchCatalog => '搜索目录';
+
+  @override
   String get selectRecordings => '选择录音';
 
   @override

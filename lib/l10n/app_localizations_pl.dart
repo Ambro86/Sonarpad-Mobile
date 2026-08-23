@@ -1905,6 +1905,18 @@ class AppLocalizationsPl extends AppLocalizations {
   String get recordings => 'Nagrania';
 
   @override
+  String get recordingInProgressStatus => 'Nagrywanie w toku';
+
+  @override
+  String get scheduledRecordingInProgressStatus => 'Trwa zaplanowane nagrywanie';
+
+  @override
+  String get recordingCannotOpenWhileInProgress => 'Nie można otworzyć tego nagrania, ponieważ nagrywanie nadal trwa.';
+
+  @override
+  String get blindLibrarySearchCatalog => 'Przeszukaj katalog';
+
+  @override
   String get selectRecordings => 'Wybierz nagrania';
 
   @override

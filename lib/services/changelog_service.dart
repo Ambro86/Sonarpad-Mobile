@@ -4,15 +4,22 @@ import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'app_settings_service.dart';
+import 'raiplay_service.dart';
+import 'raiplay_sound_service.dart';
+import 'tv_service.dart';
+
 class ChangelogEntry {
   final String version;
   final String date;
   final Map<String, List<String>> changesByLanguage;
+  final List<String> italianExtraChanges;
 
   const ChangelogEntry({
     required this.version,
     required this.date,
     required this.changesByLanguage,
+    this.italianExtraChanges = const [],
   });
 
   factory ChangelogEntry.fromJson(Map<String, dynamic> json) {
@@ -25,24 +32,59 @@ class ChangelogEntry {
       }
     }
 
+    final rawItalianExtraChanges = json['it_extra'];
+    final italianExtraChanges = rawItalianExtraChanges is List
+        ? rawItalianExtraChanges.map((item) => item.toString()).toList()
+        : const <String>[];
+
     return ChangelogEntry(
       version: json['version']?.toString() ?? '',
       date: json['date']?.toString() ?? '',
       changesByLanguage: changesByLanguage,
+      italianExtraChanges: italianExtraChanges,
     );
   }
 
-  List<String> changesFor(String languageCode) {
-    return changesByLanguage[languageCode] ??
+  List<String> changesFor(
+    String languageCode, {
+    bool includeItalianExtras = false,
+  }) {
+    final baseChanges = changesByLanguage[languageCode] ??
         changesByLanguage['en'] ??
         changesByLanguage['it'] ??
-        const [];
+        const <String>[];
+    if (languageCode != 'it' ||
+        !includeItalianExtras ||
+        italianExtraChanges.isEmpty) {
+      return baseChanges;
+    }
+    return [...baseChanges, ...italianExtraChanges];
   }
 }
 
 class ChangelogService {
   static const _assetPath = 'assets/changelog.json';
   static const _lastSeenVersionKey = 'sonarpad_last_seen_changelog_version';
+
+  Future<bool> hasSonarpadExtraAccess() async {
+    final code = (await AppSettingsService().getTvSecretCode()).trim();
+    if (code.isEmpty) return false;
+    return TvService().isSecretCodeValid(code) ||
+        RaiPlayService().isSecretCodeValid(code) ||
+        RaiPlaySoundService().isSecretCodeValid(code);
+  }
+
+  Future<List<String>> visibleChangesFor(
+    ChangelogEntry entry,
+    String languageCode,
+  ) async {
+    final includeItalianExtras = languageCode == 'it' &&
+        await hasSonarpadExtraAccess();
+    return entry.changesFor(
+      languageCode,
+      includeItalianExtras: includeItalianExtras,
+    );
+  }
 
   Future<List<ChangelogEntry>> loadEntries() async {
     final raw = await rootBundle.loadString(_assetPath);

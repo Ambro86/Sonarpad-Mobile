@@ -2613,6 +2613,10 @@
   "startRecording": "Aufnahme starten",
   "stopRecording": "Aufnahme stoppen",
   "recordings": "Aufnahmen",
+  "recordingInProgressStatus": "Aufnahme läuft",
+  "scheduledRecordingInProgressStatus": "Geplante Aufnahme läuft",
+  "recordingCannotOpenWhileInProgress": "Diese Aufnahme kann nicht geöffnet werden, da sie noch läuft.",
+  "blindLibrarySearchCatalog": "Katalog durchsuchen",
   "selectRecordings": "Aufnahmen auswählen",
   "deleteRecordingsConfirmation": "{count, plural, =1{Eine Aufnahme dauerhaft löschen?} other{{count} Aufnahmen dauerhaft löschen?}}",
   "@deleteRecordingsConfirmation": {

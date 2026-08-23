@@ -1849,6 +1849,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String get recordings => 'Gravações';
 
   @override
+  String get recordingInProgressStatus => 'Gravação em curso';
+
+  @override
+  String get scheduledRecordingInProgressStatus => 'Gravação programada em curso';
+
+  @override
+  String get recordingCannotOpenWhileInProgress => 'Não é possível abrir esta gravação porque ainda está em curso.';
+
+  @override
+  String get blindLibrarySearchCatalog => 'Pesquisar no catálogo';
+
+  @override
   String get selectRecordings => 'Selecionar gravações';
 
   @override
@@ -5197,6 +5209,18 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get recordings => 'Gravações';
+
+  @override
+  String get recordingInProgressStatus => 'Gravação em andamento';
+
+  @override
+  String get scheduledRecordingInProgressStatus => 'Gravação programada em andamento';
+
+  @override
+  String get recordingCannotOpenWhileInProgress => 'Não é possível abrir esta gravação porque ela ainda está em andamento.';
+
+  @override
+  String get blindLibrarySearchCatalog => 'Pesquisar no catálogo';
 
   @override
   String get selectRecordings => 'Selecionar gravações';

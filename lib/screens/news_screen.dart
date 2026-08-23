@@ -698,6 +698,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
   final _service = NewsService();
   final _settings = AppSettingsService();
   final _localCityController = TextEditingController();
+  final ValueNotifier<bool> _suppressBackSemantics = ValueNotifier<bool>(false);
   late Future<List<NewsArticle>> _future;
   late Uri _currentUri;
 
@@ -711,6 +712,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
 
   @override
   void dispose() {
+    _suppressBackSemantics.dispose();
     _localCityController.dispose();
     super.dispose();
   }
@@ -828,8 +830,20 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         .firstOrNull;
     final isLocalCategory = currentCategory?.isLocal == true;
 
+    final canPop = Navigator.of(context).canPop();
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: !canPop,
+        leading: canPop
+            ? ValueListenableBuilder<bool>(
+                valueListenable: _suppressBackSemantics,
+                builder: (context, suppress, child) => ExcludeSemantics(
+                  excluding: suppress,
+                  child: child,
+                ),
+                child: const BackButton(),
+              )
+            : null,
         title: Text(widget.title ?? widget.source.name),
         actions: [
           IconButton(
@@ -981,6 +995,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                 future: _future,
                 language: widget.language,
                 sourceName: widget.title ?? widget.source.name,
+                suppressBackSemantics: _suppressBackSemantics,
               ),
             ),
           ),
@@ -1400,11 +1415,13 @@ class _NewsArticleList extends StatefulWidget {
     required this.future,
     required this.language,
     required this.sourceName,
+    required this.suppressBackSemantics,
   });
 
   final Future<List<NewsArticle>> future;
   final NewsLanguage language;
   final String sourceName;
+  final ValueNotifier<bool> suppressBackSemantics;
 
   @override
   State<_NewsArticleList> createState() => _NewsArticleListState();
@@ -1459,6 +1476,9 @@ class _NewsArticleListState extends State<_NewsArticleList> {
       _readUris = {..._readUris, article.id};
     });
 
+    if (scrollTarget != null && suppressBackSemanticsDuringRouteReturn) {
+      widget.suppressBackSemantics.value = true;
+    }
     await navigator.push(
       MaterialPageRoute(
         settings: const RouteSettings(name: '/news/article'),
@@ -1474,6 +1494,16 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     if (!mounted) return;
     if (useSharedAccessibleViewModel) {
       _schedulePendingArticleFocus();
+      if (widget.suppressBackSemantics.value) {
+        Future<void>.delayed(const Duration(seconds: 3), () {
+          if (!mounted || !widget.suppressBackSemantics.value) return;
+          widget.suppressBackSemantics.value = false;
+          _pendingArticleScrollId = null;
+          _pendingArticleScrollScheduled = false;
+        });
+      }
+    } else {
+      widget.suppressBackSemantics.value = false;
     }
   }
 
@@ -1545,6 +1575,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           () => _tryFocusPendingArticle(id, attempt: attempt + 1),
         );
       } else {
+        widget.suppressBackSemantics.value = false;
         _pendingArticleScrollId = null;
         _pendingArticleScrollScheduled = false;
       }
@@ -1554,12 +1585,17 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     try {
       await _accessibleListController.focusAccessibleRow(
         id,
-        mode: AccessibleFocusMode.returnFocus,
+        mode: AccessibleFocusMode.routeReturnJump,
         animated: false,
       );
       if (!mounted || _pendingArticleScrollId != id) return;
-      _pendingArticleScrollId = null;
-      _pendingArticleScrollScheduled = false;
+      // With the native iOS renderer, keep Back excluded until UIKit reports
+      // that VoiceOver actually acquired the target article. Other renderers
+      // do not need that handoff guard, so the request itself completes it.
+      if (!widget.suppressBackSemantics.value) {
+        _pendingArticleScrollId = null;
+        _pendingArticleScrollScheduled = false;
+      }
     } catch (_) {
       if (!mounted || _pendingArticleScrollId != id) return;
       if (attempt < 4) {
@@ -1568,9 +1604,19 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           () => _tryFocusPendingArticle(id, attempt: attempt + 1),
         );
       } else {
+        widget.suppressBackSemantics.value = false;
         _pendingArticleScrollId = null;
         _pendingArticleScrollScheduled = false;
       }
+    }
+  }
+
+  void _handleArticleAccessibilityFocus(String id) {
+    if (_pendingArticleScrollId != id) return;
+    _pendingArticleScrollId = null;
+    _pendingArticleScrollScheduled = false;
+    if (widget.suppressBackSemantics.value) {
+      widget.suppressBackSemantics.value = false;
     }
   }
 
@@ -1671,6 +1717,8 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                   : '${article.source}. ${article.summary}';
               return AccessibleListRow(
                 id: article.id,
+                onAccessibilityFocus: () =>
+                    _handleArticleAccessibilityFocus(article.id),
                 title: titleWithListTimestamp(
                   article.title,
                   article.publishedAt,
@@ -1684,6 +1732,9 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           return UniversalAccessibleList(
             key: ValueKey('shared-news-articles-${widget.sourceName}-${rows.length}'),
             controller: _accessibleListController,
+            routeReturnSemanticsSettleDelay: Duration.zero,
+            routeReturnUseFocusProxy: false,
+            routeReturnWaitForForeignFocusClear: true,
             sections: [AccessibleListSection(rows: rows)],
             onEvent: (event) async {
               if (event.type != 'activate' || event.id == null) return;

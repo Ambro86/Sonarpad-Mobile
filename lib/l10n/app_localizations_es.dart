@@ -1919,6 +1919,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get recordings => 'Grabaciones';
 
   @override
+  String get recordingInProgressStatus => 'Grabación en curso';
+
+  @override
+  String get scheduledRecordingInProgressStatus => 'Grabación programada en curso';
+
+  @override
+  String get recordingCannotOpenWhileInProgress => 'No se puede abrir esta grabación porque todavía está en curso.';
+
+  @override
+  String get blindLibrarySearchCatalog => 'Buscar en el catálogo';
+
+  @override
   String get selectRecordings => 'Seleccionar grabaciones';
 
   @override

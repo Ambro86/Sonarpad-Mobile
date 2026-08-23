@@ -165,4 +165,33 @@ void main() {
     expect(requestedUri.queryParameters['seed'], 'abcdefghijk');
   });
 
+  test('resolveUrl accepts a direct YouTube trailer URL', () async {
+    late Uri requestedUri;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        requestedUri = request.url;
+        return http.Response(
+          jsonEncode({
+            'ok': true,
+            'stream': 'https://media.test/trailer.mp4',
+          }),
+          200,
+        );
+      }),
+    );
+
+    final media = await service.resolveUrl(
+      'https://www.youtube.com/watch?v=trailer12345',
+      fallbackTitle: 'Titolo film',
+    );
+
+    expect(
+      requestedUri.queryParameters['url'],
+      'https://www.youtube.com/watch?v=trailer12345',
+    );
+    expect(media.audioUrl, 'https://media.test/trailer.mp4');
+    expect(media.title, 'Titolo film');
+  });
+
 }

@@ -1849,6 +1849,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get recordings => "Aufnahmen";
 
   @override
+  String get recordingInProgressStatus => 'Aufnahme läuft';
+
+  @override
+  String get scheduledRecordingInProgressStatus => 'Geplante Aufnahme läuft';
+
+  @override
+  String get recordingCannotOpenWhileInProgress => 'Diese Aufnahme kann nicht geöffnet werden, da sie noch läuft.';
+
+  @override
+  String get blindLibrarySearchCatalog => 'Katalog durchsuchen';
+
+  @override
   String get selectRecordings => "Aufnahmen auswählen";
 
   @override
