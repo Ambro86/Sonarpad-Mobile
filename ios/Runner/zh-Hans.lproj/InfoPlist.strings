@@ -2,3 +2,5 @@
 "NSCalendarsUsageDescription" = "Sonarpad 需要访问日历，以添加您的提醒和日程。";
 "NSCalendarsFullAccessUsageDescription" = "Sonarpad 需要完整访问日历，以便直接在系统日历中创建并保存您的提醒和日程。";
 "NSContactsUsageDescription" = "Sonarpad 需要访问通讯录，以便为日历日程添加受邀者。";
+"NSLocationWhenInUseUsageDescription" = "Sonarpad 仅在您主动使用路线或导航功能时使用位置信息，以计算路线和附近地点。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Sonarpad 通常不会请求持续访问您的位置。此说明之所以存在，是因为应用中包含的某些 iOS 组件可能会引用定位 API。只有当您主动使用路线或导航功能时，Sonarpad 才会使用您的位置。";

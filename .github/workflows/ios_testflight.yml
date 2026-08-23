@@ -65,6 +65,7 @@ jobs:
           plist["NSPhotoLibraryUsageDescription"] = "Sonarpad puo accedere alle foto solo quando scegli di selezionare o allegare immagini e documenti."
           plist["NSCameraUsageDescription"] = "Sonarpad puo usare la fotocamera solo quando scegli di acquisire o allegare una immagine o un documento."
           plist["NSLocationWhenInUseUsageDescription"] = "Sonarpad usa la posizione solo quando scegli funzioni di percorsi o navigazione, per calcolare indicazioni e luoghi vicini."
+          plist["NSLocationAlwaysAndWhenInUseUsageDescription"] = "Sonarpad non richiede normalmente l’accesso continuo alla posizione; questa descrizione è presente perché alcuni componenti iOS inclusi nell’app possono fare riferimento alle API di localizzazione. La posizione viene usata solo quando scegli funzioni di percorsi o navigazione."
 
           plist["LSSupportsOpeningDocumentsInPlace"] = True
           plist["UIFileSharingEnabled"] = True
@@ -76,6 +77,7 @@ jobs:
           print("NSPhotoLibraryUsageDescription =", plist["NSPhotoLibraryUsageDescription"])
           print("NSCameraUsageDescription =", plist["NSCameraUsageDescription"])
           print("NSLocationWhenInUseUsageDescription =", plist["NSLocationWhenInUseUsageDescription"])
+          print("NSLocationAlwaysAndWhenInUseUsageDescription =", plist["NSLocationAlwaysAndWhenInUseUsageDescription"])
           PY
 
       - name: Configure iOS background audio mode

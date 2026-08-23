@@ -106,6 +106,12 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Sonarpad può usare la fotocamera solo per funzioni di scansione o acquisizione immagini attivate dall’utente.</string>
 
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Sonarpad usa la posizione solo quando scegli funzioni di percorsi o navigazione, per calcolare indicazioni e luoghi vicini.</string>
+
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Sonarpad non richiede normalmente l’accesso continuo alla posizione; questa descrizione è presente perché alcuni componenti iOS inclusi nell’app possono fare riferimento alle API di localizzazione. La posizione viene usata solo quando scegli funzioni di percorsi o navigazione.</string>
+
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>

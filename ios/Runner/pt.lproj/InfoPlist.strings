@@ -2,3 +2,5 @@
 "NSCalendarsUsageDescription" = "O Sonarpad necessita de acesso ao calendário para adicionar lembretes e eventos.";
 "NSCalendarsFullAccessUsageDescription" = "O Sonarpad necessita de acesso total ao calendário para criar e guardar os seus lembretes e eventos diretamente no calendário do sistema.";
 "NSContactsUsageDescription" = "O Sonarpad necessita de acesso aos contactos para associar convidados aos eventos do calendário.";
+"NSLocationWhenInUseUsageDescription" = "O Sonarpad utiliza a localização apenas quando escolhe funções de percursos ou navegação, para calcular indicações e locais próximos.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "O Sonarpad normalmente não solicita acesso contínuo à localização. Esta descrição está presente porque alguns componentes iOS incluídos na app podem referenciar APIs de localização. A localização só é utilizada quando escolhe funções de percursos ou navegação.";

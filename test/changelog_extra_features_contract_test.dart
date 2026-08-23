@@ -10,10 +10,12 @@ void main() {
     final entry = entries.firstWhere((item) => item['version'] == '0.4.0');
 
     final extras = (entry['it_extra'] as List).cast<String>();
-    expect(extras, hasLength(3));
+    expect(extras, hasLength(5));
     expect(extras[0], contains('Aggiunte le registrazioni programmate di Radio e TV'));
     expect(extras[1], contains('recupero della lista dei canali'));
     expect(extras[2], contains('canali regionali e nazionali'));
+    expect(extras[3], contains('leggere la trama di ogni programma'));
+    expect(extras[4], contains('audiodescrizioni e i contenuti di RaiPlay Sound'));
 
     for (final language in const [
       'en',
@@ -30,6 +32,8 @@ void main() {
       final changes = (entry[language] as List).cast<String>().join('\n');
       expect(changes, isNot(contains('registrazioni programmate di Radio e TV')));
       expect(changes, isNot(contains('canali regionali e nazionali')));
+      expect(changes, isNot(contains('leggere la trama di ogni programma')));
+      expect(changes, isNot(contains('audiodescrizioni e i contenuti di RaiPlay Sound')));
     }
 
     final publicItalian = (entry['it'] as List).cast<String>().join('\n');

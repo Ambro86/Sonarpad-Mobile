@@ -217,7 +217,9 @@
     "it_extra": [
       "Aggiunte le registrazioni programmate di Radio e TV: una volta programmata una registrazione, non è necessario rimanere nella schermata del canale. La programmazione continua ad avere effetto anche mentre si esplorano e si utilizzano le altre funzioni di Sonarpad, e la registrazione viene avviata automaticamente all’orario previsto.",
       "Aggiunto un sistema di recupero della lista dei canali per rendere più affidabili le registrazioni TV programmate: Sonarpad conserva una copia aggiornata della lista e può utilizzarla anche quando la lista online non è temporaneamente raggiungibile.",
-      "Aggiunti numerosi canali regionali e nazionali per rendere la lista dei canali TV sempre più ricca."
+      "Aggiunti numerosi canali regionali e nazionali per rendere la lista dei canali TV sempre più ricca.",
+      "È ora possibile leggere la trama di ogni programma andando in TV, scegliendo un canale e facendo doppio tap sul programma di interesse.",
+      "È ora possibile conservare le audiodescrizioni e i contenuti di RaiPlay Sound tramite flick verticale. Un messaggio di conferma avviserà che il contenuto è stato salvato nei Documenti; da lì sarà possibile condividerlo."
     ],
     "uk": [
       "Інтерфейс iPhone було переписано для сумісності з iOS 27, що потребувало значного перегляду застосунку. Як позитивний результат, усі екрани тепер використовують UIKit, завдяки чому довгі списки можна швидше прокручувати жестом VoiceOver трьома пальцями, а також користуватися вже наявними командами «Перейти до літери» та «Перейти до дати».",
