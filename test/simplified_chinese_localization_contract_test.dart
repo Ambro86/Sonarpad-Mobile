@@ -18,7 +18,7 @@ void main() {
     expect(fallback['@@locale'], 'zh');
     expect(_messageKeys(chinese), _messageKeys(template));
     expect(_messageKeys(fallback), _messageKeys(template));
-    expect(_messageKeys(chinese).length, 1020);
+    expect(_messageKeys(chinese), isNotEmpty);
     for (final key in _messageKeys(template)) {
       expect(fallback[key], chinese[key], reason: 'zh fallback must mirror zh_CN for $key');
     }
@@ -158,13 +158,20 @@ void main() {
         ).allMatches(generated).length;
 
     // The committed generated source can still contain only zh_CN until
-    // gen-l10n runs. Flutter 3.47 regenerates both zh and zh_CN and therefore
-    // doubles the overrides. Both forms must expose the complete 1020-message
-    // API and the correct placeholders.
-    expect(overrideCount == 1020 || overrideCount == 2040, isTrue);
+    // gen-l10n runs. Flutter may regenerate both zh and zh_CN and therefore
+    // double the overrides. Derive the expected API size from the ARB so this
+    // contract keeps working when new localized messages are added.
+    final chineseArb = _arb('lib/l10n/app_zh_CN.arb');
+    final expectedApiSize = _messageKeys(chineseArb).length;
+    expect(expectedApiSize, greaterThan(0));
+    expect(
+      overrideCount == expectedApiSize ||
+          overrideCount == expectedApiSize * 2,
+      isTrue,
+    );
     expect(durationMethodCount == 1 || durationMethodCount == 2, isTrue);
     expect(durationTextCount, durationMethodCount);
-    if (overrideCount == 2040) {
+    if (overrideCount == expectedApiSize * 2) {
       expect(
         generated,
         contains('class AppLocalizationsZh extends AppLocalizations'),
