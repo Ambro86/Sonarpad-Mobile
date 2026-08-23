@@ -44,7 +44,7 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
     final l10n = AppLocalizations.of(context);
     final sorted = List<RadioStation>.from(_favorites)
       ..sort((a, b) => _sortKey(a.name).compareTo(_sortKey(b.name)));
-    await _service.saveFavorites(sorted);
+    await _service.saveFavorites(sorted, updateOrder: true);
     if (!mounted) return;
     setState(() => _favorites = sorted);
     showStatusMessage(context, l10n.radioFavoritesSortedAlphabetically);
@@ -79,11 +79,11 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
 
     if (action == _RadioAction.moveUp && index > 0) {
       list.insert(index - 1, item);
-      await _service.saveFavorites(list);
+      await _service.saveFavorites(list, updateOrder: true);
       setState(() => _favorites = list);
     } else if (action == _RadioAction.moveDown && index < list.length) {
       list.insert(index + 1, item);
-      await _service.saveFavorites(list);
+      await _service.saveFavorites(list, updateOrder: true);
       setState(() => _favorites = list);
     } else if (action == _RadioAction.moveToPosition) {
       list.insert(index, item);
@@ -97,7 +97,7 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
       if (newPos != null && newPos != index) {
         final toMove = list.removeAt(index);
         list.insert(newPos, toMove);
-        await _service.saveFavorites(list);
+        await _service.saveFavorites(list, updateOrder: true);
         setState(() => _favorites = list);
       }
     }

@@ -46,7 +46,7 @@ enum WeatherTemperatureUnit {
 }
 
 class AppSettingsService {
-  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de', 'zh_CN'};
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de', 'zh_CN', 'uk'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -629,6 +629,7 @@ class AppSettingsService {
       'cs' || 'cs-CZ' => 'cs-CZ-VlastaNeural',
       'de' || 'de-DE' => 'de-DE-KatjaNeural',
       'zh' || 'zh-CN' || 'zh_CN' => 'zh-CN-XiaoxiaoNeural',
+      'uk' || 'uk-UA' => 'uk-UA-PolinaNeural',
       _ => '',
     };
   }

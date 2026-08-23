@@ -6,6 +6,7 @@ import '../services/recent_routes_service.dart';
 import '../services/route_service.dart';
 import 'route_result_screen.dart';
 import '../utils/status_message.dart';
+import '../utils/country_name_helper.dart';
 import '../widgets/universal_accessible_view.dart';
 
 class RouteScreen extends StatefulWidget {
@@ -38,6 +39,7 @@ class _RouteScreenState extends State<RouteScreen> {
         'cs' => 'cz',
         'de' => 'de',
         'zh_CN' => 'cn',
+        'uk' => 'ua',
         _ => 'it',
       };
     }
@@ -229,6 +231,7 @@ class _RouteScreenState extends State<RouteScreen> {
       AccessibleOption(value: 'de', label: l10n.radioCountryOptionDe),
       AccessibleOption(value: 'gb', label: l10n.radioCountryOptionGb),
       AccessibleOption(value: 'us', label: l10n.radioCountryOptionUs),
+      AccessibleOption(value: 'ua', label: localizedCountryDisplayName('UA', localeName: l10n.localeName)),
       AccessibleOption(value: 'cn', label: l10n.chinaCountryName),
     ];
     return UniversalAccessibleList(
@@ -355,6 +358,8 @@ class _RouteScreenState extends State<RouteScreen> {
                   value: 'gb', child: Text(l10n.radioCountryOptionGb)),
               DropdownMenuItem(
                   value: 'us', child: Text(l10n.radioCountryOptionUs)),
+              DropdownMenuItem(
+                  value: 'ua', child: Text(localizedCountryDisplayName('UA', localeName: l10n.localeName))),
               DropdownMenuItem(
                   value: 'cn', child: Text(l10n.chinaCountryName)),
             ],

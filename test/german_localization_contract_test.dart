@@ -111,7 +111,7 @@ void main() {
   });
 
   test('shared UI labels live in ARB for every supported language', () {
-    const locales = ['it', 'en', 'fr', 'es', 'pt', 'pl', 'cs', 'de'];
+    const locales = ['it', 'en', 'fr', 'es', 'pt', 'pl', 'cs', 'de', 'uk'];
     const keys = [
       'letterJumpSelectLetter',
       'letterJumpSelected',

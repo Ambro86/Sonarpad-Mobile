@@ -1,0 +1,4350 @@
+{
+  "@@locale": "uk",
+  "appTitle": "Sonarpad",
+  "@appTitle": {
+    "description": "Localized text for appTitle."
+  },
+  "appLanguage": "Мова застосунку",
+  "@appLanguage": {
+    "description": "Localized text for appLanguage."
+  },
+  "settingsTheme": "Тема застосунку",
+  "@settingsTheme": {
+    "description": "Localized text for settingsTheme."
+  },
+  "settingsThemeSystem": "Системна",
+  "@settingsThemeSystem": {
+    "description": "Localized text for settingsThemeSystem."
+  },
+  "settingsThemeLight": "Світла",
+  "@settingsThemeLight": {
+    "description": "Localized text for settingsThemeLight."
+  },
+  "settingsThemeDark": "Темна",
+  "@settingsThemeDark": {
+    "description": "Localized text for settingsThemeDark."
+  },
+  "settingsWeatherTemperatureUnit": "Одиниця температури погоди",
+  "@settingsWeatherTemperatureUnit": {
+    "description": "Localized text for settingsWeatherTemperatureUnit."
+  },
+  "weatherTemperatureCelsius": "Цельсій (°C)",
+  "@weatherTemperatureCelsius": {
+    "description": "Localized text for weatherTemperatureCelsius."
+  },
+  "weatherTemperatureFahrenheit": "Фаренгейт (°F)",
+  "@weatherTemperatureFahrenheit": {
+    "description": "Localized text for weatherTemperatureFahrenheit."
+  },
+  "homeSemanticsLabel": "Sonarpad, головний екран",
+  "@homeSemanticsLabel": {
+    "description": "Localized text for homeSemanticsLabel."
+  },
+  "settings": "Налаштування",
+  "@settings": {
+    "description": "Localized text for settings."
+  },
+  "settingsHint": "Відкрити налаштування",
+  "@settingsHint": {
+    "description": "Localized text for settingsHint."
+  },
+  "info": "Про застосунок",
+  "@info": {
+    "description": "Localized text for info."
+  },
+  "infoHint": "Відкрити інформацію про застосунок",
+  "@infoHint": {
+    "description": "Localized text for infoHint."
+  },
+  "categoryReading": "Читання та документи",
+  "@categoryReading": {
+    "description": "Localized text for categoryReading."
+  },
+  "categoryMedia": "Медіа та розваги",
+  "@categoryMedia": {
+    "description": "Localized text for categoryMedia."
+  },
+  "sonarTubeTitle": "SonarTube",
+  "sonarTubeSearchLabel": "Пошук відео, каналів або списків відтворення",
+  "sonarTubeSearchPrompt": "Введіть запит, щоб знайти відео, канали та списки відтворення.",
+  "sonarTubeNoResults": "Відео не знайдено.",
+  "sonarTubeLoadMore": "Завантажити більше результатів",
+  "sonarTubeChannel": "Канал",
+  "sonarTubePlaylist": "Список відтворення",
+  "sonarTubeLive": "Наживо",
+  "sonarTubeResolving": "Підготовка відео…",
+  "sonarTubeFavorites": "Вибране",
+  "sonarTubeNoFavorites": "Немає вибраних каналів або списків відтворення.",
+  "sonarTubeAddFavorite": "Додати до вибраного",
+  "sonarTubeRemoveFavorite": "Видалити з вибраного",
+  "sonarTubeFavoriteAdded": "{name} додано до вибраного.",
+  "@sonarTubeFavoriteAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sonarTubeFavoriteRemoved": "{name} видалено з вибраного.",
+  "@sonarTubeFavoriteRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryUtilities": "Пошук та інструменти",
+  "@categoryUtilities": {
+    "description": "Localized text for categoryUtilities."
+  },
+  "voiceDictionaryTitle": "Словник вимови",
+  "@voiceDictionaryTitle": {
+    "description": "Localized text for voiceDictionaryTitle."
+  },
+  "voiceDictionaryAdd": "Додати записи до словника",
+  "@voiceDictionaryAdd": {
+    "description": "Localized text for voiceDictionaryAdd."
+  },
+  "voiceDictionaryOriginalWord": "Початкове слово",
+  "@voiceDictionaryOriginalWord": {
+    "description": "Localized text for voiceDictionaryOriginalWord."
+  },
+  "voiceDictionaryReplacementWord": "Заміна",
+  "@voiceDictionaryReplacementWord": {
+    "description": "Localized text for voiceDictionaryReplacementWord."
+  },
+  "voiceDictionaryMatchCase": "Враховувати регістр",
+  "@voiceDictionaryMatchCase": {
+    "description": "Localized text for voiceDictionaryMatchCase."
+  },
+  "voiceDictionaryIgnoreCase": "Не враховувати регістр",
+  "@voiceDictionaryIgnoreCase": {
+    "description": "Localized text for voiceDictionaryIgnoreCase."
+  },
+  "voiceDictionaryEntries": "Записи словника",
+  "@voiceDictionaryEntries": {
+    "description": "Localized text for voiceDictionaryEntries."
+  },
+  "voiceDictionaryEmpty": "У словнику немає записів.",
+  "@voiceDictionaryEmpty": {
+    "description": "Localized text for voiceDictionaryEmpty."
+  },
+  "voiceDictionaryRemove": "Видалити вибраний запис",
+  "@voiceDictionaryRemove": {
+    "description": "Localized text for voiceDictionaryRemove."
+  },
+  "voiceDictionaryOriginalRequired": "Введіть початкове слово.",
+  "@voiceDictionaryOriginalRequired": {
+    "description": "Localized text for voiceDictionaryOriginalRequired."
+  },
+  "convertMediaTitle": "Конвертувати медіа",
+  "@convertMediaTitle": {
+    "description": "Localized text for convertMediaTitle."
+  },
+  "convertMediaInput": "Файл для конвертації",
+  "@convertMediaInput": {
+    "description": "Localized text for convertMediaInput."
+  },
+  "convertMediaOutput": "Папка збереження",
+  "@convertMediaOutput": {
+    "description": "Localized text for convertMediaOutput."
+  },
+  "convertMediaImage": "Зображення",
+  "@convertMediaImage": {
+    "description": "Localized text for convertMediaImage."
+  },
+  "convertMediaBrowse": "Огляд...",
+  "@convertMediaBrowse": {
+    "description": "Localized text for convertMediaBrowse."
+  },
+  "convertMediaFormat": "Формат",
+  "@convertMediaFormat": {
+    "description": "Localized text for convertMediaFormat."
+  },
+  "convertMediaBitrate": "Бітрейт (кбіт/с)",
+  "@convertMediaBitrate": {
+    "description": "Localized text for convertMediaBitrate."
+  },
+  "convertMediaOggQuality": "Якість (q)",
+  "@convertMediaOggQuality": {
+    "description": "Localized text for convertMediaOggQuality."
+  },
+  "convertMediaFlacCompression": "Рівень стиснення",
+  "@convertMediaFlacCompression": {
+    "description": "Localized text for convertMediaFlacCompression."
+  },
+  "convertMediaWavBitDepth": "Розрядність WAV",
+  "@convertMediaWavBitDepth": {
+    "description": "Localized text for convertMediaWavBitDepth."
+  },
+  "convertMediaReady": "Готово.",
+  "@convertMediaReady": {
+    "description": "Localized text for convertMediaReady."
+  },
+  "convertMediaRunning": "Конвертація...",
+  "@convertMediaRunning": {
+    "description": "Localized text for convertMediaRunning."
+  },
+  "convertMediaDone": "Конвертацію завершено.",
+  "@convertMediaDone": {
+    "description": "Localized text for convertMediaDone."
+  },
+  "convertMediaButton": "Конвертувати медіа",
+  "@convertMediaButton": {
+    "description": "Localized text for convertMediaButton."
+  },
+  "convertMediaNoInput": "Виберіть файл для конвертації.",
+  "@convertMediaNoInput": {
+    "description": "Localized text for convertMediaNoInput."
+  },
+  "convertMediaNoOutput": "Виберіть папку збереження.",
+  "@convertMediaNoOutput": {
+    "description": "Localized text for convertMediaNoOutput."
+  },
+  "convertMediaOutputNotWritable": "Вибрана папка недоступна для прямого запису. Файл буде збережено у внутрішній папці Sonarpad; після завершення конвертації ним можна буде поділитися або зберегти у програмі «Файли».",
+  "@convertMediaOutputNotWritable": {
+    "description": "Localized text for convertMediaOutputNotWritable."
+  },
+  "convertMediaNoImage": "Виберіть зображення для відео.",
+  "@convertMediaNoImage": {
+    "description": "Localized text for convertMediaNoImage."
+  },
+  "convertMediaSamePath": "Конвертований файл має відрізнятися від вихідного.",
+  "@convertMediaSamePath": {
+    "description": "Localized text for convertMediaSamePath."
+  },
+  "convertMediaInvalidBitrate": "Некоректний бітрейт. Введіть значення від 64 до 320 кбіт/с.",
+  "@convertMediaInvalidBitrate": {
+    "description": "Localized text for convertMediaInvalidBitrate."
+  },
+  "convertMediaFailed": "Помилка конвертації: {error}",
+  "@convertMediaFailed": {
+    "description": "Localized text for convertMediaFailed.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "donations": "Пожертви",
+  "@donations": {
+    "description": "Localized text for donations."
+  },
+  "donationsHint": "Підтримати розвиток Sonarpad",
+  "@donationsHint": {
+    "description": "Localized text for donationsHint."
+  },
+  "loading": "Завантаження",
+  "@loading": {
+    "description": "Localized text for loading."
+  },
+  "ttsVoiceLanguage": "Мова голосу TTS",
+  "@ttsVoiceLanguage": {
+    "description": "Localized text for ttsVoiceLanguage."
+  },
+  "ttsVoice": "Голос TTS",
+  "@ttsVoice": {
+    "description": "Localized text for ttsVoice."
+  },
+  "saveSettings": "Зберегти налаштування",
+  "@saveSettings": {
+    "description": "Localized text for saveSettings."
+  },
+  "settingsSaved": "Налаштування збережено.",
+  "@settingsSaved": {
+    "description": "Localized text for settingsSaved."
+  },
+  "settingsSavedTitle": "Налаштування збережено",
+  "@settingsSavedTitle": {
+    "description": "Localized text for settingsSavedTitle."
+  },
+  "sonarpadCodeValidTitle": "Код дійсний",
+  "@sonarpadCodeValidTitle": {
+    "description": "Localized text for sonarpadCodeValidTitle."
+  },
+  "sonarpadCodeValidMessage": "Код Sonarpad правильний. Налаштування збережено.",
+  "@sonarpadCodeValidMessage": {
+    "description": "Localized text for sonarpadCodeValidMessage."
+  },
+  "sonarpadCodeInvalidTitle": "Недійсний код",
+  "@sonarpadCodeInvalidTitle": {
+    "description": "Localized text for sonarpadCodeInvalidTitle."
+  },
+  "sonarpadCodeInvalidMessage": "Код Sonarpad недійсний. Перевірте, чи ви скопіювали його без зайвих пробілів.",
+  "@sonarpadCodeInvalidMessage": {
+    "description": "Localized text for sonarpadCodeInvalidMessage."
+  },
+  "infoDescription": "Sonarpad — простий застосунок із багатьма функціями. Він створений доступним для VoiceOver для незрячих і слабозорих людей та дає змогу слухати новини, шукати подкасти й підписуватися на них, імпортувати статті Wikipedia, додавати документи до бібліотеки, зберігати й редагувати їх. Sonarpad постійно оновлюється, а кожна функція створюється, щоб полегшувати повсякденне життя.",
+  "@infoDescription": {
+    "description": "Localized text for infoDescription."
+  },
+  "infoAuthor": "Автор: Ambrogio Riili",
+  "@infoAuthor": {
+    "description": "Localized text for infoAuthor."
+  },
+  "donationsIntro": "Спочатку Sonarpad було створено для особистих потреб, але з часом він перетворився на ширший застосунок. Його розвиток потребує постійної роботи: удосконалення функцій, виправлення помилок, пошуку нових ідей і ретельного тестування кожної можливості.\n\nЯкщо Sonarpad корисний для вас і ви хочете підтримати його розвиток, ви можете зробити пожертву.",
+  "@donationsIntro": {
+    "description": "Localized text for donationsIntro."
+  },
+  "donationsPaypalDesc": "Ви можете зробити пожертву через PayPal за цим посиланням:\nhttps://www.paypal.me/ambrogio86\nЯкщо можливо, додайте «Sonarpad» як примітку до платежу.",
+  "@donationsPaypalDesc": {
+    "description": "Localized text for donationsPaypalDesc."
+  },
+  "donationsBankDesc": "Ви також можете зробити пожертву банківським переказом на рахунок Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nЯкщо можливо, вкажіть зрозуміле призначення платежу, наприклад «Sonarpad».",
+  "@donationsBankDesc": {
+    "description": "Localized text for donationsBankDesc."
+  },
+  "donationsThanks": "Кожного, хто підтримує проєкт, буде згадано в застосунку та в репозиторії GitHub, якщо людина не бажає залишитися анонімною або використати псевдонім.\n\nДякуємо Jiri Holzinger і Paola Vagata за їхній внесок.\nЗа чеський переклад дякуємо Radek Žalud і Jiri Holzinger.\nЗа іспанський переклад дякуємо Arturo Fernandez Rivas.",
+  "@donationsThanks": {
+    "description": "Localized text for donationsThanks."
+  },
+  "news": "Новини",
+  "@news": {
+    "description": "Localized text for news."
+  },
+  "newsHint": "Відкрити новини з RSS Google News",
+  "@newsHint": {
+    "description": "Localized text for newsHint."
+  },
+  "podcasts": "Подкасти",
+  "@podcasts": {
+    "description": "Localized text for podcasts."
+  },
+  "podcastsHint": "Підписуватися на подкасти, відтворювати або завантажувати епізоди",
+  "@podcastsHint": {
+    "description": "Localized text for podcastsHint."
+  },
+  "importFromWikipedia": "Wikipedia",
+  "@importFromWikipedia": {
+    "description": "Localized text for importFromWikipedia."
+  },
+  "wikipediaHint": "Знайти статтю Wikipedia та імпортувати текст",
+  "@wikipediaHint": {
+    "description": "Localized text for wikipediaHint."
+  },
+  "newsCategoryTop": "Головні новини",
+  "@newsCategoryTop": {
+    "description": "Localized text for newsCategoryTop."
+  },
+  "settingsHomeGrouping": "Групувати значки головного екрана за категоріями",
+  "@settingsHomeGrouping": {
+    "description": "Localized text for settingsHomeGrouping."
+  },
+  "settingsHomeGroupingHint": "Якщо вимкнено, основні значки відображатимуться одним списком без підпапок",
+  "@settingsHomeGroupingHint": {
+    "description": "Localized text for settingsHomeGroupingHint."
+  },
+  "newsCategoryMyCity": "Моє місто",
+  "@newsCategoryMyCity": {
+    "description": "Localized text for newsCategoryMyCity."
+  },
+  "newsLocalCityLabel": "Введіть своє місто",
+  "@newsLocalCityLabel": {
+    "description": "Localized text for newsLocalCityLabel."
+  },
+  "newsLocalCityHint": "Виправити місто, яке використовується для місцевих новин",
+  "@newsLocalCityHint": {
+    "description": "Localized text for newsLocalCityHint."
+  },
+  "update": "Оновити",
+  "@update": {
+    "description": "Localized text for update."
+  },
+  "moveUp": "Перемістити вгору",
+  "@moveUp": {
+    "description": "Localized text for moveUp."
+  },
+  "moveDown": "Перемістити вниз",
+  "@moveDown": {
+    "description": "Localized text for moveDown."
+  },
+  "hide": "Видалити",
+  "@hide": {
+    "description": "Localized text for hide."
+  },
+  "moveToPosition": "Перемістити на позицію",
+  "@moveToPosition": {
+    "description": "Localized text for moveToPosition."
+  },
+  "positionLabel": "Позиція {position}: перед {targetName}",
+  "@positionLabel": {
+    "description": "Localized text for positionLabel.",
+    "placeholders": {
+      "position": {
+        "example": "3",
+        "type": "int"
+      },
+      "targetName": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "positionLabelLast": "Остання позиція",
+  "@positionLabelLast": {
+    "description": "Localized text for positionLabelLast."
+  },
+  "restoreHiddenSources": "Відновити видалені джерела",
+  "@restoreHiddenSources": {
+    "description": "Localized text for restoreHiddenSources."
+  },
+  "addCustomNewsSource": "Додати власне RSS-джерело",
+  "@addCustomNewsSource": {
+    "description": "Localized text for addCustomNewsSource."
+  },
+  "newsSourceName": "Назва джерела або сайту",
+  "@newsSourceName": {
+    "description": "Localized text for newsSourceName."
+  },
+  "newsSourceUrlOrSearch": "URL сайту, RSS-канал або слово для пошуку",
+  "@newsSourceUrlOrSearch": {
+    "description": "Localized text for newsSourceUrlOrSearch."
+  },
+  "deleteNewsSource": "Видалити джерело",
+  "@deleteNewsSource": {
+    "description": "Localized text for deleteNewsSource."
+  },
+  "importRssSourcesFromOpml": "Імпортувати RSS-джерела з OPML",
+  "@importRssSourcesFromOpml": {
+    "description": "Localized text for importRssSourcesFromOpml."
+  },
+  "exportRssSourcesToOpml": "Експортувати RSS-джерела в OPML",
+  "@exportRssSourcesToOpml": {
+    "description": "Localized text for exportRssSourcesToOpml."
+  },
+  "rssImportComplete": "Імпортовано RSS-джерел: {count}",
+  "@rssImportComplete": {
+    "description": "Localized text for rssImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "rssImportError": "Помилка імпорту RSS: {error}",
+  "@rssImportError": {
+    "description": "Localized text for rssImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "rssExportComplete": "RSS-джерела експортовано",
+  "@rssExportComplete": {
+    "description": "Localized text for rssExportComplete."
+  },
+  "rssExportError": "Помилка експорту RSS: {error}",
+  "@rssExportError": {
+    "description": "Localized text for rssExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "articleTextSemantics": "Текст статті",
+  "@articleTextSemantics": {
+    "description": "Localized text for articleTextSemantics."
+  },
+  "newsLanguage": "Мова новин",
+  "@newsLanguage": {
+    "description": "Localized text for newsLanguage."
+  },
+  "loadingNews": "Завантаження новин",
+  "@loadingNews": {
+    "description": "Localized text for loadingNews."
+  },
+  "error": "Помилка: {error}",
+  "@error": {
+    "description": "Localized text for error.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "noNewsFound": "Новин не знайдено",
+  "@noNewsFound": {
+    "description": "Localized text for noNewsFound."
+  },
+  "loadingArticle": "Завантаження статті",
+  "@loadingArticle": {
+    "description": "Localized text for loadingArticle."
+  },
+  "noFullArticleFound": "Повний текст статті недоступний. Показано короткий опис із каналу.",
+  "@noFullArticleFound": {
+    "description": "Localized text for noFullArticleFound."
+  },
+  "italian": "Італійська",
+  "@italian": {
+    "description": "Localized text for italian."
+  },
+  "english": "Англійська",
+  "@english": {
+    "description": "Localized text for english."
+  },
+  "french": "Французька",
+  "@french": {
+    "description": "Localized text for french."
+  },
+  "spanish": "Іспанська",
+  "german": "Німецька",
+  "@german": {
+    "description": "Localized text for german."
+  },
+  "@spanish": {
+    "description": "Localized text for spanish."
+  },
+  "newsSource": "Джерело новин",
+  "@newsSource": {
+    "description": "Localized text for newsSource."
+  },
+  "article": "Стаття",
+  "@article": {
+    "description": "Localized text for article."
+  },
+  "articlePreview": "Попередній перегляд статті",
+  "@articlePreview": {
+    "description": "Localized text for articlePreview."
+  },
+  "readFullArticle": "Читати повну статтю",
+  "@readFullArticle": {
+    "description": "Localized text for readFullArticle."
+  },
+  "extractingReaderArticleText": "Видобування тексту в режимі читання...",
+  "@extractingReaderArticleText": {
+    "description": "Localized text for extractingReaderArticleText."
+  },
+  "extractingVisibleArticleText": "Видобування видимого тексту зі сторінки...",
+  "@extractingVisibleArticleText": {
+    "description": "Localized text for extractingVisibleArticleText."
+  },
+  "source": "Джерело: {source}",
+  "@source": {
+    "description": "Localized text for source.",
+    "placeholders": {
+      "source": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "readyStatus": "Готово.",
+  "@readyStatus": {
+    "description": "Localized text for readyStatus."
+  },
+  "preparingEdgeTts": "Підготовка читання Edge TTS блоками...",
+  "@preparingEdgeTts": {
+    "description": "Localized text for preparingEdgeTts."
+  },
+  "noTextToRead": "Немає тексту для читання.",
+  "@noTextToRead": {
+    "description": "Localized text for noTextToRead."
+  },
+  "chunkCreated": "Створено блок {index} з {total}. Читання триває...",
+  "@chunkCreated": {
+    "description": "Localized text for chunkCreated.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "playingChunk": "Відтворюється блок {index} з {total} ({size} байт)...",
+  "@playingChunk": {
+    "description": "Localized text for playingChunk.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      },
+      "size": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "readingFinished": "Читання завершено. Створено блоків: {readyChunks}/{totalChunks}. Бібліотека: {libraryPath}",
+  "@readingFinished": {
+    "description": "Localized text for readingFinished.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "libraryPath": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "libraryNotSpecified": "не вказано",
+  "@libraryNotSpecified": {
+    "description": "Localized text for libraryNotSpecified."
+  },
+  "readingStopped": "Читання зупинено.",
+  "@readingStopped": {
+    "description": "Localized text for readingStopped."
+  },
+  "edgeTtsError": "Помилка Edge TTS: {error}",
+  "@edgeTtsError": {
+    "description": "Localized text for edgeTtsError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "audioChunksReady": "Готові аудіоблоки: {readyChunks} / {totalChunks}",
+  "@audioChunksReady": {
+    "description": "Localized text for audioChunksReady.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "readingInProgress": "Читання триває...",
+  "@readingInProgress": {
+    "description": "Localized text for readingInProgress."
+  },
+  "readWithEdgeTts": "Почати читання",
+  "@readWithEdgeTts": {
+    "description": "Localized text for readWithEdgeTts."
+  },
+  "stopReading": "Зупинити читання",
+  "@stopReading": {
+    "description": "Localized text for stopReading."
+  },
+  "startReading": "Почати читання",
+  "@startReading": {
+    "description": "Localized text for startReading."
+  },
+  "resumeReading": "Продовжити читання",
+  "@resumeReading": {
+    "description": "Localized text for resumeReading."
+  },
+  "pauseReading": "Призупинити читання",
+  "@pauseReading": {
+    "description": "Localized text for pauseReading."
+  },
+  "openOriginalArticle": "Відкрити оригінальну статтю",
+  "@openOriginalArticle": {
+    "description": "Localized text for openOriginalArticle."
+  },
+  "searchPodcasts": "Шукати подкасти",
+  "@searchPodcasts": {
+    "description": "Localized text for searchPodcasts."
+  },
+  "podcastName": "Назва подкасту",
+  "@podcastName": {
+    "description": "Localized text for podcastName."
+  },
+  "podcastSearchHint": "Наприклад: технології, історія, назва подкасту...",
+  "@podcastSearchHint": {
+    "description": "Localized text for podcastSearchHint."
+  },
+  "searchCountry": "Країна пошуку",
+  "@searchCountry": {
+    "description": "Localized text for searchCountry."
+  },
+  "browsePodcastCountries": "Перегляд за країнами",
+  "@browsePodcastCountries": {
+    "description": "Localized text for browsePodcastCountries."
+  },
+  "podcastCountries": "Країни подкастів",
+  "@podcastCountries": {
+    "description": "Localized text for podcastCountries."
+  },
+  "podcastCategory": "Категорія подкасту",
+  "@podcastCategory": {
+    "description": "Localized text for podcastCategory."
+  },
+  "browsePodcastCategories": "Перегляд категорій",
+  "@browsePodcastCategories": {
+    "description": "Localized text for browsePodcastCategories."
+  },
+  "selectedPodcastCategory": "Вибрана категорія",
+  "@selectedPodcastCategory": {
+    "description": "Localized text for selectedPodcastCategory."
+  },
+  "selectedRecently": "нещодавно вибрано",
+  "@selectedRecently": {
+    "description": "Label appended to the most recently selected podcast country or category."
+  },
+  "podcastCategories": "Категорії подкастів",
+  "@podcastCategories": {
+    "description": "Localized text for podcastCategories."
+  },
+  "countryItaly": "Італія",
+  "@countryItaly": {
+    "description": "Localized text for countryItaly."
+  },
+  "countryUnitedStatesEnglish": "Сполучені Штати / англійська",
+  "@countryUnitedStatesEnglish": {
+    "description": "Localized text for countryUnitedStatesEnglish."
+  },
+  "countryUnitedKingdom": "Велика Британія",
+  "@countryUnitedKingdom": {
+    "description": "Localized text for countryUnitedKingdom."
+  },
+  "countrySpain": "Іспанія",
+  "@countrySpain": {
+    "description": "Localized text for countrySpain."
+  },
+  "countryFrance": "Франція",
+  "@countryFrance": {
+    "description": "Localized text for countryFrance."
+  },
+  "searchInProgress": "Пошук триває...",
+  "newsReadArticles": "Прочитані статті",
+  "weatherRecentCities": "Недавні міста",
+  "@searchInProgress": {
+    "description": "Localized text for searchInProgress."
+  },
+  "podcastResultsFound": "Знайдено подкастів: {count}",
+  "@podcastResultsFound": {
+    "description": "Localized text for podcastResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "podcastSearchError": "Помилка пошуку подкастів: {error}",
+  "@podcastSearchError": {
+    "description": "Localized text for podcastSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "subscribedTo": "Підписано на {title}",
+  "@subscribedTo": {
+    "description": "Localized text for subscribedTo.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionError": "Помилка підписки: {error}",
+  "@subscriptionError": {
+    "description": "Localized text for subscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "podcastSubscriptionError": "Помилка підписки на подкаст: {error}",
+  "@podcastSubscriptionError": {
+    "description": "Localized text for podcastSubscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "searchResults": "Результати пошуку",
+  "@searchResults": {
+    "description": "Localized text for searchResults."
+  },
+  "podcastInfo": "Інформація про подкаст",
+  "@podcastInfo": {
+    "description": "Localized text for podcastInfo."
+  },
+  "subscribe": "Підписатися",
+  "@subscribe": {
+    "description": "Localized text for subscribe."
+  },
+  "openPodcast": "Відкрити подкаст",
+  "@openPodcast": {
+    "description": "Localized text for openPodcast."
+  },
+  "viewEpisodes": "Переглянути епізоди",
+  "@viewEpisodes": {
+    "description": "Localized text for viewEpisodes."
+  },
+  "podcastAuthor": "Автор",
+  "@podcastAuthor": {
+    "description": "Localized text for podcastAuthor."
+  },
+  "noPodcastDescription": "Опис недоступний.",
+  "@noPodcastDescription": {
+    "description": "Localized text for noPodcastDescription."
+  },
+  "noPodcastResults": "Подкастів не знайдено.",
+  "@noPodcastResults": {
+    "description": "Localized text for noPodcastResults."
+  },
+  "loadingPodcastInfo": "Завантаження інформації про подкаст",
+  "@loadingPodcastInfo": {
+    "description": "Localized text for loadingPodcastInfo."
+  },
+  "podcastArtwork": "Обкладинка подкасту",
+  "@podcastArtwork": {
+    "description": "Localized text for podcastArtwork."
+  },
+  "addFeedUrlManually": "Додати URL RSS-стрічки вручну",
+  "@addFeedUrlManually": {
+    "description": "Localized text for addFeedUrlManually."
+  },
+  "podcastFeedUrl": "URL RSS-стрічки подкасту",
+  "@podcastFeedUrl": {
+    "description": "Localized text for podcastFeedUrl."
+  },
+  "subscribeFromUrl": "Підписатися за URL",
+  "@subscribeFromUrl": {
+    "description": "Localized text for subscribeFromUrl."
+  },
+  "subscribedPodcasts": "Підписки на подкасти",
+  "@subscribedPodcasts": {
+    "description": "Localized text for subscribedPodcasts."
+  },
+  "noSubscribedPodcasts": "Немає підписок на подкасти. Знайдіть подкаст і торкніться результату, щоб підписатися.",
+  "@noSubscribedPodcasts": {
+    "description": "Localized text for noSubscribedPodcasts."
+  },
+  "localAudioFiles": "Локальні аудіофайли",
+  "@localAudioFiles": {
+    "description": "Localized text for localAudioFiles."
+  },
+  "noLocalAudioFiles": "Локальних аудіофайлів не знайдено.",
+  "@noLocalAudioFiles": {
+    "description": "Localized text for noLocalAudioFiles."
+  },
+  "importAudioFromITunes": "Імпортувати локальні аудіофайли",
+  "@importAudioFromITunes": {
+    "description": "Localized text for importAudioFromITunes."
+  },
+  "localAudioFilesFound": "Знайдено локальних аудіофайлів: {count}",
+  "@localAudioFilesFound": {
+    "description": "Localized text for localAudioFilesFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "importPodcastsFromFile": "Імпортувати подкасти з файлу",
+  "@importPodcastsFromFile": {
+    "description": "Localized text for importPodcastsFromFile."
+  },
+  "exportPodcastsToFile": "Експортувати подкасти у файл OPML",
+  "@exportPodcastsToFile": {
+    "description": "Localized text for exportPodcastsToFile."
+  },
+  "podcastImportComplete": "Імпортовано подкастів: {count}",
+  "@podcastImportComplete": {
+    "description": "Localized text for podcastImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "podcastImportError": "Помилка імпорту подкастів: {error}",
+  "@podcastImportError": {
+    "description": "Localized text for podcastImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "podcastInvalidOpmlFile": "Недійсний файл. Виберіть файл OPML або XML.",
+  "@podcastInvalidOpmlFile": {
+    "description": "Shown when the selected podcast import file is not an OPML or XML file."
+  },
+  "podcastExportComplete": "Подкасти експортовано",
+  "@podcastExportComplete": {
+    "description": "Localized text for podcastExportComplete."
+  },
+  "podcastExportError": "Помилка експорту подкастів: {error}",
+  "@podcastExportError": {
+    "description": "Localized text for podcastExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "loadingEpisodes": "Завантаження епізодів",
+  "@loadingEpisodes": {
+    "description": "Localized text for loadingEpisodes."
+  },
+  "noAudioEpisodesFound": "У стрічці не знайдено аудіоепізодів.",
+  "@noAudioEpisodesFound": {
+    "description": "Localized text for noAudioEpisodesFound."
+  },
+  "episodes": "Епізоди",
+  "@episodes": {
+    "description": "Localized text for episodes."
+  },
+  "episodeActions": "Дії з епізодом",
+  "@episodeActions": {
+    "description": "Localized text for episodeActions."
+  },
+  "downloaded": "Завантажено: {path}",
+  "@downloaded": {
+    "description": "Localized text for downloaded.",
+    "placeholders": {
+      "path": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "episodeError": "Помилка епізоду: {error}",
+  "@episodeError": {
+    "description": "Localized text for episodeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "play": "Відтворити",
+  "@play": {
+    "description": "Localized text for play."
+  },
+  "pause": "Пауза",
+  "@pause": {
+    "description": "Localized text for pause."
+  },
+  "rewind15s": "Назад 15 с",
+  "@rewind15s": {
+    "description": "Localized text for rewind15s."
+  },
+  "forward15s": "Вперед 15 с",
+  "@forward15s": {
+    "description": "Localized text for forward15s."
+  },
+  "stop": "Зупинити",
+  "@stop": {
+    "description": "Localized text for stop."
+  },
+  "back": "Назад",
+  "@back": {
+    "description": "Localized text for back."
+  },
+  "episodePlayer": "Програвач епізоду",
+  "@episodePlayer": {
+    "description": "Localized text for episodePlayer."
+  },
+  "nowPlayingTitle": "Відтворюється: {title}",
+  "@nowPlayingTitle": {
+    "description": "Localized text for nowPlayingTitle.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "loadingEpisodeAudio": "Завантаження аудіо епізоду",
+  "@loadingEpisodeAudio": {
+    "description": "Localized text for loadingEpisodeAudio."
+  },
+  "playbackPosition": "Позиція",
+  "@playbackPosition": {
+    "description": "Localized text for playbackPosition."
+  },
+  "playbackPositionValue": "{position} з {duration}",
+  "@playbackPositionValue": {
+    "description": "Localized text for playbackPositionValue.",
+    "placeholders": {
+      "position": {
+        "example": "01:23",
+        "type": "String"
+      },
+      "duration": {
+        "example": "01:23",
+        "type": "String"
+      }
+    }
+  },
+  "adjustVolume": "Налаштувати гучність",
+  "@adjustVolume": {
+    "description": "Accessibility label for the media volume slider."
+  },
+  "volumeValue": "Гучність: {percentage}%",
+  "@volumeValue": {
+    "description": "Visible media volume percentage.",
+    "placeholders": {
+      "percentage": {
+        "example": "80",
+        "type": "int"
+      }
+    }
+  },
+  "download": "Завантажити",
+  "@download": {
+    "description": "Localized text for download."
+  },
+  "searchWikipedia": "Пошук у Wikipedia",
+  "@searchWikipedia": {
+    "description": "Localized text for searchWikipedia."
+  },
+  "wikipediaLanguage": "Мова Wikipedia",
+  "@wikipediaLanguage": {
+    "description": "Localized text for wikipediaLanguage."
+  },
+  "search": "Пошук",
+  "@search": {
+    "description": "Localized text for search."
+  },
+  "wikipediaSearch": "Пошук Wikipedia",
+  "@wikipediaSearch": {
+    "description": "Localized text for wikipediaSearch."
+  },
+  "wikipediaImporting": "Імпорт із Wikipedia",
+  "@wikipediaImporting": {
+    "description": "Localized text for wikipediaImporting."
+  },
+  "noWikipediaResults": "У Wikipedia нічого не знайдено",
+  "@noWikipediaResults": {
+    "description": "Localized text for noWikipediaResults."
+  },
+  "wikipediaImportMode": "Режим імпорту",
+  "@wikipediaImportMode": {
+    "description": "Localized text for wikipediaImportMode."
+  },
+  "wikipediaImportWholeArticle": "Уся стаття",
+  "@wikipediaImportWholeArticle": {
+    "description": "Localized text for wikipediaImportWholeArticle."
+  },
+  "documents": "Документи",
+  "@documents": {
+    "description": "Localized text for documents."
+  },
+  "documentsHint": "Відкрити бібліотеку документів",
+  "@documentsHint": {
+    "description": "Localized text for documentsHint."
+  },
+  "documentLibrary": "Бібліотека документів",
+  "@documentLibrary": {
+    "description": "Localized text for documentLibrary."
+  },
+  "addToLibrary": "Додати до бібліотеки",
+  "@addToLibrary": {
+    "description": "Localized text for addToLibrary."
+  },
+  "documentImportSelectionMode": "Вибрати один документ чи кілька документів?",
+  "@documentImportSelectionMode": {
+    "description": "Localized text for documentImportSelectionMode."
+  },
+  "documentImportSingle": "Один документ",
+  "@documentImportSingle": {
+    "description": "Localized text for documentImportSingle."
+  },
+  "documentImportMultiple": "Кілька документів",
+  "@documentImportMultiple": {
+    "description": "Localized text for documentImportMultiple."
+  },
+  "noDocuments": "Документів немає. Додайте файл.",
+  "@noDocuments": {
+    "description": "Localized text for noDocuments."
+  },
+  "noDocumentsInLibrary": "У бібліотеці немає документів.",
+  "@noDocumentsInLibrary": {
+    "description": "Localized text for noDocumentsInLibrary."
+  },
+  "documentAdded": "Документ додано",
+  "@documentAdded": {
+    "description": "Localized text for documentAdded."
+  },
+  "documentsAdded": "Документи додано",
+  "@documentsAdded": {
+    "description": "Localized text for documentsAdded."
+  },
+  "importDocumentsFromITunes": "Імпортувати документи з iTunes / Apple Devices",
+  "@importDocumentsFromITunes": {
+    "description": "Localized text for importDocumentsFromITunes."
+  },
+  "sharedDocumentsImportComplete": "Імпортовано документів з iTunes / Apple Devices: {count}",
+  "@sharedDocumentsImportComplete": {
+    "description": "Localized text for sharedDocumentsImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "libraryLoadError": "Помилка завантаження бібліотеки: {error}",
+  "@libraryLoadError": {
+    "description": "Localized text for libraryLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "fileOpenError": "Помилка відкриття файлу: {error}",
+  "@fileOpenError": {
+    "description": "Localized text for fileOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "filePathUnavailable": "Шлях до файлу недоступний.",
+  "@filePathUnavailable": {
+    "description": "Localized text for filePathUnavailable."
+  },
+  "fileInaccessible": "Файл недоступний: {name}",
+  "@fileInaccessible": {
+    "description": "Localized text for fileInaccessible.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "documentAddError": "Помилка додавання документа: {error}",
+  "@documentAddError": {
+    "description": "Localized text for documentAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "documentRemoveError": "Помилка видалення: {error}",
+  "@documentRemoveError": {
+    "description": "Localized text for documentRemoveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "noExportableTextFound": "Тексту для експорту не знайдено.",
+  "@noExportableTextFound": {
+    "description": "Localized text for noExportableTextFound."
+  },
+  "modifiedDocumentNoExportableText": "Змінений документ не містить тексту для експорту.",
+  "@modifiedDocumentNoExportableText": {
+    "description": "Localized text for modifiedDocumentNoExportableText."
+  },
+  "documentRemoved": "Документ видалено",
+  "@documentRemoved": {
+    "description": "Localized text for documentRemoved."
+  },
+  "folderRemoved": "Папку видалено",
+  "@folderRemoved": {
+    "description": "Localized text for folderRemoved."
+  },
+  "removeFolder": "Видалити папку",
+  "@removeFolder": {
+    "description": "Localized text for removeFolder."
+  },
+  "removeDocument": "Видалити документ",
+  "@removeDocument": {
+    "description": "Localized text for removeDocument."
+  },
+  "writeNewDocument": "Створити новий документ",
+  "@writeNewDocument": {
+    "description": "Localized text for writeNewDocument."
+  },
+  "addDocumentToLibraryHint": "Додати документ до бібліотеки. Перегляньте файли на пристрої та додайте потрібні.",
+  "@addDocumentToLibraryHint": {
+    "description": "Localized text for addDocumentToLibraryHint."
+  },
+  "documentTypeLabel": "Документ",
+  "@documentTypeLabel": {
+    "description": "Localized text for documentTypeLabel."
+  },
+  "documentPosition": "Позиція в документі",
+  "documentRemainingLessThanOneMinute": "залишилося менше 1 хвилини",
+  "@documentRemainingLessThanOneMinute": {
+    "description": "Localized text for documentRemainingLessThanOneMinute."
+  },
+  "documentRemainingMinutes": "залишилося приблизно {minutes} хвилин",
+  "@documentRemainingMinutes": {
+    "description": "Localized text for documentRemainingMinutes.",
+    "placeholders": {
+      "minutes": {
+        "example": "12",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHours": "залишилося приблизно {hours} годин",
+  "@documentRemainingHours": {
+    "description": "Localized text for documentRemainingHours.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHoursMinutes": "залишилося приблизно {hours} годин і {minutes} хвилин",
+  "@documentRemainingHoursMinutes": {
+    "description": "Localized text for documentRemainingHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      },
+      "minutes": {
+        "example": "15",
+        "type": "int"
+      }
+    }
+  },
+  "@documentPosition": {
+    "description": "Localized text for documentPosition."
+  },
+  "folderTypeLabel": "Папка",
+  "@folderTypeLabel": {
+    "description": "Localized text for folderTypeLabel."
+  },
+  "documentAddedOn": "додано {date}",
+  "@documentAddedOn": {
+    "description": "Localized text for documentAddedOn.",
+    "placeholders": {
+      "date": {
+        "example": "1 gennaio 2026",
+        "type": "String"
+      }
+    }
+  },
+  "documentTypeDescription": "тип {extension}",
+  "@documentTypeDescription": {
+    "description": "Localized text for documentTypeDescription.",
+    "placeholders": {
+      "extension": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "openFolderHint": "Торкніться двічі, щоб відкрити папку",
+  "@openFolderHint": {
+    "description": "Localized text for openFolderHint."
+  },
+  "openDocumentHint": "Торкніться двічі, щоб відкрити й прочитати документ",
+  "@openDocumentHint": {
+    "description": "Localized text for openDocumentHint."
+  },
+  "removeItem": "Видалити {name}",
+  "@removeItem": {
+    "description": "Localized text for removeItem.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "removePodcast": "Видалити подкаст",
+  "@removePodcast": {
+    "description": "Localized text for removePodcast."
+  },
+  "podcastRemoved": "Подкаст видалено",
+  "@podcastRemoved": {
+    "description": "Localized text for podcastRemoved."
+  },
+  "documentPickerError": "Помилка відкриття файлу",
+  "@documentPickerError": {
+    "description": "Localized text for documentPickerError."
+  },
+  "readDocument": "Читати документ",
+  "@readDocument": {
+    "description": "Localized text for readDocument."
+  },
+  "documentReaderTitle": "Читання документа",
+  "@documentReaderTitle": {
+    "description": "Localized text for documentReaderTitle."
+  },
+  "documentReaderEditHint": "Торкніться абзацу, щоб змінити його. Проведіть угору або вниз, щоб додати закладку.",
+  "@documentReaderEditHint": {
+    "description": "Localized text for documentReaderEditHint."
+  },
+  "documentParagraphSelectionStartAction": "Почати вибір абзаців",
+  "@documentParagraphSelectionStartAction": {
+    "description": "Localized text for documentParagraphSelectionStartAction."
+  },
+  "documentParagraphSelectionTapHint": "Режим вибору активний. Торкніться двічі, щоб вибрати або скасувати вибір цього абзацу.",
+  "@documentParagraphSelectionTapHint": {
+    "description": "Localized text for documentParagraphSelectionTapHint."
+  },
+  "documentParagraphSelectionStarted": "Режим вибору активний. Абзац вибрано. Торкайтеся двічі інших абзаців, щоб вибирати їх.",
+  "@documentParagraphSelectionStarted": {
+    "description": "Localized text for documentParagraphSelectionStarted."
+  },
+  "documentParagraphSelectedAnnouncement": "Абзац вибрано. Усього вибрано: {count}.",
+  "@documentParagraphSelectedAnnouncement": {
+    "description": "Localized text for documentParagraphSelectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphDeselectedAnnouncement": "Вибір абзацу скасовано. Усього вибрано: {count}.",
+  "@documentParagraphDeselectedAnnouncement": {
+    "description": "Localized text for documentParagraphDeselectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphSelectionCount": "Вибрано: {count}",
+  "@documentParagraphSelectionCount": {
+    "description": "Localized text for documentParagraphSelectionCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentDeleteSelectedParagraphs": "Видалити вибрані абзаци",
+  "@documentDeleteSelectedParagraphs": {
+    "description": "Localized text for documentDeleteSelectedParagraphs."
+  },
+  "documentDeleteSelectedParagraphsConfirmation": "Видалити вибрані абзаци? Усього: {count}.",
+  "@documentDeleteSelectedParagraphsConfirmation": {
+    "description": "Localized text for documentDeleteSelectedParagraphsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentSelectedParagraphsDeleted": "Видалено абзаців: {count}.",
+  "@documentSelectedParagraphsDeleted": {
+    "description": "Localized text for documentSelectedParagraphsDeleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentExitParagraphSelection": "Вийти з режиму вибору абзаців",
+  "@documentExitParagraphSelection": {
+    "description": "Localized text for documentExitParagraphSelection."
+  },
+  "documentParagraphSelectionExited": "Режим вибору вимкнено.",
+  "@documentParagraphSelectionExited": {
+    "description": "Localized text for documentParagraphSelectionExited."
+  },
+  "documentBookmarkHintSet": "Проведіть угору або вниз, щоб установити закладку.",
+  "@documentBookmarkHintSet": {
+    "description": "Localized text for documentBookmarkHintSet."
+  },
+  "documentEditParagraphActionHint": "Торкніться двічі, щоб змінити цей абзац.",
+  "@documentEditParagraphActionHint": {
+    "description": "Localized text for documentEditParagraphActionHint."
+  },
+  "documentBookmarkHintReplace": "Проведіть угору або вниз, щоб видалити наявну закладку або замінити її цим абзацом.",
+  "@documentBookmarkHintReplace": {
+    "description": "Localized text for documentBookmarkHintReplace."
+  },
+  "documentSetBookmarkAction": "Додати нову закладку",
+  "@documentSetBookmarkAction": {
+    "description": "Localized text for documentSetBookmarkAction."
+  },
+  "documentRemoveBookmarkAction": "Видалити закладку",
+  "@documentRemoveBookmarkAction": {
+    "description": "Localized text for documentRemoveBookmarkAction."
+  },
+  "documentReplaceBookmarkAction": "Видалити й додати нову закладку",
+  "@documentReplaceBookmarkAction": {
+    "description": "Localized text for documentReplaceBookmarkAction."
+  },
+  "searchInDocument": "Пошук у документі",
+  "documentIndex": "Зміст",
+  "@documentIndex": {
+    "description": "Localized text for documentIndex."
+  },
+  "@searchInDocument": {
+    "description": "Localized text for searchInDocument."
+  },
+  "documentSearchFieldLabel": "Текст для пошуку",
+  "@documentSearchFieldLabel": {
+    "description": "Localized text for documentSearchFieldLabel."
+  },
+  "documentSearchFieldHint": "Слово або фраза для пошуку",
+  "@documentSearchFieldHint": {
+    "description": "Localized text for documentSearchFieldHint."
+  },
+  "documentSearchEmptyQuery": "Введіть текст для пошуку.",
+  "@documentSearchEmptyQuery": {
+    "description": "Localized text for documentSearchEmptyQuery."
+  },
+  "documentSearchResultsTitle": "Результати пошуку в документі",
+  "@documentSearchResultsTitle": {
+    "description": "Localized text for documentSearchResultsTitle."
+  },
+  "noDocumentSearchResults": "Нічого не знайдено для {query}.",
+  "@noDocumentSearchResults": {
+    "description": "Localized text for noDocumentSearchResults.",
+    "placeholders": {
+      "query": {
+        "example": "testo",
+        "type": "String"
+      }
+    }
+  },
+  "documentSearchResultParagraph": "Абзац {number}",
+  "@documentSearchResultParagraph": {
+    "description": "Localized text for documentSearchResultParagraph.",
+    "placeholders": {
+      "number": {
+        "example": "4",
+        "type": "int"
+      }
+    }
+  },
+  "edit": "Редагувати",
+  "@edit": {
+    "description": "Localized text for edit."
+  },
+  "save": "Зберегти",
+  "@save": {
+    "description": "Localized text for save."
+  },
+  "cancel": "Скасувати",
+  "@cancel": {
+    "description": "Localized text for cancel."
+  },
+  "settingsReadingEngine": "Механізм читання",
+  "@settingsReadingEngine": {
+    "description": "Localized text for settingsReadingEngine."
+  },
+  "settingsEdgeTtsQuality": "Edge TTS (висока якість онлайн)",
+  "@settingsEdgeTtsQuality": {
+    "description": "Localized text for settingsEdgeTtsQuality."
+  },
+  "settingsSystemVoices": "Системні голоси (VoiceOver / Google)",
+  "@settingsSystemVoices": {
+    "description": "Localized text for settingsSystemVoices."
+  },
+  "settingsNoSystemVoices": "Системних голосів немає.",
+  "@settingsNoSystemVoices": {
+    "description": "Localized text for settingsNoSystemVoices."
+  },
+  "settingsDefaultVoiceHint": "Голос за замовчуванням",
+  "@settingsDefaultVoiceHint": {
+    "description": "Localized text for settingsDefaultVoiceHint."
+  },
+  "settingsDefaultVoice": "За замовчуванням",
+  "@settingsDefaultVoice": {
+    "description": "Localized text for settingsDefaultVoice."
+  },
+  "settingsVoiceSpeed": "Швидкість читання: ",
+  "@settingsVoiceSpeed": {
+    "description": "Localized text for settingsVoiceSpeed."
+  },
+  "settingsVoicePitch": "Висота тону: ",
+  "@settingsVoicePitch": {
+    "description": "Localized text for settingsVoicePitch."
+  },
+  "settingsVoiceSpeedLabel": "Швидкість читання",
+  "@settingsVoiceSpeedLabel": {
+    "description": "Localized text for settingsVoiceSpeedLabel."
+  },
+  "settingsVoicePitchLabel": "Висота тону",
+  "@settingsVoicePitchLabel": {
+    "description": "Localized text for settingsVoicePitchLabel."
+  },
+  "settingsTestVoice": "Перевірити голос",
+  "@settingsTestVoice": {
+    "description": "Localized text for settingsTestVoice."
+  },
+  "settingsTestingVoice": "Відтворення...",
+  "@settingsTestingVoice": {
+    "description": "Localized text for settingsTestingVoice."
+  },
+  "settingsVoiceTestText": "Це перевірка вибраного голосу.",
+  "@settingsVoiceTestText": {
+    "description": "Localized text for settingsVoiceTestText."
+  },
+  "settingsVoiceTestError": "Помилка перевірки голосу: {error}",
+  "@settingsVoiceTestError": {
+    "description": "Localized text for settingsVoiceTestError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "settingsVoiceSaveError": "Помилка збереження голосу TTS: {error}",
+  "@settingsVoiceSaveError": {
+    "description": "Localized text for settingsVoiceSaveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "settingsUnsavedTitle": "Незбережені зміни",
+  "@settingsUnsavedTitle": {
+    "description": "Localized text for settingsUnsavedTitle."
+  },
+  "settingsUnsavedMessage": "Зберегти зміни перед виходом із налаштувань?",
+  "@settingsUnsavedMessage": {
+    "description": "Localized text for settingsUnsavedMessage."
+  },
+  "settingsExitWithoutSaving": "Вийти без збереження",
+  "@settingsExitWithoutSaving": {
+    "description": "Localized text for settingsExitWithoutSaving."
+  },
+  "settingsSystemLanguage": "Системна мова",
+  "@settingsSystemLanguage": {
+    "description": "Localized text for settingsSystemLanguage."
+  },
+  "settingsSystemVoice": "Системний голос",
+  "@settingsSystemVoice": {
+    "description": "Localized text for settingsSystemVoice."
+  },
+  "settingsAutoBookmark": "Автоматична закладка",
+  "@settingsAutoBookmark": {
+    "description": "Localized text for settingsAutoBookmark."
+  },
+  "settingsAutoBookmarkHint": "Продовжуйте документи, подкасти, RaiPlay та аудіодескрипції з місця, де зупинилися.",
+  "@settingsAutoBookmarkHint": {
+    "description": "Localized text for settingsAutoBookmarkHint."
+  },
+  "settingsDocumentSliderStep": "Крок повзунка документа",
+  "@settingsDocumentSliderStep": {
+    "description": "Localized text for settingsDocumentSliderStep."
+  },
+  "settingsDocumentSliderStepHint": "Налаштуйте, наскільки вперед або назад переміщується позиція документа жестом угору чи вниз.",
+  "settingsReadingSleepTimer": "Таймер сну для читання",
+  "@settingsReadingSleepTimer": {
+    "description": "Localized text for settingsReadingSleepTimer."
+  },
+  "settingsReadingSleepTimerOff": "Вимкнено",
+  "@settingsReadingSleepTimerOff": {
+    "description": "Localized text for settingsReadingSleepTimerOff."
+  },
+  "settingsReadingSleepTimerMinutes": "{minutes} хвилин",
+  "@settingsReadingSleepTimerMinutes": {
+    "description": "Localized text for settingsReadingSleepTimerMinutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsReadingSleepTimerHint": "Автоматично зупиняє читання документа через вибраний час і зберігає позицію. Відлік починається заново щоразу, коли ви запускаєте читання документа.",
+  "@settingsReadingSleepTimerHint": {
+    "description": "Localized text for settingsReadingSleepTimerHint."
+  },
+  "documentReadingSleepTimerStopped": "Таймер сну: читання зупинено, позицію збережено.",
+  "@documentReadingSleepTimerStopped": {
+    "description": "Localized text for documentReadingSleepTimerStopped."
+  },
+  "@settingsDocumentSliderStepHint": {
+    "description": "Localized text for settingsDocumentSliderStepHint."
+  },
+  "settingsSeekStep": "Крок перемотування медіа назад / вперед",
+  "@settingsSeekStep": {
+    "description": "Localized text for settingsSeekStep."
+  },
+  "aiChatIntro": "Я штучний інтелект Sonarpad. Чим можу допомогти?",
+  "@aiChatIntro": {
+    "description": "Localized text for aiChatIntro."
+  },
+  "meteoTitle": "Погода",
+  "@meteoTitle": {
+    "description": "Localized text for meteoTitle."
+  },
+  "weatherCity": "Місто",
+  "@weatherCity": {
+    "description": "Localized text for weatherCity."
+  },
+  "weatherCityHint": "Наприклад: Київ",
+  "@weatherCityHint": {
+    "description": "Localized text for weatherCityHint."
+  },
+  "weatherCityNotFound": "Місто не знайдено",
+  "@weatherCityNotFound": {
+    "description": "Localized text for weatherCityNotFound."
+  },
+  "weatherSearchError": "Помилка під час пошуку",
+  "@weatherSearchError": {
+    "description": "Localized text for weatherSearchError."
+  },
+  "weatherToday": "Сьогодні",
+  "@weatherToday": {
+    "description": "Localized text for weatherToday."
+  },
+  "weatherCurrentSituation": "Поточні умови",
+  "@weatherCurrentSituation": {
+    "description": "Localized text for weatherCurrentSituation."
+  },
+  "weatherTomorrow": "Завтра",
+  "@weatherTomorrow": {
+    "description": "Localized text for weatherTomorrow."
+  },
+  "weatherChooseDay": "Виберіть день",
+  "@weatherChooseDay": {
+    "description": "Localized text for weatherChooseDay."
+  },
+  "weatherCurrentTemperature": "Поточна температура",
+  "@weatherCurrentTemperature": {
+    "description": "Localized text for weatherCurrentTemperature."
+  },
+  "weatherMaxTemperature": "Максимальна температура",
+  "@weatherMaxTemperature": {
+    "description": "Localized text for weatherMaxTemperature."
+  },
+  "weatherMinTemperature": "Мінімальна температура",
+  "@weatherMinTemperature": {
+    "description": "Localized text for weatherMinTemperature."
+  },
+  "weatherPrecipitation": "Опади",
+  "@weatherPrecipitation": {
+    "description": "Localized text for weatherPrecipitation."
+  },
+  "weatherPrecipitationProbability": "Імовірність опадів",
+  "@weatherPrecipitationProbability": {
+    "description": "Localized text for weatherPrecipitationProbability."
+  },
+  "weatherWind": "Вітер",
+  "@weatherWind": {
+    "description": "Localized text for weatherWind."
+  },
+  "weatherRelativeHumidity": "Відносна вологість",
+  "@weatherRelativeHumidity": {
+    "description": "Localized text for weatherRelativeHumidity."
+  },
+  "settingsSecretCode": "Код Sonarpad для додаткових функцій",
+  "@settingsSecretCode": {
+    "description": "Localized text for settingsSecretCode."
+  },
+  "settingsRequestCode": "Запросити код у автора",
+  "@settingsRequestCode": {
+    "description": "Localized text for settingsRequestCode."
+  },
+  "settingsPasteCode": "Вставити код",
+  "@settingsPasteCode": {
+    "description": "Localized text for settingsPasteCode."
+  },
+  "settingsCancel": "Скасувати",
+  "@settingsCancel": {
+    "description": "Localized text for settingsCancel."
+  },
+  "settingsSend": "Надіслати",
+  "@settingsSend": {
+    "description": "Localized text for settingsSend."
+  },
+  "settingsFillFieldsCode": "Заповніть усі поля, щоб запросити код.",
+  "@settingsFillFieldsCode": {
+    "description": "Localized text for settingsFillFieldsCode."
+  },
+  "settingsName": "Ім’я",
+  "@settingsName": {
+    "description": "Localized text for settingsName."
+  },
+  "settingsSurname": "Прізвище",
+  "@settingsSurname": {
+    "description": "Localized text for settingsSurname."
+  },
+  "settingsEmail": "Електронна пошта",
+  "@settingsEmail": {
+    "description": "Localized text for settingsEmail."
+  },
+  "settingsOperatingSystem": "Операційна система",
+  "@settingsOperatingSystem": {
+    "description": "Localized text for settingsOperatingSystem."
+  },
+  "settingsCodeRequestBody": "Ім’я: {name}; Прізвище: {surname}; Email: {email}; Операційна система: {os}",
+  "@settingsCodeRequestBody": {
+    "description": "Localized text for settingsCodeRequestBody.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "surname": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "email": {
+        "example": "Example",
+        "type": "String"
+      },
+      "os": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "settingsNameOptional": "Ім’я (необов’язково)",
+  "@settingsNameOptional": {
+    "description": "Localized text for settingsNameOptional."
+  },
+  "settingsMessageOptional": "Повідомлення (необов’язково)",
+  "@settingsMessageOptional": {
+    "description": "Localized text for settingsMessageOptional."
+  },
+  "settingsVerifyCodeAndSave": "Перевірка коду та збереження...",
+  "@settingsVerifyCodeAndSave": {
+    "description": "Localized text for settingsVerifyCodeAndSave."
+  },
+  "settingsViewSysLog": "Переглянути системний журнал",
+  "@settingsViewSysLog": {
+    "description": "Localized text for settingsViewSysLog."
+  },
+  "settingsMailOpenError": "Помилка відкриття пошти: {error}",
+  "@settingsMailOpenError": {
+    "description": "Localized text for settingsMailOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "ok": "OK",
+  "yes": "Так",
+  "no": "Ні",
+  "@ok": {
+    "description": "Localized text for ok."
+  },
+  "invia": "Надіслати",
+  "@invia": {
+    "description": "Localized text for invia."
+  },
+  "saveArticle": "Зберегти статтю",
+  "@saveArticle": {
+    "description": "Localized text for saveArticle."
+  },
+  "shareArticle": "Поділитися статтею",
+  "@shareArticle": {
+    "description": "Localized text for shareArticle."
+  },
+  "articleSavedSuccess": "Статтю збережено в Документах",
+  "@articleSavedSuccess": {
+    "description": "Localized text for articleSavedSuccess."
+  },
+  "annulla": "Скасувати",
+  "@annulla": {
+    "description": "Localized text for annulla."
+  },
+  "compilaTuttiICampiPerRichiedereIlCodice": "Заповніть усі поля, щоб запросити код.",
+  "@compilaTuttiICampiPerRichiedereIlCodice": {
+    "description": "Localized text for compilaTuttiICampiPerRichiedereIlCodice."
+  },
+  "selectFolder": "Вибрати папку",
+  "@selectFolder": {
+    "description": "Localized text for selectFolder."
+  },
+  "exportDocument": "Експортувати документ",
+  "@exportDocument": {
+    "description": "Localized text for exportDocument."
+  },
+  "exportFormatPrompt": "У якому форматі експортувати документ?",
+  "@exportFormatPrompt": {
+    "description": "Localized text for exportFormatPrompt."
+  },
+  "textFormat": "Текст (.txt)",
+  "@textFormat": {
+    "description": "Localized text for textFormat."
+  },
+  "pdfFormat": "PDF (.pdf)",
+  "docxFormat": "DOCX (.docx)",
+  "epubFormat": "EPUB (.epub)",
+  "@pdfFormat": {
+    "description": "Localized text for pdfFormat."
+  },
+  "exportError": "Помилка експорту",
+  "@exportError": {
+    "description": "Localized text for exportError."
+  },
+  "newFolder": "Нова папка",
+  "@newFolder": {
+    "description": "Localized text for newFolder."
+  },
+  "folderNameHint": "Назва папки",
+  "@folderNameHint": {
+    "description": "Localized text for folderNameHint."
+  },
+  "create": "Створити",
+  "@create": {
+    "description": "Localized text for create."
+  },
+  "createNewFolder": "Створити нову папку",
+  "@createNewFolder": {
+    "description": "Localized text for createNewFolder."
+  },
+  "importExternalSources": "Імпорт із зовнішніх джерел",
+  "@importExternalSources": {
+    "description": "Localized text for importExternalSources."
+  },
+  "importExternalSourcesTitle": "Зовнішні джерела",
+  "@importExternalSourcesTitle": {
+    "description": "Localized text for importExternalSourcesTitle."
+  },
+  "importFromDropbox": "Імпортувати документи з Dropbox",
+  "@importFromDropbox": {
+    "description": "Localized text for importFromDropbox."
+  },
+  "importFromProjectGutenberg": "Імпортувати з Project Gutenberg",
+  "@importFromProjectGutenberg": {
+    "description": "Localized text for importFromProjectGutenberg."
+  },
+  "projectGutenbergImportUnavailable": "Імпорт із Project Gutenberg поки недоступний.",
+  "@projectGutenbergImportUnavailable": {
+    "description": "Localized text for projectGutenbergImportUnavailable."
+  },
+  "importFromInternetArchive": "Імпортувати з Internet Archive",
+  "@importFromInternetArchive": {
+    "description": "Localized text for importFromInternetArchive."
+  },
+  "internetArchiveTitle": "Internet Archive",
+  "@internetArchiveTitle": {
+    "description": "Localized text for internetArchiveTitle."
+  },
+  "internetArchiveSearchLabel": "Пошук аудіо",
+  "@internetArchiveSearchLabel": {
+    "description": "Localized text for internetArchiveSearchLabel."
+  },
+  "internetArchiveSourceLabel": "Джерело",
+  "@internetArchiveSourceLabel": {
+    "description": "Localized text for internetArchiveSourceLabel."
+  },
+  "internetArchiveOldTimeRadio": "Радіовистави минулих років",
+  "@internetArchiveOldTimeRadio": {
+    "description": "Localized text for internetArchiveOldTimeRadio."
+  },
+  "internetArchiveSpeeches": "Історичні промови",
+  "@internetArchiveSpeeches": {
+    "description": "Localized text for internetArchiveSpeeches."
+  },
+  "internetArchiveLiveMusic": "Архів живої музики",
+  "@internetArchiveLiveMusic": {
+    "description": "Localized text for internetArchiveLiveMusic."
+  },
+  "internetArchiveNoItemsFound": "Аудіоматеріалів не знайдено.",
+  "@internetArchiveNoItemsFound": {
+    "description": "Localized text for internetArchiveNoItemsFound."
+  },
+  "saveAudioInDocuments": "Зберегти аудіо в Документах",
+  "@saveAudioInDocuments": {
+    "description": "Localized text for saveAudioInDocuments."
+  },
+  "audioSavedInDocuments": "Аудіо збережено в Документах.",
+  "@audioSavedInDocuments": {
+    "description": "Localized text for audioSavedInDocuments."
+  },
+  "noAudioTracksAvailable": "Аудіодоріжок немає.",
+  "@noAudioTracksAvailable": {
+    "description": "Localized text for noAudioTracksAvailable."
+  },
+  "importFromLibriVox": "Імпортувати з LibriVox",
+  "@importFromLibriVox": {
+    "description": "Localized text for importFromLibriVox."
+  },
+  "gutenbergSearchLabel": "Пошук книги або автора",
+  "@gutenbergSearchLabel": {
+    "description": "Localized text for gutenbergSearchLabel."
+  },
+  "sourceLanguageLabel": "Мова",
+  "@sourceLanguageLabel": {
+    "description": "Localized text for sourceLanguageLabel."
+  },
+  "noGutenbergBooksFound": "Книг не знайдено.",
+  "@noGutenbergBooksFound": {
+    "description": "Localized text for noGutenbergBooksFound."
+  },
+  "loadMore": "Завантажити ще",
+  "@loadMore": {
+    "description": "Localized text for loadMore."
+  },
+  "sourceLanguageValue": "Мова: {language}",
+  "@sourceLanguageValue": {
+    "description": "Localized text for sourceLanguageValue.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "gutenbergImportAndRead": "Імпортувати й читати",
+  "@gutenbergImportAndRead": {
+    "description": "Localized text for gutenbergImportAndRead."
+  },
+  "gutenbergImporting": "Імпорт...",
+  "@gutenbergImporting": {
+    "description": "Localized text for gutenbergImporting."
+  },
+  "librivoxSearchLabel": "Пошук аудіокниги",
+  "@librivoxSearchLabel": {
+    "description": "Localized text for librivoxSearchLabel."
+  },
+  "noLibrivoxAudiobooksFound": "Аудіокниг не знайдено.",
+  "@noLibrivoxAudiobooksFound": {
+    "description": "Localized text for noLibrivoxAudiobooksFound."
+  },
+  "librivoxAudiobookSaved": "Аудіокнигу збережено в Документах.",
+  "@librivoxAudiobookSaved": {
+    "description": "Localized text for librivoxAudiobookSaved."
+  },
+  "librivoxSaveAudiobook": "Зберегти аудіокнигу в Документах",
+  "@librivoxSaveAudiobook": {
+    "description": "Localized text for librivoxSaveAudiobook."
+  },
+  "librivoxSaving": "Збереження...",
+  "@librivoxSaving": {
+    "description": "Localized text for librivoxSaving."
+  },
+  "librivoxNoAudioTracks": "Аудіодоріжок немає.",
+  "@librivoxNoAudioTracks": {
+    "description": "Localized text for librivoxNoAudioTracks."
+  },
+  "librivoxNotTextExportable": "Аудіокниги LibriVox не можна експортувати як текст.",
+  "@librivoxNotTextExportable": {
+    "description": "Localized text for librivoxNotTextExportable."
+  },
+  "sourceDurationValue": "Тривалість: {duration}",
+  "@sourceDurationValue": {
+    "description": "Localized text for sourceDurationValue.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "importFromPoetryDb": "Імпортувати з PoetryDB",
+  "@importFromPoetryDb": {
+    "description": "Localized text for importFromPoetryDb."
+  },
+  "poetryDbSearchLabel": "Пошук вірша",
+  "@poetryDbSearchLabel": {
+    "description": "Localized text for poetryDbSearchLabel."
+  },
+  "poetryDbSearchBy": "Шукати за",
+  "@poetryDbSearchBy": {
+    "description": "Localized text for poetryDbSearchBy."
+  },
+  "poetryDbSearchByTitle": "Назвою",
+  "@poetryDbSearchByTitle": {
+    "description": "Localized text for poetryDbSearchByTitle."
+  },
+  "poetryDbSearchByAuthor": "Автором",
+  "@poetryDbSearchByAuthor": {
+    "description": "Localized text for poetryDbSearchByAuthor."
+  },
+  "poetryDbNoPoemsFound": "Віршів не знайдено.",
+  "@poetryDbNoPoemsFound": {
+    "description": "Localized text for poetryDbNoPoemsFound."
+  },
+  "poetryDbLineCount": "{count} рядків",
+  "@poetryDbLineCount": {
+    "description": "Localized text for poetryDbLineCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moveDocument": "Перемістити документ",
+  "@moveDocument": {
+    "description": "Localized text for moveDocument."
+  },
+  "documentMoved": "Успішно переміщено",
+  "@documentMoved": {
+    "description": "Localized text for documentMoved."
+  },
+  "outOfFolder": "Поза папкою",
+  "@outOfFolder": {
+    "description": "Localized text for outOfFolder."
+  },
+  "moveToAnotherFolder": "Перемістити до іншої папки...",
+  "@moveToAnotherFolder": {
+    "description": "Localized text for moveToAnotherFolder."
+  },
+  "ttsError": "Помилка синтезу мовлення",
+  "@ttsError": {
+    "description": "Localized text for ttsError."
+  },
+  "editParagraph": "Редагувати абзац",
+  "@editParagraph": {
+    "description": "Localized text for editParagraph."
+  },
+  "editParagraphTextField": "Поле для редагування абзацу",
+  "@editParagraphTextField": {
+    "description": "Localized text for editParagraphTextField."
+  },
+  "editParagraphHint": "Змініть текст абзацу",
+  "@editParagraphHint": {
+    "description": "Localized text for editParagraphHint."
+  },
+  "applyAndSave": "Застосувати й зберегти",
+  "@applyAndSave": {
+    "description": "Localized text for applyAndSave."
+  },
+  "textEditedAndSaved": "Текст змінено й збережено в поточному документі.",
+  "@textEditedAndSaved": {
+    "description": "Localized text for textEditedAndSaved."
+  },
+  "saveError": "Помилка під час збереження",
+  "@saveError": {
+    "description": "Localized text for saveError."
+  },
+  "docSavedInLibrary": "Документ збережено в бібліотеці",
+  "@docSavedInLibrary": {
+    "description": "Localized text for docSavedInLibrary."
+  },
+  "saveInLibrary": "Зберегти в бібліотеці",
+  "@saveInLibrary": {
+    "description": "Localized text for saveInLibrary."
+  },
+  "documentTextLabel": "Текст документа",
+  "@documentTextLabel": {
+    "description": "Localized text for documentTextLabel."
+  },
+  "modifiedInSonarpad": "Змінено в Sonarpad",
+  "@modifiedInSonarpad": {
+    "description": "Localized text for modifiedInSonarpad."
+  },
+  "noTextAvailableForDocument": "Для цього документа немає доступного тексту.",
+  "@noTextAvailableForDocument": {
+    "description": "Localized text for noTextAvailableForDocument."
+  },
+  "bookmarkSet": "Закладку встановлено на абзаці {index}.",
+  "@bookmarkSet": {
+    "description": "Localized text for bookmarkSet.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "bookmarkRemoved": "Закладку видалено.",
+  "@bookmarkRemoved": {
+    "description": "Localized text for bookmarkRemoved."
+  },
+  "docEmpty": "Документ порожній",
+  "@docEmpty": {
+    "description": "Localized text for docEmpty."
+  },
+  "docSavedSuccessfully": "Документ успішно збережено.",
+  "@docSavedSuccessfully": {
+    "description": "Localized text for docSavedSuccessfully."
+  },
+  "writeDocument": "Створити документ",
+  "@writeDocument": {
+    "description": "Localized text for writeDocument."
+  },
+  "documentTitleOptional": "Назва (необов’язково)",
+  "@documentTitleOptional": {
+    "description": "Localized text for documentTitleOptional."
+  },
+  "documentTitleHint": "Наприклад: список покупок",
+  "@documentTitleHint": {
+    "description": "Localized text for documentTitleHint."
+  },
+  "documentTextField": "Текст документа",
+  "@documentTextField": {
+    "description": "Localized text for documentTextField."
+  },
+  "documentTextHint": "Почніть писати тут...",
+  "@documentTextHint": {
+    "description": "Localized text for documentTextHint."
+  },
+  "newDocumentDefaultName": "Новий_Документ",
+  "@newDocumentDefaultName": {
+    "description": "Localized text for newDocumentDefaultName."
+  },
+  "saving": "Збереження...",
+  "@saving": {
+    "description": "Localized text for saving."
+  },
+  "saveDocument": "Зберегти документ",
+  "@saveDocument": {
+    "description": "Localized text for saveDocument."
+  },
+  "addRssSource": "Додати RSS-джерело",
+  "@addRssSource": {
+    "description": "Localized text for addRssSource."
+  },
+  "add": "Додати",
+  "@add": {
+    "description": "Localized text for add."
+  },
+  "errorPrefix": "Помилка",
+  "@errorPrefix": {
+    "description": "Localized text for errorPrefix."
+  },
+  "versionBuild": "Версія {version} (збірка {buildNumber})",
+  "@versionBuild": {
+    "description": "Localized text for versionBuild.",
+    "placeholders": {
+      "version": {
+        "example": "Example",
+        "type": "String"
+      },
+      "buildNumber": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "whatIsNew": "Що нового",
+  "@whatIsNew": {
+    "description": "Localized text for whatIsNew."
+  },
+  "whatIsNewInVersion": "Що нового у версії {version}",
+  "@whatIsNewInVersion": {
+    "description": "Localized text for whatIsNewInVersion.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "changelogLoadError": "Помилка завантаження списку змін: {error}",
+  "@changelogLoadError": {
+    "description": "Localized text for changelogLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "visitSonarpadSite": "Відвідати сайт Sonarpad",
+  "@visitSonarpadSite": {
+    "description": "Localized text for visitSonarpadSite."
+  },
+  "visitSonarpadSiteWithUrl": "Відвідати сайт Sonarpad: {url}",
+  "@visitSonarpadSiteWithUrl": {
+    "description": "Localized text for visitSonarpadSiteWithUrl.",
+    "placeholders": {
+      "url": {
+        "example": "https://example.com",
+        "type": "String"
+      }
+    }
+  },
+  "nowPlaying": "Відтворюється",
+  "@nowPlaying": {
+    "description": "Localized text for nowPlaying."
+  },
+  "fileImported": "Файл імпортовано",
+  "@fileImported": {
+    "description": "Localized text for fileImported."
+  },
+  "importZipError": "Помилка імпорту ZIP: {error}",
+  "@importZipError": {
+    "description": "Localized text for importZipError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "dropboxLoginPrompt": "Увійдіть у Dropbox, щоб імпортувати документи.",
+  "@dropboxLoginPrompt": {
+    "description": "Localized text for dropboxLoginPrompt."
+  },
+  "loginToDropbox": "Увійти в Dropbox",
+  "@loginToDropbox": {
+    "description": "Localized text for loginToDropbox."
+  },
+  "logoutFromDropbox": "Вийти з Dropbox",
+  "@logoutFromDropbox": {
+    "description": "Localized text for logoutFromDropbox."
+  },
+  "dropboxLoginFailed": "Вхід не вдався або його скасовано",
+  "@dropboxLoginFailed": {
+    "description": "Localized text for dropboxLoginFailed."
+  },
+  "dropboxLoadFolderError": "Помилка завантаження папки: {error}",
+  "@dropboxLoadFolderError": {
+    "description": "Localized text for dropboxLoadFolderError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "dropboxImportError": "Помилка імпорту: {error}",
+  "@dropboxImportError": {
+    "description": "Localized text for dropboxImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "retry": "Спробувати знову",
+  "@retry": {
+    "description": "Localized text for retry."
+  },
+  "goBack": ".. Назад",
+  "@goBack": {
+    "description": "Localized text for goBack."
+  },
+  "noSupportedFilesInFolder": "У цій папці немає підтримуваних файлів.",
+  "@noSupportedFilesInFolder": {
+    "description": "Localized text for noSupportedFilesInFolder."
+  },
+  "articleNotFound": "Статтю не знайдено.",
+  "@articleNotFound": {
+    "description": "Localized text for articleNotFound."
+  },
+  "errorOpening": "Помилка під час відкриття",
+  "@errorOpening": {
+    "description": "Localized text for errorOpening."
+  },
+  "recentArticles": "Недавні статті",
+  "@recentArticles": {
+    "description": "Localized text for recentArticles."
+  },
+  "clearHistory": "Очистити історію",
+  "@clearHistory": {
+    "description": "Localized text for clearHistory."
+  },
+  "confirmClearHistory": "Справді очистити всі недавні пошуки?",
+  "@confirmClearHistory": {
+    "description": "Localized text for confirmClearHistory."
+  },
+  "clear": "Очистити",
+  "@clear": {
+    "description": "Localized text for clear."
+  },
+  "noRecentSearches": "Недавніх пошуків немає.",
+  "@noRecentSearches": {
+    "description": "Localized text for noRecentSearches."
+  },
+  "logCopiedToClipboard": "Журнал скопійовано в буфер обміну",
+  "@logCopiedToClipboard": {
+    "description": "Localized text for logCopiedToClipboard."
+  },
+  "logCleared": "Журнал очищено",
+  "@logCleared": {
+    "description": "Localized text for logCleared."
+  },
+  "parafarmacoDetailReadyAnnouncement": "Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.",
+  "@parafarmacoDetailReadyAnnouncement": {
+    "description": "Announcement spoken after a para-pharmaceutical product detail page has loaded."
+  },
+  "systemLog": "Системний журнал",
+  "@systemLog": {
+    "description": "Localized text for systemLog."
+  },
+  "clearSystemLog": "Очистити журнал",
+  "@clearSystemLog": {
+    "description": "Localized text for clearSystemLog."
+  },
+  "copySystemLog": "Копіювати журнал",
+  "@copySystemLog": {
+    "description": "Localized text for copySystemLog."
+  },
+  "donateWithPaypal": "Пожертвувати через PayPal",
+  "@donateWithPaypal": {
+    "description": "Localized text for donateWithPaypal."
+  },
+  "bankTransferTitle": "Банківський переказ",
+  "@bankTransferTitle": {
+    "description": "Localized text for bankTransferTitle."
+  },
+  "enableVideo": "Увімкнути відео",
+  "@enableVideo": {
+    "description": "Localized text for enableVideo."
+  },
+  "calendar": "Календар",
+  "@calendar": {
+    "description": "Localized text for calendar."
+  },
+  "calendarHint": "Відкрити календар зі святими, святами та нагадуваннями",
+  "@calendarHint": {
+    "description": "Localized text for calendarHint."
+  },
+  "saintOfTheDay": "Святий дня",
+  "@saintOfTheDay": {
+    "description": "Localized text for saintOfTheDay."
+  },
+  "quoteOfTheDay": "Цитата дня",
+  "@quoteOfTheDay": {
+    "description": "Localized text for quoteOfTheDay."
+  },
+  "reminders": "Нагадування",
+  "@reminders": {
+    "description": "Localized text for reminders."
+  },
+  "addReminder": "Додати нагадування",
+  "@addReminder": {
+    "description": "Localized text for addReminder."
+  },
+  "removeReminder": "Видалити нагадування",
+  "@removeReminder": {
+    "description": "Localized text for removeReminder."
+  },
+  "noReminders": "Нагадувань немає",
+  "@noReminders": {
+    "description": "Localized text for noReminders."
+  },
+  "writeReminder": "Напишіть тут своє нагадування...",
+  "@writeReminder": {
+    "description": "Localized text for writeReminder."
+  },
+  "saveReminder": "Зберегти",
+  "@saveReminder": {
+    "description": "Localized text for saveReminder."
+  },
+  "cancelReminder": "Скасувати",
+  "@cancelReminder": {
+    "description": "Localized text for cancelReminder."
+  },
+  "backToToday": "Повернутися до сьогодні",
+  "@backToToday": {
+    "description": "Localized text for backToToday."
+  },
+  "calendarToday": "Сьогодні",
+  "@calendarToday": {
+    "description": "Localized text for calendarToday."
+  },
+  "calendarTomorrow": "Завтра",
+  "@calendarTomorrow": {
+    "description": "Localized text for calendarTomorrow."
+  },
+  "calendarYesterday": "Учора",
+  "@calendarYesterday": {
+    "description": "Localized text for calendarYesterday."
+  },
+  "share": "Поділитися",
+  "@share": {
+    "description": "Localized text for share."
+  },
+  "shareCalendarDayOptions": "Параметри поширення",
+  "@shareCalendarDayOptions": {
+    "description": "Localized text for shareCalendarDayOptions."
+  },
+  "shareCalendarDayOnly": "Поділитися лише днем",
+  "@shareCalendarDayOnly": {
+    "description": "Localized text for shareCalendarDayOnly."
+  },
+  "shareCalendarDayWithReminder": "Поділитися днем і нагадуванням",
+  "@shareCalendarDayWithReminder": {
+    "description": "Localized text for shareCalendarDayWithReminder."
+  },
+  "listenToAll": "Прослухати все",
+  "@listenToAll": {
+    "description": "Localized text for listenToAll."
+  },
+  "reminderSaved": "Нагадувань: {count}",
+  "@reminderSaved": {
+    "description": "Localized text for reminderSaved.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "audiodescriptionTitle": "Audiodescrizioni Rai",
+  "@audiodescriptionTitle": {
+    "description": "Localized text for audiodescriptionTitle."
+  },
+  "audiodescriptionRecent": "Recenti",
+  "@audiodescriptionRecent": {
+    "description": "Localized text for audiodescriptionRecent."
+  },
+  "audiodescriptionAll": "Tutte le audiodescrizioni",
+  "@audiodescriptionAll": {
+    "description": "Localized text for audiodescriptionAll."
+  },
+  "audiodescriptionFilm": "Film",
+  "@audiodescriptionFilm": {
+    "description": "Localized text for audiodescriptionFilm."
+  },
+  "audiodescriptionSearch": "Cerca...",
+  "@audiodescriptionSearch": {
+    "description": "Localized text for audiodescriptionSearch."
+  },
+  "audiodescriptionLoading": "Caricamento in corso...",
+  "@audiodescriptionLoading": {
+    "description": "Localized text for audiodescriptionLoading."
+  },
+  "audiodescriptionError": "Errore nel caricamento del catalogo",
+  "@audiodescriptionError": {
+    "description": "Localized text for audiodescriptionError."
+  },
+  "audiodescriptionEmpty": "Nessun elemento trovato",
+  "@audiodescriptionEmpty": {
+    "description": "Localized text for audiodescriptionEmpty."
+  },
+  "radio": "Радіо",
+  "@radio": {
+    "description": "Localized text for radio."
+  },
+  "radioHint": "Шукайте радіостанції, слухайте трансляції та керуйте вибраними",
+  "@radioHint": {
+    "description": "Localized text for radioHint."
+  },
+  "radioTitle": "Радіо з усього світу",
+  "@radioTitle": {
+    "description": "Localized text for radioTitle."
+  },
+  "radioFavoritesButton": "Вибрані радіостанції",
+  "@radioFavoritesButton": {
+    "description": "Localized text for radioFavoritesButton."
+  },
+  "radioNoFavorites": "Немає вибраних радіостанцій.",
+  "@radioNoFavorites": {
+    "description": "Localized text for radioNoFavorites."
+  },
+  "radioSearchText": "Пошук радіо",
+  "@radioSearchText": {
+    "description": "Localized text for radioSearchText."
+  },
+  "radioSearchHint": "Назва станції або місто...",
+  "@radioSearchHint": {
+    "description": "Localized text for radioSearchHint."
+  },
+  "radioLanguage": "Мова",
+  "@radioLanguage": {
+    "description": "Localized text for radioLanguage."
+  },
+  "radioBrowseBy": "Перегляд за",
+  "radioBrowseByLanguage": "Перегляд за мовою",
+  "radioBrowseByCountry": "Перегляд за країною",
+  "radioCountry": "Країна",
+  "radioGenre": "Жанр",
+  "radioActiveFilters": "Активні фільтри",
+  "radioResetFilters": "Скинути фільтри",
+  "radioFiltersReset": "Фільтри скинуто.",
+  "radioCity": "Місто",
+  "@radioGenre": {
+    "description": "Localized text for radioGenre."
+  },
+  "radioSearch": "Пошук",
+  "@radioSearch": {
+    "description": "Localized text for radioSearch."
+  },
+  "radioSearching": "Завантаження радіостанцій...",
+  "@radioSearching": {
+    "description": "Localized text for radioSearching."
+  },
+  "radioSearchResults": "Результати пошуку радіо",
+  "@radioSearchResults": {
+    "description": "Localized text for radioSearchResults."
+  },
+  "radioNoResults": "Радіостанцій не знайдено.",
+  "@radioNoResults": {
+    "description": "Localized text for radioNoResults."
+  },
+  "radioResultsFound": "Знайдено радіостанцій: {count}",
+  "@radioResultsFound": {
+    "description": "Localized text for radioResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "radioSearchError": "Помилка пошуку радіо: {error}",
+  "@radioSearchError": {
+    "description": "Localized text for radioSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "radioNowPlaying": "Відтворюється {name}",
+  "@radioNowPlaying": {
+    "description": "Localized text for radioNowPlaying.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "radioPlayError": "Помилка трансляції радіо: {error}",
+  "@radioPlayError": {
+    "description": "Localized text for radioPlayError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "radioAddFavorite": "Додати до вибраного",
+  "@radioAddFavorite": {
+    "description": "Localized text for radioAddFavorite."
+  },
+  "radioRemoveFavorite": "Видалити з вибраного",
+  "@radioRemoveFavorite": {
+    "description": "Localized text for radioRemoveFavorite."
+  },
+  "radioFavoriteAdded": "{name} додано до вибраного.",
+  "@radioFavoriteAdded": {
+    "description": "Localized text for radioFavoriteAdded.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "radioFavoriteRemoved": "{name} видалено з вибраного.",
+  "tvSearchFieldLabel": "Cerca canali TV",
+  "@tvSearchFieldLabel": {
+    "description": "Localized text for tvSearchFieldLabel."
+  },
+  "tvSearchFieldHint": "Nome del canale...",
+  "@tvSearchFieldHint": {
+    "description": "Localized text for tvSearchFieldHint."
+  },
+  "tvSearchButton": "Cerca",
+  "@tvSearchButton": {
+    "description": "Localized text for tvSearchButton."
+  },
+  "tvSearchResults": "Risultati canali TV",
+  "@tvSearchResults": {
+    "description": "Localized text for tvSearchResults."
+  },
+  "tvSearchEmptyQuery": "Inserisci il nome di un canale TV da cercare.",
+  "@tvSearchEmptyQuery": {
+    "description": "Localized text for tvSearchEmptyQuery."
+  },
+  "tvSearchNoResults": "Nessun canale TV trovato per {query}.",
+  "@tvSearchNoResults": {
+    "description": "Localized text for tvSearchNoResults.",
+    "placeholders": {
+      "query": {
+        "example": "Rai",
+        "type": "String"
+      }
+    }
+  },
+  "tvOpenChannelHint": "Tocca per riprodurre il canale TV",
+  "@tvOpenChannelHint": {
+    "description": "Localized text for tvOpenChannelHint."
+  },
+  "tvNowOnAir": "Ora in onda: {title}",
+  "@tvNowOnAir": {
+    "description": "Localized text for tvNowOnAir.",
+    "placeholders": {
+      "title": {
+        "example": "Telegiornale",
+        "type": "String"
+      }
+    }
+  },
+  "@radioFavoriteRemoved": {
+    "description": "Localized text for radioFavoriteRemoved.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "radioAddCommunity": "Додати радіостанцію до спільноти Sonarpad",
+  "@radioAddCommunity": {
+    "description": "Localized text for radioAddCommunity."
+  },
+  "radioAddName": "Назва радіостанції",
+  "@radioAddName": {
+    "description": "Localized text for radioAddName."
+  },
+  "radioAddUrl": "Адреса трансляції",
+  "@radioAddUrl": {
+    "description": "Localized text for radioAddUrl."
+  },
+  "radioAddSubmit": "Перевірити й додати",
+  "@radioAddSubmit": {
+    "description": "Localized text for radioAddSubmit."
+  },
+  "radioAddMissingFields": "Введіть назву радіостанції та адресу трансляції.",
+  "@radioAddMissingFields": {
+    "description": "Localized text for radioAddMissingFields."
+  },
+  "radioCommunityAdded": "Радіостанцію успішно додано до спільноти Sonarpad.",
+  "@radioCommunityAdded": {
+    "description": "Localized text for radioCommunityAdded."
+  },
+  "radioCommunityAddError": "Помилка додавання радіостанції: {error}",
+  "@radioCommunityAddError": {
+    "description": "Localized text for radioCommunityAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "radioPlay": "Відтворити",
+  "@radioPlay": {
+    "description": "Localized text for radioPlay."
+  },
+  "startRecording": "Avvia registrazione",
+  "stopRecording": "Ferma registrazione",
+  "recordings": "Registrazioni",
+  "recordingInProgressStatus": "Registrazione in corso",
+  "scheduledRecordingInProgressStatus": "Registrazione programmata in corso",
+  "recordingCannotOpenWhileInProgress": "Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.",
+  "blindLibrarySearchCatalog": "Cerca nel catalogo",
+  "selectRecordings": "Seleziona registrazioni",
+  "deleteRecordingsConfirmation": "{count, plural, =1{Vuoi eliminare definitivamente una registrazione?} other{Vuoi eliminare definitivamente {count} registrazioni?}}",
+  "@deleteRecordingsConfirmation": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noRecordings": "Nessuna registrazione.",
+  "recordingStarted": "Registrazione avviata.",
+  "recordingSaved": "Registrazione salvata: {path}",
+  "@recordingSaved": {
+    "placeholders": {
+      "path": {
+        "type": "Object"
+      }
+    }
+  },
+  "recordingError": "Errore registrazione: {error}",
+  "@recordingError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "routeTitle": "Маршрути",
+  "@routeTitle": {
+    "description": "Localized text for routeTitle."
+  },
+  "routeFrom": "Звідки",
+  "@routeFrom": {
+    "description": "Localized text for routeFrom."
+  },
+  "routeTo": "Куди",
+  "@routeTo": {
+    "description": "Localized text for routeTo."
+  },
+  "routeCountry": "Країна",
+  "@routeCountry": {
+    "description": "Localized text for routeCountry."
+  },
+  "routeCountryItaly": "Італія",
+  "@routeCountryItaly": {
+    "description": "Localized text for routeCountryItaly."
+  },
+  "routeCountryFrance": "Франція",
+  "@routeCountryFrance": {
+    "description": "Localized text for routeCountryFrance."
+  },
+  "routeCountrySpain": "Іспанія",
+  "@routeCountrySpain": {
+    "description": "Localized text for routeCountrySpain."
+  },
+  "routeCountryCzechRepublic": "Чехія",
+  "@routeCountryCzechRepublic": {
+    "description": "Localized text for routeCountryCzechRepublic."
+  },
+  "routeVehicle": "Спосіб пересування",
+  "@routeVehicle": {
+    "description": "Localized text for routeVehicle."
+  },
+  "routeType": "Тип",
+  "@routeType": {
+    "description": "Localized text for routeType."
+  },
+  "routeIncludeMunicipalities": "Включати населені пункти на маршруті",
+  "@routeIncludeMunicipalities": {
+    "description": "Localized text for routeIncludeMunicipalities."
+  },
+  "routeWalking": "Пішки",
+  "@routeWalking": {
+    "description": "Localized text for routeWalking."
+  },
+  "routeCycling": "Велосипедом",
+  "@routeCycling": {
+    "description": "Localized text for routeCycling."
+  },
+  "routeDriving": "Автомобілем",
+  "@routeDriving": {
+    "description": "Localized text for routeDriving."
+  },
+  "routeWheelchair": "На кріслі колісному",
+  "@routeWheelchair": {
+    "description": "Localized text for routeWheelchair."
+  },
+  "routeFastest": "Найшвидший",
+  "@routeFastest": {
+    "description": "Localized text for routeFastest."
+  },
+  "routeShortest": "Найкоротший",
+  "@routeShortest": {
+    "description": "Localized text for routeShortest."
+  },
+  "routeCalculate": "Розрахувати маршрут",
+  "@routeCalculate": {
+    "description": "Localized text for routeCalculate."
+  },
+  "routeCalculating": "Розрахунок маршруту...",
+  "@routeCalculating": {
+    "description": "Localized text for routeCalculating."
+  },
+  "routeChooseFrom": "Виберіть пункт відправлення",
+  "@routeChooseFrom": {
+    "description": "Localized text for routeChooseFrom."
+  },
+  "routeChooseTo": "Виберіть пункт призначення",
+  "@routeChooseTo": {
+    "description": "Localized text for routeChooseTo."
+  },
+  "routeCancel": "Скасувати",
+  "@routeCancel": {
+    "description": "Localized text for routeCancel."
+  },
+  "routeErrorMissingFields": "Введіть пункт відправлення та пункт призначення",
+  "@routeErrorMissingFields": {
+    "description": "Localized text for routeErrorMissingFields."
+  },
+  "routeErrorFromNotFound": "Для адреси відправлення нічого не знайдено",
+  "@routeErrorFromNotFound": {
+    "description": "Localized text for routeErrorFromNotFound."
+  },
+  "routeErrorToNotFound": "Для адреси призначення нічого не знайдено",
+  "@routeErrorToNotFound": {
+    "description": "Localized text for routeErrorToNotFound."
+  },
+  "routeResultsTitle": "Доступні маршрути",
+  "@routeResultsTitle": {
+    "description": "Localized text for routeResultsTitle."
+  },
+  "routeDistance": "Відстань",
+  "@routeDistance": {
+    "description": "Localized text for routeDistance."
+  },
+  "routeDuration": "Тривалість",
+  "@routeDuration": {
+    "description": "Localized text for routeDuration."
+  },
+  "routeNavigation": "Деталі навігації",
+  "@routeNavigation": {
+    "description": "Localized text for routeNavigation."
+  },
+  "routeStartMunicipality": "Початковий населений пункт",
+  "@routeStartMunicipality": {
+    "description": "Localized text for routeStartMunicipality."
+  },
+  "routeEnterMunicipality": "В’їзд до населеного пункту",
+  "@routeEnterMunicipality": {
+    "description": "Localized text for routeEnterMunicipality."
+  },
+  "routeError": "Помилка: {error}",
+  "@routeError": {
+    "description": "Localized text for routeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "radioLanguageIt": "Італійська",
+  "@radioLanguageIt": {
+    "description": "Localized text for radioLanguageIt."
+  },
+  "radioLanguageEn": "Англійська",
+  "@radioLanguageEn": {
+    "description": "Localized text for radioLanguageEn."
+  },
+  "radioLanguageDe": "Німецька",
+  "@radioLanguageDe": {
+    "description": "Localized text for radioLanguageDe."
+  },
+  "radioLanguageCountryCh": "Швейцарія",
+  "@radioLanguageCountryCh": {
+    "description": "Localized text for radioLanguageCountryCh."
+  },
+  "radioLanguageEs": "Іспанська",
+  "@radioLanguageEs": {
+    "description": "Localized text for radioLanguageEs."
+  },
+  "radioLanguagePt": "Португальська",
+  "@radioLanguagePt": {
+    "description": "Localized text for radioLanguagePt."
+  },
+  "radioLanguageSv": "Шведська",
+  "@radioLanguageSv": {
+    "description": "Localized text for radioLanguageSv."
+  },
+  "radioLanguageVi": "В’єтнамська",
+  "@radioLanguageVi": {
+    "description": "Localized text for radioLanguageVi."
+  },
+  "radioLanguageCs": "Чеська",
+  "@radioLanguageCs": {
+    "description": "Localized text for radioLanguageCs."
+  },
+  "radioLanguagePl": "Польська",
+  "@radioLanguagePl": {
+    "description": "Localized text for radioLanguagePl."
+  },
+  "radioLanguageFr": "Французька",
+  "@radioLanguageFr": {
+    "description": "Localized text for radioLanguageFr."
+  },
+  "radioLanguageSr": "Сербська",
+  "@radioLanguageSr": {
+    "description": "Localized text for radioLanguageSr."
+  },
+  "radioLanguageUk": "Українська",
+  "@radioLanguageUk": {
+    "description": "Localized text for radioLanguageUk."
+  },
+  "radioLanguageHi": "Гінді",
+  "@radioLanguageHi": {
+    "description": "Localized text for radioLanguageHi."
+  },
+  "radioLanguageLt": "Литовська",
+  "@radioLanguageLt": {
+    "description": "Localized text for radioLanguageLt."
+  },
+  "radioLanguageRu": "Російська",
+  "@radioLanguageRu": {
+    "description": "Localized text for radioLanguageRu."
+  },
+  "radioLanguageZh": "Китайська",
+  "@radioLanguageZh": {
+    "description": "Localized text for radioLanguageZh."
+  },
+  "radioCountryOptionIt": "Італія",
+  "radioCountryOptionUs": "Сполучені Штати",
+  "radioCountryOptionGb": "Велика Британія",
+  "radioCountryOptionFr": "Франція",
+  "radioCountryOptionEs": "Іспанія",
+  "radioCountryOptionDe": "Німеччина",
+  "radioCountryOptionCh": "Швейцарія",
+  "radioCountryOptionAt": "Австрія",
+  "radioCountryOptionBe": "Бельгія",
+  "radioCountryOptionNl": "Нідерланди",
+  "radioCountryOptionPt": "Португалія",
+  "radioCountryOptionBr": "Бразилія",
+  "radioCountryOptionAr": "Аргентина",
+  "radioCountryOptionMx": "Мексика",
+  "radioCountryOptionCa": "Канада",
+  "radioCountryOptionAu": "Австралія",
+  "radioCountryOptionIe": "Ірландія",
+  "radioCountryOptionSe": "Швеція",
+  "radioCountryOptionPl": "Польща",
+  "radioCountryOptionJp": "Японія",
+  "radioGenreOptionAll": "Усі жанри",
+  "@radioGenreOptionAll": {
+    "description": "Localized text for radioGenreOptionAll."
+  },
+  "radioGenreOptionNews": "Новини",
+  "@radioGenreOptionNews": {
+    "description": "Localized text for radioGenreOptionNews."
+  },
+  "radioGenreOptionMusic": "Музика",
+  "@radioGenreOptionMusic": {
+    "description": "Localized text for radioGenreOptionMusic."
+  },
+  "radioGenreOptionSport": "Спорт",
+  "@radioGenreOptionSport": {
+    "description": "Localized text for radioGenreOptionSport."
+  },
+  "radioGenreOptionTalk": "Розмовні програми та аналітика",
+  "@radioGenreOptionTalk": {
+    "description": "Localized text for radioGenreOptionTalk."
+  },
+  "radioGenreOptionPop": "Поп",
+  "@radioGenreOptionPop": {
+    "description": "Localized text for radioGenreOptionPop."
+  },
+  "radioGenreOptionRock": "Рок",
+  "@radioGenreOptionRock": {
+    "description": "Localized text for radioGenreOptionRock."
+  },
+  "radioGenreOptionClassical": "Класична музика",
+  "@radioGenreOptionClassical": {
+    "description": "Localized text for radioGenreOptionClassical."
+  },
+  "radioGenreOptionJazz": "Джаз",
+  "@radioGenreOptionJazz": {
+    "description": "Localized text for radioGenreOptionJazz."
+  },
+  "radioGenreOptionDance": "Танцювальна музика",
+  "@radioGenreOptionDance": {
+    "description": "Localized text for radioGenreOptionDance."
+  },
+  "radioGenreOptionBlues": "Блюз",
+  "@radioGenreOptionBlues": {
+    "description": "Localized text for radioGenreOptionBlues."
+  },
+  "radioGenreOptionCountry": "Кантрі",
+  "@radioGenreOptionCountry": {
+    "description": "Localized text for radioGenreOptionCountry."
+  },
+  "radioGenreOptionHiphop": "Хіп-хоп",
+  "@radioGenreOptionHiphop": {
+    "description": "Localized text for radioGenreOptionHiphop."
+  },
+  "radioGenreOptionElectronic": "Електронна музика",
+  "@radioGenreOptionElectronic": {
+    "description": "Localized text for radioGenreOptionElectronic."
+  },
+  "radioGenreOptionLatin": "Латиноамериканська музика",
+  "@radioGenreOptionLatin": {
+    "description": "Localized text for radioGenreOptionLatin."
+  },
+  "radioGenreOptionReggae": "Реггі",
+  "@radioGenreOptionReggae": {
+    "description": "Localized text for radioGenreOptionReggae."
+  },
+  "radioGenreOptionMetal": "Метал",
+  "@radioGenreOptionMetal": {
+    "description": "Localized text for radioGenreOptionMetal."
+  },
+  "radioGenreOptionFolk": "Фолк",
+  "@radioGenreOptionFolk": {
+    "description": "Localized text for radioGenreOptionFolk."
+  },
+  "radioGenreOptionReligion": "Релігія",
+  "@radioGenreOptionReligion": {
+    "description": "Localized text for radioGenreOptionReligion."
+  },
+  "radioGenreOptionLocal": "Місцеве",
+  "@radioGenreOptionLocal": {
+    "description": "Localized text for radioGenreOptionLocal."
+  },
+  "radioGenreOptionCulture": "Культура",
+  "@radioGenreOptionCulture": {
+    "description": "Localized text for radioGenreOptionCulture."
+  },
+  "radioGenreOptionOldies": "70-ті / 80-ті / 90-ті",
+  "@radioGenreOptionOldies": {
+    "description": "Localized text for radioGenreOptionOldies."
+  },
+  "radioGenreOptionKids": "Для дітей",
+  "@radioGenreOptionKids": {
+    "description": "Localized text for radioGenreOptionKids."
+  },
+  "radioGenreOptionAmbient": "Ембієнт",
+  "@radioGenreOptionAmbient": {
+    "description": "Localized text for radioGenreOptionAmbient."
+  },
+  "radioCommunityLanguageItalian": "Італійська",
+  "@radioCommunityLanguageItalian": {
+    "description": "Localized text for radioCommunityLanguageItalian."
+  },
+  "radioCommunityLanguageEnglish": "Англійська",
+  "@radioCommunityLanguageEnglish": {
+    "description": "Localized text for radioCommunityLanguageEnglish."
+  },
+  "radioCommunityLanguageSpanish": "Іспанська",
+  "@radioCommunityLanguageSpanish": {
+    "description": "Localized text for radioCommunityLanguageSpanish."
+  },
+  "radioCommunityLanguageFrench": "Французька",
+  "@radioCommunityLanguageFrench": {
+    "description": "Localized text for radioCommunityLanguageFrench."
+  },
+  "radioCommunityLanguageGerman": "Німецька",
+  "@radioCommunityLanguageGerman": {
+    "description": "Localized text for radioCommunityLanguageGerman."
+  },
+  "radioCommunityLanguagePortuguese": "Португальська",
+  "@radioCommunityLanguagePortuguese": {
+    "description": "Localized text for radioCommunityLanguagePortuguese."
+  },
+  "radioCommunityLanguageSwedish": "Шведська",
+  "@radioCommunityLanguageSwedish": {
+    "description": "Localized text for radioCommunityLanguageSwedish."
+  },
+  "radioCommunityLanguageVietnamese": "В’єтнамська",
+  "@radioCommunityLanguageVietnamese": {
+    "description": "Localized text for radioCommunityLanguageVietnamese."
+  },
+  "radioCommunityLanguageCzech": "Чеська",
+  "@radioCommunityLanguageCzech": {
+    "description": "Localized text for radioCommunityLanguageCzech."
+  },
+  "radioCommunityLanguagePolish": "Польська",
+  "@radioCommunityLanguagePolish": {
+    "description": "Localized text for radioCommunityLanguagePolish."
+  },
+  "radioCommunityLanguageSerbian": "Сербська",
+  "@radioCommunityLanguageSerbian": {
+    "description": "Localized text for radioCommunityLanguageSerbian."
+  },
+  "radioCommunityLanguageUkrainian": "Українська",
+  "@radioCommunityLanguageUkrainian": {
+    "description": "Localized text for radioCommunityLanguageUkrainian."
+  },
+  "radioCommunityLanguageLithuanian": "Литовська",
+  "@radioCommunityLanguageLithuanian": {
+    "description": "Localized text for radioCommunityLanguageLithuanian."
+  },
+  "radioCommunityLanguageRussian": "Російська",
+  "@radioCommunityLanguageRussian": {
+    "description": "Localized text for radioCommunityLanguageRussian."
+  },
+  "radioCommunityLanguageChinese": "Китайська",
+  "@radioCommunityLanguageChinese": {
+    "description": "Localized text for radioCommunityLanguageChinese."
+  },
+  "radioCommunityLanguageHindi": "Гінді",
+  "@radioCommunityLanguageHindi": {
+    "description": "Localized text for radioCommunityLanguageHindi."
+  },
+  "routeDistanceMeters": "{meters} м",
+  "@routeDistanceMeters": {
+    "description": "Formatted route distance in meters.",
+    "placeholders": {
+      "meters": {
+        "type": "int",
+        "example": "250"
+      }
+    }
+  },
+  "routeDistanceKilometers": "{kilometers} км",
+  "@routeDistanceKilometers": {
+    "description": "Formatted route distance in kilometers.",
+    "placeholders": {
+      "kilometers": {
+        "type": "String",
+        "example": "1.5"
+      }
+    }
+  },
+  "routeDurationMinutes": "{minutes} хв",
+  "@routeDurationMinutes": {
+    "description": "Formatted route duration in minutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "routeDurationHoursMinutes": "{hours} год {minutes} хв",
+  "@routeDurationHoursMinutes": {
+    "description": "Formatted route duration in hours and minutes.",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "1"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "cinemaTitle": "Фільми в кінотеатрах",
+  "@cinemaTitle": {
+    "description": "Titolo della schermata dei film al cinema"
+  },
+  "cinemaNoMovies": "Наразі фільмів не знайдено.",
+  "@cinemaNoMovies": {
+    "description": "Testo quando non ci sono film"
+  },
+  "cinemaError": "Помилка завантаження фільмів.",
+  "@cinemaError": {
+    "description": "Errore caricamento film"
+  },
+  "cinemaReleased": "Дата виходу: {date}",
+  "@cinemaReleased": {
+    "description": "Data di uscita",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
+    }
+  },
+  "cinemaOverviewLabel": "Сюжет:",
+  "cinemaUpcomingReleases": "Незабаром у кіно",
+  "cinemaWillRelease": "Вийде: {date}",
+  "@cinemaWillRelease": {
+    "description": "Data di uscita futura",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
+    }
+  },
+  "@cinemaOverviewLabel": {
+    "description": "Label trama"
+  },
+  "cinemaOpenTrailer": "Відкрити трейлер",
+  "@cinemaOpenTrailer": {
+    "description": "Label per aprire il trailer"
+  },
+  "concertsTitle": "Концерти та події",
+  "concertsSearchHint": "Введіть місто (наприклад, Київ, Львів)",
+  "concertsSearchLabel": "Пошук концертів за містом",
+  "concertsSearchTooltip": "Пошук",
+  "concertsInitialText": "Введіть угорі назву свого міста, щоб переглянути заплановані музичні концерти.",
+  "concertsEmpty": "У цьому місті концертів не знайдено.",
+  "concertsVenue": "Місце проведення:",
+  "concertsBuyTickets": "Придбати квитки або переглянути подробиці на Ticketmaster",
+  "podcastPlayedEpisodes": "Прослухані епізоди",
+  "podcastSelectDate": "Вибрати дату",
+  "@podcastSelectDate": {
+    "description": "Button that opens the podcast date selector."
+  },
+  "podcastNoDatesAvailable": "Для цих епізодів немає доступних дат.",
+  "podcastChapters": "Розділи",
+  "@podcastChapters": {
+    "description": "Button and screen title for the podcast chapter list."
+  },
+  "podcastChaptersUnavailable": "Для цього епізоду розділи недоступні.",
+  "@podcastChaptersUnavailable": {
+    "description": "Shown when no podcast chapters are available for an episode."
+  },
+  "@podcastNoDatesAvailable": {
+    "description": "Shown when a podcast feed has no publication dates to choose from."
+  },
+  "podcastUnplayed": "Непрослухані епізоди",
+  "routeReadAction": "Прочитати маршрут",
+  "@routeReadAction": {
+    "description": "Localized text for routeReadAction."
+  },
+  "routeSaveAction": "Зберегти в документах",
+  "@routeSaveAction": {
+    "description": "Localized text for routeSaveAction."
+  },
+  "routeSaveSuccess": "Маршрут збережено в документах",
+  "@routeSaveSuccess": {
+    "description": "Localized text for routeSaveSuccess."
+  },
+  "deleteItem": "Видалити",
+  "@deleteItem": {
+    "description": "Localized text for deleteItem."
+  },
+  "audiobookMp3Format": "Аудіокнига MP3 (.mp3)",
+  "@audiobookMp3Format": {
+    "description": "Export format label for audiobook MP3."
+  },
+  "audiobookM4bFormat": "Аудіокнига M4B (.m4b)",
+  "@audiobookM4bFormat": {
+    "description": "Export format label for audiobook M4B."
+  },
+  "exportCompleteTitle": "Експорт завершено",
+  "@exportCompleteTitle": {
+    "description": "Localized text for exportCompleteTitle."
+  },
+  "exportCompleteMessage": "Файл успішно створено. Зберегти його в Sonarpad чи поділитися ним?",
+  "@exportCompleteMessage": {
+    "description": "Localized text for exportCompleteMessage."
+  },
+  "saveInSonarpad": "Зберегти в Sonarpad",
+  "@saveInSonarpad": {
+    "description": "Localized text for saveInSonarpad."
+  },
+  "exportSavedInSonarpad": "Файл збережено в Документах Sonarpad.",
+  "@exportSavedInSonarpad": {
+    "description": "Localized text for exportSavedInSonarpad."
+  },
+  "audiobookExportProgressTitle": "Створення аудіокниги",
+  "@audiobookExportProgressTitle": {
+    "description": "Title shown while exporting an audiobook."
+  },
+  "audiobookExportPreparing": "Підготовка аудіокниги...",
+  "@audiobookExportPreparing": {
+    "description": "Progress text shown while preparing audiobook export."
+  },
+  "audiobookExportGeneratingAudio": "Створення аудіо",
+  "@audiobookExportGeneratingAudio": {
+    "description": "Progress text shown while generating audiobook chunks."
+  },
+  "audiobookExportConvertingAudio": "Фінальне перетворення аудіофайлу...",
+  "@audiobookExportConvertingAudio": {
+    "description": "Progress text shown while converting/merging audiobook audio."
+  },
+  "audiobookExportFinalizing": "Завершення...",
+  "@audiobookExportFinalizing": {
+    "description": "Progress text shown while finalizing audiobook export."
+  },
+  "routeRecentRoutes": "Недавні маршрути",
+  "routeRecentRoutesEmpty": "Недавніх маршрутів немає",
+  "routeNavigationFromTo": "Навігація від {from} до {to} - {date}",
+  "@routeNavigationFromTo": {
+    "placeholders": {
+      "from": {},
+      "to": {},
+      "date": {}
+    }
+  },
+  "sortPodcastsAlphabetically": "Сортувати подкасти за абеткою",
+  "@sortPodcastsAlphabetically": {
+    "description": "Button that sorts the subscribed podcasts alphabetically."
+  },
+  "sortRadioFavoritesAlphabetically": "Сортувати вибрані радіостанції за абеткою",
+  "@sortRadioFavoritesAlphabetically": {
+    "description": "Button that sorts radio favorites alphabetically."
+  },
+  "podcastsSortedAlphabetically": "Подкасти відсортовано за абеткою.",
+  "@podcastsSortedAlphabetically": {
+    "description": "Status message shown after podcasts have been sorted alphabetically."
+  },
+  "radioFavoritesSortedAlphabetically": "Вибрані радіостанції відсортовано за абеткою.",
+  "@radioFavoritesSortedAlphabetically": {
+    "description": "Status message shown after radio favorites have been sorted alphabetically."
+  },
+  "settingsIncludeFootnotesInText": "Включати примітки до тексту",
+  "@settingsIncludeFootnotesInText": {
+    "description": "Localized text for settingsIncludeFootnotesInText."
+  },
+  "settingsIncludeFootnotesInTextHint": "У підтримуваних EPUB показує текст примітки одразу після абзацу, що на неї посилається.",
+  "@settingsIncludeFootnotesInTextHint": {
+    "description": "Localized text for settingsIncludeFootnotesInTextHint."
+  },
+  "documentFootnoteLabel": "Примітка",
+  "@documentFootnoteLabel": {
+    "description": "Localized text for documentFootnoteLabel."
+  },
+  "settingsMultipleDocumentBookmarks": "Дозволити кілька закладок у документах",
+  "@settingsMultipleDocumentBookmarks": {
+    "description": "Title for the setting that enables multiple bookmarks in documents."
+  },
+  "settingsMultipleDocumentBookmarksHint": "Якщо вимкнено, для кожного документа зберігається одна закладка. Якщо увімкнено, можна зберігати кілька закладок у тому самому документі.",
+  "@settingsMultipleDocumentBookmarksHint": {
+    "description": "Description for the setting that enables multiple bookmarks in documents."
+  },
+  "documentGoToBookmarkAction": "Перейти до закладки",
+  "@documentGoToBookmarkAction": {
+    "description": "Accessibility action and menu entry to open document bookmarks."
+  },
+  "documentChooseBookmarkTitle": "Виберіть закладку",
+  "@documentChooseBookmarkTitle": {
+    "description": "Dialog title for choosing a document bookmark."
+  },
+  "documentDeleteBookmarkAction": "Видалити закладку",
+  "@documentDeleteBookmarkAction": {
+    "description": "Action label to delete a document bookmark."
+  },
+  "documentKeepBookmarkTitle": "Яку закладку залишити?",
+  "@documentKeepBookmarkTitle": {
+    "description": "Dialog title asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentKeepBookmarkMessage": "Кілька закладок вимкнено. Виберіть одну закладку, яку потрібно залишити; інші буде видалено.",
+  "@documentKeepBookmarkMessage": {
+    "description": "Dialog message asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentBookmarkChoiceLabel": "Закладка {order}, абзац {paragraph}",
+  "@documentBookmarkChoiceLabel": {
+    "description": "Label for a bookmark in the bookmark chooser.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      }
+    }
+  },
+  "documentBookmarkChoiceLabelWithPreview": "Закладка {order}, абзац {paragraph}. {preview}",
+  "@documentBookmarkChoiceLabelWithPreview": {
+    "description": "Label for a bookmark in the bookmark chooser, including a short text preview.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      },
+      "preview": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsVideoLandscapeFullscreen": "Відео на весь екран у горизонтальній орієнтації",
+  "@settingsVideoLandscapeFullscreen": {
+    "description": "Title for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsVideoLandscapeFullscreenHint": "Коли відео ввімкнено, воно показується на весь екран у горизонтальній орієнтації. Радіостанції лише з аудіо не змінюються.",
+  "@settingsVideoLandscapeFullscreenHint": {
+    "description": "Description for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsPodcastCacheTitle": "Кеш подкастів",
+  "@settingsPodcastCacheTitle": {
+    "description": "Localized text for settingsPodcastCacheTitle."
+  },
+  "settingsPodcastCacheHint": "Видаляє лише тимчасові файли подкастів. Підписки, історія та імпортоване аудіо залишаються без змін.",
+  "@settingsPodcastCacheHint": {
+    "description": "Localized text for settingsPodcastCacheHint."
+  },
+  "settingsPodcastCacheSize": "Використано: {size}",
+  "@settingsPodcastCacheSize": {
+    "description": "Localized text for settingsPodcastCacheSize.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearPodcastCache": "Очистити кеш подкастів",
+  "@clearPodcastCache": {
+    "description": "Localized text for clearPodcastCache."
+  },
+  "confirmClearPodcastCacheTitle": "Очистити кеш подкастів?",
+  "@confirmClearPodcastCacheTitle": {
+    "description": "Localized text for confirmClearPodcastCacheTitle."
+  },
+  "confirmClearPodcastCacheMessage": "Тимчасові файли подкастів буде видалено. Підписки та історія епізодів залишаться без змін.",
+  "@confirmClearPodcastCacheMessage": {
+    "description": "Localized text for confirmClearPodcastCacheMessage."
+  },
+  "podcastCacheCleared": "Кеш подкастів очищено. Звільнено {size}.",
+  "@podcastCacheCleared": {
+    "description": "Localized text for podcastCacheCleared.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "podcastCacheEmpty": "Кеш подкастів уже порожній.",
+  "@podcastCacheEmpty": {
+    "description": "Localized text for podcastCacheEmpty."
+  },
+  "pharmacyFeatureTitle": "Farmaci, parafarmaci e integratori",
+  "@pharmacyFeatureTitle": {
+    "description": "Title for the medicines, parapharmaceuticals and supplements feature."
+  },
+  "pharmacyProductsSectionTitle": "Parafarmaci e integratori",
+  "@pharmacyProductsSectionTitle": {
+    "description": "Title for the parapharmaceuticals and supplements results section."
+  },
+  "pharmacyProductsLoadingTitle": "Ricerca parafarmaci e integratori in corso...",
+  "@pharmacyProductsLoadingTitle": {
+    "description": "Loading title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsErrorTitle": "Errore nella ricerca parafarmaci e integratori",
+  "@pharmacyProductsErrorTitle": {
+    "description": "Error title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsNoResultsTitle": "Nessun parafarmaco o integratore trovato",
+  "@pharmacyProductsNoResultsTitle": {
+    "description": "Empty state title for parapharmaceuticals and supplements search."
+  },
+  "mediaCutterTitle": "Обрізати медіафайл",
+  "mediaCutterInstruction1": "Відкрийте аудіо- або відеофайл, запустіть відтворення та перейдіть до місця, де потрібно зробити розріз.",
+  "mediaCutterInstruction2": "Призупиніть відтворення, натисніть «Розділити», потім у розділі частин видаліть непотрібні частини та натисніть «Зберегти».",
+  "mediaCutterOpenFile": "Відкрити медіафайл",
+  "mediaCutterSelectedFile": "Вибрано файл: {fileName}",
+  "@mediaCutterSelectedFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPosition": "Позиція розрізу",
+  "mediaCutterPositionHint": "Переміщуйтеся вперед або назад по одній секунді.",
+  "mediaCutterHideVideoPreview": "Сховати відео",
+  "mediaCutterVideoRotation": "Поворот відео",
+  "mediaCutterVideoRotationNone": "Без повороту",
+  "mediaCutterVideoRotationRight": "Повернути праворуч",
+  "mediaCutterVideoRotationLeft": "Повернути ліворуч",
+  "mediaCutterVideoRotationUpsideDown": "Повернути на 180 градусів",
+  "@mediaCutterHideVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterVideoPreview": "Попередній перегляд відео",
+  "@mediaCutterVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterSplit": "Розділити",
+  "mediaCutterPartsTitle": "Частини для збереження",
+  "mediaCutterPartsHint": "Торкніться частини, щоб прослухати її. Видалені частини зникають зі списку, пропускаються під час відтворення та не зберігаються. Ефекти застосовуються до всієї частини під час збереження медіафайлу.",
+  "mediaCutterPartLabel": "Частина {index}",
+  "@mediaCutterPartLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartRange": "Від {start} до {end}",
+  "@mediaCutterPartRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSave": "Зберегти",
+  "mediaCutterReady": "Готово.",
+  "mediaCutterUnsavedExitTitle": "Файл не збережено",
+  "mediaCutterUnsavedExitMessage": "Файл не було збережено. Справді вийти?",
+  "mediaCutterNoFile": "Спочатку відкрийте медіафайл.",
+  "mediaCutterInvalidSplitPoint": "Виберіть точку всередині файлу, а не на початку чи в кінці.",
+  "mediaCutterSplitAlreadyExists": "У цій точці вже є розділення.",
+  "mediaCutterSplitAdded": "Розділення додано в позиції {position}.",
+  "@mediaCutterSplitAdded": {
+    "placeholders": {
+      "position": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSaving": "Збереження файлу...",
+  "mediaCutterSaved": "Файл збережено: {fileName}",
+  "@mediaCutterSaved": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterLoadFailed": "Не вдалося відкрити файл: {error}",
+  "@mediaCutterLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterSaveFailed": "Не вдалося зберегти файл: {error}",
+  "@mediaCutterSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterNoPartsToSave": "Залиште принаймні одну частину для збереження.",
+  "mediaCutterRestoreDeletedPart": "Відновити видалену частину",
+  "mediaCutterNoDeletedParts": "Немає видалених частин для відновлення.",
+  "mediaCutterPartDeleteAction": "Видалити",
+  "mediaCutterPartTapHint": "Торкніться двічі, щоб прослухати цю частину. Використовуйте дії «Редагувати частину», «Видалити» або «Налаштувати ефекти».",
+  "mediaCutterPartDeleted": "Видалено частину від {start} до {end}.",
+  "@mediaCutterPartDeleted": {
+    "description": "Status shown after a media part is deleted",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartRestored": "Відновлено частину від {start} до {end}.",
+  "@mediaCutterPartRestored": {
+    "description": "Status shown after a deleted media part is restored",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsAction": "Налаштувати ефекти",
+  "mediaCutterPartEditAction": "Редагувати частину",
+  "mediaCutterPartEditDescription": "Перемістіть початок або кінець частини на 1 секунду, а потім прослухайте змінену частину.",
+  "mediaCutterPartAdjusted": "Частину змінено: від {start} до {end}.",
+  "@mediaCutterPartAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsTitle": "Ефекти частини",
+  "mediaCutterPartEffectsDescription": "Налаштуйте гучність і ефект лише для цієї частини.",
+  "mediaCutterPartVolumeLabel": "Гучність частини",
+  "mediaCutterPartVolumeValue": "Гучність частини: {percent}%",
+  "@mediaCutterPartVolumeValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartEffect": "Аудіоефект",
+  "mediaCutterPartEffectNone": "Без ефекту",
+  "mediaCutterPartEffectEcho": "Легке ехо",
+  "mediaCutterPartEffectEchoRoom": "Ехо кімнати",
+  "mediaCutterPartEffectEchoChamber": "Ехо камери",
+  "mediaCutterPartEffectEchoCathedral": "Ехо собору",
+  "mediaCutterPartEffectLargeRoom": "Велика кімната",
+  "mediaCutterPartEffectSmallRoom": "Мала кімната",
+  "mediaCutterPartEffectBathroom": "Ефект ванної кімнати",
+  "mediaCutterPartEffectTunnel": "Тунель",
+  "mediaCutterPartEffectRepeatEcho": "Повторюване ехо слів",
+  "mediaCutterPartEffectCorridor": "Коридор",
+  "mediaCutterPartEffectDelay": "Затримка",
+  "mediaCutterPartEffectReverb": "Легка реверберація",
+  "mediaCutterPartEffectChorus": "Хорус",
+  "mediaCutterPartEffectPitchLow": "Низький тон",
+  "mediaCutterPartEffectPitchVeryLow": "Дуже низький тон",
+  "mediaCutterPartEffectPitchHigh": "Високий тон",
+  "mediaCutterPartEffectPitchVeryHigh": "Дуже високий тон",
+  "mediaCutterPartEffectRobot": "Голос робота",
+  "mediaCutterPartEffectSuperRobot": "Суперробот",
+  "mediaCutterPartEffectHelicopter": "Гелікоптер",
+  "mediaCutterPartEffectAlien": "Інопланетне вібрато",
+  "mediaCutterPartEffectBrightVoice": "Світліший голос",
+  "mediaCutterPartEffectDarkVoice": "Темніший голос",
+  "mediaCutterPartEffectGhost": "Привид",
+  "mediaCutterPartEffectTelephone": "Телефон",
+  "mediaCutterPartEffectOldRadio": "Старе радіо",
+  "mediaCutterPartEffectMegaphone": "Мегафон",
+  "mediaCutterPartEffectUnderwater": "Під водою",
+  "mediaCutterPartEffectMonster": "Монстр",
+  "mediaCutterPartEffectChipmunk": "Бурундук",
+  "mediaCutterPartEffectDream": "Сон",
+  "mediaCutterPartEffectDistortion": "Спотворення",
+  "mediaCutterPartEffectLoFi": "Lo-fi",
+  "mediaCutterPartEffectReverseEcho": "Зворотне ехо",
+  "mediaCutterPartEffectFadeIn": "Плавне наростання",
+  "mediaCutterPartEffectFadeOut": "Плавне згасання",
+  "mediaCutterPartEffectAmountLabel": "Інтенсивність ефекту",
+  "mediaCutterPartEffectAmountValue": "Інтенсивність ефекту: {percent}%",
+  "@mediaCutterPartEffectAmountValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartPreviewAction": "Прослухати попередньо",
+  "mediaCutterPartEffectsSavedOnly": "Попереднє прослуховування використовує вибрану гучність. Аудіоефекти застосовуються під час збереження.",
+  "mediaCutterPartEffectsApplied": "Ефекти оновлено для частини від {start} до {end}.",
+  "@mediaCutterPartEffectsApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsSummary": "Гучність {percent}%, ефект {effect}",
+  "@mediaCutterPartEffectsSummary": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedModeTitle": "Кероване обрізання",
+  "mediaCutterGuidedModeDescription": "Підходить для початківців. Виберіть початкову й кінцеву точки, прослухайте фрагмент, який буде вирізано, а потім застосуйте обрізання.",
+  "mediaCutterAdvancedModeTitle": "Розширене обрізання",
+  "mediaCutterAdvancedModeDescription": "Дає змогу розділити медіафайл на кілька частин і видалити непотрібні частини.",
+  "mediaCutterChangeCutMode": "Змінити режим обрізання",
+  "mediaCutterGuidedSetStart": "Початок обрізання",
+  "mediaCutterGuidedSetEnd": "Кінець обрізання",
+  "mediaCutterGuidedApplyCut": "Застосувати обрізання",
+  "mediaCutterGuidedListenCut": "Прослухати фрагмент",
+  "mediaCutterGuidedModifyCut": "Змінити обрізання",
+  "mediaCutterGuidedMoveStartBackOneSecond": "Перемістити початок обрізання назад на 1 секунду",
+  "mediaCutterGuidedMoveStartForwardOneSecond": "Перемістити початок обрізання вперед на 1 секунду",
+  "mediaCutterGuidedMoveEndBackOneSecond": "Перемістити кінець обрізання назад на 1 секунду",
+  "mediaCutterGuidedMoveEndForwardOneSecond": "Перемістити кінець обрізання вперед на 1 секунду",
+  "mediaCutterCutEditPrecisionLabel": "Точність редагування обрізання",
+  "mediaCutterCutEditPrecisionValue": "Точність редагування обрізання: {value}",
+  "@mediaCutterCutEditPrecisionValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterCutEditStepOneSecond": "1 секунда",
+  "mediaCutterCutEditStepHalfSecond": "0,5 секунди",
+  "mediaCutterCutEditStepQuarterSecond": "0,25 секунди",
+  "mediaCutterCutEditStepTenthSecond": "0,10 секунди",
+  "mediaCutterMoveStartBackBy": "Перемістити початок обрізання назад на {value}",
+  "@mediaCutterMoveStartBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveStartForwardBy": "Перемістити початок обрізання вперед на {value}",
+  "@mediaCutterMoveStartForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndBackBy": "Перемістити кінець обрізання назад на {value}",
+  "@mediaCutterMoveEndBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndForwardBy": "Перемістити кінець обрізання вперед на {value}",
+  "@mediaCutterMoveEndForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutAdjusted": "Обрізання змінено: від {start} до {end}.",
+  "@mediaCutterGuidedCutAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNoCut": "Обрізання не задано",
+  "mediaCutterGuidedEffectsAction": "Налаштувати ефекти файлу",
+  "mediaCutterGuidedEffectsDescription": "Налаштуйте гучність і ефекти для всього підсумкового файлу.",
+  "mediaCutterGuidedFileTapHint": "Торкніться двічі, щоб відтворити підсумковий файл. Використовуйте дію «Налаштувати ефекти файлу», щоб застосувати ефекти до всього файлу.",
+  "mediaCutterGuidedStartSet": "Початок обрізання встановлено на {start}.",
+  "@mediaCutterGuidedStartSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedEndSet": "Кінець обрізання встановлено на {end}. Обрізання від {start} до {end}.",
+  "@mediaCutterGuidedEndSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutApplied": "Застосовано обрізання від {start} до {end}.",
+  "@mediaCutterGuidedCutApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNeedStartEnd": "Спочатку встановіть початок і кінець обрізання.",
+  "mediaCutterGuidedCutSummary": "Обрізання від {start} до {end}",
+  "@mediaCutterGuidedCutSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedMultipleCutSummary": "Обрізань: {count}: {cuts}",
+  "@mediaCutterGuidedMultipleCutSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cuts": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedPendingCutExitMessage": "Є незастосоване кероване обрізання. Вийти, не зберігаючи його?",
+  "mediaCutterSplitAddedAnnouncement": "Розділення додано. Додано частину {partNumber}.",
+  "@mediaCutterSplitAddedAnnouncement": {
+    "placeholders": {
+      "partNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "newsAddCommunitySource": "Додати видання до спільноти Sonarpad",
+  "@newsAddCommunitySource": {
+    "description": "Localized text for newsAddCommunitySource."
+  },
+  "newsBrowseCommunitySources": "Джерела спільноти",
+  "@newsBrowseCommunitySources": {
+    "description": "Localized text for newsBrowseCommunitySources."
+  },
+  "newsAddCommunityInstructions": "Введіть назву видання та URL RSS-стрічки або вебсайту. Sonarpad використає вибрану мову новин, а якщо вказано сайт, спробує автоматично знайти RSS-стрічку.",
+  "@newsAddCommunityInstructions": {
+    "description": "Localized text for newsAddCommunityInstructions."
+  },
+  "newsCommunitySourceName": "Назва видання",
+  "@newsCommunitySourceName": {
+    "description": "Localized text for newsCommunitySourceName."
+  },
+  "newsCommunitySourceUrl": "URL RSS-стрічки або вебсайту",
+  "@newsCommunitySourceUrl": {
+    "description": "Localized text for newsCommunitySourceUrl."
+  },
+  "newsCommunitySubmit": "Перевірити й додати",
+  "@newsCommunitySubmit": {
+    "description": "Localized text for newsCommunitySubmit."
+  },
+  "newsCommunityChecking": "Перевірка стрічки або сайту...",
+  "@newsCommunityChecking": {
+    "description": "Localized text for newsCommunityChecking."
+  },
+  "newsCommunityMissingFields": "Введіть назву та URL стрічки або сайту.",
+  "@newsCommunityMissingFields": {
+    "description": "Localized text for newsCommunityMissingFields."
+  },
+  "newsCommunityAdded": "Джерело успішно додано до спільноти Sonarpad.",
+  "@newsCommunityAdded": {
+    "description": "Localized text for newsCommunityAdded."
+  },
+  "newsCommunityAddError": "Помилка додавання джерела: {error}",
+  "@newsCommunityAddError": {
+    "description": "Localized text for newsCommunityAddError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySelectedLanguage": "Вибрана мова: {language}",
+  "@newsCommunitySelectedLanguage": {
+    "description": "Localized text for newsCommunitySelectedLanguage.",
+    "placeholders": {
+      "language": {}
+    }
+  },
+  "newsCommunitySourcesTitle": "Джерела спільноти",
+  "@newsCommunitySourcesTitle": {
+    "description": "Localized text for newsCommunitySourcesTitle."
+  },
+  "newsCommunitySourcesEmpty": "Для цієї мови немає джерел спільноти.",
+  "@newsCommunitySourcesEmpty": {
+    "description": "Localized text for newsCommunitySourcesEmpty."
+  },
+  "newsCommunitySourcesError": "Помилка завантаження джерел спільноти: {error}",
+  "@newsCommunitySourcesError": {
+    "description": "Localized text for newsCommunitySourcesError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceAddedToLibrary": "{name} додано до вашої бібліотеки новин.",
+  "@newsCommunitySourceAddedToLibrary": {
+    "description": "Localized text for newsCommunitySourceAddedToLibrary.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "newsCommunityAddToLibraryError": "Помилка додавання до бібліотеки: {error}",
+  "@newsCommunityAddToLibraryError": {
+    "description": "Localized text for newsCommunityAddToLibraryError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceTapHint": "Торкніться, щоб додати до своєї бібліотеки новин.",
+  "@newsCommunitySourceTapHint": {
+    "description": "Localized text for newsCommunitySourceTapHint."
+  },
+  "developerModeEnabled": "Режим розробника увімкнено.",
+  "@developerModeEnabled": {
+    "description": "Localized text for developerModeEnabled."
+  },
+  "developerModeDisabled": "Режим розробника вимкнено.",
+  "@developerModeDisabled": {
+    "description": "Localized text for developerModeDisabled."
+  },
+  "developerSectionTitle": "Розробник",
+  "@developerSectionTitle": {
+    "description": "Localized text for developerSectionTitle."
+  },
+  "developerUseExperimentalFlutterRenderer": "Використовувати експериментальний рендерер Flutter",
+  "@developerUseExperimentalFlutterRenderer": {
+    "description": "Localized text for developerUseExperimentalFlutterRenderer."
+  },
+  "developerUseExperimentalFlutterRendererHint": "Тимчасово вимикає UIKit, щоб порівняти VoiceOver із чистим Flutter.",
+  "@developerUseExperimentalFlutterRendererHint": {
+    "description": "Localized text for developerUseExperimentalFlutterRendererHint."
+  },
+  "letterJumpSelectLetter": "Вибрати літеру",
+  "@letterJumpSelectLetter": {
+    "description": "Localized text for letterJumpSelectLetter."
+  },
+  "letterJumpSelected": "вибрано",
+  "@letterJumpSelected": {
+    "description": "Localized text for letterJumpSelected."
+  },
+  "settingsToggleOn": "Увімкнено",
+  "@settingsToggleOn": {
+    "description": "Localized text for settingsToggleOn."
+  },
+  "settingsToggleOff": "Вимкнено",
+  "@settingsToggleOff": {
+    "description": "Localized text for settingsToggleOff."
+  },
+  "radioDirectoryLoading": "Оновлення країн і мов радіо...",
+  "@radioDirectoryLoading": {
+    "description": "Localized text for radioDirectoryLoading."
+  },
+  "recentRadios": "Недавні радіостанції",
+  "@recentRadios": {
+    "description": "Localized text for recentRadios."
+  },
+  "radioNextPage": "Наступні",
+  "@radioNextPage": {
+    "description": "Localized text for radioNextPage."
+  },
+  "radioPageOf": "Сторінка {current} з {total}",
+  "@radioPageOf": {
+    "description": "Localized text for radioPageOf.",
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "radioNoResultsWithQuery": "Радіостанцій не знайдено. Спробуйте ввести лише назву станції без жанру або змініть мову чи країну.",
+  "@radioNoResultsWithQuery": {
+    "description": "Localized text for radioNoResultsWithQuery."
+  },
+  "radioNoResultsGeneric": "Радіостанцій не знайдено. Спробуйте іншу мову, країну або жанр.",
+  "@radioNoResultsGeneric": {
+    "description": "Localized text for radioNoResultsGeneric."
+  },
+  "radioSearchRawError": "Помилка пошуку радіо: {error}",
+  "@radioSearchRawError": {
+    "description": "Localized text for radioSearchRawError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioBrowserConnectionError": "Помилка з’єднання з Radio Browser. Спробуйте пізніше.",
+  "@radioBrowserConnectionError": {
+    "description": "Localized text for radioBrowserConnectionError."
+  },
+  "documentIndexLoadingMessage": "Завантаження змісту... Зачекайте.",
+  "@documentIndexLoadingMessage": {
+    "description": "Localized text for documentIndexLoadingMessage."
+  },
+  "documentIndexUnavailableMessage": "Зміст для цього EPUB недоступний.",
+  "@documentIndexUnavailableMessage": {
+    "description": "Localized text for documentIndexUnavailableMessage."
+  },
+  "mediaCutterVolumeSummary": "гучність {percent}%",
+  "@mediaCutterVolumeSummary": {
+    "description": "Localized text for mediaCutterVolumeSummary.",
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "mediaCutterDurationSummary": "тривалість {duration}",
+  "@mediaCutterDurationSummary": {
+    "description": "Localized text for mediaCutterDurationSummary.",
+    "placeholders": {
+      "duration": {}
+    }
+  },
+  "mediaCutterDurationHourOne": "година",
+  "@mediaCutterDurationHourOne": {
+    "description": "Localized text for mediaCutterDurationHourOne."
+  },
+  "mediaCutterDurationHourFew": "години",
+  "@mediaCutterDurationHourFew": {
+    "description": "Localized text for mediaCutterDurationHourFew."
+  },
+  "mediaCutterDurationHourMany": "годин",
+  "@mediaCutterDurationHourMany": {
+    "description": "Localized text for mediaCutterDurationHourMany."
+  },
+  "mediaCutterDurationMinuteOne": "хвилина",
+  "@mediaCutterDurationMinuteOne": {
+    "description": "Localized text for mediaCutterDurationMinuteOne."
+  },
+  "mediaCutterDurationMinuteFew": "хвилини",
+  "@mediaCutterDurationMinuteFew": {
+    "description": "Localized text for mediaCutterDurationMinuteFew."
+  },
+  "mediaCutterDurationMinuteMany": "хвилин",
+  "@mediaCutterDurationMinuteMany": {
+    "description": "Localized text for mediaCutterDurationMinuteMany."
+  },
+  "mediaCutterDurationSecondOne": "секунда",
+  "@mediaCutterDurationSecondOne": {
+    "description": "Localized text for mediaCutterDurationSecondOne."
+  },
+  "mediaCutterDurationSecondFew": "секунди",
+  "@mediaCutterDurationSecondFew": {
+    "description": "Localized text for mediaCutterDurationSecondFew."
+  },
+  "mediaCutterDurationSecondMany": "секунд",
+  "@mediaCutterDurationSecondMany": {
+    "description": "Localized text for mediaCutterDurationSecondMany."
+  },
+  "mediaCutterDurationAnd": "і",
+  "@mediaCutterDurationAnd": {
+    "description": "Localized text for mediaCutterDurationAnd."
+  },
+  "mediaCutterSeekStepButton": "Налаштувати переміщення у медіафайлі: {step}",
+  "@mediaCutterSeekStepButton": {
+    "description": "Localized text for mediaCutterSeekStepButton.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterSeekStepTitle": "Переміщення у медіафайлі",
+  "@mediaCutterSeekStepTitle": {
+    "description": "Localized text for mediaCutterSeekStepTitle."
+  },
+  "mediaCutterSeekStepSelected": "Крок переміщення у медіафайлі встановлено на {step}.",
+  "@mediaCutterSeekStepSelected": {
+    "description": "Localized text for mediaCutterSeekStepSelected.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterPartEffectBackwards": "Навпаки",
+  "@mediaCutterPartEffectBackwards": {
+    "description": "Localized text for mediaCutterPartEffectBackwards."
+  },
+  "mediaCutterPartEffectTalkingGuitar": "Розмовляюча гітара",
+  "@mediaCutterPartEffectTalkingGuitar": {
+    "description": "Localized text for mediaCutterPartEffectTalkingGuitar."
+  },
+  "mediaCutterPartEffectMosquito": "Комар",
+  "@mediaCutterPartEffectMosquito": {
+    "description": "Localized text for mediaCutterPartEffectMosquito."
+  },
+  "mediaCutterPartEffectOneOfMany": "Один голос у багато",
+  "@mediaCutterPartEffectOneOfMany": {
+    "description": "Localized text for mediaCutterPartEffectOneOfMany."
+  },
+  "mediaCutterPartEffectOrganVocoder": "Розмовляючий орган",
+  "@mediaCutterPartEffectOrganVocoder": {
+    "description": "Localized text for mediaCutterPartEffectOrganVocoder."
+  },
+  "mediaCutterPartEffectWarped": "Деформований",
+  "@mediaCutterPartEffectWarped": {
+    "description": "Localized text for mediaCutterPartEffectWarped."
+  },
+  "mediaCutterPartEffectSwirling": "Стереовихор",
+  "@mediaCutterPartEffectSwirling": {
+    "description": "Localized text for mediaCutterPartEffectSwirling."
+  },
+  "mediaCutterPartEffectVader": "Темний кінематографічний голос",
+  "@mediaCutterPartEffectVader": {
+    "description": "Localized text for mediaCutterPartEffectVader."
+  },
+  "mediaCutterPartEffectMetallic": "Металевий",
+  "@mediaCutterPartEffectMetallic": {
+    "description": "Localized text for mediaCutterPartEffectMetallic."
+  },
+  "mediaCutterPartEffectSongbird": "Пташка",
+  "@mediaCutterPartEffectSongbird": {
+    "description": "Localized text for mediaCutterPartEffectSongbird."
+  },
+  "mediaCutterPartEffectExterminator": "Екстермінатор",
+  "@mediaCutterPartEffectExterminator": {
+    "description": "Localized text for mediaCutterPartEffectExterminator."
+  },
+  "mediaCutterPartEffectRainAndThunder": "Дощ і грім",
+  "@mediaCutterPartEffectRainAndThunder": {
+    "description": "Localized text for mediaCutterPartEffectRainAndThunder."
+  },
+  "mediaCutterPartEffectJungle": "Джунглі",
+  "@mediaCutterPartEffectJungle": {
+    "description": "Localized text for mediaCutterPartEffectJungle."
+  },
+  "mediaCutterPartEffectCrowd": "Натовп",
+  "@mediaCutterPartEffectCrowd": {
+    "description": "Localized text for mediaCutterPartEffectCrowd."
+  },
+  "mediaCutterPartEffectSlotMachines": "Гральні автомати",
+  "@mediaCutterPartEffectSlotMachines": {
+    "description": "Localized text for mediaCutterPartEffectSlotMachines."
+  },
+  "mediaCutterPartEffectTraffic": "Дорожній рух",
+  "@mediaCutterPartEffectTraffic": {
+    "description": "Localized text for mediaCutterPartEffectTraffic."
+  },
+  "mediaCutterPartEffectSpaceship": "Космічний корабель",
+  "@mediaCutterPartEffectSpaceship": {
+    "description": "Localized text for mediaCutterPartEffectSpaceship."
+  },
+  "mediaCutterPartEffectCricket": "Цвіркун",
+  "@mediaCutterPartEffectCricket": {
+    "description": "Localized text for mediaCutterPartEffectCricket."
+  },
+  "mediaCutterPartEffectSiren": "Сирена",
+  "@mediaCutterPartEffectSiren": {
+    "description": "Localized text for mediaCutterPartEffectSiren."
+  },
+  "mediaCutterPartEffectSleighBells": "Дзвіночки",
+  "@mediaCutterPartEffectSleighBells": {
+    "description": "Localized text for mediaCutterPartEffectSleighBells."
+  },
+  "mediaCutterPartEffectDj": "DJ і скретч",
+  "@mediaCutterPartEffectDj": {
+    "description": "Localized text for mediaCutterPartEffectDj."
+  },
+  "mediaCutterPartEffectApplause": "Оплески",
+  "@mediaCutterPartEffectApplause": {
+    "description": "Localized text for mediaCutterPartEffectApplause."
+  },
+  "mediaCutterPartEffectBadMelody": "Фальшива мелодія",
+  "@mediaCutterPartEffectBadMelody": {
+    "description": "Localized text for mediaCutterPartEffectBadMelody."
+  },
+  "mediaCutterPartEffectBadHarmony": "Дисонансна гармонія",
+  "@mediaCutterPartEffectBadHarmony": {
+    "description": "Localized text for mediaCutterPartEffectBadHarmony."
+  },
+  "mediaCutterPartEffectWarmVoice": "Теплий голос",
+  "@mediaCutterPartEffectWarmVoice": {
+    "description": "Localized text for mediaCutterPartEffectWarmVoice."
+  },
+  "mediaCutterPartEffectTurtle": "Черепаха",
+  "@mediaCutterPartEffectTurtle": {
+    "description": "Localized text for mediaCutterPartEffectTurtle."
+  },
+  "mediaCutterPartEffectHaunting": "Моторошний",
+  "@mediaCutterPartEffectHaunting": {
+    "description": "Localized text for mediaCutterPartEffectHaunting."
+  },
+  "radioPreviousPage": "Попередні",
+  "@radioPreviousPage": {
+    "description": "Localized text for radioPreviousPage."
+  },
+  "noRecentRadios": "Недавніх радіостанцій немає.",
+  "@noRecentRadios": {
+    "description": "Localized text for noRecentRadios."
+  },
+  "radioBrowseByCity": "Перегляд за містом",
+  "@radioBrowseByCity": {
+    "description": "Localized text for radioBrowseByCity."
+  },
+  "radioCityInputHint": "Введіть назву міста...",
+  "@radioCityInputHint": {
+    "description": "Localized text for radioCityInputHint."
+  },
+  "openItem": "Відкрити",
+  "@openItem": {
+    "description": "Localized text for openItem."
+  },
+  "clearSearch": "Очистити пошук",
+  "@clearSearch": {
+    "description": "Localized text for clearSearch."
+  },
+  "fileTypeLabel": "Файл",
+  "@fileTypeLabel": {
+    "description": "Localized text for fileTypeLabel."
+  },
+  "cinemaTrailerLoading": "Завантаження трейлера",
+  "@cinemaTrailerLoading": {
+    "description": "Localized text for cinemaTrailerLoading."
+  },
+  "cinemaNoTrailer": "Для цього фільму немає доступного трейлера",
+  "@cinemaNoTrailer": {
+    "description": "Localized text for cinemaNoTrailer."
+  },
+  "radioScheduleHours": "Години",
+  "@radioScheduleHours": {
+    "description": "Localized text for radioScheduleHours."
+  },
+  "radioScheduleSelectHours": "Виберіть години",
+  "@radioScheduleSelectHours": {
+    "description": "Localized text for radioScheduleSelectHours."
+  },
+  "radioScheduleMinutes": "Хвилини",
+  "@radioScheduleMinutes": {
+    "description": "Localized text for radioScheduleMinutes."
+  },
+  "radioScheduleSelectMinutes": "Виберіть хвилини",
+  "@radioScheduleSelectMinutes": {
+    "description": "Localized text for radioScheduleSelectMinutes."
+  },
+  "radioScheduleStopCurrentFirst": "Завершіть поточний запис, перш ніж планувати новий.",
+  "@radioScheduleStopCurrentFirst": {
+    "description": "Localized text for radioScheduleStopCurrentFirst."
+  },
+  "radioScheduleStartTime": "Час початку",
+  "@radioScheduleStartTime": {
+    "description": "Localized text for radioScheduleStartTime."
+  },
+  "radioScheduleEndTime": "Час завершення",
+  "@radioScheduleEndTime": {
+    "description": "Localized text for radioScheduleEndTime."
+  },
+  "radioScheduleDialogTitle": "Запланувати запис",
+  "@radioScheduleDialogTitle": {
+    "description": "Localized text for radioScheduleDialogTitle."
+  },
+  "radioScheduleOpenRequirement": "Запланований запис продовжує працювати, поки ви переходите між іншими екранами Sonarpad. Sonarpad має залишатися відкритим; якщо застосунок закриє або призупинить система, запуск не гарантується.",
+  "@radioScheduleOpenRequirement": {
+    "description": "Localized text for radioScheduleOpenRequirement."
+  },
+  "radioScheduleStartTimeValue": "Час початку: {time}",
+  "@radioScheduleStartTimeValue": {
+    "description": "Localized text for radioScheduleStartTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleEndTimeValue": "Час завершення: {time}",
+  "@radioScheduleEndTimeValue": {
+    "description": "Localized text for radioScheduleEndTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleOptionalTitle": "Необов’язкова назва",
+  "@radioScheduleOptionalTitle": {
+    "description": "Localized text for radioScheduleOptionalTitle."
+  },
+  "radioScheduleTitleHint": "Залиште порожнім, щоб використовувати назву радіо або TV",
+  "@radioScheduleTitleHint": {
+    "description": "Localized text for radioScheduleTitleHint."
+  },
+  "radioScheduleAction": "Запланувати",
+  "@radioScheduleAction": {
+    "description": "Localized text for radioScheduleAction."
+  },
+  "radioScheduledRecordingRange": "Запис заплановано: {start} - {end}.",
+  "@radioScheduledRecordingRange": {
+    "description": "Localized text for radioScheduledRecordingRange.",
+    "placeholders": {
+      "start": {},
+      "end": {}
+    }
+  },
+  "radioScheduledRecordingAlreadyActive": "Запланований запис не розпочато: інший запис уже триває.",
+  "@radioScheduledRecordingAlreadyActive": {
+    "description": "Localized text for radioScheduledRecordingAlreadyActive."
+  },
+  "radioScheduledRecordingStarted": "Запланований запис розпочато.",
+  "@radioScheduledRecordingStarted": {
+    "description": "Localized text for radioScheduledRecordingStarted."
+  },
+  "radioScheduledRecordingError": "Помилка запланованого запису: {error}",
+  "@radioScheduledRecordingError": {
+    "description": "Localized text for radioScheduledRecordingError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingSaved": "Запланований запис збережено.",
+  "@radioScheduledRecordingSaved": {
+    "description": "Localized text for radioScheduledRecordingSaved."
+  },
+  "radioScheduledRecordingSaveError": "Помилка збереження запланованого запису: {error}",
+  "@radioScheduledRecordingSaveError": {
+    "description": "Localized text for radioScheduledRecordingSaveError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingCancelled": "Запланований запис скасовано.",
+  "@radioScheduledRecordingCancelled": {
+    "description": "Localized text for radioScheduledRecordingCancelled."
+  },
+  "radioScheduledRecordingRangeWithTitle": "Запис заплановано: {start} - {end}. Назва: {title}.",
+  "@radioScheduledRecordingRangeWithTitle": {
+    "description": "Localized text for radioScheduledRecordingRangeWithTitle.",
+    "placeholders": {
+      "start": {},
+      "end": {},
+      "title": {}
+    }
+  },
+  "radioScheduleCancelAction": "Скасувати запланований запис",
+  "@radioScheduleCancelAction": {
+    "description": "Localized text for radioScheduleCancelAction."
+  },
+  "radioLanguageTr": "Турецька",
+  "@radioLanguageTr": {
+    "description": "Localized text for radioLanguageTr."
+  },
+  "radioCountryOptionTr": "Туреччина",
+  "@radioCountryOptionTr": {
+    "description": "Localized text for radioCountryOptionTr."
+  },
+  "radioCommunityLanguageTurkish": "Турецька",
+  "@radioCommunityLanguageTurkish": {
+    "description": "Localized text for radioCommunityLanguageTurkish."
+  },
+  "simplifiedChineseLanguageName": "Китайська спрощена",
+  "@simplifiedChineseLanguageName": {
+    "description": "Localized name for Simplified Chinese in the language selector."
+  },
+  "chinaCountryName": "Китай",
+  "@chinaCountryName": {
+    "description": "Localized country name for China."
+  },
+  "technicalErrorGeneric": "Технічна помилка. Спробуйте ще раз.",
+  "@technicalErrorGeneric": {
+    "description": "Generic localized message used when a service returns a legacy non-localized technical error."
+  },
+  "cinemaTrailerTitle": "Трейлер: {title}",
+  "@cinemaTrailerTitle": {
+    "description": "Localized title for the trailer player screen.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterExportPartProgress": "Частина {index} з {total}",
+  "@mediaCutterExportPartProgress": {
+    "description": "Progress label while exporting Media Cutter parts.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterExportFinalVerification": "Фінальна перевірка",
+  "@mediaCutterExportFinalVerification": {
+    "description": "Localized text for mediaCutterExportFinalVerification."
+  },
+  "mediaCutterExportMergeParts": "Об’єднання частин",
+  "@mediaCutterExportMergeParts": {
+    "description": "Localized text for mediaCutterExportMergeParts."
+  },
+  "mediaCutterExportFileCheck": "Перевірка файлу",
+  "@mediaCutterExportFileCheck": {
+    "description": "Localized text for mediaCutterExportFileCheck."
+  },
+  "mediaCutterExportPublishing": "Публікація",
+  "@mediaCutterExportPublishing": {
+    "description": "Localized text for mediaCutterExportPublishing."
+  },
+  "mediaCutterExportCompletion": "Завершення",
+  "@mediaCutterExportCompletion": {
+    "description": "Localized text for mediaCutterExportCompletion."
+  },
+  "mediaCutterAddTrack": "Додати нову доріжку",
+  "@mediaCutterAddTrack": {
+    "description": "Localized text for mediaCutterAddTrack."
+  },
+  "mediaCutterChooseAudioTrack": "Вибрати аудіофайл",
+  "@mediaCutterChooseAudioTrack": {
+    "description": "Localized text for mediaCutterChooseAudioTrack."
+  },
+  "mediaCutterAddedTrackSelected": "Вибрано аудіофайл: {name}",
+  "@mediaCutterAddedTrackSelected": {
+    "description": "Localized text for mediaCutterAddedTrackSelected.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterOriginalTrackVolume": "Гучність оригінальної доріжки",
+  "@mediaCutterOriginalTrackVolume": {
+    "description": "Localized text for mediaCutterOriginalTrackVolume."
+  },
+  "mediaCutterNewTrackVolume": "Гучність нової доріжки",
+  "@mediaCutterNewTrackVolume": {
+    "description": "Localized text for mediaCutterNewTrackVolume."
+  },
+  "mediaCutterLoopNewTrack": "Повторювати нову доріжку циклічно",
+  "@mediaCutterLoopNewTrack": {
+    "description": "Localized text for mediaCutterLoopNewTrack."
+  },
+  "mediaCutterPreviewNewTrack": "Прослухати попередньо",
+  "@mediaCutterPreviewNewTrack": {
+    "description": "Localized text for mediaCutterPreviewNewTrack."
+  },
+  "mediaCutterFinalizeTrack": "Завершити",
+  "@mediaCutterFinalizeTrack": {
+    "description": "Localized text for mediaCutterFinalizeTrack."
+  },
+  "mediaCutterAddedTrackApplied": "Нову доріжку додано: {name}",
+  "@mediaCutterAddedTrackApplied": {
+    "description": "Localized text for mediaCutterAddedTrackApplied.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterAddedTrackInvalidAudio": "Вибраний файл не містить дійсної аудіодоріжки.",
+  "@mediaCutterAddedTrackInvalidAudio": {
+    "description": "Localized text for mediaCutterAddedTrackInvalidAudio."
+  },
+  "mediaCutterAddedTrackPreviewPreparing": "Підготовка попереднього прослуховування…",
+  "@mediaCutterAddedTrackPreviewPreparing": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewPreparing."
+  },
+  "mediaCutterAddedTrackPreviewFailed": "Не вдалося створити попереднє прослуховування.",
+  "@mediaCutterAddedTrackPreviewFailed": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewFailed."
+  },
+  "mediaCutterMixingAddedTrack": "Змішування нової доріжки",
+  "@mediaCutterMixingAddedTrack": {
+    "description": "Localized text for mediaCutterMixingAddedTrack."
+  },
+  "preserveMedia": "Зберегти медіафайл",
+  "@preserveMedia": {
+    "description": "Secondary action that downloads and preserves a playable MP3."
+  },
+  "preserveMediaSaving": "Збереження медіафайлу…",
+  "@preserveMediaSaving": {
+    "description": "Status shown while a media file is being downloaded and preserved."
+  },
+  "preserveMediaSaved": "Медіафайл збережено в Документах Sonarpad.",
+  "@preserveMediaSaved": {
+    "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
+  },
+  "preserveMediaError": "Не вдалося зберегти медіафайл.",
+  "@preserveMediaError": {
+    "description": "Error shown when a playable media file cannot be preserved."
+  }
+}

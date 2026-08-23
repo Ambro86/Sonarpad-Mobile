@@ -43,6 +43,7 @@ void main() {
       'app_pt.arb',
       'app_pt_BR.arb',
       'app_zh.arb',
+      'app_uk.arb',
       'app_zh_CN.arb',
     ];
     final templatePath = 'lib/l10n/${files.first}';
@@ -73,6 +74,7 @@ void main() {
       'cs.json',
       'pt_PT.json',
       'pt_BR.json',
+      'uk.json',
       'zh_CN.json',
     ];
     for (final file in files) {
@@ -133,6 +135,7 @@ void main() {
       'app_pt.arb',
       'app_pt_BR.arb',
       'app_zh.arb',
+      'app_uk.arb',
       'app_zh_CN.arb',
     ];
     for (final file in arbFiles) {

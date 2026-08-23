@@ -122,6 +122,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
         return 'de';
       case 'zh_CN':
         return 'cn';
+      case 'uk':
+        return 'ua';
       case 'it':
       default:
         return 'it';

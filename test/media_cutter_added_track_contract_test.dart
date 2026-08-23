@@ -52,6 +52,7 @@ void main() {
       'cs',
       'pt',
       'pt_BR',
+      'uk',
       'zh_CN',
     ];
     const keys = [

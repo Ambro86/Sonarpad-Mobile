@@ -186,6 +186,8 @@ class RouteService {
       case 'cz':
       case 'cs':
         return 'CZE';
+      case 'ua':
+        return 'UKR';
       case 'us':
         return 'USA';
       case 'gb':
@@ -368,6 +370,7 @@ class RouteService {
         'zh' || 'zh_CN' => '地址无效',
         'pl' => 'Nieprawidłowy adres',
         'de' => 'Ungültige Adresse',
+        'uk' => 'Недійсна адреса',
         _ => 'Indirizzo non valido',
       };
 
@@ -380,6 +383,7 @@ class RouteService {
         'zh' || 'zh_CN' => '地理编码网络错误：HTTP $statusCode',
         'pl' => 'Błąd sieci geokodowania: HTTP $statusCode',
         'de' => 'Netzwerkfehler bei der Geokodierung: HTTP $statusCode',
+        'uk' => 'Помилка мережі геокодування: HTTP $statusCode',
         _ => 'Errore di rete geocode: HTTP $statusCode',
       };
 
@@ -392,6 +396,7 @@ class RouteService {
         'zh' || 'zh_CN' => '路线网络错误：HTTP $statusCode',
         'pl' => 'Błąd sieci trasy: HTTP $statusCode',
         'de' => 'Netzwerkfehler bei der Routenberechnung: HTTP $statusCode',
+        'uk' => 'Помилка мережі маршруту: HTTP $statusCode',
         _ => 'Errore di rete route: HTTP $statusCode',
       };
 
@@ -403,6 +408,7 @@ class RouteService {
         'zh' || 'zh_CN' => '服务器错误',
         'pl' => 'Błąd serwera',
         'de' => 'Serverfehler',
+        'uk' => 'Помилка сервера',
         _ => 'Errore dal server',
       };
 
@@ -414,6 +420,7 @@ class RouteService {
         'zh' || 'zh_CN' => '服务器路线计算错误',
         'pl' => 'Błąd obliczania trasy po stronie serwera',
         'de' => 'Fehler bei der Routenberechnung auf dem Server',
+        'uk' => 'Помилка розрахунку маршруту на сервері',
         _ => 'Errore di calcolo percorso dal server',
       };
 
@@ -434,6 +441,8 @@ class RouteService {
           'Klient nieautoryzowany. Zaktualizuj Sonarpad albo sprawdź konfigurację aplikacji.',
         'de' =>
           'Nicht autorisierter Client. Aktualisiere Sonarpad oder überprüfe die App-Konfiguration.',
+        'uk' =>
+          'Неавторизований клієнт. Оновіть Sonarpad або перевірте конфігурацію застосунку.',
         _ =>
           'Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell\'app.',
       };
@@ -458,6 +467,9 @@ class RouteService {
         'de' => isStart
             ? 'Startadresse nicht gefunden'
             : 'Zieladresse nicht gefunden',
+        'uk' => isStart
+            ? 'Адресу відправлення не знайдено'
+            : 'Адресу призначення не знайдено',
         _ => isStart
             ? 'Indirizzo di partenza non trovato'
             : 'Indirizzo di arrivo non trovato',

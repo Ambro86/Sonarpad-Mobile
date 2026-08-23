@@ -74,6 +74,7 @@ void main() {
       'app_pt.arb',
       'app_pt_BR.arb',
       'app_zh.arb',
+      'app_uk.arb',
       'app_zh_CN.arb',
     ];
     const keys = [

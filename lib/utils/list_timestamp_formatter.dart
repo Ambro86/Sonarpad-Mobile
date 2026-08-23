@@ -85,6 +85,13 @@ String? _relativeDayLabel(int dayDiff, String localeName) {
         1: 'morgen',
         2: 'übermorgen',
       },
+    'uk' => const {
+        0: 'сьогодні',
+        -1: 'вчора',
+        -2: 'позавчора',
+        1: 'завтра',
+        2: 'післязавтра',
+      },
     'zh' => const {
         0: '今天',
         -1: '昨天',
@@ -109,7 +116,7 @@ DateFormat _dateFormatter(String localeName) {
       ? 'MM/dd/yyyy'
       : language == 'zh'
           ? 'yyyy/MM/dd'
-          : (language == 'pl' || language == 'cs' || language == 'de')
+          : (language == 'pl' || language == 'cs' || language == 'de' || language == 'uk')
               ? 'dd.MM.yyyy'
               : 'dd/MM/yyyy';
   return DateFormat(pattern, localeName);

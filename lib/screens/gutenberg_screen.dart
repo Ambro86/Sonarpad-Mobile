@@ -36,6 +36,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
     'de',
     'pt',
     'pl',
+    'uk',
     'zh',
   ];
 

@@ -26,6 +26,7 @@ import 'news_sources/polish_news_sources.dart';
 import 'news_sources/czech_news_sources.dart';
 import 'news_sources/german_news_sources.dart';
 import 'news_sources/simplified_chinese_news_sources.dart';
+import 'news_sources/ukrainian_news_sources.dart';
 
 enum NewsLanguage {
   italian,
@@ -37,7 +38,8 @@ enum NewsLanguage {
   polish,
   czech,
   german,
-  chineseSimplified
+  chineseSimplified,
+  ukrainian
 }
 
 class _TinyfishArticleFetchResult {
@@ -62,6 +64,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.czech => 'cs',
         NewsLanguage.german => 'de',
         NewsLanguage.chineseSimplified => 'zh-CN',
+        NewsLanguage.ukrainian => 'uk',
       };
 
   String get communityKey => switch (this) {
@@ -75,6 +78,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.czech => 'czech',
         NewsLanguage.german => 'german',
         NewsLanguage.chineseSimplified => 'chinese_simplified',
+        NewsLanguage.ukrainian => 'ukrainian',
       };
 
   String label(AppLocalizations l10n) => switch (this) {
@@ -88,6 +92,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.czech => l10n.radioLanguageCs,
         NewsLanguage.german => l10n.german,
         NewsLanguage.chineseSimplified => l10n.simplifiedChineseLanguageName,
+        NewsLanguage.ukrainian => l10n.radioLanguageUk,
       };
 
   List<NewsRssSource> get rssSources => switch (this) {
@@ -101,6 +106,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.czech => czechNewsSources,
         NewsLanguage.german => germanNewsSources,
         NewsLanguage.chineseSimplified => simplifiedChineseNewsSources,
+        NewsLanguage.ukrainian => ukrainianNewsSources,
       };
 }
 
@@ -610,6 +616,11 @@ class NewsService {
             hl = 'zh-CN';
             gl = 'CN';
             ceid = 'CN:zh-Hans';
+            break;
+          case NewsLanguage.ukrainian:
+            hl = 'uk';
+            gl = 'UA';
+            ceid = 'UA:uk';
             break;
         }
         finalUrl =
@@ -1634,6 +1645,7 @@ class NewsService {
         NewsLanguage.czech => 'CZ',
         NewsLanguage.german => 'DE',
         NewsLanguage.chineseSimplified => 'CN',
+        NewsLanguage.ukrainian => 'UA',
       };
 
   bool _isGoogleNewsUri(Uri uri) =>
@@ -1683,6 +1695,7 @@ class NewsService {
       NewsLanguage.portuguese => 'pt-150',
       NewsLanguage.portugueseBrazil => 'pt-419',
       NewsLanguage.chineseSimplified => 'zh-Hans',
+      NewsLanguage.ukrainian => 'uk',
       _ => lang,
     };
     return Uri.https('news.google.com', '/rss/search', {
@@ -2195,6 +2208,7 @@ class NewsService {
       NewsLanguage.czech => 'cs-CZ,cs;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.german => 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.chineseSimplified => 'zh-CN,zh;q=0.9,en-US;q=0.7,en;q=0.6',
+      NewsLanguage.ukrainian => 'uk-UA,uk;q=0.9,en-US;q=0.8,en;q=0.7',
     };
   }
 

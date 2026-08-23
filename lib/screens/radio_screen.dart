@@ -778,6 +778,7 @@ String _defaultRadioLanguageForLocale(String localeName) => switch (localeName) 
       'cs' => 'cs',
       'de' => 'de',
       'zh_CN' => 'zh',
+      'uk' => 'uk',
       _ => 'it',
     };
 
@@ -791,6 +792,7 @@ String _defaultRadioCountryForLocale(String localeName) => switch (localeName) {
       'cs' => 'cz',
       'de' => 'de',
       'zh_CN' => 'cn',
+      'uk' => 'ua',
       _ => 'it',
     };
 

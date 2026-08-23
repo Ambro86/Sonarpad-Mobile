@@ -435,6 +435,7 @@ class _WeatherForecastView extends StatelessWidget {
       'pt' || 'pt_BR' => _weatherCodeLabelsPt,
       'pl' => _weatherCodeLabelsPl,
       'de' => _weatherCodeLabelsDe,
+      'uk' => _weatherCodeLabelsUk,
       'zh' => _weatherCodeLabelsZh,
       _ => _weatherCodeLabelsIt,
     };
@@ -795,6 +796,38 @@ const Map<int, String> _weatherCodeLabelsPt = {
   99: 'Trovoada com granizo intenso',
 };
 
+
+
+const Map<int, String> _weatherCodeLabelsUk = {
+  0: 'Ясно',
+  1: 'Переважно ясно',
+  2: 'Мінлива хмарність',
+  3: 'Хмарно',
+  45: 'Туман',
+  48: 'Туман з памороззю',
+  51: 'Слабка мряка',
+  53: 'Помірна мряка',
+  55: 'Сильна мряка',
+  56: 'Слабка крижана мряка',
+  57: 'Сильна крижана мряка',
+  61: 'Слабкий дощ',
+  63: 'Помірний дощ',
+  65: 'Сильний дощ',
+  66: 'Слабкий крижаний дощ',
+  67: 'Сильний крижаний дощ',
+  71: 'Слабкий сніг',
+  73: 'Помірний сніг',
+  75: 'Сильний сніг',
+  77: 'Снігові зерна',
+  80: 'Слабкі зливи',
+  81: 'Помірні зливи',
+  82: 'Сильні зливи',
+  85: 'Слабкі снігові заряди',
+  86: 'Сильні снігові заряди',
+  95: 'Гроза',
+  96: 'Гроза зі слабким градом',
+  99: 'Гроза із сильним градом',
+};
 
 
 const Map<int, String> _weatherCodeLabelsZh = {

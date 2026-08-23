@@ -24,6 +24,7 @@ void main() {
       'pl',
       'cs',
       'de',
+      'uk',
       'zh_CN',
     ]) {
       final changes = (entry[language] as List).cast<String>().join('\n');

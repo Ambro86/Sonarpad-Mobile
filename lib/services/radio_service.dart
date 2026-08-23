@@ -9,6 +9,7 @@ import '../utils/app_logger.dart';
 
 class RadioService {
   static const _favoritesPrefsKey = 'sonarpad_radio_favorites';
+  static const _favoritesOrderPrefsKey = 'sonarpad_radio_favorites_order';
   static const _recentPrefsKey = 'sonarpad_radio_recent';
   static const _directoryLanguagesPrefsKey =
       'sonarpad_radio_directory_languages';
@@ -148,19 +149,41 @@ class RadioService {
   Future<List<RadioStation>> loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getStringList(_favoritesPrefsKey) ?? const [];
-    return _normalizeStations(
+    final normalized = _normalizeStations(
       raw.map((item) => RadioStation.fromJson(jsonDecode(item))).toList(),
       sortByName: false,
     );
+    final savedOrder = prefs.getStringList(_favoritesOrderPrefsKey) ?? const [];
+    return _applyFavoriteOrder(normalized, savedOrder);
   }
 
-  Future<void> saveFavorites(List<RadioStation> favorites) async {
+  Future<void> saveFavorites(
+    List<RadioStation> favorites, {
+    bool updateOrder = false,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final normalized = _normalizeStations(favorites, sortByName: false);
+
+    final currentRaw = prefs.getStringList(_favoritesPrefsKey) ?? const [];
+    final currentFavorites = _normalizeStations(
+      currentRaw.map((item) => RadioStation.fromJson(jsonDecode(item))).toList(),
+      sortByName: false,
+    );
+    final persistedOrder = prefs.getStringList(_favoritesOrderPrefsKey);
+    final baseOrder = persistedOrder == null || persistedOrder.isEmpty
+        ? currentFavorites.map(_favoriteOrderId).toList()
+        : List<String>.from(persistedOrder);
+
+    final nextOrder = updateOrder
+        ? normalized.map(_favoriteOrderId).toList()
+        : _mergeFavoriteOrder(baseOrder, normalized);
+    final orderedFavorites = _applyFavoriteOrder(normalized, nextOrder);
+
     await prefs.setStringList(
       _favoritesPrefsKey,
-      normalized.map((item) => jsonEncode(item.toJson())).toList(),
+      orderedFavorites.map((item) => jsonEncode(item.toJson())).toList(),
     );
+    await prefs.setStringList(_favoritesOrderPrefsKey, nextOrder);
   }
 
   Future<List<RadioStation>> loadRecentRadios() async {
@@ -594,6 +617,51 @@ class RadioService {
     );
   }
 
+
+  String _favoriteOrderId(RadioStation station) {
+    final uuid = station.stationUuid.trim();
+    if (uuid.isNotEmpty) return 'uuid:${uuid.toLowerCase()}';
+    return 'url:${_normalizeStreamUrl(station.streamUrl)}';
+  }
+
+  List<String> _mergeFavoriteOrder(
+    List<String> existingOrder,
+    List<RadioStation> favorites,
+  ) {
+    final wanted = favorites.map(_favoriteOrderId).toSet();
+    final result = <String>[];
+    final seen = <String>{};
+    for (final id in existingOrder) {
+      if (wanted.contains(id) && seen.add(id)) result.add(id);
+    }
+    for (final station in favorites) {
+      final id = _favoriteOrderId(station);
+      if (seen.add(id)) result.add(id);
+    }
+    return result;
+  }
+
+  List<RadioStation> _applyFavoriteOrder(
+    List<RadioStation> favorites,
+    List<String> order,
+  ) {
+    if (favorites.length < 2 || order.isEmpty) return favorites;
+    final byId = <String, RadioStation>{
+      for (final station in favorites) _favoriteOrderId(station): station,
+    };
+    final result = <RadioStation>[];
+    final used = <String>{};
+    for (final id in order) {
+      final station = byId[id];
+      if (station != null && used.add(id)) result.add(station);
+    }
+    for (final station in favorites) {
+      final id = _favoriteOrderId(station);
+      if (used.add(id)) result.add(station);
+    }
+    return result;
+  }
+
   List<RadioStation> _normalizeStations(
     List<RadioStation> stations, {
     bool sortByName = true,
@@ -708,6 +776,7 @@ class RadioService {
         'zh' || 'country:cn' => 'chinese',
         'hi' => 'hindi',
         'country:de' || 'country:at' || 'de' => 'german',
+        'country:ua' || 'uk' => 'ukrainian',
         _ => null,
       };
 

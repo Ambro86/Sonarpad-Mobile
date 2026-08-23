@@ -21,7 +21,7 @@
       "Migliorata la ricerca nella Biblioteca Digitale, che riconosce meglio nomi e parole anche quando vengono inseriti in un ordine differente.",
       "Migliorata la ricerca di farmaci e parafarmaci, con supporto anche a integratori e altri prodotti farmaceutici e memorizzazione delle relative ricerche recenti.",
       "Ampliati i Percorsi con nuovi paesi supportati, tra cui Australia, Canada, Germania, Regno Unito e Stati Uniti.",
-      "Aggiunta la localizzazione completa in tedesco, cinese semplificato e portoghese brasiliano, comprese le principali sezioni dell’app, Calendario, Meteo, Notizie, Podcast, Radio e le descrizioni dei permessi iOS.",
+      "Aggiunta la localizzazione completa in tedesco, cinese semplificato, portoghese brasiliano e ucraino, comprese le principali sezioni dell’app, Calendario, Meteo, Notizie, Podcast, Radio e le descrizioni dei permessi iOS.",
       "Aggiunte molte nuove citazioni del giorno al Calendario, tradotte nelle lingue supportate.",
       "Numerosi miglioramenti generali a stabilità, accessibilità, focus con screen reader, localizzazioni, riproduzione multimediale e gestione dei file su iOS e Android."
     ],
@@ -42,7 +42,7 @@
       "Improved Movies in theaters: the “Open trailer” command now plays the YouTube trailer directly with Sonarpad’s player, using the same video-resolution system as SonarTube.",
       "Improved language-name localization in Wikipedia, Project Gutenberg and other areas of the app: names are now shown in the interface language, for example “Italiano, Inglese, Francese” with Sonarpad in Italian and “Italian, English, French” with Sonarpad in English.",
       "Expanded Routes with support for additional countries, including Australia, Canada, Germany, the United Kingdom and the United States.",
-      "Added complete German, Simplified Chinese and Brazilian Portuguese localizations, including the main app sections, Calendar, Weather, News, Podcasts, Radio and iOS permission descriptions.",
+      "Added complete German, Simplified Chinese, Brazilian Portuguese and Ukrainian localizations, including the main app sections, Calendar, Weather, News, Podcasts, Radio and iOS permission descriptions.",
       "Added many new daily quotes to the Calendar, translated into the supported languages.",
       "Numerous general improvements to stability, accessibility, screen-reader focus, localization, media playback and file handling on iOS and Android."
     ],
@@ -63,7 +63,7 @@
       "Amélioration de la section Films au cinéma : la commande « Ouvrir la bande-annonce » lit désormais directement la bande-annonce YouTube avec le lecteur de Sonarpad, en utilisant le même système de résolution vidéo que SonarTube.",
       "Amélioration de la localisation des noms de langues dans Wikipédia, Project Gutenberg et d’autres sections de l’application : les noms sont désormais affichés dans la langue de l’interface, par exemple « Italiano, Inglese, Francese » avec Sonarpad en italien et « Italian, English, French » avec Sonarpad en anglais.",
       "Extension des Itinéraires à de nouveaux pays, notamment l’Australie, le Canada, l’Allemagne, le Royaume-Uni et les États-Unis.",
-      "Ajout des localisations complètes en allemand, chinois simplifié et portugais brésilien, y compris les principales sections de l’application, le Calendrier, la Météo, les Actualités, les Podcasts, la Radio et les descriptions des autorisations iOS.",
+      "Ajout des localisations complètes en allemand, chinois simplifié, portugais brésilien et ukrainien, y compris les principales sections de l’application, le Calendrier, la Météo, les Actualités, les Podcasts, la Radio et les descriptions des autorisations iOS.",
       "Ajout de nombreuses nouvelles citations du jour au Calendrier, traduites dans les langues prises en charge.",
       "Nombreuses améliorations générales de la stabilité, de l’accessibilité, du focus avec les lecteurs d’écran, des localisations, de la lecture multimédia et de la gestion des fichiers sur iOS et Android."
     ],
@@ -84,7 +84,7 @@
       "Mejorada la sección Películas en cartelera: el comando «Abrir tráiler» reproduce ahora el tráiler de YouTube directamente con el reproductor de Sonarpad, utilizando el mismo sistema de resolución de vídeo que SonarTube.",
       "Mejorada la localización de los nombres de idiomas en Wikipedia, Project Gutenberg y otras secciones de la aplicación: los nombres se muestran ahora en el idioma de la interfaz, por ejemplo «Italiano, Inglese, Francese» con Sonarpad en italiano y «Italian, English, French» con Sonarpad en inglés.",
       "Ampliadas las Rutas con nuevos países compatibles, entre ellos Australia, Canadá, Alemania, Reino Unido y Estados Unidos.",
-      "Añadidas localizaciones completas en alemán, chino simplificado y portugués de Brasil, incluidas las principales secciones de la aplicación, Calendario, Tiempo, Noticias, Podcasts, Radio y las descripciones de permisos de iOS.",
+      "Añadidas localizaciones completas en alemán, chino simplificado, portugués de Brasil y ucraniano, incluidas las principales secciones de la aplicación, Calendario, Tiempo, Noticias, Podcasts, Radio y las descripciones de permisos de iOS.",
       "Añadidas muchas nuevas citas del día al Calendario, traducidas a los idiomas compatibles.",
       "Numerosas mejoras generales de estabilidad, accesibilidad, foco con lectores de pantalla, localizaciones, reproducción multimedia y gestión de archivos en iOS y Android."
     ],
@@ -105,7 +105,7 @@
       "Melhorada a secção Filmes no cinema: o comando «Abrir trailer» reproduz agora o trailer do YouTube diretamente com o leitor do Sonarpad, utilizando o mesmo sistema de resolução de vídeo do SonarTube.",
       "Melhorada a localização dos nomes dos idiomas na Wikipédia, Project Gutenberg e noutras secções da aplicação: os nomes são agora apresentados no idioma da interface, por exemplo «Italiano, Inglese, Francese» com o Sonarpad em italiano e «Italian, English, French» com o Sonarpad em inglês.",
       "Ampliados os Percursos com novos países suportados, incluindo Austrália, Canadá, Alemanha, Reino Unido e Estados Unidos.",
-      "Adicionadas localizações completas em alemão, chinês simplificado e português do Brasil, incluindo as principais secções da aplicação, Calendário, Tempo, Notícias, Podcasts, Rádio e as descrições das permissões do iOS.",
+      "Adicionadas localizações completas em alemão, chinês simplificado, português do Brasil e ucraniano, incluindo as principais secções da aplicação, Calendário, Tempo, Notícias, Podcasts, Rádio e as descrições das permissões do iOS.",
       "Adicionadas muitas novas citações do dia ao Calendário, traduzidas para os idiomas suportados.",
       "Várias melhorias gerais de estabilidade, acessibilidade, foco com leitores de ecrã, localizações, reprodução multimédia e gestão de ficheiros no iOS e Android."
     ],
@@ -126,7 +126,7 @@
       "Ulepszono sekcję Filmy w kinie: polecenie „Otwórz zwiastun” odtwarza teraz zwiastun YouTube bezpośrednio w odtwarzaczu Sonarpad, korzystając z tego samego systemu rozwiązywania adresów wideo co SonarTube.",
       "Ulepszono lokalizację nazw języków w Wikipedii, Project Gutenberg i innych częściach aplikacji: nazwy są teraz wyświetlane w języku interfejsu, na przykład „Italiano, Inglese, Francese” w Sonarpad po włosku oraz „Italian, English, French” w Sonarpad po angielsku.",
       "Rozszerzono Trasy o kolejne obsługiwane kraje, w tym Australię, Kanadę, Niemcy, Wielką Brytanię i Stany Zjednoczone.",
-      "Dodano pełne lokalizacje w języku niemieckim, chińskim uproszczonym i portugalskim brazylijskim, obejmujące główne sekcje aplikacji, Kalendarz, Pogodę, Wiadomości, Podcasty, Radio oraz opisy uprawnień iOS.",
+      "Dodano pełne lokalizacje w języku niemieckim, chińskim uproszczonym, portugalskim brazylijskim i ukraińskim, obejmujące główne sekcje aplikacji, Kalendarz, Pogodę, Wiadomości, Podcasty, Radio oraz opisy uprawnień iOS.",
       "Do Kalendarza dodano wiele nowych cytatów dnia, przetłumaczonych na obsługiwane języki.",
       "Liczne ogólne ulepszenia stabilności, dostępności, fokusu czytników ekranu, lokalizacji, odtwarzania multimediów i zarządzania plikami w iOS i Androidzie."
     ],
@@ -147,7 +147,7 @@
       "Vylepšena sekce Filmy v kinech: příkaz „Otevřít trailer“ nyní přehraje YouTube trailer přímo v přehrávači Sonarpadu pomocí stejného systému řešení videí jako SonarTube.",
       "Vylepšena lokalizace názvů jazyků ve Wikipedii, Project Gutenberg a dalších částech aplikace: názvy se nyní zobrazují v jazyce rozhraní, například „Italiano, Inglese, Francese“ v italském Sonarpadu a „Italian, English, French“ v anglickém Sonarpadu.",
       "Trasy byly rozšířeny o další podporované země, včetně Austrálie, Kanady, Německa, Spojeného království a Spojených států.",
-      "Přidány kompletní lokalizace do němčiny, zjednodušené čínštiny a brazilské portugalštiny, včetně hlavních částí aplikace, Kalendáře, Počasí, Zpráv, Podcastů, Rádia a popisů oprávnění iOS.",
+      "Přidány kompletní lokalizace do němčiny, zjednodušené čínštiny, brazilské portugalštiny a ukrajinštiny, včetně hlavních částí aplikace, Kalendáře, Počasí, Zpráv, Podcastů, Rádia a popisů oprávnění iOS.",
       "Do Kalendáře bylo přidáno mnoho nových citátů dne, přeložených do podporovaných jazyků.",
       "Řada obecných vylepšení stability, přístupnosti, fokusu čteček obrazovky, lokalizací, přehrávání médií a správy souborů v iOS a Androidu."
     ],
@@ -168,7 +168,7 @@
       "Der Bereich Filme im Kino wurde verbessert: Der Befehl „Trailer öffnen“ spielt den YouTube-Trailer jetzt direkt mit dem Sonarpad-Player ab und verwendet dabei dasselbe Video-Auflösungssystem wie SonarTube.",
       "Die Lokalisierung von Sprachnamen in Wikipedia, Project Gutenberg und weiteren Bereichen der App wurde verbessert: Die Namen werden jetzt in der Sprache der Benutzeroberfläche angezeigt, zum Beispiel „Italiano, Inglese, Francese“ bei Sonarpad auf Italienisch und „Italian, English, French“ bei Sonarpad auf Englisch.",
       "Routen wurden um weitere unterstützte Länder erweitert, darunter Australien, Kanada, Deutschland, das Vereinigte Königreich und die Vereinigten Staaten.",
-      "Vollständige Lokalisierungen auf Deutsch, vereinfachtem Chinesisch und brasilianischem Portugiesisch wurden hinzugefügt, einschließlich der wichtigsten App-Bereiche, Kalender, Wetter, Nachrichten, Podcasts, Radio und iOS-Berechtigungsbeschreibungen.",
+      "Vollständige Lokalisierungen auf Deutsch, vereinfachtem Chinesisch, brasilianischem Portugiesisch und Ukrainisch wurden hinzugefügt, einschließlich der wichtigsten App-Bereiche, Kalender, Wetter, Nachrichten, Podcasts, Radio und iOS-Berechtigungsbeschreibungen.",
       "Dem Kalender wurden viele neue Zitate des Tages hinzugefügt, übersetzt in die unterstützten Sprachen.",
       "Zahlreiche allgemeine Verbesserungen bei Stabilität, Barrierefreiheit, Screenreader-Fokus, Lokalisierungen, Medienwiedergabe und Dateiverwaltung unter iOS und Android."
     ],
@@ -189,7 +189,7 @@
       "Melhorada a seção Filmes no cinema: o comando “Abrir trailer” agora reproduz o trailer do YouTube diretamente com o player do Sonarpad, usando o mesmo sistema de resolução de vídeo do SonarTube.",
       "Melhorada a localização dos nomes dos idiomas na Wikipédia, Project Gutenberg e em outras seções do aplicativo: os nomes agora são exibidos no idioma da interface, por exemplo “Italiano, Inglese, Francese” com o Sonarpad em italiano e “Italian, English, French” com o Sonarpad em inglês.",
       "Ampliadas as Rotas com novos países compatíveis, incluindo Austrália, Canadá, Alemanha, Reino Unido e Estados Unidos.",
-      "Adicionadas localizações completas em alemão, chinês simplificado e português brasileiro, incluindo as principais seções do aplicativo, Calendário, Clima, Notícias, Podcasts, Rádio e as descrições das permissões do iOS.",
+      "Adicionadas localizações completas em alemão, chinês simplificado, português brasileiro e ucraniano, incluindo as principais seções do aplicativo, Calendário, Clima, Notícias, Podcasts, Rádio e as descrições das permissões do iOS.",
       "Adicionadas muitas novas citações do dia ao Calendário, traduzidas para os idiomas compatíveis.",
       "Diversas melhorias gerais de estabilidade, acessibilidade, foco com leitores de tela, localizações, reprodução multimídia e gestão de arquivos no iOS e Android."
     ],
@@ -208,7 +208,7 @@
       "多个长列表新增“选择字母”命令，可快速跳转到指定首字母。同时改进了焦点恢复、VoiceOver 导航，以及 Flutter 渲染器和原生 UIKit 渲染器中的列表行为。",
       "改进了 VoiceOver 与 UIKit 下文本输入框的无障碍体验，移除了字段名称与提示之间多余的重复，例如白页和黄页中的“地点”字段。数字图书馆中的多个标签也进行了调整，使语音朗读更加自然。",
       "改进了“影院电影”功能：“打开预告片”现在会直接使用 Sonarpad 播放器播放 YouTube 预告片，并使用与 SonarTube 相同的视频解析系统。",
-      "改进了 Wikipedia、Project Gutenberg 以及应用其他区域中的语言名称本地化：语言名称现在会按照界面语言显示，例如 Sonarpad 使用意大利语时显示“Italiano, Inglese, Francese”，使用英语时显示“Italian, English, French”。",
+      "新增完整的德语、简体中文、巴西葡萄牙语和乌克兰语本地化，包括应用主要区域、日历、天气、新闻、播客、广播以及 iOS 权限说明。",
       "路线功能新增更多支持国家，包括澳大利亚、加拿大、德国、英国和美国。",
       "新增完整的德语、简体中文和巴西葡萄牙语本地化，包括应用主要区域、日历、天气、新闻、播客、广播以及 iOS 权限说明。",
       "日历中新增大量每日名言，并已翻译为支持的语言。",
@@ -218,6 +218,27 @@
       "Aggiunte le registrazioni programmate di Radio e TV: una volta programmata una registrazione, non è necessario rimanere nella schermata del canale. La programmazione continua ad avere effetto anche mentre si esplorano e si utilizzano le altre funzioni di Sonarpad, e la registrazione viene avviata automaticamente all’orario previsto.",
       "Aggiunto un sistema di recupero della lista dei canali per rendere più affidabili le registrazioni TV programmate: Sonarpad conserva una copia aggiornata della lista e può utilizzarla anche quando la lista online non è temporaneamente raggiungibile.",
       "Aggiunti numerosi canali regionali e nazionali per rendere la lista dei canali TV sempre più ricca."
+    ],
+    "uk": [
+      "Інтерфейс iPhone було переписано для сумісності з iOS 27, що потребувало значного перегляду застосунку. Як позитивний результат, усі екрани тепер використовують UIKit, завдяки чому довгі списки можна швидше прокручувати жестом VoiceOver трьома пальцями, а також користуватися вже наявними командами «Перейти до літери» та «Перейти до дати».",
+      "Додано SonarTube — нову вбудовану систему для пошуку та відтворення відео YouTube безпосередньо в Sonarpad. Можна переглядати відео, канали й списки відтворення, завантажувати додаткові результати, додавати канали до обраного та відтворювати вміст у вбудованому програвачі Sonarpad.",
+      "Додано функцію «Обрізати медіафайл», яка дає змогу відкривати аудіо- й відеофайли та обрізати їх у потрібному місці. Доступні два режими — кероване й розширене обрізання — з точним редагуванням точок обрізання, попереднім прослуховуванням частин, відновленням вилучених фрагментів, налаштуванням кроку переміщення, обертанням відео та надійнішим експортом аудіо й відео.",
+      "До функції обрізання медіа додано багато аудіоефектів, зокрема хор, робот, суперробот, старе радіо, вокодер, зміну голосу та різні атмосферні ефекти. Багато ефектів тепер використовують нативний DSP-рушій, спільний для iPhone і Android, щоб якість попереднього прослуховування та фінального файлу була більш однаковою.",
+      "У функції обрізання медіа тепер можна додати до відкритого файла нову аудіодоріжку, наприклад фонову музику. Гучність оригінальної та доданої доріжок можна регулювати окремо, нову доріжку можна відтворювати циклічно, попередньо прослухати та включити до фінального файла.",
+      "Значно підвищено надійність експорту в обрізанні медіа: Sonarpad визначає фактичні доріжки файла, правильно обробляє відео без аудіо та аудіофайли з обкладинкою, перевіряє тривалість і декодування та публікує результат лише після перевірки коректності створеного файла.",
+      "Покращено роботу з Документами: додано множинний вибір і видалення абзаців, кілька закладок в одному документі, налаштовуваний крок повзунка позиції, негайне вирівнювання читання TTS після переміщення, таймер сну та оцінку часу читання, що залишився.",
+      "Покращено відкриття документів TXT, RTF та EPUB. Виправлено різні проблеми з кодуванням символів і діакритикою, покращено інтерпретацію RTF, а також роботу змісту, відкриття розділів і підтримку виносок в EPUB.",
+      "Імпортованими аудіофайлами тепер можна безпосередньо ділитися з розділу Документи через стандартне меню поширення iOS або Android.",
+      "Покращено розділ Новини: вилучення тексту статей стало надійнішим завдяки зовнішньому сервісу Tinyfish, який допомагає відкривати більшість статей без труднощів. Також можна пропонувати нові джерела спільноті Sonarpad і додавати до своєї колекції джерела, якими поділилися інші користувачі.",
+      "Покращено Подкасти: додано вибір дати епізодів, підтримку розділів за їх наявності, алфавітне сортування підписок, зрозумілішу роботу з локальними аудіофайлами та нові можливості для перегляду й очищення кешу.",
+      "У кількох довгих списках покращено команду «Вибрати літеру», яка дає змогу швидко перейти до потрібної початкової літери. Також покращено відновлення фокуса, навігацію VoiceOver і поведінку списків як у Flutter-рендерері, так і в нативному UIKit-рендерері.",
+      "Покращено доступність текстових полів у VoiceOver та UIKit, усунувши зайві повтори між назвою поля й підказкою. Також покращено низку підписів, щоб синтез мовлення читав їх природніше.",
+      "Покращено розділ «Фільми в кіно»: команда «Відкрити трейлер» тепер відтворює трейлер YouTube безпосередньо в програвачі Sonarpad, використовуючи ту саму систему визначення відеопотоку, що й SonarTube.",
+      "Покращено локалізацію назв мов у Wikipedia, Project Gutenberg та інших розділах застосунку: тепер назви показуються мовою інтерфейсу.",
+      "Розширено «Маршрути» підтримкою додаткових країн, зокрема Австралії, Канади, Німеччини, Великої Британії та США.",
+      "Додано повні локалізації німецькою, спрощеною китайською, бразильською португальською та українською мовами, зокрема для основних розділів застосунку, Календаря, Погоди, Новин, Подкастів, Радіо та описів дозволів iOS.",
+      "До Календаря додано багато нових цитат дня, перекладених підтримуваними мовами.",
+      "Численні загальні покращення стабільності, доступності, фокуса екранних читачів, локалізації, відтворення медіа та керування файлами на iOS і Android."
     ]
   },
   {
@@ -353,6 +374,19 @@
       "新增按钮，可重置广播筛选条件并开始一次全新的搜索。",
       "播客搜索结果新增辅助操作，可直接订阅；如果播客已经存在，则该操作会打开播客。",
       "新增设置，可选择天气温度单位：摄氏度或华氏度。"
+    ],
+    "uk": [
+      "Перший публічний випуск Sonarpad Mobile в App Store. Він містить основні вже доступні функції: читання й упорядкування документів, імпорт із Project Gutenberg, LibriVox, PoetryDB, Internet Archive та iTunes / Apple Devices, експорт у DOCX, EPUB, MP3 і M4B, Новини з RSS, OPML і папками, подкасти, радіо, маршрути, погоду, календар та вибір світлої, темної або автоматичної теми.",
+      "Коли пошук радіостанцій не повертає результатів через проблеми з підключенням, Sonarpad тепер показує користувачеві зрозуміліше повідомлення замість технічної помилки.",
+      "Виправлено збереження у конвертері файлів: якщо Sonarpad не може зберегти файл безпосередньо у вибраному місці, відкривається системне меню поширення, щоб користувач міг зберегти файл у потрібній папці.",
+      "Внесено різні виправлення для всіх локалізацій.",
+      "Виправлено проблему в пошуку радіостанцій, через яку після введення першого символу потрібно було знову повертатися до текстового поля, щоб продовжити введення.",
+      "Покращено імпорт з iTunes / Apple Devices: Sonarpad тепер також зберігає структуру імпортованих папок і підпапок.",
+      "Покращено пошук радіостанцій: країни тепер відображаються з повною назвою та кодом, наприклад «Туреччина (TR)», а не лише кодом.",
+      "Додано підсумок активних фільтрів у пошуку радіостанцій, щоб було простіше зрозуміти, які критерії зараз використовуються.",
+      "Додано кнопку для скидання фільтрів радіо та початку нового пошуку без попередніх обмежень.",
+      "У результатах пошуку подкастів додано додаткову дію для швидкої підписки; якщо подкаст уже додано, ця дія відкриває його.",
+      "У Налаштуваннях додано вибір одиниці температури для погоди: Цельсій або Фаренгейт."
     ]
   },
   {
@@ -588,6 +622,29 @@
       "设置中新增主题选择：Sonarpad 可跟随系统主题，也可始终使用浅色或深色模式。",
       "新增文档导出为 DOCX、EPUB，以及 MP3 或 M4B 有声书，并使用用户已选择的语音引擎、声音、语速和音调设置。",
       "改进文档朗读时的自动书签：暂停时也会保存位置，因此即使应用意外关闭，Sonarpad 也能从正确段落继续。"
+    ],
+    "uk": [
+      "Додано польську, португальську та чеську локалізації.",
+      "Покращено пошук радіостанцій: тепер можна шукати за мовою, країною, містом і жанром, а останні вибрані параметри зберігаються.",
+      "У Документах додано імпорт із Project Gutenberg, LibriVox, PoetryDB та Internet Archive, а також імпорт документів, доданих через iTunes на пристроях Apple.",
+      "Покращено медіаконвертер: додано більше варіантів перетворення та можливість вибирати папку для збереження конвертованого файлу.",
+      "Додано пошук у документах: результати показують початок знайденого абзацу, а подвійний дотик переносить безпосередньо до абзацу, що містить шуканий текст.",
+      "У розділі «Моє місто» тепер можна вручну змінити місто, щоб виправити приблизне місцезнаходження, визначене Sonarpad.",
+      "Покращено розділ Погода: вибирати своє місто стало простіше, а список нещодавніх міст дає змогу швидко перемикатися між ними.",
+      "Виправлено проблему, через яку позиція відтворення локального медіафайлу не зберігалася після його закриття.",
+      "У Маршрутах додано кнопки для збереження вказівок у Документах і для прослуховування вказівок за допомогою синтезу мовлення.",
+      "У Новинах після прочитання статті певного джерела стає доступною кнопка «Прочитані статті». Прочитані матеріали прибираються з основного списку та залишаються в окремій історії для кожного джерела, яку можна очистити.",
+      "Покращено роботу з кодуванням документів: Sonarpad краще підтримує UTF-8, ANSI, європейські та інші кодування, тому більше документів відкриваються коректно.",
+      "Виправлено проблему, через яку під час увімкнення відео зникав регулятор гучності.",
+      "Виправлено проблему в Новинах, через яку команда зупинки читання фактично не зупиняла відтворення.",
+      "Виправлено проблему, через яку останній абзац статті в Новинах озвучувався двічі.",
+      "У Календарі під час поширення дня, що містить нагадування, Sonarpad запитує, чи додавати також нагадування, щоб випадково не поширити приватну інформацію.",
+      "У Новинах додано кнопки імпорту та експорту джерел у форматі OPML. Імпорт підтримує також складні файли, наприклад із Lire, де джерела організовані в папки.",
+      "Для джерел Новин додано керування папками: джерела можна переміщувати до папок і з них, а папки можна видаляти.",
+      "До додаткових дій у Новинах додано пункт «Створити нову папку».",
+      "У Налаштуваннях додано вибір теми застосунку: автоматично за системою, світла або темна.",
+      "Додано експорт документів у DOCX, EPUB та у формат аудіокниги MP3 або M4B із використанням уже вибраних користувачем параметрів рушія, голосу, швидкості й висоти тону.",
+      "Покращено автоматичне збереження закладки під час читання документів: позиція тепер зберігається також під час паузи, тож Sonarpad може продовжити з правильного абзацу навіть після випадкового закриття застосунку."
     ]
   },
   {
@@ -616,6 +673,9 @@
     ],
     "zh_CN": [
       "修复首次启动时的语言检测：如果用户尚未选择应用语言，Sonarpad 现在会使用设备首个受支持的首选语言。"
+    ],
+    "uk": [
+      "Виправлено визначення мови під час першого запуску: якщо користувач ще не вибрав мову застосунку, Sonarpad тепер використовує першу підтримувану мову зі списку бажаних мов пристрою."
     ]
   },
   {
@@ -853,6 +913,34 @@
       "改进英语、法语和西班牙语翻译。",
       "提高了多个界面和应用消息的清晰度。",
       "新增“电影”功能，可发现影院当前上映影片、阅读剧情并在可用时观看预告片；还提供“即将上映”按钮查看未来上映影片。"
+    ],
+    "uk": [
+      "Додано можливість створювати новий документ безпосередньо в Sonarpad.",
+      "Додано імпорт із Dropbox: після входу у свій обліковий запис можна переглядати файли Dropbox безпосередньо в Sonarpad та імпортувати їх до бібліотеки документів.",
+      "Тепер документ можна поширити з застосунку Файли на телефоні й відкрити безпосередньо в Sonarpad, щоб імпортувати його до бібліотеки.",
+      "Додано підтримку ZIP-файлів: під час імпорту архіву Sonarpad автоматично створює папку з його вмістом.",
+      "Додано можливість створювати нові папки та переміщувати документи між ними, щоб зручніше впорядковувати книги й документи.",
+      "Додано OCR для розпізнавання та читання документів, які містять лише зображення.",
+      "Додано повзунок для швидкого переходу вперед або назад під час читання документа.",
+      "Покращено керування закладками в документах: доступна дія автоматично змінюється залежно від того, чи вже існує закладка.",
+      "Додано можливість автоматично встановлювати нову закладку після зупинки читання, якщо цю опцію ввімкнено в налаштуваннях.",
+      "Додано новий розділ Погода з пошуком міста, вибором дня, поточними умовами, опадами, мінімальною й максимальною температурою та іншими корисними даними.",
+      "Додано доступний Календар зі святим дня та окремою цитатою на кожен день.",
+      "Додано автоматичне продовження: документи, подкасти та медіафайли можуть відновлюватися з місця, де їх було зупинено. Цю функцію можна вимкнути в налаштуваннях.",
+      "Додано повзунки для регулювання гучності та позиції в медіафайлах.",
+      "У налаштуваннях можна вибрати, на скільки перемотувати медіафайли вперед або назад. Типове значення — одна хвилина.",
+      "Додано можливість поширювати медіафайли з інших застосунків і відкривати їх безпосередньо в Sonarpad.",
+      "Для відеовмісту додано прапорець, який дає змогу вмикати або вимикати показ відео.",
+      "Додано імпорт та експорт подкастів, щоб переносити підписки до Sonarpad Mobile, зокрема із Sonarpad для Windows або Mac.",
+      "Пошук радіостанцій став толерантнішим: достатньо ввести перші літери назви станції, щоб отримати результати.",
+      "Покращено читання Новин: інтерфейс став чистішим і зручнішим порівняно з попередньою версією.",
+      "Sonarpad намагається пропускати блоки та непотрібні елементи вебсторінок, щоб спростити читання статей.",
+      "Додано медіаконвертер для аудіо- та відеофайлів: наприклад, MP3 можна перетворити на WAV або створити MP4-відео з аудіофайлу, додавши зображення.",
+      "Додано можливість групувати екрани за категоріями, щоб краще впорядкувати значки на головному екрані.",
+      "У налаштуваннях можна вибрати, чи показувати екрани згрупованими за категоріями, чи залишити класичний вигляд.",
+      "Покращено переклади англійською, французькою та іспанською мовами.",
+      "Покращено зрозумілість різних екранів і повідомлень застосунку.",
+      "Додано розділ Кіно, де можна дізнатися про фільми, що зараз ідуть у кінотеатрах, прочитати опис і переглянути трейлер, якщо він доступний. Також є кнопка «Незабаром у прокаті» для перегляду майбутніх прем’єр."
     ]
   }
 ]
