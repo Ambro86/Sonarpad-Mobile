@@ -1,7 +1,7 @@
 [
   {
     "version": "0.4.0",
-    "date": "2026-08-23",
+    "date": "2026-08-24",
     "it": [
       "È stata riscritta l’interfaccia per iPhone per renderla compatibile con iOS 27, che ha reso necessaria una revisione importante dell’app. Come conseguenza positiva, tutte le schermate utilizzano ora UIKit, permettendo di scorrere più velocemente le liste lunghe con il gesto a tre dita di VoiceOver, oltre a utilizzare i comandi “Vai alla lettera” e “Vai alla data” già presenti nell’app.",
       "Aggiunto SonarTube, il nuovo sistema integrato per cercare e riprodurre video di YouTube direttamente in Sonarpad. È possibile esplorare video, canali e playlist, caricare altri risultati, aggiungere i canali ai preferiti e riprodurre i contenuti tramite il player interno di Sonarpad.",
