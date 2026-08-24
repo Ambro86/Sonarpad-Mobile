@@ -11,6 +11,42 @@ import 'radio_player_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
+String formatTvGuideDateLabel(DateTime date, DateTime today) {
+  final normalizedToday = DateTime(today.year, today.month, today.day);
+  final normalizedDate = DateTime(date.year, date.month, date.day);
+  final diff = normalizedDate.difference(normalizedToday).inDays;
+  if (diff == -1) return 'Ieri';
+  if (diff == 0) return 'Oggi';
+  if (diff == 1) return 'Domani';
+  if (diff == 2) return 'Dopodomani';
+
+  const weekdays = [
+    'Lunedì',
+    'Martedì',
+    'Mercoledì',
+    'Giovedì',
+    'Venerdì',
+    'Sabato',
+    'Domenica',
+  ];
+  const months = [
+    'gennaio',
+    'febbraio',
+    'marzo',
+    'aprile',
+    'maggio',
+    'giugno',
+    'luglio',
+    'agosto',
+    'settembre',
+    'ottobre',
+    'novembre',
+    'dicembre',
+  ];
+  return '${weekdays[normalizedDate.weekday - 1]} '
+      '${normalizedDate.day} ${months[normalizedDate.month - 1]}';
+}
+
 Future<DateTime?> showTvDaySelectionDialog(
   BuildContext context, {
   required DateTime selectedDate,
@@ -26,15 +62,17 @@ Future<DateTime?> showTvDaySelectionDialog(
         onChanged: (value) {
           if (value != null) Navigator.pop(dialogContext, value);
         },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [-1, 0, 1, 2].map((offset) {
-            final date = today.add(Duration(days: offset));
-            return RadioListTile<DateTime>(
-              title: Text(labelForDate(date)),
-              value: date,
-            );
-          }).toList(),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(7, (index) => index - 1).map((offset) {
+              final date = today.add(Duration(days: offset));
+              return RadioListTile<DateTime>(
+                title: Text(labelForDate(date)),
+                value: date,
+              );
+            }).toList(),
+          ),
         ),
       ),
     ),
@@ -219,12 +257,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   String _getLabelForDate(DateTime d) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final diff = d.difference(today).inDays;
-    if (diff == -1) return 'Ieri';
-    if (diff == 0) return 'Oggi';
-    if (diff == 1) return 'Domani';
-    if (diff == 2) return 'Dopodomani';
-    return '${d.day}/${d.month}/${d.year}';
+    return formatTvGuideDateLabel(d, today);
   }
 
   Future<void> _selectDay() async {

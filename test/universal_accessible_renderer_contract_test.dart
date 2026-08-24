@@ -34,18 +34,41 @@ void main() {
     expect(
       violations,
       isEmpty,
-      reason: 'Platform selection must stay inside universal_accessible_view.dart. '
+      reason:
+          'Platform selection must stay inside universal_accessible_view.dart. '
           'Screens describe shared accessible models instead.',
     );
   });
 
   test('legacy Flutter UI is controlled by one global shared-model switch', () {
-    final adapter = File('lib/widgets/universal_accessible_view.dart')
-        .readAsStringSync();
+    final adapter = File(
+      'lib/widgets/universal_accessible_view.dart',
+    ).readAsStringSync();
     expect(adapter, contains('SONARPAD_ACCESSIBLE_RENDERER'));
     expect(adapter, contains("defaultValue: 'native'"));
     expect(adapter, contains("accessibleRendererMode == 'flutter'"));
     expect(adapter, contains("accessibleRendererMode == 'native'"));
+  });
+
+  test('UIKit accessibility labels include row subtitles by default', () {
+    final nativeRenderer = File(
+      'ios/Runner/SonarpadNativeAccessibleView.swift',
+    ).readAsStringSync();
+
+    expect(nativeRenderer, contains('var effectiveAccessibilityLabel: String'));
+    expect(nativeRenderer, contains('return "\\(title), \\(subtitle)"'));
+    expect(
+      nativeRenderer,
+      contains('cell.accessibilityLabel = row.effectiveAccessibilityLabel'),
+    );
+    expect(
+      nativeRenderer,
+      isNot(
+        contains(
+          'cell.accessibilityLabel = row.accessibilityLabel ?? row.title',
+        ),
+      ),
+    );
   });
 
   test('every scrollable screen is covered by the shared accessible model', () {
@@ -68,7 +91,8 @@ void main() {
         final text = entity.readAsStringSync();
         final isScrollable = scrollTokens.any((token) => text.contains(token));
         if (!isScrollable) continue;
-        final covered = text.contains('useSharedAccessibleViewModel') ||
+        final covered =
+            text.contains('useSharedAccessibleViewModel') ||
             text.contains('UniversalAccessibleList(') ||
             text.contains('UniversalAccessibleGrid(');
         if (!covered) uncovered.add(entity.path);
@@ -78,7 +102,8 @@ void main() {
     expect(
       uncovered,
       isEmpty,
-      reason: 'Scrollable screens must participate in the shared model so '
+      reason:
+          'Scrollable screens must participate in the shared model so '
           'Android and iOS do not drift apart.',
     );
   });

@@ -42,6 +42,18 @@ private struct SonarpadNativeRow {
   var visualActionId: String?
   var visualActionIcon: String?
 
+  var effectiveAccessibilityLabel: String {
+    if let accessibilityLabel = accessibilityLabel {
+      return accessibilityLabel
+    }
+    guard let subtitle = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines),
+          !subtitle.isEmpty,
+          subtitle.caseInsensitiveCompare(title.trimmingCharacters(in: .whitespacesAndNewlines)) != .orderedSame else {
+      return title
+    }
+    return "\(title), \(subtitle)"
+  }
+
   init(_ map: [String: Any]) {
     id = map["id"] as? String ?? UUID().uuidString
     title = map["title"] as? String ?? ""
@@ -825,7 +837,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.rowId = row.id
       cell.field.text = row.value ?? ""
       cell.field.placeholder = row.placeholder
-      cell.field.accessibilityLabel = row.accessibilityLabel ?? row.title
+      cell.field.accessibilityLabel = row.effectiveAccessibilityLabel
       cell.field.accessibilityHint = row.hint
       cell.field.isSecureTextEntry = row.secure
       cell.field.isEnabled = row.enabled
@@ -876,7 +888,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     cell.accessoryView = nil
     cell.accessoryType = row.accessibilityButtonTrait && (row.kind == "action" || row.kind == "picker" || row.kind == "button") ? .disclosureIndicator : .none
     cell.isAccessibilityElement = true
-    cell.accessibilityLabel = row.accessibilityLabel ?? row.title
+    cell.accessibilityLabel = row.effectiveAccessibilityLabel
     cell.accessibilityHint = row.hint
     cell.accessibilityValue = row.valueLabel ?? row.value
     var traits: UIAccessibilityTraits = []
@@ -895,7 +907,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       toggle.isOn = row.toggleValue
       toggle.isEnabled = row.enabled
       toggle.isAccessibilityElement = true
-      toggle.accessibilityLabel = row.accessibilityLabel ?? row.title
+      toggle.accessibilityLabel = row.effectiveAccessibilityLabel
       toggle.accessibilityHint = row.hint
       objc_setAssociatedObject(toggle, &AssociatedKeys.rowId, row.id, .OBJC_ASSOCIATION_COPY_NONATOMIC)
       toggle.addTarget(self, action: #selector(toggleControlChanged(_:)), for: .valueChanged)
@@ -916,7 +928,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       // VoiceOver element so standard adjustable swipe up/down gestures stay
       // on the control and announce the updated percentage immediately.
       slider.isAccessibilityElement = exposeNativeSlider
-      slider.accessibilityLabel = row.accessibilityLabel ?? row.title
+      slider.accessibilityLabel = row.effectiveAccessibilityLabel
       slider.accessibilityHint = row.hint
       slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
       slider.accessibilityTraits = row.enabled ? [.adjustable] : [.adjustable, .notEnabled]
@@ -944,7 +956,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       slider.addTarget(self, action: #selector(sliderControlChanged(_:)), for: .valueChanged)
       cell.accessoryView = slider
       cell.isAccessibilityElement = !exposeNativeSlider
-      cell.accessibilityLabel = row.accessibilityLabel ?? row.title
+      cell.accessibilityLabel = row.effectiveAccessibilityLabel
       cell.accessibilityHint = row.hint
       cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
       cell.selectionStyle = .none
@@ -1310,7 +1322,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
             let slider = cell.accessoryView as? SonarpadAccessibleSlider else { continue }
       cell.textLabel?.text = row.title
       cell.detailTextLabel?.text = row.subtitle ?? row.value
-      cell.accessibilityLabel = row.accessibilityLabel ?? row.title
+      cell.accessibilityLabel = row.effectiveAccessibilityLabel
       cell.accessibilityHint = row.hint
       cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
       slider.minimumValue = Float(row.sliderMin)
@@ -1319,7 +1331,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       slider.isEnabled = row.enabled
       slider.isUserInteractionEnabled = row.enabled
       slider.isAccessibilityElement = row.nativeSliderAccessibilityElement
-      slider.accessibilityLabel = row.accessibilityLabel ?? row.title
+      slider.accessibilityLabel = row.effectiveAccessibilityLabel
       slider.accessibilityHint = row.hint
       slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
       slider.accessibilityTraits = row.enabled ? [.adjustable] : [.adjustable, .notEnabled]
@@ -1343,7 +1355,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           cell.field.text = row.value ?? ""
         }
         cell.field.placeholder = row.placeholder
-        cell.field.accessibilityLabel = row.accessibilityLabel ?? row.title
+        cell.field.accessibilityLabel = row.effectiveAccessibilityLabel
         cell.field.accessibilityHint = row.hint
         cell.field.isSecureTextEntry = row.secure
         cell.field.isEnabled = row.enabled
@@ -1362,7 +1374,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       if row.kind == "slider" {
         cell.textLabel?.text = row.title
         cell.detailTextLabel?.text = row.subtitle ?? row.value
-        cell.accessibilityLabel = row.accessibilityLabel ?? row.title
+        cell.accessibilityLabel = row.effectiveAccessibilityLabel
         cell.accessibilityHint = row.hint
         cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
         if let slider = cell.accessoryView as? SonarpadAccessibleSlider {
@@ -1372,7 +1384,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           slider.isEnabled = row.enabled
           slider.isUserInteractionEnabled = row.enabled
           slider.isAccessibilityElement = row.nativeSliderAccessibilityElement
-          slider.accessibilityLabel = row.accessibilityLabel ?? row.title
+          slider.accessibilityLabel = row.effectiveAccessibilityLabel
           slider.accessibilityHint = row.hint
           slider.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
           slider.accessibilityTraits = row.enabled ? [.adjustable] : [.adjustable, .notEnabled]
@@ -1387,7 +1399,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         if let toggle = cell.accessoryView as? UISwitch {
           toggle.isOn = row.toggleValue
           toggle.isEnabled = row.enabled
-          toggle.accessibilityLabel = row.accessibilityLabel ?? row.title
+          toggle.accessibilityLabel = row.effectiveAccessibilityLabel
           toggle.accessibilityHint = row.hint
         }
         continue
