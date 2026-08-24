@@ -135,10 +135,43 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     }
   }
 
+  Future<String> _shareableArticleUrl() async {
+    final candidates = <String?>[
+      _resolvedArticleUrlForReader,
+      _allowedMainArticleUrl,
+      await _controller.currentUrl(),
+    ];
+
+    for (final candidate in candidates) {
+      final value = candidate?.trim() ?? '';
+      if (_isHttpArticleUrl(value) &&
+          !_isGoogleNewsUrl(value) &&
+          !_isGoogleConsentUrl(value)) {
+        return value;
+      }
+    }
+
+    final resolved =
+        await _newsService.resolveArticleUrlForSharing(widget.article.link);
+    if (_isHttpArticleUrl(resolved) && !_isGoogleConsentUrl(resolved)) {
+      return resolved;
+    }
+    return widget.article.link.trim();
+  }
+
   Future<void> _shareArticle() async {
     try {
-      // ignore: deprecated_member_use
-      await Share.share(widget.article.link, subject: widget.article.title);
+      final url = await _shareableArticleUrl();
+      unawaited(AppLogger.log(
+        'News share: title="${widget.article.title}" '
+        'originalUrl=${widget.article.link} sharedUrl=$url',
+      ));
+      await SharePlus.instance.share(
+        ShareParams(
+          text: '${widget.article.title}\n$url',
+          subject: widget.article.title,
+        ),
+      );
     } catch (e) {
       debugPrint('Error sharing article: $e');
     }

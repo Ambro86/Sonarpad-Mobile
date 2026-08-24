@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 
@@ -13,9 +14,11 @@ import '../utils/document_unicode_normalizer.dart';
 /// Gestisce la persistenza della libreria documenti tramite SharedPreferences.
 class DocumentLibraryService {
   static const _key = 'document_library_v1';
+  static const _placementsPrefsKey = 'document_library_placement_v1';
   static const documentsFolderName = 'Documenti';
 
   List<DocumentItem> _documents = [];
+  Map<String, String?> _placements = <String, String?>{};
 
   List<DocumentItem> get documents => List.unmodifiable(_documents);
 
@@ -282,6 +285,7 @@ class DocumentLibraryService {
 
     if (recovered.isEmpty) return 0;
     _documents = [...recovered, ..._documents];
+    await _persistPlacementsFor(recovered);
     await _save();
     return recovered.length;
   }
@@ -358,16 +362,23 @@ class DocumentLibraryService {
         'Recuperati ${recovered.length} documenti da ${sourceDir.path}.');
     if (recovered.isEmpty) return 0;
     _documents = [...recovered, ..._documents];
+    await _persistPlacementsFor(recovered);
     await _save();
     return recovered.length;
   }
 
   /// Carica i documenti salvati. Deve essere chiamato prima di ogni accesso.
+  ///
+  /// La posizione nelle cartelle è persistita separatamente dai metadati del
+  /// documento. In questo modo una schermata rimasta con una copia vecchia
+  /// della libreria non può riportare accidentalmente un file nella root
+  /// salvando, ad esempio, un segnalibro o un altro metadato.
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_key);
     if (raw == null || raw.isEmpty) {
       _documents = [];
+      _placements = _readPlacements(prefs);
       return;
     }
     try {
@@ -376,12 +387,33 @@ class DocumentLibraryService {
       dev.log('DocumentLibraryService: errore decodifica libreria: $e');
       _documents = [];
     }
+
+    _placements = _readPlacements(prefs);
+    var placementChanged = false;
+    for (final doc in _documents) {
+      if (!_placements.containsKey(doc.id)) {
+        _placements[doc.id] = doc.parentId;
+        placementChanged = true;
+      }
+    }
+    if (placementChanged || !prefs.containsKey(_placementsPrefsKey)) {
+      await _savePlacements(prefs, _placements);
+    }
+
+    _documents = _documents
+        .map((doc) => _withPersistedPlacement(doc))
+        .toList(growable: false);
     await _removeMissingLocalDocuments();
   }
 
   /// Aggiunge un documento e salva la libreria aggiornata.
   Future<void> add(DocumentItem doc) async {
-    _documents = [doc, ..._documents];
+    // Rileggiamo prima lo stato persistito: DocumentsScreen può esistere in più
+    // istanze (root + cartella) e una copia vecchia non deve cancellare elementi
+    // aggiunti da un'altra schermata.
+    await load();
+    await _persistPlacement(doc.id, doc.parentId);
+    _documents = [doc, ..._documents.where((item) => item.id != doc.id)];
     await _save();
   }
 
@@ -443,16 +475,36 @@ class DocumentLibraryService {
   }
 
   /// Aggiorna un documento esistente (es. per salvare il segnalibro).
+  ///
+  /// L'aggiornamento dei metadati non modifica mai la cartella: per spostare un
+  /// elemento usare [moveToFolder]. Questo evita che un DocumentItem vecchio,
+  /// tenuto in memoria da un'altra route, possa azzerare il parentId.
   Future<void> update(DocumentItem doc) async {
+    await load();
     final index = _documents.indexWhere((d) => d.id == doc.id);
     if (index != -1) {
-      _documents[index] = doc;
+      _documents[index] = _withPersistedPlacement(doc);
       await _save();
     }
   }
 
+  /// Sposta esplicitamente un documento o una cartella.
+  Future<void> moveToFolder(String id, String? parentId) async {
+    await load();
+    final index = _documents.indexWhere((d) => d.id == id);
+    if (index == -1) return;
+
+    await _persistPlacement(id, parentId);
+    _documents[index] = _documents[index].copyWith(
+      parentId: parentId,
+      clearParentId: parentId == null,
+    );
+    await _save();
+  }
+
   /// Rimuove un documento tramite [id] e salva la libreria aggiornata.
   Future<void> remove(String id) async {
+    await load();
     final toRemove = <String>{id};
     var added = true;
     while (added) {
@@ -487,11 +539,16 @@ class DocumentLibraryService {
     }
 
     _documents = _documents.where((d) => !toRemove.contains(d.id)).toList();
+    await _removePersistedPlacements(toRemove);
     await _save();
   }
 
   Future<void> _save() async {
     final prefs = await SharedPreferences.getInstance();
+    _placements = _readPlacements(prefs);
+    _documents = _documents
+        .map((doc) => _withPersistedPlacement(doc))
+        .toList(growable: false);
     final raw = DocumentItem.listToJsonString(_documents);
     final ok = await prefs.setString(_key, raw);
     if (!ok) {
@@ -534,15 +591,127 @@ class DocumentLibraryService {
     }
 
     if (changed) {
+      final keptIds = kept.map((doc) => doc.id).toSet();
+      final removedIds = _documents
+          .where((doc) => !keptIds.contains(doc.id))
+          .map((doc) => doc.id)
+          .toSet();
       _documents = kept;
+      if (removedIds.isNotEmpty) {
+        await _removePersistedPlacements(removedIds);
+      }
       await _save();
     }
   }
 
-  /// Sovrascrive l'intera lista di documenti (es. per riordino)
+  /// Sovrascrive l'ordine della libreria senza poter cancellare elementi
+  /// aggiunti nel frattempo da un'altra istanza della schermata Documenti.
   Future<void> saveAll(List<DocumentItem> docs) async {
-    _documents = List.from(docs);
+    final requestedOrder = docs.map((doc) => doc.id).toList(growable: false);
+    await load();
+
+    final latestById = <String, DocumentItem>{
+      for (final doc in _documents) doc.id: doc,
+    };
+    final reordered = <DocumentItem>[];
+    final seen = <String>{};
+
+    for (final id in requestedOrder) {
+      final doc = latestById[id];
+      if (doc != null && seen.add(id)) {
+        reordered.add(doc);
+      }
+    }
+    for (final doc in _documents) {
+      if (seen.add(doc.id)) {
+        reordered.add(doc);
+      }
+    }
+
+    _documents = reordered;
     await _save();
+  }
+
+  Map<String, String?> _readPlacements(SharedPreferences prefs) {
+    final raw = prefs.getString(_placementsPrefsKey);
+    if (raw == null || raw.isEmpty) return <String, String?>{};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return <String, String?>{};
+      final result = <String, String?>{};
+      for (final entry in decoded.entries) {
+        final key = entry.key.toString();
+        final value = entry.value;
+        if (value == null || value is String) {
+          result[key] = value as String?;
+        }
+      }
+      return result;
+    } catch (e) {
+      dev.log('DocumentLibraryService: errore decodifica posizioni: $e');
+      return <String, String?>{};
+    }
+  }
+
+  DocumentItem _withPersistedPlacement(DocumentItem doc) {
+    if (!_placements.containsKey(doc.id)) return doc;
+    final parentId = _placements[doc.id];
+    return doc.copyWith(
+      parentId: parentId,
+      clearParentId: parentId == null,
+    );
+  }
+
+  Future<void> _savePlacements(
+    SharedPreferences prefs,
+    Map<String, String?> placements,
+  ) async {
+    final ok = await prefs.setString(_placementsPrefsKey, jsonEncode(placements));
+    if (!ok) {
+      dev.log(
+        'DocumentLibraryService: impossibile salvare le posizioni cartelle.',
+      );
+    }
+  }
+
+  Future<void> _persistPlacement(String id, String? parentId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final latest = _readPlacements(prefs);
+    latest[id] = parentId;
+    await _savePlacements(prefs, latest);
+    _placements = latest;
+  }
+
+  Future<void> _persistPlacementsFor(Iterable<DocumentItem> docs) async {
+    final prefs = await SharedPreferences.getInstance();
+    final latest = _readPlacements(prefs);
+    var changed = false;
+    for (final doc in docs) {
+      if (!latest.containsKey(doc.id) || latest[doc.id] != doc.parentId) {
+        latest[doc.id] = doc.parentId;
+        changed = true;
+      }
+    }
+    if (changed) {
+      await _savePlacements(prefs, latest);
+    }
+    _placements = latest;
+  }
+
+  Future<void> _removePersistedPlacements(Set<String> ids) async {
+    if (ids.isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    final latest = _readPlacements(prefs);
+    var changed = false;
+    for (final id in ids) {
+      final existed = latest.containsKey(id);
+      latest.remove(id);
+      changed = existed || changed;
+    }
+    if (changed) {
+      await _savePlacements(prefs, latest);
+    }
+    _placements = latest;
   }
 
   Future<String> saveEditedText(DocumentItem doc, String text) async {

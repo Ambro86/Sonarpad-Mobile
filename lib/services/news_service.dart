@@ -1102,6 +1102,24 @@ class NewsService {
     return null;
   }
 
+  Future<String> resolveArticleUrlForSharing(String url) async {
+    final original = url.trim();
+    if (!_isHttpUrl(original)) return original;
+
+    try {
+      final resolved = (await _resolveArticleUrl(original)).trim();
+      if (_isHttpUrl(resolved) && !_isGoogleNewsArticleUrl(resolved)) {
+        return resolved;
+      }
+    } catch (e) {
+      unawaited(AppLogger.log(
+        'News share: risoluzione URL fallita, uso URL originale error=$e',
+      ));
+    }
+
+    return original;
+  }
+
   Future<NewsArticleContent> fetchArticleContent(NewsArticle article,
       {required NewsLanguage language}) async {
     final resolvedUrl = await _resolveArticleUrl(article.link);

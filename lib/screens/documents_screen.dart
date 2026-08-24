@@ -374,11 +374,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         final clearParent = selectedFolderId == 'root';
         final newParentId = clearParent ? null : selectedFolderId;
         if (doc.parentId != newParentId) {
-          final updatedDoc = doc.copyWith(
-            parentId: newParentId,
-            clearParentId: clearParent,
-          );
-          await _service.update(updatedDoc);
+          await _service.moveToFolder(doc.id, newParentId);
           if (!mounted) return;
           setState(() {});
           _showSnack(l10n.documentMoved);
