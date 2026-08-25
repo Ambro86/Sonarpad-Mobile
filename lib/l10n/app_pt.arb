@@ -1918,6 +1918,14 @@
   "@radioScheduleSelectMinutes": {
     "description": "Localized text for radioScheduleSelectMinutes."
   },
+  "radioScheduleLabeledValue": "{label}: {value}",
+  "@radioScheduleLabeledValue": {
+    "description": "Combines a localized schedule field label with its current value.",
+    "placeholders": {
+      "label": {},
+      "value": {}
+    }
+  },
   "radioScheduleStopCurrentFirst": "Termina a gravação em curso antes de programares uma nova.",
   "@radioScheduleStopCurrentFirst": {
     "description": "Localized text for radioScheduleStopCurrentFirst."

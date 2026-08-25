@@ -300,7 +300,8 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     final l10n = AppLocalizations.of(context);
     final destinationService = MediaExportDestinationService();
 
-    while (mounted) {
+    while (true) {
+      if (!mounted) return;
       final action = await showDialog<_ConvertDoneAction>(
         context: context,
         barrierDismissible: false,

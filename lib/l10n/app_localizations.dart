@@ -5641,6 +5641,7 @@ abstract class AppLocalizations {
   String get radioScheduleSelectHours;
   String get radioScheduleMinutes;
   String get radioScheduleSelectMinutes;
+  String radioScheduleLabeledValue(String label, String value);
   String get radioScheduleStopCurrentFirst;
   String get radioScheduleStartTime;
   String get radioScheduleEndTime;

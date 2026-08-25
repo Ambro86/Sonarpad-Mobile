@@ -2571,6 +2571,11 @@ class AppLocalizationsUk extends AppLocalizations {
   String get radioScheduleSelectMinutes => "Виберіть хвилини";
 
   @override
+  String radioScheduleLabeledValue(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get radioScheduleStopCurrentFirst => "Завершіть поточний запис, перш ніж планувати новий.";
 
   @override

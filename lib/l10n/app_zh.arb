@@ -1912,6 +1912,14 @@
   "@radioScheduleSelectMinutes": {
     "description": "Localized text for radioScheduleSelectMinutes."
   },
+  "radioScheduleLabeledValue": "{label}：{value}",
+  "@radioScheduleLabeledValue": {
+    "description": "Combines a localized schedule field label with its current value.",
+    "placeholders": {
+      "label": {},
+      "value": {}
+    }
+  },
   "radioScheduleStopCurrentFirst": "安排新录制前，请先停止当前录制。",
   "@radioScheduleStopCurrentFirst": {
     "description": "Localized text for radioScheduleStopCurrentFirst."

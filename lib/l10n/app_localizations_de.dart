@@ -3213,6 +3213,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get radioScheduleSelectMinutes => 'Minuten auswählen';
 
   @override
+  String radioScheduleLabeledValue(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get radioScheduleStopCurrentFirst => 'Beende die laufende Aufnahme, bevor du eine neue planst.';
 
   @override

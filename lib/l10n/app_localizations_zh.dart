@@ -2952,6 +2952,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get radioScheduleSelectMinutes => '选择分钟';
 
   @override
+  String radioScheduleLabeledValue(String label, String value) => '$label：$value';
+
+  @override
   String get radioScheduleStopCurrentFirst => '安排新录制前，请先停止当前录制。';
 
   @override

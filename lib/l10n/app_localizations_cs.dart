@@ -3316,6 +3316,11 @@ class AppLocalizationsCs extends AppLocalizations {
   String get radioScheduleSelectMinutes => 'Vyberte minuty';
 
   @override
+  String radioScheduleLabeledValue(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get radioScheduleStopCurrentFirst => 'Před naplánováním nového záznamu ukončete probíhající nahrávání.';
 
   @override

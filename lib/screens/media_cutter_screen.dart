@@ -4838,7 +4838,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final l10n = AppLocalizations.of(context);
     final destinationService = MediaExportDestinationService();
 
-    while (mounted) {
+    while (true) {
+      if (!mounted) return;
       final action = await showDialog<_MediaCutterDoneAction>(
         context: context,
         barrierDismissible: false,
@@ -4924,21 +4925,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         'Media cutter: staged output cleanup failed path="$filePath" error=$error',
       );
     }
-  }
-
-  String _shortPath(String path, {required int parentCount}) {
-    final normalized = p.normalize(path);
-    final parts = p.split(normalized);
-    final fileName = parts.isEmpty ? path : parts.last;
-    final parents = parts.length <= 1
-        ? const <String>[]
-        : parts
-            .sublist(0, parts.length - 1)
-            .reversed
-            .take(parentCount)
-            .toList()
-            .reversed;
-    return [...parents, fileName].join('/');
   }
 
   Future<String> _uniqueOutputPath(String outputDir, String inputPath) async {

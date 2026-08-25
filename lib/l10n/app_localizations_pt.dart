@@ -3211,6 +3211,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radioScheduleSelectMinutes => 'Selecionar os minutos';
 
   @override
+  String radioScheduleLabeledValue(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get radioScheduleStopCurrentFirst => 'Termina a gravação em curso antes de programares uma nova.';
 
   @override
@@ -6592,6 +6597,11 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get radioScheduleSelectMinutes => 'Selecionar os minutos';
+
+  @override
+  String radioScheduleLabeledValue(String label, String value) {
+    return '$label: $value';
+  }
 
   @override
   String get radioScheduleStopCurrentFirst => 'Termine a gravação em andamento antes de programar uma nova.';

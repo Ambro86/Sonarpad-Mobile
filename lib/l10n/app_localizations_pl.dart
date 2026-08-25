@@ -3316,6 +3316,11 @@ class AppLocalizationsPl extends AppLocalizations {
   String get radioScheduleSelectMinutes => 'Wybierz minuty';
 
   @override
+  String radioScheduleLabeledValue(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get radioScheduleStopCurrentFirst => 'Zakończ bieżące nagrywanie przed zaplanowaniem nowego.';
 
   @override
