@@ -103,21 +103,32 @@ void main() {
     ];
     for (final path in screens) {
       final source = File(path).readAsStringSync();
-      expect(source, contains('visualActionId:'), reason: path);
       expect(source, contains("'preserve_media'"), reason: path);
       expect(source, contains('ExcludeSemantics('), reason: path);
       expect(source, contains('Icons.download'), reason: path);
       expect(source, contains('CustomSemanticsAction'), reason: path);
     }
 
+    for (final path in screens.take(3)) {
+      final source = File(path).readAsStringSync();
+      expect(source, contains('visualActionId:'), reason: path);
+    }
+
+    final raiPlaySound =
+        File('lib/screens/raiplaysound_screen.dart').readAsStringSync();
+    expect(raiPlaySound, contains('visualActions:'));
+    expect(raiPlaySound, contains('AccessibleVisualAction('));
+
     final shared = File('lib/widgets/universal_accessible_view.dart')
         .readAsStringSync();
+    expect(shared, contains('final List<AccessibleVisualAction> visualActions;'));
     expect(shared, contains('final String? visualActionId;'));
     expect(shared, contains('return ExcludeSemantics('));
     expect(shared, contains("type: 'customAction'"));
 
     final native = File('ios/Runner/SonarpadNativeAccessibleView.swift')
         .readAsStringSync();
+    expect(native, contains('if !row.visualActions.isEmpty'));
     expect(native, contains('button.isAccessibilityElement = false'));
     expect(native, contains('button.accessibilityElementsHidden = true'));
     expect(native, contains('handleVisualAction'));

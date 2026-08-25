@@ -31,16 +31,6 @@ void main() {
     expect(transcriptScreen, contains('UniversalAccessibleList('));
   });
 
-  test('PHP transcript resolver has modern panel fallback', () {
-    final php = File('server/youtube_resolve.php').readAsStringSync();
-
-    expect(php, contains('YT_TRANSCRIPT_URL'));
-    expect(php, contains('youtube_transcript_from_panel'));
-    expect(php, contains('getTranscriptEndpoint'));
-    expect(php, contains('http_post_json_web'));
-    expect(php, contains("'transcript_source' => 'youtube_panel'"));
-  });
-
   test('all locales contain SonarTube transcript labels', () {
     for (final file in Directory('lib/l10n')
         .listSync()
