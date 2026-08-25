@@ -793,9 +793,16 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     if (mounted &&
         _localCityController.text.trim().isEmpty &&
         city.isNotEmpty) {
-      _localCityController.text = city;
-      _localCityController.selection =
-          TextSelection.collapsed(offset: city.length);
+      // The local Google News feed already uses the detected city at this
+      // point. Rebuild as soon as the controller is populated so the shared
+      // accessible model sends the same value to the native iOS text field.
+      // Without this rebuild Flutter saw the controller change directly, while
+      // UIKit kept the initial empty value until the next manual refresh.
+      setState(() {
+        _localCityController.text = city;
+        _localCityController.selection =
+            TextSelection.collapsed(offset: city.length);
+      });
     }
     if (city.isNotEmpty) {
       final searchUri = Uri.parse(

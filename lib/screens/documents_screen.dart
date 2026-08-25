@@ -45,6 +45,33 @@ const Set<String> _audioDocumentExtensions = {
   'flac',
 };
 
+// Keep this aligned with the video formats accepted by Media Cutter. Files
+// saved in Sonarpad Documents must remain media items instead of being opened
+// by the text document reader.
+const Set<String> _videoDocumentExtensions = {
+  'mp4',
+  'avi',
+  'mov',
+  'mkv',
+  'm4v',
+  'webm',
+  'mpg',
+  'mpeg',
+  'ts',
+  'm2ts',
+  'mts',
+  'wmv',
+  'asf',
+  'flv',
+  'vob',
+  '3gp',
+};
+
+const Set<String> _localMediaDocumentExtensions = {
+  ..._audioDocumentExtensions,
+  ..._videoDocumentExtensions,
+};
+
 /// Schermata libreria documenti.
 /// Permette di aggiungere file dal dispositivo (PDF, DOCX, EPUB, TXT, ecc.)
 /// e di sfogliarli / leggerli con TTS.
@@ -84,6 +111,22 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     'wav',
     'ogg',
     'flac',
+    'mp4',
+    'avi',
+    'mov',
+    'mkv',
+    'm4v',
+    'webm',
+    'mpg',
+    'mpeg',
+    'ts',
+    'm2ts',
+    'mts',
+    'wmv',
+    'asf',
+    'flv',
+    'vob',
+    '3gp',
   ];
 
   @override
@@ -403,8 +446,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     );
   }
 
-  Future<void> _shareLocalAudioDocument(DocumentItem doc) async {
-    if (!_isLocalAudioDocument(doc)) return;
+  Future<void> _shareLocalMediaDocument(DocumentItem doc) async {
+    if (!_isLocalMediaDocument(doc)) return;
     final l10n = AppLocalizations.of(context);
     try {
       final resolvedPath = await _service.resolveFilePath(doc);
@@ -422,7 +465,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         ),
       );
     } catch (e) {
-      dev.log('DocumentsScreen: errore condivisione audio: $e');
+      dev.log('DocumentsScreen: errore condivisione media: $e');
       if (mounted) {
         _showSnack(l10n.error(l10n.technicalErrorGeneric));
       }
@@ -859,20 +902,25 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       return;
     }
 
-    if (_isLocalAudioDocument(doc)) {
+    if (_isLocalMediaDocument(doc)) {
       try {
         final resolvedPath = await _service.resolveFilePath(doc);
+        final isVideo = _isLocalVideoDocument(doc);
         if (!mounted) return;
         final episode = PodcastEpisode(
           title: doc.displayName,
           description: doc.displayName,
           audioUrl: Uri.file(resolvedPath).toString(),
-          id: 'document_audio:${doc.id}',
+          id: 'document_media:${doc.id}',
         );
         await Navigator.of(context).push(
           MaterialPageRoute<void>(
-            settings: const RouteSettings(name: '/documents/audio_player'),
-            builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+            settings: const RouteSettings(name: '/documents/media_player'),
+            builder: (_) => PodcastEpisodePlayerScreen(
+              episode: episode,
+              isVideoSupported: isVideo,
+              startWithVideo: isVideo,
+            ),
           ),
         );
       } catch (e) {
@@ -1038,9 +1086,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   bool _isRemoteAudioDocument(DocumentItem doc) =>
       _isLibrivoxDocument(doc) || _isInternetArchiveDocument(doc);
 
-  bool _isLocalAudioDocument(DocumentItem doc) {
+  bool _isLocalVideoDocument(DocumentItem doc) {
     final ext = doc.extension.toLowerCase();
-    return _audioDocumentExtensions.contains(ext);
+    return _videoDocumentExtensions.contains(ext);
+  }
+
+  bool _isLocalMediaDocument(DocumentItem doc) {
+    final ext = doc.extension.toLowerCase();
+    return _localMediaDocumentExtensions.contains(ext);
   }
 
 
@@ -1060,9 +1113,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           id: 'remove',
           label: doc.isFolder ? l10n.removeFolder : l10n.removeDocument,
         ),
-        if (_isLocalAudioDocument(doc))
+        if (_isLocalMediaDocument(doc))
           AccessibleCustomAction(id: 'share', label: l10n.share),
-        if (!_isRemoteAudioDocument(doc) && !_isLocalAudioDocument(doc))
+        if (!_isRemoteAudioDocument(doc) && !_isLocalMediaDocument(doc))
           AccessibleCustomAction(id: 'export', label: l10n.exportDocument),
         if (index > 0)
           AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
@@ -1103,7 +1156,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         } else if (event.type == 'customAction') {
           switch (event.action) {
             case 'remove': await _remove(doc.id); break;
-            case 'share': await _shareLocalAudioDocument(doc); break;
+            case 'share': await _shareLocalMediaDocument(doc); break;
             case 'export': await _exportDocument(doc); break;
             case 'move_up': await _handleAction(_DocumentAction.moveUp, doc); break;
             case 'move_down': await _handleAction(_DocumentAction.moveDown, doc); break;
@@ -1220,8 +1273,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                             isLast: isLast,
                             onOpen: () => _openDocument(doc),
                             onRemove: () => _remove(doc.id),
-                            canShare: _isLocalAudioDocument(doc),
-                            onShare: () => _shareLocalAudioDocument(doc),
+                            canShare: _isLocalMediaDocument(doc),
+                            onShare: () => _shareLocalMediaDocument(doc),
                             onExport: () => _exportDocument(doc),
                             onAction: (action) => _handleAction(action, doc),
                           );
@@ -1291,8 +1344,30 @@ class _DocumentTile extends StatelessWidget {
       case 'archiveaudio':
         return Colors.deepPurple.shade700;
       case 'mp3':
+      case 'm4a':
       case 'm4b':
+      case 'aac':
+      case 'wav':
+      case 'ogg':
+      case 'flac':
         return Colors.teal.shade700;
+      case 'mp4':
+      case 'avi':
+      case 'mov':
+      case 'mkv':
+      case 'm4v':
+      case 'webm':
+      case 'mpg':
+      case 'mpeg':
+      case 'ts':
+      case 'm2ts':
+      case 'mts':
+      case 'wmv':
+      case 'asf':
+      case 'flv':
+      case 'vob':
+      case '3gp':
+        return Colors.deepOrange.shade700;
       default:
         return Colors.purple.shade700;
     }
@@ -1323,7 +1398,8 @@ class _DocumentTile extends StatelessWidget {
           if (canShare) CustomSemanticsAction(label: l10n.share): onShare,
           if (doc.extension != 'librivox' &&
               doc.extension != 'archiveaudio' &&
-              !_audioDocumentExtensions.contains(doc.extension.toLowerCase()))
+              !_localMediaDocumentExtensions
+                  .contains(doc.extension.toLowerCase()))
             CustomSemanticsAction(label: l10n.exportDocument): onExport,
           if (!isFirst)
             CustomSemanticsAction(label: l10n.moveUp): () =>
@@ -1360,20 +1436,24 @@ class _DocumentTile extends StatelessWidget {
                       child: doc.isFolder
                           ? const Icon(Icons.folder,
                               color: Colors.white, size: 28)
-                          : doc.extension == 'librivox' ||
-                                  doc.extension == 'archiveaudio' ||
-                                  _audioDocumentExtensions
-                                      .contains(doc.extension.toLowerCase())
-                              ? const Icon(Icons.headphones,
+                          : _videoDocumentExtensions
+                                  .contains(doc.extension.toLowerCase())
+                              ? const Icon(Icons.videocam,
                                   color: Colors.white, size: 28)
-                              : Text(
-                                  doc.extension.toUpperCase(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                              : doc.extension == 'librivox' ||
+                                      doc.extension == 'archiveaudio' ||
+                                      _audioDocumentExtensions
+                                          .contains(doc.extension.toLowerCase())
+                                  ? const Icon(Icons.headphones,
+                                      color: Colors.white, size: 28)
+                                  : Text(
+                                      doc.extension.toUpperCase(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                     ),
                   ),
                   const SizedBox(width: 12),
