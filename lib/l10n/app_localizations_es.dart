@@ -101,6 +101,36 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sonarTubeShareVideo => 'Compartir video';
 
   @override
+  String get sonarTubePreviousTrack => 'Ir a la pista anterior';
+
+  @override
+  String get sonarTubeNextTrack => 'Ir a la pista siguiente';
+
+  @override
+  String get sonarTubeGoToChannel => 'Ir al canal';
+
+  @override
+  String get sonarTubeViewComments => 'Ver comentarios';
+
+  @override
+  String get sonarTubeComments => 'Comentarios';
+
+  @override
+  String get sonarTubeNoComments => 'No hay comentarios disponibles.';
+
+  @override
+  String get sonarTubeLoadMoreComments => 'Cargar más comentarios';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Transcribir video';
+
+  @override
+  String get sonarTubeTranscript => 'Transcripción';
+
+  @override
+  String get sonarTubeNoTranscript => 'No hay ninguna transcripción disponible para este video.';
+
+  @override
   String get sonarTubeShareChannel => 'Compartir canal';
 
   @override

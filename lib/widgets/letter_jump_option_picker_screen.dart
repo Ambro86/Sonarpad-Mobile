@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:scroll_to_index/scroll_to_index.dart';
 
 import 'universal_accessible_view.dart';
 
@@ -34,21 +33,9 @@ class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
 
 class _LetterJumpOptionPickerScreenState<T>
     extends State<LetterJumpOptionPickerScreen<T>> {
-  final _scrollController = AutoScrollController();
-  final _accessibleController = AccessibleListController(debugName: 'letter_jump');
-  final ValueNotifier<bool> _suppressBackSemantics = ValueNotifier<bool>(false);
-
   bool get _showLetterPicker =>
       widget.options.length >= widget.minimumItemsForLetterPicker &&
       _availableLetters().length > 1;
-
-
-  @override
-  void dispose() {
-    _suppressBackSemantics.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
 
   List<String> _availableLetters() {
     final letters = <String>{};
@@ -62,119 +49,40 @@ class _LetterJumpOptionPickerScreenState<T>
     return sorted;
   }
 
-  int? _firstIndexForLetter(String letter) {
-    int? selectedFallback;
-    for (var index = 0; index < widget.options.length; index++) {
-      final option = widget.options[index];
-      final optionLetter = _initialLetter(widget.labelBuilder(option));
-      if (optionLetter != letter) continue;
-
-      // Several pickers pin the most recently selected option at the top
-      // of the list. That row must not become the alphabetical anchor for
-      // its letter (for example recent Italia before India/Indonesia).
-      // Prefer the first ordinary option and use the selected one only when
-      // it is the sole option available for that letter.
-      final selected = widget.selectedBuilder?.call(option) ?? false;
-      if (!selected) return index;
-      selectedFallback ??= index;
-    }
-    return selectedFallback;
+  List<T> _optionsForLetter(String letter) {
+    return widget.options
+        .where(
+          (option) => _initialLetter(widget.labelBuilder(option)) == letter,
+        )
+        .toList(growable: false);
   }
 
   Future<void> _openLetterPicker() async {
-    // The native jump is already reliable. On iOS, only silence the parent
-    // Back button while the A-Z picker is returning, so VoiceOver does not
-    // announce it immediately before the real target row.
-    if (suppressBackSemanticsDuringRouteReturn) {
-      _suppressBackSemantics.value = true;
-    }
-
-    final letter = await Navigator.push<String>(
+    final selected = await Navigator.push<T>(
       context,
       MaterialPageRoute(
-        builder: (_) => _LetterPickerScreen(
+        builder: (_) => _LetterPickerScreen<T>(
           title: widget.selectLetterTitle,
           letters: _availableLetters(),
+          filteredTitle: widget.title,
+          optionsForLetter: _optionsForLetter,
+          displayLabelBuilder: _displayLabel,
+          selectedBuilder: widget.selectedBuilder,
+          leadingBuilder: widget.leadingBuilder,
         ),
       ),
     );
-    if (!mounted) return;
-    if (letter == null) {
-      _suppressBackSemantics.value = false;
-      return;
-    }
-    await _jumpToLetter(letter);
+    if (!mounted || selected == null) return;
 
-    // Safety only. Normally the actual target focus event below restores the
-    // Back button semantics much earlier.
-    if (suppressBackSemanticsDuringRouteReturn) {
-      Future<void>.delayed(const Duration(seconds: 3), () {
-        if (mounted && _suppressBackSemantics.value) {
-          _suppressBackSemantics.value = false;
-        }
-      });
-    }
+    Navigator.pop(context, selected);
   }
 
-  Future<void> _jumpToLetter(String letter) async {
-    final index = _firstIndexForLetter(letter);
-    if (index == null || index < 0 || index >= widget.options.length) {
-      _suppressBackSemantics.value = false;
-      return;
-    }
-
-    if (useSharedAccessibleViewModel) {
-      await _accessibleController.focusAccessibleRow(
-        'option_$index',
-        mode: AccessibleFocusMode.routeReturnJump,
-      );
-      return;
-    }
-
-    final listIndex = index + (_showLetterPicker ? 1 : 0);
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-    await _tryScrollToOptionIndex(listIndex);
-  }
-
-  Future<void> _tryScrollToOptionIndex(int listIndex, {int attempt = 0}) async {
-    if (!mounted) return;
-
-    if (!_scrollController.hasClients) {
-      if (attempt < 3) {
-        Future<void>.delayed(
-          Duration(milliseconds: 250 + (attempt * 150)),
-          () => _tryScrollToOptionIndex(listIndex, attempt: attempt + 1),
-        );
-      }
-      return;
-    }
-
-    try {
-      await _scrollController.scrollToIndex(
-        listIndex,
-        preferPosition: AutoScrollPosition.begin,
-        duration: const Duration(milliseconds: 300),
-      );
-
-      // Dopo il ritorno dal selettore lettera, VoiceOver può restare
-      // temporaneamente sulla AppBar. Ripetiamo solo lo scroll, senza
-      // SemanticsService.announce e senza focus forzato.
-      await Future<void>.delayed(const Duration(milliseconds: 180));
-      if (!mounted || !_scrollController.hasClients) return;
-      await _scrollController.scrollToIndex(
-        listIndex,
-        preferPosition: AutoScrollPosition.begin,
-        duration: const Duration(milliseconds: 120),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      if (attempt < 3) {
-        Future<void>.delayed(
-          Duration(milliseconds: 300 + (attempt * 200)),
-          () => _tryScrollToOptionIndex(listIndex, attempt: attempt + 1),
-        );
-      }
-    }
+  String _displayLabel(T option) {
+    final selected = widget.selectedBuilder?.call(option) ?? false;
+    final label = widget.labelBuilder(option);
+    return selected && widget.selectedLabel != null
+        ? '$label, ${widget.selectedLabel}'
+        : label;
   }
 
   @override
@@ -184,24 +92,11 @@ class _LetterJumpOptionPickerScreenState<T>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: !canPop,
-        leading: canPop
-            ? ValueListenableBuilder<bool>(
-                valueListenable: _suppressBackSemantics,
-                builder: (context, suppress, child) => ExcludeSemantics(
-                  excluding: suppress,
-                  child: child,
-                ),
-                child: const BackButton(),
-              )
-            : null,
+        leading: canPop ? const BackButton() : null,
         title: Text(widget.title),
       ),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
-              controller: _accessibleController,
-              routeReturnSemanticsSettleDelay: Duration.zero,
-              routeReturnUseFocusProxy: false,
-              routeReturnWaitForForeignFocusClear: true,
               sections: [
                 AccessibleListSection(
                   rows: [
@@ -211,14 +106,11 @@ class _LetterJumpOptionPickerScreenState<T>
                         title: widget.selectLetterLabel,
                       ),
                     ...widget.options.asMap().entries.map((entry) {
-                      final selected = widget.selectedBuilder?.call(entry.value) ?? false;
-                      final label = widget.labelBuilder(entry.value);
-                      final displayLabel = selected && widget.selectedLabel != null
-                          ? '$label, ${widget.selectedLabel}'
-                          : label;
+                      final selected =
+                          widget.selectedBuilder?.call(entry.value) ?? false;
                       return AccessibleListRow(
                         id: 'option_${entry.key}',
-                        title: displayLabel,
+                        title: _displayLabel(entry.value),
                         selected: selected,
                       );
                     }),
@@ -226,14 +118,6 @@ class _LetterJumpOptionPickerScreenState<T>
                 ),
               ],
               onEvent: (event) async {
-                if (event.type == 'focus' &&
-                    event.id?.startsWith('option_') == true &&
-                    _suppressBackSemantics.value) {
-                  // Re-enable Back only after UIKit confirms that VoiceOver
-                  // really acquired a row in the target list.
-                  _suppressBackSemantics.value = false;
-                  return;
-                }
                 if (event.type != 'activate' || event.id == null) return;
                 if (event.id == 'select_letter') {
                   await _openLetterPicker();
@@ -241,82 +125,191 @@ class _LetterJumpOptionPickerScreenState<T>
                 }
                 if (event.id!.startsWith('option_')) {
                   final index = int.tryParse(event.id!.substring(7));
-                  if (index != null && index >= 0 && index < widget.options.length) {
-                    if (mounted) Navigator.pop(context, widget.options[index]);
+                  if (index != null &&
+                      index >= 0 &&
+                      index < widget.options.length &&
+                      mounted) {
+                    Navigator.pop(context, widget.options[index]);
                   }
                 }
               },
             )
           : ListView.separated(
-        controller: _scrollController,
-        itemCount: widget.options.length + (showLetterPicker ? 1 : 0),
-        separatorBuilder: (_, _) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          if (showLetterPicker && index == 0) {
-            return ListTile(
-              leading: const Icon(Icons.sort_by_alpha),
-              title: Text(widget.selectLetterLabel),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: _openLetterPicker,
-            );
-          }
+              itemCount: widget.options.length + (showLetterPicker ? 1 : 0),
+              separatorBuilder: (_, _) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                if (showLetterPicker && index == 0) {
+                  return ListTile(
+                    leading: const Icon(Icons.sort_by_alpha),
+                    title: Text(widget.selectLetterLabel),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: _openLetterPicker,
+                  );
+                }
 
-          final optionIndex = index - (showLetterPicker ? 1 : 0);
-          final option = widget.options[optionIndex];
-          final selected = widget.selectedBuilder?.call(option) ?? false;
-          final label = widget.labelBuilder(option);
-          final displayLabel = selected && widget.selectedLabel != null
-              ? '$label, ${widget.selectedLabel}'
-              : label;
-          return AutoScrollTag(
-            key: ValueKey('letter_option_$index'),
-            controller: _scrollController,
-            index: index,
-            child: ListTile(
-              leading: widget.leadingBuilder?.call(selected) ??
-                  Icon(selected ? Icons.check : Icons.radio),
-              title: Text(displayLabel),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.pop(context, option),
+                final optionIndex = index - (showLetterPicker ? 1 : 0);
+                final option = widget.options[optionIndex];
+                final selected =
+                    widget.selectedBuilder?.call(option) ?? false;
+                return ListTile(
+                  leading: widget.leadingBuilder?.call(selected) ??
+                      Icon(selected ? Icons.check : Icons.radio),
+                  title: Text(_displayLabel(option)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.pop(context, option),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }
 
-class _LetterPickerScreen extends StatelessWidget {
+class _LetterPickerScreen<T> extends StatelessWidget {
   final String title;
   final List<String> letters;
+  final String filteredTitle;
+  final List<T> Function(String letter) optionsForLetter;
+  final String Function(T) displayLabelBuilder;
+  final bool Function(T)? selectedBuilder;
+  final Widget Function(bool selected)? leadingBuilder;
 
   const _LetterPickerScreen({
     required this.title,
     required this.letters,
+    required this.filteredTitle,
+    required this.optionsForLetter,
+    required this.displayLabelBuilder,
+    this.selectedBuilder,
+    this.leadingBuilder,
   });
+
+  Future<void> _openLetter(BuildContext context, String letter) async {
+    final options = optionsForLetter(letter);
+    if (options.isEmpty) return;
+
+    final selected = await Navigator.push<T>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _LetterFilteredOptionsScreen<T>(
+          title: filteredTitle,
+          options: options,
+          displayLabelBuilder: displayLabelBuilder,
+          selectedBuilder: selectedBuilder,
+          leadingBuilder: leadingBuilder,
+        ),
+      ),
+    );
+    if (!context.mounted || selected == null) return;
+
+    Navigator.pop(context, selected);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      // Deliberately keep the tiny A-Z picker in Flutter and materialize all
-      // rows at once. The iOS 27 regression affects lazy/virtualized long lists;
-      // this picker has at most a few dozen entries. Avoiding a second UIKit
-      // PlatformView also prevents VoiceOver from remaining focused on the
-      // dismissed `letter_N` cell while the parent native list is being focused.
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            for (var index = 0; index < letters.length; index++) ...[
-              ListTile(
-                leading: const Icon(Icons.sort_by_alpha),
-                title: Text(letters[index]),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.pop(context, letters[index]),
+      body: SafeArea(
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [
+                  AccessibleListSection(
+                    rows: [
+                      for (var index = 0; index < letters.length; index++)
+                        AccessibleListRow(
+                          id: 'letter_$index',
+                          title: letters[index],
+                        ),
+                    ],
+                  ),
+                ],
+                onEvent: (event) async {
+                  if (event.type != 'activate' || event.id == null) return;
+                  final index = int.tryParse(
+                    event.id!.replaceFirst('letter_', ''),
+                  );
+                  if (index != null && index >= 0 && index < letters.length) {
+                    await _openLetter(context, letters[index]);
+                  }
+                },
+              )
+            : ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: letters.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                itemBuilder: (context, index) => ListTile(
+                  leading: const Icon(Icons.sort_by_alpha),
+                  title: Text(letters[index]),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _openLetter(context, letters[index]),
+                ),
               ),
-              if (index != letters.length - 1) const Divider(height: 1),
-            ],
-          ],
+      ),
+    );
+  }
+}
+
+class _LetterFilteredOptionsScreen<T> extends StatelessWidget {
+  final String title;
+  final List<T> options;
+  final String Function(T) displayLabelBuilder;
+  final bool Function(T)? selectedBuilder;
+  final Widget Function(bool selected)? leadingBuilder;
+
+  const _LetterFilteredOptionsScreen({
+    required this.title,
+    required this.options,
+    required this.displayLabelBuilder,
+    this.selectedBuilder,
+    this.leadingBuilder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final backLabel = MaterialLocalizations.of(context).backButtonTooltip;
+
+    return Scaffold(
+      body: SafeArea(
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: options.length + 2,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back),
+                  label: Text(backLabel),
+                ),
+              );
+            }
+
+            if (index == 1) {
+              return Semantics(
+                header: true,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+              );
+            }
+
+            final option = options[index - 2];
+            final selected = selectedBuilder?.call(option) ?? false;
+            return Card(
+              child: ListTile(
+                leading: leadingBuilder?.call(selected) ??
+                    Icon(selected ? Icons.check : Icons.radio),
+                title: Text(displayLabelBuilder(option)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pop(context, option),
+              ),
+            );
+          },
         ),
       ),
     );

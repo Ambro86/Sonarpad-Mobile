@@ -3,16 +3,21 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('RaiPlay Sound date return keeps the existing renderer and focuses in place', () {
+  test('RaiPlay Sound date selection opens a filtered Material list without jumping', () {
     final source = File('lib/screens/raiplaysound_screen.dart').readAsStringSync();
 
     expect(
       source,
-      contains('_waitForDateSelectorReturnToSettle()'),
+      contains("settings: const RouteSettings(name: '/raiplaysound/date')"),
     );
+    expect(source, contains('class _RaiPlaySoundDateItemsScreen'));
+    expect(source, contains('itemCount: items.length + 1'));
+    expect(source, contains('label: Text(l10n.back)'));
+    expect(source, contains('ElevatedButton.icon('));
+    expect(source, contains('final dateItems = _itemsForDate(date);'));
     expect(
       source,
-      contains("_accessibleListController.focusTo(\n        'item_\$itemIndex',"),
+      isNot(contains('_waitForDateSelectorReturnToSettle')),
     );
     expect(
       source,
@@ -20,15 +25,7 @@ void main() {
     );
     expect(
       source,
-      contains('routeReturnWaitForForeignFocusClear: false'),
-    );
-    expect(
-      source,
-      contains('routeReturnSemanticsSettleDelay: Duration.zero'),
-    );
-    expect(
-      source,
-      contains('routeReturnUseFocusProxy: false'),
+      isNot(contains("_accessibleListController.focusTo(\n        'item_\$itemIndex'")),
     );
   });
 }

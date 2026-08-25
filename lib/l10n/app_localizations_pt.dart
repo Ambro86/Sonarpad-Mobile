@@ -99,6 +99,36 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeShareVideo => 'Partilhar vídeo';
 
   @override
+  String get sonarTubePreviousTrack => 'Ir para a faixa anterior';
+
+  @override
+  String get sonarTubeNextTrack => 'Ir para a faixa seguinte';
+
+  @override
+  String get sonarTubeGoToChannel => 'Ir para o canal';
+
+  @override
+  String get sonarTubeViewComments => 'Ver comentários';
+
+  @override
+  String get sonarTubeComments => 'Comentários';
+
+  @override
+  String get sonarTubeNoComments => 'Não há comentários disponíveis.';
+
+  @override
+  String get sonarTubeLoadMoreComments => 'Carregar mais comentários';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
+
+  @override
+  String get sonarTubeTranscript => 'Transcrição';
+
+  @override
+  String get sonarTubeNoTranscript => 'Não existe transcrição disponível para este vídeo.';
+
+  @override
   String get sonarTubeShareChannel => 'Partilhar canal';
 
   @override
@@ -3485,6 +3515,36 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get sonarTubeShareVideo => 'Compartilhar vídeo';
+
+  @override
+  String get sonarTubePreviousTrack => 'Ir para a faixa anterior';
+
+  @override
+  String get sonarTubeNextTrack => 'Ir para a faixa seguinte';
+
+  @override
+  String get sonarTubeGoToChannel => 'Ir para o canal';
+
+  @override
+  String get sonarTubeViewComments => 'Ver comentários';
+
+  @override
+  String get sonarTubeComments => 'Comentários';
+
+  @override
+  String get sonarTubeNoComments => 'Nenhum comentário disponível.';
+
+  @override
+  String get sonarTubeLoadMoreComments => 'Carregar mais comentários';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
+
+  @override
+  String get sonarTubeTranscript => 'Transcrição';
+
+  @override
+  String get sonarTubeNoTranscript => 'Nenhuma transcrição disponível para este vídeo.';
 
   @override
   String get sonarTubeShareChannel => 'Compartilhar canal';

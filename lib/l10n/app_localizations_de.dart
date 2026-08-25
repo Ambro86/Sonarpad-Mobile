@@ -99,6 +99,36 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sonarTubeShareVideo => 'Video teilen';
 
   @override
+  String get sonarTubePreviousTrack => 'Zum vorherigen Titel';
+
+  @override
+  String get sonarTubeNextTrack => 'Zum nächsten Titel';
+
+  @override
+  String get sonarTubeGoToChannel => 'Zum Kanal';
+
+  @override
+  String get sonarTubeViewComments => 'Kommentare anzeigen';
+
+  @override
+  String get sonarTubeComments => 'Kommentare';
+
+  @override
+  String get sonarTubeNoComments => 'Keine Kommentare verfügbar.';
+
+  @override
+  String get sonarTubeLoadMoreComments => 'Weitere Kommentare laden';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Video transkribieren';
+
+  @override
+  String get sonarTubeTranscript => 'Transkript';
+
+  @override
+  String get sonarTubeNoTranscript => 'Für dieses Video ist kein Transkript verfügbar.';
+
+  @override
   String get sonarTubeShareChannel => 'Kanal teilen';
 
   @override

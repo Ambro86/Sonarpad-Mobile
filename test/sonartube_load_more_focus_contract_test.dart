@@ -28,4 +28,14 @@ void main() {
       );
     }
   });
+  test('clean SonarTube search load more focuses the first appended result', () {
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+
+    expect(source, contains('_searchLoadMoreFocusIndex = firstAppendedIndex;'));
+    expect(source, contains('_focusFirstAppendedSearchResult(firstAppendedIndex)'));
+    expect(source, contains('Scrollable.ensureVisible('));
+    expect(source, contains('sendSemanticsEvent(const FocusSemanticEvent())'));
+    expect(source, contains("debugLabel: 'sonartube_search_load_more_target'"));
+  });
+
 }

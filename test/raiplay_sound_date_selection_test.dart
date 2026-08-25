@@ -39,7 +39,7 @@ void main() {
     expect(page.items.last.publishedAt, DateTime(2026, 7, 2));
   });
 
-  testWidgets('selecting a date jumps to the matching RaiPlay Sound item', (
+  testWidgets('selecting a date opens only the RaiPlay Sound items for that date', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
@@ -71,11 +71,9 @@ void main() {
     );
     await tester.tap(find.text('30 luglio 2026'));
     await tester.pumpAndSettle();
-    await tester.pump(const Duration(milliseconds: 301));
-    await tester.pumpAndSettle();
-    await tester.pump(const Duration(milliseconds: 181));
-    await tester.pumpAndSettle();
 
+    expect(find.text('Indietro'), findsOneWidget);
     expect(find.textContaining('Episodio 30'), findsOneWidget);
+    expect(find.textContaining('Episodio 29'), findsNothing);
   });
 }

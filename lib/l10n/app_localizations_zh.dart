@@ -96,6 +96,36 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get sonarTubeShareVideo => '分享视频';
 
   @override
+  String get sonarTubePreviousTrack => '转到上一首';
+
+  @override
+  String get sonarTubeNextTrack => '转到下一首';
+
+  @override
+  String get sonarTubeGoToChannel => '前往频道';
+
+  @override
+  String get sonarTubeViewComments => '查看评论';
+
+  @override
+  String get sonarTubeComments => '评论';
+
+  @override
+  String get sonarTubeNoComments => '暂无评论。';
+
+  @override
+  String get sonarTubeLoadMoreComments => '加载更多评论';
+
+  @override
+  String get sonarTubeTranscribeVideo => '转录视频';
+
+  @override
+  String get sonarTubeTranscript => '转录文本';
+
+  @override
+  String get sonarTubeNoTranscript => '此视频没有可用的转录文本。';
+
+  @override
   String get sonarTubeShareChannel => '分享频道';
 
   @override

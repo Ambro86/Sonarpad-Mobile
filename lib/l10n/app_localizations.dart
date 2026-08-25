@@ -291,6 +291,42 @@ abstract class AppLocalizations {
   /// **'Condividi video'**
   String get sonarTubeShareVideo;
 
+  /// No description provided for @sonarTubePreviousTrack.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai al brano precedente'**
+  String get sonarTubePreviousTrack;
+
+  /// No description provided for @sonarTubeNextTrack.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai al brano successivo'**
+  String get sonarTubeNextTrack;
+
+  /// Open the channel that published the selected SonarTube video.
+  String get sonarTubeGoToChannel;
+
+  /// Open the comments for the selected SonarTube video.
+  String get sonarTubeViewComments;
+
+  /// Title for the SonarTube comments screen.
+  String get sonarTubeComments;
+
+  /// Message shown when a video has no accessible comments.
+  String get sonarTubeNoComments;
+
+  /// Load another page of SonarTube comments.
+  String get sonarTubeLoadMoreComments;
+
+  /// Transcribe the selected SonarTube video.
+  String get sonarTubeTranscribeVideo;
+
+  /// Title for the SonarTube transcript screen.
+  String get sonarTubeTranscript;
+
+  /// Message shown when a SonarTube transcript is unavailable.
+  String get sonarTubeNoTranscript;
+
   /// No description provided for @sonarTubeShareChannel.
   ///
   /// In it, this message translates to:

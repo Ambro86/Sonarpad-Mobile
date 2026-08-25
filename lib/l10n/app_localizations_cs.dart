@@ -100,6 +100,36 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeShareVideo => 'Sdílet video';
 
   @override
+  String get sonarTubePreviousTrack => 'Přejít na předchozí skladbu';
+
+  @override
+  String get sonarTubeNextTrack => 'Přejít na následující skladbu';
+
+  @override
+  String get sonarTubeGoToChannel => 'Přejít na kanál';
+
+  @override
+  String get sonarTubeViewComments => 'Zobrazit komentáře';
+
+  @override
+  String get sonarTubeComments => 'Komentáře';
+
+  @override
+  String get sonarTubeNoComments => 'Nejsou k dispozici žádné komentáře.';
+
+  @override
+  String get sonarTubeLoadMoreComments => 'Načíst další komentáře';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Přepsat video';
+
+  @override
+  String get sonarTubeTranscript => 'Přepis';
+
+  @override
+  String get sonarTubeNoTranscript => 'Pro toto video není k dispozici žádný přepis.';
+
+  @override
   String get sonarTubeShareChannel => 'Sdílet kanál';
 
   @override

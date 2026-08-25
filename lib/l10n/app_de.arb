@@ -78,6 +78,8 @@
   "sonarTubeNoFavorites": "Keine favorisierten Videos, Kanäle oder Playlists.",
   "sonarTubeAddFavorite": "Zu Favoriten hinzufügen",
   "sonarTubeShareVideo": "Video teilen",
+  "sonarTubePreviousTrack": "Zum vorherigen Titel",
+  "sonarTubeNextTrack": "Zum nächsten Titel",
   "sonarTubeShareChannel": "Kanal teilen",
   "sonarTubeSharePlaylist": "Playlist teilen",
   "sonarTubeRemoveFavorite": "Aus Favoriten entfernen",
@@ -4370,5 +4372,22 @@
   "mediaCutterProcess": "Verarbeiten",
   "@mediaCutterProcess": {
     "description": "Button that processes the current Media Cutter edits before choosing a destination."
+  },
+  "sonarTubeGoToChannel": "Zum Kanal",
+  "sonarTubeViewComments": "Kommentare anzeigen",
+  "sonarTubeComments": "Kommentare",
+  "sonarTubeNoComments": "Keine Kommentare verfügbar.",
+  "sonarTubeLoadMoreComments": "Weitere Kommentare laden",
+  "sonarTubeTranscribeVideo": "Video transkribieren",
+  "@sonarTubeTranscribeVideo": {
+    "description": "Secondary action that opens the transcript for a SonarTube video."
+  },
+  "sonarTubeTranscript": "Transkript",
+  "@sonarTubeTranscript": {
+    "description": "Title for the SonarTube transcript screen."
+  },
+  "sonarTubeNoTranscript": "Für dieses Video ist kein Transkript verfügbar.",
+  "@sonarTubeNoTranscript": {
+    "description": "Message shown when no transcript is available for a SonarTube video."
   }
 }

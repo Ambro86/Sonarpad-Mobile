@@ -14,11 +14,13 @@ class SonarTubeScreen extends StatefulWidget {
   const SonarTubeScreen({
     super.key,
     this.collection,
+    this.searchQuery,
     this.service,
     this.favoritesService,
-  });
+  }) : assert(collection == null || searchQuery == null);
 
   final SonarTubeItem? collection;
+  final String? searchQuery;
   final SonarTubeService? service;
   final SonarTubeFavoritesService? favoritesService;
 
@@ -34,6 +36,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   final _searchFocusNode = FocusNode();
   final AccessibleListController _accessibleListController =
       AccessibleListController(debugName: 'sonartube');
+  final GlobalKey _searchLoadMoreFocusTargetKey = GlobalKey(
+    debugLabel: 'sonartube_search_load_more_target',
+  );
+  int? _searchLoadMoreFocusIndex;
   List<SonarTubeItem> _items = const [];
   Set<String> _favoriteKeys = const {};
   String? _query;
@@ -45,6 +51,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   Object? _error;
 
   bool get _isCollection => widget.collection != null;
+  bool get _isSearchResults => widget.searchQuery != null;
 
   @override
   void initState() {
@@ -52,6 +59,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     _loadFavoriteKeys();
     if (_isCollection) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _loadCollection());
+    } else if (_isSearchResults) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadSearchResults());
     }
   }
 
@@ -99,7 +108,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       MaterialPageRoute(
         settings: const RouteSettings(name: '/sonartube/favorites'),
         builder: (_) =>
-            _SonarTubeFavoritesScreen(favoritesService: _favoritesService),
+            _SonarTubeFavoritesScreen(
+              favoritesService: _favoritesService,
+              service: _service,
+            ),
       ),
     );
     await _loadFavoriteKeys();
@@ -115,16 +127,34 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
 
   Future<void> _search() async {
     final query = _searchController.text.trim();
-    if (query.isEmpty || _loading) {
+    if (query.isEmpty) {
       _searchFocusNode.requestFocus();
       return;
     }
     FocusScope.of(context).unfocus();
-    var shouldFocusFirstResult = false;
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/search-results'),
+        builder: (_) => SonarTubeScreen(
+          searchQuery: query,
+          service: _service,
+          favoritesService: _favoritesService,
+        ),
+      ),
+    );
+    if (mounted) {
+      await _loadFavoriteKeys();
+    }
+  }
+
+  Future<void> _loadSearchResults() async {
+    if (_loading || !_isSearchResults) return;
+    final query = widget.searchQuery!.trim();
+    _query = query;
     setState(() {
       _loading = true;
       _error = null;
-      _query = query;
       _items = const [];
       _nextToken = null;
       _page = 1;
@@ -136,25 +166,12 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         _items = result.items;
         _nextToken = result.nextToken;
         _page = result.page;
-        shouldFocusFirstResult = result.items.isNotEmpty;
       });
     } catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
-
-    if (!mounted || !shouldFocusFirstResult || !useSharedAccessibleViewModel) {
-      return;
-    }
-
-    // The search field/keyboard has just been dismissed. Wait until the
-    // shared model has rebuilt with the result rows, then hand accessibility
-    // focus directly to the first result. The controller keeps this neutral:
-    // Flutter and UIKit receive the same in-place focus request.
-    await WidgetsBinding.instance.endOfFrame;
-    if (!mounted) return;
-    await _accessibleListController.focusTo('item_0', animated: false);
   }
 
   Future<void> _loadCollection() async {
@@ -229,6 +246,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         if (appended.isNotEmpty) {
           _items = [..._items, ...appended];
           shouldFocusFirstAppendedItem = true;
+          if (_isSearchResults) {
+            _searchLoadMoreFocusIndex = firstAppendedIndex;
+          }
         }
         _nextToken = appended.isEmpty ? null : token;
         _page = currentPage;
@@ -239,22 +259,47 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       if (mounted) setState(() => _loadingMore = false);
     }
 
-    if (!mounted ||
-        !shouldFocusFirstAppendedItem ||
-        !useSharedAccessibleViewModel) {
+    if (!mounted || !shouldFocusFirstAppendedItem) return;
+
+    // The clean search-results route is intentionally a plain Material list,
+    // but Load more must keep the useful accessibility behavior it had before:
+    // move VoiceOver/TalkBack to the first result that was just appended.
+    if (_isSearchResults) {
+      await _focusFirstAppendedSearchResult(firstAppendedIndex);
       return;
     }
 
-    // Keep the screen renderer-neutral. AccessibleListController routes the
-    // same in-place focus request to the shared Flutter renderer or to UIKit.
-    // Waiting for the final frame also ensures the newly appended row exists
-    // before either renderer is asked to focus it.
+    if (!useSharedAccessibleViewModel) return;
+
+    // Keep collection browsing renderer-neutral. AccessibleListController
+    // routes the same in-place focus request to Flutter or UIKit.
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return;
     await _accessibleListController.focusTo(
       'item_$firstAppendedIndex',
       animated: false,
     );
+  }
+
+  Future<void> _focusFirstAppendedSearchResult(int index) async {
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted || _searchLoadMoreFocusIndex != index) return;
+
+    final targetContext = _searchLoadMoreFocusTargetKey.currentContext;
+    if (targetContext == null || !targetContext.mounted) return;
+
+    await Scrollable.ensureVisible(
+      targetContext,
+      alignment: 0.35,
+      duration: Duration.zero,
+    );
+    if (!mounted || !targetContext.mounted) return;
+
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted || _searchLoadMoreFocusIndex != index) return;
+    _searchLoadMoreFocusTargetKey.currentContext
+        ?.findRenderObject()
+        ?.sendSemanticsEvent(const FocusSemanticEvent());
   }
 
   String _sonarTubeItemKey(SonarTubeItem item) =>
@@ -303,6 +348,55 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
   }
 
+  Future<void> _openChannelForVideo(SonarTubeItem item) async {
+    if (item.kind != SonarTubeItemKind.video) return;
+    try {
+      final channel = await _service.channelForVideo(item);
+      if (!mounted) return;
+      await Navigator.push<void>(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/sonartube/channel'),
+          builder: (_) => SonarTubeScreen(
+            collection: channel,
+            service: _service,
+            favoritesService: _favoritesService,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) setState(() => _error = error);
+    }
+  }
+
+  Future<void> _openComments(SonarTubeItem item) async {
+    if (item.kind != SonarTubeItemKind.video || !mounted) return;
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/comments'),
+        builder: (_) => _SonarTubeCommentsScreen(
+          item: item,
+          service: _service,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openTranscript(SonarTubeItem item) async {
+    if (item.kind != SonarTubeItemKind.video || !mounted) return;
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/transcript'),
+        builder: (_) => _SonarTubeTranscriptScreen(
+          item: item,
+          service: _service,
+        ),
+      ),
+    );
+  }
+
   Future<void> _openItem(SonarTubeItem item) async {
     if (item.kind != SonarTubeItemKind.video) {
       await Navigator.push<void>(
@@ -324,8 +418,31 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       _error = null;
     });
     try {
+      final navigationItems = _isCollection
+          ? _items
+              .where((candidate) => candidate.kind == SonarTubeItemKind.video)
+              .toList(growable: false)
+          : const <SonarTubeItem>[];
+      var navigationIndex = navigationItems.indexWhere(
+        (candidate) => _sonarTubeItemKey(candidate) == _sonarTubeItemKey(item),
+      );
       final episode = await _resolveEpisode(item);
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+
+      Future<PodcastEpisode?> navigateEpisode(int direction) async {
+        final targetIndex = navigationIndex + direction;
+        if (navigationIndex < 0 ||
+            targetIndex < 0 ||
+            targetIndex >= navigationItems.length) {
+          return null;
+        }
+        final targetItem = navigationItems[targetIndex];
+        final resolved = await _resolveEpisode(targetItem);
+        navigationIndex = targetIndex;
+        return resolved;
+      }
+
       await Navigator.push<void>(
         context,
         MaterialPageRoute(
@@ -334,7 +451,25 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             episode: episode,
             isVideoSupported: true,
             startWithVideoThenRestorePreference: true,
-            refreshEpisode: () => _resolveEpisode(item),
+            refreshEpisode: () {
+              final currentItem = navigationIndex >= 0
+                  ? navigationItems[navigationIndex]
+                  : item;
+              return _resolveEpisode(currentItem);
+            },
+            navigateEpisode: navigationIndex >= 0 ? navigateEpisode : null,
+            hasPreviousEpisode: navigationIndex >= 0
+                ? () => navigationIndex > 0
+                : null,
+            hasNextEpisode: navigationIndex >= 0
+                ? () => navigationIndex + 1 < navigationItems.length
+                : null,
+            previousEpisodeLabel: navigationIndex >= 0
+                ? l10n.sonarTubePreviousTrack
+                : null,
+            nextEpisodeLabel: navigationIndex >= 0
+                ? l10n.sonarTubeNextTrack
+                : null,
           ),
         ),
       );
@@ -382,6 +517,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     required bool isFavorite,
     required String favoriteLabel,
     required String? subtitle,
+    bool includeCustomActions = false,
   }) {
     final card = Card(
       child: ListTile(
@@ -445,6 +581,23 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         if (subtitle?.isNotEmpty ?? false) subtitle!,
       ].join(', '),
       onTap: _resolvingId == null ? () => _openItem(item) : null,
+      customSemanticsActions: includeCustomActions
+          ? {
+              CustomSemanticsAction(label: favoriteLabel):
+                  () => _toggleFavorite(item),
+              CustomSemanticsAction(label: _shareActionLabel(l10n, item)):
+                  () => _shareItem(item),
+              if (item.kind == SonarTubeItemKind.video)
+                CustomSemanticsAction(label: l10n.sonarTubeGoToChannel):
+                    () => _openChannelForVideo(item),
+              if (item.kind == SonarTubeItemKind.video)
+                CustomSemanticsAction(label: l10n.sonarTubeViewComments):
+                    () => _openComments(item),
+              if (item.kind == SonarTubeItemKind.video)
+                CustomSemanticsAction(label: l10n.sonarTubeTranscribeVideo):
+                    () => _openTranscript(item),
+            }
+          : null,
       child: ExcludeSemantics(child: card),
     );
   }
@@ -539,6 +692,21 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             id: _shareActionId(item),
             label: _shareActionLabel(l10n, item),
           ),
+          if (item.kind == SonarTubeItemKind.video)
+            AccessibleCustomAction(
+              id: 'go_channel',
+              label: l10n.sonarTubeGoToChannel,
+            ),
+          if (item.kind == SonarTubeItemKind.video)
+            AccessibleCustomAction(
+              id: 'view_comments',
+              label: l10n.sonarTubeViewComments,
+            ),
+          if (item.kind == SonarTubeItemKind.video)
+            AccessibleCustomAction(
+              id: 'transcribe_video',
+              label: l10n.sonarTubeTranscribeVideo,
+            ),
         ],
         flutterChild: _buildFlutterSonarTubeItem(
           l10n,
@@ -593,6 +761,24 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           return;
         }
         if (event.type == 'customAction' &&
+            (event.action == 'go_channel' ||
+                event.action == 'view_comments' ||
+                event.action == 'transcribe_video') &&
+            event.id?.startsWith('item_') == true) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index != null && index >= 0 && index < _items.length) {
+            final item = _items[index];
+            if (event.action == 'go_channel') {
+              await _openChannelForVideo(item);
+            } else if (event.action == 'view_comments') {
+              await _openComments(item);
+            } else {
+              await _openTranscript(item);
+            }
+          }
+          return;
+        }
+        if (event.type == 'customAction' &&
             event.action == 'favorite' &&
             event.id?.startsWith('item_') == true) {
           final index = int.tryParse(event.id!.substring(5));
@@ -621,9 +807,111 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
   }
 
+  Widget _buildSearchResultsMaterial(AppLocalizations l10n) {
+    final rows = <Widget>[
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          key: const ValueKey('sonartube_search_results_back'),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+          label: Text(l10n.back),
+        ),
+      ),
+      const SizedBox(height: 16),
+      Text(
+        l10n.searchResults,
+        key: const ValueKey('sonartube_search_results_title'),
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      const SizedBox(height: 12),
+    ];
+
+    if (_loading) {
+      rows.add(LinearProgressIndicator(semanticsLabel: l10n.loading));
+    } else if (_error != null) {
+      rows.add(
+        Text(
+          l10n.error(l10n.technicalErrorGeneric),
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
+          textAlign: TextAlign.center,
+        ),
+      );
+    } else if (_items.isEmpty) {
+      rows.add(Text(l10n.sonarTubeNoResults, textAlign: TextAlign.center));
+    } else {
+      for (var index = 0; index < _items.length; index++) {
+        final item = _items[index];
+        final resolving = _resolvingId == item.id;
+        final isFavorite = _favoriteKeys.contains(
+          _favoritesService.itemKey(item),
+        );
+        final favoriteLabel = isFavorite
+            ? l10n.sonarTubeRemoveFavorite
+            : l10n.sonarTubeAddFavorite;
+        final subtitle = resolving
+            ? l10n.sonarTubeResolving
+            : _subtitle(l10n, item);
+        final itemWidget = _buildFlutterSonarTubeItem(
+          l10n,
+          item,
+          resolving: resolving,
+          isFavorite: isFavorite,
+          favoriteLabel: favoriteLabel,
+          subtitle: subtitle,
+          includeCustomActions: true,
+        );
+        rows.add(
+          index == _searchLoadMoreFocusIndex
+              ? KeyedSubtree(
+                  key: _searchLoadMoreFocusTargetKey,
+                  child: itemWidget,
+                )
+              : itemWidget,
+        );
+      }
+      if (_nextToken != null) {
+        rows.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Center(
+              child: FilledButton.tonal(
+                key: const ValueKey('sonartube_load_more'),
+                onPressed: _loadingMore ? null : _loadMore,
+                child: _loadingMore
+                    ? SizedBox.square(
+                        dimension: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          semanticsLabel: l10n.loading,
+                        ),
+                      )
+                    : Text(l10n.sonarTubeLoadMore),
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return Scaffold(
+      body: SafeArea(
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: rows.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (_, index) => rows[index],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    if (_isSearchResults) {
+      return _buildSearchResultsMaterial(l10n);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.collection?.title ?? l10n.sonarTubeTitle),
@@ -812,6 +1100,18 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                             CustomSemanticsAction(
                               label: _shareActionLabel(l10n, item),
                             ): () => _shareItem(item),
+                            if (item.kind == SonarTubeItemKind.video)
+                              CustomSemanticsAction(
+                                label: l10n.sonarTubeGoToChannel,
+                              ): () => _openChannelForVideo(item),
+                            if (item.kind == SonarTubeItemKind.video)
+                              CustomSemanticsAction(
+                                label: l10n.sonarTubeViewComments,
+                              ): () => _openComments(item),
+                            if (item.kind == SonarTubeItemKind.video)
+                              CustomSemanticsAction(
+                                label: l10n.sonarTubeTranscribeVideo,
+                              ): () => _openTranscript(item),
                           },
                           child: ExcludeSemantics(child: card),
                         );
@@ -825,10 +1125,297 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   }
 }
 
+
+class _SonarTubeTranscriptScreen extends StatefulWidget {
+  const _SonarTubeTranscriptScreen({
+    required this.item,
+    required this.service,
+  });
+
+  final SonarTubeItem item;
+  final SonarTubeService service;
+
+  @override
+  State<_SonarTubeTranscriptScreen> createState() =>
+      _SonarTubeTranscriptScreenState();
+}
+
+class _SonarTubeTranscriptScreenState
+    extends State<_SonarTubeTranscriptScreen> {
+  SonarTubeTranscript? _transcript;
+  bool _loading = true;
+  bool _unavailable = false;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final transcript = await widget.service.transcribe(widget.item);
+      if (!mounted) return;
+      setState(() {
+        _transcript = transcript;
+        _loading = false;
+      });
+    } on SonarTubeTranscriptUnavailableException {
+      if (!mounted) return;
+      setState(() {
+        _unavailable = true;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _failed = true;
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final rows = <Widget>[
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          key: const ValueKey('sonartube_transcript_back'),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+          label: Text(l10n.back),
+        ),
+      ),
+      Text(
+        l10n.sonarTubeTranscript,
+        key: const ValueKey('sonartube_transcript_title'),
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      Text(
+        widget.item.title,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+    ];
+
+    if (_loading) {
+      rows.add(LinearProgressIndicator(semanticsLabel: l10n.loading));
+    } else if (_unavailable) {
+      rows.add(
+        Text(
+          l10n.sonarTubeNoTranscript,
+          textAlign: TextAlign.center,
+        ),
+      );
+    } else if (_failed || _transcript == null) {
+      rows.add(
+        Text(
+          l10n.error(l10n.technicalErrorGeneric),
+          textAlign: TextAlign.center,
+        ),
+      );
+    } else {
+      rows.add(
+        SelectableText(
+          _transcript!.text,
+          key: const ValueKey('sonartube_transcript_text'),
+        ),
+      );
+    }
+
+    return Scaffold(
+      body: SafeArea(
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: rows.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (_, index) => rows[index],
+        ),
+      ),
+    );
+  }
+}
+
+class _SonarTubeCommentsScreen extends StatefulWidget {
+  const _SonarTubeCommentsScreen({
+    required this.item,
+    required this.service,
+  });
+
+  final SonarTubeItem item;
+  final SonarTubeService service;
+
+  @override
+  State<_SonarTubeCommentsScreen> createState() =>
+      _SonarTubeCommentsScreenState();
+}
+
+class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
+  List<SonarTubeComment> _comments = const [];
+  String? _nextToken;
+  int _page = 1;
+  bool _loading = true;
+  bool _loadingMore = false;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final page = await widget.service.comments(widget.item);
+      if (!mounted) return;
+      setState(() {
+        _comments = page.items;
+        _nextToken = page.nextToken;
+        _page = page.page;
+        _failed = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _failed = true);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loadMore() async {
+    final token = _nextToken;
+    if (token == null || token.isEmpty || _loadingMore) return;
+    setState(() => _loadingMore = true);
+    try {
+      final page = await widget.service.comments(
+        widget.item,
+        token: token,
+        page: _page + 1,
+      );
+      if (!mounted) return;
+      final known = _comments.map((comment) => comment.id).toSet();
+      setState(() {
+        _comments = [
+          ..._comments,
+          ...page.items.where((comment) => known.add(comment.id)),
+        ];
+        _nextToken = page.nextToken;
+        _page = page.page;
+        _failed = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _failed = true);
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final rows = <Widget>[
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          key: const ValueKey('sonartube_comments_back'),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+          label: Text(l10n.back),
+        ),
+      ),
+      const SizedBox(height: 16),
+      Text(
+        l10n.sonarTubeComments,
+        key: const ValueKey('sonartube_comments_title'),
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      const SizedBox(height: 12),
+    ];
+
+    if (_loading) {
+      rows.add(LinearProgressIndicator(semanticsLabel: l10n.loading));
+    } else if (_failed && _comments.isEmpty) {
+      rows.add(
+        Text(
+          l10n.error(l10n.technicalErrorGeneric),
+          textAlign: TextAlign.center,
+        ),
+      );
+    } else if (_comments.isEmpty) {
+      rows.add(
+        Text(
+          l10n.sonarTubeNoComments,
+          textAlign: TextAlign.center,
+        ),
+      );
+    } else {
+      for (final comment in _comments) {
+        final meta = <String>[
+          if (comment.author?.isNotEmpty ?? false) comment.author!,
+          if (comment.published?.isNotEmpty ?? false) comment.published!,
+        ].join(' · ');
+        rows.add(
+          Card(
+            key: ValueKey('sonartube_comment_${comment.id}'),
+            child: ListTile(
+              title: Text(comment.text),
+              subtitle: meta.isEmpty ? null : Text(meta),
+            ),
+          ),
+        );
+      }
+      if (_failed) {
+        rows.add(
+          Text(
+            l10n.error(l10n.technicalErrorGeneric),
+            textAlign: TextAlign.center,
+          ),
+        );
+      }
+      if (_nextToken != null && _nextToken!.isNotEmpty) {
+        rows.add(
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.tonal(
+              key: const ValueKey('sonartube_comments_load_more'),
+              onPressed: _loadingMore ? null : _loadMore,
+              child: _loadingMore
+                  ? SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        semanticsLabel: l10n.loading,
+                      ),
+                    )
+                  : Text(l10n.sonarTubeLoadMoreComments),
+            ),
+          ),
+        );
+      }
+    }
+
+    return Scaffold(
+      body: SafeArea(
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: rows.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (_, index) => rows[index],
+        ),
+      ),
+    );
+  }
+}
+
 class _SonarTubeFavoritesScreen extends StatefulWidget {
-  const _SonarTubeFavoritesScreen({required this.favoritesService});
+  const _SonarTubeFavoritesScreen({
+    required this.favoritesService,
+    required this.service,
+  });
 
   final SonarTubeFavoritesService favoritesService;
+  final SonarTubeService service;
 
   @override
   State<_SonarTubeFavoritesScreen> createState() =>
@@ -862,6 +1449,58 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
       AppLocalizations.of(context).sonarTubeFavoriteRemoved(item.title),
     );
     await _load();
+  }
+
+  Future<void> _openChannel(SonarTubeItem item) async {
+    try {
+      final channel = await widget.service.channelForVideo(item);
+      if (!mounted) return;
+      await Navigator.push<void>(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/sonartube/channel'),
+          builder: (_) => SonarTubeScreen(
+            collection: channel,
+            service: widget.service,
+            favoritesService: widget.favoritesService,
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).error(
+          AppLocalizations.of(context).technicalErrorGeneric,
+        ),
+      );
+    }
+  }
+
+  Future<void> _openComments(SonarTubeItem item) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/comments'),
+        builder: (_) => _SonarTubeCommentsScreen(
+          item: item,
+          service: widget.service,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openTranscript(SonarTubeItem item) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/transcript'),
+        builder: (_) => _SonarTubeTranscriptScreen(
+          item: item,
+          service: widget.service,
+        ),
+      ),
+    );
   }
 
   @override
@@ -904,6 +1543,21 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                                     id: 'remove',
                                     label: l10n.sonarTubeRemoveFavorite,
                                   ),
+                                  if (item.kind == SonarTubeItemKind.video)
+                                    AccessibleCustomAction(
+                                      id: 'go_channel',
+                                      label: l10n.sonarTubeGoToChannel,
+                                    ),
+                                  if (item.kind == SonarTubeItemKind.video)
+                                    AccessibleCustomAction(
+                                      id: 'view_comments',
+                                      label: l10n.sonarTubeViewComments,
+                                    ),
+                                  if (item.kind == SonarTubeItemKind.video)
+                                    AccessibleCustomAction(
+                                      id: 'transcribe_video',
+                                      label: l10n.sonarTubeTranscribeVideo,
+                                    ),
                                 ],
                               );
                             })
@@ -917,6 +1571,15 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                       final item = _favorites[index];
                       if (event.type == 'customAction' && event.action == 'remove') {
                         await _remove(item);
+                      } else if (event.type == 'customAction' &&
+                          event.action == 'go_channel') {
+                        await _openChannel(item);
+                      } else if (event.type == 'customAction' &&
+                          event.action == 'view_comments') {
+                        await _openComments(item);
+                      } else if (event.type == 'customAction' &&
+                          event.action == 'transcribe_video') {
+                        await _openTranscript(item);
                       } else if (event.type == 'activate') {
                         if (mounted) Navigator.pop(context, item);
                       }
@@ -936,8 +1599,19 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                     customSemanticsActions: {
                       CustomSemanticsAction(
                         label: l10n.sonarTubeRemoveFavorite,
-                      ): () =>
-                          _remove(item),
+                      ): () => _remove(item),
+                      if (item.kind == SonarTubeItemKind.video)
+                        CustomSemanticsAction(
+                          label: l10n.sonarTubeGoToChannel,
+                        ): () => _openChannel(item),
+                      if (item.kind == SonarTubeItemKind.video)
+                        CustomSemanticsAction(
+                          label: l10n.sonarTubeViewComments,
+                        ): () => _openComments(item),
+                      if (item.kind == SonarTubeItemKind.video)
+                        CustomSemanticsAction(
+                          label: l10n.sonarTubeTranscribeVideo,
+                        ): () => _openTranscript(item),
                     },
                     child: Card(
                       child: ListTile(

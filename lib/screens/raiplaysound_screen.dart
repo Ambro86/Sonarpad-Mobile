@@ -229,81 +229,15 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
       );
 
   Future<void> _openDateSelector(List<RaiPlaySoundItem> items) async {
-    final selectedItem = await Navigator.push<RaiPlaySoundItem>(
+    await Navigator.push<void>(
       context,
       MaterialPageRoute(
-        builder: (_) => _RaiPlaySoundDateSelectorScreen(items: items),
+        builder: (_) => _RaiPlaySoundDateSelectorScreen(
+          items: items,
+          onOpenItem: (item) => _openItem(item),
+        ),
       ),
     );
-    if (selectedItem == null || !mounted) return;
-
-    final itemIndex = items.indexWhere((item) => item.id == selectedItem.id);
-    if (itemIndex < 0) return;
-    if (useSharedAccessibleViewModel) {
-      await _waitForDateSelectorReturnToSettle();
-      if (!mounted) return;
-      await _accessibleListController.focusTo(
-        'item_$itemIndex',
-        animated: false,
-      );
-      return;
-    }
-
-    final listIndex = itemIndex + (_hasDatedAudioItems(items) ? 1 : 0);
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-    await _tryScrollToItemIndex(listIndex);
-  }
-
-  Future<void> _waitForDateSelectorReturnToSettle() async {
-    final route = ModalRoute.of(context);
-    final deadline = DateTime.now().add(const Duration(seconds: 2));
-    while (mounted && route != null && DateTime.now().isBefore(deadline)) {
-      final primaryStable = route.animation == null ||
-          route.animation!.status == AnimationStatus.completed;
-      final secondaryStable = route.secondaryAnimation == null ||
-          route.secondaryAnimation!.status == AnimationStatus.dismissed;
-      if (route.isCurrent && primaryStable && secondaryStable) break;
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted) return;
-    }
-    await WidgetsBinding.instance.endOfFrame;
-    if (!mounted) return;
-    await WidgetsBinding.instance.endOfFrame;
-  }
-
-  Future<void> _tryScrollToItemIndex(int listIndex, {int attempt = 0}) async {
-    if (!mounted) return;
-    if (!_scrollController.hasClients) {
-      if (attempt < 3) {
-        Future<void>.delayed(
-          Duration(milliseconds: 250 + (attempt * 150)),
-          () => _tryScrollToItemIndex(listIndex, attempt: attempt + 1),
-        );
-      }
-      return;
-    }
-
-    try {
-      await _scrollController.scrollToIndex(
-        listIndex,
-        preferPosition: AutoScrollPosition.begin,
-        duration: const Duration(milliseconds: 300),
-      );
-      await Future<void>.delayed(const Duration(milliseconds: 180));
-      if (!mounted || !_scrollController.hasClients) return;
-      await _scrollController.scrollToIndex(
-        listIndex,
-        preferPosition: AutoScrollPosition.begin,
-        duration: const Duration(milliseconds: 120),
-      );
-    } catch (_) {
-      if (attempt < 3) {
-        Future<void>.delayed(
-          Duration(milliseconds: 300 + (attempt * 200)),
-          () => _tryScrollToItemIndex(listIndex, attempt: attempt + 1),
-        );
-      }
-    }
   }
 
   Future<void> _subscribeCurrentPageToPodcasts() async {
@@ -342,9 +276,6 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   Widget _buildSharedAccessibleBody(AppLocalizations l10n, List<RaiPlaySoundItem> items, bool hasDateButton) {
     return UniversalAccessibleList(
       controller: _accessibleListController,
-      routeReturnSemanticsSettleDelay: Duration.zero,
-      routeReturnUseFocusProxy: false,
-      routeReturnWaitForForeignFocusClear: false,
       sections: [
         AccessibleListSection(rows: [
           if (_isRoot)
@@ -575,15 +506,45 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
 }
 
 class _RaiPlaySoundDateSelectorScreen extends StatelessWidget {
-  const _RaiPlaySoundDateSelectorScreen({required this.items});
+  const _RaiPlaySoundDateSelectorScreen({
+    required this.items,
+    required this.onOpenItem,
+  });
 
   final List<RaiPlaySoundItem> items;
+  final void Function(RaiPlaySoundItem item) onOpenItem;
+
+  List<RaiPlaySoundItem> _itemsForDate(DateTime date) {
+    return items.where((item) {
+      if (item.kind != RaiPlaySoundItemKind.audio) return false;
+      final publishedAt = item.publishedAt;
+      if (publishedAt == null) return false;
+      final localDate = publishedAt.toLocal();
+      return localDate.year == date.year &&
+          localDate.month == date.month &&
+          localDate.day == date.day;
+    }).toList(growable: false);
+  }
+
+  void _openDate(BuildContext context, DateTime date) {
+    final dateItems = _itemsForDate(date);
+    Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/raiplaysound/date'),
+        builder: (_) => _RaiPlaySoundDateItemsScreen(
+          items: dateItems,
+          onOpenItem: onOpenItem,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final formatter = DateFormat.yMMMMd(l10n.localeName);
-    final datedItems = <_RaiPlaySoundDatedItem>[];
+    final dates = <DateTime>[];
     final seenDates = <String>{};
 
     for (final item in items) {
@@ -595,49 +556,107 @@ class _RaiPlaySoundDateSelectorScreen extends StatelessWidget {
           '${localDate.month.toString().padLeft(2, '0')}-'
           '${localDate.day.toString().padLeft(2, '0')}';
       if (seenDates.add(dateKey)) {
-        datedItems.add(_RaiPlaySoundDatedItem(localDate, item));
+        dates.add(localDate);
       }
     }
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.podcastSelectDate)),
       body: SafeArea(
-        child: datedItems.isEmpty
+        child: dates.isEmpty
             ? Center(child: Text(l10n.podcastNoDatesAvailable))
             : useSharedAccessibleViewModel
                 ? UniversalAccessibleList(
-                    sections: [AccessibleListSection(rows: [
-                      for (var i = 0; i < datedItems.length; i++)
-                        AccessibleListRow(id: 'date_$i', title: formatter.format(datedItems[i].date)),
-                    ])],
+                    sections: [
+                      AccessibleListSection(
+                        rows: [
+                          for (var i = 0; i < dates.length; i++)
+                            AccessibleListRow(
+                              id: 'date_$i',
+                              title: formatter.format(dates[i]),
+                            ),
+                        ],
+                      ),
+                    ],
                     onEvent: (event) {
                       if (event.type != 'activate' || event.id == null) return;
-                      final i = int.tryParse(event.id!.replaceFirst('date_', ''));
-                      if (i != null && i < datedItems.length) Navigator.pop(context, datedItems[i].item);
+                      final i = int.tryParse(
+                        event.id!.replaceFirst('date_', ''),
+                      );
+                      if (i != null && i < dates.length) {
+                        _openDate(context, dates[i]);
+                      }
                     },
                   )
                 : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: datedItems.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final datedItem = datedItems[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(formatter.format(datedItem.date)),
-                      onTap: () => Navigator.pop(context, datedItem.item),
-                    ),
-                  );
-                },
-              ),
+                    padding: const EdgeInsets.all(16),
+                    itemCount: dates.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final date = dates[index];
+                      return Card(
+                        child: ListTile(
+                          title: Text(formatter.format(date)),
+                          onTap: () => _openDate(context, date),
+                        ),
+                      );
+                    },
+                  ),
       ),
     );
   }
 }
 
-class _RaiPlaySoundDatedItem {
-  const _RaiPlaySoundDatedItem(this.date, this.item);
+class _RaiPlaySoundDateItemsScreen extends StatelessWidget {
+  const _RaiPlaySoundDateItemsScreen({
+    required this.items,
+    required this.onOpenItem,
+  });
 
-  final DateTime date;
-  final RaiPlaySoundItem item;
+  final List<RaiPlaySoundItem> items;
+  final void Function(RaiPlaySoundItem item) onOpenItem;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Scaffold(
+      body: SafeArea(
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: items.length + 1,
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back),
+                  label: Text(l10n.back),
+                ),
+              );
+            }
+
+            final item = items[index - 1];
+            return Card(
+              child: ListTile(
+                title: Text(
+                  titleWithListTimestamp(
+                    item.title,
+                    item.publishedAt,
+                    l10n.localeName,
+                  ),
+                ),
+                subtitle:
+                    item.description.isNotEmpty ? Text(item.description) : null,
+                onTap: () => onOpenItem(item),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
 }
+

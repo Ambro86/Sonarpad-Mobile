@@ -99,6 +99,36 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sonarTubeShareVideo => 'Поділитися відео';
 
   @override
+  String get sonarTubePreviousTrack => 'Перейти до попереднього треку';
+
+  @override
+  String get sonarTubeNextTrack => 'Перейти до наступного треку';
+
+  @override
+  String get sonarTubeGoToChannel => 'Перейти до каналу';
+
+  @override
+  String get sonarTubeViewComments => 'Переглянути коментарі';
+
+  @override
+  String get sonarTubeComments => 'Коментарі';
+
+  @override
+  String get sonarTubeNoComments => 'Коментарів немає.';
+
+  @override
+  String get sonarTubeLoadMoreComments => 'Завантажити більше коментарів';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Транскрибувати відео';
+
+  @override
+  String get sonarTubeTranscript => 'Транскрипція';
+
+  @override
+  String get sonarTubeNoTranscript => 'Для цього відео немає доступної транскрипції.';
+
+  @override
   String get sonarTubeShareChannel => 'Поділитися каналом';
 
   @override

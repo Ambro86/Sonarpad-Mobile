@@ -10,12 +10,13 @@ void main() {
     final entry = entries.firstWhere((item) => item['version'] == '0.4.0');
 
     final extras = (entry['it_extra'] as List).cast<String>();
-    expect(extras, hasLength(5));
+    expect(extras, hasLength(6));
     expect(extras[0], contains('Aggiunte le registrazioni programmate di Radio e TV'));
     expect(extras[1], contains('recupero della lista dei canali'));
     expect(extras[2], contains('canali regionali e nazionali'));
     expect(extras[3], contains('leggere la trama di ogni programma'));
     expect(extras[4], contains('audiodescrizioni e i contenuti di RaiPlay Sound'));
+    expect(extras[5], contains('Aggiunto La7 Play'));
 
     for (final language in const [
       'en',

@@ -217,6 +217,11 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byTooltip('Rimuovi dai preferiti'), findsOneWidget);
+    expect(find.byKey(const ValueKey('sonartube_favorites_button')), findsNothing);
+    await tester.tap(
+      find.byKey(const ValueKey('sonartube_search_results_back')),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('sonartube_favorites_button')));
     await tester.pumpAndSettle();
 

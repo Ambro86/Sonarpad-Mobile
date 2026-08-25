@@ -27,6 +27,8 @@
   "sonarTubeNoFavorites": "没有收藏的视频、频道或播放列表。",
   "sonarTubeAddFavorite": "添加到收藏",
   "sonarTubeShareVideo": "分享视频",
+  "sonarTubePreviousTrack": "转到上一首",
+  "sonarTubeNextTrack": "转到下一首",
   "sonarTubeShareChannel": "分享频道",
   "sonarTubeSharePlaylist": "分享播放列表",
   "sonarTubeRemoveFavorite": "从收藏中移除",
@@ -2795,5 +2797,22 @@
   "mediaCutterProcess": "处理",
   "@mediaCutterProcess": {
     "description": "Button that processes the current Media Cutter edits before choosing a destination."
+  },
+  "sonarTubeGoToChannel": "前往频道",
+  "sonarTubeViewComments": "查看评论",
+  "sonarTubeComments": "评论",
+  "sonarTubeNoComments": "暂无评论。",
+  "sonarTubeLoadMoreComments": "加载更多评论",
+  "sonarTubeTranscribeVideo": "转录视频",
+  "@sonarTubeTranscribeVideo": {
+    "description": "Secondary action that opens the transcript for a SonarTube video."
+  },
+  "sonarTubeTranscript": "转录文本",
+  "@sonarTubeTranscript": {
+    "description": "Title for the SonarTube transcript screen."
+  },
+  "sonarTubeNoTranscript": "此视频没有可用的转录文本。",
+  "@sonarTubeNoTranscript": {
+    "description": "Message shown when no transcript is available for a SonarTube video."
   }
 }

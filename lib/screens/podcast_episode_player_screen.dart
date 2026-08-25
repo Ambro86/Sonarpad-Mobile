@@ -24,6 +24,11 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
     this.startWithVideo = false,
     this.startWithVideoThenRestorePreference = false,
     this.refreshEpisode,
+    this.navigateEpisode,
+    this.hasPreviousEpisode,
+    this.hasNextEpisode,
+    this.previousEpisodeLabel,
+    this.nextEpisodeLabel,
   });
 
   final PodcastEpisode episode;
@@ -39,6 +44,15 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
   /// Optional one-shot media refresh used when a temporary signed stream URL
   /// fails. Other players leave this null and preserve their old behavior.
   final Future<PodcastEpisode?> Function()? refreshEpisode;
+
+  /// Optional adjacent-item navigation. SonarTube supplies this only when a
+  /// video was opened from a channel or playlist. The callback resolves the
+  /// adjacent item on demand and returns fresh playable URLs.
+  final Future<PodcastEpisode?> Function(int direction)? navigateEpisode;
+  final bool Function()? hasPreviousEpisode;
+  final bool Function()? hasNextEpisode;
+  final String? previousEpisodeLabel;
+  final String? nextEpisodeLabel;
 
   @override
   State<PodcastEpisodePlayerScreen> createState() =>
@@ -320,6 +334,79 @@ class _PodcastEpisodePlayerScreenState
       return false;
     } finally {
       _refreshingEpisode = false;
+    }
+  }
+
+  bool get _canNavigatePrevious =>
+      widget.navigateEpisode != null &&
+      widget.previousEpisodeLabel != null &&
+      (widget.hasPreviousEpisode?.call() ?? false);
+
+  bool get _canNavigateNext =>
+      widget.navigateEpisode != null &&
+      widget.nextEpisodeLabel != null &&
+      (widget.hasNextEpisode?.call() ?? false);
+
+  Future<void> _navigateAdjacentEpisode(int direction) async {
+    final navigate = widget.navigateEpisode;
+    if (navigate == null || _loading || _refreshingEpisode) return;
+    if (direction < 0 && !_canNavigatePrevious) return;
+    if (direction > 0 && !_canNavigateNext) return;
+
+    AppLogger.log(
+      'PodcastPlayer: adjacent navigation start direction=$direction, $_logSubject',
+    );
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final replacement = await navigate(direction);
+      if (!mounted || replacement == null) return;
+
+      await _saveVideoBookmark();
+      if (_videoController == null) {
+        await _audio.saveCurrentBookmark();
+      }
+      final previousVideoController = _videoController;
+      if (Platform.isIOS && previousVideoController != null) {
+        await _mediaCommands.invokeMethod('clearMagicTap');
+      }
+      if (previousVideoController != null) {
+        await previousVideoController.pause();
+        previousVideoController.dispose();
+      }
+      _videoController = null;
+      _videoUsesExternalAudio = false;
+      if (_loaded) {
+        await _audio.stop();
+      }
+
+      _loaded = false;
+      _detectedChapters = null;
+      _lastVideoBookmarkSecond = -1;
+      _refreshedEpisode = replacement;
+      _restoreVideoOffAfterBootstrap = false;
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = null;
+      });
+      unawaited(_detectChapters());
+      await _play();
+      AppLogger.log(
+        'PodcastPlayer: adjacent navigation complete direction=$direction, $_logSubject',
+      );
+    } catch (error) {
+      AppLogger.log(
+        'PodcastPlayer: adjacent navigation failed direction=$direction error=$error, $_logSubject',
+      );
+      if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        setState(() => _error = l10n.episodeError(l10n.technicalErrorGeneric));
+      }
+    } finally {
+      if (mounted && _loading) setState(() => _loading = false);
     }
   }
 
@@ -668,6 +755,15 @@ class _PodcastEpisodePlayerScreenState
               runSpacing: 12,
               alignment: WrapAlignment.center,
               children: [
+                if (_canNavigatePrevious)
+                  FilledButton.icon(
+                    key: const ValueKey('podcast_fullscreen_previous_episode'),
+                    onPressed: _loading
+                        ? null
+                        : () => _navigateAdjacentEpisode(-1),
+                    icon: const Icon(Icons.skip_previous),
+                    label: Text(widget.previousEpisodeLabel!),
+                  ),
                 if (canSeek)
                   FilledButton.icon(
                     onPressed: _loading || !_loaded ? null : _seekBackward,
@@ -691,6 +787,15 @@ class _PodcastEpisodePlayerScreenState
                     onPressed: _loading || !_loaded ? null : _seekForward,
                     icon: const Icon(Icons.fast_forward),
                     label: Text(l10n.forward15s),
+                  ),
+                if (_canNavigateNext)
+                  FilledButton.icon(
+                    key: const ValueKey('podcast_fullscreen_next_episode'),
+                    onPressed: _loading
+                        ? null
+                        : () => _navigateAdjacentEpisode(1),
+                    icon: const Icon(Icons.skip_next),
+                    label: Text(widget.nextEpisodeLabel!),
                   ),
               ],
             ),
@@ -780,6 +885,13 @@ class _PodcastEpisodePlayerScreenState
           AccessibleListRow(id: 'chapters', title: l10n.podcastChapters),
         if (widget.isVideoSupported)
           AccessibleListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
+        if (_canNavigatePrevious)
+          AccessibleListRow(
+            id: 'previous_episode',
+            title: widget.previousEpisodeLabel!,
+            kind: 'button',
+            enabled: !_loading,
+          ),
         if (canSeek) AccessibleListRow(id: 'rewind', title: l10n.rewind15s, kind: 'button', enabled: !_loading && _loaded),
         AccessibleListRow(
           id: 'play_pause',
@@ -788,6 +900,13 @@ class _PodcastEpisodePlayerScreenState
           enabled: !_loading,
         ),
         if (canSeek) AccessibleListRow(id: 'forward', title: l10n.forward15s, kind: 'button', enabled: !_loading && _loaded),
+        if (_canNavigateNext)
+          AccessibleListRow(
+            id: 'next_episode',
+            title: widget.nextEpisodeLabel!,
+            kind: 'button',
+            enabled: !_loading,
+          ),
       ];
       return UniversalAccessibleList(
         sections: [AccessibleListSection(rows: rows)],
@@ -796,10 +915,14 @@ class _PodcastEpisodePlayerScreenState
             await _openChapters();
           } else if (event.id == 'video' && event.type == 'toggle') {
             _toggleVideo(event.value == true);
+          } else if (event.id == 'previous_episode' && event.type == 'activate') {
+            await _navigateAdjacentEpisode(-1);
           } else if (event.id == 'rewind' && event.type == 'activate') {
             await _seekBackward();
           } else if (event.id == 'forward' && event.type == 'activate') {
             await _seekForward();
+          } else if (event.id == 'next_episode' && event.type == 'activate') {
+            await _navigateAdjacentEpisode(1);
           } else if (event.id == 'play_pause' && event.type == 'activate') {
             if (_videoController != null) {
               await _toggleVideoPlayback();
@@ -949,6 +1072,15 @@ class _PodcastEpisodePlayerScreenState
                 runSpacing: 12,
                 alignment: WrapAlignment.center,
                 children: [
+                  if (_canNavigatePrevious)
+                    FilledButton.icon(
+                      key: const ValueKey('podcast_previous_episode'),
+                      onPressed: _loading
+                          ? null
+                          : () => _navigateAdjacentEpisode(-1),
+                      icon: const Icon(Icons.skip_previous),
+                      label: Text(widget.previousEpisodeLabel!),
+                    ),
                   if (canSeek)
                     FilledButton.icon(
                       onPressed:
@@ -982,6 +1114,15 @@ class _PodcastEpisodePlayerScreenState
                           _loading || !_loaded ? null : _seekForward,
                       icon: const Icon(Icons.fast_forward),
                       label: Text(l10n.forward15s),
+                    ),
+                  if (_canNavigateNext)
+                    FilledButton.icon(
+                      key: const ValueKey('podcast_next_episode'),
+                      onPressed: _loading
+                          ? null
+                          : () => _navigateAdjacentEpisode(1),
+                      icon: const Icon(Icons.skip_next),
+                      label: Text(widget.nextEpisodeLabel!),
                     ),
                 ],
               ),
