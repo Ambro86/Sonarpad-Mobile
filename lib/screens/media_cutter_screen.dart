@@ -4883,7 +4883,24 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           filePath,
           originalName: p.basename(filePath),
         );
-        if (mounted) _showSnack(l10n.exportSavedInSonarpad);
+        if (!mounted) return;
+        await showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => PopScope(
+            canPop: false,
+            child: AlertDialog(
+              content: Text(l10n.exportSavedInSonarpad),
+              actions: [
+                FilledButton(
+                  key: const ValueKey('media_cutter_saved_ok'),
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(l10n.ok),
+                ),
+              ],
+            ),
+          ),
+        );
         await _cleanupStagedOutput(filePath);
         return;
       } catch (error) {

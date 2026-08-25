@@ -34,6 +34,16 @@ void main() {
     expect(source, contains('resolveFilePath(document)'));
   });
 
+  test('media cutter save confirmation is a localized OK dialog', () {
+    final cutter = File('lib/screens/media_cutter_screen.dart').readAsStringSync();
+
+    expect(cutter, contains("ValueKey('media_cutter_saved_ok')"));
+    expect(cutter, contains('content: Text(l10n.exportSavedInSonarpad)'));
+    expect(cutter, contains('child: Text(l10n.ok)'));
+    expect(cutter, contains('barrierDismissible: false'));
+    expect(cutter, isNot(contains('_showSnack(l10n.exportSavedInSonarpad)')));
+  });
+
   test('every locale contains the new media destination labels', () {
     final arbFiles = Directory('lib/l10n')
         .listSync()
