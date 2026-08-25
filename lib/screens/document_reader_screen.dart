@@ -9,10 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:path_provider/path_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/app_settings_service.dart';
+import '../services/app_cache_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
@@ -1123,11 +1123,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _epubIndexCacheVersion.toString(),
       ].join('|'),
     );
-    final supportDir = await getApplicationSupportDirectory();
-    final cacheDir = Directory('${supportDir.path}/epub_index_cache');
-    if (!await cacheDir.exists()) {
-      await cacheDir.create(recursive: true);
-    }
+    final cacheDir = await AppCacheService.directory(
+      AppCacheService.epubIndexFolder,
+    );
     return File('${cacheDir.path}/$cacheKey.json');
   }
 

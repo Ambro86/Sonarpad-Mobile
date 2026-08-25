@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 import 'aifa_service.dart';
+import 'app_cache_service.dart';
 
 class ParafarmacoSearchResult {
   final String name;
@@ -464,11 +464,9 @@ class ParafarmacoService {
     ParafarmacoDetail detail,
     ParafarmacoSectionType type,
   ) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final cacheDir = Directory('${dir.path}/parafarmaci_cache');
-    if (!await cacheDir.exists()) {
-      await cacheDir.create(recursive: true);
-    }
+    final cacheDir = await AppCacheService.directory(
+      AppCacheService.parafarmaciFolder,
+    );
 
     final safeName = _safeFileName('${detail.name}_${type.name}');
     final file = File('${cacheDir.path}/$safeName.txt');

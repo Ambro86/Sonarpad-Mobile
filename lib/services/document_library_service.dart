@@ -559,8 +559,22 @@ class DocumentLibraryService {
   Future<void> _removeMissingLocalDocuments() async {
     final kept = <DocumentItem>[];
     var changed = false;
+    final legacyTechnicalFolderIds = _documents
+        .where(_isLegacyTechnicalDirectory)
+        .map((doc) => doc.id)
+        .toSet();
 
     for (final doc in _documents) {
+      if (_isLegacyTechnicalDirectory(doc) ||
+          (doc.parentId != null &&
+              legacyTechnicalFolderIds.contains(doc.parentId))) {
+        changed = true;
+        await AppLogger.log(
+          'DocumentLibraryService: rimosso elemento tecnico legacy '
+          'name="${doc.name}" path="${doc.path}"',
+        );
+        continue;
+      }
       if (doc.isFolder ||
           doc.extension == 'librivox' ||
           doc.extension == 'archiveaudio') {
@@ -776,7 +790,15 @@ class DocumentLibraryService {
     final lower = basename.toLowerCase();
     return lower.isEmpty ||
         lower.startsWith('.') ||
-        lower == '__macosx';
+        lower == '__macosx' ||
+        lower == 'aifa_cache' ||
+        lower == 'parafarmaci_cache';
+  }
+
+  bool _isLegacyTechnicalDirectory(DocumentItem doc) {
+    if (!doc.isFolder || doc.path.trim().isEmpty) return false;
+    final normalized = doc.path.replaceAll('\\', '/').toLowerCase();
+    return normalized == 'aifa_cache' || normalized == 'parafarmaci_cache';
   }
 
   String _placementKey(String? parentId, String name, {required bool isFolder}) {

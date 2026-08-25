@@ -22,6 +22,7 @@ import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/app_cache_service.dart';
 import '../services/media_export_destination_service.dart';
 import 'media_cutter_add_track_screen.dart';
 import '../utils/app_logger.dart';
@@ -4919,11 +4920,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   Future<String> _createStagedOutputDirectory() async {
-    final supportDir = await getApplicationSupportDirectory();
+    final mediaExportsDir = await AppCacheService.directory(
+      AppCacheService.mediaExportsFolder,
+    );
     final operationDir = Directory(
       p.join(
-        supportDir.path,
-        'media_exports',
+        mediaExportsDir.path,
         'cutter_${DateTime.now().microsecondsSinceEpoch}',
       ),
     );

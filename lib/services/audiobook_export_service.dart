@@ -5,11 +5,11 @@ import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
+import 'app_cache_service.dart';
 import 'app_settings_service.dart';
 import 'voice_dictionary_service.dart';
 
@@ -586,9 +586,9 @@ class AudiobookExportService {
     required String text,
     required int chunks,
   }) async {
-    final base = await getApplicationSupportDirectory();
-    final root = Directory(p.join(base.path, 'sonarpad_audiobook_exports'));
-    await root.create(recursive: true);
+    final root = await AppCacheService.directory(
+      AppCacheService.audiobookExportsFolder,
+    );
     await _cleanupOldJobs(root);
 
     final jobId = _jobId(

@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/app_logger.dart';
+import 'app_cache_service.dart';
 
 class TvChannel {
   final String name;
@@ -282,11 +282,9 @@ class TvService {
   }
 
   Future<File> _channelsCacheFile() async {
-    final supportDir = await getApplicationSupportDirectory();
-    final cacheDir = Directory('${supportDir.path}/tv_cache');
-    if (!await cacheDir.exists()) {
-      await cacheDir.create(recursive: true);
-    }
+    final cacheDir = await AppCacheService.directory(
+      AppCacheService.tvFolder,
+    );
     return File('${cacheDir.path}/channels.json');
   }
 

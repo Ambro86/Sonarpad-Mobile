@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:string_similarity/string_similarity.dart';
 import 'aifa_cache_manager.dart';
+import 'app_cache_service.dart';
 
 enum DrugMatchLevel { confirmed, strong, possible, unknown }
 
@@ -239,11 +239,9 @@ class AifaService {
         '$_baseUrl/organizzazione/${drug.codiceSis}/farmaci/${drug.aic6}/stampati?ts=FI';
 
     // Predispone la directory di cache
-    final dir = await getApplicationDocumentsDirectory();
-    final cacheDir = Directory('${dir.path}/aifa_cache');
-    if (!await cacheDir.exists()) {
-      await cacheDir.create(recursive: true);
-    }
+    final cacheDir = await AppCacheService.directory(
+      AppCacheService.aifaFolder,
+    );
 
     // Nome file sicuro per il file system
     final safeName = drug.name.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');

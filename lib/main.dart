@@ -11,6 +11,7 @@ import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
 import 'l10n/app_localizations.dart';
 import 'models/podcast.dart';
 import 'utils/app_logger.dart';
+import 'services/app_cache_service.dart';
 import 'services/app_settings_service.dart';
 import 'widgets/universal_accessible_view.dart';
 import 'services/changelog_service.dart';
@@ -143,6 +144,7 @@ Future<void> main() async {
     'developerMode=$developerModeEnabled '
     'accessibleRenderer=$effectiveAccessibleRendererMode',
   );
+  await AppCacheService.cleanupAtStartup();
   tz_data.initializeTimeZones();
   await AppLogger.log('Sonarpad bootstrap timezone data initialized');
   try {

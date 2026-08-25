@@ -5,10 +5,10 @@ import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/app_cache_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
@@ -363,11 +363,12 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   }
 
   Future<String> _createStagedOutputPath(String inputPath) async {
-    final supportDir = await getApplicationSupportDirectory();
+    final mediaExportsDir = await AppCacheService.directory(
+      AppCacheService.mediaExportsFolder,
+    );
     final operationDir = Directory(
       p.join(
-        supportDir.path,
-        'media_exports',
+        mediaExportsDir.path,
         'convert_${DateTime.now().microsecondsSinceEpoch}',
       ),
     );

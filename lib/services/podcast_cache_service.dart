@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'app_cache_service.dart';
 
 /// Gestione della cache temporanea usata dai podcast.
 ///
@@ -21,12 +20,7 @@ class PodcastCacheService {
   static const automaticCleanupMaxAge = Duration(days: 14);
 
   Future<Directory> cacheDirectory({bool create = true}) async {
-    final base = await getTemporaryDirectory();
-    final dir = Directory(p.join(base.path, _cacheFolderName));
-    if (create && !await dir.exists()) {
-      await dir.create(recursive: true);
-    }
-    return dir;
+    return AppCacheService.directory(_cacheFolderName, create: create);
   }
 
   Future<int> cacheSizeBytes() async {

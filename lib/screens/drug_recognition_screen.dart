@@ -752,18 +752,31 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
         await _cameraController!.stopImageStream();
       }
       final file = await _cameraController!.takePicture();
-      final dir = await getApplicationDocumentsDirectory();
-      final targetPath = p.join(dir.path,
-          'Debug_Farmaco_${DateTime.now().millisecondsSinceEpoch}.jpg');
-      await file.saveTo(targetPath);
-      AppLogger.log('DrugRecognition: Salvata foto debug in $targetPath');
-      _speak('Condivisione foto di debug in corso');
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(targetPath)],
-          text: 'Foto debug per riconoscimento farmaci',
-        ),
+      final dir = await getTemporaryDirectory();
+      final targetPath = p.join(
+        dir.path,
+        'Debug_Farmaco_${DateTime.now().millisecondsSinceEpoch}.jpg',
       );
+      await file.saveTo(targetPath);
+      AppLogger.log(
+        'DrugRecognition: Salvata foto debug temporanea in $targetPath',
+      );
+      _speak('Condivisione foto di debug in corso');
+      try {
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(targetPath)],
+            text: 'Foto debug per riconoscimento farmaci',
+          ),
+        );
+      } finally {
+        try {
+          final debugFile = File(targetPath);
+          if (await debugFile.exists()) await debugFile.delete();
+        } catch (e) {
+          AppLogger.log('DrugRecognition: pulizia foto debug fallita: $e');
+        }
+      }
 
       _isProcessing = false;
       _startAnalysis();
