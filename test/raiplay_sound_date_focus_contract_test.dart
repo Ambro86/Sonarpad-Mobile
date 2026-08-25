@@ -3,16 +3,24 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('RaiPlay Sound date return waits for dismissed UIKit focus before focusing item', () {
+  test('RaiPlay Sound date return keeps the existing renderer and focuses in place', () {
     final source = File('lib/screens/raiplaysound_screen.dart').readAsStringSync();
 
     expect(
       source,
-      contains('mode: AccessibleFocusMode.routeReturnJump'),
+      contains('_waitForDateSelectorReturnToSettle()'),
     );
     expect(
       source,
-      contains('routeReturnWaitForForeignFocusClear: true'),
+      contains("_accessibleListController.focusTo(\n        'item_\$itemIndex',"),
+    );
+    expect(
+      source,
+      isNot(contains('mode: AccessibleFocusMode.routeReturnJump')),
+    );
+    expect(
+      source,
+      contains('routeReturnWaitForForeignFocusClear: false'),
     );
     expect(
       source,

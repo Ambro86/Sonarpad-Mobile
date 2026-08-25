@@ -240,9 +240,11 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     final itemIndex = items.indexWhere((item) => item.id == selectedItem.id);
     if (itemIndex < 0) return;
     if (useSharedAccessibleViewModel) {
-      await _accessibleListController.focusAccessibleRow(
+      await _waitForDateSelectorReturnToSettle();
+      if (!mounted) return;
+      await _accessibleListController.focusTo(
         'item_$itemIndex',
-        mode: AccessibleFocusMode.routeReturnJump,
+        animated: false,
       );
       return;
     }
@@ -250,6 +252,23 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     final listIndex = itemIndex + (_hasDatedAudioItems(items) ? 1 : 0);
     await Future<void>.delayed(const Duration(milliseconds: 300));
     await _tryScrollToItemIndex(listIndex);
+  }
+
+  Future<void> _waitForDateSelectorReturnToSettle() async {
+    final route = ModalRoute.of(context);
+    final deadline = DateTime.now().add(const Duration(seconds: 2));
+    while (mounted && route != null && DateTime.now().isBefore(deadline)) {
+      final primaryStable = route.animation == null ||
+          route.animation!.status == AnimationStatus.completed;
+      final secondaryStable = route.secondaryAnimation == null ||
+          route.secondaryAnimation!.status == AnimationStatus.dismissed;
+      if (route.isCurrent && primaryStable && secondaryStable) break;
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+    }
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await WidgetsBinding.instance.endOfFrame;
   }
 
   Future<void> _tryScrollToItemIndex(int listIndex, {int attempt = 0}) async {
@@ -325,7 +344,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
       controller: _accessibleListController,
       routeReturnSemanticsSettleDelay: Duration.zero,
       routeReturnUseFocusProxy: false,
-      routeReturnWaitForForeignFocusClear: true,
+      routeReturnWaitForForeignFocusClear: false,
       sections: [
         AccessibleListSection(rows: [
           if (_isRoot)
