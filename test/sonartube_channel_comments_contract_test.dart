@@ -29,6 +29,8 @@ void main() {
     final commentsScreen = screen.substring(start, end);
     expect(commentsScreen, contains('useSharedAccessibleViewModel'));
     expect(commentsScreen, contains('UniversalAccessibleList('));
+    expect(commentsScreen, contains('final title = author.isEmpty ? comment.text : author;'));
+    expect(commentsScreen, contains('if (author.isNotEmpty) comment.text'));
   });
 
   test('all locales contain SonarTube channel and comments labels', () {

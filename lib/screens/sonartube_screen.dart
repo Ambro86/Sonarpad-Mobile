@@ -1663,23 +1663,26 @@ class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
     } else {
       for (var index = 0; index < _comments.length; index++) {
         final comment = _comments[index];
-        final meta = <String>[
-          if (comment.author?.isNotEmpty ?? false) comment.author!,
-          if (comment.published?.isNotEmpty ?? false) comment.published!,
-        ].join(' · ');
+        final author = comment.author?.trim() ?? '';
+        final published = comment.published?.trim() ?? '';
+        final title = author.isEmpty ? comment.text : author;
+        final details = <String>[
+          if (author.isNotEmpty) comment.text,
+          if (published.isNotEmpty) published,
+        ].join('\n');
         final child = Card(
           key: ValueKey('sonartube_comment_${comment.id}'),
           child: ListTile(
-            title: Text(comment.text),
-            subtitle: meta.isEmpty ? null : Text(meta),
+            title: Text(title),
+            subtitle: details.isEmpty ? null : Text(details),
           ),
         );
         flutterRows.add(child);
         accessibleRows.add(
           AccessibleListRow(
             id: 'comment_$index',
-            title: comment.text,
-            subtitle: meta.isEmpty ? null : meta,
+            title: title,
+            subtitle: details.isEmpty ? null : details,
             kind: 'text',
             accessibilityButtonTrait: false,
             flutterChild: child,
