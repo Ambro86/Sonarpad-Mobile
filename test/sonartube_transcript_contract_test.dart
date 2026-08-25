@@ -18,23 +18,19 @@ void main() {
     expect(screen, isNot(contains('Localizations.localeOf(context).languageCode')));
   });
 
-  test('SonarTube transcript keeps the clean screen while using the shared accessible renderer', () {
+  test('SonarTube transcript opens in the standard document reader', () {
     final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync();
 
     expect(screen, contains('class _SonarTubeTranscriptScreen'));
     expect(screen, contains("ValueKey('sonartube_transcript_back')"));
     expect(screen, contains('l10n.sonarTubeTranscript'));
     expect(screen, contains('l10n.sonarTubeNoTranscript'));
-    expect(screen, contains("ValueKey('sonartube_transcript_text')"));
-    expect(screen, contains("ValueKey('sonartube_transcript_copy')"));
-    expect(screen, contains("ValueKey('sonartube_transcript_save')"));
-    expect(screen, contains("ValueKey('sonartube_transcript_saved_ok')"));
-    expect(screen, contains(r"id: 'transcript_paragraph_$index'"));
     expect(screen, contains("transcript.paragraphs.join('\\n\\n')"));
     expect(screen, contains('DocumentLibraryService()'));
-    expect(screen, contains('await library.add(document)'));
-    expect(screen, contains('l10n.sonarTubeTranscriptSavedInDocuments'));
-    expect(screen, contains('child: Text(l10n.ok)'));
+    expect(screen, contains('isTemporary: true'));
+    expect(screen, contains('DocumentReaderScreen(document: document)'));
+    expect(screen, isNot(contains("ValueKey('sonartube_transcript_copy')")));
+    expect(screen, isNot(contains("ValueKey('sonartube_transcript_save')")));
     final start = screen.indexOf('class _SonarTubeTranscriptScreenState');
     final end = screen.indexOf('class _SonarTubeCommentsScreen', start);
     final transcriptScreen = screen.substring(start, end);
@@ -52,9 +48,6 @@ void main() {
         'sonarTubeTranscribeVideo',
         'sonarTubeTranscript',
         'sonarTubeNoTranscript',
-        'sonarTubeCopyTranscript',
-        'sonarTubeTranscriptCopied',
-        'sonarTubeTranscriptSavedInDocuments',
       ]) {
         expect(source, contains('"$key"'), reason: '${file.path}: $key');
       }
