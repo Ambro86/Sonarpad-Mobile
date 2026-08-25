@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('letter navigation opens a clean filtered Material screen instead of jumping', () {
+  test('letter navigation opens a clean filtered shared-accessible screen instead of jumping', () {
     final source = File(
       'lib/widgets/letter_jump_option_picker_screen.dart',
     ).readAsStringSync();
@@ -11,7 +11,11 @@ void main() {
     expect(source, contains('class _LetterFilteredOptionsScreen<T>'));
     expect(source, contains('optionsForLetter: _optionsForLetter'));
     expect(source, contains('final options = optionsForLetter(letter);'));
-    expect(source, contains('itemCount: options.length + 2'));
+    final start = source.indexOf('class _LetterFilteredOptionsScreen<T>');
+    final filtered = source.substring(start, source.indexOf('String? _initialLetter', start));
+    expect(filtered, contains('useSharedAccessibleViewModel'));
+    expect(filtered, contains('UniversalAccessibleList('));
+    expect(filtered, contains("id: 'back'"));
     expect(source, contains('ElevatedButton.icon('));
     expect(source, contains('header: true'));
     expect(source, isNot(contains('focusAccessibleRow(')));

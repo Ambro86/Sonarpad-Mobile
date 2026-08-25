@@ -16,7 +16,7 @@ void main() {
     expect(screen, isNot(contains('Localizations.localeOf(context).languageCode')));
   });
 
-  test('SonarTube transcript opens in a clean Material screen', () {
+  test('SonarTube transcript keeps the clean screen while using the shared accessible renderer', () {
     final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync();
 
     expect(screen, contains('class _SonarTubeTranscriptScreen'));
@@ -24,6 +24,11 @@ void main() {
     expect(screen, contains('l10n.sonarTubeTranscript'));
     expect(screen, contains('l10n.sonarTubeNoTranscript'));
     expect(screen, contains("ValueKey('sonartube_transcript_text')"));
+    final start = screen.indexOf('class _SonarTubeTranscriptScreenState');
+    final end = screen.indexOf('class _SonarTubeCommentsScreen', start);
+    final transcriptScreen = screen.substring(start, end);
+    expect(transcriptScreen, contains('useSharedAccessibleViewModel'));
+    expect(transcriptScreen, contains('UniversalAccessibleList('));
   });
 
   test('all locales contain SonarTube transcript labels', () {

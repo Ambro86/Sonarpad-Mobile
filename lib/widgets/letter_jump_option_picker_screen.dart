@@ -266,51 +266,89 @@ class _LetterFilteredOptionsScreen<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backLabel = MaterialLocalizations.of(context).backButtonTooltip;
+    final flutterRows = <Widget>[
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+          label: Text(backLabel),
+        ),
+      ),
+      Semantics(
+        header: true,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+        ),
+      ),
+    ];
+    final accessibleRows = <AccessibleListRow>[
+      AccessibleListRow(
+        id: 'back',
+        title: backLabel,
+        kind: 'button',
+        flutterChild: flutterRows[0],
+      ),
+      AccessibleListRow(
+        id: 'title',
+        title: title,
+        kind: 'text',
+        accessibilityButtonTrait: false,
+        flutterChild: flutterRows[1],
+      ),
+    ];
+
+    for (var index = 0; index < options.length; index++) {
+      final option = options[index];
+      final selected = selectedBuilder?.call(option) ?? false;
+      final label = displayLabelBuilder(option);
+      final child = Card(
+        child: ListTile(
+          leading: leadingBuilder?.call(selected) ??
+              Icon(selected ? Icons.check : Icons.radio),
+          title: Text(label),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.pop(context, option),
+        ),
+      );
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'option_$index',
+          title: label,
+          selected: selected,
+          flutterChild: child,
+        ),
+      );
+    }
 
     return Scaffold(
       body: SafeArea(
-        child: ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: options.length + 2,
-          separatorBuilder: (_, _) => const SizedBox(height: 8),
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back),
-                  label: Text(backLabel),
-                ),
-              );
-            }
-
-            if (index == 1) {
-              return Semantics(
-                header: true,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                ),
-              );
-            }
-
-            final option = options[index - 2];
-            final selected = selectedBuilder?.call(option) ?? false;
-            return Card(
-              child: ListTile(
-                leading: leadingBuilder?.call(selected) ??
-                    Icon(selected ? Icons.check : Icons.radio),
-                title: Text(displayLabelBuilder(option)),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.pop(context, option),
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: accessibleRows)],
+                onEvent: (event) {
+                  if (event.type != 'activate' || event.id == null) return;
+                  if (event.id == 'back') {
+                    Navigator.pop(context);
+                  } else if (event.id!.startsWith('option_')) {
+                    final index = int.tryParse(event.id!.substring(7));
+                    if (index != null && index >= 0 && index < options.length) {
+                      Navigator.pop(context, options[index]);
+                    }
+                  }
+                },
+              )
+            : ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: flutterRows.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                itemBuilder: (_, index) => flutterRows[index],
               ),
-            );
-          },
-        ),
       ),
     );
   }

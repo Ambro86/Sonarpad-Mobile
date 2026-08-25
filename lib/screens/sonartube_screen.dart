@@ -261,18 +261,16 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
 
     if (!mounted || !shouldFocusFirstAppendedItem) return;
 
-    // The clean search-results route is intentionally a plain Material list,
-    // but Load more must keep the useful accessibility behavior it had before:
-    // move VoiceOver/TalkBack to the first result that was just appended.
-    if (_isSearchResults) {
+    if (_isSearchResults && !useSharedAccessibleViewModel) {
       await _focusFirstAppendedSearchResult(firstAppendedIndex);
       return;
     }
 
     if (!useSharedAccessibleViewModel) return;
 
-    // Keep collection browsing renderer-neutral. AccessibleListController
-    // routes the same in-place focus request to Flutter or UIKit.
+    // Keep both collection browsing and the clean search-results route
+    // renderer-neutral. On iOS this request is handled by UIKit; on Android
+    // the shared Flutter renderer receives the same row id.
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return;
     await _accessibleListController.focusTo(
@@ -807,6 +805,191 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
   }
 
+  Widget _buildSearchResultsAccessible(AppLocalizations l10n) {
+    final rows = <AccessibleListRow>[
+      AccessibleListRow(
+        id: 'back',
+        title: l10n.back,
+        kind: 'button',
+        flutterChild: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            key: const ValueKey('sonartube_search_results_back'),
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back),
+            label: Text(l10n.back),
+          ),
+        ),
+      ),
+      AccessibleListRow(
+        id: 'title',
+        title: l10n.searchResults,
+        kind: 'text',
+        accessibilityButtonTrait: false,
+        flutterChild: Text(
+          l10n.searchResults,
+          key: const ValueKey('sonartube_search_results_title'),
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+      ),
+    ];
+
+    if (_loading) {
+      rows.add(
+        AccessibleListRow(
+          id: 'loading',
+          title: l10n.loading,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: LinearProgressIndicator(semanticsLabel: l10n.loading),
+        ),
+      );
+    } else if (_error != null) {
+      final message = l10n.error(l10n.technicalErrorGeneric);
+      rows.add(
+        AccessibleListRow(
+          id: 'error',
+          title: message,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: Text(
+            message,
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    } else if (_items.isEmpty) {
+      rows.add(
+        AccessibleListRow(
+          id: 'empty',
+          title: l10n.sonarTubeNoResults,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: Text(
+            l10n.sonarTubeNoResults,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    } else {
+      for (var index = 0; index < _items.length; index++) {
+        final item = _items[index];
+        final resolving = _resolvingId == item.id;
+        final isFavorite = _favoriteKeys.contains(
+          _favoritesService.itemKey(item),
+        );
+        final favoriteLabel = isFavorite
+            ? l10n.sonarTubeRemoveFavorite
+            : l10n.sonarTubeAddFavorite;
+        final subtitle = resolving
+            ? l10n.sonarTubeResolving
+            : _subtitle(l10n, item);
+        rows.add(
+          AccessibleListRow(
+            id: 'item_$index',
+            title: item.title,
+            subtitle: subtitle,
+            accessibilityLabel: [
+              item.title,
+              if (subtitle?.isNotEmpty ?? false) subtitle!,
+            ].join(', '),
+            enabled: _resolvingId == null,
+            actions: [
+              AccessibleCustomAction(id: 'favorite', label: favoriteLabel),
+              AccessibleCustomAction(
+                id: _shareActionId(item),
+                label: _shareActionLabel(l10n, item),
+              ),
+              if (item.kind == SonarTubeItemKind.video)
+                AccessibleCustomAction(
+                  id: 'go_channel',
+                  label: l10n.sonarTubeGoToChannel,
+                ),
+              if (item.kind == SonarTubeItemKind.video)
+                AccessibleCustomAction(
+                  id: 'view_comments',
+                  label: l10n.sonarTubeViewComments,
+                ),
+              if (item.kind == SonarTubeItemKind.video)
+                AccessibleCustomAction(
+                  id: 'transcribe_video',
+                  label: l10n.sonarTubeTranscribeVideo,
+                ),
+            ],
+            flutterChild: _buildFlutterSonarTubeItem(
+              l10n,
+              item,
+              resolving: resolving,
+              isFavorite: isFavorite,
+              favoriteLabel: favoriteLabel,
+              subtitle: subtitle,
+            ),
+          ),
+        );
+      }
+      if (_nextToken != null) {
+        rows.add(
+          AccessibleListRow(
+            id: 'load_more',
+            title: _loadingMore ? l10n.loading : l10n.sonarTubeLoadMore,
+            kind: 'button',
+            enabled: !_loadingMore,
+            flutterChild: FilledButton.tonal(
+              key: const ValueKey('sonartube_load_more'),
+              onPressed: _loadingMore ? null : _loadMore,
+              child: _loadingMore
+                  ? SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        semanticsLabel: l10n.loading,
+                      ),
+                    )
+                  : Text(l10n.sonarTubeLoadMore),
+            ),
+          ),
+        );
+      }
+    }
+
+    return UniversalAccessibleList(
+      controller: _accessibleListController,
+      sections: [AccessibleListSection(rows: rows)],
+      onEvent: (event) async {
+        if (event.type == 'customAction' &&
+            event.id?.startsWith('item_') == true) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index == null || index < 0 || index >= _items.length) return;
+          final item = _items[index];
+          if (event.action == 'favorite') {
+            await _toggleFavorite(item, accessibleRowId: event.id);
+          } else if (event.action == _shareActionId(item)) {
+            await _shareItem(item);
+          } else if (event.action == 'go_channel') {
+            await _openChannelForVideo(item);
+          } else if (event.action == 'view_comments') {
+            await _openComments(item);
+          } else if (event.action == 'transcribe_video') {
+            await _openTranscript(item);
+          }
+          return;
+        }
+        if (event.type != 'activate' || event.id == null) return;
+        if (event.id == 'back') {
+          Navigator.pop(context);
+        } else if (event.id == 'load_more') {
+          await _loadMore();
+        } else if (event.id!.startsWith('item_')) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index != null && index >= 0 && index < _items.length) {
+            await _openItem(_items[index]);
+          }
+        }
+      },
+    );
+  }
+
   Widget _buildSearchResultsMaterial(AppLocalizations l10n) {
     final rows = <Widget>[
       SizedBox(
@@ -910,7 +1093,13 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     if (_isSearchResults) {
-      return _buildSearchResultsMaterial(l10n);
+      return useSharedAccessibleViewModel
+          ? Scaffold(
+              body: SafeArea(
+                child: _buildSearchResultsAccessible(l10n),
+              ),
+            )
+          : _buildSearchResultsMaterial(l10n);
     }
     return Scaffold(
       appBar: AppBar(
@@ -1179,7 +1368,7 @@ class _SonarTubeTranscriptScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final rows = <Widget>[
+    final flutterRows = <Widget>[
       SizedBox(
         width: double.infinity,
         child: ElevatedButton.icon(
@@ -1199,43 +1388,108 @@ class _SonarTubeTranscriptScreenState
         style: Theme.of(context).textTheme.titleMedium,
       ),
     ];
+    final accessibleRows = <AccessibleListRow>[
+      AccessibleListRow(
+        id: 'back',
+        title: l10n.back,
+        kind: 'button',
+        flutterChild: flutterRows[0],
+      ),
+      AccessibleListRow(
+        id: 'title',
+        title: l10n.sonarTubeTranscript,
+        kind: 'text',
+        accessibilityButtonTrait: false,
+        flutterChild: flutterRows[1],
+      ),
+      AccessibleListRow(
+        id: 'video_title',
+        title: widget.item.title,
+        kind: 'text',
+        accessibilityButtonTrait: false,
+        flutterChild: flutterRows[2],
+      ),
+    ];
 
     if (_loading) {
-      rows.add(LinearProgressIndicator(semanticsLabel: l10n.loading));
+      final child = LinearProgressIndicator(semanticsLabel: l10n.loading);
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'loading',
+          title: l10n.loading,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
+        ),
+      );
     } else if (_unavailable) {
-      rows.add(
-        Text(
-          l10n.sonarTubeNoTranscript,
-          textAlign: TextAlign.center,
+      final child = Text(
+        l10n.sonarTubeNoTranscript,
+        textAlign: TextAlign.center,
+      );
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'unavailable',
+          title: l10n.sonarTubeNoTranscript,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
         ),
       );
     } else if (_failed || _transcript == null) {
-      rows.add(
-        Text(
-          l10n.error(l10n.technicalErrorGeneric),
-          textAlign: TextAlign.center,
+      final message = l10n.error(l10n.technicalErrorGeneric);
+      final child = Text(message, textAlign: TextAlign.center);
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'error',
+          title: message,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
         ),
       );
     } else {
-      rows.add(
-        SelectableText(
-          _transcript!.text,
-          key: const ValueKey('sonartube_transcript_text'),
+      final text = _transcript!.text;
+      final child = SelectableText(
+        text,
+        key: const ValueKey('sonartube_transcript_text'),
+      );
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'transcript',
+          title: text,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
         ),
       );
     }
 
     return Scaffold(
       body: SafeArea(
-        child: ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: rows.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (_, index) => rows[index],
-        ),
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: accessibleRows)],
+                onEvent: (event) {
+                  if (event.type == 'activate' && event.id == 'back') {
+                    Navigator.pop(context);
+                  }
+                },
+              )
+            : ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: flutterRows.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                itemBuilder: (_, index) => flutterRows[index],
+              ),
       ),
     );
   }
+
 }
 
 class _SonarTubeCommentsScreen extends StatefulWidget {
@@ -1314,7 +1568,7 @@ class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final rows = <Widget>[
+    final flutterRows = <Widget>[
       SizedBox(
         width: double.infinity,
         child: ElevatedButton.icon(
@@ -1324,72 +1578,133 @@ class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
           label: Text(l10n.back),
         ),
       ),
-      const SizedBox(height: 16),
       Text(
         l10n.sonarTubeComments,
         key: const ValueKey('sonartube_comments_title'),
         style: Theme.of(context).textTheme.headlineSmall,
       ),
-      const SizedBox(height: 12),
+    ];
+    final accessibleRows = <AccessibleListRow>[
+      AccessibleListRow(
+        id: 'back',
+        title: l10n.back,
+        kind: 'button',
+        flutterChild: flutterRows[0],
+      ),
+      AccessibleListRow(
+        id: 'title',
+        title: l10n.sonarTubeComments,
+        kind: 'text',
+        accessibilityButtonTrait: false,
+        flutterChild: flutterRows[1],
+      ),
     ];
 
     if (_loading) {
-      rows.add(LinearProgressIndicator(semanticsLabel: l10n.loading));
+      final child = LinearProgressIndicator(semanticsLabel: l10n.loading);
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'loading',
+          title: l10n.loading,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
+        ),
+      );
     } else if (_failed && _comments.isEmpty) {
-      rows.add(
-        Text(
-          l10n.error(l10n.technicalErrorGeneric),
-          textAlign: TextAlign.center,
+      final message = l10n.error(l10n.technicalErrorGeneric);
+      final child = Text(message, textAlign: TextAlign.center);
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'error',
+          title: message,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
         ),
       );
     } else if (_comments.isEmpty) {
-      rows.add(
-        Text(
-          l10n.sonarTubeNoComments,
-          textAlign: TextAlign.center,
+      final child = Text(
+        l10n.sonarTubeNoComments,
+        textAlign: TextAlign.center,
+      );
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'empty',
+          title: l10n.sonarTubeNoComments,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
         ),
       );
     } else {
-      for (final comment in _comments) {
+      for (var index = 0; index < _comments.length; index++) {
+        final comment = _comments[index];
         final meta = <String>[
           if (comment.author?.isNotEmpty ?? false) comment.author!,
           if (comment.published?.isNotEmpty ?? false) comment.published!,
         ].join(' · ');
-        rows.add(
-          Card(
-            key: ValueKey('sonartube_comment_${comment.id}'),
-            child: ListTile(
-              title: Text(comment.text),
-              subtitle: meta.isEmpty ? null : Text(meta),
-            ),
+        final child = Card(
+          key: ValueKey('sonartube_comment_${comment.id}'),
+          child: ListTile(
+            title: Text(comment.text),
+            subtitle: meta.isEmpty ? null : Text(meta),
+          ),
+        );
+        flutterRows.add(child);
+        accessibleRows.add(
+          AccessibleListRow(
+            id: 'comment_$index',
+            title: comment.text,
+            subtitle: meta.isEmpty ? null : meta,
+            kind: 'text',
+            accessibilityButtonTrait: false,
+            flutterChild: child,
           ),
         );
       }
       if (_failed) {
-        rows.add(
-          Text(
-            l10n.error(l10n.technicalErrorGeneric),
-            textAlign: TextAlign.center,
+        final message = l10n.error(l10n.technicalErrorGeneric);
+        final child = Text(message, textAlign: TextAlign.center);
+        flutterRows.add(child);
+        accessibleRows.add(
+          AccessibleListRow(
+            id: 'error_more',
+            title: message,
+            kind: 'text',
+            accessibilityButtonTrait: false,
+            flutterChild: child,
           ),
         );
       }
       if (_nextToken != null && _nextToken!.isNotEmpty) {
-        rows.add(
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.tonal(
-              key: const ValueKey('sonartube_comments_load_more'),
-              onPressed: _loadingMore ? null : _loadMore,
-              child: _loadingMore
-                  ? SizedBox.square(
-                      dimension: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        semanticsLabel: l10n.loading,
-                      ),
-                    )
-                  : Text(l10n.sonarTubeLoadMoreComments),
-            ),
+        final child = SizedBox(
+          width: double.infinity,
+          child: FilledButton.tonal(
+            key: const ValueKey('sonartube_comments_load_more'),
+            onPressed: _loadingMore ? null : _loadMore,
+            child: _loadingMore
+                ? SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      semanticsLabel: l10n.loading,
+                    ),
+                  )
+                : Text(l10n.sonarTubeLoadMoreComments),
+          ),
+        );
+        flutterRows.add(child);
+        accessibleRows.add(
+          AccessibleListRow(
+            id: 'load_more',
+            title: _loadingMore ? l10n.loading : l10n.sonarTubeLoadMoreComments,
+            kind: 'button',
+            enabled: !_loadingMore,
+            flutterChild: child,
           ),
         );
       }
@@ -1397,15 +1712,28 @@ class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: rows.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 8),
-          itemBuilder: (_, index) => rows[index],
-        ),
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: accessibleRows)],
+                onEvent: (event) async {
+                  if (event.type != 'activate' || event.id == null) return;
+                  if (event.id == 'back') {
+                    Navigator.pop(context);
+                  } else if (event.id == 'load_more') {
+                    await _loadMore();
+                  }
+                },
+              )
+            : ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: flutterRows.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                itemBuilder: (_, index) => flutterRows[index],
+              ),
       ),
     );
   }
+
 }
 
 class _SonarTubeFavoritesScreen extends StatefulWidget {

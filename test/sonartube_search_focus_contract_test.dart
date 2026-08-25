@@ -3,11 +3,12 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('SonarTube search opens a clean Material results route without focus jump', () {
+  test('SonarTube search opens a clean shared-accessible results route without initial focus jump', () {
     final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
 
     expect(source, contains("name: '/sonartube/search-results'"));
     expect(source, contains('searchQuery: query'));
+    expect(source, contains('_buildSearchResultsAccessible(l10n)'));
     expect(source, contains('_buildSearchResultsMaterial(l10n)'));
     expect(
       source,
@@ -20,10 +21,10 @@ void main() {
     expect(source, isNot(contains('shouldFocusFirstResult')));
   });
 
-  test('clean SonarTube search results start with Back and omit search chrome', () {
+  test('clean SonarTube search results start with Back, omit search chrome, and keep UIKit on iOS', () {
     final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
     final start = source.indexOf(
-      'Widget _buildSearchResultsMaterial(AppLocalizations l10n)',
+      'Widget _buildSearchResultsAccessible(AppLocalizations l10n)',
     );
     final end = source.indexOf('\n  @override\n  Widget build(', start);
     expect(start, greaterThanOrEqualTo(0));
@@ -39,6 +40,6 @@ void main() {
     expect(method, isNot(contains('sonartube_favorites_button')));
     expect(method, isNot(contains('sonartube_search_field')));
     expect(method, isNot(contains('sonartube_search_button')));
-    expect(method, isNot(contains('UniversalAccessibleList(')));
+    expect(method, contains('UniversalAccessibleList('));
   });
 }

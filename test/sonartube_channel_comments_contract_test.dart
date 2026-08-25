@@ -16,7 +16,7 @@ void main() {
     expect(service, contains('Future<SonarTubeItem> channelForVideo'));
   });
 
-  test('SonarTube comments open in a clean Material-only comments screen', () {
+  test('SonarTube comments keep the clean screen while using the shared accessible renderer', () {
     final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync();
 
     expect(screen, contains('class _SonarTubeCommentsScreen'));
@@ -24,7 +24,11 @@ void main() {
     expect(screen, contains('l10n.sonarTubeComments'));
     expect(screen, contains('l10n.sonarTubeNoComments'));
     expect(screen, contains('l10n.sonarTubeLoadMoreComments'));
-    expect(screen, isNot(contains("AccessibleListController(debugName: 'sonartube_comments')")));
+    final start = screen.indexOf('class _SonarTubeCommentsScreenState');
+    final end = screen.indexOf('class _SonarTubeFavoritesScreen', start);
+    final commentsScreen = screen.substring(start, end);
+    expect(commentsScreen, contains('useSharedAccessibleViewModel'));
+    expect(commentsScreen, contains('UniversalAccessibleList('));
   });
 
   test('all locales contain SonarTube channel and comments labels', () {

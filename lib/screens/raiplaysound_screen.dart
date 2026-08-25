@@ -619,42 +619,74 @@ class _RaiPlaySoundDateItemsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final flutterRows = <Widget>[
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+          label: Text(l10n.back),
+        ),
+      ),
+    ];
+    final accessibleRows = <AccessibleListRow>[
+      AccessibleListRow(
+        id: 'back',
+        title: l10n.back,
+        kind: 'button',
+        flutterChild: flutterRows.first,
+      ),
+    ];
+
+    for (var index = 0; index < items.length; index++) {
+      final item = items[index];
+      final title = titleWithListTimestamp(
+        item.title,
+        item.publishedAt,
+        l10n.localeName,
+      );
+      final subtitle = item.description.isNotEmpty ? item.description : null;
+      final child = Card(
+        child: ListTile(
+          title: Text(title),
+          subtitle: subtitle == null ? null : Text(subtitle),
+          onTap: () => onOpenItem(item),
+        ),
+      );
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'item_$index',
+          title: title,
+          subtitle: subtitle,
+          flutterChild: child,
+        ),
+      );
+    }
 
     return Scaffold(
       body: SafeArea(
-        child: ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: items.length + 1,
-          separatorBuilder: (_, _) => const SizedBox(height: 8),
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back),
-                  label: Text(l10n.back),
-                ),
-              );
-            }
-
-            final item = items[index - 1];
-            return Card(
-              child: ListTile(
-                title: Text(
-                  titleWithListTimestamp(
-                    item.title,
-                    item.publishedAt,
-                    l10n.localeName,
-                  ),
-                ),
-                subtitle:
-                    item.description.isNotEmpty ? Text(item.description) : null,
-                onTap: () => onOpenItem(item),
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: accessibleRows)],
+                onEvent: (event) {
+                  if (event.type != 'activate' || event.id == null) return;
+                  if (event.id == 'back') {
+                    Navigator.pop(context);
+                  } else if (event.id!.startsWith('item_')) {
+                    final index = int.tryParse(event.id!.substring(5));
+                    if (index != null && index >= 0 && index < items.length) {
+                      onOpenItem(items[index]);
+                    }
+                  }
+                },
+              )
+            : ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: flutterRows.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                itemBuilder: (_, index) => flutterRows[index],
               ),
-            );
-          },
-        ),
       ),
     );
   }
