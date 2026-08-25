@@ -129,6 +129,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeNoTranscript => 'Não existe transcrição disponível para este vídeo.';
 
   @override
+  String get sonarTubeCopyTranscript => 'Copiar transcrição';
+
+  @override
+  String get sonarTubeTranscriptCopied => 'Transcrição copiada para a área de transferência';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments => 'A transcrição foi guardada nos Documentos.';
+
+  @override
   String get sonarTubeShareChannel => 'Partilhar canal';
 
   @override
@@ -3545,6 +3554,15 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get sonarTubeNoTranscript => 'Nenhuma transcrição disponível para este vídeo.';
+
+  @override
+  String get sonarTubeCopyTranscript => 'Copiar transcrição';
+
+  @override
+  String get sonarTubeTranscriptCopied => 'Transcrição copiada para a área de transferência';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments => 'A transcrição foi salva em Documentos.';
 
   @override
   String get sonarTubeShareChannel => 'Compartilhar canal';

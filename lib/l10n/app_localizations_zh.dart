@@ -126,6 +126,15 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get sonarTubeNoTranscript => '此视频没有可用的转录文本。';
 
   @override
+  String get sonarTubeCopyTranscript => '复制转录文本';
+
+  @override
+  String get sonarTubeTranscriptCopied => '转录文本已复制到剪贴板';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments => '转录文本已保存到“文档”。';
+
+  @override
   String get sonarTubeShareChannel => '分享频道';
 
   @override

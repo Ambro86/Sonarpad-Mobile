@@ -13,6 +13,8 @@ void main() {
     expect(service, contains("'transcribe': '1'"));
     expect(service, contains('Future<SonarTubeTranscript> transcribe'));
     expect(service, contains("String languageCode = 'auto'"));
+    expect(service, contains("'timestamps': '1'"));
+    expect(service, contains('for (var attempt = 0; attempt < 2; attempt++)'));
     expect(screen, isNot(contains('Localizations.localeOf(context).languageCode')));
   });
 
@@ -24,6 +26,15 @@ void main() {
     expect(screen, contains('l10n.sonarTubeTranscript'));
     expect(screen, contains('l10n.sonarTubeNoTranscript'));
     expect(screen, contains("ValueKey('sonartube_transcript_text')"));
+    expect(screen, contains("ValueKey('sonartube_transcript_copy')"));
+    expect(screen, contains("ValueKey('sonartube_transcript_save')"));
+    expect(screen, contains("ValueKey('sonartube_transcript_saved_ok')"));
+    expect(screen, contains(r"id: 'transcript_paragraph_$index'"));
+    expect(screen, contains("transcript.paragraphs.join('\\n\\n')"));
+    expect(screen, contains('DocumentLibraryService()'));
+    expect(screen, contains('await library.add(document)'));
+    expect(screen, contains('l10n.sonarTubeTranscriptSavedInDocuments'));
+    expect(screen, contains('child: Text(l10n.ok)'));
     final start = screen.indexOf('class _SonarTubeTranscriptScreenState');
     final end = screen.indexOf('class _SonarTubeCommentsScreen', start);
     final transcriptScreen = screen.substring(start, end);
@@ -41,6 +52,9 @@ void main() {
         'sonarTubeTranscribeVideo',
         'sonarTubeTranscript',
         'sonarTubeNoTranscript',
+        'sonarTubeCopyTranscript',
+        'sonarTubeTranscriptCopied',
+        'sonarTubeTranscriptSavedInDocuments',
       ]) {
         expect(source, contains('"$key"'), reason: '${file.path}: $key');
       }

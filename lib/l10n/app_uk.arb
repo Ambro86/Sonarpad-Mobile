@@ -4389,5 +4389,17 @@
   "sonarTubeNoTranscript": "Для цього відео немає доступної транскрипції.",
   "@sonarTubeNoTranscript": {
     "description": "Message shown when no transcript is available for a SonarTube video."
+  },
+  "sonarTubeCopyTranscript": "Копіювати транскрипцію",
+  "@sonarTubeCopyTranscript": {
+    "description": "Button that copies the complete SonarTube transcript."
+  },
+  "sonarTubeTranscriptCopied": "Транскрипцію скопійовано в буфер обміну",
+  "@sonarTubeTranscriptCopied": {
+    "description": "Confirmation shown after copying a SonarTube transcript."
+  },
+  "sonarTubeTranscriptSavedInDocuments": "Транскрипцію збережено в Документах.",
+  "@sonarTubeTranscriptSavedInDocuments": {
+    "description": "Confirmation shown after saving a SonarTube transcript in Documents."
   }
 }

@@ -2817,5 +2817,17 @@
   "sonarTubeNoTranscript": "Pro toto video není k dispozici žádný přepis.",
   "@sonarTubeNoTranscript": {
     "description": "Message shown when no transcript is available for a SonarTube video."
+  },
+  "sonarTubeCopyTranscript": "Kopírovat přepis",
+  "@sonarTubeCopyTranscript": {
+    "description": "Button that copies the complete SonarTube transcript."
+  },
+  "sonarTubeTranscriptCopied": "Přepis byl zkopírován do schránky",
+  "@sonarTubeTranscriptCopied": {
+    "description": "Confirmation shown after copying a SonarTube transcript."
+  },
+  "sonarTubeTranscriptSavedInDocuments": "Přepis byl uložen do Dokumentů.",
+  "@sonarTubeTranscriptSavedInDocuments": {
+    "description": "Confirmation shown after saving a SonarTube transcript in Documents."
   }
 }

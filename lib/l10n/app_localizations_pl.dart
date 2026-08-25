@@ -130,6 +130,15 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sonarTubeNoTranscript => 'Brak dostępnej transkrypcji dla tego filmu.';
 
   @override
+  String get sonarTubeCopyTranscript => 'Kopiuj transkrypcję';
+
+  @override
+  String get sonarTubeTranscriptCopied => 'Transkrypcja została skopiowana do schowka';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments => 'Transkrypcja została zapisana w Dokumentach.';
+
+  @override
   String get sonarTubeShareChannel => 'Udostępnij kanał';
 
   @override

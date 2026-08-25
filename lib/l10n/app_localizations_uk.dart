@@ -129,6 +129,15 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sonarTubeNoTranscript => 'Для цього відео немає доступної транскрипції.';
 
   @override
+  String get sonarTubeCopyTranscript => 'Копіювати транскрипцію';
+
+  @override
+  String get sonarTubeTranscriptCopied => 'Транскрипцію скопійовано в буфер обміну';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments => 'Транскрипцію збережено в Документах.';
+
+  @override
   String get sonarTubeShareChannel => 'Поділитися каналом';
 
   @override

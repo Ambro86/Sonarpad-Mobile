@@ -4392,5 +4392,17 @@
   "sonarTubeNoTranscript": "Brak dostępnej transkrypcji dla tego filmu.",
   "@sonarTubeNoTranscript": {
     "description": "Message shown when no transcript is available for a SonarTube video."
+  },
+  "sonarTubeCopyTranscript": "Kopiuj transkrypcję",
+  "@sonarTubeCopyTranscript": {
+    "description": "Button that copies the complete SonarTube transcript."
+  },
+  "sonarTubeTranscriptCopied": "Transkrypcja została skopiowana do schowka",
+  "@sonarTubeTranscriptCopied": {
+    "description": "Confirmation shown after copying a SonarTube transcript."
+  },
+  "sonarTubeTranscriptSavedInDocuments": "Transkrypcja została zapisana w Dokumentach.",
+  "@sonarTubeTranscriptSavedInDocuments": {
+    "description": "Confirmation shown after saving a SonarTube transcript in Documents."
   }
 }

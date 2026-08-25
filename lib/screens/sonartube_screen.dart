@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
+import '../services/document_library_service.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_service.dart';
 import '../utils/status_message.dart';
@@ -1355,6 +1357,7 @@ class _SonarTubeTranscriptScreenState
   bool _loading = true;
   bool _unavailable = false;
   bool _failed = false;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -1382,6 +1385,64 @@ class _SonarTubeTranscriptScreenState
         _failed = true;
         _loading = false;
       });
+    }
+  }
+
+  Future<void> _copyTranscript(AppLocalizations l10n) async {
+    final transcript = _transcript;
+    if (transcript == null) return;
+    final text = transcript.paragraphs.isEmpty
+        ? transcript.text
+        : transcript.paragraphs.join('\n\n');
+    await Clipboard.setData(ClipboardData(text: text));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.sonarTubeTranscriptCopied)),
+    );
+  }
+
+  Future<void> _saveTranscript(AppLocalizations l10n) async {
+    final transcript = _transcript;
+    if (transcript == null || _saving) return;
+    setState(() => _saving = true);
+    try {
+      var safeTitle = widget.item.title
+          .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim();
+      if (safeTitle.isEmpty) safeTitle = l10n.sonarTubeTranscript;
+      if (safeTitle.length > 120) safeTitle = safeTitle.substring(0, 120).trim();
+      final content = transcript.paragraphs.isEmpty
+          ? transcript.text
+          : transcript.paragraphs.join('\n\n');
+      final library = DocumentLibraryService();
+      final document = await library.createTextDocument(
+        name: '$safeTitle - ${l10n.sonarTubeTranscript}.txt',
+        content: content,
+      );
+      await library.add(document);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l10n.sonarTubeTranscript),
+          content: Text(l10n.sonarTubeTranscriptSavedInDocuments),
+          actions: [
+            FilledButton(
+              key: const ValueKey('sonartube_transcript_saved_ok'),
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.ok),
+            ),
+          ],
+        ),
+      );
+    } catch (_) {
+      if (mounted) {
+        showStatusMessage(context, l10n.error(l10n.technicalErrorGeneric));
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 
@@ -1472,21 +1533,66 @@ class _SonarTubeTranscriptScreenState
         ),
       );
     } else {
-      final text = _transcript!.text;
-      final child = SelectableText(
-        text,
-        key: const ValueKey('sonartube_transcript_text'),
+      final transcript = _transcript!;
+      final copyButton = SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          key: const ValueKey('sonartube_transcript_copy'),
+          onPressed: () => _copyTranscript(l10n),
+          icon: const Icon(Icons.copy),
+          label: Text(l10n.sonarTubeCopyTranscript),
+        ),
       );
-      flutterRows.add(child);
+      flutterRows.add(copyButton);
       accessibleRows.add(
         AccessibleListRow(
-          id: 'transcript',
-          title: text,
+          id: 'copy_transcript',
+          title: l10n.sonarTubeCopyTranscript,
+          kind: 'button',
+          flutterChild: copyButton,
+        ),
+      );
+      final saveButton = SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          key: const ValueKey('sonartube_transcript_save'),
+          onPressed: _saving ? null : () => _saveTranscript(l10n),
+          icon: const Icon(Icons.save_alt),
+          label: Text(_saving ? l10n.saving : l10n.saveInSonarpadDocuments),
+        ),
+      );
+      flutterRows.add(saveButton);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'save_transcript',
+          title: _saving ? l10n.saving : l10n.saveInSonarpadDocuments,
+          kind: 'button',
+          enabled: !_saving,
+          flutterChild: saveButton,
+        ),
+      );
+      final paragraphs = transcript.paragraphs.isEmpty
+          ? <String>[transcript.text]
+          : transcript.paragraphs;
+      for (var index = 0; index < paragraphs.length; index++) {
+        final paragraph = paragraphs[index];
+        final child = SelectableText(
+          paragraph,
+          key: index == 0
+              ? const ValueKey('sonartube_transcript_text')
+              : ValueKey('sonartube_transcript_paragraph_$index'),
+        );
+        flutterRows.add(child);
+        accessibleRows.add(
+          AccessibleListRow(
+            id: 'transcript_paragraph_$index',
+            title: paragraph,
           kind: 'text',
           accessibilityButtonTrait: false,
           flutterChild: child,
-        ),
-      );
+          ),
+        );
+      }
     }
 
     return Scaffold(
@@ -1497,6 +1603,13 @@ class _SonarTubeTranscriptScreenState
                 onEvent: (event) {
                   if (event.type == 'activate' && event.id == 'back') {
                     Navigator.pop(context);
+                  } else if (event.type == 'activate' &&
+                      event.id == 'copy_transcript') {
+                    _copyTranscript(l10n);
+                  } else if (event.type == 'activate' &&
+                      event.id == 'save_transcript' &&
+                      !_saving) {
+                    _saveTranscript(l10n);
                   }
                 },
               )

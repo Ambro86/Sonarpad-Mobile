@@ -131,6 +131,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sonarTubeNoTranscript => 'Aucune transcription n’est disponible pour cette vidéo.';
 
   @override
+  String get sonarTubeCopyTranscript => 'Copier la transcription';
+
+  @override
+  String get sonarTubeTranscriptCopied => 'Transcription copiée dans le presse-papiers';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments => 'La transcription a été enregistrée dans Documents.';
+
+  @override
   String get sonarTubeShareChannel => 'Partager la chaîne';
 
   @override

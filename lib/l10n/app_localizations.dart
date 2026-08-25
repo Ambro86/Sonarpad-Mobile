@@ -327,6 +327,15 @@ abstract class AppLocalizations {
   /// Message shown when a SonarTube transcript is unavailable.
   String get sonarTubeNoTranscript;
 
+  /// Button that copies the complete SonarTube transcript.
+  String get sonarTubeCopyTranscript;
+
+  /// Confirmation shown after copying a SonarTube transcript.
+  String get sonarTubeTranscriptCopied;
+
+  /// Confirmation shown after saving a SonarTube transcript in Documents.
+  String get sonarTubeTranscriptSavedInDocuments;
+
   /// No description provided for @sonarTubeShareChannel.
   ///
   /// In it, this message translates to:

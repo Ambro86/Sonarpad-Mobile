@@ -130,6 +130,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeNoTranscript => 'Pro toto video není k dispozici žádný přepis.';
 
   @override
+  String get sonarTubeCopyTranscript => 'Kopírovat přepis';
+
+  @override
+  String get sonarTubeTranscriptCopied => 'Přepis byl zkopírován do schránky';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments => 'Přepis byl uložen do Dokumentů.';
+
+  @override
   String get sonarTubeShareChannel => 'Sdílet kanál';
 
   @override
