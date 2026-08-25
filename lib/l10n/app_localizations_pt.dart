@@ -72,6 +72,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeLoadMore => 'Carregar mais resultados';
 
   @override
+  String get sonarTubeVideo => 'Vídeo';
+
+  @override
   String get sonarTubeChannel => 'Canal';
 
   @override
@@ -87,10 +90,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeFavorites => 'Favoritos';
 
   @override
-  String get sonarTubeNoFavorites => 'Nenhum canal ou lista favorito.';
+  String get sonarTubeNoFavorites => 'Nenhum vídeo, canal ou lista de reprodução nos favoritos.';
 
   @override
   String get sonarTubeAddFavorite => 'Adicionar aos favoritos';
+
+  @override
+  String get sonarTubeShareVideo => 'Partilhar vídeo';
+
+  @override
+  String get sonarTubeShareChannel => 'Partilhar canal';
+
+  @override
+  String get sonarTubeSharePlaylist => 'Partilhar lista de reprodução';
 
   @override
   String get sonarTubeRemoveFavorite => 'Remover dos favoritos';
@@ -2560,7 +2572,7 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterSaving => 'A guardar o ficheiro...';
+  String get mediaCutterSaving => 'A processar...';
 
   @override
   String mediaCutterSaved(String fileName) {
@@ -3353,16 +3365,25 @@ class AppLocalizationsPt extends AppLocalizations {
 
 
   @override
-  String get preserveMedia => 'Conservar multimédia';
+  String get mediaProcessingCompleted => 'Processamento concluído.';
 
   @override
-  String get preserveMediaSaving => 'A guardar o conteúdo multimédia…';
+  String get saveInSonarpadDocuments => 'Guardar nos Documentos do Sonarpad';
 
   @override
-  String get preserveMediaSaved => 'Conteúdo multimédia guardado nos Documentos do Sonarpad.';
+  String get mediaCutterProcess => 'Processar';
 
   @override
-  String get preserveMediaError => 'Não foi possível conservar o conteúdo multimédia.';
+  String get preserveMedia => 'Conservar conteúdo';
+
+  @override
+  String get preserveMediaSaving => 'A guardar o conteúdo…';
+
+  @override
+  String get preserveMediaSaved => 'Conteúdo guardado nos Documentos do Sonarpad.';
+
+  @override
+  String get preserveMediaError => 'Não foi possível conservar o conteúdo.';
 
 }
 
@@ -3434,6 +3455,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get sonarTubeLoadMore => 'Carregar mais resultados';
 
   @override
+  String get sonarTubeVideo => 'Vídeo';
+
+  @override
   String get sonarTubeChannel => 'Canal';
 
   @override
@@ -3449,10 +3473,19 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get sonarTubeFavorites => 'Favoritos';
 
   @override
-  String get sonarTubeNoFavorites => 'Nenhum canal ou lista favorito.';
+  String get sonarTubeNoFavorites => 'Nenhum vídeo, canal ou playlist nos favoritos.';
 
   @override
   String get sonarTubeAddFavorite => 'Adicionar aos favoritos';
+
+  @override
+  String get sonarTubeShareVideo => 'Compartilhar vídeo';
+
+  @override
+  String get sonarTubeShareChannel => 'Compartilhar canal';
+
+  @override
+  String get sonarTubeSharePlaylist => 'Compartilhar playlist';
 
   @override
   String get sonarTubeRemoveFavorite => 'Remover dos favoritos';
@@ -5922,7 +5955,7 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterSaving => 'Salvando o arquivo...';
+  String get mediaCutterSaving => 'Processando...';
 
   @override
   String mediaCutterSaved(String fileName) {
@@ -6715,15 +6748,24 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
 
   @override
-  String get preserveMedia => 'Salvar mídia';
+  String get mediaProcessingCompleted => 'Processamento concluído.';
 
   @override
-  String get preserveMediaSaving => 'Salvando mídia…';
+  String get saveInSonarpadDocuments => 'Salvar nos Documentos do Sonarpad';
 
   @override
-  String get preserveMediaSaved => 'Mídia salva nos Documentos do Sonarpad.';
+  String get mediaCutterProcess => 'Processar';
 
   @override
-  String get preserveMediaError => 'Não foi possível salvar a mídia.';
+  String get preserveMedia => 'Salvar conteúdo';
+
+  @override
+  String get preserveMediaSaving => 'Salvando conteúdo…';
+
+  @override
+  String get preserveMediaSaved => 'Conteúdo salvo nos Documentos do Sonarpad.';
+
+  @override
+  String get preserveMediaError => 'Não foi possível salvar o conteúdo.';
 
 }

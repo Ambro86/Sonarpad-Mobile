@@ -72,6 +72,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sonarTubeLoadMore => "Weitere Ergebnisse laden";
 
   @override
+  String get sonarTubeVideo => "Video";
+
+  @override
   String get sonarTubeChannel => "Kanal";
 
   @override
@@ -87,10 +90,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sonarTubeFavorites => "Favoriten";
 
   @override
-  String get sonarTubeNoFavorites => "Keine favorisierten Kanäle oder Playlists.";
+  String get sonarTubeNoFavorites => "Keine favorisierten Videos, Kanäle oder Playlists.";
 
   @override
   String get sonarTubeAddFavorite => "Zu Favoriten hinzufügen";
+
+  @override
+  String get sonarTubeShareVideo => 'Video teilen';
+
+  @override
+  String get sonarTubeShareChannel => 'Kanal teilen';
+
+  @override
+  String get sonarTubeSharePlaylist => 'Playlist teilen';
 
   @override
   String get sonarTubeRemoveFavorite => "Aus Favoriten entfernen";
@@ -2560,7 +2572,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterSaving => "Datei wird gespeichert…";
+  String get mediaCutterSaving => 'Verarbeitung läuft…';
 
   @override
   String mediaCutterSaved(String fileName) {
@@ -3352,15 +3364,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
 
   @override
-  String get preserveMedia => 'Medium speichern';
+  String get mediaProcessingCompleted => 'Verarbeitung abgeschlossen.';
 
   @override
-  String get preserveMediaSaving => 'Medium wird gespeichert…';
+  String get saveInSonarpadDocuments => 'In Sonarpad-Dokumenten speichern';
 
   @override
-  String get preserveMediaSaved => 'Medium in Sonarpad-Dokumenten gespeichert.';
+  String get mediaCutterProcess => 'Verarbeiten';
 
   @override
-  String get preserveMediaError => 'Das Medium konnte nicht gespeichert werden.';
+  String get preserveMedia => 'Inhalt speichern';
+
+  @override
+  String get preserveMediaSaving => 'Inhalt wird gespeichert…';
+
+  @override
+  String get preserveMediaSaved => 'Inhalt in Sonarpad-Dokumenten gespeichert.';
+
+  @override
+  String get preserveMediaError => 'Der Inhalt konnte nicht gespeichert werden.';
 
 }

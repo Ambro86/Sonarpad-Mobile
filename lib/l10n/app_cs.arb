@@ -18,13 +18,17 @@
   "sonarTubeSearchPrompt": "Zadejte hledání videí, kanálů a playlistů.",
   "sonarTubeNoResults": "Nebyla nalezena žádná videa.",
   "sonarTubeLoadMore": "Načíst další výsledky",
+  "sonarTubeVideo": "Video",
   "sonarTubeChannel": "Kanál",
   "sonarTubePlaylist": "Playlist",
   "sonarTubeLive": "Živě",
   "sonarTubeResolving": "Příprava videa…",
   "sonarTubeFavorites": "Oblíbené",
-  "sonarTubeNoFavorites": "Žádné oblíbené kanály ani playlisty.",
+  "sonarTubeNoFavorites": "Žádná oblíbená videa, kanály ani playlisty.",
   "sonarTubeAddFavorite": "Přidat do oblíbených",
+  "sonarTubeShareVideo": "Sdílet video",
+  "sonarTubeShareChannel": "Sdílet kanál",
+  "sonarTubeSharePlaylist": "Sdílet playlist",
   "sonarTubeRemoveFavorite": "Odebrat z oblíbených",
   "sonarTubeFavoriteAdded": "{name} přidáno do oblíbených.",
   "sonarTubeFavoriteRemoved": "{name} odebráno z oblíbených.",
@@ -1227,7 +1231,7 @@
       }
     }
   },
-  "mediaCutterSaving": "Ukládání souboru...",
+  "mediaCutterSaving": "Zpracování...",
   "mediaCutterSaved": "Soubor uložen: {fileName}",
   "@mediaCutterSaved": {
     "placeholders": {
@@ -2759,21 +2763,32 @@
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
   },
-  "preserveMedia": "Uchovat médium",
+  "preserveMedia": "Uchovat obsah",
   "@preserveMedia": {
     "description": "Secondary action that downloads and preserves a playable MP3."
   },
-  "preserveMediaSaving": "Ukládání média…",
+  "preserveMediaSaving": "Ukládání obsahu…",
   "@preserveMediaSaving": {
     "description": "Status shown while a media file is being downloaded and preserved."
   },
-  "preserveMediaSaved": "Médium bylo uloženo do Dokumentů Sonarpadu.",
+  "preserveMediaSaved": "Obsah byl uložen do Dokumentů Sonarpadu.",
   "@preserveMediaSaved": {
     "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
   },
-  "preserveMediaError": "Médium se nepodařilo uchovat.",
+  "preserveMediaError": "Obsah se nepodařilo uchovat.",
   "@preserveMediaError": {
     "description": "Error shown when a playable media file cannot be preserved."
+  },
+  "mediaProcessingCompleted": "Zpracování dokončeno.",
+  "@mediaProcessingCompleted": {
+    "description": "Shown when media processing has completed and the user must choose a destination."
+  },
+  "saveInSonarpadDocuments": "Uložit do Dokumentů Sonarpadu",
+  "@saveInSonarpadDocuments": {
+    "description": "Button that saves a generated media file in Sonarpad Documents."
+  },
+  "mediaCutterProcess": "Zpracovat",
+  "@mediaCutterProcess": {
+    "description": "Button that processes the current Media Cutter edits before choosing a destination."
   }
-
 }

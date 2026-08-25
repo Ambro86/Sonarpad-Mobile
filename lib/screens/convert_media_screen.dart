@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/media_export_destination_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -32,7 +33,7 @@ enum _MediaFormat {
   final String label;
 }
 
-enum _ConvertDoneAction { share, close }
+enum _ConvertDoneAction { saveDocuments, share }
 
 enum _WavBitDepth {
   pcm16('pcm_s16le', '16-bit'),
@@ -55,11 +56,9 @@ class ConvertMediaScreen extends StatefulWidget {
 
 class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   final _inputController = TextEditingController();
-  final _outputController = TextEditingController();
   final _imageController = TextEditingController();
   final _bitrateController = TextEditingController(text: '192');
   String _inputPath = '';
-  String _outputDirectory = '';
   String _imagePath = '';
 
   _MediaFormat _format = _MediaFormat.mp3;
@@ -109,7 +108,6 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   @override
   void dispose() {
     _inputController.dispose();
-    _outputController.dispose();
     _imageController.dispose();
     _bitrateController.dispose();
     super.dispose();
@@ -128,50 +126,6 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       _inputPath = path;
       _inputController.text = _shortPath(path, parentCount: 1);
     });
-    if (_outputDirectory.isEmpty) {
-      final outputDirectory = await _defaultOutputDirectory();
-      if (!mounted) return;
-      setState(() {
-        _outputDirectory = outputDirectory;
-        _outputController.text = _defaultOutputDirectoryDisplayPath(
-          outputDirectory,
-        );
-      });
-    }
-  }
-
-  Future<void> _pickOutput() async {
-    final l10n = AppLocalizations.of(context);
-    final initialDirectory = _outputDirectory.isEmpty
-        ? await _defaultOutputDirectory()
-        : _outputDirectory;
-    final path = await FilePicker.getDirectoryPath(
-      dialogTitle: l10n.convertMediaOutput,
-      initialDirectory: initialDirectory,
-    );
-    if (path == null || path.isEmpty) return;
-
-    final writable = await _isWritableOutputDirectory(path);
-    if (!mounted) return;
-    if (!writable) {
-      await AppLogger.log(
-        'Convert media: selected output directory is not writable, '
-        'path="$path"; using default app folder',
-      );
-      final fallback = await _defaultOutputDirectory();
-      if (!mounted) return;
-      setState(() {
-        _outputDirectory = fallback;
-        _outputController.text = _defaultOutputDirectoryDisplayPath(fallback);
-      });
-      _showSnack(l10n.convertMediaOutputNotWritable);
-      return;
-    }
-
-    setState(() {
-      _outputDirectory = path;
-      _outputController.text = _shortPath(path, parentCount: 2);
-    });
   }
 
   Future<void> _pickImage() async {
@@ -188,41 +142,12 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     });
   }
 
-  Future<bool> _isWritableOutputDirectory(String path) async {
-    try {
-      final directory = Directory(path);
-      if (!await directory.exists()) return false;
-      final testFile = File(
-        p.join(
-          path,
-          '.sonarpad_write_test_${DateTime.now().microsecondsSinceEpoch}.tmp',
-        ),
-      );
-      await testFile.writeAsString('test', flush: true);
-      if (await testFile.exists()) {
-        await testFile.delete();
-      }
-      return true;
-    } catch (error) {
-      await AppLogger.log(
-        'Convert media: output directory write test failed path="$path" '
-        'error=$error',
-      );
-      return false;
-    }
-  }
-
   Future<void> _convert() async {
     final l10n = AppLocalizations.of(context);
     final input = _inputPath;
-    final outputDirectory = _outputDirectory;
 
     if (input.isEmpty) {
       _showSnack(l10n.convertMediaNoInput);
-      return;
-    }
-    if (outputDirectory.isEmpty) {
-      _showSnack(l10n.convertMediaNoOutput);
       return;
     }
     if (!await File(input).exists()) {
@@ -253,38 +178,18 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       _status = l10n.convertMediaRunning;
     });
 
+    String? stagedOutput;
     try {
-      var effectiveOutputDirectory = outputDirectory;
-      if (!await _isWritableOutputDirectory(effectiveOutputDirectory)) {
-        await AppLogger.log(
-          'Convert media: output directory not writable at conversion time, '
-          'path="$effectiveOutputDirectory"; using default app folder',
-        );
-        effectiveOutputDirectory = await _defaultOutputDirectory();
-        if (!mounted) return;
-        setState(() {
-          _outputDirectory = effectiveOutputDirectory;
-          _outputController.text = _defaultOutputDirectoryDisplayPath(
-            effectiveOutputDirectory,
-          );
-        });
-        _showSnack(l10n.convertMediaOutputNotWritable);
-      }
-      final effectiveOutput = _buildOutputPath(input, effectiveOutputDirectory);
-      if (p.equals(input, effectiveOutput)) {
-        _showSnack(l10n.convertMediaSamePath);
-        setState(() => _running = false);
-        return;
-      }
-
+      final outputPath = await _createStagedOutputPath(input);
+      stagedOutput = outputPath;
       await _runWithProgressDialog(l10n, () async {
         final arguments = await _buildArguments(
           input,
-          effectiveOutput,
+          outputPath,
           bitrate ?? 192,
         );
         await AppLogger.log(
-          'Convert media: start input="$input" output="$effectiveOutput" '
+          'Convert media: start input="$input" output="$outputPath" '
           'format=${_format.label} bitrate=${bitrate ?? 192} '
           'wavBitDepth=${_format == _MediaFormat.wav ? _wavBitDepth.label : ''} '
           'image="${_requiresImage(input) ? _imagePath : ''}" '
@@ -296,31 +201,41 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         if (!ReturnCode.isSuccess(returnCode)) {
           await AppLogger.log(
             'Convert media: failed returnCode=${returnCode?.getValue()} '
-            'output="$effectiveOutput" logs="${_compactLog(logs)}"',
+            'output="$outputPath" logs="${_compactLog(logs)}"',
           );
           throw logs.trim().isEmpty ? returnCode?.getValue() ?? 'FFmpeg' : logs;
         }
 
-        final outputFile = File(effectiveOutput);
+        final outputFile = File(outputPath);
         final exists = await outputFile.exists();
         final length = exists ? await outputFile.length() : 0;
         await AppLogger.log(
-          'Convert media: completed output="$effectiveOutput" exists=$exists bytes=$length '
+          'Convert media: completed output="$outputPath" exists=$exists bytes=$length '
           'returnCode=${returnCode?.getValue()}',
         );
+        if (!exists || length <= 0) {
+          throw FileSystemException(
+            'Generated converted media is missing or empty',
+            outputPath,
+          );
+        }
       });
       if (!mounted) return;
       setState(() {
         _running = false;
-        _status = l10n.convertMediaDone;
+        _status = l10n.mediaProcessingCompleted;
       });
-      await _showDoneDialog(l10n.convertMediaDone, filePath: effectiveOutput);
+      await _showDoneDialog(outputPath);
+      stagedOutput = null;
     } catch (error) {
       await AppLogger.log('Convert media: error $error');
       if (!mounted) return;
       setState(() => _status = l10n.convertMediaReady);
       _showSnack(l10n.convertMediaFailed(l10n.technicalErrorGeneric));
     } finally {
+      if (stagedOutput != null) {
+        await _cleanupStagedOutput(stagedOutput);
+      }
       if (mounted) setState(() => _running = false);
     }
   }
@@ -380,36 +295,96 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     return '${compact.substring(0, 1200)}...';
   }
 
-  Future<void> _showDoneDialog(String message, {String? filePath}) async {
+  Future<void> _showDoneDialog(String filePath) async {
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
-    final action = await showDialog<_ConvertDoneAction>(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text(message),
-        actions: [
-          if (filePath != null)
-            TextButton(
-              onPressed: () => Navigator.pop(context, _ConvertDoneAction.share),
-              child: Text(l10n.share),
-            ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, _ConvertDoneAction.close),
-            child: Text(l10n.ok),
-          ),
-        ],
-      ),
-    );
+    final destinationService = MediaExportDestinationService();
 
-    if (!mounted || action != _ConvertDoneAction.share || filePath == null) {
-      return;
+    while (mounted) {
+      final action = await showDialog<_ConvertDoneAction>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            content: Text(l10n.mediaProcessingCompleted),
+            actions: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(context, _ConvertDoneAction.share),
+                child: Text(l10n.share),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(
+                  context,
+                  _ConvertDoneAction.saveDocuments,
+                ),
+                child: Text(l10n.saveInSonarpadDocuments),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      if (!mounted || action == null) continue;
+      if (action == _ConvertDoneAction.share) {
+        try {
+          await SharePlus.instance.share(
+            ShareParams(
+              files: [XFile(filePath)],
+              text: p.basename(filePath),
+            ),
+          );
+          await _cleanupStagedOutput(filePath);
+          return;
+        } catch (error) {
+          await AppLogger.log('Convert media: share failed error=$error');
+          if (mounted) _showSnack(l10n.technicalErrorGeneric);
+          continue;
+        }
+      }
+
+      try {
+        await destinationService.saveInSonarpadDocuments(
+          filePath,
+          originalName: p.basename(filePath),
+        );
+        if (mounted) _showSnack(l10n.exportSavedInSonarpad);
+        await _cleanupStagedOutput(filePath);
+        return;
+      } catch (error) {
+        await AppLogger.log(
+          'Convert media: save in Sonarpad Documents failed error=$error',
+        );
+        if (mounted) _showSnack(l10n.technicalErrorGeneric);
+      }
     }
-    await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(filePath)],
-        text: p.basename(filePath),
+  }
+
+  Future<String> _createStagedOutputPath(String inputPath) async {
+    final supportDir = await getApplicationSupportDirectory();
+    final operationDir = Directory(
+      p.join(
+        supportDir.path,
+        'media_exports',
+        'convert_${DateTime.now().microsecondsSinceEpoch}',
       ),
     );
+    await operationDir.create(recursive: true);
+    return _buildOutputPath(inputPath, operationDir.path);
+  }
+
+  Future<void> _cleanupStagedOutput(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (await file.exists()) await file.delete();
+      final parent = file.parent;
+      if (await parent.exists()) await parent.delete(recursive: true);
+    } catch (error) {
+      await AppLogger.log(
+        'Convert media: staged output cleanup failed path="$filePath" error=$error',
+      );
+    }
   }
 
   Future<List<String>> _buildArguments(
@@ -558,15 +533,6 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     return true;
   }
 
-  Future<String> _defaultOutputDirectory() async {
-    final documentsDir = await getApplicationDocumentsDirectory();
-    final mediaDir = Directory(p.join(documentsDir.path, 'media'));
-    if (!await mediaDir.exists()) {
-      await mediaDir.create(recursive: true);
-    }
-    return mediaDir.path;
-  }
-
   String _buildOutputPath(String inputPath, String outputDirectory) {
     final stem = p.basenameWithoutExtension(inputPath);
     return p.join(outputDirectory, '${stem}_converted.${_format.extension}');
@@ -585,11 +551,6 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         _bitrateController.text = '192';
       }
     });
-  }
-
-  String _defaultOutputDirectoryDisplayPath(String path) {
-    if (p.basename(path) == 'media') return ['Sonarpad', 'media'].join('/');
-    return _shortPath(path, parentCount: 2);
   }
 
   String _shortPath(String path, {required int parentCount}) {
@@ -617,12 +578,6 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         id: 'input',
         title: l10n.convertMediaInput,
         subtitle: _inputController.text.isEmpty ? null : _inputController.text,
-        enabled: !_running,
-      ),
-      AccessibleListRow(
-        id: 'output',
-        title: l10n.convertMediaOutput,
-        subtitle: _outputController.text.isEmpty ? null : _outputController.text,
         enabled: !_running,
       ),
       if (_requiresImage(_inputPath))
@@ -695,8 +650,6 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       onEvent: (event) async {
         if (event.id == 'input' && event.type == 'activate') {
           await _pickInput();
-        } else if (event.id == 'output' && event.type == 'activate') {
-          await _pickOutput();
         } else if (event.id == 'image' && event.type == 'activate') {
           await _pickImage();
         } else if (event.id == 'format' && event.type == 'picker') {
@@ -743,19 +696,6 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
                   tooltip: l10n.convertMediaBrowse,
                   onPressed: _running ? null : _pickInput,
                   icon: const Icon(Icons.folder_open),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _outputController,
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: l10n.convertMediaOutput,
-                suffixIcon: IconButton(
-                  tooltip: l10n.convertMediaBrowse,
-                  onPressed: _running ? null : _pickOutput,
-                  icon: const Icon(Icons.drive_folder_upload),
                 ),
               ),
             ),

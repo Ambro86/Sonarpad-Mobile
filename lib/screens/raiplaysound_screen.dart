@@ -323,6 +323,9 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   Widget _buildSharedAccessibleBody(AppLocalizations l10n, List<RaiPlaySoundItem> items, bool hasDateButton) {
     return UniversalAccessibleList(
       controller: _accessibleListController,
+      routeReturnSemanticsSettleDelay: Duration.zero,
+      routeReturnUseFocusProxy: false,
+      routeReturnWaitForForeignFocusClear: true,
       sections: [
         AccessibleListSection(rows: [
           if (_isRoot)

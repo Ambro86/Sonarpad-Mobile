@@ -18,13 +18,17 @@
   "sonarTubeSearchPrompt": "输入搜索内容以查找视频、频道和播放列表。",
   "sonarTubeNoResults": "未找到视频。",
   "sonarTubeLoadMore": "加载更多结果",
+  "sonarTubeVideo": "视频",
   "sonarTubeChannel": "频道",
   "sonarTubePlaylist": "播放列表",
   "sonarTubeLive": "直播",
   "sonarTubeResolving": "正在准备视频…",
   "sonarTubeFavorites": "收藏",
-  "sonarTubeNoFavorites": "没有收藏的频道或播放列表。",
+  "sonarTubeNoFavorites": "没有收藏的视频、频道或播放列表。",
   "sonarTubeAddFavorite": "添加到收藏",
+  "sonarTubeShareVideo": "分享视频",
+  "sonarTubeShareChannel": "分享频道",
+  "sonarTubeSharePlaylist": "分享播放列表",
   "sonarTubeRemoveFavorite": "从收藏中移除",
   "sonarTubeFavoriteAdded": "已将 {name} 添加到收藏。",
   "sonarTubeFavoriteRemoved": "已将 {name} 从收藏中移除。",
@@ -1224,7 +1228,7 @@
       }
     }
   },
-  "mediaCutterSaving": "正在保存文件...",
+  "mediaCutterSaving": "正在处理...",
   "mediaCutterSaved": "文件已保存：{fileName}",
   "@mediaCutterSaved": {
     "placeholders": {
@@ -2756,21 +2760,32 @@
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
   },
-  "preserveMedia": "保存媒体",
+  "preserveMedia": "保存内容",
   "@preserveMedia": {
     "description": "Secondary action that downloads and preserves a playable MP3."
   },
-  "preserveMediaSaving": "正在保存媒体…",
+  "preserveMediaSaving": "正在保存内容…",
   "@preserveMediaSaving": {
     "description": "Status shown while a media file is being downloaded and preserved."
   },
-  "preserveMediaSaved": "媒体已保存到 Sonarpad 文档。",
+  "preserveMediaSaved": "内容已保存到 Sonarpad 文档。",
   "@preserveMediaSaved": {
     "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
   },
-  "preserveMediaError": "无法保存媒体。",
+  "preserveMediaError": "无法保存内容。",
   "@preserveMediaError": {
     "description": "Error shown when a playable media file cannot be preserved."
+  },
+  "mediaProcessingCompleted": "处理完成。",
+  "@mediaProcessingCompleted": {
+    "description": "Shown when media processing has completed and the user must choose a destination."
+  },
+  "saveInSonarpadDocuments": "保存到 Sonarpad 文档",
+  "@saveInSonarpadDocuments": {
+    "description": "Button that saves a generated media file in Sonarpad Documents."
+  },
+  "mediaCutterProcess": "处理",
+  "@mediaCutterProcess": {
+    "description": "Button that processes the current Media Cutter edits before choosing a destination."
   }
-
 }

@@ -73,6 +73,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeLoadMore => 'Načíst další výsledky';
 
   @override
+  String get sonarTubeVideo => 'Video';
+
+  @override
   String get sonarTubeChannel => 'Kanál';
 
   @override
@@ -88,10 +91,19 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeFavorites => 'Oblíbené';
 
   @override
-  String get sonarTubeNoFavorites => 'Žádné oblíbené kanály ani playlisty.';
+  String get sonarTubeNoFavorites => 'Žádná oblíbená videa, kanály ani playlisty.';
 
   @override
   String get sonarTubeAddFavorite => 'Přidat do oblíbených';
+
+  @override
+  String get sonarTubeShareVideo => 'Sdílet video';
+
+  @override
+  String get sonarTubeShareChannel => 'Sdílet kanál';
+
+  @override
+  String get sonarTubeSharePlaylist => 'Sdílet playlist';
 
   @override
   String get sonarTubeRemoveFavorite => 'Odebrat z oblíbených';
@@ -2643,7 +2655,7 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterSaving => 'Ukládání souboru...';
+  String get mediaCutterSaving => 'Zpracování...';
 
   @override
   String mediaCutterSaved(String fileName) {
@@ -3455,15 +3467,24 @@ class AppLocalizationsCs extends AppLocalizations {
 
 
   @override
-  String get preserveMedia => 'Uchovat médium';
+  String get mediaProcessingCompleted => 'Zpracování dokončeno.';
 
   @override
-  String get preserveMediaSaving => 'Ukládání média…';
+  String get saveInSonarpadDocuments => 'Uložit do Dokumentů Sonarpadu';
 
   @override
-  String get preserveMediaSaved => 'Médium bylo uloženo do Dokumentů Sonarpadu.';
+  String get mediaCutterProcess => 'Zpracovat';
 
   @override
-  String get preserveMediaError => 'Médium se nepodařilo uchovat.';
+  String get preserveMedia => 'Uchovat obsah';
+
+  @override
+  String get preserveMediaSaving => 'Ukládání obsahu…';
+
+  @override
+  String get preserveMediaSaved => 'Obsah byl uložen do Dokumentů Sonarpadu.';
+
+  @override
+  String get preserveMediaError => 'Obsah se nepodařilo uchovat.';
 
 }

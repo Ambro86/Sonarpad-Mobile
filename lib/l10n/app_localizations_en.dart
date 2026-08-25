@@ -73,6 +73,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sonarTubeLoadMore => 'Load more results';
 
   @override
+  String get sonarTubeVideo => 'Video';
+
+  @override
   String get sonarTubeChannel => 'Channel';
 
   @override
@@ -88,10 +91,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sonarTubeFavorites => 'Favorites';
 
   @override
-  String get sonarTubeNoFavorites => 'No favorite channels or playlists.';
+  String get sonarTubeNoFavorites => 'No favorite videos, channels, or playlists.';
 
   @override
   String get sonarTubeAddFavorite => 'Add to favorites';
+
+  @override
+  String get sonarTubeShareVideo => 'Share video';
+
+  @override
+  String get sonarTubeShareChannel => 'Share channel';
+
+  @override
+  String get sonarTubeSharePlaylist => 'Share playlist';
 
   @override
   String get sonarTubeRemoveFavorite => 'Remove from favorites';
@@ -2636,7 +2648,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterSaving => 'Saving file...';
+  String get mediaCutterSaving => 'Processing...';
 
   @override
   String mediaCutterSaved(String fileName) {
@@ -3447,15 +3459,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
 
   @override
-  String get preserveMedia => 'Preserve media';
+  String get mediaProcessingCompleted => 'Processing completed.';
 
   @override
-  String get preserveMediaSaving => 'Saving media…';
+  String get saveInSonarpadDocuments => 'Save in Sonarpad Documents';
 
   @override
-  String get preserveMediaSaved => 'Media saved in Sonarpad Documents.';
+  String get mediaCutterProcess => 'Process';
 
   @override
-  String get preserveMediaError => 'Unable to preserve the media.';
+  String get preserveMedia => 'Preserve content';
+
+  @override
+  String get preserveMediaSaving => 'Saving content…';
+
+  @override
+  String get preserveMediaSaved => 'Content saved in Sonarpad Documents.';
+
+  @override
+  String get preserveMediaError => 'Unable to preserve the content.';
 
 }

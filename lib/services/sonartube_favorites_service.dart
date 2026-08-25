@@ -25,16 +25,51 @@ class SonarTubeFavoritesService {
   }
 
   Future<bool> toggleFavorite(SonarTubeItem item) async {
-    if (item.kind == SonarTubeItemKind.video) {
-      throw ArgumentError('Solo canali e playlist possono essere preferiti.');
-    }
     final favorites = await loadFavorites();
     final key = itemKey(item);
     final wasFavorite = favorites.any((favorite) => itemKey(favorite) == key);
     favorites.removeWhere((favorite) => itemKey(favorite) == key);
-    if (!wasFavorite) favorites.add(item);
+    if (!wasFavorite) favorites.add(_forFavoriteStorage(item));
     await _save(favorites);
     return !wasFavorite;
+  }
+
+  SonarTubeItem _forFavoriteStorage(SonarTubeItem item) {
+    final publicUrl = _publicYoutubeUrl(item);
+    return SonarTubeItem(
+      kind: item.kind,
+      id: item.id,
+      title: item.title,
+      url: publicUrl,
+      channel: item.channel,
+      thumbnailUrl: item.thumbnailUrl,
+      duration: item.duration,
+      published: item.published,
+      views: item.views,
+      description: item.description,
+      isLive: item.isLive,
+    );
+  }
+
+  String _publicYoutubeUrl(SonarTubeItem item) {
+    final original = Uri.tryParse(item.url.trim());
+    final host = original?.host.toLowerCase() ?? '';
+    if (original != null &&
+        (host == 'youtube.com' ||
+            host == 'www.youtube.com' ||
+            host == 'm.youtube.com' ||
+            host == 'youtu.be')) {
+      return original.toString();
+    }
+
+    return switch (item.kind) {
+      SonarTubeItemKind.video =>
+        Uri.https('www.youtube.com', '/watch', {'v': item.id}).toString(),
+      SonarTubeItemKind.channel =>
+        Uri.https('www.youtube.com', '/channel/${item.id}').toString(),
+      SonarTubeItemKind.playlist =>
+        Uri.https('www.youtube.com', '/playlist', {'list': item.id}).toString(),
+    };
   }
 
   String itemKey(SonarTubeItem item) => '${item.kind.name}:${item.id}';
@@ -54,11 +89,16 @@ class SonarTubeFavoritesService {
     'url': item.url,
     'channel': item.channel,
     'thumbnail': item.thumbnailUrl,
+    'duration': item.duration,
+    'published': item.published,
+    'views': item.views,
     'description': item.description,
+    'isLive': item.isLive,
   };
 
   SonarTubeItem? _fromJson(Map<String, dynamic> raw) {
     final kind = switch (raw['kind']) {
+      'video' => SonarTubeItemKind.video,
       'channel' => SonarTubeItemKind.channel,
       'playlist' => SonarTubeItemKind.playlist,
       _ => null,
@@ -79,7 +119,11 @@ class SonarTubeFavoritesService {
       url: raw['url']?.toString() ?? '',
       channel: raw['channel']?.toString(),
       thumbnailUrl: raw['thumbnail']?.toString(),
+      duration: raw['duration']?.toString(),
+      published: raw['published']?.toString(),
+      views: raw['views']?.toString(),
       description: raw['description']?.toString(),
+      isLive: raw['isLive'] == true,
     );
   }
 }

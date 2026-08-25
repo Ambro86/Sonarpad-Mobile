@@ -72,6 +72,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sonarTubeLoadMore => "Завантажити більше результатів";
 
   @override
+  String get sonarTubeVideo => "Відео";
+
+  @override
   String get sonarTubeChannel => "Канал";
 
   @override
@@ -87,10 +90,19 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sonarTubeFavorites => "Вибране";
 
   @override
-  String get sonarTubeNoFavorites => "Немає вибраних каналів або списків відтворення.";
+  String get sonarTubeNoFavorites => "Немає улюблених відео, каналів або списків відтворення.";
 
   @override
   String get sonarTubeAddFavorite => "Додати до вибраного";
+
+  @override
+  String get sonarTubeShareVideo => 'Поділитися відео';
+
+  @override
+  String get sonarTubeShareChannel => 'Поділитися каналом';
+
+  @override
+  String get sonarTubeSharePlaylist => 'Поділитися списком відтворення';
 
   @override
   String get sonarTubeRemoveFavorite => "Видалити з вибраного";
@@ -2085,7 +2097,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get mediaCutterSplitAlreadyExists => "У цій точці вже є розділення.";
 
   @override
-  String get mediaCutterSaving => "Збереження файлу...";
+  String get mediaCutterSaving => 'Обробка...';
 
   @override
   String get mediaCutterNoPartsToSave => "Залиште принаймні одну частину для збереження.";
@@ -2664,16 +2676,25 @@ class AppLocalizationsUk extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => "Змішування нової доріжки";
 
   @override
-  String get preserveMedia => "Зберегти медіафайл";
+  String get mediaProcessingCompleted => 'Обробку завершено.';
 
   @override
-  String get preserveMediaSaving => "Збереження медіафайлу…";
+  String get saveInSonarpadDocuments => 'Зберегти в Документах Sonarpad';
 
   @override
-  String get preserveMediaSaved => "Медіафайл збережено в Документах Sonarpad.";
+  String get mediaCutterProcess => 'Обробити';
 
   @override
-  String get preserveMediaError => "Не вдалося зберегти медіафайл.";
+  String get preserveMedia => "Зберегти вміст";
+
+  @override
+  String get preserveMediaSaving => "Збереження вмісту…";
+
+  @override
+  String get preserveMediaSaved => "Вміст збережено в Документах Sonarpad.";
+
+  @override
+  String get preserveMediaError => "Не вдалося зберегти вміст.";
 
   @override
   String sonarTubeFavoriteAdded(String name) => "${name} додано до вибраного.";

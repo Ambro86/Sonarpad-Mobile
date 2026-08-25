@@ -872,6 +872,10 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                           title: AppLocalizations.of(context).newsCategoryTop,
                           kind: 'picker',
                           value: _currentUri.toString(),
+                          // Keep the URI only as the picker value. It is an
+                          // implementation detail and must never be announced
+                          // by VoiceOver as the row's accessibility value.
+                          valueLabel: '',
                           options: [
                             AccessibleOption(
                               value: widget.source.uri.toString(),

@@ -73,6 +73,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sonarTubeLoadMore => 'Carica altri risultati';
 
   @override
+  String get sonarTubeVideo => 'Video';
+
+  @override
   String get sonarTubeChannel => 'Canale';
 
   @override
@@ -88,10 +91,19 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sonarTubeFavorites => 'Preferiti';
 
   @override
-  String get sonarTubeNoFavorites => 'Nessun canale o playlist preferito.';
+  String get sonarTubeNoFavorites => 'Nessun video, canale o playlist preferito.';
 
   @override
   String get sonarTubeAddFavorite => 'Aggiungi ai preferiti';
+
+  @override
+  String get sonarTubeShareVideo => 'Condividi video';
+
+  @override
+  String get sonarTubeShareChannel => 'Condividi canale';
+
+  @override
+  String get sonarTubeSharePlaylist => 'Condividi playlist';
 
   @override
   String get sonarTubeRemoveFavorite => 'Rimuovi dai preferiti';
@@ -2652,7 +2664,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterSaving => 'Salvataggio del file in corso...';
+  String get mediaCutterSaving => 'Elaborazione in corso...';
 
   @override
   String mediaCutterSaved(String fileName) {
@@ -3464,15 +3476,24 @@ class AppLocalizationsIt extends AppLocalizations {
 
 
   @override
-  String get preserveMedia => 'Conserva media';
+  String get mediaProcessingCompleted => 'Elaborazione completata.';
 
   @override
-  String get preserveMediaSaving => 'Conservazione del media…';
+  String get saveInSonarpadDocuments => 'Salva nei Documenti di Sonarpad';
 
   @override
-  String get preserveMediaSaved => 'Media conservato nei Documenti di Sonarpad.';
+  String get mediaCutterProcess => 'Elabora';
 
   @override
-  String get preserveMediaError => 'Impossibile conservare il media.';
+  String get preserveMedia => 'Conserva contenuto';
+
+  @override
+  String get preserveMediaSaving => 'Conservazione del contenuto…';
+
+  @override
+  String get preserveMediaSaved => 'Contenuto salvato nei Documenti di Sonarpad.';
+
+  @override
+  String get preserveMediaError => 'Impossibile conservare il contenuto.';
 
 }

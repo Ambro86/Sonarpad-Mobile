@@ -73,6 +73,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sonarTubeLoadMore => 'Wczytaj więcej wyników';
 
   @override
+  String get sonarTubeVideo => 'Film';
+
+  @override
   String get sonarTubeChannel => 'Kanał';
 
   @override
@@ -88,10 +91,19 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sonarTubeFavorites => 'Ulubione';
 
   @override
-  String get sonarTubeNoFavorites => 'Brak ulubionych kanałów lub playlist.';
+  String get sonarTubeNoFavorites => 'Brak ulubionych filmów, kanałów lub playlist.';
 
   @override
   String get sonarTubeAddFavorite => 'Dodaj do ulubionych';
+
+  @override
+  String get sonarTubeShareVideo => 'Udostępnij film';
+
+  @override
+  String get sonarTubeShareChannel => 'Udostępnij kanał';
+
+  @override
+  String get sonarTubeSharePlaylist => 'Udostępnij playlistę';
 
   @override
   String get sonarTubeRemoveFavorite => 'Usuń z ulubionych';
@@ -2645,7 +2657,7 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterSaving => 'Zapisywanie pliku...';
+  String get mediaCutterSaving => 'Przetwarzanie...';
 
   @override
   String mediaCutterSaved(String fileName) {
@@ -3455,15 +3467,24 @@ class AppLocalizationsPl extends AppLocalizations {
 
 
   @override
-  String get preserveMedia => 'Zachowaj multimedia';
+  String get mediaProcessingCompleted => 'Przetwarzanie zakończone.';
 
   @override
-  String get preserveMediaSaving => 'Zapisywanie multimediów…';
+  String get saveInSonarpadDocuments => 'Zapisz w Dokumentach Sonarpad';
 
   @override
-  String get preserveMediaSaved => 'Multimedia zapisano w Dokumentach Sonarpad.';
+  String get mediaCutterProcess => 'Przetwórz';
 
   @override
-  String get preserveMediaError => 'Nie udało się zachować multimediów.';
+  String get preserveMedia => 'Zachowaj zawartość';
+
+  @override
+  String get preserveMediaSaving => 'Zapisywanie zawartości…';
+
+  @override
+  String get preserveMediaSaved => 'Zawartość zapisano w Dokumentach Sonarpad.';
+
+  @override
+  String get preserveMediaError => 'Nie udało się zachować zawartości.';
 
 }

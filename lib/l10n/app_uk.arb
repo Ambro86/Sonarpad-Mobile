@@ -69,13 +69,17 @@
   "sonarTubeSearchPrompt": "Введіть запит, щоб знайти відео, канали та списки відтворення.",
   "sonarTubeNoResults": "Відео не знайдено.",
   "sonarTubeLoadMore": "Завантажити більше результатів",
+  "sonarTubeVideo": "Відео",
   "sonarTubeChannel": "Канал",
   "sonarTubePlaylist": "Список відтворення",
   "sonarTubeLive": "Наживо",
   "sonarTubeResolving": "Підготовка відео…",
   "sonarTubeFavorites": "Вибране",
-  "sonarTubeNoFavorites": "Немає вибраних каналів або списків відтворення.",
+  "sonarTubeNoFavorites": "Немає улюблених відео, каналів або списків відтворення.",
   "sonarTubeAddFavorite": "Додати до вибраного",
+  "sonarTubeShareVideo": "Поділитися відео",
+  "sonarTubeShareChannel": "Поділитися каналом",
+  "sonarTubeSharePlaylist": "Поділитися списком відтворення",
   "sonarTubeRemoveFavorite": "Видалити з вибраного",
   "sonarTubeFavoriteAdded": "{name} додано до вибраного.",
   "@sonarTubeFavoriteAdded": {
@@ -3423,7 +3427,7 @@
       }
     }
   },
-  "mediaCutterSaving": "Збереження файлу...",
+  "mediaCutterSaving": "Обробка...",
   "mediaCutterSaved": "Файл збережено: {fileName}",
   "@mediaCutterSaved": {
     "placeholders": {
@@ -4331,20 +4335,32 @@
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
   },
-  "preserveMedia": "Зберегти медіафайл",
+  "preserveMedia": "Зберегти вміст",
   "@preserveMedia": {
     "description": "Secondary action that downloads and preserves a playable MP3."
   },
-  "preserveMediaSaving": "Збереження медіафайлу…",
+  "preserveMediaSaving": "Збереження вмісту…",
   "@preserveMediaSaving": {
     "description": "Status shown while a media file is being downloaded and preserved."
   },
-  "preserveMediaSaved": "Медіафайл збережено в Документах Sonarpad.",
+  "preserveMediaSaved": "Вміст збережено в Документах Sonarpad.",
   "@preserveMediaSaved": {
     "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
   },
-  "preserveMediaError": "Не вдалося зберегти медіафайл.",
+  "preserveMediaError": "Не вдалося зберегти вміст.",
   "@preserveMediaError": {
     "description": "Error shown when a playable media file cannot be preserved."
+  },
+  "mediaProcessingCompleted": "Обробку завершено.",
+  "@mediaProcessingCompleted": {
+    "description": "Shown when media processing has completed and the user must choose a destination."
+  },
+  "saveInSonarpadDocuments": "Зберегти в Документах Sonarpad",
+  "@saveInSonarpadDocuments": {
+    "description": "Button that saves a generated media file in Sonarpad Documents."
+  },
+  "mediaCutterProcess": "Обробити",
+  "@mediaCutterProcess": {
+    "description": "Button that processes the current Media Cutter edits before choosing a destination."
   }
 }

@@ -65,7 +65,6 @@
   "service-error\tlib/services/raiplay_sound_service.dart\tHTTP ${response.statusCode}": 1,
   "service-error\tlib/services/raiplay_sound_service.dart\tImpossibile cercare in RaiPlay Sound.": 1,
   "service-error\tlib/services/raiplay_sound_service.dart\tInserisci un testo da cercare in RaiPlay Sound.": 1,
-  "service-error\tlib/services/sonartube_favorites_service.dart\tSolo canali e playlist possono essere preferiti.": 1,
   "service-error\tlib/services/sonartube_service.dart\tHTTP ${response.statusCode}": 1,
   "service-error\tlib/services/sonartube_service.dart\tUn video non è una raccolta SonarTube.": 1,
   "service-error\tlib/services/sonartube_service.dart\tÈ possibile risolvere soltanto un video.": 1,

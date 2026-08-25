@@ -19,6 +19,7 @@ import 'package:video_player/video_player.dart';
 import '../services/app_settings_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
+import '../widgets/tv_recording_schedule_action.dart';
 import '../widgets/universal_accessible_view.dart';
 
 class RadioPlayerScreen extends StatefulWidget {
@@ -84,15 +85,17 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _recordingTarget = GlobalRecordingTarget(
-      id: widget.tvChannel == null
-          ? 'radio:${widget.station.streamUrl}'
-          : 'tv:${widget.tvChannel!.url}|${widget.station.streamUrl}',
-      stationName: widget.station.name,
-      streamUrl: widget.station.streamUrl,
-      includeVideo: widget.tvChannel != null,
-      tvChannel: widget.tvChannel,
-    );
+    _recordingTarget = widget.tvChannel == null
+        ? GlobalRecordingTarget(
+            id: 'radio:${widget.station.streamUrl}',
+            stationName: widget.station.name,
+            streamUrl: widget.station.streamUrl,
+            includeVideo: false,
+          )
+        : tvRecordingTargetForChannel(
+            widget.tvChannel!,
+            resolvedStreamUrl: widget.station.streamUrl,
+          );
     _recordingService.addListener(_onGlobalRecordingChanged);
     if (Platform.isIOS) {
       _mediaEventsSubscription =

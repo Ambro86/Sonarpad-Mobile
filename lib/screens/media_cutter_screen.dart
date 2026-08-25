@@ -22,12 +22,13 @@ import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/media_export_destination_service.dart';
 import 'media_cutter_add_track_screen.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
-enum _MediaCutterDoneAction { share, close }
+enum _MediaCutterDoneAction { saveDocuments, share }
 
 enum _MediaCutterMode { guided, advanced }
 
@@ -426,7 +427,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   static const _splitBoundaryTolerance = Duration.zero;
 
   final _audioPlayer = AudioPlayer();
-  final _outputController = TextEditingController();
   VideoPlayerController? _videoController;
   StreamSubscription<Duration>? _audioPositionSubscription;
   StreamSubscription<Duration?>? _audioDurationSubscription;
@@ -439,7 +439,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   String _inputPath = '';
   String _displayName = '';
-  String _outputDirectory = '';
   bool _isVideo = false;
   _MediaProbeInfo? _inputProbe;
   bool _showVideoPreview = false;
@@ -535,7 +534,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _cancelDeletedSkipTimer();
     _videoController?.dispose();
     _audioPlayer.dispose();
-    _outputController.dispose();
     super.dispose();
   }
 
@@ -859,16 +857,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
 
     await _loadMedia(path);
-    if (_outputDirectory.isEmpty) {
-      final outputDirectory = await _defaultOutputDirectory();
-      if (!mounted) return;
-      setState(() {
-        _outputDirectory = outputDirectory;
-        _outputController.text = _defaultOutputDirectoryDisplayPath(
-          outputDirectory,
-        );
-      });
-    }
   }
 
   Future<void> _playAddedTrackPreviewFile(String path) async {
@@ -981,86 +969,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       'originalVolume=${applied.originalVolumePercent}% '
       'newTrackVolume=${applied.newTrackVolumePercent}% loop=${applied.loop}',
     ));
-  }
-
-  Future<void> _pickOutput() async {
-    final l10n = AppLocalizations.of(context);
-    final initialDirectory = _outputDirectory.isEmpty
-        ? await _defaultOutputDirectory()
-        : _outputDirectory;
-    final selectedPath = await FilePicker.getDirectoryPath(
-      dialogTitle: l10n.convertMediaOutput,
-      initialDirectory: initialDirectory,
-    );
-    if (selectedPath == null || selectedPath.isEmpty) return;
-
-    var path = selectedPath;
-    try {
-      final selectedType = await FileSystemEntity.type(selectedPath);
-      if (selectedType == FileSystemEntityType.file) {
-        final parent = p.dirname(selectedPath);
-        await AppLogger.log(
-          'Media cutter: output picker returned a file path; '
-          'using parent directory instead selected="$selectedPath" parent="$parent"',
-        );
-        path = parent;
-      }
-    } catch (error) {
-      await AppLogger.log(
-        'Media cutter: output picker path type check failed '
-        'path="$selectedPath" error=$error',
-      );
-    }
-
-    final writable = await _isWritableOutputDirectory(path);
-    if (!mounted) return;
-    if (!writable) {
-      await AppLogger.log(
-        'Media cutter: selected output directory is not writable, '
-        'path="$path" originalSelection="$selectedPath"; '
-        'using default app folder and native sharing fallback',
-      );
-      final fallback = await _defaultOutputDirectory();
-      if (!mounted) return;
-      setState(() {
-        _outputDirectory = fallback;
-        _outputController.text = _defaultOutputDirectoryDisplayPath(fallback);
-      });
-      _showSnack(l10n.convertMediaOutputNotWritable);
-      return;
-    }
-
-    setState(() {
-      _outputDirectory = path;
-      _outputController.text = _shortPath(path, parentCount: 2);
-    });
-    unawaited(_logMediaCutter(
-      'output directory selected path="$path" originalSelection="$selectedPath"',
-    ));
-  }
-
-  Future<bool> _isWritableOutputDirectory(String path) async {
-    try {
-      final directory = Directory(path);
-      if (!await directory.exists()) return false;
-      final testFile = File(
-        p.join(
-          path,
-          '.sonarpad_write_test_${DateTime.now().microsecondsSinceEpoch}.tmp',
-        ),
-      );
-      await testFile.writeAsString('test', flush: true);
-      if (await testFile.exists()) {
-        await testFile.delete();
-      }
-      return true;
-    } catch (error) {
-      await AppLogger.log(
-        'Media cutter: output directory write test failed path="$path" '
-        'error=$error',
-      );
-      return false;
-    }
   }
 
   Future<VideoPlayerController> _initializeVideoControllerWithRetry(
@@ -3561,8 +3469,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
     final keptParts = _parts.where((part) => part.keep).toList();
     unawaited(_logMediaCutter(
-      'save requested keptParts=${keptParts.length} totalParts=${_parts.length} '
-      'deleted=$_deletedPartCount outputDir="$_outputDirectory" ${_logPlaybackState()}',
+      'processing requested keptParts=${keptParts.length} totalParts=${_parts.length} '
+      'deleted=$_deletedPartCount ${_logPlaybackState()}',
     ));
     if (keptParts.isEmpty) {
       _showSnack(l10n.mediaCutterNoPartsToSave);
@@ -3576,92 +3484,42 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
     final exportController = _MediaCutterExportController();
     var wakelockEnabled = false;
+    String? stagedOutput;
     try {
       await _pause();
       await _enableExportWakelock();
       wakelockEnabled = true;
-      var outputDir = _outputDirectory;
-      if (outputDir.isEmpty) {
-        outputDir = await _defaultOutputDirectory();
-        if (!mounted) return;
-        setState(() {
-          _outputDirectory = outputDir;
-          _outputController.text =
-              _defaultOutputDirectoryDisplayPath(outputDir);
-        });
-      }
 
-      var fallbackToShare = false;
-      if (!await _isWritableOutputDirectory(outputDir)) {
-        await AppLogger.log(
-          'Media cutter: output directory not writable at save time, '
-          'path="$outputDir"; using default app folder and native share fallback',
-        );
-        outputDir = await _defaultOutputDirectory();
-        fallbackToShare = true;
-        if (!mounted) return;
-        setState(() {
-          _outputDirectory = outputDir;
-          _outputController.text =
-              _defaultOutputDirectoryDisplayPath(outputDir);
-        });
-        _showSnack(l10n.convertMediaOutputNotWritable);
-      }
+      final stagingDirectory = await _createStagedOutputDirectory();
+      final output = await _uniqueOutputPath(stagingDirectory, _inputPath);
+      stagedOutput = output;
+      await _runWithProgressDialog(l10n, exportController, () async {
+        await _exportKeptParts(keptParts, output, exportController, l10n);
+      });
 
-      var output = await _uniqueOutputPath(outputDir, _inputPath);
-      try {
-        await _runWithProgressDialog(l10n, exportController, () async {
-          await _exportKeptParts(keptParts, output, exportController, l10n);
-        });
-      } catch (error) {
-        if (error is _MediaCutterExportCancelled) rethrow;
-        if (error is! _MediaCutterOutputWriteException) rethrow;
-        final defaultOutputDir = await _defaultOutputDirectory();
-        final alreadyUsingDefault = p.equals(
-          p.normalize(outputDir),
-          p.normalize(defaultOutputDir),
-        );
-        if (alreadyUsingDefault) rethrow;
-
-        await AppLogger.log(
-          'Media cutter: save to selected directory failed, retrying in app '
-          'folder and using native share fallback. output="$output" error=$error',
-        );
-        outputDir = defaultOutputDir;
-        output = await _uniqueOutputPath(outputDir, _inputPath);
-        fallbackToShare = true;
-        if (!mounted) return;
-        setState(() {
-          _outputDirectory = outputDir;
-          _outputController.text =
-              _defaultOutputDirectoryDisplayPath(outputDir);
-        });
-        _showSnack(l10n.convertMediaOutputNotWritable);
-        await _runWithProgressDialog(l10n, exportController, () async {
-          await _exportKeptParts(keptParts, output, exportController, l10n);
-        });
-      }
       if (!mounted) return;
       unawaited(_logMediaCutter(
-        'save completed output="$output" fallbackToShare=$fallbackToShare '
-        'keptParts=${keptParts.length}',
+        'processing completed output="$output" keptParts=${keptParts.length}',
       ));
-      final message = l10n.mediaCutterSaved(p.basename(output));
       setState(() {
         _hasUnsavedEdit = false;
-        _status = message;
+        _status = l10n.mediaProcessingCompleted;
       });
-      await _showDoneDialog(message, output, forceShare: fallbackToShare);
+      await _showDoneDialog(output);
+      stagedOutput = null;
     } catch (error) {
       if (error is _MediaCutterExportCancelled) {
-        await AppLogger.log('Media cutter: save cancelled by user');
+        await AppLogger.log('Media cutter: processing cancelled by user');
         return;
       }
-      await AppLogger.log('Media cutter: save failed error=$error');
+      await AppLogger.log('Media cutter: processing failed error=$error');
       if (!mounted) return;
       setState(() => _status = l10n.mediaCutterReady);
       _showSnack(l10n.mediaCutterSaveFailed(l10n.technicalErrorGeneric));
     } finally {
+      if (stagedOutput != null) {
+        await _cleanupStagedOutput(stagedOutput);
+      }
       if (wakelockEnabled) {
         await _disableExportWakelock();
       }
@@ -4975,39 +4833,65 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     await taskFuture;
   }
 
-  Future<void> _showDoneDialog(
-    String message,
-    String filePath, {
-    bool forceShare = false,
-  }) async {
+  Future<void> _showDoneDialog(String filePath) async {
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
+    final destinationService = MediaExportDestinationService();
 
-    if (forceShare) {
-      await _shareOutputFile(filePath);
-      return;
+    while (mounted) {
+      final action = await showDialog<_MediaCutterDoneAction>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            content: Text(l10n.mediaProcessingCompleted),
+            actions: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(context, _MediaCutterDoneAction.share),
+                child: Text(l10n.share),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(
+                  context,
+                  _MediaCutterDoneAction.saveDocuments,
+                ),
+                child: Text(l10n.saveInSonarpadDocuments),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      if (!mounted || action == null) continue;
+      if (action == _MediaCutterDoneAction.share) {
+        try {
+          await _shareOutputFile(filePath);
+          await _cleanupStagedOutput(filePath);
+          return;
+        } catch (error) {
+          await AppLogger.log('Media cutter: share failed error=$error');
+          if (mounted) _showSnack(l10n.technicalErrorGeneric);
+          continue;
+        }
+      }
+
+      try {
+        await destinationService.saveInSonarpadDocuments(
+          filePath,
+          originalName: p.basename(filePath),
+        );
+        if (mounted) _showSnack(l10n.exportSavedInSonarpad);
+        await _cleanupStagedOutput(filePath);
+        return;
+      } catch (error) {
+        await AppLogger.log(
+          'Media cutter: save in Sonarpad Documents failed error=$error',
+        );
+        if (mounted) _showSnack(l10n.technicalErrorGeneric);
+      }
     }
-
-    final action = await showDialog<_MediaCutterDoneAction>(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.pop(context, _MediaCutterDoneAction.share),
-            child: Text(l10n.share),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.pop(context, _MediaCutterDoneAction.close),
-            child: Text(l10n.ok),
-          ),
-        ],
-      ),
-    );
-    if (!mounted || action != _MediaCutterDoneAction.share) return;
-    await _shareOutputFile(filePath);
   }
 
   Future<void> _shareOutputFile(String filePath) async {
@@ -5016,16 +4900,30 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
-  Future<String> _defaultOutputDirectory() async {
-    final documentsDir = await getApplicationDocumentsDirectory();
-    final mediaDir = Directory(p.join(documentsDir.path, 'media'));
-    if (!await mediaDir.exists()) await mediaDir.create(recursive: true);
-    return mediaDir.path;
+  Future<String> _createStagedOutputDirectory() async {
+    final supportDir = await getApplicationSupportDirectory();
+    final operationDir = Directory(
+      p.join(
+        supportDir.path,
+        'media_exports',
+        'cutter_${DateTime.now().microsecondsSinceEpoch}',
+      ),
+    );
+    await operationDir.create(recursive: true);
+    return operationDir.path;
   }
 
-  String _defaultOutputDirectoryDisplayPath(String path) {
-    if (p.basename(path) == 'media') return ['Sonarpad', 'media'].join('/');
-    return _shortPath(path, parentCount: 2);
+  Future<void> _cleanupStagedOutput(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (await file.exists()) await file.delete();
+      final parent = file.parent;
+      if (await parent.exists()) await parent.delete(recursive: true);
+    } catch (error) {
+      await AppLogger.log(
+        'Media cutter: staged output cleanup failed path="$filePath" error=$error',
+      );
+    }
   }
 
   String _shortPath(String path, {required int parentCount}) {
@@ -7047,12 +6945,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           kind: 'button',
           enabled: canUseMedia,
         ),
-      AccessibleListRow(
-        id: 'output',
-        title: l10n.convertMediaOutput,
-        subtitle: _outputController.text.isEmpty ? null : _outputController.text,
-        enabled: !_loading && !_saving,
-      ),
       if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loading),
       if (_inputPath.isNotEmpty && _duration != Duration.zero)
         AccessibleListRow(id: 'seek_step', title: _mediaSeekStepButtonLabel(), enabled: canUseMedia),
@@ -7139,8 +7031,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           await _pickInput();
         } else if (id == 'add_track' && event.type == 'activate') {
           await _openAddTrackScreen();
-        } else if (id == 'output' && event.type == 'activate') {
-          await _pickOutput();
         } else if (id == 'seek_step' && event.type == 'activate') {
           await _showMediaSeekStepDialog();
         } else if (id == 'rotation' && event.type == 'picker') {
@@ -7263,19 +7153,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   ),
                 ],
               ],
-              const SizedBox(height: 12),
-              TextField(
-                controller: _outputController,
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: l10n.convertMediaOutput,
-                  suffixIcon: IconButton(
-                    tooltip: l10n.convertMediaBrowse,
-                    onPressed: _loading || _saving ? null : _pickOutput,
-                    icon: const Icon(Icons.drive_folder_upload),
-                  ),
-                ),
-              ),
               if (_loading) ...[
                 const SizedBox(height: 16),
                 const LinearProgressIndicator(),

@@ -245,6 +245,8 @@ abstract class AppLocalizations {
   ///
   /// In it, this message translates to:
   /// **'Canale'**
+  String get sonarTubeVideo;
+
   String get sonarTubeChannel;
 
   /// No description provided for @sonarTubePlaylist.
@@ -282,6 +284,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Aggiungi ai preferiti'**
   String get sonarTubeAddFavorite;
+
+  /// No description provided for @sonarTubeShareVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi video'**
+  String get sonarTubeShareVideo;
+
+  /// No description provided for @sonarTubeShareChannel.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi canale'**
+  String get sonarTubeShareChannel;
+
+  /// No description provided for @sonarTubeSharePlaylist.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi playlist'**
+  String get sonarTubeSharePlaylist;
 
   /// No description provided for @sonarTubeRemoveFavorite.
   ///
@@ -5675,6 +5695,15 @@ abstract class AppLocalizations {
   String get mediaCutterAddedTrackPreviewPreparing;
   String get mediaCutterAddedTrackPreviewFailed;
   String get mediaCutterMixingAddedTrack;
+
+  /// Shown when media processing has completed and the user must choose a destination.
+  String get mediaProcessingCompleted;
+
+  /// Button that saves a generated media file in Sonarpad Documents.
+  String get saveInSonarpadDocuments;
+
+  /// Button that processes the current Media Cutter edits before choosing a destination.
+  String get mediaCutterProcess;
 
   /// Secondary action that downloads and preserves a playable MP3.
   String get preserveMedia;

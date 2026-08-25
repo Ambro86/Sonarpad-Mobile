@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
@@ -119,6 +120,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       return;
     }
     FocusScope.of(context).unfocus();
+    var shouldFocusFirstResult = false;
     setState(() {
       _loading = true;
       _error = null;
@@ -134,12 +136,25 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         _items = result.items;
         _nextToken = result.nextToken;
         _page = result.page;
+        shouldFocusFirstResult = result.items.isNotEmpty;
       });
     } catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+
+    if (!mounted || !shouldFocusFirstResult || !useSharedAccessibleViewModel) {
+      return;
+    }
+
+    // The search field/keyboard has just been dismissed. Wait until the
+    // shared model has rebuilt with the result rows, then hand accessibility
+    // focus directly to the first result. The controller keeps this neutral:
+    // Flutter and UIKit receive the same in-place focus request.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _accessibleListController.focusTo('item_0', animated: false);
   }
 
   Future<void> _loadCollection() async {
@@ -245,6 +260,49 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   String _sonarTubeItemKey(SonarTubeItem item) =>
       '${item.kind.name}:${item.id}';
 
+
+  String _shareableItemUrl(SonarTubeItem item) {
+    final originalUrl = item.url.trim();
+    final uri = Uri.tryParse(originalUrl);
+    if (uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.host.isNotEmpty) {
+      return originalUrl;
+    }
+
+    return switch (item.kind) {
+      SonarTubeItemKind.video =>
+        Uri.https('www.youtube.com', '/watch', {'v': item.id}).toString(),
+      SonarTubeItemKind.channel =>
+        Uri.https('www.youtube.com', '/channel/${item.id}').toString(),
+      SonarTubeItemKind.playlist =>
+        Uri.https('www.youtube.com', '/playlist', {'list': item.id}).toString(),
+    };
+  }
+
+  String _shareActionId(SonarTubeItem item) => switch (item.kind) {
+    SonarTubeItemKind.video => 'share_video',
+    SonarTubeItemKind.channel => 'share_channel',
+    SonarTubeItemKind.playlist => 'share_playlist',
+  };
+
+  String _shareActionLabel(AppLocalizations l10n, SonarTubeItem item) =>
+      switch (item.kind) {
+        SonarTubeItemKind.video => l10n.sonarTubeShareVideo,
+        SonarTubeItemKind.channel => l10n.sonarTubeShareChannel,
+        SonarTubeItemKind.playlist => l10n.sonarTubeSharePlaylist,
+      };
+
+  Future<void> _shareItem(SonarTubeItem item) async {
+    final url = _shareableItemUrl(item);
+    await SharePlus.instance.share(
+      ShareParams(
+        text: '${item.title}\n$url',
+        subject: item.title,
+      ),
+    );
+  }
+
   Future<void> _openItem(SonarTubeItem item) async {
     if (item.kind != SonarTubeItemKind.video) {
       await Navigator.push<void>(
@@ -321,7 +379,6 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     AppLocalizations l10n,
     SonarTubeItem item, {
     required bool resolving,
-    required bool canFavorite,
     required bool isFavorite,
     required String favoriteLabel,
     required String? subtitle,
@@ -363,20 +420,18 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                 dimension: 24,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : canFavorite
-                ? ExcludeSemantics(
-                    child: IconButton(
-                      key: ValueKey(
-                        'sonartube_favorite_${item.kind.name}_${item.id}',
-                      ),
-                      tooltip: favoriteLabel,
-                      onPressed: () => _toggleFavorite(item),
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                      ),
-                    ),
-                  )
-                : const ExcludeSemantics(child: Icon(Icons.play_arrow)),
+            : ExcludeSemantics(
+                child: IconButton(
+                  key: ValueKey(
+                    'sonartube_favorite_${item.kind.name}_${item.id}',
+                  ),
+                  tooltip: favoriteLabel,
+                  onPressed: () => _toggleFavorite(item),
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                  ),
+                ),
+              ),
         enabled: _resolvingId == null,
         onTap: _resolvingId == null ? () => _openItem(item) : null,
       ),
@@ -454,19 +509,16 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         kind: 'text',
       ));
     }
-    if (!_loading && _items.isEmpty) {
+    if (!_loading && _items.isEmpty && (_query != null || _isCollection)) {
       rows.add(AccessibleListRow(
         id: 'empty',
-        title: _query == null && !_isCollection
-            ? l10n.sonarTubeSearchPrompt
-            : l10n.sonarTubeNoResults,
+        title: l10n.sonarTubeNoResults,
         kind: 'text',
       ));
     }
     for (var i = 0; i < _items.length; i++) {
       final item = _items[i];
       final resolving = _resolvingId == item.id;
-      final canFavorite = item.kind != SonarTubeItemKind.video;
       final isFavorite = _favoriteKeys.contains(_favoritesService.itemKey(item));
       final favoriteLabel = isFavorite
           ? l10n.sonarTubeRemoveFavorite
@@ -481,14 +533,17 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           if (subtitle?.isNotEmpty ?? false) subtitle!,
         ].join(', '),
         enabled: _resolvingId == null,
-        actions: canFavorite
-            ? [AccessibleCustomAction(id: 'favorite', label: favoriteLabel)]
-            : const [],
+        actions: [
+          AccessibleCustomAction(id: 'favorite', label: favoriteLabel),
+          AccessibleCustomAction(
+            id: _shareActionId(item),
+            label: _shareActionLabel(l10n, item),
+          ),
+        ],
         flutterChild: _buildFlutterSonarTubeItem(
           l10n,
           item,
           resolving: resolving,
-          canFavorite: canFavorite,
           isFavorite: isFavorite,
           favoriteLabel: favoriteLabel,
           subtitle: subtitle,
@@ -523,6 +578,18 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       onEvent: (event) async {
         if (event.id == 'query' && event.type == 'textChanged') {
           _searchController.text = event.value?.toString() ?? '';
+          return;
+        }
+        if (event.type == 'customAction' &&
+            event.action?.startsWith('share_') == true &&
+            event.id?.startsWith('item_') == true) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index != null && index >= 0 && index < _items.length) {
+            final item = _items[index];
+            if (event.action == _shareActionId(item)) {
+              await _shareItem(item);
+            }
+          }
           return;
         }
         if (event.type == 'customAction' &&
@@ -656,8 +723,6 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                         }
                         final item = _items[index];
                         final resolving = _resolvingId == item.id;
-                        final canFavorite =
-                            item.kind != SonarTubeItemKind.video;
                         final isFavorite = _favoriteKeys.contains(
                           _favoritesService.itemKey(item),
                         );
@@ -707,8 +772,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : canFavorite
-                                ? ExcludeSemantics(
+                                : ExcludeSemantics(
                                     child: IconButton(
                                       key: ValueKey(
                                         'sonartube_favorite_${item.kind.name}_${item.id}',
@@ -721,9 +785,6 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                                             : Icons.favorite_border,
                                       ),
                                     ),
-                                  )
-                                : const ExcludeSemantics(
-                                    child: Icon(Icons.play_arrow),
                                   ),
                             enabled: _resolvingId == null,
                             onTap: () => _openItem(item),
@@ -745,14 +806,13 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                           onTap: _resolvingId == null
                               ? () => _openItem(item)
                               : null,
-                          customSemanticsActions: canFavorite
-                              ? {
-                                  CustomSemanticsAction(
-                                    label: favoriteLabel,
-                                  ): () =>
-                                      _toggleFavorite(item),
-                                }
-                              : null,
+                          customSemanticsActions: {
+                            CustomSemanticsAction(label: favoriteLabel):
+                                () => _toggleFavorite(item),
+                            CustomSemanticsAction(
+                              label: _shareActionLabel(l10n, item),
+                            ): () => _shareItem(item),
+                          },
                           child: ExcludeSemantics(child: card),
                         );
                       },
@@ -830,9 +890,11 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                             .entries
                             .map((entry) {
                               final item = entry.value;
-                              final type = item.kind == SonarTubeItemKind.channel
-                                  ? l10n.sonarTubeChannel
-                                  : l10n.sonarTubePlaylist;
+                              final type = switch (item.kind) {
+                                SonarTubeItemKind.video => l10n.sonarTubeVideo,
+                                SonarTubeItemKind.channel => l10n.sonarTubeChannel,
+                                SonarTubeItemKind.playlist => l10n.sonarTubePlaylist,
+                              };
                               return AccessibleListRow(
                                 id: 'favorite_${entry.key}',
                                 title: item.title,
@@ -865,9 +927,11 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                 itemCount: _favorites.length,
                 itemBuilder: (context, index) {
                   final item = _favorites[index];
-                  final type = item.kind == SonarTubeItemKind.channel
-                      ? l10n.sonarTubeChannel
-                      : l10n.sonarTubePlaylist;
+                  final type = switch (item.kind) {
+                    SonarTubeItemKind.video => l10n.sonarTubeVideo,
+                    SonarTubeItemKind.channel => l10n.sonarTubeChannel,
+                    SonarTubeItemKind.playlist => l10n.sonarTubePlaylist,
+                  };
                   return Semantics(
                     customSemanticsActions: {
                       CustomSemanticsAction(
@@ -882,9 +946,11 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                         ),
                         leading: item.thumbnailUrl == null
                             ? Icon(
-                                item.kind == SonarTubeItemKind.channel
-                                    ? Icons.account_circle
-                                    : Icons.playlist_play,
+                                item.kind == SonarTubeItemKind.video
+                                    ? Icons.play_circle_outline
+                                    : item.kind == SonarTubeItemKind.channel
+                                        ? Icons.account_circle
+                                        : Icons.playlist_play,
                               )
                             : ClipRRect(
                                 borderRadius: BorderRadius.circular(6),

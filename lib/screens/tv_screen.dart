@@ -9,6 +9,7 @@ import 'favorite_tvs_screen.dart';
 import 'tv_channel_screen.dart';
 import 'tv_recordings_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/tv_recording_schedule_action.dart';
 import '../widgets/universal_accessible_view.dart';
 
 class TvScreen extends StatefulWidget {
@@ -592,6 +593,10 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                               ? AppLocalizations.of(context).radioRemoveFavorite
                               : AppLocalizations.of(context).radioAddFavorite,
                         ),
+                        AccessibleCustomAction(
+                          id: 'schedule_recording',
+                          label: AppLocalizations.of(context).radioScheduleDialogTitle,
+                        ),
                       ],
                     );
                   }).toList(),
@@ -607,6 +612,9 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                   widget.onOpenChannel(channel);
                 } else if (event.type == 'customAction' && event.action == 'favorite') {
                   await _toggleFavorite(channel);
+                } else if (event.type == 'customAction' &&
+                    event.action == 'schedule_recording') {
+                  await showTvScheduleRecordingAction(context, channel);
                 }
               },
             )
@@ -622,6 +630,8 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
             isFavorite: _isFavorite(channel),
             onOpen: () => widget.onOpenChannel(channel),
             onToggleFavorite: () => _toggleFavorite(channel),
+            onScheduleRecording: () =>
+                showTvScheduleRecordingAction(context, channel),
           );
         },
       ),
@@ -728,6 +738,10 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                           id: 'favorite',
                           label: favorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
                         ),
+                        AccessibleCustomAction(
+                          id: 'schedule_recording',
+                          label: l10n.radioScheduleDialogTitle,
+                        ),
                       ],
                     );
                   }).toList(),
@@ -743,6 +757,9 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                   Navigator.of(context).pop(channel);
                 } else if (event.type == 'customAction' && event.action == 'favorite') {
                   await _toggleFavorite(channel);
+                } else if (event.type == 'customAction' &&
+                    event.action == 'schedule_recording') {
+                  await showTvScheduleRecordingAction(context, channel);
                 }
               },
             )
@@ -758,6 +775,8 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
             isFavorite: _isFavorite(channel),
             onOpen: () => Navigator.of(context).pop(channel),
             onToggleFavorite: () => _toggleFavorite(channel),
+            onScheduleRecording: () =>
+                showTvScheduleRecordingAction(context, channel),
           );
         },
       ),
@@ -792,6 +811,7 @@ class _TvChannelButton extends StatelessWidget {
     required this.isFavorite,
     required this.onOpen,
     required this.onToggleFavorite,
+    required this.onScheduleRecording,
   });
 
   final TvChannel channel;
@@ -799,6 +819,7 @@ class _TvChannelButton extends StatelessWidget {
   final bool isFavorite;
   final VoidCallback onOpen;
   final VoidCallback onToggleFavorite;
+  final VoidCallback onScheduleRecording;
 
   String _channelLabel(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -828,6 +849,9 @@ class _TvChannelButton extends StatelessWidget {
             CustomSemanticsAction(
               label: isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
             ): onToggleFavorite,
+            CustomSemanticsAction(
+              label: l10n.radioScheduleDialogTitle,
+            ): onScheduleRecording,
           },
           child: ExcludeSemantics(
             child: FilledButton(

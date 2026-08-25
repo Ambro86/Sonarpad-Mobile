@@ -69,6 +69,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get sonarTubeLoadMore => '加载更多结果';
 
   @override
+  String get sonarTubeVideo => '视频';
+
+  @override
   String get sonarTubeChannel => '频道';
 
   @override
@@ -84,10 +87,19 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get sonarTubeFavorites => '收藏';
 
   @override
-  String get sonarTubeNoFavorites => '没有收藏的频道或播放列表。';
+  String get sonarTubeNoFavorites => '没有收藏的视频、频道或播放列表。';
 
   @override
   String get sonarTubeAddFavorite => '添加到收藏';
+
+  @override
+  String get sonarTubeShareVideo => '分享视频';
+
+  @override
+  String get sonarTubeShareChannel => '分享频道';
+
+  @override
+  String get sonarTubeSharePlaylist => '分享播放列表';
 
   @override
   String get sonarTubeRemoveFavorite => '从收藏中移除';
@@ -2334,7 +2346,7 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get mediaCutterPartsTitle => '要保存的片段';
 
   @override
-  String get mediaCutterPartsHint => '轻点片段可试听。已删除的片段会从列表中消失，播放时会跳过，也不会被保存。音频效果只会在保存媒体时应用到整个片段。';
+  String get mediaCutterPartsHint => '轻点片段可试听。已删除的片段会从列表中消失，播放时会跳过，也不会被保存。音频效果只会在保存内容时应用到整个片段。';
 
   @override
   String mediaCutterPartLabel(int index) => '片段 ${index}';
@@ -2367,7 +2379,7 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String mediaCutterSplitAdded(String position) => '已在 ${position} 添加分割点。';
 
   @override
-  String get mediaCutterSaving => '正在保存文件...';
+  String get mediaCutterSaving => '正在处理...';
 
   @override
   String mediaCutterSaved(String fileName) => '文件已保存：${fileName}';
@@ -3081,15 +3093,24 @@ class AppLocalizationsZhCn extends AppLocalizations {
 
 
   @override
-  String get preserveMedia => '保存媒体';
+  String get mediaProcessingCompleted => '处理完成。';
 
   @override
-  String get preserveMediaSaving => '正在保存媒体…';
+  String get saveInSonarpadDocuments => '保存到 Sonarpad 文档';
 
   @override
-  String get preserveMediaSaved => '媒体已保存到 Sonarpad 文档。';
+  String get mediaCutterProcess => '处理';
 
   @override
-  String get preserveMediaError => '无法保存媒体。';
+  String get preserveMedia => '保存内容';
+
+  @override
+  String get preserveMediaSaving => '正在保存内容…';
+
+  @override
+  String get preserveMediaSaved => '内容已保存到 Sonarpad 文档。';
+
+  @override
+  String get preserveMediaError => '无法保存内容。';
 
 }

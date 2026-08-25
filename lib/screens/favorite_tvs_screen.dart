@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
+import '../l10n/app_localizations.dart';
+
 import '../services/tv_service.dart';
 import '../utils/status_message.dart';
+import '../widgets/tv_recording_schedule_action.dart';
 import '../widgets/universal_accessible_view.dart';
 
 class FavoriteTvsScreen extends StatefulWidget {
@@ -71,6 +74,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('TV preferite')),
       body: _loading
@@ -96,8 +100,15 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                               accessibilityLabel: _channelLabel(channel, currentProgram),
                               hint: 'Tocca per aprire il canale TV',
                               kind: 'action',
-                              actions: const [
-                                AccessibleCustomAction(id: 'remove', label: 'Rimuovi dai preferiti'),
+                              actions: [
+                                const AccessibleCustomAction(
+                                  id: 'remove',
+                                  label: 'Rimuovi dai preferiti',
+                                ),
+                                AccessibleCustomAction(
+                                  id: 'schedule_recording',
+                                  label: l10n.radioScheduleDialogTitle,
+                                ),
                               ],
                             );
                           }).toList(),
@@ -113,6 +124,9 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                           widget.onOpenChannel(channel);
                         } else if (event.type == 'customAction' && event.action == 'remove') {
                           await _removeFromFavorites(channel);
+                        } else if (event.type == 'customAction' &&
+                            event.action == 'schedule_recording') {
+                          await showTvScheduleRecordingAction(context, channel);
                         }
                       },
                     )
@@ -144,6 +158,12 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                             const CustomSemanticsAction(
                                     label: 'Rimuovi dai preferiti'):
                                 () => _removeFromFavorites(channel),
+                            CustomSemanticsAction(
+                              label: l10n.radioScheduleDialogTitle,
+                            ): () => showTvScheduleRecordingAction(
+                                  context,
+                                  channel,
+                                ),
                           },
                           child: ExcludeSemantics(
                             child: FilledButton(

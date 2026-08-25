@@ -4,9 +4,16 @@ import 'package:sonarpad_mobile_starter/services/sonartube_favorites_service.dar
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 
 void main() {
-  test('persists and removes channel and playlist favorites', () async {
+  test('persists and removes video, channel and playlist favorites', () async {
     SharedPreferences.setMockInitialValues({});
     final service = SonarTubeFavoritesService();
+    const video = SonarTubeItem(
+      kind: SonarTubeItemKind.video,
+      id: 'abcdefghijk',
+      title: 'Video preferito',
+      url: 'https://youtu.be/abcdefghijk?si=original',
+      channel: 'Canale video',
+    );
     const channel = SonarTubeItem(
       kind: SonarTubeItemKind.channel,
       id: 'UC123',
@@ -20,29 +27,41 @@ void main() {
       url: 'https://www.youtube.com/playlist?list=PL123',
     );
 
+    expect(await service.toggleFavorite(video), isTrue);
     expect(await service.toggleFavorite(channel), isTrue);
     expect(await service.toggleFavorite(playlist), isTrue);
 
     final favorites = await SonarTubeFavoritesService().loadFavorites();
     expect(favorites.map((item) => item.title), [
+      'Video preferito',
       'Canale preferito',
       'Playlist preferita',
     ]);
+    final storedVideo = favorites.first;
+    expect(storedVideo.kind, SonarTubeItemKind.video);
+    expect(storedVideo.url, 'https://youtu.be/abcdefghijk?si=original');
 
-    expect(await service.toggleFavorite(channel), isFalse);
-    expect((await service.loadFavorites()).single.title, 'Playlist preferita');
+    expect(await service.toggleFavorite(video), isFalse);
+    expect(
+      (await service.loadFavorites()).map((item) => item.title),
+      ['Canale preferito', 'Playlist preferita'],
+    );
   });
 
-  test('rejects individual videos as favorites', () async {
+  test('video favorites never persist a temporary resolved media URL', () async {
     SharedPreferences.setMockInitialValues({});
     final service = SonarTubeFavoritesService();
     const video = SonarTubeItem(
       kind: SonarTubeItemKind.video,
       id: 'abcdefghijk',
       title: 'Video',
-      url: 'https://www.youtube.com/watch?v=abcdefghijk',
+      url: 'https://temporary.example.invalid/resolved/audio-stream.m4a',
     );
 
-    expect(() => service.toggleFavorite(video), throwsArgumentError);
+    expect(await service.toggleFavorite(video), isTrue);
+    final stored = (await service.loadFavorites()).single;
+
+    expect(stored.url, 'https://www.youtube.com/watch?v=abcdefghijk');
+    expect(stored.url, isNot(contains('temporary.example.invalid')));
   });
 }

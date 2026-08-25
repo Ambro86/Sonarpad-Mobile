@@ -18,13 +18,17 @@
   "sonarTubeSearchPrompt": "Saisissez une recherche pour trouver des vidéos, chaînes et playlists.",
   "sonarTubeNoResults": "Aucune vidéo trouvée.",
   "sonarTubeLoadMore": "Charger plus de résultats",
+  "sonarTubeVideo": "Vidéo",
   "sonarTubeChannel": "Chaîne",
   "sonarTubePlaylist": "Playlist",
   "sonarTubeLive": "En direct",
   "sonarTubeResolving": "Préparation de la vidéo…",
   "sonarTubeFavorites": "Favoris",
-  "sonarTubeNoFavorites": "Aucune chaîne ou playlist favorite.",
+  "sonarTubeNoFavorites": "Aucune vidéo, chaîne ou playlist favorite.",
   "sonarTubeAddFavorite": "Ajouter aux favoris",
+  "sonarTubeShareVideo": "Partager la vidéo",
+  "sonarTubeShareChannel": "Partager la chaîne",
+  "sonarTubeSharePlaylist": "Partager la playlist",
   "sonarTubeRemoveFavorite": "Retirer des favoris",
   "sonarTubeFavoriteAdded": "{name} ajouté aux favoris.",
   "sonarTubeFavoriteRemoved": "{name} retiré des favoris.",
@@ -1230,7 +1234,7 @@
       }
     }
   },
-  "mediaCutterSaving": "Enregistrement du fichier...",
+  "mediaCutterSaving": "Traitement en cours...",
   "mediaCutterSaved": "Fichier enregistré : {fileName}",
   "@mediaCutterSaved": {
     "placeholders": {
@@ -2762,21 +2766,32 @@
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
   },
-  "preserveMedia": "Conserver le média",
+  "preserveMedia": "Conserver le contenu",
   "@preserveMedia": {
     "description": "Secondary action that downloads and preserves a playable MP3."
   },
-  "preserveMediaSaving": "Enregistrement du média…",
+  "preserveMediaSaving": "Enregistrement du contenu…",
   "@preserveMediaSaving": {
     "description": "Status shown while a media file is being downloaded and preserved."
   },
-  "preserveMediaSaved": "Média enregistré dans les Documents de Sonarpad.",
+  "preserveMediaSaved": "Contenu enregistré dans les Documents de Sonarpad.",
   "@preserveMediaSaved": {
     "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
   },
-  "preserveMediaError": "Impossible de conserver le média.",
+  "preserveMediaError": "Impossible de conserver le contenu.",
   "@preserveMediaError": {
     "description": "Error shown when a playable media file cannot be preserved."
+  },
+  "mediaProcessingCompleted": "Traitement terminé.",
+  "@mediaProcessingCompleted": {
+    "description": "Shown when media processing has completed and the user must choose a destination."
+  },
+  "saveInSonarpadDocuments": "Enregistrer dans les Documents de Sonarpad",
+  "@saveInSonarpadDocuments": {
+    "description": "Button that saves a generated media file in Sonarpad Documents."
+  },
+  "mediaCutterProcess": "Traiter",
+  "@mediaCutterProcess": {
+    "description": "Button that processes the current Media Cutter edits before choosing a destination."
   }
-
 }
