@@ -18,6 +18,8 @@ import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
+const _addToPodcastsLabel = 'Aggiungi ai podcast';
+
 class RaiPlaySoundScreen extends StatefulWidget {
   final String? url;
   final String? searchQuery;
@@ -235,6 +237,9 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
         builder: (_) => _RaiPlaySoundDateSelectorScreen(
           items: items,
           onOpenItem: (item) => _openItem(item),
+          onPreserveMedia: _preserveMedia,
+          canSubscribe: _canSubscribeCurrentPage,
+          onSubscribe: _subscribeCurrentPageToPodcasts,
         ),
       ),
     );
@@ -301,15 +306,24 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                     _canSubscribeCurrentPage)
                   const AccessibleCustomAction(
                     id: 'subscribe',
-                    label: 'Aggiungi ai podcast',
+                    label: _addToPodcastsLabel,
                   ),
               ],
-              visualActionId: items[i].kind == RaiPlaySoundItemKind.audio
-                  ? 'preserve_media'
-                  : null,
-              visualActionIcon: items[i].kind == RaiPlaySoundItemKind.audio
-                  ? 'download'
-                  : null,
+              visualActions: [
+                if (items[i].kind == RaiPlaySoundItemKind.audio)
+                  AccessibleVisualAction(
+                    id: 'preserve_media',
+                    label: l10n.preserveMedia,
+                    icon: 'download',
+                  ),
+                if (items[i].kind == RaiPlaySoundItemKind.audio &&
+                    _canSubscribeCurrentPage)
+                  const AccessibleVisualAction(
+                    id: 'subscribe',
+                    label: _addToPodcastsLabel,
+                    icon: 'podcast_add',
+                  ),
+              ],
             ),
         ]),
       ],
@@ -453,7 +467,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                                         ),
                                   if (isAudio && _canSubscribeCurrentPage)
                                     const CustomSemanticsAction(
-                                      label: 'Aggiungi ai podcast',
+                                      label: _addToPodcastsLabel,
                                     ): () => unawaited(
                                           _subscribeCurrentPageToPodcasts(),
                                         ),
@@ -482,12 +496,28 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
                                       : null,
                                   trailing: isAudio
                                       ? ExcludeSemantics(
-                                          child: IconButton(
-                                            icon: const Icon(Icons.download),
-                                            tooltip: l10n.preserveMedia,
-                                            onPressed: () => unawaited(
-                                              _preserveMedia(item),
-                                            ),
+                                          child: Wrap(
+                                            spacing: 2,
+                                            children: [
+                                              IconButton(
+                                                icon: const Icon(Icons.download),
+                                                tooltip: l10n.preserveMedia,
+                                                onPressed: () => unawaited(
+                                                  _preserveMedia(item),
+                                                ),
+                                              ),
+                                              if (_canSubscribeCurrentPage)
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.podcasts,
+                                                  ),
+                                                  tooltip:
+                                                      _addToPodcastsLabel,
+                                                  onPressed: () => unawaited(
+                                                    _subscribeCurrentPageToPodcasts(),
+                                                  ),
+                                                ),
+                                            ],
                                           ),
                                         )
                                       : null,
@@ -509,10 +539,16 @@ class _RaiPlaySoundDateSelectorScreen extends StatelessWidget {
   const _RaiPlaySoundDateSelectorScreen({
     required this.items,
     required this.onOpenItem,
+    required this.onPreserveMedia,
+    required this.canSubscribe,
+    required this.onSubscribe,
   });
 
   final List<RaiPlaySoundItem> items;
   final void Function(RaiPlaySoundItem item) onOpenItem;
+  final Future<void> Function(RaiPlaySoundItem item) onPreserveMedia;
+  final bool canSubscribe;
+  final Future<void> Function() onSubscribe;
 
   List<RaiPlaySoundItem> _itemsForDate(DateTime date) {
     return items.where((item) {
@@ -535,6 +571,9 @@ class _RaiPlaySoundDateSelectorScreen extends StatelessWidget {
         builder: (_) => _RaiPlaySoundDateItemsScreen(
           items: dateItems,
           onOpenItem: onOpenItem,
+          onPreserveMedia: onPreserveMedia,
+          canSubscribe: canSubscribe,
+          onSubscribe: onSubscribe,
         ),
       ),
     );
@@ -611,15 +650,110 @@ class _RaiPlaySoundDateItemsScreen extends StatelessWidget {
   const _RaiPlaySoundDateItemsScreen({
     required this.items,
     required this.onOpenItem,
+    required this.onPreserveMedia,
+    required this.canSubscribe,
+    required this.onSubscribe,
   });
 
   final List<RaiPlaySoundItem> items;
   final void Function(RaiPlaySoundItem item) onOpenItem;
+  final Future<void> Function(RaiPlaySoundItem item) onPreserveMedia;
+  final bool canSubscribe;
+  final Future<void> Function() onSubscribe;
+
+  List<AccessibleCustomAction> _accessibleActions(
+    AppLocalizations l10n,
+  ) => [
+        AccessibleCustomAction(
+          id: 'preserve_media',
+          label: l10n.preserveMedia,
+        ),
+        if (canSubscribe)
+          const AccessibleCustomAction(
+            id: 'subscribe',
+            label: _addToPodcastsLabel,
+          ),
+      ];
+
+  List<AccessibleVisualAction> _visualActions(
+    AppLocalizations l10n,
+  ) => [
+        AccessibleVisualAction(
+          id: 'preserve_media',
+          label: l10n.preserveMedia,
+          icon: 'download',
+        ),
+        if (canSubscribe)
+          const AccessibleVisualAction(
+            id: 'subscribe',
+            label: _addToPodcastsLabel,
+            icon: 'podcast_add',
+          ),
+      ];
+
+  Widget _legacyItem(
+    BuildContext context,
+    AppLocalizations l10n,
+    RaiPlaySoundItem item,
+    String title,
+    String? subtitle,
+  ) {
+    return Card(
+      child: Semantics(
+        container: true,
+        customSemanticsActions: {
+          CustomSemanticsAction(label: l10n.preserveMedia): () =>
+              unawaited(onPreserveMedia(item)),
+          if (canSubscribe)
+            const CustomSemanticsAction(label: _addToPodcastsLabel): () =>
+                unawaited(onSubscribe()),
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ListTile(
+              title: Text(title),
+              subtitle: subtitle == null ? null : Text(subtitle),
+              onTap: () => onOpenItem(item),
+            ),
+            ExcludeSemantics(
+              child: Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: Wrap(
+                  spacing: 2,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.download),
+                      tooltip: l10n.preserveMedia,
+                      onPressed: () => unawaited(onPreserveMedia(item)),
+                    ),
+                    if (canSubscribe)
+                      IconButton(
+                        icon: const Icon(Icons.podcasts),
+                        tooltip: _addToPodcastsLabel,
+                        onPressed: () => unawaited(onSubscribe()),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final flutterRows = <Widget>[
+    final accessibleRows = <AccessibleListRow>[
+      AccessibleListRow(
+        id: 'back',
+        title: l10n.back,
+        kind: 'button',
+      ),
+    ];
+    final legacyRows = <Widget>[
       SizedBox(
         width: double.infinity,
         child: ElevatedButton.icon(
@@ -627,14 +761,6 @@ class _RaiPlaySoundDateItemsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           label: Text(l10n.back),
         ),
-      ),
-    ];
-    final accessibleRows = <AccessibleListRow>[
-      AccessibleListRow(
-        id: 'back',
-        title: l10n.back,
-        kind: 'button',
-        flutterChild: flutterRows.first,
       ),
     ];
 
@@ -646,22 +772,16 @@ class _RaiPlaySoundDateItemsScreen extends StatelessWidget {
         l10n.localeName,
       );
       final subtitle = item.description.isNotEmpty ? item.description : null;
-      final child = Card(
-        child: ListTile(
-          title: Text(title),
-          subtitle: subtitle == null ? null : Text(subtitle),
-          onTap: () => onOpenItem(item),
-        ),
-      );
-      flutterRows.add(child);
       accessibleRows.add(
         AccessibleListRow(
           id: 'item_$index',
           title: title,
           subtitle: subtitle,
-          flutterChild: child,
+          actions: _accessibleActions(l10n),
+          visualActions: _visualActions(l10n),
         ),
       );
+      legacyRows.add(_legacyItem(context, l10n, item, title, subtitle));
     }
 
     return Scaffold(
@@ -669,26 +789,37 @@ class _RaiPlaySoundDateItemsScreen extends StatelessWidget {
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(
                 sections: [AccessibleListSection(rows: accessibleRows)],
-                onEvent: (event) {
-                  if (event.type != 'activate' || event.id == null) return;
-                  if (event.id == 'back') {
+                onEvent: (event) async {
+                  final id = event.id;
+                  if (id == null) return;
+                  if (id == 'back' && event.type == 'activate') {
                     Navigator.pop(context);
-                  } else if (event.id!.startsWith('item_')) {
-                    final index = int.tryParse(event.id!.substring(5));
-                    if (index != null && index >= 0 && index < items.length) {
-                      onOpenItem(items[index]);
+                    return;
+                  }
+                  if (!id.startsWith('item_')) return;
+                  final index = int.tryParse(id.substring(5));
+                  if (index == null || index < 0 || index >= items.length) {
+                    return;
+                  }
+                  final item = items[index];
+                  if (event.type == 'customAction') {
+                    if (event.action == 'preserve_media') {
+                      await onPreserveMedia(item);
+                    } else if (event.action == 'subscribe' && canSubscribe) {
+                      await onSubscribe();
                     }
+                  } else if (event.type == 'activate') {
+                    onOpenItem(item);
                   }
                 },
               )
             : ListView.separated(
                 padding: const EdgeInsets.all(16),
-                itemCount: flutterRows.length,
+                itemCount: legacyRows.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
-                itemBuilder: (_, index) => flutterRows[index],
+                itemBuilder: (_, index) => legacyRows[index],
               ),
       ),
     );
   }
 }
-

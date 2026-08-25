@@ -96,10 +96,10 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get sonarTubeShareVideo => '分享视频';
 
   @override
-  String get sonarTubePreviousTrack => '转到上一首';
+  String get sonarTubePreviousTrack => '转到上一个视频';
 
   @override
-  String get sonarTubeNextTrack => '转到下一首';
+  String get sonarTubeNextTrack => '转到下一个视频';
 
   @override
   String get sonarTubeGoToChannel => '前往频道';

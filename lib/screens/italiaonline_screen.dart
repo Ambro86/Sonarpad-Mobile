@@ -52,14 +52,24 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
               sections: [
                 AccessibleListSection(rows: [
                   AccessibleListRow(
-                    id: 'kind',
-                    title: 'Elenco',
-                    kind: 'picker',
-                    value: _kind.name,
-                    options: const [
-                      AccessibleOption(value: 'pagineBianche', label: 'Pagine Bianche'),
-                      AccessibleOption(value: 'pagineGialle', label: 'Pagine Gialle'),
-                    ],
+                    id: 'kind_pagine_bianche',
+                    title: 'Pagine Bianche',
+                    selected: _kind == DirectoryKind.pagineBianche,
+                    onActivate: () {
+                      if (_kind != DirectoryKind.pagineBianche) {
+                        setState(() => _kind = DirectoryKind.pagineBianche);
+                      }
+                    },
+                  ),
+                  AccessibleListRow(
+                    id: 'kind_pagine_gialle',
+                    title: 'Pagine Gialle',
+                    selected: _kind == DirectoryKind.pagineGialle,
+                    onActivate: () {
+                      if (_kind != DirectoryKind.pagineGialle) {
+                        setState(() => _kind = DirectoryKind.pagineGialle);
+                      }
+                    },
                   ),
                   AccessibleListRow(
                     id: 'what',
@@ -79,10 +89,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                 ]),
               ],
               onEvent: (event) {
-                if (event.id == 'kind' && event.type == 'picker') {
-                  final v = event.value?.toString();
-                  setState(() => _kind = v == 'pagineGialle' ? DirectoryKind.pagineGialle : DirectoryKind.pagineBianche);
-                } else if (event.id == 'what' && event.type == 'textChanged') {
+                if (event.id == 'what' && event.type == 'textChanged') {
                   _whatController.text = event.value?.toString() ?? '';
                 } else if (event.id == 'where' && event.type == 'textChanged') {
                   _whereController.text = event.value?.toString() ?? '';

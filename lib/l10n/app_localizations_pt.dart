@@ -99,10 +99,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeShareVideo => 'Partilhar vídeo';
 
   @override
-  String get sonarTubePreviousTrack => 'Ir para a faixa anterior';
+  String get sonarTubePreviousTrack => 'Ir para o vídeo anterior';
 
   @override
-  String get sonarTubeNextTrack => 'Ir para a faixa seguinte';
+  String get sonarTubeNextTrack => 'Ir para o vídeo seguinte';
 
   @override
   String get sonarTubeGoToChannel => 'Ir para o canal';
@@ -3517,10 +3517,10 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get sonarTubeShareVideo => 'Compartilhar vídeo';
 
   @override
-  String get sonarTubePreviousTrack => 'Ir para a faixa anterior';
+  String get sonarTubePreviousTrack => 'Ir para o vídeo anterior';
 
   @override
-  String get sonarTubeNextTrack => 'Ir para a faixa seguinte';
+  String get sonarTubeNextTrack => 'Ir para o próximo vídeo';
 
   @override
   String get sonarTubeGoToChannel => 'Ir para o canal';

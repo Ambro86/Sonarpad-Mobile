@@ -100,10 +100,10 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeShareVideo => 'Sdílet video';
 
   @override
-  String get sonarTubePreviousTrack => 'Přejít na předchozí skladbu';
+  String get sonarTubePreviousTrack => 'Přejít na předchozí video';
 
   @override
-  String get sonarTubeNextTrack => 'Přejít na následující skladbu';
+  String get sonarTubeNextTrack => 'Přejít na následující video';
 
   @override
   String get sonarTubeGoToChannel => 'Přejít na kanál';

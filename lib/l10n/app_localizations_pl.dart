@@ -100,10 +100,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sonarTubeShareVideo => 'Udostępnij film';
 
   @override
-  String get sonarTubePreviousTrack => 'Przejdź do poprzedniego utworu';
+  String get sonarTubePreviousTrack => 'Przejdź do poprzedniego filmu';
 
   @override
-  String get sonarTubeNextTrack => 'Przejdź do następnego utworu';
+  String get sonarTubeNextTrack => 'Przejdź do następnego filmu';
 
   @override
   String get sonarTubeGoToChannel => 'Przejdź do kanału';

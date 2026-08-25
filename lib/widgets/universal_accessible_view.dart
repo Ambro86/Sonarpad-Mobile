@@ -94,6 +94,29 @@ class AccessibleCustomAction {
   Map<String, Object?> toMap() => {'id': id, 'label': label};
 }
 
+/// Sighted-only counterpart of an accessible custom action.
+///
+/// These controls are deliberately excluded from the semantics/accessibility
+/// tree. Screen-reader users invoke the corresponding [AccessibleCustomAction]
+/// on the row instead, so the action is exposed exactly once.
+class AccessibleVisualAction {
+  const AccessibleVisualAction({
+    required this.id,
+    required this.label,
+    required this.icon,
+  });
+
+  final String id;
+  final String label;
+  final String icon;
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'label': label,
+        'icon': icon,
+      };
+}
+
 typedef AccessibleActivateCallback = FutureOr<void> Function();
 typedef AccessibleValueChangedCallback = FutureOr<void> Function(Object? value);
 typedef AccessibleCustomActionCallback = FutureOr<void> Function(String actionId);
@@ -132,6 +155,7 @@ class AccessibleListRow {
     this.options = const [],
     this.actions = const [],
     this.mergeFlutterCustomActions = false,
+    this.visualActions = const [],
     this.visualActionId,
     this.visualActionIcon,
     this.onActivate,
@@ -182,7 +206,11 @@ class AccessibleListRow {
   /// lands on the same node that exposes the actions. UIKit ignores this.
   final bool mergeFlutterCustomActions;
 
-  /// Optional sighted-only accessory action. It is rendered as a visible
+  /// Sighted-only counterparts of [actions]. They are rendered as visible
+  /// controls but deliberately excluded from the accessibility tree.
+  final List<AccessibleVisualAction> visualActions;
+
+  /// Optional legacy sighted-only accessory action. It is rendered as a visible
   /// control but deliberately excluded from the accessibility tree. Screen
   /// reader users invoke the matching entry in [actions] instead.
   final String? visualActionId;
@@ -239,6 +267,8 @@ class AccessibleListRow {
             stabilizeNativeTextFieldFocusOnBegin,
         'options': options.map((e) => e.toMap()).toList(),
         'actions': actions.map((e) => e.toMap()).toList(),
+        if (visualActions.isNotEmpty)
+          'visualActions': visualActions.map((e) => e.toMap()).toList(),
         if (visualActionId != null) 'visualActionId': visualActionId,
         if (visualActionIcon != null) 'visualActionIcon': visualActionIcon,
       };
@@ -1316,35 +1346,77 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   IconData _visualActionIcon(String? name) => switch (name) {
         'download' => Icons.download,
         'save' => Icons.save_alt,
+        'favorite' => Icons.favorite_border,
+        'favorite_filled' => Icons.favorite,
+        'share' => Icons.share,
+        'channel' => Icons.account_circle_outlined,
+        'comments' => Icons.comment_outlined,
+        'transcript' => Icons.subject,
+        'podcast_add' => Icons.podcasts,
+        'remove' => Icons.delete_outline,
         _ => Icons.more_horiz,
       };
 
-  Widget? _visualActionButton(AccessibleListRow row) {
+  Widget _visualActionControl(
+    AccessibleListRow row, {
+    required String actionId,
+    required String label,
+    required String? icon,
+  }) {
+    return IconButton(
+      tooltip: label.isEmpty ? null : label,
+      icon: Icon(_visualActionIcon(icon)),
+      onPressed: row.enabled
+          ? () => unawaited(_dispatch(AccessibleListEvent(
+                type: 'customAction',
+                id: row.id,
+                action: actionId,
+              )))
+          : null,
+    );
+  }
+
+  Widget? _visualActionButtons(AccessibleListRow row) {
+    final actions = row.visualActions;
+    if (actions.isNotEmpty) {
+      return ExcludeSemantics(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: actions
+              .map(
+                (action) => _visualActionControl(
+                  row,
+                  actionId: action.id,
+                  label: action.label,
+                  icon: action.icon,
+                ),
+              )
+              .toList(growable: false),
+        ),
+      );
+    }
+
     final actionId = row.visualActionId;
     if (actionId == null || actionId.isEmpty) return null;
     return ExcludeSemantics(
-      child: IconButton(
-        icon: Icon(_visualActionIcon(row.visualActionIcon)),
-        onPressed: row.enabled
-            ? () => unawaited(_dispatch(AccessibleListEvent(
-                  type: 'customAction',
-                  id: row.id,
-                  action: actionId,
-                )))
-            : null,
+      child: _visualActionControl(
+        row,
+        actionId: actionId,
+        label: '',
+        icon: row.visualActionIcon,
       ),
     );
   }
 
   Widget? _rowTrailing(AccessibleListRow row, String? displayValue) {
-    final visualAction = _visualActionButton(row);
-    if (visualAction == null) {
+    final visualActions = _visualActionButtons(row);
+    if (visualActions == null) {
       return displayValue == null ? null : Text(displayValue);
     }
-    if (displayValue == null) return visualAction;
+    if (displayValue == null) return visualActions;
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: [Text(displayValue), visualAction],
+      children: [Text(displayValue), visualActions],
     );
   }
 

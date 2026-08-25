@@ -294,13 +294,13 @@ abstract class AppLocalizations {
   /// No description provided for @sonarTubePreviousTrack.
   ///
   /// In it, this message translates to:
-  /// **'Vai al brano precedente'**
+  /// **'Vai al video precedente'**
   String get sonarTubePreviousTrack;
 
   /// No description provided for @sonarTubeNextTrack.
   ///
   /// In it, this message translates to:
-  /// **'Vai al brano successivo'**
+  /// **'Vai al video successivo'**
   String get sonarTubeNextTrack;
 
   /// Open the channel that published the selected SonarTube video.

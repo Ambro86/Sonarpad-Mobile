@@ -101,10 +101,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sonarTubeShareVideo => 'Compartir video';
 
   @override
-  String get sonarTubePreviousTrack => 'Ir a la pista anterior';
+  String get sonarTubePreviousTrack => 'Ir al video anterior';
 
   @override
-  String get sonarTubeNextTrack => 'Ir a la pista siguiente';
+  String get sonarTubeNextTrack => 'Ir al video siguiente';
 
   @override
   String get sonarTubeGoToChannel => 'Ir al canal';

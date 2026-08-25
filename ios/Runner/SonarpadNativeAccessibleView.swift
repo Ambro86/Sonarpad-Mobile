@@ -12,6 +12,12 @@ private struct SonarpadNativeAction {
   let label: String
 }
 
+private struct SonarpadNativeVisualAction {
+  let id: String
+  let label: String
+  let icon: String
+}
+
 private struct SonarpadNativeRow {
   let id: String
   var title: String
@@ -39,6 +45,7 @@ private struct SonarpadNativeRow {
   var stabilizeTextFieldFocusOnBegin: Bool
   var options: [SonarpadNativeOption]
   var actions: [SonarpadNativeAction]
+  var visualActions: [SonarpadNativeVisualAction]
   var visualActionId: String?
   var visualActionIcon: String?
 
@@ -86,6 +93,12 @@ private struct SonarpadNativeRow {
     actions = (map["actions"] as? [[String: Any]] ?? []).compactMap {
       guard let id = $0["id"] as? String, let label = $0["label"] as? String else { return nil }
       return SonarpadNativeAction(id: id, label: label)
+    }
+    visualActions = (map["visualActions"] as? [[String: Any]] ?? []).compactMap {
+      guard let id = $0["id"] as? String,
+            let label = $0["label"] as? String,
+            let icon = $0["icon"] as? String else { return nil }
+      return SonarpadNativeVisualAction(id: id, label: label, icon: icon)
     }
     visualActionId = map["visualActionId"] as? String
     visualActionIcon = map["visualActionIcon"] as? String
@@ -138,6 +151,7 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.stabilizeTextFieldFocusOnBegin == rhs.stabilizeTextFieldFocusOnBegin,
         lhs.options.count == rhs.options.count,
         lhs.actions.count == rhs.actions.count,
+        lhs.visualActions.count == rhs.visualActions.count,
         lhs.visualActionId == rhs.visualActionId,
         lhs.visualActionIcon == rhs.visualActionIcon else { return false }
 
@@ -146,6 +160,9 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
   }
   for (left, right) in zip(lhs.actions, rhs.actions) {
     if left.id != right.id || left.label != right.label { return false }
+  }
+  for (left, right) in zip(lhs.visualActions, rhs.visualActions) {
+    if left.id != right.id || left.label != right.label || left.icon != right.icon { return false }
   }
   return true
 }
@@ -983,15 +1000,34 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.activationHandler = nil
     }
 
-    if let visualActionId = row.visualActionId, !visualActionId.isEmpty, row.enabled {
-      let button = UIButton(type: .system)
-      let symbolName: String
-      switch row.visualActionIcon {
-      case "save": symbolName = "square.and.arrow.down"
-      case "download": symbolName = "arrow.down.circle"
-      default: symbolName = "ellipsis.circle"
+    if !row.visualActions.isEmpty && row.enabled {
+      let stack = UIStackView()
+      stack.axis = .horizontal
+      stack.alignment = .center
+      stack.distribution = .fillProportionally
+      stack.spacing = 0
+      stack.isAccessibilityElement = false
+      stack.accessibilityElementsHidden = true
+
+      for action in row.visualActions {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: visualActionSymbol(action.icon)), for: .normal)
+        button.isAccessibilityElement = false
+        button.accessibilityElementsHidden = true
+        button.accessibilityLabel = nil
+        button.accessibilityHint = nil
+        button.accessibilityIdentifier = nil
+        button.widthAnchor.constraint(greaterThanOrEqualToConstant: 36).isActive = true
+        button.heightAnchor.constraint(greaterThanOrEqualToConstant: 36).isActive = true
+        objc_setAssociatedObject(button, &AssociatedKeys.rowId, row.id, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+        objc_setAssociatedObject(button, &AssociatedKeys.actionId, action.id, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+        button.addTarget(self, action: #selector(handleVisualAction(_:)), for: .touchUpInside)
+        stack.addArrangedSubview(button)
       }
-      button.setImage(UIImage(systemName: symbolName), for: .normal)
+      cell.accessoryView = stack
+    } else if let visualActionId = row.visualActionId, !visualActionId.isEmpty, row.enabled {
+      let button = UIButton(type: .system)
+      button.setImage(UIImage(systemName: visualActionSymbol(row.visualActionIcon)), for: .normal)
       button.isAccessibilityElement = false
       button.accessibilityElementsHidden = true
       objc_setAssociatedObject(button, &AssociatedKeys.rowId, row.id, .OBJC_ASSOCIATION_COPY_NONATOMIC)
@@ -1012,6 +1048,22 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
     } else {
       cell.accessibilityCustomActions = nil
+    }
+  }
+
+  private func visualActionSymbol(_ icon: String?) -> String {
+    switch icon {
+    case "save": return "square.and.arrow.down"
+    case "download": return "arrow.down.circle"
+    case "favorite": return "heart"
+    case "favorite_filled": return "heart.fill"
+    case "share": return "square.and.arrow.up"
+    case "channel": return "person.crop.circle"
+    case "comments": return "bubble.left"
+    case "transcript": return "text.alignleft"
+    case "podcast_add": return "dot.radiowaves.left.and.right"
+    case "remove": return "trash"
+    default: return "ellipsis.circle"
     }
   }
 
