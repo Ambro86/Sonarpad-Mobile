@@ -234,18 +234,36 @@ class _RouteScreenState extends State<RouteScreen> {
       AccessibleOption(value: 'ua', label: localizedCountryDisplayName('UA', localeName: l10n.localeName)),
       AccessibleOption(value: 'cn', label: l10n.chinaCountryName),
     ];
+    String? countryValueLabel;
+    for (final option in countries) {
+      if (option.value == _countryCode) {
+        countryValueLabel = option.label;
+        break;
+      }
+    }
+    final profileValueLabel = switch (_profile) {
+      RouteProfile.walking => l10n.routeWalking,
+      RouteProfile.cycling => l10n.routeCycling,
+      RouteProfile.driving => l10n.routeDriving,
+      RouteProfile.wheelchair => l10n.routeWheelchair,
+    };
+    final preferenceValueLabel = switch (_preference) {
+      RoutePreference.fastest => l10n.routeFastest,
+      RoutePreference.shortest => l10n.routeShortest,
+    };
     return UniversalAccessibleList(
       sections: [
         AccessibleListSection(rows: [
           AccessibleListRow(id: 'recent', title: l10n.routeRecentRoutes, enabled: !_calculating),
           AccessibleListRow(id: 'from', title: l10n.routeFrom, kind: 'textField', value: _fromController.text),
           AccessibleListRow(id: 'to', title: l10n.routeTo, kind: 'textField', value: _toController.text, textInputAction: 'done', onSubmitted: (_) { if (!_calculating) _calculateRoute(); }),
-          AccessibleListRow(id: 'country', title: l10n.routeCountry, kind: 'picker', value: _countryCode, options: countries),
+          AccessibleListRow(id: 'country', title: l10n.routeCountry, kind: 'picker', value: _countryCode, valueLabel: countryValueLabel, options: countries),
           AccessibleListRow(
             id: 'profile',
             title: l10n.routeVehicle,
             kind: 'picker',
             value: _profile.name,
+            valueLabel: profileValueLabel,
             options: [
               AccessibleOption(value: RouteProfile.walking.name, label: l10n.routeWalking),
               AccessibleOption(value: RouteProfile.cycling.name, label: l10n.routeCycling),
@@ -258,6 +276,7 @@ class _RouteScreenState extends State<RouteScreen> {
             title: l10n.routeType,
             kind: 'picker',
             value: _preference.name,
+            valueLabel: preferenceValueLabel,
             options: [
               AccessibleOption(value: RoutePreference.fastest.name, label: l10n.routeFastest),
               AccessibleOption(value: RoutePreference.shortest.name, label: l10n.routeShortest),
