@@ -2855,5 +2855,10 @@
   "textCopiedToClipboard": "Texte copié dans le presse-papiers",
   "@textCopiedToClipboard": {
     "description": "Confirmation shown after copying the complete temporary document text."
-  }
+  },
+  "rename": "Renommer",
+  "renameRecording": "Renommer l’enregistrement",
+  "newRecordingName": "Nouveau nom de l’enregistrement",
+  "recordingCannotRenameWhileInProgress": "Impossible de renommer un enregistrement en cours.",
+  "recordingNameAlreadyExists": "Un enregistrement portant ce nom existe déjà."
 }

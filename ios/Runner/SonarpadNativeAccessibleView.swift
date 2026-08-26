@@ -826,6 +826,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     guard let map = arguments as? [String: Any] else { return }
     debugTag = map["debugTag"] as? String
     configurePersistentTopAction(from: map)
+    tableView.showsVerticalScrollIndicator = map["showVerticalScrollIndicator"] as? Bool ?? true
     let rawSections = map["sections"] as? [[String: Any]] ?? []
     let newSections = rawSections.map(SonarpadNativeSection.init)
     let focusedRowBeforeReload = voiceOverFocusedRowId()
@@ -1114,6 +1115,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     case "transcript": return "text.alignleft"
     case "podcast_add": return "dot.radiowaves.left.and.right"
     case "remove": return "trash"
+    case "edit": return "pencil"
     case "record": return "record.circle"
     default: return "ellipsis.circle"
     }

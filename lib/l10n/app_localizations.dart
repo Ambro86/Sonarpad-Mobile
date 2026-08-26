@@ -5840,6 +5840,21 @@ abstract class AppLocalizations {
 
   /// Error shown when a playable media file cannot be preserved.
   String get preserveMediaError;
+
+  /// Renames a saved radio or TV recording.
+  String get rename;
+
+  /// Title for the recording rename screen.
+  String get renameRecording;
+
+  /// Label for the new recording name field.
+  String get newRecordingName;
+
+  /// Shown when rename is requested while the recording is still active.
+  String get recordingCannotRenameWhileInProgress;
+
+  /// Shown when another recording already uses the requested name.
+  String get recordingNameAlreadyExists;
 }
 
 class _AppLocalizationsDelegate

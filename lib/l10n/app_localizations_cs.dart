@@ -3573,4 +3573,20 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get preserveMediaError => 'Obsah se nepodařilo uchovat.';
 
+
+  @override
+  String get rename => 'Přejmenovat';
+
+  @override
+  String get renameRecording => 'Přejmenovat nahrávku';
+
+  @override
+  String get newRecordingName => 'Nový název nahrávky';
+
+  @override
+  String get recordingCannotRenameWhileInProgress => 'Probíhající nahrávku nelze přejmenovat.';
+
+  @override
+  String get recordingNameAlreadyExists => 'Nahrávka s tímto názvem již existuje.';
+
 }

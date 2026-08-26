@@ -10,6 +10,7 @@ void main() {
     ).readAsStringSync();
 
     expect(source, contains("id: 'category_top'"));
+    expect(source, contains('showVerticalScrollIndicator: false'));
     expect(source, contains("id: 'category_\$index'"));
     expect(source, contains("kind: 'button'"));
     expect(source, contains('selected: _currentUri == widget.source.uri'));
@@ -29,5 +30,11 @@ void main() {
     expect(source, contains('final showCategories = widget.initialUri == null;'));
     expect(source, isNot(contains("id: 'category',")));
     expect(nativeSource, contains('if row.selected { traits.insert(.selected) }'));
+    expect(
+      nativeSource,
+      contains(
+        'tableView.showsVerticalScrollIndicator = map["showVerticalScrollIndicator"] as? Bool ?? true',
+      ),
+    );
   });
 }

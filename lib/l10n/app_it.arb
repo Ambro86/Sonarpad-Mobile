@@ -4427,5 +4427,10 @@
   "textCopiedToClipboard": "Testo copiato negli appunti",
   "@textCopiedToClipboard": {
     "description": "Confirmation shown after copying the complete temporary document text."
-  }
+  },
+  "rename": "Rinomina",
+  "renameRecording": "Rinomina registrazione",
+  "newRecordingName": "Nuovo nome della registrazione",
+  "recordingCannotRenameWhileInProgress": "Non è possibile rinominare una registrazione in corso.",
+  "recordingNameAlreadyExists": "Esiste già una registrazione con questo nome."
 }

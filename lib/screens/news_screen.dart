@@ -873,6 +873,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                 ? SizedBox(
                     height: 72,
                     child: UniversalAccessibleList(
+                      showVerticalScrollIndicator: false,
                       sections: [
                         AccessibleListSection(
                           rows: [

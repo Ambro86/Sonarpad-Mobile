@@ -2849,5 +2849,10 @@
   "textCopiedToClipboard": "Text copied to clipboard",
   "@textCopiedToClipboard": {
     "description": "Confirmation shown after copying the complete temporary document text."
-  }
+  },
+  "rename": "Rename",
+  "renameRecording": "Rename recording",
+  "newRecordingName": "New recording name",
+  "recordingCannotRenameWhileInProgress": "A recording in progress cannot be renamed.",
+  "recordingNameAlreadyExists": "A recording with this name already exists."
 }

@@ -3582,4 +3582,20 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get preserveMediaError => 'Impossibile conservare il contenuto.';
 
+
+  @override
+  String get rename => 'Rinomina';
+
+  @override
+  String get renameRecording => 'Rinomina registrazione';
+
+  @override
+  String get newRecordingName => 'Nuovo nome della registrazione';
+
+  @override
+  String get recordingCannotRenameWhileInProgress => 'Non è possibile rinominare una registrazione in corso.';
+
+  @override
+  String get recordingNameAlreadyExists => 'Esiste già una registrazione con questo nome.';
+
 }

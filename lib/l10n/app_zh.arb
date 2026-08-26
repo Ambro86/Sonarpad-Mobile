@@ -2849,5 +2849,10 @@
   "textCopiedToClipboard": "文本已复制到剪贴板",
   "@textCopiedToClipboard": {
     "description": "Confirmation shown after copying the complete temporary document text."
-  }
+  },
+  "rename": "重命名",
+  "renameRecording": "重命名录制内容",
+  "newRecordingName": "录制内容的新名称",
+  "recordingCannotRenameWhileInProgress": "正在进行的录制无法重命名。",
+  "recordingNameAlreadyExists": "已存在同名录制内容。"
 }

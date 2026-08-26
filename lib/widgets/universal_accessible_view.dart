@@ -538,6 +538,7 @@ class UniversalAccessibleList extends StatefulWidget {
     this.onEvent,
     this.onRefresh,
     this.refreshEnabled = false,
+    this.showVerticalScrollIndicator = true,
     this.controller,
     this.persistentTopAction,
     this.initialFocusId,
@@ -552,6 +553,12 @@ class UniversalAccessibleList extends StatefulWidget {
   final AccessibleListEventCallback? onEvent;
   final FutureOr<void> Function()? onRefresh;
   final bool refreshEnabled;
+
+  /// Whether the native scrolling surface should expose its vertical scroll
+  /// indicator. Screens with a compact auxiliary list can hide the indicator
+  /// without disabling scrolling or changing the accessibility rows.
+  final bool showVerticalScrollIndicator;
+
   final AccessibleListController? controller;
 
   /// Optional route-level action that must remain reachable even while the
@@ -602,6 +609,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   Map<String, Object?> get _data => {
         'sections': widget.sections.map((e) => e.toMap()).toList(),
         'refreshEnabled': widget.refreshEnabled,
+        'showVerticalScrollIndicator': widget.showVerticalScrollIndicator,
         if (widget.persistentTopAction != null)
           'persistentTopAction': widget.persistentTopAction!.toMap(),
         if (_effectiveInitialFocusId != null)
@@ -1397,6 +1405,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'transcript' => Icons.subject,
         'podcast_add' => Icons.podcasts,
         'remove' => Icons.delete_outline,
+        'edit' => Icons.edit_outlined,
         'record' => Icons.fiber_manual_record,
         _ => Icons.more_horiz,
       };

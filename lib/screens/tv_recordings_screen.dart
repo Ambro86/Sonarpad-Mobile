@@ -13,6 +13,7 @@ import '../utils/status_message.dart';
 import '../widgets/recording_selection_dialog.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
+import 'recording_rename_screen.dart';
 
 class TvRecordingsScreen extends StatefulWidget {
   const TvRecordingsScreen({super.key});
@@ -133,6 +134,23 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
     }
   }
 
+  Future<void> _renameRecording(File file) async {
+    if (_recordingState(file) != GlobalRecordingOutputState.none) {
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).recordingCannotRenameWhileInProgress,
+      );
+      return;
+    }
+
+    final renamed = await showAndRenameRecording(
+      context,
+      file,
+      routeName: '/tv/recordings/rename',
+    );
+    if (renamed != null && mounted) _reload();
+  }
+
   Future<void> _deleteRecording(File file) async {
     await _deleteRecordings([file]);
   }
@@ -196,7 +214,15 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                             actions: [
                               AccessibleCustomAction(id: 'open', label: l10n.openItem),
                               AccessibleCustomAction(id: 'share', label: l10n.share),
+                              AccessibleCustomAction(id: 'rename', label: l10n.rename),
                               AccessibleCustomAction(id: 'delete', label: l10n.deleteItem),
+                            ],
+                            visualActions: [
+                              AccessibleVisualAction(
+                                id: 'rename',
+                                label: l10n.rename,
+                                icon: 'edit',
+                              ),
                             ],
                           ))
                       .toList(growable: false),
@@ -211,6 +237,8 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                   _openRecording(file);
                 } else if (event.type == 'customAction' && event.action == 'share') {
                   await _shareRecording(file);
+                } else if (event.type == 'customAction' && event.action == 'rename') {
+                  await _renameRecording(file);
                 } else if (event.type == 'customAction' && event.action == 'delete') {
                   await _deleteRecording(file);
                 }
@@ -231,6 +259,8 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                       _openRecording(file),
                   CustomSemanticsAction(label: l10n.share): () =>
                       _shareRecording(file),
+                  CustomSemanticsAction(label: l10n.rename): () =>
+                      _renameRecording(file),
                   CustomSemanticsAction(label: l10n.deleteItem): () =>
                       _deleteRecording(file),
                 },
@@ -240,32 +270,43 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                   title: Text(name),
                   subtitle: status == null ? null : Text(status),
                   trailing: ExcludeSemantics(
-                    child: PopupMenuButton<_RecordingAction>(
-                      onSelected: (action) {
-                        switch (action) {
-                          case _RecordingAction.open:
-                            _openRecording(file);
-                            break;
-                          case _RecordingAction.share:
-                            _shareRecording(file);
-                            break;
-                          case _RecordingAction.delete:
-                            _deleteRecording(file);
-                            break;
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: _RecordingAction.open,
-                          child: Text(l10n.openItem),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          key: ValueKey('tv_recording_rename_${file.path}'),
+                          icon: const Icon(Icons.edit_outlined),
+                          tooltip: l10n.rename,
+                          onPressed: () => _renameRecording(file),
                         ),
-                        PopupMenuItem(
-                          value: _RecordingAction.share,
-                          child: Text(l10n.share),
-                        ),
-                        PopupMenuItem(
-                          value: _RecordingAction.delete,
-                          child: Text(l10n.deleteItem),
+                        PopupMenuButton<_RecordingAction>(
+                          onSelected: (action) {
+                            switch (action) {
+                              case _RecordingAction.open:
+                                _openRecording(file);
+                                break;
+                              case _RecordingAction.share:
+                                _shareRecording(file);
+                                break;
+                              case _RecordingAction.delete:
+                                _deleteRecording(file);
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: _RecordingAction.open,
+                              child: Text(l10n.openItem),
+                            ),
+                            PopupMenuItem(
+                              value: _RecordingAction.share,
+                              child: Text(l10n.share),
+                            ),
+                            PopupMenuItem(
+                              value: _RecordingAction.delete,
+                              child: Text(l10n.deleteItem),
+                            ),
+                          ],
                         ),
                       ],
                     ),

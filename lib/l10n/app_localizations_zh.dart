@@ -3197,4 +3197,20 @@ class AppLocalizationsZhCn extends AppLocalizations {
   @override
   String get preserveMediaError => '无法保存内容。';
 
+
+  @override
+  String get rename => '重命名';
+
+  @override
+  String get renameRecording => '重命名录制内容';
+
+  @override
+  String get newRecordingName => '录制内容的新名称';
+
+  @override
+  String get recordingCannotRenameWhileInProgress => '正在进行的录制无法重命名。';
+
+  @override
+  String get recordingNameAlreadyExists => '已存在同名录制内容。';
+
 }

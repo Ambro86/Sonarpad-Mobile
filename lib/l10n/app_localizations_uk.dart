@@ -3190,4 +3190,20 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String mediaCutterAddedTrackApplied(String name) => "Нову доріжку додано: ${name}";
 
+
+  @override
+  String get rename => 'Перейменувати';
+
+  @override
+  String get renameRecording => 'Перейменувати запис';
+
+  @override
+  String get newRecordingName => 'Нова назва запису';
+
+  @override
+  String get recordingCannotRenameWhileInProgress => 'Неможливо перейменувати запис, що триває.';
+
+  @override
+  String get recordingNameAlreadyExists => 'Запис із такою назвою вже існує.';
+
 }

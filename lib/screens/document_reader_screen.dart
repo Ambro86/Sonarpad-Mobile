@@ -1236,6 +1236,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _edgeFileController = controller;
         Object? generationError;
         const initialBufferChunks = 2;
+        const edgeRetryDelays = <Duration>[
+          Duration(seconds: 2),
+          Duration(seconds: 4),
+          Duration(seconds: 6),
+          Duration(seconds: 8),
+          Duration(seconds: 10),
+        ];
 
         final generation = Future<void>(() async {
           for (var i = startIndex; i < _chunks.length; i++) {
@@ -1244,8 +1251,32 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             }
             final textToSpeak =
                 _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
-            final file =
-                await _tts.speakToFile(text: textToSpeak, voice: voice);
+            File? file;
+            for (var attempt = 0;; attempt++) {
+              if (!mounted || !_speaking || readingToken != _readingToken) {
+                break;
+              }
+              try {
+                file = await _tts.speakToFile(
+                  text: textToSpeak,
+                  voice: voice,
+                );
+                break;
+              } catch (e) {
+                if (attempt >= edgeRetryDelays.length) rethrow;
+                if (!mounted || !_speaking || readingToken != _readingToken) {
+                  break;
+                }
+                final delay = edgeRetryDelays[attempt];
+                dev.log(
+                  'DocumentReaderScreen: Edge TTS chunk ${i + 1} retry '
+                  '${attempt + 1}/${edgeRetryDelays.length} tra '
+                  '${delay.inSeconds}s: $e',
+                );
+                await Future.delayed(delay);
+              }
+            }
+            if (file == null) break;
             if (!controller.isClosed &&
                 mounted &&
                 _speaking &&

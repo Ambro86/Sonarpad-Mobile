@@ -4427,5 +4427,10 @@
   "textCopiedToClipboard": "Text in die Zwischenablage kopiert",
   "@textCopiedToClipboard": {
     "description": "Confirmation shown after copying the complete temporary document text."
-  }
+  },
+  "rename": "Umbenennen",
+  "renameRecording": "Aufnahme umbenennen",
+  "newRecordingName": "Neuer Name der Aufnahme",
+  "recordingCannotRenameWhileInProgress": "Eine laufende Aufnahme kann nicht umbenannt werden.",
+  "recordingNameAlreadyExists": "Eine Aufnahme mit diesem Namen ist bereits vorhanden."
 }

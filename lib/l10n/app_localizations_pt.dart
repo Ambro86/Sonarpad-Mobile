@@ -3471,6 +3471,22 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get preserveMediaError => 'Não foi possível conservar o conteúdo.';
 
+
+  @override
+  String get rename => 'Renomear';
+
+  @override
+  String get renameRecording => 'Renomear gravação';
+
+  @override
+  String get newRecordingName => 'Novo nome da gravação';
+
+  @override
+  String get recordingCannotRenameWhileInProgress => 'Não é possível renomear uma gravação em curso.';
+
+  @override
+  String get recordingNameAlreadyExists => 'Já existe uma gravação com este nome.';
+
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -6939,5 +6955,21 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get preserveMediaError => 'Não foi possível salvar o conteúdo.';
+
+
+  @override
+  String get rename => 'Renomear';
+
+  @override
+  String get renameRecording => 'Renomear gravação';
+
+  @override
+  String get newRecordingName => 'Novo nome da gravação';
+
+  @override
+  String get recordingCannotRenameWhileInProgress => 'Não é possível renomear uma gravação em andamento.';
+
+  @override
+  String get recordingNameAlreadyExists => 'Já existe uma gravação com este nome.';
 
 }
