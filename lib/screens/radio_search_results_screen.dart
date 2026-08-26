@@ -70,13 +70,80 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
             : l10n.radioFavoriteAdded(station.name));
   }
 
-  void _changePage(int page, int totalPages) {
-    final l10n = AppLocalizations.of(context);
+  void _changePage(
+    int page,
+    int totalPages, {
+    bool announce = true,
+  }) {
     final nextPage = page.clamp(0, totalPages - 1).toInt();
+    if (nextPage == _page) return;
     setState(() => _page = nextPage);
+    if (!announce) return;
+    final l10n = AppLocalizations.of(context);
     showStatusMessage(
       context,
       l10n.radioPageOf(nextPage + 1, totalPages),
+    );
+  }
+
+  Widget _buildPageSelector(
+    AppLocalizations l10n,
+    int currentPage,
+    int totalPages,
+  ) {
+    final pageNumber = currentPage + 1;
+    final pageLabel = l10n.radioPageOf(pageNumber, totalPages);
+    if (totalPages <= 1) {
+      return Semantics(
+        liveRegion: true,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: Text(
+            pageLabel,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+      );
+    }
+
+    final increasedPage = pageNumber < totalPages ? pageNumber + 1 : pageNumber;
+    final decreasedPage = pageNumber > 1 ? pageNumber - 1 : pageNumber;
+    return SizedBox(
+      height: 96,
+      child: UniversalAccessibleList(
+        key: const ValueKey('radio_page_selector_shared'),
+        debugTag: 'radio-page-selector',
+        showVerticalScrollIndicator: false,
+        sections: [
+          AccessibleListSection(
+            rows: [
+              AccessibleListRow(
+                id: 'radio_page_selector',
+                title: pageLabel,
+                valueLabel: '',
+                kind: 'slider',
+                sliderValue: pageNumber.toDouble(),
+                sliderMin: 1,
+                sliderMax: totalPages.toDouble(),
+                sliderStep: 1,
+                sliderIncreasedValueLabel:
+                    l10n.radioPageOf(increasedPage, totalPages),
+                sliderDecreasedValueLabel:
+                    l10n.radioPageOf(decreasedPage, totalPages),
+              ),
+            ],
+          ),
+        ],
+        onEvent: (event) {
+          if (event.type != 'slider' ||
+              event.id != 'radio_page_selector' ||
+              event.value is! num) {
+            return;
+          }
+          final requestedPage = (event.value as num).round() - 1;
+          _changePage(requestedPage, totalPages, announce: false);
+        },
+      ),
     );
   }
 
@@ -131,20 +198,9 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               ? start + _pageSize
               : results.length;
           final visibleResults = results.sublist(start, end);
-          final pageLabel = l10n.radioPageOf(currentPage + 1, totalPages);
-
           return Column(
             children: [
-              Semantics(
-                liveRegion: true,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                  child: Text(
-                    pageLabel,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ),
+              _buildPageSelector(l10n, currentPage, totalPages),
               Expanded(
                 child: useSharedAccessibleViewModel
                     ? UniversalAccessibleList(
