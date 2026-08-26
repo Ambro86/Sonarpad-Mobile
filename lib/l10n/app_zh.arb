@@ -512,6 +512,7 @@
   "weatherCurrentSituation": "当前天气",
   "weatherTomorrow": "明天",
   "weatherChooseDay": "选择日期",
+  "tvRecordingChooseDay": "选择日期",
   "weatherCurrentTemperature": "当前温度",
   "weatherMaxTemperature": "最高温度",
   "weatherMinTemperature": "最低温度",

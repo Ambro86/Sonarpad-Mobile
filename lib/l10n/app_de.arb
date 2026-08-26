@@ -1631,6 +1631,10 @@
   "@weatherChooseDay": {
     "description": "Localized text for weatherChooseDay."
   },
+  "tvRecordingChooseDay": "Tag auswählen",
+  "@tvRecordingChooseDay": {
+    "description": "Localized text for tvRecordingChooseDay."
+  },
   "weatherCurrentTemperature": "Aktuelle Temperatur",
   "@weatherCurrentTemperature": {
     "description": "Localized text for weatherCurrentTemperature."

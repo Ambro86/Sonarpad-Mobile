@@ -1631,6 +1631,10 @@
   "@weatherChooseDay": {
     "description": "Localized text for weatherChooseDay."
   },
+  "tvRecordingChooseDay": "Виберіть день",
+  "@tvRecordingChooseDay": {
+    "description": "Localized text for tvRecordingChooseDay."
+  },
   "weatherCurrentTemperature": "Поточна температура",
   "@weatherCurrentTemperature": {
     "description": "Localized text for weatherCurrentTemperature."

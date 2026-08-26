@@ -1200,6 +1200,9 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get weatherChooseDay => 'Escolher dia';
 
+
+  @override
+  String get tvRecordingChooseDay => weatherChooseDay;
   @override
   String get weatherCurrentTemperature => 'Temperatura atual';
 
@@ -4660,6 +4663,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
   @override
   String get weatherChooseDay => 'Escolher dia';
 
+
+  @override
+  String get tvRecordingChooseDay => weatherChooseDay;
   @override
   String get weatherCurrentTemperature => 'Temperatura atual';
 

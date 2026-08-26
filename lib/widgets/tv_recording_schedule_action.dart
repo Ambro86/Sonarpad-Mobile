@@ -83,7 +83,7 @@ Future<DateTime?> showTvRecordingDaySelectionDialog(
   return showDialog<DateTime>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: const Text('Scegli giorno'),
+      title: Text(AppLocalizations.of(dialogContext).tvRecordingChooseDay),
       content: RadioGroup<DateTime>(
         groupValue: _dateOnly(selectedDate),
         onChanged: (value) {

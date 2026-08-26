@@ -509,6 +509,7 @@
   "weatherCurrentSituation": "Situation actuelle",
   "weatherTomorrow": "Demain",
   "weatherChooseDay": "Choisir le jour",
+  "tvRecordingChooseDay": "Choisir le jour",
   "weatherCurrentTemperature": "Température actuelle",
   "weatherMaxTemperature": "Température maximale",
   "weatherMinTemperature": "Température minimale",

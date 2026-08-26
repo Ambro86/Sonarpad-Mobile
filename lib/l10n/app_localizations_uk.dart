@@ -950,6 +950,9 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get weatherChooseDay => "Виберіть день";
 
+
+  @override
+  String get tvRecordingChooseDay => weatherChooseDay;
   @override
   String get weatherCurrentTemperature => "Поточна температура";
 

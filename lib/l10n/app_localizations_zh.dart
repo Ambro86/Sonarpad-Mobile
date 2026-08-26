@@ -1097,6 +1097,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
   @override
   String get weatherChooseDay => '选择日期';
 
+
+  @override
+  String get tvRecordingChooseDay => weatherChooseDay;
   @override
   String get weatherCurrentTemperature => '当前温度';
 

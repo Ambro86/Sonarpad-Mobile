@@ -1240,6 +1240,9 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get weatherChooseDay => 'Vyberte den';
 
+
+  @override
+  String get tvRecordingChooseDay => weatherChooseDay;
   @override
   String get weatherCurrentTemperature => 'Aktuální teplota';
 

@@ -162,6 +162,11 @@ Future<void> showTvProgramDetailsDialog(
   );
 }
 
+String _tvProgramListLabel(TvProgram program) => <String>[
+  program.hour,
+  program.title,
+].where((part) => part.trim().isNotEmpty).join(' ');
+
 class TvChannelScreen extends StatefulWidget {
   final TvChannel channel;
   final bool autoPlay;
@@ -412,7 +417,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                               program.startTime <= now && program.endTime > now;
                           return AccessibleListRow(
                             id: '${program.startTime}',
-                            title: '${program.hour} ${program.title}',
+                            title: _tvProgramListLabel(program),
                             subtitle: isCurrent ? 'In onda adesso' : null,
                             selected: isCurrent,
                             kind: 'action',
@@ -467,7 +472,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                         container: true,
                         button: true,
                         selected: isCurrent,
-                        label: '${program.hour} ${program.title}',
+                        label: _tvProgramListLabel(program),
                         onTap: () => _showProgramDetails(program),
                         customSemanticsActions: {
                           CustomSemanticsAction(label: scheduleLabel): () =>

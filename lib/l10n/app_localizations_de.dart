@@ -1200,6 +1200,9 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get weatherChooseDay => "Tag auswählen";
 
+
+  @override
+  String get tvRecordingChooseDay => weatherChooseDay;
   @override
   String get weatherCurrentTemperature => "Aktuelle Temperatur";
 

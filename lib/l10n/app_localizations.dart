@@ -2262,6 +2262,12 @@ abstract class AppLocalizations {
   /// **'Scegli il giorno'**
   String get weatherChooseDay;
 
+  /// Localized text for tvRecordingChooseDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose day'**
+  String get tvRecordingChooseDay;
+
   /// Localized text for weatherCurrentTemperature.
   ///
   /// In it, this message translates to:
