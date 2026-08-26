@@ -2225,9 +2225,7 @@ class _SonarTubeRecentVideosScreenState
                                   : Text(_subtitle(item)!),
                               trailing: ExcludeSemantics(
                                 child: IconButton(
-                                  key: ValueKey(
-                                    'sonartube_delete_recent_video_${item.id}',
-                                  ),
+                                  key: ValueKey('sonartube_delete_recent_video_${item.id}'),
                                   tooltip: l10n.sonarTubeDeleteRecentVideo,
                                   icon: const Icon(Icons.delete_outline),
                                   onPressed: () => _deleteRecentVideo(item),
