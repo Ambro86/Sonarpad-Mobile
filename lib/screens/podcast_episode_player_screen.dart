@@ -16,6 +16,22 @@ import 'package:video_player/video_player.dart';
 import '../utils/app_logger.dart';
 import 'podcast_chapters_screen.dart';
 
+class PodcastPlayerExtraAction {
+  const PodcastPlayerExtraAction({
+    required this.id,
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    this.pauseBeforeOpen = false,
+  });
+
+  final String id;
+  final String Function() label;
+  final IconData icon;
+  final Future<void> Function() onPressed;
+  final bool pauseBeforeOpen;
+}
+
 class PodcastEpisodePlayerScreen extends StatefulWidget {
   const PodcastEpisodePlayerScreen({
     super.key,
@@ -29,6 +45,9 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
     this.hasNextEpisode,
     this.previousEpisodeLabel,
     this.nextEpisodeLabel,
+    this.showPreviousEpisodeAction = true,
+    this.showNextEpisodeAction = true,
+    this.extraActions = const <PodcastPlayerExtraAction>[],
   });
 
   final PodcastEpisode episode;
@@ -53,6 +72,9 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
   final bool Function()? hasNextEpisode;
   final String? previousEpisodeLabel;
   final String? nextEpisodeLabel;
+  final bool showPreviousEpisodeAction;
+  final bool showNextEpisodeAction;
+  final List<PodcastPlayerExtraAction> extraActions;
 
   @override
   State<PodcastEpisodePlayerScreen> createState() =>
@@ -338,14 +360,28 @@ class _PodcastEpisodePlayerScreenState
   }
 
   bool get _canNavigatePrevious =>
+      widget.showPreviousEpisodeAction &&
       widget.navigateEpisode != null &&
       widget.previousEpisodeLabel != null &&
       (widget.hasPreviousEpisode?.call() ?? false);
 
   bool get _canNavigateNext =>
+      widget.showNextEpisodeAction &&
       widget.navigateEpisode != null &&
       widget.nextEpisodeLabel != null &&
       (widget.hasNextEpisode?.call() ?? false);
+
+  Future<void> _runExtraAction(PodcastPlayerExtraAction action) async {
+    if (_loading) return;
+    if (action.pauseBeforeOpen) {
+      await _pause();
+      if (Platform.isIOS && _videoController != null) {
+        await _mediaCommands.invokeMethod('setMagicTapPlaying', false);
+      }
+    }
+    await action.onPressed();
+    if (mounted) setState(() {});
+  }
 
   Future<void> _navigateAdjacentEpisode(int direction) async {
     final navigate = widget.navigateEpisode;
@@ -797,6 +833,13 @@ class _PodcastEpisodePlayerScreenState
                     icon: const Icon(Icons.skip_next),
                     label: Text(widget.nextEpisodeLabel!),
                   ),
+                for (final action in widget.extraActions)
+                  FilledButton.tonalIcon(
+                    key: ValueKey('podcast_fullscreen_extra_${action.id}'),
+                    onPressed: _loading ? null : () => _runExtraAction(action),
+                    icon: Icon(action.icon),
+                    label: Text(action.label()),
+                  ),
               ],
             ),
             if (canSeek) ...[
@@ -879,6 +922,12 @@ class _PodcastEpisodePlayerScreenState
       final videoReady = _videoController != null && _videoController!.value.isInitialized;
       final videoPlaying = videoReady && _videoController!.value.isPlaying;
       final rows = <AccessibleListRow>[
+        AccessibleListRow(
+          id: 'now_playing_title',
+          kind: 'text',
+          title: l10n.nowPlayingTitle(_episode.title),
+          accessibilityButtonTrait: false,
+        ),
         if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loadingEpisodeAudio),
         if (_error != null) AccessibleListRow(id: 'error', kind: 'text', title: _error!),
         if (_podcastService.hasChapterSource(_episode) || (_detectedChapters?.isNotEmpty ?? false))
@@ -907,14 +956,15 @@ class _PodcastEpisodePlayerScreenState
             kind: 'button',
             enabled: !_loading,
           ),
+        for (final action in widget.extraActions)
+          AccessibleListRow(
+            id: 'extra_${action.id}',
+            title: action.label(),
+            kind: 'button',
+            enabled: !_loading,
+          ),
       ];
       return UniversalAccessibleList(
-        persistentTopAction: AccessibleListRow(
-          id: 'persistent_back',
-          title: l10n.back,
-          kind: 'button',
-          onActivate: () => Navigator.pop(context),
-        ),
         sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
           if (event.id == 'chapters' && event.type == 'activate') {
@@ -929,6 +979,15 @@ class _PodcastEpisodePlayerScreenState
             await _seekForward();
           } else if (event.id == 'next_episode' && event.type == 'activate') {
             await _navigateAdjacentEpisode(1);
+          } else if (event.type == 'activate' &&
+              event.id?.startsWith('extra_') == true) {
+            final actionId = event.id!.substring('extra_'.length);
+            for (final action in widget.extraActions) {
+              if (action.id == actionId) {
+                await _runExtraAction(action);
+                break;
+              }
+            }
           } else if (event.id == 'play_pause' && event.type == 'activate') {
             if (_videoController != null) {
               await _toggleVideoPlayback();
@@ -1002,14 +1061,16 @@ class _PodcastEpisodePlayerScreenState
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(l10n.nowPlayingTitle(_episode.title)),
-        leading: UniversalPersistentNavigationButton(
+        excludeHeaderSemantics: true,
+        leading: BackButton(
           key: const ValueKey('podcast_player_back'),
-          label: l10n.back,
           onPressed: () {
             AppLogger.log('PodcastPlayer: appbar back pressed, $_logSubject');
             Navigator.pop(context);
           },
+        ),
+        title: ExcludeSemantics(
+          child: Text(l10n.nowPlayingTitle(_episode.title)),
         ),
       ),
       body: useSharedAccessibleViewModel
@@ -1021,7 +1082,8 @@ class _PodcastEpisodePlayerScreenState
             padding: const EdgeInsets.all(16),
             children: [
               Text(
-                _episode.title,
+                l10n.nowPlayingTitle(_episode.title),
+                key: const ValueKey('podcast_player_now_playing_title'),
                 style: Theme.of(context).textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
@@ -1132,6 +1194,13 @@ class _PodcastEpisodePlayerScreenState
                           : () => _navigateAdjacentEpisode(1),
                       icon: const Icon(Icons.skip_next),
                       label: Text(widget.nextEpisodeLabel!),
+                    ),
+                  for (final action in widget.extraActions)
+                    FilledButton.tonalIcon(
+                      key: ValueKey('podcast_player_extra_${action.id}'),
+                      onPressed: _loading ? null : () => _runExtraAction(action),
+                      icon: Icon(action.icon),
+                      label: Text(action.label()),
                     ),
                 ],
               ),

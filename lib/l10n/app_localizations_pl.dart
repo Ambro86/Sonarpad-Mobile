@@ -2582,6 +2582,9 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get settingsSonarTubePlayerActions => 'Dostosuj działania odtwarzacza SonarTube';
+
+  @override
   String get settingsVideoLandscapeFullscreen =>
       'Wideo poziome na pełnym ekranie';
 

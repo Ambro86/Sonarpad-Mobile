@@ -2603,6 +2603,9 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get settingsSonarTubePlayerActions => 'Personnaliser les actions du lecteur SonarTube';
+
+  @override
   String get settingsVideoLandscapeFullscreen =>
       'Vidéo horizontale en plein écran';
 

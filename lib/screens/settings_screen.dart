@@ -14,6 +14,7 @@ import '../services/podcast_cache_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import 'app_log_screen.dart';
+import 'sonartube_player_actions_settings_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
 import '../widgets/letter_jump_option_picker_screen.dart';
@@ -987,6 +988,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
 
+  Future<void> _openSonarTubePlayerActionsSettings() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(
+          name: '/settings/sonartube-player-actions',
+        ),
+        builder: (_) => const SonarTubePlayerActionsSettingsScreen(),
+      ),
+    );
+  }
+
+
   Widget _buildSharedAccessibleSettings(
     AppLocalizations l10n,
     bool showItalianOnlySettings,
@@ -1259,6 +1272,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             toggleValue: _displayVideoInPortrait,
             valueLabel: toggleLabel(_displayVideoInPortrait),
           ),
+          AccessibleListRow(
+            id: 'sonartube_player_actions',
+            title: l10n.settingsSonarTubePlayerActions,
+            kind: 'button',
+          ),
         ],
       ),
       AccessibleListSection(
@@ -1417,6 +1435,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           switch (id) {
             case 'test_voice': await _testVoice(); break;
             case 'clear_podcast_cache': await _clearPodcastCache(); break;
+            case 'sonartube_player_actions':
+              await _openSonarTubePlayerActionsSettings();
+              break;
             case 'paste_secret_code': await _pasteSecretCode(); setState(() {}); break;
             case 'request_secret_code': await _requestSecretCode(); break;
             case 'save': await _save(); break;
@@ -1908,6 +1929,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         () => _displayVideoInPortrait = val,
                       ),
                       contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 12),
+                    ListTile(
+                      key: const ValueKey(
+                        'settings-sonartube-player-actions',
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.smart_display_outlined),
+                      title: Text(l10n.settingsSonarTubePlayerActions),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: _openSonarTubePlayerActionsSettings,
                     ),
                     const SizedBox(height: 12),
                     Semantics(

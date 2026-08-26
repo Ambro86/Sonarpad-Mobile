@@ -1113,6 +1113,10 @@
       }
     }
   },
+  "settingsSonarTubePlayerActions": "Personnaliser les actions du lecteur SonarTube",
+  "@settingsSonarTubePlayerActions": {
+    "description": "Button that opens the SonarTube player action selector."
+  },
   "settingsVideoLandscapeFullscreen": "Vidéo horizontale en plein écran",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

@@ -2581,6 +2581,9 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String get settingsSonarTubePlayerActions => 'Přizpůsobit akce přehrávače SonarTube';
+
+  @override
   String get settingsVideoLandscapeFullscreen =>
       'Vodorovné video přes celou obrazovku';
 

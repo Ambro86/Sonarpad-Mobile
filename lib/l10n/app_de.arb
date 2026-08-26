@@ -3309,6 +3309,10 @@
       }
     }
   },
+  "settingsSonarTubePlayerActions": "Aktionen des SonarTube-Players anpassen",
+  "@settingsSonarTubePlayerActions": {
+    "description": "Button that opens the SonarTube player action selector."
+  },
   "settingsVideoLandscapeFullscreen": "Video im Querformat als Vollbild",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

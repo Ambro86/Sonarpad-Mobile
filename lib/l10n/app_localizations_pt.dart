@@ -2512,6 +2512,9 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get settingsSonarTubePlayerActions => 'Personalizar ações do leitor SonarTube';
+
+  @override
   String get settingsVideoLandscapeFullscreen => 'Vídeo horizontal em ecrã inteiro';
 
   @override
@@ -5976,6 +5979,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
   ) {
     return 'Marcador $order, parágrafo $paragraph. $preview';
   }
+
+  @override
+  String get settingsSonarTubePlayerActions => 'Personalizar ações do player SonarTube';
 
   @override
   String get settingsVideoLandscapeFullscreen => 'Vídeo horizontal em tela cheia';

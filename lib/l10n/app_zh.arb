@@ -1107,6 +1107,10 @@
       }
     }
   },
+  "settingsSonarTubePlayerActions": "自定义 SonarTube 播放器操作",
+  "@settingsSonarTubePlayerActions": {
+    "description": "Button that opens the SonarTube player action selector."
+  },
   "settingsVideoLandscapeFullscreen": "横屏全屏视频",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

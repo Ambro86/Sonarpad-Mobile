@@ -70,6 +70,31 @@ class AppSettingsService {
   static const _developerModeKey = 'sonarpad_developer_mode';
   static const _iosFlutterAccessibleRendererKey =
       'sonarpad_ios_flutter_accessible_renderer';
+  static const _sonarTubePlayerActionsKey =
+      'sonarpad_sonartube_player_actions';
+
+  static const sonarTubePlayerActionPrevious = 'previous';
+  static const sonarTubePlayerActionNext = 'next';
+  static const sonarTubePlayerActionShare = 'share';
+  static const sonarTubePlayerActionFavorite = 'favorite';
+  static const sonarTubePlayerActionChannel = 'channel';
+  static const sonarTubePlayerActionComments = 'comments';
+  static const sonarTubePlayerActionTranscript = 'transcript';
+
+  static const sonarTubePlayerActionIds = <String>{
+    sonarTubePlayerActionPrevious,
+    sonarTubePlayerActionNext,
+    sonarTubePlayerActionShare,
+    sonarTubePlayerActionFavorite,
+    sonarTubePlayerActionChannel,
+    sonarTubePlayerActionComments,
+    sonarTubePlayerActionTranscript,
+  };
+
+  static const defaultSonarTubePlayerActions = <String>{
+    sonarTubePlayerActionPrevious,
+    sonarTubePlayerActionNext,
+  };
 
   static const documentSliderStepPercentOptions = <int>[2, 5, 10, 15, 20, 30];
   static const defaultDocumentSliderStepPercent = 10;
@@ -327,6 +352,23 @@ class AppSettingsService {
   Future<void> setFlutterAccessibleRendererOnIos(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_iosFlutterAccessibleRendererKey, enabled);
+  }
+
+
+  Future<Set<String>> loadSonarTubePlayerActions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList(_sonarTubePlayerActionsKey);
+    if (saved == null) {
+      return Set<String>.from(defaultSonarTubePlayerActions);
+    }
+    return saved.where(sonarTubePlayerActionIds.contains).toSet();
+  }
+
+  Future<void> saveSonarTubePlayerActions(Set<String> actions) async {
+    final prefs = await SharedPreferences.getInstance();
+    final normalized = actions.where(sonarTubePlayerActionIds.contains).toList()
+      ..sort();
+    await prefs.setStringList(_sonarTubePlayerActionsKey, normalized);
   }
 
   Future<String> loadTtsLanguage() async {

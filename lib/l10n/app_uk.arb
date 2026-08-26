@@ -3309,6 +3309,10 @@
       }
     }
   },
+  "settingsSonarTubePlayerActions": "Налаштувати дії програвача SonarTube",
+  "@settingsSonarTubePlayerActions": {
+    "description": "Button that opens the SonarTube player action selector."
+  },
   "settingsVideoLandscapeFullscreen": "Відео на весь екран у горизонтальній орієнтації",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

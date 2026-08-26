@@ -1110,6 +1110,10 @@
       }
     }
   },
+  "settingsSonarTubePlayerActions": "Přizpůsobit akce přehrávače SonarTube",
+  "@settingsSonarTubePlayerActions": {
+    "description": "Button that opens the SonarTube player action selector."
+  },
   "settingsVideoLandscapeFullscreen": "Vodorovné video přes celou obrazovku",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

@@ -12,7 +12,7 @@ String _between(String source, String start, String? end) {
 }
 
 void main() {
-  test('every scrollable SonarTube route keeps Back outside the native list', () {
+  test('every scrollable SonarTube route keeps an accessible Back in the fixed AppBar', () {
     final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
 
     final rootAndCollections = _between(
@@ -20,11 +20,15 @@ void main() {
       'class _SonarTubeScreenState',
       'class _SonarTubeTranscriptScreen',
     );
-    expect(rootAndCollections, contains('persistentTopAction: _isCollection'));
     expect(
       rootAndCollections,
       contains("key: const ValueKey('sonartube_search_results_back')"),
     );
+    expect(
+      rootAndCollections,
+      contains("key: const ValueKey('sonartube_collection_back')"),
+    );
+    expect(rootAndCollections, contains('leading: BackButton('));
 
     final transcript = _between(
       source,
@@ -48,34 +52,51 @@ void main() {
     );
 
     for (final screen in [transcript, comments, recent, favorites]) {
-      expect(screen, contains('persistentTopAction: AccessibleListRow('));
-      expect(screen, contains("id: 'persistent_back'"));
-      expect(screen, contains('onActivate: () => Navigator.pop(context)'));
-      expect(screen, contains('UniversalPersistentNavigationButton('));
+      expect(screen, contains('leading: BackButton('));
+      expect(screen, isNot(contains('persistentTopAction:')));
+      expect(screen, isNot(contains("id: 'persistent_back'")));
     }
 
-    expect(
-      RegExp(r"id: 'persistent_back'").allMatches(source).length,
-      greaterThanOrEqualTo(6),
-    );
+    expect(source, isNot(contains('UniversalPersistentNavigationButton(')));
+    expect(source, isNot(contains('persistentTopAction:')));
     expect(source, contains("ValueKey('sonartube_transcript_back')"));
     expect(source, contains("ValueKey('sonartube_comments_back')"));
     expect(source, contains("ValueKey('sonartube_recent_videos_back')"));
     expect(source, contains("ValueKey('sonartube_favorites_back')"));
   });
 
-  test('SonarTube player keeps Back paired with the shared native controls', () {
+  test('SonarTube media player exposes AppBar Back before native player controls', () {
     final player = File(
       'lib/screens/podcast_episode_player_screen.dart',
     ).readAsStringSync();
 
     expect(player, contains("ValueKey('podcast_player_back')"));
-    expect(player, contains('UniversalPersistentNavigationButton('));
-    expect(player, contains('persistentTopAction: AccessibleListRow('));
-    expect(player, contains("id: 'persistent_back'"));
+    expect(player, contains('leading: BackButton('));
+    expect(player, contains('excludeHeaderSemantics: true'));
+    expect(
+      player,
+      contains(
+        "title: ExcludeSemantics(\n          child: Text(l10n.nowPlayingTitle(_episode.title)),",
+      ),
+    );
+    expect(player, contains("id: 'now_playing_title'"));
+    expect(
+      player,
+      contains('title: l10n.nowPlayingTitle(_episode.title)'),
+    );
+    final appBarStart = player.indexOf('appBar: AppBar(');
+    final bodyStart = player.indexOf('body:', appBarStart);
+    final appBar = player.substring(appBarStart, bodyStart);
+    expect(
+      appBar.indexOf('leading: BackButton('),
+      lessThan(appBar.indexOf('title: ExcludeSemantics(')),
+    );
+    expect(player, isNot(contains('UniversalPersistentNavigationButton(')));
+    expect(player, isNot(contains('persistentTopAction:')));
+    expect(player, isNot(contains("id: 'persistent_back'")));
   });
 
-  test('shared renderer serializes the persistent route action to UIKit', () {
+  test('shared renderer still supports persistent route actions when a screen needs one', () {
     final adapter = File(
       'lib/widgets/universal_accessible_view.dart',
     ).readAsStringSync();
@@ -88,7 +109,7 @@ void main() {
     expect(adapter, contains('persistentTopAction.id == id'));
   });
 
-  test('UIKit places persistent Back before the scrolling table', () {
+  test('UIKit can still place a persistent action before a scrolling table', () {
     final native = File(
       'ios/Runner/SonarpadNativeAccessibleView.swift',
     ).readAsStringSync();

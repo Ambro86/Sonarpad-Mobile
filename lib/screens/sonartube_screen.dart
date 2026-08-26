@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/document_library_service.dart';
+import '../services/app_settings_service.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_history_service.dart';
 import '../services/sonartube_service.dart';
@@ -477,6 +478,77 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       await _historyService.addRecentVideo(item);
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
+      final playerActions =
+          await AppSettingsService().loadSonarTubePlayerActions();
+      if (!mounted) return;
+
+      SonarTubeItem currentVideoItem() => navigationIndex >= 0
+          ? navigationItems[navigationIndex]
+          : item;
+
+      String currentFavoriteLabel() {
+        final currentItem = currentVideoItem();
+        final isFavorite = _favoriteKeys.contains(
+          _favoritesService.itemKey(currentItem),
+        );
+        return _favoriteLabelForItem(
+          l10n,
+          currentItem,
+          isFavorite: isFavorite,
+        );
+      }
+
+      final extraPlayerActions = <PodcastPlayerExtraAction>[
+        if (playerActions.contains(
+          AppSettingsService.sonarTubePlayerActionShare,
+        ))
+          PodcastPlayerExtraAction(
+            id: 'share_video',
+            label: () => l10n.sonarTubeShareVideo,
+            icon: Icons.share,
+            pauseBeforeOpen: true,
+            onPressed: () => _shareItem(currentVideoItem()),
+          ),
+        if (playerActions.contains(
+          AppSettingsService.sonarTubePlayerActionFavorite,
+        ))
+          PodcastPlayerExtraAction(
+            id: 'favorite',
+            label: currentFavoriteLabel,
+            icon: Icons.favorite_border,
+            onPressed: () => _toggleFavorite(currentVideoItem()),
+          ),
+        if (playerActions.contains(
+          AppSettingsService.sonarTubePlayerActionChannel,
+        ))
+          PodcastPlayerExtraAction(
+            id: 'go_channel',
+            label: () => l10n.sonarTubeGoToChannel,
+            icon: Icons.account_circle_outlined,
+            pauseBeforeOpen: true,
+            onPressed: () => _openChannelForVideo(currentVideoItem()),
+          ),
+        if (playerActions.contains(
+          AppSettingsService.sonarTubePlayerActionComments,
+        ))
+          PodcastPlayerExtraAction(
+            id: 'view_comments',
+            label: () => l10n.sonarTubeViewComments,
+            icon: Icons.comment_outlined,
+            pauseBeforeOpen: true,
+            onPressed: () => _openComments(currentVideoItem()),
+          ),
+        if (playerActions.contains(
+          AppSettingsService.sonarTubePlayerActionTranscript,
+        ))
+          PodcastPlayerExtraAction(
+            id: 'transcribe_video',
+            label: () => l10n.sonarTubeTranscribeVideo,
+            icon: Icons.subject,
+            pauseBeforeOpen: true,
+            onPressed: () => _openTranscript(currentVideoItem()),
+          ),
+      ];
 
       Future<PodcastEpisode?> navigateEpisode(int direction) async {
         final targetIndex = navigationIndex + direction;
@@ -519,6 +591,13 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             nextEpisodeLabel: navigationIndex >= 0
                 ? l10n.sonarTubeNextTrack
                 : null,
+            showPreviousEpisodeAction: playerActions.contains(
+              AppSettingsService.sonarTubePlayerActionPrevious,
+            ),
+            showNextEpisodeAction: playerActions.contains(
+              AppSettingsService.sonarTubePlayerActionNext,
+            ),
+            extraActions: extraPlayerActions,
           ),
         ),
       );
@@ -747,6 +826,21 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
 
   Widget _buildSharedAccessibleSonarTube(AppLocalizations l10n) {
     final rows = <AccessibleListRow>[];
+    if (_isCollection) {
+      rows.add(
+        AccessibleListRow(
+          id: 'collection_title',
+          title: widget.collection!.title,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: Text(
+            widget.collection!.title,
+            key: const ValueKey('sonartube_collection_content_title'),
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+        ),
+      );
+    }
     if (!_isCollection) {
       rows.add(AccessibleListRow(
         id: 'favorites',
@@ -939,14 +1033,6 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
 
     return UniversalAccessibleList(
       controller: _accessibleListController,
-      persistentTopAction: _isCollection
-          ? AccessibleListRow(
-              id: 'persistent_back',
-              title: l10n.back,
-              kind: 'button',
-              onActivate: () => Navigator.pop(context),
-            )
-          : null,
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.id == 'query' && event.type == 'textChanged') {
@@ -1178,12 +1264,6 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
 
     return UniversalAccessibleList(
       controller: _accessibleListController,
-      persistentTopAction: AccessibleListRow(
-        id: 'persistent_back',
-        title: l10n.back,
-        kind: 'button',
-        onActivate: () => Navigator.pop(context),
-      ),
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.type == 'customAction' &&
@@ -1312,9 +1392,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        leading: UniversalPersistentNavigationButton(
+        leading: BackButton(
           key: const ValueKey('sonartube_search_results_back'),
-          label: l10n.back,
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -1337,9 +1416,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           ? Scaffold(
               appBar: AppBar(
                 automaticallyImplyLeading: false,
-                leading: UniversalPersistentNavigationButton(
+                leading: BackButton(
                   key: const ValueKey('sonartube_search_results_back'),
-                  label: l10n.back,
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
@@ -1352,13 +1430,18 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: !_isCollection,
+        excludeHeaderSemantics: _isCollection && useSharedAccessibleViewModel,
         leading: _isCollection
-            ? UniversalPersistentNavigationButton(
-                label: l10n.back,
+            ? BackButton(
+                key: const ValueKey('sonartube_collection_back'),
                 onPressed: () => Navigator.pop(context),
               )
             : null,
-        title: Text(widget.collection?.title ?? l10n.sonarTubeTitle),
+        title: _isCollection && useSharedAccessibleViewModel
+            ? ExcludeSemantics(
+                child: Text(widget.collection!.title),
+              )
+            : Text(widget.collection?.title ?? l10n.sonarTubeTitle),
       ),
       body: SafeArea(
         child: useSharedAccessibleViewModel
@@ -1714,21 +1797,14 @@ class _SonarTubeTranscriptScreenState
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        leading: UniversalPersistentNavigationButton(
+        leading: BackButton(
           key: const ValueKey('sonartube_transcript_back'),
-          label: l10n.back,
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(
-                persistentTopAction: AccessibleListRow(
-                  id: 'persistent_back',
-                  title: l10n.back,
-                  kind: 'button',
-                  onActivate: () => Navigator.pop(context),
-                ),
                 sections: [AccessibleListSection(rows: accessibleRows)],
                 onEvent: (event) async {
                   if (event.type != 'activate') return;
@@ -1957,21 +2033,14 @@ class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        leading: UniversalPersistentNavigationButton(
+        leading: BackButton(
           key: const ValueKey('sonartube_comments_back'),
-          label: l10n.back,
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(
-                persistentTopAction: AccessibleListRow(
-                  id: 'persistent_back',
-                  title: l10n.back,
-                  kind: 'button',
-                  onActivate: () => Navigator.pop(context),
-                ),
                 sections: [AccessibleListSection(rows: accessibleRows)],
                 onEvent: (event) async {
                   if (event.type != 'activate' || event.id == null) return;
@@ -2121,12 +2190,6 @@ class _SonarTubeRecentVideosScreenState
     }
 
     return UniversalAccessibleList(
-      persistentTopAction: AccessibleListRow(
-        id: 'persistent_back',
-        title: l10n.back,
-        kind: 'button',
-        onActivate: () => Navigator.pop(context),
-      ),
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.id == null) return;
@@ -2156,9 +2219,8 @@ class _SonarTubeRecentVideosScreenState
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        leading: UniversalPersistentNavigationButton(
+        leading: BackButton(
           key: const ValueKey('sonartube_recent_videos_back'),
-          label: l10n.back,
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(l10n.sonarTubeRecentVideos),
@@ -2421,12 +2483,6 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
     }
 
     return UniversalAccessibleList(
-      persistentTopAction: AccessibleListRow(
-        id: 'persistent_back',
-        title: l10n.back,
-        kind: 'button',
-        onActivate: () => Navigator.pop(context),
-      ),
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.id?.startsWith('favorite_') != true) return;
@@ -2457,9 +2513,8 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        leading: UniversalPersistentNavigationButton(
+        leading: BackButton(
           key: const ValueKey('sonartube_favorites_back'),
-          label: l10n.back,
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(l10n.sonarTubeFavorites),

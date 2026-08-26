@@ -38,9 +38,8 @@ void main() {
     final accessible = source.substring(accessibleStart, materialStart);
     final material = source.substring(materialStart, buildStart);
 
-    expect(accessible, contains('persistentTopAction: AccessibleListRow('));
-    expect(accessible, contains("id: 'persistent_back'"));
-    expect(accessible, contains('onActivate: () => Navigator.pop(context)'));
+    expect(accessible, isNot(contains('persistentTopAction:')));
+    expect(accessible, isNot(contains("id: 'persistent_back'")));
     expect(accessible, contains('l10n.searchResults'));
     expect(accessible, isNot(contains("id: 'back'")));
     expect(accessible, isNot(contains('sonartube_favorites_button')));
@@ -48,7 +47,7 @@ void main() {
     expect(accessible, isNot(contains('sonartube_search_button')));
 
     expect(material, contains('appBar: AppBar('));
-    expect(material, contains('UniversalPersistentNavigationButton('));
+    expect(material, contains('leading: BackButton('));
     expect(material, contains("ValueKey('sonartube_search_results_back')"));
     expect(material, contains('l10n.searchResults'));
   });

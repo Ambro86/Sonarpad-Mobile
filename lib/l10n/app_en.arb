@@ -1107,6 +1107,10 @@
       }
     }
   },
+  "settingsSonarTubePlayerActions": "Customize SonarTube player actions",
+  "@settingsSonarTubePlayerActions": {
+    "description": "Button that opens the SonarTube player action selector."
+  },
   "settingsVideoLandscapeFullscreen": "Landscape full-screen video",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

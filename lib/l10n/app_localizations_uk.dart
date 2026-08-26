@@ -2067,6 +2067,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get documentKeepBookmarkMessage => "Кілька закладок вимкнено. Виберіть одну закладку, яку потрібно залишити; інші буде видалено.";
 
   @override
+  String get settingsSonarTubePlayerActions => 'Налаштувати дії програвача SonarTube';
+
+  @override
   String get settingsVideoLandscapeFullscreen => "Відео на весь екран у горизонтальній орієнтації";
 
   @override

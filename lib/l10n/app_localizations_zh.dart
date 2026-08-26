@@ -2331,6 +2331,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
   ) => '书签 ${order}，第 ${paragraph} 段。${preview}';
 
   @override
+  String get settingsSonarTubePlayerActions => '自定义 SonarTube 播放器操作';
+
+  @override
   String get settingsVideoLandscapeFullscreen => '横屏全屏视频';
 
   @override
