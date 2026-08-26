@@ -873,46 +873,48 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                 ? SizedBox(
                     height: 72,
                     child: UniversalAccessibleList(
-                      sections: [AccessibleListSection(rows: [
-                        AccessibleListRow(
-                          id: 'category',
-                          title: AppLocalizations.of(context).newsCategoryTop,
-                          kind: 'picker',
-                          value: _currentUri.toString(),
-                          // Keep the URI only as the picker value. It is an
-                          // implementation detail and must never be announced
-                          // by VoiceOver as the row's accessibility value.
-                          valueLabel: '',
-                          options: [
-                            AccessibleOption(
-                              value: widget.source.uri.toString(),
-                              label: AppLocalizations.of(context).newsCategoryTop,
+                      sections: [
+                        AccessibleListSection(
+                          rows: [
+                            AccessibleListRow(
+                              id: 'category_top',
+                              title: AppLocalizations.of(context).newsCategoryTop,
+                              kind: 'button',
+                              selected: _currentUri == widget.source.uri,
                             ),
-                            for (final cat in widget.source.categories!)
-                              AccessibleOption(
-                                value: cat.uri.toString(),
-                                label: cat.name,
+                            for (var index = 0;
+                                index < widget.source.categories!.length;
+                                index++)
+                              AccessibleListRow(
+                                id: 'category_$index',
+                                title: widget.source.categories![index].name,
+                                kind: 'button',
+                                selected: _currentUri ==
+                                    widget.source.categories![index].uri,
                               ),
                           ],
                         ),
-                      ])],
+                      ],
                       onEvent: (event) {
-                        if (event.id != 'category' || event.type != 'picker') return;
-                        final selected = event.value?.toString();
-                        if (selected == null) return;
-                        if (selected == widget.source.uri.toString()) {
+                        if (event.type != 'activate' || event.id == null) return;
+                        if (event.id == 'category_top') {
                           _openCategory(widget.source.uri, widget.source.name);
                           return;
                         }
-                        final category = widget.source.categories!
-                            .where((cat) => cat.uri.toString() == selected)
-                            .firstOrNull;
-                        if (category != null) {
-                          _openCategory(
-                            category.uri,
-                            '${widget.source.name}: ${category.name}',
-                          );
+                        if (!event.id!.startsWith('category_')) return;
+                        final index = int.tryParse(
+                          event.id!.substring('category_'.length),
+                        );
+                        if (index == null ||
+                            index < 0 ||
+                            index >= widget.source.categories!.length) {
+                          return;
                         }
+                        final category = widget.source.categories![index];
+                        _openCategory(
+                          category.uri,
+                          '${widget.source.name}: ${category.name}',
+                        );
                       },
                     ),
                   )
