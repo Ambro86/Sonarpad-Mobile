@@ -1892,6 +1892,22 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   void _syncDocumentPositionFromAccessibilityFocus(int index) {
     _docLog('DOC_FOCUS accessibility focus event index=$index mounted=$mounted speaking=$_speaking paused=$_ttsPaused previous=$_focusedChunkIndex');
     if (!mounted || index < 0 || index >= _chunks.length) return;
+
+    // The bookmark is only an entry point for a freshly opened document.
+    // Once that paragraph has actually received accessibility focus, consume
+    // the initial-focus request. Otherwise a later rebuild/re-attachment of
+    // the shared renderer (for example after editing a paragraph and pressing
+    // Apply) could incorrectly send UIKit back to the saved bookmark instead
+    // of leaving VoiceOver at the user's current reading position. This is
+    // renderer-neutral and also prevents the shared Flutter renderer from
+    // reusing a stale initial focus on a later rebuild.
+    if (_initialBookmarkFocusIndex >= 0) {
+      _docLog(
+        'DOC_FOCUS initial bookmark consumed initial=$_initialBookmarkFocusIndex current=$index',
+      );
+      _initialBookmarkFocusIndex = -1;
+    }
+
     // Durante la lettura attiva lo slider deve seguire il TTS, non il focus VO.
     // Se la lettura è ferma o in pausa, invece il flick tra paragrafi aggiorna
     // la posizione corrente e quindi anche lo slider percentuale.
