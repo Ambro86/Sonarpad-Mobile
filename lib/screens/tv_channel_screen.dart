@@ -9,42 +9,11 @@ import '../services/app_settings_service.dart';
 import '../services/tv_service.dart';
 import 'radio_player_screen.dart';
 import '../utils/status_message.dart';
+import '../widgets/tv_recording_schedule_action.dart';
 import '../widgets/universal_accessible_view.dart';
 
 String formatTvGuideDateLabel(DateTime date, DateTime today) {
-  final normalizedToday = DateTime(today.year, today.month, today.day);
-  final normalizedDate = DateTime(date.year, date.month, date.day);
-  final diff = normalizedDate.difference(normalizedToday).inDays;
-  if (diff == -1) return 'Ieri';
-  if (diff == 0) return 'Oggi';
-  if (diff == 1) return 'Domani';
-  if (diff == 2) return 'Dopodomani';
-
-  const weekdays = [
-    'Lunedì',
-    'Martedì',
-    'Mercoledì',
-    'Giovedì',
-    'Venerdì',
-    'Sabato',
-    'Domenica',
-  ];
-  const months = [
-    'gennaio',
-    'febbraio',
-    'marzo',
-    'aprile',
-    'maggio',
-    'giugno',
-    'luglio',
-    'agosto',
-    'settembre',
-    'ottobre',
-    'novembre',
-    'dicembre',
-  ];
-  return '${weekdays[normalizedDate.weekday - 1]} '
-      '${normalizedDate.day} ${months[normalizedDate.month - 1]}';
+  return formatTvRecordingDayLabel(date, today);
 }
 
 Future<DateTime?> showTvDaySelectionDialog(
@@ -85,8 +54,9 @@ Future<void> showTvProgramDetailsDialog(
 ) {
   final l10n = AppLocalizations.of(context);
   final description = program.description.trim();
-  final descriptionLabel =
-      description.isEmpty ? l10n.noPodcastDescription : description;
+  final descriptionLabel = description.isEmpty
+      ? l10n.noPodcastDescription
+      : description;
 
   return showDialog<void>(
     context: context,
@@ -132,9 +102,7 @@ Future<void> showTvProgramDetailsDialog(
         sortKey: const OrdinalSortKey(3),
         label: descriptionLabel,
         child: ExcludeSemantics(
-          child: SingleChildScrollView(
-            child: Text(descriptionLabel),
-          ),
+          child: SingleChildScrollView(child: Text(descriptionLabel)),
         ),
       );
 
@@ -283,6 +251,14 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     return showTvProgramDetailsDialog(context, program);
   }
 
+  Future<void> _scheduleProgramRecording(TvProgram program) {
+    return showTvScheduleRecordingAction(
+      context,
+      widget.channel,
+      program: program,
+    );
+  }
+
   Future<void> _play() async {
     try {
       final isRaiAd = _service.isRaiAudioDescriptionChannel(widget.channel);
@@ -423,31 +399,60 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                     child: Text('Nessun programma trovato per oggi.'),
                   )
                 : useSharedAccessibleViewModel
-                    ? UniversalAccessibleList(
-                        key: ValueKey('shared-tv-guide-${widget.channel.name}-${_selectedDate.toIso8601String()}-${_guide.length}'),
-                        sections: [
-                          AccessibleListSection(
-                            rows: _guide.map((program) {
-                              final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-                              final isCurrent = program.startTime <= now && program.endTime > now;
-                              return AccessibleListRow(
-                                id: '${program.startTime}',
-                                title: '${program.hour} ${program.title}',
-                                subtitle: isCurrent ? 'In onda adesso' : null,
-                                selected: isCurrent,
-                                kind: 'action',
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                        onEvent: (event) {
-                          if (event.type != 'activate' || event.id == null) return;
-                          final start = int.tryParse(event.id!);
-                          final index = _guide.indexWhere((e) => e.startTime == start);
-                          if (index >= 0) _showProgramDetails(_guide[index]);
-                        },
-                      )
-                    : ListView.builder(
+                ? UniversalAccessibleList(
+                    key: ValueKey(
+                      'shared-tv-guide-${widget.channel.name}-${_selectedDate.toIso8601String()}-${_guide.length}',
+                    ),
+                    sections: [
+                      AccessibleListSection(
+                        rows: _guide.map((program) {
+                          final now =
+                              DateTime.now().millisecondsSinceEpoch ~/ 1000;
+                          final isCurrent =
+                              program.startTime <= now && program.endTime > now;
+                          return AccessibleListRow(
+                            id: '${program.startTime}',
+                            title: '${program.hour} ${program.title}',
+                            subtitle: isCurrent ? 'In onda adesso' : null,
+                            selected: isCurrent,
+                            kind: 'action',
+                            actions: [
+                              AccessibleCustomAction(
+                                id: 'schedule_recording',
+                                label: AppLocalizations.of(
+                                  context,
+                                ).radioScheduleDialogTitle,
+                              ),
+                            ],
+                            visualActions: [
+                              AccessibleVisualAction(
+                                id: 'schedule_recording',
+                                label: AppLocalizations.of(
+                                  context,
+                                ).radioScheduleDialogTitle,
+                                icon: 'record',
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                    onEvent: (event) {
+                      if (event.id == null) return;
+                      final start = int.tryParse(event.id!);
+                      final index = _guide.indexWhere(
+                        (e) => e.startTime == start,
+                      );
+                      if (index < 0) return;
+                      if (event.type == 'activate') {
+                        _showProgramDetails(_guide[index]);
+                      } else if (event.type == 'customAction' &&
+                          event.action == 'schedule_recording') {
+                        _scheduleProgramRecording(_guide[index]);
+                      }
+                    },
+                  )
+                : ListView.builder(
                     itemCount: _guide.length,
                     itemBuilder: (context, index) {
                       final program = _guide[index];
@@ -455,31 +460,57 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                       final isCurrent =
                           program.startTime <= now && program.endTime > now;
 
-                      return ListTile(
-                        tileColor: isCurrent
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : null,
-                        leading: Text(
-                          program.hour,
-                          style: TextStyle(
-                            fontWeight: isCurrent
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            fontSize: 16,
-                          ),
-                        ),
-                        title: Text(
-                          program.title,
-                          style: TextStyle(
-                            fontWeight: isCurrent
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
-                        trailing: isCurrent
-                            ? const Icon(Icons.live_tv, color: Colors.red)
-                            : null,
+                      final scheduleLabel = AppLocalizations.of(
+                        context,
+                      ).radioScheduleDialogTitle;
+                      return Semantics(
+                        container: true,
+                        button: true,
+                        selected: isCurrent,
+                        label: '${program.hour} ${program.title}',
                         onTap: () => _showProgramDetails(program),
+                        customSemanticsActions: {
+                          CustomSemanticsAction(label: scheduleLabel): () =>
+                              _scheduleProgramRecording(program),
+                        },
+                        child: ExcludeSemantics(
+                          child: ListTile(
+                            tileColor: isCurrent
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : null,
+                            leading: Text(
+                              program.hour,
+                              style: TextStyle(
+                                fontWeight: isCurrent
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                fontSize: 16,
+                              ),
+                            ),
+                            title: Text(
+                              program.title,
+                              style: TextStyle(
+                                fontWeight: isCurrent
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (isCurrent)
+                                  const Icon(Icons.live_tv, color: Colors.red),
+                                IconButton(
+                                  tooltip: scheduleLabel,
+                                  icon: const Icon(Icons.fiber_manual_record),
+                                  onPressed: () =>
+                                      _scheduleProgramRecording(program),
+                                ),
+                              ],
+                            ),
+                            onTap: () => _showProgramDetails(program),
+                          ),
+                        ),
                       );
                     },
                   ),

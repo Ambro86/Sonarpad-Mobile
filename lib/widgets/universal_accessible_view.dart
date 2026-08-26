@@ -1354,6 +1354,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'transcript' => Icons.subject,
         'podcast_add' => Icons.podcasts,
         'remove' => Icons.delete_outline,
+        'record' => Icons.fiber_manual_record,
         _ => Icons.more_horiz,
       };
 
