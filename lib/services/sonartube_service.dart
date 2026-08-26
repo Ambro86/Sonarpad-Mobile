@@ -6,6 +6,15 @@ import '../utils/app_logger.dart';
 
 enum SonarTubeItemKind { video, channel, playlist }
 
+class _InnerTubeHttpFailure implements Exception {
+  const _InnerTubeHttpFailure(this.statusCode);
+
+  final int statusCode;
+
+  @override
+  String toString() => statusCode.toString();
+}
+
 class SonarTubeItem {
   const SonarTubeItem({
     required this.kind,
@@ -789,7 +798,7 @@ class SonarTubeService {
         )
         .timeout(const Duration(seconds: 10));
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('InnerTube HTTP ${response.statusCode}');
+      throw _InnerTubeHttpFailure(response.statusCode);
     }
     final decoded = jsonDecode(utf8.decode(response.bodyBytes));
     if (decoded is! Map) {

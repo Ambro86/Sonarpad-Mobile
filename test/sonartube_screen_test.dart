@@ -220,7 +220,7 @@ void main() {
       find.byKey(const ValueKey('sonartube_favorite_channel_UC123')),
     );
     await tester.pumpAndSettle();
-    expect(find.byTooltip('Rimuovi dai preferiti'), findsOneWidget);
+    expect(find.byTooltip('Rimuovi canale dai preferiti'), findsOneWidget);
     expect(find.byKey(const ValueKey('sonartube_favorites_button')), findsNothing);
     await tester.tap(
       find.byKey(const ValueKey('sonartube_search_results_back')),
@@ -298,6 +298,7 @@ void main() {
     final favorites = await favoritesService.loadFavorites();
     expect(favorites.where((item) => item.kind == SonarTubeItemKind.channel), hasLength(1));
     expect(favorites.single.id, 'UC123');
+    await tester.pump(const Duration(seconds: 3));
   });
 
   testWidgets('load more skips duplicate continuation pages', (tester) async {
