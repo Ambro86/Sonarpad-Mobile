@@ -91,6 +91,33 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeFavorites => 'Oblíbené';
 
   @override
+  String get sonarTubeVideoFavorites => 'Oblíbená videa';
+
+  @override
+  String get sonarTubeChannelFavorites => 'Oblíbené kanály';
+
+  @override
+  String get sonarTubeNoVideoFavorites => 'Žádná oblíbená videa ani playlisty.';
+
+  @override
+  String get sonarTubeNoChannelFavorites => 'Žádné oblíbené kanály.';
+
+  @override
+  String get sonarTubeAddChannelFavorite => 'Přidat kanál do oblíbených';
+
+  @override
+  String get sonarTubeRemoveChannelFavorite => 'Odebrat kanál z oblíbených';
+
+  @override
+  String get sonarTubeRecentVideos => 'Nedávná videa';
+
+  @override
+  String get sonarTubeNoRecentVideos => 'Žádná nedávná videa.';
+
+  @override
+  String get sonarTubeConfirmClearHistory => 'Opravdu chcete vymazat historii nedávných videí?';
+
+  @override
   String get sonarTubeNoFavorites => 'Žádná oblíbená videa, kanály ani playlisty.';
 
   @override
@@ -1522,6 +1549,12 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get saveInLibrary => 'Uložit do knihovny';
+
+  @override
+  String get copyToClipboard => "Kopírovat do schránky";
+
+  @override
+  String get textCopiedToClipboard => "Text byl zkopírován do schránky";
 
   @override
   String get documentTextLabel => 'Text dokumentu';

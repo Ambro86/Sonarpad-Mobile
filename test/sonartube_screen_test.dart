@@ -7,6 +7,7 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/screens/sonartube_screen.dart';
+import 'package:sonarpad_mobile_starter/services/sonartube_favorites_service.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 
 void main() {
@@ -23,6 +24,7 @@ void main() {
     );
     final service = SonarTubeService(
       endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      enableDirectNavigation: false,
       client: MockClient((request) async {
         return http.Response(
           jsonEncode({
@@ -80,6 +82,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final service = SonarTubeService(
       endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      enableDirectNavigation: false,
       client: MockClient((request) async {
         final query = request.url.queryParameters;
         if (query.containsKey('browse')) {
@@ -161,6 +164,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final service = SonarTubeService(
       endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      enableDirectNavigation: false,
       client: MockClient((request) async {
         if (request.url.queryParameters.containsKey('browse')) {
           return http.Response(
@@ -232,11 +236,76 @@ void main() {
     expect(find.text('Video preferito del canale'), findsOneWidget);
   });
 
+  testWidgets('channel page toggles the channel favorite before the video list', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    const channel = SonarTubeItem(
+      kind: SonarTubeItemKind.channel,
+      id: 'UC123',
+      title: 'Canale diretto',
+      url: 'https://www.youtube.com/channel/UC123',
+    );
+    final favoritesService = SonarTubeFavoritesService();
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      enableDirectNavigation: false,
+      client: MockClient((request) async {
+        return http.Response(
+          jsonEncode({
+            'ok': true,
+            'page': 1,
+            'items': [
+              {
+                'kind': 'video',
+                'id': 'abcdefghijk',
+                'title': 'Primo video del canale',
+                'url': 'https://www.youtube.com/watch?v=abcdefghijk',
+              },
+            ],
+          }),
+          200,
+        );
+      }),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SonarTubeScreen(
+          collection: channel,
+          service: service,
+          favoritesService: favoritesService,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final button = find.byKey(
+      const ValueKey('sonartube_collection_channel_favorite'),
+    );
+    expect(button, findsOneWidget);
+    expect(find.text('Aggiungi canale ai preferiti'), findsOneWidget);
+    expect(
+      tester.getTopLeft(button).dy,
+      lessThan(tester.getTopLeft(find.text('Primo video del canale')).dy),
+    );
+
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Rimuovi canale dai preferiti'), findsOneWidget);
+    final favorites = await favoritesService.loadFavorites();
+    expect(favorites.where((item) => item.kind == SonarTubeItemKind.channel), hasLength(1));
+    expect(favorites.single.id, 'UC123');
+  });
+
   testWidgets('load more skips duplicate continuation pages', (tester) async {
     SharedPreferences.setMockInitialValues({});
     var requestCount = 0;
     final service = SonarTubeService(
       endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      enableDirectNavigation: false,
       client: MockClient((request) async {
         requestCount++;
         final token = request.url.queryParameters['token'];

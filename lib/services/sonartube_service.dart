@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../utils/app_logger.dart';
+
 enum SonarTubeItemKind { video, channel, playlist }
 
 class SonarTubeItem {
@@ -123,28 +125,69 @@ class SonarTubeTranscript {
 }
 
 class SonarTubeService {
+  static const _youtubeApiKey = 'AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vfUWA8808';
+  static const _webClientVersion = '2.20260722.01.00';
+  static const _androidClientVersion = '21.29.366';
+  static const _androidUserAgent =
+      'com.google.android.youtube/21.29.366 '
+      '(Linux; U; Android 16; en_US; SM-S908E Build/TP1A.220624.014) gzip';
+  static final Uri _youtubeSearchEndpoint = Uri.parse(
+    'https://www.youtube.com/youtubei/v1/search'
+    '?prettyPrint=false&key=$_youtubeApiKey',
+  );
+  static final Uri _youtubeBrowseEndpoint = Uri.parse(
+    'https://www.youtube.com/youtubei/v1/browse'
+    '?prettyPrint=false&key=$_youtubeApiKey',
+  );
+  static final Uri _youtubeNextEndpoint = Uri.parse(
+    'https://www.youtube.com/youtubei/v1/next'
+    '?prettyPrint=false&key=$_youtubeApiKey',
+  );
+  static final Uri _youtubePlayerEndpoint = Uri.parse(
+    'https://www.youtube.com/youtubei/v1/player'
+    '?prettyPrint=false&key=$_youtubeApiKey',
+  );
   static const _compiledClientToken = String.fromEnvironment(
     'SONARPAD_ROUTE_CLIENT_TOKEN',
   );
 
-  SonarTubeService({http.Client? client, Uri? endpoint, String? clientToken})
-    : _client = client ?? http.Client(),
-      endpoint =
-          endpoint ?? Uri.parse('https://sonarpad.com/api/youtube_resolve.php'),
-      _clientToken = clientToken ?? _compiledClientToken;
+  SonarTubeService({
+    http.Client? client,
+    Uri? endpoint,
+    String? clientToken,
+    bool enableDirectNavigation = true,
+  }) : _client = client ?? http.Client(),
+       endpoint =
+           endpoint ?? Uri.parse('https://sonarpad.com/api/youtube_resolve.php'),
+       _clientToken = clientToken ?? _compiledClientToken,
+       _directNavigationEnabled = enableDirectNavigation;
 
   final http.Client _client;
   final Uri endpoint;
   final String _clientToken;
+  final bool _directNavigationEnabled;
 
   Future<SonarTubePage> search(String query, {String? token, int page = 1}) {
-    return _loadPage({
-      'q': query,
-      'type': 'all',
-      'format': 'json',
-      if (token != null && token.isNotEmpty) 'token': token,
-      'page': '$page',
-    });
+    final trimmedQuery = query.trim();
+    final fallbackQuery = <String, String>{
+        'q': trimmedQuery,
+        'type': 'all',
+        'format': 'json',
+        if (token != null && token.isNotEmpty) 'token': token,
+        'page': '$page',
+      };
+    if (!_directNavigationEnabled) {
+      return _loadServerPage(fallbackQuery);
+    }
+    return _loadNavigationPage(
+      operation: 'search',
+      direct: () => _searchDirect(
+        trimmedQuery,
+        token: token,
+        page: page,
+      ),
+      fallbackQuery: fallbackQuery,
+    );
   }
 
   Future<SonarTubePage> browse(
@@ -156,7 +199,7 @@ class SonarTubeService {
       throw ArgumentError('Un video non è una raccolta SonarTube.');
     }
     final seedVideoId = _mixSeedVideoId(collection);
-    return _loadPage({
+    final fallbackQuery = <String, String>{
       'browse': collection.id,
       'kind': collection.kind.name,
       'title': collection.title,
@@ -164,7 +207,20 @@ class SonarTubeService {
       'seed': ?seedVideoId,
       if (token != null && token.isNotEmpty) 'token': token,
       'page': '$page',
-    });
+    };
+    if (!_directNavigationEnabled) {
+      return _loadServerPage(fallbackQuery);
+    }
+    return _loadNavigationPage(
+      operation: 'browse:${collection.kind.name}',
+      direct: () => _browseDirect(
+        collection,
+        token: token,
+        page: page,
+        seedVideoId: seedVideoId,
+      ),
+      fallbackQuery: fallbackQuery,
+    );
   }
 
   String? _mixSeedVideoId(SonarTubeItem collection) {
@@ -238,13 +294,25 @@ class SonarTubeService {
     var channelId = item.channelId;
     var channelTitle = item.channel;
     if (channelId == null || channelId.isEmpty) {
-      final data = await _request({
-        'url': item.url.isEmpty ? item.id : item.url,
-        'metadata': '1',
-        'format': 'json',
-      });
-      channelId = _string(data['channel_id']);
-      channelTitle = _string(data['channel']) ?? channelTitle;
+      if (_directNavigationEnabled) {
+        try {
+          final data = await _playerMetadataDirect(item.id);
+          channelId = _string(data['channelId']);
+          channelTitle = _string(data['author']) ?? channelTitle;
+        } catch (_) {
+          // Il resolver server resta il fallback anche per l'apertura del
+          // canale quando il risultato video non contiene già il channelId.
+        }
+      }
+      if (channelId == null || channelId.isEmpty) {
+        final data = await _request({
+          'url': item.url.isEmpty ? item.id : item.url,
+          'metadata': '1',
+          'format': 'json',
+        });
+        channelId = _string(data['channel_id']);
+        channelTitle = _string(data['channel']) ?? channelTitle;
+      }
     }
     if (channelId == null || channelId.isEmpty) {
       throw const FormatException('channel_unavailable');
@@ -398,23 +466,795 @@ class SonarTubeService {
     return paragraphs;
   }
 
-  Future<SonarTubePage> _loadPage(Map<String, String> query) async {
-    final data = await _request(query);
-    final rawItems = data['items'] is List
-        ? data['items'] as List
-        : data['videos'] is List
-        ? data['videos'] as List
-        : const [];
-    final items = rawItems
-        .whereType<Map>()
-        .map((raw) => _parseItem(Map<String, dynamic>.from(raw)))
-        .whereType<SonarTubeItem>()
-        .toList(growable: false);
-    return SonarTubePage(
-      items: items,
-      page: _int(data['page']) ?? 1,
-      nextToken: _string(data['next_token']),
+  Future<SonarTubePage> _loadNavigationPage({
+    required String operation,
+    required Future<SonarTubePage> Function() direct,
+    required Map<String, String> fallbackQuery,
+  }) async {
+    Object? directFailure;
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        final page = await direct();
+        await AppLogger.log(
+          'SonarTube: direct InnerTube $operation success '
+          'attempt=${attempt + 1} page=${page.page} items=${page.items.length} '
+          'hasMore=${page.hasMore}',
+        );
+        return page;
+      } catch (error) {
+        directFailure = error;
+        await AppLogger.log(
+          'SonarTube: direct InnerTube $operation failed '
+          'attempt=${attempt + 1} error=$error',
+        );
+        if (attempt == 0) {
+          await Future<void>.delayed(const Duration(milliseconds: 300));
+        }
+      }
+    }
+
+    await AppLogger.log(
+      'SonarTube: direct InnerTube $operation unavailable; '
+      'using server fallback host=${endpoint.host}',
     );
+    try {
+      final page = await _loadServerPage(fallbackQuery);
+      await AppLogger.log(
+        'SonarTube: server fallback $operation success '
+        'page=${page.page} items=${page.items.length} hasMore=${page.hasMore}',
+      );
+      return page;
+    } catch (fallbackFailure) {
+      await AppLogger.log(
+        'SonarTube: server fallback $operation failed error=$fallbackFailure',
+      );
+      throw Exception(
+        'SonarTube navigation failed. '
+        'direct=$directFailure; fallback=$fallbackFailure',
+      );
+    }
+  }
+
+  Future<SonarTubePage> _loadServerPage(Map<String, String> query) async {
+    Object? lastFailure;
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        final data = await _request(query);
+        final rawItems = data['items'] is List
+            ? data['items'] as List
+            : data['videos'] is List
+            ? data['videos'] as List
+            : const [];
+        final items = rawItems
+            .whereType<Map>()
+            .map((raw) => _parseItem(Map<String, dynamic>.from(raw)))
+            .whereType<SonarTubeItem>()
+            .toList(growable: false);
+        return SonarTubePage(
+          items: items,
+          page: _int(data['page']) ?? 1,
+          nextToken: _string(data['next_token']),
+        );
+      } catch (error) {
+        lastFailure = error;
+        if (attempt == 0) {
+          await Future<void>.delayed(const Duration(milliseconds: 300));
+        }
+      }
+    }
+    throw lastFailure ?? Exception('sonartube_page_failed');
+  }
+
+  Future<SonarTubePage> _searchDirect(
+    String query, {
+    String? token,
+    int page = 1,
+  }) async {
+    final continuation = token?.trim() ?? '';
+    if (query.isEmpty && continuation.isEmpty) {
+      return SonarTubePage(items: const [], page: page);
+    }
+
+    final data = await _searchInnerTube(
+      query,
+      continuation: continuation,
+      type: 'all',
+    );
+    var items = _extractNavigationItems(data);
+    final nextToken = _findSearchContinuation(data);
+
+    // Replica il resolver PHP: sulla prima pagina generale aggiunge davanti
+    // i video della ricerca filtrata e, in coda, alcuni canali e playlist.
+    if (continuation.isEmpty) {
+      final known = <String>{
+        for (final item in items) _navigationItemKey(item),
+      };
+
+      final supplements = await Future.wait([
+        _trySearchSupplement(query, 'video'),
+        _trySearchSupplement(query, 'channel'),
+        _trySearchSupplement(query, 'playlist'),
+      ]);
+
+      final exactVideos = <SonarTubeItem>[];
+      for (final item in supplements[0]) {
+        if (item.kind != SonarTubeItemKind.video) continue;
+        final key = _navigationItemKey(item);
+        if (!known.add(key)) continue;
+        exactVideos.add(item);
+        if (exactVideos.length >= 20) break;
+      }
+      if (exactVideos.isNotEmpty) {
+        items = [...exactVideos, ...items];
+      }
+
+      final extraKinds = [
+        SonarTubeItemKind.channel,
+        SonarTubeItemKind.playlist,
+      ];
+      for (var index = 0; index < extraKinds.length; index++) {
+        final expectedKind = extraKinds[index];
+        final extraItems = supplements[index + 1];
+        var added = 0;
+        for (final item in extraItems) {
+          if (item.kind != expectedKind) continue;
+          final key = _navigationItemKey(item);
+          if (!known.add(key)) continue;
+          items.add(item);
+          added++;
+          if (added >= 5) break;
+        }
+      }
+    }
+
+    if (items.isEmpty && query.isNotEmpty) {
+      throw const FormatException('empty_direct_search_results');
+    }
+    return SonarTubePage(
+      items: List.unmodifiable(items),
+      page: page,
+      nextToken: nextToken,
+    );
+  }
+
+  Future<List<SonarTubeItem>> _trySearchSupplement(
+    String query,
+    String type,
+  ) async {
+    try {
+      final data = await _searchInnerTube(query, type: type);
+      return _extractNavigationItems(data);
+    } catch (_) {
+      // Le ricerche supplementari migliorano l'aderenza dei risultati, ma la
+      // risposta generale resta valida anche se uno di questi tentativi fallisce.
+      return const [];
+    }
+  }
+
+  Future<Map<String, dynamic>> _searchInnerTube(
+    String query, {
+    String continuation = '',
+    String type = 'all',
+  }) {
+    final payload = <String, dynamic>{
+      'context': _youtubeBrowseContext(),
+    };
+    if (continuation.isNotEmpty) {
+      payload['continuation'] = continuation;
+    } else {
+      payload['query'] = query;
+      final params = _searchParamsForType(type);
+      if (params != null) payload['params'] = params;
+    }
+    return _postInnerTube(_youtubeSearchEndpoint, payload, webClient: true);
+  }
+
+  Future<SonarTubePage> _browseDirect(
+    SonarTubeItem collection, {
+    String? token,
+    int page = 1,
+    String? seedVideoId,
+  }) async {
+    final continuation = token?.trim() ?? '';
+    final isPlaylist = collection.kind == SonarTubeItemKind.playlist;
+    final isGeneratedMix = isPlaylist && collection.id.startsWith('RD');
+    final payload = <String, dynamic>{
+      'context': _youtubeBrowseContext(),
+    };
+
+    if (continuation.isNotEmpty) {
+      payload['continuation'] = continuation;
+    } else if (isGeneratedMix) {
+      var seed = seedVideoId?.trim() ?? '';
+      if (seed.isEmpty && collection.id.length == 13) {
+        final derived = collection.id.substring(2);
+        if (RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(derived)) {
+          seed = derived;
+        }
+      }
+      payload['playlistId'] = collection.id;
+      if (seed.isNotEmpty) payload['videoId'] = seed;
+    } else if (isPlaylist) {
+      payload['browseId'] = collection.id.startsWith('VL')
+          ? collection.id
+          : 'VL${collection.id}';
+    } else {
+      final uploadsId = collection.id.startsWith('UC')
+          ? 'UU${collection.id.substring(2)}'
+          : collection.id;
+      payload['browseId'] = uploadsId.startsWith('VL')
+          ? uploadsId
+          : 'VL$uploadsId';
+    }
+
+    final data = await _postInnerTube(
+      isGeneratedMix ? _youtubeNextEndpoint : _youtubeBrowseEndpoint,
+      payload,
+      webClient: true,
+    );
+    final videos = _extractNavigationItems(data)
+        .where((item) => item.kind == SonarTubeItemKind.video)
+        .toList(growable: false);
+    if (videos.isEmpty && continuation.isEmpty) {
+      // Un canale/playlist scelto dall'utente normalmente contiene almeno un
+      // video. Se la risposta diretta cambia layout e il parser non riconosce
+      // più nulla, considera il tentativo non riuscito e lascia spazio al
+      // resolver server, che può essere aggiornato indipendentemente dall'app.
+      throw const FormatException('empty_direct_browse_results');
+    }
+    return SonarTubePage(
+      items: videos,
+      page: page,
+      nextToken: _findSearchContinuation(data),
+    );
+  }
+
+  Future<Map<String, dynamic>> _playerMetadataDirect(String videoId) async {
+    if (!RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(videoId)) {
+      throw const FormatException('invalid_video_id');
+    }
+    final data = await _postInnerTube(
+      _youtubePlayerEndpoint,
+      {
+        'context': {
+          'client': {
+            'hl': 'it',
+            'gl': 'IT',
+            'clientName': 'ANDROID',
+            'clientVersion': _androidClientVersion,
+            'androidSdkVersion': 33,
+            'osName': 'Android',
+            'osVersion': '16',
+            'platform': 'MOBILE',
+          },
+        },
+        'videoId': videoId,
+        'playbackContext': {
+          'contentPlaybackContext': {
+            'html5Preference': 'HTML5_PREF_WANTS',
+          },
+        },
+        'contentCheckOk': true,
+        'racyCheckOk': true,
+      },
+      webClient: false,
+    );
+    final details = data['videoDetails'];
+    if (details is! Map) {
+      throw const FormatException('channel_unavailable');
+    }
+    return Map<String, dynamic>.from(details);
+  }
+
+  Map<String, dynamic> _youtubeBrowseContext() {
+    return {
+      'client': {
+        'hl': 'it',
+        'gl': 'IT',
+        'clientName': 'WEB',
+        'clientVersion': _webClientVersion,
+        'platform': 'DESKTOP',
+      },
+    };
+  }
+
+  String? _searchParamsForType(String type) {
+    return switch (type) {
+      'video' || 'videos' => 'EgIQAQ==',
+      'live' || 'stream' => 'EgJAAQ==',
+      'channel' || 'channels' => 'EgIQAg==',
+      'playlist' || 'playlists' => 'EgIQAw==',
+      'all' || '' => null,
+      _ => 'EgIQAQ==',
+    };
+  }
+
+  Future<Map<String, dynamic>> _postInnerTube(
+    Uri uri,
+    Map<String, dynamic> payload, {
+    required bool webClient,
+  }) async {
+    final response = await _client
+        .post(
+          uri,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'User-Agent': _androidUserAgent,
+            'X-YouTube-Client-Name': webClient ? '1' : '3',
+            'X-YouTube-Client-Version':
+                webClient ? _webClientVersion : _androidClientVersion,
+          },
+          body: jsonEncode(payload),
+        )
+        .timeout(const Duration(seconds: 10));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('InnerTube HTTP ${response.statusCode}');
+    }
+    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+    if (decoded is! Map) {
+      throw const FormatException('Risposta InnerTube non valida.');
+    }
+    final data = Map<String, dynamic>.from(decoded);
+    if (data['error'] != null) {
+      throw const FormatException('InnerTube API error.');
+    }
+    return data;
+  }
+
+  List<SonarTubeItem> _extractNavigationItems(Map<String, dynamic> root) {
+    final items = <SonarTubeItem>[];
+    final seen = <String>{};
+
+    void addVideo(Map<String, dynamic> video) {
+      final id = _string(video['videoId']);
+      if (id == null || seen.contains(id)) return;
+      final title = _youtubeText(video['title'] ?? video['headline']);
+      if (title.isEmpty) return;
+      seen.add(id);
+      final channel = _youtubeText(
+        video['shortBylineText'] ??
+            video['longBylineText'] ??
+            video['ownerText'],
+      );
+      final published = _youtubeText(video['publishedTimeText']);
+      final views = _youtubeText(
+        video['viewCountText'] ?? video['shortViewCountText'],
+      );
+      final badgesJson = _safeJson(video['badges']).toLowerCase();
+      final liveText = '$published $views'.toLowerCase();
+      items.add(
+        SonarTubeItem(
+          kind: SonarTubeItemKind.video,
+          id: id,
+          title: title,
+          url: Uri.https(
+            'www.youtube.com',
+            '/watch',
+            {'v': id},
+          ).toString(),
+          channel: channel.isEmpty ? null : channel,
+          channelId: _youtubeChannelIdFromNode(video),
+          published: published.isEmpty ? null : published,
+          views: views.isEmpty ? null : views,
+          duration: _nullableYoutubeText(video['lengthText']),
+          thumbnailUrl: _youtubeBestThumb(video['thumbnail']),
+          isLive: liveText.contains('in diretta') || badgesJson.contains('live'),
+        ),
+      );
+    }
+
+    void addChannel(Map<String, dynamic> channel) {
+      var id = _string(channel['channelId']);
+      final navigation = _asMap(channel['navigationEndpoint']);
+      final browseEndpoint = _asMap(navigation?['browseEndpoint']);
+      id ??= _string(browseEndpoint?['browseId']);
+      if (id == null || seen.contains('ch_$id')) return;
+      final title = _youtubeText(channel['title']);
+      if (title.isEmpty) return;
+      seen.add('ch_$id');
+      final handle = _string(browseEndpoint?['canonicalBaseUrl']);
+      items.add(
+        SonarTubeItem(
+          kind: SonarTubeItemKind.channel,
+          id: id,
+          title: title,
+          channel: title,
+          url: handle != null
+              ? 'https://www.youtube.com$handle'
+              : Uri.https(
+                  'www.youtube.com',
+                  '/channel/$id',
+                ).toString(),
+          thumbnailUrl: _youtubeBestThumb(channel['thumbnail']),
+          description: _nullableYoutubeText(channel['descriptionSnippet']),
+        ),
+      );
+    }
+
+    void addPlaylist(Map<String, dynamic> playlist) {
+      final navigation = _asMap(playlist['navigationEndpoint']);
+      final watchEndpoint = _asMap(navigation?['watchEndpoint']);
+      final id = _string(playlist['playlistId']) ??
+          _string(watchEndpoint?['playlistId']);
+      if (id == null || seen.contains('pl_$id')) return;
+      final title = _youtubeText(playlist['title']);
+      if (title.isEmpty) return;
+      seen.add('pl_$id');
+      final seed = id.startsWith('RD')
+          ? _youtubeFirstVideoId(playlist)
+          : null;
+      items.add(
+        SonarTubeItem(
+          kind: SonarTubeItemKind.playlist,
+          id: id,
+          title: title,
+          channel: _nullableYoutubeText(
+            playlist['shortBylineText'] ?? playlist['longBylineText'],
+          ),
+          thumbnailUrl: _youtubeBestThumb(
+            _firstListItem(playlist['thumbnails']) ?? playlist['thumbnail'],
+          ),
+          url: _playlistUrl(id, seed),
+        ),
+      );
+    }
+
+    void addLockup(Map<String, dynamic> lockup) {
+      final contentType = _string(lockup['contentType']) ?? '';
+      final isVideo = contentType == 'LOCKUP_CONTENT_TYPE_VIDEO';
+      final isPlaylist = contentType == 'LOCKUP_CONTENT_TYPE_PLAYLIST' ||
+          contentType == 'LOCKUP_CONTENT_TYPE_PODCAST';
+      if (!isVideo && !isPlaylist) return;
+      final id = _string(lockup['contentId']);
+      if (id == null) return;
+      final seenKey = isPlaylist ? 'pl_$id' : id;
+      if (seen.contains(seenKey)) return;
+
+      final metadata = _asMap(
+        _asMap(lockup['metadata'])?['lockupMetadataViewModel'],
+      );
+      final contentMetadata = _asMap(
+        _asMap(metadata?['metadata'])?['contentMetadataViewModel'],
+      );
+      final rows = _asList(contentMetadata?['metadataRows']);
+      final channel = _nestedString(
+        rows,
+        const [0, 'metadataParts', 0, 'text', 'content'],
+      );
+      final views = _nestedString(
+        rows,
+        const [1, 'metadataParts', 0, 'text', 'content'],
+      );
+      final published = _nestedString(
+        rows,
+        const [1, 'metadataParts', 1, 'text', 'content'],
+      );
+      final sources = _asList(
+        _asMap(
+          _asMap(
+            _asMap(lockup['contentImage'])?['thumbnailViewModel'],
+          )?['image'],
+        )?['sources'],
+      );
+      final lastSource = sources.isEmpty ? null : _asMap(sources.last);
+      final thumbnail = _string(lastSource?['url']);
+      final overlays = _asList(
+        _asMap(
+          _asMap(lockup['contentImage'])?['thumbnailViewModel'],
+        )?['overlays'],
+      );
+      final firstOverlay = overlays.isEmpty ? null : _asMap(overlays.first);
+      final badges = _asList(
+        _asMap(
+          firstOverlay?['thumbnailBottomOverlayViewModel'],
+        )?['badges'],
+      );
+      final firstBadge = badges.isEmpty ? null : _asMap(badges.first);
+      final duration = _string(
+        _asMap(firstBadge?['thumbnailBadgeViewModel'])?['text'],
+      );
+      final title = _string(_asMap(metadata?['title'])?['content']);
+      if (title == null) return;
+      seen.add(seenKey);
+      final seed = isPlaylist && id.startsWith('RD')
+          ? _youtubeFirstVideoId(lockup)
+          : null;
+      items.add(
+        SonarTubeItem(
+          kind: isPlaylist
+              ? SonarTubeItemKind.playlist
+              : SonarTubeItemKind.video,
+          id: id,
+          title: title,
+          channel: channel,
+          channelId: isVideo ? _youtubeChannelIdFromNode(lockup) : null,
+          published: published,
+          views: views,
+          duration: duration,
+          thumbnailUrl: thumbnail,
+          url: isPlaylist
+              ? _playlistUrl(id, seed)
+              : Uri.https(
+                  'www.youtube.com',
+                  '/watch',
+                  {'v': id},
+                ).toString(),
+        ),
+      );
+    }
+
+    void addRadio(Map<String, dynamic> radio) {
+      final navigation = _asMap(radio['navigationEndpoint']);
+      final watchEndpoint = _asMap(navigation?['watchEndpoint']);
+      final id = _string(radio['playlistId']) ??
+          _string(watchEndpoint?['playlistId']);
+      if (id == null || seen.contains('pl_$id')) return;
+      var seed = _string(watchEndpoint?['videoId']);
+      seed ??= _youtubeFirstVideoId(radio);
+      final title = _nullableYoutubeText(
+            radio['title'] ?? radio['headline'],
+          ) ??
+          'Mix';
+      seen.add('pl_$id');
+      items.add(
+        SonarTubeItem(
+          kind: SonarTubeItemKind.playlist,
+          id: id,
+          title: title,
+          channel: _nullableYoutubeText(
+            radio['shortBylineText'] ?? radio['longBylineText'],
+          ),
+          thumbnailUrl: _youtubeBestThumb(radio['thumbnail']),
+          url: _playlistUrl(id, seed),
+        ),
+      );
+    }
+
+    _walkYoutubeTree(root, (node) {
+      final videoRenderer = _asMap(node['videoRenderer']);
+      if (videoRenderer != null) addVideo(videoRenderer);
+      final compactVideoRenderer = _asMap(node['compactVideoRenderer']);
+      if (compactVideoRenderer != null) addVideo(compactVideoRenderer);
+      final playlistVideoRenderer = _asMap(node['playlistVideoRenderer']);
+      if (playlistVideoRenderer != null) addVideo(playlistVideoRenderer);
+      final playlistPanelVideoRenderer =
+          _asMap(node['playlistPanelVideoRenderer']);
+      if (playlistPanelVideoRenderer != null) {
+        addVideo(playlistPanelVideoRenderer);
+      }
+      final radioRenderer = _asMap(node['radioRenderer']);
+      if (radioRenderer != null) addRadio(radioRenderer);
+      final compactRadioRenderer = _asMap(node['compactRadioRenderer']);
+      if (compactRadioRenderer != null) addRadio(compactRadioRenderer);
+      final channelRenderer = _asMap(node['channelRenderer']);
+      if (channelRenderer != null) addChannel(channelRenderer);
+      final playlistRenderer = _asMap(node['playlistRenderer']);
+      if (playlistRenderer != null) addPlaylist(playlistRenderer);
+      final compactPlaylistRenderer = _asMap(node['compactPlaylistRenderer']);
+      if (compactPlaylistRenderer != null) {
+        addPlaylist(compactPlaylistRenderer);
+      }
+      final gridPlaylistRenderer = _asMap(node['gridPlaylistRenderer']);
+      if (gridPlaylistRenderer != null) addPlaylist(gridPlaylistRenderer);
+      final lockupViewModel = _asMap(node['lockupViewModel']);
+      if (lockupViewModel != null) addLockup(lockupViewModel);
+      final gridVideoRenderer = _asMap(node['gridVideoRenderer']);
+      if (gridVideoRenderer != null) addVideo(gridVideoRenderer);
+    });
+    return items;
+  }
+
+  String _navigationItemKey(SonarTubeItem item) =>
+      '${item.kind.name}:${item.id}';
+
+  String _playlistUrl(String id, String? seed) {
+    if (seed != null && seed.isNotEmpty) {
+      return Uri.https(
+        'www.youtube.com',
+        '/watch',
+        {'v': seed, 'list': id},
+      ).toString();
+    }
+    return Uri.https(
+      'www.youtube.com',
+      '/playlist',
+      {'list': id},
+    ).toString();
+  }
+
+  String? _findSearchContinuation(dynamic root) {
+    String? findContinuationItem(dynamic node) {
+      if (node is Map) {
+        final map = Map<String, dynamic>.from(node);
+        final renderer = _asMap(map['continuationItemRenderer']);
+        if (renderer != null) {
+          final endpoint = _asMap(renderer['continuationEndpoint']);
+          final command = _asMap(endpoint?['continuationCommand']);
+          var token = _string(command?['token']);
+          if (token == null) {
+            final button = _asMap(renderer['button']);
+            final buttonRenderer = _asMap(button?['buttonRenderer']);
+            final buttonCommand = _asMap(buttonRenderer?['command']);
+            token = _string(
+              _asMap(buttonCommand?['continuationCommand'])?['token'],
+            );
+          }
+          if (token != null) return token;
+        }
+        for (final child in map.values) {
+          final found = findContinuationItem(child);
+          if (found != null) return found;
+        }
+      } else if (node is List) {
+        for (final child in node) {
+          final found = findContinuationItem(child);
+          if (found != null) return found;
+        }
+      }
+      return null;
+    }
+
+    final preferred = findContinuationItem(root);
+    if (preferred != null) return preferred;
+
+    String? findLegacy(dynamic node) {
+      if (node is Map) {
+        final map = Map<String, dynamic>.from(node);
+        final next = _asMap(map['nextContinuationData']);
+        final token = _string(next?['continuation']);
+        if (token != null) return token;
+        for (final child in map.values) {
+          final found = findLegacy(child);
+          if (found != null) return found;
+        }
+      } else if (node is List) {
+        for (final child in node) {
+          final found = findLegacy(child);
+          if (found != null) return found;
+        }
+      }
+      return null;
+    }
+
+    return findLegacy(root);
+  }
+
+  String _youtubeText(dynamic node) {
+    if (node == null) return '';
+    if (node is String) return node;
+    if (node is! Map) return '';
+    final map = Map<String, dynamic>.from(node);
+    final simpleText = map['simpleText'];
+    if (simpleText is String) return simpleText;
+    final runs = map['runs'];
+    if (runs is List) {
+      final buffer = StringBuffer();
+      for (final run in runs) {
+        final runMap = _asMap(run);
+        final text = runMap?['text'];
+        if (text != null) buffer.write(text);
+      }
+      return buffer.toString();
+    }
+    final accessibility = _asMap(map['accessibility']);
+    final accessibilityData = _asMap(accessibility?['accessibilityData']);
+    return _string(accessibilityData?['label']) ?? '';
+  }
+
+  String? _nullableYoutubeText(dynamic node) {
+    final text = _youtubeText(node).trim();
+    return text.isEmpty ? null : text;
+  }
+
+  String? _youtubeChannelIdFromNode(dynamic node) {
+    if (node is Map) {
+      final map = Map<String, dynamic>.from(node);
+      final browseId = _string(map['browseId']);
+      if (browseId != null &&
+          RegExp(r'^UC[A-Za-z0-9_-]{22}$').hasMatch(browseId)) {
+        return browseId;
+      }
+      for (final child in map.values) {
+        final found = _youtubeChannelIdFromNode(child);
+        if (found != null) return found;
+      }
+    } else if (node is List) {
+      for (final child in node) {
+        final found = _youtubeChannelIdFromNode(child);
+        if (found != null) return found;
+      }
+    }
+    return null;
+  }
+
+  String? _youtubeBestThumb(dynamic node) {
+    final map = _asMap(node);
+    if (map == null) return null;
+    final thumbnails = _asList(map['thumbnails']);
+    if (thumbnails.isEmpty) return null;
+    final last = _asMap(thumbnails.last);
+    return _string(last?['url']);
+  }
+
+  String? _youtubeFirstVideoId(dynamic node) {
+    if (node is Map) {
+      final map = Map<String, dynamic>.from(node);
+      final videoId = _string(map['videoId']);
+      if (videoId != null &&
+          RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(videoId)) {
+        return videoId;
+      }
+      for (final child in map.values) {
+        final found = _youtubeFirstVideoId(child);
+        if (found != null) return found;
+      }
+    } else if (node is List) {
+      for (final child in node) {
+        final found = _youtubeFirstVideoId(child);
+        if (found != null) return found;
+      }
+    }
+    return null;
+  }
+
+  void _walkYoutubeTree(
+    dynamic node,
+    void Function(Map<String, dynamic>) visitor,
+  ) {
+    if (node is Map) {
+      final map = Map<String, dynamic>.from(node);
+      visitor(map);
+      for (final child in map.values) {
+        _walkYoutubeTree(child, visitor);
+      }
+    } else if (node is List) {
+      for (final child in node) {
+        _walkYoutubeTree(child, visitor);
+      }
+    }
+  }
+
+  Map<String, dynamic>? _asMap(dynamic value) {
+    if (value is! Map) return null;
+    return Map<String, dynamic>.from(value);
+  }
+
+  List<dynamic> _asList(dynamic value) {
+    return value is List ? value : const <dynamic>[];
+  }
+
+  dynamic _firstListItem(dynamic value) {
+    final list = _asList(value);
+    return list.isEmpty ? null : list.first;
+  }
+
+  String? _nestedString(List<dynamic> root, List<dynamic> path) {
+    dynamic current = root;
+    for (final segment in path) {
+      if (segment is int) {
+        if (current is! List ||
+            segment < 0 ||
+            segment >= current.length) {
+          return null;
+        }
+        current = current[segment];
+      } else if (segment is String) {
+        if (current is! Map) return null;
+        current = current[segment];
+      } else {
+        return null;
+      }
+    }
+    return _string(current);
+  }
+
+  String _safeJson(dynamic value) {
+    try {
+      return jsonEncode(value);
+    } catch (_) {
+      return '';
+    }
   }
 
   Future<Map<String, dynamic>> _request(

@@ -92,6 +92,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sonarTubeFavorites => 'Favoris';
 
   @override
+  String get sonarTubeVideoFavorites => 'Vidéos favorites';
+
+  @override
+  String get sonarTubeChannelFavorites => 'Chaînes favorites';
+
+  @override
+  String get sonarTubeNoVideoFavorites => 'Aucune vidéo ou playlist favorite.';
+
+  @override
+  String get sonarTubeNoChannelFavorites => 'Aucune chaîne favorite.';
+
+  @override
+  String get sonarTubeAddChannelFavorite => 'Ajouter la chaîne aux favoris';
+
+  @override
+  String get sonarTubeRemoveChannelFavorite => 'Retirer la chaîne des favoris';
+
+  @override
+  String get sonarTubeRecentVideos => 'Vidéos récentes';
+
+  @override
+  String get sonarTubeNoRecentVideos => 'Aucune vidéo récente.';
+
+  @override
+  String get sonarTubeConfirmClearHistory => 'Voulez-vous vraiment effacer tout l’historique des vidéos récentes ?';
+
+  @override
   String get sonarTubeNoFavorites => 'Aucune vidéo, chaîne ou playlist favorite.';
 
   @override
@@ -1537,6 +1564,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get saveInLibrary => 'Enregistrer dans la bibliothèque';
+
+  @override
+  String get copyToClipboard => "Copier dans le presse-papiers";
+
+  @override
+  String get textCopiedToClipboard => "Texte copié dans le presse-papiers";
 
   @override
   String get documentTextLabel => 'Texte du document';

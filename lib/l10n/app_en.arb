@@ -24,6 +24,15 @@
   "sonarTubeLive": "Live",
   "sonarTubeResolving": "Preparing video…",
   "sonarTubeFavorites": "Favorites",
+  "sonarTubeVideoFavorites": "Favorite videos",
+  "sonarTubeChannelFavorites": "Favorite channels",
+  "sonarTubeNoVideoFavorites": "No favorite videos or playlists.",
+  "sonarTubeNoChannelFavorites": "No favorite channels.",
+  "sonarTubeAddChannelFavorite": "Add channel to favorites",
+  "sonarTubeRemoveChannelFavorite": "Remove channel from favorites",
+  "sonarTubeRecentVideos": "Recent videos",
+  "sonarTubeNoRecentVideos": "No recent videos.",
+  "sonarTubeConfirmClearHistory": "Do you really want to clear the recent video history?",
   "sonarTubeNoFavorites": "No favorite videos, channels, or playlists.",
   "sonarTubeAddFavorite": "Add to favorites",
   "sonarTubeShareVideo": "Share video",
@@ -2826,5 +2835,13 @@
   "sonarTubeTranscriptSavedInDocuments": "The transcript has been saved in Documents.",
   "@sonarTubeTranscriptSavedInDocuments": {
     "description": "Confirmation shown after saving a SonarTube transcript in Documents."
+  },
+  "copyToClipboard": "Copy to clipboard",
+  "@copyToClipboard": {
+    "description": "Copy the complete temporary document text to the system clipboard."
+  },
+  "textCopiedToClipboard": "Text copied to clipboard",
+  "@textCopiedToClipboard": {
+    "description": "Confirmation shown after copying the complete temporary document text."
   }
 }

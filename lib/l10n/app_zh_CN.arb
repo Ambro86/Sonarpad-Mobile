@@ -24,6 +24,15 @@
   "sonarTubeLive": "直播",
   "sonarTubeResolving": "正在准备视频…",
   "sonarTubeFavorites": "收藏",
+  "sonarTubeVideoFavorites": "收藏的视频",
+  "sonarTubeChannelFavorites": "收藏的频道",
+  "sonarTubeNoVideoFavorites": "没有收藏的视频或播放列表。",
+  "sonarTubeNoChannelFavorites": "没有收藏的频道。",
+  "sonarTubeAddChannelFavorite": "将频道添加到收藏",
+  "sonarTubeRemoveChannelFavorite": "从收藏中移除频道",
+  "sonarTubeRecentVideos": "最近的视频",
+  "sonarTubeNoRecentVideos": "暂无最近观看的视频。",
+  "sonarTubeConfirmClearHistory": "确定要清空最近观看的视频记录吗？",
   "sonarTubeNoFavorites": "没有收藏的视频、频道或播放列表。",
   "sonarTubeAddFavorite": "添加到收藏",
   "sonarTubeShareVideo": "分享视频",
@@ -2826,5 +2835,13 @@
   "sonarTubeTranscriptSavedInDocuments": "转录文本已保存到“文档”。",
   "@sonarTubeTranscriptSavedInDocuments": {
     "description": "Confirmation shown after saving a SonarTube transcript in Documents."
+  },
+  "copyToClipboard": "复制到剪贴板",
+  "@copyToClipboard": {
+    "description": "Copy the complete temporary document text to the system clipboard."
+  },
+  "textCopiedToClipboard": "文本已复制到剪贴板",
+  "@textCopiedToClipboard": {
+    "description": "Confirmation shown after copying the complete temporary document text."
   }
 }

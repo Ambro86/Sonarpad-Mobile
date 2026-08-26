@@ -75,6 +75,15 @@
   "sonarTubeLive": "Наживо",
   "sonarTubeResolving": "Підготовка відео…",
   "sonarTubeFavorites": "Вибране",
+  "sonarTubeVideoFavorites": "Улюблені відео",
+  "sonarTubeChannelFavorites": "Улюблені канали",
+  "sonarTubeNoVideoFavorites": "Немає улюблених відео або списків відтворення.",
+  "sonarTubeNoChannelFavorites": "Немає улюблених каналів.",
+  "sonarTubeAddChannelFavorite": "Додати канал до вибраного",
+  "sonarTubeRemoveChannelFavorite": "Видалити канал із вибраного",
+  "sonarTubeRecentVideos": "Нещодавні відео",
+  "sonarTubeNoRecentVideos": "Немає нещодавніх відео.",
+  "sonarTubeConfirmClearHistory": "Справді очистити історію нещодавніх відео?",
   "sonarTubeNoFavorites": "Немає улюблених відео, каналів або списків відтворення.",
   "sonarTubeAddFavorite": "Додати до вибраного",
   "sonarTubeShareVideo": "Поділитися відео",
@@ -4401,5 +4410,13 @@
   "sonarTubeTranscriptSavedInDocuments": "Транскрипцію збережено в Документах.",
   "@sonarTubeTranscriptSavedInDocuments": {
     "description": "Confirmation shown after saving a SonarTube transcript in Documents."
+  },
+  "copyToClipboard": "Копіювати в буфер обміну",
+  "@copyToClipboard": {
+    "description": "Copy the complete temporary document text to the system clipboard."
+  },
+  "textCopiedToClipboard": "Текст скопійовано в буфер обміну",
+  "@textCopiedToClipboard": {
+    "description": "Confirmation shown after copying the complete temporary document text."
   }
 }

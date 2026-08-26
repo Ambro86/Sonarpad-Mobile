@@ -80,6 +80,34 @@ bool get isUsingFlutterAccessibleRendererAtRuntime =>
 bool get suppressBackSemanticsDuringRouteReturn =>
     useNativeIosAccessibleViews;
 
+/// Visual navigation control paired with [UniversalAccessibleList.persistentTopAction].
+///
+/// UIKit receives the persistent accessibility action from the native list, so
+/// the Flutter chrome must stay visual-only there to avoid duplicate Back
+/// announcements. Flutter/Android keep the normal button semantics.
+class UniversalPersistentNavigationButton extends StatelessWidget {
+  const UniversalPersistentNavigationButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      excluding: useNativeIosAccessibleViews,
+      child: IconButton(
+        tooltip: label,
+        onPressed: onPressed,
+        icon: const BackButtonIcon(),
+      ),
+    );
+  }
+}
+
 class AccessibleOption {
   const AccessibleOption({required this.value, required this.label});
   final Object? value;
@@ -511,6 +539,7 @@ class UniversalAccessibleList extends StatefulWidget {
     this.onRefresh,
     this.refreshEnabled = false,
     this.controller,
+    this.persistentTopAction,
     this.initialFocusId,
     this.debugTag,
     this.routeReturnSemanticsSettleDelay = const Duration(milliseconds: 80),
@@ -524,6 +553,14 @@ class UniversalAccessibleList extends StatefulWidget {
   final FutureOr<void> Function()? onRefresh;
   final bool refreshEnabled;
   final AccessibleListController? controller;
+
+  /// Optional route-level action that must remain reachable even while the
+  /// native UIKit list is scrolled. The native renderer exposes it as a fixed
+  /// accessibility element ahead of the table; Flutter keeps using the
+  /// screen's normal persistent chrome (for example an AppBar back button).
+  /// Keep the matching visual control outside the list when one already exists.
+  final AccessibleListRow? persistentTopAction;
+
   final String? initialFocusId;
   final String? debugTag;
   final Duration routeReturnSemanticsSettleDelay;
@@ -565,6 +602,8 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   Map<String, Object?> get _data => {
         'sections': widget.sections.map((e) => e.toMap()).toList(),
         'refreshEnabled': widget.refreshEnabled,
+        if (widget.persistentTopAction != null)
+          'persistentTopAction': widget.persistentTopAction!.toMap(),
         if (_effectiveInitialFocusId != null)
           'initialFocusId': _effectiveInitialFocusId,
         if (widget.debugTag != null) 'debugTag': widget.debugTag,
@@ -572,6 +611,10 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
 
   AccessibleListRow? _rowForId(String? id) {
     if (id == null) return null;
+    final persistentTopAction = widget.persistentTopAction;
+    if (persistentTopAction != null && persistentTopAction.id == id) {
+      return persistentTopAction;
+    }
     for (final section in widget.sections) {
       for (final row in section.rows) {
         if (row.id == id) return row;

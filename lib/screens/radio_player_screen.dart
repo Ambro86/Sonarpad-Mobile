@@ -64,6 +64,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _mediaKitPlaying = false;
   bool _mediaKitVideoSettingApplied = false;
   bool _landscapeFullscreenApplied = false;
+  Size? _lastFullscreenVideoSurfaceSize;
+  String? _lastFullscreenVideoSurfaceEngine;
   bool _mediaKitRaiAudioTrackApplied = false;
   bool _mediaKitBuffering = false;
   bool _mediaKitCompleted = false;
@@ -1317,6 +1319,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final enable = _useLandscapeFullscreenVideo;
     if (_landscapeFullscreenApplied == enable) return;
     _landscapeFullscreenApplied = enable;
+    unawaited(AppLogger.log(
+      'RadioPlayer: fullscreen orientation change enable=$enable '
+      'setting=$_displayVideoInPortrait videoEnabled=$_isVideoEnabled '
+      'mediaKitController=${_mediaKitController != null} '
+      'videoPlayerInitialized=${_videoController?.value.isInitialized ?? false}',
+    ));
+    if (!enable) {
+      _lastFullscreenVideoSurfaceSize = null;
+      _lastFullscreenVideoSurfaceEngine = null;
+    }
     if (Platform.isIOS || Platform.isAndroid) {
       if (enable) {
         unawaited(SystemChrome.setPreferredOrientations(const [
@@ -1422,46 +1434,82 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
-  Widget _buildVideoPlayerFullscreenSurface(VideoPlayerController controller) {
-    final aspect = controller.value.aspectRatio > 0
-        ? controller.value.aspectRatio
+  Widget _buildFullscreenVideoSurface({
+    required Widget child,
+    required double aspectRatio,
+    required String engine,
+  }) {
+    final safeAspect = aspectRatio > 0 && aspectRatio.isFinite
+        ? aspectRatio
         : 16 / 9;
     return ColoredBox(
       color: Colors.black,
       child: ClipRect(
-        child: Center(
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: SizedBox(
-              width: aspect >= 1 ? aspect : 1,
-              height: aspect >= 1 ? 1 : 1 / aspect,
-              child: VideoPlayer(controller),
-            ),
-          ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mediaSize = MediaQuery.sizeOf(context);
+            final maxWidth = constraints.maxWidth.isFinite
+                ? constraints.maxWidth
+                : mediaSize.width;
+            final maxHeight = constraints.maxHeight.isFinite
+                ? constraints.maxHeight
+                : mediaSize.height;
+
+            var width = maxWidth;
+            var height = width / safeAspect;
+            if (height > maxHeight) {
+              height = maxHeight;
+              width = height * safeAspect;
+            }
+            width = width.clamp(0.0, maxWidth).toDouble();
+            height = height.clamp(0.0, maxHeight).toDouble();
+
+            final surfaceSize = Size(width, height);
+            if (_lastFullscreenVideoSurfaceEngine != engine ||
+                _lastFullscreenVideoSurfaceSize != surfaceSize) {
+              _lastFullscreenVideoSurfaceEngine = engine;
+              _lastFullscreenVideoSurfaceSize = surfaceSize;
+              unawaited(AppLogger.log(
+                'RadioPlayer: fullscreen video layout engine=$engine '
+                'available=${maxWidth.toStringAsFixed(1)}x${maxHeight.toStringAsFixed(1)} '
+                'surface=${width.toStringAsFixed(1)}x${height.toStringAsFixed(1)} '
+                'aspect=${safeAspect.toStringAsFixed(4)} '
+                'playing=$_mediaKitPlaying videoEnabled=$_isVideoEnabled',
+              ));
+            }
+
+            return Center(
+              child: SizedBox(
+                width: width,
+                height: height,
+                child: child,
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildMediaKitVideoFullscreenSurface() {
-    final video = mkv.Video(
-      controller: _mediaKitController!,
-      controls: mkv.AdaptiveVideoControls,
+  Widget _buildVideoPlayerFullscreenSurface(VideoPlayerController controller) {
+    final aspect = controller.value.aspectRatio > 0
+        ? controller.value.aspectRatio
+        : 16 / 9;
+    return _buildFullscreenVideoSurface(
+      child: VideoPlayer(controller),
+      aspectRatio: aspect,
+      engine: 'video_player',
     );
-    return ColoredBox(
-      color: Colors.black,
-      child: ClipRect(
-        child: Center(
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: SizedBox(
-              width: 16,
-              height: 9,
-              child: video,
-            ),
-          ),
-        ),
+  }
+
+  Widget _buildMediaKitVideoFullscreenSurface() {
+    return _buildFullscreenVideoSurface(
+      child: mkv.Video(
+        controller: _mediaKitController!,
+        controls: mkv.AdaptiveVideoControls,
       ),
+      aspectRatio: 16 / 9,
+      engine: 'media_kit',
     );
   }
 

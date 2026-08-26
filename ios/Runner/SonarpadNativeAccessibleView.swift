@@ -223,6 +223,18 @@ private final class SonarpadAccessibleSlider: UISlider {
   }
 }
 
+private final class SonarpadPersistentAccessibilityActionElement: UIAccessibilityElement {
+  var activationHandler: (() -> Void)?
+
+  override func accessibilityActivate() -> Bool {
+    guard let activationHandler = activationHandler else {
+      return super.accessibilityActivate()
+    }
+    activationHandler()
+    return true
+  }
+}
+
 private final class SonarpadAccessibleTableCell: UITableViewCell {
   var rowId = ""
   var activationHandler: (() -> Void)?
@@ -409,6 +421,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var focusTraceExpectedRowId: String?
   private var globalFocusTraceObserver: NSObjectProtocol?
   private var focusTraceSequence = 0
+  private var persistentTopActionElement: SonarpadPersistentAccessibilityActionElement?
 
   private func emitDebug(_ message: String) {
     guard debugTag?.isEmpty == false else { return }
@@ -772,9 +785,47 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
 
   func view() -> UIView { rootView }
 
+  private func configurePersistentTopAction(from map: [String: Any]) {
+    guard let rawAction = map["persistentTopAction"] as? [String: Any] else {
+      persistentTopActionElement = nil
+      rootView.accessibilityElements = nil
+      return
+    }
+
+    let row = SonarpadNativeRow(rawAction)
+    let element = persistentTopActionElement
+      ?? SonarpadPersistentAccessibilityActionElement(accessibilityContainer: rootView)
+    persistentTopActionElement = element
+    element.isAccessibilityElement = true
+    element.accessibilityLabel = row.effectiveAccessibilityLabel
+    element.accessibilityHint = row.hint
+    element.accessibilityTraits = row.enabled ? [.button] : [.button, .notEnabled]
+    element.accessibilityFrameInContainerSpace = CGRect(
+      x: 0,
+      y: 0,
+      width: max(rootView.bounds.width, 160),
+      height: 52
+    )
+    element.activationHandler = { [weak self] in
+      guard let self = self, row.enabled else { return }
+      self.channel.invokeMethod(
+        "event",
+        arguments: ["type": "activate", "id": row.id]
+      )
+    }
+
+    // Keep the route-level action outside UITableView's scrolling container.
+    // VoiceOver can therefore reach Back even when the currently visible video
+    // rows are far from the beginning of the list. The Flutter AppBar remains
+    // the visual counterpart; this element only fixes native traversal order.
+    rootView.isAccessibilityElement = false
+    rootView.accessibilityElements = [element, tableView]
+  }
+
   private func apply(arguments: Any?) {
     guard let map = arguments as? [String: Any] else { return }
     debugTag = map["debugTag"] as? String
+    configurePersistentTopAction(from: map)
     let rawSections = map["sections"] as? [[String: Any]] ?? []
     let newSections = rawSections.map(SonarpadNativeSection.init)
     let focusedRowBeforeReload = voiceOverFocusedRowId()

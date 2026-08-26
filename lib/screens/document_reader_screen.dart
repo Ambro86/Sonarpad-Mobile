@@ -1752,6 +1752,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
+  Future<void> _copyTemporaryDocumentToClipboard() async {
+    if (!_currentDoc.isTemporary || _documentText.isEmpty) return;
+    final l10n = AppLocalizations.of(context);
+    await Clipboard.setData(ClipboardData(text: _documentText));
+    if (!mounted) return;
+    showStatusMessage(context, l10n.textCopiedToClipboard);
+  }
+
   // ---------------------------------------------------------------------------
   // Build
   // ---------------------------------------------------------------------------
@@ -2086,6 +2094,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                     ? null
                     : () => unawaited(_openDocumentIndex()),
               ),
+            ),
+          if (!_paragraphSelectionMode && doc.isTemporary)
+            IconButton(
+              icon: const Icon(Icons.copy_all),
+              tooltip: l10n.copyToClipboard,
+              onPressed: _documentText.isEmpty
+                  ? null
+                  : () => unawaited(_copyTemporaryDocumentToClipboard()),
             ),
           if (!_paragraphSelectionMode && doc.isTemporary)
             IconButton(

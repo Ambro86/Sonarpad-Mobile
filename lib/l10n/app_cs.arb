@@ -24,6 +24,15 @@
   "sonarTubeLive": "Živě",
   "sonarTubeResolving": "Příprava videa…",
   "sonarTubeFavorites": "Oblíbené",
+  "sonarTubeVideoFavorites": "Oblíbená videa",
+  "sonarTubeChannelFavorites": "Oblíbené kanály",
+  "sonarTubeNoVideoFavorites": "Žádná oblíbená videa ani playlisty.",
+  "sonarTubeNoChannelFavorites": "Žádné oblíbené kanály.",
+  "sonarTubeAddChannelFavorite": "Přidat kanál do oblíbených",
+  "sonarTubeRemoveChannelFavorite": "Odebrat kanál z oblíbených",
+  "sonarTubeRecentVideos": "Nedávná videa",
+  "sonarTubeNoRecentVideos": "Žádná nedávná videa.",
+  "sonarTubeConfirmClearHistory": "Opravdu chcete vymazat historii nedávných videí?",
   "sonarTubeNoFavorites": "Žádná oblíbená videa, kanály ani playlisty.",
   "sonarTubeAddFavorite": "Přidat do oblíbených",
   "sonarTubeShareVideo": "Sdílet video",
@@ -2829,5 +2838,13 @@
   "sonarTubeTranscriptSavedInDocuments": "Přepis byl uložen do Dokumentů.",
   "@sonarTubeTranscriptSavedInDocuments": {
     "description": "Confirmation shown after saving a SonarTube transcript in Documents."
+  },
+  "copyToClipboard": "Kopírovat do schránky",
+  "@copyToClipboard": {
+    "description": "Copy the complete temporary document text to the system clipboard."
+  },
+  "textCopiedToClipboard": "Text byl zkopírován do schránky",
+  "@textCopiedToClipboard": {
+    "description": "Confirmation shown after copying the complete temporary document text."
   }
 }

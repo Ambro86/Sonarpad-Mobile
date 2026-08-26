@@ -273,6 +273,60 @@ abstract class AppLocalizations {
   /// **'Preferiti'**
   String get sonarTubeFavorites;
 
+  /// No description provided for @sonarTubeVideoFavorites.
+  ///
+  /// In it, this message translates to:
+  /// **'Video preferiti'**
+  String get sonarTubeVideoFavorites;
+
+  /// No description provided for @sonarTubeChannelFavorites.
+  ///
+  /// In it, this message translates to:
+  /// **'Canali preferiti'**
+  String get sonarTubeChannelFavorites;
+
+  /// No description provided for @sonarTubeNoVideoFavorites.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun video o playlist preferito.'**
+  String get sonarTubeNoVideoFavorites;
+
+  /// No description provided for @sonarTubeNoChannelFavorites.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun canale preferito.'**
+  String get sonarTubeNoChannelFavorites;
+
+  /// No description provided for @sonarTubeAddChannelFavorite.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi canale ai preferiti'**
+  String get sonarTubeAddChannelFavorite;
+
+  /// No description provided for @sonarTubeRemoveChannelFavorite.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi canale dai preferiti'**
+  String get sonarTubeRemoveChannelFavorite;
+
+  /// No description provided for @sonarTubeRecentVideos.
+  ///
+  /// In it, this message translates to:
+  /// **'Video recenti'**
+  String get sonarTubeRecentVideos;
+
+  /// No description provided for @sonarTubeNoRecentVideos.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun video recente.'**
+  String get sonarTubeNoRecentVideos;
+
+  /// No description provided for @sonarTubeConfirmClearHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi davvero svuotare la cronologia dei video recenti?'**
+  String get sonarTubeConfirmClearHistory;
+
   /// No description provided for @sonarTubeNoFavorites.
   ///
   /// In it, this message translates to:
@@ -2788,6 +2842,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Salva nella libreria'**
   String get saveInLibrary;
+
+  /// Copy the complete temporary document text to the system clipboard.
+  String get copyToClipboard;
+
+  /// Confirmation shown after copying the complete temporary document text.
+  String get textCopiedToClipboard;
 
   /// Localized text for documentTextLabel.
   ///

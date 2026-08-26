@@ -6,42 +6,193 @@ import 'package:http/testing.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 
 void main() {
-  test('search parses videos, channels, playlists and pagination', () async {
-    late Uri requestedUri;
+  test(
+    'search uses direct InnerTube and preserves mixed result behavior',
+    () async {
+      var innerTubeRequests = 0;
+      final service = SonarTubeService(
+        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+        clientToken: 'test-route-client-token',
+        client: MockClient((request) async {
+          expect(request.url.host, 'www.youtube.com');
+          expect(request.method, 'POST');
+          expect(request.url.path, '/youtubei/v1/search');
+          innerTubeRequests++;
+          final body = Map<String, dynamic>.from(
+            jsonDecode(request.body) as Map,
+          );
+          final params = body['params']?.toString();
+
+          if (params == 'EgIQAQ==') {
+            return http.Response(
+              jsonEncode({
+                'contents': {
+                  'itemSectionRenderer': {
+                    'contents': [
+                      {
+                        'videoRenderer': {
+                          'videoId': 'exactvid001',
+                          'title': {
+                            'runs': [
+                              {'text': 'Elisa risultato esatto'},
+                            ],
+                          },
+                          'shortBylineText': {
+                            'runs': [
+                              {
+                                'text': 'Elisa',
+                                'navigationEndpoint': {
+                                  'browseEndpoint': {
+                                    'browseId':
+                                        'UCabcdefghijklmnopqrstuv',
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                          'lengthText': {'simpleText': '4:12'},
+                        },
+                      },
+                    ],
+                  },
+                },
+              }),
+              200,
+            );
+          }
+          if (params == 'EgIQAg==') {
+            return http.Response(
+              jsonEncode({
+                'contents': {
+                  'channelRenderer': {
+                    'channelId': 'UCabcdefghijklmnopqrstuv',
+                    'title': {'simpleText': 'Elisa'},
+                    'thumbnail': {
+                      'thumbnails': [
+                        {'url': 'https://img.test/elisa.jpg'},
+                      ],
+                    },
+                  },
+                },
+              }),
+              200,
+            );
+          }
+          if (params == 'EgIQAw==') {
+            return http.Response(
+              jsonEncode({
+                'contents': {
+                  'playlistRenderer': {
+                    'playlistId': 'PLelisa123',
+                    'title': {'simpleText': 'Elisa playlist'},
+                  },
+                },
+              }),
+              200,
+            );
+          }
+
+          expect(body['query'], 'elisa');
+          return http.Response(
+            jsonEncode({
+              'estimatedResults': '1000',
+              'contents': {
+                'sectionListRenderer': {
+                  'contents': [
+                    {
+                      'itemSectionRenderer': {
+                        'contents': [
+                          {
+                            'videoRenderer': {
+                              'videoId': 'general0001',
+                              'title': {
+                                'runs': [
+                                  {'text': 'Elisa video generale'},
+                                ],
+                              },
+                              'shortBylineText': {
+                                'runs': [
+                                  {
+                                    'text': 'Elisa',
+                                    'navigationEndpoint': {
+                                      'browseEndpoint': {
+                                        'browseId':
+                                            'UCabcdefghijklmnopqrstuv',
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                    {
+                      'continuationItemRenderer': {
+                        'continuationEndpoint': {
+                          'continuationCommand': {'token': 'next-page'},
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            }),
+            200,
+          );
+        }),
+      );
+
+      final page = await service.search('elisa');
+
+      expect(innerTubeRequests, 4);
+      expect(page.items.map((item) => item.title), [
+        'Elisa risultato esatto',
+        'Elisa video generale',
+        'Elisa',
+        'Elisa playlist',
+      ]);
+      expect(page.items.map((item) => item.kind), [
+        SonarTubeItemKind.video,
+        SonarTubeItemKind.video,
+        SonarTubeItemKind.channel,
+        SonarTubeItemKind.playlist,
+      ]);
+      expect(page.items.first.channelId, 'UCabcdefghijklmnopqrstuv');
+      expect(page.nextToken, 'next-page');
+      expect(page.hasMore, isTrue);
+    },
+  );
+
+  test('search falls back to the resolver after direct InnerTube fails', () async {
+    var directAttempts = 0;
+    var fallbackRequests = 0;
     final service = SonarTubeService(
       endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
       clientToken: 'test-route-client-token',
       client: MockClient((request) async {
-        requestedUri = request.url;
+        if (request.url.host == 'www.youtube.com') {
+          directAttempts++;
+          return http.Response('temporary InnerTube failure', 503);
+        }
+        fallbackRequests++;
         expect(
           request.headers['X-Sonarpad-Route-Token'],
           'test-route-client-token',
         );
+        expect(request.url.queryParameters['q'], 'retry');
+        expect(request.url.queryParameters['type'], 'all');
         return http.Response(
           jsonEncode({
             'ok': true,
             'page': 1,
-            'next_token': 'next-page',
             'items': [
               {
                 'kind': 'video',
                 'id': 'abcdefghijk',
-                'title': 'Video accessibile',
+                'title': 'Risultato dal fallback',
                 'url': 'https://www.youtube.com/watch?v=abcdefghijk',
-                'duration': '12:34',
-                'channel_id': 'UCabcdefghijklmnopqrstuv',
-              },
-              {
-                'kind': 'channel',
-                'id': 'UC123',
-                'title': 'Canale accessibile',
-                'url': 'https://www.youtube.com/channel/UC123',
-              },
-              {
-                'kind': 'playlist',
-                'id': 'PL123',
-                'title': 'Playlist accessibile',
-                'url': 'https://www.youtube.com/playlist?list=PL123',
               },
             ],
           }),
@@ -50,63 +201,195 @@ void main() {
       }),
     );
 
-    final page = await service.search('accessibilità');
+    final page = await service.search('retry');
 
-    expect(requestedUri.queryParameters['q'], 'accessibilità');
-    expect(requestedUri.queryParameters['type'], 'all');
-    expect(page.items.map((item) => item.kind), [
-      SonarTubeItemKind.video,
-      SonarTubeItemKind.channel,
-      SonarTubeItemKind.playlist,
-    ]);
-    expect(page.hasMore, isTrue);
-    expect(page.items.first.channelId, 'UCabcdefghijklmnopqrstuv');
+    expect(directAttempts, 2);
+    expect(fallbackRequests, 1);
+    expect(page.items.single.title, 'Risultato dal fallback');
   });
 
-  test(
-    'browse requests the real collection id and continuation token',
-    () async {
-      late Uri requestedUri;
-      final service = SonarTubeService(
-        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
-        client: MockClient((request) async {
-          requestedUri = request.url;
-          return http.Response(
-            jsonEncode({
-              'ok': true,
-              'page': 2,
-              'items': [
-                {
-                  'kind': 'video',
-                  'id': 'abcdefghijk',
-                  'title': 'Video del canale',
-                  'url': 'https://www.youtube.com/watch?v=abcdefghijk',
-                },
-              ],
-            }),
-            200,
-          );
-        }),
-      );
-      const channel = SonarTubeItem(
-        kind: SonarTubeItemKind.channel,
-        id: 'UC123',
-        title: 'Canale accessibile',
-        url: 'https://www.youtube.com/channel/UC123',
-      );
+  test('search continuation uses the direct token without supplemental queries', () async {
+    var requests = 0;
+    late Map<String, dynamic> requestedBody;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        requests++;
+        expect(request.url.host, 'www.youtube.com');
+        expect(request.url.path, '/youtubei/v1/search');
+        requestedBody = Map<String, dynamic>.from(
+          jsonDecode(request.body) as Map,
+        );
+        return http.Response(
+          jsonEncode({
+            'contents': {
+              'videoRenderer': {
+                'videoId': 'nextvideo01',
+                'title': {'simpleText': 'Elisa pagina due'},
+              },
+            },
+            'continuationItemRenderer': {
+              'continuationEndpoint': {
+                'continuationCommand': {'token': 'next-page-3'},
+              },
+            },
+          }),
+          200,
+        );
+      }),
+    );
 
-      final page = await service.browse(
-        channel,
-        token: 'continuation',
-        page: 2,
-      );
+    final page = await service.search(
+      'elisa',
+      token: 'next-page-2',
+      page: 2,
+    );
 
-      expect(requestedUri.queryParameters['browse'], 'UC123');
-      expect(requestedUri.queryParameters['kind'], 'channel');
-      expect(requestedUri.queryParameters['token'], 'continuation');
-      expect(page.items.single.title, 'Video del canale');
-    },
-  );
+    expect(requests, 1);
+    expect(requestedBody['continuation'], 'next-page-2');
+    expect(requestedBody.containsKey('query'), isFalse);
+    expect(requestedBody.containsKey('params'), isFalse);
+    expect(page.page, 2);
+    expect(page.items.single.title, 'Elisa pagina due');
+    expect(page.nextToken, 'next-page-3');
+  });
+
+  test('browse falls back to the resolver when direct navigation is unusable', () async {
+    var directAttempts = 0;
+    var fallbackRequests = 0;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      clientToken: 'test-route-client-token',
+      client: MockClient((request) async {
+        if (request.url.host == 'www.youtube.com') {
+          directAttempts++;
+          // HTTP 200 ma nessun renderer video: viene trattato come navigazione
+          // diretta non utilizzabile e deve scattare il resolver server.
+          return http.Response(jsonEncode({'contents': {}}), 200);
+        }
+        fallbackRequests++;
+        expect(request.url.queryParameters['browse'], 'PLfallback123');
+        expect(request.url.queryParameters['kind'], 'playlist');
+        expect(
+          request.headers['X-Sonarpad-Route-Token'],
+          'test-route-client-token',
+        );
+        return http.Response(
+          jsonEncode({
+            'ok': true,
+            'page': 1,
+            'items': [
+              {
+                'kind': 'video',
+                'id': 'abcdefghijk',
+                'title': 'Video dal resolver',
+                'url': 'https://www.youtube.com/watch?v=abcdefghijk',
+              },
+            ],
+          }),
+          200,
+        );
+      }),
+    );
+    const playlist = SonarTubeItem(
+      kind: SonarTubeItemKind.playlist,
+      id: 'PLfallback123',
+      title: 'Playlist fallback',
+      url: 'https://www.youtube.com/playlist?list=PLfallback123',
+    );
+
+    final page = await service.browse(playlist);
+
+    expect(directAttempts, 2);
+    expect(fallbackRequests, 1);
+    expect(page.items.single.title, 'Video dal resolver');
+  });
+
+  test('channel browse uses the direct uploads playlist', () async {
+    late Map<String, dynamic> requestedBody;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        expect(request.url.host, 'www.youtube.com');
+        expect(request.url.path, '/youtubei/v1/browse');
+        requestedBody = Map<String, dynamic>.from(
+          jsonDecode(request.body) as Map,
+        );
+        return http.Response(
+          jsonEncode({
+            'contents': {
+              'playlistVideoRenderer': {
+                'videoId': 'abcdefghijk',
+                'title': {'simpleText': 'Video del canale'},
+              },
+            },
+            'continuationItemRenderer': {
+              'continuationEndpoint': {
+                'continuationCommand': {'token': 'channel-next'},
+              },
+            },
+          }),
+          200,
+        );
+      }),
+    );
+    const channel = SonarTubeItem(
+      kind: SonarTubeItemKind.channel,
+      id: 'UCabcdefghijklmnopqrstuv',
+      title: 'Canale accessibile',
+      url:
+          'https://www.youtube.com/channel/UCabcdefghijklmnopqrstuv',
+    );
+
+    final page = await service.browse(channel);
+
+    expect(
+      requestedBody['browseId'],
+      'VLUUabcdefghijklmnopqrstuv',
+    );
+    expect(page.items.single.title, 'Video del canale');
+    expect(page.nextToken, 'channel-next');
+  });
+
+  test('browse continuation is sent directly without needing the browse id', () async {
+    late Map<String, dynamic> requestedBody;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        requestedBody = Map<String, dynamic>.from(
+          jsonDecode(request.body) as Map,
+        );
+        return http.Response(
+          jsonEncode({
+            'contents': {
+              'playlistVideoRenderer': {
+                'videoId': 'abcdefghijk',
+                'title': {'simpleText': 'Pagina successiva'},
+              },
+            },
+          }),
+          200,
+        );
+      }),
+    );
+    const playlist = SonarTubeItem(
+      kind: SonarTubeItemKind.playlist,
+      id: 'PL123',
+      title: 'Playlist',
+      url: 'https://www.youtube.com/playlist?list=PL123',
+    );
+
+    final page = await service.browse(
+      playlist,
+      token: 'continuation-token',
+      page: 2,
+    );
+
+    expect(requestedBody['continuation'], 'continuation-token');
+    expect(requestedBody.containsKey('browseId'), isFalse);
+    expect(page.page, 2);
+    expect(page.items.single.title, 'Pagina successiva');
+  });
 
   test(
     'resolve keeps separate video and audio streams for the player',
@@ -142,14 +425,25 @@ void main() {
       expect(media.title, 'Video risolto');
     },
   );
-  test('browse sends the seed video for a generated YouTube Mix', () async {
+  test('browse sends the seed video directly for a generated YouTube Mix', () async {
     late Uri requestedUri;
+    late Map<String, dynamic> requestedBody;
     final service = SonarTubeService(
       endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
       client: MockClient((request) async {
         requestedUri = request.url;
+        requestedBody = Map<String, dynamic>.from(
+          jsonDecode(request.body) as Map,
+        );
         return http.Response(
-          jsonEncode({'ok': true, 'page': 1, 'items': []}),
+          jsonEncode({
+            'contents': {
+              'playlistPanelVideoRenderer': {
+                'videoId': 'abcdefghijk',
+                'title': {'simpleText': 'Mix seed'},
+              },
+            },
+          }),
           200,
         );
       }),
@@ -163,8 +457,10 @@ void main() {
 
     await service.browse(mix);
 
-    expect(requestedUri.queryParameters['browse'], 'RDabcdefghijk');
-    expect(requestedUri.queryParameters['seed'], 'abcdefghijk');
+    expect(requestedUri.host, 'www.youtube.com');
+    expect(requestedUri.path, '/youtubei/v1/next');
+    expect(requestedBody['playlistId'], 'RDabcdefghijk');
+    expect(requestedBody['videoId'], 'abcdefghijk');
   });
 
   test('resolveUrl accepts a direct YouTube trailer URL', () async {
@@ -234,6 +530,45 @@ void main() {
     expect(requestedUri.queryParameters['token'], 'token-1');
     expect(page.items.single.text, 'Commento di prova');
     expect(page.hasMore, isTrue);
+  });
+
+  test('channel action resolves missing channel metadata directly from YouTube', () async {
+    var fallbackCalled = false;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        if (request.url.host != 'www.youtube.com') {
+          fallbackCalled = true;
+          return http.Response('{}', 500);
+        }
+        expect(request.url.path, '/youtubei/v1/player');
+        final body = Map<String, dynamic>.from(
+          jsonDecode(request.body) as Map,
+        );
+        expect(body['videoId'], 'abcdefghijk');
+        return http.Response(
+          jsonEncode({
+            'videoDetails': {
+              'author': 'Canale diretto',
+              'channelId': 'UCabcdefghijklmnopqrstuv',
+            },
+          }),
+          200,
+        );
+      }),
+    );
+    const video = SonarTubeItem(
+      kind: SonarTubeItemKind.video,
+      id: 'abcdefghijk',
+      title: 'Video',
+      url: 'https://www.youtube.com/watch?v=abcdefghijk',
+    );
+
+    final channel = await service.channelForVideo(video);
+
+    expect(fallbackCalled, isFalse);
+    expect(channel.id, 'UCabcdefghijklmnopqrstuv');
+    expect(channel.title, 'Canale diretto');
   });
 
   test('channel action uses stored channel id without a request', () async {
@@ -385,6 +720,173 @@ void main() {
       service.transcribe(video),
       throwsA(isA<SonarTubeTranscriptUnavailableException>()),
     );
+  });
+
+
+  test('direct search parses modern lockup and mix renderers without server fallback', () async {
+    var serverFallbackCalled = false;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        if (request.url.host != 'www.youtube.com') {
+          serverFallbackCalled = true;
+          return http.Response('{}', 500);
+        }
+        final body = Map<String, dynamic>.from(
+          jsonDecode(request.body) as Map,
+        );
+        if (body['params'] != null) {
+          return http.Response(jsonEncode({'contents': {}}), 200);
+        }
+        return http.Response(
+          jsonEncode({
+            'contents': {
+              'sectionListRenderer': {
+                'contents': [
+                  {
+                    'lockupViewModel': {
+                      'contentType': 'LOCKUP_CONTENT_TYPE_VIDEO',
+                      'contentId': 'lockupvid01',
+                      'metadata': {
+                        'lockupMetadataViewModel': {
+                          'title': {'content': 'Video layout moderno'},
+                          'metadata': {
+                            'contentMetadataViewModel': {
+                              'metadataRows': [
+                                {
+                                  'metadataParts': [
+                                    {
+                                      'text': {'content': 'Canale moderno'},
+                                    },
+                                  ],
+                                },
+                                {
+                                  'metadataParts': [
+                                    {
+                                      'text': {'content': '12.345 visualizzazioni'},
+                                    },
+                                    {
+                                      'text': {'content': '2 giorni fa'},
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                      'contentImage': {
+                        'thumbnailViewModel': {
+                          'image': {
+                            'sources': [
+                              {'url': 'https://img.test/modern.jpg'},
+                            ],
+                          },
+                          'overlays': [
+                            {
+                              'thumbnailBottomOverlayViewModel': {
+                                'badges': [
+                                  {
+                                    'thumbnailBadgeViewModel': {'text': '3:21'},
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
+                  {
+                    'radioRenderer': {
+                      'playlistId': 'RDlockupvid01',
+                      'title': {'simpleText': 'Mix moderno'},
+                      'navigationEndpoint': {
+                        'watchEndpoint': {
+                          'playlistId': 'RDlockupvid01',
+                          'videoId': 'lockupvid01',
+                        },
+                      },
+                    },
+                  },
+                  {
+                    'continuationItemRenderer': {
+                      'continuationEndpoint': {
+                        'continuationCommand': {'token': 'modern-next'},
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          }),
+          200,
+        );
+      }),
+    );
+
+    final page = await service.search('layout moderno');
+
+    expect(serverFallbackCalled, isFalse);
+    expect(page.items.where((item) => item.id == 'lockupvid01').single.kind,
+        SonarTubeItemKind.video);
+    expect(
+      page.items.where((item) => item.id == 'RDlockupvid01').single.kind,
+      SonarTubeItemKind.playlist,
+    );
+    expect(page.nextToken, 'modern-next');
+  });
+
+  test('search continuation fallback preserves token and page for the PHP resolver', () async {
+    var directAttempts = 0;
+    var fallbackRequests = 0;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      clientToken: 'test-route-client-token',
+      client: MockClient((request) async {
+        if (request.url.host == 'www.youtube.com') {
+          directAttempts++;
+          return http.Response('temporary InnerTube failure', 503);
+        }
+        fallbackRequests++;
+        expect(request.url.queryParameters['q'], 'elisa');
+        expect(request.url.queryParameters['token'], 'direct-next-token');
+        expect(request.url.queryParameters['page'], '2');
+        expect(request.url.queryParameters['type'], 'all');
+        expect(
+          request.headers['X-Sonarpad-Route-Token'],
+          'test-route-client-token',
+        );
+        return http.Response(
+          jsonEncode({
+            'ok': true,
+            'page': 2,
+            'next_token': 'server-next-token',
+            'items': [
+              {
+                'kind': 'video',
+                'id': 'servervid01',
+                'title': 'Pagina due dal fallback',
+                'url': 'https://www.youtube.com/watch?v=servervid01',
+              },
+            ],
+          }),
+          200,
+        );
+      }),
+    );
+
+    final page = await service.search(
+      'elisa',
+      token: 'direct-next-token',
+      page: 2,
+    );
+
+    expect(directAttempts, 2);
+    expect(fallbackRequests, 1);
+    expect(page.page, 2);
+    expect(page.nextToken, 'server-next-token');
+    expect(page.items.single.title, 'Pagina due dal fallback');
   });
 
 }

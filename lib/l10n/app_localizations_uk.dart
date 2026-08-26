@@ -90,6 +90,33 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sonarTubeFavorites => "Вибране";
 
   @override
+  String get sonarTubeVideoFavorites => 'Улюблені відео';
+
+  @override
+  String get sonarTubeChannelFavorites => 'Улюблені канали';
+
+  @override
+  String get sonarTubeNoVideoFavorites => 'Немає улюблених відео або списків відтворення.';
+
+  @override
+  String get sonarTubeNoChannelFavorites => 'Немає улюблених каналів.';
+
+  @override
+  String get sonarTubeAddChannelFavorite => 'Додати канал до вибраного';
+
+  @override
+  String get sonarTubeRemoveChannelFavorite => 'Видалити канал із вибраного';
+
+  @override
+  String get sonarTubeRecentVideos => 'Нещодавні відео';
+
+  @override
+  String get sonarTubeNoRecentVideos => 'Немає нещодавніх відео.';
+
+  @override
+  String get sonarTubeConfirmClearHistory => 'Справді очистити історію нещодавніх відео?';
+
+  @override
   String get sonarTubeNoFavorites => "Немає улюблених відео, каналів або списків відтворення.";
 
   @override
@@ -1195,6 +1222,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get saveInLibrary => "Зберегти в бібліотеці";
+
+  @override
+  String get copyToClipboard => "Копіювати в буфер обміну";
+
+  @override
+  String get textCopiedToClipboard => "Текст скопійовано в буфер обміну";
 
   @override
   String get documentTextLabel => "Текст документа";

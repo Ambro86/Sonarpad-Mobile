@@ -90,6 +90,33 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeFavorites => 'Favoritos';
 
   @override
+  String get sonarTubeVideoFavorites => 'Vídeos favoritos';
+
+  @override
+  String get sonarTubeChannelFavorites => 'Canais favoritos';
+
+  @override
+  String get sonarTubeNoVideoFavorites => 'Nenhum vídeo ou lista de reprodução favorito.';
+
+  @override
+  String get sonarTubeNoChannelFavorites => 'Nenhum canal favorito.';
+
+  @override
+  String get sonarTubeAddChannelFavorite => 'Adicionar canal aos favoritos';
+
+  @override
+  String get sonarTubeRemoveChannelFavorite => 'Remover canal dos favoritos';
+
+  @override
+  String get sonarTubeRecentVideos => 'Vídeos recentes';
+
+  @override
+  String get sonarTubeNoRecentVideos => 'Nenhum vídeo recente.';
+
+  @override
+  String get sonarTubeConfirmClearHistory => 'Pretende mesmo limpar o histórico de vídeos recentes?';
+
+  @override
   String get sonarTubeNoFavorites => 'Nenhum vídeo, canal ou lista de reprodução nos favoritos.';
 
   @override
@@ -1475,6 +1502,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get saveInLibrary => 'Guardar na biblioteca';
+
+  @override
+  String get copyToClipboard => "Copiar para a área de transferência";
+
+  @override
+  String get textCopiedToClipboard => "Texto copiado para a área de transferência";
 
   @override
   String get documentTextLabel => 'Texto do documento';
@@ -3517,6 +3550,33 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get sonarTubeFavorites => 'Favoritos';
 
   @override
+  String get sonarTubeVideoFavorites => 'Vídeos favoritos';
+
+  @override
+  String get sonarTubeChannelFavorites => 'Canais favoritos';
+
+  @override
+  String get sonarTubeNoVideoFavorites => 'Nenhum vídeo ou playlist favorito.';
+
+  @override
+  String get sonarTubeNoChannelFavorites => 'Nenhum canal favorito.';
+
+  @override
+  String get sonarTubeAddChannelFavorite => 'Adicionar canal aos favoritos';
+
+  @override
+  String get sonarTubeRemoveChannelFavorite => 'Remover canal dos favoritos';
+
+  @override
+  String get sonarTubeRecentVideos => 'Vídeos recentes';
+
+  @override
+  String get sonarTubeNoRecentVideos => 'Nenhum vídeo recente.';
+
+  @override
+  String get sonarTubeConfirmClearHistory => 'Deseja realmente limpar o histórico de vídeos recentes?';
+
+  @override
   String get sonarTubeNoFavorites => 'Nenhum vídeo, canal ou playlist nos favoritos.';
 
   @override
@@ -4902,6 +4962,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get saveInLibrary => 'Salvar na biblioteca';
+
+  @override
+  String get copyToClipboard => "Copiar para a área de transferência";
+
+  @override
+  String get textCopiedToClipboard => "Texto copiado para a área de transferência";
 
   @override
   String get documentTextLabel => 'Texto do documento';

@@ -87,6 +87,33 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get sonarTubeFavorites => '收藏';
 
   @override
+  String get sonarTubeVideoFavorites => '收藏的视频';
+
+  @override
+  String get sonarTubeChannelFavorites => '收藏的频道';
+
+  @override
+  String get sonarTubeNoVideoFavorites => '没有收藏的视频或播放列表。';
+
+  @override
+  String get sonarTubeNoChannelFavorites => '没有收藏的频道。';
+
+  @override
+  String get sonarTubeAddChannelFavorite => '将频道添加到收藏';
+
+  @override
+  String get sonarTubeRemoveChannelFavorite => '从收藏中移除频道';
+
+  @override
+  String get sonarTubeRecentVideos => '最近的视频';
+
+  @override
+  String get sonarTubeNoRecentVideos => '暂无最近观看的视频。';
+
+  @override
+  String get sonarTubeConfirmClearHistory => '确定要清空最近观看的视频记录吗？';
+
+  @override
   String get sonarTubeNoFavorites => '没有收藏的视频、频道或播放列表。';
 
   @override
@@ -1362,6 +1389,12 @@ class AppLocalizationsZhCn extends AppLocalizations {
 
   @override
   String get saveInLibrary => '保存到资料库';
+
+  @override
+  String get copyToClipboard => "复制到剪贴板";
+
+  @override
+  String get textCopiedToClipboard => "文本已复制到剪贴板";
 
   @override
   String get documentTextLabel => '文档文本';
