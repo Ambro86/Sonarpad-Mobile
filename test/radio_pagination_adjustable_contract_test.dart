@@ -19,6 +19,13 @@ void main() {
 
       expect(selectorBlock, contains("id: 'radio_page_selector'"));
       expect(selectorBlock, contains("kind: 'slider'"));
+      // Keep the current spoken page in the rebuilt row model too. UIKit
+      // updates the focused cell synchronously during the gesture, then Dart
+      // sends the row back through setData; an empty value/valueLabel would
+      // clear accessibilityValue before VoiceOver can announce later flicks.
+      expect(selectorBlock, contains('value: pageLabel'));
+      expect(selectorBlock, contains('valueLabel: pageLabel'));
+      expect(selectorBlock, isNot(contains("valueLabel: ''")));
       expect(selectorBlock, contains('sliderValue: pageNumber.toDouble()'));
       expect(selectorBlock, contains('sliderMin: 1'));
       expect(selectorBlock, contains('sliderMax: totalPages.toDouble()'));
