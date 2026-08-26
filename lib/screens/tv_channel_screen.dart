@@ -85,110 +85,112 @@ Future<void> showTvProgramDetailsDialog(
 ) {
   final l10n = AppLocalizations.of(context);
   final description = program.description.trim();
+  final descriptionLabel =
+      description.isEmpty ? l10n.noPodcastDescription : description;
+
   return showDialog<void>(
     context: context,
     barrierDismissible: false,
-    builder: (dialogContext) => Dialog(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560, maxHeight: 640),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Semantics(
-                key: const ValueKey('tv_program_details_back_semantics'),
-                container: true,
-                button: true,
-                label: l10n.back,
-                sortKey: const OrdinalSortKey(1),
-                onTap: () => Navigator.pop(dialogContext),
-                child: ExcludeSemantics(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TextButton.icon(
-                      autofocus: true,
-                      onPressed: () => Navigator.pop(dialogContext),
-                      icon: const Icon(Icons.arrow_back),
-                      label: Text(l10n.back),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Semantics(
-                key: const ValueKey('tv_program_details_title_semantics'),
-                container: true,
-                sortKey: const OrdinalSortKey(2),
-                header: true,
-                label: program.title,
-                child: ExcludeSemantics(
-                  child: Text(
-                    program.title,
-                    style: Theme.of(dialogContext).textTheme.headlineSmall,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Flexible(
-                child: useSharedAccessibleViewModel
-                    ? UniversalAccessibleList(
-                        sections: [AccessibleListSection(rows: [
-                          AccessibleListRow(
-                            id: 'description',
-                            kind: 'text',
-                            title: description.isEmpty
-                                ? l10n.noPodcastDescription
-                                : description,
-                            flutterChild: Semantics(
-                              key: const ValueKey(
-                                'tv_program_details_description_semantics',
-                              ),
-                              container: true,
-                              sortKey: const OrdinalSortKey(3),
-                              label: description.isEmpty
-                                  ? l10n.noPodcastDescription
-                                  : description,
-                              child: ExcludeSemantics(
-                                child: SingleChildScrollView(
-                                  child: Text(
-                                    description.isEmpty
-                                        ? l10n.noPodcastDescription
-                                        : description,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ])],
-                        onEvent: (_) {},
-                      )
-                    : Semantics(
-                        key: const ValueKey(
-                          'tv_program_details_description_semantics',
-                        ),
-                        container: true,
-                        sortKey: const OrdinalSortKey(3),
-                        label: description.isEmpty
-                            ? l10n.noPodcastDescription
-                            : description,
-                        child: ExcludeSemantics(
-                          child: SingleChildScrollView(
-                            child: Text(
-                              description.isEmpty
-                                  ? l10n.noPodcastDescription
-                                  : description,
-                            ),
-                          ),
-                        ),
-                      ),
-              ),
-            ],
+    builder: (dialogContext) {
+      final backButton = Semantics(
+        key: const ValueKey('tv_program_details_back_semantics'),
+        container: true,
+        button: true,
+        label: l10n.back,
+        sortKey: const OrdinalSortKey(1),
+        onTap: () => Navigator.pop(dialogContext),
+        child: ExcludeSemantics(
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              autofocus: true,
+              onPressed: () => Navigator.pop(dialogContext),
+              icon: const Icon(Icons.arrow_back),
+              label: Text(l10n.back),
+            ),
           ),
         ),
-      ),
-    ),
+      );
+
+      final title = Semantics(
+        key: const ValueKey('tv_program_details_title_semantics'),
+        container: true,
+        sortKey: const OrdinalSortKey(2),
+        header: true,
+        label: program.title,
+        child: ExcludeSemantics(
+          child: Text(
+            program.title,
+            style: Theme.of(dialogContext).textTheme.headlineSmall,
+          ),
+        ),
+      );
+
+      final descriptionWidget = Semantics(
+        key: const ValueKey('tv_program_details_description_semantics'),
+        container: true,
+        sortKey: const OrdinalSortKey(3),
+        label: descriptionLabel,
+        child: ExcludeSemantics(
+          child: SingleChildScrollView(
+            child: Text(descriptionLabel),
+          ),
+        ),
+      );
+
+      return Dialog(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 560, maxHeight: 640),
+          child: useSharedAccessibleViewModel
+              ? UniversalAccessibleList(
+                  initialFocusId: 'back',
+                  debugTag: 'tv_program_details',
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+                  sections: [
+                    AccessibleListSection(
+                      rows: [
+                        AccessibleListRow(
+                          id: 'back',
+                          title: l10n.back,
+                          kind: 'button',
+                          onActivate: () => Navigator.pop(dialogContext),
+                          flutterChild: backButton,
+                        ),
+                        AccessibleListRow(
+                          id: 'title',
+                          title: program.title,
+                          kind: 'header',
+                          accessibilityButtonTrait: false,
+                          flutterChild: title,
+                        ),
+                        AccessibleListRow(
+                          id: 'description',
+                          title: descriptionLabel,
+                          kind: 'text',
+                          accessibilityButtonTrait: false,
+                          flutterChild: descriptionWidget,
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      backButton,
+                      const SizedBox(height: 4),
+                      title,
+                      const SizedBox(height: 16),
+                      Flexible(child: descriptionWidget),
+                    ],
+                  ),
+                ),
+        ),
+      );
+    },
   );
 }
 
