@@ -108,6 +108,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get sonarTubeRecentVideos => '最近的视频';
 
   @override
+  String get sonarTubeDeleteRecentVideo => '删除视频';
+
+  @override
   String get sonarTubeNoRecentVideos => '暂无最近观看的视频。';
 
   @override

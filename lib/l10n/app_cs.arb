@@ -31,6 +31,7 @@
   "sonarTubeAddChannelFavorite": "Přidat kanál do oblíbených",
   "sonarTubeRemoveChannelFavorite": "Odebrat kanál z oblíbených",
   "sonarTubeRecentVideos": "Nedávná videa",
+  "sonarTubeDeleteRecentVideo": "Smazat video",
   "sonarTubeNoRecentVideos": "Žádná nedávná videa.",
   "sonarTubeConfirmClearHistory": "Opravdu chcete vymazat historii nedávných videí?",
   "sonarTubeNoFavorites": "Žádná oblíbená videa, kanály ani playlisty.",

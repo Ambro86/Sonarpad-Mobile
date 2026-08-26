@@ -1654,6 +1654,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<void> _editParagraph(int index) async {
     if (index < 0 || index >= _chunks.length) return;
 
+    final originalParagraphLength = _chunks[index].length;
     final controller = TextEditingController(text: _chunks[index]);
     final edited = await showDialog<String>(
       context: context,
@@ -1735,15 +1736,39 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           'DocumentReaderScreen: DocumentItem aggiornato con editedTextPath');
 
       if (!mounted) return;
-      // Aggiorna stato: testo e chunk (la lettura riparte dall'inizio se necessario)
+      // Aggiorna stato: testo e chunk (la lettura riparte dall'inizio se necessario).
+      // Manteniamo lo stesso id accessibile del paragrafo modificato: il focus
+      // VoiceOver deve restare dov'è, ma UIKit deve ricevere il nuovo testo.
       setState(() {
         _documentText = newText;
         _chunks = _splitTextForDocumentDisplay(_documentText);
         // Chiavi gestite da AutoScrollTag
       });
 
+      // UniversalAccessibleList invia il nuovo modello a UIKit durante il
+      // rebuild. Aspettiamo che quel frame sia terminato e poi riconfiguriamo
+      // esplicitamente la cella già focalizzata. Il bridge nativo aggiorna la
+      // accessibilityLabel in-place e, se VoiceOver è ancora su quella cella,
+      // pubblica layoutChanged sulla STESSA cella: nessun salto al segnalibro
+      // e nessun flick avanti/indietro necessario per leggere il testo nuovo.
+      await WidgetsBinding.instance.endOfFrame;
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).textEditedAndSaved);
+      final refreshedParagraphId = 'paragraph_$index';
+      _docLog(
+        'DOC_EDIT refresh accessibility row id=$refreshedParagraphId '
+        'oldChars=$originalParagraphLength newChars=${finalEdited.length} '
+        'nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer}',
+      );
+      await _accessibleDocumentListController.refreshAccessibilityRow(
+        refreshedParagraphId,
+      );
+      _docLog('DOC_EDIT accessibility row refreshed id=$refreshedParagraphId');
+
+      if (!mounted) return;
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).textEditedAndSaved,
+      );
     } catch (e) {
       dev.log('DocumentReaderScreen: Errore fatale durante il salvataggio: $e');
       if (!mounted) return;

@@ -315,6 +315,12 @@ abstract class AppLocalizations {
   /// **'Video recenti'**
   String get sonarTubeRecentVideos;
 
+  /// No description provided for @sonarTubeDeleteRecentVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina video'**
+  String get sonarTubeDeleteRecentVideo;
+
   /// No description provided for @sonarTubeNoRecentVideos.
   ///
   /// In it, this message translates to:

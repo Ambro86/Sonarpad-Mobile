@@ -909,6 +909,12 @@ class _PodcastEpisodePlayerScreenState
           ),
       ];
       return UniversalAccessibleList(
+        persistentTopAction: AccessibleListRow(
+          id: 'persistent_back',
+          title: l10n.back,
+          kind: 'button',
+          onActivate: () => Navigator.pop(context),
+        ),
         sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
           if (event.id == 'chapters' && event.type == 'activate') {
@@ -995,15 +1001,18 @@ class _PodcastEpisodePlayerScreenState
     }
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(l10n.nowPlayingTitle(_episode.title)),
-          leading: BackButton(
-            onPressed: () {
-              AppLogger.log('PodcastPlayer: appbar back pressed, $_logSubject');
-              Navigator.pop(context);
-            },
-          ),
+        leading: UniversalPersistentNavigationButton(
+          key: const ValueKey('podcast_player_back'),
+          label: l10n.back,
+          onPressed: () {
+            AppLogger.log('PodcastPlayer: appbar back pressed, $_logSubject');
+            Navigator.pop(context);
+          },
         ),
-        body: useSharedAccessibleViewModel
+      ),
+      body: useSharedAccessibleViewModel
             ? _buildSharedAccessiblePlayerBody(l10n, canSeek)
             : Semantics(
           container: Platform.isIOS,

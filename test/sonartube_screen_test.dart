@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/screens/sonartube_screen.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_favorites_service.dart';
+import 'package:sonarpad_mobile_starter/services/sonartube_history_service.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 
 void main() {
@@ -74,6 +75,152 @@ void main() {
       findsOneWidget,
     );
     semanticsHandle.dispose();
+  });
+
+  testWidgets('search results keep Back visible after scrolling many results', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      enableDirectNavigation: false,
+      client: MockClient((request) async {
+        return http.Response(
+          jsonEncode({
+            'ok': true,
+            'page': 1,
+            'items': List.generate(
+              60,
+              (index) => {
+                'kind': 'video',
+                'id': 'result_${index + 1}',
+                'title': 'Risultato ${index + 1}',
+                'url': 'https://www.youtube.com/watch?v=result_${index + 1}',
+              },
+            ),
+          }),
+          200,
+        );
+      }),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SonarTubeScreen(service: service),
+      ),
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('sonartube_search_field')),
+      'annalisa',
+    );
+    await tester.tap(find.byKey(const ValueKey('sonartube_search_button')));
+    await tester.pumpAndSettle();
+
+    final back = find.byKey(const ValueKey('sonartube_search_results_back'));
+    expect(back, findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Risultato 60'),
+      600,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Risultato 60'), findsOneWidget);
+    expect(back, findsOneWidget);
+    expect(tester.getTopLeft(back).dy, lessThan(100));
+  });
+
+
+  testWidgets('favorites keep Back visible after scrolling many saved items', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final favoritesService = SonarTubeFavoritesService();
+    for (var index = 1; index <= 60; index++) {
+      await favoritesService.toggleFavorite(
+        SonarTubeItem(
+          kind: SonarTubeItemKind.video,
+          id: 'favorite_$index',
+          title: 'Preferito $index',
+          url: 'https://www.youtube.com/watch?v=favorite_$index',
+        ),
+      );
+    }
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SonarTubeScreen(favoritesService: favoritesService),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('sonartube_favorites_button')));
+    await tester.pumpAndSettle();
+
+    final back = find.byKey(const ValueKey('sonartube_favorites_back'));
+    expect(back, findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Preferito 60'),
+      600,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Preferito 60'), findsOneWidget);
+    expect(back, findsOneWidget);
+    expect(tester.getTopLeft(back).dy, lessThan(100));
+  });
+
+  testWidgets('recent videos keep Back visible after scrolling long history', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final historyService = SonarTubeHistoryService();
+    for (var index = 1; index <= 60; index++) {
+      await historyService.addRecentVideo(
+        SonarTubeItem(
+          kind: SonarTubeItemKind.video,
+          id: 'recent_$index',
+          title: 'Video recente $index',
+          url: 'https://www.youtube.com/watch?v=recent_$index',
+        ),
+      );
+    }
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SonarTubeScreen(historyService: historyService),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const ValueKey('sonartube_recent_videos_button')),
+    );
+    await tester.pumpAndSettle();
+
+    final back = find.byKey(const ValueKey('sonartube_recent_videos_back'));
+    expect(back, findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Video recente 1'),
+      600,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Video recente 1'), findsOneWidget);
+    expect(back, findsOneWidget);
+    expect(tester.getTopLeft(back).dy, lessThan(100));
   });
 
   testWidgets('searches and opens a channel with its real videos', (

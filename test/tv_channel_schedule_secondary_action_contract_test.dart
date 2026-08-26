@@ -95,4 +95,34 @@ void main() {
       expect(player, isNot(contains("'tv:\${widget.tvChannel!.url}|")));
     },
   );
+
+
+  test(
+    'all TV schedule hour fields show time without repeating the selected day',
+    () {
+      final action = File(
+        'lib/widgets/tv_recording_schedule_action.dart',
+      ).readAsStringSync();
+
+      expect(action, contains('String _formatScheduledTime(DateTime value)'));
+      expect(action, contains("return '\$hour:\$minute';"));
+      expect(
+        action,
+        contains(
+          'String scheduleFieldValue(DateTime value) =>\n'
+          '                _formatScheduledTime(value);',
+        ),
+      );
+      expect(
+        action,
+        isNot(
+          contains(
+            'String scheduleFieldValue(DateTime value) => program == null',
+          ),
+        ),
+      );
+      expect(action, contains('radioScheduleStartTimeValue(\n                                  scheduleFieldValue(start),'));
+      expect(action, contains('radioScheduleEndTimeValue(\n                                  scheduleFieldValue(end),'));
+    },
+  );
 }

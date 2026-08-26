@@ -31,6 +31,7 @@
   "sonarTubeAddChannelFavorite": "Adicionar canal aos favoritos",
   "sonarTubeRemoveChannelFavorite": "Remover canal dos favoritos",
   "sonarTubeRecentVideos": "Vídeos recentes",
+  "sonarTubeDeleteRecentVideo": "Eliminar vídeo",
   "sonarTubeNoRecentVideos": "Nenhum vídeo recente.",
   "sonarTubeConfirmClearHistory": "Pretende mesmo limpar o histórico de vídeos recentes?",
   "sonarTubeNoFavorites": "Nenhum vídeo, canal ou lista de reprodução nos favoritos.",

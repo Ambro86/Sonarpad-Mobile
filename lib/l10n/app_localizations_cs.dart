@@ -112,6 +112,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeRecentVideos => 'Nedávná videa';
 
   @override
+  String get sonarTubeDeleteRecentVideo => 'Smazat video';
+
+  @override
   String get sonarTubeNoRecentVideos => 'Žádná nedávná videa.';
 
   @override

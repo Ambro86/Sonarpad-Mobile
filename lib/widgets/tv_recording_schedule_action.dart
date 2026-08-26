@@ -232,6 +232,12 @@ Future<TimeOfDay?> _showScheduledRecordingTimePicker({
   );
 }
 
+String _formatScheduledTime(DateTime value) {
+  final hour = value.hour.toString().padLeft(2, '0');
+  final minute = value.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+}
+
 String _formatScheduledDateTime(DateTime value) {
   final day = value.day.toString().padLeft(2, '0');
   final month = value.month.toString().padLeft(2, '0');
@@ -315,6 +321,9 @@ Future<void> showTvScheduleRecordingAction(
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
+            String scheduleFieldValue(DateTime value) =>
+                _formatScheduledTime(value);
+
             Future<void> pickDay() async {
               final picked = await showTvRecordingDaySelectionDialog(
                 context,
@@ -382,13 +391,13 @@ Future<void> showTvScheduleRecordingAction(
                               AccessibleListRow(
                                 id: 'start',
                                 title: l10n.radioScheduleStartTimeValue(
-                                  _formatScheduledDateTime(start),
+                                  scheduleFieldValue(start),
                                 ),
                               ),
                               AccessibleListRow(
                                 id: 'end',
                                 title: l10n.radioScheduleEndTimeValue(
-                                  _formatScheduledDateTime(end),
+                                  scheduleFieldValue(end),
                                 ),
                               ),
                               AccessibleListRow(
@@ -437,7 +446,7 @@ Future<void> showTvScheduleRecordingAction(
                               icon: const Icon(Icons.schedule),
                               label: Text(
                                 l10n.radioScheduleStartTimeValue(
-                                  _formatScheduledDateTime(start),
+                                  scheduleFieldValue(start),
                                 ),
                               ),
                             ),
@@ -447,7 +456,7 @@ Future<void> showTvScheduleRecordingAction(
                               icon: const Icon(Icons.schedule),
                               label: Text(
                                 l10n.radioScheduleEndTimeValue(
-                                  _formatScheduledDateTime(end),
+                                  scheduleFieldValue(end),
                                 ),
                               ),
                             ),

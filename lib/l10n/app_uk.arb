@@ -82,6 +82,7 @@
   "sonarTubeAddChannelFavorite": "Додати канал до вибраного",
   "sonarTubeRemoveChannelFavorite": "Видалити канал із вибраного",
   "sonarTubeRecentVideos": "Нещодавні відео",
+  "sonarTubeDeleteRecentVideo": "Видалити відео",
   "sonarTubeNoRecentVideos": "Немає нещодавніх відео.",
   "sonarTubeConfirmClearHistory": "Справді очистити історію нещодавніх відео?",
   "sonarTubeNoFavorites": "Немає улюблених відео, каналів або списків відтворення.",

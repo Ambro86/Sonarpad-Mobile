@@ -21,25 +21,35 @@ void main() {
     expect(source, isNot(contains('shouldFocusFirstResult')));
   });
 
-  test('clean SonarTube search results start with Back, omit search chrome, and keep UIKit on iOS', () {
+  test('clean SonarTube search results keep Back outside the scrolling results', () {
     final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
-    final start = source.indexOf(
+    final accessibleStart = source.indexOf(
       'Widget _buildSearchResultsAccessible(AppLocalizations l10n)',
     );
-    final end = source.indexOf('\n  @override\n  Widget build(', start);
-    expect(start, greaterThanOrEqualTo(0));
-    expect(end, greaterThan(start));
-    final method = source.substring(start, end);
+    final materialStart = source.indexOf(
+      'Widget _buildSearchResultsMaterial(AppLocalizations l10n)',
+      accessibleStart,
+    );
+    final buildStart = source.indexOf('\n  @override\n  Widget build(', materialStart);
+    expect(accessibleStart, greaterThanOrEqualTo(0));
+    expect(materialStart, greaterThan(accessibleStart));
+    expect(buildStart, greaterThan(materialStart));
 
-    final back = method.indexOf('sonartube_search_results_back');
-    final title = method.indexOf('sonartube_search_results_title');
-    expect(back, greaterThanOrEqualTo(0));
-    expect(title, greaterThan(back));
-    expect(method, contains('l10n.back'));
-    expect(method, contains('l10n.searchResults'));
-    expect(method, isNot(contains('sonartube_favorites_button')));
-    expect(method, isNot(contains('sonartube_search_field')));
-    expect(method, isNot(contains('sonartube_search_button')));
-    expect(method, contains('UniversalAccessibleList('));
+    final accessible = source.substring(accessibleStart, materialStart);
+    final material = source.substring(materialStart, buildStart);
+
+    expect(accessible, contains('persistentTopAction: AccessibleListRow('));
+    expect(accessible, contains("id: 'persistent_back'"));
+    expect(accessible, contains('onActivate: () => Navigator.pop(context)'));
+    expect(accessible, contains('l10n.searchResults'));
+    expect(accessible, isNot(contains("id: 'back'")));
+    expect(accessible, isNot(contains('sonartube_favorites_button')));
+    expect(accessible, isNot(contains('sonartube_search_field')));
+    expect(accessible, isNot(contains('sonartube_search_button')));
+
+    expect(material, contains('appBar: AppBar('));
+    expect(material, contains('UniversalPersistentNavigationButton('));
+    expect(material, contains("ValueKey('sonartube_search_results_back')"));
+    expect(material, contains('l10n.searchResults'));
   });
 }

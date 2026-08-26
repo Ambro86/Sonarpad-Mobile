@@ -112,6 +112,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sonarTubeRecentVideos => 'Recent videos';
 
   @override
+  String get sonarTubeDeleteRecentVideo => 'Delete video';
+
+  @override
   String get sonarTubeNoRecentVideos => 'No recent videos.';
 
   @override

@@ -84,4 +84,19 @@ void main() {
     await service.clearRecentVideos();
     expect(await service.loadRecentVideos(), isEmpty);
   });
+
+
+  test('remove one recent video keeps the remaining SonarTube history', () async {
+    SharedPreferences.setMockInitialValues({});
+    final service = SonarTubeHistoryService();
+
+    await service.addRecentVideo(video(1));
+    await service.addRecentVideo(video(2));
+    await service.addRecentVideo(video(3));
+
+    await service.removeRecentVideo('video_00002');
+
+    final recent = await service.loadRecentVideos();
+    expect(recent.map((item) => item.id), ['video_00003', 'video_00001']);
+  });
 }

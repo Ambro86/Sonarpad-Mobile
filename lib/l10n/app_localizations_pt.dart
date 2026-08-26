@@ -111,6 +111,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeRecentVideos => 'Vídeos recentes';
 
   @override
+  String get sonarTubeDeleteRecentVideo => 'Eliminar vídeo';
+
+  @override
   String get sonarTubeNoRecentVideos => 'Nenhum vídeo recente.';
 
   @override
@@ -3572,6 +3575,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get sonarTubeRecentVideos => 'Vídeos recentes';
+
+  @override
+  String get sonarTubeDeleteRecentVideo => 'Excluir vídeo';
 
   @override
   String get sonarTubeNoRecentVideos => 'Nenhum vídeo recente.';

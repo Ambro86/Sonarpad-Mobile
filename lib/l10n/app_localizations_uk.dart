@@ -111,6 +111,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sonarTubeRecentVideos => 'Нещодавні відео';
 
   @override
+  String get sonarTubeDeleteRecentVideo => 'Видалити відео';
+
+  @override
   String get sonarTubeNoRecentVideos => 'Немає нещодавніх відео.';
 
   @override

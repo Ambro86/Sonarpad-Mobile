@@ -31,6 +31,7 @@
   "sonarTubeAddChannelFavorite": "将频道添加到收藏",
   "sonarTubeRemoveChannelFavorite": "从收藏中移除频道",
   "sonarTubeRecentVideos": "最近的视频",
+  "sonarTubeDeleteRecentVideo": "删除视频",
   "sonarTubeNoRecentVideos": "暂无最近观看的视频。",
   "sonarTubeConfirmClearHistory": "确定要清空最近观看的视频记录吗？",
   "sonarTubeNoFavorites": "没有收藏的视频、频道或播放列表。",

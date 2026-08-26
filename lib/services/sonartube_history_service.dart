@@ -39,6 +39,14 @@ class SonarTubeHistoryService {
     await _save(recent);
   }
 
+  Future<void> removeRecentVideo(String videoId) async {
+    final normalizedId = videoId.trim();
+    if (normalizedId.isEmpty) return;
+    final recent = await loadRecentVideos();
+    recent.removeWhere((item) => item.id == normalizedId);
+    await _save(recent);
+  }
+
   Future<void> clearRecentVideos() async {
     final preferences = await SharedPreferences.getInstance();
     await preferences.remove(_key);

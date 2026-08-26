@@ -40,4 +40,41 @@ void main() {
     expect(source, contains('recent.removeWhere((candidate) => candidate.id == item.id);'));
     expect(source, contains('recent.insert(0, _forHistoryStorage(item));'));
   });
+
+
+  test('recent videos expose per-video delete as secondary action and sighted-only button', () {
+    final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final history = File(
+      'lib/services/sonartube_history_service.dart',
+    ).readAsStringSync();
+
+    expect(screen, contains("id: 'delete_video'"));
+    expect(screen, contains('label: l10n.sonarTubeDeleteRecentVideo'));
+    expect(screen, contains("icon: 'remove'"));
+    expect(screen, contains('customSemanticsActions:'));
+    expect(screen, contains('trailing: ExcludeSemantics('));
+    expect(
+      screen,
+      contains("ValueKey('sonartube_delete_recent_video_\${item.id}')"),
+    );
+    expect(screen, contains('await _deleteRecentVideo(item);'));
+    expect(history, contains('Future<void> removeRecentVideo(String videoId)'));
+  });
+
+  test('every locale contains the recent-video delete label', () {
+    final arbFiles = Directory('lib/l10n')
+        .listSync()
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.arb'))
+        .toList();
+
+    expect(arbFiles, isNotEmpty);
+    for (final file in arbFiles) {
+      expect(
+        file.readAsStringSync(),
+        contains('"sonarTubeDeleteRecentVideo"'),
+        reason: file.path,
+      );
+    }
+  });
 }

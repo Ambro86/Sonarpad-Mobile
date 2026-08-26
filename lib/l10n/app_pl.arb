@@ -79,6 +79,7 @@
   "sonarTubeAddChannelFavorite": "Dodaj kanał do ulubionych",
   "sonarTubeRemoveChannelFavorite": "Usuń kanał z ulubionych",
   "sonarTubeRecentVideos": "Ostatnie filmy",
+  "sonarTubeDeleteRecentVideo": "Usuń film",
   "sonarTubeNoRecentVideos": "Brak ostatnio oglądanych filmów.",
   "sonarTubeConfirmClearHistory": "Czy na pewno chcesz wyczyścić historię ostatnio oglądanych filmów?",
   "sonarTubeNoFavorites": "Brak ulubionych filmów, kanałów lub playlist.",
