@@ -28,6 +28,7 @@ class SonarTubeItem {
     this.published,
     this.views,
     this.subscribers,
+    this.handle,
     this.description,
     this.isLive = false,
   });
@@ -43,6 +44,7 @@ class SonarTubeItem {
   final String? published;
   final String? views;
   final String? subscribers;
+  final String? handle;
   final String? description;
   final bool isLive;
 }
@@ -911,21 +913,39 @@ class SonarTubeService {
       final title = _youtubeText(channel['title']);
       if (title.isEmpty) return;
       seen.add('ch_$id');
-      final handle = _string(browseEndpoint?['canonicalBaseUrl']);
+      final canonicalBaseUrl = _string(browseEndpoint?['canonicalBaseUrl']);
+      final subscriberText =
+          _nullableYoutubeText(channel['subscriberCountText']);
+      final subscriberTextIsHandle =
+          subscriberText?.trimLeft().startsWith('@') ?? false;
+      final handle = canonicalBaseUrl != null && canonicalBaseUrl.startsWith('/@')
+          ? canonicalBaseUrl.substring(1)
+          : subscriberTextIsHandle
+              ? subscriberText
+              : null;
+      // Nei channelRenderer dei risultati di ricerca YouTube usa oggi
+      // subscriberCountText per l'handle e videoCountText per gli iscritti.
+      // Riutilizziamo videoCountText soltanto quando subscriberCountText e'
+      // chiaramente un handle, cosi' non confondiamo il numero di video nei
+      // normali feed/canali con il numero di iscritti.
+      final subscribers = subscriberTextIsHandle
+          ? _nullableYoutubeText(channel['videoCountText'])
+          : subscriberText;
       items.add(
         SonarTubeItem(
           kind: SonarTubeItemKind.channel,
           id: id,
           title: title,
           channel: title,
-          url: handle != null
-              ? 'https://www.youtube.com$handle'
+          url: canonicalBaseUrl != null
+              ? 'https://www.youtube.com$canonicalBaseUrl'
               : Uri.https(
                   'www.youtube.com',
                   '/channel/$id',
                 ).toString(),
           thumbnailUrl: _youtubeBestThumb(channel['thumbnail']),
-          subscribers: _nullableYoutubeText(channel['subscriberCountText']),
+          subscribers: subscribers,
+          handle: handle,
           description: _nullableYoutubeText(channel['descriptionSnippet']),
         ),
       );
@@ -1368,6 +1388,7 @@ class SonarTubeService {
       published: _string(raw['published']),
       views: _string(raw['views']),
       subscribers: _string(raw['subscribers']),
+      handle: _string(raw['handle']),
       description: _string(raw['description']),
       isLive: raw['live'] == true,
     );

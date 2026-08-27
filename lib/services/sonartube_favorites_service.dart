@@ -48,6 +48,7 @@ class SonarTubeFavoritesService {
       published: item.published,
       views: item.views,
       subscribers: item.subscribers,
+      handle: item.handle,
       description: item.description,
       isLive: item.isLive,
     );
@@ -96,6 +97,7 @@ class SonarTubeFavoritesService {
     'published': item.published,
     'views': item.views,
     'subscribers': item.subscribers,
+    'handle': item.handle,
     'description': item.description,
     'isLive': item.isLive,
   };
@@ -128,6 +130,7 @@ class SonarTubeFavoritesService {
       published: raw['published']?.toString(),
       views: raw['views']?.toString(),
       subscribers: raw['subscribers']?.toString(),
+      handle: raw['handle']?.toString(),
       description: raw['description']?.toString(),
       isLive: raw['isLive'] == true,
     );

@@ -631,6 +631,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     final values = <String>[
       _itemType(l10n, item),
       if (item.kind == SonarTubeItemKind.channel &&
+          (item.handle?.isNotEmpty ?? false))
+        item.handle!,
+      if (item.kind == SonarTubeItemKind.channel &&
           (item.subscribers?.isNotEmpty ?? false))
         item.subscribers!,
       if (item.kind != SonarTubeItemKind.channel &&
@@ -2435,10 +2438,15 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
             SonarTubeItemKind.channel => l10n.sonarTubeChannel,
             SonarTubeItemKind.playlist => l10n.sonarTubePlaylist,
           };
-          final favoriteSubtitle = item.kind == SonarTubeItemKind.channel &&
-                  (item.subscribers?.isNotEmpty ?? false)
-              ? '$type · ${item.subscribers}'
-              : type;
+          final favoriteSubtitle = <String>[
+            type,
+            if (item.kind == SonarTubeItemKind.channel &&
+                (item.handle?.isNotEmpty ?? false))
+              item.handle!,
+            if (item.kind == SonarTubeItemKind.channel &&
+                (item.subscribers?.isNotEmpty ?? false))
+              item.subscribers!,
+          ].join(' · ');
           final removeLabel = item.kind == SonarTubeItemKind.channel
               ? l10n.sonarTubeRemoveChannelFavorite
               : l10n.sonarTubeRemoveFavorite;
@@ -2558,11 +2566,15 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                             SonarTubeItemKind.channel => l10n.sonarTubeChannel,
                             SonarTubeItemKind.playlist => l10n.sonarTubePlaylist,
                           };
-                          final favoriteSubtitle =
-                              item.kind == SonarTubeItemKind.channel &&
-                                      (item.subscribers?.isNotEmpty ?? false)
-                                  ? '$type · ${item.subscribers}'
-                                  : type;
+                          final favoriteSubtitle = <String>[
+                            type,
+                            if (item.kind == SonarTubeItemKind.channel &&
+                                (item.handle?.isNotEmpty ?? false))
+                              item.handle!,
+                            if (item.kind == SonarTubeItemKind.channel &&
+                                (item.subscribers?.isNotEmpty ?? false))
+                              item.subscribers!,
+                          ].join(' · ');
                           final removeLabel =
                               item.kind == SonarTubeItemKind.channel
                                   ? l10n.sonarTubeRemoveChannelFavorite

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
@@ -30,8 +32,11 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
   static const _pageSize = 25;
 
   final _service = RadioService();
+  final _resultsAccessibleListController =
+      AccessibleListController(debugName: 'radio-results');
   List<RadioStation> _favorites = [];
   int _page = 0;
+  bool _scrollNewPageResultsToTop = false;
 
   @override
   void initState() {
@@ -94,6 +99,7 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
   }) {
     final nextPage = page.clamp(0, totalPages - 1).toInt();
     if (nextPage == _page) return;
+    _scrollNewPageResultsToTop = true;
     setState(() => _page = nextPage);
     if (!announce) return;
     final l10n = AppLocalizations.of(context);
@@ -217,13 +223,30 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               ? start + _pageSize
               : results.length;
           final visibleResults = results.sublist(start, end);
+          if (_scrollNewPageResultsToTop &&
+              useSharedAccessibleViewModel &&
+              visibleResults.isNotEmpty) {
+            _scrollNewPageResultsToTop = false;
+            final firstResultId = visibleResults.first.streamUrl;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              unawaited(
+                _resultsAccessibleListController.scrollTo(
+                  firstResultId,
+                  animated: false,
+                ),
+              );
+            });
+          }
           return Column(
             children: [
               _buildPageSelector(l10n, currentPage, totalPages),
               Expanded(
                 child: useSharedAccessibleViewModel
                     ? UniversalAccessibleList(
-                        key: ValueKey('shared-radio-results-$currentPage-${visibleResults.length}'),
+                        key: const ValueKey('shared-radio-results'),
+                        controller: _resultsAccessibleListController,
+                        debugTag: 'radio-results',
                         sections: [
                           AccessibleListSection(
                             rows: visibleResults.map((station) {

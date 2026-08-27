@@ -66,6 +66,24 @@ void main() {
       // Previous/Next remain available as the second navigation method.
       expect(source, contains("ValueKey('radio_previous_page')"));
       expect(source, contains("ValueKey('radio_next_page')"));
+      // Keep the results UiKitView itself stable across page changes. Recreating
+      // this platform view made VoiceOver jump from the page slider directly
+      // to the Flutter Previous/Next buttons instead of entering the radios.
+      expect(
+        source,
+        contains("key: const ValueKey('shared-radio-results')"),
+      );
+      expect(
+        source,
+        isNot(contains(r"shared-radio-results-$currentPage")),
+      );
+      expect(
+        source,
+        contains("AccessibleListController(debugName: 'radio-results')"),
+      );
+      expect(source, contains("debugTag: 'radio-results'"));
+      expect(source, contains('_resultsAccessibleListController.scrollTo('));
+      expect(source, contains('animated: false'));
 
       // Flutter uses the same single Semantics adjustable node as Settings.
       expect(adapter, contains('slider: true'));
