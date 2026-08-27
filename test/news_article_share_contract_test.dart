@@ -22,4 +22,17 @@ void main() {
     expect(source, contains('await _resolveArticleUrl(original)'));
     expect(source, contains("if (_isHttpUrl(resolved) && !_isGoogleNewsArticleUrl(resolved))"));
   });
+
+  test('news article rows expose share before opening in shared and Flutter UI', () {
+    final source = File('lib/screens/news_screen.dart').readAsStringSync();
+
+    expect(source, contains("AccessibleCustomAction(\n                    id: 'share',\n                    label: l10n.shareArticle"));
+    expect(source, contains("AccessibleVisualAction(\n                    id: 'share',\n                    label: l10n.shareArticle,\n                    icon: 'share'"));
+    expect(source, contains("event.type == 'customAction' && event.action == 'share'"));
+    expect(source, contains('CustomSemanticsAction(label: l10n.shareArticle)'));
+    expect(source, contains('ExcludeSemantics('));
+    expect(source, contains('await _service.resolveArticleUrlForSharing(article.link)'));
+    expect(source, contains("text: '${article.title}\\n$url'"));
+  });
+
 }

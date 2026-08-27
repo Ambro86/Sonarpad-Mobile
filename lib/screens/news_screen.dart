@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/semantics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
@@ -1525,6 +1526,23 @@ class _NewsArticleListState extends State<_NewsArticleList> {
     }
   }
 
+  Future<void> _shareArticle(NewsArticle article) async {
+    try {
+      final resolved = await _service.resolveArticleUrlForSharing(article.link);
+      final url = resolved.trim().isNotEmpty
+          ? resolved.trim()
+          : article.link.trim();
+      await SharePlus.instance.share(
+        ShareParams(
+          text: '${article.title}\n$url',
+          subject: article.title,
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error sharing news article from list: $e');
+    }
+  }
+
   Future<void> _loadReadArticles() async {
     final list = await _service.getReadArticles(widget.language, widget.sourceName);
     if (!mounted) return;
@@ -1744,6 +1762,19 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                 ),
                 subtitle: subtitleText,
                 kind: 'action',
+                actions: [
+                  AccessibleCustomAction(
+                    id: 'share',
+                    label: l10n.shareArticle,
+                  ),
+                ],
+                visualActions: [
+                  AccessibleVisualAction(
+                    id: 'share',
+                    label: l10n.shareArticle,
+                    icon: 'share',
+                  ),
+                ],
               );
             }),
           ];
@@ -1755,13 +1786,20 @@ class _NewsArticleListState extends State<_NewsArticleList> {
             routeReturnWaitForForeignFocusClear: true,
             sections: [AccessibleListSection(rows: rows)],
             onEvent: (event) async {
-              if (event.type != 'activate' || event.id == null) return;
-              if (event.id == '__read_articles__') {
+              final id = event.id;
+              if (id == null) return;
+              if (event.type == 'activate' && id == '__read_articles__') {
                 _openReadArticles();
                 return;
               }
-              final index = articles.indexWhere((article) => article.id == event.id);
-              if (index >= 0) await _openArticle(articles[index], articles);
+              final index = articles.indexWhere((article) => article.id == id);
+              if (index < 0) return;
+              final article = articles[index];
+              if (event.type == 'customAction' && event.action == 'share') {
+                await _shareArticle(article);
+              } else if (event.type == 'activate') {
+                await _openArticle(article, articles);
+              }
             },
           );
         }
@@ -1801,19 +1839,33 @@ class _NewsArticleListState extends State<_NewsArticleList> {
               key: ValueKey('news_article_scroll_$index'),
               controller: _scrollController,
               index: index,
-              child: ListTile(
-                key: ValueKey('news_article_${article.id}'),
-                title: Text(titleWithListTimestamp(
-                  article.title,
-                  article.publishedAt,
-                  l10n.localeName,
-                )),
-                subtitle: Text(
-                  subtitleText,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
+              child: Semantics(
+                container: true,
+                customSemanticsActions: {
+                  CustomSemanticsAction(label: l10n.shareArticle): () =>
+                      _shareArticle(article),
+                },
+                child: ListTile(
+                  key: ValueKey('news_article_${article.id}'),
+                  title: Text(titleWithListTimestamp(
+                    article.title,
+                    article.publishedAt,
+                    l10n.localeName,
+                  )),
+                  subtitle: Text(
+                    subtitleText,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: ExcludeSemantics(
+                    child: IconButton(
+                      icon: const Icon(Icons.share),
+                      tooltip: l10n.shareArticle,
+                      onPressed: () => _shareArticle(article),
+                    ),
+                  ),
+                  onTap: () => _openArticle(article, articles),
                 ),
-                onTap: () => _openArticle(article, articles),
               ),
             );
           },
