@@ -1781,6 +1781,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get radioPlay => '播放';
 
   @override
+  String get tvPlayLive => '播放直播';
+
+  @override
   String get playAndRecord => '播放并录制';
 
   @override

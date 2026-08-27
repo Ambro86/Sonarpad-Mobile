@@ -14,6 +14,7 @@ class FavoriteTvsScreen extends StatefulWidget {
     required this.channels,
     required this.currentPrograms,
     required this.onOpenChannel,
+    required this.onPlayLive,
     required this.onPlayAndRecord,
     this.recordingFeatureUnlocked = false,
   });
@@ -21,6 +22,7 @@ class FavoriteTvsScreen extends StatefulWidget {
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
   final ValueChanged<TvChannel> onOpenChannel;
+  final ValueChanged<TvChannel> onPlayLive;
   final ValueChanged<TvChannel> onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
@@ -105,6 +107,10 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                               hint: 'Tocca per aprire il canale TV',
                               kind: 'action',
                               actions: [
+                                AccessibleCustomAction(
+                                  id: 'play_live',
+                                  label: l10n.tvPlayLive,
+                                ),
                                 const AccessibleCustomAction(
                                   id: 'remove',
                                   label: 'Rimuovi dai preferiti',
@@ -121,6 +127,11 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                                   ),
                               ],
                               visualActions: [
+                                AccessibleVisualAction(
+                                  id: 'play_live',
+                                  label: l10n.tvPlayLive,
+                                  icon: 'play',
+                                ),
                                 if (widget.recordingFeatureUnlocked)
                                   AccessibleVisualAction(
                                     id: 'play_record',
@@ -146,6 +157,9 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                         final channel = _favorites[index];
                         if (event.type == 'activate') {
                           widget.onOpenChannel(channel);
+                        } else if (event.type == 'customAction' &&
+                            event.action == 'play_live') {
+                          widget.onPlayLive(channel);
                         } else if (event.type == 'customAction' && event.action == 'remove') {
                           await _removeFromFavorites(channel);
                         } else if (event.type == 'customAction' &&
@@ -184,6 +198,9 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                           hint: 'Tocca per aprire il canale TV',
                           onTap: () => widget.onOpenChannel(channel),
                           customSemanticsActions: {
+                            CustomSemanticsAction(
+                              label: l10n.tvPlayLive,
+                            ): () => widget.onPlayLive(channel),
                             const CustomSemanticsAction(
                                     label: 'Rimuovi dai preferiti'):
                                 () => _removeFromFavorites(channel),
@@ -247,6 +264,14 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                                       ],
                                     ),
                                   ),
+                                ),
+                                IconButton(
+                                  key: ValueKey(
+                                    'favorite_tv_play_live_${channel.name}',
+                                  ),
+                                  tooltip: l10n.tvPlayLive,
+                                  icon: const Icon(Icons.play_arrow),
+                                  onPressed: () => widget.onPlayLive(channel),
                                 ),
                                 if (widget.recordingFeatureUnlocked)
                                   IconButton(

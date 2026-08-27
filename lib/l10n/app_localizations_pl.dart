@@ -1986,6 +1986,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get radioPlay => 'Odtwórz';
 
   @override
+  String get tvPlayLive => 'Odtwórz transmisję na żywo';
+
+  @override
   String get playAndRecord => 'Odtwórz i nagrywaj';
 
   @override

@@ -3617,6 +3617,12 @@ abstract class AppLocalizations {
   /// **'Riproduci'**
   String get radioPlay;
 
+  /// Secondary action that plays a TV channel live without opening its guide.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduci diretta'**
+  String get tvPlayLive;
+
   /// Secondary action that opens a radio or TV channel and immediately starts recording.
   ///
   /// In it, this message translates to:

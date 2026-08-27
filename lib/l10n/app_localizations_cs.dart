@@ -1985,6 +1985,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get radioPlay => 'Přehrát';
 
   @override
+  String get tvPlayLive => 'Přehrát živé vysílání';
+
+  @override
   String get playAndRecord => 'Přehrát a nahrávat';
 
   @override

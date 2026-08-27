@@ -1978,6 +1978,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radioPlay => 'Play';
 
   @override
+  String get tvPlayLive => 'Play live broadcast';
+
+  @override
   String get playAndRecord => 'Play and record';
 
   @override

@@ -2627,6 +2627,10 @@
     }
   },
   "radioPlay": "Abspielen",
+  "tvPlayLive": "Live-Sendung abspielen",
+  "@tvPlayLive": {
+    "description": "Secondary action that plays a TV channel live without opening its guide."
+  },
   "playAndRecord": "Abspielen und aufnehmen",
   "@playAndRecord": {
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."

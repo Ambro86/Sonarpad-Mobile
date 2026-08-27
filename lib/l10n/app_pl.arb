@@ -2611,6 +2611,10 @@
     }
   },
   "radioPlay": "Odtwórz",
+  "tvPlayLive": "Odtwórz transmisję na żywo",
+  "@tvPlayLive": {
+    "description": "Secondary action that plays a TV channel live without opening its guide."
+  },
   "playAndRecord": "Odtwórz i nagrywaj",
   "@playAndRecord": {
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."

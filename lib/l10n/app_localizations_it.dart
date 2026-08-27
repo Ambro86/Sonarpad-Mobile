@@ -1992,6 +1992,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get radioPlay => 'Riproduci';
 
   @override
+  String get tvPlayLive => 'Riproduci diretta';
+
+  @override
   String get playAndRecord => 'Riproduci e registra';
 
   @override

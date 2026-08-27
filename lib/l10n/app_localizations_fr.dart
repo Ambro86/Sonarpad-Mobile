@@ -2002,6 +2002,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get radioPlay => 'Lire';
 
   @override
+  String get tvPlayLive => 'Lire le direct';
+
+  @override
   String get playAndRecord => 'Lire et enregistrer';
 
   @override

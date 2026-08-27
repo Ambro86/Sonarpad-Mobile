@@ -772,6 +772,10 @@
   "radioCommunityAdded": "电台已成功添加到 Sonarpad 社区。",
   "radioCommunityAddError": "添加电台时出错：{error}",
   "radioPlay": "播放",
+  "tvPlayLive": "播放直播",
+  "@tvPlayLive": {
+    "description": "Secondary action that plays a TV channel live without opening its guide."
+  },
   "playAndRecord": "播放并录制",
   "@playAndRecord": {
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."

@@ -1930,6 +1930,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get radioPlay => "Abspielen";
 
   @override
+  String get tvPlayLive => 'Live-Sendung abspielen';
+
+  @override
   String get playAndRecord => 'Abspielen und aufnehmen';
 
   @override

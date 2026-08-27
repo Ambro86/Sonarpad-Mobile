@@ -2627,6 +2627,10 @@
     }
   },
   "radioPlay": "Riproduci",
+  "tvPlayLive": "Riproduci diretta",
+  "@tvPlayLive": {
+    "description": "Secondary action that plays a TV channel live without opening its guide."
+  },
   "playAndRecord": "Riproduci e registra",
   "@playAndRecord": {
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."

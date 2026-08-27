@@ -2000,6 +2000,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get radioPlay => 'Reproducir';
 
   @override
+  String get tvPlayLive => 'Reproducir en directo';
+
+  @override
   String get playAndRecord => 'Reproducir y grabar';
 
   @override

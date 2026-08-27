@@ -1930,6 +1930,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radioPlay => 'Reproduzir';
 
   @override
+  String get tvPlayLive => 'Reproduzir emissão em direto';
+
+  @override
   String get playAndRecord => 'Reproduzir e gravar';
 
   @override
@@ -5431,6 +5434,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get radioPlay => 'Reproduzir';
+
+  @override
+  String get tvPlayLive => 'Reproduzir transmissão ao vivo';
 
   @override
   String get playAndRecord => 'Reproduzir e gravar';

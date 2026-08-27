@@ -775,6 +775,10 @@
   "radioCommunityAdded": "Radio ajoutée avec succès à la communauté Sonarpad.",
   "radioCommunityAddError": "Erreur lors de l'ajout de la radio : {error}",
   "radioPlay": "Lire",
+  "tvPlayLive": "Lire le direct",
+  "@tvPlayLive": {
+    "description": "Secondary action that plays a TV channel live without opening its guide."
+  },
   "playAndRecord": "Lire et enregistrer",
   "@playAndRecord": {
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
+import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/recording_feature_access.dart';
 import '../services/tv_service.dart';
 import '../utils/app_logger.dart';
 import 'favorite_tvs_screen.dart';
+import 'radio_player_screen.dart';
 import 'tv_channel_screen.dart';
 import 'tv_recordings_screen.dart';
 import '../utils/status_message.dart';
@@ -105,6 +107,35 @@ class _TvScreenState extends State<TvScreen> {
     );
   }
 
+  Future<void> _playLiveChannel(TvChannel channel) async {
+    try {
+      final resolvedUrl = await _service.resolveStreamUrl(channel);
+      if (!mounted) return;
+      final station = RadioStation(
+        name: channel.name,
+        streamUrl: resolvedUrl,
+        languageCode: 'it',
+      );
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/tv/channel/player'),
+          builder: (_) => RadioPlayerScreen(
+            station: station,
+            isVideoSupported: true,
+            tvChannel: channel,
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).technicalErrorGeneric,
+      );
+    }
+  }
+
   Future<void> _openCategory(String category, List<TvChannel> channels) async {
     Navigator.push(
       context,
@@ -115,6 +146,7 @@ class _TvScreenState extends State<TvScreen> {
           channels: channels,
           currentPrograms: _currentPrograms,
           onOpenChannel: _openChannel,
+          onPlayLive: _playLiveChannel,
           onPlayAndRecord: (channel) => _openChannel(
             channel,
             autoPlay: true,
@@ -137,6 +169,7 @@ class _TvScreenState extends State<TvScreen> {
           regions: regions,
           currentPrograms: _currentPrograms,
           onOpenChannel: _openChannel,
+          onPlayLive: _playLiveChannel,
           onPlayAndRecord: (channel) => _openChannel(
             channel,
             autoPlay: true,
@@ -163,6 +196,7 @@ class _TvScreenState extends State<TvScreen> {
         query: query,
         channels: results,
         currentPrograms: _currentPrograms,
+        onPlayLive: _playLiveChannel,
         onPlayAndRecord: (channel) => _openChannel(
           channel,
           autoPlay: true,
@@ -292,6 +326,7 @@ class _TvScreenState extends State<TvScreen> {
                   channels: _channels,
                   currentPrograms: _currentPrograms,
                   onOpenChannel: _openChannel,
+                  onPlayLive: _playLiveChannel,
                   onPlayAndRecord: (channel) => _openChannel(
                     channel,
                     autoPlay: true,
@@ -427,6 +462,7 @@ class _TvScreenState extends State<TvScreen> {
                   channels: _channels,
                   currentPrograms: _currentPrograms,
                   onOpenChannel: _openChannel,
+                  onPlayLive: _playLiveChannel,
                   onPlayAndRecord: (channel) => _openChannel(
                     channel,
                     autoPlay: true,
@@ -468,6 +504,7 @@ class _TvRegionalScreen extends StatelessWidget {
     required this.regions,
     required this.currentPrograms,
     required this.onOpenChannel,
+    required this.onPlayLive,
     required this.onPlayAndRecord,
     required this.recordingFeatureUnlocked,
   });
@@ -475,6 +512,7 @@ class _TvRegionalScreen extends StatelessWidget {
   final Map<String, List<TvChannel>> regions;
   final Map<String, TvProgram> currentPrograms;
   final ValueChanged<TvChannel> onOpenChannel;
+  final ValueChanged<TvChannel> onPlayLive;
   final ValueChanged<TvChannel> onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
@@ -488,6 +526,7 @@ class _TvRegionalScreen extends StatelessWidget {
           channels: regions[region] ?? const [],
           currentPrograms: currentPrograms,
           onOpenChannel: onOpenChannel,
+          onPlayLive: onPlayLive,
           onPlayAndRecord: onPlayAndRecord,
           recordingFeatureUnlocked: recordingFeatureUnlocked,
         ),
@@ -553,6 +592,7 @@ class _TvCategoryScreen extends StatefulWidget {
     required this.channels,
     required this.currentPrograms,
     required this.onOpenChannel,
+    required this.onPlayLive,
     required this.onPlayAndRecord,
     required this.recordingFeatureUnlocked,
   });
@@ -561,6 +601,7 @@ class _TvCategoryScreen extends StatefulWidget {
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
   final ValueChanged<TvChannel> onOpenChannel;
+  final ValueChanged<TvChannel> onPlayLive;
   final ValueChanged<TvChannel> onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
@@ -637,6 +678,10 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                       kind: 'action',
                       actions: [
                         AccessibleCustomAction(
+                          id: 'play_live',
+                          label: AppLocalizations.of(context).tvPlayLive,
+                        ),
+                        AccessibleCustomAction(
                           id: 'favorite',
                           label: favorite
                               ? AppLocalizations.of(context).radioRemoveFavorite
@@ -654,6 +699,11 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                           ),
                       ],
                       visualActions: [
+                        AccessibleVisualAction(
+                          id: 'play_live',
+                          label: AppLocalizations.of(context).tvPlayLive,
+                          icon: 'play',
+                        ),
                         if (widget.recordingFeatureUnlocked)
                           AccessibleVisualAction(
                             id: 'play_record',
@@ -673,6 +723,9 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                 final channel = widget.channels[index];
                 if (event.type == 'activate') {
                   widget.onOpenChannel(channel);
+                } else if (event.type == 'customAction' &&
+                    event.action == 'play_live') {
+                  widget.onPlayLive(channel);
                 } else if (event.type == 'customAction' && event.action == 'favorite') {
                   await _toggleFavorite(channel);
                 } else if (event.type == 'customAction' &&
@@ -697,6 +750,7 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
             currentProgram: _currentProgramFor(channel),
             isFavorite: _isFavorite(channel),
             onOpen: () => widget.onOpenChannel(channel),
+            onPlayLive: () => widget.onPlayLive(channel),
             onToggleFavorite: () => _toggleFavorite(channel),
             onPlayAndRecord: widget.recordingFeatureUnlocked
                 ? () => widget.onPlayAndRecord(channel)
@@ -716,6 +770,7 @@ class _TvSearchResultsDialog extends StatefulWidget {
     required this.query,
     required this.channels,
     required this.currentPrograms,
+    required this.onPlayLive,
     required this.onPlayAndRecord,
     required this.recordingFeatureUnlocked,
   });
@@ -723,6 +778,7 @@ class _TvSearchResultsDialog extends StatefulWidget {
   final String query;
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
+  final ValueChanged<TvChannel> onPlayLive;
   final ValueChanged<TvChannel> onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
@@ -811,6 +867,10 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                       kind: 'action',
                       actions: [
                         AccessibleCustomAction(
+                          id: 'play_live',
+                          label: l10n.tvPlayLive,
+                        ),
+                        AccessibleCustomAction(
                           id: 'favorite',
                           label: favorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
                         ),
@@ -826,6 +886,11 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                           ),
                       ],
                       visualActions: [
+                        AccessibleVisualAction(
+                          id: 'play_live',
+                          label: l10n.tvPlayLive,
+                          icon: 'play',
+                        ),
                         if (widget.recordingFeatureUnlocked)
                           AccessibleVisualAction(
                             id: 'play_record',
@@ -845,6 +910,10 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                 final channel = widget.channels[index];
                 if (event.type == 'activate') {
                   Navigator.of(context).pop(channel);
+                } else if (event.type == 'customAction' &&
+                    event.action == 'play_live') {
+                  Navigator.of(context).pop();
+                  widget.onPlayLive(channel);
                 } else if (event.type == 'customAction' && event.action == 'favorite') {
                   await _toggleFavorite(channel);
                 } else if (event.type == 'customAction' &&
@@ -870,6 +939,10 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
             currentProgram: _currentProgramFor(channel),
             isFavorite: _isFavorite(channel),
             onOpen: () => Navigator.of(context).pop(channel),
+            onPlayLive: () {
+              Navigator.of(context).pop();
+              widget.onPlayLive(channel);
+            },
             onToggleFavorite: () => _toggleFavorite(channel),
             onPlayAndRecord: widget.recordingFeatureUnlocked
                 ? () {
@@ -913,6 +986,7 @@ class _TvChannelButton extends StatelessWidget {
     required this.currentProgram,
     required this.isFavorite,
     required this.onOpen,
+    required this.onPlayLive,
     required this.onToggleFavorite,
     this.onPlayAndRecord,
     this.onScheduleRecording,
@@ -922,6 +996,7 @@ class _TvChannelButton extends StatelessWidget {
   final TvProgram? currentProgram;
   final bool isFavorite;
   final VoidCallback onOpen;
+  final VoidCallback onPlayLive;
   final VoidCallback onToggleFavorite;
   final VoidCallback? onPlayAndRecord;
   final VoidCallback? onScheduleRecording;
@@ -951,6 +1026,9 @@ class _TvChannelButton extends StatelessWidget {
           hint: l10n.tvOpenChannelHint,
           onTap: onOpen,
           customSemanticsActions: {
+            CustomSemanticsAction(
+              label: l10n.tvPlayLive,
+            ): onPlayLive,
             CustomSemanticsAction(
               label: isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
             ): onToggleFavorite,
@@ -1009,6 +1087,11 @@ class _TvChannelButton extends StatelessWidget {
                       ],
                     ),
                   ),
+                ),
+                IconButton(
+                  tooltip: l10n.tvPlayLive,
+                  onPressed: onPlayLive,
+                  icon: const Icon(Icons.play_arrow),
                 ),
                 if (onPlayAndRecord != null)
                   IconButton(

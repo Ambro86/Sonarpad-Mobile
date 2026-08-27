@@ -775,6 +775,10 @@
   "radioCommunityAdded": "Stanice byla úspěšně přidána do komunity Sonarpad.",
   "radioCommunityAddError": "Chyba při přidávání stanice: {error}",
   "radioPlay": "Přehrát",
+  "tvPlayLive": "Přehrát živé vysílání",
+  "@tvPlayLive": {
+    "description": "Secondary action that plays a TV channel live without opening its guide."
+  },
   "playAndRecord": "Přehrát a nahrávat",
   "@playAndRecord": {
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."

@@ -1560,6 +1560,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get radioPlay => "Відтворити";
 
   @override
+  String get tvPlayLive => 'Відтворити наживо';
+
+  @override
   String get playAndRecord => 'Відтворити й записувати';
 
   @override

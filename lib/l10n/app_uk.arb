@@ -2627,6 +2627,10 @@
     }
   },
   "radioPlay": "Відтворити",
+  "tvPlayLive": "Відтворити наживо",
+  "@tvPlayLive": {
+    "description": "Secondary action that plays a TV channel live without opening its guide."
+  },
   "playAndRecord": "Відтворити й записувати",
   "@playAndRecord": {
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
