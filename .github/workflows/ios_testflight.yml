@@ -31,6 +31,9 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
+      - name: Patch flutter_tts iOS synthesizeToFile Int16 crash
+        run: scripts/patch_flutter_tts_ios_int16.sh
+
       - name: Verify native DSP assets
         run: python3 tools/verify_native_dsp_assets.py
 
