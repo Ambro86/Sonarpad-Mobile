@@ -81,7 +81,14 @@ Future<TimeOfDay?> _showScheduledRecordingTimePicker({
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ExcludeSemantics(child: Text('$visibleLabel: $valueText')),
+                ExcludeSemantics(
+                  child: Text(
+                    l10n.radioScheduleLabeledValue(
+                      visibleLabel,
+                      valueText,
+                    ),
+                  ),
+                ),
                 Semantics(
                   slider: true,
                   label: semanticsLabel,
