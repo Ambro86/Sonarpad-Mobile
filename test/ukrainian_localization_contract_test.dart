@@ -9,6 +9,11 @@ Map<String, dynamic> _arb(String path) =>
 Set<String> _messageKeys(Map<String, dynamic> arb) =>
     arb.keys.where((key) => !key.startsWith('@')).toSet();
 
+String _arbText(Map<String, dynamic> arb) => _messageKeys(arb)
+    .map((key) => arb[key])
+    .whereType<String>()
+    .join('\n');
+
 void main() {
   test('Ukrainian ARB covers every Sonarpad localization key', () {
     final italian = _arb('lib/l10n/app_it.arb');
@@ -26,6 +31,27 @@ void main() {
     expect(service, contains("'uk'"));
     expect(generated, contains("Locale('uk')"));
     expect(generated, contains("case 'uk':"));
+  });
+
+  test('Ukrainian ARB has no known Italian localization residue', () {
+    final ukrainian = _arb('lib/l10n/app_uk.arb');
+    final text = _arbText(ukrainian);
+    const forbidden = <String>[
+      'Cerca canali TV',
+      'Tocca per riprodurre il canale TV',
+      'Registrazione in corso',
+      'Seleziona registrazioni',
+      'Nessuna registrazione',
+      'Audiodescrizioni Rai',
+      'Caricamento in corso',
+      'Nessun elemento trovato',
+      'Farmaci, parafarmaci e integratori',
+      'Errore nella ricerca parafarmaci',
+      'Scheda prodotto caricata',
+    ];
+    for (final value in forbidden) {
+      expect(text, isNot(contains(value)), reason: value);
+    }
   });
 
   test('Ukrainian changelog is complete for every release', () {

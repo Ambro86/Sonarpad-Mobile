@@ -27,6 +27,7 @@ class SonarTubeItem {
     this.duration,
     this.published,
     this.views,
+    this.subscribers,
     this.description,
     this.isLive = false,
   });
@@ -41,6 +42,7 @@ class SonarTubeItem {
   final String? duration;
   final String? published;
   final String? views;
+  final String? subscribers;
   final String? description;
   final bool isLive;
 }
@@ -175,10 +177,52 @@ class SonarTubeService {
   final Uri endpoint;
   final String _clientToken;
   final bool _directNavigationEnabled;
+  String _youtubeLanguage = 'it';
+  String _youtubeRegion = 'IT';
+
+  void setLocaleName(String localeName) {
+    final normalized = localeName.replaceAll('-', '_').toLowerCase();
+    if (normalized == 'cs') {
+      _youtubeLanguage = 'cs';
+      _youtubeRegion = 'CZ';
+    } else if (normalized == 'de') {
+      _youtubeLanguage = 'de';
+      _youtubeRegion = 'DE';
+    } else if (normalized == 'en') {
+      _youtubeLanguage = 'en';
+      _youtubeRegion = 'US';
+    } else if (normalized == 'es') {
+      _youtubeLanguage = 'es';
+      _youtubeRegion = 'ES';
+    } else if (normalized == 'fr') {
+      _youtubeLanguage = 'fr';
+      _youtubeRegion = 'FR';
+    } else if (normalized == 'pl') {
+      _youtubeLanguage = 'pl';
+      _youtubeRegion = 'PL';
+    } else if (normalized == 'pt') {
+      _youtubeLanguage = 'pt-PT';
+      _youtubeRegion = 'PT';
+    } else if (normalized == 'pt_br') {
+      _youtubeLanguage = 'pt-BR';
+      _youtubeRegion = 'BR';
+    } else if (normalized == 'uk') {
+      _youtubeLanguage = 'uk';
+      _youtubeRegion = 'UA';
+    } else if (normalized == 'zh' || normalized == 'zh_cn') {
+      _youtubeLanguage = 'zh-CN';
+      _youtubeRegion = 'CN';
+    } else {
+      _youtubeLanguage = 'it';
+      _youtubeRegion = 'IT';
+    }
+  }
 
   Future<SonarTubePage> search(String query, {String? token, int page = 1}) {
     final trimmedQuery = query.trim();
     final fallbackQuery = <String, String>{
+        'hl': _youtubeLanguage,
+        'gl': _youtubeRegion,
         'q': trimmedQuery,
         'type': 'all',
         'format': 'json',
@@ -209,6 +253,8 @@ class SonarTubeService {
     }
     final seedVideoId = _mixSeedVideoId(collection);
     final fallbackQuery = <String, String>{
+      'hl': _youtubeLanguage,
+      'gl': _youtubeRegion,
       'browse': collection.id,
       'kind': collection.kind.name,
       'title': collection.title,
@@ -344,6 +390,8 @@ class SonarTubeService {
       throw ArgumentError('video_required');
     }
     final data = await _request({
+      'hl': _youtubeLanguage,
+      'gl': _youtubeRegion,
       'url': item.url.isEmpty ? item.id : item.url,
       'comments': '1',
       'format': 'json',
@@ -727,8 +775,8 @@ class SonarTubeService {
       {
         'context': {
           'client': {
-            'hl': 'it',
-            'gl': 'IT',
+            'hl': _youtubeLanguage,
+            'gl': _youtubeRegion,
             'clientName': 'ANDROID',
             'clientVersion': _androidClientVersion,
             'androidSdkVersion': 33,
@@ -758,8 +806,8 @@ class SonarTubeService {
   Map<String, dynamic> _youtubeBrowseContext() {
     return {
       'client': {
-        'hl': 'it',
-        'gl': 'IT',
+        'hl': _youtubeLanguage,
+        'gl': _youtubeRegion,
         'clientName': 'WEB',
         'clientVersion': _webClientVersion,
         'platform': 'DESKTOP',
@@ -789,6 +837,7 @@ class SonarTubeService {
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            'Accept-Language': _youtubeLanguage,
             'User-Agent': _androidUserAgent,
             'X-YouTube-Client-Name': webClient ? '1' : '3',
             'X-YouTube-Client-Version':
@@ -876,6 +925,7 @@ class SonarTubeService {
                   '/channel/$id',
                 ).toString(),
           thumbnailUrl: _youtubeBestThumb(channel['thumbnail']),
+          subscribers: _nullableYoutubeText(channel['subscriberCountText']),
           description: _nullableYoutubeText(channel['descriptionSnippet']),
         ),
       );
@@ -1317,6 +1367,7 @@ class SonarTubeService {
       duration: _string(raw['duration']),
       published: _string(raw['published']),
       views: _string(raw['views']),
+      subscribers: _string(raw['subscribers']),
       description: _string(raw['description']),
       isLive: raw['live'] == true,
     );

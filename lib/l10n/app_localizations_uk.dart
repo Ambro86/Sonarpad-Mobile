@@ -1347,7 +1347,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get logCleared => "Журнал очищено";
 
   @override
-  String get parafarmacoDetailReadyAnnouncement => "Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.";
+  String get parafarmacoDetailReadyAnnouncement => "Картку товару завантажено. Проведіть пальцем праворуч, щоб вибрати розділи.";
 
   @override
   String get systemLog => "Системний журнал";
@@ -1428,28 +1428,28 @@ class AppLocalizationsUk extends AppLocalizations {
   String get listenToAll => "Прослухати все";
 
   @override
-  String get audiodescriptionTitle => "Audiodescrizioni Rai";
+  String get audiodescriptionTitle => "Аудіодескрипції Rai";
 
   @override
-  String get audiodescriptionRecent => "Recenti";
+  String get audiodescriptionRecent => "Нещодавні";
 
   @override
-  String get audiodescriptionAll => "Tutte le audiodescrizioni";
+  String get audiodescriptionAll => "Усі аудіодескрипції";
 
   @override
-  String get audiodescriptionFilm => "Film";
+  String get audiodescriptionFilm => "Фільми";
 
   @override
-  String get audiodescriptionSearch => "Cerca...";
+  String get audiodescriptionSearch => "Пошук...";
 
   @override
-  String get audiodescriptionLoading => "Caricamento in corso...";
+  String get audiodescriptionLoading => "Завантаження...";
 
   @override
-  String get audiodescriptionError => "Errore nel caricamento del catalogo";
+  String get audiodescriptionError => "Помилка завантаження каталогу";
 
   @override
-  String get audiodescriptionEmpty => "Nessun elemento trovato";
+  String get audiodescriptionEmpty => "Нічого не знайдено";
 
   @override
   String get radio => "Радіо";
@@ -1521,22 +1521,22 @@ class AppLocalizationsUk extends AppLocalizations {
   String get radioRemoveFavorite => "Видалити з вибраного";
 
   @override
-  String get tvSearchFieldLabel => "Cerca canali TV";
+  String get tvSearchFieldLabel => "Пошук телеканалів";
 
   @override
-  String get tvSearchFieldHint => "Nome del canale...";
+  String get tvSearchFieldHint => "Назва каналу...";
 
   @override
-  String get tvSearchButton => "Cerca";
+  String get tvSearchButton => "Пошук";
 
   @override
-  String get tvSearchResults => "Risultati canali TV";
+  String get tvSearchResults => "Результати пошуку телеканалів";
 
   @override
-  String get tvSearchEmptyQuery => "Inserisci il nome di un canale TV da cercare.";
+  String get tvSearchEmptyQuery => "Введіть назву телеканалу для пошуку.";
 
   @override
-  String get tvOpenChannelHint => "Tocca per riprodurre il canale TV";
+  String get tvOpenChannelHint => "Торкніться, щоб відтворити телеканал";
 
   @override
   String get radioAddCommunity => "Додати радіостанцію до спільноти Sonarpad";
@@ -1566,34 +1566,34 @@ class AppLocalizationsUk extends AppLocalizations {
   String get playAndRecord => 'Відтворити й записувати';
 
   @override
-  String get startRecording => "Avvia registrazione";
+  String get startRecording => "Почати запис";
 
   @override
-  String get stopRecording => "Ferma registrazione";
+  String get stopRecording => "Зупинити запис";
 
   @override
-  String get recordings => "Registrazioni";
+  String get recordings => "Записи";
 
   @override
-  String get recordingInProgressStatus => "Registrazione in corso";
+  String get recordingInProgressStatus => "Триває запис";
 
   @override
-  String get scheduledRecordingInProgressStatus => "Registrazione programmata in corso";
+  String get scheduledRecordingInProgressStatus => "Триває запланований запис";
 
   @override
-  String get recordingCannotOpenWhileInProgress => "Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.";
+  String get recordingCannotOpenWhileInProgress => "Цей запис неможливо відкрити, оскільки запис ще триває.";
 
   @override
-  String get blindLibrarySearchCatalog => "Cerca nel catalogo";
+  String get blindLibrarySearchCatalog => "Пошук у каталозі";
 
   @override
-  String get selectRecordings => "Seleziona registrazioni";
+  String get selectRecordings => "Вибрати записи";
 
   @override
-  String get noRecordings => "Nessuna registrazione.";
+  String get noRecordings => "Немає записів.";
 
   @override
-  String get recordingStarted => "Registrazione avviata.";
+  String get recordingStarted => "Запис розпочато.";
 
   @override
   String get routeTitle => "Маршрути";
@@ -2100,19 +2100,19 @@ class AppLocalizationsUk extends AppLocalizations {
   String get podcastCacheEmpty => "Кеш подкастів уже порожній.";
 
   @override
-  String get pharmacyFeatureTitle => "Farmaci, parafarmaci e integratori";
+  String get pharmacyFeatureTitle => "Лікарські засоби, парафармацевтичні товари та добавки";
 
   @override
-  String get pharmacyProductsSectionTitle => "Parafarmaci e integratori";
+  String get pharmacyProductsSectionTitle => "Парафармацевтичні товари та добавки";
 
   @override
-  String get pharmacyProductsLoadingTitle => "Ricerca parafarmaci e integratori in corso...";
+  String get pharmacyProductsLoadingTitle => "Пошук парафармацевтичних товарів і добавок...";
 
   @override
-  String get pharmacyProductsErrorTitle => "Errore nella ricerca parafarmaci e integratori";
+  String get pharmacyProductsErrorTitle => "Помилка пошуку парафармацевтичних товарів і добавок";
 
   @override
-  String get pharmacyProductsNoResultsTitle => "Nessun parafarmaco o integratore trovato";
+  String get pharmacyProductsNoResultsTitle => "Парафармацевтичних товарів або добавок не знайдено";
 
   @override
   String get mediaCutterTitle => "Обрізати медіафайл";
@@ -2999,25 +2999,25 @@ class AppLocalizationsUk extends AppLocalizations {
   String radioFavoriteRemoved(String name) => "${name} видалено з вибраного.";
 
   @override
-  String tvSearchNoResults(String query) => "Nessun canale TV trovato per ${query}.";
+  String tvSearchNoResults(String query) => "Не знайдено телеканалів за запитом ${query}.";
 
   @override
-  String tvNowOnAir(String title) => "Ora in onda: ${title}";
+  String tvNowOnAir(String title) => "Зараз в ефірі: ${title}";
 
   @override
   String radioCommunityAddError(Object error) => "Помилка додавання радіостанції: ${error}";
 
   @override
   String deleteRecordingsConfirmation(int count) {
-    if (count == 1) return 'Vuoi eliminare definitivamente una registrazione?';
-    return 'Vuoi eliminare definitivamente $count registrazioni?';
+    if (count == 1) return 'Видалити один запис назавжди?';
+    return 'Видалити $count записів назавжди?';
   }
 
   @override
-  String recordingSaved(Object path) => "Registrazione salvata: ${path}";
+  String recordingSaved(Object path) => "Запис збережено: ${path}";
 
   @override
-  String recordingError(Object error) => "Errore registrazione: ${error}";
+  String recordingError(Object error) => "Помилка запису: ${error}";
 
   @override
   String routeError(Object error) => "Помилка: ${error}";

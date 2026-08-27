@@ -2273,7 +2273,7 @@
   "@logCleared": {
     "description": "Localized text for logCleared."
   },
-  "parafarmacoDetailReadyAnnouncement": "Scheda prodotto caricata. Scorri verso destra per scegliere le sezioni.",
+  "parafarmacoDetailReadyAnnouncement": "Картку товару завантажено. Проведіть пальцем праворуч, щоб вибрати розділи.",
   "@parafarmacoDetailReadyAnnouncement": {
     "description": "Announcement spoken after a para-pharmaceutical product detail page has loaded."
   },
@@ -2391,35 +2391,35 @@
       }
     }
   },
-  "audiodescriptionTitle": "Audiodescrizioni Rai",
+  "audiodescriptionTitle": "Аудіодескрипції Rai",
   "@audiodescriptionTitle": {
     "description": "Localized text for audiodescriptionTitle."
   },
-  "audiodescriptionRecent": "Recenti",
+  "audiodescriptionRecent": "Нещодавні",
   "@audiodescriptionRecent": {
     "description": "Localized text for audiodescriptionRecent."
   },
-  "audiodescriptionAll": "Tutte le audiodescrizioni",
+  "audiodescriptionAll": "Усі аудіодескрипції",
   "@audiodescriptionAll": {
     "description": "Localized text for audiodescriptionAll."
   },
-  "audiodescriptionFilm": "Film",
+  "audiodescriptionFilm": "Фільми",
   "@audiodescriptionFilm": {
     "description": "Localized text for audiodescriptionFilm."
   },
-  "audiodescriptionSearch": "Cerca...",
+  "audiodescriptionSearch": "Пошук...",
   "@audiodescriptionSearch": {
     "description": "Localized text for audiodescriptionSearch."
   },
-  "audiodescriptionLoading": "Caricamento in corso...",
+  "audiodescriptionLoading": "Завантаження...",
   "@audiodescriptionLoading": {
     "description": "Localized text for audiodescriptionLoading."
   },
-  "audiodescriptionError": "Errore nel caricamento del catalogo",
+  "audiodescriptionError": "Помилка завантаження каталогу",
   "@audiodescriptionError": {
     "description": "Localized text for audiodescriptionError."
   },
-  "audiodescriptionEmpty": "Nessun elemento trovato",
+  "audiodescriptionEmpty": "Нічого не знайдено",
   "@audiodescriptionEmpty": {
     "description": "Localized text for audiodescriptionEmpty."
   },
@@ -2540,27 +2540,27 @@
     }
   },
   "radioFavoriteRemoved": "{name} видалено з вибраного.",
-  "tvSearchFieldLabel": "Cerca canali TV",
+  "tvSearchFieldLabel": "Пошук телеканалів",
   "@tvSearchFieldLabel": {
     "description": "Localized text for tvSearchFieldLabel."
   },
-  "tvSearchFieldHint": "Nome del canale...",
+  "tvSearchFieldHint": "Назва каналу...",
   "@tvSearchFieldHint": {
     "description": "Localized text for tvSearchFieldHint."
   },
-  "tvSearchButton": "Cerca",
+  "tvSearchButton": "Пошук",
   "@tvSearchButton": {
     "description": "Localized text for tvSearchButton."
   },
-  "tvSearchResults": "Risultati canali TV",
+  "tvSearchResults": "Результати пошуку телеканалів",
   "@tvSearchResults": {
     "description": "Localized text for tvSearchResults."
   },
-  "tvSearchEmptyQuery": "Inserisci il nome di un canale TV da cercare.",
+  "tvSearchEmptyQuery": "Введіть назву телеканалу для пошуку.",
   "@tvSearchEmptyQuery": {
     "description": "Localized text for tvSearchEmptyQuery."
   },
-  "tvSearchNoResults": "Nessun canale TV trovato per {query}.",
+  "tvSearchNoResults": "Не знайдено телеканалів за запитом {query}.",
   "@tvSearchNoResults": {
     "description": "Localized text for tvSearchNoResults.",
     "placeholders": {
@@ -2570,11 +2570,11 @@
       }
     }
   },
-  "tvOpenChannelHint": "Tocca per riprodurre il canale TV",
+  "tvOpenChannelHint": "Торкніться, щоб відтворити телеканал",
   "@tvOpenChannelHint": {
     "description": "Localized text for tvOpenChannelHint."
   },
-  "tvNowOnAir": "Ora in onda: {title}",
+  "tvNowOnAir": "Зараз в ефірі: {title}",
   "@tvNowOnAir": {
     "description": "Localized text for tvNowOnAir.",
     "placeholders": {
@@ -2638,15 +2638,15 @@
   "@radioPlay": {
     "description": "Localized text for radioPlay."
   },
-  "startRecording": "Avvia registrazione",
-  "stopRecording": "Ferma registrazione",
-  "recordings": "Registrazioni",
-  "recordingInProgressStatus": "Registrazione in corso",
-  "scheduledRecordingInProgressStatus": "Registrazione programmata in corso",
-  "recordingCannotOpenWhileInProgress": "Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.",
-  "blindLibrarySearchCatalog": "Cerca nel catalogo",
-  "selectRecordings": "Seleziona registrazioni",
-  "deleteRecordingsConfirmation": "{count, plural, =1{Vuoi eliminare definitivamente una registrazione?} other{Vuoi eliminare definitivamente {count} registrazioni?}}",
+  "startRecording": "Почати запис",
+  "stopRecording": "Зупинити запис",
+  "recordings": "Записи",
+  "recordingInProgressStatus": "Триває запис",
+  "scheduledRecordingInProgressStatus": "Триває запланований запис",
+  "recordingCannotOpenWhileInProgress": "Цей запис неможливо відкрити, оскільки запис ще триває.",
+  "blindLibrarySearchCatalog": "Пошук у каталозі",
+  "selectRecordings": "Вибрати записи",
+  "deleteRecordingsConfirmation": "{count, plural, =1{Видалити один запис назавжди?} other{Видалити {count} записів назавжди?}}",
   "@deleteRecordingsConfirmation": {
     "placeholders": {
       "count": {
@@ -2654,9 +2654,9 @@
       }
     }
   },
-  "noRecordings": "Nessuna registrazione.",
-  "recordingStarted": "Registrazione avviata.",
-  "recordingSaved": "Registrazione salvata: {path}",
+  "noRecordings": "Немає записів.",
+  "recordingStarted": "Запис розпочато.",
+  "recordingSaved": "Запис збережено: {path}",
   "@recordingSaved": {
     "placeholders": {
       "path": {
@@ -2664,7 +2664,7 @@
       }
     }
   },
-  "recordingError": "Errore registrazione: {error}",
+  "recordingError": "Помилка запису: {error}",
   "@recordingError": {
     "placeholders": {
       "error": {
@@ -3371,23 +3371,23 @@
   "@podcastCacheEmpty": {
     "description": "Localized text for podcastCacheEmpty."
   },
-  "pharmacyFeatureTitle": "Farmaci, parafarmaci e integratori",
+  "pharmacyFeatureTitle": "Лікарські засоби, парафармацевтичні товари та добавки",
   "@pharmacyFeatureTitle": {
     "description": "Title for the medicines, parapharmaceuticals and supplements feature."
   },
-  "pharmacyProductsSectionTitle": "Parafarmaci e integratori",
+  "pharmacyProductsSectionTitle": "Парафармацевтичні товари та добавки",
   "@pharmacyProductsSectionTitle": {
     "description": "Title for the parapharmaceuticals and supplements results section."
   },
-  "pharmacyProductsLoadingTitle": "Ricerca parafarmaci e integratori in corso...",
+  "pharmacyProductsLoadingTitle": "Пошук парафармацевтичних товарів і добавок...",
   "@pharmacyProductsLoadingTitle": {
     "description": "Loading title for parapharmaceuticals and supplements search."
   },
-  "pharmacyProductsErrorTitle": "Errore nella ricerca parafarmaci e integratori",
+  "pharmacyProductsErrorTitle": "Помилка пошуку парафармацевтичних товарів і добавок",
   "@pharmacyProductsErrorTitle": {
     "description": "Error title for parapharmaceuticals and supplements search."
   },
-  "pharmacyProductsNoResultsTitle": "Nessun parafarmaco o integratore trovato",
+  "pharmacyProductsNoResultsTitle": "Парафармацевтичних товарів або добавок не знайдено",
   "@pharmacyProductsNoResultsTitle": {
     "description": "Empty state title for parapharmaceuticals and supplements search."
   },

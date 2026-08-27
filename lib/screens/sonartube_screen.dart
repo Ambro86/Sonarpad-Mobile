@@ -630,7 +630,12 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   String? _subtitle(AppLocalizations l10n, SonarTubeItem item) {
     final values = <String>[
       _itemType(l10n, item),
-      if (item.channel?.isNotEmpty ?? false) item.channel!,
+      if (item.kind == SonarTubeItemKind.channel &&
+          (item.subscribers?.isNotEmpty ?? false))
+        item.subscribers!,
+      if (item.kind != SonarTubeItemKind.channel &&
+          (item.channel?.isNotEmpty ?? false))
+        item.channel!,
       if (item.duration?.isNotEmpty ?? false) item.duration!,
       if (item.published?.isNotEmpty ?? false) item.published!,
       if (item.views?.isNotEmpty ?? false) item.views!,
@@ -1411,6 +1416,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    _service.setLocaleName(l10n.localeName);
     if (_isSearchResults) {
       return useSharedAccessibleViewModel
           ? Scaffold(
@@ -1710,6 +1716,7 @@ class _SonarTubeTranscriptScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    widget.service.setLocaleName(l10n.localeName);
     final flutterRows = <Widget>[
       Text(
         l10n.sonarTubeTranscript,
@@ -1900,6 +1907,7 @@ class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    widget.service.setLocaleName(l10n.localeName);
     final flutterRows = <Widget>[
       Text(
         l10n.sonarTubeComments,
@@ -2427,13 +2435,17 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
             SonarTubeItemKind.channel => l10n.sonarTubeChannel,
             SonarTubeItemKind.playlist => l10n.sonarTubePlaylist,
           };
+          final favoriteSubtitle = item.kind == SonarTubeItemKind.channel &&
+                  (item.subscribers?.isNotEmpty ?? false)
+              ? '$type · ${item.subscribers}'
+              : type;
           final removeLabel = item.kind == SonarTubeItemKind.channel
               ? l10n.sonarTubeRemoveChannelFavorite
               : l10n.sonarTubeRemoveFavorite;
           return AccessibleListRow(
             id: 'favorite_${entry.key}',
             title: item.title,
-            subtitle: type,
+            subtitle: favoriteSubtitle,
             actions: [
               AccessibleCustomAction(id: 'remove', label: removeLabel),
               if (item.kind == SonarTubeItemKind.video)
@@ -2510,6 +2522,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    widget.service.setLocaleName(l10n.localeName);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -2545,6 +2558,11 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                             SonarTubeItemKind.channel => l10n.sonarTubeChannel,
                             SonarTubeItemKind.playlist => l10n.sonarTubePlaylist,
                           };
+                          final favoriteSubtitle =
+                              item.kind == SonarTubeItemKind.channel &&
+                                      (item.subscribers?.isNotEmpty ?? false)
+                                  ? '$type · ${item.subscribers}'
+                                  : type;
                           final removeLabel =
                               item.kind == SonarTubeItemKind.channel
                                   ? l10n.sonarTubeRemoveChannelFavorite
@@ -2601,7 +2619,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                                             ),
                                           ),
                                     title: Text(item.title),
-                                    subtitle: Text(type),
+                                    subtitle: Text(favoriteSubtitle),
                                     trailing: ExcludeSemantics(
                                       child: IconButton(
                                         key: ValueKey(

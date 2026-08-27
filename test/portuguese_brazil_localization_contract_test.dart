@@ -281,6 +281,25 @@ void main() {
     expect(audio, isNot(contains('Riproduzione Audio')));
   });
 
+  test('SonarTube localizes dynamic YouTube metadata for the app locale', () {
+    final service =
+        File('lib/services/sonartube_service.dart').readAsStringSync();
+    final screen =
+        File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final resolver = File('server/youtube_resolve.php').readAsStringSync();
+
+    expect(service, contains("_youtubeLanguage = 'pt-PT'"));
+    expect(service, contains("_youtubeLanguage = 'pt-BR'"));
+    expect(service, contains("'Accept-Language': _youtubeLanguage"));
+    expect(service, contains("'hl': _youtubeLanguage"));
+    expect(service, contains("'gl': _youtubeRegion"));
+    expect(screen, contains('_service.setLocaleName(l10n.localeName);'));
+    expect(resolver, contains("_GET['hl']"));
+    expect(resolver, contains("_GET['gl']"));
+    expect(resolver, contains('yt_request_language()'));
+    expect(resolver, contains('yt_request_region()'));
+  });
+
   test('Portuguese changelog is complete for Portugal and Brazil', () {
     final decoded = jsonDecode(
       File('assets/changelog.json').readAsStringSync(),
