@@ -108,6 +108,7 @@ class _PodcastEpisodePlayerScreenState
   PodcastEpisode? _refreshedEpisode;
   bool _restoreVideoOffAfterBootstrap = false;
   bool _refreshingEpisode = false;
+  bool _switchingVideoMode = false;
 
   PodcastEpisode get _episode => _refreshedEpisode ?? widget.episode;
 
@@ -149,7 +150,11 @@ class _PodcastEpisodePlayerScreenState
     }
   }
 
-  Future<void> _play({bool allowMediaRefresh = true}) async {
+  Future<void> _play({
+    bool allowMediaRefresh = true,
+    Duration? resumePosition,
+    bool shouldPlay = true,
+  }) async {
     AppLogger.log(
       'PodcastPlayer: _play start mounted=$mounted loaded=$_loaded '
       'loading=$_loading videoEnabled=$_isVideoEnabled '
@@ -166,8 +171,16 @@ class _PodcastEpisodePlayerScreenState
         AppLogger.log(
           'PodcastPlayer: video branch start loaded=$_loaded, $_logSubject',
         );
-        if (_loaded) await _audio.stop();
-        _videoController?.dispose();
+        // The audio-only player may still be running even when `_loaded` was
+        // reset for a mode change. Stop it unconditionally before creating the
+        // video controller, otherwise both engines remain audible on iOS.
+        await _audio.stop();
+        final previousVideoController = _videoController;
+        if (previousVideoController != null) {
+          await previousVideoController.pause();
+          await previousVideoController.dispose();
+          _videoController = null;
+        }
         final playbackUrl = _episode.videoUrl ?? _episode.audioUrl;
         final useExternalAudio = _episode.videoUrl != null &&
             _episode.videoUrl != _episode.audioUrl;
@@ -226,7 +239,16 @@ class _PodcastEpisodePlayerScreenState
         });
 
         final stableId = _getStableId();
-        if (await _settings.isAutoBookmarkEnabled()) {
+        if (resumePosition != null) {
+          await _videoController!.seekTo(resumePosition);
+          if (useExternalAudio) {
+            await _audio.seek(resumePosition);
+          }
+          AppLogger.log(
+            'PodcastPlayer: video transition restored position='
+            '${resumePosition.inMilliseconds}ms, $_logSubject',
+          );
+        } else if (await _settings.isAutoBookmarkEnabled()) {
           final savedPos = await _settings.getMediaBookmark(stableId);
           if (savedPos != null && savedPos >= 3) {
             final dur = _videoController!.value.duration;
@@ -239,10 +261,14 @@ class _PodcastEpisodePlayerScreenState
           }
         }
 
-        AppLogger.log('PodcastPlayer: video play start, $_logSubject');
-        await _videoController!.play();
+        AppLogger.log(
+          'PodcastPlayer: video ready shouldPlay=$shouldPlay, $_logSubject',
+        );
+        if (shouldPlay) {
+          await _videoController!.play();
+        }
         _loaded = true;
-        if (useExternalAudio) {
+        if (useExternalAudio && shouldPlay) {
           unawaited(_audio.play().catchError((Object e, StackTrace stackTrace) {
             AppLogger.log(
               'PodcastPlayer: external audio play async error: $e, $_logSubject',
@@ -253,7 +279,10 @@ class _PodcastEpisodePlayerScreenState
           }));
         }
         if (Platform.isIOS) {
-          await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
+          await _mediaCommands.invokeMethod(
+            'setMagicTapPlaying',
+            shouldPlay,
+          );
         }
         AppLogger.log('PodcastPlayer: video play completed, $_logSubject');
         if (_restoreVideoOffAfterBootstrap) {
@@ -274,8 +303,11 @@ class _PodcastEpisodePlayerScreenState
         if (Platform.isIOS && _videoController != null) {
           await _mediaCommands.invokeMethod('clearMagicTap');
         }
-        _videoController?.pause();
-        _videoController?.dispose();
+        final previousVideoController = _videoController;
+        if (previousVideoController != null) {
+          await previousVideoController.pause();
+          await previousVideoController.dispose();
+        }
         _videoController = null;
         _videoUsesExternalAudio = false;
 
@@ -291,16 +323,25 @@ class _PodcastEpisodePlayerScreenState
             'PodcastPlayer: audio setUrl completed loaded=$_loaded, '
             'title="In riproduzione: ${_episode.title}", $_logSubject',
           );
+          if (resumePosition != null) {
+            await _audio.seek(resumePosition);
+            AppLogger.log(
+              'PodcastPlayer: audio transition restored position='
+              '${resumePosition.inMilliseconds}ms, $_logSubject',
+            );
+          }
         }
         AppLogger.log(
           'PodcastPlayer: audio play scheduled, '
           'title="In riproduzione: ${_episode.title}", $_logSubject',
         );
-        unawaited(_audio.play().catchError((Object e, StackTrace stackTrace) {
-          AppLogger.log(
-            'PodcastPlayer: audio play async error: $e, $_logSubject',
-          );
-        }));
+        if (shouldPlay) {
+          unawaited(_audio.play().catchError((Object e, StackTrace stackTrace) {
+            AppLogger.log(
+              'PodcastPlayer: audio play async error: $e, $_logSubject',
+            );
+          }));
+        }
       }
       if (!mounted) return;
     } catch (e) {
@@ -311,7 +352,11 @@ class _PodcastEpisodePlayerScreenState
           _loading = false;
           _error = null;
         });
-        await _play(allowMediaRefresh: false);
+        await _play(
+          allowMediaRefresh: false,
+          resumePosition: resumePosition,
+          shouldPlay: shouldPlay,
+        );
         return;
       }
       AppLogger.log('PodcastPlayer: Error during _play: $e, $_logSubject');
@@ -557,24 +602,83 @@ class _PodcastEpisodePlayerScreenState
   }
 
   void _toggleVideo(bool enable) {
+    if (_loading || _switchingVideoMode) {
+      AppLogger.log(
+        'PodcastPlayer: _toggleVideo ignored during transition enable=$enable, '
+        '$_logSubject',
+      );
+      return;
+    }
     _restoreVideoOffAfterBootstrap = false;
     AppLogger.log('PodcastPlayer: _toggleVideo enable=$enable, $_logSubject');
-    setState(() => _isVideoEnabled = enable);
+    setState(() {
+      _isVideoEnabled = enable;
+      _switchingVideoMode = true;
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _isVideoEnabled != enable) return;
+      if (!mounted || _isVideoEnabled != enable) {
+        _switchingVideoMode = false;
+        return;
+      }
       unawaited(_applyVideoSetting(enable));
     });
   }
 
   Future<void> _applyVideoSetting(bool enable) async {
-    if (_videoController != null && _videoController!.value.isPlaying) {
-      await _pause();
+    final previousVideoController = _videoController;
+    final wasPlaying = previousVideoController?.value.isPlaying ??
+        _audio.isPlaying;
+    final resumePosition = previousVideoController?.value.position ??
+        _audio.position;
+
+    AppLogger.log(
+      'PodcastPlayer: mode transition start enableVideo=$enable '
+      'wasPlaying=$wasPlaying position=${resumePosition.inMilliseconds}ms '
+      'source=${previousVideoController == null ? 'audio' : 'video'}, '
+      '$_logSubject',
+    );
+
+    try {
+      if (previousVideoController != null) {
+        await _saveVideoBookmark();
+        if (Platform.isIOS) {
+          await _mediaCommands.invokeMethod('clearMagicTap');
+        }
+        await previousVideoController.pause();
+        if (_videoUsesExternalAudio || _audio.isPlaying) {
+          await _audio.stop();
+        }
+        await previousVideoController.dispose();
+        _videoController = null;
+        _videoUsesExternalAudio = false;
+      } else {
+        // This is the critical audio-only -> video path from the reported log.
+        // Stop just_audio before a VideoPlayerController is initialized.
+        await _audio.stop();
+      }
+
+      await _settings.setVideoEnabled(enable);
+      _loaded = false; // Force a reload only after the old engine is stopped.
+      await _play(
+        resumePosition: resumePosition,
+        shouldPlay: wasPlaying,
+      );
+    } catch (error, stackTrace) {
+      AppLogger.log(
+        'PodcastPlayer: mode transition failed error=$error '
+        'stack=$stackTrace, $_logSubject',
+      );
+      if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        setState(
+          () => _error = l10n.episodeError(l10n.technicalErrorGeneric),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _switchingVideoMode = false);
+      }
     }
-    await _settings.setVideoEnabled(enable);
-    _loaded = false; // force reload to switch player
-    await _play().catchError((Object e, StackTrace stackTrace) {
-      AppLogger.log('PodcastPlayer: _toggleVideo _play error: $e, $_logSubject');
-    });
   }
 
   void _startDiagnosticHeartbeat() {
@@ -742,21 +846,59 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Widget _buildVideoPlayerFullscreenSurface(VideoPlayerController controller) {
-    final aspect = controller.value.aspectRatio > 0
+    final safeAspect = controller.value.aspectRatio > 0 &&
+            controller.value.aspectRatio.isFinite
         ? controller.value.aspectRatio
         : 16 / 9;
     return ColoredBox(
       color: Colors.black,
       child: ClipRect(
-        child: Center(
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: SizedBox(
-              width: aspect >= 1 ? aspect : 1,
-              height: aspect >= 1 ? 1 : 1 / aspect,
-              child: VideoPlayer(controller),
-            ),
-          ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mediaSize = MediaQuery.sizeOf(context);
+            final maxWidth = constraints.maxWidth.isFinite
+                ? constraints.maxWidth
+                : mediaSize.width;
+            final maxHeight = constraints.maxHeight.isFinite
+                ? constraints.maxHeight
+                : mediaSize.height;
+
+            var width = maxWidth;
+            var height = width / safeAspect;
+            final isPortraitVideo = safeAspect < 1;
+            if (isPortraitVideo && height > maxHeight) {
+              // A vertical SonarTube video must remain completely visible.
+              // It uses the same real-sized surface as TV, but with contain
+              // sizing so faces and captions are not cropped above or below.
+              height = maxHeight;
+              width = height * safeAspect;
+            } else if (!isPortraitVideo && height < maxHeight) {
+              // Horizontal videos keep the proven TV fullscreen cover layout.
+              height = maxHeight;
+              width = height * safeAspect;
+            }
+
+            AppLogger.log(
+              'PodcastPlayer: fullscreen video layout available='
+              '${maxWidth}x$maxHeight surface=${width}x$height '
+              'aspect=$safeAspect fit=${isPortraitVideo ? 'contain' : 'cover'}, '
+              '$_logSubject',
+            );
+            return Center(
+              child: OverflowBox(
+                alignment: Alignment.center,
+                minWidth: width,
+                maxWidth: width,
+                minHeight: height,
+                maxHeight: height,
+                child: SizedBox(
+                  width: width,
+                  height: height,
+                  child: VideoPlayer(controller),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -782,7 +924,7 @@ class _PodcastEpisodePlayerScreenState
                 style: const TextStyle(color: Colors.white),
               ),
               value: _isVideoEnabled,
-              onChanged: _loading ? null : _toggleVideo,
+              onChanged: _loading || _switchingVideoMode ? null : _toggleVideo,
               contentPadding: EdgeInsets.zero,
               dense: true,
             ),
@@ -933,7 +1075,13 @@ class _PodcastEpisodePlayerScreenState
         if (_podcastService.hasChapterSource(_episode) || (_detectedChapters?.isNotEmpty ?? false))
           AccessibleListRow(id: 'chapters', title: l10n.podcastChapters),
         if (widget.isVideoSupported)
-          AccessibleListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
+          AccessibleListRow(
+            id: 'video',
+            title: l10n.enableVideo,
+            kind: 'toggle',
+            toggleValue: _isVideoEnabled,
+            enabled: !_loading && !_switchingVideoMode,
+          ),
         if (_canNavigatePrevious)
           AccessibleListRow(
             id: 'previous_episode',
@@ -1116,7 +1264,9 @@ class _PodcastEpisodePlayerScreenState
                   key: const ValueKey('podcast_video_toggle'),
                   title: Text(l10n.enableVideo),
                   value: _isVideoEnabled,
-                  onChanged: _toggleVideo,
+                  onChanged: _loading || _switchingVideoMode
+                      ? null
+                      : _toggleVideo,
                   contentPadding: EdgeInsets.zero,
                 ),
               ],

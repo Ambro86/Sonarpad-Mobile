@@ -26,6 +26,7 @@
       "Ampliati i Percorsi con nuovi paesi supportati, tra cui Australia, Canada, Germania, Regno Unito e Stati Uniti.",
       "Aggiunta la localizzazione completa in tedesco, cinese semplificato, portoghese brasiliano e ucraino, comprese le principali sezioni dell’app, Calendario, Meteo, Notizie, Podcast, Radio e le descrizioni dei permessi iOS.",
       "Migliorato anche il Calendario, aumentando enormemente le citazioni del giorno fino a raggiungere 128 citazioni uniche, tradotte in ogni lingua.",
+      "Corretta la visualizzazione dei video di SonarTube e degli altri contenuti video, che ora vengono mostrati correttamente a schermo intero quando è attiva l’opzione “Video orizzontale a schermo intero”.",
       "Migliorata la lettura con le voci Edge quando la connessione è instabile: se l’invio di un paragrafo non riesce, Sonarpad riprova automaticamente fino a cinque volte. La lettura si interrompe soltanto se falliscono tutti i tentativi.",
       "Numerosi miglioramenti generali a stabilità, accessibilità, focus con screen reader, localizzazioni, riproduzione multimediale e gestione dei file su iOS e Android."
     ],
@@ -51,6 +52,7 @@
       "Expanded Routes with support for additional countries, including Australia, Canada, Germany, the United Kingdom and the United States.",
       "Added complete German, Simplified Chinese, Brazilian Portuguese and Ukrainian localizations, including the main app sections, Calendar, Weather, News, Podcasts, Radio and iOS permission descriptions.",
       "The Calendar has also been improved, greatly expanding the daily quotes to 128 unique quotes, translated into every supported language.",
+      "Fixed the display of SonarTube videos and other video content, which is now shown correctly in full screen when the “Landscape full-screen video” option is enabled.",
       "Improved reading with Edge voices when the connection is unstable: if sending a paragraph fails, Sonarpad automatically retries up to five times. Reading stops only if all attempts fail.",
       "Numerous general improvements to stability, accessibility, screen-reader focus, localization, media playback and file handling on iOS and Android."
     ],
@@ -76,6 +78,7 @@
       "Extension des Itinéraires à de nouveaux pays, notamment l’Australie, le Canada, l’Allemagne, le Royaume-Uni et les États-Unis.",
       "Ajout des localisations complètes en allemand, chinois simplifié, portugais brésilien et ukrainien, y compris les principales sections de l’application, le Calendrier, la Météo, les Actualités, les Podcasts, la Radio et les descriptions des autorisations iOS.",
       "Le Calendrier a également été amélioré, avec une forte augmentation des citations du jour jusqu’à 128 citations uniques, traduites dans chaque langue prise en charge.",
+      "Correction de l’affichage des vidéos SonarTube et des autres contenus vidéo, désormais affichés correctement en plein écran lorsque l’option « Vidéo horizontale en plein écran » est activée.",
       "Amélioration de la lecture avec les voix Edge lorsque la connexion est instable : si l’envoi d’un paragraphe échoue, Sonarpad réessaie automatiquement jusqu’à cinq fois. La lecture ne s’arrête que si toutes les tentatives échouent.",
       "Nombreuses améliorations générales de la stabilité, de l’accessibilité, du focus avec les lecteurs d’écran, des localisations, de la lecture multimédia et de la gestion des fichiers sur iOS et Android."
     ],
@@ -101,6 +104,7 @@
       "Ampliadas las Rutas con nuevos países compatibles, entre ellos Australia, Canadá, Alemania, Reino Unido y Estados Unidos.",
       "Añadidas localizaciones completas en alemán, chino simplificado, portugués de Brasil y ucraniano, incluidas las principales secciones de la aplicación, Calendario, Tiempo, Noticias, Podcasts, Radio y las descripciones de permisos de iOS.",
       "También se ha mejorado el Calendario, aumentando enormemente las citas del día hasta alcanzar 128 citas únicas, traducidas a todos los idiomas compatibles.",
+      "Corregida la visualización de los vídeos de SonarTube y de otros contenidos de vídeo, que ahora se muestran correctamente a pantalla completa cuando está activada la opción «Vídeo horizontal a pantalla completa».",
       "Mejorada la lectura con las voces de Edge cuando la conexión es inestable: si falla el envío de un párrafo, Sonarpad lo intenta de nuevo automáticamente hasta cinco veces. La lectura solo se detiene si fallan todos los intentos.",
       "Numerosas mejoras generales de estabilidad, accesibilidad, foco con lectores de pantalla, localizaciones, reproducción multimedia y gestión de archivos en iOS y Android."
     ],
@@ -126,6 +130,7 @@
       "Ampliados os Percursos com novos países suportados, incluindo Austrália, Canadá, Alemanha, Reino Unido e Estados Unidos.",
       "Adicionadas localizações completas em alemão, chinês simplificado, português do Brasil e ucraniano, incluindo as principais secções da aplicação, Calendário, Tempo, Notícias, Podcasts, Rádio e as descrições das permissões do iOS.",
       "O Calendário também foi melhorado, aumentando significativamente as citações do dia até 128 citações únicas, traduzidas para todos os idiomas suportados.",
+      "Corrigida a apresentação dos vídeos do SonarTube e de outros conteúdos de vídeo, que agora são mostrados corretamente em ecrã inteiro quando a opção «Vídeo horizontal em ecrã inteiro» está ativada.",
       "Melhorada a leitura com as vozes Edge quando a ligação está instável: se o envio de um parágrafo falhar, o Sonarpad tenta novamente de forma automática até cinco vezes. A leitura só é interrompida se todas as tentativas falharem.",
       "Várias melhorias gerais de estabilidade, acessibilidade, foco com leitores de ecrã, localizações, reprodução multimédia e gestão de ficheiros no iOS e Android."
     ],
@@ -151,6 +156,7 @@
       "Rozszerzono Trasy o kolejne obsługiwane kraje, w tym Australię, Kanadę, Niemcy, Wielką Brytanię i Stany Zjednoczone.",
       "Dodano pełne lokalizacje w języku niemieckim, chińskim uproszczonym, portugalskim brazylijskim i ukraińskim, obejmujące główne sekcje aplikacji, Kalendarz, Pogodę, Wiadomości, Podcasty, Radio oraz opisy uprawnień iOS.",
       "Ulepszono także Kalendarz, znacznie zwiększając liczbę cytatów dnia do 128 unikalnych cytatów, przetłumaczonych na każdy obsługiwany język.",
+      "Poprawiono wyświetlanie filmów SonarTube i innych materiałów wideo. Są one teraz prawidłowo wyświetlane na pełnym ekranie po włączeniu opcji „Wideo poziome na pełnym ekranie”.",
       "Ulepszono czytanie głosami Edge przy niestabilnym połączeniu: jeśli wysłanie akapitu się nie powiedzie, Sonarpad automatycznie ponowi próbę maksymalnie pięć razy. Czytanie zostanie zatrzymane tylko wtedy, gdy wszystkie próby zakończą się niepowodzeniem.",
       "Liczne ogólne ulepszenia stabilności, dostępności, fokusu czytników ekranu, lokalizacji, odtwarzania multimediów i zarządzania plikami w iOS i Androidzie."
     ],
@@ -176,6 +182,7 @@
       "Trasy byly rozšířeny o další podporované země, včetně Austrálie, Kanady, Německa, Spojeného království a Spojených států.",
       "Přidány kompletní lokalizace do němčiny, zjednodušené čínštiny, brazilské portugalštiny a ukrajinštiny, včetně hlavních částí aplikace, Kalendáře, Počasí, Zpráv, Podcastů, Rádia a popisů oprávnění iOS.",
       "Vylepšen byl také Kalendář: počet citátů dne byl výrazně rozšířen na 128 jedinečných citátů, přeložených do všech podporovaných jazyků.",
+      "Opraveno zobrazování videí SonarTube a dalšího videoobsahu, který se nyní správně zobrazuje přes celou obrazovku, když je zapnuta možnost „Vodorovné video přes celou obrazovku“.",
       "Vylepšeno čtení hlasy Edge při nestabilním připojení: pokud se odeslání odstavce nezdaří, Sonarpad pokus automaticky zopakuje až pětkrát. Čtení se zastaví pouze tehdy, když selžou všechny pokusy.",
       "Řada obecných vylepšení stability, přístupnosti, fokusu čteček obrazovky, lokalizací, přehrávání médií a správy souborů v iOS a Androidu."
     ],
@@ -201,6 +208,7 @@
       "Routen wurden um weitere unterstützte Länder erweitert, darunter Australien, Kanada, Deutschland, das Vereinigte Königreich und die Vereinigten Staaten.",
       "Vollständige Lokalisierungen auf Deutsch, vereinfachtem Chinesisch, brasilianischem Portugiesisch und Ukrainisch wurden hinzugefügt, einschließlich der wichtigsten App-Bereiche, Kalender, Wetter, Nachrichten, Podcasts, Radio und iOS-Berechtigungsbeschreibungen.",
       "Auch der Kalender wurde verbessert: Die Zitate des Tages wurden erheblich auf 128 einzigartige Zitate erweitert, die in alle unterstützten Sprachen übersetzt wurden.",
+      "Die Darstellung von SonarTube-Videos und anderen Videoinhalten wurde korrigiert. Sie werden jetzt korrekt im Vollbild angezeigt, wenn die Option „Video im Querformat als Vollbild“ aktiviert ist.",
       "Die Wiedergabe mit Edge-Stimmen bei instabiler Verbindung wurde verbessert: Schlägt das Senden eines Absatzes fehl, versucht Sonarpad es automatisch bis zu fünfmal erneut. Die Wiedergabe wird nur beendet, wenn alle Versuche fehlschlagen.",
       "Zahlreiche allgemeine Verbesserungen bei Stabilität, Barrierefreiheit, Screenreader-Fokus, Lokalisierungen, Medienwiedergabe und Dateiverwaltung unter iOS und Android."
     ],
@@ -226,6 +234,7 @@
       "Ampliadas as Rotas com novos países compatíveis, incluindo Austrália, Canadá, Alemanha, Reino Unido e Estados Unidos.",
       "Adicionadas localizações completas em alemão, chinês simplificado, português brasileiro e ucraniano, incluindo as principais seções do aplicativo, Calendário, Clima, Notícias, Podcasts, Rádio e as descrições das permissões do iOS.",
       "O Calendário também foi aprimorado, ampliando bastante as citações do dia para 128 citações únicas, traduzidas para todos os idiomas compatíveis.",
+      "Corrigida a exibição dos vídeos do SonarTube e de outros conteúdos de vídeo, que agora são mostrados corretamente em tela cheia quando a opção “Vídeo horizontal em tela cheia” está ativada.",
       "Melhorada a leitura com as vozes Edge quando a conexão está instável: se o envio de um parágrafo falhar, o Sonarpad tentará novamente de forma automática até cinco vezes. A leitura só será interrompida se todas as tentativas falharem.",
       "Diversas melhorias gerais de estabilidade, acessibilidade, foco com leitores de tela, localizações, reprodução multimídia e gestão de arquivos no iOS e Android."
     ],
@@ -251,6 +260,7 @@
       "路线功能新增更多支持国家，包括澳大利亚、加拿大、德国、英国和美国。",
       "新增完整的德语、简体中文和巴西葡萄牙语本地化，包括应用主要区域、日历、天气、新闻、播客、广播以及 iOS 权限说明。",
       "日历也得到改进，每日名言大幅扩充至 128 条独特名言，并已翻译成所有支持的语言。",
+      "修正了 SonarTube 视频及其他视频内容的显示问题。启用“横屏全屏视频”选项后，视频现在可正确全屏显示。",
       "改进了网络连接不稳定时使用 Edge 语音的朗读体验：如果某个段落发送失败，Sonarpad 会自动重试，最多五次。只有全部尝试均失败时，朗读才会停止。",
       "对 iOS 和 Android 上的稳定性、无障碍、屏幕阅读器焦点、本地化、媒体播放和文件管理进行了大量整体改进。"
     ],
@@ -260,7 +270,8 @@
       "Aggiunti numerosi canali regionali e nazionali per rendere la lista dei canali TV sempre più ricca.",
       "È ora possibile leggere la trama di ogni programma andando in TV, scegliendo un canale e facendo doppio tap sul programma di interesse.",
       "È ora possibile conservare le audiodescrizioni e i contenuti di RaiPlay Sound tramite flick verticale. Un messaggio di conferma avviserà che il contenuto è stato salvato nei Documenti; da lì sarà possibile condividerlo.",
-      "Aggiunto La7 Play. Una funzione accessibile per riascoltare e cercare i programmi di La7, sempre aggiornati alla data attuale."
+      "Aggiunto La7 Play. Una funzione accessibile per riascoltare e cercare i programmi di La7, sempre aggiornati alla data attuale.",
+      "Da ora è possibile riprodurre direttamente un canale TV senza aprirlo: basta posizionarsi sul canale e, con un flick verso il basso, scegliere “Riproduci diretta”."
     ],
     "uk": [
       "Інтерфейс iPhone було переписано для сумісності з iOS 27, що потребувало значного перегляду застосунку. Як позитивний результат, усі екрани тепер використовують UIKit, завдяки чому довгі списки можна швидше прокручувати жестом VoiceOver трьома пальцями, а також користуватися вже наявними командами «Перейти до літери» та «Перейти до дати».",
@@ -284,6 +295,7 @@
       "Розширено «Маршрути» підтримкою додаткових країн, зокрема Австралії, Канади, Німеччини, Великої Британії та США.",
       "Додано повні локалізації німецькою, спрощеною китайською, бразильською португальською та українською мовами, зокрема для основних розділів застосунку, Календаря, Погоди, Новин, Подкастів, Радіо та описів дозволів iOS.",
       "Також покращено Календар: кількість цитат дня значно збільшено до 128 унікальних цитат, перекладених усіма підтримуваними мовами.",
+      "Виправлено відображення відео SonarTube та іншого відеовмісту. Тепер відео правильно відображається на весь екран, коли ввімкнено параметр «Відео на весь екран у горизонтальній орієнтації».",
       "Покращено читання голосами Edge за нестабільного з’єднання: якщо надіслати абзац не вдається, Sonarpad автоматично повторює спробу до п’яти разів. Читання зупиняється лише тоді, коли всі спроби завершилися невдало.",
       "Численні загальні покращення стабільності, доступності, фокуса екранних читачів, локалізації, відтворення медіа та керування файлами на iOS і Android."
     ]

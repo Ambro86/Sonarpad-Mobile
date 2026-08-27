@@ -139,6 +139,8 @@ class AudioPlayerService {
 
   bool get isPlaying => _player.playing;
 
+  Duration get position => _player.position;
+
   Future<void> _prepareAudioSession(AudioSessionType type) async {
     if (_pendingDispose != null) {
       AppLogger.log(
