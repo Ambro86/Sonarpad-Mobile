@@ -414,7 +414,7 @@ class ParafarmacoService {
 
     final response = await _getCodifaIndex(uri);
     if (response.statusCode != 200) {
-      throw Exception('HTTP ${response.statusCode}');
+      _throwCodifaHttp(response);
     }
 
     final body = _decodeResponse(response);
@@ -448,7 +448,7 @@ class ParafarmacoService {
 
     final response = await _get(uri);
     if (response.statusCode != 200) {
-      throw Exception('HTTP ${response.statusCode}');
+      _throwCodifaHttp(response);
     }
 
     final body = _decodeResponse(response);
@@ -456,6 +456,10 @@ class ParafarmacoService {
     _removeNoise(document);
     _indexCache[key] = document;
     return document;
+  }
+
+  Never _throwCodifaHttp(http.Response response) {
+    throw Exception('HTTP ${response.statusCode}');
   }
 
   Future<http.Response> _get(Uri uri) {
