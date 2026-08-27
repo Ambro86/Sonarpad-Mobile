@@ -117,7 +117,7 @@
   "addCustomNewsSource": "Přidat vlastní RSS zdroj",
   "newsSourceName": "Název zdroje nebo webu",
   "newsSourceUrlOrSearch": "Adresa webu, RSS kanál nebo hledané slovo",
-  "deleteNewsSource": "Smazat zdroj",
+  "deleteNewsSource": "Odebrat",
   "importRssSourcesFromOpml": "Importovat zdroje RSS z OPML",
   "@importRssSourcesFromOpml": {
     "description": "Localized text for importRssSourcesFromOpml."
@@ -775,6 +775,10 @@
   "radioCommunityAdded": "Stanice byla úspěšně přidána do komunity Sonarpad.",
   "radioCommunityAddError": "Chyba při přidávání stanice: {error}",
   "radioPlay": "Přehrát",
+  "playAndRecord": "Přehrát a nahrávat",
+  "@playAndRecord": {
+    "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
+  },
   "startRecording": "Spustit nahrávání",
   "stopRecording": "Zastavit nahrávání",
   "recordings": "Nahrávky",
@@ -2857,5 +2861,10 @@
   "renameRecording": "Přejmenovat nahrávku",
   "newRecordingName": "Nový název nahrávky",
   "recordingCannotRenameWhileInProgress": "Probíhající nahrávku nelze přejmenovat.",
-  "recordingNameAlreadyExists": "Nahrávka s tímto názvem již existuje."
+  "recordingNameAlreadyExists": "Nahrávka s tímto názvem již existuje.",
+  "renameDocument": "Přejmenovat dokument",
+  "newDocumentName": "Nový název dokumentu",
+  "documentNameAlreadyExists": "Dokument s tímto názvem již existuje.",
+  "recordingExitPrompt": "Nahrávání probíhá. Chcete ho zastavit, nebo pokračovat v nahrávání?",
+  "continueRecording": "Pokračovat v nahrávání"
 }

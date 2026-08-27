@@ -399,7 +399,7 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get newsSourceUrlOrSearch => '网站网址、RSS 源或搜索词';
 
   @override
-  String get deleteNewsSource => '删除来源';
+  String get deleteNewsSource => '移除';
 
   @override
   String get importRssSourcesFromOpml => '从 OPML 导入 RSS 来源';
@@ -1779,6 +1779,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
 
   @override
   String get radioPlay => '播放';
+
+  @override
+  String get playAndRecord => '播放并录制';
 
   @override
   String get startRecording => '开始录制';
@@ -3205,6 +3208,15 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get renameRecording => '重命名录制内容';
 
   @override
+  String get renameDocument => '重命名文档';
+
+  @override
+  String get newDocumentName => '新文档名称';
+
+  @override
+  String get documentNameAlreadyExists => '已存在同名文档。';
+
+  @override
   String get newRecordingName => '录制内容的新名称';
 
   @override
@@ -3212,5 +3224,11 @@ class AppLocalizationsZhCn extends AppLocalizations {
 
   @override
   String get recordingNameAlreadyExists => '已存在同名录制内容。';
+
+  @override
+  String get recordingExitPrompt => '正在录制。要停止录制还是继续录制？';
+
+  @override
+  String get continueRecording => '继续录制';
 
 }

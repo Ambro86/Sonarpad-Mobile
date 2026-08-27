@@ -1213,11 +1213,12 @@ class _NewsSourceList extends StatelessWidget {
           if (!source.isFolder)
             AccessibleCustomAction(id: 'move_folder', label: l10n.moveToAnotherFolder),
           if (!source.isFolder)
-            AccessibleCustomAction(id: 'hide', label: l10n.hide),
+            AccessibleCustomAction(
+              id: source.isCustom ? 'delete' : 'hide',
+              label: l10n.deleteNewsSource,
+            ),
           if (source.isFolder)
             AccessibleCustomAction(id: 'delete', label: l10n.removeFolder),
-          if (source.isCustom && !source.isFolder)
-            AccessibleCustomAction(id: 'delete', label: l10n.deleteNewsSource),
         ];
         rows.add(AccessibleListRow(
           id: _newsSourceStableId(source),
@@ -1310,13 +1311,16 @@ class _NewsSourceList extends StatelessWidget {
                 CustomSemanticsAction(label: l10n.moveToAnotherFolder): () =>
                     _handleAction(context, _NewsSourceAction.moveToFolder, index),
               if (!source.isFolder)
-                CustomSemanticsAction(label: l10n.hide): () =>
-                    _handleAction(context, _NewsSourceAction.hide, index),
+                CustomSemanticsAction(label: l10n.deleteNewsSource): () =>
+                    _handleAction(
+                      context,
+                      source.isCustom
+                          ? _NewsSourceAction.delete
+                          : _NewsSourceAction.hide,
+                      index,
+                    ),
               if (source.isFolder)
                 CustomSemanticsAction(label: l10n.removeFolder): () =>
-                    _handleAction(context, _NewsSourceAction.delete, index),
-              if (source.isCustom && !source.isFolder)
-                CustomSemanticsAction(label: l10n.deleteNewsSource): () =>
                     _handleAction(context, _NewsSourceAction.delete, index),
           },
           child: ExcludeSemantics(

@@ -120,7 +120,7 @@
   "addCustomNewsSource": "Add custom RSS source",
   "newsSourceName": "Source or site name",
   "newsSourceUrlOrSearch": "Website URL, RSS feed or search word",
-  "deleteNewsSource": "Delete source",
+  "deleteNewsSource": "Remove",
   "importRssSourcesFromOpml": "Import RSS sources from OPML",
   "@importRssSourcesFromOpml": {
     "description": "Localized text for importRssSourcesFromOpml."
@@ -772,6 +772,10 @@
   "radioCommunityAdded": "Radio successfully added to Sonarpad community.",
   "radioCommunityAddError": "Error adding radio: {error}",
   "radioPlay": "Play",
+  "playAndRecord": "Play and record",
+  "@playAndRecord": {
+    "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
+  },
   "startRecording": "Start recording",
   "stopRecording": "Stop recording",
   "recordings": "Recordings",
@@ -2854,5 +2858,10 @@
   "renameRecording": "Rename recording",
   "newRecordingName": "New recording name",
   "recordingCannotRenameWhileInProgress": "A recording in progress cannot be renamed.",
-  "recordingNameAlreadyExists": "A recording with this name already exists."
+  "recordingNameAlreadyExists": "A recording with this name already exists.",
+  "renameDocument": "Rename document",
+  "newDocumentName": "New document name",
+  "documentNameAlreadyExists": "A document with this name already exists.",
+  "recordingExitPrompt": "Recording is in progress. Do you want to stop it or continue recording?",
+  "continueRecording": "Continue recording"
 }

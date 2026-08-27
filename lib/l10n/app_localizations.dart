@@ -3617,6 +3617,12 @@ abstract class AppLocalizations {
   /// **'Riproduci'**
   String get radioPlay;
 
+  /// Secondary action that opens a radio or TV channel and immediately starts recording.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduci e registra'**
+  String get playAndRecord;
+
   /// No description provided for @startRecording.
   ///
   /// In it, this message translates to:
@@ -5847,6 +5853,15 @@ abstract class AppLocalizations {
   /// Title for the recording rename screen.
   String get renameRecording;
 
+  /// Title for the document rename screen.
+  String get renameDocument;
+
+  /// Label for the new document name field.
+  String get newDocumentName;
+
+  /// Shown when another document already uses the requested name.
+  String get documentNameAlreadyExists;
+
   /// Label for the new recording name field.
   String get newRecordingName;
 
@@ -5855,6 +5870,12 @@ abstract class AppLocalizations {
 
   /// Shown when another recording already uses the requested name.
   String get recordingNameAlreadyExists;
+
+  /// Prompt shown when leaving a player while its recording is active.
+  String get recordingExitPrompt;
+
+  /// Leaves the player while keeping the current recording active.
+  String get continueRecording;
 }
 
 class _AppLocalizationsDelegate

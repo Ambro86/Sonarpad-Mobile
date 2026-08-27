@@ -27,6 +27,7 @@ import '../utils/document_unicode_normalizer.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'document_editor_screen.dart';
 import 'document_reader_screen.dart';
+import 'document_rename_screen.dart';
 import 'dropbox_browser_screen.dart';
 import 'gutenberg_screen.dart';
 import 'internet_archive_screen.dart';
@@ -295,6 +296,34 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (mounted) {
       setState(() {});
       _showSnack(isFolder ? l10n.folderRemoved : l10n.documentRemoved);
+    }
+  }
+
+  Future<void> _renameDocument(DocumentItem doc) async {
+    if (doc.isFolder) return;
+    final l10n = AppLocalizations.of(context);
+    final requestedName = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/documents/rename'),
+        builder: (_) => DocumentRenameScreen(initialName: doc.displayName),
+      ),
+    );
+    if (!mounted || requestedName == null) return;
+
+    try {
+      final renamed = await _service.renameDocument(doc, requestedName);
+      if (renamed != null && mounted) {
+        setState(() {});
+      }
+    } on DocumentRenameConflictException {
+      if (mounted) {
+        showStatusMessage(context, l10n.documentNameAlreadyExists);
+      }
+    } catch (_) {
+      if (mounted) {
+        showStatusMessage(context, l10n.error(l10n.technicalErrorGeneric));
+      }
     }
   }
 
@@ -1113,6 +1142,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           id: 'remove',
           label: doc.isFolder ? l10n.removeFolder : l10n.removeDocument,
         ),
+        if (!doc.isFolder)
+          AccessibleCustomAction(id: 'rename', label: l10n.rename),
         if (_isLocalMediaDocument(doc))
           AccessibleCustomAction(id: 'share', label: l10n.share),
         if (!_isRemoteAudioDocument(doc) && !_isLocalMediaDocument(doc))
@@ -1139,6 +1170,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         hint: doc.isFolder ? l10n.openFolderHint : l10n.openDocumentHint,
         kind: 'action',
         actions: actions,
+        visualActions: [
+          if (!doc.isFolder)
+            AccessibleVisualAction(
+              id: 'rename',
+              label: l10n.rename,
+              icon: 'edit',
+            ),
+        ],
       ));
     }
 
@@ -1156,6 +1195,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         } else if (event.type == 'customAction') {
           switch (event.action) {
             case 'remove': await _remove(doc.id); break;
+            case 'rename': await _renameDocument(doc); break;
             case 'share': await _shareLocalMediaDocument(doc); break;
             case 'export': await _exportDocument(doc); break;
             case 'move_up': await _handleAction(_DocumentAction.moveUp, doc); break;
@@ -1273,6 +1313,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                             isLast: isLast,
                             onOpen: () => _openDocument(doc),
                             onRemove: () => _remove(doc.id),
+                            onRename: () => _renameDocument(doc),
                             canShare: _isLocalMediaDocument(doc),
                             onShare: () => _shareLocalMediaDocument(doc),
                             onExport: () => _exportDocument(doc),
@@ -1304,6 +1345,7 @@ class _DocumentTile extends StatelessWidget {
   final bool isLast;
   final VoidCallback onOpen;
   final VoidCallback onRemove;
+  final VoidCallback onRename;
   final bool canShare;
   final VoidCallback onShare;
   final VoidCallback onExport;
@@ -1316,6 +1358,7 @@ class _DocumentTile extends StatelessWidget {
     required this.isLast,
     required this.onOpen,
     required this.onRemove,
+    required this.onRename,
     required this.canShare,
     required this.onShare,
     required this.onExport,
@@ -1395,6 +1438,8 @@ class _DocumentTile extends StatelessWidget {
               label: doc.isFolder
                   ? l10n.removeFolder
                   : l10n.removeDocument): onRemove,
+          if (!doc.isFolder)
+            CustomSemanticsAction(label: l10n.rename): onRename,
           if (canShare) CustomSemanticsAction(label: l10n.share): onShare,
           if (doc.extension != 'librivox' &&
               doc.extension != 'archiveaudio' &&
@@ -1480,6 +1525,13 @@ class _DocumentTile extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (!doc.isFolder)
+                    IconButton(
+                      key: ValueKey('document_rename_${doc.id}'),
+                      icon: const Icon(Icons.edit_outlined),
+                      tooltip: l10n.rename,
+                      onPressed: onRename,
+                    ),
                   // Pulsante rimuovi
                   ExcludeSemantics(
                     child: Semantics(

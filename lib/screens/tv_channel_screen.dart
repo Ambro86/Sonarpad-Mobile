@@ -6,6 +6,7 @@ import 'package:flutter/semantics.dart';
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
+import '../services/recording_feature_access.dart';
 import '../services/tv_service.dart';
 import 'radio_player_screen.dart';
 import '../utils/status_message.dart';
@@ -170,11 +171,13 @@ String _tvProgramListLabel(TvProgram program) => <String>[
 class TvChannelScreen extends StatefulWidget {
   final TvChannel channel;
   final bool autoPlay;
+  final bool autoStartRecording;
 
   const TvChannelScreen({
     super.key,
     required this.channel,
     this.autoPlay = false,
+    this.autoStartRecording = false,
   });
 
   @override
@@ -187,6 +190,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
 
   List<TvProgram> _guide = [];
   bool _loading = true;
+  bool _isRecordingFeatureUnlocked = false;
   String? _error;
   late DateTime _selectedDate;
 
@@ -196,7 +200,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     final now = DateTime.now();
     _selectedDate = DateTime(now.year, now.month, now.day);
     _loadGuide();
-    if (widget.autoPlay) {
+    if (widget.autoPlay || widget.autoStartRecording) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _play();
       });
@@ -210,6 +214,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     });
     try {
       final code = await _settings.getTvSecretCode();
+      final recordingFeatureUnlocked = RecordingFeatureAccess.isCodeValid(code);
       final guide = await _service.loadChannelGuide(
         _service.guideChannelName(widget.channel),
         code,
@@ -218,6 +223,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
       if (!mounted) return;
       setState(() {
         _guide = guide;
+        _isRecordingFeatureUnlocked = recordingFeatureUnlocked;
         _loading = false;
       });
     } catch (e) {
@@ -300,6 +306,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
             station: station,
             isVideoSupported: true,
             tvChannel: widget.channel,
+            autoStartRecording: widget.autoStartRecording,
           ),
         ),
       );
@@ -422,21 +429,23 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                             selected: isCurrent,
                             kind: 'action',
                             actions: [
-                              AccessibleCustomAction(
-                                id: 'schedule_recording',
-                                label: AppLocalizations.of(
-                                  context,
-                                ).radioScheduleDialogTitle,
-                              ),
+                              if (_isRecordingFeatureUnlocked)
+                                AccessibleCustomAction(
+                                  id: 'schedule_recording',
+                                  label: AppLocalizations.of(
+                                    context,
+                                  ).radioScheduleDialogTitle,
+                                ),
                             ],
                             visualActions: [
-                              AccessibleVisualAction(
-                                id: 'schedule_recording',
-                                label: AppLocalizations.of(
-                                  context,
-                                ).radioScheduleDialogTitle,
-                                icon: 'record',
-                              ),
+                              if (_isRecordingFeatureUnlocked)
+                                AccessibleVisualAction(
+                                  id: 'schedule_recording',
+                                  label: AppLocalizations.of(
+                                    context,
+                                  ).radioScheduleDialogTitle,
+                                  icon: 'record',
+                                ),
                             ],
                           );
                         }).toList(),
@@ -452,7 +461,8 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                       if (event.type == 'activate') {
                         _showProgramDetails(_guide[index]);
                       } else if (event.type == 'customAction' &&
-                          event.action == 'schedule_recording') {
+                          event.action == 'schedule_recording' &&
+                          _isRecordingFeatureUnlocked) {
                         _scheduleProgramRecording(_guide[index]);
                       }
                     },
@@ -475,8 +485,9 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                         label: _tvProgramListLabel(program),
                         onTap: () => _showProgramDetails(program),
                         customSemanticsActions: {
-                          CustomSemanticsAction(label: scheduleLabel): () =>
-                              _scheduleProgramRecording(program),
+                          if (_isRecordingFeatureUnlocked)
+                            CustomSemanticsAction(label: scheduleLabel): () =>
+                                _scheduleProgramRecording(program),
                         },
                         child: ExcludeSemantics(
                           child: ListTile(
@@ -505,12 +516,13 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                               children: [
                                 if (isCurrent)
                                   const Icon(Icons.live_tv, color: Colors.red),
-                                IconButton(
-                                  tooltip: scheduleLabel,
-                                  icon: const Icon(Icons.fiber_manual_record),
-                                  onPressed: () =>
-                                      _scheduleProgramRecording(program),
-                                ),
+                                if (_isRecordingFeatureUnlocked)
+                                  IconButton(
+                                    tooltip: scheduleLabel,
+                                    icon: const Icon(Icons.fiber_manual_record),
+                                    onPressed: () =>
+                                        _scheduleProgramRecording(program),
+                                  ),
                               ],
                             ),
                             onTap: () => _showProgramDetails(program),

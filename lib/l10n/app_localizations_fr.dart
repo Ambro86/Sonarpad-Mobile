@@ -429,7 +429,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'URL du site, flux RSS ou mot de recherche';
 
   @override
-  String get deleteNewsSource => 'Supprimer la source';
+  String get deleteNewsSource => 'Retirer';
 
   @override
   String get importRssSourcesFromOpml =>
@@ -2000,6 +2000,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get radioPlay => 'Lire';
+
+  @override
+  String get playAndRecord => 'Lire et enregistrer';
 
   @override
   String get startRecording => 'Démarrer l\'enregistrement';
@@ -3606,6 +3609,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get renameRecording => 'Renommer l’enregistrement';
 
   @override
+  String get renameDocument => 'Renommer le document';
+
+  @override
+  String get newDocumentName => 'Nouveau nom du document';
+
+  @override
+  String get documentNameAlreadyExists => 'Un document portant ce nom existe déjà.';
+
+  @override
   String get newRecordingName => 'Nouveau nom de l’enregistrement';
 
   @override
@@ -3613,5 +3625,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get recordingNameAlreadyExists => 'Un enregistrement portant ce nom existe déjà.';
+
+  @override
+  String get recordingExitPrompt => 'L’enregistrement est en cours. Voulez-vous l’arrêter ou continuer l’enregistrement ?';
+
+  @override
+  String get continueRecording => 'Continuer l’enregistrement';
 
 }

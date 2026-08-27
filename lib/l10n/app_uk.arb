@@ -416,7 +416,7 @@
   "@newsSourceUrlOrSearch": {
     "description": "Localized text for newsSourceUrlOrSearch."
   },
-  "deleteNewsSource": "Видалити джерело",
+  "deleteNewsSource": "Вилучити",
   "@deleteNewsSource": {
     "description": "Localized text for deleteNewsSource."
   },
@@ -2627,6 +2627,10 @@
     }
   },
   "radioPlay": "Відтворити",
+  "playAndRecord": "Відтворити й записувати",
+  "@playAndRecord": {
+    "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
+  },
   "@radioPlay": {
     "description": "Localized text for radioPlay."
   },
@@ -4432,5 +4436,10 @@
   "renameRecording": "Перейменувати запис",
   "newRecordingName": "Нова назва запису",
   "recordingCannotRenameWhileInProgress": "Неможливо перейменувати запис, що триває.",
-  "recordingNameAlreadyExists": "Запис із такою назвою вже існує."
+  "recordingNameAlreadyExists": "Запис із такою назвою вже існує.",
+  "renameDocument": "Перейменувати документ",
+  "newDocumentName": "Нова назва документа",
+  "documentNameAlreadyExists": "Документ із такою назвою вже існує.",
+  "recordingExitPrompt": "Триває запис. Зупинити його чи продовжити запис?",
+  "continueRecording": "Продовжити запис"
 }

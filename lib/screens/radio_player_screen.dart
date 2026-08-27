@@ -26,11 +26,13 @@ class RadioPlayerScreen extends StatefulWidget {
   final RadioStation station;
   final bool isVideoSupported;
   final TvChannel? tvChannel;
+  final bool autoStartRecording;
   const RadioPlayerScreen({
     super.key,
     required this.station,
     this.isVideoSupported = false,
     this.tvChannel,
+    this.autoStartRecording = false,
   });
 
   @override
@@ -80,6 +82,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   double _mediaKitVolume = 1.0;
   double _videoPlayerVolume = 1.0;
   bool _isRecordingFeatureUnlocked = false;
+  bool _allowExitWithActiveRecording = false;
+  bool _recordingExitPromptOpen = false;
 
   bool _loading = false;
   String? _error;
@@ -120,8 +124,25 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
       if (!mounted) return;
       setState(() {});
-      _play();
+      if (widget.autoStartRecording) {
+        unawaited(_playThenStartRecording());
+      } else {
+        _play();
+      }
     });
+  }
+
+  Future<void> _playThenStartRecording() async {
+    await _play();
+    if (!mounted ||
+        !widget.autoStartRecording ||
+        !_isRecordingFeatureUnlocked ||
+        _error != null ||
+        _recording ||
+        _anotherRecordingActive) {
+      return;
+    }
+    await _toggleRecording();
   }
 
   void _onGlobalRecordingChanged() {
@@ -1358,6 +1379,72 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     ));
   }
 
+  Future<void> _requestPlayerExit() async {
+    if (!mounted || _recordingExitPromptOpen) return;
+    if (!_recording) {
+      Navigator.of(context).pop();
+      return;
+    }
+
+    _recordingExitPromptOpen = true;
+    final l10n = AppLocalizations.of(context);
+    try {
+      final stopRecording = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: Text(l10n.recordingInProgressStatus),
+            content: Text(l10n.recordingExitPrompt),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(l10n.stopRecording),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(l10n.continueRecording),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      if (!mounted || stopRecording == null) return;
+      if (stopRecording) {
+        try {
+          await _stopRecordingNow(showMessage: false);
+        } catch (error) {
+          if (!mounted) return;
+          showStatusMessage(
+            context,
+            l10n.recordingError(l10n.technicalErrorGeneric),
+          );
+          return;
+        }
+      }
+
+      if (!mounted) return;
+      setState(() => _allowExitWithActiveRecording = true);
+      await WidgetsBinding.instance.endOfFrame;
+      if (mounted) Navigator.of(context).pop();
+    } finally {
+      _recordingExitPromptOpen = false;
+    }
+  }
+
+  Widget _withRecordingExitGuard(Widget child) {
+    return PopScope<void>(
+      canPop: !_recording || _allowExitWithActiveRecording,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop || _allowExitWithActiveRecording) return;
+        unawaited(_requestPlayerExit());
+      },
+      child: child,
+    );
+  }
+
   @override
   void dispose() {
     _recordingService.removeListener(_onGlobalRecordingChanged);
@@ -1641,7 +1728,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                     tooltip:
                         MaterialLocalizations.of(context).backButtonTooltip,
                     icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: _requestPlayerExit,
                   ),
                 ),
               ),
@@ -1761,15 +1848,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final showStationDetails = widget.tvChannel == null &&
         widget.station.detailsText.trim().isNotEmpty;
     if (_useLandscapeFullscreenVideo) {
-      return _buildLandscapeFullscreenScaffold(l10n);
+      return _withRecordingExitGuard(
+        _buildLandscapeFullscreenScaffold(l10n),
+      );
     }
-    return Scaffold(
+    return _withRecordingExitGuard(Scaffold(
       appBar: AppBar(
         title: Text('${l10n.nowPlaying}: ${widget.station.name}'),
         leading: BackButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: _requestPlayerExit,
         ),
       ),
       body: useSharedAccessibleViewModel
@@ -1909,7 +1996,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           ),
         ],
       ),
-    );
+    ));
   }
 }
 

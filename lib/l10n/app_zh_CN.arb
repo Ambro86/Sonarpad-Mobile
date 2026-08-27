@@ -120,7 +120,7 @@
   "addCustomNewsSource": "添加自定义 RSS 来源",
   "newsSourceName": "来源或网站名称",
   "newsSourceUrlOrSearch": "网站网址、RSS 源或搜索词",
-  "deleteNewsSource": "删除来源",
+  "deleteNewsSource": "移除",
   "importRssSourcesFromOpml": "从 OPML 导入 RSS 来源",
   "@importRssSourcesFromOpml": {
     "description": "Localized text for importRssSourcesFromOpml."
@@ -772,6 +772,10 @@
   "radioCommunityAdded": "电台已成功添加到 Sonarpad 社区。",
   "radioCommunityAddError": "添加电台时出错：{error}",
   "radioPlay": "播放",
+  "playAndRecord": "播放并录制",
+  "@playAndRecord": {
+    "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
+  },
   "startRecording": "开始录制",
   "stopRecording": "停止录制",
   "recordings": "录音",
@@ -2854,5 +2858,10 @@
   "renameRecording": "重命名录制内容",
   "newRecordingName": "录制内容的新名称",
   "recordingCannotRenameWhileInProgress": "正在进行的录制无法重命名。",
-  "recordingNameAlreadyExists": "已存在同名录制内容。"
+  "recordingNameAlreadyExists": "已存在同名录制内容。",
+  "renameDocument": "重命名文档",
+  "newDocumentName": "新文档名称",
+  "documentNameAlreadyExists": "已存在同名文档。",
+  "recordingExitPrompt": "正在录制。要停止录制还是继续录制？",
+  "continueRecording": "继续录制"
 }

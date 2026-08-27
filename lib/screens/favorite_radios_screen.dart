@@ -7,10 +7,16 @@ import '../services/radio_service.dart';
 import '../utils/status_message.dart';
 import 'radio_player_screen.dart';
 import 'radio_screen.dart';
+import '../widgets/radio_recording_schedule_action.dart';
 import '../widgets/universal_accessible_view.dart'; // Per RadioTile
 
 class FavoriteRadiosScreen extends StatefulWidget {
-  const FavoriteRadiosScreen({super.key});
+  const FavoriteRadiosScreen({
+    super.key,
+    this.recordingFeatureUnlocked = false,
+  });
+
+  final bool recordingFeatureUnlocked;
 
   @override
   State<FavoriteRadiosScreen> createState() => _FavoriteRadiosScreenState();
@@ -68,6 +74,20 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
       MaterialPageRoute(
         settings: const RouteSettings(name: '/radio/player'),
         builder: (_) => RadioPlayerScreen(station: station),
+      ),
+    );
+    await _loadFavorites();
+  }
+
+  Future<void> _playAndRecord(RadioStation station) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/radio/player'),
+        builder: (_) => RadioPlayerScreen(
+          station: station,
+          autoStartRecording: true,
+        ),
       ),
     );
     await _loadFavorites();
@@ -141,6 +161,30 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                                   if (index > 0) AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
                                   if (index < _favorites.length - 1) AccessibleCustomAction(id: 'move_down', label: l10n.moveDown),
                                   AccessibleCustomAction(id: 'move_position', label: l10n.moveToPosition),
+                                  if (widget.recordingFeatureUnlocked)
+                                    AccessibleCustomAction(
+                                      id: 'play_record',
+                                      label: l10n.playAndRecord,
+                                    ),
+                                  if (widget.recordingFeatureUnlocked)
+                                    AccessibleCustomAction(
+                                      id: 'schedule_recording',
+                                      label: l10n.radioScheduleDialogTitle,
+                                    ),
+                                ],
+                                visualActions: [
+                                  if (widget.recordingFeatureUnlocked)
+                                    AccessibleVisualAction(
+                                      id: 'play_record',
+                                      label: l10n.playAndRecord,
+                                      icon: 'record',
+                                    ),
+                                  if (widget.recordingFeatureUnlocked)
+                                    AccessibleVisualAction(
+                                      id: 'schedule_recording',
+                                      label: l10n.radioScheduleDialogTitle,
+                                      icon: 'record',
+                                    ),
                                 ],
                               );
                             }),
@@ -165,6 +209,16 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                             case 'move_up': await _handleAction(_RadioAction.moveUp, index); break;
                             case 'move_down': await _handleAction(_RadioAction.moveDown, index); break;
                             case 'move_position': await _handleAction(_RadioAction.moveToPosition, index); break;
+                            case 'play_record':
+                              if (widget.recordingFeatureUnlocked) {
+                                await _playAndRecord(station);
+                              }
+                              break;
+                            case 'schedule_recording':
+                              if (widget.recordingFeatureUnlocked) {
+                                await showRadioScheduleRecordingAction(context, station);
+                              }
+                              break;
                           }
                         }
                       },
@@ -206,7 +260,41 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                             CustomSemanticsAction(label: l10n.moveToPosition):
                                 () => _handleAction(
                                     _RadioAction.moveToPosition, index),
+                            if (widget.recordingFeatureUnlocked)
+                              CustomSemanticsAction(
+                                label: l10n.playAndRecord,
+                              ): () => _playAndRecord(station),
+                            if (widget.recordingFeatureUnlocked)
+                              CustomSemanticsAction(
+                                label: l10n.radioScheduleDialogTitle,
+                              ): () => showRadioScheduleRecordingAction(
+                                    context,
+                                    station,
+                                  ),
                           },
+                          extraTrailingActions: [
+                            if (widget.recordingFeatureUnlocked)
+                              IconButton(
+                                key: ValueKey(
+                                  'favorite_radio_play_record_${station.streamUrl}',
+                                ),
+                                tooltip: l10n.playAndRecord,
+                                onPressed: () => _playAndRecord(station),
+                                icon: const Icon(Icons.fiber_manual_record),
+                              ),
+                            if (widget.recordingFeatureUnlocked)
+                              IconButton(
+                                key: ValueKey(
+                                  'favorite_radio_schedule_${station.streamUrl}',
+                                ),
+                                tooltip: l10n.radioScheduleDialogTitle,
+                                onPressed: () => showRadioScheduleRecordingAction(
+                                  context,
+                                  station,
+                                ),
+                                icon: const Icon(Icons.schedule),
+                              ),
+                          ],
                         ),
                       );
                     }),

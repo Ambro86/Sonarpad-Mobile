@@ -193,6 +193,7 @@ class _RadioScreenState extends State<RadioScreen> {
         builder: (_) => RadioSearchResultsScreen(
           resultsFuture: resultsFuture,
           query: _searchController.text,
+          recordingFeatureUnlocked: _isRecordingFeatureUnlocked,
         ),
       ),
     );
@@ -445,7 +446,9 @@ class _RadioScreenState extends State<RadioScreen> {
                 if (event.type != 'activate') return;
                 switch (event.id) {
                   case 'favorites':
-                    await Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: '/radio/favorites'), builder: (_) => const FavoriteRadiosScreen()));
+                    await Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: '/radio/favorites'), builder: (_) => FavoriteRadiosScreen(
+                      recordingFeatureUnlocked: _isRecordingFeatureUnlocked,
+                    )));
                     break;
                   case 'recent':
                     await Navigator.push(context, MaterialPageRoute(settings: const RouteSettings(name: '/radio/recent'), builder: (_) => const RecentRadiosScreen()));
@@ -474,7 +477,9 @@ class _RadioScreenState extends State<RadioScreen> {
                 context,
                 MaterialPageRoute(
                   settings: const RouteSettings(name: '/radio/favorites'),
-                  builder: (_) => const FavoriteRadiosScreen(),
+                  builder: (_) => FavoriteRadiosScreen(
+                      recordingFeatureUnlocked: _isRecordingFeatureUnlocked,
+                    ),
                 ),
               );
             },
@@ -803,6 +808,7 @@ class RadioTile extends StatelessWidget {
   final VoidCallback onPlay;
   final VoidCallback onToggleFavorite;
   final Map<CustomSemanticsAction, VoidCallback>? extraSemanticsActions;
+  final List<Widget> extraTrailingActions;
 
   const RadioTile({
     super.key,
@@ -812,6 +818,7 @@ class RadioTile extends StatelessWidget {
     required this.onPlay,
     required this.onToggleFavorite,
     this.extraSemanticsActions,
+    this.extraTrailingActions = const [],
   });
 
   @override
@@ -848,6 +855,7 @@ class RadioTile extends StatelessWidget {
                     onPressed: onPlay,
                     icon: const Icon(Icons.play_arrow),
                   ),
+                  ...extraTrailingActions,
                   IconButton(
                     tooltip: isFavorite
                         ? l10n.radioRemoveFavorite

@@ -390,7 +390,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get newsSourceUrlOrSearch => "URL сайту, RSS-канал або слово для пошуку";
 
   @override
-  String get deleteNewsSource => "Видалити джерело";
+  String get deleteNewsSource => "Вилучити";
 
   @override
   String get importRssSourcesFromOpml => "Імпортувати RSS-джерела з OPML";
@@ -1558,6 +1558,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get radioPlay => "Відтворити";
+
+  @override
+  String get playAndRecord => 'Відтворити й записувати';
 
   @override
   String get startRecording => "Avvia registrazione";
@@ -3198,6 +3201,15 @@ class AppLocalizationsUk extends AppLocalizations {
   String get renameRecording => 'Перейменувати запис';
 
   @override
+  String get renameDocument => 'Перейменувати документ';
+
+  @override
+  String get newDocumentName => 'Нова назва документа';
+
+  @override
+  String get documentNameAlreadyExists => 'Документ із такою назвою вже існує.';
+
+  @override
   String get newRecordingName => 'Нова назва запису';
 
   @override
@@ -3205,5 +3217,11 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get recordingNameAlreadyExists => 'Запис із такою назвою вже існує.';
+
+  @override
+  String get recordingExitPrompt => 'Триває запис. Зупинити його чи продовжити запис?';
+
+  @override
+  String get continueRecording => 'Продовжити запис';
 
 }

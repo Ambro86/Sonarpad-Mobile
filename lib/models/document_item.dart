@@ -37,13 +37,15 @@ class DocumentItem {
   }
 
   DocumentItem copyWith({
+    String? name,
+    String? path,
     String? parentId,
     bool clearParentId = false,
   }) {
     return DocumentItem(
       id: id,
-      name: name,
-      path: path,
+      name: name ?? this.name,
+      path: path ?? this.path,
       extension: extension,
       addedAt: addedAt,
       bookmarkIndex: bookmarkIndex,

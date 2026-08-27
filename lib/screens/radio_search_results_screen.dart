@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
@@ -11,11 +12,13 @@ import '../utils/status_message.dart';
 class RadioSearchResultsScreen extends StatefulWidget {
   final Future<List<RadioStation>> resultsFuture;
   final String query;
+  final bool recordingFeatureUnlocked;
 
   const RadioSearchResultsScreen({
     super.key,
     required this.resultsFuture,
     this.query = '',
+    this.recordingFeatureUnlocked = false,
   });
 
   @override
@@ -48,6 +51,20 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
       MaterialPageRoute(
         settings: const RouteSettings(name: '/radio/player'),
         builder: (_) => RadioPlayerScreen(station: station),
+      ),
+    );
+    await _loadFavorites();
+  }
+
+  Future<void> _playAndRecord(RadioStation station) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/radio/player'),
+        builder: (_) => RadioPlayerScreen(
+          station: station,
+          autoStartRecording: true,
+        ),
       ),
     );
     await _loadFavorites();
@@ -222,6 +239,19 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
                                     id: 'favorite',
                                     label: isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
                                   ),
+                                  if (widget.recordingFeatureUnlocked)
+                                    AccessibleCustomAction(
+                                      id: 'play_record',
+                                      label: l10n.playAndRecord,
+                                    ),
+                                ],
+                                visualActions: [
+                                  if (widget.recordingFeatureUnlocked)
+                                    AccessibleVisualAction(
+                                      id: 'play_record',
+                                      label: l10n.playAndRecord,
+                                      icon: 'record',
+                                    ),
                                 ],
                               );
                             }).toList(),
@@ -237,6 +267,10 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
                             await _play(station);
                           } else if (event.type == 'customAction' && event.action == 'favorite') {
                             await _toggleFavorite(station);
+                          } else if (event.type == 'customAction' &&
+                              event.action == 'play_record' &&
+                              widget.recordingFeatureUnlocked) {
+                            await _playAndRecord(station);
                           }
                         },
                       )
@@ -262,6 +296,22 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
                         isPlaying: false,
                         onPlay: () => _play(station),
                         onToggleFavorite: () => _toggleFavorite(station),
+                        extraSemanticsActions: {
+                          if (widget.recordingFeatureUnlocked)
+                            CustomSemanticsAction(label: l10n.playAndRecord):
+                                () => _playAndRecord(station),
+                        },
+                        extraTrailingActions: [
+                          if (widget.recordingFeatureUnlocked)
+                            IconButton(
+                              key: ValueKey(
+                                'radio_search_play_record_${station.streamUrl}',
+                              ),
+                              tooltip: l10n.playAndRecord,
+                              onPressed: () => _playAndRecord(station),
+                              icon: const Icon(Icons.fiber_manual_record),
+                            ),
+                        ],
                       ),
                     );
                   },

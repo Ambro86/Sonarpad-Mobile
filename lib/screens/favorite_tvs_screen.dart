@@ -14,11 +14,15 @@ class FavoriteTvsScreen extends StatefulWidget {
     required this.channels,
     required this.currentPrograms,
     required this.onOpenChannel,
+    required this.onPlayAndRecord,
+    this.recordingFeatureUnlocked = false,
   });
 
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
   final ValueChanged<TvChannel> onOpenChannel;
+  final ValueChanged<TvChannel> onPlayAndRecord;
+  final bool recordingFeatureUnlocked;
 
   @override
   State<FavoriteTvsScreen> createState() => _FavoriteTvsScreenState();
@@ -105,10 +109,30 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                                   id: 'remove',
                                   label: 'Rimuovi dai preferiti',
                                 ),
-                                AccessibleCustomAction(
-                                  id: 'schedule_recording',
-                                  label: l10n.radioScheduleDialogTitle,
-                                ),
+                                if (widget.recordingFeatureUnlocked)
+                                  AccessibleCustomAction(
+                                    id: 'play_record',
+                                    label: l10n.playAndRecord,
+                                  ),
+                                if (widget.recordingFeatureUnlocked)
+                                  AccessibleCustomAction(
+                                    id: 'schedule_recording',
+                                    label: l10n.radioScheduleDialogTitle,
+                                  ),
+                              ],
+                              visualActions: [
+                                if (widget.recordingFeatureUnlocked)
+                                  AccessibleVisualAction(
+                                    id: 'play_record',
+                                    label: l10n.playAndRecord,
+                                    icon: 'record',
+                                  ),
+                                if (widget.recordingFeatureUnlocked)
+                                  AccessibleVisualAction(
+                                    id: 'schedule_recording',
+                                    label: l10n.radioScheduleDialogTitle,
+                                    icon: 'record',
+                                  ),
                               ],
                             );
                           }).toList(),
@@ -125,7 +149,12 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                         } else if (event.type == 'customAction' && event.action == 'remove') {
                           await _removeFromFavorites(channel);
                         } else if (event.type == 'customAction' &&
-                            event.action == 'schedule_recording') {
+                            event.action == 'play_record' &&
+                            widget.recordingFeatureUnlocked) {
+                          widget.onPlayAndRecord(channel);
+                        } else if (event.type == 'customAction' &&
+                            event.action == 'schedule_recording' &&
+                            widget.recordingFeatureUnlocked) {
                           await showTvScheduleRecordingAction(context, channel);
                         }
                       },
@@ -158,57 +187,90 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                             const CustomSemanticsAction(
                                     label: 'Rimuovi dai preferiti'):
                                 () => _removeFromFavorites(channel),
-                            CustomSemanticsAction(
-                              label: l10n.radioScheduleDialogTitle,
-                            ): () => showTvScheduleRecordingAction(
-                                  context,
-                                  channel,
-                                ),
+                            if (widget.recordingFeatureUnlocked)
+                              CustomSemanticsAction(
+                                label: l10n.playAndRecord,
+                              ): () => widget.onPlayAndRecord(channel),
+                            if (widget.recordingFeatureUnlocked)
+                              CustomSemanticsAction(
+                                label: l10n.radioScheduleDialogTitle,
+                              ): () => showTvScheduleRecordingAction(
+                                    context,
+                                    channel,
+                                  ),
                           },
                           child: ExcludeSemantics(
-                            child: FilledButton(
-                              style: FilledButton.styleFrom(
-                                minimumSize: const Size.fromHeight(64),
-                                alignment: Alignment.centerLeft,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                              ),
-                              onPressed: () => widget.onOpenChannel(channel),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.tv),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: FilledButton(
+                                    style: FilledButton.styleFrom(
+                                      minimumSize: const Size.fromHeight(64),
+                                      alignment: Alignment.centerLeft,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                    ),
+                                    onPressed: () => widget.onOpenChannel(channel),
+                                    child: Row(
                                       children: [
-                                        Text(
-                                          channel.name,
-                                          style: const TextStyle(fontSize: 20),
-                                        ),
-                                        if (currentProgram != null) ...[
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            'Ora in onda: ${currentProgram.title}',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary
-                                                  .withValues(alpha: 0.8),
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                        const Icon(Icons.tv),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                channel.name,
+                                                style: const TextStyle(fontSize: 20),
+                                              ),
+                                              if (currentProgram != null) ...[
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  'Ora in onda: ${currentProgram.title}',
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimary
+                                                        .withValues(alpha: 0.8),
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                            ],
                                           ),
-                                        ],
+                                        ),
                                       ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                if (widget.recordingFeatureUnlocked)
+                                  IconButton(
+                                    key: ValueKey(
+                                      'favorite_tv_play_record_${channel.name}',
+                                    ),
+                                    tooltip: l10n.playAndRecord,
+                                    icon: const Icon(Icons.fiber_manual_record),
+                                    onPressed: () =>
+                                        widget.onPlayAndRecord(channel),
+                                  ),
+                                if (widget.recordingFeatureUnlocked)
+                                  IconButton(
+                                    key: ValueKey(
+                                      'favorite_tv_schedule_${channel.name}',
+                                    ),
+                                    tooltip: l10n.radioScheduleDialogTitle,
+                                    icon: const Icon(Icons.schedule),
+                                    onPressed: () => showTvScheduleRecordingAction(
+                                      context,
+                                      channel,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ),

@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/app_settings_service.dart';
+import '../services/recording_feature_access.dart';
 import '../services/tv_service.dart';
 import '../utils/app_logger.dart';
 import 'favorite_tvs_screen.dart';
@@ -29,6 +30,7 @@ class _TvScreenState extends State<TvScreen> {
   List<TvChannel> _channels = [];
   Map<String, TvProgram> _currentPrograms = {};
   bool _loading = true;
+  bool _isRecordingFeatureUnlocked = false;
   String? _error;
   String? _cacheWarning;
 
@@ -46,6 +48,7 @@ class _TvScreenState extends State<TvScreen> {
 
   Future<void> _load() async {
     final code = await _settings.getTvSecretCode();
+    final recordingFeatureUnlocked = RecordingFeatureAccess.isCodeValid(code);
     try {
       final channelResult = await _service.loadChannelsWithCache(code);
       var currentPrograms = <String, TvProgram>{};
@@ -65,6 +68,7 @@ class _TvScreenState extends State<TvScreen> {
         _channels = channelResult.channels;
         _currentPrograms = currentPrograms;
         _cacheWarning = channelResult.cacheWarning;
+        _isRecordingFeatureUnlocked = recordingFeatureUnlocked;
         _loading = false;
       });
       if (channelResult.fromCache && channelResult.cacheWarning != null) {
@@ -86,6 +90,7 @@ class _TvScreenState extends State<TvScreen> {
   Future<void> _openChannel(
     TvChannel channel, {
     bool autoPlay = false,
+    bool autoStartRecording = false,
   }) async {
     Navigator.push(
       context,
@@ -94,6 +99,7 @@ class _TvScreenState extends State<TvScreen> {
         builder: (_) => TvChannelScreen(
           channel: channel,
           autoPlay: autoPlay,
+          autoStartRecording: autoStartRecording,
         ),
       ),
     );
@@ -109,6 +115,12 @@ class _TvScreenState extends State<TvScreen> {
           channels: channels,
           currentPrograms: _currentPrograms,
           onOpenChannel: _openChannel,
+          onPlayAndRecord: (channel) => _openChannel(
+            channel,
+            autoPlay: true,
+            autoStartRecording: true,
+          ),
+          recordingFeatureUnlocked: _isRecordingFeatureUnlocked,
         ),
       ),
     );
@@ -125,6 +137,12 @@ class _TvScreenState extends State<TvScreen> {
           regions: regions,
           currentPrograms: _currentPrograms,
           onOpenChannel: _openChannel,
+          onPlayAndRecord: (channel) => _openChannel(
+            channel,
+            autoPlay: true,
+            autoStartRecording: true,
+          ),
+          recordingFeatureUnlocked: _isRecordingFeatureUnlocked,
         ),
       ),
     );
@@ -145,6 +163,12 @@ class _TvScreenState extends State<TvScreen> {
         query: query,
         channels: results,
         currentPrograms: _currentPrograms,
+        onPlayAndRecord: (channel) => _openChannel(
+          channel,
+          autoPlay: true,
+          autoStartRecording: true,
+        ),
+        recordingFeatureUnlocked: _isRecordingFeatureUnlocked,
       ),
     );
 
@@ -268,6 +292,12 @@ class _TvScreenState extends State<TvScreen> {
                   channels: _channels,
                   currentPrograms: _currentPrograms,
                   onOpenChannel: _openChannel,
+                  onPlayAndRecord: (channel) => _openChannel(
+                    channel,
+                    autoPlay: true,
+                    autoStartRecording: true,
+                  ),
+                  recordingFeatureUnlocked: _isRecordingFeatureUnlocked,
                 ),
               ),
             );
@@ -276,7 +306,8 @@ class _TvScreenState extends State<TvScreen> {
           label: const Text('TV preferite', style: TextStyle(fontSize: 20)),
         ),
       ),
-      Padding(
+      if (_isRecordingFeatureUnlocked)
+        Padding(
         key: const ValueKey('tv_recordings_category'),
         padding: const EdgeInsets.only(bottom: 12),
         child: FilledButton.icon(
@@ -363,7 +394,8 @@ class _TvScreenState extends State<TvScreen> {
         ),
         AccessibleListRow(id: '__search__', title: l10n.tvSearchButton, kind: 'button'),
         const AccessibleListRow(id: '__favorites__', title: 'TV preferite', kind: 'action'),
-        AccessibleListRow(id: '__recordings__', title: l10n.recordings, kind: 'action'),
+        if (_isRecordingFeatureUnlocked)
+          AccessibleListRow(id: '__recordings__', title: l10n.recordings, kind: 'action'),
         ...categories.where((c) => map.containsKey(c)).map(
           (c) => AccessibleListRow(id: 'category:$c', title: c, kind: 'action'),
         ),
@@ -395,10 +427,17 @@ class _TvScreenState extends State<TvScreen> {
                   channels: _channels,
                   currentPrograms: _currentPrograms,
                   onOpenChannel: _openChannel,
+                  onPlayAndRecord: (channel) => _openChannel(
+                    channel,
+                    autoPlay: true,
+                    autoStartRecording: true,
+                  ),
+                  recordingFeatureUnlocked: _isRecordingFeatureUnlocked,
                 ),
               ),
             );
-          } else if (id == '__recordings__') {
+          } else if (id == '__recordings__' &&
+              _isRecordingFeatureUnlocked) {
             await Navigator.push(
               context,
               MaterialPageRoute(
@@ -429,11 +468,15 @@ class _TvRegionalScreen extends StatelessWidget {
     required this.regions,
     required this.currentPrograms,
     required this.onOpenChannel,
+    required this.onPlayAndRecord,
+    required this.recordingFeatureUnlocked,
   });
 
   final Map<String, List<TvChannel>> regions;
   final Map<String, TvProgram> currentPrograms;
   final ValueChanged<TvChannel> onOpenChannel;
+  final ValueChanged<TvChannel> onPlayAndRecord;
+  final bool recordingFeatureUnlocked;
 
   void _openRegion(BuildContext context, String region) {
     Navigator.push(
@@ -445,6 +488,8 @@ class _TvRegionalScreen extends StatelessWidget {
           channels: regions[region] ?? const [],
           currentPrograms: currentPrograms,
           onOpenChannel: onOpenChannel,
+          onPlayAndRecord: onPlayAndRecord,
+          recordingFeatureUnlocked: recordingFeatureUnlocked,
         ),
       ),
     );
@@ -508,12 +553,16 @@ class _TvCategoryScreen extends StatefulWidget {
     required this.channels,
     required this.currentPrograms,
     required this.onOpenChannel,
+    required this.onPlayAndRecord,
+    required this.recordingFeatureUnlocked,
   });
 
   final String category;
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
   final ValueChanged<TvChannel> onOpenChannel;
+  final ValueChanged<TvChannel> onPlayAndRecord;
+  final bool recordingFeatureUnlocked;
 
   @override
   State<_TvCategoryScreen> createState() => _TvCategoryScreenState();
@@ -593,10 +642,24 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                               ? AppLocalizations.of(context).radioRemoveFavorite
                               : AppLocalizations.of(context).radioAddFavorite,
                         ),
-                        AccessibleCustomAction(
-                          id: 'schedule_recording',
-                          label: AppLocalizations.of(context).radioScheduleDialogTitle,
-                        ),
+                        if (widget.recordingFeatureUnlocked)
+                          AccessibleCustomAction(
+                            id: 'play_record',
+                            label: AppLocalizations.of(context).playAndRecord,
+                          ),
+                        if (widget.recordingFeatureUnlocked)
+                          AccessibleCustomAction(
+                            id: 'schedule_recording',
+                            label: AppLocalizations.of(context).radioScheduleDialogTitle,
+                          ),
+                      ],
+                      visualActions: [
+                        if (widget.recordingFeatureUnlocked)
+                          AccessibleVisualAction(
+                            id: 'play_record',
+                            label: AppLocalizations.of(context).playAndRecord,
+                            icon: 'record',
+                          ),
                       ],
                     );
                   }).toList(),
@@ -613,7 +676,12 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                 } else if (event.type == 'customAction' && event.action == 'favorite') {
                   await _toggleFavorite(channel);
                 } else if (event.type == 'customAction' &&
-                    event.action == 'schedule_recording') {
+                    event.action == 'play_record' &&
+                    widget.recordingFeatureUnlocked) {
+                  widget.onPlayAndRecord(channel);
+                } else if (event.type == 'customAction' &&
+                    event.action == 'schedule_recording' &&
+                    widget.recordingFeatureUnlocked) {
                   await showTvScheduleRecordingAction(context, channel);
                 }
               },
@@ -630,8 +698,12 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
             isFavorite: _isFavorite(channel),
             onOpen: () => widget.onOpenChannel(channel),
             onToggleFavorite: () => _toggleFavorite(channel),
-            onScheduleRecording: () =>
-                showTvScheduleRecordingAction(context, channel),
+            onPlayAndRecord: widget.recordingFeatureUnlocked
+                ? () => widget.onPlayAndRecord(channel)
+                : null,
+            onScheduleRecording: widget.recordingFeatureUnlocked
+                ? () => showTvScheduleRecordingAction(context, channel)
+                : null,
           );
         },
       ),
@@ -644,11 +716,15 @@ class _TvSearchResultsDialog extends StatefulWidget {
     required this.query,
     required this.channels,
     required this.currentPrograms,
+    required this.onPlayAndRecord,
+    required this.recordingFeatureUnlocked,
   });
 
   final String query;
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
+  final ValueChanged<TvChannel> onPlayAndRecord;
+  final bool recordingFeatureUnlocked;
 
   @override
   State<_TvSearchResultsDialog> createState() => _TvSearchResultsDialogState();
@@ -738,10 +814,24 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                           id: 'favorite',
                           label: favorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
                         ),
-                        AccessibleCustomAction(
-                          id: 'schedule_recording',
-                          label: l10n.radioScheduleDialogTitle,
-                        ),
+                        if (widget.recordingFeatureUnlocked)
+                          AccessibleCustomAction(
+                            id: 'play_record',
+                            label: l10n.playAndRecord,
+                          ),
+                        if (widget.recordingFeatureUnlocked)
+                          AccessibleCustomAction(
+                            id: 'schedule_recording',
+                            label: l10n.radioScheduleDialogTitle,
+                          ),
+                      ],
+                      visualActions: [
+                        if (widget.recordingFeatureUnlocked)
+                          AccessibleVisualAction(
+                            id: 'play_record',
+                            label: l10n.playAndRecord,
+                            icon: 'record',
+                          ),
                       ],
                     );
                   }).toList(),
@@ -758,7 +848,13 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                 } else if (event.type == 'customAction' && event.action == 'favorite') {
                   await _toggleFavorite(channel);
                 } else if (event.type == 'customAction' &&
-                    event.action == 'schedule_recording') {
+                    event.action == 'play_record' &&
+                    widget.recordingFeatureUnlocked) {
+                  Navigator.of(context).pop();
+                  widget.onPlayAndRecord(channel);
+                } else if (event.type == 'customAction' &&
+                    event.action == 'schedule_recording' &&
+                    widget.recordingFeatureUnlocked) {
                   await showTvScheduleRecordingAction(context, channel);
                 }
               },
@@ -775,8 +871,15 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
             isFavorite: _isFavorite(channel),
             onOpen: () => Navigator.of(context).pop(channel),
             onToggleFavorite: () => _toggleFavorite(channel),
-            onScheduleRecording: () =>
-                showTvScheduleRecordingAction(context, channel),
+            onPlayAndRecord: widget.recordingFeatureUnlocked
+                ? () {
+                    Navigator.of(context).pop();
+                    widget.onPlayAndRecord(channel);
+                  }
+                : null,
+            onScheduleRecording: widget.recordingFeatureUnlocked
+                ? () => showTvScheduleRecordingAction(context, channel)
+                : null,
           );
         },
       ),
@@ -811,7 +914,8 @@ class _TvChannelButton extends StatelessWidget {
     required this.isFavorite,
     required this.onOpen,
     required this.onToggleFavorite,
-    required this.onScheduleRecording,
+    this.onPlayAndRecord,
+    this.onScheduleRecording,
   });
 
   final TvChannel channel;
@@ -819,7 +923,8 @@ class _TvChannelButton extends StatelessWidget {
   final bool isFavorite;
   final VoidCallback onOpen;
   final VoidCallback onToggleFavorite;
-  final VoidCallback onScheduleRecording;
+  final VoidCallback? onPlayAndRecord;
+  final VoidCallback? onScheduleRecording;
 
   String _channelLabel(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -850,51 +955,68 @@ class _TvChannelButton extends StatelessWidget {
               label: isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
             ): onToggleFavorite,
             CustomSemanticsAction(
+              label: l10n.playAndRecord,
+            ): ?onPlayAndRecord,
+            CustomSemanticsAction(
               label: l10n.radioScheduleDialogTitle,
-            ): onScheduleRecording,
+            ): ?onScheduleRecording,
           },
           child: ExcludeSemantics(
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(64),
-                alignment: Alignment.centerLeft,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              ),
-              onPressed: onOpen,
-              child: Row(
-                children: [
-                  const Icon(Icons.tv),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
+            child: Row(
+              children: [
+                Expanded(
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(64),
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                    ),
+                    onPressed: onOpen,
+                    child: Row(
                       children: [
-                        Text(
-                          channel.name,
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        if (currentProgram != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.tvNowOnAir(currentProgram!.title),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimary
-                                  .withValues(alpha: 0.8),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        const Icon(Icons.tv),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                channel.name,
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                              if (currentProgram != null) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.tvNowOnAir(currentProgram!.title),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary
+                                        .withValues(alpha: 0.8),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ],
                           ),
-                        ],
+                        ),
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+                if (onPlayAndRecord != null)
+                  IconButton(
+                    tooltip: l10n.playAndRecord,
+                    onPressed: onPlayAndRecord,
+                    icon: const Icon(Icons.fiber_manual_record),
+                  ),
+              ],
             ),
           ),
         ),

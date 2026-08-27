@@ -426,7 +426,7 @@ class AppLocalizationsCs extends AppLocalizations {
       'Adresa webu, RSS kanál nebo hledané slovo';
 
   @override
-  String get deleteNewsSource => 'Smazat zdroj';
+  String get deleteNewsSource => 'Odebrat';
 
   @override
   String get importRssSourcesFromOpml => 'Importovat zdroje RSS z OPML';
@@ -1983,6 +1983,9 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get radioPlay => 'Přehrát';
+
+  @override
+  String get playAndRecord => 'Přehrát a nahrávat';
 
   @override
   String get startRecording => 'Spustit nahrávání';
@@ -3581,6 +3584,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get renameRecording => 'Přejmenovat nahrávku';
 
   @override
+  String get renameDocument => 'Přejmenovat dokument';
+
+  @override
+  String get newDocumentName => 'Nový název dokumentu';
+
+  @override
+  String get documentNameAlreadyExists => 'Dokument s tímto názvem již existuje.';
+
+  @override
   String get newRecordingName => 'Nový název nahrávky';
 
   @override
@@ -3588,5 +3600,11 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get recordingNameAlreadyExists => 'Nahrávka s tímto názvem již existuje.';
+
+  @override
+  String get recordingExitPrompt => 'Nahrávání probíhá. Chcete ho zastavit, nebo pokračovat v nahrávání?';
+
+  @override
+  String get continueRecording => 'Pokračovat v nahrávání';
 
 }

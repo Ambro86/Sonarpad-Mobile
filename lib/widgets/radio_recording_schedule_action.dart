@@ -1,111 +1,36 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../models/radio_station.dart';
 import '../services/global_recording_service.dart';
 import '../services/recording_feature_access.dart';
-import '../services/tv_service.dart';
 import '../utils/status_message.dart';
 import 'universal_accessible_view.dart';
 
-class _TvScheduledRecordingRequest {
-  const _TvScheduledRecordingRequest({
-    required this.start,
-    required this.end,
+class _RadioScheduledRecordingRequest {
+  const _RadioScheduledRecordingRequest({
+    required this.startTime,
+    required this.endTime,
     required this.title,
   });
 
-  final DateTime start;
-  final DateTime end;
+  final TimeOfDay startTime;
+  final TimeOfDay endTime;
   final String title;
 }
 
-DateTime tvProgramRecordingStart(TvProgram program) =>
-    DateTime.fromMillisecondsSinceEpoch(
-      program.startTime * 1000,
-    ).subtract(const Duration(minutes: 10));
-
-DateTime tvProgramRecordingEnd(TvProgram program) =>
-    DateTime.fromMillisecondsSinceEpoch(
-      program.endTime * 1000,
-    ).add(const Duration(minutes: 10));
-
-DateTime _dateOnly(DateTime value) =>
-    DateTime(value.year, value.month, value.day);
-
-List<DateTime> tvRecordingDayChoices(DateTime today) {
-  final normalizedToday = _dateOnly(today);
-  return List.generate(
-    6,
-    (offset) => normalizedToday.add(Duration(days: offset)),
-  );
+String _formatTimeOfDay(TimeOfDay time) {
+  final hour = time.hour.toString().padLeft(2, '0');
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
 }
 
-String formatTvRecordingDayLabel(DateTime date, DateTime today) {
-  final normalizedToday = _dateOnly(today);
-  final normalizedDate = _dateOnly(date);
-  final diff = normalizedDate.difference(normalizedToday).inDays;
-  if (diff == -1) return 'Ieri';
-  if (diff == 0) return 'Oggi';
-  if (diff == 1) return 'Domani';
-  if (diff == 2) return 'Dopodomani';
-
-  const weekdays = [
-    'Lunedì',
-    'Martedì',
-    'Mercoledì',
-    'Giovedì',
-    'Venerdì',
-    'Sabato',
-    'Domenica',
-  ];
-  const months = [
-    'gennaio',
-    'febbraio',
-    'marzo',
-    'aprile',
-    'maggio',
-    'giugno',
-    'luglio',
-    'agosto',
-    'settembre',
-    'ottobre',
-    'novembre',
-    'dicembre',
-  ];
-  return '${weekdays[normalizedDate.weekday - 1]} '
-      '${normalizedDate.day} ${months[normalizedDate.month - 1]}';
-}
-
-Future<DateTime?> showTvRecordingDaySelectionDialog(
-  BuildContext context, {
-  required DateTime selectedDate,
-  required DateTime today,
-}) {
-  return showDialog<DateTime>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: Text(AppLocalizations.of(dialogContext).tvRecordingChooseDay),
-      content: RadioGroup<DateTime>(
-        groupValue: _dateOnly(selectedDate),
-        onChanged: (value) {
-          if (value != null) Navigator.pop(dialogContext, value);
-        },
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: tvRecordingDayChoices(today)
-                .map(
-                  (date) => RadioListTile<DateTime>(
-                    title: Text(formatTvRecordingDayLabel(date, today)),
-                    value: date,
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      ),
-    ),
-  );
+String _formatScheduledDateTime(DateTime value) {
+  final day = value.day.toString().padLeft(2, '0');
+  final month = value.month.toString().padLeft(2, '0');
+  final hour = value.hour.toString().padLeft(2, '0');
+  final minute = value.minute.toString().padLeft(2, '0');
+  return '$day/$month $hour:$minute';
 }
 
 Future<TimeOfDay?> _showScheduledRecordingTimePicker({
@@ -156,11 +81,7 @@ Future<TimeOfDay?> _showScheduledRecordingTimePicker({
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ExcludeSemantics(
-                  child: Text(
-                    l10n.radioScheduleLabeledValue(visibleLabel, valueText),
-                  ),
-                ),
+                ExcludeSemantics(child: Text('$visibleLabel: $valueText')),
                 Semantics(
                   slider: true,
                   label: semanticsLabel,
@@ -233,59 +154,13 @@ Future<TimeOfDay?> _showScheduledRecordingTimePicker({
   );
 }
 
-String _formatScheduledTime(DateTime value) {
-  final hour = value.hour.toString().padLeft(2, '0');
-  final minute = value.minute.toString().padLeft(2, '0');
-  return '$hour:$minute';
-}
-
-String _formatScheduledDateTime(DateTime value) {
-  final day = value.day.toString().padLeft(2, '0');
-  final month = value.month.toString().padLeft(2, '0');
-  final hour = value.hour.toString().padLeft(2, '0');
-  final minute = value.minute.toString().padLeft(2, '0');
-  return '$day/$month $hour:$minute';
-}
-
-DateTime _replaceTime(DateTime date, TimeOfDay time) =>
-    DateTime(date.year, date.month, date.day, time.hour, time.minute);
-
-String _tvRecordingTargetId(TvChannel channel) {
-  final tvgId = channel.tvgId.trim().toLowerCase();
-  if (tvgId.isNotEmpty) return 'tv:tvg:$tvgId';
-
-  final resolverId = channel.resolverChannelId?.trim() ?? '';
-  if (resolverId.isNotEmpty) {
-    final resolver = channel.streamResolver?.trim().toLowerCase() ?? '';
-    return 'tv:resolver:$resolver:$resolverId';
-  }
-
-  return 'tv:name:${TvService().normalizeChannelName(channel.name)}';
-}
-
-GlobalRecordingTarget tvRecordingTargetForChannel(
-  TvChannel channel, {
-  String? resolvedStreamUrl,
-}) {
-  final fallbackUrl = channel.url.trim();
-  return GlobalRecordingTarget(
-    id: _tvRecordingTargetId(channel),
-    stationName: channel.name,
-    streamUrl: resolvedStreamUrl?.trim().isNotEmpty == true
-        ? resolvedStreamUrl!.trim()
-        : fallbackUrl,
-    includeVideo: true,
-    tvChannel: channel,
-  );
-}
-
-Future<void> showTvScheduleRecordingAction(
+Future<void> showRadioScheduleRecordingAction(
   BuildContext context,
-  TvChannel channel, {
-  TvProgram? program,
-}) async {
+  RadioStation station,
+) async {
   if (!await RecordingFeatureAccess.isUnlocked()) return;
   if (!context.mounted) return;
+
   final l10n = AppLocalizations.of(context);
   final recordingService = GlobalRecordingService.instance;
   if (recordingService.hasAnyActiveRecording) {
@@ -294,80 +169,39 @@ Future<void> showTvScheduleRecordingAction(
   }
 
   final now = DateTime.now();
-  DateTime start = program == null
-      ? now.add(const Duration(minutes: 5))
-      : tvProgramRecordingStart(program);
-  DateTime end = program == null
-      ? now.add(const Duration(minutes: 35))
-      : tvProgramRecordingEnd(program);
-  final today = _dateOnly(now);
-  final lastAvailableDay = today.add(const Duration(days: 5));
-  DateTime selectedDay = program == null
-      ? _dateOnly(start)
-      : _dateOnly(
-          DateTime.fromMillisecondsSinceEpoch(program.startTime * 1000),
-        );
-  if (selectedDay.isBefore(today) || selectedDay.isAfter(lastAvailableDay)) {
-    final replacementDay = selectedDay.isBefore(today)
-        ? today
-        : lastAvailableDay;
-    final shift = replacementDay.difference(selectedDay);
-    start = start.add(shift);
-    end = end.add(shift);
-    selectedDay = replacementDay;
-  }
-  final titleController = TextEditingController(text: program?.title ?? '');
+  TimeOfDay startTime = TimeOfDay.fromDateTime(
+    now.add(const Duration(minutes: 5)),
+  );
+  TimeOfDay endTime = TimeOfDay.fromDateTime(
+    now.add(const Duration(minutes: 35)),
+  );
+  final titleController = TextEditingController();
 
   try {
-    final request = await showDialog<_TvScheduledRecordingRequest>(
+    final request = await showDialog<_RadioScheduledRecordingRequest>(
       context: context,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            String scheduleFieldValue(DateTime value) =>
-                _formatScheduledTime(value);
-
-            Future<void> pickDay() async {
-              final picked = await showTvRecordingDaySelectionDialog(
-                context,
-                selectedDate: selectedDay,
-                today: today,
-              );
-              if (picked != null) {
-                final shift = picked.difference(selectedDay);
-                setDialogState(() {
-                  start = start.add(shift);
-                  end = end.add(shift);
-                  selectedDay = picked;
-                });
-              }
-            }
-
             Future<void> pickStart() async {
               final picked = await _showScheduledRecordingTimePicker(
                 context: context,
-                initialTime: TimeOfDay.fromDateTime(start),
+                initialTime: startTime,
                 title: l10n.radioScheduleStartTime,
               );
               if (picked != null) {
-                setDialogState(() => start = _replaceTime(start, picked));
+                setDialogState(() => startTime = picked);
               }
             }
 
             Future<void> pickEnd() async {
               final picked = await _showScheduledRecordingTimePicker(
                 context: context,
-                initialTime: TimeOfDay.fromDateTime(end),
+                initialTime: endTime,
                 title: l10n.radioScheduleEndTime,
               );
               if (picked != null) {
-                setDialogState(() {
-                  var candidate = _replaceTime(start, picked);
-                  if (!candidate.isAfter(start)) {
-                    candidate = candidate.add(const Duration(days: 1));
-                  }
-                  end = candidate;
-                });
+                setDialogState(() => endTime = picked);
               }
             }
 
@@ -375,7 +209,7 @@ Future<void> showTvScheduleRecordingAction(
               title: Text(l10n.radioScheduleDialogTitle),
               content: SizedBox(
                 width: double.maxFinite,
-                height: 420,
+                height: 360,
                 child: useSharedAccessibleViewModel
                     ? UniversalAccessibleList(
                         sections: [
@@ -387,20 +221,15 @@ Future<void> showTvScheduleRecordingAction(
                                 title: l10n.radioScheduleOpenRequirement,
                               ),
                               AccessibleListRow(
-                                id: 'day',
-                                title:
-                                    'Giorno: ${formatTvRecordingDayLabel(selectedDay, today)}',
-                              ),
-                              AccessibleListRow(
                                 id: 'start',
                                 title: l10n.radioScheduleStartTimeValue(
-                                  scheduleFieldValue(start),
+                                  _formatTimeOfDay(startTime),
                                 ),
                               ),
                               AccessibleListRow(
                                 id: 'end',
                                 title: l10n.radioScheduleEndTimeValue(
-                                  scheduleFieldValue(end),
+                                  _formatTimeOfDay(endTime),
                                 ),
                               ),
                               AccessibleListRow(
@@ -414,18 +243,14 @@ Future<void> showTvScheduleRecordingAction(
                           ),
                         ],
                         onEvent: (event) {
-                          if (event.id == 'day' && event.type == 'activate') {
-                            pickDay();
-                          } else if (event.id == 'start' &&
-                              event.type == 'activate') {
+                          if (event.id == 'start' && event.type == 'activate') {
                             pickStart();
                           } else if (event.id == 'end' &&
                               event.type == 'activate') {
                             pickEnd();
                           } else if (event.id == 'title' &&
                               event.type == 'textChanged') {
-                            titleController.text =
-                                event.value?.toString() ?? '';
+                            titleController.text = event.value?.toString() ?? '';
                           }
                         },
                       )
@@ -437,19 +262,11 @@ Future<void> showTvScheduleRecordingAction(
                             Text(l10n.radioScheduleOpenRequirement),
                             const SizedBox(height: 16),
                             OutlinedButton.icon(
-                              onPressed: pickDay,
-                              icon: const Icon(Icons.calendar_today),
-                              label: Text(
-                                'Giorno: ${formatTvRecordingDayLabel(selectedDay, today)}',
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            OutlinedButton.icon(
                               onPressed: pickStart,
                               icon: const Icon(Icons.schedule),
                               label: Text(
                                 l10n.radioScheduleStartTimeValue(
-                                  scheduleFieldValue(start),
+                                  _formatTimeOfDay(startTime),
                                 ),
                               ),
                             ),
@@ -459,7 +276,7 @@ Future<void> showTvScheduleRecordingAction(
                               icon: const Icon(Icons.schedule),
                               label: Text(
                                 l10n.radioScheduleEndTimeValue(
-                                  scheduleFieldValue(end),
+                                  _formatTimeOfDay(endTime),
                                 ),
                               ),
                             ),
@@ -482,16 +299,14 @@ Future<void> showTvScheduleRecordingAction(
                   child: Text(l10n.cancel),
                 ),
                 FilledButton(
-                  onPressed: () {
-                    Navigator.pop(
-                      dialogContext,
-                      _TvScheduledRecordingRequest(
-                        start: start,
-                        end: end,
-                        title: titleController.text.trim(),
-                      ),
-                    );
-                  },
+                  onPressed: () => Navigator.pop(
+                    dialogContext,
+                    _RadioScheduledRecordingRequest(
+                      startTime: startTime,
+                      endTime: endTime,
+                      title: titleController.text.trim(),
+                    ),
+                  ),
                   child: Text(l10n.radioScheduleAction),
                 ),
               ],
@@ -503,37 +318,60 @@ Future<void> showTvScheduleRecordingAction(
 
     if (request == null || !context.mounted) return;
 
-    final scheduledStart = request.start;
-    var scheduledEnd = request.end;
-    if (!scheduledEnd.isAfter(scheduledStart)) {
-      scheduledEnd = scheduledEnd.add(const Duration(days: 1));
+    final current = DateTime.now();
+    var start = DateTime(
+      current.year,
+      current.month,
+      current.day,
+      request.startTime.hour,
+      request.startTime.minute,
+    );
+    if (!start.isAfter(current)) {
+      start = start.add(const Duration(days: 1));
+    }
+    var end = DateTime(
+      start.year,
+      start.month,
+      start.day,
+      request.endTime.hour,
+      request.endTime.minute,
+    );
+    if (!end.isAfter(start)) {
+      end = end.add(const Duration(days: 1));
     }
 
     final title = request.title.trim().isEmpty ? null : request.title.trim();
     try {
       recordingService.schedule(
-        target: tvRecordingTargetForChannel(channel),
-        start: scheduledStart,
-        end: scheduledEnd,
+        target: GlobalRecordingTarget(
+          id: 'radio:${station.streamUrl}',
+          stationName: station.name,
+          streamUrl: station.streamUrl,
+          includeVideo: false,
+        ),
+        start: start,
+        end: end,
         title: title,
       );
-    } catch (error) {
-      if (!context.mounted) return;
-      showStatusMessage(
-        context,
-        l10n.radioScheduledRecordingError(l10n.technicalErrorGeneric),
-      );
+    } catch (_) {
+      if (context.mounted) {
+        showStatusMessage(
+          context,
+          l10n.radioScheduledRecordingError(l10n.technicalErrorGeneric),
+        );
+      }
       return;
     }
 
-    if (!context.mounted) return;
-    showStatusMessage(
-      context,
-      l10n.radioScheduledRecordingRange(
-        _formatScheduledDateTime(scheduledStart),
-        _formatScheduledDateTime(scheduledEnd),
-      ),
-    );
+    if (context.mounted) {
+      showStatusMessage(
+        context,
+        l10n.radioScheduledRecordingRange(
+          _formatScheduledDateTime(start),
+          _formatScheduledDateTime(end),
+        ),
+      );
+    }
   } finally {
     titleController.dispose();
   }

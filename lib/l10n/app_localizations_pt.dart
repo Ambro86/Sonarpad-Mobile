@@ -410,7 +410,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newsSourceUrlOrSearch => 'URL do site, feed RSS ou palavra de pesquisa';
 
   @override
-  String get deleteNewsSource => 'Eliminar fonte';
+  String get deleteNewsSource => 'Remover';
 
   @override
   String get importRssSourcesFromOpml => 'Importar fontes RSS de OPML';
@@ -1928,6 +1928,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get radioPlay => 'Reproduzir';
+
+  @override
+  String get playAndRecord => 'Reproduzir e gravar';
 
   @override
   String get startRecording => 'Iniciar gravação';
@@ -3479,6 +3482,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get renameRecording => 'Renomear gravação';
 
   @override
+  String get renameDocument => 'Renomear documento';
+
+  @override
+  String get newDocumentName => 'Novo nome do documento';
+
+  @override
+  String get documentNameAlreadyExists => 'Já existe um documento com este nome.';
+
+  @override
   String get newRecordingName => 'Novo nome da gravação';
 
   @override
@@ -3486,6 +3498,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get recordingNameAlreadyExists => 'Já existe uma gravação com este nome.';
+
+  @override
+  String get recordingExitPrompt => 'A gravação está em andamento. Deseja pará-la ou continuar a gravação?';
+
+  @override
+  String get continueRecording => 'Continuar gravação';
 
 }
 
@@ -3895,7 +3913,7 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get newsSourceUrlOrSearch => 'URL do site, feed RSS ou palavra de pesquisa';
 
   @override
-  String get deleteNewsSource => 'Excluir fonte';
+  String get deleteNewsSource => 'Remover';
 
   @override
   String get importRssSourcesFromOpml => 'Importar fontes RSS de OPML';
@@ -5413,6 +5431,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get radioPlay => 'Reproduzir';
+
+  @override
+  String get playAndRecord => 'Reproduzir e gravar';
 
   @override
   String get startRecording => 'Iniciar gravação';
@@ -6964,6 +6985,15 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get renameRecording => 'Renomear gravação';
 
   @override
+  String get renameDocument => 'Renomear documento';
+
+  @override
+  String get newDocumentName => 'Novo nome do documento';
+
+  @override
+  String get documentNameAlreadyExists => 'Já existe um documento com este nome.';
+
+  @override
   String get newRecordingName => 'Novo nome da gravação';
 
   @override
@@ -6971,5 +7001,11 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get recordingNameAlreadyExists => 'Já existe uma gravação com este nome.';
+
+  @override
+  String get recordingExitPrompt => 'A gravação está em andamento. Deseja pará-la ou continuar a gravação?';
+
+  @override
+  String get continueRecording => 'Continuar gravação';
 
 }

@@ -429,7 +429,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'URL del sitio, feed RSS o palabra de búsqueda';
 
   @override
-  String get deleteNewsSource => 'Eliminar fuente';
+  String get deleteNewsSource => 'Quitar';
 
   @override
   String get importRssSourcesFromOpml => 'Importar fuentes RSS desde OPML';
@@ -1998,6 +1998,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get radioPlay => 'Reproducir';
+
+  @override
+  String get playAndRecord => 'Reproducir y grabar';
 
   @override
   String get startRecording => 'Iniciar grabación';
@@ -3602,6 +3605,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get renameRecording => 'Renombrar grabación';
 
   @override
+  String get renameDocument => 'Renombrar documento';
+
+  @override
+  String get newDocumentName => 'Nuevo nombre del documento';
+
+  @override
+  String get documentNameAlreadyExists => 'Ya existe un documento con este nombre.';
+
+  @override
   String get newRecordingName => 'Nuevo nombre de la grabación';
 
   @override
@@ -3609,5 +3621,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get recordingNameAlreadyExists => 'Ya existe una grabación con este nombre.';
+
+  @override
+  String get recordingExitPrompt => 'La grabación está en curso. ¿Quieres detenerla o continuar grabando?';
+
+  @override
+  String get continueRecording => 'Continuar grabando';
 
 }

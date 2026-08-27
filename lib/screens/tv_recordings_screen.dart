@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/global_recording_service.dart';
 import '../services/radio_recording_service.dart';
+import '../services/recording_feature_access.dart';
 import '../utils/status_message.dart';
 import '../widgets/recording_selection_dialog.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -29,12 +30,15 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
     includeVideo: true,
   );
   late Future<List<File>> _future;
+  bool _isAccessChecked = false;
+  bool _isAccessAllowed = false;
 
   @override
   void initState() {
     super.initState();
     _future = _service.listRecordings();
     _globalRecordingService.addListener(_onGlobalRecordingChanged);
+    _checkAccess();
   }
 
   @override
@@ -51,6 +55,16 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
   void _reload() {
     setState(() {
       _future = _service.listRecordings();
+    });
+    _checkAccess();
+  }
+
+  Future<void> _checkAccess() async {
+    final isAllowed = await RecordingFeatureAccess.isUnlocked();
+    if (!mounted) return;
+    setState(() {
+      _isAccessAllowed = isAllowed;
+      _isAccessChecked = true;
     });
   }
 
@@ -174,7 +188,7 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
           IconButton(
             icon: const Icon(Icons.playlist_add_check),
             tooltip: l10n.selectRecordings,
-            onPressed: _selectAndShareRecordings,
+            onPressed: _isAccessAllowed ? _selectAndShareRecordings : null,
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -183,7 +197,11 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<List<File>>(
+      body: !_isAccessChecked
+          ? Center(child: CircularProgressIndicator(semanticsLabel: l10n.loading))
+          : !_isAccessAllowed
+              ? Center(child: Text(l10n.noRecordings))
+              : FutureBuilder<List<File>>(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {

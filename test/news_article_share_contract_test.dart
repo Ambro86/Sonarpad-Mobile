@@ -32,7 +32,7 @@ void main() {
     expect(source, contains('CustomSemanticsAction(label: l10n.shareArticle)'));
     expect(source, contains('ExcludeSemantics('));
     expect(source, contains('await _service.resolveArticleUrlForSharing(article.link)'));
-    expect(source, contains("text: '${article.title}\\n$url'"));
+    expect(source, contains(r"text: '${article.title}\n$url'"));
   });
 
 }

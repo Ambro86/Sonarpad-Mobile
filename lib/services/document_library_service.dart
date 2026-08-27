@@ -11,6 +11,10 @@ import '../models/document_item.dart';
 import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 
+class DocumentRenameConflictException implements Exception {
+  const DocumentRenameConflictException();
+}
+
 /// Gestisce la persistenza della libreria documenti tramite SharedPreferences.
 class DocumentLibraryService {
   static const _key = 'document_library_v1';
@@ -473,6 +477,87 @@ class DocumentLibraryService {
 
     return p.join(appDir.path, doc.editedTextPath!);
   }
+
+  Future<DocumentItem?> renameDocument(
+    DocumentItem doc,
+    String requestedName,
+  ) async {
+    await load();
+    final index = _documents.indexWhere((item) => item.id == doc.id);
+    if (index == -1) return null;
+
+    final current = _documents[index];
+    if (current.isFolder) return null;
+
+    var newDisplayName = requestedName
+        .trim()
+        .replaceAll('/', ' ')
+        .replaceAll('\\', ' ')
+        .replaceAll(':', ' ')
+        .replaceAll('*', ' ')
+        .replaceAll('?', ' ')
+        .replaceAll('"', ' ')
+        .replaceAll('<', ' ')
+        .replaceAll('>', ' ')
+        .replaceAll('|', ' ')
+        .split(' ')
+        .where((part) => part.trim().isNotEmpty)
+        .join(' ')
+        .trim();
+    if (newDisplayName.isEmpty) return null;
+
+    if (_isRemoteLibraryDocument(current)) {
+      if (newDisplayName == current.displayName) return null;
+      final renamed = current.copyWith(name: newDisplayName);
+      _documents[index] = renamed;
+      await _save();
+      return renamed;
+    }
+
+    final currentExtension = p.extension(current.name);
+    final extension = currentExtension.isNotEmpty
+        ? currentExtension
+        : (current.extension.isEmpty ? '' : '.${current.extension}');
+    if (extension.isNotEmpty &&
+        newDisplayName.toLowerCase().endsWith(extension.toLowerCase())) {
+      newDisplayName = newDisplayName
+          .substring(0, newDisplayName.length - extension.length)
+          .trim();
+      if (newDisplayName.isEmpty) return null;
+    }
+    if (newDisplayName == current.displayName) return null;
+
+    final sourcePath = await resolveFilePath(current);
+    final source = File(sourcePath);
+    if (!await source.exists()) {
+      throw FileSystemException('Document file not found.', sourcePath);
+    }
+
+    final target = File(p.join(source.parent.path, '$newDisplayName$extension'));
+    if (p.normalize(target.path) == p.normalize(source.path)) return null;
+    if (await target.exists()) {
+      throw const DocumentRenameConflictException();
+    }
+
+    final renamedFile = await source.rename(target.path);
+    final appDir = await getApplicationDocumentsDirectory();
+    final normalizedAppDir = p.normalize(appDir.path);
+    final normalizedTarget = p.normalize(renamedFile.path);
+    final newPath = p.isWithin(normalizedAppDir, normalizedTarget)
+        ? p.relative(normalizedTarget, from: normalizedAppDir)
+        : normalizedTarget;
+
+    final renamed = current.copyWith(
+      name: p.basename(renamedFile.path),
+      path: newPath,
+    );
+    _documents[index] = renamed;
+    await _save();
+    return renamed;
+  }
+
+  bool _isRemoteLibraryDocument(DocumentItem doc) =>
+      doc.extension == 'librivox' || doc.extension == 'archiveaudio';
 
   /// Aggiorna un documento esistente (es. per salvare il segnalibro).
   ///

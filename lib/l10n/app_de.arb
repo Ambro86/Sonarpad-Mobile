@@ -416,7 +416,7 @@
   "@newsSourceUrlOrSearch": {
     "description": "Localized text for newsSourceUrlOrSearch."
   },
-  "deleteNewsSource": "Quelle löschen",
+  "deleteNewsSource": "Entfernen",
   "@deleteNewsSource": {
     "description": "Localized text for deleteNewsSource."
   },
@@ -2627,6 +2627,10 @@
     }
   },
   "radioPlay": "Abspielen",
+  "playAndRecord": "Abspielen und aufnehmen",
+  "@playAndRecord": {
+    "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
+  },
   "@radioPlay": {
     "description": "Localized text for radioPlay."
   },
@@ -4432,5 +4436,10 @@
   "renameRecording": "Aufnahme umbenennen",
   "newRecordingName": "Neuer Name der Aufnahme",
   "recordingCannotRenameWhileInProgress": "Eine laufende Aufnahme kann nicht umbenannt werden.",
-  "recordingNameAlreadyExists": "Eine Aufnahme mit diesem Namen ist bereits vorhanden."
+  "recordingNameAlreadyExists": "Eine Aufnahme mit diesem Namen ist bereits vorhanden.",
+  "renameDocument": "Dokument umbenennen",
+  "newDocumentName": "Neuer Dokumentname",
+  "documentNameAlreadyExists": "Ein Dokument mit diesem Namen ist bereits vorhanden.",
+  "recordingExitPrompt": "Die Aufnahme läuft. Möchtest du sie stoppen oder die Aufnahme fortsetzen?",
+  "continueRecording": "Aufnahme fortsetzen"
 }
