@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Sonarpad keeps flutter_tts 4.2.5 unchanged and applies only upstream PR #632,
-# which fixes the iOS synthesizeToFile crash when AVSpeechSynthesizer emits
-# Int16 PCM buffers. Normal TTS playback/VoiceOver reading is not modified.
+# Sonarpad keeps flutter_tts 4.2.5 unchanged and applies only the iOS code
+# portion of upstream PR #632, which fixes the synthesizeToFile crash when
+# AVSpeechSynthesizer emits Int16 PCM buffers. Normal TTS playback/VoiceOver
+# reading is not modified.
 readonly FLUTTER_TTS_VERSION="4.2.5"
 readonly PATCH_URL="https://github.com/dlutton/flutter_tts/pull/632.patch"
 
@@ -27,24 +28,33 @@ find_plugin_dir() {
 }
 
 plugin_dir="$(find_plugin_dir)"
-marker_file="$plugin_dir/.sonarpad_flutter_tts_pr632_applied"
+marker_file="$plugin_dir/.sonarpad_flutter_tts_pr632_ios_applied"
 
 if [[ -f "$marker_file" ]]; then
-  echo "Patch flutter_tts #632 gia applicata a $plugin_dir"
+  echo "Patch iOS flutter_tts #632 gia applicata a $plugin_dir"
   exit 0
 fi
 
 patch_file="$(mktemp "${TMPDIR:-/tmp}/sonarpad-flutter-tts-632.XXXXXX")"
-trap 'rm -f "$patch_file"' EXIT
+ios_patch_file="$(mktemp "${TMPDIR:-/tmp}/sonarpad-flutter-tts-632-ios.XXXXXX")"
+trap 'rm -f "$patch_file" "$ios_patch_file"' EXIT
 
 curl --fail --silent --show-error --location "$PATCH_URL" --output "$patch_file"
 
-# Safety guard: this Sonarpad hotfix must remain iOS-only and must never change
-# Dart APIs, Android code, speaking/reading logic, or any other plugin files.
-changed_files="$(sed -nE 's#^diff --git a/([^ ]+) b/.*#\1#p' "$patch_file" | sort -u)"
+# PR #632 currently also contains documentation/changelog changes. Sonarpad
+# deliberately ignores every diff outside ios/Classes and applies only the
+# native iOS implementation change required for synthesizeToFile.
+awk '
+  /^diff --git / {
+    keep = ($3 ~ /^a\/ios\/Classes\// && $4 ~ /^b\/ios\/Classes\//)
+  }
+  keep { print }
+' "$patch_file" > "$ios_patch_file"
+
+changed_files="$(sed -nE 's#^diff --git a/([^ ]+) b/.*#\1#p' "$ios_patch_file" | sort -u)"
 
 if [[ -z "$changed_files" ]]; then
-  echo "Patch flutter_tts #632 vuota o non riconosciuta." >&2
+  echo "Patch flutter_tts #632: nessuna modifica ios/Classes trovata; interrompo." >&2
   exit 1
 fi
 
@@ -54,7 +64,7 @@ while IFS= read -r changed; do
     ios/Classes/*)
       ;;
     *)
-      echo "Rifiuto patch flutter_tts #632: modifica inattesa fuori da ios/Classes: $changed" >&2
+      echo "Rifiuto patch filtrata flutter_tts #632: file inatteso: $changed" >&2
       exit 1
       ;;
   esac
@@ -62,11 +72,11 @@ done <<< "$changed_files"
 
 # Fresh GitHub runners normally take this branch. -N prevents an accidental
 # second application if a restored Pub cache already contains the hotfix.
-if patch -N -s -d "$plugin_dir" -p1 < "$patch_file"; then
-  printf '%s\n' "$(shasum -a 256 "$patch_file" | awk '{print $1}')" > "$marker_file"
-  echo "Applicata patch flutter_tts #632 a $plugin_dir"
+if patch -N -s -d "$plugin_dir" -p1 < "$ios_patch_file"; then
+  printf '%s\n' "$(shasum -a 256 "$ios_patch_file" | awk '{print $1}')" > "$marker_file"
+  echo "Applicata solo la parte ios/Classes della patch flutter_tts #632 a $plugin_dir"
 else
-  echo "Impossibile applicare in modo pulito la patch flutter_tts #632 a flutter_tts ${FLUTTER_TTS_VERSION}." >&2
+  echo "Impossibile applicare in modo pulito la parte iOS della patch flutter_tts #632 a flutter_tts ${FLUTTER_TTS_VERSION}." >&2
   echo "Interrompo invece di modificare codice TTS non previsto." >&2
   exit 1
 fi
