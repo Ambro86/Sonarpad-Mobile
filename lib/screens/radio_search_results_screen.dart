@@ -59,6 +59,7 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
       ),
     );
     await _loadFavorites();
+    await _restoreResultFocusAfterPlayer(station);
   }
 
   Future<void> _playAndRecord(RadioStation station) async {
@@ -73,6 +74,25 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
       ),
     );
     await _loadFavorites();
+    await _restoreResultFocusAfterPlayer(station);
+  }
+
+  Future<void> _restoreResultFocusAfterPlayer(RadioStation station) async {
+    if (!mounted || !useSharedAccessibleViewModel) return;
+
+    // Returning from the player must hand VoiceOver/TalkBack back to the
+    // station that opened it. In particular, do not let the page selector
+    // above the results become the first accessible element after the route
+    // transition. routeReturnJump uses the renderer-neutral return-focus
+    // handoff: UIKit recreates only the results platform view when needed,
+    // while the shared Flutter renderer focuses the same row id directly.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _resultsAccessibleListController.focusAccessibleRow(
+      station.streamUrl,
+      mode: AccessibleFocusMode.routeReturnJump,
+      animated: false,
+    );
   }
 
   Future<void> _toggleFavorite(RadioStation station) async {
