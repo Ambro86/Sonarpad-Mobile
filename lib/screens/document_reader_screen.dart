@@ -2418,8 +2418,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         id: 'paragraph_$i',
         title: _chunks[i],
         subtitle: isBookmarked ? '🔖' : null,
-        accessibilityLabel:
-            useNativeIosAccessibleViews ? _chunks[i] : null,
+        accessibilityLabel: _chunks[i],
         kind: canInteract ? 'action' : 'text',
         accessibilityButtonTrait: false,
         selected: isSelected,

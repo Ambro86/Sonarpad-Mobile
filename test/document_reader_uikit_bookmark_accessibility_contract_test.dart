@@ -24,11 +24,9 @@ void main() {
     );
     expect(
       sharedDocumentList,
-      contains(
-        'accessibilityLabel:\n'
-        '            useNativeIosAccessibleViews ? _chunks[i] : null',
-      ),
+      contains('accessibilityLabel: _chunks[i]'),
     );
+    expect(sharedDocumentList, isNot(contains('useNativeIosAccessibleViews')));
 
     final native = File(
       'ios/Runner/SonarpadNativeAccessibleView.swift',
