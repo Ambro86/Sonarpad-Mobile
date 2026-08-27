@@ -420,6 +420,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var currentRequestedFocusRowId: String?
   private var focusTraceExpectedRowId: String?
   private var globalFocusTraceObserver: NSObjectProtocol?
+  private var voiceOverStatusObserver: NSObjectProtocol?
   private var focusTraceSequence = 0
   private var persistentTopActionElement: SonarpadPersistentAccessibilityActionElement?
 
@@ -556,6 +557,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     tableView.keyboardDismissMode = .interactive
     tableView.dataSource = self
     tableView.delegate = self
+    updateHorizontalScrollIndicatorVisibility()
+    voiceOverStatusObserver = NotificationCenter.default.addObserver(
+      forName: UIAccessibility.voiceOverStatusDidChangeNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.updateHorizontalScrollIndicatorVisibility()
+    }
     rootView.addSubview(tableView)
     NSLayoutConstraint.activate([
       tableView.leadingAnchor.constraint(equalTo: rootView.leadingAnchor),
@@ -781,6 +790,18 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     if let observer = globalFocusTraceObserver {
       NotificationCenter.default.removeObserver(observer)
     }
+    if let observer = voiceOverStatusObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
+  }
+
+  private func updateHorizontalScrollIndicatorVisibility() {
+    // Keep the visual horizontal scroll indicator for sighted users, but do
+    // not expose/show it while VoiceOver is running. On recent iOS versions
+    // UIKit may otherwise surface the indicator itself as a separate
+    // accessibility stop (for example after opening SonarTube channels or
+    // podcast lists), even though the actual rows remain vertically usable.
+    tableView.showsHorizontalScrollIndicator = !UIAccessibility.isVoiceOverRunning
   }
 
   func view() -> UIView { rootView }
@@ -2722,6 +2743,7 @@ private final class SonarpadNativePickerController: UITableViewController {
   private let options: [SonarpadNativeOption]
   private let selectedValue: String?
   private let onSelected: (SonarpadNativeOption) -> Void
+  private var voiceOverStatusObserver: NSObjectProtocol?
 
   init(title: String, options: [SonarpadNativeOption], selectedValue: String?, onSelected: @escaping (SonarpadNativeOption) -> Void) {
     self.options = options
@@ -2738,6 +2760,24 @@ private final class SonarpadNativePickerController: UITableViewController {
     navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(close))
     tableView.estimatedRowHeight = 52
     tableView.rowHeight = UITableView.automaticDimension
+    updateHorizontalScrollIndicatorVisibility()
+    voiceOverStatusObserver = NotificationCenter.default.addObserver(
+      forName: UIAccessibility.voiceOverStatusDidChangeNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.updateHorizontalScrollIndicatorVisibility()
+    }
+  }
+
+  deinit {
+    if let observer = voiceOverStatusObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
+  }
+
+  private func updateHorizontalScrollIndicatorVisibility() {
+    tableView.showsHorizontalScrollIndicator = !UIAccessibility.isVoiceOverRunning
   }
 
   @objc private func close() { dismiss(animated: true) }
@@ -2832,6 +2872,7 @@ private final class SonarpadNativeGridView: NSObject, FlutterPlatformView, UICol
   private let channel: FlutterMethodChannel
   private var items: [SonarpadGridItem] = []
   private var columns = 2
+  private var voiceOverStatusObserver: NSObjectProtocol?
 
   init(frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, messenger: FlutterBinaryMessenger) {
     rootView = UIView(frame: frame)
@@ -2847,6 +2888,14 @@ private final class SonarpadNativeGridView: NSObject, FlutterPlatformView, UICol
     collectionView.backgroundColor = .systemBackground
     collectionView.dataSource = self
     collectionView.delegate = self
+    updateHorizontalScrollIndicatorVisibility()
+    voiceOverStatusObserver = NotificationCenter.default.addObserver(
+      forName: UIAccessibility.voiceOverStatusDidChangeNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.updateHorizontalScrollIndicatorVisibility()
+    }
     collectionView.register(SonarpadGridCell.self, forCellWithReuseIdentifier: "grid")
     rootView.addSubview(collectionView)
     NSLayoutConstraint.activate([
@@ -2861,6 +2910,16 @@ private final class SonarpadNativeGridView: NSObject, FlutterPlatformView, UICol
       else { result(FlutterMethodNotImplemented) }
     }
   }
+  deinit {
+    if let observer = voiceOverStatusObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
+  }
+
+  private func updateHorizontalScrollIndicatorVisibility() {
+    collectionView.showsHorizontalScrollIndicator = !UIAccessibility.isVoiceOverRunning
+  }
+
   func view() -> UIView { rootView }
   private func apply(arguments: Any?) {
     guard let map = arguments as? [String: Any] else { return }

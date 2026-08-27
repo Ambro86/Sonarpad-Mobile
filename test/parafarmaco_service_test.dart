@@ -113,4 +113,64 @@ void main() {
     });
   });
 
+
+  group('ParafarmacoService cataloghi alfabetici', () {
+    test('sfoglia i farmaci di una lettera, filtra e ordina i risultati', () async {
+      final service = ParafarmacoService(
+        client: MockClient((request) async {
+          if (request.url.path == '/farmaci/p') {
+            return http.Response(
+              '<html><body>'
+              '<a href="/farmaci/p/pevaryl">Pevaryl</a>'
+              '<a href="/farmaci/p/palexia">Palexia</a>'
+              '<a href="/farmaci/a/aspirina">Aspirina</a>'
+              '<a href="/parafarmaci/p/polase">Polase</a>'
+              '</body></html>',
+              200,
+            );
+          }
+          return http.Response('<html><body></body></html>', 200);
+        }),
+      );
+
+      final results = await service.browseDrugsByLetter('P');
+
+      expect(
+        results.map((result) => result.name).toList(),
+        ['Palexia', 'Pevaryl'],
+      );
+      expect(results.every(service.isMedicationResult), isTrue);
+    });
+
+    test('sfoglia soltanto i parafarmaci della lettera selezionata', () async {
+      final service = ParafarmacoService(
+        client: MockClient((request) async {
+          if (request.url.path == '/parafarmaci/m') {
+            return http.Response(
+              '<html><body>'
+              '<a href="/parafarmaci/m/massigen">Massigen</a>'
+              '<a href="/parafarmaci/m/microlife">Microlife</a>'
+              '<a href="/integratori/m/multicentrum">Multicentrum</a>'
+              '<a href="/parafarmaci/a/altro">Altro</a>'
+              '</body></html>',
+              200,
+            );
+          }
+          return http.Response('<html><body></body></html>', 200);
+        }),
+      );
+
+      final results = await service.browseParafarmaciByLetter('m');
+
+      expect(
+        results.map((result) => result.name).toList(),
+        ['Massigen', 'Microlife'],
+      );
+      expect(
+        results.every((result) => !service.isMedicationResult(result)),
+        isTrue,
+      );
+    });
+  });
+
 }

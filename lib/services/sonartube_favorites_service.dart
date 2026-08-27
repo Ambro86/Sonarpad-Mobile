@@ -34,6 +34,53 @@ class SonarTubeFavoritesService {
     return !wasFavorite;
   }
 
+  /// Aggiorna i metadati salvati di un preferito senza aggiungerlo se non
+  /// esiste. I valori nuovi non vuoti vincono, mentre i dati gia' presenti
+  /// vengono conservati quando [item] non li contiene.
+  Future<SonarTubeItem?> updateFavoriteMetadata(SonarTubeItem item) async {
+    final favorites = await loadFavorites();
+    final key = itemKey(item);
+    final index = favorites.indexWhere((favorite) => itemKey(favorite) == key);
+    if (index < 0) return null;
+
+    final existing = favorites[index];
+    final updated = _forFavoriteStorage(_mergeFavorite(existing, item));
+    if (jsonEncode(_toJson(existing)) != jsonEncode(_toJson(updated))) {
+      favorites[index] = updated;
+      await _save(favorites);
+    }
+    return updated;
+  }
+
+  SonarTubeItem _mergeFavorite(
+    SonarTubeItem existing,
+    SonarTubeItem incoming,
+  ) {
+    String? prefer(String? newer, String? older) {
+      final value = newer?.trim();
+      return value != null && value.isNotEmpty ? value : older;
+    }
+
+    return SonarTubeItem(
+      kind: existing.kind,
+      id: existing.id,
+      title: incoming.title.trim().isNotEmpty
+          ? incoming.title
+          : existing.title,
+      url: prefer(incoming.url, existing.url) ?? existing.url,
+      channel: prefer(incoming.channel, existing.channel),
+      channelId: prefer(incoming.channelId, existing.channelId),
+      thumbnailUrl: prefer(incoming.thumbnailUrl, existing.thumbnailUrl),
+      duration: prefer(incoming.duration, existing.duration),
+      published: prefer(incoming.published, existing.published),
+      views: prefer(incoming.views, existing.views),
+      subscribers: prefer(incoming.subscribers, existing.subscribers),
+      handle: prefer(incoming.handle, existing.handle),
+      description: prefer(incoming.description, existing.description),
+      isLive: incoming.isLive || existing.isLive,
+    );
+  }
+
   SonarTubeItem _forFavoriteStorage(SonarTubeItem item) {
     final publicUrl = _publicYoutubeUrl(item);
     return SonarTubeItem(

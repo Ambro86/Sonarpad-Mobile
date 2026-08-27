@@ -64,4 +64,35 @@ void main() {
     expect(stored.url, 'https://www.youtube.com/watch?v=abcdefghijk');
     expect(stored.url, isNot(contains('temporary.example.invalid')));
   });
+
+  test('updates static metadata only for an existing favorite', () async {
+    SharedPreferences.setMockInitialValues({});
+    final service = SonarTubeFavoritesService();
+    const oldChannel = SonarTubeItem(
+      kind: SonarTubeItemKind.channel,
+      id: 'UC123',
+      title: 'Canale preferito',
+      url: 'https://www.youtube.com/channel/UC123',
+    );
+    const refreshedChannel = SonarTubeItem(
+      kind: SonarTubeItemKind.channel,
+      id: 'UC123',
+      title: 'Canale preferito',
+      url: 'https://www.youtube.com/@canalepreferito',
+      handle: '@canalepreferito',
+      subscribers: '123 mila iscritti',
+    );
+
+    expect(await service.updateFavoriteMetadata(refreshedChannel), isNull);
+    expect(await service.toggleFavorite(oldChannel), isTrue);
+
+    final updated = await service.updateFavoriteMetadata(refreshedChannel);
+    expect(updated, isNotNull);
+    expect(updated!.handle, '@canalepreferito');
+    expect(updated.subscribers, '123 mila iscritti');
+
+    final stored = (await service.loadFavorites()).single;
+    expect(stored.handle, '@canalepreferito');
+    expect(stored.subscribers, '123 mila iscritti');
+  });
 }

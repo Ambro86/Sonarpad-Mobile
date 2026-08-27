@@ -11,8 +11,15 @@ import 'parafarmaco_detail_screen.dart';
 
 class AifaSearchResultsScreen extends StatefulWidget {
   final String query;
+  final bool aifaOnly;
+  final bool saveRecentSearch;
 
-  const AifaSearchResultsScreen({super.key, required this.query});
+  const AifaSearchResultsScreen({
+    super.key,
+    required this.query,
+    this.aifaOnly = false,
+    this.saveRecentSearch = true,
+  });
 
   @override
   State<AifaSearchResultsScreen> createState() =>
@@ -37,7 +44,11 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
   void initState() {
     super.initState();
     _searchAifa();
-    _searchParafarmaci();
+    if (widget.aifaOnly) {
+      _parafarmacoLoading = false;
+    } else {
+      _searchParafarmaci();
+    }
   }
 
   Future<void> _searchAifa() async {
@@ -79,7 +90,7 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
   }
 
   Future<void> _saveRecentSearchIfNeeded() async {
-    if (_recentSearchSaved) return;
+    if (!widget.saveRecentSearch || _recentSearchSaved) return;
     _recentSearchSaved = true;
     try {
       await RecentSearchesService().addSearch(
@@ -110,6 +121,7 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
   bool _hideEmptyProductsSection(
     List<ParafarmacoSearchResult> visibleProducts,
   ) {
+    if (widget.aifaOnly) return true;
     return !_aifaLoading &&
         _results.isNotEmpty &&
         !_parafarmacoLoading &&
@@ -145,9 +157,11 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
         subtitle: _aifaError!,
       ));
     } else if (_results.isEmpty) {
-      children.add(const _StatusTile.info(
+      children.add(_StatusTile.info(
         title: 'Nessun farmaco AIFA trovato',
-        subtitle: 'La ricerca negli altri prodotti può comunque dare risultati.',
+        subtitle: widget.aifaOnly
+            ? 'Nessun medicinale AIFA trovato per questo nome.'
+            : 'La ricerca negli altri prodotti può comunque dare risultati.',
       ));
     } else {
       for (final group in _results) {
@@ -226,7 +240,14 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
     } else if (_aifaError != null && _results.isEmpty) {
       aifaRows.add(AccessibleListRow(id: 'aifa_status', title: 'Errore nella ricerca AIFA', subtitle: _aifaError!, kind: 'text'));
     } else if (_results.isEmpty) {
-      aifaRows.add(const AccessibleListRow(id: 'aifa_status', title: 'Nessun farmaco AIFA trovato', subtitle: 'La ricerca negli altri prodotti può comunque dare risultati.', kind: 'text'));
+      aifaRows.add(AccessibleListRow(
+        id: 'aifa_status',
+        title: 'Nessun farmaco AIFA trovato',
+        subtitle: widget.aifaOnly
+            ? 'Nessun medicinale AIFA trovato per questo nome.'
+            : 'La ricerca negli altri prodotti può comunque dare risultati.',
+        kind: 'text',
+      ));
     } else {
       for (var i = 0; i < _results.length; i++) {
         final group = _results[i];

@@ -89,10 +89,167 @@ class ParafarmacoService {
   static const _legacyCodifaBase = 'https://codifa-legacy.farmadati.it';
   static const _publicCodifaBase = 'https://www.codifa.it';
 
+  static final Map<String, List<ParafarmacoSearchResult>>
+      _alphabeticalResultCache = {};
+
   final http.Client? _client;
   final Map<String, dom.Document> _indexCache = {};
 
   ParafarmacoService({http.Client? client}) : _client = client;
+
+  /// Restituisce l'indice alfabetico dei medicinali Codifa per una lettera.
+  /// L'indice serve soltanto per lo sfoglia A-Z: aprendo un elemento Sonarpad
+  /// torna alla ricerca AIFA ufficiale per mostrare confezioni e bugiardino.
+  Future<List<ParafarmacoSearchResult>> browseDrugsByLetter(
+    String rawLetter,
+  ) {
+    return _browseCodifaAlphabeticalSection(
+      section: 'farmaci',
+      rawLetter: rawLetter,
+    );
+  }
+
+  /// Restituisce l'indice alfabetico dei parafarmaci Codifa per una lettera.
+  Future<List<ParafarmacoSearchResult>> browseParafarmaciByLetter(
+    String rawLetter,
+  ) {
+    return _browseCodifaAlphabeticalSection(
+      section: 'parafarmaci',
+      rawLetter: rawLetter,
+    );
+  }
+
+  Future<List<ParafarmacoSearchResult>> _browseCodifaAlphabeticalSection({
+    required String section,
+    required String rawLetter,
+  }) async {
+    final letter = _normalizeAlphabeticalLetter(rawLetter);
+    if (letter == null) return const [];
+
+    final cacheKey = '$section:$letter';
+    final cached = _client == null ? _alphabeticalResultCache[cacheKey] : null;
+    if (cached != null) return List.of(cached);
+
+    Object? lastError;
+    var hadSuccessfulResponse = false;
+    for (final base in const [_legacyCodifaBase, _publicCodifaBase]) {
+      try {
+        final uri = Uri.parse('$base/$section/${letter.toLowerCase()}');
+        final results = await _browseCodifaIndexPage(
+          uri,
+          section: section,
+          letter: letter,
+        );
+        hadSuccessfulResponse = true;
+        if (results.isNotEmpty) {
+          if (_client == null) {
+            _alphabeticalResultCache[cacheKey] = List.unmodifiable(results);
+          }
+          return List.of(results);
+        }
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (hadSuccessfulResponse) return const [];
+    if (lastError != null) throw lastError;
+    return const [];
+  }
+
+  Future<List<ParafarmacoSearchResult>> _browseCodifaIndexPage(
+    Uri uri, {
+    required String section,
+    required String letter,
+  }) async {
+    final document = await _loadCodifaDocument(uri);
+    final links = document.querySelectorAll('a[href]');
+    final results = <ParafarmacoSearchResult>[];
+    final expectedSection = section.toLowerCase();
+    final expectedLetter = letter.toLowerCase();
+
+    for (final link in links) {
+      final href = link.attributes['href']?.trim() ?? '';
+      if (!_isCodifaProductHref(href)) continue;
+
+      final url = _absoluteCodifaUrl(href);
+      final parsed = Uri.tryParse(url);
+      if (parsed == null) continue;
+      final segments = parsed.pathSegments.map((value) => value.toLowerCase()).toList();
+      if (segments.length < 3 ||
+          segments.first != expectedSection ||
+          segments[1] != expectedLetter) {
+        continue;
+      }
+
+      final rawName = _cleanText(link.text);
+      final name = rawName.isNotEmpty ? rawName : _nameFromCodifaUrl(url);
+      if (name.length < 2 || _initialCatalogLetter(name) != letter) continue;
+
+      final parentText = _cleanText(link.parent?.text ?? '');
+      results.add(
+        ParafarmacoSearchResult(
+          name: name,
+          category: _categoryFromCodifaUrl(url),
+          sourceName: 'Codifa/Farmadati',
+          sourceUrl: url,
+          snippet: _snippetFromParent(parentText, name),
+        ),
+      );
+    }
+
+    final deduplicated = _deduplicateResults(results);
+    deduplicated.sort(
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
+    return deduplicated;
+  }
+
+  String? _normalizeAlphabeticalLetter(String rawLetter) {
+    final value = rawLetter.trim().toUpperCase();
+    if (value.length != 1) return null;
+    final code = value.codeUnitAt(0);
+    return code >= 0x41 && code <= 0x5A ? value : null;
+  }
+
+  String? _initialCatalogLetter(String value) {
+    const foldedInitials = <String, String>{
+      'À': 'A',
+      'Á': 'A',
+      'Â': 'A',
+      'Ã': 'A',
+      'Ä': 'A',
+      'Å': 'A',
+      'Ç': 'C',
+      'È': 'E',
+      'É': 'E',
+      'Ê': 'E',
+      'Ë': 'E',
+      'Ì': 'I',
+      'Í': 'I',
+      'Î': 'I',
+      'Ï': 'I',
+      'Ñ': 'N',
+      'Ò': 'O',
+      'Ó': 'O',
+      'Ô': 'O',
+      'Õ': 'O',
+      'Ö': 'O',
+      'Ù': 'U',
+      'Ú': 'U',
+      'Û': 'U',
+      'Ü': 'U',
+      'Ý': 'Y',
+    };
+    for (final rune in value.trim().runes) {
+      final upper = String.fromCharCode(rune).toUpperCase();
+      final folded = foldedInitials[upper] ?? upper;
+      if (folded.length != 1) continue;
+      final code = folded.codeUnitAt(0);
+      if (code >= 0x41 && code <= 0x5A) return folded;
+    }
+    return null;
+  }
 
   /// Rimuove soltanto le schede di medicinali Codifa già rappresentate dai
   /// risultati ufficiali AIFA. Integratori, dispositivi e parafarmaci con lo

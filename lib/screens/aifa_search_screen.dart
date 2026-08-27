@@ -6,6 +6,7 @@ import '../widgets/universal_accessible_view.dart';
 import 'recent_searches_screen.dart';
 
 import 'aifa_search_results_screen.dart';
+import 'pharmacy_alphabetical_screen.dart';
 
 class AifaSearchScreen extends StatefulWidget {
   const AifaSearchScreen({super.key});
@@ -24,6 +25,14 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _openAlphabeticalCatalog(PharmacyAlphabeticalKind kind) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PharmacyAlphabeticalScreen(kind: kind),
+      ),
+    );
   }
 
   void _submitSearch(String query) {
@@ -49,6 +58,14 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                 sections: [
                   AccessibleListSection(
                     rows: [
+                      const AccessibleListRow(
+                        id: 'drugs_az',
+                        title: 'Farmaci A-Z',
+                      ),
+                      const AccessibleListRow(
+                        id: 'parafarmaci_az',
+                        title: 'Parafarmaci A-Z',
+                      ),
                       AccessibleListRow(
                         id: 'recent',
                         title: _recentSearchesTitle,
@@ -76,6 +93,12 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                   if (event.type != 'activate') return;
                   if (event.id == 'search') {
                     _submitSearch(_controller.text);
+                  } else if (event.id == 'drugs_az') {
+                    _openAlphabeticalCatalog(PharmacyAlphabeticalKind.drugs);
+                  } else if (event.id == 'parafarmaci_az') {
+                    _openAlphabeticalCatalog(
+                      PharmacyAlphabeticalKind.parafarmaci,
+                    );
                   } else if (event.id == 'recent') {
                     final q = await Navigator.of(context).push<String>(
                       MaterialPageRoute(
@@ -96,7 +119,33 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.tonalIcon(
+                          onPressed: () => _openAlphabeticalCatalog(
+                            PharmacyAlphabeticalKind.drugs,
+                          ),
+                          icon: const Icon(Icons.sort_by_alpha),
+                          label: const Text('Farmaci A-Z'),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.tonalIcon(
+                          onPressed: () => _openAlphabeticalCatalog(
+                            PharmacyAlphabeticalKind.parafarmaci,
+                          ),
+                          icon: const Icon(Icons.sort_by_alpha),
+                          label: const Text('Parafarmaci A-Z'),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
                       child: SizedBox(
                         width: double.infinity,
                         child: FilledButton.tonal(

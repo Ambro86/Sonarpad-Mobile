@@ -394,10 +394,29 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
   }
 
+  Future<SonarTubeItem> _prepareChannelForOpen(SonarTubeItem channel) async {
+    if (channel.kind != SonarTubeItemKind.channel) return channel;
+
+    // Se non e' un preferito restituisce null e non fa alcuna richiesta.
+    // Se invece e' gia' salvato, unisce subito i dati freschi eventualmente
+    // presenti nel risultato corrente con quelli statici del preferito.
+    var prepared = await _favoritesService.updateFavoriteMetadata(channel);
+    if (prepared == null) return channel;
+
+    final hasHandle = prepared.handle?.trim().isNotEmpty ?? false;
+    final hasSubscribers = prepared.subscribers?.trim().isNotEmpty ?? false;
+    if (!hasHandle || !hasSubscribers) {
+      prepared = await _service.refreshChannelMetadata(prepared);
+      await _favoritesService.updateFavoriteMetadata(prepared);
+    }
+    return prepared;
+  }
+
   Future<void> _openChannelForVideo(SonarTubeItem item) async {
     if (item.kind != SonarTubeItemKind.video) return;
     try {
-      final channel = await _service.channelForVideo(item);
+      final resolvedChannel = await _service.channelForVideo(item);
+      final channel = await _prepareChannelForOpen(resolvedChannel);
       if (!mounted) return;
       await Navigator.push<void>(
         context,
@@ -446,12 +465,16 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
 
   Future<void> _openItem(SonarTubeItem item) async {
     if (item.kind != SonarTubeItemKind.video) {
+      final collection = item.kind == SonarTubeItemKind.channel
+          ? await _prepareChannelForOpen(item)
+          : item;
+      if (!mounted) return;
       await Navigator.push<void>(
         context,
         MaterialPageRoute(
           settings: const RouteSettings(name: '/sonartube/collection'),
           builder: (_) => SonarTubeScreen(
-            collection: item,
+            collection: collection,
             service: _service,
             favoritesService: _favoritesService,
             historyService: _historyService,

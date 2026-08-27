@@ -383,6 +383,97 @@ class SonarTubeService {
     );
   }
 
+  Future<SonarTubeItem> refreshChannelMetadata(SonarTubeItem item) async {
+    if (item.kind != SonarTubeItemKind.channel) {
+      throw ArgumentError('channel_required');
+    }
+    if (_hasCompleteChannelMetadata(item)) return item;
+
+    SonarTubeItem? refreshed;
+    if (_directNavigationEnabled) {
+      try {
+        final data = await _searchInnerTube(item.title, type: 'channel');
+        refreshed = _exactChannelFromItems(
+          _extractNavigationItems(data),
+          item.id,
+        );
+      } catch (error) {
+        await AppLogger.log(
+          'SonarTube: channel metadata direct refresh failed id=${item.id} '
+          'error=$error',
+        );
+      }
+    }
+
+    if (refreshed == null) {
+      try {
+        final page = await _loadServerPage({
+          'hl': _youtubeLanguage,
+          'gl': _youtubeRegion,
+          'q': item.title,
+          'type': 'channel',
+          'format': 'json',
+          'page': '1',
+        });
+        refreshed = _exactChannelFromItems(page.items, item.id);
+      } catch (error) {
+        await AppLogger.log(
+          'SonarTube: channel metadata server refresh failed id=${item.id} '
+          'error=$error',
+        );
+      }
+    }
+
+    if (refreshed == null) return item;
+    return _mergeChannelMetadata(item, refreshed);
+  }
+
+  bool _hasCompleteChannelMetadata(SonarTubeItem item) =>
+      (item.handle?.trim().isNotEmpty ?? false) &&
+      (item.subscribers?.trim().isNotEmpty ?? false);
+
+  SonarTubeItem? _exactChannelFromItems(
+    Iterable<SonarTubeItem> items,
+    String channelId,
+  ) {
+    for (final candidate in items) {
+      if (candidate.kind == SonarTubeItemKind.channel &&
+          candidate.id == channelId) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
+  SonarTubeItem _mergeChannelMetadata(
+    SonarTubeItem existing,
+    SonarTubeItem refreshed,
+  ) {
+    String? prefer(String? newer, String? older) {
+      final value = newer?.trim();
+      return value != null && value.isNotEmpty ? value : older;
+    }
+
+    return SonarTubeItem(
+      kind: SonarTubeItemKind.channel,
+      id: existing.id,
+      title: refreshed.title.trim().isNotEmpty
+          ? refreshed.title
+          : existing.title,
+      url: prefer(refreshed.url, existing.url) ?? existing.url,
+      channel: prefer(refreshed.channel, existing.channel),
+      channelId: prefer(refreshed.channelId, existing.channelId),
+      thumbnailUrl: prefer(refreshed.thumbnailUrl, existing.thumbnailUrl),
+      duration: existing.duration,
+      published: existing.published,
+      views: existing.views,
+      subscribers: prefer(refreshed.subscribers, existing.subscribers),
+      handle: prefer(refreshed.handle, existing.handle),
+      description: prefer(refreshed.description, existing.description),
+      isLive: existing.isLive,
+    );
+  }
+
   Future<SonarTubeCommentsPage> comments(
     SonarTubeItem item, {
     String? token,
