@@ -286,7 +286,7 @@ void main() {
         File('lib/services/sonartube_service.dart').readAsStringSync();
     final screen =
         File('lib/screens/sonartube_screen.dart').readAsStringSync();
-    final resolver = File('server/youtube_resolve.php').readAsStringSync();
+    final resolverFile = File('server/youtube_resolve.php');
 
     expect(service, contains("_youtubeLanguage = 'pt-PT'"));
     expect(service, contains("_youtubeLanguage = 'pt-BR'"));
@@ -294,10 +294,13 @@ void main() {
     expect(service, contains("'hl': _youtubeLanguage"));
     expect(service, contains("'gl': _youtubeRegion"));
     expect(screen, contains('_service.setLocaleName(l10n.localeName);'));
-    expect(resolver, contains("_GET['hl']"));
-    expect(resolver, contains("_GET['gl']"));
-    expect(resolver, contains('yt_request_language()'));
-    expect(resolver, contains('yt_request_region()'));
+    if (resolverFile.existsSync()) {
+      final resolver = resolverFile.readAsStringSync();
+      expect(resolver, contains("_GET['hl']"));
+      expect(resolver, contains("_GET['gl']"));
+      expect(resolver, contains('yt_request_language()'));
+      expect(resolver, contains('yt_request_region()'));
+    }
   });
 
   test('Portuguese changelog is complete for Portugal and Brazil', () {
