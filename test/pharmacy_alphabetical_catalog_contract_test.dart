@@ -23,6 +23,7 @@ void main() {
     expect(source, contains('_PharmacyAlphabeticalLetterScreen'));
     expect(source, contains('browseDrugsByLetter'));
     expect(source, contains('browseParafarmaciByLetter'));
+    expect(source, contains('initial != null && initial.isNotEmpty'));
   });
 
   test('alphabetical drug selection returns to official AIFA results only', () {

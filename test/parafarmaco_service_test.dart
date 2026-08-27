@@ -115,17 +115,37 @@ void main() {
 
 
   group('ParafarmacoService cataloghi alfabetici', () {
+    test('non elimina i contenitori nav/menu degli indici alfabetici', () async {
+      final service = ParafarmacoService(
+        client: MockClient((request) async {
+          if (request.url.path == '/farmaci/a') {
+            expect(request.headers['User-Agent'], contains('Safari'));
+            return http.Response(
+              '<html><body><nav class="menu">'
+              '<a href="/farmaci/a/aspirina">Aspirina</a>'
+              '</nav></body></html>',
+              200,
+            );
+          }
+          return http.Response('<html><body></body></html>', 200);
+        }),
+      );
+
+      final results = await service.browseDrugsByLetter('A');
+      expect(results.map((result) => result.name), contains('Aspirina'));
+    });
+
     test('sfoglia i farmaci di una lettera, filtra e ordina i risultati', () async {
       final service = ParafarmacoService(
         client: MockClient((request) async {
           if (request.url.path == '/farmaci/p') {
             return http.Response(
-              '<html><body>'
+              '<html><body><nav class="menu">'
               '<a href="/farmaci/p/pevaryl">Pevaryl</a>'
               '<a href="/farmaci/p/palexia">Palexia</a>'
               '<a href="/farmaci/a/aspirina">Aspirina</a>'
               '<a href="/parafarmaci/p/polase">Polase</a>'
-              '</body></html>',
+              '</nav></body></html>',
               200,
             );
           }
@@ -147,12 +167,12 @@ void main() {
         client: MockClient((request) async {
           if (request.url.path == '/parafarmaci/m') {
             return http.Response(
-              '<html><body>'
+              '<html><body><nav class="menu">'
               '<a href="/parafarmaci/m/massigen">Massigen</a>'
               '<a href="/parafarmaci/m/microlife">Microlife</a>'
               '<a href="/integratori/m/multicentrum">Multicentrum</a>'
               '<a href="/parafarmaci/a/altro">Altro</a>'
-              '</body></html>',
+              '</nav></body></html>',
               200,
             );
           }

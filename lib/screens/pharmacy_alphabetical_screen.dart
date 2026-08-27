@@ -363,10 +363,14 @@ class _PharmacyAlphabeticalLetterScreenState
   void initState() {
     super.initState();
     final initial = widget.initialResults;
-    if (initial != null) {
+    if (initial != null && initial.isNotEmpty) {
       _results = List.of(initial)..sort(_compareResults);
       _loading = false;
     } else {
+      // Un risultato vuoto ottenuto durante il caricamento globale non e'
+      // considerato definitivo: aprendo una lettera la richiediamo di nuovo.
+      // Questo evita che un indice temporaneamente ridotto/filtrato dal sito
+      // lasci per sempre vuota la schermata della singola lettera.
       _load();
     }
   }

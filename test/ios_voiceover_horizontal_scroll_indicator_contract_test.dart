@@ -4,30 +4,44 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test(
-    'native accessible scroll views hide horizontal indicators only while VoiceOver runs',
+    'native accessible scroll views hide both indicators while VoiceOver runs',
     () {
       final native = File(
         'ios/Runner/SonarpadNativeAccessibleView.swift',
       ).readAsStringSync();
 
       // SonarTube channels, podcasts and the other shared accessible lists use
-      // the same native UITableView. Sighted users keep the normal indicator;
-      // VoiceOver users do not get a separate horizontal-scrollbar stop.
+      // the same native UITableView. Sighted users keep the indicators requested
+      // by the screen; VoiceOver users must not encounter scrollbar stops.
+      expect(
+        native,
+        contains('tableView.showsHorizontalScrollIndicator = !voiceOverRunning'),
+      );
       expect(
         native,
         contains(
-          'tableView.showsHorizontalScrollIndicator = '
-          '!UIAccessibility.isVoiceOverRunning',
+          'tableView.showsVerticalScrollIndicator = '
+          'requestedVerticalScrollIndicator && !voiceOverRunning',
         ),
       );
 
-      // Apply the same rule to the shared grid renderer as well, so the policy
-      // is global for the UIKit accessibility renderer rather than screen-specific.
+      // Pickers and grids follow the same VoiceOver-only policy.
+      expect(
+        RegExp(
+          r'tableView\.showsVerticalScrollIndicator = !voiceOverRunning',
+        ).allMatches(native).length,
+        greaterThanOrEqualTo(1),
+      );
       expect(
         native,
         contains(
-          'collectionView.showsHorizontalScrollIndicator = '
-          '!UIAccessibility.isVoiceOverRunning',
+          'collectionView.showsHorizontalScrollIndicator = !voiceOverRunning',
+        ),
+      );
+      expect(
+        native,
+        contains(
+          'collectionView.showsVerticalScrollIndicator = !voiceOverRunning',
         ),
       );
 
@@ -40,12 +54,12 @@ void main() {
         greaterThanOrEqualTo(3),
       );
 
-      // Do not globally remove the vertical indicator: individual screens can
-      // still opt out with the existing showVerticalScrollIndicator contract.
+      // Preserve per-screen sighted behavior: screens that already requested no
+      // vertical indicator still remain indicator-free even without VoiceOver.
       expect(
         native,
         contains(
-          'tableView.showsVerticalScrollIndicator = '
+          'requestedVerticalScrollIndicator = '
           'map["showVerticalScrollIndicator"] as? Bool ?? true',
         ),
       );

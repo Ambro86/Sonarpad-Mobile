@@ -42,8 +42,15 @@ void main() {
     expect(
       native,
       contains(
-        'tableView.showsVerticalScrollIndicator = '
+        'requestedVerticalScrollIndicator = '
         'map["showVerticalScrollIndicator"] as? Bool ?? true',
+      ),
+    );
+    expect(
+      native,
+      contains(
+        'tableView.showsVerticalScrollIndicator = '
+        'requestedVerticalScrollIndicator && !voiceOverRunning',
       ),
     );
   });

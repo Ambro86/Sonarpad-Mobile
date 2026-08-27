@@ -86,6 +86,10 @@ extension ParafarmacoSectionTypeLabel on ParafarmacoSectionType {
 class ParafarmacoService {
   static const _userAgent =
       'Mozilla/5.0 (compatible; SonarpadMobile/1.0; +https://sonarpad.com)';
+  static const _codifaIndexUserAgent =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) '
+      'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 '
+      'Mobile/15E148 Safari/604.1';
   static const _legacyCodifaBase = 'https://codifa-legacy.farmadati.it';
   static const _publicCodifaBase = 'https://www.codifa.it';
 
@@ -162,7 +166,10 @@ class ParafarmacoService {
     required String section,
     required String letter,
   }) async {
-    final document = await _loadCodifaDocument(uri);
+    // Gli indici alfabetici Codifa non vanno passati attraverso la pulizia
+    // usata per le schede prodotto: alcune versioni del sito racchiudono
+    // l'elenco in contenitori di navigazione/menu, che verrebbero rimossi.
+    final document = await _loadCodifaIndexDocument(uri);
     final links = document.querySelectorAll('a[href]');
     final results = <ParafarmacoSearchResult>[];
     final expectedSection = section.toLowerCase();
@@ -398,6 +405,40 @@ class ParafarmacoService {
       ));
     }
     return _deduplicateResults(results);
+  }
+
+  Future<dom.Document> _loadCodifaIndexDocument(Uri uri) async {
+    final key = 'alphabetical:${uri.toString()}';
+    final cached = _indexCache[key];
+    if (cached != null) return cached;
+
+    final response = await _getCodifaIndex(uri);
+    if (response.statusCode != 200) {
+      throw Exception('HTTP ${response.statusCode}');
+    }
+
+    final body = _decodeResponse(response);
+    final document = html_parser.parse(body);
+
+    // Non chiamare _removeNoise(document) qui. Per gli indici A-Z servono
+    // tutti i link della pagina; filtriamo poi in modo stretto per sezione,
+    // lettera e host invece di eliminare contenitori HTML a priori.
+    _indexCache[key] = document;
+    return document;
+  }
+
+  Future<http.Response> _getCodifaIndex(Uri uri) {
+    const headers = <String, String>{
+      'User-Agent': _codifaIndexUserAgent,
+      'Accept':
+          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'it-IT,it;q=0.9,en;q=0.7',
+    };
+    final client = _client;
+    if (client != null) {
+      return client.get(uri, headers: headers);
+    }
+    return http.get(uri, headers: headers);
   }
 
   Future<dom.Document> _loadCodifaDocument(Uri uri) async {
