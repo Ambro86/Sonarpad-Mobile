@@ -120,6 +120,7 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
               AccessibleListRow(
                 id: 'radio_page_selector',
                 title: pageLabel,
+                accessibilityLabel: '',
                 value: pageLabel,
                 valueLabel: pageLabel,
                 kind: 'slider',

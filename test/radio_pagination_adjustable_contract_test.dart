@@ -19,6 +19,10 @@ void main() {
 
       expect(selectorBlock, contains("id: 'radio_page_selector'"));
       expect(selectorBlock, contains("kind: 'slider'"));
+      // The visible title and accessibility value both contain the complete
+      // localized page phrase. Suppress only the separate semantic label so
+      // VoiceOver does not say e.g. "Pagina 1 di 8" twice.
+      expect(selectorBlock, contains("accessibilityLabel: ''"));
       // Keep the current spoken page in the rebuilt row model too. UIKit
       // updates the focused cell synchronously during the gesture, then Dart
       // sends the row back through setData; an empty value/valueLabel would
