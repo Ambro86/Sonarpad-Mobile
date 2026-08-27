@@ -10,6 +10,12 @@ void main() {
     expect(source, contains('Widget _buildFullscreenVideoSurface({'));
     expect(source, contains('child: LayoutBuilder('));
     expect(source, contains('final surfaceSize = Size(width, height);'));
+    expect(source, contains('if (height < maxHeight) {'));
+    expect(source, contains('height = maxHeight;'));
+    expect(source, contains('width = height * safeAspect;'));
+    expect(source, contains('child: OverflowBox('));
+    expect(source, contains('minWidth: width,'));
+    expect(source, contains('maxHeight: height,'));
     expect(source, contains('width: width,'));
     expect(source, contains('height: height,'));
     expect(source, contains("engine: 'media_kit'"));
@@ -25,6 +31,10 @@ void main() {
       source,
       isNot(contains('child: FittedBox(\n            fit: BoxFit.contain')),
     );
+    // Fullscreen is cover, not contain: ultra-wide iPhone displays must not
+    // add app-generated pillarboxes around a 16:9 TV surface.
+    expect(source, isNot(contains('if (height > maxHeight) {')));
+    expect(source, isNot(contains('width = width.clamp(0.0, maxWidth)')));
   });
 
   test('fullscreen video diagnostics report orientation and real surface size', () {

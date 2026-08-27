@@ -1457,12 +1457,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
             var width = maxWidth;
             var height = width / safeAspect;
-            if (height > maxHeight) {
+            if (height < maxHeight) {
               height = maxHeight;
               width = height * safeAspect;
             }
-            width = width.clamp(0.0, maxWidth).toDouble();
-            height = height.clamp(0.0, maxHeight).toDouble();
 
             final surfaceSize = Size(width, height);
             if (_lastFullscreenVideoSurfaceEngine != engine ||
@@ -1479,10 +1477,17 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             }
 
             return Center(
-              child: SizedBox(
-                width: width,
-                height: height,
-                child: child,
+              child: OverflowBox(
+                alignment: Alignment.center,
+                minWidth: width,
+                maxWidth: width,
+                minHeight: height,
+                maxHeight: height,
+                child: SizedBox(
+                  width: width,
+                  height: height,
+                  child: child,
+                ),
               ),
             );
           },
