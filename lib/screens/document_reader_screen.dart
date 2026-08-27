@@ -2418,6 +2418,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         id: 'paragraph_$i',
         title: _chunks[i],
         subtitle: isBookmarked ? '🔖' : null,
+        accessibilityLabel:
+            useNativeIosAccessibleViews ? _chunks[i] : null,
         kind: canInteract ? 'action' : 'text',
         accessibilityButtonTrait: false,
         selected: isSelected,
@@ -2441,6 +2443,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       controller: _accessibleDocumentListController,
       initialFocusId: initialFocusId,
       debugTag: 'document',
+      showVerticalScrollIndicator: false,
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id;
