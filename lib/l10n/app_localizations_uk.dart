@@ -2481,6 +2481,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsToggleOff => "Вимкнено";
 
   @override
+  String get settingsShowOnlyMultilingualEdgeVoices => 'Показувати лише багатомовні голоси';
+
+  @override
   String get radioDirectoryLoading => "Оновлення країн і мов радіо...";
 
   @override

@@ -4445,5 +4445,9 @@
   "newDocumentName": "Neuer Dokumentname",
   "documentNameAlreadyExists": "Ein Dokument mit diesem Namen ist bereits vorhanden.",
   "recordingExitPrompt": "Die Aufnahme läuft. Möchtest du sie stoppen oder die Aufnahme fortsetzen?",
-  "continueRecording": "Aufnahme fortsetzen"
+  "continueRecording": "Aufnahme fortsetzen",
+  "settingsShowOnlyMultilingualEdgeVoices": "Nur mehrsprachige Stimmen anzeigen",
+  "@settingsShowOnlyMultilingualEdgeVoices": {
+    "description": "Show only multilingual Edge voices in the voice picker."
+  }
 }

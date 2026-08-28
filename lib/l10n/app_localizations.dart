@@ -5705,6 +5705,9 @@ abstract class AppLocalizations {
   String get letterJumpSelected;
   String get settingsToggleOn;
   String get settingsToggleOff;
+
+  /// Show only multilingual Edge voices in the voice picker.
+  String get settingsShowOnlyMultilingualEdgeVoices;
   String get radioDirectoryLoading;
   String get recentRadios;
   String get radioNextPage;

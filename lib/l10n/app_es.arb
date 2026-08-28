@@ -2873,5 +2873,9 @@
   "newDocumentName": "Nuevo nombre del documento",
   "documentNameAlreadyExists": "Ya existe un documento con este nombre.",
   "recordingExitPrompt": "La grabación está en curso. ¿Quieres detenerla o continuar grabando?",
-  "continueRecording": "Continuar grabando"
+  "continueRecording": "Continuar grabando",
+  "settingsShowOnlyMultilingualEdgeVoices": "Mostrar solo las voces multilingües",
+  "@settingsShowOnlyMultilingualEdgeVoices": {
+    "description": "Show only multilingual Edge voices in the voice picker."
+  }
 }

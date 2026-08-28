@@ -46,6 +46,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
   List<TtsVoiceLanguage> _edgeLanguages = AppSettingsService.ttsLanguages;
   List<TtsVoiceOption> _edgeVoices = AppSettingsService.ttsVoices;
+  // Session-only display filter: it must never alter saved TTS preferences by
+  // itself. The user explicitly picks a voice before anything is persisted.
+  bool _showOnlyMultilingualEdgeVoices = false;
 
   String _ttsEngine = 'edge';
   String _systemTtsLanguage = 'it-IT';
@@ -897,14 +900,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _restoreControlFocus(_edgeLanguageFocusNode);
   }
 
+  List<TtsVoiceOption> _visibleEdgeVoiceOptions() {
+    if (_showOnlyMultilingualEdgeVoices) {
+      return AppSettingsService.multilingualEdgeVoicesFrom(_edgeVoices);
+    }
+    return AppSettingsService.voicesForLanguageFrom(
+      _edgeVoices,
+      _languageCode,
+    );
+  }
+
   Future<void> _openEdgeVoicePicker() async {
     final l10n = AppLocalizations.of(context);
-    final voices = List<TtsVoiceOption>.of(
-      AppSettingsService.voicesForLanguageFrom(
-        _edgeVoices,
-        _languageCode,
-      ),
-    )..sort((a, b) => a.label.compareTo(b.label));
+    final voices = List<TtsVoiceOption>.of(_visibleEdgeVoiceOptions())
+      ..sort((a, b) => a.label.compareTo(b.label));
 
     final result = await Navigator.of(context).push<TtsVoiceOption>(
       MaterialPageRoute(
@@ -924,8 +933,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (!mounted) return;
-    if (result != null && result.voice != _voice) {
-      setState(() => _voice = result.voice);
+    if (result != null &&
+        (result.voice != _voice ||
+            (_showOnlyMultilingualEdgeVoices &&
+                result.languageCode != _languageCode))) {
+      setState(() {
+        _voice = result.voice;
+        if (_showOnlyMultilingualEdgeVoices) {
+          // A multilingual voice can originate from a different locale than
+          // the language currently shown in Settings. Keep the stored pair
+          // coherent after an explicit filtered selection; normal per-language
+          // voice selection keeps its previous behavior unchanged.
+          _languageCode = result.languageCode;
+        }
+      });
     }
     await _restoreControlFocus(_edgeVoiceFocusNode);
   }
@@ -1075,9 +1096,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         (a, b) => _localizedEdgeLanguageLabel(a, l10n)
             .compareTo(_localizedEdgeLanguageLabel(b, l10n)),
       );
-    final edgeVoices = List<TtsVoiceOption>.of(
-      AppSettingsService.voicesForLanguageFrom(_edgeVoices, _languageCode),
-    )..sort((a, b) => a.label.compareTo(b.label));
+    final edgeVoices = List<TtsVoiceOption>.of(_visibleEdgeVoiceOptions())
+      ..sort((a, b) => a.label.compareTo(b.label));
     final systemLocales = _systemVoices.map((v) => v['locale']!).toSet().toList()
       ..sort();
     final systemVoices = _systemVoices
@@ -1180,6 +1200,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         label: _localizedEdgeLanguageLabel(e, l10n),
                       ))
                   .toList(),
+            ),
+            AccessibleListRow(
+              id: 'edge_multilingual_only',
+              title: l10n.settingsShowOnlyMultilingualEdgeVoices,
+              kind: 'toggle',
+              toggleValue: _showOnlyMultilingualEdgeVoices,
+              valueLabel: toggleLabel(_showOnlyMultilingualEdgeVoices),
             ),
             AccessibleListRow(
               id: 'edge_voice',
@@ -1442,7 +1469,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               }
               break;
             case 'edge_voice':
-              setState(() => _voice = value);
+              TtsVoiceOption? selectedVoice;
+              for (final candidate in _edgeVoices) {
+                if (candidate.voice == value) {
+                  selectedVoice = candidate;
+                  break;
+                }
+              }
+              setState(() {
+                _voice = value;
+                if (_showOnlyMultilingualEdgeVoices && selectedVoice != null) {
+                  _languageCode = selectedVoice.languageCode;
+                }
+              });
               break;
             case 'system_language':
               setState(() { _systemTtsLanguage = value; _systemTtsVoice = null; });
@@ -1462,6 +1501,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
           setState(() {
             switch (id) {
+              case 'edge_multilingual_only':
+                _showOnlyMultilingualEdgeVoices = value;
+                break;
               case 'auto_bookmark': _autoBookmark = value; break;
               case 'epub_footnotes': _includeEpubFootnotesInText = value; break;
               case 'multiple_bookmarks': _multipleDocumentBookmarks = value; break;
@@ -1683,6 +1725,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: _openEdgeLanguagePicker,
+                      ),
+                      const SizedBox(height: 4),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          l10n.settingsShowOnlyMultilingualEdgeVoices,
+                        ),
+                        value: _showOnlyMultilingualEdgeVoices,
+                        onChanged: (value) {
+                          setState(
+                            () => _showOnlyMultilingualEdgeVoices = value,
+                          );
+                        },
                       ),
                       const SizedBox(height: 4),
                       ListTile(

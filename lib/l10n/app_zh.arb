@@ -2867,5 +2867,9 @@
   "newDocumentName": "新文档名称",
   "documentNameAlreadyExists": "已存在同名文档。",
   "recordingExitPrompt": "正在录制。要停止录制还是继续录制？",
-  "continueRecording": "继续录制"
+  "continueRecording": "继续录制",
+  "settingsShowOnlyMultilingualEdgeVoices": "仅显示多语言语音",
+  "@settingsShowOnlyMultilingualEdgeVoices": {
+    "description": "Show only multilingual Edge voices in the voice picker."
+  }
 }

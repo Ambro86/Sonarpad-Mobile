@@ -3196,6 +3196,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsToggleOff => 'Vypnuto';
 
   @override
+  String get settingsShowOnlyMultilingualEdgeVoices => 'Zobrazit pouze vícejazyčné hlasy';
+
+  @override
   String get radioDirectoryLoading => 'Aktualizuji země a jazyky rádia...';
 
   @override

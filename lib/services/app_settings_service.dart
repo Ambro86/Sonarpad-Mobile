@@ -601,6 +601,14 @@ class AppSettingsService {
     return languages;
   }
 
+  static bool isMultilingualEdgeVoice(TtsVoiceOption voice) =>
+      voice.voice.toLowerCase().contains('multilingual');
+
+  static List<TtsVoiceOption> multilingualEdgeVoicesFrom(
+    List<TtsVoiceOption> voices,
+  ) =>
+      voices.where((voice) => isMultilingualEdgeVoice(voice)).toList();
+
   static List<TtsVoiceOption> voicesForLanguage(String languageCode) =>
       voicesForLanguageFrom(ttsVoices, languageCode);
 

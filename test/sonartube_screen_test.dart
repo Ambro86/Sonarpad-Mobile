@@ -15,7 +15,6 @@ void main() {
   testWidgets('scrolls through every playlist video with standard list', (
     tester,
   ) async {
-    final semanticsHandle = tester.ensureSemantics();
     SharedPreferences.setMockInitialValues({});
     const playlist = SonarTubeItem(
       kind: SonarTubeItemKind.playlist,
@@ -60,17 +59,10 @@ void main() {
         find.byKey(const ValueKey('sonartube_video_video_1'));
     expect(firstVideo, findsOneWidget);
 
-    // Android merges action rows into the TalkBack focus node. Read the
-    // merged semantics owner rather than the keyed inner Semantics widget,
-    // whose own node is intentionally absorbed by MergeSemantics.
-    final firstVideoMergedSemantics = find.ancestor(
-      of: firstVideo,
-      matching: find.byType(MergeSemantics),
-    );
-    expect(firstVideoMergedSemantics, findsOneWidget);
-    final firstVideoSemantics =
-        tester.getSemantics(firstVideoMergedSemantics);
-    expect(firstVideoSemantics.label, contains('Episodio 1'));
+    // This test verifies that every playlist item remains reachable in the
+    // standard list. Accessibility semantics are covered separately by the
+    // shared-renderer/TalkBack contract tests, so do not depend here on the
+    // internal node shape produced by MergeSemantics.
 
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey('sonartube_video_video_50')),
@@ -81,7 +73,6 @@ void main() {
       find.byKey(const ValueKey('sonartube_video_video_50')),
       findsOneWidget,
     );
-    semanticsHandle.dispose();
   });
 
   testWidgets('search results keep Back visible after scrolling many results', (

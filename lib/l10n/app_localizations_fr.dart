@@ -3221,6 +3221,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsToggleOff => 'Désactivé';
 
   @override
+  String get settingsShowOnlyMultilingualEdgeVoices => 'Afficher uniquement les voix multilingues';
+
+  @override
   String get radioDirectoryLoading => 'Mise à jour des pays et langues radio...';
 
   @override

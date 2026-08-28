@@ -2844,6 +2844,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get settingsToggleOff => '关闭';
 
   @override
+  String get settingsShowOnlyMultilingualEdgeVoices => '仅显示多语言语音';
+
+  @override
   String get radioDirectoryLoading => '正在更新广播国家/地区和语言...';
 
   @override

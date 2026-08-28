@@ -3205,6 +3205,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsToggleOff => 'Disattivo';
 
   @override
+  String get settingsShowOnlyMultilingualEdgeVoices => 'Visualizza solo le voci multilingue';
+
+  @override
   String get radioDirectoryLoading => 'Aggiornamento di paesi e lingue radio...';
 
   @override

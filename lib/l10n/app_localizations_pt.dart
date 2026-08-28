@@ -3091,6 +3091,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsToggleOff => 'Desativado';
 
   @override
+  String get settingsShowOnlyMultilingualEdgeVoices => 'Mostrar apenas vozes multilingues';
+
+  @override
   String get radioDirectoryLoading => 'A atualizar países e idiomas de rádio...';
 
   @override
@@ -6595,6 +6598,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get settingsToggleOff => 'Desativado';
+
+  @override
+  String get settingsShowOnlyMultilingualEdgeVoices => 'Mostrar apenas vozes multilíngues';
 
   @override
   String get radioDirectoryLoading => 'Atualizando países e idiomas de rádio...';

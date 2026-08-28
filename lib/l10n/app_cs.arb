@@ -2870,5 +2870,9 @@
   "newDocumentName": "Nový název dokumentu",
   "documentNameAlreadyExists": "Dokument s tímto názvem již existuje.",
   "recordingExitPrompt": "Nahrávání probíhá. Chcete ho zastavit, nebo pokračovat v nahrávání?",
-  "continueRecording": "Pokračovat v nahrávání"
+  "continueRecording": "Pokračovat v nahrávání",
+  "settingsShowOnlyMultilingualEdgeVoices": "Zobrazit pouze vícejazyčné hlasy",
+  "@settingsShowOnlyMultilingualEdgeVoices": {
+    "description": "Show only multilingual Edge voices in the voice picker."
+  }
 }

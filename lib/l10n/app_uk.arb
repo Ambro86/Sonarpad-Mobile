@@ -4445,5 +4445,9 @@
   "newDocumentName": "Нова назва документа",
   "documentNameAlreadyExists": "Документ із такою назвою вже існує.",
   "recordingExitPrompt": "Триває запис. Зупинити його чи продовжити запис?",
-  "continueRecording": "Продовжити запис"
+  "continueRecording": "Продовжити запис",
+  "settingsShowOnlyMultilingualEdgeVoices": "Показувати лише багатомовні голоси",
+  "@settingsShowOnlyMultilingualEdgeVoices": {
+    "description": "Show only multilingual Edge voices in the voice picker."
+  }
 }
