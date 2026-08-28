@@ -1404,12 +1404,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       AccessibleListSection(
         rows: [
           AccessibleListRow(
-            id: 'save',
-            title: _isSaving ? l10n.settingsVerifyCodeAndSave : l10n.saveSettings,
+            id: 'view_log',
+            title: l10n.settingsViewSysLog,
             kind: 'button',
-            enabled: !_isSaving,
           ),
-          AccessibleListRow(id: 'view_log', title: l10n.settingsViewSysLog, kind: 'button'),
         ],
       ),
     ];
@@ -1501,7 +1499,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               break;
             case 'paste_secret_code': await _pasteSecretCode(); setState(() {}); break;
             case 'request_secret_code': await _requestSecretCode(); break;
-            case 'save': await _save(); break;
             case 'view_log':
               if (!mounted) return;
               await Navigator.of(context).push(MaterialPageRoute<void>(settings: const RouteSettings(name: '/settings/app-log'), builder: (_) => const AppLogScreen()));
@@ -1510,6 +1507,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }
       },
     );
+  }
+
+  Future<void> _saveAndClose() async {
+    if (_loading || _isSaving) return;
+    await _save(showConfirmation: false);
+    if (!mounted || _hasUnsavedChanges) return;
+
+    // The top-bar Save action is a confirmation action: after a successful
+    // save, leave Settings just like a standard iOS/Android settings page.
+    // Invalid Sonarpad codes keep the screen open because _save leaves the
+    // changed value unsaved.
+    await Future<void>.delayed(Duration.zero);
+    if (!mounted) return;
+    Navigator.of(context).pop(_appLanguage);
   }
 
   @override
@@ -1531,7 +1542,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Navigator.of(context).pop(_appLanguage);
       },
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.settings)),
+        appBar: AppBar(
+          title: Text(l10n.settings),
+          actions: [
+            Semantics(
+              button: true,
+              label: l10n.saveSettings,
+              excludeSemantics: true,
+              child: TextButton(
+                onPressed: _loading || _isSaving ? null : _saveAndClose,
+                child: Text(
+                  _isSaving ? l10n.settingsVerifyCodeAndSave : l10n.save,
+                ),
+              ),
+            ),
+          ],
+        ),
         body: _loading
             ? Center(
                 child: CircularProgressIndicator(semanticsLabel: l10n.loading))
@@ -2147,19 +2173,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ],
                       ),
                     ],
-                    const SizedBox(height: 16),
-                    FilledButton.icon(
-                      onPressed: _isSaving ? null : () => _save(),
-                      icon: _isSaving
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.save),
-                      label: Text(_isSaving
-                          ? l10n.settingsVerifyCodeAndSave
-                          : l10n.saveSettings),
-                    ),
                     const SizedBox(height: 24),
                     const Divider(),
                     const SizedBox(height: 12),
