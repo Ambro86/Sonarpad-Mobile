@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Android TalkBack long press opens existing shared secondary actions', () {
+  test('TalkBack and VoiceOver long press open existing shared secondary actions', () {
     final source = File('lib/widgets/universal_accessible_view.dart').readAsStringSync();
 
-    expect(source, contains('Future<void> _showAndroidSecondaryActions(AccessibleListRow row)'));
-    expect(source, contains('if (!isAndroidPlatform || row.actions.isEmpty || !mounted) return;'));
-    expect(source, contains('onLongPress: isAndroidPlatform && row.actions.isNotEmpty'));
+    expect(source, contains('Future<void> _showSecondaryActions(AccessibleListRow row)'));
+    expect(source, contains('if (!(isAndroidPlatform || isIosPlatform) || row.actions.isEmpty || !mounted)'));
+    expect(source, contains('onLongPress: (isAndroidPlatform || isIosPlatform) && row.actions.isNotEmpty'));
     expect(source, contains('SimpleDialog('));
     expect(source, contains('for (final action in row.actions)'));
     expect(source, contains("type: 'customAction'"));
@@ -25,13 +25,14 @@ void main() {
     expect(documents, contains("AccessibleCustomAction(id: 'rename', label: l10n.rename)"));
   });
 
-  test('iOS is not given the Android long-press shortcut', () {
-    final source = File('lib/widgets/universal_accessible_view.dart').readAsStringSync();
+  test('native iOS exposes the same actions through the VoiceOver long press context menu', () {
+    final source = File('ios/Runner/SonarpadNativeAccessibleView.swift').readAsStringSync();
 
-    expect(
-      source,
-      contains('onLongPress: isAndroidPlatform && row.actions.isNotEmpty'),
-    );
-    expect(source, isNot(contains('onLongPress: isIosPlatform')));
+    expect(source, contains('contextMenuConfigurationForRowAt indexPath: IndexPath'));
+    expect(source, contains('UIAccessibility.isVoiceOverRunning'));
+    expect(source, contains('UIContextMenuConfiguration('));
+    expect(source, contains('UIAction(title: action.label)'));
+    expect(source, contains('["type": "customAction", "id": rowId, "action": action.id]'));
+    expect(source, contains('cell.accessibilityCustomActions = row.actions.map'));
   });
 }

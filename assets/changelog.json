@@ -324,37 +324,48 @@
     ],
     "ios": {
       "it": [
-        "È stata riscritta l’interfaccia per iPhone per renderla compatibile con iOS 27, che ha reso necessaria una revisione importante dell’app. Come conseguenza positiva, tutte le schermate utilizzano ora UIKit, permettendo di scorrere più velocemente le liste lunghe con il gesto a tre dita di VoiceOver, oltre a utilizzare i comandi “Vai alla lettera” e “Vai alla data” già presenti nell’app."
+        "È stata riscritta l’interfaccia per iPhone per renderla compatibile con iOS 27, che ha reso necessaria una revisione importante dell’app. Come conseguenza positiva, tutte le schermate utilizzano ora UIKit, permettendo di scorrere più velocemente le liste lunghe con il gesto a tre dita di VoiceOver, oltre a utilizzare i comandi “Vai alla lettera” e “Vai alla data” già presenti nell’app.",
+        "Su iPhone, con VoiceOver, è ora possibile aprire le azioni secondarie di un elemento con un doppio tap trattenuto, come alternativa al flick verso l’alto o verso il basso."
       ],
       "en": [
-        "The iPhone interface has been rewritten to make it compatible with iOS 27, which required a major revision of the app. As a positive result, all screens now use UIKit, allowing long lists to be scrolled faster with VoiceOver’s three-finger gesture, in addition to the “Go to letter” and “Go to date” commands already available in the app."
+        "The iPhone interface has been rewritten to make it compatible with iOS 27, which required a major revision of the app. As a positive result, all screens now use UIKit, allowing long lists to be scrolled faster with VoiceOver’s three-finger gesture, in addition to the “Go to letter” and “Go to date” commands already available in the app.",
+        "On iPhone, with VoiceOver, you can now open an item's secondary actions with a double tap and hold, as an alternative to swiping up or down."
       ],
       "fr": [
-        "L’interface iPhone a été réécrite pour assurer sa compatibilité avec iOS 27, ce qui a nécessité une révision importante de l’application. Conséquence positive : tous les écrans utilisent désormais UIKit, ce qui permet de faire défiler plus rapidement les longues listes avec le geste VoiceOver à trois doigts, en plus des commandes « Aller à la lettre » et « Aller à la date » déjà présentes dans l’application."
+        "L’interface iPhone a été réécrite pour assurer sa compatibilité avec iOS 27, ce qui a nécessité une révision importante de l’application. Conséquence positive : tous les écrans utilisent désormais UIKit, ce qui permet de faire défiler plus rapidement les longues listes avec le geste VoiceOver à trois doigts, en plus des commandes « Aller à la lettre » et « Aller à la date » déjà présentes dans l’application.",
+        "Sur iPhone, avec VoiceOver, il est désormais possible d’ouvrir les actions secondaires d’un élément avec un double appui prolongé, comme alternative au balayage vers le haut ou vers le bas."
       ],
       "es": [
-        "Se ha reescrito la interfaz para iPhone para hacerla compatible con iOS 27, lo que ha requerido una revisión importante de la aplicación. Como consecuencia positiva, todas las pantallas utilizan ahora UIKit, permitiendo desplazarse más rápidamente por las listas largas con el gesto de tres dedos de VoiceOver, además de usar los comandos «Ir a la letra» e «Ir a la fecha» ya presentes en la aplicación."
+        "Se ha reescrito la interfaz para iPhone para hacerla compatible con iOS 27, lo que ha requerido una revisión importante de la aplicación. Como consecuencia positiva, todas las pantallas utilizan ahora UIKit, permitiendo desplazarse más rápidamente por las listas largas con el gesto de tres dedos de VoiceOver, además de usar los comandos «Ir a la letra» e «Ir a la fecha» ya presentes en la aplicación.",
+        "En iPhone, con VoiceOver, ahora es posible abrir las acciones secundarias de un elemento con un doble toque mantenido, como alternativa al deslizamiento hacia arriba o hacia abajo."
       ],
       "pt": [
-        "A interface para iPhone foi reescrita para a tornar compatível com o iOS 27, o que exigiu uma revisão importante da aplicação. Como consequência positiva, todos os ecrãs utilizam agora UIKit, permitindo percorrer listas longas mais rapidamente com o gesto de três dedos do VoiceOver, além dos comandos «Ir para a letra» e «Ir para a data» já disponíveis na aplicação."
+        "A interface para iPhone foi reescrita para a tornar compatível com o iOS 27, o que exigiu uma revisão importante da aplicação. Como consequência positiva, todos os ecrãs utilizam agora UIKit, permitindo percorrer listas longas mais rapidamente com o gesto de três dedos do VoiceOver, além dos comandos «Ir para a letra» e «Ir para a data» já disponíveis na aplicação.",
+        "No iPhone, com o VoiceOver, agora é possível abrir as ações secundárias de um elemento com um duplo toque prolongado, como alternativa ao gesto para cima ou para baixo."
       ],
       "pt_BR": [
-        "A interface para iPhone foi reescrita para torná-la compatível com o iOS 27, o que exigiu uma revisão importante do aplicativo. Como consequência positiva, todas as telas agora usam UIKit, permitindo percorrer listas longas mais rapidamente com o gesto de três dedos do VoiceOver, além dos comandos “Ir para a letra” e “Ir para a data” já disponíveis no aplicativo."
+        "A interface para iPhone foi reescrita para torná-la compatível com o iOS 27, o que exigiu uma revisão importante do aplicativo. Como consequência positiva, todas as telas agora usam UIKit, permitindo percorrer listas longas mais rapidamente com o gesto de três dedos do VoiceOver, além dos comandos “Ir para a letra” e “Ir para a data” já disponíveis no aplicativo.",
+        "No iPhone, com o VoiceOver, agora é possível abrir as ações secundárias de um item com um toque duplo prolongado, como alternativa ao gesto para cima ou para baixo."
       ],
       "pl": [
-        "Interfejs iPhone’a został przepisany, aby zapewnić zgodność z iOS 27, co wymagało dużej przebudowy aplikacji. Pozytywnym skutkiem jest to, że wszystkie ekrany korzystają teraz z UIKit, dzięki czemu długie listy można szybciej przewijać gestem VoiceOver trzema palcami, a także używać dostępnych już poleceń „Przejdź do litery” i „Przejdź do daty”."
+        "Interfejs iPhone’a został przepisany, aby zapewnić zgodność z iOS 27, co wymagało dużej przebudowy aplikacji. Pozytywnym skutkiem jest to, że wszystkie ekrany korzystają teraz z UIKit, dzięki czemu długie listy można szybciej przewijać gestem VoiceOver trzema palcami, a także używać dostępnych już poleceń „Przejdź do litery” i „Przejdź do daty”.",
+        "Na iPhonie z VoiceOver można teraz otworzyć dodatkowe akcje elementu podwójnym stuknięciem z przytrzymaniem, jako alternatywę dla przesunięcia w górę lub w dół."
       ],
       "cs": [
-        "Rozhraní pro iPhone bylo přepsáno kvůli kompatibilitě s iOS 27, což si vyžádalo rozsáhlou revizi aplikace. Pozitivním výsledkem je, že všechny obrazovky nyní používají UIKit, takže dlouhé seznamy lze rychleji posouvat tříprstým gestem VoiceOveru a zároveň využívat již dostupné příkazy „Přejít na písmeno“ a „Přejít na datum“."
+        "Rozhraní pro iPhone bylo přepsáno kvůli kompatibilitě s iOS 27, což si vyžádalo rozsáhlou revizi aplikace. Pozitivním výsledkem je, že všechny obrazovky nyní používají UIKit, takže dlouhé seznamy lze rychleji posouvat tříprstým gestem VoiceOveru a zároveň využívat již dostupné příkazy „Přejít na písmeno“ a „Přejít na datum“.",
+        "Na iPhonu s VoiceOver lze nyní otevřít vedlejší akce položky dvojitým klepnutím s podržením jako alternativu k přejetí nahoru nebo dolů."
       ],
       "de": [
-        "Die iPhone-Oberfläche wurde neu geschrieben, um sie mit iOS 27 kompatibel zu machen, was eine umfassende Überarbeitung der App erforderlich machte. Als positiver Nebeneffekt verwenden nun alle Bildschirme UIKit. Dadurch lassen sich lange Listen mit der Drei-Finger-Geste von VoiceOver schneller durchblättern; zusätzlich stehen die bereits vorhandenen Befehle „Zu Buchstabe“ und „Zu Datum“ zur Verfügung."
+        "Die iPhone-Oberfläche wurde neu geschrieben, um sie mit iOS 27 kompatibel zu machen, was eine umfassende Überarbeitung der App erforderlich machte. Als positiver Nebeneffekt verwenden nun alle Bildschirme UIKit. Dadurch lassen sich lange Listen mit der Drei-Finger-Geste von VoiceOver schneller durchblättern; zusätzlich stehen die bereits vorhandenen Befehle „Zu Buchstabe“ und „Zu Datum“ zur Verfügung.",
+        "Auf dem iPhone können mit VoiceOver die sekundären Aktionen eines Elements jetzt durch Doppeltippen und Halten geöffnet werden, als Alternative zum Wischen nach oben oder unten."
       ],
       "zh_CN": [
-        "为了兼容 iOS 27，iPhone 界面已重新编写，这需要对应用进行一次重要调整。一个积极的结果是，现在所有界面都使用 UIKit，因此长列表可以通过 VoiceOver 的三指手势更快滚动，同时仍可使用应用中已有的“跳转到字母”和“跳转到日期”命令。"
+        "为了兼容 iOS 27，iPhone 界面已重新编写，这需要对应用进行一次重要调整。一个积极的结果是，现在所有界面都使用 UIKit，因此长列表可以通过 VoiceOver 的三指手势更快滚动，同时仍可使用应用中已有的“跳转到字母”和“跳转到日期”命令。",
+        "在 iPhone 上使用 VoiceOver 时，现在可以通过双击并按住打开项目的辅助操作，作为向上或向下轻扫的替代方式。"
       ],
       "uk": [
-        "Інтерфейс iPhone було переписано для сумісності з iOS 27, що потребувало значного перегляду застосунку. Як позитивний результат, усі екрани тепер використовують UIKit, завдяки чому довгі списки можна швидше прокручувати жестом VoiceOver трьома пальцями, а також користуватися вже наявними командами «Перейти до літери» та «Перейти до дати»."
+        "Інтерфейс iPhone було переписано для сумісності з iOS 27, що потребувало значного перегляду застосунку. Як позитивний результат, усі екрани тепер використовують UIKit, завдяки чому довгі списки можна швидше прокручувати жестом VoiceOver трьома пальцями, а також користуватися вже наявними командами «Перейти до літери» та «Перейти до дати».",
+        "На iPhone з VoiceOver додаткові дії елемента тепер можна відкрити подвійним дотиком з утриманням як альтернативу свайпу вгору або вниз."
       ]
     },
     "android": {

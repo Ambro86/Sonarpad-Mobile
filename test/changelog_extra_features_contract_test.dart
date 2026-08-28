@@ -174,6 +174,19 @@ void main() {
       'zh_CN': '双击并按住',
       'uk': 'подвійним дотиком з утриманням',
     };
+    final iosLongPressSnippets = <String, String>{
+      'it': 'doppio tap trattenuto',
+      'en': 'double tap and hold',
+      'fr': 'double appui prolongé',
+      'es': 'doble toque mantenido',
+      'pt': 'duplo toque prolongado',
+      'pt_BR': 'toque duplo prolongado',
+      'pl': 'podwójnym stuknięciem z przytrzymaniem',
+      'cs': 'dvojitým klepnutím s podržením',
+      'de': 'Doppeltippen und Halten',
+      'zh_CN': '双击并按住',
+      'uk': 'подвійним дотиком з утриманням',
+    };
     final ios = (entry['ios'] as Map<String, dynamic>);
     final android = (entry['android'] as Map<String, dynamic>);
 
@@ -184,6 +197,8 @@ void main() {
       expect(base, isNot(contains(threeFingerSnippets[language]!)));
       expect(base, isNot(contains(androidLongPressSnippets[language]!)));
       expect(iosText, contains(threeFingerSnippets[language]!));
+      expect(iosText, contains('VoiceOver'));
+      expect(iosText, contains(iosLongPressSnippets[language]!));
       expect(androidText, contains('TalkBack'));
       expect(androidText, contains(androidLongPressSnippets[language]!));
     }

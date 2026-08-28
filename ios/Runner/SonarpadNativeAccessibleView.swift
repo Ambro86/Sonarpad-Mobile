@@ -1195,6 +1195,35 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
   }
 
+  func tableView(
+    _ tableView: UITableView,
+    contextMenuConfigurationForRowAt indexPath: IndexPath,
+    point: CGPoint
+  ) -> UIContextMenuConfiguration? {
+    guard UIAccessibility.isVoiceOverRunning,
+          sections.indices.contains(indexPath.section),
+          sections[indexPath.section].rows.indices.contains(indexPath.row) else {
+      return nil
+    }
+
+    let row = sections[indexPath.section].rows[indexPath.row]
+    guard row.enabled, !row.actions.isEmpty else { return nil }
+    let rowId = row.id
+    let actions = row.actions
+
+    return UIContextMenuConfiguration(identifier: rowId as NSString, previewProvider: nil) { [weak self] _ in
+      let menuActions = actions.map { action in
+        UIAction(title: action.label) { [weak self] _ in
+          self?.channel.invokeMethod(
+            "event",
+            arguments: ["type": "customAction", "id": rowId, "action": action.id]
+          )
+        }
+      }
+      return UIMenu(title: "", children: menuActions)
+    }
+  }
+
   private func sendActivation(at indexPath: IndexPath) {
     let row = sections[indexPath.section].rows[indexPath.row]
     channel.invokeMethod("event", arguments: ["type": "activate", "id": row.id])
