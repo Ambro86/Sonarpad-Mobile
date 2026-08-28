@@ -771,6 +771,118 @@ Questo è il secondo paragrafo con un [link utile](https://example.com) e testo 
       expect(content.text, contains('reader locale'));
     });
 
+    test(
+        'reader locale rispetta il charset ISO-8859-1 degli articoli HTML',
+        () async {
+      final service = NewsService(
+        client: MockClient((request) async {
+          if (request.url.host == 'sonarpad.com' &&
+              request.url.queryParameters['policy'] == '1') {
+            return http.Response.bytes(
+              utf8.encode(jsonEncode({
+                'ok': true,
+                'tinyfish_fallback_only': true,
+              })),
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'},
+            );
+          }
+
+          const html = '''
+<!doctype html>
+<html>
+  <head><meta charset="ISO-8859-1"><title>Adobe</title></head>
+  <body>
+    <article>
+      <p>La modalità si attiva da un interruttore e si può nascondere senza perdere le impostazioni già scelte.</p>
+      <p>Dentro, il ritocco passa dai prompt e dalle annotazioni disegnate sull'immagine, così l'utente può lavorare più rapidamente.</p>
+    </article>
+  </body>
+</html>
+''';
+          return http.Response.bytes(
+            latin1.encode(html),
+            200,
+            headers: {'content-type': 'text/html; charset=ISO-8859-1'},
+          );
+        }),
+      );
+
+      await service.loadTinyfishFallbackOnlyPolicyForSession();
+      final content = await service.fetchArticleContent(
+        const NewsArticle(
+          id: 'charset-article',
+          title: 'Adobe',
+          link: 'https://www.fotografidigitali.it/news/example.html',
+          summary: 'Riassunto RSS',
+          source: 'Fotografi Digitali',
+          publishedAt: null,
+        ),
+        language: NewsLanguage.italian,
+      );
+
+      expect(content.text, contains('modalità'));
+      expect(content.text, contains('si può nascondere'));
+      expect(content.text, contains('già scelte'));
+      expect(content.text, isNot(contains('�')));
+    });
+
+    test(
+        'reader locale usa il meta charset Windows-1252 quando manca nel Content-Type',
+        () async {
+      final service = NewsService(
+        client: MockClient((request) async {
+          if (request.url.host == 'sonarpad.com' &&
+              request.url.queryParameters['policy'] == '1') {
+            return http.Response.bytes(
+              utf8.encode(jsonEncode({
+                'ok': true,
+                'tinyfish_fallback_only': true,
+              })),
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'},
+            );
+          }
+
+          final asciiPrefix = ascii.encode('''
+<!doctype html><html><head><meta charset="windows-1252"></head><body><article><p>''');
+          final body = <int>[
+            ...asciiPrefix,
+            ...latin1.encode(
+              'La modalità opzionale può essere nascosta. Un secondo periodo abbastanza lungo mantiene valido il contenuto del reader.',
+            ),
+            0x93,
+            ...latin1.encode('Prompt e annotazioni'),
+            0x94,
+            ...ascii.encode('</p></article></body></html>'),
+          ];
+          return http.Response.bytes(
+            body,
+            200,
+            headers: {'content-type': 'text/html'},
+          );
+        }),
+      );
+
+      await service.loadTinyfishFallbackOnlyPolicyForSession();
+      final content = await service.fetchArticleContent(
+        const NewsArticle(
+          id: 'meta-charset-article',
+          title: 'Adobe',
+          link: 'https://www.fotografidigitali.it/news/example-meta.html',
+          summary: 'Riassunto RSS',
+          source: 'Fotografi Digitali',
+          publishedAt: null,
+        ),
+        language: NewsLanguage.italian,
+      );
+
+      expect(content.text, contains('modalità opzionale'));
+      expect(content.text, contains('può essere nascosta'));
+      expect(content.text, contains('“Prompt e annotazioni”'));
+      expect(content.text, isNot(contains('�')));
+    });
+
     test('esegue Tinyfish con fallback=1 solo su richiesta dopo la WebView',
         () async {
       final requested = <Uri>[];

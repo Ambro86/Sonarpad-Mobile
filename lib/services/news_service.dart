@@ -1430,7 +1430,7 @@ class NewsService {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Articolo non raggiungibile: ${response.statusCode}');
     }
-    final html = utf8.decode(response.bodyBytes, allowMalformed: true);
+    final html = _decodeHtmlResponse(response);
     if (_isGoogleConsentPage(html) || _isGoogleFullCoveragePage(html)) {
       return NewsArticleContent(text: article.summary, url: article.link);
     }
@@ -1460,10 +1460,7 @@ class NewsService {
         },
       );
       if (iphoneResponse.statusCode >= 200 && iphoneResponse.statusCode < 300) {
-        final iphoneHtml = utf8.decode(
-          iphoneResponse.bodyBytes,
-          allowMalformed: true,
-        );
+        final iphoneHtml = _decodeHtmlResponse(iphoneResponse);
         final iphoneText = _extractArticleText(iphoneHtml, language: language);
         unawaited(AppLogger.log(
           'News reader HTML: profilo iPhone length=${iphoneText.trim().length} '
@@ -1489,10 +1486,7 @@ class NewsService {
       final ampFetch = await _browserGetWithFallback(ampUri);
       final ampResponse = ampFetch.response;
       if (ampResponse.statusCode >= 200 && ampResponse.statusCode < 300) {
-        final ampHtml = utf8.decode(
-          ampResponse.bodyBytes,
-          allowMalformed: true,
-        );
+        final ampHtml = _decodeHtmlResponse(ampResponse);
         final ampText = _extractArticleText(ampHtml, language: language);
         unawaited(AppLogger.log(
           'News reader HTML: AMP length=${ampText.trim().length} '
@@ -2430,7 +2424,7 @@ class NewsService {
 
   bool _shouldFallbackBrowserResponse(http.Response response) {
     if (response.statusCode < 200 || response.statusCode >= 400) return true;
-    final html = utf8.decode(response.bodyBytes, allowMalformed: true);
+    final html = _decodeHtmlResponse(response);
     if (_looksLikeFeed(html)) return false;
     final lower = html.toLowerCase();
     return lower.contains('just a moment') ||
@@ -2439,6 +2433,115 @@ class NewsService {
         lower.contains('enable javascript and cookies') ||
         lower.contains('cf-chl') ||
         response.bodyBytes.length < 3000;
+  }
+
+  static String _decodeHtmlResponse(http.Response response) {
+    final bytes = response.bodyBytes;
+    if (bytes.isEmpty) return '';
+
+    // HTML pages are not guaranteed to be UTF-8. Some Italian sites still
+    // return ISO-8859-1/Windows-1252; forcing UTF-8 would turn accented bytes
+    // into the replacement character (�).
+    final declaredCharset = _declaredHtmlCharset(response, bytes);
+    final declared = _decodeHtmlBytes(bytes, declaredCharset);
+    if (declared != null) return declared;
+
+    // Without an explicit charset, accept valid UTF-8 first and use
+    // Windows-1252 only when the byte stream is not valid UTF-8.
+    try {
+      return utf8.decode(bytes);
+    } on FormatException {
+      return _decodeWindows1252(bytes);
+    }
+  }
+
+  static String? _declaredHtmlCharset(
+    http.Response response,
+    List<int> bytes,
+  ) {
+    String? contentType;
+    for (final entry in response.headers.entries) {
+      if (entry.key.toLowerCase() == 'content-type') {
+        contentType = entry.value;
+        break;
+      }
+    }
+    if (contentType != null) {
+      final match = RegExp(
+        r'''charset\s*=\s*["']?\s*([^;\s"']+)''',
+        caseSensitive: false,
+      ).firstMatch(contentType);
+      final charset = match?.group(1)?.trim().toLowerCase();
+      if (charset != null && charset.isNotEmpty) return charset;
+    }
+
+    // Charset declarations are ASCII, so a Latin-1 view of the first bytes
+    // is safe while discovering a <meta charset=...> declaration.
+    final prefix = latin1.decode(
+      bytes.take(8192).toList(growable: false),
+      allowInvalid: true,
+    );
+    final metaMatch = RegExp(
+      r'''charset\s*=\s*["']?\s*([a-zA-Z0-9._-]+)''',
+      caseSensitive: false,
+    ).firstMatch(prefix);
+    return metaMatch?.group(1)?.trim().toLowerCase();
+  }
+
+  static String? _decodeHtmlBytes(List<int> bytes, String? charset) {
+    if (charset == null || charset.isEmpty) return null;
+    final normalized = charset.replaceAll('_', '-').toLowerCase();
+
+    if (normalized == 'utf-8' || normalized == 'utf8') {
+      return utf8.decode(bytes, allowMalformed: true);
+    }
+    if (normalized == 'iso-8859-1' ||
+        normalized == 'iso8859-1' ||
+        normalized == 'latin1' ||
+        normalized == 'latin-1') {
+      return latin1.decode(bytes, allowInvalid: true);
+    }
+    if (normalized == 'windows-1252' ||
+        normalized == 'cp1252' ||
+        normalized == 'windows1252') {
+      return _decodeWindows1252(bytes);
+    }
+    return null;
+  }
+
+  static String _decodeWindows1252(List<int> bytes) {
+    const replacements = <int, int>{
+      0x80: 0x20AC,
+      0x82: 0x201A,
+      0x83: 0x0192,
+      0x84: 0x201E,
+      0x85: 0x2026,
+      0x86: 0x2020,
+      0x87: 0x2021,
+      0x88: 0x02C6,
+      0x89: 0x2030,
+      0x8A: 0x0160,
+      0x8B: 0x2039,
+      0x8C: 0x0152,
+      0x8E: 0x017D,
+      0x91: 0x2018,
+      0x92: 0x2019,
+      0x93: 0x201C,
+      0x94: 0x201D,
+      0x95: 0x2022,
+      0x96: 0x2013,
+      0x97: 0x2014,
+      0x98: 0x02DC,
+      0x99: 0x2122,
+      0x9A: 0x0161,
+      0x9B: 0x203A,
+      0x9C: 0x0153,
+      0x9E: 0x017E,
+      0x9F: 0x0178,
+    };
+    return String.fromCharCodes(
+      bytes.map((byte) => replacements[byte] ?? byte),
+    );
   }
 
   bool _looksLikeFeed(String value) {
