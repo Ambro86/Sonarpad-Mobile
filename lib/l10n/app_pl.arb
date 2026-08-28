@@ -296,7 +296,7 @@
   "@donationsBankDesc": {
     "description": "Localized text for donationsBankDesc."
   },
-  "donationsThanks": "Każda osoba wspierająca projekt zostanie wymieniona w aplikacji i w repozytorium GitHub w sekcji wspierających, chyba że poprosi o anonimowość lub użycie pseudonimu.\n\nDziękuję Jiriemu Holzingerowi i Paoli Vagata za ich wkład.\nZa tłumaczenie na czeski dziękuję Radkowi Žaludowi i Jiriemu Holzingerowi.\nZa tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.",
+  "donationsThanks": "Każda osoba wspierająca projekt zostanie wymieniona w aplikacji i w repozytorium GitHub w sekcji wspierających, chyba że poprosi o anonimowość lub użycie pseudonimu.\n\nDziękuję Jiriemu Holzingerowi i Paoli Vagata za ich wkład.\nZa tłumaczenie na czeski dziękuję Radkowi Žaludowi i Jiriemu Holzingerowi.\nZa tłumaczenie na hiszpański dziękuję Arturo Fernandezowi Rivasowi.\n\nOgromne podziękowania dla Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro oraz całej grupy Tecnologia accessibile za całe wsparcie w codziennym ulepszaniu tego wspaniałego projektu.",
   "@donationsThanks": {
     "description": "Localized text for donationsThanks."
   },

@@ -347,7 +347,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get donationsThanks =>
-      'Anyone who supports the project will be mentioned in the app and on the GitHub repository, unless they prefer to stay anonymous or use a nickname.\n\nThanks to Jiri Holzinger and Paola Vagata for their contribution.\nFor the Czech translation, thanks to Radek Žalud and Jiri Holzinger.\nFor the Spanish translation, thanks to Arturo Fernandez Rivas.';
+      'Anyone who supports the project will be mentioned in the app and on the GitHub repository, unless they prefer to stay anonymous or use a nickname.\n\nThanks to Jiri Holzinger and Paola Vagata for their contribution.\nFor the Czech translation, thanks to Radek Žalud and Jiri Holzinger.\nFor the Spanish translation, thanks to Arturo Fernandez Rivas.\n\nA huge thank you to Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro and the entire Tecnologia accessibile group for all their support in helping to improve this wonderful project every day.';
 
   @override
   String get news => 'News';

@@ -327,7 +327,7 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get donationsBankDesc => '你也可以通过银行转账捐赠至 Ambrogio Riili 名下的银行账户。\nIBAN：IT77W0306901020100000064149\n如有可能，请填写清晰的付款用途，例如“Sonarpad”。';
 
   @override
-  String get donationsThanks => '所有支持本项目的人都会在应用和 GitHub 仓库中被提及，除非他们希望保持匿名或使用昵称。\n\n感谢 Jiri Holzinger 和 Paola Vagata 的贡献。\n捷克语翻译感谢 Radek Žalud 和 Jiri Holzinger。\n西班牙语翻译感谢 Arturo Fernandez Rivas。';
+  String get donationsThanks => '所有支持本项目的人都会在应用和 GitHub 仓库中被提及，除非他们希望保持匿名或使用昵称。\n\n感谢 Jiri Holzinger 和 Paola Vagata 的贡献。\n捷克语翻译感谢 Radek Žalud 和 Jiri Holzinger。\n西班牙语翻译感谢 Arturo Fernandez Rivas。\n\n特别感谢 Leonardo Graziano、Paolo Marcelli、Tiziano Ferraro 以及 Tecnologia accessibile 全体成员一直以来的支持，帮助这个精彩的项目每天不断进步。';
 
   @override
   String get news => '新闻';

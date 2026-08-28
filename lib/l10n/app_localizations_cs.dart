@@ -347,7 +347,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get donationsThanks =>
-      'Každý, kdo projekt podpoří, bude uveden v programu a v repozitáři GitHub, pokud si nepřeje zůstat anonymní nebo použít přezdívku.\n\nDěkujeme Jirimu Holzingerovi a Paole Vagatě za jejich příspěvek.\nZa český překlad děkujeme Radku Žaludovi a Jirimu Holzingerovi.\nZa španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.';
+      'Každý, kdo projekt podpoří, bude uveden v programu a v repozitáři GitHub, pokud si nepřeje zůstat anonymní nebo použít přezdívku.\n\nDěkujeme Jirimu Holzingerovi a Paole Vagatě za jejich příspěvek.\nZa český překlad děkujeme Radku Žaludovi a Jirimu Holzingerovi.\nZa španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.\n\nVelké poděkování Leonardu Grazianovi, Paolu Marcellimu, Tizianu Ferrarovi a celé skupině Tecnologia accessibile za veškerou podporu při každodenním zlepšování tohoto skvělého projektu.';
 
   @override
   String get news => 'Zprávy';

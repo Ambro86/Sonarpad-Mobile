@@ -96,7 +96,7 @@
   "donationsIntro": "Sonarpad foi criado inicialmente para atender a necessidades pessoais, mas com o tempo se tornou um aplicativo mais completo. Seu desenvolvimento exige trabalho constante: melhorar funções, corrigir erros, explorar novas ideias e testar cuidadosamente cada função.\n\nSe o Sonarpad for útil para você e quiser apoiar seu desenvolvimento, pode fazer uma doação.",
   "donationsPaypalDesc": "Você pode doar pelo PayPal usando este link:\nhttps://www.paypal.me/ambrogio86\nSe possível, adicione “Sonarpad” como observação do pagamento.",
   "donationsBankDesc": "Você também pode fazer uma doação por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.",
-  "donationsThanks": "Quem apoiar o projeto será mencionado no aplicativo e no repositório GitHub, a menos que prefira permanecer anônimo ou usar um pseudônimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução tcheca, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.",
+  "donationsThanks": "Quem apoiar o projeto será mencionado no aplicativo e no repositório GitHub, a menos que prefira permanecer anônimo ou usar um pseudônimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução tcheca, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.\n\nUm grande agradecimento a Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro e a todo o grupo Tecnologia accessibile por todo o apoio para melhorar, a cada dia, este maravilhoso projeto.",
   "news": "Notícias",
   "newsHint": "Abrir notícias do Google News RSS",
   "podcasts": "Podcasts",

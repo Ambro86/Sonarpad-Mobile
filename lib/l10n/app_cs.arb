@@ -93,7 +93,7 @@
   "donationsIntro": "Sonarpad vznikl původně pro osobní potřeby, ale postupně se rozrostl v širší aplikaci. Jeho vývoj vyžaduje stálou práci: zlepšování funkcí, opravy chyb, hledání nových nápadů a pečlivé testování každé části.\n\nPokud je pro vás Sonarpad užitečný a chcete podpořit jeho vývoj, můžete přispět darem.",
   "donationsPaypalDesc": "Dar můžete poslat přes PayPal pomocí tohoto odkazu:\nhttps://www.paypal.me/ambrogio86\nPokud je to možné, přidejte do poznámky platby slovo „Sonarpad“.",
   "donationsBankDesc": "Dar můžete poslat také bankovním převodem na účet vedený na jméno Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nPokud je to možné, použijte jasný důvod platby, například „Sonarpad“.",
-  "donationsThanks": "Každý, kdo projekt podpoří, bude uveden v programu a v repozitáři GitHub, pokud si nepřeje zůstat anonymní nebo použít přezdívku.\n\nDěkujeme Jirimu Holzingerovi a Paole Vagatě za jejich příspěvek.\nZa český překlad děkujeme Radku Žaludovi a Jirimu Holzingerovi.\nZa španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.",
+  "donationsThanks": "Každý, kdo projekt podpoří, bude uveden v programu a v repozitáři GitHub, pokud si nepřeje zůstat anonymní nebo použít přezdívku.\n\nDěkujeme Jirimu Holzingerovi a Paole Vagatě za jejich příspěvek.\nZa český překlad děkujeme Radku Žaludovi a Jirimu Holzingerovi.\nZa španělský překlad děkujeme Arturovi Fernandezovi Rivasovi.\n\nVelké poděkování Leonardu Grazianovi, Paolu Marcellimu, Tizianu Ferrarovi a celé skupině Tecnologia accessibile za veškerou podporu při každodenním zlepšování tohoto skvělého projektu.",
   "news": "Zprávy",
   "newsHint": "Otevřít zprávy z RSS a Google News",
   "podcasts": "Podcasty",

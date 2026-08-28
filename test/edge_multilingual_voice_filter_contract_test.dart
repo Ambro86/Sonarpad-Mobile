@@ -41,16 +41,15 @@ void main() {
     expect(ids, everyElement(endsWith('Neural')));
   });
 
-  test('Settings exposes the transient multilingual filter in both renderers', () {
+  test('Settings exposes multilingual voices as a separate menu', () {
     final source = File('lib/screens/settings_screen.dart').readAsStringSync();
 
+    expect(source, contains("id: 'edge_multilingual_voices'"));
     expect(
       source,
-      contains('bool _showOnlyMultilingualEdgeVoices = false;'),
+      contains("const RouteSettings(name: '/settings/edge-multilingual-voices')"),
     );
-    expect(source, contains("id: 'edge_multilingual_only'"));
-    expect(source, contains("kind: 'toggle'"));
-    expect(source, contains('SwitchListTile('));
+    expect(source, contains("kind: 'button'"));
     expect(
       source,
       contains('l10n.settingsShowOnlyMultilingualEdgeVoices'),
@@ -59,18 +58,29 @@ void main() {
       source,
       contains('AppSettingsService.multilingualEdgeVoicesFrom(_edgeVoices)'),
     );
-    expect(source, contains('if (_showOnlyMultilingualEdgeVoices) {'));
+    expect(source, contains('_openMultilingualEdgeVoicePicker'));
     expect(source, contains('_languageCode = result.languageCode;'));
 
-    // The checkbox is a display filter only: it is intentionally absent from
-    // the persistent settings service and from unsaved-change bookkeeping.
-    final service =
-        File('lib/services/app_settings_service.dart').readAsStringSync();
-    expect(service, isNot(contains('showOnlyMultilingualEdgeVoicesKey')));
-    expect(service, isNot(contains('saveShowOnlyMultilingual')));
+    // The ordinary Edge language/voice controls remain language-scoped and are
+    // not filtered by the multilingual menu.
+    expect(
+      source,
+      contains(
+        'AppSettingsService.voicesForLanguageFrom(_edgeVoices, _languageCode)',
+      ),
+    );
+    expect(source, isNot(contains('_showOnlyMultilingualEdgeVoices')));
+    expect(source, isNot(contains("id: 'edge_multilingual_only'")));
+
+    final engineIndex = source.indexOf("id: 'tts_engine'");
+    final multilingualIndex = source.indexOf("id: 'edge_multilingual_voices'");
+    final languageIndex = source.indexOf("id: 'edge_language'");
+    expect(engineIndex, greaterThanOrEqualTo(0));
+    expect(multilingualIndex, greaterThan(engineIndex));
+    expect(languageIndex, greaterThan(multilingualIndex));
   });
 
-  test('multilingual filter label exists in every ARB locale', () {
+  test('multilingual menu label exists in every ARB locale', () {
     final arbFiles = Directory('lib/l10n')
         .listSync()
         .whereType<File>()

@@ -349,7 +349,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get donationsThanks =>
-      'Toute personne qui soutient le projet sera mentionnée dans l’application et dans le dépôt GitHub, sauf si elle préfère rester anonyme ou utiliser un pseudonyme.\n\nMerci à Jiri Holzinger et Paola Vagata pour leur contribution.\nPour la traduction en tchèque, merci à Radek Žalud et Jiri Holzinger.\nPour la traduction en espagnol, merci à Arturo Fernandez Rivas.';
+      'Toute personne qui soutient le projet sera mentionnée dans l’application et dans le dépôt GitHub, sauf si elle préfère rester anonyme ou utiliser un pseudonyme.\n\nMerci à Jiri Holzinger et Paola Vagata pour leur contribution.\nPour la traduction en tchèque, merci à Radek Žalud et Jiri Holzinger.\nPour la traduction en espagnol, merci à Arturo Fernandez Rivas.\n\nUn grand merci à Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro et à tout le groupe Tecnologia accessibile pour tout leur soutien afin d’améliorer chaque jour ce merveilleux projet.';
 
   @override
   String get news => 'Actualités';

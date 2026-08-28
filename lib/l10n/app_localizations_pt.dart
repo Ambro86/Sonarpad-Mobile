@@ -336,7 +336,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get donationsBankDesc => 'Também pode fazer um donativo por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.';
 
   @override
-  String get donationsThanks => 'Quem apoiar o projeto será mencionado na aplicação e no repositório GitHub, salvo se preferir ficar anónimo ou usar um pseudónimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução checa, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.';
+  String get donationsThanks => 'Quem apoiar o projeto será mencionado na aplicação e no repositório GitHub, salvo se preferir ficar anónimo ou usar um pseudónimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução checa, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.\n\nUm grande agradecimento a Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro e a todo o grupo Tecnologia accessibile por todo o seu apoio para melhorar, a cada dia, este maravilhoso projeto.';
 
   @override
   String get news => 'Notícias';
@@ -3845,7 +3845,7 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get donationsBankDesc => 'Você também pode fazer uma doação por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.';
 
   @override
-  String get donationsThanks => 'Quem apoiar o projeto será mencionado no aplicativo e no repositório GitHub, a menos que prefira permanecer anônimo ou usar um pseudônimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução tcheca, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.';
+  String get donationsThanks => 'Quem apoiar o projeto será mencionado no aplicativo e no repositório GitHub, a menos que prefira permanecer anônimo ou usar um pseudônimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução tcheca, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.\n\nUm grande agradecimento a Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro e a todo o grupo Tecnologia accessibile por todo o apoio para melhorar, a cada dia, este maravilhoso projeto.';
 
   @override
   String get news => 'Notícias';

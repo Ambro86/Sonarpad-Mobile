@@ -336,7 +336,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get donationsBankDesc => "Du kannst auch per Banküberweisung auf das Konto von Ambrogio Riili spenden.\nIBAN: IT77W0306901020100000064149\nBitte verwende, wenn möglich, einen eindeutigen Verwendungszweck, zum Beispiel „Sonarpad“.";
 
   @override
-  String get donationsThanks => "Wer das Projekt unterstützt, wird in der App und im GitHub-Repository erwähnt, sofern die Person nicht anonym bleiben oder einen Spitznamen verwenden möchte.\n\nVielen Dank an Jiri Holzinger und Paola Vagata für ihren Beitrag.\nFür die tschechische Übersetzung danken wir Radek Žalud und Jiri Holzinger.\nFür die spanische Übersetzung danken wir Arturo Fernandez Rivas.";
+  String get donationsThanks => "Wer das Projekt unterstützt, wird in der App und im GitHub-Repository erwähnt, sofern die Person nicht anonym bleiben oder einen Spitznamen verwenden möchte.\n\nVielen Dank an Jiri Holzinger und Paola Vagata für ihren Beitrag.\nFür die tschechische Übersetzung danken wir Radek Žalud und Jiri Holzinger.\nFür die spanische Übersetzung danken wir Arturo Fernandez Rivas.\n\nEin großes Dankeschön an Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro und die gesamte Gruppe Tecnologia accessibile für ihre große Unterstützung dabei, dieses wunderbare Projekt jeden Tag weiter zu verbessern.";
 
   @override
   String get news => "Nachrichten";

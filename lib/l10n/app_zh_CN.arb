@@ -96,7 +96,7 @@
   "donationsIntro": "Sonarpad 最初是为满足个人需求而创建的，但随着时间推移，它逐渐发展成一款功能更广泛的应用。开发需要持续投入：改进功能、修复错误、探索新想法，并认真测试每一项功能。\n\n如果你觉得 Sonarpad 对你有帮助，并希望支持它的开发，可以进行捐赠。",
   "donationsPaypalDesc": "你可以通过 PayPal 使用以下链接捐赠：\nhttps://www.paypal.me/ambrogio86\n如有可能，请在付款备注中填写“Sonarpad”。",
   "donationsBankDesc": "你也可以通过银行转账捐赠至 Ambrogio Riili 名下的银行账户。\nIBAN：IT77W0306901020100000064149\n如有可能，请填写清晰的付款用途，例如“Sonarpad”。",
-  "donationsThanks": "所有支持本项目的人都会在应用和 GitHub 仓库中被提及，除非他们希望保持匿名或使用昵称。\n\n感谢 Jiri Holzinger 和 Paola Vagata 的贡献。\n捷克语翻译感谢 Radek Žalud 和 Jiri Holzinger。\n西班牙语翻译感谢 Arturo Fernandez Rivas。",
+  "donationsThanks": "所有支持本项目的人都会在应用和 GitHub 仓库中被提及，除非他们希望保持匿名或使用昵称。\n\n感谢 Jiri Holzinger 和 Paola Vagata 的贡献。\n捷克语翻译感谢 Radek Žalud 和 Jiri Holzinger。\n西班牙语翻译感谢 Arturo Fernandez Rivas。\n\n特别感谢 Leonardo Graziano、Paolo Marcelli、Tiziano Ferraro 以及 Tecnologia accessibile 全体成员一直以来的支持，帮助这个精彩的项目每天不断进步。",
   "news": "新闻",
   "newsHint": "打开 Google 新闻 RSS",
   "podcasts": "播客",

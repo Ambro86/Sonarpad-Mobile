@@ -723,7 +723,7 @@ abstract class AppLocalizations {
   /// Localized text for donationsThanks.
   ///
   /// In it, this message translates to:
-  /// **'Chiunque decida di sostenere il progetto verrà ringraziato nell’app e nel repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nRingrazio Jiri Holzinger e Paola Vagata per il loro contributo.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.'**
+  /// **'Chiunque decida di sostenere il progetto verrà ringraziato nell’app e nel repository GitHub, nella sezione sostenitori, salvo richiesta di anonimato o utilizzo di un nickname.\n\nRingrazio Jiri Holzinger e Paola Vagata per il loro contributo.\nPer la traduzione in ceco ringrazio Radek Žalud e Jiri Holzinger.\nPer la traduzione in spagnolo ringrazio Arturo Fernandez Rivas.\n\nUn grande ringraziamento a Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro e a tutto il gruppo Tecnologia accessibile per tutto il loro supporto nel migliorare ogni giorno questo meraviglioso progetto.'**
   String get donationsThanks;
 
   /// Localized text for news.
