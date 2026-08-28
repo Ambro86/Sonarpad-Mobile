@@ -15,16 +15,30 @@ void main() {
     expect(
       source,
       contains('suppressBackSemanticsDuringRouteReturn'),
-      reason: 'The Back button must be temporarily removed from accessibility '
-          'while VoiceOver is handed to the target article.',
+      reason: 'Back may still be excluded while the article route itself is '
+          'closing so VoiceOver does not steal the initial return focus.',
     );
     expect(source, contains('valueListenable: _suppressBackSemantics'));
     expect(source, contains('excluding: suppress'));
+
+    final pushIndex = source.indexOf('await navigator.push(');
+    final restoreIndex = source.indexOf(
+      'widget.suppressBackSemantics.value = false;',
+      pushIndex,
+    );
+    final reloadIndex = source.indexOf('await _loadReadArticles();', pushIndex);
+    expect(pushIndex, greaterThanOrEqualTo(0));
+    expect(restoreIndex, greaterThan(pushIndex));
+    expect(reloadIndex, greaterThan(restoreIndex));
+    expect(
+      source,
+      isNot(contains('Future<void>.delayed(const Duration(seconds: 3)')),
+      reason: 'Back must not stay hidden while the native focus handoff retries.',
+    );
     expect(
       source,
       contains('_handleArticleAccessibilityFocus(article.id)'),
-      reason: 'Back semantics must be restored only after the target row '
-          'actually receives accessibility focus.',
+      reason: 'The article focus handoff still needs its accessibility callback.',
     );
     expect(source, contains('routeReturnSemanticsSettleDelay: Duration.zero'));
     expect(source, contains('routeReturnUseFocusProxy: false'));

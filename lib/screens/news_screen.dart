@@ -1513,20 +1513,21 @@ class _NewsArticleListState extends State<_NewsArticleList> {
       ),
     );
     if (!mounted) return;
+
+    // The source route is visible again now. Back may be excluded while the
+    // article route is closing so VoiceOver does not steal the initial focus,
+    // but it must be exposed as soon as the user is back on the article list.
+    // Do not keep it hidden while the read-state reload or the native UIKit
+    // route-return focus handoff settles: that work can legitimately take a
+    // few seconds on large feeds.
+    if (widget.suppressBackSemantics.value) {
+      widget.suppressBackSemantics.value = false;
+    }
+
     await _loadReadArticles();
     if (!mounted) return;
     if (useSharedAccessibleViewModel) {
       _schedulePendingArticleFocus();
-      if (widget.suppressBackSemantics.value) {
-        Future<void>.delayed(const Duration(seconds: 3), () {
-          if (!mounted || !widget.suppressBackSemantics.value) return;
-          widget.suppressBackSemantics.value = false;
-          _pendingArticleScrollId = null;
-          _pendingArticleScrollScheduled = false;
-        });
-      }
-    } else {
-      widget.suppressBackSemantics.value = false;
     }
   }
 
@@ -1629,9 +1630,9 @@ class _NewsArticleListState extends State<_NewsArticleList> {
         animated: false,
       );
       if (!mounted || _pendingArticleScrollId != id) return;
-      // With the native iOS renderer, keep Back excluded until UIKit reports
-      // that VoiceOver actually acquired the target article. Other renderers
-      // do not need that handoff guard, so the request itself completes it.
+      // Back is already exposed again as soon as the article route closes.
+      // The native focus request may keep retrying internally, but it must not
+      // control the availability of the navigation button.
       if (!widget.suppressBackSemantics.value) {
         _pendingArticleScrollId = null;
         _pendingArticleScrollScheduled = false;
