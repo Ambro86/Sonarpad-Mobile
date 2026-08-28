@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,12 +14,16 @@ class ChangelogEntry {
   final String version;
   final String date;
   final Map<String, List<String>> changesByLanguage;
+  final Map<String, List<String>> iosChangesByLanguage;
+  final Map<String, List<String>> androidChangesByLanguage;
   final List<String> italianExtraChanges;
 
   const ChangelogEntry({
     required this.version,
     required this.date,
     required this.changesByLanguage,
+    this.iosChangesByLanguage = const {},
+    this.androidChangesByLanguage = const {},
     this.italianExtraChanges = const [],
   });
 
@@ -32,6 +37,34 @@ class ChangelogEntry {
       }
     }
 
+    Map<String, List<String>> readPlatformChanges(String key) {
+      final rawPlatform = json[key];
+      if (rawPlatform is! Map<String, dynamic>) {
+        return const <String, List<String>>{};
+      }
+      final changes = <String, List<String>>{};
+      for (final language in const [
+        'it',
+        'en',
+        'fr',
+        'es',
+        'pt',
+        'pt_BR',
+        'pl',
+        'cs',
+        'de',
+        'zh_CN',
+        'uk',
+      ]) {
+        final rawChanges = rawPlatform[language];
+        if (rawChanges is List) {
+          changes[language] =
+              rawChanges.map((item) => item.toString()).toList();
+        }
+      }
+      return changes;
+    }
+
     final rawItalianExtraChanges = json['it_extra'];
     final italianExtraChanges = rawItalianExtraChanges is List
         ? rawItalianExtraChanges.map((item) => item.toString()).toList()
@@ -41,6 +74,8 @@ class ChangelogEntry {
       version: json['version']?.toString() ?? '',
       date: json['date']?.toString() ?? '',
       changesByLanguage: changesByLanguage,
+      iosChangesByLanguage: readPlatformChanges('ios'),
+      androidChangesByLanguage: readPlatformChanges('android'),
       italianExtraChanges: italianExtraChanges,
     );
   }
@@ -48,17 +83,30 @@ class ChangelogEntry {
   List<String> changesFor(
     String languageCode, {
     bool includeItalianExtras = false,
+    TargetPlatform? platform,
   }) {
     final baseChanges = changesByLanguage[languageCode] ??
         changesByLanguage['en'] ??
         changesByLanguage['it'] ??
         const <String>[];
+    final platformChanges = switch (platform) {
+      TargetPlatform.iOS => iosChangesByLanguage[languageCode] ??
+          iosChangesByLanguage['en'] ??
+          iosChangesByLanguage['it'] ??
+          const <String>[],
+      TargetPlatform.android => androidChangesByLanguage[languageCode] ??
+          androidChangesByLanguage['en'] ??
+          androidChangesByLanguage['it'] ??
+          const <String>[],
+      _ => const <String>[],
+    };
+    final visibleChanges = [...platformChanges, ...baseChanges];
     if (languageCode != 'it' ||
         !includeItalianExtras ||
         italianExtraChanges.isEmpty) {
-      return baseChanges;
+      return visibleChanges;
     }
-    return [...baseChanges, ...italianExtraChanges];
+    return [...visibleChanges, ...italianExtraChanges];
   }
 }
 
@@ -83,6 +131,7 @@ class ChangelogService {
     return entry.changesFor(
       languageCode,
       includeItalianExtras: includeItalianExtras,
+      platform: defaultTargetPlatform,
     );
   }
 

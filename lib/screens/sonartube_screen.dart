@@ -2352,6 +2352,8 @@ class _SonarTubeFavoritesScreen extends StatefulWidget {
 }
 
 class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
+  final AccessibleListController _accessibleListController =
+      AccessibleListController(debugName: 'sonartube-favorites');
   List<SonarTubeItem> _favorites = const [];
   bool _loading = true;
 
@@ -2380,6 +2382,71 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
     await _load();
   }
 
+  int _favoriteIndexFor(SonarTubeItem item) {
+    final key = widget.favoritesService.itemKey(item);
+    return _favorites.indexWhere(
+      (favorite) => widget.favoritesService.itemKey(favorite) == key,
+    );
+  }
+
+  Future<void> _restoreFavoriteFocus(SonarTubeItem item) async {
+    if (!mounted || !useSharedAccessibleViewModel) return;
+    final index = _favoriteIndexFor(item);
+    if (index < 0) return;
+
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _accessibleListController.focusAccessibleRow(
+      'favorite_$index',
+      mode: AccessibleFocusMode.routeReturnJump,
+      animated: false,
+    );
+  }
+
+  Future<SonarTubeItem> _prepareFavoriteChannelForOpen(
+    SonarTubeItem channel,
+  ) async {
+    var prepared =
+        await widget.favoritesService.updateFavoriteMetadata(channel) ?? channel;
+    final hasHandle = prepared.handle?.trim().isNotEmpty ?? false;
+    final hasSubscribers = prepared.subscribers?.trim().isNotEmpty ?? false;
+    if (!hasHandle || !hasSubscribers) {
+      prepared = await widget.service.refreshChannelMetadata(prepared);
+      await widget.favoritesService.updateFavoriteMetadata(prepared);
+    }
+    return prepared;
+  }
+
+  Future<void> _openFavoriteChannel(SonarTubeItem item) async {
+    if (item.kind != SonarTubeItemKind.channel) return;
+    try {
+      final channel = await _prepareFavoriteChannelForOpen(item);
+      if (!mounted) return;
+      await Navigator.push<void>(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/sonartube/channel'),
+          builder: (_) => SonarTubeScreen(
+            collection: channel,
+            service: widget.service,
+            favoritesService: widget.favoritesService,
+          ),
+        ),
+      );
+      if (!mounted) return;
+      await _load();
+      await _restoreFavoriteFocus(item);
+    } catch (_) {
+      if (!mounted) return;
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).error(
+          AppLocalizations.of(context).technicalErrorGeneric,
+        ),
+      );
+    }
+  }
+
   Future<void> _openChannel(SonarTubeItem item) async {
     try {
       final channel = await widget.service.channelForVideo(item);
@@ -2395,6 +2462,9 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
           ),
         ),
       );
+      if (!mounted) return;
+      await _load();
+      await _restoreFavoriteFocus(item);
     } catch (_) {
       if (!mounted) return;
       showStatusMessage(
@@ -2526,6 +2596,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
     }
 
     return UniversalAccessibleList(
+      controller: _accessibleListController,
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.id?.startsWith('favorite_') != true) return;
@@ -2544,7 +2615,11 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
             event.action == 'transcribe_video') {
           await _openTranscript(item);
         } else if (event.type == 'activate') {
-          if (mounted) Navigator.pop(context, item);
+          if (item.kind == SonarTubeItemKind.channel) {
+            await _openFavoriteChannel(item);
+          } else if (mounted) {
+            Navigator.pop(context, item);
+          }
         }
       },
     );
@@ -2665,7 +2740,9 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                                         icon: const Icon(Icons.favorite),
                                       ),
                                     ),
-                                    onTap: () => Navigator.pop(context, item),
+                                    onTap: item.kind == SonarTubeItemKind.channel
+                                        ? () => _openFavoriteChannel(item)
+                                        : () => Navigator.pop(context, item),
                                   ),
                                   if (item.kind == SonarTubeItemKind.video)
                                     Align(

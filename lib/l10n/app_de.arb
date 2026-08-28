@@ -3317,9 +3317,9 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Aktionen des SonarTube-Players anpassen",
+  "settingsSonarTubePlayerActions": "Schaltflächen des SonarTube-Players anpassen",
   "@settingsSonarTubePlayerActions": {
-    "description": "Button that opens the SonarTube player action selector."
+    "description": "Button that opens the SonarTube player button selector."
   },
   "settingsVideoLandscapeFullscreen": "Video im Querformat als Vollbild",
   "@settingsVideoLandscapeFullscreen": {

@@ -3,13 +3,13 @@
     "version": "0.4.0",
     "date": "2026-08-24",
     "it": [
-      "È stata riscritta l’interfaccia per iPhone per renderla compatibile con iOS 27, che ha reso necessaria una revisione importante dell’app. Come conseguenza positiva, tutte le schermate utilizzano ora UIKit, permettendo di scorrere più velocemente le liste lunghe con il gesto a tre dita di VoiceOver, oltre a utilizzare i comandi “Vai alla lettera” e “Vai alla data” già presenti nell’app.",
       "Aggiunto SonarTube, il nuovo sistema integrato per cercare e riprodurre video di YouTube direttamente in Sonarpad. È possibile esplorare video, canali e playlist, caricare altri risultati, aggiungere canali e singoli video ai preferiti e riprodurre i contenuti tramite il player interno di Sonarpad. Con SonarTube è inoltre possibile leggere le trascrizioni dei video, quando disponibili, e leggere i commenti di ogni video.",
       "Aggiunta la funzione Taglia file media, che permette di aprire file audio e video e tagliarli nel punto desiderato. Sono disponibili due modalità, Taglio guidato e Taglio avanzato, con modifica precisa dei punti di taglio, anteprima delle parti, ripristino delle sezioni eliminate, regolazione dello spostamento, rotazione dei video e una gestione più affidabile dell’esportazione dei file audio e video.",
       "Aggiunti numerosi effetti audio in Taglia file media, tra cui coro, robot, super robot, vecchia radio, vocoder, cambi di voce e diversi effetti ambientali. Molti effetti utilizzano ora un motore DSP nativo condiviso tra iPhone e Android per ottenere una qualità più uniforme tra anteprima e file finale.",
       "In Taglia file media è ora possibile aggiungere una nuova traccia audio al file aperto, ad esempio una musica di sottofondo. È possibile regolare separatamente il volume della traccia originale e di quella aggiunta, ripetere la nuova traccia in loop, ascoltare un’anteprima e includerla nel file finale.",
       "Migliorata profondamente l’affidabilità dell’esportazione di Taglia file media: Sonarpad rileva le tracce reali dei file, gestisce correttamente video senza audio e file audio con copertina, verifica durata e decodifica e pubblica il risultato soltanto dopo aver controllato che il file generato sia valido.",
       "Migliorata la gestione dei Documenti, con selezione multipla ed eliminazione dei paragrafi, più segnalibri nello stesso documento, intervallo personalizzabile dello slider, riallineamento immediato della lettura TTS dopo uno spostamento, timer di spegnimento e stima del tempo di lettura rimanente.",
+      "Aggiunta la possibilità di rinominare i documenti: basta posizionarsi sul documento e fare un flick verso il basso.",
       "Migliorata l’apertura dei documenti TXT, RTF ed EPUB. Sono stati corretti diversi problemi di codifica dei caratteri e degli accenti, migliorata l’interpretazione dei file RTF e potenziati l’indice, l’apertura dei capitoli e il supporto alle note a piè di pagina negli EPUB.",
       "Aggiunta nei Documenti la visualizzazione dell’indice per i file EPUB.",
       "Aggiunta l’impostazione, per alcuni tipi di file, per mostrare la nota a piè di pagina accanto al paragrafo a cui si riferisce.",
@@ -34,13 +34,13 @@
       "Numerosi miglioramenti generali a stabilità, accessibilità, focus con screen reader, localizzazioni, riproduzione multimediale e gestione dei file su iOS e Android."
     ],
     "en": [
-      "The iPhone interface has been rewritten to make it compatible with iOS 27, which required a major revision of the app. As a positive result, all screens now use UIKit, allowing long lists to be scrolled faster with VoiceOver’s three-finger gesture, in addition to the “Go to letter” and “Go to date” commands already available in the app.",
       "Added SonarTube, the new integrated system for searching and playing YouTube videos directly in Sonarpad. You can browse videos, channels and playlists, load more results, add channels and individual videos to favorites, and play content with Sonarpad’s built-in player. SonarTube also lets you read video transcripts when available and read the comments for each video.",
       "Added Media Cutter, which lets you open audio and video files and cut them at the desired point. Two modes are available, Guided Cut and Advanced Cut, with precise cut-point editing, section preview, restoration of removed sections, seek-step adjustment, video rotation and more reliable audio and video export.",
       "Added numerous audio effects to Media Cutter, including chorus, robot, super robot, old radio, vocoder, voice changes and several ambient effects. Many effects now use a native DSP engine shared by iPhone and Android for more consistent quality between preview and final output.",
       "Media Cutter can now add a new audio track to the opened file, for example background music. You can adjust the original and added-track volumes separately, loop the new track, preview it and include it in the final file.",
       "Greatly improved Media Cutter export reliability: Sonarpad detects the actual tracks in files, correctly handles videos without audio and audio files with cover art, validates duration and decoding, and publishes the result only after checking that the generated file is valid.",
       "Improved Documents with multi-selection and paragraph deletion, multiple bookmarks in the same document, a customizable position-slider step, immediate TTS realignment after seeking, a sleep timer and an estimate of the remaining reading time.",
+      "Added the ability to rename documents: just move to the document and flick down.",
       "Improved opening of TXT, RTF and EPUB documents. Several character-encoding and accent issues were fixed, RTF interpretation was improved, and EPUB indexes, chapter opening and footnote support were enhanced.",
       "Added EPUB table-of-contents display in Documents.",
       "Added a setting, for supported file types, to show footnotes next to the paragraph they refer to.",
@@ -62,13 +62,13 @@
       "Numerous general improvements to stability, accessibility, screen-reader focus, localization, media playback and file handling on iOS and Android."
     ],
     "fr": [
-      "L’interface iPhone a été réécrite pour assurer sa compatibilité avec iOS 27, ce qui a nécessité une révision importante de l’application. Conséquence positive : tous les écrans utilisent désormais UIKit, ce qui permet de faire défiler plus rapidement les longues listes avec le geste VoiceOver à trois doigts, en plus des commandes « Aller à la lettre » et « Aller à la date » déjà présentes dans l’application.",
       "Ajout de SonarTube, le nouveau système intégré permettant de rechercher et de lire des vidéos YouTube directement dans Sonarpad. Il est possible d’explorer des vidéos, des chaînes et des playlists, de charger davantage de résultats, d’ajouter des chaînes et des vidéos individuelles aux favoris et de lire les contenus avec le lecteur intégré de Sonarpad. SonarTube permet également de lire les transcriptions des vidéos lorsqu’elles sont disponibles et de lire les commentaires de chaque vidéo.",
       "Ajout de la fonction Découpeur multimédia, qui permet d’ouvrir des fichiers audio et vidéo et de les couper à l’endroit souhaité. Deux modes sont disponibles, Découpe guidée et Découpe avancée, avec modification précise des points de coupe, aperçu des parties, restauration des sections supprimées, réglage du pas de déplacement, rotation vidéo et export audio/vidéo plus fiable.",
       "Ajout de nombreux effets audio dans le Découpeur multimédia, notamment chœur, robot, super robot, vieille radio, vocodeur, transformations de voix et différents effets d’ambiance. De nombreux effets utilisent désormais un moteur DSP natif partagé entre iPhone et Android afin d’obtenir une qualité plus homogène entre l’aperçu et le fichier final.",
       "Le Découpeur multimédia permet maintenant d’ajouter une nouvelle piste audio au fichier ouvert, par exemple une musique de fond. Il est possible de régler séparément le volume de la piste d’origine et de la piste ajoutée, de lire la nouvelle piste en boucle, d’en écouter un aperçu et de l’inclure dans le fichier final.",
       "La fiabilité de l’exportation du Découpeur multimédia a été fortement améliorée : Sonarpad détecte les pistes réellement présentes, gère correctement les vidéos sans audio et les fichiers audio avec pochette, vérifie la durée et le décodage et ne publie le résultat qu’après avoir confirmé que le fichier généré est valide.",
       "Amélioration des Documents avec sélection multiple et suppression de paragraphes, plusieurs signets dans un même document, pas personnalisable du curseur de position, réalignement immédiat de la lecture TTS après un déplacement, minuterie d’arrêt et estimation du temps de lecture restant.",
+      "Ajout de la possibilité de renommer les documents : il suffit de se placer sur le document et d’effectuer un balayage vers le bas.",
       "Amélioration de l’ouverture des documents TXT, RTF et EPUB. Plusieurs problèmes d’encodage des caractères et des accents ont été corrigés, l’interprétation des fichiers RTF a été améliorée, ainsi que l’index, l’ouverture des chapitres et la prise en charge des notes de bas de page dans les EPUB.",
       "Ajout, dans Documents, de l’affichage de la table des matières pour les fichiers EPUB.",
       "Ajout d’un réglage, pour certains types de fichiers, permettant d’afficher la note de bas de page à côté du paragraphe auquel elle se rapporte.",
@@ -90,13 +90,13 @@
       "Nombreuses améliorations générales de la stabilité, de l’accessibilité, du focus avec les lecteurs d’écran, des localisations, de la lecture multimédia et de la gestion des fichiers sur iOS et Android."
     ],
     "es": [
-      "Se ha reescrito la interfaz para iPhone para hacerla compatible con iOS 27, lo que ha requerido una revisión importante de la aplicación. Como consecuencia positiva, todas las pantallas utilizan ahora UIKit, permitiendo desplazarse más rápidamente por las listas largas con el gesto de tres dedos de VoiceOver, además de usar los comandos «Ir a la letra» e «Ir a la fecha» ya presentes en la aplicación.",
       "Añadido SonarTube, el nuevo sistema integrado para buscar y reproducir vídeos de YouTube directamente en Sonarpad. Es posible explorar vídeos, canales y listas de reproducción, cargar más resultados, añadir canales y vídeos individuales a favoritos y reproducir el contenido con el reproductor interno de Sonarpad. SonarTube también permite leer las transcripciones de los vídeos cuando estén disponibles y leer los comentarios de cada vídeo.",
       "Añadida la función Cortador multimedia, que permite abrir archivos de audio y vídeo y cortarlos en el punto deseado. Hay dos modos disponibles, Corte guiado y Corte avanzado, con edición precisa de los puntos de corte, vista previa de las partes, restauración de secciones eliminadas, ajuste del desplazamiento, rotación de vídeo y una exportación de audio y vídeo más fiable.",
       "Añadidos numerosos efectos de audio al Cortador multimedia, entre ellos coro, robot, super robot, radio antigua, vocoder, cambios de voz y varios efectos ambientales. Muchos efectos utilizan ahora un motor DSP nativo compartido entre iPhone y Android para ofrecer una calidad más uniforme entre la vista previa y el archivo final.",
       "En el Cortador multimedia ahora es posible añadir una nueva pista de audio al archivo abierto, por ejemplo música de fondo. Se puede ajustar por separado el volumen de la pista original y de la añadida, repetir la nueva pista en bucle, escuchar una vista previa e incluirla en el archivo final.",
       "Se ha mejorado profundamente la fiabilidad de la exportación del Cortador multimedia: Sonarpad detecta las pistas reales de los archivos, gestiona correctamente vídeos sin audio y archivos de audio con carátula, verifica la duración y la decodificación y publica el resultado solo después de comprobar que el archivo generado es válido.",
       "Mejorada la gestión de Documentos con selección múltiple y eliminación de párrafos, varios marcadores en un mismo documento, intervalo personalizable del control de posición, realineación inmediata de la lectura TTS después de desplazarse, temporizador de apagado y estimación del tiempo de lectura restante.",
+      "Añadida la posibilidad de renombrar documentos: basta situarse sobre el documento y hacer un flick hacia abajo.",
       "Mejorada la apertura de documentos TXT, RTF y EPUB. Se han corregido varios problemas de codificación de caracteres y acentos, se ha mejorado la interpretación de archivos RTF y se han potenciado el índice, la apertura de capítulos y el soporte de notas al pie en EPUB.",
       "Se ha añadido en Documentos la visualización del índice de los archivos EPUB.",
       "Se ha añadido un ajuste, para algunos tipos de archivo, que permite mostrar la nota al pie junto al párrafo al que hace referencia.",
@@ -118,13 +118,13 @@
       "Numerosas mejoras generales de estabilidad, accesibilidad, foco con lectores de pantalla, localizaciones, reproducción multimedia y gestión de archivos en iOS y Android."
     ],
     "pt": [
-      "A interface para iPhone foi reescrita para a tornar compatível com o iOS 27, o que exigiu uma revisão importante da aplicação. Como consequência positiva, todos os ecrãs utilizam agora UIKit, permitindo percorrer listas longas mais rapidamente com o gesto de três dedos do VoiceOver, além dos comandos «Ir para a letra» e «Ir para a data» já disponíveis na aplicação.",
       "Adicionado o SonarTube, o novo sistema integrado para pesquisar e reproduzir vídeos do YouTube diretamente no Sonarpad. É possível explorar vídeos, canais e listas de reprodução, carregar mais resultados, adicionar canais e vídeos individuais aos favoritos e reproduzir conteúdos com o leitor interno do Sonarpad. O SonarTube também permite ler as transcrições dos vídeos, quando disponíveis, e ler os comentários de cada vídeo.",
       "Adicionada a função Cortador multimédia, que permite abrir ficheiros de áudio e vídeo e cortá-los no ponto desejado. Estão disponíveis dois modos, Corte guiado e Corte avançado, com edição precisa dos pontos de corte, pré-visualização das partes, reposição de secções removidas, ajuste do deslocamento, rotação de vídeo e uma exportação de áudio e vídeo mais fiável.",
       "Adicionados vários efeitos de áudio ao Cortador multimédia, incluindo coro, robô, super robô, rádio antiga, vocoder, alterações de voz e diferentes efeitos de ambiente. Muitos efeitos utilizam agora um motor DSP nativo partilhado entre iPhone e Android para obter uma qualidade mais uniforme entre a pré-visualização e o ficheiro final.",
       "No Cortador multimédia é agora possível adicionar uma nova faixa de áudio ao ficheiro aberto, por exemplo música de fundo. É possível ajustar separadamente o volume da faixa original e da faixa adicionada, repetir a nova faixa em loop, ouvir uma pré-visualização e incluí-la no ficheiro final.",
       "A fiabilidade da exportação do Cortador multimédia foi profundamente melhorada: o Sonarpad deteta as faixas reais dos ficheiros, gere corretamente vídeos sem áudio e ficheiros de áudio com capa, verifica a duração e a descodificação e só publica o resultado depois de confirmar que o ficheiro gerado é válido.",
       "Melhorada a gestão dos Documentos, com seleção múltipla e eliminação de parágrafos, vários marcadores no mesmo documento, intervalo personalizável do controlo de posição, realinhamento imediato da leitura TTS após um deslocamento, temporizador de suspensão e estimativa do tempo de leitura restante.",
+      "Adicionada a possibilidade de renomear documentos: basta posicionar-se no documento e fazer um flick para baixo.",
       "Melhorada a abertura de documentos TXT, RTF e EPUB. Foram corrigidos vários problemas de codificação de caracteres e acentos, melhorada a interpretação dos ficheiros RTF e reforçados o índice, a abertura de capítulos e o suporte de notas de rodapé nos EPUB.",
       "Adicionada nos Documentos a visualização do índice para ficheiros EPUB.",
       "Adicionada uma definição, para alguns tipos de ficheiro, que permite mostrar a nota de rodapé junto ao parágrafo a que se refere.",
@@ -146,13 +146,13 @@
       "Várias melhorias gerais de estabilidade, acessibilidade, foco com leitores de ecrã, localizações, reprodução multimédia e gestão de ficheiros no iOS e Android."
     ],
     "pl": [
-      "Interfejs iPhone’a został przepisany, aby zapewnić zgodność z iOS 27, co wymagało dużej przebudowy aplikacji. Pozytywnym skutkiem jest to, że wszystkie ekrany korzystają teraz z UIKit, dzięki czemu długie listy można szybciej przewijać gestem VoiceOver trzema palcami, a także używać dostępnych już poleceń „Przejdź do litery” i „Przejdź do daty”.",
       "Dodano SonarTube, nowy zintegrowany system do wyszukiwania i odtwarzania filmów z YouTube bezpośrednio w Sonarpad. Można przeglądać filmy, kanały i playlisty, wczytywać kolejne wyniki, dodawać kanały i pojedyncze filmy do ulubionych oraz odtwarzać treści we wbudowanym odtwarzaczu Sonarpad. SonarTube pozwala także czytać transkrypcje filmów, gdy są dostępne, oraz komentarze do każdego filmu.",
       "Dodano funkcję Przycinanie multimediów, która pozwala otwierać pliki audio i wideo oraz przycinać je w wybranym miejscu. Dostępne są dwa tryby, Przycinanie prowadzone i Zaawansowane, z precyzyjną edycją punktów cięcia, podglądem fragmentów, przywracaniem usuniętych części, regulacją kroku przewijania, obracaniem wideo i bardziej niezawodnym eksportem audio i wideo.",
       "Do Przycinania multimediów dodano liczne efekty audio, w tym chór, robot, super robot, stare radio, wokoder, zmiany głosu i różne efekty otoczenia. Wiele efektów korzysta teraz z natywnego silnika DSP współdzielonego przez iPhone’a i Androida, aby zapewnić bardziej spójną jakość między podglądem a plikiem końcowym.",
       "W Przycinaniu multimediów można teraz dodać nową ścieżkę audio do otwartego pliku, na przykład muzykę w tle. Można osobno regulować głośność ścieżki oryginalnej i dodanej, odtwarzać nową ścieżkę w pętli, odsłuchać podgląd i dołączyć ją do pliku końcowego.",
       "Znacznie poprawiono niezawodność eksportu w Przycinaniu multimediów: Sonarpad wykrywa rzeczywiste ścieżki w plikach, prawidłowo obsługuje wideo bez dźwięku i pliki audio z okładką, sprawdza czas trwania oraz dekodowanie i publikuje wynik dopiero po potwierdzeniu poprawności wygenerowanego pliku.",
       "Ulepszono Dokumenty: wielokrotny wybór i usuwanie akapitów, wiele zakładek w jednym dokumencie, konfigurowalny krok suwaka pozycji, natychmiastowe wyrównanie odczytu TTS po przewinięciu, wyłącznik czasowy oraz szacowany pozostały czas czytania.",
+      "Dodano możliwość zmiany nazw dokumentów: wystarczy ustawić fokus na dokumencie i wykonać gest przesunięcia w dół.",
       "Ulepszono otwieranie dokumentów TXT, RTF i EPUB. Naprawiono kilka problemów z kodowaniem znaków i akcentów, poprawiono interpretację plików RTF oraz ulepszono indeks, otwieranie rozdziałów i obsługę przypisów w EPUB.",
       "W Dokumentach dodano wyświetlanie spisu treści dla plików EPUB.",
       "Dodano ustawienie, dla niektórych typów plików, umożliwiające wyświetlanie przypisu dolnego obok akapitu, którego dotyczy.",
@@ -174,13 +174,13 @@
       "Liczne ogólne ulepszenia stabilności, dostępności, fokusu czytników ekranu, lokalizacji, odtwarzania multimediów i zarządzania plikami w iOS i Androidzie."
     ],
     "cs": [
-      "Rozhraní pro iPhone bylo přepsáno kvůli kompatibilitě s iOS 27, což si vyžádalo rozsáhlou revizi aplikace. Pozitivním výsledkem je, že všechny obrazovky nyní používají UIKit, takže dlouhé seznamy lze rychleji posouvat tříprstým gestem VoiceOveru a zároveň využívat již dostupné příkazy „Přejít na písmeno“ a „Přejít na datum“.",
       "Přidán SonarTube, nový integrovaný systém pro vyhledávání a přehrávání videí YouTube přímo v Sonarpadu. Lze procházet videa, kanály a playlisty, načítat další výsledky, přidávat kanály i jednotlivá videa do oblíbených a přehrávat obsah pomocí vestavěného přehrávače Sonarpadu. SonarTube také umožňuje číst přepisy videí, pokud jsou k dispozici, a komentáře u každého videa.",
       "Přidána funkce Střih médií, která umožňuje otevřít audio a video soubory a vystřihnout je v požadovaném místě. K dispozici jsou dva režimy, Průvodce střihem a Pokročilý střih, s přesnou úpravou bodů střihu, náhledem částí, obnovením odstraněných úseků, nastavením kroku posunu, otočením videa a spolehlivějším exportem audia a videa.",
       "Do Střihu médií bylo přidáno mnoho zvukových efektů, včetně sboru, robota, super robota, starého rádia, vokodéru, změn hlasu a různých efektů prostředí. Mnoho efektů nyní používá nativní DSP engine sdílený mezi iPhonem a Androidem, aby byla kvalita náhledu a výsledného souboru jednotnější.",
       "Ve Střihu médií lze nyní k otevřenému souboru přidat novou zvukovou stopu, například hudbu na pozadí. Hlasitost původní a přidané stopy lze nastavit samostatně, novou stopu opakovat ve smyčce, poslechnout si náhled a zahrnout ji do výsledného souboru.",
       "Výrazně byla zlepšena spolehlivost exportu Střihu médií: Sonarpad zjišťuje skutečné stopy v souborech, správně zpracovává videa bez zvuku a audio soubory s obalem, ověřuje délku a dekódování a výsledek zveřejní až po kontrole platnosti vytvořeného souboru.",
       "Vylepšena správa Dokumentů: vícenásobný výběr a mazání odstavců, více záložek v jednom dokumentu, nastavitelný krok posuvníku pozice, okamžité srovnání čtení TTS po přesunu, časovač vypnutí a odhad zbývající doby čtení.",
+      "Přidána možnost přejmenovat dokumenty: stačí se přesunout na dokument a provést gesto švihnutí dolů.",
       "Vylepšeno otevírání dokumentů TXT, RTF a EPUB. Opraveno několik problémů s kódováním znaků a diakritikou, zlepšena interpretace RTF souborů a rozšířen rejstřík, otevírání kapitol a podpora poznámek pod čarou v EPUB.",
       "V Dokumentech bylo přidáno zobrazení obsahu pro soubory EPUB.",
       "Bylo přidáno nastavení, které u některých typů souborů umožňuje zobrazit poznámku pod čarou vedle odstavce, ke kterému se vztahuje.",
@@ -202,13 +202,13 @@
       "Řada obecných vylepšení stability, přístupnosti, fokusu čteček obrazovky, lokalizací, přehrávání médií a správy souborů v iOS a Androidu."
     ],
     "de": [
-      "Die iPhone-Oberfläche wurde neu geschrieben, um sie mit iOS 27 kompatibel zu machen, was eine umfassende Überarbeitung der App erforderlich machte. Als positiver Nebeneffekt verwenden nun alle Bildschirme UIKit. Dadurch lassen sich lange Listen mit der Drei-Finger-Geste von VoiceOver schneller durchblättern; zusätzlich stehen die bereits vorhandenen Befehle „Zu Buchstabe“ und „Zu Datum“ zur Verfügung.",
       "SonarTube wurde hinzugefügt, das neue integrierte System zum Suchen und Abspielen von YouTube-Videos direkt in Sonarpad. Videos, Kanäle und Playlists können durchsucht, weitere Ergebnisse geladen, Kanäle und einzelne Videos zu den Favoriten hinzugefügt und Inhalte mit dem integrierten Sonarpad-Player wiedergegeben werden. Mit SonarTube können außerdem Videotranskripte gelesen werden, sofern verfügbar, sowie die Kommentare zu jedem Video.",
       "Der Media Cutter wurde hinzugefügt. Damit lassen sich Audio- und Videodateien öffnen und an der gewünschten Stelle schneiden. Es gibt zwei Modi, Geführter Schnitt und Erweiterter Schnitt, mit präziser Bearbeitung der Schnittpunkte, Vorschau der Abschnitte, Wiederherstellung entfernter Bereiche, anpassbarer Sprungweite, Videodrehung und zuverlässigerem Audio- und Videoexport.",
       "Dem Media Cutter wurden zahlreiche Audioeffekte hinzugefügt, darunter Chorus, Roboter, Super-Roboter, altes Radio, Vocoder, Stimmveränderungen und verschiedene Umgebungseffekte. Viele Effekte verwenden jetzt eine native DSP-Engine, die von iPhone und Android gemeinsam genutzt wird, um eine gleichmäßigere Qualität zwischen Vorschau und Enddatei zu erreichen.",
       "Im Media Cutter kann der geöffneten Datei jetzt eine neue Audiospur hinzugefügt werden, zum Beispiel Hintergrundmusik. Die Lautstärke der Originalspur und der hinzugefügten Spur kann getrennt eingestellt, die neue Spur in Schleife wiedergegeben, vorgehört und in die endgültige Datei aufgenommen werden.",
       "Die Zuverlässigkeit des Media-Cutter-Exports wurde stark verbessert: Sonarpad erkennt die tatsächlich vorhandenen Spuren, verarbeitet Videos ohne Audio und Audiodateien mit Cover korrekt, prüft Dauer und Dekodierung und veröffentlicht das Ergebnis erst, nachdem die erzeugte Datei als gültig bestätigt wurde.",
       "Dokumente wurden verbessert: Mehrfachauswahl und Löschen von Absätzen, mehrere Lesezeichen im selben Dokument, anpassbare Schrittweite des Positionsreglers, sofortige Neuausrichtung der TTS-Wiedergabe nach dem Springen, Sleep-Timer und Schätzung der verbleibenden Lesezeit.",
+      "Dokumente können jetzt umbenannt werden: Dazu einfach den Fokus auf das Dokument setzen und nach unten wischen.",
       "Das Öffnen von TXT-, RTF- und EPUB-Dokumenten wurde verbessert. Mehrere Probleme mit Zeichenkodierung und Akzenten wurden behoben, die Interpretation von RTF-Dateien verbessert und Index, Kapitelöffnung sowie Fußnotenunterstützung in EPUB-Dateien erweitert.",
       "In Dokumente wurde die Anzeige des Inhaltsverzeichnisses für EPUB-Dateien hinzugefügt.",
       "Für einige Dateitypen wurde eine Einstellung hinzugefügt, mit der Fußnoten direkt neben dem Absatz angezeigt werden können, auf den sie sich beziehen.",
@@ -230,13 +230,13 @@
       "Zahlreiche allgemeine Verbesserungen bei Stabilität, Barrierefreiheit, Screenreader-Fokus, Lokalisierungen, Medienwiedergabe und Dateiverwaltung unter iOS und Android."
     ],
     "pt_BR": [
-      "A interface para iPhone foi reescrita para torná-la compatível com o iOS 27, o que exigiu uma revisão importante do aplicativo. Como consequência positiva, todas as telas agora usam UIKit, permitindo percorrer listas longas mais rapidamente com o gesto de três dedos do VoiceOver, além dos comandos “Ir para a letra” e “Ir para a data” já disponíveis no aplicativo.",
       "Adicionado o SonarTube, o novo sistema integrado para pesquisar e reproduzir vídeos do YouTube diretamente no Sonarpad. É possível explorar vídeos, canais e playlists, carregar mais resultados, adicionar canais e vídeos individuais aos favoritos e reproduzir o conteúdo com o player interno do Sonarpad. O SonarTube também permite ler as transcrições dos vídeos, quando disponíveis, e ler os comentários de cada vídeo.",
       "Adicionada a função Cortador de mídia, que permite abrir arquivos de áudio e vídeo e cortá-los no ponto desejado. Há dois modos disponíveis, Corte guiado e Corte avançado, com edição precisa dos pontos de corte, prévia das partes, restauração de seções removidas, ajuste do deslocamento, rotação de vídeo e exportação de áudio e vídeo mais confiável.",
       "Adicionados diversos efeitos de áudio ao Cortador de mídia, incluindo coro, robô, super robô, rádio antiga, vocoder, alterações de voz e vários efeitos de ambiente. Muitos efeitos agora usam um motor DSP nativo compartilhado entre iPhone e Android para oferecer qualidade mais uniforme entre a prévia e o arquivo final.",
       "No Cortador de mídia agora é possível adicionar uma nova faixa de áudio ao arquivo aberto, por exemplo uma música de fundo. É possível ajustar separadamente o volume da faixa original e da faixa adicionada, repetir a nova faixa em loop, ouvir uma prévia e incluí-la no arquivo final.",
       "A confiabilidade da exportação do Cortador de mídia foi profundamente melhorada: o Sonarpad detecta as faixas reais dos arquivos, lida corretamente com vídeos sem áudio e arquivos de áudio com capa, verifica duração e decodificação e só publica o resultado depois de confirmar que o arquivo gerado é válido.",
       "Melhorada a gestão dos Documentos, com seleção múltipla e exclusão de parágrafos, vários marcadores no mesmo documento, intervalo personalizável do controle de posição, realinhamento imediato da leitura TTS após um deslocamento, temporizador de desligamento e estimativa do tempo de leitura restante.",
+      "Adicionada a possibilidade de renomear documentos: basta posicionar-se no documento e fazer um flick para baixo.",
       "Melhorada a abertura de documentos TXT, RTF e EPUB. Foram corrigidos vários problemas de codificação de caracteres e acentos, melhorada a interpretação de arquivos RTF e aprimorados o índice, a abertura de capítulos e o suporte a notas de rodapé nos EPUB.",
       "Adicionada, em Documentos, a visualização do índice para arquivos EPUB.",
       "Adicionada uma configuração, para alguns tipos de arquivo, que permite mostrar a nota de rodapé ao lado do parágrafo ao qual ela se refere.",
@@ -258,13 +258,13 @@
       "Diversas melhorias gerais de estabilidade, acessibilidade, foco com leitores de tela, localizações, reprodução multimídia e gestão de arquivos no iOS e Android."
     ],
     "zh_CN": [
-      "为了兼容 iOS 27，iPhone 界面已重新编写，这需要对应用进行一次重要调整。一个积极的结果是，现在所有界面都使用 UIKit，因此长列表可以通过 VoiceOver 的三指手势更快滚动，同时仍可使用应用中已有的“跳转到字母”和“跳转到日期”命令。",
       "新增 SonarTube，这是 Sonarpad 内置的 YouTube 视频搜索和播放系统。现在可以浏览视频、频道和播放列表，加载更多结果，将频道和单个视频加入收藏，并使用 Sonarpad 内置播放器播放内容。SonarTube 还支持在可用时阅读视频转录文本，以及阅读每个视频的评论。",
       "新增媒体剪辑功能，可打开音频和视频文件，并在所需位置进行剪切。提供“引导剪辑”和“高级剪辑”两种模式，支持精确调整剪切点、预览片段、恢复已删除片段、调整跳转步长、旋转视频，并提高音视频导出的可靠性。",
       "媒体剪辑中新增多种音频效果，包括合唱、机器人、超级机器人、老式收音机、声码器、变声以及多种环境效果。许多效果现在使用 iPhone 与 Android 共用的原生 DSP 引擎，使预览与最终文件之间的音质更加一致。",
       "媒体剪辑现在可以为已打开的文件添加新的音轨，例如背景音乐。可以分别调整原始音轨和新增音轨的音量，让新增音轨循环播放、试听预览，并将其加入最终文件。",
       "大幅提升了媒体剪辑的导出可靠性：Sonarpad 会检测文件中实际存在的轨道，正确处理无音频的视频和带封面的音频文件，验证时长与解码情况，并且只有在确认生成文件有效后才发布结果。",
       "改进了文档管理，新增多选与删除段落、同一文档中的多个书签、可自定义的位置滑块步长、跳转后立即重新对齐 TTS 阅读位置、睡眠定时器以及剩余阅读时间估算。",
+      "新增重命名文档的功能：只需将焦点移到文档上，然后向下轻扫即可。",
       "改进了 TXT、RTF 和 EPUB 文档的打开方式。修复了多种字符编码和重音符号问题，增强了 RTF 文件解析，并改进 EPUB 的目录、章节打开和脚注支持。",
       "在“文档”中新增 EPUB 文件目录显示。",
       "新增一项设置，可针对部分文件类型将脚注显示在其对应段落旁边。",
@@ -295,13 +295,13 @@
       "Da ora è possibile riprodurre direttamente un canale TV senza aprirlo: basta posizionarsi sul canale e, con un flick verso il basso, scegliere “Riproduci diretta”."
     ],
     "uk": [
-      "Інтерфейс iPhone було переписано для сумісності з iOS 27, що потребувало значного перегляду застосунку. Як позитивний результат, усі екрани тепер використовують UIKit, завдяки чому довгі списки можна швидше прокручувати жестом VoiceOver трьома пальцями, а також користуватися вже наявними командами «Перейти до літери» та «Перейти до дати».",
       "Додано SonarTube — нову вбудовану систему для пошуку та відтворення відео YouTube безпосередньо в Sonarpad. Можна переглядати відео, канали й списки відтворення, завантажувати додаткові результати, додавати канали й окремі відео до обраного та відтворювати вміст у вбудованому програвачі Sonarpad. SonarTube також дає змогу читати транскрипції відео, якщо вони доступні, і коментарі до кожного відео.",
       "Додано функцію «Обрізати медіафайл», яка дає змогу відкривати аудіо- й відеофайли та обрізати їх у потрібному місці. Доступні два режими — кероване й розширене обрізання — з точним редагуванням точок обрізання, попереднім прослуховуванням частин, відновленням вилучених фрагментів, налаштуванням кроку переміщення, обертанням відео та надійнішим експортом аудіо й відео.",
       "До функції обрізання медіа додано багато аудіоефектів, зокрема хор, робот, суперробот, старе радіо, вокодер, зміну голосу та різні атмосферні ефекти. Багато ефектів тепер використовують нативний DSP-рушій, спільний для iPhone і Android, щоб якість попереднього прослуховування та фінального файлу була більш однаковою.",
       "У функції обрізання медіа тепер можна додати до відкритого файла нову аудіодоріжку, наприклад фонову музику. Гучність оригінальної та доданої доріжок можна регулювати окремо, нову доріжку можна відтворювати циклічно, попередньо прослухати та включити до фінального файла.",
       "Значно підвищено надійність експорту в обрізанні медіа: Sonarpad визначає фактичні доріжки файла, правильно обробляє відео без аудіо та аудіофайли з обкладинкою, перевіряє тривалість і декодування та публікує результат лише після перевірки коректності створеного файла.",
       "Покращено роботу з Документами: додано множинний вибір і видалення абзаців, кілька закладок в одному документі, налаштовуваний крок повзунка позиції, негайне вирівнювання читання TTS після переміщення, таймер сну та оцінку часу читання, що залишився.",
+      "Додано можливість перейменовувати документи: достатньо перейти фокусом на документ і виконати жест униз.",
       "Покращено відкриття документів TXT, RTF та EPUB. Виправлено різні проблеми з кодуванням символів і діакритикою, покращено інтерпретацію RTF, а також роботу змісту, відкриття розділів і підтримку виносок в EPUB.",
       "У розділі «Документи» додано відображення змісту для файлів EPUB.",
       "Додано налаштування для деяких типів файлів, яке дає змогу показувати виноску поруч з абзацом, якого вона стосується.",
@@ -321,7 +321,77 @@
       "Покращено відображення голосів Edge: підписи стали зрозумілішими та менш технічними.",
       "Покращено читання голосами Edge за нестабільного з’єднання: якщо надіслати абзац не вдається, Sonarpad автоматично повторює спробу до п’яти разів. Читання зупиняється лише тоді, коли всі спроби завершилися невдало.",
       "Численні загальні покращення стабільності, доступності, фокуса екранних читачів, локалізації, відтворення медіа та керування файлами на iOS і Android."
-    ]
+    ],
+    "ios": {
+      "it": [
+        "È stata riscritta l’interfaccia per iPhone per renderla compatibile con iOS 27, che ha reso necessaria una revisione importante dell’app. Come conseguenza positiva, tutte le schermate utilizzano ora UIKit, permettendo di scorrere più velocemente le liste lunghe con il gesto a tre dita di VoiceOver, oltre a utilizzare i comandi “Vai alla lettera” e “Vai alla data” già presenti nell’app."
+      ],
+      "en": [
+        "The iPhone interface has been rewritten to make it compatible with iOS 27, which required a major revision of the app. As a positive result, all screens now use UIKit, allowing long lists to be scrolled faster with VoiceOver’s three-finger gesture, in addition to the “Go to letter” and “Go to date” commands already available in the app."
+      ],
+      "fr": [
+        "L’interface iPhone a été réécrite pour assurer sa compatibilité avec iOS 27, ce qui a nécessité une révision importante de l’application. Conséquence positive : tous les écrans utilisent désormais UIKit, ce qui permet de faire défiler plus rapidement les longues listes avec le geste VoiceOver à trois doigts, en plus des commandes « Aller à la lettre » et « Aller à la date » déjà présentes dans l’application."
+      ],
+      "es": [
+        "Se ha reescrito la interfaz para iPhone para hacerla compatible con iOS 27, lo que ha requerido una revisión importante de la aplicación. Como consecuencia positiva, todas las pantallas utilizan ahora UIKit, permitiendo desplazarse más rápidamente por las listas largas con el gesto de tres dedos de VoiceOver, además de usar los comandos «Ir a la letra» e «Ir a la fecha» ya presentes en la aplicación."
+      ],
+      "pt": [
+        "A interface para iPhone foi reescrita para a tornar compatível com o iOS 27, o que exigiu uma revisão importante da aplicação. Como consequência positiva, todos os ecrãs utilizam agora UIKit, permitindo percorrer listas longas mais rapidamente com o gesto de três dedos do VoiceOver, além dos comandos «Ir para a letra» e «Ir para a data» já disponíveis na aplicação."
+      ],
+      "pt_BR": [
+        "A interface para iPhone foi reescrita para torná-la compatível com o iOS 27, o que exigiu uma revisão importante do aplicativo. Como consequência positiva, todas as telas agora usam UIKit, permitindo percorrer listas longas mais rapidamente com o gesto de três dedos do VoiceOver, além dos comandos “Ir para a letra” e “Ir para a data” já disponíveis no aplicativo."
+      ],
+      "pl": [
+        "Interfejs iPhone’a został przepisany, aby zapewnić zgodność z iOS 27, co wymagało dużej przebudowy aplikacji. Pozytywnym skutkiem jest to, że wszystkie ekrany korzystają teraz z UIKit, dzięki czemu długie listy można szybciej przewijać gestem VoiceOver trzema palcami, a także używać dostępnych już poleceń „Przejdź do litery” i „Przejdź do daty”."
+      ],
+      "cs": [
+        "Rozhraní pro iPhone bylo přepsáno kvůli kompatibilitě s iOS 27, což si vyžádalo rozsáhlou revizi aplikace. Pozitivním výsledkem je, že všechny obrazovky nyní používají UIKit, takže dlouhé seznamy lze rychleji posouvat tříprstým gestem VoiceOveru a zároveň využívat již dostupné příkazy „Přejít na písmeno“ a „Přejít na datum“."
+      ],
+      "de": [
+        "Die iPhone-Oberfläche wurde neu geschrieben, um sie mit iOS 27 kompatibel zu machen, was eine umfassende Überarbeitung der App erforderlich machte. Als positiver Nebeneffekt verwenden nun alle Bildschirme UIKit. Dadurch lassen sich lange Listen mit der Drei-Finger-Geste von VoiceOver schneller durchblättern; zusätzlich stehen die bereits vorhandenen Befehle „Zu Buchstabe“ und „Zu Datum“ zur Verfügung."
+      ],
+      "zh_CN": [
+        "为了兼容 iOS 27，iPhone 界面已重新编写，这需要对应用进行一次重要调整。一个积极的结果是，现在所有界面都使用 UIKit，因此长列表可以通过 VoiceOver 的三指手势更快滚动，同时仍可使用应用中已有的“跳转到字母”和“跳转到日期”命令。"
+      ],
+      "uk": [
+        "Інтерфейс iPhone було переписано для сумісності з iOS 27, що потребувало значного перегляду застосунку. Як позитивний результат, усі екрани тепер використовують UIKit, завдяки чому довгі списки можна швидше прокручувати жестом VoiceOver трьома пальцями, а також користуватися вже наявними командами «Перейти до літери» та «Перейти до дати»."
+      ]
+    },
+    "android": {
+      "it": [
+        "Su Android, con TalkBack, è ora possibile aprire le azioni secondarie di un elemento con un doppio tap trattenuto."
+      ],
+      "en": [
+        "On Android, with TalkBack, you can now open an item's secondary actions with a double tap and hold."
+      ],
+      "fr": [
+        "Sur Android, avec TalkBack, il est désormais possible d’ouvrir les actions secondaires d’un élément avec un double appui prolongé."
+      ],
+      "es": [
+        "En Android, con TalkBack, ahora es posible abrir las acciones secundarias de un elemento con un doble toque mantenido."
+      ],
+      "pt": [
+        "No Android, com o TalkBack, agora é possível abrir as ações secundárias de um elemento com um duplo toque prolongado."
+      ],
+      "pt_BR": [
+        "No Android, com o TalkBack, agora é possível abrir as ações secundárias de um item com um toque duplo prolongado."
+      ],
+      "pl": [
+        "W systemie Android z TalkBack można teraz otworzyć dodatkowe akcje elementu, wykonując podwójne stuknięcie z przytrzymaniem."
+      ],
+      "cs": [
+        "V Androidu s TalkBackem lze nyní otevřít vedlejší akce položky dvojitým klepnutím s podržením."
+      ],
+      "de": [
+        "Unter Android können mit TalkBack die sekundären Aktionen eines Elements jetzt durch Doppeltippen und Halten geöffnet werden."
+      ],
+      "zh_CN": [
+        "在 Android 上使用 TalkBack 时，现在可以通过双击并按住来打开项目的辅助操作。"
+      ],
+      "uk": [
+        "На Android із TalkBack додаткові дії елемента тепер можна відкрити подвійним дотиком з утриманням."
+      ]
+    }
   },
   {
     "version": "0.3.1",

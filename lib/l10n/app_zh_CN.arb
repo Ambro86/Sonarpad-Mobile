@@ -1115,9 +1115,9 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "自定义 SonarTube 播放器操作",
+  "settingsSonarTubePlayerActions": "自定义 SonarTube 播放器按钮",
   "@settingsSonarTubePlayerActions": {
-    "description": "Button that opens the SonarTube player action selector."
+    "description": "Button that opens the SonarTube player button selector."
   },
   "settingsVideoLandscapeFullscreen": "横屏全屏视频",
   "@settingsVideoLandscapeFullscreen": {

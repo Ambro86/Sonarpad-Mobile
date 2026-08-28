@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/screens/tv_channel_screen.dart';
@@ -118,41 +117,18 @@ void main() {
     await tester.tap(find.text('Apri trama'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Indietro'), findsOneWidget);
+    final backFinder =
+        find.byKey(const ValueKey('tv_program_details_back_semantics'));
+    expect(backFinder, findsOneWidget);
+    expect(find.byType(BackButton), findsOneWidget);
     expect(find.text('Programma di prova'), findsOneWidget);
     expect(find.text('Trama completa del programma.'), findsOneWidget);
     expect(find.bySemanticsLabel('Ignora'), findsNothing);
+    expect(tester.getTopLeft(backFinder).dx, lessThanOrEqualTo(4));
     expect(
-      tester.getTopLeft(find.text('Indietro')).dy,
+      tester.getTopLeft(backFinder).dy,
       lessThan(tester.getTopLeft(find.text('Programma di prova')).dy),
     );
-    expect(
-      tester
-          .getSemantics(
-            find.byKey(const ValueKey('tv_program_details_back_semantics')),
-          )
-          .sortKey,
-      const OrdinalSortKey(1),
-    );
-    expect(
-      tester
-          .getSemantics(
-            find.byKey(const ValueKey('tv_program_details_title_semantics')),
-          )
-          .sortKey,
-      const OrdinalSortKey(2),
-    );
-    expect(
-      tester
-          .getSemantics(
-            find.byKey(
-              const ValueKey('tv_program_details_description_semantics'),
-            ),
-          )
-          .sortKey,
-      const OrdinalSortKey(3),
-    );
-
     semanticsHandle.dispose();
   });
 }

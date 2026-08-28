@@ -2518,7 +2518,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Aktionen des SonarTube-Players anpassen';
+  String get settingsSonarTubePlayerActions => 'Schaltflächen des SonarTube-Players anpassen';
 
   @override
   String get settingsVideoLandscapeFullscreen => "Video im Querformat als Vollbild";

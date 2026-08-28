@@ -4726,10 +4726,10 @@ abstract class AppLocalizations {
     String preview,
   );
 
-  /// Button that opens the SonarTube player action selector.
+  /// Button that opens the SonarTube player button selector.
   ///
   /// In it, this message translates to:
-  /// **'Personalizza azioni del player SonarTube'**
+  /// **'Personalizza i pulsanti del player SonarTube'**
   String get settingsSonarTubePlayerActions;
 
   /// Title for the setting that shows video full-screen in landscape orientation.

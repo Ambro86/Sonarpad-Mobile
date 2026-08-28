@@ -2609,7 +2609,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Personnaliser les actions du lecteur SonarTube';
+  String get settingsSonarTubePlayerActions => 'Personnaliser les boutons du lecteur SonarTube';
 
   @override
   String get settingsVideoLandscapeFullscreen =>

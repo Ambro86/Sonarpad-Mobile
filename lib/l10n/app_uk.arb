@@ -3317,9 +3317,9 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Налаштувати дії програвача SonarTube",
+  "settingsSonarTubePlayerActions": "Налаштувати кнопки програвача SonarTube",
   "@settingsSonarTubePlayerActions": {
-    "description": "Button that opens the SonarTube player action selector."
+    "description": "Button that opens the SonarTube player button selector."
   },
   "settingsVideoLandscapeFullscreen": "Відео на весь екран у горизонтальній орієнтації",
   "@settingsVideoLandscapeFullscreen": {

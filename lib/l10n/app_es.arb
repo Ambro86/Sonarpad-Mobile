@@ -1121,9 +1121,9 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Personalizar acciones del reproductor de SonarTube",
+  "settingsSonarTubePlayerActions": "Personalizar los botones del reproductor de SonarTube",
   "@settingsSonarTubePlayerActions": {
-    "description": "Button that opens the SonarTube player action selector."
+    "description": "Button that opens the SonarTube player button selector."
   },
   "settingsVideoLandscapeFullscreen": "Vídeo horizontal a pantalla completa",
   "@settingsVideoLandscapeFullscreen": {

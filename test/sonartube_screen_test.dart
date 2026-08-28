@@ -381,6 +381,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Video preferito del canale'), findsOneWidget);
+
+    await tester.tap(
+      find.byKey(const ValueKey('sonartube_collection_back')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('sonartube_favorites_back')), findsOneWidget);
+    expect(find.text('Canale da salvare'), findsOneWidget);
   });
 
   testWidgets('channel page toggles the channel favorite before the video list', (tester) async {

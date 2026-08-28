@@ -11,6 +11,7 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    - test/_tmp_*.dart
     - build/**
     - third_party/rhttp_plus/example/**
     - third_party/rhttp_plus/test/**

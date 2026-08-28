@@ -118,6 +118,84 @@ void main() {
     expect(news, contains('_shareArticle(article)'));
   });
 
+  test('0.4.0 includes document rename from secondary actions in every language', () {
+    final decoded = jsonDecode(File('assets/changelog.json').readAsStringSync());
+    final entries = (decoded as List).cast<Map<String, dynamic>>();
+    final entry = entries.firstWhere((item) => item['version'] == '0.4.0');
+
+    final renameSnippets = <String, String>{
+      'it': 'rinominare i documenti',
+      'en': 'rename documents',
+      'fr': 'renommer les documents',
+      'es': 'renombrar documentos',
+      'pt': 'renomear documentos',
+      'pt_BR': 'renomear documentos',
+      'pl': 'zmiany nazw dokumentów',
+      'cs': 'přejmenovat dokumenty',
+      'de': 'Dokumente können jetzt umbenannt werden',
+      'zh_CN': '重命名文档',
+      'uk': 'перейменовувати документи',
+    };
+
+    for (final item in renameSnippets.entries) {
+      final changes = (entry[item.key] as List).cast<String>();
+      expect(changes.any((change) => change.contains(item.value)), isTrue);
+    }
+  });
+
+  test('0.4.0 keeps VoiceOver three-finger note on iOS and TalkBack long press on Android', () {
+    final decoded = jsonDecode(File('assets/changelog.json').readAsStringSync());
+    final entries = (decoded as List).cast<Map<String, dynamic>>();
+    final entry = entries.firstWhere((item) => item['version'] == '0.4.0');
+
+    final threeFingerSnippets = <String, String>{
+      'it': 'gesto a tre dita di VoiceOver',
+      'en': 'three-finger gesture',
+      'fr': 'geste VoiceOver à trois doigts',
+      'es': 'gesto de tres dedos de VoiceOver',
+      'pt': 'gesto de três dedos do VoiceOver',
+      'pt_BR': 'gesto de três dedos do VoiceOver',
+      'pl': 'gestem VoiceOver trzema palcami',
+      'cs': 'tříprstým gestem VoiceOveru',
+      'de': 'Drei-Finger-Geste von VoiceOver',
+      'zh_CN': 'VoiceOver 的三指手势',
+      'uk': 'жестом VoiceOver трьома пальцями',
+    };
+    final androidLongPressSnippets = <String, String>{
+      'it': 'doppio tap trattenuto',
+      'en': 'double tap and hold',
+      'fr': 'double appui prolongé',
+      'es': 'doble toque mantenido',
+      'pt': 'duplo toque prolongado',
+      'pt_BR': 'toque duplo prolongado',
+      'pl': 'podwójne stuknięcie z przytrzymaniem',
+      'cs': 'dvojitým klepnutím s podržením',
+      'de': 'Doppeltippen und Halten',
+      'zh_CN': '双击并按住',
+      'uk': 'подвійним дотиком з утриманням',
+    };
+    final ios = (entry['ios'] as Map<String, dynamic>);
+    final android = (entry['android'] as Map<String, dynamic>);
+
+    for (final language in threeFingerSnippets.keys) {
+      final base = (entry[language] as List).cast<String>().join('\n');
+      final iosText = (ios[language] as List).cast<String>().join('\n');
+      final androidText = (android[language] as List).cast<String>().join('\n');
+      expect(base, isNot(contains(threeFingerSnippets[language]!)));
+      expect(base, isNot(contains(androidLongPressSnippets[language]!)));
+      expect(iosText, contains(threeFingerSnippets[language]!));
+      expect(androidText, contains('TalkBack'));
+      expect(androidText, contains(androidLongPressSnippets[language]!));
+    }
+
+    final service = File('lib/services/changelog_service.dart').readAsStringSync();
+    expect(service, contains("readPlatformChanges('ios')"));
+    expect(service, contains("readPlatformChanges('android')"));
+    expect(service, contains('TargetPlatform.iOS'));
+    expect(service, contains('TargetPlatform.android'));
+    expect(service, contains('platform: defaultTargetPlatform'));
+  });
+
   test('changelog resolves Italian extras only after validating Sonarpad code', () {
     final service = File('lib/services/changelog_service.dart').readAsStringSync();
     expect(service, contains("json['it_extra']"));

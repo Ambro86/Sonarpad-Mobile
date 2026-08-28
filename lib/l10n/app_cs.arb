@@ -1118,9 +1118,9 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Přizpůsobit akce přehrávače SonarTube",
+  "settingsSonarTubePlayerActions": "Přizpůsobit tlačítka přehrávače SonarTube",
   "@settingsSonarTubePlayerActions": {
-    "description": "Button that opens the SonarTube player action selector."
+    "description": "Button that opens the SonarTube player button selector."
   },
   "settingsVideoLandscapeFullscreen": "Vodorovné video přes celou obrazovku",
   "@settingsVideoLandscapeFullscreen": {

@@ -1353,6 +1353,31 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     unawaited(_dispatch(AccessibleListEvent(type: type, id: row.id, value: value)));
   }
 
+  Future<void> _showAndroidSecondaryActions(AccessibleListRow row) async {
+    if (!isAndroidPlatform || row.actions.isEmpty || !mounted) return;
+
+    final actionId = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: Text(MaterialLocalizations.of(dialogContext).moreButtonTooltip),
+        children: [
+          for (final action in row.actions)
+            SimpleDialogOption(
+              onPressed: () => Navigator.of(dialogContext).pop(action.id),
+              child: Text(action.label),
+            ),
+        ],
+      ),
+    );
+    if (actionId == null || !mounted) return;
+
+    unawaited(_dispatch(AccessibleListEvent(
+      type: 'customAction',
+      id: row.id,
+      action: actionId,
+    )));
+  }
+
   Widget _withCustomActions(AccessibleListRow row, Widget child) {
     if (row.actions.isEmpty && row.onAccessibilityFocus == null) return child;
     final semantics = Semantics(
@@ -1361,6 +1386,13 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           : () => unawaited(
               Future<void>.sync(row.onAccessibilityFocus!),
             ),
+      // Android/TalkBack: double tap and hold invokes the semantic long-press
+      // action. Expose the same existing secondary actions in a standard
+      // accessible dialog instead of duplicating their callbacks. iOS keeps
+      // using UIAccessibilityCustomAction/VoiceOver rotor unchanged.
+      onLongPress: isAndroidPlatform && row.actions.isNotEmpty
+          ? () => unawaited(_showAndroidSecondaryActions(row))
+          : null,
       customSemanticsActions: {
         for (final action in row.actions)
           CustomSemanticsAction(label: action.label): () {

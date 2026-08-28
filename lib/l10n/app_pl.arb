@@ -3296,9 +3296,9 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Dostosuj działania odtwarzacza SonarTube",
+  "settingsSonarTubePlayerActions": "Dostosuj przyciski odtwarzacza SonarTube",
   "@settingsSonarTubePlayerActions": {
-    "description": "Button that opens the SonarTube player action selector."
+    "description": "Button that opens the SonarTube player button selector."
   },
   "settingsVideoLandscapeFullscreen": "Wideo poziome na pełnym ekranie",
   "@settingsVideoLandscapeFullscreen": {
