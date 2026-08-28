@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'aifa_service.dart';
 import 'app_cache_service.dart';
+import '../utils/app_logger.dart';
 
 class ParafarmacoSearchResult {
   final String name;
@@ -86,10 +87,10 @@ extension ParafarmacoSectionTypeLabel on ParafarmacoSectionType {
 class ParafarmacoService {
   static const _userAgent =
       'Mozilla/5.0 (compatible; SonarpadMobile/1.0; +https://sonarpad.com)';
-  static const _codifaIndexUserAgent =
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) '
-      'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 '
-      'Mobile/15E148 Safari/604.1';
+  static const _codifaDesktopUserAgent =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+      'AppleWebKit/537.36 (KHTML, like Gecko) '
+      'Chrome/139.0.0.0 Safari/537.36';
   static const _legacyCodifaBase = 'https://codifa-legacy.farmadati.it';
   static const _publicCodifaBase = 'https://www.codifa.it';
 
@@ -153,10 +154,19 @@ class ParafarmacoService {
         }
       } catch (error) {
         lastError = error;
+        _logAz(
+          'PHARMACY_AZ_LETTER section=$section letter=$letter base=$base '
+          'error=${error.runtimeType}',
+        );
       }
     }
 
-    if (hadSuccessfulResponse) return const [];
+    if (hadSuccessfulResponse) {
+      _logAz(
+        'PHARMACY_AZ_LETTER section=$section letter=$letter result=empty',
+      );
+      return const [];
+    }
     if (lastError != null) throw lastError;
     return const [];
   }
@@ -173,25 +183,23 @@ class ParafarmacoService {
     final links = document.querySelectorAll('a[href]');
     final results = <ParafarmacoSearchResult>[];
     final expectedSection = section.toLowerCase();
-    final expectedLetter = letter.toLowerCase();
+    var sectionCandidates = 0;
+    var initialCandidates = 0;
 
     for (final link in links) {
       final href = link.attributes['href']?.trim() ?? '';
-      if (!_isCodifaProductHref(href)) continue;
+      // L'indice A-Z deve tollerare entrambe le forme viste nel tempo su
+      // Codifa: /farmaci/a/nome e /farmaci/nome. La pagina che stiamo
+      // leggendo determina già la lettera; escludiamo quindi le altre sezioni
+      // e poi verifichiamo l'iniziale sul nome del prodotto.
+      if (!_isCodifaCatalogHrefForSection(href, expectedSection)) continue;
+      sectionCandidates++;
 
       final url = _absoluteCodifaUrl(href);
-      final parsed = Uri.tryParse(url);
-      if (parsed == null) continue;
-      final segments = parsed.pathSegments.map((value) => value.toLowerCase()).toList();
-      if (segments.length < 3 ||
-          segments.first != expectedSection ||
-          segments[1] != expectedLetter) {
-        continue;
-      }
-
       final rawName = _cleanText(link.text);
       final name = rawName.isNotEmpty ? rawName : _nameFromCodifaUrl(url);
       if (name.length < 2 || _initialCatalogLetter(name) != letter) continue;
+      initialCandidates++;
 
       final parentText = _cleanText(link.parent?.text ?? '');
       results.add(
@@ -208,6 +216,12 @@ class ParafarmacoService {
     final deduplicated = _deduplicateResults(results);
     deduplicated.sort(
       (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
+    _logAz(
+      'PHARMACY_AZ_PARSE section=$section letter=$letter '
+      'links=${links.length} sectionCandidates=$sectionCandidates '
+      'initialCandidates=$initialCandidates results=${deduplicated.length} '
+      'title=${_cleanText(document.title)}',
     );
     return deduplicated;
   }
@@ -412,24 +426,113 @@ class ParafarmacoService {
     final cached = _indexCache[key];
     if (cached != null) return cached;
 
-    final response = await _getCodifaIndex(uri);
+    // Prima prova lo stesso profilo HTTP della ricerca Codifa normale. Se la
+    // risposta e' formalmente 200 ma non contiene link della sezione (alcune
+    // varianti mobile/anti-bot fanno proprio cosi'), riprova una sola volta
+    // con un profilo desktop che riceve l'indice HTML server-rendered.
+    final response = await _get(uri);
     if (response.statusCode != 200) {
+      _logAz(
+        'PHARMACY_AZ_FETCH profile=default url=$uri status=${response.statusCode} '
+        'bytes=${response.bodyBytes.length}',
+      );
       _throwCodifaHttp(response);
     }
 
     final body = _decodeResponse(response);
-    final document = html_parser.parse(body);
+    var document = html_parser.parse(body);
+    final section = uri.pathSegments.isEmpty
+        ? ''
+        : uri.pathSegments.first.toLowerCase();
+    final sectionLinks = _countCodifaCatalogLinks(document, section);
+    _logCodifaIndexResponse(
+      profile: 'default',
+      uri: uri,
+      response: response,
+      body: body,
+      document: document,
+      sectionLinks: sectionLinks,
+    );
+
+    if (sectionLinks == 0) {
+      try {
+        final desktopResponse = await _getCodifaDesktop(uri);
+        if (desktopResponse.statusCode == 200) {
+          final desktopBody = _decodeResponse(desktopResponse);
+          final desktopDocument = html_parser.parse(desktopBody);
+          final desktopSectionLinks =
+              _countCodifaCatalogLinks(desktopDocument, section);
+          _logCodifaIndexResponse(
+            profile: 'desktop',
+            uri: uri,
+            response: desktopResponse,
+            body: desktopBody,
+            document: desktopDocument,
+            sectionLinks: desktopSectionLinks,
+          );
+          if (desktopSectionLinks > sectionLinks) {
+            document = desktopDocument;
+          }
+        } else {
+          _logAz(
+            'PHARMACY_AZ_FETCH profile=desktop url=$uri '
+            'status=${desktopResponse.statusCode} bytes=${desktopResponse.bodyBytes.length}',
+          );
+        }
+      } catch (error) {
+        _logAz(
+          'PHARMACY_AZ_FETCH profile=desktop url=$uri error=${error.runtimeType}',
+        );
+      }
+    }
 
     // Non chiamare _removeNoise(document) qui. Per gli indici A-Z servono
-    // tutti i link della pagina; filtriamo poi in modo stretto per sezione,
-    // lettera e host invece di eliminare contenitori HTML a priori.
+    // tutti i link della pagina; filtriamo poi in modo stretto per sezione e
+    // iniziale invece di eliminare contenitori HTML a priori.
     _indexCache[key] = document;
     return document;
   }
 
-  Future<http.Response> _getCodifaIndex(Uri uri) {
+  void _logAz(String message) {
+    if (_client != null) return;
+    AppLogger.log(message);
+  }
+
+  int _countCodifaCatalogLinks(dom.Document document, String section) {
+    if (section.isEmpty) return 0;
+    var count = 0;
+    for (final link in document.querySelectorAll('a[href]')) {
+      final href = link.attributes['href']?.trim() ?? '';
+      if (_isCodifaCatalogHrefForSection(href, section) &&
+          _cleanText(link.text).length >= 2) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  void _logCodifaIndexResponse({
+    required String profile,
+    required Uri uri,
+    required http.Response response,
+    required String body,
+    required dom.Document document,
+    required int sectionLinks,
+  }) {
+    final normalizedBody = _normalize(body);
+    _logAz(
+      'PHARMACY_AZ_FETCH profile=$profile url=$uri status=${response.statusCode} '
+      'bytes=${response.bodyBytes.length} links=${document.querySelectorAll('a[href]').length} '
+      'sectionLinks=$sectionLinks '
+      'catalogHeading=${normalizedBody.contains('indice') && normalizedBody.contains('ordine alfabetico')} '
+      'challenge=${normalizedBody.contains('captcha') || normalizedBody.contains('cloudflare') || normalizedBody.contains('just a moment')} '
+      'title=${_cleanText(document.title)}',
+    );
+  }
+
+  Future<http.Response> _getCodifaDesktop(Uri uri) {
     const headers = <String, String>{
-      'User-Agent': _codifaIndexUserAgent,
+      'User-Agent': _codifaDesktopUserAgent,
       'Accept':
           'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'it-IT,it;q=0.9,en;q=0.7',
@@ -1413,6 +1516,15 @@ class ParafarmacoService {
     } catch (_) {
       return latin1.decode(response.bodyBytes);
     }
+  }
+
+  bool _isCodifaCatalogHrefForSection(String href, String expectedSection) {
+    final url = _absoluteCodifaUrl(href);
+    final uri = Uri.tryParse(url);
+    if (uri == null || !_isSupportedCodifaHost(uri.host)) return false;
+    final segments = uri.pathSegments.map((s) => s.toLowerCase()).toList();
+    if (segments.length < 2) return false;
+    return segments.first == expectedSection;
   }
 
   bool _isCodifaProductHref(String href) {

@@ -119,7 +119,7 @@ void main() {
       final service = ParafarmacoService(
         client: MockClient((request) async {
           if (request.url.path == '/farmaci/a') {
-            expect(request.headers['User-Agent'], contains('Safari'));
+            expect(request.headers['User-Agent'], contains('SonarpadMobile'));
             return http.Response(
               '<html><body><nav class="menu">'
               '<a href="/farmaci/a/aspirina">Aspirina</a>'
@@ -135,6 +135,31 @@ void main() {
       expect(results.map((result) => result.name), contains('Aspirina'));
     });
 
+    test('A-Z riprova con profilo desktop se la risposta standard non contiene il catalogo', () async {
+      var calls = 0;
+      final service = ParafarmacoService(
+        client: MockClient((request) async {
+          calls++;
+          if (request.headers['User-Agent']?.contains('Chrome/139') ?? false) {
+            return http.Response(
+              '<html><body><h1>Indice farmaci in ordine alfabetico</h1>'
+              '<a href="/farmaci/a/aspirina">Aspirina</a>'
+              '</body></html>',
+              200,
+            );
+          }
+          return http.Response(
+            '<html><body><h1>Indice farmaci in ordine alfabetico</h1></body></html>',
+            200,
+          );
+        }),
+      );
+
+      final results = await service.browseDrugsByLetter('A');
+      expect(calls, 2);
+      expect(results.map((result) => result.name), contains('Aspirina'));
+    });
+
     test('sfoglia i farmaci di una lettera, filtra e ordina i risultati', () async {
       final service = ParafarmacoService(
         client: MockClient((request) async {
@@ -143,6 +168,7 @@ void main() {
               '<html><body><nav class="menu">'
               '<a href="/farmaci/p/pevaryl">Pevaryl</a>'
               '<a href="/farmaci/p/palexia">Palexia</a>'
+              '<a href="/farmaci/prova-nuovo-layout">Prova nuovo layout</a>'
               '<a href="/farmaci/a/aspirina">Aspirina</a>'
               '<a href="/parafarmaci/p/polase">Polase</a>'
               '</nav></body></html>',
@@ -157,7 +183,7 @@ void main() {
 
       expect(
         results.map((result) => result.name).toList(),
-        ['Palexia', 'Pevaryl'],
+        ['Palexia', 'Pevaryl', 'Prova nuovo layout'],
       );
       expect(results.every(service.isMedicationResult), isTrue);
     });
