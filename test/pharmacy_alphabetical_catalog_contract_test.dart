@@ -3,15 +3,14 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('pharmacy home exposes separate A-Z drug and parafarmaco catalogs', () {
+  test('pharmacy home exposes the reliable AIFA A-Z drug catalog only', () {
     final source = File('lib/screens/aifa_search_screen.dart').readAsStringSync();
 
     expect(source, contains("id: 'drugs_az'"));
     expect(source, contains("title: 'Farmaci A-Z'"));
-    expect(source, contains("id: 'parafarmaci_az'"));
-    expect(source, contains("title: 'Parafarmaci A-Z'"));
     expect(source, contains('PharmacyAlphabeticalKind.drugs'));
-    expect(source, contains('PharmacyAlphabeticalKind.parafarmaci'));
+    expect(source, isNot(contains("id: 'parafarmaci_az'")));
+    expect(source, isNot(contains("title: 'Parafarmaci A-Z'")));
   });
 
   test('A-Z catalog supports a letter picker and a clean letter-only screen', () {
@@ -22,8 +21,21 @@ void main() {
     expect(source, contains("id: 'select_letter'"));
     expect(source, contains('_PharmacyAlphabeticalLetterScreen'));
     expect(source, contains('browseDrugsByLetter'));
-    expect(source, contains('browseParafarmaciByLetter'));
     expect(source, contains('initial != null && initial.isNotEmpty'));
+  });
+
+  test('alphabetical drug catalog uses daily official AIFA registry', () {
+    final aifa = File('lib/services/aifa_service.dart').readAsStringSync();
+    final products =
+        File('lib/services/parafarmaco_service.dart').readAsStringSync();
+
+    expect(
+      aifa,
+      contains('https://drive.aifa.gov.it/farmaci/confezioni_fornitura.csv'),
+    );
+    expect(aifa, contains('anagrafica_farmaci_aifa.csv'));
+    expect(aifa, contains('Duration(hours: 24)'));
+    expect(products, contains('AifaService().browseDrugNamesByLetter'));
   });
 
   test('alphabetical drug selection returns to official AIFA results only', () {
@@ -37,13 +49,11 @@ void main() {
     expect(results, contains('if (widget.aifaOnly)'));
   });
 
-  test('pharmacy A-Z is available in both UIKit and pure Flutter renderers', () {
+  test('Farmaci A-Z is available in both UIKit and pure Flutter renderers', () {
     final home = File('lib/screens/aifa_search_screen.dart').readAsStringSync();
     final catalog =
         File('lib/screens/pharmacy_alphabetical_screen.dart').readAsStringSync();
 
-    // Home: UIKit/native path uses the shared accessible model; Flutter path
-    // exposes the same two actions as real Material buttons.
     expect(home, contains('useSharedAccessibleViewModel'));
     expect(home, contains('UniversalAccessibleList('));
     expect(home, contains('FilledButton.tonalIcon('));
@@ -55,17 +65,7 @@ void main() {
       RegExp(r"label: const Text\('Farmaci A-Z'\)").hasMatch(home),
       isTrue,
     );
-    expect(
-      RegExp(r"title: 'Parafarmaci A-Z'").allMatches(home).length,
-      greaterThanOrEqualTo(1),
-    );
-    expect(
-      RegExp(r"label: const Text\('Parafarmaci A-Z'\)").hasMatch(home),
-      isTrue,
-    );
 
-    // Catalog and clean letter-only screen: both have native/UIKit and
-    // Flutter list builders selected by the same renderer switch.
     expect(catalog, contains('Widget _buildSharedAccessibleList('));
     expect(catalog, contains('Widget _buildFlutterList('));
     expect(catalog, contains('UniversalAccessibleList('));

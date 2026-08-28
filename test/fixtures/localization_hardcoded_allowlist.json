@@ -96,7 +96,6 @@
   "ui\tlib/screens/aifa_search_results_screen.dart\tSto cercando tra i medicinali AIFA.": 2,
   "ui\tlib/screens/aifa_search_screen.dart\tFarmaci A-Z": 2,
   "ui\tlib/screens/aifa_search_screen.dart\tNome, principio attivo, ingrediente o codice AIC": 2,
-  "ui\tlib/screens/aifa_search_screen.dart\tParafarmaci A-Z": 2,
   "ui\tlib/screens/audiodescription_all_screen.dart\t${l10n.audiodescriptionError}: $_error": 1,
   "ui\tlib/screens/audiodescription_recent_screen.dart\t${entry.value.date} ${entry.value.description}": 1,
   "ui\tlib/screens/audiodescription_recent_screen.dart\t${item.date} ${item.description}": 1,

@@ -102,16 +102,24 @@ class ParafarmacoService {
 
   ParafarmacoService({http.Client? client}) : _client = client;
 
-  /// Restituisce l'indice alfabetico dei medicinali Codifa per una lettera.
-  /// L'indice serve soltanto per lo sfoglia A-Z: aprendo un elemento Sonarpad
-  /// torna alla ricerca AIFA ufficiale per mostrare confezioni e bugiardino.
+  /// Restituisce l'indice alfabetico dei medicinali dall'Anagrafica Farmaci
+  /// ufficiale AIFA. Codifa non viene usato per Farmaci A-Z: nel 2026 i suoi
+  /// indici pubblici possono rispondere con una challenge anti-bot pur dando
+  /// HTTP 200, producendo un falso elenco vuoto.
   Future<List<ParafarmacoSearchResult>> browseDrugsByLetter(
     String rawLetter,
-  ) {
-    return _browseCodifaAlphabeticalSection(
-      section: 'farmaci',
-      rawLetter: rawLetter,
-    );
+  ) async {
+    final names = await AifaService().browseDrugNamesByLetter(rawLetter);
+    return names
+        .map(
+          (name) => ParafarmacoSearchResult(
+            name: name,
+            category: '',
+            sourceName: '',
+            sourceUrl: 'aifa://catalog/${Uri.encodeComponent(name)}',
+          ),
+        )
+        .toList(growable: false);
   }
 
   /// Restituisce l'indice alfabetico dei parafarmaci Codifa per una lettera.

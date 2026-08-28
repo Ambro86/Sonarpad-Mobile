@@ -62,10 +62,6 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                         id: 'drugs_az',
                         title: 'Farmaci A-Z',
                       ),
-                      const AccessibleListRow(
-                        id: 'parafarmaci_az',
-                        title: 'Parafarmaci A-Z',
-                      ),
                       AccessibleListRow(
                         id: 'recent',
                         title: _recentSearchesTitle,
@@ -95,10 +91,6 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                     _submitSearch(_controller.text);
                   } else if (event.id == 'drugs_az') {
                     _openAlphabeticalCatalog(PharmacyAlphabeticalKind.drugs);
-                  } else if (event.id == 'parafarmaci_az') {
-                    _openAlphabeticalCatalog(
-                      PharmacyAlphabeticalKind.parafarmaci,
-                    );
                   } else if (event.id == 'recent') {
                     final q = await Navigator.of(context).push<String>(
                       MaterialPageRoute(
@@ -128,19 +120,6 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
                           ),
                           icon: const Icon(Icons.sort_by_alpha),
                           label: const Text('Farmaci A-Z'),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.tonalIcon(
-                          onPressed: () => _openAlphabeticalCatalog(
-                            PharmacyAlphabeticalKind.parafarmaci,
-                          ),
-                          icon: const Icon(Icons.sort_by_alpha),
-                          label: const Text('Parafarmaci A-Z'),
                         ),
                       ),
                     ),
