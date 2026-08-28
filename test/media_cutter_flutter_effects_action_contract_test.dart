@@ -29,10 +29,13 @@ void main() {
 
     expect(
       renderer,
-      contains(
-        'if (row.mergeFlutterCustomActions && row.actions.isNotEmpty)',
-      ),
+      contains('final shouldMergeCustomActions = row.actions.isNotEmpty'),
     );
+    expect(
+      renderer,
+      contains('(isAndroidPlatform || row.mergeFlutterCustomActions)'),
+    );
+    expect(renderer, contains('if (shouldMergeCustomActions)'));
     expect(renderer, contains('return MergeSemantics(child: semantics);'));
   });
 }

@@ -56,14 +56,21 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final firstVideoSemantics = tester.getSemantics(
-      find.byKey(const ValueKey('sonartube_video_video_1')),
+    final firstVideo =
+        find.byKey(const ValueKey('sonartube_video_video_1'));
+    expect(firstVideo, findsOneWidget);
+
+    // Android merges action rows into the TalkBack focus node. Read the
+    // merged semantics owner rather than the keyed inner Semantics widget,
+    // whose own node is intentionally absorbed by MergeSemantics.
+    final firstVideoMergedSemantics = find.ancestor(
+      of: firstVideo,
+      matching: find.byType(MergeSemantics),
     );
+    expect(firstVideoMergedSemantics, findsOneWidget);
+    final firstVideoSemantics =
+        tester.getSemantics(firstVideoMergedSemantics);
     expect(firstVideoSemantics.label, contains('Episodio 1'));
-    expect(
-      firstVideoSemantics.getSemanticsData().customSemanticsActionIds,
-      isEmpty,
-    );
 
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey('sonartube_video_video_50')),
