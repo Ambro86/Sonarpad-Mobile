@@ -50,7 +50,10 @@ class ParafarmacoDetail {
     if (type == ParafarmacoSectionType.complete) return fullText;
     final direct = sections[type];
     if (direct != null && direct.trim().length >= 40) return direct.trim();
-    return _missingSectionText(type);
+    final note = _missingSectionText(type);
+    final complete = fullText.trim();
+    if (complete.length < 40) return note;
+    return '$note\n\nScheda completa disponibile:\n\n$complete';
   }
 
   String _missingSectionText(ParafarmacoSectionType type) {
@@ -93,6 +96,7 @@ class ParafarmacoService {
       'Chrome/139.0.0.0 Safari/537.36';
   static const _legacyCodifaBase = 'https://codifa-legacy.farmadati.it';
   static const _publicCodifaBase = 'https://www.codifa.it';
+  static const _currentCodifaBase = 'https://codifa.it';
 
   static final Map<String, List<ParafarmacoSearchResult>>
       _alphabeticalResultCache = {};
@@ -316,41 +320,54 @@ class ParafarmacoService {
     if (query.length < 2) return const [];
 
     final found = <String, ParafarmacoSearchResult>{};
+    var currentSearchAvailable = false;
 
-    // Codifa/Farmadati non espone una ricerca pubblica stabile con ?search=.
-    // La strada più affidabile sulle pagine pubbliche è aprire gli indici
-    // alfabetici (/parafarmaci/m, /integratori/m, ecc.) e filtrare i link in
-    // modo locale. Così Polase, Multicentrum, Saugella, Vea, ecc. vengono
-    // trovati senza toccare la pipeline AIFA/AIC.
-    for (final url in _codifaIndexUrlsForQuery(query)) {
-      try {
-        final results = await _searchCodifaPage(Uri.parse(url), query);
-        for (final result in results) {
-          found[result.sourceUrl] = result;
-        }
-        if (found.length >= 30) break;
-      } catch (_) {
-        // Sito non raggiungibile o layout cambiato: passa alla variante dopo.
+    // Il sito Codifa corrente espone la ricerca come handler Razor sulla
+    // sezione /farmaci, ma include nello stesso elenco anche integratori,
+    // dispositivi e parafarmaci distinguendoli con data-isfarmaco="false".
+    // Da agosto 2026 i precedenti indici /integratori/x e /parafarmaci/x
+    // reindirizzano alla home e non contengono piu' i prodotti.
+    try {
+      final results = await _searchCurrentCodifa(query);
+      currentSearchAvailable = true;
+      for (final result in results) {
+        found[result.sourceUrl] = result;
       }
+    } catch (_) {
+      // Mantieni i parser legacy come fallback se l'handler cambia o non e'
+      // temporaneamente raggiungibile.
     }
 
-    // Fallback breve sulle vecchie varianti, utile se Codifa dovesse riattivare
-    // una pagina di ricerca indicizzabile. Non è la fonte primaria.
-    if (found.length < 6) {
-      final encoded = Uri.encodeComponent(query);
-      final searchUrls = <String>[
-        'https://www.codifa.it/farmaci?search=$encoded',
-        'https://www.codifa.it/parafarmaci?search=$encoded',
-        'https://www.codifa.it/integratori?search=$encoded',
-      ];
-      for (final url in searchUrls) {
+    if (!currentSearchAvailable) {
+      for (final url in _codifaIndexUrlsForQuery(query)) {
         try {
           final results = await _searchCodifaPage(Uri.parse(url), query);
           for (final result in results) {
             found[result.sourceUrl] = result;
           }
           if (found.length >= 30) break;
-        } catch (_) {}
+        } catch (_) {
+          // Sito non raggiungibile o layout cambiato: passa alla variante dopo.
+        }
+      }
+
+      // Ultimo fallback sulle vecchie varianti ?search=.
+      if (found.length < 6) {
+        final encoded = Uri.encodeComponent(query);
+        final searchUrls = <String>[
+          'https://www.codifa.it/farmaci?search=$encoded',
+          'https://www.codifa.it/parafarmaci?search=$encoded',
+          'https://www.codifa.it/integratori?search=$encoded',
+        ];
+        for (final url in searchUrls) {
+          try {
+            final results = await _searchCodifaPage(Uri.parse(url), query);
+            for (final result in results) {
+              found[result.sourceUrl] = result;
+            }
+            if (found.length >= 30) break;
+          } catch (_) {}
+        }
       }
     }
 
@@ -365,6 +382,65 @@ class ParafarmacoService {
       return bScore.compareTo(aScore);
     });
     return list.take(30).toList();
+  }
+
+  Future<List<ParafarmacoSearchResult>> _searchCurrentCodifa(
+    String query,
+  ) async {
+    final uri = Uri.parse('$_currentCodifaBase/farmaci').replace(
+      queryParameters: <String, String>{
+        'handler': 'Search',
+        'query': query,
+        'page': '0',
+      },
+    );
+    final response = await _getCurrentCodifaWithRetry(uri);
+    if (response.statusCode != 200) _throwCodifaHttp(response);
+
+    final document = html_parser.parse(_decodeResponse(response));
+    final headers = document.querySelectorAll(
+      '.result-header[data-codice], [data-codice][data-isfarmaco]',
+    );
+    final noResults = document.querySelector('.app-alert') != null &&
+        _normalize(document.body?.text ?? document.text ?? '')
+            .contains('nessun risultato');
+    if (headers.isEmpty && !noResults) {
+      throw const FormatException('Risposta ricerca Codifa non riconosciuta');
+    }
+
+    final results = <ParafarmacoSearchResult>[];
+    for (final header in headers) {
+      final code = header.attributes['data-codice']?.trim() ?? '';
+      final name = _cleanText(
+        header.querySelector('.result-title')?.text ?? header.text,
+      );
+      if (code.isEmpty || name.length < 2) continue;
+
+      final isMedication =
+          (header.attributes['data-isfarmaco'] ?? '').toLowerCase() == 'true';
+      final company = _cleanText(
+        header.querySelector('.result-ditta')?.text ?? '',
+      );
+      final detailUrl = Uri.parse('$_currentCodifaBase/farmaci').replace(
+        queryParameters: <String, String>{
+          'handler': 'Detail',
+          'codice': code,
+        },
+      );
+      results.add(
+        ParafarmacoSearchResult(
+          name: name,
+          category: isMedication
+              ? 'Medicinale / scheda Codifa'
+              : 'Parafarmaco / prodotto da farmacia',
+          sourceName: 'Codifa/Farmadati',
+          sourceUrl: detailUrl.toString(),
+          snippet: company.isEmpty ? null : company,
+          code: code,
+        ),
+      );
+    }
+    return _deduplicateResults(results);
   }
 
   List<String> _codifaIndexUrlsForQuery(String query) {
@@ -581,6 +657,26 @@ class ParafarmacoService {
     return http.get(uri, headers: {'User-Agent': _userAgent});
   }
 
+  Future<http.Response> _getCurrentCodifaWithRetry(Uri uri) async {
+    Object? lastError;
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        final response = await _get(uri).timeout(const Duration(seconds: 10));
+        if (response.statusCode < 500 || attempt == 1) return response;
+        lastError = Exception('HTTP ${response.statusCode}');
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    throw lastError ?? Exception('Codifa non raggiungibile');
+  }
+
+  bool _isCurrentCodifaHandlerUri(Uri uri) {
+    return uri.host.toLowerCase() == Uri.parse(_currentCodifaBase).host &&
+        uri.path == '/farmaci' &&
+        uri.queryParameters.containsKey('handler');
+  }
+
   List<ParafarmacoSearchResult> _deduplicateResults(
       List<ParafarmacoSearchResult> results) {
     final byUrl = <String, ParafarmacoSearchResult>{};
@@ -611,7 +707,10 @@ class ParafarmacoService {
 
     http.Response response;
     try {
-      response = await _get(Uri.parse(result.sourceUrl));
+      final uri = Uri.parse(result.sourceUrl);
+      response = _isCurrentCodifaHandlerUri(uri)
+          ? await _getCurrentCodifaWithRetry(uri)
+          : await _get(uri);
     } catch (_) {
       final fallback = _detailFromFallbackSnippet(
         result,
@@ -633,12 +732,15 @@ class ParafarmacoService {
 
     final body = _decodeResponse(response);
     final document = html_parser.parse(body);
+    final embeddedDetail = _embeddedCodifaDetailDocument(document);
     _removeNoise(document);
+    if (embeddedDetail != null) _removeNoise(embeddedDetail);
 
     final name = _extractTitle(document, fallback: result.name);
+    final contentDocument = embeddedDetail ?? document;
     final code = _extractCode(document) ?? result.code;
-    final fullText = _cleanText(_bestBodyText(document));
-    final sections = _extractSections(document, fullText);
+    final fullText = _cleanText(_bestBodyText(contentDocument));
+    final sections = _extractSections(contentDocument, fullText);
 
     // Alcuni siti esterni caricano il contenuto via JavaScript oppure mostrano
     // soprattutto prezzi, pulsanti e materiale commerciale. In quei casi è più
@@ -1614,6 +1716,7 @@ class ParafarmacoService {
   String _extractTitle(dom.Document document, {required String fallback}) {
     final candidates = <String?>[
       document.querySelector('h1')?.text,
+      document.querySelector('.detail-title-info h2')?.text,
       document
           .querySelector('meta[property="og:title"]')
           ?.attributes['content'],
@@ -1636,6 +1739,27 @@ class ParafarmacoService {
       return _cleanTitle(cleaned);
     }
     return fallback;
+  }
+
+  dom.Document? _embeddedCodifaDetailDocument(dom.Document document) {
+    final srcdoc = document
+        .querySelector('iframe[srcdoc]')
+        ?.attributes['srcdoc'];
+    if (srcdoc == null || srcdoc.trim().isEmpty) return null;
+    // Nel srcdoc Codifa titoli e testo sono spesso tutti elementi inline
+    // separati soltanto da <br>. Conserviamo quei confini come righe: il
+    // parser delle sezioni puo' cosi' fermarsi al titolo successivo.
+    final withLineBreaks = srcdoc
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .replaceAllMapped(
+          RegExp(r'<(b|strong)(?:\s[^>]*)?>', caseSensitive: false),
+          (match) => '\n${match.group(0)}',
+        )
+        .replaceAllMapped(
+          RegExp(r'</(b|strong)>', caseSensitive: false),
+          (match) => '${match.group(0)}\n',
+        );
+    return html_parser.parse(withLineBreaks);
   }
 
   String _cleanTitle(String raw) {
@@ -1686,6 +1810,27 @@ class ParafarmacoService {
       final extracted = _extractSectionFromPlainText(fullText, type);
       if (extracted != null && _isUsefulSectionTextForType(extracted, type)) {
         sections[type] = extracted.trim();
+      }
+    }
+
+    if (!(sections[ParafarmacoSectionType.indications]
+            ?.trim()
+            .isNotEmpty ??
+        false)) {
+      final leading = _extractLeadingIndications(fullText);
+      if (leading != null &&
+          _isUsefulSectionTextForType(
+              leading, ParafarmacoSectionType.indications)) {
+        sections[ParafarmacoSectionType.indications] = leading;
+      }
+    }
+
+    if (!(sections[ParafarmacoSectionType.usage]?.trim().isNotEmpty ?? false)) {
+      final instructions = _extractInstructionSentence(fullText);
+      if (instructions != null &&
+          _isUsefulSectionTextForType(
+              instructions, ParafarmacoSectionType.usage)) {
+        sections[ParafarmacoSectionType.usage] = instructions;
       }
     }
 
@@ -1835,6 +1980,14 @@ class ParafarmacoService {
       ParafarmacoSectionType.usage => const [
           'Modalità d\'uso',
           'Modalità d’uso',
+          'Modalitá d\'uso',
+          'Modalitá d’uso',
+          'Modalità d\'utilizzo',
+          'Modalità d’utilizzo',
+          'Modalitá d\'utilizzo',
+          'Modalitá d’utilizzo',
+          'Modalità di utilizzo',
+          'Modalità di assunzione',
           'Come si usa',
           'Come si utilizza',
           'Posologia',
@@ -1871,6 +2024,14 @@ class ParafarmacoService {
       'Che cos\'è',
       'Modalità d\'uso',
       'Modalità d’uso',
+      'Modalitá d\'uso',
+      'Modalitá d’uso',
+      'Modalità d\'utilizzo',
+      'Modalità d’utilizzo',
+      'Modalitá d\'utilizzo',
+      'Modalitá d’utilizzo',
+      'Modalità di utilizzo',
+      'Modalità di assunzione',
       'Come si usa',
       'Come si utilizza',
       'Posologia',
@@ -1949,6 +2110,69 @@ class ParafarmacoService {
       }
     }
     return best;
+  }
+
+  String? _extractLeadingIndications(String fullText) {
+    final lines = fullText
+        .split('\n')
+        .map(_cleanText)
+        .where((line) => line.isNotEmpty)
+        .toList();
+    if (lines.isEmpty) return null;
+
+    var start = 0;
+    while (start < lines.length && start < 3) {
+      final line = lines[start];
+      final normalized = _normalize(line);
+      final looksLikeTitle = line.length < 120 &&
+          (line == line.toUpperCase() ||
+              normalized == 'descrizione' ||
+              normalized == 'scheda tecnica');
+      if (!looksLikeTitle) break;
+      start++;
+    }
+
+    final parts = <String>[];
+    for (var index = start; index < lines.length && parts.length < 8; index++) {
+      final line = lines[index];
+      final normalized = _normalize(line);
+      if (_sectionTypeFromHeading(line) != null ||
+          _startsWithAny(normalized, const [
+            'formato',
+            'conservazione',
+            'caratteristiche nutrizionali',
+            'cod ',
+          ])) {
+        break;
+      }
+      parts.add(line);
+    }
+
+    final candidate = _cleanText(parts.join('\n'));
+    return candidate.length >= 40 ? candidate : null;
+  }
+
+  String? _extractInstructionSentence(String fullText) {
+    final match = RegExp(
+      r'(?:^|[.!?]\s+|\n)((?:assumere|applicare|instillare|spruzzare|utilizzare|usare|sciogliere|diluire|stendere|ingerire|nebulizzare)\b[\s\S]{40,700})',
+      caseSensitive: false,
+    ).firstMatch(fullText);
+    if (match == null) return null;
+
+    var candidate = match.group(1) ?? '';
+    final normalizedStops = <RegExp>[
+      RegExp(r'\n\s*Avvertenze\b', caseSensitive: false),
+      RegExp(r'\n\s*(?:Ingredienti|Componenti|Composizione)\b',
+          caseSensitive: false),
+      RegExp(r'\n\s*(?:Conservazione|Formato)\b', caseSensitive: false),
+    ];
+    var end = candidate.length;
+    for (final stop in normalizedStops) {
+      final stopMatch = stop.firstMatch(candidate);
+      if (stopMatch != null && stopMatch.start < end) end = stopMatch.start;
+    }
+    candidate = _cleanText(candidate.substring(0, end));
+    return candidate.length >= 40 ? candidate : null;
   }
 
   int _indexOfSectionLabel(String text, String label, int start) {

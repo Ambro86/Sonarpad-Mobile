@@ -113,6 +113,191 @@ void main() {
     });
   });
 
+  group('ParafarmacoService nuovo handler Codifa', () {
+    late ParafarmacoService service;
+
+    setUp(() {
+      service = ParafarmacoService(
+        client: MockClient((request) async {
+          if (request.url.path == '/farmaci' &&
+              request.url.queryParameters['handler'] == 'Search') {
+            return http.Response(
+              '<div id="searchContainer"><div class="result-item">'
+              '<div class="result-header" data-codice="934488976" '
+              'data-isfarmaco="false" data-codiceDitta="152K">'
+              '<div class="result-title">QUETIDIA 30 COMPRESSE</div>'
+              '<div class="result-ditta">NEURAXPHARM ITALY SpA</div>'
+              '</div></div></div>',
+              200,
+              headers: const {'content-type': 'text/html; charset=utf-8'},
+            );
+          }
+          if (request.url.path == '/farmaci' &&
+              request.url.queryParameters['handler'] == 'Detail') {
+            return http.Response(
+              '<div class="detail-title-info"><h2>QUETIDIA 30CPR</h2></div>'
+              '<iframe srcdoc="&lt;h1&gt;QUETIDIA&lt;/h1&gt;'
+              '&lt;b&gt;Descrizione&lt;/b&gt;&lt;br&gt;Integratore alimentare per il rilassamento in caso di stress e per il benessere mentale. '
+              '&lt;b&gt;Ingredienti&lt;/b&gt;&lt;br&gt;Magnesio, passiflora, tè verde e scutellaria. '
+              '&lt;b&gt;Modalità d\'uso&lt;/b&gt;&lt;br&gt;Assumere una compressa al giorno con acqua. '
+              '&lt;b&gt;Avvertenze&lt;/b&gt;&lt;br&gt;Non superare la dose giornaliera consigliata e tenere fuori dalla portata dei bambini."'
+              '></iframe>',
+              200,
+              headers: const {'content-type': 'text/html; charset=utf-8'},
+            );
+          }
+          return http.Response('', 404);
+        }),
+      );
+    });
+
+    test('trova Quetidia come prodotto non AIFA', () async {
+      final results = await service.searchProducts('quetidia');
+
+      expect(results, hasLength(1));
+      expect(results.single.name, 'QUETIDIA 30 COMPRESSE');
+      expect(results.single.category, contains('Parafarmaco'));
+      expect(results.single.code, '934488976');
+      expect(results.single.sourceUrl, contains('handler=Detail'));
+      expect(service.isMedicationResult(results.single), isFalse);
+    });
+
+    test('legge la scheda tecnica incorporata nel nuovo srcdoc', () async {
+      final product = (await service.searchProducts('quetidia')).single;
+      final detail = await service.loadDetail(product);
+
+      expect(detail.name, 'QUETIDIA 30CPR');
+      expect(detail.code, '934488976');
+      expect(detail.fullText, contains('Integratore alimentare'));
+      expect(
+        detail.sections[ParafarmacoSectionType.usage],
+        contains('Assumere una compressa'),
+      );
+      expect(
+        detail.sections[ParafarmacoSectionType.warnings],
+        contains('Non superare la dose'),
+      );
+      expect(
+        detail.sections[ParafarmacoSectionType.composition],
+        contains('Magnesio'),
+      );
+    });
+
+    test('ritenta la ricerca dopo un errore temporaneo Codifa', () async {
+      var attempts = 0;
+      final retryingService = ParafarmacoService(
+        client: MockClient((request) async {
+          attempts++;
+          if (attempts == 1) return http.Response('', 503);
+          return http.Response(
+            '<div class="result-header" data-codice="934488976" '
+            'data-isfarmaco="false">'
+            '<div class="result-title">QUETIDIA 30 COMPRESSE</div></div>',
+            200,
+          );
+        }),
+      );
+
+      final results = await retryingService.searchProducts('quetidia');
+
+      expect(attempts, 2);
+      expect(results.single.name, 'QUETIDIA 30 COMPRESSE');
+    });
+  });
+
+  group('ParafarmacoService varianti sezioni Codifa', () {
+    test('riconosce descrizione iniziale e Modalitá d’uso', () async {
+      final service = ParafarmacoService(
+        client: MockClient((request) async {
+          if (request.url.queryParameters['handler'] == 'Search') {
+            return http.Response(
+              '<div class="result-header" data-codice="900654284" '
+              'data-isfarmaco="false">'
+              '<div class="result-title">COMPEED VESCICHE</div></div>',
+              200,
+            );
+          }
+          return http.Response(
+            '<div class="detail-title-info"><h2>COMPEED VESCICHE</h2></div>'
+            '<iframe srcdoc="&lt;h1&gt;COMPEED VESCICHE&lt;/h1&gt;&lt;br&gt;'
+            'Trattamento per la guarigione e la prevenzione delle vesciche, con protezione della pelle dallo sfregamento.'
+            '&lt;br&gt;&lt;b&gt;Modalitá d&#39;uso:&lt;/b&gt;&lt;br&gt;'
+            'Applicare sulla pelle pulita e asciutta e lasciare applicato finché il cerotto non si stacca da solo.'
+            '"></iframe>',
+            200,
+          );
+        }),
+      );
+
+      final product = (await service.searchProducts('compeed')).single;
+      final detail = await service.loadDetail(product);
+
+      expect(
+        detail.sections[ParafarmacoSectionType.indications],
+        contains('prevenzione delle vesciche'),
+      );
+      expect(
+        detail.sections[ParafarmacoSectionType.usage],
+        contains('Applicare sulla pelle'),
+      );
+    });
+
+    test('riconosce Modalità d’utilizzo', () async {
+      final service = ParafarmacoService(
+        client: MockClient((request) async {
+          if (request.url.queryParameters['handler'] == 'Search') {
+            return http.Response(
+              '<div class="result-header" data-codice="926116955" '
+              'data-isfarmaco="false">'
+              '<div class="result-title">GENGIGEL</div></div>',
+              200,
+            );
+          }
+          return http.Response(
+            '<div class="detail-title-info"><h2>GENGIGEL</h2></div>'
+            '<iframe srcdoc="&lt;h1&gt;GENGIGEL&lt;/h1&gt;'
+            '&lt;b&gt;Modalità d&#39;utilizzo&lt;/b&gt;&lt;br&gt;'
+            'Stendere una piccola quantità di prodotto e massaggiare delicatamente la gengiva fino a coprire la zona interessata.'
+            '"></iframe>',
+            200,
+          );
+        }),
+      );
+
+      final product = (await service.searchProducts('gengigel'))
+          .firstWhere((result) => result.sourceUrl.contains('handler=Detail'));
+      final detail = await service.loadDetail(product);
+
+      expect(
+        detail.sections[ParafarmacoSectionType.usage],
+        contains('Stendere una piccola quantità'),
+      );
+    });
+
+    test('se la fonte omette una sezione rende disponibile la scheda completa',
+        () {
+      const detail = ParafarmacoDetail(
+        name: 'Prodotto',
+        category: 'Parafarmaco',
+        sourceName: 'Codifa/Farmadati',
+        sourceUrl: 'https://codifa.it/farmaci',
+        sections: <ParafarmacoSectionType, String>{},
+        fullText:
+            'Scheda completa del prodotto con tutte le informazioni effettivamente pubblicate dalla fonte originale.',
+      );
+
+      for (final type in const [
+        ParafarmacoSectionType.indications,
+        ParafarmacoSectionType.usage,
+        ParafarmacoSectionType.warnings,
+        ParafarmacoSectionType.composition,
+      ]) {
+        expect(detail.sectionText(type), contains('Scheda completa disponibile'));
+        expect(detail.sectionText(type), contains('informazioni effettivamente'));
+      }
+    });
+  });
+
 
   group('ParafarmacoService indice parafarmaci legacy', () {
     test('sfoglia soltanto i parafarmaci della lettera selezionata', () async {
