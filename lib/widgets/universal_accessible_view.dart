@@ -229,9 +229,11 @@ class AccessibleListRow {
   final List<AccessibleOption> options;
   final List<AccessibleCustomAction> actions;
 
-  /// Flutter-only accessibility safeguard. When true, the row and its custom
-  /// actions are merged into one semantics node so VoiceOver/TalkBack focus
-  /// lands on the same node that exposes the actions. UIKit ignores this.
+  /// Flutter-only accessibility safeguard. Android automatically merges every
+  /// row that exposes custom actions so TalkBack focuses the same semantics
+  /// node that owns those actions. Set this to true when the same safeguard is
+  /// also needed by another Flutter renderer (for example the optional Flutter
+  /// renderer on iOS). UIKit ignores this flag.
   final bool mergeFlutterCustomActions;
 
   /// Sighted-only counterparts of [actions]. They are rendered as visible
@@ -1406,7 +1408,14 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       },
       child: child,
     );
-    if (row.mergeFlutterCustomActions && row.actions.isNotEmpty) {
+    // Android must never leave custom actions on a semantics parent while
+    // TalkBack focuses a child ListTile/Card node. That mismatch made the
+    // long-press/custom-actions menu expose unrelated actions from another
+    // focused node. UIKit does not need this because it assigns row.actions
+    // directly to the native UITableViewCell.
+    final shouldMergeCustomActions = row.actions.isNotEmpty &&
+        (isAndroidPlatform || row.mergeFlutterCustomActions);
+    if (shouldMergeCustomActions) {
       return MergeSemantics(child: semantics);
     }
     return semantics;
