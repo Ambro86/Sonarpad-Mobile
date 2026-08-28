@@ -686,20 +686,18 @@ class AppSettingsService {
       name = name.substring(0, name.length - 'Neural'.length);
     }
     name = name.replaceAll('Multilingual', ' Multilingual');
-    return '$name ($locale)';
+    return name.trim();
   }
 
   static String _edgeLanguageLabel(String locale, String friendlyName) {
     final labelFromLocale = _edgeLocaleDisplayName(locale);
-    if (labelFromLocale != null) {
-      return '$labelFromLocale ($locale)';
-    }
+    if (labelFromLocale != null) return labelFromLocale;
 
     final separatorIndex = friendlyName.lastIndexOf(' - ');
     if (separatorIndex == -1) return locale;
 
     final label = friendlyName.substring(separatorIndex + 3).trim();
-    return label.isEmpty ? locale : '$label ($locale)';
+    return label.isEmpty ? locale : label;
   }
 
   static String? _edgeLocaleDisplayName(String locale) {

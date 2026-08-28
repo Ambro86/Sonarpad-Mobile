@@ -13,6 +13,7 @@ import '../services/audio_player_service.dart';
 import '../services/podcast_cache_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
+import '../utils/country_name_helper.dart';
 import 'app_log_screen.dart';
 import 'sonartube_player_actions_settings_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -762,12 +763,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
     TtsVoiceLanguage language,
     AppLocalizations l10n,
   ) {
-    final localized = l10n.languageLabel(language.code);
-    if (localized == language.code) return language.label;
-
     final normalized = language.code.trim().replaceAll('_', '-');
-    if (!normalized.contains('-')) return localized;
-    return '$localized (${language.code})';
+    final parts = normalized.split('-').where((part) => part.isNotEmpty).toList();
+    final localizedLanguage = l10n.languageLabel(language.code);
+
+    // If Sonarpad does not have a localized name for this language, keep the
+    // human-readable Edge label instead of exposing a technical locale code.
+    if (localizedLanguage == language.code || parts.isEmpty) {
+      return language.label;
+    }
+
+    // Script/dialect variants such as iu-Cans-CA or zh-CN-liaoning carry
+    // useful information in Edge's friendly label. Preserve that text rather
+    // than collapsing it to a country code.
+    if (parts.length > 2) {
+      final openParen = language.label.indexOf('(');
+      if (openParen != -1) {
+        return '$localizedLanguage ${language.label.substring(openParen)}';
+      }
+      return localizedLanguage;
+    }
+
+    final region = parts.length == 2 && parts[1].length == 2
+        ? parts[1].toUpperCase()
+        : null;
+    if (region == null) return localizedLanguage;
+
+    final fallbackCountry = _edgeCountryFromLanguageLabel(language.label);
+    final country = localizedCountryDisplayName(
+      region,
+      localeName: l10n.localeName,
+      fallbackLabel: fallbackCountry,
+    );
+    if (country.isEmpty || country.toUpperCase() == region) {
+      return language.label;
+    }
+    return '$localizedLanguage ($country)';
+  }
+
+  String _edgeCountryFromLanguageLabel(String label) {
+    final openParen = label.lastIndexOf('(');
+    final closeParen = label.lastIndexOf(')');
+    if (openParen == -1 || closeParen <= openParen) return '';
+    final inside = label.substring(openParen + 1, closeParen).trim();
+    if (inside.contains(',')) {
+      return inside.split(',').last.trim();
+    }
+    return inside;
   }
 
   TtsVoiceOption? get _selectedEdgeVoice {
@@ -779,6 +821,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (voice.voice == _voice) return voice;
     }
     return voices.isEmpty ? null : voices.first;
+  }
+
+  String get _selectedEdgeVoiceLabel {
+    final selected = _selectedEdgeVoice;
+    if (selected != null && selected.label.trim().isNotEmpty) {
+      return selected.label.trim();
+    }
+    return _edgeVoiceNameFromId(_voice);
+  }
+
+  String _edgeVoiceNameFromId(String voiceId) {
+    var name = voiceId.trim();
+    if (name.isEmpty) return name;
+    final separatorIndex = name.lastIndexOf('-');
+    if (separatorIndex != -1 && separatorIndex + 1 < name.length) {
+      name = name.substring(separatorIndex + 1);
+    }
+    if (name.endsWith('Neural')) {
+      name = name.substring(0, name.length - 'Neural'.length);
+    }
+    return name.replaceAll('Multilingual', ' Multilingual').trim();
   }
 
   Future<void> _restoreControlFocus(FocusNode focusNode) async {
@@ -849,7 +912,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (_) => LetterJumpOptionPickerScreen<TtsVoiceOption>(
           title: l10n.ttsVoice,
           options: voices,
-          labelBuilder: (voice) => '${voice.label} (${voice.voice})',
+          labelBuilder: (voice) => voice.label,
           selectedBuilder: (voice) => voice.voice == _voice,
           selectedLabel: l10n.letterJumpSelected,
           leadingBuilder: (selected) =>
@@ -1123,13 +1186,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: l10n.ttsVoice,
               kind: 'picker',
               value: _voice,
-              valueLabel: _selectedEdgeVoice == null
-                  ? _voice
-                  : '${_selectedEdgeVoice!.label} (${_selectedEdgeVoice!.voice})',
+              valueLabel: _selectedEdgeVoiceLabel,
               options: edgeVoices
                   .map((e) => AccessibleOption(
                         value: e.voice,
-                        label: '${e.label} (${e.voice})',
+                        label: e.label,
                       ))
                   .toList(),
             ),
@@ -1604,10 +1665,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         leading: const Icon(Icons.record_voice_over),
                         title: Text(l10n.ttsVoice),
                         subtitle: Text(
-                          _selectedEdgeVoice == null
-                              ? _voice
-                              : '${_selectedEdgeVoice!.label} '
-                                  '(${_selectedEdgeVoice!.voice})',
+                          _selectedEdgeVoiceLabel,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
