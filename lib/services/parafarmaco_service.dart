@@ -50,10 +50,7 @@ class ParafarmacoDetail {
     if (type == ParafarmacoSectionType.complete) return fullText;
     final direct = sections[type];
     if (direct != null && direct.trim().length >= 40) return direct.trim();
-    final note = _missingSectionText(type);
-    final complete = fullText.trim();
-    if (complete.length < 40) return note;
-    return '$note\n\nScheda completa disponibile:\n\n$complete';
+    return _missingSectionText(type);
   }
 
   String _missingSectionText(ParafarmacoSectionType type) {
@@ -99,7 +96,7 @@ class ParafarmacoService {
   static const _currentCodifaBase = 'https://codifa.it';
 
   static final Map<String, List<ParafarmacoSearchResult>>
-      _alphabeticalResultCache = {};
+  _alphabeticalResultCache = {};
 
   final http.Client? _client;
   final Map<String, dom.Document> _indexCache = {};
@@ -174,9 +171,7 @@ class ParafarmacoService {
     }
 
     if (hadSuccessfulResponse) {
-      _logAz(
-        'PHARMACY_AZ_LETTER section=$section letter=$letter result=empty',
-      );
+      _logAz('PHARMACY_AZ_LETTER section=$section letter=$letter result=empty');
       return const [];
     }
     if (lastError != null) throw lastError;
@@ -293,10 +288,14 @@ class ParafarmacoService {
   ) {
     if (aifaDrugs.isEmpty) return List.of(products);
     return products
-        .where((product) =>
-            !isMedicationResult(product) ||
-            !aifaDrugs.any((drug) =>
-                _sameCommercialMedicine(product.name, drug.denominazione)))
+        .where(
+          (product) =>
+              !isMedicationResult(product) ||
+              !aifaDrugs.any(
+                (drug) =>
+                    _sameCommercialMedicine(product.name, drug.denominazione),
+              ),
+        )
         .toList(growable: false);
   }
 
@@ -401,9 +400,11 @@ class ParafarmacoService {
     final headers = document.querySelectorAll(
       '.result-header[data-codice], [data-codice][data-isfarmaco]',
     );
-    final noResults = document.querySelector('.app-alert') != null &&
-        _normalize(document.body?.text ?? document.text ?? '')
-            .contains('nessun risultato');
+    final noResults =
+        document.querySelector('.app-alert') != null &&
+        _normalize(
+          document.body?.text ?? document.text ?? '',
+        ).contains('nessun risultato');
     if (headers.isEmpty && !noResults) {
       throw const FormatException('Risposta ricerca Codifa non riconosciuta');
     }
@@ -422,10 +423,7 @@ class ParafarmacoService {
         header.querySelector('.result-ditta')?.text ?? '',
       );
       final detailUrl = Uri.parse('$_currentCodifaBase/farmaci').replace(
-        queryParameters: <String, String>{
-          'handler': 'Detail',
-          'codice': code,
-        },
+        queryParameters: <String, String>{'handler': 'Detail', 'codice': code},
       );
       results.add(
         ParafarmacoSearchResult(
@@ -475,7 +473,9 @@ class ParafarmacoService {
   }
 
   Future<List<ParafarmacoSearchResult>> _searchCodifaPage(
-      Uri uri, String query) async {
+    Uri uri,
+    String query,
+  ) async {
     final document = await _loadCodifaDocument(uri);
     final links = document.querySelectorAll('a[href]');
     final results = <ParafarmacoSearchResult>[];
@@ -494,13 +494,15 @@ class ParafarmacoService {
       final normalizedHaystack = _normalize('$name $parentText $url');
       if (!_matchesQueryTokens(normalizedHaystack, tokens)) continue;
 
-      results.add(ParafarmacoSearchResult(
-        name: name,
-        category: _categoryFromCodifaUrl(url),
-        sourceName: 'Codifa/Farmadati',
-        sourceUrl: url,
-        snippet: _snippetFromParent(parentText, name),
-      ));
+      results.add(
+        ParafarmacoSearchResult(
+          name: name,
+          category: _categoryFromCodifaUrl(url),
+          sourceName: 'Codifa/Farmadati',
+          sourceUrl: url,
+          snippet: _snippetFromParent(parentText, name),
+        ),
+      );
     }
     return _deduplicateResults(results);
   }
@@ -544,8 +546,10 @@ class ParafarmacoService {
         if (desktopResponse.statusCode == 200) {
           final desktopBody = _decodeResponse(desktopResponse);
           final desktopDocument = html_parser.parse(desktopBody);
-          final desktopSectionLinks =
-              _countCodifaCatalogLinks(desktopDocument, section);
+          final desktopSectionLinks = _countCodifaCatalogLinks(
+            desktopDocument,
+            section,
+          );
           _logCodifaIndexResponse(
             profile: 'desktop',
             uri: uri,
@@ -678,7 +682,8 @@ class ParafarmacoService {
   }
 
   List<ParafarmacoSearchResult> _deduplicateResults(
-      List<ParafarmacoSearchResult> results) {
+    List<ParafarmacoSearchResult> results,
+  ) {
     final byUrl = <String, ParafarmacoSearchResult>{};
     for (final result in results) {
       byUrl[result.sourceUrl] = result;
@@ -727,7 +732,8 @@ class ParafarmacoService {
       );
       if (fallback != null) return fallback;
       throw Exception(
-          'Impossibile aprire la scheda prodotto (HTTP ${response.statusCode})');
+        'Impossibile aprire la scheda prodotto (HTTP ${response.statusCode})',
+      );
     }
 
     final body = _decodeResponse(response);
@@ -787,11 +793,13 @@ class ParafarmacoService {
     if (snippet == null || snippet.length < 20) return null;
     if (result.sourceName == 'Codifa/Farmadati') return null;
 
-    final reasonText = reason ??
+    final reasonText =
+        reason ??
         (statusCode == 200
             ? 'la fonte esterna non espone sezioni leggibili in modo stabile'
             : 'la fonte esterna ha risposto HTTP $statusCode durante l\'apertura');
-    final note = 'Nota: $reasonText. '
+    final note =
+        'Nota: $reasonText. '
         'Mostro quindi una scheda sintetica basata sul fallback curato e sulla fonte dichiarata, '
         'senza spacciarla per scheda Codifa o AIFA.';
     final body = '$snippet\n\n$note';
@@ -821,7 +829,8 @@ class ParafarmacoService {
   }
 
   ParafarmacoDetail _detailFromCuratedSearchResult(
-      ParafarmacoSearchResult result) {
+    ParafarmacoSearchResult result,
+  ) {
     final snippet = result.snippet?.trim() ?? '';
     final note =
         'Nota: questa è una scheda sintetica di fallback usata quando la fonte pubblica non restituisce in modo affidabile la variante richiesta. '
@@ -1179,443 +1188,481 @@ class ParafarmacoService {
     );
 
     addIf(
-        normalized.contains('ematonil'),
-        const ParafarmacoSearchResult(
-          name: 'Ematonil Plus Emulsione',
-          category: 'Parafarmaco / prodotto da farmacia',
-          sourceName: 'Codifa/Farmadati',
-          sourceUrl:
-              'https://www.codifa.it/parafarmaci/e/ematonil-plus-emulsione-idratanti-tonificanti-rassodanti-multifunzione-corpo',
-          snippet: 'A base di arnica, escina e bromelina.',
-          code: 'PARAF/MINSAN 902649298',
-        ));
+      normalized.contains('ematonil'),
+      const ParafarmacoSearchResult(
+        name: 'Ematonil Plus Emulsione',
+        category: 'Parafarmaco / prodotto da farmacia',
+        sourceName: 'Codifa/Farmadati',
+        sourceUrl:
+            'https://www.codifa.it/parafarmaci/e/ematonil-plus-emulsione-idratanti-tonificanti-rassodanti-multifunzione-corpo',
+        snippet: 'A base di arnica, escina e bromelina.',
+        code: 'PARAF/MINSAN 902649298',
+      ),
+    );
 
     // Alcuni prodotti non emergono dagli indici pubblici Codifa/Farmadati.
     // In questi casi offriamo un fallback chiaramente indicato come scheda
     // pubblica/sito produttore o scheda pubblica prodotto, senza confonderlo
     // con la ricerca AIFA e senza spacciarlo per fonte Codifa.
     addIf(
-        normalized.contains('cicaplast') ||
-            (normalized.contains('baume') && normalized.contains('b5')),
-        const ParafarmacoSearchResult(
-          name: 'Cicaplast Baume B5+',
-          category: 'Dermocosmetico / prodotto da farmacia',
-          sourceName: 'La Roche-Posay',
-          sourceUrl:
-              'https://www.larocheposay.it/cicaplast-per-la-pelle-fragilizzata/cicaplast-baume-b5-plus',
-          snippet:
-              'Balsamo lenitivo ultra-riparatore per pelli irritate o fragilizzate.',
-        ));
+      normalized.contains('cicaplast') ||
+          (normalized.contains('baume') && normalized.contains('b5')),
+      const ParafarmacoSearchResult(
+        name: 'Cicaplast Baume B5+',
+        category: 'Dermocosmetico / prodotto da farmacia',
+        sourceName: 'La Roche-Posay',
+        sourceUrl:
+            'https://www.larocheposay.it/cicaplast-per-la-pelle-fragilizzata/cicaplast-baume-b5-plus',
+        snippet:
+            'Balsamo lenitivo ultra-riparatore per pelli irritate o fragilizzate.',
+      ),
+    );
 
     addIf(
-        normalized.contains('ialumar'),
-        const ParafarmacoSearchResult(
-          name: 'Ialumar Spray',
-          category: 'Dispositivo / prodotto da farmacia',
-          sourceName: 'Scheda pubblica prodotto',
-          sourceUrl:
-              'https://www.farmaciafornari.it/prodotti-uso-umano/293-ialumar-spray-100-ml.html',
-          snippet:
-              'Soluzione isotonica spray di acqua di mare e acido ialuronico sale sodico.',
-          code: '913152397',
-        ));
+      normalized.contains('ialumar'),
+      const ParafarmacoSearchResult(
+        name: 'Ialumar Spray',
+        category: 'Dispositivo / prodotto da farmacia',
+        sourceName: 'Scheda pubblica prodotto',
+        sourceUrl:
+            'https://www.farmaciafornari.it/prodotti-uso-umano/293-ialumar-spray-100-ml.html',
+        snippet:
+            'Soluzione isotonica spray di acqua di mare e acido ialuronico sale sodico.',
+        code: '913152397',
+      ),
+    );
 
     addIf(
-        normalized.contains('vea') && normalized.contains('olio'),
-        const ParafarmacoSearchResult(
-          name: 'Vea Olio',
-          category: 'Dermocosmetico / prodotto da farmacia',
-          sourceName: 'Scheda pubblica prodotto',
-          sourceUrl: 'https://www.vea.it/prodotti/vea-olio/',
-          snippet:
-              'Olio dermatologico a base di vitamina E pura, indicato per pelle secca, arrossata o sensibile.',
-        ));
+      normalized.contains('vea') && normalized.contains('olio'),
+      const ParafarmacoSearchResult(
+        name: 'Vea Olio',
+        category: 'Dermocosmetico / prodotto da farmacia',
+        sourceName: 'Scheda pubblica prodotto',
+        sourceUrl: 'https://www.vea.it/prodotti/vea-olio/',
+        snippet:
+            'Olio dermatologico a base di vitamina E pura, indicato per pelle secca, arrossata o sensibile.',
+      ),
+    );
 
     addIf(
-        normalized.contains('gse') &&
-            (normalized.contains('intimo') || normalized.contains('intima')),
-        const ParafarmacoSearchResult(
-          name: 'Gse Intimo',
-          category: 'Prodotto per igiene intima / prodotto da farmacia',
-          sourceName: 'Prodeco Pharma',
-          sourceUrl:
-              'https://www.prodecopharma.com/prodotto/gse-intimo-detergente/',
-          snippet:
-              'Detergente intimo della linea GSE pensato per l’igiene e il benessere delle parti intime.',
-        ));
+      normalized.contains('gse') &&
+          (normalized.contains('intimo') || normalized.contains('intima')),
+      const ParafarmacoSearchResult(
+        name: 'Gse Intimo',
+        category: 'Prodotto per igiene intima / prodotto da farmacia',
+        sourceName: 'Prodeco Pharma',
+        sourceUrl:
+            'https://www.prodecopharma.com/prodotto/gse-intimo-detergente/',
+        snippet:
+            'Detergente intimo della linea GSE pensato per l’igiene e il benessere delle parti intime.',
+      ),
+    );
 
     addIf(
-        normalized.contains('cicatridina') && normalized.contains('ovuli'),
-        const ParafarmacoSearchResult(
-          name: 'Cicatridina ovuli',
-          category: 'Dispositivo per ginecologia / prodotto da farmacia',
-          sourceName: 'Codifa/Farmadati',
-          sourceUrl:
-              'https://www.codifa.it/parafarmaci/c/cicatridina-dispositivi-per-ginecologia--altri',
-          snippet: 'Dispositivo ginecologico della linea Cicatridina.',
-        ));
+      normalized.contains('cicatridina') && normalized.contains('ovuli'),
+      const ParafarmacoSearchResult(
+        name: 'Cicatridina ovuli',
+        category: 'Dispositivo per ginecologia / prodotto da farmacia',
+        sourceName: 'Codifa/Farmadati',
+        sourceUrl:
+            'https://www.codifa.it/parafarmaci/c/cicatridina-dispositivi-per-ginecologia--altri',
+        snippet: 'Dispositivo ginecologico della linea Cicatridina.',
+      ),
+    );
 
     addIf(
-        normalized.contains('cicatridina') && normalized.contains('crema'),
-        const ParafarmacoSearchResult(
-          name: 'Cicatridina crema',
-          category: 'Medicazione per ferite / prodotto da farmacia',
-          sourceName: 'Codifa/Farmadati',
-          sourceUrl:
-              'https://www.codifa.it/parafarmaci/c/cicatridina-medicazioni-per-ferite-piaghe-e-ulcere--altre',
-          snippet: 'Prodotto Cicatridina per processi riparativi cutanei.',
-        ));
+      normalized.contains('cicatridina') && normalized.contains('crema'),
+      const ParafarmacoSearchResult(
+        name: 'Cicatridina crema',
+        category: 'Medicazione per ferite / prodotto da farmacia',
+        sourceName: 'Codifa/Farmadati',
+        sourceUrl:
+            'https://www.codifa.it/parafarmaci/c/cicatridina-medicazioni-per-ferite-piaghe-e-ulcere--altre',
+        snippet: 'Prodotto Cicatridina per processi riparativi cutanei.',
+      ),
+    );
 
     addIf(
-        normalized.contains('rilastil') && normalized.contains('difesa'),
-        const ParafarmacoSearchResult(
-          name: 'Rilastil Difesa crema',
-          category: 'Dermocosmetico / prodotto da farmacia',
-          sourceName: 'Rilastil',
-          sourceUrl: 'https://www.rilastil.com/it/difesa-crema-sterile/',
-          snippet:
-              'Crema protettiva della linea Rilastil Difesa per pelle sensibile o reattiva.',
-        ));
+      normalized.contains('rilastil') && normalized.contains('difesa'),
+      const ParafarmacoSearchResult(
+        name: 'Rilastil Difesa crema',
+        category: 'Dermocosmetico / prodotto da farmacia',
+        sourceName: 'Rilastil',
+        sourceUrl: 'https://www.rilastil.com/it/difesa-crema-sterile/',
+        snippet:
+            'Crema protettiva della linea Rilastil Difesa per pelle sensibile o reattiva.',
+      ),
+    );
 
     addIf(
-        normalized.contains('rilastil') && normalized.contains('xerolact'),
-        const ParafarmacoSearchResult(
-          name: 'Rilastil Xerolact',
-          category: 'Dermocosmetico / prodotto da farmacia',
-          sourceName: 'Rilastil',
-          sourceUrl: 'https://www.rilastil.com/it/xerolact/',
-          snippet:
-              'Linea Rilastil Xerolact per pelle secca, molto secca o soggetta a xerosi.',
-        ));
+      normalized.contains('rilastil') && normalized.contains('xerolact'),
+      const ParafarmacoSearchResult(
+        name: 'Rilastil Xerolact',
+        category: 'Dermocosmetico / prodotto da farmacia',
+        sourceName: 'Rilastil',
+        sourceUrl: 'https://www.rilastil.com/it/xerolact/',
+        snippet:
+            'Linea Rilastil Xerolact per pelle secca, molto secca o soggetta a xerosi.',
+      ),
+    );
 
     addIf(
-        normalized.contains('la roche') && normalized.contains('lipikar'),
-        const ParafarmacoSearchResult(
-          name: 'La Roche-Posay Lipikar',
-          category: 'Dermocosmetico / prodotto da farmacia',
-          sourceName: 'La Roche-Posay',
-          sourceUrl: 'https://www.larocheposay.it/lipikar',
-          snippet:
-              'Linea Lipikar per pelle secca, sensibile o a tendenza atopica.',
-        ));
+      normalized.contains('la roche') && normalized.contains('lipikar'),
+      const ParafarmacoSearchResult(
+        name: 'La Roche-Posay Lipikar',
+        category: 'Dermocosmetico / prodotto da farmacia',
+        sourceName: 'La Roche-Posay',
+        sourceUrl: 'https://www.larocheposay.it/lipikar',
+        snippet:
+            'Linea Lipikar per pelle secca, sensibile o a tendenza atopica.',
+      ),
+    );
 
     addIf(
-        normalized.contains('massigen') && normalized.contains('dailyvit'),
-        const ParafarmacoSearchResult(
-          name: 'Massigen Dailyvit',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Massigen',
-          sourceUrl: 'https://www.massigen.it/prodotti/dailyvit/',
-          snippet:
-              'Integratore multivitaminico e multiminerale della linea Massigen Dailyvit.',
-        ));
+      normalized.contains('massigen') && normalized.contains('dailyvit'),
+      const ParafarmacoSearchResult(
+        name: 'Massigen Dailyvit',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Massigen',
+        sourceUrl: 'https://www.massigen.it/prodotti/dailyvit/',
+        snippet:
+            'Integratore multivitaminico e multiminerale della linea Massigen Dailyvit.',
+      ),
+    );
 
     addIf(
-        normalized.contains('massigen') && normalized.contains('difesa'),
-        const ParafarmacoSearchResult(
-          name: 'Massigen Pronto Difesa',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Massigen',
-          sourceUrl: 'https://www.massigen.it/prodotti/pronto-difesa/',
-          snippet:
-              'Integratore della linea Massigen Pronto Difesa per il supporto delle difese dell’organismo.',
-        ));
+      normalized.contains('massigen') && normalized.contains('difesa'),
+      const ParafarmacoSearchResult(
+        name: 'Massigen Pronto Difesa',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Massigen',
+        sourceUrl: 'https://www.massigen.it/prodotti/pronto-difesa/',
+        snippet:
+            'Integratore della linea Massigen Pronto Difesa per il supporto delle difese dell’organismo.',
+      ),
+    );
 
     addIf(
-        normalized.contains('compeed') &&
-            (normalized.contains('vesciche') || normalized.contains('cerotti')),
-        const ParafarmacoSearchResult(
-          name: 'Compeed Cerotti per Vesciche Medio',
-          category: 'Cerotti / prodotto da farmacia',
-          sourceName: 'Compeed',
-          sourceUrl:
-              'https://www.compeed.it/vesciche/prodotti/compeed-cerotti-per-vesciche-medio/',
-          snippet:
-              'Cerotti idrocolloidali per vesciche, sollievo rapido e protezione dallo sfregamento.',
-        ));
+      normalized.contains('compeed') &&
+          (normalized.contains('vesciche') || normalized.contains('cerotti')),
+      const ParafarmacoSearchResult(
+        name: 'Compeed Cerotti per Vesciche Medio',
+        category: 'Cerotti / prodotto da farmacia',
+        sourceName: 'Compeed',
+        sourceUrl:
+            'https://www.compeed.it/vesciche/prodotti/compeed-cerotti-per-vesciche-medio/',
+        snippet:
+            'Cerotti idrocolloidali per vesciche, sollievo rapido e protezione dallo sfregamento.',
+      ),
+    );
 
     addIf(
-        normalized.contains('rinoway'),
-        const ParafarmacoSearchResult(
-          name: 'Rinoway Doccia per irrigazione nasale',
-          category: 'Dispositivo medico / prodotto da farmacia',
-          sourceName: 'Envicon Medical',
-          sourceUrl:
-              'https://www.envicon.it/shop/lavaggi-nasali/rinoway-doccia-per-irrigazione-nasale/',
-          snippet:
-              'Doccia per irrigazione nasale utile per lavaggi delle cavità nasali.',
-        ));
+      normalized.contains('rinoway'),
+      const ParafarmacoSearchResult(
+        name: 'Rinoway Doccia per irrigazione nasale',
+        category: 'Dispositivo medico / prodotto da farmacia',
+        sourceName: 'Envicon Medical',
+        sourceUrl:
+            'https://www.envicon.it/shop/lavaggi-nasali/rinoway-doccia-per-irrigazione-nasale/',
+        snippet:
+            'Doccia per irrigazione nasale utile per lavaggi delle cavità nasali.',
+      ),
+    );
 
     addIf(
-        normalized.contains('libenar'),
-        const ParafarmacoSearchResult(
-          name: 'Libenar Soluzione Fisiologica',
-          category: 'Dispositivo / prodotto da farmacia',
-          sourceName: 'Libenar',
-          sourceUrl: 'https://www.libenar.it/soluzione-fisiologica',
-          snippet: 'Soluzione salina sterile isotonica in flaconcini monodose.',
-        ));
+      normalized.contains('libenar'),
+      const ParafarmacoSearchResult(
+        name: 'Libenar Soluzione Fisiologica',
+        category: 'Dispositivo / prodotto da farmacia',
+        sourceName: 'Libenar',
+        sourceUrl: 'https://www.libenar.it/soluzione-fisiologica',
+        snippet: 'Soluzione salina sterile isotonica in flaconcini monodose.',
+      ),
+    );
 
     addIf(
-        normalized.contains('gengigel'),
-        const ParafarmacoSearchResult(
-          name: 'Gengigel Gel Gengivale',
-          category: 'Dispositivo medico / prodotto da farmacia',
-          sourceName: 'Ricerfarma / Gengigel',
-          sourceUrl:
-              'https://www.ricerfarma.com/oral-care/gengigel-line/gengigel-gel/',
-          snippet:
-              'Gel con acido ialuronico 0,2% per gengive sensibili, irritate o traumatizzate.',
-        ));
+      normalized.contains('gengigel'),
+      const ParafarmacoSearchResult(
+        name: 'Gengigel Gel Gengivale',
+        category: 'Dispositivo medico / prodotto da farmacia',
+        sourceName: 'Ricerfarma / Gengigel',
+        sourceUrl:
+            'https://www.ricerfarma.com/oral-care/gengigel-line/gengigel-gel/',
+        snippet:
+            'Gel con acido ialuronico 0,2% per gengive sensibili, irritate o traumatizzate.',
+      ),
+    );
 
     addIf(
-        normalized.contains('physiomer'),
-        const ParafarmacoSearchResult(
-          name: 'Physiomer Getto Normale Spray Nasale',
-          category: 'Dispositivo medico / prodotto da farmacia',
-          sourceName: 'Physiomer',
-          sourceUrl: 'https://www.physiomer.it/physiomer-getto-normale',
-          snippet:
-              'Spray nasale con siero di mare per detersione quotidiana e comfort respiratorio.',
-        ));
+      normalized.contains('physiomer'),
+      const ParafarmacoSearchResult(
+        name: 'Physiomer Getto Normale Spray Nasale',
+        category: 'Dispositivo medico / prodotto da farmacia',
+        sourceName: 'Physiomer',
+        sourceUrl: 'https://www.physiomer.it/physiomer-getto-normale',
+        snippet:
+            'Spray nasale con siero di mare per detersione quotidiana e comfort respiratorio.',
+      ),
+    );
 
     addIf(
-        normalized.contains('fluimare') || normalized.contains('fluimar'),
-        const ParafarmacoSearchResult(
-          name: 'Fluimar Spray',
-          category: 'Dispositivo / prodotto da farmacia',
-          sourceName: 'Chemist Research',
-          sourceUrl: 'https://www.chemistresearch.it/prodotto/fluimar-spray/',
-          snippet:
-              'Soluzione isotonica nasale di acqua di mare per detergere e idratare il naso.',
-        ));
+      normalized.contains('fluimare') || normalized.contains('fluimar'),
+      const ParafarmacoSearchResult(
+        name: 'Fluimar Spray',
+        category: 'Dispositivo / prodotto da farmacia',
+        sourceName: 'Chemist Research',
+        sourceUrl: 'https://www.chemistresearch.it/prodotto/fluimar-spray/',
+        snippet:
+            'Soluzione isotonica nasale di acqua di mare per detergere e idratare il naso.',
+      ),
+    );
 
     addIf(
-        normalized.contains('avene') && normalized.contains('cicalfate'),
-        const ParafarmacoSearchResult(
-          name: 'Avène Cicalfate+ Crema Ristrutturante Protettiva',
-          category: 'Dermocosmetico / prodotto da farmacia',
-          sourceName: 'Eau Thermale Avène',
-          sourceUrl:
-              'https://www.avene.it/p/cicalfate-crema-ristrutturante-protettiva-3282770204681-30bef97c',
-          snippet:
-              'Crema ristrutturante protettiva per pelle sensibile fragilizzata.',
-        ));
+      normalized.contains('avene') && normalized.contains('cicalfate'),
+      const ParafarmacoSearchResult(
+        name: 'Avène Cicalfate+ Crema Ristrutturante Protettiva',
+        category: 'Dermocosmetico / prodotto da farmacia',
+        sourceName: 'Eau Thermale Avène',
+        sourceUrl:
+            'https://www.avene.it/p/cicalfate-crema-ristrutturante-protettiva-3282770204681-30bef97c',
+        snippet:
+            'Crema ristrutturante protettiva per pelle sensibile fragilizzata.',
+      ),
+    );
 
     addIf(
-        normalized.contains('bioscalin'),
-        const ParafarmacoSearchResult(
-          name: 'Bioscalin Total Care Integratore',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Bioscalin Giuliani',
-          sourceUrl: 'https://www.bioscalin.it/collections/linea-total-care',
-          snippet:
-              'Linea con integratori e trattamenti per capelli indeboliti e soggetti a caduta temporanea.',
-        ));
+      normalized.contains('bioscalin'),
+      const ParafarmacoSearchResult(
+        name: 'Bioscalin Total Care Integratore',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Bioscalin Giuliani',
+        sourceUrl: 'https://www.bioscalin.it/collections/linea-total-care',
+        snippet:
+            'Linea con integratori e trattamenti per capelli indeboliti e soggetti a caduta temporanea.',
+      ),
+    );
 
     addIf(
-        normalized.contains('solgar') &&
-            (normalized.contains('vitamina') || normalized.contains('ester')),
-        const ParafarmacoSearchResult(
-          name: 'Solgar Ester-C Plus 1000',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Solgar Italia',
-          sourceUrl: 'https://www.solgar.it/immunity/',
-          snippet:
-              'Integratore a base di vitamina C Ester-C con rosa canina, acerola, bioflavonoidi e rutina.',
-        ));
+      normalized.contains('solgar') &&
+          (normalized.contains('vitamina') || normalized.contains('ester')),
+      const ParafarmacoSearchResult(
+        name: 'Solgar Ester-C Plus 1000',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Solgar Italia',
+        sourceUrl: 'https://www.solgar.it/immunity/',
+        snippet:
+            'Integratore a base di vitamina C Ester-C con rosa canina, acerola, bioflavonoidi e rutina.',
+      ),
+    );
 
     addIf(
-        normalized.contains('immunomix'),
-        const ParafarmacoSearchResult(
-          name: 'ImmunoMix Plus Opercoli',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Aboca',
-          sourceUrl: 'https://www.aboca.com/product/immunomix-plus-capsules/',
-          snippet:
-              'Integratore naturale Aboca per coadiuvare le naturali difese dell’organismo.',
-        ));
+      normalized.contains('immunomix'),
+      const ParafarmacoSearchResult(
+        name: 'ImmunoMix Plus Opercoli',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Aboca',
+        sourceUrl: 'https://www.aboca.com/product/immunomix-plus-capsules/',
+        snippet:
+            'Integratore naturale Aboca per coadiuvare le naturali difese dell’organismo.',
+      ),
+    );
 
     addIf(
-        normalized.contains('lenodiar'),
-        const ParafarmacoSearchResult(
-          name: 'LenoDiar Adulti',
-          category: 'Dispositivo medico / prodotto da farmacia',
-          sourceName: 'Aboca',
-          sourceUrl: 'https://www.aboca.com/it/prodotto/lenodiar-adulti/',
-          snippet:
-              'Prodotto indicato per il trattamento della diarrea acuta e delle riacutizzazioni della diarrea cronica.',
-        ));
+      normalized.contains('lenodiar'),
+      const ParafarmacoSearchResult(
+        name: 'LenoDiar Adulti',
+        category: 'Dispositivo medico / prodotto da farmacia',
+        sourceName: 'Aboca',
+        sourceUrl: 'https://www.aboca.com/it/prodotto/lenodiar-adulti/',
+        snippet:
+            'Prodotto indicato per il trattamento della diarrea acuta e delle riacutizzazioni della diarrea cronica.',
+      ),
+    );
 
     addIf(
-        normalized.contains('golamir'),
-        const ParafarmacoSearchResult(
-          name: 'Golamir 2Act Spray Forte',
-          category: 'Dispositivo medico / prodotto da farmacia',
-          sourceName: 'Aboca',
-          sourceUrl: 'https://www.aboca.com/it/prodotto/golamir-spray/',
-          snippet:
-              'Prodotto per il trattamento degli stati irritativi e infiammatori del cavo orofaringeo.',
-        ));
+      normalized.contains('golamir'),
+      const ParafarmacoSearchResult(
+        name: 'Golamir 2Act Spray Forte',
+        category: 'Dispositivo medico / prodotto da farmacia',
+        sourceName: 'Aboca',
+        sourceUrl: 'https://www.aboca.com/it/prodotto/golamir-spray/',
+        snippet:
+            'Prodotto per il trattamento degli stati irritativi e infiammatori del cavo orofaringeo.',
+      ),
+    );
 
     addIf(
-        normalized.contains('curasept') && normalized.contains('collutorio'),
-        const ParafarmacoSearchResult(
-          name: 'Curasept Collutorio',
-          category: 'Igiene orale / prodotto da farmacia',
-          sourceName: 'Curasept',
-          sourceUrl: 'https://curaseptspa.it/prodotti/collutori/',
-          snippet:
-              'Linea di collutori Curasept per igiene orale, protezione e mantenimento della salute gengivale.',
-        ));
+      normalized.contains('curasept') && normalized.contains('collutorio'),
+      const ParafarmacoSearchResult(
+        name: 'Curasept Collutorio',
+        category: 'Igiene orale / prodotto da farmacia',
+        sourceName: 'Curasept',
+        sourceUrl: 'https://curaseptspa.it/prodotti/collutori/',
+        snippet:
+            'Linea di collutori Curasept per igiene orale, protezione e mantenimento della salute gengivale.',
+      ),
+    );
 
     addIf(
-        normalized.contains('optrex') && normalized.contains('actimist'),
-        const ParafarmacoSearchResult(
-          name: 'Optrex ActiMist Spray 2 in 1',
-          category: 'Dispositivo / prodotto oftalmico',
-          sourceName: 'Scheda pubblica prodotto',
-          sourceUrl: 'https://www.drmax.it/optrex',
-          snippet:
-              'Spray 2 in 1 ad azione lubrificante e reidratante per occhi secchi, stanchi o irritati.',
-        ));
+      normalized.contains('optrex') && normalized.contains('actimist'),
+      const ParafarmacoSearchResult(
+        name: 'Optrex ActiMist Spray 2 in 1',
+        category: 'Dispositivo / prodotto oftalmico',
+        sourceName: 'Scheda pubblica prodotto',
+        sourceUrl: 'https://www.drmax.it/optrex',
+        snippet:
+            'Spray 2 in 1 ad azione lubrificante e reidratante per occhi secchi, stanchi o irritati.',
+      ),
+    );
 
     addIf(
-        normalized.contains('redoxon'),
-        const ParafarmacoSearchResult(
-          name: 'Redoxon Doppia Azione',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Scheda pubblica prodotto',
-          sourceUrl: 'https://farmaciadelcorso.net/redoxon-15-cpr-effarancmand',
-          snippet:
-              'Integratore alimentare a base di vitamina C e zinco in compresse effervescenti.',
-        ));
+      normalized.contains('redoxon'),
+      const ParafarmacoSearchResult(
+        name: 'Redoxon Doppia Azione',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Scheda pubblica prodotto',
+        sourceUrl: 'https://farmaciadelcorso.net/redoxon-15-cpr-effarancmand',
+        snippet:
+            'Integratore alimentare a base di vitamina C e zinco in compresse effervescenti.',
+      ),
+    );
 
     addIf(
-        normalized.contains('drenax'),
-        const ParafarmacoSearchResult(
-          name: 'Drenax Forte',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Drenax',
-          sourceUrl: 'https://drenax.it/prodotti/',
-          snippet:
-              'Linea di integratori alimentari per controllo del peso corporeo e ritenzione idrica.',
-        ));
+      normalized.contains('drenax'),
+      const ParafarmacoSearchResult(
+        name: 'Drenax Forte',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Drenax',
+        sourceUrl: 'https://drenax.it/prodotti/',
+        snippet:
+            'Linea di integratori alimentari per controllo del peso corporeo e ritenzione idrica.',
+      ),
+    );
 
     addIf(
-        normalized.contains('hoffmann'),
-        const ParafarmacoSearchResult(
-          name: 'Pasta Hoffmann',
-          category: 'Dermocosmetico / prodotto da farmacia',
-          sourceName: 'Euphidra',
-          sourceUrl: 'https://www.euphidra.com/prodotto/pasta-hoffmann-0',
-          snippet:
-              'Pasta con ossido di zinco, olio di oliva e olio di riso per irritazioni e fenomeni macerativi.',
-        ));
+      normalized.contains('hoffmann'),
+      const ParafarmacoSearchResult(
+        name: 'Pasta Hoffmann',
+        category: 'Dermocosmetico / prodotto da farmacia',
+        sourceName: 'Euphidra',
+        sourceUrl: 'https://www.euphidra.com/prodotto/pasta-hoffmann-0',
+        snippet:
+            'Pasta con ossido di zinco, olio di oliva e olio di riso per irritazioni e fenomeni macerativi.',
+      ),
+    );
 
     addIf(
-        normalized.contains('vizik'),
-        const ParafarmacoSearchResult(
-          name: 'Vizik Collirio',
-          category: 'Dispositivo / prodotto oftalmico',
-          sourceName: 'Scheda pubblica prodotto',
-          sourceUrl:
-              'https://liki24.it/p/vizik-collirio-per-occhi-irritati-e-arrossati-10-ml-zdrovit/',
-          snippet:
-              'Collirio lubrificante, lenitivo e idratante per occhi irritati e arrossati.',
-        ));
+      normalized.contains('vizik'),
+      const ParafarmacoSearchResult(
+        name: 'Vizik Collirio',
+        category: 'Dispositivo / prodotto oftalmico',
+        sourceName: 'Scheda pubblica prodotto',
+        sourceUrl:
+            'https://liki24.it/p/vizik-collirio-per-occhi-irritati-e-arrossati-10-ml-zdrovit/',
+        snippet:
+            'Collirio lubrificante, lenitivo e idratante per occhi irritati e arrossati.',
+      ),
+    );
 
     addIf(
-        normalized.contains('ribolio'),
-        const ParafarmacoSearchResult(
-          name: 'Ribolio Integratore',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Scheda pubblica prodotto',
-          sourceUrl:
-              'https://www.farmacosmo.it/integratori/ribolio-50-capsule-integratore-benessere-dell-organismo-144162/',
-          snippet:
-              'Complemento alimentare a base di olio di semi di ribes nero, ricco di acidi grassi omega-3 e omega-6.',
-        ));
+      normalized.contains('ribolio'),
+      const ParafarmacoSearchResult(
+        name: 'Ribolio Integratore',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Scheda pubblica prodotto',
+        sourceUrl:
+            'https://www.farmacosmo.it/integratori/ribolio-50-capsule-integratore-benessere-dell-organismo-144162/',
+        snippet:
+            'Complemento alimentare a base di olio di semi di ribes nero, ricco di acidi grassi omega-3 e omega-6.',
+      ),
+    );
 
     addIf(
-        normalized.contains('noremifa'),
-        const ParafarmacoSearchResult(
-          name: 'Noremifa',
-          category: 'Dispositivo medico / prodotto da farmacia',
-          sourceName: 'Scheda pubblica prodotto',
-          sourceUrl: 'https://www.drmax.it/noremifa-25bust-20ml',
-          snippet:
-              'Dispositivo medico indicato in caso di reflusso gastroesofageo e disturbi correlati.',
-        ));
+      normalized.contains('noremifa'),
+      const ParafarmacoSearchResult(
+        name: 'Noremifa',
+        category: 'Dispositivo medico / prodotto da farmacia',
+        sourceName: 'Scheda pubblica prodotto',
+        sourceUrl: 'https://www.drmax.it/noremifa-25bust-20ml',
+        snippet:
+            'Dispositivo medico indicato in caso di reflusso gastroesofageo e disturbi correlati.',
+      ),
+    );
 
     addIf(
-        normalized.contains('viviscal'),
-        const ParafarmacoSearchResult(
-          name: 'Viviscal',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Viviscal Italia',
-          sourceUrl: 'https://www.viviscalitalia.it/',
-          snippet:
-              'Integratori e prodotti per capelli fini, fragili o soggetti a caduta temporanea.',
-        ));
+      normalized.contains('viviscal'),
+      const ParafarmacoSearchResult(
+        name: 'Viviscal',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Viviscal Italia',
+        sourceUrl: 'https://www.viviscalitalia.it/',
+        snippet:
+            'Integratori e prodotti per capelli fini, fragili o soggetti a caduta temporanea.',
+      ),
+    );
 
     addIf(
-        normalized.contains('doppelherz') && normalized.contains('omega'),
-        const ParafarmacoSearchResult(
-          name: 'Doppelherz Omega-3 1400',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Doppelherz',
-          sourceUrl:
-              'https://www.doppelherz.it/prodotti/doppelherz-aktiv-omega-3-1400',
-          snippet:
-              'Integratore con acidi grassi omega-3 EPA e DHA da olio di pesce concentrato.',
-        ));
+      normalized.contains('doppelherz') && normalized.contains('omega'),
+      const ParafarmacoSearchResult(
+        name: 'Doppelherz Omega-3 1400',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Doppelherz',
+        sourceUrl:
+            'https://www.doppelherz.it/prodotti/doppelherz-aktiv-omega-3-1400',
+        snippet:
+            'Integratore con acidi grassi omega-3 EPA e DHA da olio di pesce concentrato.',
+      ),
+    );
 
     addIf(
-        normalized.contains('zincovit'),
-        const ParafarmacoSearchResult(
-          name: 'Zincovit C',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'HealthAid Italia',
-          sourceUrl:
-              'https://www.healthaiditalia.it/integratori/zincovit-cr-blister-60-s',
-          snippet:
-              'Integratore con zinco, vitamina C e propoli per il sistema immunitario.',
-        ));
+      normalized.contains('zincovit'),
+      const ParafarmacoSearchResult(
+        name: 'Zincovit C',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'HealthAid Italia',
+        sourceUrl:
+            'https://www.healthaiditalia.it/integratori/zincovit-cr-blister-60-s',
+        snippet:
+            'Integratore con zinco, vitamina C e propoli per il sistema immunitario.',
+      ),
+    );
 
     addIf(
-        normalized.contains('dermovitamina') && normalized.contains('ragadi'),
-        const ParafarmacoSearchResult(
-          name: 'Dermovitamina Ragadi Gel Mani-Piedi',
-          category: 'Dermocosmetico / prodotto da farmacia',
-          sourceName: 'Dermovitamina',
-          sourceUrl:
-              'https://www.dermovitamina.it/prodotto/ragadi-gel-mani-piedi-filmante-protettivo/',
-          snippet:
-              'Gel filmante protettivo indicato per ragadi, screpolature, fissurazioni e piccoli tagli.',
-        ));
+      normalized.contains('dermovitamina') && normalized.contains('ragadi'),
+      const ParafarmacoSearchResult(
+        name: 'Dermovitamina Ragadi Gel Mani-Piedi',
+        category: 'Dermocosmetico / prodotto da farmacia',
+        sourceName: 'Dermovitamina',
+        sourceUrl:
+            'https://www.dermovitamina.it/prodotto/ragadi-gel-mani-piedi-filmante-protettivo/',
+        snippet:
+            'Gel filmante protettivo indicato per ragadi, screpolature, fissurazioni e piccoli tagli.',
+      ),
+    );
 
     addIf(
-        normalized.contains('bioscalin') && normalized.contains('energy'),
-        const ParafarmacoSearchResult(
-          name: 'Bioscalin Energy',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Bioscalin Giuliani',
-          sourceUrl: 'https://www.bioscalin.it/',
-          snippet:
-              'Linea Bioscalin per il benessere dei capelli fragili o soggetti a caduta temporanea.',
-        ));
+      normalized.contains('bioscalin') && normalized.contains('energy'),
+      const ParafarmacoSearchResult(
+        name: 'Bioscalin Energy',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Bioscalin Giuliani',
+        sourceUrl: 'https://www.bioscalin.it/',
+        snippet:
+            'Linea Bioscalin per il benessere dei capelli fragili o soggetti a caduta temporanea.',
+      ),
+    );
 
     addIf(
-        normalized.contains('bioscalin') && normalized.contains('tricoage'),
-        const ParafarmacoSearchResult(
-          name: 'Bioscalin TricoAge',
-          category: 'Integratore / prodotto da farmacia',
-          sourceName: 'Bioscalin Giuliani',
-          sourceUrl: 'https://www.bioscalin.it/',
-          snippet:
-              'Linea Bioscalin per capelli assottigliati, fragili o soggetti a caduta.',
-        ));
+      normalized.contains('bioscalin') && normalized.contains('tricoage'),
+      const ParafarmacoSearchResult(
+        name: 'Bioscalin TricoAge',
+        category: 'Integratore / prodotto da farmacia',
+        sourceName: 'Bioscalin Giuliani',
+        sourceUrl: 'https://www.bioscalin.it/',
+        snippet:
+            'Linea Bioscalin per capelli assottigliati, fragili o soggetti a caduta.',
+      ),
+    );
 
     return results;
   }
@@ -1704,11 +1751,14 @@ class ParafarmacoService {
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim()
         .split(' ')
-        .where((part) =>
-            part.isNotEmpty && !stopWords.contains(part.toLowerCase()))
+        .where(
+          (part) => part.isNotEmpty && !stopWords.contains(part.toLowerCase()),
+        )
         .take(8)
-        .map((part) =>
-            '${part[0].toUpperCase()}${part.length > 1 ? part.substring(1) : ''}')
+        .map(
+          (part) =>
+              '${part[0].toUpperCase()}${part.length > 1 ? part.substring(1) : ''}',
+        )
         .toList();
     return words.join(' ').trim();
   }
@@ -1774,8 +1824,10 @@ class ParafarmacoService {
     final patterns = <RegExp>[
       RegExp(r'\bMINSAN\s*[:\-]?\s*(\d{6,12})\b', caseSensitive: false),
       RegExp(r'\bPARAF\s*[:\-]?\s*(\d{6,12})\b', caseSensitive: false),
-      RegExp(r'\bCodice\s+(?:prodotto|articolo)\s*[:\-]?\s*([A-Z0-9]{4,20})\b',
-          caseSensitive: false),
+      RegExp(
+        r'\bCodice\s+(?:prodotto|articolo)\s*[:\-]?\s*([A-Z0-9]{4,20})\b',
+        caseSensitive: false,
+      ),
       RegExp(r'\bEAN\s*[:\-]?\s*(\d{8,14})\b', caseSensitive: false),
     ];
     for (final pattern in patterns) {
@@ -1786,7 +1838,9 @@ class ParafarmacoService {
   }
 
   Map<ParafarmacoSectionType, String> _extractSections(
-      dom.Document document, String fullText) {
+    dom.Document document,
+    String fullText,
+  ) {
     final sections = <ParafarmacoSectionType, String>{};
 
     final headingTags = document.querySelectorAll('h1,h2,h3,h4,strong,b');
@@ -1803,24 +1857,24 @@ class ParafarmacoService {
     }
 
     for (final type in ParafarmacoSectionType.values) {
-      if (type == ParafarmacoSectionType.complete ||
-          (sections[type]?.trim().isNotEmpty ?? false)) {
-        continue;
-      }
+      if (type == ParafarmacoSectionType.complete) continue;
       final extracted = _extractSectionFromPlainText(fullText, type);
       if (extracted != null && _isUsefulSectionTextForType(extracted, type)) {
+        // Il testo lineare preserva meglio i confini nei srcdoc Codifa
+        // malformati, dove un singolo <b> può inglobare più sezioni. Quando
+        // l'estrazione delimitata è disponibile deve prevalere su quella DOM.
         sections[type] = extracted.trim();
       }
     }
 
-    if (!(sections[ParafarmacoSectionType.indications]
-            ?.trim()
-            .isNotEmpty ??
+    if (!(sections[ParafarmacoSectionType.indications]?.trim().isNotEmpty ??
         false)) {
       final leading = _extractLeadingIndications(fullText);
       if (leading != null &&
           _isUsefulSectionTextForType(
-              leading, ParafarmacoSectionType.indications)) {
+            leading,
+            ParafarmacoSectionType.indications,
+          )) {
         sections[ParafarmacoSectionType.indications] = leading;
       }
     }
@@ -1829,7 +1883,9 @@ class ParafarmacoService {
       final instructions = _extractInstructionSentence(fullText);
       if (instructions != null &&
           _isUsefulSectionTextForType(
-              instructions, ParafarmacoSectionType.usage)) {
+            instructions,
+            ParafarmacoSectionType.usage,
+          )) {
         sections[ParafarmacoSectionType.usage] = instructions;
       }
     }
@@ -1847,11 +1903,9 @@ class ParafarmacoService {
     return true;
   }
 
-  bool _isUsefulSectionTextForType(
-    String text,
-    ParafarmacoSectionType type,
-  ) {
+  bool _isUsefulSectionTextForType(String text, ParafarmacoSectionType type) {
     if (!_isUsefulSectionText(text)) return false;
+    if (_containsForeignSectionLabel(text, type)) return false;
     final normalized = _normalize(text);
 
     if (type == ParafarmacoSectionType.indications &&
@@ -1865,6 +1919,11 @@ class ParafarmacoService {
           'precauzioni',
           'effetti indesiderati',
           'effetti collaterali',
+          'valori medi',
+          'ingredienti',
+          'componenti',
+          'composizione',
+          'caratteristiche nutrizionali',
         ])) {
       return false;
     }
@@ -1902,6 +1961,79 @@ class ParafarmacoService {
     return true;
   }
 
+  bool _containsForeignSectionLabel(String text, ParafarmacoSectionType type) {
+    final forbidden = switch (type) {
+      ParafarmacoSectionType.indications => const [
+        'ingredienti',
+        'componenti e ingredienti',
+        'componenti',
+        'composizione',
+        'caratteristiche nutrizionali',
+        'valori nutrizionali',
+        'valori medi',
+        'modalita d uso',
+        'modalita duso',
+        'modalita d utilizzo',
+        'modalita di utilizzo',
+        'avvertenze',
+        'controindicazioni',
+        'conservazione',
+        'formato',
+      ],
+      ParafarmacoSectionType.usage => const [
+        'ingredienti',
+        'componenti',
+        'composizione',
+        'valori medi',
+        'caratteristiche nutrizionali',
+        'avvertenze',
+        'conservazione',
+        'formato',
+      ],
+      ParafarmacoSectionType.warnings => const [
+        'ingredienti',
+        'componenti e ingredienti',
+        'composizione',
+        'modalita d uso',
+        'modalita duso',
+        'conservazione',
+        'formato',
+        'valori medi',
+        'caratteristiche nutrizionali',
+      ],
+      ParafarmacoSectionType.composition => const [
+        'modalita d uso',
+        'modalita duso',
+        'avvertenze',
+        'conservazione',
+        'formato',
+        'caratteristiche nutrizionali',
+        'valori medi',
+      ],
+      ParafarmacoSectionType.complete => const <String>[],
+    };
+
+    for (final line in text.split('\n')) {
+      final normalizedLine = _normalize(line);
+      if (normalizedLine.isEmpty) continue;
+      for (final label in forbidden) {
+        if (normalizedLine == label || normalizedLine.startsWith('$label ')) {
+          return true;
+        }
+      }
+    }
+
+    if (type == ParafarmacoSectionType.indications ||
+        type == ParafarmacoSectionType.usage) {
+      final normalized = _normalize(text);
+      if (normalized.contains('valori medi') ||
+          normalized.contains('caratteristiche nutrizionali')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   ParafarmacoSectionType? _sectionTypeFromHeading(String raw) {
     final text = _normalize(raw);
     if (_containsAny(text, const [
@@ -1929,9 +2061,10 @@ class ParafarmacoService {
     if (_containsAny(text, const [
       'modalita d uso',
       'modalita duso',
+      'modalita di utilizzo',
+      'modalita d utilizzo',
       'come si usa',
       'come usare',
-      'uso',
       'posologia',
       'modo d uso',
       'modo duso',
@@ -1951,66 +2084,99 @@ class ParafarmacoService {
 
   String _collectTextAfterHeading(dom.Element heading) {
     final parts = <String>[];
-    var sibling = heading.nextElementSibling;
+    final siblings = heading.parent?.nodes;
+    if (siblings == null) return '';
+    final headingIndex = siblings.indexOf(heading);
+    if (headingIndex < 0) return '';
+
     var guard = 0;
-    while (sibling != null && guard < 16) {
+    for (
+      var index = headingIndex + 1;
+      index < siblings.length && guard < 40;
+      index++
+    ) {
       guard += 1;
-      final tag = sibling.localName?.toLowerCase() ?? '';
-      if (const {'h1', 'h2', 'h3', 'h4'}.contains(tag)) break;
-      final text = _cleanText(sibling.text);
+      final node = siblings[index];
+      if (node is dom.Element) {
+        final tag = node.localName?.toLowerCase() ?? '';
+        final label = _cleanText(node.text);
+        if (const {'h1', 'h2', 'h3', 'h4', 'strong', 'b'}.contains(tag) &&
+            _isSectionBoundaryHeading(label)) {
+          break;
+        }
+        if (tag == 'br') {
+          parts.add('\n');
+          continue;
+        }
+      }
+      final text = _cleanText(node.text ?? '');
       if (text.isNotEmpty) parts.add(text);
-      sibling = sibling.nextElementSibling;
     }
     return _cleanText(parts.join('\n\n'));
   }
 
+  bool _isSectionBoundaryHeading(String raw) {
+    if (_sectionTypeFromHeading(raw) != null) return true;
+    final text = _normalize(raw);
+    return _startsWithAny(text, const [
+      'caratteristiche nutrizionali',
+      'valori nutrizionali',
+      'valori medi',
+      'conservazione',
+      'formato',
+      'cod ',
+    ]);
+  }
+
   String? _extractSectionFromPlainText(
-      String text, ParafarmacoSectionType type) {
+    String text,
+    ParafarmacoSectionType type,
+  ) {
     final labels = switch (type) {
       ParafarmacoSectionType.indications => const [
-          'Perché si usa',
-          'Perche si usa',
-          'A cosa serve',
-          'Indicazioni',
-          'Descrizione e caratteristiche',
-          'Descrizione',
-          'Che cos’è',
-          'Che cos\'è',
-        ],
+        'Perché si usa',
+        'Perche si usa',
+        'A cosa serve',
+        'Indicazioni',
+        'Descrizione e caratteristiche',
+        'Descrizione',
+        'Che cos’è',
+        'Che cos\'è',
+      ],
       ParafarmacoSectionType.usage => const [
-          'Modalità d\'uso',
-          'Modalità d’uso',
-          'Modalitá d\'uso',
-          'Modalitá d’uso',
-          'Modalità d\'utilizzo',
-          'Modalità d’utilizzo',
-          'Modalitá d\'utilizzo',
-          'Modalitá d’utilizzo',
-          'Modalità di utilizzo',
-          'Modalità di assunzione',
-          'Come si usa',
-          'Come si utilizza',
-          'Posologia',
-          'Modo d\'uso',
-          'Modo d’uso',
-        ],
+        'Modalità d\'uso',
+        'Modalità d’uso',
+        'Modalitá d\'uso',
+        'Modalitá d’uso',
+        'Modalità d\'utilizzo',
+        'Modalità d’utilizzo',
+        'Modalitá d\'utilizzo',
+        'Modalitá d’utilizzo',
+        'Modalità di utilizzo',
+        'Modalità di assunzione',
+        'Come si usa',
+        'Come si utilizza',
+        'Posologia',
+        'Modo d\'uso',
+        'Modo d’uso',
+      ],
       ParafarmacoSectionType.warnings => const [
-          'Avvertenze',
-          'Controindicazioni',
-          'Precauzioni',
-          'Effetti collaterali',
-          'Effetti indesiderati',
-        ],
+        'Avvertenze',
+        'Controindicazioni',
+        'Precauzioni',
+        'Effetti collaterali',
+        'Effetti indesiderati',
+      ],
       ParafarmacoSectionType.composition => const [
-          'Componenti e ingredienti',
-          'Elenco degli eccipienti',
-          'Principio attivo',
-          'Componenti',
-          'Composizione',
-          'Ingredienti',
-          'INCI',
-          'Allergeni',
-        ],
+        'Componenti e ingredienti',
+        'Elenco degli eccipienti',
+        'Principio attivo',
+        'Componenti',
+        'Composizione',
+        'Ingredienti',
+        'INCI',
+        'Allergeni',
+      ],
       ParafarmacoSectionType.complete => const <String>[],
     };
     final stopLabels = const [
@@ -2060,6 +2226,10 @@ class ParafarmacoService {
       'Allergeni',
       'Formato',
       'Conservazione',
+      'Caratteristiche nutrizionali',
+      'Valori nutrizionali',
+      'Valori medi',
+      'Valori medi per',
       'Produttore',
       'Recensioni',
       'Confezioni',
@@ -2124,7 +2294,8 @@ class ParafarmacoService {
     while (start < lines.length && start < 3) {
       final line = lines[start];
       final normalized = _normalize(line);
-      final looksLikeTitle = line.length < 120 &&
+      final looksLikeTitle =
+          line.length < 120 &&
           (line == line.toUpperCase() ||
               normalized == 'descrizione' ||
               normalized == 'scheda tecnica');
@@ -2141,6 +2312,8 @@ class ParafarmacoService {
             'formato',
             'conservazione',
             'caratteristiche nutrizionali',
+            'valori nutrizionali',
+            'valori medi',
             'cod ',
           ])) {
         break;
@@ -2162,8 +2335,10 @@ class ParafarmacoService {
     var candidate = match.group(1) ?? '';
     final normalizedStops = <RegExp>[
       RegExp(r'\n\s*Avvertenze\b', caseSensitive: false),
-      RegExp(r'\n\s*(?:Ingredienti|Componenti|Composizione)\b',
-          caseSensitive: false),
+      RegExp(
+        r'\n\s*(?:Ingredienti|Componenti|Composizione)\b',
+        caseSensitive: false,
+      ),
       RegExp(r'\n\s*(?:Conservazione|Formato)\b', caseSensitive: false),
     ];
     var end = candidate.length;
@@ -2189,10 +2364,14 @@ class ParafarmacoService {
   }
 
   bool _hasSectionLabelBoundary(String text, int start, int length) {
-    final before = start == 0 ? '' : text[start - 1];
+    // I titoli Codifa stanno a capo dopo la conversione di <b>/<br>.
+    // Un match a metà frase, ad esempio "allergie verso uno o più componenti",
+    // non deve chiudere la sezione.
+    final atLineStart = start == 0 || text[start - 1] == '\n';
+    if (!atLineStart) return false;
     final afterIndex = start + length;
-    final after = afterIndex >= text.length ? '' : text[afterIndex];
-    return !_isAsciiLetterOrDigit(before) && !_isAsciiLetterOrDigit(after);
+    if (afterIndex >= text.length) return true;
+    return !_isAsciiLetterOrDigit(text[afterIndex]);
   }
 
   bool _isAsciiLetterOrDigit(String value) {
@@ -2203,20 +2382,23 @@ class ParafarmacoService {
         (code >= 97 && code <= 122);
   }
 
-  String _cleanupExtractedSection(
-    String text,
-    ParafarmacoSectionType type,
-  ) {
+  String _cleanupExtractedSection(String text, ParafarmacoSectionType type) {
     var cleaned = _cleanText(text)
         .replaceFirst(RegExp(r'^(\?|:|;|,|\.)\s*'), '')
         .replaceFirst(
-            RegExp(r'^(e caratteristiche|e ingredienti|pio attivo)\s+',
-                caseSensitive: false),
-            '')
+          RegExp(
+            r'^(e caratteristiche|e ingredienti|pio attivo)\s+',
+            caseSensitive: false,
+          ),
+          '',
+        )
         .replaceFirst(
-            RegExp(r'^(ingredienti|componenti)\s*[:\-]?\s*',
-                caseSensitive: false),
-            '');
+          RegExp(
+            r'^(ingredienti|componenti)\s*[:\-]?\s*',
+            caseSensitive: false,
+          ),
+          '',
+        );
     if (type == ParafarmacoSectionType.indications) {
       cleaned = cleaned.replaceFirst(
         RegExp(r'^(e caratteristiche)\s+', caseSensitive: false),
@@ -2275,17 +2457,14 @@ class ParafarmacoService {
 
       final removeEnd =
           _isRepeatedFirstSectionTitle(lines[start], lines[end - 1])
-              ? end - 1
-              : end;
+          ? end - 1
+          : end;
       if (removeEnd - start < 3) continue;
 
       final removeFrom = start > 0 && _isSectionIndexPrefix(lines[start - 1])
           ? start - 1
           : start;
-      return [
-        ...lines.take(removeFrom),
-        ...lines.skip(removeEnd),
-      ].join('\n\n');
+      return [...lines.take(removeFrom), ...lines.skip(removeEnd)].join('\n\n');
     }
 
     return fullText;
@@ -2478,31 +2657,46 @@ class ParafarmacoService {
         'intima',
         'ginecologia',
         'cosmesi intima',
-        'igiene intima'
+        'igiene intima',
       ])) {
         score += 110;
       }
-      if (_containsAny(nameUrl,
-          const ['eye', 'occhi', 'oftalmologia', 'colliri', 'gocce oculari'])) {
+      if (_containsAny(nameUrl, const [
+        'eye',
+        'occhi',
+        'oftalmologia',
+        'colliri',
+        'gocce oculari',
+      ])) {
         score -= 140;
       }
     }
 
     if (has('ovuli') || has('ovulo')) {
-      if (_containsAny(
-          nameUrl, const ['ginecologia', 'vaginale', 'vaginali', 'ovuli'])) {
+      if (_containsAny(nameUrl, const [
+        'ginecologia',
+        'vaginale',
+        'vaginali',
+        'ovuli',
+      ])) {
         score += 120;
       }
-      if (_containsAny(
-          nameUrl, const ['gastrointestinale', 'supposte', 'rettale'])) {
+      if (_containsAny(nameUrl, const [
+        'gastrointestinale',
+        'supposte',
+        'rettale',
+      ])) {
         score -= 110;
       }
     }
 
     if (has('olio')) {
       if (_containsAny(nameUrl, const ['olio', 'oil'])) score += 95;
-      if (_containsAny(
-          nameUrl, const ['bucato', 'detersivo', 'igienici vari'])) {
+      if (_containsAny(nameUrl, const [
+        'bucato',
+        'detersivo',
+        'igienici vari',
+      ])) {
         score -= 120;
       }
     }
@@ -2537,7 +2731,7 @@ class ParafarmacoService {
           'gocce',
           'occhi',
           'oftalmologia',
-          'oculari'
+          'oculari',
         ])) {
       score += 70;
     }
@@ -2554,38 +2748,37 @@ class ParafarmacoService {
   }
 
   bool _veryGenericTailToken(String token) => const {
-        'crema',
-        'gel',
-        'spray',
-        'collirio',
-        'gocce',
-        'pasta',
-        'protezione',
-        'plus',
-        'classico',
-        'adulti',
-        'adulto',
-        'bambini',
-        'flaconcini',
-        'flaconi',
-        'cerotti',
-        'vesciche',
-        'fascia',
-        'doccia',
-        'nasale',
-        'aerosol',
-        'compresse',
-        'compressa',
-        'capsule',
-        'capsula',
-        'bustine',
-        'bustina',
-      }.contains(token);
+    'crema',
+    'gel',
+    'spray',
+    'collirio',
+    'gocce',
+    'pasta',
+    'protezione',
+    'plus',
+    'classico',
+    'adulti',
+    'adulto',
+    'bambini',
+    'flaconcini',
+    'flaconi',
+    'cerotti',
+    'vesciche',
+    'fascia',
+    'doccia',
+    'nasale',
+    'aerosol',
+    'compresse',
+    'compressa',
+    'capsule',
+    'capsula',
+    'bustine',
+    'bustina',
+  }.contains(token);
 
-  List<String> _searchTokens(String raw) => _normalize(raw)
-      .split(RegExp(r'\s+'))
-      .where((token) => token.length >= 2)
-      .toList();
+  List<String> _searchTokens(String raw) => _normalize(
+    raw,
+  ).split(RegExp(r'\s+')).where((token) => token.length >= 2).toList();
 
   List<String> _meaningfulSearchTokens(String raw) {
     const generic = {
@@ -2672,20 +2865,26 @@ class ParafarmacoService {
   String _cleanText(String raw) => _repairMojibake(raw)
       .replaceAll('\u00a0', ' ')
       .replaceAll(
-          RegExp(
-              r'FARMACIINTEGRATORIPRINCIPI ATTIVIVETERINARIALIMENTI VETERINARI',
-              caseSensitive: false),
-          ' ')
+        RegExp(
+          r'FARMACIINTEGRATORIPRINCIPI ATTIVIVETERINARIALIMENTI VETERINARI',
+          caseSensitive: false,
+        ),
+        ' ',
+      )
       .replaceAll(
-          RegExp(
-              r'PARAFARMACIINTEGRATORIPRINCIPI ATTIVIVETERINARIALIMENTI VETERINARI',
-              caseSensitive: false),
-          ' ')
+        RegExp(
+          r'PARAFARMACIINTEGRATORIPRINCIPI ATTIVIVETERINARIALIMENTI VETERINARI',
+          caseSensitive: false,
+        ),
+        ' ',
+      )
       .replaceAll(
-          RegExp(
-              r'FARMACIPARAFARMACIPRINCIPI ATTIVIVETERINARIALIMENTI VETERINARI',
-              caseSensitive: false),
-          ' ')
+        RegExp(
+          r'FARMACIPARAFARMACIPRINCIPI ATTIVIVETERINARIALIMENTI VETERINARI',
+          caseSensitive: false,
+        ),
+        ' ',
+      )
       .replaceAll(RegExp(r'[ \t\r\f\v]+'), ' ')
       .replaceAll(RegExp(r'\n\s*\n\s*\n+'), '\n\n')
       .replaceAll(RegExp(r' *\n *'), '\n')

@@ -102,15 +102,18 @@ void main() {
       );
     });
 
-    test('canonicalizza in HTTPS anche i link legacy scritti in HTTP', () async {
-      final results = await service.searchProducts('quetidia');
+    test(
+      'canonicalizza in HTTPS anche i link legacy scritti in HTTP',
+      () async {
+        final results = await service.searchProducts('quetidia');
 
-      expect(results.any((result) => result.name == 'Quetidia'), isTrue);
-      expect(
-        results.firstWhere((result) => result.name == 'Quetidia').sourceUrl,
-        startsWith('https://codifa-legacy.farmadati.it/integratori/q/'),
-      );
-    });
+        expect(results.any((result) => result.name == 'Quetidia'), isTrue);
+        expect(
+          results.firstWhere((result) => result.name == 'Quetidia').sourceUrl,
+          startsWith('https://codifa-legacy.farmadati.it/integratori/q/'),
+        );
+      },
+    );
   });
 
   group('ParafarmacoService nuovo handler Codifa', () {
@@ -139,8 +142,10 @@ void main() {
               '<iframe srcdoc="&lt;h1&gt;QUETIDIA&lt;/h1&gt;'
               '&lt;b&gt;Descrizione&lt;/b&gt;&lt;br&gt;Integratore alimentare per il rilassamento in caso di stress e per il benessere mentale. '
               '&lt;b&gt;Ingredienti&lt;/b&gt;&lt;br&gt;Magnesio, passiflora, tè verde e scutellaria. '
+              '&lt;b&gt;Caratteristiche nutrizionali&lt;/b&gt;&lt;br&gt;Valori medi per una compressa: magnesio 75 mg. '
               '&lt;b&gt;Modalità d\'uso&lt;/b&gt;&lt;br&gt;Assumere una compressa al giorno con acqua. '
-              '&lt;b&gt;Avvertenze&lt;/b&gt;&lt;br&gt;Non superare la dose giornaliera consigliata e tenere fuori dalla portata dei bambini."'
+              '&lt;b&gt;Avvertenze&lt;/b&gt;&lt;br&gt;Non superare la dose giornaliera consigliata. Non assumere in caso di allergie verso uno o più componenti. Tenere fuori dalla portata dei bambini. '
+              '&lt;b&gt;Conservazione&lt;/b&gt;&lt;br&gt;Conservare in luogo fresco e asciutto."'
               '></iframe>',
               200,
               headers: const {'content-type': 'text/html; charset=utf-8'},
@@ -170,6 +175,30 @@ void main() {
       expect(detail.code, '934488976');
       expect(detail.fullText, contains('Integratore alimentare'));
       expect(
+        detail.sections[ParafarmacoSectionType.indications],
+        contains('rilassamento in caso di stress'),
+      );
+      expect(
+        detail.sections[ParafarmacoSectionType.indications],
+        isNot(contains('Ingredienti')),
+      );
+      expect(
+        detail.sections[ParafarmacoSectionType.indications],
+        isNot(contains('Valori medi')),
+      );
+      expect(
+        detail.sectionText(ParafarmacoSectionType.indications),
+        isNot(contains('Valori medi')),
+      );
+      expect(
+        detail.sectionText(ParafarmacoSectionType.indications),
+        isNot(contains('Ingredienti')),
+      );
+      expect(
+        detail.sectionText(ParafarmacoSectionType.indications),
+        isNot(contains('Scheda completa disponibile')),
+      );
+      expect(
         detail.sections[ParafarmacoSectionType.usage],
         contains('Assumere una compressa'),
       );
@@ -178,8 +207,20 @@ void main() {
         contains('Non superare la dose'),
       );
       expect(
+        detail.sections[ParafarmacoSectionType.warnings],
+        contains('allergie verso uno o più componenti'),
+      );
+      expect(
+        detail.sections[ParafarmacoSectionType.warnings],
+        isNot(contains('Conservare in luogo fresco')),
+      );
+      expect(
         detail.sections[ParafarmacoSectionType.composition],
         contains('Magnesio'),
+      );
+      expect(
+        detail.sections[ParafarmacoSectionType.composition],
+        isNot(contains('Valori medi')),
       );
     });
 
@@ -264,8 +305,9 @@ void main() {
         }),
       );
 
-      final product = (await service.searchProducts('gengigel'))
-          .firstWhere((result) => result.sourceUrl.contains('handler=Detail'));
+      final product = (await service.searchProducts(
+        'gengigel',
+      )).firstWhere((result) => result.sourceUrl.contains('handler=Detail'));
       final detail = await service.loadDetail(product);
 
       expect(
@@ -274,8 +316,52 @@ void main() {
       );
     });
 
-    test('se la fonte omette una sezione rende disponibile la scheda completa',
-        () {
+    test('un unico titolo <b> non versa valori medi in A cosa serve', () async {
+      final service = ParafarmacoService(
+        client: MockClient((request) async {
+          if (request.url.queryParameters['handler'] == 'Search') {
+            return http.Response(
+              '<div class="result-header" data-codice="934488976" '
+              'data-isfarmaco="false">'
+              '<div class="result-title">QUETIDIA 30 COMPRESSE</div></div>',
+              200,
+            );
+          }
+          return http.Response(
+            '<div class="detail-title-info"><h2>QUETIDIA 30CPR</h2></div>'
+            '<iframe srcdoc="'
+            '&lt;b&gt;Descrizione&lt;br&gt;Integratore alimentare per il rilassamento in caso di stress.&lt;br&gt;'
+            'Ingredienti&lt;br&gt;Magnesio, passiflora e tè verde.&lt;br&gt;'
+            'Caratteristiche nutrizionali&lt;br&gt;Valori medi per una compressa: magnesio 75 mg.&lt;br&gt;'
+            'Modalità d&#39;uso&lt;br&gt;Assumere una compressa al giorno con acqua.&lt;br&gt;'
+            'Avvertenze&lt;br&gt;Non superare la dose giornaliera consigliata in caso di allergie verso uno o più componenti.&lt;/b&gt;'
+            '"></iframe>',
+            200,
+          );
+        }),
+      );
+
+      final product = (await service.searchProducts('quetidia')).single;
+      final detail = await service.loadDetail(product);
+      final indications = detail.sectionText(
+        ParafarmacoSectionType.indications,
+      );
+
+      expect(indications, contains('rilassamento in caso di stress'));
+      expect(indications, isNot(contains('Valori medi')));
+      expect(indications, isNot(contains('Ingredienti')));
+      expect(indications, isNot(contains('Assumere una compressa')));
+      expect(
+        detail.sectionText(ParafarmacoSectionType.usage),
+        contains('Assumere una compressa'),
+      );
+      expect(
+        detail.sectionText(ParafarmacoSectionType.warnings),
+        contains('uno o più componenti'),
+      );
+    });
+
+    test('se la fonte omette una sezione non mescola la scheda completa', () {
       const detail = ParafarmacoDetail(
         name: 'Prodotto',
         category: 'Parafarmaco',
@@ -292,12 +378,14 @@ void main() {
         ParafarmacoSectionType.warnings,
         ParafarmacoSectionType.composition,
       ]) {
-        expect(detail.sectionText(type), contains('Scheda completa disponibile'));
-        expect(detail.sectionText(type), contains('informazioni effettivamente'));
+        expect(detail.sectionText(type), contains('non è disponibile'));
+        expect(
+          detail.sectionText(type),
+          isNot(contains('scheda completa del prodotto')),
+        );
       }
     });
   });
-
 
   group('ParafarmacoService indice parafarmaci legacy', () {
     test('sfoglia soltanto i parafarmaci della lettera selezionata', () async {
@@ -320,15 +408,14 @@ void main() {
 
       final results = await service.browseParafarmaciByLetter('m');
 
-      expect(
-        results.map((result) => result.name).toList(),
-        ['Massigen', 'Microlife'],
-      );
+      expect(results.map((result) => result.name).toList(), [
+        'Massigen',
+        'Microlife',
+      ]);
       expect(
         results.every((result) => !service.isMedicationResult(result)),
         isTrue,
       );
     });
   });
-
 }
