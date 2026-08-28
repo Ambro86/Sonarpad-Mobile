@@ -1,7 +1,7 @@
 [
   {
     "version": "0.4.0",
-    "date": "2026-08-24",
+    "date": "2026-09-01",
     "it": [
       "Aggiunto SonarTube, il nuovo sistema integrato per cercare e riprodurre video di YouTube direttamente in Sonarpad. È possibile esplorare video, canali e playlist, caricare altri risultati, aggiungere canali e singoli video ai preferiti e riprodurre i contenuti tramite il player interno di Sonarpad. Con SonarTube è inoltre possibile leggere le trascrizioni dei video, quando disponibili, e leggere i commenti di ogni video.",
       "Aggiunta la funzione Taglia file media, che permette di aprire file audio e video e tagliarli nel punto desiderato. Sono disponibili due modalità, Taglio guidato e Taglio avanzato, con modifica precisa dei punti di taglio, anteprima delle parti, ripristino delle sezioni eliminate, regolazione dello spostamento, rotazione dei video e una gestione più affidabile dell’esportazione dei file audio e video.",

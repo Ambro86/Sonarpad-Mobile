@@ -128,18 +128,18 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   }
 
   Future<void> _openFavorites() async {
-    final item = await Navigator.push<SonarTubeItem>(
+    await Navigator.push<void>(
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/sonartube/favorites'),
         builder: (_) => _SonarTubeFavoritesScreen(
           favoritesService: _favoritesService,
           service: _service,
+          onOpenItem: _openItem,
         ),
       ),
     );
     await _loadFavoriteKeys();
-    if (item != null && mounted) await _openItem(item);
   }
 
   Future<void> _openRecentVideos() async {
@@ -2341,10 +2341,12 @@ class _SonarTubeFavoritesScreen extends StatefulWidget {
   const _SonarTubeFavoritesScreen({
     required this.favoritesService,
     required this.service,
+    required this.onOpenItem,
   });
 
   final SonarTubeFavoritesService favoritesService;
   final SonarTubeService service;
+  final Future<void> Function(SonarTubeItem item) onOpenItem;
 
   @override
   State<_SonarTubeFavoritesScreen> createState() =>
@@ -2445,6 +2447,17 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
         ),
       );
     }
+  }
+
+  Future<void> _openFavoriteItem(SonarTubeItem item) async {
+    if (item.kind == SonarTubeItemKind.channel) {
+      await _openFavoriteChannel(item);
+      return;
+    }
+    await widget.onOpenItem(item);
+    if (!mounted) return;
+    await _load();
+    await _restoreFavoriteFocus(item);
   }
 
   Future<void> _openChannel(SonarTubeItem item) async {
@@ -2615,11 +2628,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
             event.action == 'transcribe_video') {
           await _openTranscript(item);
         } else if (event.type == 'activate') {
-          if (item.kind == SonarTubeItemKind.channel) {
-            await _openFavoriteChannel(item);
-          } else if (mounted) {
-            Navigator.pop(context, item);
-          }
+          await _openFavoriteItem(item);
         }
       },
     );
@@ -2740,9 +2749,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                                         icon: const Icon(Icons.favorite),
                                       ),
                                     ),
-                                    onTap: item.kind == SonarTubeItemKind.channel
-                                        ? () => _openFavoriteChannel(item)
-                                        : () => Navigator.pop(context, item),
+                                    onTap: () => _openFavoriteItem(item),
                                   ),
                                   if (item.kind == SonarTubeItemKind.video)
                                     Align(
