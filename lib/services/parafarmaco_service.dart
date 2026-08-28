@@ -221,7 +221,7 @@ class ParafarmacoService {
       'PHARMACY_AZ_PARSE section=$section letter=$letter '
       'links=${links.length} sectionCandidates=$sectionCandidates '
       'initialCandidates=$initialCandidates results=${deduplicated.length} '
-      'title=${_cleanText(document.title)}',
+      'title=${_cleanText(document.querySelector('title')?.text ?? '')}',
     );
     return deduplicated;
   }
@@ -526,7 +526,7 @@ class ParafarmacoService {
       'sectionLinks=$sectionLinks '
       'catalogHeading=${normalizedBody.contains('indice') && normalizedBody.contains('ordine alfabetico')} '
       'challenge=${normalizedBody.contains('captcha') || normalizedBody.contains('cloudflare') || normalizedBody.contains('just a moment')} '
-      'title=${_cleanText(document.title)}',
+      'title=${_cleanText(document.querySelector('title')?.text ?? '')}',
     );
   }
 
