@@ -407,6 +407,114 @@ void main() {
   );
 
   test(
+    'channel Videos tab restores channel, age and views from compact lockup metadata',
+    () async {
+      final service = SonarTubeService(
+        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+        client: MockClient((request) async {
+          return http.Response.bytes(
+            utf8.encode(
+              jsonEncode({
+                'contents': {
+                  'richGridRenderer': {
+                    'contents': [
+                      {
+                        'richItemRenderer': {
+                          'content': {
+                            'lockupViewModel': {
+                              'contentType': 'LOCKUP_CONTENT_TYPE_VIDEO',
+                              'contentId': 'abcdefghijk',
+                              'metadata': {
+                                'lockupMetadataViewModel': {
+                                  'title': {
+                                    'content':
+                                        "Generale Vannacci: l'aborto non e un diritto",
+                                  },
+                                  'metadata': {
+                                    'contentMetadataViewModel': {
+                                      'metadataRows': [
+                                        {
+                                          'metadataParts': [
+                                            {
+                                              'text': {
+                                                'content': '207 visualizzazioni',
+                                              },
+                                            },
+                                            {
+                                              'text': {
+                                                'content': '55 minuti fa',
+                                              },
+                                            },
+                                          ],
+                                        },
+                                      ],
+                                    },
+                                  },
+                                },
+                              },
+                              'contentImage': {
+                                'thumbnailViewModel': {
+                                  'image': {
+                                    'sources': [
+                                      {'url': 'https://img.test/video.jpg'},
+                                    ],
+                                  },
+                                  'overlays': [
+                                    {
+                                      'thumbnailBottomOverlayViewModel': {
+                                        'badges': [
+                                          {
+                                            'thumbnailBadgeViewModel': {
+                                              'text': '1:48',
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        'continuationItemRenderer': {
+                          'continuationEndpoint': {
+                            'continuationCommand': {'token': 'next-page'},
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              }),
+            ),
+            200,
+            headers: const {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      );
+      const channel = SonarTubeItem(
+        kind: SonarTubeItemKind.channel,
+        id: 'UCLfQVw8Opp0ZcOHbcbY_4CQ',
+        title: 'Diego Fusaro',
+        url: 'https://www.youtube.com/@DiegoFusaro',
+      );
+
+      final page = await service.browse(channel);
+      final video = page.items.single;
+
+      expect(video.channel, 'Diego Fusaro');
+      expect(video.channelId, channel.id);
+      expect(video.duration, '1:48');
+      expect(video.published, '55 minuti fa');
+      expect(video.views, '207 visualizzazioni');
+      expect(page.hasMore, isTrue);
+    },
+  );
+
+  test(
     'channel browse keeps pagination when YouTube uses reloadContinuationData',
     () async {
       final service = SonarTubeService(

@@ -867,9 +867,17 @@ class SonarTubeService {
       payload,
       webClient: true,
     );
-    final videos = _extractNavigationItems(data)
-        .where((item) => item.kind == SonarTubeItemKind.video)
-        .toList(growable: false);
+    final channelBrowseId = collection.kind == SonarTubeItemKind.channel
+        ? _channelBrowseId(collection)
+        : null;
+    final videos = _extractNavigationItems(
+      data,
+      channelContextTitle:
+          collection.kind == SonarTubeItemKind.channel ? collection.title : null,
+      channelContextId: channelBrowseId,
+    ).where((item) => item.kind == SonarTubeItemKind.video).toList(
+      growable: false,
+    );
     final nextToken = _findSearchContinuation(data);
     if (collection.kind == SonarTubeItemKind.channel) {
       await AppLogger.log(
@@ -1051,7 +1059,11 @@ class SonarTubeService {
     return data;
   }
 
-  List<SonarTubeItem> _extractNavigationItems(Map<String, dynamic> root) {
+  List<SonarTubeItem> _extractNavigationItems(
+    Map<String, dynamic> root, {
+    String? channelContextTitle,
+    String? channelContextId,
+  }) {
     final items = <SonarTubeItem>[];
     final seen = <String>{};
 
@@ -1061,11 +1073,14 @@ class SonarTubeService {
       final title = _youtubeText(video['title'] ?? video['headline']);
       if (title.isEmpty) return;
       seen.add(id);
-      final channel = _youtubeText(
+      final parsedChannel = _youtubeText(
         video['shortBylineText'] ??
             video['longBylineText'] ??
             video['ownerText'],
       );
+      final channel = parsedChannel.isNotEmpty
+          ? parsedChannel
+          : channelContextTitle ?? '';
       final published = _youtubeText(video['publishedTimeText']);
       final views = _youtubeText(
         video['viewCountText'] ?? video['shortViewCountText'],
@@ -1083,7 +1098,7 @@ class SonarTubeService {
             {'v': id},
           ).toString(),
           channel: channel.isEmpty ? null : channel,
-          channelId: _youtubeChannelIdFromNode(video),
+          channelId: _youtubeChannelIdFromNode(video) ?? channelContextId,
           published: published.isEmpty ? null : published,
           views: views.isEmpty ? null : views,
           duration: _nullableYoutubeText(video['lengthText']),
@@ -1186,18 +1201,39 @@ class SonarTubeService {
         _asMap(metadata?['metadata'])?['contentMetadataViewModel'],
       );
       final rows = _asList(contentMetadata?['metadataRows']);
-      final channel = _nestedString(
-        rows,
-        const [0, 'metadataParts', 0, 'text', 'content'],
-      );
-      final views = _nestedString(
-        rows,
-        const [1, 'metadataParts', 0, 'text', 'content'],
-      );
-      final published = _nestedString(
-        rows,
-        const [1, 'metadataParts', 1, 'text', 'content'],
-      );
+      String? channel;
+      String? views;
+      String? published;
+      if (channelContextTitle != null && rows.length == 1) {
+        // Inside a channel's Videos tab YouTube omits the redundant channel
+        // name and packs views + publication age into the only metadata row.
+        // Treating its first value as the channel produced labels such as
+        // "199 visualizzazioni · 1:48" and lost "55 minuti fa".
+        channel = channelContextTitle;
+        views = _nestedString(
+          rows,
+          const [0, 'metadataParts', 0, 'text', 'content'],
+        );
+        published = _nestedString(
+          rows,
+          const [0, 'metadataParts', 1, 'text', 'content'],
+        );
+      } else {
+        // Search results currently expose the channel on the first row and
+        // views + publication age on the second row.
+        channel = _nestedString(
+          rows,
+          const [0, 'metadataParts', 0, 'text', 'content'],
+        );
+        views = _nestedString(
+          rows,
+          const [1, 'metadataParts', 0, 'text', 'content'],
+        );
+        published = _nestedString(
+          rows,
+          const [1, 'metadataParts', 1, 'text', 'content'],
+        );
+      }
       final sources = _asList(
         _asMap(
           _asMap(
@@ -1236,7 +1272,9 @@ class SonarTubeService {
           id: id,
           title: title,
           channel: channel,
-          channelId: isVideo ? _youtubeChannelIdFromNode(lockup) : null,
+          channelId: isVideo
+              ? _youtubeChannelIdFromNode(lockup) ?? channelContextId
+              : null,
           published: published,
           views: views,
           duration: duration,

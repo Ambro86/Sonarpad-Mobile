@@ -662,7 +662,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       if (item.kind != SonarTubeItemKind.channel &&
           (item.channel?.isNotEmpty ?? false))
         item.channel!,
-      if (item.duration?.isNotEmpty ?? false) item.duration!,
+      if (item.duration?.isNotEmpty ?? false)
+        l10n.sourceDurationValue(item.duration!),
       if (item.published?.isNotEmpty ?? false) item.published!,
       if (item.views?.isNotEmpty ?? false) item.views!,
     ].where((value) => value.isNotEmpty).toList();
@@ -2159,10 +2160,11 @@ class _SonarTubeRecentVideosScreenState
     setState(() => _recent = const []);
   }
 
-  String? _subtitle(SonarTubeItem item) {
+  String? _subtitle(AppLocalizations l10n, SonarTubeItem item) {
     final values = <String>[
       if (item.channel?.isNotEmpty ?? false) item.channel!,
-      if (item.duration?.isNotEmpty ?? false) item.duration!,
+      if (item.duration?.isNotEmpty ?? false)
+        l10n.sourceDurationValue(item.duration!),
       if (item.published?.isNotEmpty ?? false) item.published!,
       if (item.views?.isNotEmpty ?? false) item.views!,
     ];
@@ -2203,7 +2205,7 @@ class _SonarTubeRecentVideosScreenState
           return AccessibleListRow(
             id: 'recent_${entry.key}',
             title: item.title,
-            subtitle: _subtitle(item),
+            subtitle: _subtitle(l10n, item),
             kind: 'action',
             actions: [
               AccessibleCustomAction(
@@ -2316,9 +2318,9 @@ class _SonarTubeRecentVideosScreenState
                                       ),
                                     ),
                               title: Text(item.title),
-                              subtitle: _subtitle(item) == null
+                              subtitle: _subtitle(l10n, item) == null
                                   ? null
-                                  : Text(_subtitle(item)!),
+                                  : Text(_subtitle(l10n, item)!),
                               trailing: ExcludeSemantics(
                                 child: IconButton(
                                   key: ValueKey('sonartube_delete_recent_video_${item.id}'),
