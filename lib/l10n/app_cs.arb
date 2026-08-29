@@ -958,6 +958,10 @@
   "podcastUnplayed": "Nepřehrané epizody",
   "routeReadAction": "Přečíst trasu",
   "routeSaveAction": "Uložit do Dokumentů",
+  "routeOpenAction": "Otevřít trasu",
+  "routeAppleMapsAction": "Mapy",
+  "routeGoogleMapsAction": "Google Maps",
+  "routeOpenError": "Navigační aplikaci se nepodařilo otevřít.",
   "routeSaveSuccess": "Trasa uložena do Dokumentů",
   "deleteItem": "Smazat",
   "@deleteItem": {

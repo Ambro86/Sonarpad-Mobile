@@ -2412,6 +2412,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get routeSaveAction => "In Dokumente speichern";
 
   @override
+  String get routeOpenAction => 'Route öffnen';
+
+  @override
+  String get routeAppleMapsAction => 'Karten';
+
+  @override
+  String get routeGoogleMapsAction => 'Google Maps';
+
+  @override
+  String get routeOpenError => 'Die Navigations-App konnte nicht geöffnet werden.';
+
+  @override
   String get routeSaveSuccess => "Route in Dokumente gespeichert";
 
   @override

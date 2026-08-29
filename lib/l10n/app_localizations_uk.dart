@@ -1986,6 +1986,18 @@ class AppLocalizationsUk extends AppLocalizations {
   String get routeSaveAction => "Зберегти в документах";
 
   @override
+  String get routeOpenAction => 'Відкрити маршрут';
+
+  @override
+  String get routeAppleMapsAction => 'Карти';
+
+  @override
+  String get routeGoogleMapsAction => 'Google Maps';
+
+  @override
+  String get routeOpenError => 'Не вдалося відкрити навігаційний застосунок.';
+
+  @override
   String get routeSaveSuccess => "Маршрут збережено в документах";
 
   @override

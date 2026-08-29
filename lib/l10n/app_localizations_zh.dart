@@ -2237,6 +2237,18 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get routeSaveAction => '保存到文档';
 
   @override
+  String get routeOpenAction => '打开路线';
+
+  @override
+  String get routeAppleMapsAction => '地图';
+
+  @override
+  String get routeGoogleMapsAction => 'Google Maps';
+
+  @override
+  String get routeOpenError => '无法打开导航应用。';
+
+  @override
   String get routeSaveSuccess => '路线已保存到文档';
 
   @override

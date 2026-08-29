@@ -2489,6 +2489,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get routeSaveAction => 'Guardar en Documentos';
 
   @override
+  String get routeOpenAction => 'Abrir ruta';
+
+  @override
+  String get routeAppleMapsAction => 'Mapas';
+
+  @override
+  String get routeGoogleMapsAction => 'Google Maps';
+
+  @override
+  String get routeOpenError => 'No se puede abrir la aplicación de navegación.';
+
+  @override
   String get routeSaveSuccess => 'Ruta guardada en Documentos';
 
   @override

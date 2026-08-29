@@ -3172,6 +3172,10 @@
   "@routeSaveAction": {
     "description": "Localized text for routeSaveAction."
   },
+  "routeOpenAction": "Route öffnen",
+  "routeAppleMapsAction": "Karten",
+  "routeGoogleMapsAction": "Google Maps",
+  "routeOpenError": "Die Navigations-App konnte nicht geöffnet werden.",
   "routeSaveSuccess": "Route in Dokumente gespeichert",
   "@routeSaveSuccess": {
     "description": "Localized text for routeSaveSuccess."

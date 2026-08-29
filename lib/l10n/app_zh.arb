@@ -955,6 +955,10 @@
   "podcastUnplayed": "未播放单集",
   "routeReadAction": "朗读路线",
   "routeSaveAction": "保存到文档",
+  "routeOpenAction": "打開路線",
+  "routeAppleMapsAction": "地圖",
+  "routeGoogleMapsAction": "Google Maps",
+  "routeOpenError": "無法開啟導航 App。",
   "routeSaveSuccess": "路线已保存到文档",
   "deleteItem": "删除",
   "@deleteItem": {

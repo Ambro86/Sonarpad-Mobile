@@ -961,6 +961,10 @@
   "podcastUnplayed": "Episódios não reproduzidos",
   "routeReadAction": "Ler percurso",
   "routeSaveAction": "Guardar nos documentos",
+  "routeOpenAction": "Abrir percurso",
+  "routeAppleMapsAction": "Mapas",
+  "routeGoogleMapsAction": "Google Maps",
+  "routeOpenError": "Não foi possível abrir a aplicação de navegação.",
   "routeSaveSuccess": "Percurso guardado nos documentos",
   "deleteItem": "Eliminar",
   "@deleteItem": {

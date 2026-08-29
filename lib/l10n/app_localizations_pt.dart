@@ -2412,6 +2412,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String get routeSaveAction => 'Guardar nos documentos';
 
   @override
+  String get routeOpenAction => 'Abrir percurso';
+
+  @override
+  String get routeAppleMapsAction => 'Mapas';
+
+  @override
+  String get routeGoogleMapsAction => 'Google Maps';
+
+  @override
+  String get routeOpenError => 'Não foi possível abrir a aplicação de navegação.';
+
+  @override
   String get routeSaveSuccess => 'Percurso guardado nos documentos';
 
   @override
@@ -5922,6 +5934,18 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get routeSaveAction => 'Salvar nos documentos';
+
+  @override
+  String get routeOpenAction => 'Abrir rota';
+
+  @override
+  String get routeAppleMapsAction => 'Mapas';
+
+  @override
+  String get routeGoogleMapsAction => 'Google Maps';
+
+  @override
+  String get routeOpenError => 'Não foi possível abrir o aplicativo de navegação.';
 
   @override
   String get routeSaveSuccess => 'Percurso salvo nos documentos';

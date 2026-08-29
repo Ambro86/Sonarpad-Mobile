@@ -2472,6 +2472,18 @@ class AppLocalizationsPl extends AppLocalizations {
   String get routeSaveAction => 'Zapisz w Dokumentach';
 
   @override
+  String get routeOpenAction => 'Otwórz trasę';
+
+  @override
+  String get routeAppleMapsAction => 'Mapy';
+
+  @override
+  String get routeGoogleMapsAction => 'Google Maps';
+
+  @override
+  String get routeOpenError => 'Nie można otworzyć aplikacji nawigacyjnej.';
+
+  @override
   String get routeSaveSuccess => 'Trasa zapisana w Dokumentach';
 
   @override

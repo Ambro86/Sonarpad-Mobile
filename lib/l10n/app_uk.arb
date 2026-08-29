@@ -3172,6 +3172,10 @@
   "@routeSaveAction": {
     "description": "Localized text for routeSaveAction."
   },
+  "routeOpenAction": "Відкрити маршрут",
+  "routeAppleMapsAction": "Карти",
+  "routeGoogleMapsAction": "Google Maps",
+  "routeOpenError": "Не вдалося відкрити навігаційний застосунок.",
   "routeSaveSuccess": "Маршрут збережено в документах",
   "@routeSaveSuccess": {
     "description": "Localized text for routeSaveSuccess."

@@ -2473,6 +2473,18 @@ class AppLocalizationsCs extends AppLocalizations {
   String get routeSaveAction => 'Uložit do Dokumentů';
 
   @override
+  String get routeOpenAction => 'Otevřít trasu';
+
+  @override
+  String get routeAppleMapsAction => 'Mapy';
+
+  @override
+  String get routeGoogleMapsAction => 'Google Maps';
+
+  @override
+  String get routeOpenError => 'Navigační aplikaci se nepodařilo otevřít.';
+
+  @override
   String get routeSaveSuccess => 'Trasa uložena do Dokumentů';
 
   @override

@@ -955,6 +955,10 @@
   "podcastUnplayed": "Unplayed episodes",
   "routeReadAction": "Read route",
   "routeSaveAction": "Save to documents",
+  "routeOpenAction": "Open route",
+  "routeAppleMapsAction": "Maps",
+  "routeGoogleMapsAction": "Google Maps",
+  "routeOpenError": "Unable to open the navigation app.",
   "routeSaveSuccess": "Route saved to documents",
   "deleteItem": "Delete",
   "@deleteItem": {

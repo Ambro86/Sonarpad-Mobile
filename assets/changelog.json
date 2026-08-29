@@ -31,6 +31,8 @@
       "Corretta la visualizzazione dei video di SonarTube e degli altri contenuti video, che ora vengono mostrati correttamente a schermo intero quando è attiva l’opzione “Video orizzontale a schermo intero”.",
       "Migliorata la visualizzazione delle voci Edge, con etichette più umane e meno tecniche.",
       "Migliorata la lettura con le voci Edge quando la connessione è instabile: se l’invio di un paragrafo non riesce, Sonarpad riprova automaticamente fino a cinque volte. La lettura si interrompe soltanto se falliscono tutti i tentativi.",
+      "Aggiunto a tutti i campi di testo modificabili un pulsante per cancellarne rapidamente il contenuto. Nei campi di ricerca viene annunciato come “Cancella ricerca”, mentre negli altri campi come “Cancella testo”, con etichette accessibili localizzate.",
+      "Nella sezione Percorsi è stato aggiunto il pulsante “Apri percorso”, che consente di aprire immediatamente il tragitto calcolato nel navigatore del dispositivo. Su iPhone è possibile scegliere tra Mappe e Google Maps, se installato, mentre su Android il percorso viene aperto in Google Maps, mantenendo origine, destinazione e modalità di viaggio.",
       "Numerosi miglioramenti generali a stabilità, accessibilità, focus con screen reader, localizzazioni, riproduzione multimediale e gestione dei file su iOS e Android."
     ],
     "en": [
@@ -59,6 +61,8 @@
       "Fixed the display of SonarTube videos and other video content, which is now shown correctly in full screen when the “Landscape full-screen video” option is enabled.",
       "Improved the display of Edge voices, with more human-friendly and less technical labels.",
       "Improved reading with Edge voices when the connection is unstable: if sending a paragraph fails, Sonarpad automatically retries up to five times. Reading stops only if all attempts fail.",
+      "Added a button to all editable text fields to quickly clear their contents. In search fields it is announced as “Clear search”, while in other fields it is announced as “Clear text”, with localized accessibility labels.",
+      "Added an “Open route” button in Routes, letting you immediately open the calculated route in the device’s navigation app. On iPhone you can choose between Maps and Google Maps if installed, while on Android the route opens in Google Maps, preserving origin, destination, and travel mode.",
       "Numerous general improvements to stability, accessibility, screen-reader focus, localization, media playback and file handling on iOS and Android."
     ],
     "fr": [
@@ -87,6 +91,8 @@
       "Correction de l’affichage des vidéos SonarTube et des autres contenus vidéo, désormais affichés correctement en plein écran lorsque l’option « Vidéo horizontale en plein écran » est activée.",
       "Amélioration de l’affichage des voix Edge, avec des libellés plus naturels et moins techniques.",
       "Amélioration de la lecture avec les voix Edge lorsque la connexion est instable : si l’envoi d’un paragraphe échoue, Sonarpad réessaie automatiquement jusqu’à cinq fois. La lecture ne s’arrête que si toutes les tentatives échouent.",
+      "Ajout d’un bouton dans tous les champs de texte modifiables pour effacer rapidement leur contenu. Dans les champs de recherche, il est annoncé comme « Effacer la recherche », tandis que dans les autres champs il est annoncé comme « Effacer le texte », avec des libellés d’accessibilité localisés.",
+      "Ajout dans Itinéraires d’un bouton « Ouvrir l’itinéraire », qui permet d’ouvrir immédiatement le trajet calculé dans l’application de navigation de l’appareil. Sur iPhone, vous pouvez choisir entre Plans et Google Maps si ce dernier est installé ; sur Android, le trajet s’ouvre dans Google Maps en conservant le point de départ, la destination et le mode de déplacement.",
       "Nombreuses améliorations générales de la stabilité, de l’accessibilité, du focus avec les lecteurs d’écran, des localisations, de la lecture multimédia et de la gestion des fichiers sur iOS et Android."
     ],
     "es": [
@@ -115,6 +121,8 @@
       "Corregida la visualización de los vídeos de SonarTube y de otros contenidos de vídeo, que ahora se muestran correctamente a pantalla completa cuando está activada la opción «Vídeo horizontal a pantalla completa».",
       "Mejorada la visualización de las voces de Edge, con etiquetas más claras y menos técnicas.",
       "Mejorada la lectura con las voces de Edge cuando la conexión es inestable: si falla el envío de un párrafo, Sonarpad lo intenta de nuevo automáticamente hasta cinco veces. La lectura solo se detiene si fallan todos los intentos.",
+      "Añadido un botón a todos los campos de texto editables para borrar rápidamente su contenido. En los campos de búsqueda se anuncia como «Borrar búsqueda», mientras que en los demás campos se anuncia como «Borrar texto», con etiquetas de accesibilidad localizadas.",
+      "Se añadió en Rutas el botón «Abrir ruta», que permite abrir inmediatamente el trayecto calculado en la aplicación de navegación del dispositivo. En iPhone se puede elegir entre Mapas y Google Maps si está instalado; en Android la ruta se abre en Google Maps, manteniendo origen, destino y modo de viaje.",
       "Numerosas mejoras generales de estabilidad, accesibilidad, foco con lectores de pantalla, localizaciones, reproducción multimedia y gestión de archivos en iOS y Android."
     ],
     "pt": [
@@ -143,7 +151,9 @@
       "Corrigida a apresentação dos vídeos do SonarTube e de outros conteúdos de vídeo, que agora são mostrados corretamente em ecrã inteiro quando a opção «Vídeo horizontal em ecrã inteiro» está ativada.",
       "Melhorada a apresentação das vozes Edge, com etiquetas mais naturais e menos técnicas.",
       "Melhorada a leitura com as vozes Edge quando a ligação está instável: se o envio de um parágrafo falhar, o Sonarpad tenta novamente de forma automática até cinco vezes. A leitura só é interrompida se todas as tentativas falharem.",
-      "Várias melhorias gerais de estabilidade, acessibilidade, foco com leitores de ecrã, localizações, reprodução multimédia e gestão de ficheiros no iOS e Android."
+      "Adicionado um botão a todos os campos de texto editáveis para limpar rapidamente o respetivo conteúdo. Nos campos de pesquisa é anunciado como «Limpar pesquisa», enquanto nos restantes campos é anunciado como «Limpar texto», com etiquetas de acessibilidade localizadas.",
+      "Várias melhorias gerais de estabilidade, acessibilidade, foco com leitores de ecrã, localizações, reprodução multimédia e gestão de ficheiros no iOS e Android.",
+      "Foi adicionado em Rotas o botão “Abrir percurso”, que permite abrir imediatamente o trajeto calculado na aplicação de navegação do dispositivo. No iPhone é possível escolher entre Mapas e Google Maps, se estiver instalado; no Android o percurso é aberto no Google Maps, mantendo origem, destino e modo de viagem."
     ],
     "pl": [
       "Dodano SonarTube, nowy zintegrowany system do wyszukiwania i odtwarzania filmów z YouTube bezpośrednio w Sonarpad. Można przeglądać filmy, kanały i playlisty, wczytywać kolejne wyniki, dodawać kanały i pojedyncze filmy do ulubionych oraz odtwarzać treści we wbudowanym odtwarzaczu Sonarpad. SonarTube pozwala także czytać transkrypcje filmów, gdy są dostępne, oraz komentarze do każdego filmu.",
@@ -171,6 +181,8 @@
       "Poprawiono wyświetlanie filmów SonarTube i innych materiałów wideo. Są one teraz prawidłowo wyświetlane na pełnym ekranie po włączeniu opcji „Wideo poziome na pełnym ekranie”.",
       "Ulepszono wyświetlanie głosów Edge, stosując bardziej zrozumiałe i mniej techniczne etykiety.",
       "Ulepszono czytanie głosami Edge przy niestabilnym połączeniu: jeśli wysłanie akapitu się nie powiedzie, Sonarpad automatycznie ponowi próbę maksymalnie pięć razy. Czytanie zostanie zatrzymane tylko wtedy, gdy wszystkie próby zakończą się niepowodzeniem.",
+      "Dodano przycisk do wszystkich edytowalnych pól tekstowych, który pozwala szybko wyczyścić ich zawartość. W polach wyszukiwania jest ogłaszany jako „Wyczyść wyszukiwanie”, a w pozostałych jako „Wyczyść tekst”, z lokalizowanymi etykietami dostępności.",
+      "W sekcji Trasy dodano przycisk „Otwórz trasę”, który pozwala natychmiast otworzyć wyznaczoną trasę w aplikacji nawigacyjnej urządzenia. Na iPhonie można wybrać Mapy lub Google Maps, jeśli są zainstalowane, a na Androidzie trasa otwiera się w Google Maps z zachowaniem punktu początkowego, celu i trybu podróży.",
       "Liczne ogólne ulepszenia stabilności, dostępności, fokusu czytników ekranu, lokalizacji, odtwarzania multimediów i zarządzania plikami w iOS i Androidzie."
     ],
     "cs": [
@@ -199,7 +211,9 @@
       "Opraveno zobrazování videí SonarTube a dalšího videoobsahu, který se nyní správně zobrazuje přes celou obrazovku, když je zapnuta možnost „Vodorovné video přes celou obrazovku“.",
       "Vylepšeno zobrazení hlasů Edge: popisky jsou nyní přirozenější a méně technické.",
       "Vylepšeno čtení hlasy Edge při nestabilním připojení: pokud se odeslání odstavce nezdaří, Sonarpad pokus automaticky zopakuje až pětkrát. Čtení se zastaví pouze tehdy, když selžou všechny pokusy.",
-      "Řada obecných vylepšení stability, přístupnosti, fokusu čteček obrazovky, lokalizací, přehrávání médií a správy souborů v iOS a Androidu."
+      "Do všech upravitelných textových polí bylo přidáno tlačítko pro rychlé vymazání jejich obsahu. Ve vyhledávacích polích je oznamováno jako „Vymazat hledání“, v ostatních polích jako „Vymazat text“, s lokalizovanými popisky přístupnosti.",
+      "Řada obecných vylepšení stability, přístupnosti, fokusu čteček obrazovky, lokalizací, přehrávání médií a správy souborů v iOS a Androidu.",
+      "Do sekce Trasy bylo přidáno tlačítko „Otevřít trasu“, které umožňuje okamžitě otevřít vypočítanou trasu v navigační aplikaci zařízení. Na iPhonu si můžete vybrat mezi Mapami a Google Maps, pokud jsou nainstalované, zatímco na Androidu se trasa otevře v Google Maps se zachováním výchozího bodu, cíle i způsobu dopravy."
     ],
     "de": [
       "SonarTube wurde hinzugefügt, das neue integrierte System zum Suchen und Abspielen von YouTube-Videos direkt in Sonarpad. Videos, Kanäle und Playlists können durchsucht, weitere Ergebnisse geladen, Kanäle und einzelne Videos zu den Favoriten hinzugefügt und Inhalte mit dem integrierten Sonarpad-Player wiedergegeben werden. Mit SonarTube können außerdem Videotranskripte gelesen werden, sofern verfügbar, sowie die Kommentare zu jedem Video.",
@@ -227,6 +241,8 @@
       "Die Darstellung von SonarTube-Videos und anderen Videoinhalten wurde korrigiert. Sie werden jetzt korrekt im Vollbild angezeigt, wenn die Option „Video im Querformat als Vollbild“ aktiviert ist.",
       "Die Anzeige der Edge-Stimmen wurde verbessert, mit verständlicheren und weniger technischen Bezeichnungen.",
       "Die Wiedergabe mit Edge-Stimmen bei instabiler Verbindung wurde verbessert: Schlägt das Senden eines Absatzes fehl, versucht Sonarpad es automatisch bis zu fünfmal erneut. Die Wiedergabe wird nur beendet, wenn alle Versuche fehlschlagen.",
+      "Allen bearbeitbaren Textfeldern wurde eine Schaltfläche hinzugefügt, mit der sich der Inhalt schnell löschen lässt. In Suchfeldern wird sie als „Suche löschen“ angekündigt, in anderen Feldern als „Text löschen“, jeweils mit lokalisierten Beschriftungen für die Barrierefreiheit.",
+      "Im Bereich Routen wurde die Schaltfläche „Route öffnen“ hinzugefügt, mit der sich die berechnete Strecke sofort in der Navigations-App des Geräts öffnen lässt. Auf dem iPhone kann zwischen Karten und Google Maps gewählt werden, sofern Google Maps installiert ist; auf Android wird die Route in Google Maps geöffnet, wobei Start, Ziel und Reisemodus übernommen werden.",
       "Zahlreiche allgemeine Verbesserungen bei Stabilität, Barrierefreiheit, Screenreader-Fokus, Lokalisierungen, Medienwiedergabe und Dateiverwaltung unter iOS und Android."
     ],
     "pt_BR": [
@@ -255,7 +271,9 @@
       "Corrigida a exibição dos vídeos do SonarTube e de outros conteúdos de vídeo, que agora são mostrados corretamente em tela cheia quando a opção “Vídeo horizontal em tela cheia” está ativada.",
       "Melhorada a exibição das vozes Edge, com rótulos mais naturais e menos técnicos.",
       "Melhorada a leitura com as vozes Edge quando a conexão está instável: se o envio de um parágrafo falhar, o Sonarpad tentará novamente de forma automática até cinco vezes. A leitura só será interrompida se todas as tentativas falharem.",
-      "Diversas melhorias gerais de estabilidade, acessibilidade, foco com leitores de tela, localizações, reprodução multimídia e gestão de arquivos no iOS e Android."
+      "Adicionado um botão a todos os campos de texto editáveis para limpar rapidamente o conteúdo. Nos campos de pesquisa ele é anunciado como “Limpar pesquisa”, enquanto nos demais campos é anunciado como “Limpar texto”, com rótulos de acessibilidade localizados.",
+      "Diversas melhorias gerais de estabilidade, acessibilidade, foco com leitores de tela, localizações, reprodução multimídia e gestão de arquivos no iOS e Android.",
+      "Foi adicionado em Rotas o botão “Abrir rota”, que permite abrir imediatamente o trajeto calculado no aplicativo de navegação do dispositivo. No iPhone é possível escolher entre Mapas e Google Maps, se ele estiver instalado; no Android a rota é aberta no Google Maps, mantendo origem, destino e modo de viagem."
     ],
     "zh_CN": [
       "新增 SonarTube，这是 Sonarpad 内置的 YouTube 视频搜索和播放系统。现在可以浏览视频、频道和播放列表，加载更多结果，将频道和单个视频加入收藏，并使用 Sonarpad 内置播放器播放内容。SonarTube 还支持在可用时阅读视频转录文本，以及阅读每个视频的评论。",
@@ -283,7 +301,9 @@
       "修正了 SonarTube 视频及其他视频内容的显示问题。启用“横屏全屏视频”选项后，视频现在可正确全屏显示。",
       "改进了 Edge 语音的显示方式，标签更加自然易懂，减少了技术性代码。",
       "改进了网络连接不稳定时使用 Edge 语音的朗读体验：如果某个段落发送失败，Sonarpad 会自动重试，最多五次。只有全部尝试均失败时，朗读才会停止。",
-      "对 iOS 和 Android 上的稳定性、无障碍、屏幕阅读器焦点、本地化、媒体播放和文件管理进行了大量整体改进。"
+      "所有可编辑文本字段现在都增加了一个可快速清除内容的按钮。在搜索字段中，屏幕阅读器会将其读作“清除搜索”；在其他字段中则读作“清除文本”，并提供本地化的无障碍标签。",
+      "对 iOS 和 Android 上的稳定性、无障碍、屏幕阅读器焦点、本地化、媒体播放和文件管理进行了大量整体改进。",
+      "在路线部分新增了“打开路线”按钮，可立即在设备的导航应用中打开已计算的路线。在 iPhone 上，如果已安装 Google 地图，可以在地图和 Google 地图之间进行选择；在 Android 上，路线会在 Google 地图中打开，并保留起点、终点和出行方式。"
     ],
     "it_extra": [
       "Aggiunte le registrazioni programmate di Radio e TV: una volta programmata una registrazione, non è necessario rimanere nella schermata del canale. La programmazione continua ad avere effetto anche mentre si esplorano e si utilizzano le altre funzioni di Sonarpad, e la registrazione viene avviata automaticamente all’orario previsto.",
@@ -320,6 +340,8 @@
       "Виправлено відображення відео SonarTube та іншого відеовмісту. Тепер відео правильно відображається на весь екран, коли ввімкнено параметр «Відео на весь екран у горизонтальній орієнтації».",
       "Покращено відображення голосів Edge: підписи стали зрозумілішими та менш технічними.",
       "Покращено читання голосами Edge за нестабільного з’єднання: якщо надіслати абзац не вдається, Sonarpad автоматично повторює спробу до п’яти разів. Читання зупиняється лише тоді, коли всі спроби завершилися невдало.",
+      "До всіх редагованих текстових полів додано кнопку для швидкого очищення вмісту. У полях пошуку вона озвучується як «Очистити пошук», а в інших полях — як «Очистити текст», із локалізованими мітками доступності.",
+      "У розділі Маршрути додано кнопку «Відкрити маршрут», яка дозволяє одразу відкрити розрахований маршрут у навігаційній програмі пристрою. На iPhone можна вибрати між Карти та Google Maps, якщо його встановлено; на Android маршрут відкривається в Google Maps зі збереженням початкової точки, пункту призначення та способу пересування.",
       "Численні загальні покращення стабільності, доступності, фокуса екранних читачів, локалізації, відтворення медіа та керування файлами на iOS і Android."
     ],
     "ios": {

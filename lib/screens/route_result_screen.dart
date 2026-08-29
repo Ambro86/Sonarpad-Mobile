@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
@@ -52,8 +54,9 @@ class RouteResultScreen extends StatelessWidget {
                     settings: const RouteSettings(name: '/route/steps'),
                     builder: (_) => RouteStepsScreen(
                       path: path,
-                      fromLabel: result.from.displayLabel,
-                      toLabel: result.to.displayLabel,
+                      from: result.from,
+                      to: result.to,
+                      profile: result.profile,
                     ),
                   ),
                 );
@@ -79,8 +82,9 @@ class RouteResultScreen extends StatelessWidget {
                   settings: const RouteSettings(name: '/route/steps'),
                   builder: (_) => RouteStepsScreen(
                     path: path,
-                    fromLabel: result.from.displayLabel,
-                    toLabel: result.to.displayLabel,
+                    from: result.from,
+                    to: result.to,
+                    profile: result.profile,
                   ),
                 ),
               );
@@ -94,14 +98,16 @@ class RouteResultScreen extends StatelessWidget {
 
 class RouteStepsScreen extends StatefulWidget {
   final RoutePath path;
-  final String fromLabel;
-  final String toLabel;
+  final GeocodeCandidate from;
+  final GeocodeCandidate to;
+  final RouteProfile profile;
 
   const RouteStepsScreen({
     super.key,
     required this.path,
-    required this.fromLabel,
-    required this.toLabel,
+    required this.from,
+    required this.to,
+    required this.profile,
   });
 
   @override
@@ -338,6 +344,132 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
     }
   }
 
+  String _coordinate(GeocodeCandidate candidate) =>
+      '${candidate.latitude},${candidate.longitude}';
+
+  String _googleTravelMode() {
+    return switch (widget.profile) {
+      RouteProfile.driving => 'driving',
+      RouteProfile.walking => 'walking',
+      RouteProfile.cycling => 'bicycling',
+      RouteProfile.wheelchair => 'walking',
+    };
+  }
+
+  String _appleTravelMode() {
+    return switch (widget.profile) {
+      RouteProfile.driving => 'driving',
+      RouteProfile.walking => 'walking',
+      RouteProfile.cycling => 'cycling',
+      RouteProfile.wheelchair => 'walking',
+    };
+  }
+
+  Uri _appleMapsUri() {
+    final parameters = <String, String>{
+      'source': _coordinate(widget.from),
+      'destination': _coordinate(widget.to),
+      'mode': _appleTravelMode(),
+    };
+    if (widget.profile == RouteProfile.wheelchair) {
+      parameters['avoid'] = 'stairs';
+    }
+    return Uri.https('maps.apple.com', '/directions', parameters);
+  }
+
+  Uri _googleMapsWebUri() {
+    return Uri.https('www.google.com', '/maps/dir/', {
+      'api': '1',
+      'origin': _coordinate(widget.from),
+      'destination': _coordinate(widget.to),
+      'travelmode': _googleTravelMode(),
+    });
+  }
+
+  Uri _googleMapsIosUri() {
+    final query = Uri(
+      queryParameters: {
+        'saddr': _coordinate(widget.from),
+        'daddr': _coordinate(widget.to),
+        'directionsmode': _googleTravelMode(),
+      },
+    ).query;
+    return Uri.parse('comgooglemaps://?$query');
+  }
+
+  Future<bool> _launchExternal(Uri uri) async {
+    try {
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _openAppleMaps() async {
+    final opened = await _launchExternal(_appleMapsUri());
+    if (!opened && mounted) {
+      showStatusMessage(context, AppLocalizations.of(context).routeOpenError);
+    }
+  }
+
+  Future<void> _openGoogleMaps() async {
+    final opened = Platform.isIOS
+        ? await _launchExternal(_googleMapsIosUri())
+        : await _launchExternal(_googleMapsWebUri());
+    if (!opened && mounted) {
+      showStatusMessage(context, AppLocalizations.of(context).routeOpenError);
+    }
+  }
+
+  Future<void> _openRoute() async {
+    final l10n = AppLocalizations.of(context);
+
+    if (!Platform.isIOS) {
+      await _openGoogleMaps();
+      return;
+    }
+
+    var googleMapsInstalled = false;
+    try {
+      googleMapsInstalled = await canLaunchUrl(Uri.parse('comgooglemaps://'));
+    } catch (_) {
+      googleMapsInstalled = false;
+    }
+
+    if (!mounted) return;
+    if (!googleMapsInstalled) {
+      await _openAppleMaps();
+      return;
+    }
+
+    await showCupertinoModalPopup<void>(
+      context: context,
+      builder: (sheetContext) => CupertinoActionSheet(
+        title: Text(l10n.routeOpenAction),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              unawaited(_openAppleMaps());
+            },
+            child: Text(l10n.routeAppleMapsAction),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              unawaited(_openGoogleMaps());
+            },
+            child: Text(l10n.routeGoogleMapsAction),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () => Navigator.pop(sheetContext),
+          child: Text(l10n.routeCancel),
+        ),
+      ),
+    );
+  }
+
   Future<void> _saveAsDocument() async {
     final l10n = AppLocalizations.of(context);
     final text = _routeDocumentText(l10n);
@@ -413,7 +545,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
 
   String _documentFileName(AppLocalizations l10n) {
     final date = DateTime.now().toIso8601String().split('T').first;
-    return '${l10n.routeNavigationFromTo(_shortAddress(widget.fromLabel), _shortAddress(widget.toLabel), date)}.txt';
+    return '${l10n.routeNavigationFromTo(_shortAddress(widget.from.displayLabel), _shortAddress(widget.to.displayLabel), date)}.txt';
   }
 
   String _shortAddress(String value) {
@@ -447,6 +579,11 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
               sections: [
                 AccessibleListSection(
                   rows: [
+                    AccessibleListRow(
+                      id: 'open_route',
+                      kind: 'button',
+                      title: l10n.routeOpenAction,
+                    ),
                     for (var i = 0; i < _items.length; i++)
                       AccessibleListRow(
                         id: 'step_$i',
@@ -458,26 +595,36 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
                   ],
                 ),
               ],
-              onEvent: (_) {},
+              onEvent: (event) {
+                if (event.type == 'activate' && event.id == 'open_route') {
+                  unawaited(_openRoute());
+                }
+              },
             )
-          : ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _items.length,
-        itemBuilder: (context, index) {
-          final item = _items[index];
-          final distanceStr = l10n.formatDistance(item.distanceMeters);
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Text(
-              item.showDistance
-                  ? '${item.instruction} ($distanceStr)'
-                  : item.instruction,
-              style: Theme.of(context).textTheme.bodyLarge,
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: _openRoute,
+                    icon: const Icon(Icons.navigation_outlined),
+                    label: Text(l10n.routeOpenAction),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                for (final item in _items)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      item.showDistance
+                          ? '${item.instruction} (${l10n.formatDistance(item.distanceMeters)})'
+                          : item.instruction,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+              ],
             ),
-          );
-        },
-      ),
     );
   }
 

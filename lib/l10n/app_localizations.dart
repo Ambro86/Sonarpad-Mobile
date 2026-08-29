@@ -4530,6 +4530,18 @@ abstract class AppLocalizations {
   /// **'Salva nei documenti'**
   String get routeSaveAction;
 
+  /// Opens the calculated route in an external navigation app.
+  String get routeOpenAction;
+
+  /// Localized Apple Maps app name.
+  String get routeAppleMapsAction;
+
+  /// Google Maps app name.
+  String get routeGoogleMapsAction;
+
+  /// Error shown when an external navigation app cannot be opened.
+  String get routeOpenError;
+
   /// Localized text for routeSaveSuccess.
   ///
   /// In it, this message translates to:

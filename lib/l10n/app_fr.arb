@@ -961,6 +961,10 @@
   "podcastUnplayed": "Épisodes non écoutés",
   "routeReadAction": "Lire l'itinéraire",
   "routeSaveAction": "Enregistrer dans les documents",
+  "routeOpenAction": "Ouvrir l’itinéraire",
+  "routeAppleMapsAction": "Plans",
+  "routeGoogleMapsAction": "Google Maps",
+  "routeOpenError": "Impossible d’ouvrir l’application de navigation.",
   "routeSaveSuccess": "Itinéraire enregistré dans les documents",
   "deleteItem": "Supprimer",
   "@deleteItem": {
