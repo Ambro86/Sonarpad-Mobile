@@ -1234,22 +1234,47 @@ class SonarTubeService {
   }
 
   String? _findSearchContinuation(dynamic root) {
+    // YouTube changes the continuation envelope fairly often. Keep the search
+    // anchored to continuationItemRenderer first (the real "load more" row),
+    // but accept the modern commandExecutorCommand nesting as well.
+    String? continuationTokenFrom(dynamic node) {
+      if (node is Map) {
+        final map = Map<String, dynamic>.from(node);
+
+        final command = _asMap(map['continuationCommand']);
+        final commandToken = _string(command?['token']);
+        if (commandToken != null && commandToken.isNotEmpty) {
+          return commandToken;
+        }
+
+        for (final key in const [
+          'nextContinuationData',
+          'reloadContinuationData',
+        ]) {
+          final data = _asMap(map[key]);
+          final token = _string(data?['continuation']);
+          if (token != null && token.isNotEmpty) return token;
+        }
+
+        for (final child in map.values) {
+          final found = continuationTokenFrom(child);
+          if (found != null) return found;
+        }
+      } else if (node is List) {
+        for (final child in node) {
+          final found = continuationTokenFrom(child);
+          if (found != null) return found;
+        }
+      }
+      return null;
+    }
+
     String? findContinuationItem(dynamic node) {
       if (node is Map) {
         final map = Map<String, dynamic>.from(node);
         final renderer = _asMap(map['continuationItemRenderer']);
         if (renderer != null) {
-          final endpoint = _asMap(renderer['continuationEndpoint']);
-          final command = _asMap(endpoint?['continuationCommand']);
-          var token = _string(command?['token']);
-          if (token == null) {
-            final button = _asMap(renderer['button']);
-            final buttonRenderer = _asMap(button?['buttonRenderer']);
-            final buttonCommand = _asMap(buttonRenderer?['command']);
-            token = _string(
-              _asMap(buttonCommand?['continuationCommand'])?['token'],
-            );
-          }
+          final token = continuationTokenFrom(renderer);
           if (token != null) return token;
         }
         for (final child in map.values) {
@@ -1268,26 +1293,65 @@ class SonarTubeService {
     final preferred = findContinuationItem(root);
     if (preferred != null) return preferred;
 
-    String? findLegacy(dynamic node) {
+    // Older playlist responses, and some current experiment buckets, expose
+    // the next page under a continuations[] entry instead of rendering a
+    // continuationItemRenderer. This was the important missing case for long
+    // channel histories: SonarTube interpreted that layout as end-of-list and
+    // removed "Carica altri" even though YouTube still had older videos.
+    String? findContinuationContainer(dynamic node) {
       if (node is Map) {
         final map = Map<String, dynamic>.from(node);
-        final next = _asMap(map['nextContinuationData']);
-        final token = _string(next?['continuation']);
-        if (token != null) return token;
+        final continuations = _asList(map['continuations']);
+        for (final entry in continuations) {
+          final token = continuationTokenFrom(entry);
+          if (token != null) return token;
+        }
         for (final child in map.values) {
-          final found = findLegacy(child);
+          final found = findContinuationContainer(child);
           if (found != null) return found;
         }
       } else if (node is List) {
         for (final child in node) {
-          final found = findLegacy(child);
+          final found = findContinuationContainer(child);
           if (found != null) return found;
         }
       }
       return null;
     }
 
-    return findLegacy(root);
+    final containerToken = findContinuationContainer(root);
+    if (containerToken != null) return containerToken;
+
+    // Last compatibility fallback for responses where next/reload data is
+    // not wrapped in a continuations[] array. Do not recursively accept an
+    // arbitrary continuationCommand here: search/browse responses can contain
+    // unrelated shelf/menu continuations, which would make "Carica altri"
+    // jump to the wrong feed.
+    String? findUnwrappedContinuationData(dynamic node) {
+      if (node is Map) {
+        final map = Map<String, dynamic>.from(node);
+        for (final key in const [
+          'nextContinuationData',
+          'reloadContinuationData',
+        ]) {
+          final data = _asMap(map[key]);
+          final token = _string(data?['continuation']);
+          if (token != null && token.isNotEmpty) return token;
+        }
+        for (final child in map.values) {
+          final found = findUnwrappedContinuationData(child);
+          if (found != null) return found;
+        }
+      } else if (node is List) {
+        for (final child in node) {
+          final found = findUnwrappedContinuationData(child);
+          if (found != null) return found;
+        }
+      }
+      return null;
+    }
+
+    return findUnwrappedContinuationData(root);
   }
 
   String _youtubeText(dynamic node) {

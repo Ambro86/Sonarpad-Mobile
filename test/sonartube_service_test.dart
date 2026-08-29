@@ -351,6 +351,122 @@ void main() {
     expect(page.nextToken, 'channel-next');
   });
 
+  test(
+    'channel browse keeps pagination when YouTube uses reloadContinuationData',
+    () async {
+      final service = SonarTubeService(
+        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+        client: MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'continuationContents': {
+                'playlistVideoListContinuation': {
+                  'contents': [
+                    {
+                      'playlistVideoRenderer': {
+                        'videoId': 'oldvideo001',
+                        'title': {'simpleText': 'Video più vecchio'},
+                      },
+                    },
+                  ],
+                  'continuations': [
+                    {
+                      'reloadContinuationData': {
+                        'continuation': 'older-channel-page',
+                      },
+                    },
+                  ],
+                },
+              },
+            }),
+            200,
+          );
+        }),
+      );
+      const channel = SonarTubeItem(
+        kind: SonarTubeItemKind.channel,
+        id: 'UCabcdefghijklmnopqrstuv',
+        title: 'Canale lungo',
+        url: 'https://www.youtube.com/channel/UCabcdefghijklmnopqrstuv',
+      );
+
+      final page = await service.browse(
+        channel,
+        token: 'current-channel-page',
+        page: 8,
+      );
+
+      expect(page.items.single.title, 'Video più vecchio');
+      expect(page.nextToken, 'older-channel-page');
+      expect(page.hasMore, isTrue);
+    },
+  );
+
+  test(
+    'channel browse accepts continuation nested in command executor',
+    () async {
+      final service = SonarTubeService(
+        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+        client: MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'onResponseReceivedActions': [
+                {
+                  'appendContinuationItemsAction': {
+                    'continuationItems': [
+                      {
+                        'playlistVideoRenderer': {
+                          'videoId': 'oldvideo002',
+                          'title': {'simpleText': 'Altro video vecchio'},
+                        },
+                      },
+                      {
+                        'continuationItemRenderer': {
+                          'button': {
+                            'buttonRenderer': {
+                              'command': {
+                                'commandExecutorCommand': {
+                                  'commands': [
+                                    {
+                                      'continuationCommand': {
+                                        'token': 'nested-channel-page',
+                                      },
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            }),
+            200,
+          );
+        }),
+      );
+      const channel = SonarTubeItem(
+        kind: SonarTubeItemKind.channel,
+        id: 'UCabcdefghijklmnopqrstuv',
+        title: 'Canale lungo',
+        url: 'https://www.youtube.com/channel/UCabcdefghijklmnopqrstuv',
+      );
+
+      final page = await service.browse(
+        channel,
+        token: 'current-channel-page',
+        page: 9,
+      );
+
+      expect(page.items.single.title, 'Altro video vecchio');
+      expect(page.nextToken, 'nested-channel-page');
+      expect(page.hasMore, isTrue);
+    },
+  );
+
   test('browse continuation is sent directly without needing the browse id', () async {
     late Map<String, dynamic> requestedBody;
     final service = SonarTubeService(
