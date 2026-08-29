@@ -29,7 +29,20 @@ void main() {
     expect(source, contains('private let clearButton = UIButton(type: .system)'));
     expect(source, contains('UIImage(systemName: "xmark.circle.fill")'));
     expect(source, contains('clearButton.accessibilityLabel = label'));
+    expect(source, contains('isAccessibilityElement = false'));
+    expect(source, contains('contentView.isAccessibilityElement = false'));
+    expect(source, contains('field.isAccessibilityElement = true'));
+    expect(source, contains('clearButton.isAccessibilityElement = true'));
+    expect(source, contains('field.rightViewMode = hasText ? .always : .never'));
+    expect(
+      source,
+      contains('accessibilityElements = hasText ? [field as Any, clearButton as Any] : [field as Any]'),
+    );
     expect(source, contains('field.sendActions(for: .editingChanged)'));
+    expect(
+      source,
+      contains('UIAccessibility.post(notification: .layoutChanged, argument: field)'),
+    );
     expect(
       'cell.configureClearButton(label: row.clearAsSearch ? clearSearchLabel : clearTextLabel)'
           .allMatches(source)
@@ -53,6 +66,20 @@ void main() {
         reason: '${file.path} must localize clearText.',
       );
     }
+  });
+
+
+  test('SonarTube exposes clear search in both shared and Material renderers', () {
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+
+    expect(
+      'tooltip: l10n.clearSearch'.allMatches(source).length,
+      greaterThanOrEqualTo(2),
+    );
+    expect(
+      'valueListenable: _searchController'.allMatches(source).length,
+      greaterThanOrEqualTo(2),
+    );
   });
 
   test('Dropbox does not keep a duplicate shared clear-search row', () {

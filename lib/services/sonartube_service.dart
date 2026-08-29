@@ -220,36 +220,40 @@ class SonarTubeService {
     }
   }
 
-  Future<SonarTubePage> search(String query, {String? token, int page = 1}) {
+  Future<SonarTubePage> search(
+    String query, {
+    String? token,
+    int page = 1,
+  }) async {
     final trimmedQuery = query.trim();
     final fallbackQuery = <String, String>{
-        'hl': _youtubeLanguage,
-        'gl': _youtubeRegion,
-        'q': trimmedQuery,
-        'type': 'all',
-        'format': 'json',
-        if (token != null && token.isNotEmpty) 'token': token,
-        'page': '$page',
-      };
-    if (!_directNavigationEnabled) {
-      return _loadServerPage(fallbackQuery);
-    }
-    return _loadNavigationPage(
-      operation: 'search',
-      direct: () => _searchDirect(
-        trimmedQuery,
-        token: token,
-        page: page,
-      ),
-      fallbackQuery: fallbackQuery,
-    );
+      'hl': _youtubeLanguage,
+      'gl': _youtubeRegion,
+      'q': trimmedQuery,
+      'type': 'all',
+      'format': 'json',
+      if (token != null && token.isNotEmpty) 'token': token,
+      'page': '$page',
+    };
+    final result = !_directNavigationEnabled
+        ? await _loadServerPage(fallbackQuery)
+        : await _loadNavigationPage(
+            operation: 'search',
+            direct: () => _searchDirect(
+              trimmedQuery,
+              token: token,
+              page: page,
+            ),
+            fallbackQuery: fallbackQuery,
+          );
+    return _filterUnplayableVideoEntries(result);
   }
 
   Future<SonarTubePage> browse(
     SonarTubeItem collection, {
     String? token,
     int page = 1,
-  }) {
+  }) async {
     if (collection.kind == SonarTubeItemKind.video) {
       throw ArgumentError('Un video non è una raccolta SonarTube.');
     }
@@ -265,19 +269,22 @@ class SonarTubeService {
       if (token != null && token.isNotEmpty) 'token': token,
       'page': '$page',
     };
-    if (!_directNavigationEnabled) {
-      return _loadServerPage(fallbackQuery);
-    }
-    return _loadNavigationPage(
-      operation: 'browse:${collection.kind.name}',
-      direct: () => _browseDirect(
-        collection,
-        token: token,
-        page: page,
-        seedVideoId: seedVideoId,
-      ),
-      fallbackQuery: fallbackQuery,
-    );
+    final result = !_directNavigationEnabled
+        ? await _loadServerPage(fallbackQuery)
+        : await _loadNavigationPage(
+            operation: 'browse:${collection.kind.name}',
+            direct: () => _browseDirect(
+              collection,
+              token: token,
+              page: page,
+              seedVideoId: seedVideoId,
+            ),
+            fallbackQuery: fallbackQuery,
+          );
+    // Collections contain playable videos. Apply the same validity rule to
+    // channels, playlists and mixes, including the server fallback, so no
+    // navigation path can reintroduce entries that the player cannot open.
+    return _filterUnplayableVideoEntries(result, videosOnly: true);
   }
 
   String? _mixSeedVideoId(SonarTubeItem collection) {
@@ -757,6 +764,15 @@ class SonarTubeService {
       }
     }
 
+    // Keep channels and playlists in search results, but hide video entries
+    // that lack the metadata SonarTube needs to treat them as playable.
+    items = items
+        .where(
+          (item) =>
+              item.kind != SonarTubeItemKind.video || _isUsableVideoResult(item),
+        )
+        .toList(growable: false);
+
     if (items.isEmpty && query.isNotEmpty) {
       throw const FormatException('empty_direct_search_results');
     }
@@ -870,7 +886,7 @@ class SonarTubeService {
     final channelBrowseId = collection.kind == SonarTubeItemKind.channel
         ? _channelBrowseId(collection)
         : null;
-    final videos = _extractNavigationItems(
+    final parsedVideos = _extractNavigationItems(
       data,
       channelContextTitle:
           collection.kind == SonarTubeItemKind.channel ? collection.title : null,
@@ -878,12 +894,21 @@ class SonarTubeService {
     ).where((item) => item.kind == SonarTubeItemKind.video).toList(
       growable: false,
     );
+    // YouTube can expose placeholder/non-playable lockups that look like
+    // videos but have no view metadata. Device traces show that these entries
+    // cannot be resolved by SonarTube, so reject them consistently in every
+    // collection, including channels, playlists and generated mixes.
+    final videos = parsedVideos
+        .where(_isUsableVideoResult)
+        .toList(growable: false);
+    final filteredUnplayable = parsedVideos.length - videos.length;
     final nextToken = _findSearchContinuation(data);
     if (collection.kind == SonarTubeItemKind.channel) {
       await AppLogger.log(
         'SonarTube: channel browse response '
         'title=${_logValue(collection.title)} id=${_logValue(collection.id)} '
-        'page=$page items=${videos.length} hasMore=${nextToken != null && nextToken.isNotEmpty} '
+        'page=$page items=${videos.length} filteredUnplayable=$filteredUnplayable '
+        'hasMore=${nextToken != null && nextToken.isNotEmpty} '
         '${_continuationDiagnostics(data)}',
       );
     }
@@ -899,6 +924,28 @@ class SonarTubeService {
       page: page,
       nextToken: nextToken,
     );
+  }
+
+  SonarTubePage _filterUnplayableVideoEntries(
+    SonarTubePage page, {
+    bool videosOnly = false,
+  }) {
+    final usableItems = page.items.where((item) {
+      if (item.kind != SonarTubeItemKind.video) return !videosOnly;
+      return _isUsableVideoResult(item);
+    }).toList(growable: false);
+    if (usableItems.length == page.items.length) return page;
+    return SonarTubePage(
+      items: usableItems,
+      page: page.page,
+      nextToken: page.nextToken,
+    );
+  }
+
+  bool _isUsableVideoResult(SonarTubeItem item) {
+    final id = item.id.trim();
+    if (!RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(id)) return false;
+    return item.views?.trim().isNotEmpty ?? false;
   }
 
   String? _channelBrowseId(SonarTubeItem collection) {

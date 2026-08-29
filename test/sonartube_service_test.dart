@@ -51,6 +51,7 @@ void main() {
                             ],
                           },
                           'lengthText': {'simpleText': '4:12'},
+                          'viewCountText': {'simpleText': '100 visualizzazioni'},
                         },
                       },
                     ],
@@ -110,6 +111,7 @@ void main() {
                                   {'text': 'Elisa video generale'},
                                 ],
                               },
+                              'viewCountText': {'simpleText': '200 visualizzazioni'},
                               'shortBylineText': {
                                 'runs': [
                                   {
@@ -193,6 +195,7 @@ void main() {
                 'id': 'abcdefghijk',
                 'title': 'Risultato dal fallback',
                 'url': 'https://www.youtube.com/watch?v=abcdefghijk',
+                'views': '10 visualizzazioni',
               },
             ],
           }),
@@ -226,6 +229,7 @@ void main() {
               'videoRenderer': {
                 'videoId': 'nextvideo01',
                 'title': {'simpleText': 'Elisa pagina due'},
+                'viewCountText': {'simpleText': '300 visualizzazioni'},
               },
             },
             'continuationItemRenderer': {
@@ -284,6 +288,7 @@ void main() {
                 'id': 'abcdefghijk',
                 'title': 'Video dal resolver',
                 'url': 'https://www.youtube.com/watch?v=abcdefghijk',
+                'views': '20 visualizzazioni',
               },
             ],
           }),
@@ -321,6 +326,7 @@ void main() {
               'playlistVideoRenderer': {
                 'videoId': 'abcdefghijk',
                 'title': {'simpleText': 'Video del canale'},
+                'viewCountText': {'simpleText': '10 visualizzazioni'},
               },
             },
             'continuationItemRenderer': {
@@ -370,6 +376,7 @@ void main() {
                           'videoRenderer': {
                             'videoId': 'abcdefghijk',
                             'title': {'simpleText': 'Video recente'},
+                            'viewCountText': {'simpleText': '20 visualizzazioni'},
                           },
                         },
                       },
@@ -515,6 +522,63 @@ void main() {
   );
 
   test(
+    'channel browse hides video placeholders without view metadata',
+    () async {
+      final service = SonarTubeService(
+        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+        client: MockClient((request) async {
+          return http.Response(
+            jsonEncode({
+              'contents': {
+                'richGridRenderer': {
+                  'contents': [
+                    {
+                      'richItemRenderer': {
+                        'content': {
+                          'videoRenderer': {
+                            'videoId': 'playable001',
+                            'title': {'simpleText': 'Video apribile'},
+                            'viewCountText': {
+                              'simpleText': '123 visualizzazioni',
+                            },
+                          },
+                        },
+                      },
+                    },
+                    {
+                      'richItemRenderer': {
+                        'content': {
+                          'videoRenderer': {
+                            'videoId': 'blocked0001',
+                            'title': {'simpleText': 'Placeholder non apribile'},
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            }),
+            200,
+          );
+        }),
+      );
+      const channel = SonarTubeItem(
+        kind: SonarTubeItemKind.channel,
+        id: 'UCabcdefghijklmnopqrstuv',
+        title: 'Canale',
+        url: 'https://www.youtube.com/channel/UCabcdefghijklmnopqrstuv',
+      );
+
+      final page = await service.browse(channel);
+
+      expect(page.items, hasLength(1));
+      expect(page.items.single.id, 'playable001');
+      expect(page.items.single.views, '123 visualizzazioni');
+    },
+  );
+
+  test(
     'channel browse keeps pagination when YouTube uses reloadContinuationData',
     () async {
       final service = SonarTubeService(
@@ -530,6 +594,7 @@ void main() {
                         'playlistVideoRenderer': {
                           'videoId': 'oldvideo001',
                           'title': {'simpleText': 'Video più vecchio'},
+                          'viewCountText': {'simpleText': '30 visualizzazioni'},
                         },
                       },
                     ],
@@ -584,6 +649,7 @@ void main() {
                         'playlistVideoRenderer': {
                           'videoId': 'oldvideo002',
                           'title': {'simpleText': 'Altro video vecchio'},
+                          'viewCountText': {'simpleText': '40 visualizzazioni'},
                         },
                       },
                       {
@@ -647,6 +713,7 @@ void main() {
               'playlistVideoRenderer': {
                 'videoId': 'abcdefghijk',
                 'title': {'simpleText': 'Pagina successiva'},
+                'viewCountText': {'simpleText': '50 visualizzazioni'},
               },
             },
           }),
@@ -723,6 +790,7 @@ void main() {
               'playlistPanelVideoRenderer': {
                 'videoId': 'abcdefghijk',
                 'title': {'simpleText': 'Mix seed'},
+                'viewCountText': {'simpleText': '60 visualizzazioni'},
               },
             },
           }),
@@ -1150,6 +1218,7 @@ void main() {
                 'id': 'servervid01',
                 'title': 'Pagina due dal fallback',
                 'url': 'https://www.youtube.com/watch?v=servervid01',
+                'views': '70 visualizzazioni',
               },
             ],
           }),
@@ -1169,6 +1238,105 @@ void main() {
     expect(page.page, 2);
     expect(page.nextToken, 'server-next-token');
     expect(page.items.single.title, 'Pagina due dal fallback');
+  });
+
+  test('search hides video results without view metadata but keeps collections', () async {
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        final body = request.body.isEmpty
+            ? <String, dynamic>{}
+            : Map<String, dynamic>.from(jsonDecode(request.body) as Map);
+        if (body['params'] != null) {
+          return http.Response(jsonEncode({'contents': {}}), 200);
+        }
+        return http.Response(
+          jsonEncode({
+            'contents': {
+              'sectionListRenderer': {
+                'contents': [
+                  {
+                    'itemSectionRenderer': {
+                      'contents': [
+                        {
+                          'videoRenderer': {
+                            'videoId': 'playable001',
+                            'title': {'simpleText': 'Video valido'},
+                            'viewCountText': {'simpleText': '42 visualizzazioni'},
+                          },
+                        },
+                        {
+                          'videoRenderer': {
+                            'videoId': 'blocked0001',
+                            'title': {'simpleText': 'Video non apribile'},
+                          },
+                        },
+                        {
+                          'playlistRenderer': {
+                            'playlistId': 'PLkeep123',
+                            'title': {'simpleText': 'Playlist valida'},
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          }),
+          200,
+        );
+      }),
+    );
+
+    final page = await service.search('prova');
+
+    expect(page.items.any((item) => item.id == 'playable001'), isTrue);
+    expect(page.items.any((item) => item.id == 'blocked0001'), isFalse);
+    expect(page.items.any((item) => item.id == 'PLkeep123'), isTrue);
+  });
+
+  test('playlist browse hides video entries without view metadata', () async {
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      client: MockClient((request) async {
+        return http.Response(
+          jsonEncode({
+            'contents': {
+              'playlistVideoListRenderer': {
+                'contents': [
+                  {
+                    'playlistVideoRenderer': {
+                      'videoId': 'playable001',
+                      'title': {'simpleText': 'Video valido'},
+                      'viewCountText': {'simpleText': '42 visualizzazioni'},
+                    },
+                  },
+                  {
+                    'playlistVideoRenderer': {
+                      'videoId': 'blocked0001',
+                      'title': {'simpleText': 'Video non apribile'},
+                    },
+                  },
+                ],
+              },
+            },
+          }),
+          200,
+        );
+      }),
+    );
+    const playlist = SonarTubeItem(
+      kind: SonarTubeItemKind.playlist,
+      id: 'PLfilter123',
+      title: 'Playlist',
+      url: 'https://www.youtube.com/playlist?list=PLfilter123',
+    );
+
+    final page = await service.browse(playlist);
+
+    expect(page.items, hasLength(1));
+    expect(page.items.single.id, 'playable001');
   });
 
 }

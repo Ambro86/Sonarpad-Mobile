@@ -620,6 +620,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
 
   Map<String, Object?> _dataForContext(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final debugTag = widget.debugTag ?? widget.controller?.debugName;
     return {
       'sections': widget.sections.map((e) => e.toMap()).toList(),
       'refreshEnabled': widget.refreshEnabled,
@@ -630,7 +631,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'persistentTopAction': widget.persistentTopAction!.toMap(),
       if (_effectiveInitialFocusId != null)
         'initialFocusId': _effectiveInitialFocusId,
-      if (widget.debugTag != null) 'debugTag': widget.debugTag,
+      if (debugTag != null && debugTag.isNotEmpty) 'debugTag': debugTag,
     };
   }
 

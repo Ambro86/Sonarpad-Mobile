@@ -290,12 +290,16 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
     selectionStyle = .none
+    isAccessibilityElement = false
+    contentView.isAccessibilityElement = false
     field.translatesAutoresizingMaskIntoConstraints = false
     field.borderStyle = .roundedRect
     field.clearButtonMode = .never
+    field.isAccessibilityElement = true
     clearButton.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
     clearButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
     clearButton.tintColor = .tertiaryLabel
+    clearButton.isAccessibilityElement = true
     clearButton.accessibilityTraits = .button
     clearButton.addTarget(self, action: #selector(clearText), for: .touchUpInside)
     field.rightView = clearButton
@@ -332,8 +336,12 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   }
 
   private func updateClearButtonVisibility() {
-    let hasText = !(field.text ?? "").isEmpty
-    field.rightViewMode = field.isFirstResponder && hasText ? .always : .never
+    let hasText = field.isEnabled && !(field.text ?? "").isEmpty
+    field.rightViewMode = hasText ? .always : .never
+    // A UITextField rightView is not consistently exposed as a separate
+    // VoiceOver stop. Give the cell an explicit accessibility order so every
+    // shared text field exposes the contextual clear action after the field.
+    accessibilityElements = hasText ? [field as Any, clearButton as Any] : [field as Any]
   }
 
   @objc private func clearText() {
@@ -341,6 +349,7 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
     field.text = ""
     updateClearButtonVisibility()
     field.sendActions(for: .editingChanged)
+    UIAccessibility.post(notification: .layoutChanged, argument: field)
   }
 
   private func focusDiagnosticSummary(_ phase: String) -> String {
@@ -2697,6 +2706,36 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       print("DOC_NATIVE_SWIFT \(postLine)")
       self.emitDebug(postLine)
       UIAccessibility.post(notification: notification, argument: target)
+
+      // On long SonarTube channel lists, VoiceOver can acknowledge the
+      // layoutChanged post without actually moving off the old Load more row.
+      // If the requested row has not reported focus after a short settling
+      // window, perform exactly one stronger screenChanged post. Keep this
+      // recovery scoped to SonarTube in-place item jumps so other lists retain
+      // their established focus behavior.
+      if self.debugTag == "sonartube",
+         mode == "inPlaceJump",
+         id.hasPrefix("item_") {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
+          guard let self = self,
+                self.currentRequestedFocusRowId == id,
+                self.focusTokensAreCurrent(
+                  requestId: requestId,
+                  rendererGeneration: rendererGeneration
+                ),
+                let retryIndexPath = self.indexPath(forRowId: id) else { return }
+          self.tableView.layoutIfNeeded()
+          if !(self.tableView.indexPathsForVisibleRows?.contains(retryIndexPath) ?? false) {
+            self.tableView.scrollToRow(at: retryIndexPath, at: .middle, animated: false)
+            self.tableView.layoutIfNeeded()
+          }
+          guard let retryTarget = self.accessibilityTarget(at: retryIndexPath) else { return }
+          self.emitDebug(
+            "IN_PLACE_FOCUS_FALLBACK id=\(id) requestId=\(requestId) notification=screenChanged"
+          )
+          UIAccessibility.post(notification: .screenChanged, argument: retryTarget)
+        }
+      }
 
       completion([
         "posted": true,

@@ -44,10 +44,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   final _searchFocusNode = FocusNode();
   final AccessibleListController _accessibleListController =
       AccessibleListController(debugName: 'sonartube');
-  final GlobalKey _searchLoadMoreFocusTargetKey = GlobalKey(
-    debugLabel: 'sonartube_search_load_more_target',
+  final GlobalKey _loadMoreFocusTargetKey = GlobalKey(
+    debugLabel: 'sonartube_load_more_target',
   );
-  int? _searchLoadMoreFocusIndex;
+  int? _loadMoreFocusIndex;
   List<SonarTubeItem> _items = const [];
   Set<String> _favoriteKeys = const {};
   String? _query;
@@ -294,9 +294,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         if (appended.isNotEmpty) {
           _items = [..._items, ...appended];
           shouldFocusFirstAppendedItem = true;
-          if (_isSearchResults) {
-            _searchLoadMoreFocusIndex = firstAppendedIndex;
-          }
+          _loadMoreFocusIndex = firstAppendedIndex;
         }
         _nextToken = appended.isEmpty ? null : token;
         _page = currentPage;
@@ -309,12 +307,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
 
     if (!mounted || !shouldFocusFirstAppendedItem) return;
 
-    if (_isSearchResults && !useSharedAccessibleViewModel) {
-      await _focusFirstAppendedSearchResult(firstAppendedIndex);
+    if (!useSharedAccessibleViewModel) {
+      await _focusFirstAppendedMaterialResult(firstAppendedIndex);
       return;
     }
-
-    if (!useSharedAccessibleViewModel) return;
 
     // Keep both collection browsing and the clean search-results route
     // renderer-neutral. On iOS this request is handled by UIKit; on Android
@@ -327,11 +323,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
   }
 
-  Future<void> _focusFirstAppendedSearchResult(int index) async {
+  Future<void> _focusFirstAppendedMaterialResult(int index) async {
     await WidgetsBinding.instance.endOfFrame;
-    if (!mounted || _searchLoadMoreFocusIndex != index) return;
+    if (!mounted || _loadMoreFocusIndex != index) return;
 
-    final targetContext = _searchLoadMoreFocusTargetKey.currentContext;
+    final targetContext = _loadMoreFocusTargetKey.currentContext;
     if (targetContext == null || !targetContext.mounted) return;
 
     await Scrollable.ensureVisible(
@@ -342,8 +338,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     if (!mounted || !targetContext.mounted) return;
 
     await WidgetsBinding.instance.endOfFrame;
-    if (!mounted || _searchLoadMoreFocusIndex != index) return;
-    _searchLoadMoreFocusTargetKey.currentContext
+    if (!mounted || _loadMoreFocusIndex != index) return;
+    _loadMoreFocusTargetKey.currentContext
         ?.findRenderObject()
         ?.sendSemanticsEvent(const FocusSemanticEvent());
   }
@@ -917,7 +913,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                   : IconButton(
                       tooltip: l10n.clearSearch,
                       icon: const Icon(Icons.clear),
-                      onPressed: _searchController.clear,
+                      onPressed: () {
+                        _searchController.clear();
+                        _searchFocusNode.requestFocus();
+                      },
                     ),
             ),
           ),
@@ -1399,9 +1398,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           includeCustomActions: true,
         );
         rows.add(
-          index == _searchLoadMoreFocusIndex
+          index == _loadMoreFocusIndex
               ? KeyedSubtree(
-                  key: _searchLoadMoreFocusTargetKey,
+                  key: _loadMoreFocusTargetKey,
                   child: itemWidget,
                 )
               : itemWidget,
@@ -1523,6 +1522,20 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                               labelText: l10n.sonarTubeSearchLabel,
                               hintText: l10n.sonarTubeSearchPrompt,
                               prefixIcon: const Icon(Icons.search),
+                              suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                                valueListenable: _searchController,
+                                builder: (context, value, _) =>
+                                    value.text.isEmpty
+                                        ? const SizedBox.shrink()
+                                        : IconButton(
+                                            tooltip: l10n.clearSearch,
+                                            icon: const Icon(Icons.clear),
+                                            onPressed: () {
+                                              _searchController.clear();
+                                              _searchFocusNode.requestFocus();
+                                            },
+                                          ),
+                              ),
                             ),
                             textInputAction: TextInputAction.search,
                             onSubmitted: (_) => _search(),
@@ -1621,7 +1634,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                         final subtitle = resolving
                             ? l10n.sonarTubeResolving
                             : _subtitle(l10n, item);
-                          return _buildFlutterSonarTubeItem(
+                          final itemWidget = _buildFlutterSonarTubeItem(
                             l10n,
                             item,
                             resolving: resolving,
@@ -1630,6 +1643,12 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                             subtitle: subtitle,
                             includeCustomActions: true,
                           );
+                          return itemIndex == _loadMoreFocusIndex
+                              ? KeyedSubtree(
+                                  key: _loadMoreFocusTargetKey,
+                                  child: itemWidget,
+                                )
+                              : itemWidget;
                         }
                         itemIndex -= _items.length;
                         if (!_loading && _items.isEmpty && _isCollection) {

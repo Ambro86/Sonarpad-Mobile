@@ -28,14 +28,34 @@ void main() {
       );
     }
   });
-  test('clean SonarTube search load more focuses the first appended result', () {
+  test('Material SonarTube load more focuses the first appended result', () {
     final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
 
-    expect(source, contains('_searchLoadMoreFocusIndex = firstAppendedIndex;'));
-    expect(source, contains('_focusFirstAppendedSearchResult(firstAppendedIndex)'));
+    expect(source, contains('_loadMoreFocusIndex = firstAppendedIndex;'));
+    expect(source, contains('_focusFirstAppendedMaterialResult(firstAppendedIndex)'));
     expect(source, contains('Scrollable.ensureVisible('));
     expect(source, contains('sendSemanticsEvent(const FocusSemanticEvent())'));
-    expect(source, contains("debugLabel: 'sonartube_search_load_more_target'"));
+    expect(source, contains("debugLabel: 'sonartube_load_more_target'"));
+    expect(source, contains('return itemIndex == _loadMoreFocusIndex'));
+  });
+
+  test('UIKit retries an ignored SonarTube load-more focus exactly once', () {
+    final swift = File(
+      'ios/Runner/SonarpadNativeAccessibleView.swift',
+    ).readAsStringSync();
+    final shared = File(
+      'lib/widgets/universal_accessible_view.dart',
+    ).readAsStringSync();
+
+    expect(shared, contains('widget.debugTag ?? widget.controller?.debugName'));
+    expect(swift, contains('self.debugTag == "sonartube"'));
+    expect(swift, contains('mode == "inPlaceJump"'));
+    expect(swift, contains('id.hasPrefix("item_")'));
+    expect(swift, contains('IN_PLACE_FOCUS_FALLBACK'));
+    expect(
+      swift,
+      contains('UIAccessibility.post(notification: .screenChanged, argument: retryTarget)'),
+    );
   });
 
 }
