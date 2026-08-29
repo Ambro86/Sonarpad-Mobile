@@ -357,29 +357,32 @@ void main() {
       final service = SonarTubeService(
         endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
         client: MockClient((request) async {
-          return http.Response(
-            jsonEncode({
-              'continuationContents': {
-                'playlistVideoListContinuation': {
-                  'contents': [
-                    {
-                      'playlistVideoRenderer': {
-                        'videoId': 'oldvideo001',
-                        'title': {'simpleText': 'Video più vecchio'},
+          return http.Response.bytes(
+            utf8.encode(
+              jsonEncode({
+                'continuationContents': {
+                  'playlistVideoListContinuation': {
+                    'contents': [
+                      {
+                        'playlistVideoRenderer': {
+                          'videoId': 'oldvideo001',
+                          'title': {'simpleText': 'Video più vecchio'},
+                        },
                       },
-                    },
-                  ],
-                  'continuations': [
-                    {
-                      'reloadContinuationData': {
-                        'continuation': 'older-channel-page',
+                    ],
+                    'continuations': [
+                      {
+                        'reloadContinuationData': {
+                          'continuation': 'older-channel-page',
+                        },
                       },
-                    },
-                  ],
+                    ],
+                  },
                 },
-              },
-            }),
+              }),
+            ),
             200,
+            headers: const {'content-type': 'application/json; charset=utf-8'},
           );
         }),
       );
