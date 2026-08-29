@@ -283,9 +283,8 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           title: l10n.search,
           kind: 'textField',
           value: _searchController.text,
+          clearAsSearch: true,
         ),
-        if (_searchQuery.isNotEmpty)
-          AccessibleListRow(id: 'clear_search', title: l10n.clearSearch, kind: 'button'),
         if (_currentPath.isNotEmpty)
           AccessibleListRow(id: 'back', title: l10n.goBack),
         if (visibleEntries.isEmpty)
@@ -313,8 +312,6 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             final value = event.value?.toString() ?? '';
             _searchController.text = value;
             setState(() => _searchQuery = value);
-          } else if (event.id == 'clear_search' && event.type == 'activate') {
-            _clearSearch();
           } else if (event.id == 'back' && event.type == 'activate') {
             final parent = p.dirname(_currentPath);
             await _loadFolder(parent == '/' ? '' : parent);
@@ -346,9 +343,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
                   : IconButton(
                       onPressed: _clearSearch,
                       icon: const Icon(Icons.clear),
-                      tooltip: MaterialLocalizations.of(
-                        context,
-                      ).closeButtonTooltip,
+                      tooltip: l10n.clearSearch,
                     ),
               border: const OutlineInputBorder(),
             ),

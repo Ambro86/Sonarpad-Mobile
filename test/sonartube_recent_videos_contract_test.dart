@@ -61,6 +61,44 @@ void main() {
     expect(history, contains('Future<void> removeRecentVideo(String videoId)'));
   });
 
+
+  test('recent videos stay open under the player and restore focus on Back', () {
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+
+    final openRecentStart = source.indexOf('Future<void> _openRecentVideos()');
+    final disposeStart = source.indexOf('  @override\n  void dispose()', openRecentStart);
+    expect(openRecentStart, greaterThanOrEqualTo(0));
+    expect(disposeStart, greaterThan(openRecentStart));
+    final openRecent = source.substring(openRecentStart, disposeStart);
+
+    expect(openRecent, contains('await Navigator.push<void>('));
+    expect(openRecent, contains('onOpenItem: _openItem'));
+    expect(openRecent, isNot(contains('Navigator.push<SonarTubeItem>')));
+
+    final recentStart = source.indexOf('class _SonarTubeRecentVideosScreenState');
+    final favoritesStart = source.indexOf('class _SonarTubeFavoritesScreen', recentStart);
+    expect(recentStart, greaterThanOrEqualTo(0));
+    expect(favoritesStart, greaterThan(recentStart));
+    final recent = source.substring(recentStart, favoritesStart);
+
+    expect(
+      recent,
+      contains("AccessibleListController(debugName: 'sonartube-recent-videos')"),
+    );
+    expect(recent, contains('Future<void> _openRecentVideo('));
+    expect(recent, contains('await widget.onOpenItem(item);'));
+    expect(recent, contains('await _load();'));
+    expect(recent, contains('await _restoreRecentVideoFocus(item);'));
+    expect(recent, contains("'recent_\$index'"));
+    expect(recent, contains('mode: AccessibleFocusMode.routeReturnJump'));
+    expect(
+      recent,
+      contains("event.type == 'activate' && mounted) {\n          await _openRecentVideo(item);"),
+    );
+    expect(recent, contains('onTap: () => _openRecentVideo(item),'));
+    expect(recent, isNot(contains('Navigator.pop(context, item)')));
+  });
+
   test('every locale contains the recent-video delete label', () {
     final arbFiles = Directory('lib/l10n')
         .listSync()

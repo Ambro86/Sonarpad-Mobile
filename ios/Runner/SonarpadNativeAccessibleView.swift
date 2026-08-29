@@ -42,6 +42,7 @@ private struct SonarpadNativeRow {
   var placeholder: String?
   var submitOnReturn: Bool
   var textInputAction: String?
+  var clearAsSearch: Bool
   var stabilizeTextFieldFocusOnBegin: Bool
   var options: [SonarpadNativeOption]
   var actions: [SonarpadNativeAction]
@@ -85,6 +86,7 @@ private struct SonarpadNativeRow {
     placeholder = map["placeholder"] as? String
     submitOnReturn = map["submitOnReturn"] as? Bool ?? false
     textInputAction = map["textInputAction"] as? String
+    clearAsSearch = map["clearAsSearch"] as? Bool ?? (textInputAction == "search")
     stabilizeTextFieldFocusOnBegin =
       map["stabilizeNativeTextFieldFocusOnBegin"] as? Bool ?? false
     options = (map["options"] as? [[String: Any]] ?? []).map {
@@ -148,6 +150,7 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.placeholder == rhs.placeholder,
         lhs.submitOnReturn == rhs.submitOnReturn,
         lhs.textInputAction == rhs.textInputAction,
+        lhs.clearAsSearch == rhs.clearAsSearch,
         lhs.stabilizeTextFieldFocusOnBegin == rhs.stabilizeTextFieldFocusOnBegin,
         lhs.options.count == rhs.options.count,
         lhs.actions.count == rhs.actions.count,
@@ -276,6 +279,7 @@ private final class SonarpadAccessibleTableCell: UITableViewCell {
 
 private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate {
   let field = UITextField(frame: .zero)
+  private let clearButton = UIButton(type: .system)
   var rowId = ""
   var submitOnReturn = false
   var stabilizeFocusOnBegin = false
@@ -288,7 +292,14 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
     selectionStyle = .none
     field.translatesAutoresizingMaskIntoConstraints = false
     field.borderStyle = .roundedRect
-    field.clearButtonMode = .whileEditing
+    field.clearButtonMode = .never
+    clearButton.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
+    clearButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
+    clearButton.tintColor = .tertiaryLabel
+    clearButton.accessibilityTraits = .button
+    clearButton.addTarget(self, action: #selector(clearText), for: .touchUpInside)
+    field.rightView = clearButton
+    field.rightViewMode = .never
     field.returnKeyType = .done
     field.delegate = self
     contentView.addSubview(field)
@@ -314,6 +325,24 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
     NotificationCenter.default.removeObserver(self)
   }
 
+  func configureClearButton(label: String) {
+    clearButton.accessibilityLabel = label
+    clearButton.accessibilityHint = nil
+    updateClearButtonVisibility()
+  }
+
+  private func updateClearButtonVisibility() {
+    let hasText = !(field.text ?? "").isEmpty
+    field.rightViewMode = field.isFirstResponder && hasText ? .always : .never
+  }
+
+  @objc private func clearText() {
+    guard field.isEnabled, !(field.text ?? "").isEmpty else { return }
+    field.text = ""
+    updateClearButtonVisibility()
+    field.sendActions(for: .editingChanged)
+  }
+
   private func focusDiagnosticSummary(_ phase: String) -> String {
     let focused = UIAccessibility.focusedElement(using: .notificationVoiceOver)
     let focusedObject = focused as? NSObject
@@ -334,6 +363,7 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   }
 
   @objc private func valueChanged() {
+    updateClearButtonVisibility()
     if stabilizeFocusOnBegin {
       onFocusStabilized?(rowId, focusDiagnosticSummary("editingChanged"))
     }
@@ -341,6 +371,7 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   }
 
   func textFieldDidBeginEditing(_ textField: UITextField) {
+    updateClearButtonVisibility()
     guard stabilizeFocusOnBegin else { return }
     onFocusStabilized?(rowId, focusDiagnosticSummary("didBeginEditing.beforeAsync"))
     // Keep the initial double-tap attached to the real editable control while
@@ -371,6 +402,10 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
       guard let self = self, self.stabilizeFocusOnBegin else { return }
       self.onFocusStabilized?(self.rowId, self.focusDiagnosticSummary("keyboardDidShow.after80ms"))
     }
+  }
+
+  func textFieldDidEndEditing(_ textField: UITextField) {
+    updateClearButtonVisibility()
   }
 
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -422,6 +457,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var globalFocusTraceObserver: NSObjectProtocol?
   private var voiceOverStatusObserver: NSObjectProtocol?
   private var requestedVerticalScrollIndicator = true
+  private var clearTextLabel = "Clear text"
+  private var clearSearchLabel = "Clear search"
   private var focusTraceSequence = 0
   private var persistentTopActionElement: SonarpadPersistentAccessibilityActionElement?
 
@@ -850,6 +887,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private func apply(arguments: Any?) {
     guard let map = arguments as? [String: Any] else { return }
     debugTag = map["debugTag"] as? String
+    clearTextLabel = map["clearTextLabel"] as? String ?? clearTextLabel
+    clearSearchLabel = map["clearSearchLabel"] as? String ?? clearSearchLabel
     configurePersistentTopAction(from: map)
     requestedVerticalScrollIndicator = map["showVerticalScrollIndicator"] as? Bool ?? true
     updateScrollIndicatorVisibility()
@@ -936,6 +975,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.field.accessibilityHint = row.hint
       cell.field.isSecureTextEntry = row.secure
       cell.field.isEnabled = row.enabled
+      cell.configureClearButton(label: row.clearAsSearch ? clearSearchLabel : clearTextLabel)
       cell.submitOnReturn = row.submitOnReturn
       cell.stabilizeFocusOnBegin = row.stabilizeTextFieldFocusOnBegin
       switch row.textInputAction {
@@ -1521,6 +1561,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         cell.field.accessibilityHint = row.hint
         cell.field.isSecureTextEntry = row.secure
         cell.field.isEnabled = row.enabled
+        cell.configureClearButton(label: row.clearAsSearch ? clearSearchLabel : clearTextLabel)
         cell.submitOnReturn = row.submitOnReturn
         cell.stabilizeFocusOnBegin = row.stabilizeTextFieldFocusOnBegin
         switch row.textInputAction {

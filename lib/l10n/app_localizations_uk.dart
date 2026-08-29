@@ -2640,6 +2640,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get clearSearch => "Очистити пошук";
 
   @override
+  String get clearText => "Очистити текст";
+
+  @override
   String get fileTypeLabel => "Файл";
 
   @override

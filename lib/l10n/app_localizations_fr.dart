@@ -3410,6 +3410,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get clearSearch => 'Effacer la recherche';
 
   @override
+  String get clearText => 'Effacer le texte';
+
+  @override
   String get fileTypeLabel => 'Fichier';
 
   @override

@@ -3385,6 +3385,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get clearSearch => 'Wyczyść wyszukiwanie';
 
   @override
+  String get clearText => 'Wyczyść tekst';
+
+  @override
   String get fileTypeLabel => 'Plik';
 
   @override

@@ -3377,6 +3377,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearSearch => 'Clear search';
 
   @override
+  String get clearText => 'Clear text';
+
+  @override
   String get fileTypeLabel => 'File';
 
   @override

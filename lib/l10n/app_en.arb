@@ -1909,6 +1909,10 @@
   "@clearSearch": {
     "description": "Localized text for clearSearch."
   },
+  "clearText": "Clear text",
+  "@clearText": {
+    "description": "Localized text for clearText."
+  },
   "fileTypeLabel": "File",
   "@fileTypeLabel": {
     "description": "Localized text for fileTypeLabel."

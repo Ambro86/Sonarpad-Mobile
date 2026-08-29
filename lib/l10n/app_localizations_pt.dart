@@ -3280,6 +3280,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get clearSearch => 'Limpar pesquisa';
 
   @override
+  String get clearText => 'Limpar texto';
+
+  @override
   String get fileTypeLabel => 'Ficheiro';
 
   @override
@@ -6787,6 +6790,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get clearSearch => 'Limpar pesquisa';
+
+  @override
+  String get clearText => 'Limpar texto';
 
   @override
   String get fileTypeLabel => 'Arquivo';

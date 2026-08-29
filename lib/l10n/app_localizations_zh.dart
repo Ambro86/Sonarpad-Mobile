@@ -3021,6 +3021,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get clearSearch => '清除搜索';
 
   @override
+  String get clearText => '清除文本';
+
+  @override
   String get fileTypeLabel => '文件';
 
   @override

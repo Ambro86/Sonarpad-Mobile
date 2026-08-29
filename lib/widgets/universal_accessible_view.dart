@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
+import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
 
 /// Global renderer mode.
@@ -192,6 +193,7 @@ class AccessibleListRow {
     this.onAccessibilityFocus,
     this.onSubmitted,
     this.textInputAction,
+    this.clearAsSearch = false,
     this.stabilizeNativeTextFieldFocusOnBegin = false,
     this.flutterChild,
   });
@@ -257,6 +259,13 @@ class AccessibleListRow {
   /// is provided, UIKit sends the same logical submit event that Flutter does.
   final String? textInputAction;
 
+  /// Uses the search-specific clear-button label even when this field does not
+  /// use a search return key. Fields with [textInputAction] == `search` are
+  /// classified as search fields automatically.
+  final bool clearAsSearch;
+
+  bool get usesSearchClearLabel => clearAsSearch || textInputAction == 'search';
+
   /// iOS-only VoiceOver safeguard for text fields that are activated inside a
   /// native UITableView. When true, UIKit restores accessibility focus to the
   /// same UITextField after the keyboard is actually shown, as long as that
@@ -293,6 +302,7 @@ class AccessibleListRow {
         if (placeholder != null) 'placeholder': placeholder,
         'submitOnReturn': onSubmitted != null,
         if (textInputAction != null) 'textInputAction': textInputAction,
+        'clearAsSearch': usesSearchClearLabel,
         'stabilizeNativeTextFieldFocusOnBegin':
             stabilizeNativeTextFieldFocusOnBegin,
         'options': options.map((e) => e.toMap()).toList(),
@@ -608,16 +618,21 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   String? get _effectiveInitialFocusId =>
       _runtimeInitialFocusId ?? widget.initialFocusId;
 
-  Map<String, Object?> get _data => {
-        'sections': widget.sections.map((e) => e.toMap()).toList(),
-        'refreshEnabled': widget.refreshEnabled,
-        'showVerticalScrollIndicator': widget.showVerticalScrollIndicator,
-        if (widget.persistentTopAction != null)
-          'persistentTopAction': widget.persistentTopAction!.toMap(),
-        if (_effectiveInitialFocusId != null)
-          'initialFocusId': _effectiveInitialFocusId,
-        if (widget.debugTag != null) 'debugTag': widget.debugTag,
-      };
+  Map<String, Object?> _dataForContext(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return {
+      'sections': widget.sections.map((e) => e.toMap()).toList(),
+      'refreshEnabled': widget.refreshEnabled,
+      'showVerticalScrollIndicator': widget.showVerticalScrollIndicator,
+      'clearTextLabel': l10n.clearText,
+      'clearSearchLabel': l10n.clearSearch,
+      if (widget.persistentTopAction != null)
+        'persistentTopAction': widget.persistentTopAction!.toMap(),
+      if (_effectiveInitialFocusId != null)
+        'initialFocusId': _effectiveInitialFocusId,
+      if (widget.debugTag != null) 'debugTag': widget.debugTag,
+    };
+  }
 
   AccessibleListRow? _rowForId(String? id) {
     if (id == null) return null;
@@ -836,7 +851,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
           ),
         );
       }
-      unawaited(channel.invokeMethod<void>('setData', _data));
+      unawaited(channel.invokeMethod<void>('setData', _dataForContext(context)));
     }
   }
 
@@ -1673,29 +1688,46 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         );
         break;
       case 'textField':
+        final controller = _textControllerFor(row);
+        final l10n = AppLocalizations.of(context);
+        final clearLabel =
+            row.usesSearchClearLabel ? l10n.clearSearch : l10n.clearText;
         result = Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          child: TextFormField(
-            controller: _textControllerFor(row),
-            obscureText: row.secure,
-            enabled: enabled,
-            decoration: InputDecoration(
-              labelText: row.title,
-              hintText: row.placeholder,
-              helperText: row.subtitle,
+          child: ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (context, textValue, _) => TextFormField(
+              controller: controller,
+              obscureText: row.secure,
+              enabled: enabled,
+              decoration: InputDecoration(
+                labelText: row.title,
+                hintText: row.placeholder,
+                helperText: row.subtitle,
+                suffixIcon: !enabled || textValue.text.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: clearLabel,
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          controller.clear();
+                          _change(row, 'textChanged', '');
+                        },
+                      ),
+              ),
+              textInputAction: switch (row.textInputAction) {
+                'search' => TextInputAction.search,
+                'next' => TextInputAction.next,
+                'done' => TextInputAction.done,
+                _ => null,
+              },
+              onChanged: enabled
+                  ? (value) => _change(row, 'textChanged', value)
+                  : null,
+              onFieldSubmitted: enabled && row.onSubmitted != null
+                  ? (value) => _change(row, 'textSubmitted', value)
+                  : null,
             ),
-            textInputAction: switch (row.textInputAction) {
-              'search' => TextInputAction.search,
-              'next' => TextInputAction.next,
-              'done' => TextInputAction.done,
-              _ => null,
-            },
-            onChanged: enabled
-                ? (value) => _change(row, 'textChanged', value)
-                : null,
-            onFieldSubmitted: enabled && row.onSubmitted != null
-                ? (value) => _change(row, 'textSubmitted', value)
-                : null,
           ),
         );
         break;
@@ -1806,7 +1838,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     return UiKitView(
       key: _nativeViewKey,
       viewType: 'sonarpad/native_accessible_list',
-      creationParams: _data,
+      creationParams: _dataForContext(context),
       creationParamsCodec: const StandardMessageCodec(),
       onPlatformViewCreated: _created,
     );

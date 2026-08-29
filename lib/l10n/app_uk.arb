@@ -4111,6 +4111,10 @@
   "@clearSearch": {
     "description": "Localized text for clearSearch."
   },
+  "clearText": "Очистити текст",
+  "@clearText": {
+    "description": "Localized text for clearText."
+  },
   "fileTypeLabel": "Файл",
   "@fileTypeLabel": {
     "description": "Localized text for fileTypeLabel."

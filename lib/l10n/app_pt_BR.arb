@@ -1915,6 +1915,10 @@
   "@clearSearch": {
     "description": "Localized text for clearSearch."
   },
+  "clearText": "Limpar texto",
+  "@clearText": {
+    "description": "Localized text for clearText."
+  },
   "fileTypeLabel": "Arquivo",
   "@fileTypeLabel": {
     "description": "Localized text for fileTypeLabel."

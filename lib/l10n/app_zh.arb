@@ -1909,6 +1909,10 @@
   "@clearSearch": {
     "description": "Localized text for clearSearch."
   },
+  "clearText": "清除文本",
+  "@clearText": {
+    "description": "Localized text for clearText."
+  },
   "fileTypeLabel": "文件",
   "@fileTypeLabel": {
     "description": "Localized text for fileTypeLabel."

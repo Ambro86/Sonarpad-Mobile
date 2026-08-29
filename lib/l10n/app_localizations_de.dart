@@ -3282,6 +3282,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get clearSearch => 'Suche löschen';
 
   @override
+  String get clearText => 'Text löschen';
+
+  @override
   String get fileTypeLabel => 'Datei';
 
   @override

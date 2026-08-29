@@ -143,16 +143,16 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   }
 
   Future<void> _openRecentVideos() async {
-    final item = await Navigator.push<SonarTubeItem>(
+    await Navigator.push<void>(
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/sonartube/recent-videos'),
         builder: (_) => _SonarTubeRecentVideosScreen(
           historyService: _historyService,
+          onOpenItem: _openItem,
         ),
       ),
     );
-    if (item != null && mounted) await _openItem(item);
   }
 
   @override
@@ -910,6 +910,16 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             labelText: l10n.sonarTubeSearchLabel,
             hintText: l10n.sonarTubeSearchPrompt,
             prefixIcon: const Icon(Icons.search),
+            suffixIcon: ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _searchController,
+              builder: (context, value, _) => value.text.isEmpty
+                  ? const SizedBox.shrink()
+                  : IconButton(
+                      tooltip: l10n.clearSearch,
+                      icon: const Icon(Icons.clear),
+                      onPressed: _searchController.clear,
+                    ),
+            ),
           ),
           textInputAction: TextInputAction.search,
           onSubmitted: (_) => _search(),
@@ -2096,9 +2106,13 @@ class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
 }
 
 class _SonarTubeRecentVideosScreen extends StatefulWidget {
-  const _SonarTubeRecentVideosScreen({required this.historyService});
+  const _SonarTubeRecentVideosScreen({
+    required this.historyService,
+    required this.onOpenItem,
+  });
 
   final SonarTubeHistoryService historyService;
+  final Future<void> Function(SonarTubeItem item) onOpenItem;
 
   @override
   State<_SonarTubeRecentVideosScreen> createState() =>
@@ -2107,6 +2121,8 @@ class _SonarTubeRecentVideosScreen extends StatefulWidget {
 
 class _SonarTubeRecentVideosScreenState
     extends State<_SonarTubeRecentVideosScreen> {
+  final AccessibleListController _accessibleListController =
+      AccessibleListController(debugName: 'sonartube-recent-videos');
   List<SonarTubeItem> _recent = const [];
   bool _loading = true;
 
@@ -2123,6 +2139,31 @@ class _SonarTubeRecentVideosScreenState
       _recent = recent;
       _loading = false;
     });
+  }
+
+  int _recentIndexFor(SonarTubeItem item) {
+    return _recent.indexWhere((candidate) => candidate.id == item.id);
+  }
+
+  Future<void> _restoreRecentVideoFocus(SonarTubeItem item) async {
+    if (!mounted || !useSharedAccessibleViewModel) return;
+    final index = _recentIndexFor(item);
+    if (index < 0) return;
+
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _accessibleListController.focusAccessibleRow(
+      'recent_$index',
+      mode: AccessibleFocusMode.routeReturnJump,
+      animated: false,
+    );
+  }
+
+  Future<void> _openRecentVideo(SonarTubeItem item) async {
+    await widget.onOpenItem(item);
+    if (!mounted) return;
+    await _load();
+    await _restoreRecentVideoFocus(item);
   }
 
   Future<void> _deleteRecentVideo(SonarTubeItem item) async {
@@ -2226,6 +2267,7 @@ class _SonarTubeRecentVideosScreenState
     }
 
     return UniversalAccessibleList(
+      controller: _accessibleListController,
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         if (event.id == null) return;
@@ -2243,7 +2285,7 @@ class _SonarTubeRecentVideosScreenState
           return;
         }
         if (event.type == 'activate' && mounted) {
-          Navigator.pop(context, item);
+          await _openRecentVideo(item);
         }
       },
     );
@@ -2329,7 +2371,7 @@ class _SonarTubeRecentVideosScreenState
                                   onPressed: () => _deleteRecentVideo(item),
                                 ),
                               ),
-                              onTap: () => Navigator.pop(context, item),
+                              onTap: () => _openRecentVideo(item),
                             ),
                           );
                         },

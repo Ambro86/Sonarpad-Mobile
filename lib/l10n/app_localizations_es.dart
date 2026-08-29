@@ -3406,6 +3406,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clearSearch => 'Borrar búsqueda';
 
   @override
+  String get clearText => 'Borrar texto';
+
+  @override
   String get fileTypeLabel => 'Archivo';
 
   @override

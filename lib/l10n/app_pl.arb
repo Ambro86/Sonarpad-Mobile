@@ -4090,6 +4090,10 @@
   "@clearSearch": {
     "description": "Localized text for clearSearch."
   },
+  "clearText": "Wyczyść tekst",
+  "@clearText": {
+    "description": "Localized text for clearText."
+  },
   "fileTypeLabel": "Plik",
   "@fileTypeLabel": {
     "description": "Localized text for fileTypeLabel."

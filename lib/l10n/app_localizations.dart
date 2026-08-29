@@ -5772,6 +5772,7 @@ abstract class AppLocalizations {
 
   // Additional shared UI labels moved into ARB localization.
   String get clearSearch;
+  String get clearText;
   String get fileTypeLabel;
   String get cinemaTrailerLoading;
   String get cinemaNoTrailer;

@@ -3385,6 +3385,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get clearSearch => 'Vymazat hledání';
 
   @override
+  String get clearText => 'Vymazat text';
+
+  @override
   String get fileTypeLabel => 'Soubor';
 
   @override

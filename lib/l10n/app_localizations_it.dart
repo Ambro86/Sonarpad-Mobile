@@ -3394,6 +3394,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get clearSearch => 'Cancella ricerca';
 
   @override
+  String get clearText => 'Cancella testo';
+
+  @override
   String get fileTypeLabel => 'File';
 
   @override
