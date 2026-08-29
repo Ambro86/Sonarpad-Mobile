@@ -305,7 +305,7 @@ void main() {
     expect(page.items.single.title, 'Video dal resolver');
   });
 
-  test('channel browse uses the direct uploads playlist', () async {
+  test('channel browse uses the direct Videos tab', () async {
     late Map<String, dynamic> requestedBody;
     final service = SonarTubeService(
       endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
@@ -343,13 +343,68 @@ void main() {
 
     final page = await service.browse(channel);
 
-    expect(
-      requestedBody['browseId'],
-      'VLUUabcdefghijklmnopqrstuv',
-    );
+    expect(requestedBody['browseId'], 'UCabcdefghijklmnopqrstuv');
+    expect(requestedBody['params'], 'EgZ2aWRlb3PyBgQKAjoA');
     expect(page.items.single.title, 'Video del canale');
     expect(page.nextToken, 'channel-next');
   });
+
+  test(
+    'channel browse uses the real Videos tab instead of the capped uploads playlist',
+    () async {
+      late Map<String, dynamic> requestedBody;
+      final service = SonarTubeService(
+        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+        client: MockClient((request) async {
+          requestedBody = Map<String, dynamic>.from(
+            jsonDecode(request.body) as Map,
+          );
+          return http.Response(
+            jsonEncode({
+              'contents': {
+                'richGridRenderer': {
+                  'contents': [
+                    {
+                      'richItemRenderer': {
+                        'content': {
+                          'videoRenderer': {
+                            'videoId': 'abcdefghijk',
+                            'title': {'simpleText': 'Video recente'},
+                          },
+                        },
+                      },
+                    },
+                    {
+                      'continuationItemRenderer': {
+                        'continuationEndpoint': {
+                          'continuationCommand': {'token': 'older-videos'},
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            }),
+            200,
+          );
+        }),
+      );
+      const channel = SonarTubeItem(
+        kind: SonarTubeItemKind.channel,
+        id: 'UCabcdefghijklmnopqrstuv',
+        title: 'Canale molto lungo',
+        url: 'https://www.youtube.com/@canale',
+      );
+
+      final page = await service.browse(channel);
+
+      expect(requestedBody['browseId'], channel.id);
+      expect(requestedBody['params'], 'EgZ2aWRlb3PyBgQKAjoA');
+      expect(page.items.single.title, 'Video recente');
+      expect(page.nextToken, 'older-videos');
+      expect(page.hasMore, isTrue);
+    },
+  );
 
   test(
     'channel browse keeps pagination when YouTube uses reloadContinuationData',

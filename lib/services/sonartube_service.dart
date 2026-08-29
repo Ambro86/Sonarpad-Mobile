@@ -829,12 +829,37 @@ class SonarTubeService {
           ? collection.id
           : 'VL${collection.id}';
     } else {
-      final uploadsId = collection.id.startsWith('UC')
-          ? 'UU${collection.id.substring(2)}'
-          : collection.id;
-      payload['browseId'] = uploadsId.startsWith('VL')
-          ? uploadsId
-          : 'VL$uploadsId';
+      final channelId = _channelBrowseId(collection);
+      if (channelId != null) {
+        // Apri il vero tab Video del canale invece della playlist Uploads.
+        // YouTube oggi può troncare la playlist UU a circa 100 elementi senza
+        // restituire una continuation, mentre il tab Video espone la
+        // paginazione necessaria per raggiungere l'intero archivio.
+        payload['browseId'] = channelId;
+        payload['params'] = 'EgZ2aWRlb3PyBgQKAjoA';
+      } else {
+        // Compatibilità con eventuali preferiti molto vecchi che non hanno un
+        // channel id UC recuperabile. Mantieni il percorso precedente e lascia
+        // disponibile il resolver server come fallback.
+        final uploadsId = collection.id.startsWith('UU')
+            ? collection.id
+            : 'UU${collection.id}';
+        payload['browseId'] = uploadsId.startsWith('VL')
+            ? uploadsId
+            : 'VL$uploadsId';
+      }
+    }
+
+    if (collection.kind == SonarTubeItemKind.channel) {
+      final mode = payload.containsKey('params')
+          ? 'videos-tab'
+          : 'uploads-playlist';
+      await AppLogger.log(
+        'SonarTube: channel browse request '
+        'title=${_logValue(collection.title)} id=${_logValue(collection.id)} '
+        'page=$page continuation=${continuation.isNotEmpty} mode=$mode '
+        'browseId=${_logValue(_string(payload['browseId']))}',
+      );
     }
 
     final data = await _postInnerTube(
@@ -845,6 +870,15 @@ class SonarTubeService {
     final videos = _extractNavigationItems(data)
         .where((item) => item.kind == SonarTubeItemKind.video)
         .toList(growable: false);
+    final nextToken = _findSearchContinuation(data);
+    if (collection.kind == SonarTubeItemKind.channel) {
+      await AppLogger.log(
+        'SonarTube: channel browse response '
+        'title=${_logValue(collection.title)} id=${_logValue(collection.id)} '
+        'page=$page items=${videos.length} hasMore=${nextToken != null && nextToken.isNotEmpty} '
+        '${_continuationDiagnostics(data)}',
+      );
+    }
     if (videos.isEmpty && continuation.isEmpty) {
       // Un canale/playlist scelto dall'utente normalmente contiene almeno un
       // video. Se la risposta diretta cambia layout e il parser non riconosce
@@ -855,8 +889,72 @@ class SonarTubeService {
     return SonarTubePage(
       items: videos,
       page: page,
-      nextToken: _findSearchContinuation(data),
+      nextToken: nextToken,
     );
+  }
+
+  String? _channelBrowseId(SonarTubeItem collection) {
+    final directId = collection.id.trim();
+    if (RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(directId)) {
+      return directId;
+    }
+    final channelId = collection.channelId?.trim();
+    if (channelId != null &&
+        RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(channelId)) {
+      return channelId;
+    }
+    final uri = Uri.tryParse(collection.url);
+    if (uri != null) {
+      final segments = uri.pathSegments;
+      final channelIndex = segments.indexOf('channel');
+      if (channelIndex >= 0 && channelIndex + 1 < segments.length) {
+        final fromUrl = segments[channelIndex + 1].trim();
+        if (RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(fromUrl)) {
+          return fromUrl;
+        }
+      }
+    }
+    return null;
+  }
+
+  String _logValue(String? value) {
+    final text = value?.replaceAll(RegExp(r'\s+'), ' ').trim() ?? '';
+    if (text.isEmpty) return '-';
+    return text.length <= 120 ? text : '${text.substring(0, 117)}...';
+  }
+
+  String _continuationDiagnostics(dynamic root) {
+    var continuationItems = 0;
+    var continuationContainers = 0;
+    var nextData = 0;
+    var reloadData = 0;
+    var continuationCommands = 0;
+    var appendActions = 0;
+
+    void walk(dynamic node) {
+      if (node is Map) {
+        final map = Map<String, dynamic>.from(node);
+        if (map.containsKey('continuationItemRenderer')) continuationItems++;
+        if (map.containsKey('continuations')) continuationContainers++;
+        if (map.containsKey('nextContinuationData')) nextData++;
+        if (map.containsKey('reloadContinuationData')) reloadData++;
+        if (map.containsKey('continuationCommand')) continuationCommands++;
+        if (map.containsKey('appendContinuationItemsAction')) appendActions++;
+        for (final child in map.values) {
+          walk(child);
+        }
+      } else if (node is List) {
+        for (final child in node) {
+          walk(child);
+        }
+      }
+    }
+
+    walk(root);
+    return 'continuationNodes='
+        'item:$continuationItems,containers:$continuationContainers,'
+        'next:$nextData,reload:$reloadData,commands:$continuationCommands,'
+        'append:$appendActions';
   }
 
   Future<Map<String, dynamic>> _playerMetadataDirect(String videoId) async {
