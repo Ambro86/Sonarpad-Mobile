@@ -26,8 +26,9 @@ void main() {
     );
     expect(
       source,
-      contains('if (item != null && mounted) await _openItem(item);'),
+      contains('final Future<void> Function(SonarTubeItem item) onOpenItem;'),
     );
+    expect(source, contains('await widget.onOpenItem(item);'));
   });
 
   test('favorite persistence accepts videos and stores public YouTube URLs', () {
