@@ -1384,15 +1384,31 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
 
   Widget _withCustomActions(AccessibleListRow row, Widget child) {
     if (row.actions.isEmpty && row.onAccessibilityFocus == null) return child;
+
+    // TalkBack's double-tap-and-hold temporarily switches from explore-by-touch
+    // to direct touch and can therefore arrive as a real pointer long press, not
+    // only as SemanticsAction.longPress. Keep the pointer recognizer on the same
+    // shared row that owns row.actions so Android never falls through to the
+    // row's normal tap activation (for example opening a document) while the
+    // user is trying to open its secondary actions. This is intentionally
+    // Android-only; UIKit owns the equivalent VoiceOver behavior natively.
+    final interactiveChild = isAndroidPlatform && row.actions.isNotEmpty
+        ? GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            excludeFromSemantics: true,
+            onLongPress: () => unawaited(_showSecondaryActions(row)),
+            child: child,
+          )
+        : child;
+
     final semantics = Semantics(
       onDidGainAccessibilityFocus: row.onAccessibilityFocus == null
           ? null
           : () => unawaited(
               Future<void>.sync(row.onAccessibilityFocus!),
             ),
-      // TalkBack and VoiceOver can expose semantic long-press through
-      // double tap and hold. This opens the existing secondary actions
-      // without replacing TalkBack custom actions or VoiceOver rotor actions.
+      // Keep the accessibility long-click action as well as the Android
+      // pointer fallback above. Both paths dispatch the exact same row.actions.
       onLongPress: (isAndroidPlatform || isIosPlatform) && row.actions.isNotEmpty
           ? () => unawaited(_showSecondaryActions(row))
           : null,
@@ -1406,7 +1422,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
             )));
           },
       },
-      child: child,
+      child: interactiveChild,
     );
     // Android must never leave custom actions on a semantics parent while
     // TalkBack focuses a child ListTile/Card node. That mismatch made the
