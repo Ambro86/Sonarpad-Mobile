@@ -12,6 +12,7 @@ class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
   final String selectLetterLabel;
   final String selectLetterTitle;
   final int minimumItemsForLetterPicker;
+  final bool enableLetterPicker;
 
   const LetterJumpOptionPickerScreen({
     super.key,
@@ -24,6 +25,7 @@ class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
     required this.selectLetterLabel,
     required this.selectLetterTitle,
     this.minimumItemsForLetterPicker = 12,
+    this.enableLetterPicker = true,
   });
 
   @override
@@ -34,6 +36,7 @@ class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
 class _LetterJumpOptionPickerScreenState<T>
     extends State<LetterJumpOptionPickerScreen<T>> {
   bool get _showLetterPicker =>
+      widget.enableLetterPicker &&
       widget.options.length >= widget.minimumItemsForLetterPicker &&
       _availableLetters().length > 1;
 

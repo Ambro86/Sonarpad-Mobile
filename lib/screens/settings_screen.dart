@@ -919,6 +919,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Icon(selected ? Icons.check : Icons.record_voice_over),
           selectLetterLabel: l10n.letterJumpSelectLetter,
           selectLetterTitle: l10n.letterJumpSelectLetter,
+          enableLetterPicker: false,
         ),
       ),
     );

@@ -41,4 +41,13 @@ void main() {
     expect(source, contains("PodcastCountry('ve', 'Venezuela')"));
     expect(source, contains("PodcastCountry('zw', 'Zimbabwe')"));
   });
+  test('letter picker can be disabled only by an explicit caller', () {
+    final source = File(
+      'lib/widgets/letter_jump_option_picker_screen.dart',
+    ).readAsStringSync();
+
+    expect(source, contains('this.enableLetterPicker = true'));
+    expect(source, contains('widget.enableLetterPicker &&'));
+  });
+
 }

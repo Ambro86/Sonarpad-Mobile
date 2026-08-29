@@ -61,6 +61,20 @@ void main() {
     expect(source, contains('_openMultilingualEdgeVoicePicker'));
     expect(source, contains('_languageCode = result.languageCode;'));
 
+    final multilingualPickerStart = source.indexOf(
+      'Future<void> _openMultilingualEdgeVoicePicker()',
+    );
+    final ordinaryVoicePickerStart = source.indexOf(
+      'Future<void> _openEdgeVoicePicker()',
+    );
+    expect(multilingualPickerStart, greaterThanOrEqualTo(0));
+    expect(ordinaryVoicePickerStart, greaterThan(multilingualPickerStart));
+    final multilingualPickerSource = source.substring(
+      multilingualPickerStart,
+      ordinaryVoicePickerStart,
+    );
+    expect(multilingualPickerSource, contains('enableLetterPicker: false'));
+
     // The ordinary Edge language/voice controls remain language-scoped and are
     // not filtered by the multilingual menu.
     expect(
