@@ -147,10 +147,22 @@ void main() {
       nativeSource,
       contains('mode == "returnFocusAfterStructureChange"'),
     );
+    expect(nativeSource, contains('focusedInsideNativeTable'));
+    expect(nativeSource, contains('retryUsesLayoutChanged'));
     expect(
       nativeSource,
-      contains('structuralDocumentReturn ? .layoutChanged : .screenChanged'),
-      reason: 'Structural document edits must retry with layoutChanged so VoiceOver keeps the table traversal chain.',
+      contains('DOCUMENT_STRUCTURE_FOREIGN_FOCUS_RECOVERY'),
+      reason: 'If VoiceOver escapes to Flutter (for example Back), the pending paragraph return must re-enter the native table.',
+    );
+    expect(
+      nativeSource,
+      contains('UIAccessibility.post(notification: .screenChanged, argument: liveTarget)'),
+      reason: 'Cross-subtree recovery must target the requested paragraph without hiding the Back button.',
+    );
+    expect(
+      nativeSource,
+      contains('!accessibilityElementIsInNativeSubtree(focusedElement)'),
+      reason: 'The stronger screenChanged recovery is only allowed after focus actually leaves the native table.',
     );
   });
 }

@@ -59,8 +59,8 @@ void main() {
     );
     expect(
       swift,
-      contains('structuralDocumentReturn ? .layoutChanged : .screenChanged'),
-      reason: 'SonarTube keeps the strong screenChanged retry while structural document returns use layoutChanged.',
+      contains('let retryUsesLayoutChanged ='),
+      reason: 'SonarTube keeps the strong screenChanged retry while structural document returns choose layoutChanged only when VoiceOver is still inside the native table.',
     );
     expect(
       swift,

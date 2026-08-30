@@ -472,6 +472,9 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var currentRendererGeneration = 0
   private var currentFocusRequestId = 0
   private var currentRequestedFocusRowId: String?
+  private var currentRequestedFocusMode: String?
+  private var currentRequestedFocusRequestId: Int?
+  private var documentStructureForeignFocusRecoveryRequestId: Int?
   private var focusTraceExpectedRowId: String?
   private var globalFocusTraceObserver: NSObjectProtocol?
   private var voiceOverStatusObserver: NSObjectProtocol?
@@ -597,6 +600,60 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         "viewChain=\(self.focusTraceUIViewChain(element))"
       print("DOC_NATIVE_SWIFT \(line)")
       self.emitDebug(line)
+      self.recoverPendingDocumentStructureFocusIfNeeded(focusedElement: element)
+    }
+  }
+
+  private func recoverPendingDocumentStructureFocusIfNeeded(focusedElement: Any?) {
+    guard debugTag == "document",
+          currentRequestedFocusMode == "returnFocusAfterStructureChange",
+          let id = currentRequestedFocusRowId,
+          let requestId = currentRequestedFocusRequestId,
+          currentFocusRequestId == requestId,
+          documentStructureForeignFocusRecoveryRequestId != requestId,
+          focusedElement != nil,
+          !accessibilityElementIsInNativeSubtree(focusedElement),
+          let indexPath = indexPath(forRowId: id) else {
+      return
+    }
+
+    tableView.layoutIfNeeded()
+    if !(tableView.indexPathsForVisibleRows?.contains(indexPath) ?? false) {
+      tableView.scrollToRow(at: indexPath, at: .middle, animated: false)
+      tableView.layoutIfNeeded()
+    }
+    guard let target = accessibilityTarget(at: indexPath) else { return }
+
+    // Do not hide, disable or otherwise alter Flutter controls such as Back.
+    // If VoiceOver escapes the native document table while an explicit
+    // paragraph return is still pending, re-enter the table on the requested
+    // paragraph. screenChanged is appropriate only for this cross-subtree
+    // recovery; in-table corrections continue to use layoutChanged so flick
+    // traversal remains intact.
+    documentStructureForeignFocusRecoveryRequestId = requestId
+    let focusedType = focusedElement.map { String(describing: type(of: $0)) } ?? "nil"
+    let focusedLabel = focusTraceText((focusedElement as? NSObject)?.accessibilityLabel)
+    emitDebug(
+      "DOCUMENT_STRUCTURE_FOREIGN_FOCUS_RECOVERY id=\(id) requestId=\(requestId) " +
+      "focusedType=\(focusedType) focusedLabel=\(focusedLabel) notification=screenChanged"
+    )
+
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self,
+            self.currentRequestedFocusRowId == id,
+            self.currentRequestedFocusMode == "returnFocusAfterStructureChange",
+            self.currentRequestedFocusRequestId == requestId,
+            self.currentFocusRequestId == requestId,
+            let liveIndexPath = self.indexPath(forRowId: id) else {
+        return
+      }
+      self.tableView.layoutIfNeeded()
+      if !(self.tableView.indexPathsForVisibleRows?.contains(liveIndexPath) ?? false) {
+        self.tableView.scrollToRow(at: liveIndexPath, at: .middle, animated: false)
+        self.tableView.layoutIfNeeded()
+      }
+      guard let liveTarget = self.accessibilityTarget(at: liveIndexPath) else { return }
+      UIAccessibility.post(notification: .screenChanged, argument: liveTarget)
     }
   }
 
@@ -664,6 +721,10 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           let oldGeneration = self.currentRendererGeneration
           self.currentRendererGeneration = generation
           self.currentFocusRequestId = 0
+          self.currentRequestedFocusRowId = nil
+          self.currentRequestedFocusMode = nil
+          self.currentRequestedFocusRequestId = nil
+          self.documentStructureForeignFocusRecoveryRequestId = nil
           self.emitDebug("FOCUS_GEN_BUMP reason=attach old=\(oldGeneration) new=\(generation)")
         }
         result(nil)
@@ -1658,7 +1719,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       "rootWindow": rootView.window != nil,
       "tableWindow": tableView.window != nil
     ]
-    if matchesTarget { currentRequestedFocusRowId = nil }
+    if matchesTarget {
+      currentRequestedFocusRowId = nil
+      currentRequestedFocusMode = nil
+      currentRequestedFocusRequestId = nil
+    }
     channel.invokeMethod("event", arguments: payload)
   }
 
@@ -2569,6 +2634,12 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     }
     print("DOC_NATIVE_SWIFT NATIVE_GUARD_TOKENS result=pass id=\(id)")
 
+    if currentRequestedFocusRequestId != requestId {
+      documentStructureForeignFocusRecoveryRequestId = nil
+    }
+    currentRequestedFocusMode = mode
+    currentRequestedFocusRequestId = requestId
+
     guard let indexPath = indexPath(forRowId: id) else {
       print("DOC_NATIVE_SWIFT NATIVE_GUARD_INDEXPATH result=fail id=\(id)")
       emitDebug("NATIVE_GUARD_INDEXPATH result=fail id=\(id)")
@@ -2748,10 +2819,16 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           guard let retryTarget = self.accessibilityTarget(at: retryIndexPath) else { return }
           let structuralDocumentReturn =
             self.debugTag == "document" && mode == "returnFocusAfterStructureChange"
+          let focusedElementBeforeRetry =
+            UIAccessibility.focusedElement(using: .notificationVoiceOver)
+          let focusedInsideNativeTable =
+            self.accessibilityElementIsInNativeSubtree(focusedElementBeforeRetry)
+          let retryUsesLayoutChanged =
+            structuralDocumentReturn && focusedInsideNativeTable
           let retryNotification: UIAccessibility.Notification =
-            structuralDocumentReturn ? .layoutChanged : .screenChanged
+            retryUsesLayoutChanged ? .layoutChanged : .screenChanged
           let retryNotificationName =
-            structuralDocumentReturn ? "layoutChanged" : "screenChanged"
+            retryUsesLayoutChanged ? "layoutChanged" : "screenChanged"
           self.emitDebug(
             "ONE_SHOT_FOCUS_FALLBACK id=\(id) mode=\(mode) requestId=\(requestId) notification=\(retryNotificationName)"
           )
@@ -2780,6 +2857,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           self.emitDebug("FOCUS_TIMEOUT id=\(id) requestId=\(requestId)")
           print("DOC_NATIVE_SWIFT FOCUS_TIMEOUT id=\(id) requestId=\(requestId)")
           self.currentRequestedFocusRowId = nil
+          self.currentRequestedFocusMode = nil
+          self.currentRequestedFocusRequestId = nil
         }
       }
     }
