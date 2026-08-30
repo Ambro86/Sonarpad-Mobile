@@ -131,4 +131,77 @@ void main() {
     semanticsHandle.dispose();
   });
 
+  testWidgets('select all is before recordings and can toggle the full selection', (
+    tester,
+  ) async {
+    RecordingSelectionResult? result;
+    final recordings = [
+      File(r'C:\recordings\prima.m4a'),
+      File(r'C:\recordings\seconda.mp4'),
+      File(r'C:\recordings\terza.m4a'),
+    ];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () async {
+              result = await showRecordingSelectionDialog(context, recordings);
+            },
+            child: const Text('Apri selezione'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Apri selezione'));
+    await tester.pumpAndSettle();
+
+    final selectAll = find.byKey(
+      const ValueKey('recording_selection_select_all'),
+    );
+    expect(selectAll, findsOneWidget);
+    expect(find.text('Seleziona tutto'), findsOneWidget);
+    expect(
+      tester.getTopLeft(selectAll).dy,
+      lessThan(
+        tester.getTopLeft(
+          find.byKey(
+            ValueKey('recording_selection_${recordings.first.path}'),
+          ),
+        ).dy,
+      ),
+    );
+
+    await tester.tap(selectAll);
+    await tester.pump();
+    expect(find.text('Deseleziona tutto'), findsOneWidget);
+    expect(find.text('Condividi (3)'), findsOneWidget);
+    for (final checkbox in tester.widgetList<Checkbox>(find.byType(Checkbox))) {
+      expect(checkbox.value, isTrue);
+    }
+
+    await tester.tap(selectAll);
+    await tester.pump();
+    expect(find.text('Seleziona tutto'), findsOneWidget);
+    expect(find.text('Condividi (0)'), findsOneWidget);
+    for (final checkbox in tester.widgetList<Checkbox>(find.byType(Checkbox))) {
+      expect(checkbox.value, isFalse);
+    }
+
+    await tester.tap(selectAll);
+    await tester.pump();
+    await tester.tap(find.text('Condividi (3)'));
+    await tester.pumpAndSettle();
+
+    expect(result!.action, RecordingSelectionAction.share);
+    expect(
+      result!.recordings.map((file) => file.path),
+      recordings.map((file) => file.path),
+    );
+  });
+
 }

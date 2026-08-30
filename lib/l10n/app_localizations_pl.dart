@@ -1269,6 +1269,27 @@ class AppLocalizationsPl extends AppLocalizations {
   String get weatherRelativeHumidity => 'Wilgotność względna';
 
   @override
+  String get weatherAirQuality => 'Jakość powietrza';
+
+  @override
+  String get weatherAirQualityGood => 'Dobra';
+
+  @override
+  String get weatherAirQualityFair => 'Zadowalająca';
+
+  @override
+  String get weatherAirQualityModerate => 'Umiarkowana';
+
+  @override
+  String get weatherAirQualityPoor => 'Zła';
+
+  @override
+  String get weatherAirQualityVeryPoor => 'Bardzo zła';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => 'Ekstremalnie zła';
+
+  @override
   String get settingsSecretCode => 'Kod Sonarpad dla dodatkowych funkcji';
 
   @override
@@ -2017,6 +2038,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get selectRecordings => 'Wybierz nagrania';
+
+  @override
+  String get selectAll => 'Zaznacz wszystko';
+
+  @override
+  String get deselectAll => 'Odznacz wszystko';
 
   @override
   String selectionActionCount(String action, int count) {

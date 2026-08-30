@@ -1228,6 +1228,27 @@ class AppLocalizationsPt extends AppLocalizations {
   String get weatherRelativeHumidity => 'Humidade relativa';
 
   @override
+  String get weatherAirQuality => 'Qualidade do ar';
+
+  @override
+  String get weatherAirQualityGood => 'Boa';
+
+  @override
+  String get weatherAirQualityFair => 'Razoável';
+
+  @override
+  String get weatherAirQualityModerate => 'Moderada';
+
+  @override
+  String get weatherAirQualityPoor => 'Má';
+
+  @override
+  String get weatherAirQualityVeryPoor => 'Muito má';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => 'Extremamente má';
+
+  @override
   String get settingsSecretCode => 'Código secreto Sonarpad';
 
   @override
@@ -1961,6 +1982,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get selectRecordings => 'Selecionar gravações';
+
+  @override
+  String get selectAll => 'Selecionar tudo';
+
+  @override
+  String get deselectAll => 'Desmarcar tudo';
 
   @override
   String selectionActionCount(String action, int count) {
@@ -4760,6 +4787,27 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get weatherRelativeHumidity => 'Humidade relativa';
 
   @override
+  String get weatherAirQuality => 'Qualidade do ar';
+
+  @override
+  String get weatherAirQualityGood => 'Boa';
+
+  @override
+  String get weatherAirQualityFair => 'Razoável';
+
+  @override
+  String get weatherAirQualityModerate => 'Moderada';
+
+  @override
+  String get weatherAirQualityPoor => 'Ruim';
+
+  @override
+  String get weatherAirQualityVeryPoor => 'Muito ruim';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => 'Extremamente ruim';
+
+  @override
   String get settingsSecretCode => 'Código secreto Sonarpad';
 
   @override
@@ -5493,6 +5541,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get selectRecordings => 'Selecionar gravações';
+
+  @override
+  String get selectAll => 'Selecionar tudo';
+
+  @override
+  String get deselectAll => 'Desmarcar tudo';
 
   @override
   String deleteRecordingsConfirmation(int count) {

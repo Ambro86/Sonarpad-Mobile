@@ -2650,6 +2650,8 @@
   "recordingCannotOpenWhileInProgress": "Diese Aufnahme kann nicht geöffnet werden, da sie noch läuft.",
   "blindLibrarySearchCatalog": "Katalog durchsuchen",
   "selectRecordings": "Aufnahmen auswählen",
+  "selectAll": "Alle auswählen",
+  "deselectAll": "Alle abwählen",
   "selectionActionCount": "{action} ({count})",
   "@selectionActionCount": {
     "description": "Localized action label followed by the number of selected items.",
@@ -4473,5 +4475,33 @@
   "settingsShowOnlyMultilingualEdgeVoices": "Nur mehrsprachige Stimmen anzeigen",
   "@settingsShowOnlyMultilingualEdgeVoices": {
     "description": "Show only multilingual Edge voices in the voice picker."
+  },
+  "weatherAirQuality": "Luftqualität",
+  "@weatherAirQuality": {
+    "description": "Localized text for weatherAirQuality."
+  },
+  "weatherAirQualityGood": "Gut",
+  "@weatherAirQualityGood": {
+    "description": "Localized text for weatherAirQualityGood."
+  },
+  "weatherAirQualityFair": "Akzeptabel",
+  "@weatherAirQualityFair": {
+    "description": "Localized text for weatherAirQualityFair."
+  },
+  "weatherAirQualityModerate": "Mäßig",
+  "@weatherAirQualityModerate": {
+    "description": "Localized text for weatherAirQualityModerate."
+  },
+  "weatherAirQualityPoor": "Schlecht",
+  "@weatherAirQualityPoor": {
+    "description": "Localized text for weatherAirQualityPoor."
+  },
+  "weatherAirQualityVeryPoor": "Sehr schlecht",
+  "@weatherAirQualityVeryPoor": {
+    "description": "Localized text for weatherAirQualityVeryPoor."
+  },
+  "weatherAirQualityExtremelyPoor": "Extrem schlecht",
+  "@weatherAirQualityExtremelyPoor": {
+    "description": "Localized text for weatherAirQualityExtremelyPoor."
   }
 }

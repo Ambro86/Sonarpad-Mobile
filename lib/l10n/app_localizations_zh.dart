@@ -1125,6 +1125,27 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get weatherRelativeHumidity => '相对湿度';
 
   @override
+  String get weatherAirQuality => '空气质量';
+
+  @override
+  String get weatherAirQualityGood => '良好';
+
+  @override
+  String get weatherAirQualityFair => '尚可';
+
+  @override
+  String get weatherAirQualityModerate => '中等';
+
+  @override
+  String get weatherAirQualityPoor => '较差';
+
+  @override
+  String get weatherAirQualityVeryPoor => '很差';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => '极差';
+
+  @override
   String get settingsSecretCode => '用于额外功能的 Sonarpad 代码';
 
   @override
@@ -1812,6 +1833,12 @@ class AppLocalizationsZhCn extends AppLocalizations {
 
   @override
   String get selectRecordings => '选择录音';
+
+  @override
+  String get selectAll => '选择全部';
+
+  @override
+  String get deselectAll => '取消全选';
 
   @override
   String selectionActionCount(String action, int count) {

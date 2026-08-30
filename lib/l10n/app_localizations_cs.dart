@@ -1268,6 +1268,27 @@ class AppLocalizationsCs extends AppLocalizations {
   String get weatherRelativeHumidity => 'Relativní vlhkost';
 
   @override
+  String get weatherAirQuality => 'Kvalita ovzduší';
+
+  @override
+  String get weatherAirQualityGood => 'Dobrá';
+
+  @override
+  String get weatherAirQualityFair => 'Uspokojivá';
+
+  @override
+  String get weatherAirQualityModerate => 'Střední';
+
+  @override
+  String get weatherAirQualityPoor => 'Špatná';
+
+  @override
+  String get weatherAirQualityVeryPoor => 'Velmi špatná';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => 'Extrémně špatná';
+
+  @override
   String get settingsSecretCode => 'Kód Sonarpadu pro další funkce';
 
   @override
@@ -2016,6 +2037,12 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get selectRecordings => 'Vybrat nahrávky';
+
+  @override
+  String get selectAll => 'Vybrat vše';
+
+  @override
+  String get deselectAll => 'Zrušit výběr všeho';
 
   @override
   String selectionActionCount(String action, int count) {

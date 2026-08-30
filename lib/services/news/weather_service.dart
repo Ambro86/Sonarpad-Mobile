@@ -90,11 +90,13 @@ class WeatherForecast {
   final Map<String, dynamic> current;
   final Map<String, dynamic> daily;
   final Map<String, dynamic> hourly;
+  final Map<String, dynamic> airQualityCurrent;
 
   WeatherForecast({
     required this.current,
     required this.daily,
     required this.hourly,
+    this.airQualityCurrent = const {},
   });
 
   factory WeatherForecast.fromJson(Map<String, dynamic> json) {
@@ -102,6 +104,8 @@ class WeatherForecast {
       current: json['current'] as Map<String, dynamic>? ?? {},
       daily: json['daily'] as Map<String, dynamic>? ?? {},
       hourly: json['hourly'] as Map<String, dynamic>? ?? {},
+      airQualityCurrent:
+          json['air_quality_current'] as Map<String, dynamic>? ?? {},
     );
   }
 }
@@ -111,6 +115,8 @@ class OpenMeteoWeatherService {
       'https://geocoding-api.open-meteo.com/v1/search';
   static const String _forecastEndpoint =
       'https://api.open-meteo.com/v1/forecast';
+  static const String _airQualityEndpoint =
+      'https://air-quality-api.open-meteo.com/v1/air-quality';
   static const int _cacheTtlSeconds = 600;
 
   final Map<String, _CacheEntry> _cache = {};
@@ -202,17 +208,50 @@ class OpenMeteoWeatherService {
       'daily': dailyFields.join(','),
       'timezone': 'auto',
     });
+
+    // Start the optional air-quality request in parallel so it does not add a
+    // second network wait to the weather screen. If CAMS/Open-Meteo air
+    // quality is temporarily unavailable, the weather forecast must still
+    // remain usable.
+    final airQualityFuture = _getCurrentAirQuality(lat, lon);
     final res = await http.get(uri).timeout(const Duration(seconds: 15));
 
     if (res.statusCode == 200) {
-      final data = jsonDecode(res.body);
-      final forecast = WeatherForecast.fromJson(data);
+      final data = jsonDecode(res.body) as Map<String, dynamic>;
+      final airQualityCurrent = await airQualityFuture;
+      final forecast = WeatherForecast(
+        current: data['current'] as Map<String, dynamic>? ?? {},
+        daily: data['daily'] as Map<String, dynamic>? ?? {},
+        hourly: data['hourly'] as Map<String, dynamic>? ?? {},
+        airQualityCurrent: airQualityCurrent,
+      );
       _cache[cacheKey] =
           _CacheEntry(forecast: forecast, timestamp: DateTime.now());
       return forecast;
     }
 
     return null;
+  }
+
+  Future<Map<String, dynamic>> _getCurrentAirQuality(
+    double lat,
+    double lon,
+  ) async {
+    final uri = Uri.parse(_airQualityEndpoint).replace(queryParameters: {
+      'latitude': lat.toString(),
+      'longitude': lon.toString(),
+      'current': 'european_aqi',
+      'timezone': 'auto',
+    });
+    try {
+      final res = await http.get(uri).timeout(const Duration(seconds: 10));
+      if (res.statusCode != 200) return const {};
+      final data = jsonDecode(res.body);
+      if (data is! Map<String, dynamic>) return const {};
+      return data['current'] as Map<String, dynamic>? ?? const {};
+    } catch (_) {
+      return const {};
+    }
   }
 }
 

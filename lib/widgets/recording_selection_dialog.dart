@@ -35,6 +35,12 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
     selectedPaths.value = next;
   }
 
+  void updateAllSelection(bool selectAll) {
+    selectedPaths.value = selectAll
+        ? recordings.map((recording) => recording.path).toSet()
+        : <String>{};
+  }
+
   List<File> selectedRecordings(Set<String> selected) => recordings
       .where((recording) => selected.contains(recording.path))
       .toList();
@@ -229,6 +235,34 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
                 children: [
                   title,
                   const SizedBox(height: 12),
+                  if (recordings.isNotEmpty) ...[
+                    ValueListenableBuilder<Set<String>>(
+                      valueListenable: selectedPaths,
+                      builder: (context, selected, _) {
+                        final allSelected = selected.length == recordings.length;
+                        return Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: OutlinedButton.icon(
+                            key: const ValueKey(
+                              'recording_selection_select_all',
+                            ),
+                            onPressed: () => updateAllSelection(!allSelected),
+                            icon: Icon(
+                              allSelected
+                                  ? Icons.deselect
+                                  : Icons.select_all,
+                            ),
+                            label: Text(
+                              allSelected
+                                  ? l10n.deselectAll
+                                  : l10n.selectAll,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                   Expanded(child: buildRecordings()),
                   actionBar,
                 ],

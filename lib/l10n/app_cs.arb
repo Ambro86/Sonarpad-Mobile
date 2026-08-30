@@ -795,6 +795,8 @@
   "recordingCannotOpenWhileInProgress": "Tuto nahrávku nelze otevřít, protože nahrávání stále probíhá.",
   "blindLibrarySearchCatalog": "Prohledat katalog",
   "selectRecordings": "Vybrat nahrávky",
+  "selectAll": "Vybrat vše",
+  "deselectAll": "Zrušit výběr všeho",
   "selectionActionCount": "{action} ({count})",
   "@selectionActionCount": {
     "description": "Localized action label followed by the number of selected items.",
@@ -2898,5 +2900,33 @@
   "settingsShowOnlyMultilingualEdgeVoices": "Zobrazit pouze vícejazyčné hlasy",
   "@settingsShowOnlyMultilingualEdgeVoices": {
     "description": "Show only multilingual Edge voices in the voice picker."
+  },
+  "weatherAirQuality": "Kvalita ovzduší",
+  "@weatherAirQuality": {
+    "description": "Localized text for weatherAirQuality."
+  },
+  "weatherAirQualityGood": "Dobrá",
+  "@weatherAirQualityGood": {
+    "description": "Localized text for weatherAirQualityGood."
+  },
+  "weatherAirQualityFair": "Uspokojivá",
+  "@weatherAirQualityFair": {
+    "description": "Localized text for weatherAirQualityFair."
+  },
+  "weatherAirQualityModerate": "Střední",
+  "@weatherAirQualityModerate": {
+    "description": "Localized text for weatherAirQualityModerate."
+  },
+  "weatherAirQualityPoor": "Špatná",
+  "@weatherAirQualityPoor": {
+    "description": "Localized text for weatherAirQualityPoor."
+  },
+  "weatherAirQualityVeryPoor": "Velmi špatná",
+  "@weatherAirQualityVeryPoor": {
+    "description": "Localized text for weatherAirQualityVeryPoor."
+  },
+  "weatherAirQualityExtremelyPoor": "Extrémně špatná",
+  "@weatherAirQualityExtremelyPoor": {
+    "description": "Localized text for weatherAirQualityExtremelyPoor."
   }
 }

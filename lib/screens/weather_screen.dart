@@ -440,6 +440,27 @@ class _WeatherForecastView extends StatelessWidget {
     return _formatTemperature(values[day]);
   }
 
+  String _currentPercentage(String key) {
+    final value = _asDouble(forecast.current[key]);
+    if (value == null) return '-';
+    return '${_formatNumber(value)}%';
+  }
+
+  String _currentAirQuality(AppLocalizations l10n) {
+    final value = _asDouble(forecast.airQualityCurrent['european_aqi']);
+    if (value == null) return '-';
+
+    final label = switch (value) {
+      <= 20 => l10n.weatherAirQualityGood,
+      <= 40 => l10n.weatherAirQualityFair,
+      <= 60 => l10n.weatherAirQualityModerate,
+      <= 80 => l10n.weatherAirQualityPoor,
+      <= 100 => l10n.weatherAirQualityVeryPoor,
+      _ => l10n.weatherAirQualityExtremelyPoor,
+    };
+    return '$label (${_formatNumber(value)})';
+  }
+
   String _dayLabel(AppLocalizations l10n, int day) {
     if (day == 0) return l10n.weatherToday;
     if (day == 1) return l10n.weatherTomorrow;
@@ -516,6 +537,20 @@ class _WeatherForecastView extends StatelessWidget {
               AccessibleListRow(id: 'min_temp', kind: 'text', title: l10n.weatherMinTemperature, valueLabel: _temperatureValue('temperature_2m_min', day)),
               AccessibleListRow(id: 'rain', kind: 'text', title: l10n.weatherPrecipitation, valueLabel: _value('precipitation_sum', day, 'mm')),
               AccessibleListRow(id: 'wind', kind: 'text', title: l10n.weatherWind, valueLabel: _value('wind_speed_10m_max', day, 'km/h')),
+              if (day == 0)
+                AccessibleListRow(
+                  id: 'humidity',
+                  kind: 'text',
+                  title: l10n.weatherRelativeHumidity,
+                  valueLabel: _currentPercentage('relative_humidity_2m'),
+                ),
+              if (day == 0)
+                AccessibleListRow(
+                  id: 'air_quality',
+                  kind: 'text',
+                  title: l10n.weatherAirQuality,
+                  valueLabel: _currentAirQuality(l10n),
+                ),
             ]),
           ],
           onEvent: (event) {
@@ -610,7 +645,14 @@ class _WeatherForecastView extends StatelessWidget {
             Card(
               child: ListTile(
                 title: Text(l10n.weatherRelativeHumidity),
-                trailing: Text('${forecast.current['relative_humidity_2m']}%'),
+                trailing: Text(_currentPercentage('relative_humidity_2m')),
+              ),
+            ),
+          if (day == 0)
+            Card(
+              child: ListTile(
+                title: Text(l10n.weatherAirQuality),
+                trailing: Text(_currentAirQuality(l10n)),
               ),
             ),
         ],

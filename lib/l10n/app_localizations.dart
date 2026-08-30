@@ -2316,6 +2316,27 @@ abstract class AppLocalizations {
   /// **'Umidità relativa'**
   String get weatherRelativeHumidity;
 
+  /// Localized text for weatherAirQuality.
+  String get weatherAirQuality;
+
+  /// Localized text for weatherAirQualityGood.
+  String get weatherAirQualityGood;
+
+  /// Localized text for weatherAirQualityFair.
+  String get weatherAirQualityFair;
+
+  /// Localized text for weatherAirQualityModerate.
+  String get weatherAirQualityModerate;
+
+  /// Localized text for weatherAirQualityPoor.
+  String get weatherAirQualityPoor;
+
+  /// Localized text for weatherAirQualityVeryPoor.
+  String get weatherAirQualityVeryPoor;
+
+  /// Localized text for weatherAirQualityExtremelyPoor.
+  String get weatherAirQualityExtremelyPoor;
+
   /// Localized text for settingsSecretCode.
   ///
   /// In it, this message translates to:
@@ -3683,6 +3704,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Seleziona registrazioni'**
   String get selectRecordings;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona tutto'**
+  String get selectAll;
+
+  /// No description provided for @deselectAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Deseleziona tutto'**
+  String get deselectAll;
 
   /// Localized action label followed by the number of selected items.
   ///

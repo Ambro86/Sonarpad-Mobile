@@ -978,6 +978,27 @@ class AppLocalizationsUk extends AppLocalizations {
   String get weatherRelativeHumidity => "Відносна вологість";
 
   @override
+  String get weatherAirQuality => 'Якість повітря';
+
+  @override
+  String get weatherAirQualityGood => 'Добра';
+
+  @override
+  String get weatherAirQualityFair => 'Задовільна';
+
+  @override
+  String get weatherAirQualityModerate => 'Помірна';
+
+  @override
+  String get weatherAirQualityPoor => 'Погана';
+
+  @override
+  String get weatherAirQualityVeryPoor => 'Дуже погана';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => 'Надзвичайно погана';
+
+  @override
   String get settingsSecretCode => "Код Sonarpad для додаткових функцій";
 
   @override
@@ -1591,6 +1612,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get selectRecordings => "Вибрати записи";
+
+  @override
+  String get selectAll => 'Вибрати все';
+
+  @override
+  String get deselectAll => 'Скасувати вибір усіх';
 
   @override
   String selectionActionCount(String action, int count) {

@@ -2650,6 +2650,8 @@
   "recordingCannotOpenWhileInProgress": "Цей запис неможливо відкрити, оскільки запис ще триває.",
   "blindLibrarySearchCatalog": "Пошук у каталозі",
   "selectRecordings": "Вибрати записи",
+  "selectAll": "Вибрати все",
+  "deselectAll": "Скасувати вибір усіх",
   "selectionActionCount": "{action} ({count})",
   "@selectionActionCount": {
     "description": "Localized action label followed by the number of selected items.",
@@ -4473,5 +4475,33 @@
   "settingsShowOnlyMultilingualEdgeVoices": "Показувати лише багатомовні голоси",
   "@settingsShowOnlyMultilingualEdgeVoices": {
     "description": "Show only multilingual Edge voices in the voice picker."
+  },
+  "weatherAirQuality": "Якість повітря",
+  "@weatherAirQuality": {
+    "description": "Localized text for weatherAirQuality."
+  },
+  "weatherAirQualityGood": "Добра",
+  "@weatherAirQualityGood": {
+    "description": "Localized text for weatherAirQualityGood."
+  },
+  "weatherAirQualityFair": "Задовільна",
+  "@weatherAirQualityFair": {
+    "description": "Localized text for weatherAirQualityFair."
+  },
+  "weatherAirQualityModerate": "Помірна",
+  "@weatherAirQualityModerate": {
+    "description": "Localized text for weatherAirQualityModerate."
+  },
+  "weatherAirQualityPoor": "Погана",
+  "@weatherAirQualityPoor": {
+    "description": "Localized text for weatherAirQualityPoor."
+  },
+  "weatherAirQualityVeryPoor": "Дуже погана",
+  "@weatherAirQualityVeryPoor": {
+    "description": "Localized text for weatherAirQualityVeryPoor."
+  },
+  "weatherAirQualityExtremelyPoor": "Надзвичайно погана",
+  "@weatherAirQualityExtremelyPoor": {
+    "description": "Localized text for weatherAirQualityExtremelyPoor."
   }
 }
