@@ -52,10 +52,19 @@ void main() {
     expect(swift, contains('mode == "inPlaceJump"'));
     expect(swift, contains('id.hasPrefix("item_")'));
     expect(swift, contains('ONE_SHOT_FOCUS_FALLBACK'));
-    expect(swift, contains('needsOneShotStrongRecovery'));
+    expect(swift, contains('let isSonarTubeOneShotRecovery ='));
     expect(
       swift,
-      contains('UIAccessibility.post(notification: .screenChanged, argument: retryTarget)'),
+      contains('if isSonarTubeOneShotRecovery || isDocumentOneShotRecovery'),
+    );
+    expect(
+      swift,
+      contains('structuralDocumentReturn ? .layoutChanged : .screenChanged'),
+      reason: 'SonarTube keeps the strong screenChanged retry while structural document returns use layoutChanged.',
+    );
+    expect(
+      swift,
+      contains('UIAccessibility.post(notification: retryNotification, argument: retryTarget)'),
     );
   });
 
