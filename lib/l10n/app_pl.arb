@@ -1750,6 +1750,10 @@
     "description": "Localized text for saveArticle."
   },
   "shareArticle": "Udostępnij artykuł",
+  "shareArticleAsTxt": "Udostępnij artykuł jako TXT",
+  "@shareArticleAsTxt": {
+    "description": "Localized text for shareArticleAsTxt."
+  },
   "@shareArticle": {
     "description": "Localized text for shareArticle."
   },

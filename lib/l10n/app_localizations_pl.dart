@@ -1345,6 +1345,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get shareArticle => 'Udostępnij artykuł';
 
   @override
+  String get shareArticleAsTxt => 'Udostępnij artykuł jako TXT';
+
+  @override
   String get articleSavedSuccess => 'Artykuł zapisany w Dokumentach';
 
   @override

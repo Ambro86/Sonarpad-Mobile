@@ -1038,6 +1038,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get shareArticle => "Поділитися статтею";
 
   @override
+  String get shareArticleAsTxt => 'Поділитися статтею як TXT';
+
+  @override
   String get articleSavedSuccess => "Статтю збережено в Документах";
 
   @override

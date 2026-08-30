@@ -543,6 +543,10 @@
   "invia": "Send",
   "saveArticle": "Save article",
   "shareArticle": "Share article",
+  "shareArticleAsTxt": "Share article as TXT",
+  "@shareArticleAsTxt": {
+    "description": "Localized text for shareArticleAsTxt."
+  },
   "articleSavedSuccess": "Article saved to Documents",
   "annulla": "Cancel",
   "compilaTuttiICampiPerRichiedereIlCodice": "Fill all fields to request the code.",

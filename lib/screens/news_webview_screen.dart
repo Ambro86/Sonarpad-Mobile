@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
@@ -174,6 +175,55 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       );
     } catch (e) {
       debugPrint('Error sharing article: $e');
+    }
+  }
+
+  Future<void> _shareArticleAsTxt() async {
+    final readerText = _readerText?.trim();
+    if (readerText == null || readerText.isEmpty) return;
+
+    try {
+      final url = await _shareableArticleUrl();
+      final safeName = widget.article.title
+          .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
+          .trim();
+      final baseName = safeName.isEmpty
+          ? 'article'
+          : safeName.substring(0, safeName.length > 120 ? 120 : safeName.length);
+      final fileName = '$baseName.txt';
+      final tempDir = await getTemporaryDirectory();
+      final file = File(
+        '${tempDir.path}${Platform.pathSeparator}'
+        'news_${DateTime.now().microsecondsSinceEpoch}_$fileName',
+      );
+
+      final buffer = StringBuffer()
+        ..writeln(widget.article.title)
+        ..writeln();
+      final source = widget.article.source.trim();
+      if (source.isNotEmpty) {
+        buffer
+          ..writeln(source)
+          ..writeln();
+      }
+      buffer
+        ..writeln(readerText)
+        ..writeln()
+        ..writeln(url);
+
+      await file.writeAsString(buffer.toString(), flush: true);
+      unawaited(AppLogger.log(
+        'News TXT share: title="${widget.article.title}" '
+        'file=${file.path} sharedUrl=$url',
+      ));
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: widget.article.title,
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error sharing article as TXT: $e');
     }
   }
 
@@ -1696,6 +1746,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             onPressed: _shareArticle,
             icon: const Icon(Icons.share),
             tooltip: l10n.shareArticle,
+          ),
+          IconButton(
+            onPressed: _shareArticleAsTxt,
+            icon: const Icon(Icons.description_outlined),
+            tooltip: l10n.shareArticleAsTxt,
           ),
           IconButton(
             onPressed: _speaking ? null : _readArticle,

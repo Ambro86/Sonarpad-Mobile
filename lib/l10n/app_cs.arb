@@ -540,6 +540,10 @@
   "invia": "Odeslat",
   "saveArticle": "Uložit článek",
   "shareArticle": "Sdílet článek",
+  "shareArticleAsTxt": "Sdílet článek jako TXT",
+  "@shareArticleAsTxt": {
+    "description": "Localized text for shareArticleAsTxt."
+  },
   "articleSavedSuccess": "Článek uložen do Dokumentů",
   "annulla": "Zrušit",
   "compilaTuttiICampiPerRichiedereIlCodice": "Vyplňte všechna pole pro vyžádání kódu.",

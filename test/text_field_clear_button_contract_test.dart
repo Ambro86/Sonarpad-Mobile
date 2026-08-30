@@ -28,15 +28,25 @@ void main() {
 
     expect(source, contains('private let clearButton = UIButton(type: .system)'));
     expect(source, contains('UIImage(systemName: "xmark.circle.fill")'));
-    expect(source, contains('clearButton.accessibilityLabel = label'));
+    expect(
+      source,
+      contains('clearAccessibilityElement.accessibilityLabel = label'),
+    );
     expect(source, contains('isAccessibilityElement = false'));
     expect(source, contains('contentView.isAccessibilityElement = false'));
     expect(source, contains('field.isAccessibilityElement = true'));
-    expect(source, contains('clearButton.isAccessibilityElement = true'));
+    expect(source, contains('clearButton.isAccessibilityElement = false'));
+    expect(source, contains('clearButton.accessibilityElementsHidden = true'));
+    expect(
+      source,
+      contains(
+        'SonarpadPersistentAccessibilityActionElement(accessibilityContainer: self)',
+      ),
+    );
     expect(source, contains('field.rightViewMode = hasText ? .always : .never'));
     expect(
       source,
-      contains('accessibilityElements = hasText ? [field as Any, clearButton as Any] : [field as Any]'),
+      contains('clearAccessibilityElement as Any'),
     );
     expect(source, contains('field.sendActions(for: .editingChanged)'));
     expect(

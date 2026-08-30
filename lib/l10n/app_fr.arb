@@ -540,6 +540,10 @@
   "invia": "Envoyer",
   "saveArticle": "Enregistrer l'article",
   "shareArticle": "Partager l'article",
+  "shareArticleAsTxt": "Partager l’article en TXT",
+  "@shareArticleAsTxt": {
+    "description": "Localized text for shareArticleAsTxt."
+  },
   "articleSavedSuccess": "Article enregistré dans les Documents",
   "annulla": "Annuler",
   "compilaTuttiICampiPerRichiedereIlCodice": "Remplissez tous les champs pour demander le code.",

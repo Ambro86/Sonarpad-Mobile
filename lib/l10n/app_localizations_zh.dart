@@ -1196,6 +1196,9 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get shareArticle => '分享文章';
 
   @override
+  String get shareArticleAsTxt => '以 TXT 分享文章';
+
+  @override
   String get articleSavedSuccess => '文章已保存到“文档”';
 
   @override

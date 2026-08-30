@@ -1358,6 +1358,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get shareArticle => 'Compartir artículo';
 
   @override
+  String get shareArticleAsTxt => 'Compartir artículo como TXT';
+
+  @override
   String get articleSavedSuccess => 'Artículo guardado en Documentos';
 
   @override

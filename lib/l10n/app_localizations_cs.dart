@@ -1344,6 +1344,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get shareArticle => 'Sdílet článek';
 
   @override
+  String get shareArticleAsTxt => 'Sdílet článek jako TXT';
+
+  @override
   String get articleSavedSuccess => 'Článek uložen do Dokumentů';
 
   @override

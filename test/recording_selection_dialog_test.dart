@@ -91,4 +91,44 @@ void main() {
     expect(result!.action, RecordingSelectionAction.delete);
     expect(result!.recordings.single.path, recording.path);
   });
+  testWidgets('selection screen uses top-left Back and exposes no dismiss barrier', (
+    tester,
+  ) async {
+    final semanticsHandle = tester.ensureSemantics();
+    final recording = File(r'C:\recordings\prima.m4a');
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => FilledButton(
+            onPressed: () => showRecordingSelectionDialog(context, [recording]),
+            child: const Text('Apri selezione'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Apri selezione'));
+    await tester.pumpAndSettle();
+
+    final backFinder = find.byKey(
+      const ValueKey('recording_selection_back_semantics'),
+    );
+    expect(backFinder, findsOneWidget);
+    expect(find.byType(BackButton), findsOneWidget);
+    expect(find.bySemanticsLabel('Ignora'), findsNothing);
+    expect(find.widgetWithText(TextButton, 'Indietro'), findsNothing);
+    expect(tester.getTopLeft(backFinder).dx, lessThanOrEqualTo(4));
+    expect(
+      tester.getTopLeft(backFinder).dy,
+      lessThan(
+        tester.getTopLeft(find.text('Seleziona registrazioni')).dy,
+      ),
+    );
+    semanticsHandle.dispose();
+  });
+
 }

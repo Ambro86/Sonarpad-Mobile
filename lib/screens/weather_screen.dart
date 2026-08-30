@@ -278,13 +278,7 @@ class _WeatherCityResultsView extends StatelessWidget {
   final List<WeatherGeocodingResult> cities;
   final ValueChanged<WeatherGeocodingResult> onCitySelected;
 
-  String _subtitle(WeatherGeocodingResult city) {
-    final parts = [
-      city.admin1,
-      city.country,
-    ].whereType<String>().where((part) => part.isNotEmpty).toList();
-    return parts.join(', ');
-  }
+  String _subtitle(WeatherGeocodingResult city) => city.locationSubtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -961,8 +955,8 @@ class _WeatherRecentCitiesScreenState
                             subtitle: (() {
                               final cityObj = _deserializeCity(_cities[i]);
                               if (cityObj == null) return null;
-                              final parts = [cityObj.admin1, cityObj.country].whereType<String>().where((p) => p.isNotEmpty).toList();
-                              return parts.isEmpty ? null : parts.join(', ');
+                              final subtitle = cityObj.locationSubtitle;
+                              return subtitle.isEmpty ? null : subtitle;
                             })(),
                             actions: [AccessibleCustomAction(id: 'delete', label: l10n.deleteItem)],
                           ),
@@ -987,8 +981,8 @@ class _WeatherRecentCitiesScreenState
                     final displayName = cityObj != null ? cityObj.name : cityData;
                     String? subtitle;
                     if (cityObj != null) {
-                      final parts = [cityObj.admin1, cityObj.country].whereType<String>().where((p) => p.isNotEmpty).toList();
-                      if (parts.isNotEmpty) subtitle = parts.join(', ');
+                      final details = cityObj.locationSubtitle;
+                      if (details.isNotEmpty) subtitle = details;
                     }
                     
                     return Semantics(

@@ -543,6 +543,10 @@
   "invia": "发送",
   "saveArticle": "保存文章",
   "shareArticle": "分享文章",
+  "shareArticleAsTxt": "以 TXT 分享文章",
+  "@shareArticleAsTxt": {
+    "description": "Localized text for shareArticleAsTxt."
+  },
   "articleSavedSuccess": "文章已保存到“文档”",
   "annulla": "取消",
   "compilaTuttiICampiPerRichiedereIlCodice": "请填写所有字段以申请代码。",

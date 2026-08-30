@@ -4,36 +4,83 @@ import 'package:http/http.dart' as http;
 import '../../utils/text_input_normalizer.dart';
 
 class WeatherGeocodingResult {
+  final int? id;
   final double latitude;
   final double longitude;
   final String name;
   final String? admin1;
+  final String? admin2;
+  final String? admin3;
+  final String? admin4;
   final String? country;
 
   WeatherGeocodingResult({
+    this.id,
     required this.latitude,
     required this.longitude,
     required this.name,
     this.admin1,
+    this.admin2,
+    this.admin3,
+    this.admin4,
     this.country,
   });
 
   factory WeatherGeocodingResult.fromJson(Map<String, dynamic> json) {
     return WeatherGeocodingResult(
+      id: (json['id'] as num?)?.toInt(),
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
       name: json['name'] as String,
       admin1: json['admin1'] as String?,
+      admin2: json['admin2'] as String?,
+      admin3: json['admin3'] as String?,
+      admin4: json['admin4'] as String?,
       country: json['country'] as String?,
     );
   }
 
+  /// Compact location detail used to distinguish places with the same name.
+  /// Open-Meteo's admin2 is generally the most useful county/province-level
+  /// value. If it is missing, fall back to a more specific administrative
+  /// level before showing the broader region and country.
+  String get locationSubtitle {
+    final parts = <String>[];
+
+    void addUnique(String? value) {
+      final normalized = value?.trim() ?? '';
+      if (normalized.isEmpty) return;
+      final lower = normalized.toLowerCase();
+      if (lower == name.trim().toLowerCase()) return;
+      if (parts.any((part) => part.toLowerCase() == lower)) return;
+      parts.add(normalized);
+    }
+
+    final countyOrDistrict = _firstNonEmpty([admin2, admin3, admin4]);
+    addUnique(countyOrDistrict);
+    addUnique(admin1);
+    addUnique(country);
+    return parts.join(', ');
+  }
+
+  static String? _firstNonEmpty(List<String?> values) {
+    for (final value in values) {
+      final normalized = value?.trim() ?? '';
+      if (normalized.isNotEmpty) return normalized;
+    }
+    return null;
+  }
+
   Map<String, dynamic> toJson() {
     return {
+      if (id != null) 'id': id,
       'latitude': latitude,
       'longitude': longitude,
       'name': name,
       if (admin1 != null) 'admin1': admin1,
+      if (admin2 != null) 'admin2': admin2,
+      if (admin3 != null) 'admin3': admin3,
+      if (admin4 != null) 'admin4': admin4,
       if (country != null) 'country': country,
     };
   }
@@ -84,10 +131,22 @@ class OpenMeteoWeatherService {
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
       if (data['results'] != null) {
-        return (data['results'] as List)
+        final results = (data['results'] as List)
             .map((e) =>
                 WeatherGeocodingResult.fromJson(e as Map<String, dynamic>))
             .toList();
+
+        // Open-Meteo can occasionally expose the same GeoNames location more
+        // than once. Keep the ranked order while removing only exact location
+        // duplicates; distinct places with the same name must remain visible.
+        final seen = <String>{};
+        return [
+          for (final result in results)
+            if (seen.add(result.id != null
+                ? 'id:${result.id}'
+                : 'coord:${result.latitude},${result.longitude}'))
+              result,
+        ];
       }
     }
     return [];

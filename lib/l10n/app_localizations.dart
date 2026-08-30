@@ -2453,6 +2453,12 @@ abstract class AppLocalizations {
   /// **'Condividi l\'articolo'**
   String get shareArticle;
 
+  /// Localized text for shareArticleAsTxt.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi articolo come TXT'**
+  String get shareArticleAsTxt;
+
   /// Localized text for articleSavedSuccess.
   ///
   /// In it, this message translates to:

@@ -1303,6 +1303,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get shareArticle => "Artikel teilen";
 
   @override
+  String get shareArticleAsTxt => 'Artikel als TXT teilen';
+
+  @override
   String get articleSavedSuccess => "Artikel in Dokumente gespeichert";
 
   @override

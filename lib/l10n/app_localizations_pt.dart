@@ -1303,6 +1303,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get shareArticle => 'Partilhar artigo';
 
   @override
+  String get shareArticleAsTxt => 'Partilhar artigo como TXT';
+
+  @override
   String get articleSavedSuccess => 'Artigo guardado em Documentos';
 
   @override
@@ -4825,6 +4828,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get shareArticle => 'Compartilhar artigo';
+
+  @override
+  String get shareArticleAsTxt => 'Compartilhar artigo como TXT';
 
   @override
   String get articleSavedSuccess => 'Artigo salvo em Documentos';

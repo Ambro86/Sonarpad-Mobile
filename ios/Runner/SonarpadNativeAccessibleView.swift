@@ -280,6 +280,14 @@ private final class SonarpadAccessibleTableCell: UITableViewCell {
 private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate {
   let field = UITextField(frame: .zero)
   private let clearButton = UIButton(type: .system)
+  private lazy var clearAccessibilityElement: SonarpadPersistentAccessibilityActionElement = {
+    let element = SonarpadPersistentAccessibilityActionElement(accessibilityContainer: self)
+    element.accessibilityTraits = .button
+    element.activationHandler = { [weak self] in
+      self?.clearText()
+    }
+    return element
+  }()
   var rowId = ""
   var submitOnReturn = false
   var stabilizeFocusOnBegin = false
@@ -299,8 +307,11 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
     clearButton.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
     clearButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
     clearButton.tintColor = .tertiaryLabel
-    clearButton.isAccessibilityElement = true
-    clearButton.accessibilityTraits = .button
+    // Keep the visual control inside UITextField, but do not expose that
+    // descendant directly to VoiceOver. A separate sibling accessibility
+    // proxy below keeps the swipe order stable across table rows.
+    clearButton.isAccessibilityElement = false
+    clearButton.accessibilityElementsHidden = true
     clearButton.addTarget(self, action: #selector(clearText), for: .touchUpInside)
     field.rightView = clearButton
     field.rightViewMode = .never
@@ -330,18 +341,33 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   }
 
   func configureClearButton(label: String) {
-    clearButton.accessibilityLabel = label
-    clearButton.accessibilityHint = nil
+    clearAccessibilityElement.accessibilityLabel = label
+    clearAccessibilityElement.accessibilityHint = nil
     updateClearButtonVisibility()
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    updateClearAccessibilityFrame()
+  }
+
+  private func updateClearAccessibilityFrame() {
+    guard clearButton.window != nil else { return }
+    clearAccessibilityElement.accessibilityFrameInContainerSpace =
+      convert(clearButton.bounds, from: clearButton)
   }
 
   private func updateClearButtonVisibility() {
     let hasText = field.isEnabled && !(field.text ?? "").isEmpty
     field.rightViewMode = hasText ? .always : .never
-    // A UITextField rightView is not consistently exposed as a separate
-    // VoiceOver stop. Give the cell an explicit accessibility order so every
-    // shared text field exposes the contextual clear action after the field.
-    accessibilityElements = hasText ? [field as Any, clearButton as Any] : [field as Any]
+    // The visual clear button is a descendant of UITextField. Exposing that
+    // same UIButton directly also as a sibling accessibility stop can create
+    // a parent/child loop in VoiceOver navigation. Use an independent proxy
+    // owned by the cell instead: previous row -> field -> clear -> next row.
+    accessibilityElements = hasText
+      ? [field as Any, clearAccessibilityElement as Any]
+      : [field as Any]
+    if hasText { updateClearAccessibilityFrame() }
   }
 
   @objc private func clearText() {

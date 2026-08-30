@@ -61,6 +61,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   bool get _isCollection => widget.collection != null;
   bool get _isChannelCollection =>
       widget.collection?.kind == SonarTubeItemKind.channel;
+  bool get _isPlaylistCollection =>
+      widget.collection?.kind == SonarTubeItemKind.playlist;
+  bool get _hasCollectionFavoriteButton =>
+      _isChannelCollection || _isPlaylistCollection;
   bool get _isSearchResults => widget.searchQuery != null;
 
   @override
@@ -959,6 +963,30 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         ),
       ));
     }
+    if (_isPlaylistCollection) {
+      final playlist = widget.collection!;
+      final isFavorite =
+          _favoriteKeys.contains(_favoritesService.itemKey(playlist));
+      final label = _favoriteLabelForItem(
+        l10n,
+        playlist,
+        isFavorite: isFavorite,
+      );
+      rows.add(AccessibleListRow(
+        id: 'playlist_favorite',
+        title: label,
+        kind: 'button',
+        flutterChild: FilledButton.tonalIcon(
+          key: const ValueKey('sonartube_collection_playlist_favorite'),
+          onPressed: () => _toggleFavorite(
+            playlist,
+            accessibleRowId: 'playlist_favorite',
+          ),
+          icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+          label: Text(label),
+        ),
+      ));
+    }
     if (_loading) {
       rows.add(AccessibleListRow(
         id: 'loading',
@@ -1129,6 +1157,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           await _toggleFavorite(
             widget.collection!,
             accessibleRowId: 'channel_favorite',
+          );
+        } else if (event.id == 'playlist_favorite' && _isPlaylistCollection) {
+          await _toggleFavorite(
+            widget.collection!,
+            accessibleRowId: 'playlist_favorite',
           );
         } else if (event.id == 'recent_videos') {
           await _openRecentVideos();
@@ -1588,28 +1621,32 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
-                      itemCount: (_isChannelCollection ? 1 : 0) +
+                      itemCount: (_hasCollectionFavoriteButton ? 1 : 0) +
                           _items.length +
                           (!_loading && _items.isEmpty && _isCollection ? 1 : 0) +
                           (_nextToken == null ? 0 : 1),
                       itemBuilder: (context, index) {
-                        if (_isChannelCollection && index == 0) {
-                          final channel = widget.collection!;
+                        if (_hasCollectionFavoriteButton && index == 0) {
+                          final collection = widget.collection!;
                           final isFavorite = _favoriteKeys.contains(
-                            _favoritesService.itemKey(channel),
+                            _favoritesService.itemKey(collection),
                           );
                           final label = _favoriteLabelForItem(
                             l10n,
-                            channel,
+                            collection,
                             isFavorite: isFavorite,
                           );
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: FilledButton.tonalIcon(
-                              key: const ValueKey(
-                                'sonartube_collection_channel_favorite',
-                              ),
-                              onPressed: () => _toggleFavorite(channel),
+                              key: _isChannelCollection
+                                  ? const ValueKey(
+                                      'sonartube_collection_channel_favorite',
+                                    )
+                                  : const ValueKey(
+                                      'sonartube_collection_playlist_favorite',
+                                    ),
+                              onPressed: () => _toggleFavorite(collection),
                               icon: Icon(
                                 isFavorite
                                     ? Icons.favorite
@@ -1619,7 +1656,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                             ),
                           );
                         }
-                        var itemIndex = index - (_isChannelCollection ? 1 : 0);
+                        var itemIndex =
+                            index - (_hasCollectionFavoriteButton ? 1 : 0);
                         if (itemIndex < _items.length) {
                           final item = _items[itemIndex];
                         final resolving = _resolvingId == item.id;
