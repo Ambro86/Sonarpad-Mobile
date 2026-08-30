@@ -51,7 +51,8 @@ void main() {
     expect(swift, contains('self.debugTag == "sonartube"'));
     expect(swift, contains('mode == "inPlaceJump"'));
     expect(swift, contains('id.hasPrefix("item_")'));
-    expect(swift, contains('IN_PLACE_FOCUS_FALLBACK'));
+    expect(swift, contains('ONE_SHOT_FOCUS_FALLBACK'));
+    expect(swift, contains('needsOneShotStrongRecovery'));
     expect(
       swift,
       contains('UIAccessibility.post(notification: .screenChanged, argument: retryTarget)'),
