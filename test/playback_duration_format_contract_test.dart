@@ -8,7 +8,10 @@ void main() {
     final player = File('lib/screens/podcast_episode_player_screen.dart').readAsStringSync();
 
     expect(labels, contains('String formatPlaybackClock(Duration duration)'));
-    expect(labels, contains("return '$hours:${minutes.toString().padLeft(2, '0')}:$seconds';"));
+    expect(
+      labels,
+      contains(r"return '$hours:${minutes.toString().padLeft(2, '0')}:$seconds';"),
+    );
     expect(labels, contains('String formatPlaybackSpokenDuration(Duration duration)'));
     expect(labels, contains("_playbackDurationUnit('hour', hours)"));
     expect(labels, contains("_playbackDurationUnit('minute', minutes)"));

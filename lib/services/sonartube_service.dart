@@ -8,6 +8,10 @@ enum SonarTubeItemKind { video, channel, playlist }
 
 enum SonarTubeChannelSort { newest, oldest, popular }
 
+class _SonarTubeChannelSortUnavailable implements Exception {
+  const _SonarTubeChannelSortUnavailable();
+}
+
 class _InnerTubeHttpFailure implements Exception {
   const _InnerTubeHttpFailure(this.statusCode);
 
@@ -241,8 +245,6 @@ class SonarTubeService {
       'format': 'json',
       if (token != null && token.isNotEmpty) 'token': token,
       'page': '$page',
-      if (collection.kind == SonarTubeItemKind.channel)
-        'sort': channelSort.name,
     };
     final result = !_directNavigationEnabled
         ? await _loadServerPage(fallbackQuery)
@@ -275,9 +277,11 @@ class SonarTubeService {
       'kind': collection.kind.name,
       'title': collection.title,
       'format': 'json',
-      'seed': ?seedVideoId,
+      if (seedVideoId != null && seedVideoId.isNotEmpty) 'seed': seedVideoId,
       if (token != null && token.isNotEmpty) 'token': token,
       'page': '$page',
+      if (collection.kind == SonarTubeItemKind.channel)
+        'sort': channelSort.name,
     };
     final result = !_directNavigationEnabled
         ? await _loadServerPage(fallbackQuery)
@@ -930,7 +934,7 @@ class SonarTubeService {
           final selectedParams = _channelSortParamsCache[channelId]?[channelSort];
           final currentParams = _string(payload['params']);
           if (selectedParams == null || selectedParams.isEmpty) {
-            throw FormatException('channel_sort_unavailable:${channelSort.name}');
+            throw const _SonarTubeChannelSortUnavailable();
           }
           if (selectedParams != currentParams) {
             final sortedPayload = <String, dynamic>{
