@@ -90,6 +90,18 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sonarTubeFavorites => "Вибране";
 
   @override
+  String get sonarTubeSortVideos => 'Сортувати відео';
+
+  @override
+  String get sonarTubeSortNewest => 'Найновіші';
+
+  @override
+  String get sonarTubeSortOldest => 'Найстаріші';
+
+  @override
+  String get sonarTubeSortPopular => 'Популярні';
+
+  @override
   String get sonarTubeVideoFavorites => 'Улюблені відео';
 
   @override

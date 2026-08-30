@@ -90,6 +90,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sonarTubeFavorites => "Favoriten";
 
   @override
+  String get sonarTubeSortVideos => 'Videos sortieren';
+
+  @override
+  String get sonarTubeSortNewest => 'Neueste';
+
+  @override
+  String get sonarTubeSortOldest => 'Älteste';
+
+  @override
+  String get sonarTubeSortPopular => 'Beliebt';
+
+  @override
   String get sonarTubeVideoFavorites => 'Favorisierte Videos';
 
   @override

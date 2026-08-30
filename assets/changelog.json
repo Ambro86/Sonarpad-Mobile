@@ -4,6 +4,8 @@
     "date": "2026-09-01",
     "it": [
       "Aggiunto SonarTube, il nuovo sistema integrato per cercare e riprodurre video di YouTube direttamente in Sonarpad. È possibile esplorare video, canali e playlist, caricare altri risultati, aggiungere canali e singoli video ai preferiti e riprodurre i contenuti tramite il player interno di Sonarpad. Con SonarTube è inoltre possibile leggere le trascrizioni dei video, quando disponibili, e leggere i commenti di ogni video.",
+      "In SonarTube è ora possibile ordinare i video di un canale per Più recenti, Meno recenti o Popolari, mantenendo lo stesso ordinamento anche quando si caricano altri video.",
+      "Migliorata la visualizzazione del tempo nei player di Sonarpad: per contenuti di almeno un’ora vengono ora mostrati ore, minuti e secondi, mentre VoiceOver e TalkBack annunciano la durata in modo più naturale.",
       "Aggiunta la funzione Taglia file media, che permette di aprire file audio e video e tagliarli nel punto desiderato. Sono disponibili due modalità, Taglio guidato e Taglio avanzato, con modifica precisa dei punti di taglio, anteprima delle parti, ripristino delle sezioni eliminate, regolazione dello spostamento, rotazione dei video e una gestione più affidabile dell’esportazione dei file audio e video.",
       "Aggiunti numerosi effetti audio in Taglia file media, tra cui coro, robot, super robot, vecchia radio, vocoder, cambi di voce e diversi effetti ambientali. Molti effetti utilizzano ora un motore DSP nativo condiviso tra iPhone e Android per ottenere una qualità più uniforme tra anteprima e file finale.",
       "In Taglia file media è ora possibile aggiungere una nuova traccia audio al file aperto, ad esempio una musica di sottofondo. È possibile regolare separatamente il volume della traccia originale e di quella aggiunta, ripetere la nuova traccia in loop, ascoltare un’anteprima e includerla nel file finale.",
@@ -39,6 +41,8 @@
     ],
     "en": [
       "Added SonarTube, the new integrated system for searching and playing YouTube videos directly in Sonarpad. You can browse videos, channels and playlists, load more results, add channels and individual videos to favorites, and play content with Sonarpad’s built-in player. SonarTube also lets you read video transcripts when available and read the comments for each video.",
+      "In SonarTube, channel videos can now be sorted by Newest, Oldest, or Popular, and the selected order is preserved when loading more videos.",
+      "Improved time display in Sonarpad players: for content lasting at least one hour, hours, minutes and seconds are now shown, while VoiceOver and TalkBack announce the duration more naturally.",
       "Added Media Cutter, which lets you open audio and video files and cut them at the desired point. Two modes are available, Guided Cut and Advanced Cut, with precise cut-point editing, section preview, restoration of removed sections, seek-step adjustment, video rotation and more reliable audio and video export.",
       "Added numerous audio effects to Media Cutter, including chorus, robot, super robot, old radio, vocoder, voice changes and several ambient effects. Many effects now use a native DSP engine shared by iPhone and Android for more consistent quality between preview and final output.",
       "Media Cutter can now add a new audio track to the opened file, for example background music. You can adjust the original and added-track volumes separately, loop the new track, preview it and include it in the final file.",
@@ -71,6 +75,8 @@
     ],
     "fr": [
       "Ajout de SonarTube, le nouveau système intégré permettant de rechercher et de lire des vidéos YouTube directement dans Sonarpad. Il est possible d’explorer des vidéos, des chaînes et des playlists, de charger davantage de résultats, d’ajouter des chaînes et des vidéos individuelles aux favoris et de lire les contenus avec le lecteur intégré de Sonarpad. SonarTube permet également de lire les transcriptions des vidéos lorsqu’elles sont disponibles et de lire les commentaires de chaque vidéo.",
+      "Dans SonarTube, les vidéos d’une chaîne peuvent désormais être triées par Plus récentes, Plus anciennes ou Populaires, et l’ordre choisi est conservé lors du chargement de vidéos supplémentaires.",
+      "Amélioration de l’affichage du temps dans les lecteurs Sonarpad : pour les contenus d’au moins une heure, les heures, minutes et secondes sont désormais affichées, tandis que VoiceOver et TalkBack annoncent la durée de façon plus naturelle.",
       "Ajout de la fonction Découpeur multimédia, qui permet d’ouvrir des fichiers audio et vidéo et de les couper à l’endroit souhaité. Deux modes sont disponibles, Découpe guidée et Découpe avancée, avec modification précise des points de coupe, aperçu des parties, restauration des sections supprimées, réglage du pas de déplacement, rotation vidéo et export audio/vidéo plus fiable.",
       "Ajout de nombreux effets audio dans le Découpeur multimédia, notamment chœur, robot, super robot, vieille radio, vocodeur, transformations de voix et différents effets d’ambiance. De nombreux effets utilisent désormais un moteur DSP natif partagé entre iPhone et Android afin d’obtenir une qualité plus homogène entre l’aperçu et le fichier final.",
       "Le Découpeur multimédia permet maintenant d’ajouter une nouvelle piste audio au fichier ouvert, par exemple une musique de fond. Il est possible de régler séparément le volume de la piste d’origine et de la piste ajoutée, de lire la nouvelle piste en boucle, d’en écouter un aperçu et de l’inclure dans le fichier final.",
@@ -103,6 +109,8 @@
     ],
     "es": [
       "Añadido SonarTube, el nuevo sistema integrado para buscar y reproducir vídeos de YouTube directamente en Sonarpad. Es posible explorar vídeos, canales y listas de reproducción, cargar más resultados, añadir canales y vídeos individuales a favoritos y reproducir el contenido con el reproductor interno de Sonarpad. SonarTube también permite leer las transcripciones de los vídeos cuando estén disponibles y leer los comentarios de cada vídeo.",
+      "En SonarTube, los vídeos de un canal ahora se pueden ordenar por Más recientes, Menos recientes o Populares, manteniendo el orden elegido también al cargar más vídeos.",
+      "Mejorada la visualización del tiempo en los reproductores de Sonarpad: para contenidos de al menos una hora ahora se muestran horas, minutos y segundos, mientras VoiceOver y TalkBack anuncian la duración de forma más natural.",
       "Añadida la función Cortador multimedia, que permite abrir archivos de audio y vídeo y cortarlos en el punto deseado. Hay dos modos disponibles, Corte guiado y Corte avanzado, con edición precisa de los puntos de corte, vista previa de las partes, restauración de secciones eliminadas, ajuste del desplazamiento, rotación de vídeo y una exportación de audio y vídeo más fiable.",
       "Añadidos numerosos efectos de audio al Cortador multimedia, entre ellos coro, robot, super robot, radio antigua, vocoder, cambios de voz y varios efectos ambientales. Muchos efectos utilizan ahora un motor DSP nativo compartido entre iPhone y Android para ofrecer una calidad más uniforme entre la vista previa y el archivo final.",
       "En el Cortador multimedia ahora es posible añadir una nueva pista de audio al archivo abierto, por ejemplo música de fondo. Se puede ajustar por separado el volumen de la pista original y de la añadida, repetir la nueva pista en bucle, escuchar una vista previa e incluirla en el archivo final.",
@@ -135,6 +143,8 @@
     ],
     "pt": [
       "Adicionado o SonarTube, o novo sistema integrado para pesquisar e reproduzir vídeos do YouTube diretamente no Sonarpad. É possível explorar vídeos, canais e listas de reprodução, carregar mais resultados, adicionar canais e vídeos individuais aos favoritos e reproduzir conteúdos com o leitor interno do Sonarpad. O SonarTube também permite ler as transcrições dos vídeos, quando disponíveis, e ler os comentários de cada vídeo.",
+      "No SonarTube, os vídeos de um canal podem agora ser ordenados por Mais recentes, Menos recentes ou Populares, mantendo a ordem escolhida também ao carregar mais vídeos.",
+      "Melhorada a apresentação do tempo nos leitores do Sonarpad: em conteúdos com pelo menos uma hora, passam a ser mostradas horas, minutos e segundos, enquanto o VoiceOver e o TalkBack anunciam a duração de forma mais natural.",
       "Adicionada a função Cortador multimédia, que permite abrir ficheiros de áudio e vídeo e cortá-los no ponto desejado. Estão disponíveis dois modos, Corte guiado e Corte avançado, com edição precisa dos pontos de corte, pré-visualização das partes, reposição de secções removidas, ajuste do deslocamento, rotação de vídeo e uma exportação de áudio e vídeo mais fiável.",
       "Adicionados vários efeitos de áudio ao Cortador multimédia, incluindo coro, robô, super robô, rádio antiga, vocoder, alterações de voz e diferentes efeitos de ambiente. Muitos efeitos utilizam agora um motor DSP nativo partilhado entre iPhone e Android para obter uma qualidade mais uniforme entre a pré-visualização e o ficheiro final.",
       "No Cortador multimédia é agora possível adicionar uma nova faixa de áudio ao ficheiro aberto, por exemplo música de fundo. É possível ajustar separadamente o volume da faixa original e da faixa adicionada, repetir a nova faixa em loop, ouvir uma pré-visualização e incluí-la no ficheiro final.",
@@ -167,6 +177,8 @@
     ],
     "pl": [
       "Dodano SonarTube, nowy zintegrowany system do wyszukiwania i odtwarzania filmów z YouTube bezpośrednio w Sonarpad. Można przeglądać filmy, kanały i playlisty, wczytywać kolejne wyniki, dodawać kanały i pojedyncze filmy do ulubionych oraz odtwarzać treści we wbudowanym odtwarzaczu Sonarpad. SonarTube pozwala także czytać transkrypcje filmów, gdy są dostępne, oraz komentarze do każdego filmu.",
+      "W SonarTube filmy z kanału można teraz sortować według opcji Najnowsze, Najstarsze lub Popularne, a wybrana kolejność jest zachowywana także podczas wczytywania kolejnych filmów.",
+      "Ulepszono wyświetlanie czasu w odtwarzaczach Sonarpad: dla treści trwających co najmniej godzinę są teraz pokazywane godziny, minuty i sekundy, a VoiceOver i TalkBack odczytują czas trwania w bardziej naturalny sposób.",
       "Dodano funkcję Przycinanie multimediów, która pozwala otwierać pliki audio i wideo oraz przycinać je w wybranym miejscu. Dostępne są dwa tryby, Przycinanie prowadzone i Zaawansowane, z precyzyjną edycją punktów cięcia, podglądem fragmentów, przywracaniem usuniętych części, regulacją kroku przewijania, obracaniem wideo i bardziej niezawodnym eksportem audio i wideo.",
       "Do Przycinania multimediów dodano liczne efekty audio, w tym chór, robot, super robot, stare radio, wokoder, zmiany głosu i różne efekty otoczenia. Wiele efektów korzysta teraz z natywnego silnika DSP współdzielonego przez iPhone’a i Androida, aby zapewnić bardziej spójną jakość między podglądem a plikiem końcowym.",
       "W Przycinaniu multimediów można teraz dodać nową ścieżkę audio do otwartego pliku, na przykład muzykę w tle. Można osobno regulować głośność ścieżki oryginalnej i dodanej, odtwarzać nową ścieżkę w pętli, odsłuchać podgląd i dołączyć ją do pliku końcowego.",
@@ -199,6 +211,8 @@
     ],
     "cs": [
       "Přidán SonarTube, nový integrovaný systém pro vyhledávání a přehrávání videí YouTube přímo v Sonarpadu. Lze procházet videa, kanály a playlisty, načítat další výsledky, přidávat kanály i jednotlivá videa do oblíbených a přehrávat obsah pomocí vestavěného přehrávače Sonarpadu. SonarTube také umožňuje číst přepisy videí, pokud jsou k dispozici, a komentáře u každého videa.",
+      "V SonarTube lze nyní videa kanálu řadit podle možností Nejnovější, Nejstarší nebo Populární a zvolené řazení zůstává zachováno i při načítání dalších videí.",
+      "Vylepšeno zobrazení času v přehrávačích Sonarpad: u obsahu dlouhého alespoň jednu hodinu se nyní zobrazují hodiny, minuty a sekundy a VoiceOver i TalkBack oznamují dobu trvání přirozeněji.",
       "Přidána funkce Střih médií, která umožňuje otevřít audio a video soubory a vystřihnout je v požadovaném místě. K dispozici jsou dva režimy, Průvodce střihem a Pokročilý střih, s přesnou úpravou bodů střihu, náhledem částí, obnovením odstraněných úseků, nastavením kroku posunu, otočením videa a spolehlivějším exportem audia a videa.",
       "Do Střihu médií bylo přidáno mnoho zvukových efektů, včetně sboru, robota, super robota, starého rádia, vokodéru, změn hlasu a různých efektů prostředí. Mnoho efektů nyní používá nativní DSP engine sdílený mezi iPhonem a Androidem, aby byla kvalita náhledu a výsledného souboru jednotnější.",
       "Ve Střihu médií lze nyní k otevřenému souboru přidat novou zvukovou stopu, například hudbu na pozadí. Hlasitost původní a přidané stopy lze nastavit samostatně, novou stopu opakovat ve smyčce, poslechnout si náhled a zahrnout ji do výsledného souboru.",
@@ -231,6 +245,8 @@
     ],
     "de": [
       "SonarTube wurde hinzugefügt, das neue integrierte System zum Suchen und Abspielen von YouTube-Videos direkt in Sonarpad. Videos, Kanäle und Playlists können durchsucht, weitere Ergebnisse geladen, Kanäle und einzelne Videos zu den Favoriten hinzugefügt und Inhalte mit dem integrierten Sonarpad-Player wiedergegeben werden. Mit SonarTube können außerdem Videotranskripte gelesen werden, sofern verfügbar, sowie die Kommentare zu jedem Video.",
+      "In SonarTube können die Videos eines Kanals jetzt nach Neueste, Älteste oder Beliebt sortiert werden. Die gewählte Sortierung bleibt auch beim Laden weiterer Videos erhalten.",
+      "Die Zeitanzeige in den Sonarpad-Playern wurde verbessert: Bei Inhalten ab einer Stunde werden jetzt Stunden, Minuten und Sekunden angezeigt, während VoiceOver und TalkBack die Dauer natürlicher ansagen.",
       "Der Media Cutter wurde hinzugefügt. Damit lassen sich Audio- und Videodateien öffnen und an der gewünschten Stelle schneiden. Es gibt zwei Modi, Geführter Schnitt und Erweiterter Schnitt, mit präziser Bearbeitung der Schnittpunkte, Vorschau der Abschnitte, Wiederherstellung entfernter Bereiche, anpassbarer Sprungweite, Videodrehung und zuverlässigerem Audio- und Videoexport.",
       "Dem Media Cutter wurden zahlreiche Audioeffekte hinzugefügt, darunter Chorus, Roboter, Super-Roboter, altes Radio, Vocoder, Stimmveränderungen und verschiedene Umgebungseffekte. Viele Effekte verwenden jetzt eine native DSP-Engine, die von iPhone und Android gemeinsam genutzt wird, um eine gleichmäßigere Qualität zwischen Vorschau und Enddatei zu erreichen.",
       "Im Media Cutter kann der geöffneten Datei jetzt eine neue Audiospur hinzugefügt werden, zum Beispiel Hintergrundmusik. Die Lautstärke der Originalspur und der hinzugefügten Spur kann getrennt eingestellt, die neue Spur in Schleife wiedergegeben, vorgehört und in die endgültige Datei aufgenommen werden.",
@@ -263,6 +279,8 @@
     ],
     "pt_BR": [
       "Adicionado o SonarTube, o novo sistema integrado para pesquisar e reproduzir vídeos do YouTube diretamente no Sonarpad. É possível explorar vídeos, canais e playlists, carregar mais resultados, adicionar canais e vídeos individuais aos favoritos e reproduzir o conteúdo com o player interno do Sonarpad. O SonarTube também permite ler as transcrições dos vídeos, quando disponíveis, e ler os comentários de cada vídeo.",
+      "No SonarTube, os vídeos de um canal agora podem ser ordenados por Mais recentes, Menos recentes ou Populares, mantendo a ordem escolhida também ao carregar mais vídeos.",
+      "Melhorada a exibição do tempo nos players do Sonarpad: em conteúdos com pelo menos uma hora, agora são mostradas horas, minutos e segundos, enquanto o VoiceOver e o TalkBack anunciam a duração de forma mais natural.",
       "Adicionada a função Cortador de mídia, que permite abrir arquivos de áudio e vídeo e cortá-los no ponto desejado. Há dois modos disponíveis, Corte guiado e Corte avançado, com edição precisa dos pontos de corte, prévia das partes, restauração de seções removidas, ajuste do deslocamento, rotação de vídeo e exportação de áudio e vídeo mais confiável.",
       "Adicionados diversos efeitos de áudio ao Cortador de mídia, incluindo coro, robô, super robô, rádio antiga, vocoder, alterações de voz e vários efeitos de ambiente. Muitos efeitos agora usam um motor DSP nativo compartilhado entre iPhone e Android para oferecer qualidade mais uniforme entre a prévia e o arquivo final.",
       "No Cortador de mídia agora é possível adicionar uma nova faixa de áudio ao arquivo aberto, por exemplo uma música de fundo. É possível ajustar separadamente o volume da faixa original e da faixa adicionada, repetir a nova faixa em loop, ouvir uma prévia e incluí-la no arquivo final.",
@@ -295,6 +313,8 @@
     ],
     "zh_CN": [
       "新增 SonarTube，这是 Sonarpad 内置的 YouTube 视频搜索和播放系统。现在可以浏览视频、频道和播放列表，加载更多结果，将频道和单个视频加入收藏，并使用 Sonarpad 内置播放器播放内容。SonarTube 还支持在可用时阅读视频转录文本，以及阅读每个视频的评论。",
+      "在 SonarTube 中，现在可以按“最新”、“最早”或“热门”对频道视频进行排序，并且在加载更多视频时会保持所选排序方式。",
+      "改进了 Sonarpad 播放器中的时间显示：对于时长至少一小时的内容，现在会显示小时、分钟和秒，VoiceOver 和 TalkBack 也会以更自然的方式朗读时长。",
       "新增媒体剪辑功能，可打开音频和视频文件，并在所需位置进行剪切。提供“引导剪辑”和“高级剪辑”两种模式，支持精确调整剪切点、预览片段、恢复已删除片段、调整跳转步长、旋转视频，并提高音视频导出的可靠性。",
       "媒体剪辑中新增多种音频效果，包括合唱、机器人、超级机器人、老式收音机、声码器、变声以及多种环境效果。许多效果现在使用 iPhone 与 Android 共用的原生 DSP 引擎，使预览与最终文件之间的音质更加一致。",
       "媒体剪辑现在可以为已打开的文件添加新的音轨，例如背景音乐。可以分别调整原始音轨和新增音轨的音量，让新增音轨循环播放、试听预览，并将其加入最终文件。",
@@ -336,6 +356,8 @@
     ],
     "uk": [
       "Додано SonarTube — нову вбудовану систему для пошуку та відтворення відео YouTube безпосередньо в Sonarpad. Можна переглядати відео, канали й списки відтворення, завантажувати додаткові результати, додавати канали й окремі відео до обраного та відтворювати вміст у вбудованому програвачі Sonarpad. SonarTube також дає змогу читати транскрипції відео, якщо вони доступні, і коментарі до кожного відео.",
+      "У SonarTube відео каналу тепер можна сортувати за варіантами Найновіші, Найстаріші або Популярні, а вибраний порядок зберігається і під час завантаження додаткових відео.",
+      "Покращено відображення часу в програвачах Sonarpad: для вмісту тривалістю щонайменше одну годину тепер показуються години, хвилини й секунди, а VoiceOver і TalkBack природніше озвучують тривалість.",
       "Додано функцію «Обрізати медіафайл», яка дає змогу відкривати аудіо- й відеофайли та обрізати їх у потрібному місці. Доступні два режими — кероване й розширене обрізання — з точним редагуванням точок обрізання, попереднім прослуховуванням частин, відновленням вилучених фрагментів, налаштуванням кроку переміщення, обертанням відео та надійнішим експортом аудіо й відео.",
       "До функції обрізання медіа додано багато аудіоефектів, зокрема хор, робот, суперробот, старе радіо, вокодер, зміну голосу та різні атмосферні ефекти. Багато ефектів тепер використовують нативний DSP-рушій, спільний для iPhone і Android, щоб якість попереднього прослуховування та фінального файлу була більш однаковою.",
       "У функції обрізання медіа тепер можна додати до відкритого файла нову аудіодоріжку, наприклад фонову музику. Гучність оригінальної та доданої доріжок можна регулювати окремо, нову доріжку можна відтворювати циклічно, попередньо прослухати та включити до фінального файла.",

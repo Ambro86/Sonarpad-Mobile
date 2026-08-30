@@ -91,6 +91,18 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sonarTubeFavorites => 'Ulubione';
 
   @override
+  String get sonarTubeSortVideos => 'Sortuj filmy';
+
+  @override
+  String get sonarTubeSortNewest => 'Najnowsze';
+
+  @override
+  String get sonarTubeSortOldest => 'Najstarsze';
+
+  @override
+  String get sonarTubeSortPopular => 'Popularne';
+
+  @override
   String get sonarTubeVideoFavorites => 'Ulubione filmy';
 
   @override

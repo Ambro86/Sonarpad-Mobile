@@ -6,6 +6,8 @@ import '../utils/app_logger.dart';
 
 enum SonarTubeItemKind { video, channel, playlist }
 
+enum SonarTubeChannelSort { newest, oldest, popular }
+
 class _InnerTubeHttpFailure implements Exception {
   const _InnerTubeHttpFailure(this.statusCode);
 
@@ -138,6 +140,11 @@ class SonarTubeTranscript {
 }
 
 class SonarTubeService {
+  static const String _channelNewestVideosParams = 'EgZ2aWRlb3PyBgQKAjoA';
+
+  final Map<String, Map<SonarTubeChannelSort, String>>
+      _channelSortParamsCache = <String, Map<SonarTubeChannelSort, String>>{};
+
   static const _youtubeApiKey = 'AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vfUWA8808';
   static const _webClientVersion = '2.20260722.01.00';
   static const _androidClientVersion = '21.29.366';
@@ -234,6 +241,8 @@ class SonarTubeService {
       'format': 'json',
       if (token != null && token.isNotEmpty) 'token': token,
       'page': '$page',
+      if (collection.kind == SonarTubeItemKind.channel)
+        'sort': channelSort.name,
     };
     final result = !_directNavigationEnabled
         ? await _loadServerPage(fallbackQuery)
@@ -253,6 +262,7 @@ class SonarTubeService {
     SonarTubeItem collection, {
     String? token,
     int page = 1,
+    SonarTubeChannelSort channelSort = SonarTubeChannelSort.newest,
   }) async {
     if (collection.kind == SonarTubeItemKind.video) {
       throw ArgumentError('Un video non è una raccolta SonarTube.');
@@ -278,6 +288,7 @@ class SonarTubeService {
               token: token,
               page: page,
               seedVideoId: seedVideoId,
+              channelSort: channelSort,
             ),
             fallbackQuery: fallbackQuery,
           );
@@ -820,6 +831,7 @@ class SonarTubeService {
     String? token,
     int page = 1,
     String? seedVideoId,
+    SonarTubeChannelSort channelSort = SonarTubeChannelSort.newest,
   }) async {
     final continuation = token?.trim() ?? '';
     final isPlaylist = collection.kind == SonarTubeItemKind.playlist;
@@ -852,7 +864,16 @@ class SonarTubeService {
         // restituire una continuation, mentre il tab Video espone la
         // paginazione necessaria per raggiungere l'intero archivio.
         payload['browseId'] = channelId;
-        payload['params'] = 'EgZ2aWRlb3PyBgQKAjoA';
+        final cachedParams = _channelSortParamsCache[channelId]?[channelSort];
+        if (channelSort == SonarTubeChannelSort.newest) {
+          payload['params'] = cachedParams ?? _channelNewestVideosParams;
+        } else if (cachedParams != null && cachedParams.isNotEmpty) {
+          payload['params'] = cachedParams;
+        } else {
+          // First discover the sort chips from YouTube itself instead of
+          // hard-coding private InnerTube tokens for Popular/Oldest.
+          payload['params'] = _channelNewestVideosParams;
+        }
       } else {
         // Compatibilità con eventuali preferiti molto vecchi che non hanno un
         // channel id UC recuperabile. Mantieni il percorso precedente e lascia
@@ -874,15 +895,63 @@ class SonarTubeService {
         'SonarTube: channel browse request '
         'title=${_logValue(collection.title)} id=${_logValue(collection.id)} '
         'page=$page continuation=${continuation.isNotEmpty} mode=$mode '
+        'sort=${channelSort.name} '
         'browseId=${_logValue(_string(payload['browseId']))}',
       );
     }
 
-    final data = await _postInnerTube(
+    var data = await _postInnerTube(
       isGeneratedMix ? _youtubeNextEndpoint : _youtubeBrowseEndpoint,
       payload,
       webClient: true,
     );
+
+    if (collection.kind == SonarTubeItemKind.channel && continuation.isEmpty) {
+      final channelId = _channelBrowseId(collection);
+      if (channelId != null) {
+        final discovered = _extractChannelSortParams(data);
+        if (discovered.isNotEmpty) {
+          final cache = _channelSortParamsCache.putIfAbsent(
+            channelId,
+            () => <SonarTubeChannelSort, String>{},
+          );
+          cache.addAll(discovered);
+          cache.putIfAbsent(
+            SonarTubeChannelSort.newest,
+            () => _channelNewestVideosParams,
+          );
+          await AppLogger.log(
+            'SonarTube: channel sort params discovered '
+            'id=${_logValue(channelId)} available=${cache.keys.map((key) => key.name).join(',')}',
+          );
+        }
+
+        if (channelSort != SonarTubeChannelSort.newest) {
+          final selectedParams = _channelSortParamsCache[channelId]?[channelSort];
+          final currentParams = _string(payload['params']);
+          if (selectedParams == null || selectedParams.isEmpty) {
+            throw FormatException('channel_sort_unavailable:${channelSort.name}');
+          }
+          if (selectedParams != currentParams) {
+            final sortedPayload = <String, dynamic>{
+              'context': _youtubeBrowseContext(),
+              'browseId': channelId,
+              'params': selectedParams,
+            };
+            data = await _postInnerTube(
+              _youtubeBrowseEndpoint,
+              sortedPayload,
+              webClient: true,
+            );
+            final refreshed = _extractChannelSortParams(data);
+            if (refreshed.isNotEmpty) {
+              _channelSortParamsCache[channelId]?.addAll(refreshed);
+            }
+          }
+        }
+      }
+    }
+
     final channelBrowseId = collection.kind == SonarTubeItemKind.channel
         ? _channelBrowseId(collection)
         : null;
@@ -907,7 +976,7 @@ class SonarTubeService {
       await AppLogger.log(
         'SonarTube: channel browse response '
         'title=${_logValue(collection.title)} id=${_logValue(collection.id)} '
-        'page=$page items=${videos.length} filteredUnplayable=$filteredUnplayable '
+        'page=$page sort=${channelSort.name} items=${videos.length} filteredUnplayable=$filteredUnplayable '
         'hasMore=${nextToken != null && nextToken.isNotEmpty} '
         '${_continuationDiagnostics(data)}',
       );
@@ -945,6 +1014,68 @@ class SonarTubeService {
   bool _isUsableVideoResult(SonarTubeItem item) {
     if (item.id.trim().isEmpty) return false;
     return item.views?.trim().isNotEmpty ?? false;
+  }
+
+  Map<SonarTubeChannelSort, String> _extractChannelSortParams(dynamic root) {
+    final chipGroups = <List<Map<String, dynamic>>>[];
+
+    void walk(dynamic node) {
+      if (node is Map) {
+        final map = Map<String, dynamic>.from(node);
+        final chipCloud = _asMap(map['chipCloudRenderer']);
+        if (chipCloud != null) {
+          final chips = <Map<String, dynamic>>[];
+          for (final rawChip in _asList(chipCloud['chips'])) {
+            final wrapper = _asMap(rawChip);
+            final chip = _asMap(wrapper?['chipCloudChipRenderer']);
+            if (chip != null) chips.add(chip);
+          }
+          if (chips.length >= 3) chipGroups.add(chips);
+        }
+        for (final child in map.values) {
+          walk(child);
+        }
+      } else if (node is List) {
+        for (final child in node) {
+          walk(child);
+        }
+      }
+    }
+
+    walk(root);
+    if (chipGroups.isEmpty) return const <SonarTubeChannelSort, String>{};
+
+    for (final chips in chipGroups) {
+      final candidates = <({String? params, bool selected})>[];
+      for (final chip in chips) {
+        final endpoint = _asMap(chip['navigationEndpoint']);
+        final browse = _asMap(endpoint?['browseEndpoint']);
+        final params = _string(browse?['params']);
+        candidates.add((
+          params: params,
+          selected: chip['isSelected'] == true,
+        ));
+      }
+
+      // The Videos tab exposes its sort chips in the UI order
+      // Latest, Popular, Oldest. Prefer a group whose first item is selected,
+      // which identifies the sort cloud of the default Videos request without
+      // depending on translated labels.
+      final selectedIndex = candidates.indexWhere((entry) => entry.selected);
+      if (selectedIndex != 0 || candidates.length < 3) continue;
+      final popular = candidates[1].params;
+      final oldest = candidates[2].params;
+      if (popular == null || popular.isEmpty || oldest == null || oldest.isEmpty) {
+        continue;
+      }
+      return <SonarTubeChannelSort, String>{
+        SonarTubeChannelSort.newest:
+            candidates[0].params ?? _channelNewestVideosParams,
+        SonarTubeChannelSort.popular: popular,
+        SonarTubeChannelSort.oldest: oldest,
+      };
+    }
+    return const <SonarTubeChannelSort, String>{};
   }
 
   String? _channelBrowseId(SonarTubeItem collection) {

@@ -91,6 +91,18 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeFavorites => 'Oblíbené';
 
   @override
+  String get sonarTubeSortVideos => 'Seřadit videa';
+
+  @override
+  String get sonarTubeSortNewest => 'Nejnovější';
+
+  @override
+  String get sonarTubeSortOldest => 'Nejstarší';
+
+  @override
+  String get sonarTubeSortPopular => 'Populární';
+
+  @override
   String get sonarTubeVideoFavorites => 'Oblíbená videa';
 
   @override

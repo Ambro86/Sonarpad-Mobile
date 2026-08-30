@@ -273,6 +273,18 @@ abstract class AppLocalizations {
   /// **'Preferiti'**
   String get sonarTubeFavorites;
 
+  /// Sort the videos of a SonarTube channel.
+  String get sonarTubeSortVideos;
+
+  /// Show the newest channel videos first.
+  String get sonarTubeSortNewest;
+
+  /// Show the oldest channel videos first.
+  String get sonarTubeSortOldest;
+
+  /// Show the most popular channel videos first.
+  String get sonarTubeSortPopular;
+
   /// No description provided for @sonarTubeVideoFavorites.
   ///
   /// In it, this message translates to:

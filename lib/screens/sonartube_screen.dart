@@ -56,6 +56,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   String? _query;
   String? _nextToken;
   int _page = 1;
+  SonarTubeChannelSort _channelSort = SonarTubeChannelSort.newest;
   bool _loading = false;
   bool _loadingMore = false;
   String? _resolvingId;
@@ -102,6 +103,62 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     return isFavorite
         ? l10n.sonarTubeRemoveFavorite
         : l10n.sonarTubeAddFavorite;
+  }
+
+  String _channelSortLabel(
+    AppLocalizations l10n,
+    SonarTubeChannelSort sort,
+  ) => switch (sort) {
+    SonarTubeChannelSort.newest => l10n.sonarTubeSortNewest,
+    SonarTubeChannelSort.oldest => l10n.sonarTubeSortOldest,
+    SonarTubeChannelSort.popular => l10n.sonarTubeSortPopular,
+  };
+
+  Future<void> _chooseChannelSort() async {
+    if (!_isChannelCollection || _loading || _loadingMore) return;
+    final l10n = AppLocalizations.of(context);
+    final selected = await showDialog<SonarTubeChannelSort>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: Text(l10n.sonarTubeSortVideos),
+        children: [
+          for (final sort in SonarTubeChannelSort.values)
+            RadioListTile<SonarTubeChannelSort>(
+              value: sort,
+              groupValue: _channelSort,
+              title: Text(_channelSortLabel(l10n, sort)),
+              onChanged: (value) {
+                if (value != null) Navigator.pop(dialogContext, value);
+              },
+            ),
+        ],
+      ),
+    );
+    if (!mounted || selected == null || selected == _channelSort) return;
+    setState(() {
+      _channelSort = selected;
+      _loadMoreFocusIndex = null;
+    });
+    await _loadCollection();
+    if (!mounted || !useSharedAccessibleViewModel) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _accessibleListController.focusTo('channel_sort', animated: false);
+  }
+
+  Widget _buildChannelSortButton(AppLocalizations l10n) {
+    return FilledButton.tonalIcon(
+      key: const ValueKey('sonartube_channel_sort'),
+      onPressed: (_loading || _loadingMore) ? null : _chooseChannelSort,
+      icon: const Icon(Icons.sort),
+      label: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(l10n.sonarTubeSortVideos),
+          Text(_channelSortLabel(l10n, _channelSort)),
+        ],
+      ),
+    );
   }
 
   Future<void> _toggleFavorite(
@@ -224,9 +281,15 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      _items = const [];
+      _nextToken = null;
+      _page = 1;
     });
     try {
-      final result = await _service.browse(widget.collection!);
+      final result = await _service.browse(
+        widget.collection!,
+        channelSort: _channelSort,
+      );
       if (!mounted) return;
       setState(() {
         _items = result.items;
@@ -279,6 +342,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                 widget.collection!,
                 token: token,
                 page: nextPage,
+                channelSort: _channelSort,
               )
             : await _service.search(_query!, token: token, page: nextPage);
         currentPage = result.page;
@@ -999,6 +1063,18 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         ),
       ));
     }
+    if (_isChannelCollection) {
+      rows.add(
+        AccessibleListRow(
+          id: 'channel_sort',
+          title: l10n.sonarTubeSortVideos,
+          subtitle: _channelSortLabel(l10n, _channelSort),
+          kind: 'button',
+          enabled: !_loading && !_loadingMore,
+          flutterChild: _buildChannelSortButton(l10n),
+        ),
+      );
+    }
     if (_isPlaylistCollection) {
       final playlist = widget.collection!;
       final isFavorite =
@@ -1199,6 +1275,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             widget.collection!,
             accessibleRowId: 'playlist_favorite',
           );
+        } else if (event.id == 'channel_sort' && _isChannelCollection) {
+          await _chooseChannelSort();
         } else if (event.id == 'recent_videos') {
           await _openRecentVideos();
         } else if (event.id == 'search') {
@@ -1633,42 +1711,55 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                   : ListView.builder(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
                       itemCount: (_hasCollectionFavoriteButton ? 1 : 0) +
+                          (_isChannelCollection ? 1 : 0) +
                           _items.length +
                           (!_loading && _items.isEmpty && _isCollection ? 1 : 0) +
                           (_nextToken == null ? 0 : 1),
                       itemBuilder: (context, index) {
-                        if (_hasCollectionFavoriteButton && index == 0) {
-                          final collection = widget.collection!;
-                          final isFavorite = _favoriteKeys.contains(
-                            _favoritesService.itemKey(collection),
-                          );
-                          final label = _favoriteLabelForItem(
-                            l10n,
-                            collection,
-                            isFavorite: isFavorite,
-                          );
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: FilledButton.tonalIcon(
-                              key: _isChannelCollection
-                                  ? const ValueKey(
-                                      'sonartube_collection_channel_favorite',
-                                    )
-                                  : const ValueKey(
-                                      'sonartube_collection_playlist_favorite',
-                                    ),
-                              onPressed: () => _toggleFavorite(collection),
-                              icon: Icon(
-                                isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
+                        var leadingControls = 0;
+                        if (_hasCollectionFavoriteButton) {
+                          if (index == leadingControls) {
+                            final collection = widget.collection!;
+                            final isFavorite = _favoriteKeys.contains(
+                              _favoritesService.itemKey(collection),
+                            );
+                            final label = _favoriteLabelForItem(
+                              l10n,
+                              collection,
+                              isFavorite: isFavorite,
+                            );
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: FilledButton.tonalIcon(
+                                key: _isChannelCollection
+                                    ? const ValueKey(
+                                        'sonartube_collection_channel_favorite',
+                                      )
+                                    : const ValueKey(
+                                        'sonartube_collection_playlist_favorite',
+                                      ),
+                                onPressed: () => _toggleFavorite(collection),
+                                icon: Icon(
+                                  isFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                ),
+                                label: Text(label),
                               ),
-                              label: Text(label),
-                            ),
-                          );
+                            );
+                          }
+                          leadingControls++;
                         }
-                        var itemIndex =
-                            index - (_hasCollectionFavoriteButton ? 1 : 0);
+                        if (_isChannelCollection) {
+                          if (index == leadingControls) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _buildChannelSortButton(l10n),
+                            );
+                          }
+                          leadingControls++;
+                        }
+                        var itemIndex = index - leadingControls;
                         if (itemIndex < _items.length) {
                           final item = _items[itemIndex];
                         final resolving = _resolvingId == item.id;

@@ -87,6 +87,18 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get sonarTubeFavorites => '收藏';
 
   @override
+  String get sonarTubeSortVideos => '视频排序';
+
+  @override
+  String get sonarTubeSortNewest => '最新';
+
+  @override
+  String get sonarTubeSortOldest => '最早';
+
+  @override
+  String get sonarTubeSortPopular => '热门';
+
+  @override
   String get sonarTubeVideoFavorites => '收藏的视频';
 
   @override

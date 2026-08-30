@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
@@ -1428,12 +1429,6 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
     super.dispose();
   }
 
-  String _format(Duration d) {
-    final mins = d.inMinutes;
-    final secs = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return '$mins:$secs';
-  }
-
 
   void _seekBy(int seconds) {
     var newPos = _visiblePosition + Duration(seconds: seconds);
@@ -1489,7 +1484,7 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
       children: [
         ExcludeSemantics(
           child: Text(
-            '${_format(position)} / ${_format(_duration)}',
+            '${l10n.formatPlaybackClock(position)} / ${l10n.formatPlaybackClock(_duration)}',
             textAlign: TextAlign.center,
           ),
         ),
@@ -1498,13 +1493,13 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
           slider: true,
           label: l10n.playbackPosition,
           value: l10n.playbackPositionValue(
-            _format(position),
-            _format(_duration),
+            l10n.formatPlaybackSpokenDuration(position),
+            l10n.formatPlaybackSpokenDuration(_duration),
           ),
-          increasedValue: _format(
+          increasedValue: l10n.formatPlaybackSpokenDuration(
             position + Duration(seconds: currentStep),
           ),
-          decreasedValue: _format(
+          decreasedValue: l10n.formatPlaybackSpokenDuration(
             position - Duration(seconds: currentStep),
           ),
           onIncrease: _handleIncrease,
@@ -1571,12 +1566,6 @@ class _VideoPositionControlState extends State<_VideoPositionControl> {
     super.dispose();
   }
 
-  String _format(Duration d) {
-    final mins = d.inMinutes;
-    final secs = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return '$mins:$secs';
-  }
-
   Future<void> _seekTo(Duration position) async {
     setState(() => _visiblePosition = position);
     await widget.controller.seekTo(position);
@@ -1628,7 +1617,7 @@ class _VideoPositionControlState extends State<_VideoPositionControl> {
       children: [
         ExcludeSemantics(
           child: Text(
-            '${_format(position)} / ${_format(duration)}',
+            '${l10n.formatPlaybackClock(position)} / ${l10n.formatPlaybackClock(duration)}',
             textAlign: TextAlign.center,
           ),
         ),
@@ -1637,13 +1626,13 @@ class _VideoPositionControlState extends State<_VideoPositionControl> {
           slider: true,
           label: l10n.playbackPosition,
           value: l10n.playbackPositionValue(
-            _format(position),
-            _format(duration),
+            l10n.formatPlaybackSpokenDuration(position),
+            l10n.formatPlaybackSpokenDuration(duration),
           ),
-          increasedValue: _format(
+          increasedValue: l10n.formatPlaybackSpokenDuration(
             position + Duration(seconds: currentStep),
           ),
-          decreasedValue: _format(
+          decreasedValue: l10n.formatPlaybackSpokenDuration(
             position - Duration(seconds: currentStep),
           ),
           onIncrease: () => _seekBy(currentStep),

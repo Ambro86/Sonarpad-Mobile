@@ -356,6 +356,115 @@ void main() {
   });
 
   test(
+    'channel browse discovers YouTube sort chips and opens oldest server-side',
+    () async {
+      final requestedBodies = <Map<String, dynamic>>[];
+      final service = SonarTubeService(
+        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+        client: MockClient((request) async {
+          final body = Map<String, dynamic>.from(
+            jsonDecode(request.body) as Map,
+          );
+          requestedBodies.add(body);
+          final params = body['params'];
+          final isOldest = params == 'oldest-live-param';
+          final isPopular = params == 'popular-live-param';
+          return http.Response(
+            jsonEncode({
+              'chipCloudRenderer': {
+                'chips': [
+                  {
+                    'chipCloudChipRenderer': {
+                      'text': {'simpleText': 'Più recenti'},
+                      'isSelected': !isOldest && !isPopular,
+                      'navigationEndpoint': {
+                        'browseEndpoint': {
+                          'params': 'EgZ2aWRlb3PyBgQKAjoA',
+                        },
+                      },
+                    },
+                  },
+                  {
+                    'chipCloudChipRenderer': {
+                      'text': {'simpleText': 'Popolari'},
+                      'isSelected': isPopular,
+                      'navigationEndpoint': {
+                        'browseEndpoint': {'params': 'popular-live-param'},
+                      },
+                    },
+                  },
+                  {
+                    'chipCloudChipRenderer': {
+                      'text': {'simpleText': 'Meno recenti'},
+                      'isSelected': isOldest,
+                      'navigationEndpoint': {
+                        'browseEndpoint': {'params': 'oldest-live-param'},
+                      },
+                    },
+                  },
+                ],
+              },
+              'videoRenderer': {
+                'videoId': isOldest
+                    ? 'oldest00001'
+                    : isPopular
+                    ? 'popular0001'
+                    : 'newest00001',
+                'title': {
+                  'simpleText': isOldest
+                      ? 'Video più vecchio'
+                      : isPopular
+                      ? 'Video popolare'
+                      : 'Video recente',
+                },
+                'viewCountText': {'simpleText': '10 visualizzazioni'},
+              },
+              'continuationItemRenderer': {
+                'continuationEndpoint': {
+                  'continuationCommand': {
+                    'token': isOldest
+                        ? 'oldest-next'
+                        : isPopular
+                        ? 'popular-next'
+                        : 'newest-next',
+                  },
+                },
+              },
+            }),
+            200,
+          );
+        }),
+      );
+      const channel = SonarTubeItem(
+        kind: SonarTubeItemKind.channel,
+        id: 'UCabcdefghijklmnopqrstuv',
+        title: 'Canale ordinabile',
+        url: 'https://www.youtube.com/@canale',
+      );
+
+      final page = await service.browse(
+        channel,
+        channelSort: SonarTubeChannelSort.oldest,
+      );
+
+      expect(requestedBodies, hasLength(2));
+      expect(requestedBodies.first['params'], 'EgZ2aWRlb3PyBgQKAjoA');
+      expect(requestedBodies.last['params'], 'oldest-live-param');
+      expect(page.items.single.title, 'Video più vecchio');
+      expect(page.nextToken, 'oldest-next');
+
+      final popularPage = await service.browse(
+        channel,
+        channelSort: SonarTubeChannelSort.popular,
+      );
+      expect(requestedBodies, hasLength(3));
+      expect(requestedBodies.last['params'], 'popular-live-param');
+      expect(popularPage.items.single.title, 'Video popolare');
+      expect(popularPage.nextToken, 'popular-next');
+    },
+  );
+
+  test(
     'channel browse uses the real Videos tab instead of the capped uploads playlist',
     () async {
       late Map<String, dynamic> requestedBody;

@@ -90,6 +90,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeFavorites => 'Favoritos';
 
   @override
+  String get sonarTubeSortVideos => 'Ordenar vídeos';
+
+  @override
+  String get sonarTubeSortNewest => 'Mais recentes';
+
+  @override
+  String get sonarTubeSortOldest => 'Mais antigos';
+
+  @override
+  String get sonarTubeSortPopular => 'Populares';
+
+  @override
   String get sonarTubeVideoFavorites => 'Vídeos favoritos';
 
   @override
@@ -3647,6 +3659,18 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get sonarTubeFavorites => 'Favoritos';
+
+  @override
+  String get sonarTubeSortVideos => 'Ordenar vídeos';
+
+  @override
+  String get sonarTubeSortNewest => 'Mais recentes';
+
+  @override
+  String get sonarTubeSortOldest => 'Mais antigos';
+
+  @override
+  String get sonarTubeSortPopular => 'Populares';
 
   @override
   String get sonarTubeVideoFavorites => 'Vídeos favoritos';
