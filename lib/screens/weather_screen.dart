@@ -29,6 +29,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
   final _settings = AppSettingsService();
   final _weatherService = OpenMeteoWeatherService();
   final _searchCtrl = TextEditingController();
+  final _searchFocusNode = FocusNode();
+  final GlobalKey _searchFocusTargetKey = GlobalKey(
+    debugLabel: 'weather_search_focus_target',
+  );
   WeatherForecast? _forecast;
   List<WeatherGeocodingResult> _cityResults = const [];
   bool _isLoading = false;
@@ -49,6 +53,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Future<void> _loadTemperatureUnit() async {
     final unit = await _settings.loadWeatherTemperatureUnit();
     if (mounted) setState(() => _temperatureUnit = unit);
+  }
+
+  Future<void> _clearSearchText() async {
+    _searchCtrl.clear();
+    _searchFocusNode.requestFocus();
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    _searchFocusTargetKey.currentContext
+        ?.findRenderObject()
+        ?.sendSemanticsEvent(const FocusSemanticEvent());
   }
 
   Future<void> _checkRecentCities() async {
@@ -79,6 +93,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   @override
   void dispose() {
     _searchCtrl.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -209,25 +224,57 @@ class _WeatherScreenState extends State<WeatherScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchCtrl,
-                    decoration: InputDecoration(
-                      labelText: l10n.weatherCity,
-                      hintText: l10n.weatherCityHint,
-                      border: const OutlineInputBorder(),
+            child: Semantics(
+              container: true,
+              explicitChildNodes: true,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Semantics(
+                      sortKey: const OrdinalSortKey(1),
+                      child: KeyedSubtree(
+                        key: _searchFocusTargetKey,
+                        child: TextField(
+                          controller: _searchCtrl,
+                          focusNode: _searchFocusNode,
+                          decoration: InputDecoration(
+                            labelText: l10n.weatherCity,
+                            hintText: l10n.weatherCityHint,
+                            border: const OutlineInputBorder(),
+                          ),
+                          textInputAction: TextInputAction.search,
+                          onSubmitted: (_) => _fetchWeather(),
+                        ),
+                      ),
                     ),
-                    onSubmitted: (_) => _fetchWeather(),
                   ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _fetchWeather,
-                  child: Text(l10n.search),
-                ),
-              ],
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _searchCtrl,
+                    builder: (context, value, _) {
+                      if (value.text.isEmpty) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Semantics(
+                          sortKey: const OrdinalSortKey(2),
+                          child: IconButton(
+                            tooltip: l10n.clearSearch,
+                            icon: const Icon(Icons.clear),
+                            onPressed: _clearSearchText,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  Semantics(
+                    sortKey: const OrdinalSortKey(3),
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _fetchWeather,
+                      child: Text(l10n.search),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           if (_hasRecentCities && !_isLoading && _cityResults.isEmpty)

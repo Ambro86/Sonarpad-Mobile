@@ -42,6 +42,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       widget.historyService ?? SonarTubeHistoryService();
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
+  final GlobalKey _searchSemanticsFocusKey = GlobalKey(
+    debugLabel: 'sonartube_search_semantics_target',
+  );
   final AccessibleListController _accessibleListController =
       AccessibleListController(debugName: 'sonartube');
   final GlobalKey _loadMoreFocusTargetKey = GlobalKey(
@@ -856,6 +859,63 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
   }
 
+  void _clearSearchText() {
+    _searchController.clear();
+    _searchFocusNode.requestFocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _searchSemanticsFocusKey.currentContext
+          ?.findRenderObject()
+          ?.sendSemanticsEvent(const FocusSemanticEvent());
+    });
+  }
+
+  Widget _buildSearchField(AppLocalizations l10n) {
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: _searchController,
+        builder: (context, value, _) => Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Semantics(
+                sortKey: const OrdinalSortKey(1),
+                child: KeyedSubtree(
+                  key: _searchSemanticsFocusKey,
+                  child: TextField(
+                    key: const ValueKey('sonartube_search_field'),
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
+                    decoration: InputDecoration(
+                      labelText: l10n.sonarTubeSearchLabel,
+                      hintText: l10n.sonarTubeSearchPrompt,
+                      prefixIcon: const Icon(Icons.search),
+                    ),
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (_) => _search(),
+                  ),
+                ),
+              ),
+            ),
+            if (value.text.isNotEmpty) ...[
+              const SizedBox(width: 8),
+              Semantics(
+                sortKey: const OrdinalSortKey(2),
+                child: IconButton(
+                  tooltip: l10n.clearSearch,
+                  icon: const Icon(Icons.clear),
+                  onPressed: _clearSearchText,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSharedAccessibleSonarTube(AppLocalizations l10n) {
     final rows = <AccessibleListRow>[];
     if (_isCollection) {
@@ -902,31 +962,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         placeholder: l10n.sonarTubeSearchPrompt,
         textInputAction: 'search',
         onSubmitted: (_) => _search(),
-        flutterChild: TextField(
-          key: const ValueKey('sonartube_search_field'),
-          controller: _searchController,
-          focusNode: _searchFocusNode,
-          decoration: InputDecoration(
-            labelText: l10n.sonarTubeSearchLabel,
-            hintText: l10n.sonarTubeSearchPrompt,
-            prefixIcon: const Icon(Icons.search),
-            suffixIcon: ValueListenableBuilder<TextEditingValue>(
-              valueListenable: _searchController,
-              builder: (context, value, _) => value.text.isEmpty
-                  ? const SizedBox.shrink()
-                  : IconButton(
-                      tooltip: l10n.clearSearch,
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        _searchFocusNode.requestFocus();
-                      },
-                    ),
-            ),
-          ),
-          textInputAction: TextInputAction.search,
-          onSubmitted: (_) => _search(),
-        ),
+        flutterChild: _buildSearchField(l10n),
       ));
       rows.add(AccessibleListRow(
         id: 'search',
@@ -1547,32 +1583,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: TextField(
-                            key: const ValueKey('sonartube_search_field'),
-                            controller: _searchController,
-                            focusNode: _searchFocusNode,
-                            decoration: InputDecoration(
-                              labelText: l10n.sonarTubeSearchLabel,
-                              hintText: l10n.sonarTubeSearchPrompt,
-                              prefixIcon: const Icon(Icons.search),
-                              suffixIcon: ValueListenableBuilder<TextEditingValue>(
-                                valueListenable: _searchController,
-                                builder: (context, value, _) =>
-                                    value.text.isEmpty
-                                        ? const SizedBox.shrink()
-                                        : IconButton(
-                                            tooltip: l10n.clearSearch,
-                                            icon: const Icon(Icons.clear),
-                                            onPressed: () {
-                                              _searchController.clear();
-                                              _searchFocusNode.requestFocus();
-                                            },
-                                          ),
-                              ),
-                            ),
-                            textInputAction: TextInputAction.search,
-                            onSubmitted: (_) => _search(),
-                          ),
+                          child: _buildSearchField(l10n),
                         ),
                         const SizedBox(width: 12),
                         FilledButton(

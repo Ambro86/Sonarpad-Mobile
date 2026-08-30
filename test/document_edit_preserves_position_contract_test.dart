@@ -24,7 +24,7 @@ void main() {
     );
   });
 
-  test('paragraph editing updates in place without explicitly jumping to the bookmark', () {
+  test('paragraph editing disarms bookmark focus and restores the edited paragraph', () {
     final source =
         File('lib/screens/document_reader_screen.dart').readAsStringSync();
     final start = source.indexOf('Future<void> _editParagraph(int index) async');
@@ -36,9 +36,24 @@ void main() {
     expect(editMethod, isNot(contains('_bookmarkIndex.clamp')));
     expect(editMethod, isNot(contains('_focusChunk(_bookmarkIndex')));
     expect(editMethod, isNot(contains('_scrollToChunk(_bookmarkIndex')));
+    expect(
+      editMethod,
+      contains('_initialBookmarkFocusIndex = -1;'),
+      reason: 'Opening/applying the editor must never re-arm the saved bookmark as initial focus.',
+    );
+    expect(
+      editMethod,
+      contains('_focusedChunkIndex = index;'),
+      reason: 'The paragraph being edited must become the authoritative document position.',
+    );
+    expect(
+      editMethod,
+      contains('await _accessibleDocumentListController.focusToReturn('),
+      reason: 'After Apply the edited paragraph must be restored explicitly instead of relying on a stale VoiceOver cell.',
+    );
   });
 
-  test('paragraph editing refreshes the focused UIKit row after the new text is built', () {
+  test('paragraph editing refreshes the UIKit row before restoring focus', () {
     final source =
         File('lib/screens/document_reader_screen.dart').readAsStringSync();
     final start = source.indexOf('Future<void> _editParagraph(int index) async');
@@ -54,36 +69,41 @@ void main() {
     );
     expect(
       editMethod,
-      contains("final refreshedParagraphId = 'paragraph_\$index';"),
-      reason: 'The refresh must target the paragraph that was edited.',
+      contains("final refreshedParagraphId = 'paragraph_\$restoredFocusIndex';"),
+      reason: 'The refresh must target the edited paragraph after any chunk-count change.',
     );
     expect(
       editMethod,
       contains('_accessibleDocumentListController.refreshAccessibilityRow('),
-      reason: 'The already-focused UIKit cell must have its VoiceOver label refreshed in place.',
+      reason: 'The UIKit row must receive the new label before focus is restored.',
     );
     expect(
-      editMethod,
-      isNot(contains('focusToReturn(refreshedParagraphId')),
-      reason: 'Refreshing the label must not move accessibility focus.',
+      editMethod.indexOf('_accessibleDocumentListController.refreshAccessibilityRow('),
+      lessThan(editMethod.indexOf('_accessibleDocumentListController.focusToReturn(')),
+      reason: 'Refresh the label first, then move VoiceOver to that live row.',
     );
-    expect(
-      editMethod,
-      isNot(contains('_focusChunk(index)')),
-      reason: 'The fix must preserve the current paragraph rather than force a new focus jump.',
-    );
+
     final nativeSource =
         File('ios/Runner/SonarpadNativeAccessibleView.swift').readAsStringSync();
     expect(
       nativeSource,
-      contains('private func refreshAccessibilityRow(id: String)'),
-      reason: 'The UIKit bridge must support an in-place row metadata refresh.',
+      contains('self.debugTag == "document" &&'),
+      reason: 'The rare recovery must be scoped to the Document renderer.',
     );
     expect(
       nativeSource,
-      contains('UIAccessibility.post(notification: .layoutChanged, argument: cell)'),
-      reason: 'VoiceOver must be told to re-read the already-focused updated cell.',
+      contains('mode == "returnFocus" &&'),
+      reason: 'The stronger recovery must only run for an explicit editor return.',
+    );
+    expect(
+      nativeSource,
+      contains('id.hasPrefix("paragraph_")'),
+      reason: 'Only document paragraph rows may use this recovery.',
+    );
+    expect(
+      nativeSource,
+      contains('ONE_SHOT_FOCUS_FALLBACK'),
+      reason: 'If VoiceOver ignores the first post there must be exactly one stronger fallback.',
     );
   });
-
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -21,6 +22,10 @@ class DropboxBrowserScreen extends StatefulWidget {
 class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   final DropboxService _dropbox = DropboxService();
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  final GlobalKey _searchSemanticsFocusKey = GlobalKey(
+    debugLabel: 'dropbox_search_semantics_target',
+  );
   bool _loading = true;
   String? _error;
   String _currentPath = "";
@@ -48,6 +53,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -56,6 +62,13 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     if (_searchQuery.isNotEmpty) {
       setState(() => _searchQuery = "");
     }
+    _searchFocusNode.requestFocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _searchSemanticsFocusKey.currentContext
+          ?.findRenderObject()
+          ?.sendSemanticsEvent(const FocusSemanticEvent());
+    });
   }
 
   Future<void> _init() async {
@@ -333,22 +346,45 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              labelText: l10n.search,
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: _searchQuery.isEmpty
-                  ? null
-                  : IconButton(
+          child: Semantics(
+            container: true,
+            explicitChildNodes: true,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Semantics(
+                    sortKey: const OrdinalSortKey(1),
+                    child: KeyedSubtree(
+                      key: _searchSemanticsFocusKey,
+                      child: TextField(
+                        controller: _searchController,
+                        focusNode: _searchFocusNode,
+                        decoration: InputDecoration(
+                          labelText: l10n.search,
+                          prefixIcon: const Icon(Icons.search),
+                          border: const OutlineInputBorder(),
+                        ),
+                        textInputAction: TextInputAction.search,
+                        onChanged: (value) =>
+                            setState(() => _searchQuery = value),
+                      ),
+                    ),
+                  ),
+                ),
+                if (_searchQuery.isNotEmpty) ...[
+                  const SizedBox(width: 8),
+                  Semantics(
+                    sortKey: const OrdinalSortKey(2),
+                    child: IconButton(
                       onPressed: _clearSearch,
                       icon: const Icon(Icons.clear),
                       tooltip: l10n.clearSearch,
                     ),
-              border: const OutlineInputBorder(),
+                  ),
+                ],
+              ],
             ),
-            textInputAction: TextInputAction.search,
-            onChanged: (value) => setState(() => _searchQuery = value),
           ),
         ),
         if (_currentPath.isNotEmpty)

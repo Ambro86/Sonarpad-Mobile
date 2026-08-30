@@ -1685,6 +1685,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   Future<void> _editParagraph(int index) async {
     if (index < 0 || index >= _chunks.length) return;
 
+    // Editing is an explicit navigation action on this paragraph. Record it
+    // here as well as in the accessibility-focus callback so a delayed or
+    // missing VoiceOver focus notification can never leave the saved bookmark
+    // armed as a future initial-focus target during the editor rebuild.
+    _initialBookmarkFocusIndex = -1;
+    _focusedChunkIndex = index;
+
     final originalParagraphLength = _chunks[index].length;
     final controller = TextEditingController(text: _chunks[index]);
     final edited = await showDialog<String>(
@@ -1770,9 +1777,20 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       // Aggiorna stato: testo e chunk (la lettura riparte dall'inizio se necessario).
       // Manteniamo lo stesso id accessibile del paragrafo modificato: il focus
       // VoiceOver deve restare dov'è, ma UIKit deve ricevere il nuovo testo.
+      var restoredFocusIndex = index;
       setState(() {
         _documentText = newText;
         _chunks = _splitTextForDocumentDisplay(_documentText);
+        if (_chunks.isNotEmpty) {
+          restoredFocusIndex = index.clamp(0, _chunks.length - 1).toInt();
+          _focusedChunkIndex = restoredFocusIndex;
+        } else {
+          restoredFocusIndex = -1;
+          _focusedChunkIndex = -1;
+        }
+        // Never let a saved bookmark become an initial-focus candidate again
+        // just because editing rebuilt the document accessibility model.
+        _initialBookmarkFocusIndex = -1;
         // Chiavi gestite da AutoScrollTag
       });
 
@@ -1784,16 +1802,32 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       // e nessun flick avanti/indietro necessario per leggere il testo nuovo.
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted) return;
-      final refreshedParagraphId = 'paragraph_$index';
-      _docLog(
-        'DOC_EDIT refresh accessibility row id=$refreshedParagraphId '
-        'oldChars=$originalParagraphLength newChars=${finalEdited.length} '
-        'nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer}',
-      );
-      await _accessibleDocumentListController.refreshAccessibilityRow(
-        refreshedParagraphId,
-      );
-      _docLog('DOC_EDIT accessibility row refreshed id=$refreshedParagraphId');
+      if (restoredFocusIndex >= 0) {
+        final refreshedParagraphId = 'paragraph_$restoredFocusIndex';
+        _docLog(
+          'DOC_EDIT refresh accessibility row id=$refreshedParagraphId '
+          'oldChars=$originalParagraphLength newChars=${finalEdited.length} '
+          'nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer}',
+        );
+        await _accessibleDocumentListController.refreshAccessibilityRow(
+          refreshedParagraphId,
+        );
+        if (!mounted) return;
+
+        // Closing the paragraph editor is a focus-return transition, not a new
+        // document entry. Explicitly restore the edited paragraph after the
+        // rebuilt model has committed instead of relying on VoiceOver to keep
+        // its old cell reference alive. This also recovers the rare state in
+        // which VoiceOver lands at the first row and then treats it as the end
+        // of the accessibility traversal until the document is reopened.
+        await _accessibleDocumentListController.focusToReturn(
+          refreshedParagraphId,
+          animated: false,
+        );
+        _docLog(
+          'DOC_EDIT accessibility focus restored id=$refreshedParagraphId',
+        );
+      }
 
       if (!mounted) return;
       showStatusMessage(

@@ -604,6 +604,8 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   final ScrollController _flutterScrollController = ScrollController();
   final Map<String, TextEditingController> _flutterTextControllers =
       <String, TextEditingController>{};
+  final Map<String, FocusNode> _flutterTextFocusNodes = <String, FocusNode>{};
+  final Map<String, GlobalKey> _flutterTextFocusKeys = <String, GlobalKey>{};
   final GlobalKey _flutterTargetKey = GlobalKey(debugLabel: 'accessible_target_row');
   GlobalKey _nativeViewKey = GlobalKey(debugLabel: 'accessible_native_view');
   int _rendererGeneration = 0;
@@ -1360,6 +1362,9 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     for (final controller in _flutterTextControllers.values) {
       controller.dispose();
     }
+    for (final focusNode in _flutterTextFocusNodes.values) {
+      focusNode.dispose();
+    }
     super.dispose();
   }
 
@@ -1466,6 +1471,35 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       );
     }
     return controller;
+  }
+
+  FocusNode _textFocusNodeFor(AccessibleListRow row) =>
+      _flutterTextFocusNodes.putIfAbsent(
+        row.id,
+        () => FocusNode(debugLabel: 'accessible_text_${row.id}'),
+      );
+
+  GlobalKey _textFocusKeyFor(AccessibleListRow row) =>
+      _flutterTextFocusKeys.putIfAbsent(
+        row.id,
+        () => GlobalKey(debugLabel: 'accessible_text_semantics_${row.id}'),
+      );
+
+  void _clearFlutterTextField(
+    AccessibleListRow row,
+    TextEditingController controller,
+  ) {
+    controller.clear();
+    _change(row, 'textChanged', '');
+    final focusNode = _textFocusNodeFor(row);
+    focusNode.requestFocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _textFocusKeyFor(row)
+          .currentContext
+          ?.findRenderObject()
+          ?.sendSemanticsEvent(const FocusSemanticEvent());
+    });
   }
 
   IconData _visualActionIcon(String? name) => switch (name) {
@@ -1690,44 +1724,66 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         break;
       case 'textField':
         final controller = _textControllerFor(row);
+        final focusNode = _textFocusNodeFor(row);
+        final focusKey = _textFocusKeyFor(row);
         final l10n = AppLocalizations.of(context);
         final clearLabel =
             row.usesSearchClearLabel ? l10n.clearSearch : l10n.clearText;
         result = Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          child: ValueListenableBuilder<TextEditingValue>(
-            valueListenable: controller,
-            builder: (context, textValue, _) => TextFormField(
-              controller: controller,
-              obscureText: row.secure,
-              enabled: enabled,
-              decoration: InputDecoration(
-                labelText: row.title,
-                hintText: row.placeholder,
-                helperText: row.subtitle,
-                suffixIcon: !enabled || textValue.text.isEmpty
-                    ? null
-                    : IconButton(
+          child: Semantics(
+            container: true,
+            explicitChildNodes: true,
+            child: ValueListenableBuilder<TextEditingValue>(
+              valueListenable: controller,
+              builder: (context, textValue, _) => Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Semantics(
+                      sortKey: const OrdinalSortKey(1),
+                      child: KeyedSubtree(
+                        key: focusKey,
+                        child: TextFormField(
+                          controller: controller,
+                          focusNode: focusNode,
+                          obscureText: row.secure,
+                          enabled: enabled,
+                          decoration: InputDecoration(
+                            labelText: row.title,
+                            hintText: row.placeholder,
+                            helperText: row.subtitle,
+                          ),
+                          textInputAction: switch (row.textInputAction) {
+                            'search' => TextInputAction.search,
+                            'next' => TextInputAction.next,
+                            'done' => TextInputAction.done,
+                            _ => null,
+                          },
+                          onChanged: enabled
+                              ? (value) => _change(row, 'textChanged', value)
+                              : null,
+                          onFieldSubmitted: enabled && row.onSubmitted != null
+                              ? (value) => _change(row, 'textSubmitted', value)
+                              : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (enabled && textValue.text.isNotEmpty) ...[
+                    const SizedBox(width: 8),
+                    Semantics(
+                      sortKey: const OrdinalSortKey(2),
+                      child: IconButton(
                         tooltip: clearLabel,
                         icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          controller.clear();
-                          _change(row, 'textChanged', '');
-                        },
+                        onPressed: () =>
+                            _clearFlutterTextField(row, controller),
                       ),
+                    ),
+                  ],
+                ],
               ),
-              textInputAction: switch (row.textInputAction) {
-                'search' => TextInputAction.search,
-                'next' => TextInputAction.next,
-                'done' => TextInputAction.done,
-                _ => null,
-              },
-              onChanged: enabled
-                  ? (value) => _change(row, 'textChanged', value)
-                  : null,
-              onFieldSubmitted: enabled && row.onSubmitted != null
-                  ? (value) => _change(row, 'textSubmitted', value)
-                  : null,
             ),
           ),
         );

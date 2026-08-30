@@ -280,14 +280,6 @@ private final class SonarpadAccessibleTableCell: UITableViewCell {
 private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate {
   let field = UITextField(frame: .zero)
   private let clearButton = UIButton(type: .system)
-  private lazy var clearAccessibilityElement: SonarpadPersistentAccessibilityActionElement = {
-    let element = SonarpadPersistentAccessibilityActionElement(accessibilityContainer: self)
-    element.accessibilityTraits = .button
-    element.activationHandler = { [weak self] in
-      self?.clearText()
-    }
-    return element
-  }()
   var rowId = ""
   var submitOnReturn = false
   var stabilizeFocusOnBegin = false
@@ -304,26 +296,33 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
     field.borderStyle = .roundedRect
     field.clearButtonMode = .never
     field.isAccessibilityElement = true
-    clearButton.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
+
+    // The clear control must be a real sibling of the text field, not a
+    // UITextField rightView. VoiceOver may reorder overlapping parent/child
+    // accessibility frames and place “Clear search” before the field. Keeping
+    // the controls as non-overlapping siblings makes the swipe order stable:
+    // previous row -> text field -> clear -> next row.
+    clearButton.translatesAutoresizingMaskIntoConstraints = false
     clearButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
     clearButton.tintColor = .tertiaryLabel
-    // Keep the visual control inside UITextField, but do not expose that
-    // descendant directly to VoiceOver. A separate sibling accessibility
-    // proxy below keeps the swipe order stable across table rows.
-    clearButton.isAccessibilityElement = false
-    clearButton.accessibilityElementsHidden = true
+    clearButton.isAccessibilityElement = true
+    clearButton.accessibilityTraits = .button
     clearButton.addTarget(self, action: #selector(clearText), for: .touchUpInside)
-    field.rightView = clearButton
-    field.rightViewMode = .never
+
     field.returnKeyType = .done
     field.delegate = self
     contentView.addSubview(field)
+    contentView.addSubview(clearButton)
     NSLayoutConstraint.activate([
       field.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-      field.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
       field.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
       field.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
       field.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
+      clearButton.leadingAnchor.constraint(equalTo: field.trailingAnchor, constant: 8),
+      clearButton.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+      clearButton.centerYAnchor.constraint(equalTo: field.centerYAnchor),
+      clearButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 44),
+      clearButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 44),
     ])
     field.addTarget(self, action: #selector(valueChanged), for: .editingChanged)
     NotificationCenter.default.addObserver(
@@ -341,33 +340,18 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   }
 
   func configureClearButton(label: String) {
-    clearAccessibilityElement.accessibilityLabel = label
-    clearAccessibilityElement.accessibilityHint = nil
+    clearButton.accessibilityLabel = label
+    clearButton.accessibilityHint = nil
     updateClearButtonVisibility()
-  }
-
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    updateClearAccessibilityFrame()
-  }
-
-  private func updateClearAccessibilityFrame() {
-    guard clearButton.window != nil else { return }
-    clearAccessibilityElement.accessibilityFrameInContainerSpace =
-      convert(clearButton.bounds, from: clearButton)
   }
 
   private func updateClearButtonVisibility() {
     let hasText = field.isEnabled && !(field.text ?? "").isEmpty
-    field.rightViewMode = hasText ? .always : .never
-    // The visual clear button is a descendant of UITextField. Exposing that
-    // same UIButton directly also as a sibling accessibility stop can create
-    // a parent/child loop in VoiceOver navigation. Use an independent proxy
-    // owned by the cell instead: previous row -> field -> clear -> next row.
+    clearButton.isHidden = !hasText
+    clearButton.accessibilityElementsHidden = !hasText
     accessibilityElements = hasText
-      ? [field as Any, clearAccessibilityElement as Any]
+      ? [field as Any, clearButton as Any]
       : [field as Any]
-    if hasText { updateClearAccessibilityFrame() }
   }
 
   @objc private func clearText() {
@@ -2733,15 +2717,20 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       self.emitDebug(postLine)
       UIAccessibility.post(notification: notification, argument: target)
 
-      // On long SonarTube channel lists, VoiceOver can acknowledge the
-      // layoutChanged post without actually moving off the old Load more row.
-      // If the requested row has not reported focus after a short settling
-      // window, perform exactly one stronger screenChanged post. Keep this
-      // recovery scoped to SonarTube in-place item jumps so other lists retain
-      // their established focus behavior.
-      if self.debugTag == "sonartube",
-         mode == "inPlaceJump",
-         id.hasPrefix("item_") {
+      // A few dynamic-list transitions are known to be acknowledged by
+      // VoiceOver without actually moving to the requested row. Recover only
+      // for the two verified cases and only once: SonarTube load-more jumps,
+      // and returning from the Document paragraph editor. The pending request
+      // is cleared by the global focus observer as soon as the real target is
+      // focused, so this stronger post never fires after a successful move.
+      let needsOneShotStrongRecovery =
+        (self.debugTag == "sonartube" &&
+         mode == "inPlaceJump" &&
+         id.hasPrefix("item_")) ||
+        (self.debugTag == "document" &&
+         mode == "returnFocus" &&
+         id.hasPrefix("paragraph_"))
+      if needsOneShotStrongRecovery {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
           guard let self = self,
                 self.currentRequestedFocusRowId == id,
@@ -2757,7 +2746,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           }
           guard let retryTarget = self.accessibilityTarget(at: retryIndexPath) else { return }
           self.emitDebug(
-            "IN_PLACE_FOCUS_FALLBACK id=\(id) requestId=\(requestId) notification=screenChanged"
+            "ONE_SHOT_FOCUS_FALLBACK id=\(id) mode=\(mode) requestId=\(requestId) notification=screenChanged"
           )
           UIAccessibility.post(notification: .screenChanged, argument: retryTarget)
         }
