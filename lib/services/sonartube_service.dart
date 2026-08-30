@@ -943,8 +943,7 @@ class SonarTubeService {
   }
 
   bool _isUsableVideoResult(SonarTubeItem item) {
-    final id = item.id.trim();
-    if (!RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(id)) return false;
+    if (item.id.trim().isEmpty) return false;
     return item.views?.trim().isNotEmpty ?? false;
   }
 
