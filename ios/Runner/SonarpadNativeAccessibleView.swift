@@ -193,6 +193,129 @@ private func sonarpadSectionsHaveSameStructure(_ lhs: [SonarpadNativeSection], _
   return true
 }
 
+private func sonarpadRowsMatchForDocumentStructureAlignment(
+  _ lhs: SonarpadNativeRow,
+  _ rhs: SonarpadNativeRow
+) -> Bool {
+  // Paragraph ids are index-based (paragraph_271, paragraph_272, ...), so an
+  // inserted newline shifts every following id even though the underlying
+  // paragraph content is unchanged. For structural alignment we therefore
+  // compare the semantic payload and cell class, deliberately ignoring id and
+  // dynamic decoration such as bookmark state/actions. This helper is used
+  // only by the Document single-paragraph split/merge fast path below.
+  return lhs.kind == rhs.kind &&
+    lhs.title == rhs.title &&
+    lhs.accessibilityLabel == rhs.accessibilityLabel
+}
+
+private struct SonarpadDocumentParagraphMutation {
+  let section: Int
+  let anchorRow: Int
+  let insertedRows: [IndexPath]
+  let deletedRows: [IndexPath]
+}
+
+private func sonarpadDocumentParagraphMutation(
+  oldSections: [SonarpadNativeSection],
+  newSections: [SonarpadNativeSection]
+) -> SonarpadDocumentParagraphMutation? {
+  guard oldSections.count == newSections.count else { return nil }
+
+  var changedSection: Int?
+  for sectionIndex in oldSections.indices {
+    let oldSection = oldSections[sectionIndex]
+    let newSection = newSections[sectionIndex]
+    guard oldSection.header == newSection.header,
+          oldSection.footer == newSection.footer else {
+      return nil
+    }
+    if oldSection.rows.count != newSection.rows.count {
+      if changedSection != nil { return nil }
+      changedSection = sectionIndex
+    } else {
+      for (oldRow, newRow) in zip(oldSection.rows, newSection.rows) {
+        if !sonarpadRowsHaveSameStructure(oldRow, newRow) { return nil }
+      }
+    }
+  }
+
+  guard let sectionIndex = changedSection else { return nil }
+  let oldRows = oldSections[sectionIndex].rows
+  let newRows = newSections[sectionIndex].rows
+  let delta = newRows.count - oldRows.count
+  guard delta != 0, abs(delta) <= 16 else { return nil }
+
+  // Find the unchanged semantic suffix. When one paragraph is split by Return,
+  // everything after the edited paragraph is the same content shifted by the
+  // number of inserted rows. The inverse is true when paragraphs are merged.
+  var suffixCount = 0
+  while suffixCount < min(oldRows.count, newRows.count) {
+    let oldIndex = oldRows.count - 1 - suffixCount
+    let newIndex = newRows.count - 1 - suffixCount
+    if !sonarpadRowsMatchForDocumentStructureAlignment(
+      oldRows[oldIndex],
+      newRows[newIndex]
+    ) {
+      break
+    }
+    suffixCount += 1
+  }
+
+  let oldChangedCount = oldRows.count - suffixCount
+  let newChangedCount = newRows.count - suffixCount
+  guard oldChangedCount > 0, newChangedCount > 0 else { return nil }
+
+  // The editor changes exactly one logical paragraph. A split turns one old
+  // row into 1 + delta new rows; a merge turns 1 + |delta| old rows into one.
+  let anchorRow: Int
+  if delta > 0 {
+    guard oldChangedCount == 1, newChangedCount == 1 + delta else { return nil }
+    anchorRow = oldRows.count - suffixCount - 1
+  } else {
+    let removed = -delta
+    guard newChangedCount == 1, oldChangedCount == 1 + removed else { return nil }
+    anchorRow = newRows.count - suffixCount - 1
+  }
+  guard anchorRow >= 0 else { return nil }
+
+  // Rows before the edited paragraph must still be the same native rows. This
+  // makes the fast path deliberately conservative and prevents UITableView
+  // batch-update count assertions on unrelated model changes.
+  if anchorRow > 0 {
+    for rowIndex in 0..<anchorRow {
+      guard rowIndex < oldRows.count, rowIndex < newRows.count,
+            sonarpadRowsHaveSameStructure(oldRows[rowIndex], newRows[rowIndex]),
+            sonarpadRowsMatchForDocumentStructureAlignment(
+              oldRows[rowIndex],
+              newRows[rowIndex]
+            ) else {
+        return nil
+      }
+    }
+  }
+
+  let insertedRows: [IndexPath]
+  let deletedRows: [IndexPath]
+  if delta > 0 {
+    insertedRows = (1...delta).map {
+      IndexPath(row: anchorRow + $0, section: sectionIndex)
+    }
+    deletedRows = []
+  } else {
+    insertedRows = []
+    deletedRows = (1...(-delta)).map {
+      IndexPath(row: anchorRow + $0, section: sectionIndex)
+    }
+  }
+
+  return SonarpadDocumentParagraphMutation(
+    section: sectionIndex,
+    anchorRow: anchorRow,
+    insertedRows: insertedRows,
+    deletedRows: deletedRows
+  )
+}
+
 private func sonarpadSectionsEqual(_ lhs: [SonarpadNativeSection], _ rhs: [SonarpadNativeSection]) -> Bool {
   guard lhs.count == rhs.count else { return false }
   for (leftSection, rightSection) in zip(lhs, rhs) {
@@ -974,10 +1097,18 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     updateScrollIndicatorVisibility()
     let rawSections = map["sections"] as? [[String: Any]] ?? []
     let newSections = rawSections.map(SonarpadNativeSection.init)
+    let oldSections = sections
     let focusedRowBeforeReload = voiceOverFocusedRowId()
-    let sectionsChanged = !sonarpadSectionsEqual(sections, newSections)
+    let sectionsChanged = !sonarpadSectionsEqual(oldSections, newSections)
     let sameStructureDynamicChange =
-      sectionsChanged && sonarpadSectionsHaveSameStructure(sections, newSections)
+      sectionsChanged && sonarpadSectionsHaveSameStructure(oldSections, newSections)
+    let documentParagraphMutation =
+      debugTag == "document" && sectionsChanged && !sameStructureDynamicChange
+        ? sonarpadDocumentParagraphMutation(
+            oldSections: oldSections,
+            newSections: newSections
+          )
+        : nil
     sections = newSections
     let rowCount = newSections.reduce(0) { $0 + $1.rows.count }
     let focusedBeforeLabel = focusedRowBeforeReload ?? "nil"
@@ -1001,6 +1132,56 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     if sameStructureDynamicChange {
       emitDebug("apply updateVisibleRowsFromModel visible=\(tableView.indexPathsForVisibleRows?.count ?? 0)")
       updateVisibleRowsFromModel()
+    } else if let mutation = documentParagraphMutation {
+      // A paragraph split/merge must not use reloadData(). reloadData destroys
+      // every live UITableViewCell accessibility object at once; while the
+      // Flutter editor is disappearing VoiceOver then has no valid native row
+      // to inherit and can escape to the route Back button. Insert/delete only
+      // the extra paragraph rows so the edited anchor cell remains alive.
+      let inserted = mutation.insertedRows.map { "\($0.section):\($0.row)" }.joined(separator: ",")
+      let deleted = mutation.deletedRows.map { "\($0.section):\($0.row)" }.joined(separator: ",")
+      emitDebug(
+        "DOCUMENT_STRUCTURE_IN_PLACE_UPDATE anchorSection=\(mutation.section) " +
+        "anchorRow=\(mutation.anchorRow) inserted=\(inserted) deleted=\(deleted) " +
+        "beforeOffsetY=\(tableView.contentOffset.y)"
+      )
+      UIView.performWithoutAnimation {
+        tableView.beginUpdates()
+        if !mutation.deletedRows.isEmpty {
+          tableView.deleteRows(at: mutation.deletedRows, with: .none)
+        }
+        if !mutation.insertedRows.isEmpty {
+          tableView.insertRows(at: mutation.insertedRows, with: .none)
+        }
+        tableView.endUpdates()
+      }
+      tableView.layoutIfNeeded()
+      // Reconfigure the anchor and any other visible rows in place. In
+      // particular, do not reloadRows(at:): that would throw away the exact
+      // accessibility object we are trying to keep alive for VoiceOver.
+      updateVisibleRowsFromModel()
+
+      // The paragraph editor has just disappeared from Flutter. Give VoiceOver
+      // a live native destination in the same run loop instead of leaving a
+      // gap in which it can fall back to the route AppBar. This is only a
+      // gentle in-table handoff; the explicit controller focus request that
+      // follows still owns verification/recovery.
+      let anchorIndexPath = IndexPath(
+        row: mutation.anchorRow,
+        section: mutation.section
+      )
+      if let anchorTarget = accessibilityTarget(at: anchorIndexPath) {
+        let anchorId = rowId(at: anchorIndexPath) ?? "nil"
+        emitDebug(
+          "DOCUMENT_STRUCTURE_EARLY_HANDOFF id=\(anchorId) notification=layoutChanged"
+        )
+        UIAccessibility.post(notification: .layoutChanged, argument: anchorTarget)
+      }
+
+      emitDebug(
+        "DOCUMENT_STRUCTURE_IN_PLACE_UPDATE_DONE visible=\(tableView.indexPathsForVisibleRows?.count ?? 0) " +
+        "afterOffsetY=\(tableView.contentOffset.y)"
+      )
     } else if sectionsChanged {
       emitDebug("apply reloadData begin contentOffsetY=\(tableView.contentOffset.y)")
       tableView.reloadData()

@@ -164,5 +164,27 @@ void main() {
       contains('!accessibilityElementIsInNativeSubtree(focusedElement)'),
       reason: 'The stronger screenChanged recovery is only allowed after focus actually leaves the native table.',
     );
+    expect(
+      nativeSource,
+      contains('sonarpadDocumentParagraphMutation('),
+      reason: 'A single paragraph split/merge must be detected before falling back to reloadData.',
+    );
+    expect(
+      nativeSource,
+      contains('DOCUMENT_STRUCTURE_IN_PLACE_UPDATE'),
+      reason: 'Newline edits must update the UITableView structure in place so the live accessibility row survives.',
+    );
+    expect(nativeSource, contains('tableView.insertRows(at: mutation.insertedRows, with: .none)'));
+    expect(nativeSource, contains('tableView.deleteRows(at: mutation.deletedRows, with: .none)'));
+    expect(
+      nativeSource,
+      contains('DOCUMENT_STRUCTURE_EARLY_HANDOFF'),
+      reason: 'As the Flutter editor disappears, VoiceOver needs an immediate live paragraph destination instead of a gap that can fall through to Back.',
+    );
+    expect(
+      nativeSource.indexOf('DOCUMENT_STRUCTURE_IN_PLACE_UPDATE'),
+      lessThan(nativeSource.indexOf('apply reloadData begin')),
+      reason: 'The conservative document mutation fast path must run before the generic reloadData fallback.',
+    );
   });
 }
