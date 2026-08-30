@@ -369,8 +369,8 @@ void main() {
           final params = body['params'];
           final isOldest = params == 'oldest-live-param';
           final isPopular = params == 'popular-live-param';
-          return http.Response(
-            jsonEncode({
+          return http.Response.bytes(
+            utf8.encode(jsonEncode({
               'chipCloudRenderer': {
                 'chips': [
                   {
@@ -430,8 +430,11 @@ void main() {
                   },
                 },
               },
-            }),
+            })),
             200,
+            headers: const {
+              'content-type': 'application/json; charset=utf-8',
+            },
           );
         }),
       );
