@@ -795,6 +795,18 @@
   "recordingCannotOpenWhileInProgress": "Impossible d’ouvrir cet enregistrement car il est toujours en cours.",
   "blindLibrarySearchCatalog": "Rechercher dans le catalogue",
   "selectRecordings": "Sélectionner des enregistrements",
+  "selectionActionCount": "{action} ({count})",
+  "@selectionActionCount": {
+    "description": "Localized action label followed by the number of selected items.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteRecordingsConfirmation": "{count, plural, =1{Supprimer définitivement un enregistrement ?} other{Supprimer définitivement {count} enregistrements ?}}",
   "noRecordings": "Aucun enregistrement.",
   "recordingStarted": "Enregistrement démarré.",

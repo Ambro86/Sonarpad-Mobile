@@ -1593,6 +1593,11 @@ class AppLocalizationsUk extends AppLocalizations {
   String get selectRecordings => "Вибрати записи";
 
   @override
+  String selectionActionCount(String action, int count) {
+    return '$action ($count)';
+  }
+
+  @override
   String get noRecordings => "Немає записів.";
 
   @override

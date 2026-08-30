@@ -2650,6 +2650,18 @@
   "recordingCannotOpenWhileInProgress": "Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.",
   "blindLibrarySearchCatalog": "Cerca nel catalogo",
   "selectRecordings": "Seleziona registrazioni",
+  "selectionActionCount": "{action} ({count})",
+  "@selectionActionCount": {
+    "description": "Localized action label followed by the number of selected items.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteRecordingsConfirmation": "{count, plural, =1{Vuoi eliminare definitivamente una registrazione?} other{Vuoi eliminare definitivamente {count} registrazioni?}}",
   "@deleteRecordingsConfirmation": {
     "placeholders": {

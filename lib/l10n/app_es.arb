@@ -795,6 +795,18 @@
   "recordingCannotOpenWhileInProgress": "No se puede abrir esta grabación porque todavía está en curso.",
   "blindLibrarySearchCatalog": "Buscar en el catálogo",
   "selectRecordings": "Seleccionar grabaciones",
+  "selectionActionCount": "{action} ({count})",
+  "@selectionActionCount": {
+    "description": "Localized action label followed by the number of selected items.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteRecordingsConfirmation": "{count, plural, =1{¿Eliminar definitivamente una grabación?} other{¿Eliminar definitivamente {count} grabaciones?}}",
   "noRecordings": "No hay grabaciones.",
   "recordingStarted": "Grabación iniciada.",

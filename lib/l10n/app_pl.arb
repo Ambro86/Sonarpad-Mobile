@@ -2634,6 +2634,18 @@
   "recordingCannotOpenWhileInProgress": "Nie można otworzyć tego nagrania, ponieważ nagrywanie nadal trwa.",
   "blindLibrarySearchCatalog": "Przeszukaj katalog",
   "selectRecordings": "Wybierz nagrania",
+  "selectionActionCount": "{action} ({count})",
+  "@selectionActionCount": {
+    "description": "Localized action label followed by the number of selected items.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteRecordingsConfirmation": "{count, plural, =1{Trwale usunąć jedno nagranie?} other{Trwale usunąć {count} nagrań?}}",
   "noRecordings": "Brak nagrań.",
   "recordingStarted": "Nagrywanie rozpoczęte.",

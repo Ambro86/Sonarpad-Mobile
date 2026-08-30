@@ -792,6 +792,18 @@
   "recordingCannotOpenWhileInProgress": "无法打开此录制，因为录制仍在进行中。",
   "blindLibrarySearchCatalog": "搜索目录",
   "selectRecordings": "选择录音",
+  "selectionActionCount": "{action} ({count})",
+  "@selectionActionCount": {
+    "description": "Localized action label followed by the number of selected items.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteRecordingsConfirmation": "永久删除 {count} 条录音吗？",
   "noRecordings": "没有录音。",
   "recordingStarted": "录制已开始。",

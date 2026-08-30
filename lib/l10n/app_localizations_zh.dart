@@ -1814,6 +1814,11 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get selectRecordings => '选择录音';
 
   @override
+  String selectionActionCount(String action, int count) {
+    return '$action ($count)';
+  }
+
+  @override
   String deleteRecordingsConfirmation(int count) => '永久删除 ${count} 条录音吗？';
 
   @override

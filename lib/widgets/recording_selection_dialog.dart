@@ -182,7 +182,12 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
                             }
                           },
                     icon: const Icon(Icons.delete_outline),
-                    label: Text('${l10n.deleteItem} (${selected.length})'),
+                    label: Text(
+                      l10n.selectionActionCount(
+                        l10n.deleteItem,
+                        selected.length,
+                      ),
+                    ),
                   ),
                   FilledButton.icon(
                     onPressed: selected.isEmpty
@@ -195,7 +200,12 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
                             ),
                           ),
                     icon: const Icon(Icons.share),
-                    label: Text('${l10n.share} (${selected.length})'),
+                    label: Text(
+                      l10n.selectionActionCount(
+                        l10n.share,
+                        selected.length,
+                      ),
+                    ),
                   ),
                 ],
               ),

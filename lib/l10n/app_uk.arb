@@ -2650,6 +2650,18 @@
   "recordingCannotOpenWhileInProgress": "Цей запис неможливо відкрити, оскільки запис ще триває.",
   "blindLibrarySearchCatalog": "Пошук у каталозі",
   "selectRecordings": "Вибрати записи",
+  "selectionActionCount": "{action} ({count})",
+  "@selectionActionCount": {
+    "description": "Localized action label followed by the number of selected items.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteRecordingsConfirmation": "{count, plural, =1{Видалити один запис назавжди?} other{Видалити {count} записів назавжди?}}",
   "@deleteRecordingsConfirmation": {
     "placeholders": {

@@ -792,6 +792,18 @@
   "recordingCannotOpenWhileInProgress": "This recording cannot be opened because it is still in progress.",
   "blindLibrarySearchCatalog": "Search the catalog",
   "selectRecordings": "Select recordings",
+  "selectionActionCount": "{action} ({count})",
+  "@selectionActionCount": {
+    "description": "Localized action label followed by the number of selected items.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteRecordingsConfirmation": "{count, plural, =1{Permanently delete one recording?} other{Permanently delete {count} recordings?}}",
   "noRecordings": "No recordings.",
   "recordingStarted": "Recording started.",

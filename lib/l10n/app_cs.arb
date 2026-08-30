@@ -795,6 +795,18 @@
   "recordingCannotOpenWhileInProgress": "Tuto nahrávku nelze otevřít, protože nahrávání stále probíhá.",
   "blindLibrarySearchCatalog": "Prohledat katalog",
   "selectRecordings": "Vybrat nahrávky",
+  "selectionActionCount": "{action} ({count})",
+  "@selectionActionCount": {
+    "description": "Localized action label followed by the number of selected items.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deleteRecordingsConfirmation": "{count, plural, =1{Trvale odstranit jednu nahrávku?} other{Trvale odstranit {count} nahrávek?}}",
   "noRecordings": "Žádné nahrávky.",
   "recordingStarted": "Nahrávání spuštěno.",

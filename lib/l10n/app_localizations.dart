@@ -3684,6 +3684,12 @@ abstract class AppLocalizations {
   /// **'Seleziona registrazioni'**
   String get selectRecordings;
 
+  /// Localized action label followed by the number of selected items.
+  ///
+  /// In it, this message translates to:
+  /// **'{action} ({count})'**
+  String selectionActionCount(String action, int count);
+
   /// No description provided for @deleteRecordingsConfirmation.
   ///
   /// In it, this message translates to:

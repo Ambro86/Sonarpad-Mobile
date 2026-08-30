@@ -2019,6 +2019,11 @@ class AppLocalizationsPl extends AppLocalizations {
   String get selectRecordings => 'Wybierz nagrania';
 
   @override
+  String selectionActionCount(String action, int count) {
+    return '$action ($count)';
+  }
+
+  @override
   String deleteRecordingsConfirmation(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
