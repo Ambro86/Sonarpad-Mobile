@@ -22,6 +22,10 @@ void main() {
     );
     expect(service, contains('_extractModernChannelSortContinuations(data)'));
     expect(service, contains('_extractChannelSortParams(data)'));
+    expect(service, contains("final chipBar = _asMap(map['chipBarViewModel'])"));
+    expect(service, contains("_asMap(wrapper['chipViewModel'])"));
+    expect(service, contains("final listView = _asMap(map['listViewModel'])"));
+    expect(service, contains("_asMap(wrapper['listItemViewModel'])"));
     expect(service, contains("final command = _asMap(map['continuationCommand'])"));
     expect(service, contains("payload['continuation'] = continuation"));
     expect(service, contains('_SonarTubeChannelSortUnavailable'));
@@ -37,6 +41,10 @@ void main() {
     if (resolverFile.existsSync()) {
       final resolver = resolverFile.readAsStringSync();
       expect(resolver, contains('yt_channel_sort_continuations_from_response'));
+      expect(resolver, contains("\$node['chipBarViewModel']"));
+      expect(resolver, contains("\$wrapper['chipViewModel']"));
+      expect(resolver, contains("\$node['listViewModel']"));
+      expect(resolver, contains("\$wrapper['listItemViewModel']"));
       expect(resolver, contains('yt_channel_sort_params_from_response'));
       expect(resolver, contains("'continuation' => \$selectedContinuation"));
       expect(resolver, contains(r"$browseSort"));

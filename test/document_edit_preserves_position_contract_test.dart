@@ -197,4 +197,40 @@ void main() {
       reason: 'The document no-reload count-diff path must run before the generic reloadData fallback used by other screens.',
     );
   });
+
+  test('document logs spontaneous VoiceOver exits from the native table without changing focus', () {
+    final nativeSource =
+        File('ios/Runner/SonarpadNativeAccessibleView.swift').readAsStringSync();
+
+    expect(nativeSource, contains('DOCUMENT_SPONTANEOUS_FOREIGN_FOCUS'));
+    expect(nativeSource, contains('documentLastNativeFocusRowId'));
+    expect(nativeSource, contains('documentLastNativeFocusUptime'));
+    expect(nativeSource, contains('lastIndexPath='));
+    expect(nativeSource, contains('elapsedMs='));
+    expect(nativeSource, contains('foreignType='));
+    expect(nativeSource, contains('foreignLabel='));
+    expect(nativeSource, contains('visibleIds='));
+    expect(nativeSource, contains('requestedFocusMode='));
+    expect(
+      nativeSource,
+      contains('currentRequestedFocusMode != "returnFocusAfterStructureChange"'),
+      reason: 'Pending newline-return recovery already has its own dedicated diagnostics.',
+    );
+
+    final start = nativeSource.indexOf(
+      'private func logSpontaneousDocumentForeignFocusIfNeeded',
+    );
+    final end = nativeSource.indexOf(
+      'private func recoverPendingDocumentStructureFocusIfNeeded',
+      start,
+    );
+    expect(start, greaterThanOrEqualTo(0));
+    expect(end, greaterThan(start));
+    final diagnosticMethod = nativeSource.substring(start, end);
+    expect(
+      diagnosticMethod,
+      isNot(contains('UIAccessibility.post(')),
+      reason: 'This new path is diagnostics only and must never force VoiceOver focus.',
+    );
+  });
 }

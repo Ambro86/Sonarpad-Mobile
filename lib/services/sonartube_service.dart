@@ -1103,6 +1103,36 @@ class SonarTubeService {
       if (result.length == uiOrder.length) return;
       if (node is Map) {
         final map = Map<String, dynamic>.from(node);
+
+        // YouTube usa attualmente due varianti WEB per il menu di
+        // ordinamento del tab Video. Alcuni canali espongono direttamente
+        // tre chipViewModel nella chipBarViewModel; altri aprono un
+        // listViewModel tramite showSheetCommand. In entrambi i casi le tre
+        // scelte sono newest, popular, oldest e portano continuationCommand.
+        final chipBar = _asMap(map['chipBarViewModel']);
+        if (chipBar != null) {
+          final chips = _asList(chipBar['chips'])
+              .map(_asMap)
+              .whereType<Map<String, dynamic>>()
+              .map((wrapper) => _asMap(wrapper['chipViewModel']))
+              .whereType<Map<String, dynamic>>()
+              .toList(growable: false);
+          if (chips.length >= uiOrder.length &&
+              chips.first['selected'] == true) {
+            final candidate = <SonarTubeChannelSort, String>{};
+            for (var index = 0; index < uiOrder.length; index++) {
+              final token = _continuationTokenFromNode(chips[index]);
+              if (token != null && token.isNotEmpty) {
+                candidate[uiOrder[index]] = token;
+              }
+            }
+            if (candidate.length == uiOrder.length) {
+              result = candidate;
+              return;
+            }
+          }
+        }
+
         final listView = _asMap(map['listViewModel']);
         if (listView != null) {
           final items = _asList(listView['listItems'])

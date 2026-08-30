@@ -605,6 +605,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private var clearTextLabel = "Clear text"
   private var clearSearchLabel = "Clear search"
   private var focusTraceSequence = 0
+  private var documentLastNativeFocusRowId: String?
+  private var documentLastNativeFocusUptime: TimeInterval?
   private var persistentTopActionElement: SonarpadPersistentAccessibilityActionElement?
 
   private func emitDebug(_ message: String) {
@@ -723,8 +725,47 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         "viewChain=\(self.focusTraceUIViewChain(element))"
       print("DOC_NATIVE_SWIFT \(line)")
       self.emitDebug(line)
+      self.logSpontaneousDocumentForeignFocusIfNeeded(focusedElement: element)
       self.recoverPendingDocumentStructureFocusIfNeeded(focusedElement: element)
     }
+  }
+
+  private func logSpontaneousDocumentForeignFocusIfNeeded(focusedElement: Any?) {
+    guard debugTag == "document",
+          currentRequestedFocusMode != "returnFocusAfterStructureChange",
+          let focusedElement = focusedElement,
+          !accessibilityElementIsInNativeSubtree(focusedElement),
+          let lastRowId = documentLastNativeFocusRowId else {
+      return
+    }
+
+    let visibleIndexPaths = sortedVisibleIndexPaths()
+    let visibleIds = visibleIndexPaths.compactMap { rowId(at: $0) }
+    let lastIndexPath = indexPath(forRowId: lastRowId)
+    let lastIndexPathText = lastIndexPath.map { "[\($0.section),\($0.row)]" } ?? "nil"
+    let now = ProcessInfo.processInfo.systemUptime
+    let elapsedMs = documentLastNativeFocusUptime.map { max(0, Int((now - $0) * 1000.0)) } ?? -1
+    let focusedType = String(describing: type(of: focusedElement))
+    let focusedLabel = focusTraceText((focusedElement as? NSObject)?.accessibilityLabel)
+    let focusedIdentifier: String
+    if let identifiable = focusedElement as? UIAccessibilityIdentification {
+      focusedIdentifier = focusTraceText(identifiable.accessibilityIdentifier)
+    } else {
+      focusedIdentifier = "nil"
+    }
+
+    emitDebug(
+      "DOCUMENT_SPONTANEOUS_FOREIGN_FOCUS lastRow=\(lastRowId) " +
+      "lastIndexPath=\(lastIndexPathText) elapsedMs=\(elapsedMs) " +
+      "foreignType=\(focusedType) foreignLabel=\(focusedLabel) " +
+      "foreignIdentifier=\(focusedIdentifier) " +
+      "visibleFirst=\(visibleIds.first ?? "nil") visibleLast=\(visibleIds.last ?? "nil") " +
+      "visibleIds=\(visibleIds.prefix(24).joined(separator: ",")) " +
+      "offsetY=\(tableView.contentOffset.y) rows=\(sections.reduce(0) { $0 + $1.rows.count }) " +
+      "requestedFocusId=\(currentRequestedFocusRowId ?? "nil") " +
+      "requestedFocusMode=\(currentRequestedFocusMode ?? "nil") " +
+      "rootWindow=\(rootView.window != nil) tableWindow=\(tableView.window != nil)"
+    )
   }
 
   private func recoverPendingDocumentStructureFocusIfNeeded(focusedElement: Any?) {
@@ -1877,6 +1918,11 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   }
 
   private func handleAccessibilityFocus(_ id: String) {
+    if debugTag == "document" {
+      documentLastNativeFocusRowId = id
+      documentLastNativeFocusUptime = ProcessInfo.processInfo.systemUptime
+    }
+
     let expected = currentRequestedFocusRowId
     let matchesTarget = expected == id
     let visibleIndexPaths = sortedVisibleIndexPaths()

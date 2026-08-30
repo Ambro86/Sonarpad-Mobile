@@ -481,6 +481,100 @@ void main() {
   );
 
   test(
+    'channel browse discovers direct chipBar sort continuations and opens popular server-side',
+    () async {
+      final requestedBodies = <Map<String, dynamic>>[];
+      final service = SonarTubeService(
+        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+        client: MockClient((request) async {
+          final body = Map<String, dynamic>.from(
+            jsonDecode(request.body) as Map,
+          );
+          requestedBodies.add(body);
+          final continuation = body['continuation'];
+          final isPopular = continuation == 'popular-direct-token';
+          final response = <String, dynamic>{
+            if (!isPopular)
+              'chipBarViewModel': {
+                'chips': [
+                  {
+                    'chipViewModel': {
+                      'selected': true,
+                      'tapCommand': {
+                        'continuationCommand': {
+                          'token': 'newest-direct-token',
+                        },
+                      },
+                    },
+                  },
+                  {
+                    'chipViewModel': {
+                      'selected': false,
+                      'tapCommand': {
+                        'continuationCommand': {
+                          'token': 'popular-direct-token',
+                        },
+                      },
+                    },
+                  },
+                  {
+                    'chipViewModel': {
+                      'selected': false,
+                      'tapCommand': {
+                        'continuationCommand': {
+                          'token': 'oldest-direct-token',
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            'videoRenderer': {
+              'videoId': isPopular ? 'popular0001' : 'newest00001',
+              'title': {
+                'simpleText': isPopular ? 'Video popolare' : 'Video recente',
+              },
+              'viewCountText': {'simpleText': '20 visualizzazioni'},
+            },
+            'continuationItemRenderer': {
+              'continuationEndpoint': {
+                'continuationCommand': {
+                  'token': isPopular ? 'popular-next' : 'newest-next',
+                },
+              },
+            },
+          };
+          return http.Response.bytes(
+            utf8.encode(jsonEncode(response)),
+            200,
+            headers: const {
+              'content-type': 'application/json; charset=utf-8',
+            },
+          );
+        }),
+      );
+      const channel = SonarTubeItem(
+        kind: SonarTubeItemKind.channel,
+        id: 'UCabcdefghijklmnopqrstuv',
+        title: 'Canale con chip diretti',
+        url: 'https://www.youtube.com/@canale',
+      );
+
+      final page = await service.browse(
+        channel,
+        channelSort: SonarTubeChannelSort.popular,
+      );
+
+      expect(requestedBodies, hasLength(2));
+      expect(requestedBodies.first['params'], 'EgZ2aWRlb3PyBgQKAjoA');
+      expect(requestedBodies.last.containsKey('browseId'), isFalse);
+      expect(requestedBodies.last['continuation'], 'popular-direct-token');
+      expect(page.items.single.title, 'Video popolare');
+      expect(page.nextToken, 'popular-next');
+    },
+  );
+
+  test(
     'channel browse uses the real Videos tab instead of the capped uploads playlist',
     () async {
       late Map<String, dynamic> requestedBody;
