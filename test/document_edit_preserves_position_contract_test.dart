@@ -92,8 +92,8 @@ void main() {
     );
     expect(
       nativeSource,
-      contains('mode == "returnFocus" &&'),
-      reason: 'The stronger recovery must only run for an explicit editor return.',
+      contains('mode == "returnFocus"'),
+      reason: 'The stronger recovery must still cover ordinary explicit editor returns.',
     );
     expect(
       nativeSource,
@@ -104,6 +104,53 @@ void main() {
       nativeSource,
       contains('ONE_SHOT_FOCUS_FALLBACK'),
       reason: 'If VoiceOver ignores the first post there must be exactly one stronger fallback.',
+    );
+  });
+
+  test('paragraph newline edits keep the same UIKit list and use traversal-safe return focus', () {
+    final source =
+        File('lib/screens/document_reader_screen.dart').readAsStringSync();
+    final start = source.indexOf('Future<void> _editParagraph(int index) async');
+    final end = source.indexOf('Future<void> _togglePlayPause()', start);
+    expect(start, greaterThanOrEqualTo(0));
+    expect(end, greaterThan(start));
+    final editMethod = source.substring(start, end);
+
+    expect(
+      source,
+      contains("key: ValueKey('shared-document-\${widget.document.id}'),"),
+      reason: 'Changing the paragraph count must not destroy and recreate the UIKit table.',
+    );
+    expect(
+      source,
+      isNot(contains("shared-document-\${widget.document.id}-\${_chunks.length}")),
+      reason: 'The document list identity must not depend on paragraph count.',
+    );
+    expect(editMethod, contains('final originalChunkCount = _chunks.length;'));
+    expect(
+      editMethod,
+      contains('paragraphStructureChanged = _chunks.length != originalChunkCount;'),
+    );
+    expect(
+      editMethod,
+      contains('.focusToReturnAfterStructureChange('),
+      reason: 'A newline that adds/removes paragraph rows needs the traversal-safe focus path.',
+    );
+
+    final controller =
+        File('lib/widgets/universal_accessible_view.dart').readAsStringSync();
+    expect(controller, contains('returnFocusAfterStructureChange,'));
+
+    final nativeSource =
+        File('ios/Runner/SonarpadNativeAccessibleView.swift').readAsStringSync();
+    expect(
+      nativeSource,
+      contains('mode == "returnFocusAfterStructureChange"'),
+    );
+    expect(
+      nativeSource,
+      contains('structuralDocumentReturn ? .layoutChanged : .screenChanged'),
+      reason: 'Structural document edits must retry with layoutChanged so VoiceOver keeps the table traversal chain.',
     );
   });
 }

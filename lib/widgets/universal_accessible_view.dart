@@ -357,6 +357,7 @@ enum AccessibleFocusMode {
   inPlaceJump,
   routeReturnJump,
   returnFocus,
+  returnFocusAfterStructureChange,
 }
 
 class AccessibleListController {
@@ -456,6 +457,16 @@ class AccessibleListController {
       focusAccessibleRow(
         id,
         mode: AccessibleFocusMode.returnFocus,
+        animated: animated,
+      );
+
+  Future<void> focusToReturnAfterStructureChange(
+    String id, {
+    bool animated = false,
+  }) =>
+      focusAccessibleRow(
+        id,
+        mode: AccessibleFocusMode.returnFocusAfterStructureChange,
         animated: animated,
       );
 

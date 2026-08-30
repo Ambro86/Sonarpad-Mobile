@@ -1693,6 +1693,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _focusedChunkIndex = index;
 
     final originalParagraphLength = _chunks[index].length;
+    final originalChunkCount = _chunks.length;
     final controller = TextEditingController(text: _chunks[index]);
     final edited = await showDialog<String>(
       context: context,
@@ -1778,9 +1779,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       // Manteniamo lo stesso id accessibile del paragrafo modificato: il focus
       // VoiceOver deve restare dov'è, ma UIKit deve ricevere il nuovo testo.
       var restoredFocusIndex = index;
+      var paragraphStructureChanged = false;
       setState(() {
         _documentText = newText;
         _chunks = _splitTextForDocumentDisplay(_documentText);
+        paragraphStructureChanged = _chunks.length != originalChunkCount;
         if (_chunks.isNotEmpty) {
           restoredFocusIndex = index.clamp(0, _chunks.length - 1).toInt();
           _focusedChunkIndex = restoredFocusIndex;
@@ -1820,12 +1823,21 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         // its old cell reference alive. This also recovers the rare state in
         // which VoiceOver lands at the first row and then treats it as the end
         // of the accessibility traversal until the document is reopened.
-        await _accessibleDocumentListController.focusToReturn(
-          refreshedParagraphId,
-          animated: false,
-        );
+        if (paragraphStructureChanged) {
+          await _accessibleDocumentListController
+              .focusToReturnAfterStructureChange(
+            refreshedParagraphId,
+            animated: false,
+          );
+        } else {
+          await _accessibleDocumentListController.focusToReturn(
+            refreshedParagraphId,
+            animated: false,
+          );
+        }
         _docLog(
-          'DOC_EDIT accessibility focus restored id=$refreshedParagraphId',
+          'DOC_EDIT accessibility focus restored id=$refreshedParagraphId '
+          'structureChanged=$paragraphStructureChanged',
         );
       }
 
@@ -2472,7 +2484,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _docLog('DOC_FOCUS UniversalAccessibleList build initialFocusId=$initialFocusId rows=${rows.length} nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer}');
     }
     return UniversalAccessibleList(
-      key: ValueKey('shared-document-${widget.document.id}-${_chunks.length}'),
+      key: ValueKey('shared-document-${widget.document.id}'),
       controller: _accessibleDocumentListController,
       initialFocusId: initialFocusId,
       debugTag: 'document',

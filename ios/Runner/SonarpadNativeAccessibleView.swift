@@ -2723,14 +2723,15 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       // and returning from the Document paragraph editor. The pending request
       // is cleared by the global focus observer as soon as the real target is
       // focused, so this stronger post never fires after a successful move.
-      let needsOneShotStrongRecovery =
-        (self.debugTag == "sonartube" &&
-         mode == "inPlaceJump" &&
-         id.hasPrefix("item_")) ||
-        (self.debugTag == "document" &&
-         mode == "returnFocus" &&
-         id.hasPrefix("paragraph_"))
-      if needsOneShotStrongRecovery {
+      let isSonarTubeOneShotRecovery =
+        self.debugTag == "sonartube" &&
+        mode == "inPlaceJump" &&
+        id.hasPrefix("item_")
+      let isDocumentOneShotRecovery =
+        self.debugTag == "document" &&
+        (mode == "returnFocus" || mode == "returnFocusAfterStructureChange") &&
+        id.hasPrefix("paragraph_")
+      if isSonarTubeOneShotRecovery || isDocumentOneShotRecovery {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
           guard let self = self,
                 self.currentRequestedFocusRowId == id,
@@ -2745,10 +2746,16 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
             self.tableView.layoutIfNeeded()
           }
           guard let retryTarget = self.accessibilityTarget(at: retryIndexPath) else { return }
+          let structuralDocumentReturn =
+            self.debugTag == "document" && mode == "returnFocusAfterStructureChange"
+          let retryNotification: UIAccessibility.Notification =
+            structuralDocumentReturn ? .layoutChanged : .screenChanged
+          let retryNotificationName =
+            structuralDocumentReturn ? "layoutChanged" : "screenChanged"
           self.emitDebug(
-            "ONE_SHOT_FOCUS_FALLBACK id=\(id) mode=\(mode) requestId=\(requestId) notification=screenChanged"
+            "ONE_SHOT_FOCUS_FALLBACK id=\(id) mode=\(mode) requestId=\(requestId) notification=\(retryNotificationName)"
           )
-          UIAccessibility.post(notification: .screenChanged, argument: retryTarget)
+          UIAccessibility.post(notification: retryNotification, argument: retryTarget)
         }
       }
 
