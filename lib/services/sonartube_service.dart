@@ -147,6 +147,9 @@ class SonarTubeService {
   static const String _channelNewestVideosParams = 'EgZ2aWRlb3PyBgQKAjoA';
 
   final Map<String, Map<SonarTubeChannelSort, String>>
+      _channelSortContinuationCache =
+      <String, Map<SonarTubeChannelSort, String>>{};
+  final Map<String, Map<SonarTubeChannelSort, String>>
       _channelSortParamsCache = <String, Map<SonarTubeChannelSort, String>>{};
 
   static const _youtubeApiKey = 'AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vfUWA8808';
@@ -843,9 +846,13 @@ class SonarTubeService {
     final payload = <String, dynamic>{
       'context': _youtubeBrowseContext(),
     };
+    var channelSortAppliedInInitialPayload = false;
+    var channelSortRequestMode = 'default';
 
     if (continuation.isNotEmpty) {
       payload['continuation'] = continuation;
+      channelSortAppliedInInitialPayload = true;
+      channelSortRequestMode = 'page-continuation';
     } else if (isGeneratedMix) {
       var seed = seedVideoId?.trim() ?? '';
       if (seed.isEmpty && collection.id.length == 13) {
@@ -864,19 +871,39 @@ class SonarTubeService {
       final channelId = _channelBrowseId(collection);
       if (channelId != null) {
         // Apri il vero tab Video del canale invece della playlist Uploads.
-        // YouTube oggi può troncare la playlist UU a circa 100 elementi senza
-        // restituire una continuation, mentre il tab Video espone la
-        // paginazione necessaria per raggiungere l'intero archivio.
-        payload['browseId'] = channelId;
-        final cachedParams = _channelSortParamsCache[channelId]?[channelSort];
+        // Il formato WEB attuale (agosto 2026) espone Popular/Oldest nel menu
+        // del tab Video come continuationCommand, non necessariamente come
+        // browseEndpoint.params. Conserva anche il parser params legacy.
         if (channelSort == SonarTubeChannelSort.newest) {
-          payload['params'] = cachedParams ?? _channelNewestVideosParams;
-        } else if (cachedParams != null && cachedParams.isNotEmpty) {
-          payload['params'] = cachedParams;
+          payload['browseId'] = channelId;
+          payload['params'] =
+              _channelSortParamsCache[channelId]?[channelSort] ??
+              _channelNewestVideosParams;
+          channelSortAppliedInInitialPayload = true;
+          channelSortRequestMode = 'newest-params';
         } else {
-          // First discover the sort chips from YouTube itself instead of
-          // hard-coding private InnerTube tokens for Popular/Oldest.
-          payload['params'] = _channelNewestVideosParams;
+          final modernSortContinuation =
+              _channelSortContinuationCache[channelId]?[channelSort];
+          final legacySortParams =
+              _channelSortParamsCache[channelId]?[channelSort];
+          if (modernSortContinuation != null &&
+              modernSortContinuation.isNotEmpty) {
+            payload['continuation'] = modernSortContinuation;
+            channelSortAppliedInInitialPayload = true;
+            channelSortRequestMode = 'sort-continuation';
+          } else {
+            payload['browseId'] = channelId;
+            if (legacySortParams != null && legacySortParams.isNotEmpty) {
+              payload['params'] = legacySortParams;
+              channelSortAppliedInInitialPayload = true;
+              channelSortRequestMode = 'sort-params-legacy';
+            } else {
+              // Prima richiesta: scopri dal tab Più recenti il menu di
+              // ordinamento reale restituito da YouTube.
+              payload['params'] = _channelNewestVideosParams;
+              channelSortRequestMode = 'sort-discovery';
+            }
+          }
         }
       } else {
         // Compatibilità con eventuali preferiti molto vecchi che non hanno un
@@ -892,14 +919,11 @@ class SonarTubeService {
     }
 
     if (collection.kind == SonarTubeItemKind.channel) {
-      final mode = payload.containsKey('params')
-          ? 'videos-tab'
-          : 'uploads-playlist';
       await AppLogger.log(
         'SonarTube: channel browse request '
         'title=${_logValue(collection.title)} id=${_logValue(collection.id)} '
-        'page=$page continuation=${continuation.isNotEmpty} mode=$mode '
-        'sort=${channelSort.name} '
+        'page=$page continuation=${continuation.isNotEmpty} '
+        'mode=$channelSortRequestMode sort=${channelSort.name} '
         'browseId=${_logValue(_string(payload['browseId']))}',
       );
     }
@@ -913,45 +937,49 @@ class SonarTubeService {
     if (collection.kind == SonarTubeItemKind.channel && continuation.isEmpty) {
       final channelId = _channelBrowseId(collection);
       if (channelId != null) {
-        final discovered = _extractChannelSortParams(data);
-        if (discovered.isNotEmpty) {
-          final cache = _channelSortParamsCache.putIfAbsent(
-            channelId,
-            () => <SonarTubeChannelSort, String>{},
-          );
-          cache.addAll(discovered);
-          cache.putIfAbsent(
-            SonarTubeChannelSort.newest,
-            () => _channelNewestVideosParams,
-          );
-          await AppLogger.log(
-            'SonarTube: channel sort params discovered '
-            'id=${_logValue(channelId)} available=${cache.keys.map((key) => key.name).join(',')}',
-          );
-        }
+        await _cacheChannelSortCommands(channelId, data);
 
-        if (channelSort != SonarTubeChannelSort.newest) {
-          final selectedParams = _channelSortParamsCache[channelId]?[channelSort];
-          final currentParams = _string(payload['params']);
-          if (selectedParams == null || selectedParams.isEmpty) {
-            throw const _SonarTubeChannelSortUnavailable();
-          }
-          if (selectedParams != currentParams) {
-            final sortedPayload = <String, dynamic>{
+        if (channelSort != SonarTubeChannelSort.newest &&
+            !channelSortAppliedInInitialPayload) {
+          final modernSortContinuation =
+              _channelSortContinuationCache[channelId]?[channelSort];
+          final legacySortParams =
+              _channelSortParamsCache[channelId]?[channelSort];
+          late final Map<String, dynamic> sortedPayload;
+          late final String sortedMode;
+          if (modernSortContinuation != null &&
+              modernSortContinuation.isNotEmpty) {
+            sortedPayload = <String, dynamic>{
+              'context': _youtubeBrowseContext(),
+              'continuation': modernSortContinuation,
+            };
+            sortedMode = 'continuation-modern';
+          } else if (legacySortParams != null && legacySortParams.isNotEmpty) {
+            sortedPayload = <String, dynamic>{
               'context': _youtubeBrowseContext(),
               'browseId': channelId,
-              'params': selectedParams,
+              'params': legacySortParams,
             };
-            data = await _postInnerTube(
-              _youtubeBrowseEndpoint,
-              sortedPayload,
-              webClient: true,
+            sortedMode = 'params-legacy';
+          } else {
+            await AppLogger.log(
+              'SonarTube: channel sort command unavailable '
+              'id=${_logValue(channelId)} sort=${channelSort.name}',
             );
-            final refreshed = _extractChannelSortParams(data);
-            if (refreshed.isNotEmpty) {
-              _channelSortParamsCache[channelId]?.addAll(refreshed);
-            }
+            throw const _SonarTubeChannelSortUnavailable();
           }
+
+          await AppLogger.log(
+            'SonarTube: channel sort apply '
+            'id=${_logValue(channelId)} sort=${channelSort.name} '
+            'mode=$sortedMode',
+          );
+          data = await _postInnerTube(
+            _youtubeBrowseEndpoint,
+            sortedPayload,
+            webClient: true,
+          );
+          await _cacheChannelSortCommands(channelId, data);
         }
       }
     }
@@ -999,6 +1027,47 @@ class SonarTubeService {
     );
   }
 
+  Future<void> _cacheChannelSortCommands(String channelId, dynamic data) async {
+    final modernContinuations =
+        _extractModernChannelSortContinuations(data);
+    if (modernContinuations.isNotEmpty) {
+      final cache = _channelSortContinuationCache.putIfAbsent(
+        channelId,
+        () => <SonarTubeChannelSort, String>{},
+      );
+      cache.addAll(modernContinuations);
+    }
+
+    final legacyParams = _extractChannelSortParams(data);
+    if (legacyParams.isNotEmpty) {
+      final cache = _channelSortParamsCache.putIfAbsent(
+        channelId,
+        () => <SonarTubeChannelSort, String>{},
+      );
+      cache.addAll(legacyParams);
+    }
+    _channelSortParamsCache
+        .putIfAbsent(channelId, () => <SonarTubeChannelSort, String>{})
+        .putIfAbsent(
+          SonarTubeChannelSort.newest,
+          () => _channelNewestVideosParams,
+        );
+
+    if (modernContinuations.isNotEmpty || legacyParams.isNotEmpty) {
+      final available = <SonarTubeChannelSort>{
+        ...?_channelSortContinuationCache[channelId]?.keys,
+        ...?_channelSortParamsCache[channelId]?.keys,
+      };
+      await AppLogger.log(
+        'SonarTube: channel sort commands discovered '
+        'id=${_logValue(channelId)} '
+        'modern=${modernContinuations.keys.map((key) => key.name).join(',')} '
+        'legacy=${legacyParams.keys.map((key) => key.name).join(',')} '
+        'available=${available.map((key) => key.name).join(',')}',
+      );
+    }
+  }
+
   SonarTubePage _filterUnplayableVideoEntries(
     SonarTubePage page, {
     bool videosOnly = false,
@@ -1018,6 +1087,76 @@ class SonarTubeService {
   bool _isUsableVideoResult(SonarTubeItem item) {
     if (item.id.trim().isEmpty) return false;
     return item.views?.trim().isNotEmpty ?? false;
+  }
+
+  Map<SonarTubeChannelSort, String> _extractModernChannelSortContinuations(
+    dynamic root,
+  ) {
+    var result = <SonarTubeChannelSort, String>{};
+    const uiOrder = <SonarTubeChannelSort>[
+      SonarTubeChannelSort.newest,
+      SonarTubeChannelSort.popular,
+      SonarTubeChannelSort.oldest,
+    ];
+
+    void walk(dynamic node) {
+      if (result.length == uiOrder.length) return;
+      if (node is Map) {
+        final map = Map<String, dynamic>.from(node);
+        final listView = _asMap(map['listViewModel']);
+        if (listView != null) {
+          final items = _asList(listView['listItems'])
+              .map(_asMap)
+              .whereType<Map<String, dynamic>>()
+              .map((wrapper) => _asMap(wrapper['listItemViewModel']))
+              .whereType<Map<String, dynamic>>()
+              .toList(growable: false);
+          if (items.length >= uiOrder.length &&
+              items.first['isSelected'] == true) {
+            final candidate = <SonarTubeChannelSort, String>{};
+            for (var index = 0; index < uiOrder.length; index++) {
+              final token = _continuationTokenFromNode(items[index]);
+              if (token != null && token.isNotEmpty) {
+                candidate[uiOrder[index]] = token;
+              }
+            }
+            if (candidate.length == uiOrder.length) {
+              result = candidate;
+              return;
+            }
+          }
+        }
+        for (final child in map.values) {
+          walk(child);
+        }
+      } else if (node is List) {
+        for (final child in node) {
+          walk(child);
+        }
+      }
+    }
+
+    walk(root);
+    return result;
+  }
+
+  String? _continuationTokenFromNode(dynamic node) {
+    if (node is Map) {
+      final map = Map<String, dynamic>.from(node);
+      final command = _asMap(map['continuationCommand']);
+      final token = _string(command?['token']);
+      if (token != null && token.isNotEmpty) return token;
+      for (final child in map.values) {
+        final found = _continuationTokenFromNode(child);
+        if (found != null) return found;
+      }
+    } else if (node is List) {
+      for (final child in node) {
+        final found = _continuationTokenFromNode(child);
+        if (found != null) return found;
+      }
+    }
+    return null;
   }
 
   Map<SonarTubeChannelSort, String> _extractChannelSortParams(dynamic root) {

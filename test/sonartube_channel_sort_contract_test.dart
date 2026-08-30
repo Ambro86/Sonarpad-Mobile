@@ -20,7 +20,9 @@ void main() {
       service,
       contains('enum SonarTubeChannelSort { newest, oldest, popular }'),
     );
+    expect(service, contains('_extractModernChannelSortContinuations(data)'));
     expect(service, contains('_extractChannelSortParams(data)'));
+    expect(service, contains("final command = _asMap(map['continuationCommand'])"));
     expect(service, contains("payload['continuation'] = continuation"));
     expect(service, contains('_SonarTubeChannelSortUnavailable'));
     expect(screen, isNot(contains('_items.sort(')));
@@ -34,7 +36,9 @@ void main() {
 
     if (resolverFile.existsSync()) {
       final resolver = resolverFile.readAsStringSync();
+      expect(resolver, contains('yt_channel_sort_continuations_from_response'));
       expect(resolver, contains('yt_channel_sort_params_from_response'));
+      expect(resolver, contains("'continuation' => \$selectedContinuation"));
       expect(resolver, contains(r"$browseSort"));
       expect(resolver, contains("['newest', 'oldest', 'popular']"));
     }

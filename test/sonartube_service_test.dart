@@ -356,7 +356,7 @@ void main() {
   });
 
   test(
-    'channel browse discovers YouTube sort chips and opens oldest server-side',
+    'channel browse discovers modern YouTube sort continuations and opens oldest server-side',
     () async {
       final requestedBodies = <Map<String, dynamic>>[];
       final service = SonarTubeService(
@@ -366,71 +366,82 @@ void main() {
             jsonDecode(request.body) as Map,
           );
           requestedBodies.add(body);
-          final params = body['params'];
-          final isOldest = params == 'oldest-live-param';
-          final isPopular = params == 'popular-live-param';
-          return http.Response.bytes(
-            utf8.encode(jsonEncode({
-              'chipCloudRenderer': {
-                'chips': [
-                  {
-                    'chipCloudChipRenderer': {
-                      'text': {'simpleText': 'Più recenti'},
-                      'isSelected': !isOldest && !isPopular,
-                      'navigationEndpoint': {
-                        'browseEndpoint': {
-                          'params': 'EgZ2aWRlb3PyBgQKAjoA',
-                        },
+          final continuation = body['continuation'];
+          final isOldest = continuation == 'oldest-live-token';
+          final isPopular = continuation == 'popular-live-token';
+          final response = <String, dynamic>{
+            if (!isOldest && !isPopular)
+              'chipBarViewModel': {
+                'showSheetCommand': {
+                  'panelLoadingStrategy': {
+                    'inlineContent': {
+                      'listViewModel': {
+                        'listItems': [
+                          {
+                            'listItemViewModel': {
+                              'isSelected': true,
+                              'command': {
+                                'continuationCommand': {
+                                  'token': 'newest-live-token',
+                                },
+                              },
+                            },
+                          },
+                          {
+                            'listItemViewModel': {
+                              'isSelected': false,
+                              'command': {
+                                'continuationCommand': {
+                                  'token': 'popular-live-token',
+                                },
+                              },
+                            },
+                          },
+                          {
+                            'listItemViewModel': {
+                              'isSelected': false,
+                              'command': {
+                                'continuationCommand': {
+                                  'token': 'oldest-live-token',
+                                },
+                              },
+                            },
+                          },
+                        ],
                       },
                     },
                   },
-                  {
-                    'chipCloudChipRenderer': {
-                      'text': {'simpleText': 'Popolari'},
-                      'isSelected': isPopular,
-                      'navigationEndpoint': {
-                        'browseEndpoint': {'params': 'popular-live-param'},
-                      },
-                    },
-                  },
-                  {
-                    'chipCloudChipRenderer': {
-                      'text': {'simpleText': 'Meno recenti'},
-                      'isSelected': isOldest,
-                      'navigationEndpoint': {
-                        'browseEndpoint': {'params': 'oldest-live-param'},
-                      },
-                    },
-                  },
-                ],
+                },
               },
-              'videoRenderer': {
-                'videoId': isOldest
-                    ? 'oldest00001'
+            'videoRenderer': {
+              'videoId': isOldest
+                  ? 'oldest00001'
+                  : isPopular
+                  ? 'popular0001'
+                  : 'newest00001',
+              'title': {
+                'simpleText': isOldest
+                    ? 'Video più vecchio'
                     : isPopular
-                    ? 'popular0001'
-                    : 'newest00001',
-                'title': {
-                  'simpleText': isOldest
-                      ? 'Video più vecchio'
+                    ? 'Video popolare'
+                    : 'Video recente',
+              },
+              'viewCountText': {'simpleText': '10 visualizzazioni'},
+            },
+            'continuationItemRenderer': {
+              'continuationEndpoint': {
+                'continuationCommand': {
+                  'token': isOldest
+                      ? 'oldest-next'
                       : isPopular
-                      ? 'Video popolare'
-                      : 'Video recente',
-                },
-                'viewCountText': {'simpleText': '10 visualizzazioni'},
-              },
-              'continuationItemRenderer': {
-                'continuationEndpoint': {
-                  'continuationCommand': {
-                    'token': isOldest
-                        ? 'oldest-next'
-                        : isPopular
-                        ? 'popular-next'
-                        : 'newest-next',
-                  },
+                      ? 'popular-next'
+                      : 'newest-next',
                 },
               },
-            })),
+            },
+          };
+          return http.Response.bytes(
+            utf8.encode(jsonEncode(response)),
             200,
             headers: const {
               'content-type': 'application/json; charset=utf-8',
@@ -452,7 +463,8 @@ void main() {
 
       expect(requestedBodies, hasLength(2));
       expect(requestedBodies.first['params'], 'EgZ2aWRlb3PyBgQKAjoA');
-      expect(requestedBodies.last['params'], 'oldest-live-param');
+      expect(requestedBodies.last.containsKey('browseId'), isFalse);
+      expect(requestedBodies.last['continuation'], 'oldest-live-token');
       expect(page.items.single.title, 'Video più vecchio');
       expect(page.nextToken, 'oldest-next');
 
@@ -461,7 +473,8 @@ void main() {
         channelSort: SonarTubeChannelSort.popular,
       );
       expect(requestedBodies, hasLength(3));
-      expect(requestedBodies.last['params'], 'popular-live-param');
+      expect(requestedBodies.last.containsKey('browseId'), isFalse);
+      expect(requestedBodies.last['continuation'], 'popular-live-token');
       expect(popularPage.items.single.title, 'Video popolare');
       expect(popularPage.nextToken, 'popular-next');
     },
