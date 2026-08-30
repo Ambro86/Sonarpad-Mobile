@@ -167,24 +167,34 @@ void main() {
     expect(
       nativeSource,
       contains('sonarpadDocumentParagraphMutation('),
-      reason: 'A single paragraph split/merge must be detected before falling back to reloadData.',
+      reason: 'Document row-count changes must be detected without requiring an unchanged suffix before the generic reloadData fallback.',
     );
     expect(
       nativeSource,
-      contains('DOCUMENT_STRUCTURE_IN_PLACE_UPDATE'),
-      reason: 'Newline edits must update the UITableView structure in place so the live accessibility row survives.',
+      contains('DOCUMENT_STRUCTURE_COUNT_DIFF_NO_RELOAD'),
+      reason: 'Newline edits must never destroy the document UITableView; row-count changes are applied in place so the live accessibility row survives.',
     );
     expect(nativeSource, contains('tableView.insertRows(at: mutation.insertedRows, with: .none)'));
     expect(nativeSource, contains('tableView.deleteRows(at: mutation.deletedRows, with: .none)'));
+    expect(
+      nativeSource,
+      contains('do not require an unchanged suffix here'),
+      reason: 'Streaming re-chunking after Return must not make the document fall back to reloadData.',
+    );
+    expect(
+      nativeSource,
+      contains('let commonCount = min(oldRows.count, newRows.count)'),
+      reason: 'The first changed row, not an identical suffix, anchors the in-place table mutation.',
+    );
     expect(
       nativeSource,
       contains('DOCUMENT_STRUCTURE_EARLY_HANDOFF'),
       reason: 'As the Flutter editor disappears, VoiceOver needs an immediate live paragraph destination instead of a gap that can fall through to Back.',
     );
     expect(
-      nativeSource.indexOf('DOCUMENT_STRUCTURE_IN_PLACE_UPDATE'),
+      nativeSource.indexOf('DOCUMENT_STRUCTURE_COUNT_DIFF_NO_RELOAD'),
       lessThan(nativeSource.indexOf('apply reloadData begin')),
-      reason: 'The conservative document mutation fast path must run before the generic reloadData fallback.',
+      reason: 'The document no-reload count-diff path must run before the generic reloadData fallback used by other screens.',
     );
   });
 }

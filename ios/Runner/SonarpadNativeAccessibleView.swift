@@ -229,13 +229,13 @@ private func sonarpadDocumentParagraphMutation(
           oldSection.footer == newSection.footer else {
       return nil
     }
+
     if oldSection.rows.count != newSection.rows.count {
+      // Document Reader currently uses one paragraph section. Keep this
+      // generic enough for another fixed section, but never guess across two
+      // simultaneous count-changing sections.
       if changedSection != nil { return nil }
       changedSection = sectionIndex
-    } else {
-      for (oldRow, newRow) in zip(oldSection.rows, newSection.rows) {
-        if !sonarpadRowsHaveSameStructure(oldRow, newRow) { return nil }
-      }
     }
   }
 
@@ -243,56 +243,44 @@ private func sonarpadDocumentParagraphMutation(
   let oldRows = oldSections[sectionIndex].rows
   let newRows = newSections[sectionIndex].rows
   let delta = newRows.count - oldRows.count
-  guard delta != 0, abs(delta) <= 16 else { return nil }
+  guard delta != 0, !oldRows.isEmpty, !newRows.isEmpty else { return nil }
 
-  // Find the unchanged semantic suffix. When one paragraph is split by Return,
-  // everything after the edited paragraph is the same content shifted by the
-  // number of inserted rows. The inverse is true when paragraphs are merged.
-  var suffixCount = 0
-  while suffixCount < min(oldRows.count, newRows.count) {
-    let oldIndex = oldRows.count - 1 - suffixCount
-    let newIndex = newRows.count - 1 - suffixCount
-    if !sonarpadRowsMatchForDocumentStructureAlignment(
-      oldRows[oldIndex],
-      newRows[newIndex]
-    ) {
-      break
-    }
-    suffixCount += 1
+  // IMPORTANT: do not require an unchanged suffix here.
+  //
+  // Document Reader chunks text with splitTextForStreaming(). Inserting a
+  // single Return can therefore change the boundaries/text of several chunks
+  // after the edited paragraph even though the user edited only one logical
+  // point. The old suffix-based detector consequently missed perfectly normal
+  // newline edits and fell through to reloadData(), which destroys every live
+  // UITableViewCell accessibility object and lets VoiceOver escape to Back.
+  //
+  // Rows before the edit remain semantically identical. The first semantic
+  // mismatch is therefore the stable anchor cell we must KEEP alive. Any row
+  // count delta is inserted/deleted immediately after that anchor; all visible
+  // rows are then reconfigured in place from the new model. This remains safe
+  // even when later chunk boundaries have shifted, because their index-path
+  // cells survive and receive the new content without a table-wide reload.
+  let commonCount = min(oldRows.count, newRows.count)
+  var firstChangedRow = 0
+  while firstChangedRow < commonCount,
+        sonarpadRowsMatchForDocumentStructureAlignment(
+          oldRows[firstChangedRow],
+          newRows[firstChangedRow]
+        ) {
+    firstChangedRow += 1
   }
 
-  let oldChangedCount = oldRows.count - suffixCount
-  let newChangedCount = newRows.count - suffixCount
-  guard oldChangedCount > 0, newChangedCount > 0 else { return nil }
-
-  // The editor changes exactly one logical paragraph. A split turns one old
-  // row into 1 + delta new rows; a merge turns 1 + |delta| old rows into one.
   let anchorRow: Int
-  if delta > 0 {
-    guard oldChangedCount == 1, newChangedCount == 1 + delta else { return nil }
-    anchorRow = oldRows.count - suffixCount - 1
+  if firstChangedRow < commonCount {
+    anchorRow = firstChangedRow
   } else {
-    let removed = -delta
-    guard newChangedCount == 1, oldChangedCount == 1 + removed else { return nil }
-    anchorRow = newRows.count - suffixCount - 1
+    // Pure append/truncation at the end. Keep the last common row alive and
+    // apply the count change after it.
+    anchorRow = max(0, commonCount - 1)
   }
-  guard anchorRow >= 0 else { return nil }
-
-  // Rows before the edited paragraph must still be the same native rows. This
-  // makes the fast path deliberately conservative and prevents UITableView
-  // batch-update count assertions on unrelated model changes.
-  if anchorRow > 0 {
-    for rowIndex in 0..<anchorRow {
-      guard rowIndex < oldRows.count, rowIndex < newRows.count,
-            sonarpadRowsHaveSameStructure(oldRows[rowIndex], newRows[rowIndex]),
-            sonarpadRowsMatchForDocumentStructureAlignment(
-              oldRows[rowIndex],
-              newRows[rowIndex]
-            ) else {
-        return nil
-      }
-    }
-  }
+  guard anchorRow >= 0,
+        anchorRow < oldRows.count,
+        anchorRow < newRows.count else { return nil }
 
   let insertedRows: [IndexPath]
   let deletedRows: [IndexPath]
@@ -306,6 +294,18 @@ private func sonarpadDocumentParagraphMutation(
     deletedRows = (1...(-delta)).map {
       IndexPath(row: anchorRow + $0, section: sectionIndex)
     }
+  }
+
+  // Validate only index-path bounds required by UITableView's batch update.
+  // We intentionally do NOT validate the semantic suffix: re-chunking is the
+  // exact reason this path exists.
+  if let lastInserted = insertedRows.last,
+     lastInserted.row >= newRows.count {
+    return nil
+  }
+  if let lastDeleted = deletedRows.last,
+     lastDeleted.row >= oldRows.count {
+    return nil
   }
 
   return SonarpadDocumentParagraphMutation(
@@ -1141,7 +1141,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       let inserted = mutation.insertedRows.map { "\($0.section):\($0.row)" }.joined(separator: ",")
       let deleted = mutation.deletedRows.map { "\($0.section):\($0.row)" }.joined(separator: ",")
       emitDebug(
-        "DOCUMENT_STRUCTURE_IN_PLACE_UPDATE anchorSection=\(mutation.section) " +
+        "DOCUMENT_STRUCTURE_COUNT_DIFF_NO_RELOAD anchorSection=\(mutation.section) " +
         "anchorRow=\(mutation.anchorRow) inserted=\(inserted) deleted=\(deleted) " +
         "beforeOffsetY=\(tableView.contentOffset.y)"
       )
@@ -1179,7 +1179,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
 
       emitDebug(
-        "DOCUMENT_STRUCTURE_IN_PLACE_UPDATE_DONE visible=\(tableView.indexPathsForVisibleRows?.count ?? 0) " +
+        "DOCUMENT_STRUCTURE_COUNT_DIFF_NO_RELOAD_DONE visible=\(tableView.indexPathsForVisibleRows?.count ?? 0) " +
         "afterOffsetY=\(tableView.contentOffset.y)"
       )
     } else if sectionsChanged {
