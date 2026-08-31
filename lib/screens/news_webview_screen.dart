@@ -285,11 +285,6 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             ));
           },
           onNavigationRequest: (NavigationRequest request) {
-            final mediaLink = NewsArticleMediaLink.tryParse(request.url);
-            if (mediaLink != null) {
-              unawaited(_openArticleMediaLink(mediaLink));
-              return NavigationDecision.prevent;
-            }
             if (_shouldBlockEmbeddedMediaNavigation(request.url)) {
               unawaited(AppLogger.log(
                 'News WebView: navigazione bloccata per contenuto media '
@@ -563,6 +558,14 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<void> _openArticleMediaLink(NewsArticleMediaLink link) async {
+    if (!widget.article.allowInternalMediaLinks ||
+        !_isKnownArticleMediaLink(link.url)) {
+      await AppLogger.log(
+        'News media link: ignored untrusted link url=${link.url} '
+        'allowed=${widget.article.allowInternalMediaLinks}',
+      );
+      return;
+    }
     final key = 'news:${link.kind.name}:${link.url}';
     if (!_mediaOpenGuard.tryAcquire(key)) {
       await AppLogger.log(
@@ -720,6 +723,17 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return null;
   }
 
+  NewsArticleMediaLink? _knownArticleMediaLink(String url) {
+    if (!widget.article.allowInternalMediaLinks) return null;
+    for (final link in widget.article.mediaLinks) {
+      if (_sameNormalizedUrl(link.url, url)) return link;
+    }
+    return null;
+  }
+
+  bool _isKnownArticleMediaLink(String url) =>
+      _knownArticleMediaLink(url) != null;
+
   bool _shouldBlockEmbeddedMediaNavigation(String requestUrl) {
     final url = requestUrl.toLowerCase();
     if (url.contains('multiplayer.it')) return false;
@@ -841,6 +855,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       source: widget.article.source,
       publishedAt: widget.article.publishedAt,
       mediaLinks: widget.article.mediaLinks,
+      allowInternalMediaLinks: widget.article.allowInternalMediaLinks,
     );
   }
 
@@ -1972,7 +1987,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       return _ReaderArticleView(
         title: _readerTitle ?? widget.article.title,
         text: readerText,
-        mediaLinks: widget.article.mediaLinks,
+        mediaLinks: widget.article.allowInternalMediaLinks
+            ? widget.article.mediaLinks
+            : const <NewsArticleMediaLink>[],
         onOpenMediaLink: _openArticleMediaLink,
       );
     }

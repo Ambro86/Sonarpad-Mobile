@@ -233,7 +233,8 @@ class NewsService {
         'summary': article.summary,
         'source': article.source,
         'publishedAt': article.publishedAt?.toIso8601String(),
-        if (article.mediaLinks.isNotEmpty)
+        if (article.allowInternalMediaLinks) 'allowInternalMediaLinks': true,
+        if (article.allowInternalMediaLinks && article.mediaLinks.isNotEmpty)
           'mediaLinks': article.mediaLinks.map((link) => link.toJson()).toList(),
       });
 
@@ -255,10 +256,14 @@ class NewsService {
               publishedAt: map['publishedAt'] != null
                   ? DateTime.parse(map['publishedAt'])
                   : null,
-              mediaLinks: (map['mediaLinks'] as List? ?? const [])
-                  .map(NewsArticleMediaLink.fromJson)
-                  .whereType<NewsArticleMediaLink>()
-                  .toList(growable: false),
+              allowInternalMediaLinks:
+                  map['allowInternalMediaLinks'] == true,
+              mediaLinks: map['allowInternalMediaLinks'] == true
+                  ? (map['mediaLinks'] as List? ?? const [])
+                      .map(NewsArticleMediaLink.fromJson)
+                      .whereType<NewsArticleMediaLink>()
+                      .toList(growable: false)
+                  : const <NewsArticleMediaLink>[],
             );
           } catch (_) {
             return null;
@@ -1849,10 +1854,13 @@ class NewsService {
         final guid = _text(item, 'guid');
         final rawDescription = _rssDescription(item);
         final description = _cleanRssDescription(rawDescription);
-        final mediaLinks = _extractRssMediaLinks(
-          rawDescription,
-          baseUrl: link.isNotEmpty ? link : rssSource.uri.toString(),
-        );
+        final allowInternalMediaLinks = rssSource.isCustom;
+        final mediaLinks = allowInternalMediaLinks
+            ? _extractRssMediaLinks(
+                rawDescription,
+                baseUrl: link.isNotEmpty ? link : rssSource.uri.toString(),
+              )
+            : const <NewsArticleMediaLink>[];
         final source = item.findElements('source').isNotEmpty
             ? item.findElements('source').first.innerText.trim()
             : rssSource.name;
@@ -1871,6 +1879,7 @@ class NewsService {
           publishedAt:
               DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
           mediaLinks: mediaLinks,
+          allowInternalMediaLinks: allowInternalMediaLinks,
         );
       }).toList();
     } catch (_) {
@@ -1927,10 +1936,13 @@ class NewsService {
           ? _text(entry, 'summary')
           : _text(entry, 'content');
       final summary = _cleanHtml(rawSummary);
-      final mediaLinks = _extractRssMediaLinks(
-        rawSummary,
-        baseUrl: link.isNotEmpty ? link : rssSource.uri.toString(),
-      );
+      final allowInternalMediaLinks = rssSource.isCustom;
+      final mediaLinks = allowInternalMediaLinks
+          ? _extractRssMediaLinks(
+              rawSummary,
+              baseUrl: link.isNotEmpty ? link : rssSource.uri.toString(),
+            )
+          : const <NewsArticleMediaLink>[];
       final publishedRaw = _text(entry, 'published');
       final updatedRaw = _text(entry, 'updated');
       final externalId = _text(entry, 'id');
@@ -1949,6 +1961,7 @@ class NewsService {
           publishedRaw.isNotEmpty ? publishedRaw : updatedRaw,
         ),
         mediaLinks: mediaLinks,
+        allowInternalMediaLinks: allowInternalMediaLinks,
       );
     }).toList();
   }

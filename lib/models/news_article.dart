@@ -104,6 +104,7 @@ class NewsArticle {
   final String source;
   final DateTime? publishedAt;
   final List<NewsArticleMediaLink> mediaLinks;
+  final bool allowInternalMediaLinks;
 
   const NewsArticle({
     required this.id,
@@ -113,6 +114,7 @@ class NewsArticle {
     required this.source,
     required this.publishedAt,
     this.mediaLinks = const <NewsArticleMediaLink>[],
+    this.allowInternalMediaLinks = false,
   });
 }
 

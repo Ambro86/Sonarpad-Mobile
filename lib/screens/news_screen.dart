@@ -747,6 +747,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
       NewsRssSource(
         name: categorySourceName,
         uri: _currentUri,
+        isCustom: widget.source.isCustom,
       ),
       language: widget.language,
     );
