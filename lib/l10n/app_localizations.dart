@@ -3741,6 +3741,18 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{Vuoi eliminare definitivamente una registrazione?} other{Vuoi eliminare definitivamente {count} registrazioni?}}'**
   String deleteRecordingsConfirmation(int count);
 
+  /// Confirmation shown after one recording has been deleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione eliminata.'**
+  String get recordingDeleted;
+
+  /// Confirmation shown after multiple recordings have been deleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazioni eliminate.'**
+  String get recordingsDeleted;
+
   /// No description provided for @noRecordings.
   ///
   /// In it, this message translates to:
@@ -5842,6 +5854,8 @@ abstract class AppLocalizations {
   // Additional shared UI labels moved into ARB localization.
   String get clearSearch;
   String get clearText;
+  String clearedTextAnnouncement(String value);
+  String get textDeletedAnnouncement;
   String get fileTypeLabel;
   String get cinemaTrailerLoading;
   String get cinemaNoTrailer;

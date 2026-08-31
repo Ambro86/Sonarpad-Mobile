@@ -2090,6 +2090,12 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get recordingDeleted => 'Enregistrement supprimé.';
+
+  @override
+  String get recordingsDeleted => 'Enregistrements supprimés.';
+
+  @override
   String get noRecordings => 'Aucun enregistrement.';
 
   @override
@@ -3470,6 +3476,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get clearText => 'Effacer le texte';
+
+
+  @override
+
+  String clearedTextAnnouncement(String value) {
+
+    return '$value supprimé.';
+
+  }
+
+
+  @override
+
+  String get textDeletedAnnouncement => 'Texte supprimé.';
 
   @override
   String get fileTypeLabel => 'Fichier';

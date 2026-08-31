@@ -56,7 +56,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Future<void> _clearSearchText() async {
+    final previousValue = _searchCtrl.text;
+    if (previousValue.isEmpty) return;
     _searchCtrl.clear();
+    announceClearedEditableText(context, previousValue);
     _searchFocusNode.requestFocus();
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return;

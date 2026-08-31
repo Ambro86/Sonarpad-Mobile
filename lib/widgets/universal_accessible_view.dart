@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 import '../utils/app_logger.dart';
+import '../utils/status_message.dart';
 
 /// Global renderer mode.
 ///
@@ -60,6 +61,24 @@ bool get useSharedAccessibleViewModel =>
 
 bool get useNativeIosAccessibleViews =>
     isIosPlatform && effectiveAccessibleRendererMode == 'native';
+
+void announceClearedEditableText(
+  BuildContext context,
+  String previousValue, {
+  bool secure = false,
+}) {
+  final trimmed = previousValue.trim();
+  if (!secure && trimmed.isEmpty) return;
+  final l10n = AppLocalizations.of(context);
+  final message = secure
+      ? l10n.textDeletedAnnouncement
+      : l10n.clearedTextAnnouncement(trimmed);
+  announceStatusMessage(
+    context,
+    message,
+    announcementDelay: const Duration(milliseconds: 250),
+  );
+}
 
 /// Platform-neutral capability for controls that must keep the currently
 /// focused adjustable element alive while its value changes. Renderer
@@ -928,6 +947,18 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         ));
       }
     }
+    if (event.type == 'textCleared') {
+      final row = _rowForId(event.id);
+      final previousValue = event.value?.toString() ?? '';
+      if (row != null) {
+        announceClearedEditableText(
+          context,
+          previousValue,
+          secure: row.secure,
+        );
+      }
+      return null;
+    }
     if (event.type == 'refresh') {
       final refresh = widget.onRefresh;
       if (refresh != null) await refresh();
@@ -1500,8 +1531,15 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     AccessibleListRow row,
     TextEditingController controller,
   ) {
+    final previousValue = controller.text;
+    if (previousValue.isEmpty) return;
     controller.clear();
     _change(row, 'textChanged', '');
+    announceClearedEditableText(
+      context,
+      previousValue,
+      secure: row.secure,
+    );
     final focusNode = _textFocusNodeFor(row);
     focusNode.requestFocus();
     WidgetsBinding.instance.addPostFrameCallback((_) {

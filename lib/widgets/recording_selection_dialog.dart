@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 import '../l10n/app_localizations.dart';
 import 'universal_accessible_view.dart';
 
-enum RecordingSelectionAction { share, delete }
+enum RecordingSelectionAction { share, rename, delete }
 
 class RecordingSelectionResult {
   const RecordingSelectionResult({
@@ -195,6 +195,19 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
                       ),
                     ),
                   ),
+                  if (selected.length == 1)
+                    OutlinedButton.icon(
+                      key: const ValueKey('recording_selection_rename'),
+                      onPressed: () => Navigator.pop(
+                        dialogContext,
+                        RecordingSelectionResult(
+                          action: RecordingSelectionAction.rename,
+                          recordings: selectedRecordings(selected),
+                        ),
+                      ),
+                      icon: const Icon(Icons.edit_outlined),
+                      label: Text(l10n.rename),
+                    ),
                   FilledButton.icon(
                     onPressed: selected.isEmpty
                         ? null

@@ -1861,6 +1861,12 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String deleteRecordingsConfirmation(int count) => '永久删除 ${count} 条录音吗？';
 
   @override
+  String get recordingDeleted => '录制内容已删除。';
+
+  @override
+  String get recordingsDeleted => '录制内容已删除。';
+
+  @override
   String get noRecordings => '没有录音。';
 
   @override
@@ -3081,6 +3087,20 @@ class AppLocalizationsZhCn extends AppLocalizations {
 
   @override
   String get clearText => '清除文本';
+
+
+  @override
+
+  String clearedTextAnnouncement(String value) {
+
+    return '已删除$value。';
+
+  }
+
+
+  @override
+
+  String get textDeletedAnnouncement => '文本已删除。';
 
   @override
   String get fileTypeLabel => '文件';

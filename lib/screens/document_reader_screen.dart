@@ -99,7 +99,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   void _docLog(String message) {
     unawaited(AppLogger.log('DOC_READER $message'));
   }
-  static const int _epubIndexCacheVersion = 1;
+  static const int _epubIndexCacheVersion = 2;
 
   late DocumentItem _currentDoc;
 
@@ -215,8 +215,19 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
 
     try {
+      final documentLibrary = DocumentLibraryService();
       final editedPath =
-          await DocumentLibraryService().resolveEditedFilePath(_currentDoc);
+          await documentLibrary.resolveEditedFilePath(_currentDoc);
+
+      // Anche quando leggiamo la copia testuale modificata di un EPUB,
+      // conserviamo il percorso dell'EPUB originale. L'indice (NCX/nav) vive
+      // nell'archivio EPUB, mentre le destinazioni vengono rimappate sui chunk
+      // correnti: in questo modo spezzare/modificare paragrafi non fa sparire
+      // il pulsante Indice alla riapertura e non modifica mai il file originale.
+      if (ext == 'epub') {
+        originalPath = await documentLibrary.resolveFilePath(_currentDoc);
+      }
+
       if (editedPath != null && await File(editedPath).exists()) {
         usesEditedText = true;
         _documentText = normalizeDocumentUnicode(
@@ -224,7 +235,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         );
       } else {
         final path =
-            await DocumentLibraryService().resolveFilePath(_currentDoc);
+            originalPath ?? await documentLibrary.resolveFilePath(_currentDoc);
         originalPath = path;
         includeEpubFootnotes = ext == 'epub' &&
             await _settings.includeEpubFootnotesInText();
@@ -260,14 +271,23 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         // Le chiavi vengono gestite da AutoScrollTag
       }
 
-      if (ext == 'epub' &&
-          !usesEditedText &&
-          originalPath != null &&
-          _chunks.isNotEmpty) {
-        // Non calcoliamo qui l'indice EPUB: su alcuni libri grandi l'analisi
-        // NCX/nav/ancore interne rallenta l'apertura. Salviamo solo il path e
-        // carichiamo l'indice al tap sul pulsante Indice.
-        _epubIndexSourcePath = originalPath;
+      if (ext == 'epub' && originalPath != null && _chunks.isNotEmpty) {
+        final originalEpub = File(originalPath);
+        if (await originalEpub.exists()) {
+          // Non calcoliamo qui l'indice EPUB: su alcuni libri grandi l'analisi
+          // NCX/nav/ancore interne rallenta l'apertura. Salviamo solo il path
+          // dell'EPUB originale e carichiamo l'indice al tap. Se il testo è
+          // stato modificato, l'estrattore mapperà comunque le voci sui chunk
+          // correnti della copia modificata.
+          _epubIndexSourcePath = originalPath;
+          _docLog(
+            'DOC_EPUB_INDEX source=original editedText=$usesEditedText available=true',
+          );
+        } else {
+          _docLog(
+            'DOC_EPUB_INDEX source=original editedText=$usesEditedText available=false',
+          );
+        }
       }
     } catch (e) {
       dev.log('DocumentReaderScreen: errore estrazione: $e');
@@ -1056,6 +1076,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       if (decoded['cacheVersion'] != _epubIndexCacheVersion) return null;
       if (decoded['chunksLength'] != _chunks.length) return null;
       if (decoded['documentTextLength'] != _documentText.length) return null;
+      if (decoded['documentTextFingerprint'] !=
+          _stableCacheKey(_documentText)) {
+        return null;
+      }
       final rawEntries = decoded['entries'];
       if (rawEntries is! List) return null;
 
@@ -1093,6 +1117,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         'cacheVersion': _epubIndexCacheVersion,
         'chunksLength': _chunks.length,
         'documentTextLength': _documentText.length,
+        'documentTextFingerprint': _stableCacheKey(_documentText),
         'entries': entries
             .map(
               (entry) => <String, dynamic>{
@@ -1118,6 +1143,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         stat.size.toString(),
         stat.modified.millisecondsSinceEpoch.toString(),
         _documentText.length.toString(),
+        _stableCacheKey(_documentText),
         _chunks.length.toString(),
         _maxChunkChars.toString(),
         _epubIndexCacheVersion.toString(),
@@ -1647,6 +1673,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _currentDoc = newDoc;
         _documentText = newText;
         _chunks = updatedChunks;
+        // Gli indici EPUB caricati contengono posizioni nei chunk: dopo una
+        // modifica del testo vanno rimappati al prossimo tap su Indice.
+        _documentIndex = const <DocumentTableOfContentsEntry>[];
         _bookmarkIndexes = newBookmarkIndexes;
         _bookmarkIndex = newAutomaticBookmark;
         _hasBookmark = updatedChunks.isNotEmpty && newAutomaticBookmark > 0;
@@ -1783,6 +1812,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       setState(() {
         _documentText = newText;
         _chunks = _splitTextForDocumentDisplay(_documentText);
+        // Una voce dell'indice già caricata può puntare a un vecchio indice
+        // numerico dopo split/merge dei chunk. Forziamo la rimappatura dalla
+        // struttura dell'EPUB originale alla prossima apertura dell'Indice.
+        _documentIndex = const <DocumentTableOfContentsEntry>[];
         paragraphStructureChanged = _chunks.length != originalChunkCount;
         if (_chunks.isNotEmpty) {
           restoredFocusIndex = index.clamp(0, _chunks.length - 1).toInt();

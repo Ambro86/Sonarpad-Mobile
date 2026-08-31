@@ -811,6 +811,8 @@
     }
   },
   "deleteRecordingsConfirmation": "永久删除 {count} 条录音吗？",
+  "recordingDeleted": "录制内容已删除。",
+  "recordingsDeleted": "录制内容已删除。",
   "noRecordings": "没有录音。",
   "recordingStarted": "录制已开始。",
   "recordingSaved": "录音已保存：{path}",
@@ -1938,6 +1940,19 @@
   "clearText": "清除文本",
   "@clearText": {
     "description": "Localized text for clearText."
+  },
+  "clearedTextAnnouncement": "已删除{value}。",
+  "@clearedTextAnnouncement": {
+    "description": "Accessibility announcement after clearing a non-secure text or search field.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "textDeletedAnnouncement": "文本已删除。",
+  "@textDeletedAnnouncement": {
+    "description": "Accessibility announcement after clearing a secure text field without speaking its contents."
   },
   "fileTypeLabel": "文件",
   "@fileTypeLabel": {

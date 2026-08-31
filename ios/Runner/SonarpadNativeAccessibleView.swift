@@ -407,6 +407,7 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   var submitOnReturn = false
   var stabilizeFocusOnBegin = false
   var onChanged: ((String, String) -> Void)?
+  var onCleared: ((String, String) -> Void)?
   var onSubmitted: ((String, String) -> Void)?
   var onFocusStabilized: ((String, String) -> Void)?
 
@@ -478,10 +479,13 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   }
 
   @objc private func clearText() {
-    guard field.isEnabled, !(field.text ?? "").isEmpty else { return }
+    guard field.isEnabled else { return }
+    let previousValue = field.text ?? ""
+    guard !previousValue.isEmpty else { return }
     field.text = ""
     updateClearButtonVisibility()
     field.sendActions(for: .editingChanged)
+    onCleared?(rowId, previousValue)
     UIAccessibility.post(notification: .layoutChanged, argument: field)
   }
 
@@ -1287,6 +1291,9 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
       cell.onChanged = { [weak self] id, value in
         self?.channel.invokeMethod("event", arguments: ["type": "textChanged", "id": id, "value": value])
+      }
+      cell.onCleared = { [weak self] id, previousValue in
+        self?.channel.invokeMethod("event", arguments: ["type": "textCleared", "id": id, "value": previousValue])
       }
       cell.onSubmitted = { [weak self] id, value in
         self?.channel.invokeMethod("event", arguments: ["type": "textSubmitted", "id": id, "value": value])

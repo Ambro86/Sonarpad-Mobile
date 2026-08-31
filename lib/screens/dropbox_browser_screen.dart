@@ -58,10 +58,13 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   }
 
   void _clearSearch() {
+    final previousValue = _searchController.text;
+    if (previousValue.isEmpty) return;
     _searchController.clear();
     if (_searchQuery.isNotEmpty) {
       setState(() => _searchQuery = "");
     }
+    announceClearedEditableText(context, previousValue);
     _searchFocusNode.requestFocus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;

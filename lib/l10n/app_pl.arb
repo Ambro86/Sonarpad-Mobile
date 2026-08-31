@@ -2653,6 +2653,8 @@
     }
   },
   "deleteRecordingsConfirmation": "{count, plural, =1{Trwale usunąć jedno nagranie?} other{Trwale usunąć {count} nagrań?}}",
+  "recordingDeleted": "Nagranie usunięte.",
+  "recordingsDeleted": "Nagrania usunięte.",
   "noRecordings": "Brak nagrań.",
   "recordingStarted": "Nagrywanie rozpoczęte.",
   "recordingSaved": "Nagranie zapisane: {path}",
@@ -4119,6 +4121,19 @@
   "clearText": "Wyczyść tekst",
   "@clearText": {
     "description": "Localized text for clearText."
+  },
+  "clearedTextAnnouncement": "Usunięto: {value}.",
+  "@clearedTextAnnouncement": {
+    "description": "Accessibility announcement after clearing a non-secure text or search field.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "textDeletedAnnouncement": "Tekst usunięty.",
+  "@textDeletedAnnouncement": {
+    "description": "Accessibility announcement after clearing a secure text field without speaking its contents."
   },
   "fileTypeLabel": "Plik",
   "@fileTypeLabel": {

@@ -924,7 +924,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   }
 
   void _clearSearchText() {
+    final previousValue = _searchController.text;
+    if (previousValue.isEmpty) return;
     _searchController.clear();
+    announceClearedEditableText(context, previousValue);
     _searchFocusNode.requestFocus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;

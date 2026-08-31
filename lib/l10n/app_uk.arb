@@ -2676,6 +2676,8 @@
       }
     }
   },
+  "recordingDeleted": "Запис видалено.",
+  "recordingsDeleted": "Записи видалено.",
   "noRecordings": "Немає записів.",
   "recordingStarted": "Запис розпочато.",
   "recordingSaved": "Запис збережено: {path}",
@@ -4140,6 +4142,19 @@
   "clearText": "Очистити текст",
   "@clearText": {
     "description": "Localized text for clearText."
+  },
+  "clearedTextAnnouncement": "{value} видалено.",
+  "@clearedTextAnnouncement": {
+    "description": "Accessibility announcement after clearing a non-secure text or search field.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "textDeletedAnnouncement": "Текст видалено.",
+  "@textDeletedAnnouncement": {
+    "description": "Accessibility announcement after clearing a secure text field without speaking its contents."
   },
   "fileTypeLabel": "Файл",
   "@fileTypeLabel": {

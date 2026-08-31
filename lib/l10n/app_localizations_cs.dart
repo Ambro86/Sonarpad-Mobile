@@ -2073,6 +2073,12 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String get recordingDeleted => 'Nahrávka odstraněna.';
+
+  @override
+  String get recordingsDeleted => 'Nahrávky odstraněny.';
+
+  @override
   String get noRecordings => 'Žádné nahrávky.';
 
   @override
@@ -3445,6 +3451,20 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get clearText => 'Vymazat text';
+
+
+  @override
+
+  String clearedTextAnnouncement(String value) {
+
+    return '$value odstraněno.';
+
+  }
+
+
+  @override
+
+  String get textDeletedAnnouncement => 'Text odstraněn.';
 
   @override
   String get fileTypeLabel => 'Soubor';

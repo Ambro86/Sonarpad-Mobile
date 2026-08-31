@@ -2676,6 +2676,8 @@
       }
     }
   },
+  "recordingDeleted": "Registrazione eliminata.",
+  "recordingsDeleted": "Registrazioni eliminate.",
   "noRecordings": "Nessuna registrazione.",
   "recordingStarted": "Registrazione avviata.",
   "recordingSaved": "Registrazione salvata: {path}",
@@ -4140,6 +4142,19 @@
   "clearText": "Cancella testo",
   "@clearText": {
     "description": "Localized text for clearText."
+  },
+  "clearedTextAnnouncement": "{value} eliminato.",
+  "@clearedTextAnnouncement": {
+    "description": "Accessibility announcement after clearing a non-secure text or search field.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "textDeletedAnnouncement": "Testo eliminato.",
+  "@textDeletedAnnouncement": {
+    "description": "Accessibility announcement after clearing a secure text field without speaking its contents."
   },
   "fileTypeLabel": "File",
   "@fileTypeLabel": {

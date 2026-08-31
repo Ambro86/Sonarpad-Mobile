@@ -2074,6 +2074,12 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get recordingDeleted => 'Nagranie usunięte.';
+
+  @override
+  String get recordingsDeleted => 'Nagrania usunięte.';
+
+  @override
   String get noRecordings => 'Brak nagrań.';
 
   @override
@@ -3445,6 +3451,20 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get clearText => 'Wyczyść tekst';
+
+
+  @override
+
+  String clearedTextAnnouncement(String value) {
+
+    return 'Usunięto: $value.';
+
+  }
+
+
+  @override
+
+  String get textDeletedAnnouncement => 'Tekst usunięty.';
 
   @override
   String get fileTypeLabel => 'Plik';

@@ -204,4 +204,55 @@ void main() {
     );
   });
 
+  testWidgets('rename appears only for exactly one selected recording', (
+    tester,
+  ) async {
+    RecordingSelectionResult? result;
+    final recordings = [
+      File(r'C:\recordings\prima.m4a'),
+      File(r'C:\recordings\seconda.mp4'),
+    ];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () async {
+              result = await showRecordingSelectionDialog(context, recordings);
+            },
+            child: const Text('Apri selezione'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Apri selezione'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('recording_selection_rename')), findsNothing);
+
+    await tester.tap(find.byType(Checkbox).at(0));
+    await tester.pump();
+    final rename = find.byKey(const ValueKey('recording_selection_rename'));
+    expect(rename, findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Rinomina'), findsOneWidget);
+
+    await tester.tap(find.byType(Checkbox).at(1));
+    await tester.pump();
+    expect(rename, findsNothing);
+
+    await tester.tap(find.byType(Checkbox).at(1));
+    await tester.pump();
+    expect(rename, findsOneWidget);
+    await tester.tap(rename);
+    await tester.pumpAndSettle();
+
+    expect(result, isNotNull);
+    expect(result!.action, RecordingSelectionAction.rename);
+    expect(result!.recordings, hasLength(1));
+    expect(result!.recordings.single.path, recordings.first.path);
+  });
+
 }

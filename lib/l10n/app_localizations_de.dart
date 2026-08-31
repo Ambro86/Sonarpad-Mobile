@@ -2018,6 +2018,12 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get recordingDeleted => 'Aufnahme gelöscht.';
+
+  @override
+  String get recordingsDeleted => 'Aufnahmen gelöscht.';
+
+  @override
   String get noRecordings => "Keine Aufnahmen.";
 
   @override
@@ -3342,6 +3348,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get clearText => 'Text löschen';
+
+
+  @override
+
+  String clearedTextAnnouncement(String value) {
+
+    return '$value gelöscht.';
+
+  }
+
+
+  @override
+
+  String get textDeletedAnnouncement => 'Text gelöscht.';
 
   @override
   String get fileTypeLabel => 'Datei';

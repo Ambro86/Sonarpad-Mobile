@@ -2088,6 +2088,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get recordingDeleted => 'Grabación eliminada.';
+
+  @override
+  String get recordingsDeleted => 'Grabaciones eliminadas.';
+
+  @override
   String get noRecordings => 'No hay grabaciones.';
 
   @override
@@ -3466,6 +3472,20 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get clearText => 'Borrar texto';
+
+
+  @override
+
+  String clearedTextAnnouncement(String value) {
+
+    return '$value eliminado.';
+
+  }
+
+
+  @override
+
+  String get textDeletedAnnouncement => 'Texto eliminado.';
 
   @override
   String get fileTypeLabel => 'Archivo';

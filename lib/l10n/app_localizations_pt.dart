@@ -2018,6 +2018,12 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get recordingDeleted => 'Gravação eliminada.';
+
+  @override
+  String get recordingsDeleted => 'Gravações eliminadas.';
+
+  @override
   String get noRecordings => 'Nenhuma gravação.';
 
   @override
@@ -3340,6 +3346,20 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get clearText => 'Limpar texto';
+
+
+  @override
+
+  String clearedTextAnnouncement(String value) {
+
+    return '$value eliminado.';
+
+  }
+
+
+  @override
+
+  String get textDeletedAnnouncement => 'Texto eliminado.';
 
   @override
   String get fileTypeLabel => 'Ficheiro';
@@ -5573,6 +5593,11 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get deselectAll => 'Desmarcar tudo';
 
   @override
+  String selectionActionCount(String action, int count) {
+    return '$action ($count)';
+  }
+
+  @override
   String deleteRecordingsConfirmation(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -5582,6 +5607,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get recordingDeleted => 'Gravação excluída.';
+
+  @override
+  String get recordingsDeleted => 'Gravações excluídas.';
 
   @override
   String get noRecordings => 'Nenhuma gravação.';
@@ -6906,6 +6937,20 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get clearText => 'Limpar texto';
+
+
+  @override
+
+  String clearedTextAnnouncement(String value) {
+
+    return '$value excluído.';
+
+  }
+
+
+  @override
+
+  String get textDeletedAnnouncement => 'Texto excluído.';
 
   @override
   String get fileTypeLabel => 'Arquivo';

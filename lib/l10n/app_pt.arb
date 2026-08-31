@@ -814,6 +814,8 @@
     }
   },
   "deleteRecordingsConfirmation": "{count, plural, =1{Eliminar permanentemente uma gravação?} other{Eliminar permanentemente {count} gravações?}}",
+  "recordingDeleted": "Gravação eliminada.",
+  "recordingsDeleted": "Gravações eliminadas.",
   "noRecordings": "Nenhuma gravação.",
   "recordingStarted": "Gravação iniciada.",
   "recordingSaved": "Gravação guardada: {path}",
@@ -1944,6 +1946,19 @@
   "clearText": "Limpar texto",
   "@clearText": {
     "description": "Localized text for clearText."
+  },
+  "clearedTextAnnouncement": "{value} eliminado.",
+  "@clearedTextAnnouncement": {
+    "description": "Accessibility announcement after clearing a non-secure text or search field.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "textDeletedAnnouncement": "Texto eliminado.",
+  "@textDeletedAnnouncement": {
+    "description": "Accessibility announcement after clearing a secure text field without speaking its contents."
   },
   "fileTypeLabel": "Ficheiro",
   "@fileTypeLabel": {

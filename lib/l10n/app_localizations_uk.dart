@@ -1637,6 +1637,12 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get recordingDeleted => 'Запис видалено.';
+
+  @override
+  String get recordingsDeleted => 'Записи видалено.';
+
+  @override
   String get noRecordings => "Немає записів.";
 
   @override
@@ -2700,6 +2706,20 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get clearText => "Очистити текст";
+
+
+  @override
+
+  String clearedTextAnnouncement(String value) {
+
+    return '$value видалено.';
+
+  }
+
+
+  @override
+
+  String get textDeletedAnnouncement => 'Текст видалено.';
 
   @override
   String get fileTypeLabel => "Файл";

@@ -814,6 +814,8 @@
     }
   },
   "deleteRecordingsConfirmation": "{count, plural, =1{Trvale odstranit jednu nahrávku?} other{Trvale odstranit {count} nahrávek?}}",
+  "recordingDeleted": "Nahrávka odstraněna.",
+  "recordingsDeleted": "Nahrávky odstraněny.",
   "noRecordings": "Žádné nahrávky.",
   "recordingStarted": "Nahrávání spuštěno.",
   "recordingSaved": "Nahrávka uložena: {path}",
@@ -1941,6 +1943,19 @@
   "clearText": "Vymazat text",
   "@clearText": {
     "description": "Localized text for clearText."
+  },
+  "clearedTextAnnouncement": "{value} odstraněno.",
+  "@clearedTextAnnouncement": {
+    "description": "Accessibility announcement after clearing a non-secure text or search field.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "textDeletedAnnouncement": "Text odstraněn.",
+  "@textDeletedAnnouncement": {
+    "description": "Accessibility announcement after clearing a secure text field without speaking its contents."
   },
   "fileTypeLabel": "Soubor",
   "@fileTypeLabel": {

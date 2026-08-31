@@ -133,12 +133,22 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
   }
 
   Future<void> _deleteRecordings(List<File> files) async {
+    var deletedCount = 0;
     for (final file in files) {
       if (await file.exists()) {
         await file.delete();
+        deletedCount++;
       }
     }
+    if (!mounted) return;
     _reload();
+    if (deletedCount > 0) {
+      final l10n = AppLocalizations.of(context);
+      showStatusMessage(
+        context,
+        deletedCount == 1 ? l10n.recordingDeleted : l10n.recordingsDeleted,
+      );
+    }
   }
 
   Future<void> _shareRecording(File file) async {
@@ -164,6 +174,9 @@ class _RadioRecordingsScreenState extends State<RadioRecordingsScreen> {
       switch (result.action) {
         case RecordingSelectionAction.share:
           await _shareRecordings(result.recordings);
+          break;
+        case RecordingSelectionAction.rename:
+          await _renameRecording(result.recordings.single);
           break;
         case RecordingSelectionAction.delete:
           await _deleteRecordings(result.recordings);
