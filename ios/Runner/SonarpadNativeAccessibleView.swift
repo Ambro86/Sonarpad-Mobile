@@ -1311,10 +1311,48 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     return cell
   }
 
+  private func liveIndexPath(for cell: SonarpadAccessibleTableCell) -> IndexPath? {
+    guard let indexPath = tableView.indexPath(for: cell),
+          sections.indices.contains(indexPath.section),
+          sections[indexPath.section].rows.indices.contains(indexPath.row) else {
+      return nil
+    }
+    return indexPath
+  }
+
+  private func reconcileLiveCellIdentity(
+    _ cell: SonarpadAccessibleTableCell,
+    reason: String
+  ) -> (indexPath: IndexPath, rowId: String)? {
+    guard let indexPath = liveIndexPath(for: cell),
+          let liveRowId = rowId(at: indexPath) else {
+      return nil
+    }
+
+    let previousRowId = cell.rowId
+    if previousRowId != liveRowId {
+      if debugTag == "document" {
+        emitDebug(
+          "DOCUMENT_LIVE_CELL_IDENTITY_CORRECTION reason=\(reason) " +
+          "oldId=\(previousRowId.isEmpty ? "nil" : previousRowId) newId=\(liveRowId) " +
+          "indexPath=[\(indexPath.section),\(indexPath.row)]"
+        )
+      }
+      cell.rowId = liveRowId
+    }
+    return (indexPath, liveRowId)
+  }
+
   private func configure(cell: SonarpadAccessibleTableCell, with row: SonarpadNativeRow, at indexPath: IndexPath) {
     cell.rowId = row.id
-    cell.accessibilityFocusHandler = { [weak self] id in
-      self?.handleAccessibilityFocus(id)
+    cell.accessibilityFocusHandler = { [weak self, weak cell] fallbackId in
+      guard let self = self else { return }
+      guard let cell = cell,
+            let live = self.reconcileLiveCellIdentity(cell, reason: "focus") else {
+        self.handleAccessibilityFocus(fallbackId)
+        return
+      }
+      self.handleAccessibilityFocus(live.rowId)
     }
     cell.isAccessibilityElement = true
     cell.textLabel?.isAccessibilityElement = false
@@ -1420,9 +1458,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         self?.adjustSlider(at: indexPath, delta: -row.sliderStep)
       } : nil
     case "picker":
-      cell.activationHandler = { [weak self] in self?.presentPicker(for: indexPath) }
+      cell.activationHandler = { [weak self, weak cell] in
+        guard let self = self, let cell = cell,
+              let live = self.reconcileLiveCellIdentity(cell, reason: "activatePicker") else { return }
+        self.presentPicker(for: live.indexPath)
+      }
     case "action", "button":
-      cell.activationHandler = { [weak self] in self?.sendActivation(at: indexPath) }
+      cell.activationHandler = { [weak self, weak cell] in
+        guard let self = self, let cell = cell,
+              let live = self.reconcileLiveCellIdentity(cell, reason: "activate") else { return }
+        self.sendActivation(at: live.indexPath)
+      }
     default:
       cell.activationHandler = nil
     }
@@ -1509,9 +1555,19 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   }
 
   @objc private func handleCustomAction(_ action: UIAccessibilityCustomAction) -> Bool {
-    guard let rowId = objc_getAssociatedObject(action, &AssociatedKeys.rowId) as? String,
+    guard let associatedRowId = objc_getAssociatedObject(action, &AssociatedKeys.rowId) as? String,
           let actionId = objc_getAssociatedObject(action, &AssociatedKeys.actionId) as? String else { return false }
-    channel.invokeMethod("event", arguments: ["type": "customAction", "id": rowId, "action": actionId])
+
+    var resolvedRowId = associatedRowId
+    if let focusedCell = UIAccessibility.focusedElement(using: .notificationVoiceOver) as? SonarpadAccessibleTableCell,
+       let live = reconcileLiveCellIdentity(focusedCell, reason: "customAction") {
+      resolvedRowId = live.rowId
+    }
+
+    channel.invokeMethod(
+      "event",
+      arguments: ["type": "customAction", "id": resolvedRowId, "action": actionId]
+    )
     return true
   }
 
@@ -1968,14 +2024,16 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
 
   private func voiceOverFocusedRowId() -> String? {
     guard let focused = UIAccessibility.focusedElement(using: .notificationVoiceOver) else { return nil }
-    if let cell = focused as? SonarpadAccessibleTableCell, !cell.rowId.isEmpty {
-      return cell.rowId
+    if let cell = focused as? SonarpadAccessibleTableCell {
+      return reconcileLiveCellIdentity(cell, reason: "focusedRowLookup")?.rowId ??
+        (cell.rowId.isEmpty ? nil : cell.rowId)
     }
     if let view = focused as? UIView {
       var current: UIView? = view
       while let candidate = current {
-        if let cell = candidate as? SonarpadAccessibleTableCell, !cell.rowId.isEmpty {
-          return cell.rowId
+        if let cell = candidate as? SonarpadAccessibleTableCell {
+          return reconcileLiveCellIdentity(cell, reason: "focusedRowLookup")?.rowId ??
+            (cell.rowId.isEmpty ? nil : cell.rowId)
         }
         current = candidate.superview
       }
