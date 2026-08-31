@@ -7,20 +7,27 @@ import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
+import '../models/document_item.dart';
+import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
+import '../services/sonartube_service.dart';
 import '../services/document_library_service.dart';
 import '../services/html_reader_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
+import '../utils/media_open_guard.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
+import 'document_reader_screen.dart';
+import 'podcast_episode_player_screen.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
   const NewsWebViewScreen(
@@ -45,6 +52,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   final _tts = EdgeTtsBridge();
   final _flutterTts = FlutterTts();
   final _voiceDictionary = VoiceDictionaryService();
+  final _sonarTubeService = SonarTubeService();
+  final _mediaOpenGuard = MediaOpenGuard();
 
   bool _loading = true;
   String? _readerTitle;
@@ -276,6 +285,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             ));
           },
           onNavigationRequest: (NavigationRequest request) {
+            final mediaLink = NewsArticleMediaLink.tryParse(request.url);
+            if (mediaLink != null) {
+              unawaited(_openArticleMediaLink(mediaLink));
+              return NavigationDecision.prevent;
+            }
             if (_shouldBlockEmbeddedMediaNavigation(request.url)) {
               unawaited(AppLogger.log(
                 'News WebView: navigazione bloccata per contenuto media '
@@ -548,6 +562,164 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     }
   }
 
+  Future<void> _openArticleMediaLink(NewsArticleMediaLink link) async {
+    final key = 'news:${link.kind.name}:${link.url}';
+    if (!_mediaOpenGuard.tryAcquire(key)) {
+      await AppLogger.log(
+        'MEDIA_OPEN_GUARD duplicate ignored source=news-article '
+        'active=${_mediaOpenGuard.activeKey} requested=$key',
+      );
+      return;
+    }
+
+    try {
+      await AppLogger.log(
+        'News media link: open kind=${link.kind.name} label="${link.label}" '
+        'url=${link.url}',
+      );
+      switch (link.kind) {
+        case NewsArticleMediaKind.audio:
+          await _openArticleAudio(link);
+          break;
+        case NewsArticleMediaKind.pdf:
+          await _openArticlePdf(link);
+          break;
+        case NewsArticleMediaKind.youtube:
+          await _openArticleYouTube(link);
+          break;
+      }
+    } catch (e) {
+      await AppLogger.log(
+        'News media link: open failed kind=${link.kind.name} '
+        'url=${link.url} error=$e',
+      );
+      if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        showStatusMessage(
+          context,
+          l10n.error(l10n.technicalErrorGeneric),
+        );
+      }
+    } finally {
+      _mediaOpenGuard.release(key);
+    }
+  }
+
+  Future<void> _openArticleAudio(NewsArticleMediaLink link) async {
+    if (!mounted) return;
+    final episode = PodcastEpisode(
+      id: 'news-audio:${link.url.hashCode}',
+      title: link.label,
+      description: widget.article.title,
+      audioUrl: link.url,
+    );
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/media/audio'),
+        builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+      ),
+    );
+  }
+
+  Future<void> _openArticlePdf(NewsArticleMediaLink link) async {
+    final response = await http.get(
+      Uri.parse(link.url),
+      headers: const {
+        'User-Agent': 'SonarpadMobile/0.4',
+        'Accept': 'application/pdf,*/*;q=0.8',
+      },
+    ).timeout(const Duration(seconds: 30));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw HttpException('PDF HTTP ${response.statusCode}');
+    }
+    if (response.bodyBytes.isEmpty) {
+      throw const FormatException('PDF vuoto');
+    }
+
+    final uri = Uri.parse(link.url);
+    var fileName = uri.pathSegments.isEmpty ? '' : uri.pathSegments.last;
+    fileName = Uri.decodeComponent(fileName)
+        .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
+        .trim();
+    if (fileName.isEmpty) fileName = 'documento.pdf';
+    if (!fileName.toLowerCase().endsWith('.pdf')) fileName = '$fileName.pdf';
+    final tempDir = await getTemporaryDirectory();
+    final file = File(
+      '${tempDir.path}${Platform.pathSeparator}'
+      'news_${DateTime.now().microsecondsSinceEpoch}_$fileName',
+    );
+    await file.writeAsBytes(response.bodyBytes, flush: true);
+
+    final document = DocumentItem(
+      id: 'news_pdf_${DateTime.now().microsecondsSinceEpoch}',
+      name: fileName,
+      path: file.path,
+      extension: 'pdf',
+      addedAt: DateTime.now(),
+      isTemporary: true,
+    );
+    if (!mounted) return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/media/pdf'),
+        builder: (_) => DocumentReaderScreen(document: document),
+      ),
+    );
+  }
+
+  Future<void> _openArticleYouTube(NewsArticleMediaLink link) async {
+    Future<PodcastEpisode> resolveEpisode() async {
+      final media = await _sonarTubeService.resolveUrl(
+        link.url,
+        fallbackTitle: link.label,
+        fallbackChannel: widget.article.source,
+      );
+      return PodcastEpisode(
+        id: 'sonartube:${_youtubeVideoId(link.url) ?? link.url.hashCode}',
+        title: media.title,
+        description: media.channel ?? widget.article.source,
+        audioUrl: media.audioUrl,
+        videoUrl: media.videoUrl,
+      );
+    }
+
+    final episode = await resolveEpisode();
+    if (!mounted) return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/media/sonartube'),
+        builder: (_) => PodcastEpisodePlayerScreen(
+          episode: episode,
+          isVideoSupported: true,
+          startWithVideoThenRestorePreference: true,
+          refreshEpisode: resolveEpisode,
+        ),
+      ),
+    );
+  }
+
+  String? _youtubeVideoId(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return null;
+    final host = uri.host.toLowerCase();
+    String? candidate;
+    if (host == 'youtu.be') {
+      if (uri.pathSegments.isNotEmpty) candidate = uri.pathSegments.first;
+    } else {
+      candidate = uri.queryParameters['v'];
+      if ((candidate == null || candidate.isEmpty) &&
+          uri.pathSegments.length >= 2 &&
+          const {'shorts', 'embed', 'live'}.contains(uri.pathSegments.first)) {
+        candidate = uri.pathSegments[1];
+      }
+    }
+    if (candidate != null &&
+        RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(candidate)) {
+      return candidate;
+    }
+    return null;
+  }
+
   bool _shouldBlockEmbeddedMediaNavigation(String requestUrl) {
     final url = requestUrl.toLowerCase();
     if (url.contains('multiplayer.it')) return false;
@@ -668,6 +840,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       summary: widget.article.summary,
       source: widget.article.source,
       publishedAt: widget.article.publishedAt,
+      mediaLinks: widget.article.mediaLinks,
     );
   }
 
@@ -1799,6 +1972,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       return _ReaderArticleView(
         title: _readerTitle ?? widget.article.title,
         text: readerText,
+        mediaLinks: widget.article.mediaLinks,
+        onOpenMediaLink: _openArticleMediaLink,
       );
     }
 
@@ -1823,35 +1998,58 @@ class _ReaderArticleView extends StatelessWidget {
   const _ReaderArticleView({
     required this.title,
     required this.text,
+    required this.mediaLinks,
+    required this.onOpenMediaLink,
   });
 
   final String title;
   final String text;
+  final List<NewsArticleMediaLink> mediaLinks;
+  final Future<void> Function(NewsArticleMediaLink link) onOpenMediaLink;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final paragraphs =
-        _dropLeadingDuplicateTitle(title, readerParagraphs(text));
+    final mediaLabels = mediaLinks
+        .map((link) => _normalizedLinkLabel(link.label))
+        .where((label) => label.isNotEmpty)
+        .toSet();
+    final paragraphs = _dropLeadingDuplicateTitle(title, readerParagraphs(text))
+        .where((paragraph) =>
+            !mediaLabels.contains(_normalizedLinkLabel(paragraph)))
+        .toList(growable: false);
 
     if (useSharedAccessibleViewModel) {
       return UniversalAccessibleList(
         sections: [
           AccessibleListSection(
             header: title,
-            rows: paragraphs
-                .asMap()
-                .entries
-                .map((entry) => AccessibleListRow(
-                      id: 'paragraph_${entry.key}',
-                      title: entry.value,
-                      kind: 'text',
-                    ))
-                .toList(growable: false),
+            rows: [
+              for (var i = 0; i < paragraphs.length; i++)
+                AccessibleListRow(
+                  id: 'paragraph_$i',
+                  title: paragraphs[i],
+                  kind: 'text',
+                ),
+              for (var i = 0; i < mediaLinks.length; i++)
+                AccessibleListRow(
+                  id: 'media_$i',
+                  title: mediaLinks[i].label,
+                  kind: 'button',
+                ),
+            ],
           ),
         ],
-        onEvent: (_) {},
+        onEvent: (event) {
+          if (event.type != 'activate' ||
+              event.id?.startsWith('media_') != true) {
+            return;
+          }
+          final index = int.tryParse(event.id!.substring(6));
+          if (index == null || index < 0 || index >= mediaLinks.length) return;
+          onOpenMediaLink(mediaLinks[index]);
+        },
       );
     }
 
@@ -1885,6 +2083,19 @@ class _ReaderArticleView extends StatelessWidget {
                     ),
                   ),
                 ),
+                ...mediaLinks.map(
+                  (link) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: OutlinedButton.icon(
+                        onPressed: () => onOpenMediaLink(link),
+                        icon: Icon(_mediaIcon(link.kind)),
+                        label: Text(link.label),
+                      ),
+                    ),
+                  ),
+                ),
               ]),
             ),
           ),
@@ -1892,6 +2103,18 @@ class _ReaderArticleView extends StatelessWidget {
       ),
     );
   }
+
+  static String _normalizedLinkLabel(String value) => value
+      .toLowerCase()
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .replaceAll(RegExp(r'[.,;:!?]+\s*$'), '')
+      .trim();
+
+  static IconData _mediaIcon(NewsArticleMediaKind kind) => switch (kind) {
+        NewsArticleMediaKind.audio => Icons.play_arrow,
+        NewsArticleMediaKind.pdf => Icons.picture_as_pdf,
+        NewsArticleMediaKind.youtube => Icons.smart_display,
+      };
 
   static List<String> readerParagraphs(String value) {
     final sourceParagraphs = value

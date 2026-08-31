@@ -233,6 +233,8 @@ class NewsService {
         'summary': article.summary,
         'source': article.source,
         'publishedAt': article.publishedAt?.toIso8601String(),
+        if (article.mediaLinks.isNotEmpty)
+          'mediaLinks': article.mediaLinks.map((link) => link.toJson()).toList(),
       });
 
   Future<List<NewsArticle>> getReadArticles(
@@ -253,6 +255,10 @@ class NewsService {
               publishedAt: map['publishedAt'] != null
                   ? DateTime.parse(map['publishedAt'])
                   : null,
+              mediaLinks: (map['mediaLinks'] as List? ?? const [])
+                  .map(NewsArticleMediaLink.fromJson)
+                  .whereType<NewsArticleMediaLink>()
+                  .toList(growable: false),
             );
           } catch (_) {
             return null;
@@ -1841,7 +1847,12 @@ class NewsService {
         final title = _text(item, 'title');
         final link = _text(item, 'link');
         final guid = _text(item, 'guid');
-        final description = _cleanRssDescription(_rssDescription(item));
+        final rawDescription = _rssDescription(item);
+        final description = _cleanRssDescription(rawDescription);
+        final mediaLinks = _extractRssMediaLinks(
+          rawDescription,
+          baseUrl: link.isNotEmpty ? link : rssSource.uri.toString(),
+        );
         final source = item.findElements('source').isNotEmpty
             ? item.findElements('source').first.innerText.trim()
             : rssSource.name;
@@ -1859,11 +1870,36 @@ class NewsService {
           source: _cleanFeedText(source),
           publishedAt:
               DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
+          mediaLinks: mediaLinks,
         );
       }).toList();
     } catch (_) {
       return _extractArticlesFromHtml(decodedBody, rssSource);
     }
+  }
+
+  List<NewsArticleMediaLink> _extractRssMediaLinks(
+    String rawHtml, {
+    required String baseUrl,
+  }) {
+    if (rawHtml.trim().isEmpty) return const <NewsArticleMediaLink>[];
+    final fragment = html_parser.parse(rawHtml);
+    final result = <NewsArticleMediaLink>[];
+    final seen = <String>{};
+    for (final anchor in fragment.querySelectorAll('a[href]')) {
+      final href = anchor.attributes['href']?.trim() ?? '';
+      if (href.isEmpty) continue;
+      final resolved = _resolveRelativeUrl(href, baseUrl);
+      final link = NewsArticleMediaLink.tryParse(
+        resolved,
+        label: _cleanFeedText(anchor.text),
+      );
+      if (link == null) continue;
+      final key = '${link.kind.name}|${link.url}'.toLowerCase();
+      if (!seen.add(key)) continue;
+      result.add(link);
+    }
+    return List<NewsArticleMediaLink>.unmodifiable(result);
   }
 
   String _rssDescription(XmlElement item) {
@@ -1887,10 +1923,13 @@ class NewsService {
       index++;
       final title = _text(entry, 'title');
       final link = _atomLink(entry);
-      final summary = _cleanHtml(
-        _text(entry, 'summary').isNotEmpty
-            ? _text(entry, 'summary')
-            : _text(entry, 'content'),
+      final rawSummary = _text(entry, 'summary').isNotEmpty
+          ? _text(entry, 'summary')
+          : _text(entry, 'content');
+      final summary = _cleanHtml(rawSummary);
+      final mediaLinks = _extractRssMediaLinks(
+        rawSummary,
+        baseUrl: link.isNotEmpty ? link : rssSource.uri.toString(),
       );
       final publishedRaw = _text(entry, 'published');
       final updatedRaw = _text(entry, 'updated');
@@ -1909,6 +1948,7 @@ class NewsService {
         publishedAt: DateTime.tryParse(
           publishedRaw.isNotEmpty ? publishedRaw : updatedRaw,
         ),
+        mediaLinks: mediaLinks,
       );
     }).toList();
   }
