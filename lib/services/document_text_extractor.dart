@@ -89,6 +89,8 @@ Future<void> _epubTableOfContentsIsolateMain(
 /// - DOCX / DOC   → unzip (archive) + parsing XML word/document.xml
 /// - EPUB         → [epubx] EpubReader + strip HTML dei capitoli
 class DocumentTextExtractor {
+  final Expando<List<String>> _epubNormalizedChunkCache =
+      Expando<List<String>>('epubNormalizedChunks');
   Future<String> _readTextFileSafe(String path) async {
     final bytes = await File(path).readAsBytes();
     return decodeDocumentTextBytes(bytes);
@@ -1416,7 +1418,8 @@ class DocumentTextExtractor {
     List<String> chunks,
     Iterable<String> candidates,
   ) {
-    final normalizedChunks = chunks.map(_normalizeForSearch).toList();
+    final normalizedChunks = _epubNormalizedChunkCache[chunks] ??=
+        chunks.map(_normalizeForSearch).toList(growable: false);
     for (final candidate in candidates) {
       final normalized = _normalizeForSearch(candidate);
       if (normalized.length < 3) continue;

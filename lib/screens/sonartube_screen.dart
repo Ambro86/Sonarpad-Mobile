@@ -9,6 +9,7 @@ import '../services/app_settings_service.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_history_service.dart';
 import '../services/sonartube_service.dart';
+import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'document_reader_screen.dart';
@@ -60,7 +61,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   bool _loading = false;
   bool _loadingMore = false;
   String? _resolvingId;
+  String? _openingItemKey;
   Object? _error;
+
+  bool get _itemOpenInProgress => _openingItemKey != null;
 
   bool get _isCollection => widget.collection != null;
   bool get _isChannelCollection =>
@@ -531,31 +535,46 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   }
 
   Future<void> _openItem(SonarTubeItem item) async {
-    if (item.kind != SonarTubeItemKind.video) {
-      final collection = item.kind == SonarTubeItemKind.channel
-          ? await _prepareChannelForOpen(item)
-          : item;
-      if (!mounted) return;
-      await Navigator.push<void>(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/sonartube/collection'),
-          builder: (_) => SonarTubeScreen(
-            collection: collection,
-            service: _service,
-            favoritesService: _favoritesService,
-            historyService: _historyService,
-          ),
-        ),
+    final itemKey = _sonarTubeItemKey(item);
+    if (_openingItemKey != null) {
+      await AppLogger.log(
+        'SonarTube: duplicate open ignored active=$_openingItemKey requested=$itemKey',
       );
       return;
     }
 
-    setState(() {
-      _resolvingId = item.id;
-      _error = null;
-    });
+    // Claim the open synchronously, before any resolver/network await. Rebuilding
+    // the row as disabled is not enough: a second accessibility activation can
+    // arrive before Flutter/UIKit has applied that rebuild.
+    _openingItemKey = itemKey;
+    if (mounted) {
+      setState(() {
+        _resolvingId = item.kind == SonarTubeItemKind.video ? item.id : null;
+        _error = null;
+      });
+    }
+
     try {
+      if (item.kind != SonarTubeItemKind.video) {
+        final collection = item.kind == SonarTubeItemKind.channel
+            ? await _prepareChannelForOpen(item)
+            : item;
+        if (!mounted) return;
+        await Navigator.push<void>(
+          context,
+          MaterialPageRoute(
+            settings: const RouteSettings(name: '/sonartube/collection'),
+            builder: (_) => SonarTubeScreen(
+              collection: collection,
+              service: _service,
+              favoritesService: _favoritesService,
+              historyService: _historyService,
+            ),
+          ),
+        );
+        return;
+      }
+
       final navigationItems = _isCollection
           ? _items
               .where((candidate) => candidate.kind == SonarTubeItemKind.video)
@@ -694,7 +713,14 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     } catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {
-      if (mounted) setState(() => _resolvingId = null);
+      if (_openingItemKey == itemKey) {
+        _openingItemKey = null;
+      }
+      if (mounted) {
+        setState(() {
+          if (_resolvingId == item.id) _resolvingId = null;
+        });
+      }
     }
   }
 
@@ -781,7 +807,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     required bool isFavorite,
     required String favoriteLabel,
   }) {
-    final enabled = _resolvingId == null;
+    final enabled = !_itemOpenInProgress;
     return ExcludeSemantics(
       child: Wrap(
         alignment: WrapAlignment.end,
@@ -877,8 +903,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : null,
-            enabled: _resolvingId == null,
-            onTap: _resolvingId == null ? () => _openItem(item) : null,
+            enabled: !_itemOpenInProgress,
+            onTap: !_itemOpenInProgress ? () => _openItem(item) : null,
           ),
           if (!resolving)
             Align(
@@ -901,7 +927,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         item.title,
         if (subtitle?.isNotEmpty ?? false) subtitle!,
       ].join(', '),
-      onTap: _resolvingId == null ? () => _openItem(item) : null,
+      onTap: !_itemOpenInProgress ? () => _openItem(item) : null,
       customSemanticsActions: includeCustomActions
           ? {
               CustomSemanticsAction(label: favoriteLabel):
@@ -1154,7 +1180,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           item.title,
           if (subtitle?.isNotEmpty ?? false) subtitle!,
         ].join(', '),
-        enabled: _resolvingId == null,
+        enabled: !_itemOpenInProgress,
         actions: [
           AccessibleCustomAction(id: 'favorite', label: favoriteLabel),
           AccessibleCustomAction(
@@ -1388,7 +1414,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
               item.title,
               if (subtitle?.isNotEmpty ?? false) subtitle!,
             ].join(', '),
-            enabled: _resolvingId == null,
+            enabled: !_itemOpenInProgress,
             actions: [
               AccessibleCustomAction(id: 'favorite', label: favoriteLabel),
               AccessibleCustomAction(
@@ -2287,6 +2313,7 @@ class _SonarTubeRecentVideosScreenState
       AccessibleListController(debugName: 'sonartube-recent-videos');
   List<SonarTubeItem> _recent = const [];
   bool _loading = true;
+  bool _openingRecentVideo = false;
 
   @override
   void initState() {
@@ -2322,10 +2349,23 @@ class _SonarTubeRecentVideosScreenState
   }
 
   Future<void> _openRecentVideo(SonarTubeItem item) async {
-    await widget.onOpenItem(item);
-    if (!mounted) return;
-    await _load();
-    await _restoreRecentVideoFocus(item);
+    if (_openingRecentVideo) {
+      await AppLogger.log(
+        'SonarTube recent: duplicate open ignored id=${item.id}',
+      );
+      return;
+    }
+    _openingRecentVideo = true;
+    if (mounted) setState(() {});
+    try {
+      await widget.onOpenItem(item);
+      if (!mounted) return;
+      await _load();
+      await _restoreRecentVideoFocus(item);
+    } finally {
+      _openingRecentVideo = false;
+      if (mounted) setState(() {});
+    }
   }
 
   Future<void> _deleteRecentVideo(SonarTubeItem item) async {
@@ -2410,6 +2450,7 @@ class _SonarTubeRecentVideosScreenState
             title: item.title,
             subtitle: _subtitle(l10n, item),
             kind: 'action',
+            enabled: !_openingRecentVideo,
             actions: [
               AccessibleCustomAction(
                 id: 'delete_video',
@@ -2533,7 +2574,10 @@ class _SonarTubeRecentVideosScreenState
                                   onPressed: () => _deleteRecentVideo(item),
                                 ),
                               ),
-                              onTap: () => _openRecentVideo(item),
+                              enabled: !_openingRecentVideo,
+                              onTap: _openingRecentVideo
+                                  ? null
+                                  : () => _openRecentVideo(item),
                             ),
                           );
                         },
@@ -2564,6 +2608,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
       AccessibleListController(debugName: 'sonartube-favorites');
   List<SonarTubeItem> _favorites = const [];
   bool _loading = true;
+  bool _openingFavoriteItem = false;
 
   @override
   void initState() {
@@ -2656,14 +2701,27 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
   }
 
   Future<void> _openFavoriteItem(SonarTubeItem item) async {
-    if (item.kind == SonarTubeItemKind.channel) {
-      await _openFavoriteChannel(item);
+    if (_openingFavoriteItem) {
+      await AppLogger.log(
+        'SonarTube favorites: duplicate open ignored id=${item.id}',
+      );
       return;
     }
-    await widget.onOpenItem(item);
-    if (!mounted) return;
-    await _load();
-    await _restoreFavoriteFocus(item);
+    _openingFavoriteItem = true;
+    if (mounted) setState(() {});
+    try {
+      if (item.kind == SonarTubeItemKind.channel) {
+        await _openFavoriteChannel(item);
+        return;
+      }
+      await widget.onOpenItem(item);
+      if (!mounted) return;
+      await _load();
+      await _restoreFavoriteFocus(item);
+    } finally {
+      _openingFavoriteItem = false;
+      if (mounted) setState(() {});
+    }
   }
 
   Future<void> _openChannel(SonarTubeItem item) async {
@@ -2766,6 +2824,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
             id: 'favorite_${entry.key}',
             title: item.title,
             subtitle: favoriteSubtitle,
+            enabled: !_openingFavoriteItem,
             actions: [
               AccessibleCustomAction(id: 'remove', label: removeLabel),
               if (item.kind == SonarTubeItemKind.video)
@@ -2955,7 +3014,10 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                                         icon: const Icon(Icons.favorite),
                                       ),
                                     ),
-                                    onTap: () => _openFavoriteItem(item),
+                                    enabled: !_openingFavoriteItem,
+                                    onTap: _openingFavoriteItem
+                                        ? null
+                                        : () => _openFavoriteItem(item),
                                   ),
                                   if (item.kind == SonarTubeItemKind.video)
                                     Align(

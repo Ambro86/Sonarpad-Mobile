@@ -20,6 +20,7 @@ import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
+import '../utils/epub_index_remapper.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -56,6 +57,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   List<String> _chunks = [];
   List<DocumentTableOfContentsEntry> _documentIndex = [];
   String? _epubIndexSourcePath;
+  bool _usingEditedText = false;
+  bool _epubIncludeFootnotesInText = false;
   bool _documentIndexLoading = false;
   final ValueNotifier<bool> _documentIndexLoadingNotifier =
       ValueNotifier<bool>(false);
@@ -99,7 +102,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   void _docLog(String message) {
     unawaited(AppLogger.log('DOC_READER $message'));
   }
-  static const int _epubIndexCacheVersion = 2;
+  static const int _epubIndexCacheVersion = 3;
+  static const int _canonicalEpubIndexCacheVersion = 1;
 
   late DocumentItem _currentDoc;
 
@@ -228,6 +232,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         originalPath = await documentLibrary.resolveFilePath(_currentDoc);
       }
 
+      if (ext == 'epub') {
+        includeEpubFootnotes = await _settings.includeEpubFootnotesInText();
+      }
+
       if (editedPath != null && await File(editedPath).exists()) {
         usesEditedText = true;
         _documentText = normalizeDocumentUnicode(
@@ -237,8 +245,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         final path =
             originalPath ?? await documentLibrary.resolveFilePath(_currentDoc);
         originalPath = path;
-        includeEpubFootnotes = ext == 'epub' &&
-            await _settings.includeEpubFootnotesInText();
         final result = await _extractor.extract(
           path: path,
           extension: ext,
@@ -248,6 +254,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _documentText = normalizeDocumentUnicode(result.text);
         _loadError = result.error == null ? null : l10n.technicalErrorGeneric;
       }
+
+      _usingEditedText = usesEditedText;
+      _epubIncludeFootnotesInText = includeEpubFootnotes;
 
       if (_documentText.isNotEmpty) {
         _chunks = _splitDocumentTextForDisplay(
@@ -276,9 +285,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         if (await originalEpub.exists()) {
           // Non calcoliamo qui l'indice EPUB: su alcuni libri grandi l'analisi
           // NCX/nav/ancore interne rallenta l'apertura. Salviamo solo il path
-          // dell'EPUB originale e carichiamo l'indice al tap. Se il testo è
-          // stato modificato, l'estrattore mapperà comunque le voci sui chunk
-          // correnti della copia modificata.
+          // dell'EPUB originale e carichiamo l'indice al tap. Se il testo e'
+          // stato modificato, l'indice viene calcolato sui chunk ORIGINALI e
+          // poi rimappato localmente sui chunk modificati tramite ancore
+          // monotone, senza mai cercare globalmente il titolo della voce.
           _epubIndexSourcePath = originalPath;
           _docLog(
             'DOC_EPUB_INDEX source=original editedText=$usesEditedText available=true',
@@ -986,11 +996,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _loadEpubIndex(String sourcePath) async {
-    final cachedEntries = await _readCachedEpubIndex(sourcePath);
-    if (!mounted) return;
-    if (cachedEntries != null) {
-      _documentIndex = cachedEntries;
-      return;
+    if (!_usingEditedText) {
+      final cachedEntries = await _readCachedEpubIndex(sourcePath);
+      if (!mounted) return;
+      if (cachedEntries != null) {
+        _documentIndex = cachedEntries;
+        return;
+      }
     }
 
     BuildContext? dialogContext;
@@ -1012,19 +1024,29 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     );
 
     try {
-      // Il parsing EPUB e la ricerca delle voci nei chunks possono essere
-      // costosi sui libri grandi: eseguiamoli in un isolate separato.
       await WidgetsBinding.instance.endOfFrame;
-      final entries = await _extractor.extractEpubTableOfContentsInBackground(
-        path: sourcePath,
-        chunks: _chunks,
-        onProgress: _setDocumentIndexProgress,
-      );
+
+      List<DocumentTableOfContentsEntry> entries;
+      if (_usingEditedText) {
+        entries = await _loadRemappedEditedEpubIndex(sourcePath);
+      } else {
+        // Il parsing EPUB e la ricerca delle voci nei chunks possono essere
+        // costosi sui libri grandi: eseguiamoli in un isolate separato.
+        entries = await _extractor.extractEpubTableOfContentsInBackground(
+          path: sourcePath,
+          chunks: _chunks,
+          onProgress: _setDocumentIndexProgress,
+        );
+      }
+
       if (!mounted) return;
       _documentIndex = entries;
       if (entries.isEmpty) {
-        showStatusMessage(context, AppLocalizations.of(context).documentIndexUnavailableMessage);
-      } else {
+        showStatusMessage(
+          context,
+          AppLocalizations.of(context).documentIndexUnavailableMessage,
+        );
+      } else if (!_usingEditedText) {
         unawaited(_writeCachedEpubIndex(sourcePath, entries));
       }
     } catch (e, st) {
@@ -1034,7 +1056,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         stackTrace: st,
       );
       if (mounted) {
-        showStatusMessage(context, AppLocalizations.of(context).documentIndexUnavailableMessage);
+        showStatusMessage(
+          context,
+          AppLocalizations.of(context).documentIndexUnavailableMessage,
+        );
       }
     } finally {
       final activeDialogContext = dialogContext;
@@ -1047,6 +1072,81 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _setDocumentIndexLoading(false);
       }
     }
+  }
+
+  Future<List<DocumentTableOfContentsEntry>> _loadRemappedEditedEpubIndex(
+    String sourcePath,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    _setDocumentIndexProgress(0.05);
+
+    // L'indice canonico va sempre calcolato sull'EPUB originale, non sulla
+    // copia testuale modificata. Cosi' una voce come "GIORNATA PRIMA" non puo'
+    // essere associata per errore a un secondo testo omonimo nel sommario.
+    final originalExtraction = await _extractor.extract(
+      path: sourcePath,
+      extension: 'epub',
+      includeEpubFootnotesInText: _epubIncludeFootnotesInText,
+      footnoteLabel: l10n.documentFootnoteLabel,
+    );
+    final originalText = normalizeDocumentUnicode(originalExtraction.text);
+    if (originalText.isEmpty) return const <DocumentTableOfContentsEntry>[];
+
+    final originalChunks = _splitDocumentTextForDisplay(
+      originalText,
+      extension: 'epub',
+      includeEpubFootnotesInText: _epubIncludeFootnotesInText,
+      footnoteLabel: l10n.documentFootnoteLabel,
+    );
+    if (originalChunks.isEmpty) return const <DocumentTableOfContentsEntry>[];
+    _setDocumentIndexProgress(0.15);
+
+    var canonicalEntries = await _readCanonicalEpubIndex(
+      sourcePath,
+      originalText,
+      originalChunks,
+    );
+    if (canonicalEntries == null) {
+      canonicalEntries =
+          await _extractor.extractEpubTableOfContentsInBackground(
+        path: sourcePath,
+        chunks: originalChunks,
+        onProgress: (progress) {
+          _setDocumentIndexProgress(0.15 + (progress * 0.75));
+        },
+      );
+      if (canonicalEntries.isNotEmpty) {
+        unawaited(
+          _writeCanonicalEpubIndex(
+            sourcePath,
+            originalText,
+            originalChunks,
+            canonicalEntries,
+          ),
+        );
+      }
+    } else {
+      _setDocumentIndexProgress(0.90);
+    }
+
+    if (canonicalEntries.isEmpty) {
+      return const <DocumentTableOfContentsEntry>[];
+    }
+
+    final remap = remapEpubIndexToEditedChunks(
+      originalEntries: canonicalEntries,
+      originalChunks: originalChunks,
+      editedChunks: _chunks,
+    );
+    _setDocumentIndexProgress(1.0);
+    _docLog(
+      'DOC_EPUB_INDEX_REMAP '
+      'anchors=${remap.anchorCount} canonical=${canonicalEntries.length} '
+      'mapped=${remap.entries.length} exact=${remap.exactCount} '
+      'anchored=${remap.anchoredCount} skipped=${remap.skippedCount} '
+      'originalChunks=${originalChunks.length} editedChunks=${_chunks.length}',
+    );
+    return remap.entries;
   }
 
   void _setDocumentIndexLoading(bool value) {
@@ -1132,6 +1232,116 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     } catch (e) {
       dev.log('DocumentReaderScreen: impossibile salvare cache indice EPUB: $e');
     }
+  }
+
+  Future<List<DocumentTableOfContentsEntry>?> _readCanonicalEpubIndex(
+    String sourcePath,
+    String originalText,
+    List<String> originalChunks,
+  ) async {
+    try {
+      final cacheFile = await _canonicalEpubIndexCacheFile(
+        sourcePath,
+        originalText,
+        originalChunks,
+      );
+      if (!await cacheFile.exists()) return null;
+      final decoded = jsonDecode(await cacheFile.readAsString());
+      if (decoded is! Map<String, dynamic>) return null;
+      if (decoded['cacheVersion'] != _canonicalEpubIndexCacheVersion) {
+        return null;
+      }
+      if (decoded['chunksLength'] != originalChunks.length) return null;
+      if (decoded['documentTextFingerprint'] != _stableCacheKey(originalText)) {
+        return null;
+      }
+      final rawEntries = decoded['entries'];
+      if (rawEntries is! List) return null;
+
+      final entries = <DocumentTableOfContentsEntry>[];
+      for (final rawEntry in rawEntries) {
+        if (rawEntry is! Map) continue;
+        final title = rawEntry['title'];
+        final chunkIndex = rawEntry['chunkIndex'];
+        final level = rawEntry['level'];
+        if (title is! String || chunkIndex is! num) continue;
+        final normalizedIndex = chunkIndex.toInt();
+        if (normalizedIndex < 0 || normalizedIndex >= originalChunks.length) {
+          continue;
+        }
+        entries.add(
+          DocumentTableOfContentsEntry(
+            title: title,
+            chunkIndex: normalizedIndex,
+            level: level is num ? level.toInt() : 0,
+          ),
+        );
+      }
+      return entries.isEmpty ? null : entries;
+    } catch (e) {
+      dev.log('DocumentReaderScreen: cache indice EPUB canonico ignorata: $e');
+      return null;
+    }
+  }
+
+  Future<void> _writeCanonicalEpubIndex(
+    String sourcePath,
+    String originalText,
+    List<String> originalChunks,
+    List<DocumentTableOfContentsEntry> entries,
+  ) async {
+    try {
+      final cacheFile = await _canonicalEpubIndexCacheFile(
+        sourcePath,
+        originalText,
+        originalChunks,
+      );
+      final payload = <String, dynamic>{
+        'cacheVersion': _canonicalEpubIndexCacheVersion,
+        'chunksLength': originalChunks.length,
+        'documentTextFingerprint': _stableCacheKey(originalText),
+        'entries': entries
+            .map(
+              (entry) => <String, dynamic>{
+                'title': entry.title,
+                'chunkIndex': entry.chunkIndex,
+                'level': entry.level,
+              },
+            )
+            .toList(),
+      };
+      await cacheFile.writeAsString(jsonEncode(payload), flush: true);
+    } catch (e) {
+      dev.log(
+        'DocumentReaderScreen: impossibile salvare cache indice EPUB canonico: $e',
+      );
+    }
+  }
+
+  Future<File> _canonicalEpubIndexCacheFile(
+    String sourcePath,
+    String originalText,
+    List<String> originalChunks,
+  ) async {
+    final sourceFile = File(sourcePath);
+    final stat = await sourceFile.stat();
+    final cacheKey = _stableCacheKey(
+      [
+        'canonical',
+        sourceFile.absolute.path,
+        stat.size.toString(),
+        stat.modified.millisecondsSinceEpoch.toString(),
+        originalText.length.toString(),
+        _stableCacheKey(originalText),
+        originalChunks.length.toString(),
+        _maxChunkChars.toString(),
+        _canonicalEpubIndexCacheVersion.toString(),
+      ].join('|'),
+    );
+    final cacheDir = await AppCacheService.directory(
+      AppCacheService.epubIndexFolder,
+    );
+    return File('${cacheDir.path}/canonical_$cacheKey.json');
   }
 
   Future<File> _epubIndexCacheFile(String sourcePath) async {
@@ -1671,6 +1881,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
       setState(() {
         _currentDoc = newDoc;
+        _usingEditedText = true;
         _documentText = newText;
         _chunks = updatedChunks;
         // Gli indici EPUB caricati contengono posizioni nei chunk: dopo una
@@ -1794,6 +2005,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
       setState(() {
         _currentDoc = newDoc;
+        _usingEditedText = true;
       });
 
       if (!_currentDoc.isTemporary) {
