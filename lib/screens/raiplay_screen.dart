@@ -4,6 +4,8 @@ import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/raiplay_service.dart';
 import '../services/recent_searches_service.dart';
+import '../utils/app_logger.dart';
+import '../utils/media_open_guard.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -24,6 +26,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
   final _settings = AppSettingsService();
   final _service = RaiPlayService();
   final _searchController = TextEditingController();
+  final MediaOpenGuard _mediaOpenGuard = MediaOpenGuard();
 
   RaiPlayPage? _page;
   bool _loading = true;
@@ -139,33 +142,46 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
         Navigator.push(context, route);
       }
     } else {
-      if (!mounted) return;
-      setState(() => _loading = true);
+      final itemKey = 'raiplay:${item.id}';
+      if (!_mediaOpenGuard.tryAcquire(itemKey)) {
+        await AppLogger.log(
+          'MEDIA_OPEN_GUARD duplicate ignored source=raiplay '
+          'active=${_mediaOpenGuard.activeKey} requested=$itemKey',
+        );
+        return;
+      }
 
-      final mediaUrl = item.mediaUrl;
-      final resolvedMedia = await _service.resolvePlaybackUrls(mediaUrl);
+      try {
+        if (!mounted) return;
+        setState(() => _loading = true);
 
-      final episode = PodcastEpisode(
-        title: item.title,
-        description: item.description,
-        audioUrl: resolvedMedia.audioUrl,
-        videoUrl: resolvedMedia.videoUrl,
-        id: 'raiplay:${item.id}',
-        publishedAt: DateTime.now(),
-      );
+        final mediaUrl = item.mediaUrl;
+        final resolvedMedia = await _service.resolvePlaybackUrls(mediaUrl);
 
-      if (!mounted) return;
-      setState(() => _loading = false);
+        final episode = PodcastEpisode(
+          title: item.title,
+          description: item.description,
+          audioUrl: resolvedMedia.audioUrl,
+          videoUrl: resolvedMedia.videoUrl,
+          id: itemKey,
+          publishedAt: DateTime.now(),
+        );
 
-      final route = MaterialPageRoute(
-        settings: const RouteSettings(name: '/raiplay/player'),
-        builder: (_) => PodcastEpisodePlayerScreen(
-            episode: episode, isVideoSupported: true),
-      );
-      if (replaceCurrentRoute) {
-        Navigator.pushReplacement(context, route);
-      } else {
-        Navigator.push(context, route);
+        if (!mounted) return;
+        setState(() => _loading = false);
+
+        final route = MaterialPageRoute(
+          settings: const RouteSettings(name: '/raiplay/player'),
+          builder: (_) => PodcastEpisodePlayerScreen(
+              episode: episode, isVideoSupported: true),
+        );
+        if (replaceCurrentRoute) {
+          await Navigator.pushReplacement(context, route);
+        } else {
+          await Navigator.push(context, route);
+        }
+      } finally {
+        _mediaOpenGuard.release(itemKey);
       }
     }
   }

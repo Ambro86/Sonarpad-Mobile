@@ -5,7 +5,9 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/podcast_service.dart';
+import '../utils/app_logger.dart';
 import '../utils/list_timestamp_formatter.dart';
+import '../utils/media_open_guard.dart';
 import 'podcast_episode_player_screen.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -26,6 +28,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
       AccessibleListController(debugName: 'podcast_episodes');
   late Future<List<PodcastEpisode>> _episodes;
   Set<String> _playedAudioUrls = {};
+  final MediaOpenGuard _mediaOpenGuard = MediaOpenGuard();
 
   @override
   void initState() {
@@ -67,16 +70,29 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
   }
 
   Future<void> _openEpisode(PodcastEpisode episode) async {
-    await _service.markEpisodeAsPlayed(widget.subscription.feedUrl, episode);
-    if (!mounted) return;
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        settings: const RouteSettings(name: '/podcasts/player'),
-        builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
-      ),
-    );
-    _loadPlayedEpisodes();
+    final itemKey = episode.id ?? episode.audioUrl;
+    if (!_mediaOpenGuard.tryAcquire(itemKey)) {
+      await AppLogger.log(
+        'MEDIA_OPEN_GUARD duplicate ignored source=podcast '
+        'active=${_mediaOpenGuard.activeKey} requested=$itemKey',
+      );
+      return;
+    }
+
+    try {
+      await _service.markEpisodeAsPlayed(widget.subscription.feedUrl, episode);
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/podcasts/player'),
+          builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+        ),
+      );
+      _loadPlayedEpisodes();
+    } finally {
+      _mediaOpenGuard.release(itemKey);
+    }
   }
 
   Future<void> _openDateSelector(List<PodcastEpisode> episodes) async {

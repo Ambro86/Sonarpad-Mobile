@@ -9,6 +9,8 @@ import '../services/app_settings_service.dart';
 import '../services/recording_feature_access.dart';
 import '../services/tv_service.dart';
 import 'radio_player_screen.dart';
+import '../utils/app_logger.dart';
+import '../utils/media_open_guard.dart';
 import '../utils/status_message.dart';
 import '../widgets/tv_recording_schedule_action.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -162,6 +164,7 @@ class TvChannelScreen extends StatefulWidget {
 class _TvChannelScreenState extends State<TvChannelScreen> {
   final _settings = AppSettingsService();
   final _service = TvService();
+  final MediaOpenGuard _mediaOpenGuard = MediaOpenGuard();
 
   List<TvProgram> _guide = [];
   bool _loading = true;
@@ -246,6 +249,17 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   }
 
   Future<void> _play() async {
+    final itemKey = widget.channel.tvgId.trim().isNotEmpty
+        ? widget.channel.tvgId.trim()
+        : '${widget.channel.name}|${widget.channel.url}';
+    if (!_mediaOpenGuard.tryAcquire(itemKey)) {
+      await AppLogger.log(
+        'MEDIA_OPEN_GUARD duplicate ignored source=tv-channel '
+        'active=${_mediaOpenGuard.activeKey} requested=$itemKey',
+      );
+      return;
+    }
+
     try {
       final isRaiAd = _service.isRaiAudioDescriptionChannel(widget.channel);
 
@@ -273,7 +287,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
         languageCode: 'it',
       );
 
-      Navigator.push(
+      await Navigator.push(
         context,
         MaterialPageRoute(
           settings: const RouteSettings(name: '/tv/channel/player'),
@@ -288,6 +302,8 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     } catch (e) {
       if (!mounted) return;
       showStatusMessage(context, 'Impossibile avviare la diretta: $e');
+    } finally {
+      _mediaOpenGuard.release(itemKey);
     }
   }
 

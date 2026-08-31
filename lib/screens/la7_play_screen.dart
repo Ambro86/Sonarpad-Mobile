@@ -4,6 +4,8 @@ import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/la7_play_service.dart';
 import '../services/recent_searches_service.dart';
+import '../utils/app_logger.dart';
+import '../utils/media_open_guard.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
@@ -28,6 +30,7 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
   final _settings = AppSettingsService();
   final _service = La7PlayService();
   final _searchController = TextEditingController();
+  final MediaOpenGuard _mediaOpenGuard = MediaOpenGuard();
 
   La7PlayPage? _page;
   bool _loading = true;
@@ -129,6 +132,15 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
   }
 
   Future<void> _openMedia(La7PlayItem item) async {
+    final itemKey = 'la7play:${item.target}';
+    if (!_mediaOpenGuard.tryAcquire(itemKey)) {
+      await AppLogger.log(
+        'MEDIA_OPEN_GUARD duplicate ignored source=la7play '
+        'active=${_mediaOpenGuard.activeKey} requested=$itemKey',
+      );
+      return;
+    }
+
     setState(() => _loading = true);
     try {
       final mediaUrl = await _service.resolveVod(item.target);
@@ -139,7 +151,7 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
         description: item.description ?? '',
         audioUrl: mediaUrl,
         videoUrl: mediaUrl,
-        id: 'la7play:${item.target}',
+        id: itemKey,
         publishedAt: DateTime.now(),
       );
       await Navigator.of(context).push(
@@ -158,6 +170,8 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
         _loading = false;
         _error = 'Impossibile aprire il contenuto: $error';
       });
+    } finally {
+      _mediaOpenGuard.release(itemKey);
     }
   }
 

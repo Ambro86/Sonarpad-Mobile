@@ -12,7 +12,9 @@ import '../widgets/media_preservation_progress_dialog.dart';
 import '../services/podcast_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/recent_searches_service.dart';
+import '../utils/app_logger.dart';
 import '../utils/list_timestamp_formatter.dart';
+import '../utils/media_open_guard.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
@@ -49,6 +51,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
   bool _loading = true;
   String? _error;
   bool _autoOpenedSingleItem = false;
+  final MediaOpenGuard _mediaOpenGuard = MediaOpenGuard();
 
   /// true solo se siamo nella root e non stiamo visualizzando i risultati di una ricerca
   bool get _isRoot => widget.url == null && widget.searchQuery == null;
@@ -138,61 +141,76 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     });
   }
 
-  void _openItem(
+  Future<void> _openItem(
     RaiPlaySoundItem item, {
     bool replaceCurrentRoute = false,
   }) async {
-    final code = await _settings.getTvSecretCode();
-
-    if (item.kind == RaiPlaySoundItemKind.page) {
-      final baseUrl = _service.getBaseUrl(code);
-      if (baseUrl == null) return;
-
-      var path = item.pathId;
-      if (!path.startsWith('/')) path = '/$path';
-      if (!path.endsWith('.json')) path = '$path.json';
-
-      final url = '$baseUrl$path';
-      if (!mounted) return;
-      final route = MaterialPageRoute(
-        settings: const RouteSettings(name: '/raiplaysound/page'),
-        builder: (_) => RaiPlaySoundScreen(url: url),
+    final itemKey = item.kind == RaiPlaySoundItemKind.audio
+        ? 'raiplaysound:${item.id}'
+        : 'raiplaysound-page:${item.pathId}';
+    if (!_mediaOpenGuard.tryAcquire(itemKey)) {
+      await AppLogger.log(
+        'MEDIA_OPEN_GUARD duplicate ignored source=raiplaysound '
+        'active=${_mediaOpenGuard.activeKey} requested=$itemKey',
       );
-      if (replaceCurrentRoute) {
-        Navigator.pushReplacement(context, route);
+      return;
+    }
+
+    try {
+      final code = await _settings.getTvSecretCode();
+
+      if (item.kind == RaiPlaySoundItemKind.page) {
+        final baseUrl = _service.getBaseUrl(code);
+        if (baseUrl == null) return;
+
+        var path = item.pathId;
+        if (!path.startsWith('/')) path = '/$path';
+        if (!path.endsWith('.json')) path = '$path.json';
+
+        final url = '$baseUrl$path';
+        if (!mounted) return;
+        final route = MaterialPageRoute(
+          settings: const RouteSettings(name: '/raiplaysound/page'),
+          builder: (_) => RaiPlaySoundScreen(url: url),
+        );
+        if (replaceCurrentRoute) {
+          await Navigator.pushReplacement(context, route);
+        } else {
+          await Navigator.push(context, route);
+        }
       } else {
-        Navigator.push(context, route);
-      }
-    } else {
-      final baseUrl = _service.getBaseUrl(code);
-      if (baseUrl == null) return;
+        final baseUrl = _service.getBaseUrl(code);
+        if (baseUrl == null) return;
 
-      var audioPath = item.audioUrl;
-      if (!audioPath.startsWith('http')) {
-        if (!audioPath.startsWith('/')) audioPath = '/$audioPath';
-        audioPath = '$baseUrl$audioPath';
-      }
+        var audioPath = item.audioUrl;
+        if (!audioPath.startsWith('http')) {
+          if (!audioPath.startsWith('/')) audioPath = '/$audioPath';
+          audioPath = '$baseUrl$audioPath';
+        }
 
-      final episode = PodcastEpisode(
-        title: item.title,
-        description: item.description,
-        audioUrl: audioPath,
-        id: 'raiplaysound:${item.id}',
-        publishedAt: item.publishedAt ?? DateTime.now(),
-      );
+        final episode = PodcastEpisode(
+          title: item.title,
+          description: item.description,
+          audioUrl: audioPath,
+          id: 'raiplaysound:${item.id}',
+          publishedAt: item.publishedAt ?? DateTime.now(),
+        );
 
-      if (!mounted) return;
-      final route = MaterialPageRoute(
-        settings: const RouteSettings(name: '/raiplaysound/player'),
-        builder: (_) => PodcastEpisodePlayerScreen(
-          episode: episode,
-        ),
-      );
-      if (replaceCurrentRoute) {
-        Navigator.pushReplacement(context, route);
-      } else {
-        Navigator.push(context, route);
+        if (!mounted) return;
+        final route = MaterialPageRoute(
+          settings: const RouteSettings(name: '/raiplaysound/player'),
+          builder: (_) => PodcastEpisodePlayerScreen(
+            episode: episode,
+          ),
+        );
+        if (replaceCurrentRoute) {
+          await Navigator.pushReplacement(context, route);
+        } else {
+          await Navigator.push(context, route);
+        }
       }
+    } finally {
+      _mediaOpenGuard.release(itemKey);
     }
   }
 

@@ -7,6 +7,7 @@ import '../services/app_settings_service.dart';
 import '../services/recording_feature_access.dart';
 import '../services/tv_service.dart';
 import '../utils/app_logger.dart';
+import '../utils/media_open_guard.dart';
 import 'favorite_tvs_screen.dart';
 import 'radio_player_screen.dart';
 import 'tv_channel_screen.dart';
@@ -28,6 +29,7 @@ class _TvScreenState extends State<TvScreen> {
   final _settings = AppSettingsService();
   final _service = TvService();
   final _searchController = TextEditingController();
+  final MediaOpenGuard _mediaOpenGuard = MediaOpenGuard();
 
   List<TvChannel> _channels = [];
   Map<String, TvProgram> _currentPrograms = {};
@@ -108,6 +110,17 @@ class _TvScreenState extends State<TvScreen> {
   }
 
   Future<void> _playLiveChannel(TvChannel channel) async {
+    final itemKey = channel.tvgId.trim().isNotEmpty
+        ? channel.tvgId.trim()
+        : '${channel.name}|${channel.url}';
+    if (!_mediaOpenGuard.tryAcquire(itemKey)) {
+      await AppLogger.log(
+        'MEDIA_OPEN_GUARD duplicate ignored source=tv-live '
+        'active=${_mediaOpenGuard.activeKey} requested=$itemKey',
+      );
+      return;
+    }
+
     try {
       final resolvedUrl = await _service.resolveStreamUrl(channel);
       if (!mounted) return;
@@ -133,6 +146,8 @@ class _TvScreenState extends State<TvScreen> {
         context,
         AppLocalizations.of(context).technicalErrorGeneric,
       );
+    } finally {
+      _mediaOpenGuard.release(itemKey);
     }
   }
 
