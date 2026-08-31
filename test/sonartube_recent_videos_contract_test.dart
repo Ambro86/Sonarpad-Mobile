@@ -95,7 +95,8 @@ void main() {
       recent,
       contains("event.type == 'activate' && mounted) {\n          await _openRecentVideo(item);"),
     );
-    expect(recent, contains('onTap: () => _openRecentVideo(item),'));
+    expect(recent, contains('onTap: _openingRecentVideo'));
+    expect(recent, contains(': () => _openRecentVideo(item),'));
     expect(recent, isNot(contains('Navigator.pop(context, item)')));
   });
 

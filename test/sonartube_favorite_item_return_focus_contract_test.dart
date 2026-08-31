@@ -45,10 +45,20 @@ void main() {
       favorites,
       contains("settings: const RouteSettings(name: '/sonartube/channel')"),
     );
-    expect(
-      favorites,
-      contains('if (item.kind == SonarTubeItemKind.channel) {\n      await _openFavoriteChannel(item);'),
+    final openFavoriteItemStart = favorites.indexOf(
+      'Future<void> _openFavoriteItem(SonarTubeItem item) async',
     );
+    final openChannelBranch = favorites.indexOf(
+      'if (item.kind == SonarTubeItemKind.channel)',
+      openFavoriteItemStart,
+    );
+    final openFavoriteChannelCall = favorites.indexOf(
+      'await _openFavoriteChannel(item);',
+      openChannelBranch,
+    );
+    expect(openFavoriteItemStart, greaterThanOrEqualTo(0));
+    expect(openChannelBranch, greaterThan(openFavoriteItemStart));
+    expect(openFavoriteChannelCall, greaterThan(openChannelBranch));
 
     // Both the shared accessible renderer and Flutter fallback activate every
     // favorite kind (video, playlist, channel) through the same stay-in-
@@ -57,7 +67,8 @@ void main() {
       favorites,
       contains("event.type == 'activate') {\n          await _openFavoriteItem(item);"),
     );
-    expect(favorites, contains('onTap: () => _openFavoriteItem(item),'));
+    expect(favorites, contains('onTap: _openingFavoriteItem'));
+    expect(favorites, contains(': () => _openFavoriteItem(item),'));
 
     // The Favorites screen must not pop itself with the selected item anymore.
     expect(favorites, isNot(contains('Navigator.pop(context, item)')));

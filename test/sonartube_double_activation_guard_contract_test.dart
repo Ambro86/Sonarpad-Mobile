@@ -26,7 +26,7 @@ void main() {
     expect(
       source,
       contains(
-        'SonarTube: duplicate open ignored active=$_openingItemKey requested=$itemKey',
+        r'SonarTube: duplicate open ignored active=$_openingItemKey requested=$itemKey',
       ),
     );
   });
@@ -49,7 +49,7 @@ void main() {
     expect(source, contains('if (_openingFavoriteItem)'));
     expect(
       source,
-      contains('SonarTube favorites: duplicate open ignored id=${item.id}'),
+      contains(r'SonarTube favorites: duplicate open ignored id=${item.id}'),
     );
     expect(source, contains('enabled: !_openingFavoriteItem'));
 
@@ -57,7 +57,7 @@ void main() {
     expect(source, contains('if (_openingRecentVideo)'));
     expect(
       source,
-      contains('SonarTube recent: duplicate open ignored id=${item.id}'),
+      contains(r'SonarTube recent: duplicate open ignored id=${item.id}'),
     );
     expect(source, contains('enabled: !_openingRecentVideo'));
   });
