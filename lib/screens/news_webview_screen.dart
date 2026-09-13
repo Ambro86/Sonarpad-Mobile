@@ -76,6 +76,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   int _webViewPageGeneration = 0;
   int? _activeVisibleExtractionGeneration;
   bool _pureWebViewRevealInProgress = false;
+  // Quando tutti i reader testuali sono insufficienti, la WebView ripulita
+  // deve avere priorità anche se in _readerText era rimasto un riassunto RSS.
+  bool _pureWebViewMode = false;
 
   // Soglia minima per accettare il testo HTTP come reader mode
   static const _httpMinLength = 150;
@@ -835,7 +838,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     }
     final allowed = _allowedMainArticleUrl;
     if (allowed == null || allowed.isEmpty) return false;
-    if (_readerText == null) return false;
+    if (_readerText == null && !_pureWebViewMode) return false;
     return !_isSameArticleNavigation(url, allowed);
   }
 
@@ -946,14 +949,18 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       if (!mounted) return;
       final text = _cleanVisibleText(content.text);
       final existingLen = _readerText?.trim().length ?? 0;
+      final onlyRssSummary = _isOnlyRssSummary(text);
       unawaited(AppLogger.log(
         'News reader final URL HTTP: estrazione completata '
-        'length=${text.length} existingLength=$existingLen url=$finalUrl',
+        'length=${text.length} existingLength=$existingLen '
+        'onlyRssSummary=$onlyRssSummary url=$finalUrl',
       ));
       if (text.length >= _httpMinLength &&
           text.length > existingLen &&
-          !_isOnlyArticleTitle(text)) {
+          !_isOnlyArticleTitle(text) &&
+          !onlyRssSummary) {
         setState(() {
+          _pureWebViewMode = false;
           _readerTitle = widget.article.title;
           _readerText = text;
           _readerBestTextLength = text.length;
@@ -985,10 +992,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         'News reader HTTP: estrazione completata length=${text.length}',
       ));
       final onlyTitle = _isOnlyArticleTitle(text);
-      if (text.length < _httpMinLength || onlyTitle) {
+      final onlyRssSummary = _isOnlyRssSummary(text);
+      if (text.length < _httpMinLength || onlyTitle || onlyRssSummary) {
         unawaited(AppLogger.log(
           'News reader HTTP: testo insufficiente, resta WebView '
-          'length=${text.length} onlyTitle=$onlyTitle',
+          'length=${text.length} onlyTitle=$onlyTitle '
+          'onlyRssSummary=$onlyRssSummary',
         ));
         unawaited(AppLogger.log(
           'News reader UI: reader HTTP insufficiente; attendo WebView e, solo '
@@ -1000,8 +1009,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           'length=${text.length}',
         ));
       }
-      if (text.length >= _httpMinLength && !onlyTitle) {
+      if (text.length >= _httpMinLength && !onlyTitle && !onlyRssSummary) {
         setState(() {
+          _pureWebViewMode = false;
           _readerTitle = widget.article.title;
           _readerText = text;
           _readerBestTextLength = text.length;
@@ -1090,6 +1100,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               text.length > httpLen &&
               !_isOnlyArticleTitle(text)) {
             setState(() {
+              _pureWebViewMode = false;
               _readerTitle = widget.article.title;
               _readerText = text;
               _readerBestTextLength = text.length;
@@ -1167,7 +1178,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     final text = _readerText?.trim() ?? '';
     if (text.length < _httpMinLength) return false;
     if (_isOnlyArticleTitle(text)) return false;
-    if (text == widget.article.summary.trim()) return false;
+    if (_isOnlyRssSummary(text)) return false;
     if (text.length < 1200 && _looksLikeTruncatedReaderText(text)) {
       return false;
     }
@@ -1176,6 +1187,15 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   bool _isOnlyArticleTitle(String text) =>
       NewsService.isArticleTextOnlyTitle(text, widget.article.title);
+
+  bool _isOnlyRssSummary(String text) {
+    final summary = widget.article.summary.trim();
+    if (text.trim().isEmpty || summary.isEmpty) return false;
+    String normalize(String value) => HtmlReaderService.cleanText(value)
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    return normalize(text) == normalize(summary);
+  }
 
   bool _looksLikeTruncatedReaderText(String text) {
     final trimmed = text.trimRight();
@@ -1216,6 +1236,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         text.length > existingLength &&
         !_isOnlyArticleTitle(text)) {
       setState(() {
+        _pureWebViewMode = false;
         _readerTitle = widget.article.title;
         _readerText = text;
         _readerBestTextLength = text.length;
@@ -1309,10 +1330,18 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         }
       }
       if (!mounted || generation != _webViewPageGeneration) return;
-      setState(() => _readerPreparing = false);
+      final discardedReaderLength = _readerText?.trim().length ?? 0;
+      setState(() {
+        _pureWebViewMode = true;
+        _readerTitle = null;
+        _readerText = null;
+        _readerBestTextLength = 0;
+        _readerPreparing = false;
+      });
       unawaited(AppLogger.log(
         'News WebView: pagina pura mostrata solo dopo pulizia '
-        'hiddenElements=$hidden url=$pageUrl generation=$generation',
+        'hiddenElements=$hidden discardedReaderLength=$discardedReaderLength '
+        'url=$pageUrl generation=$generation',
       ));
     } finally {
       _pureWebViewRevealInProgress = false;
@@ -1982,6 +2011,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Widget _buildBody(AppLocalizations l10n) {
+    if (_pureWebViewMode && !_readerPreparing) {
+      return WebViewWidget(controller: _controller);
+    }
+
     final readerText = _readerText;
     if (readerText != null && readerText.isNotEmpty) {
       return _ReaderArticleView(

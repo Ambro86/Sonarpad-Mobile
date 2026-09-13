@@ -1,5 +1,53 @@
 [
   {
+    "version": "0.4.1",
+    "date": "2026-09-14",
+    "it": [
+      "Corretti alcuni problemi nelle Notizie che potevano mostrare parti della pagina o contenuti non pertinenti al posto del testo dell’articolo.",
+      "Migliorata l’apertura degli articoli nelle Notizie: quando l’estrazione del testo non riesce, viene ora mostrata correttamente la pagina dell’articolo invece di fermarsi al solo titolo o a una breve anteprima."
+    ],
+    "en": [
+      "Fixed some issues in News that could show page elements or unrelated content instead of the article text.",
+      "Improved article opening in News: when text extraction fails, the article page is now shown correctly instead of stopping at only the title or a short preview."
+    ],
+    "fr": [
+      "Correction de plusieurs problèmes dans les Actualités qui pouvaient afficher des éléments de la page ou du contenu sans rapport à la place du texte de l’article.",
+      "Amélioration de l’ouverture des articles dans les Actualités : lorsque l’extraction du texte échoue, la page de l’article s’affiche désormais correctement au lieu de s’arrêter au seul titre ou à un court aperçu."
+    ],
+    "es": [
+      "Se han corregido algunos problemas en Noticias que podían mostrar elementos de la página o contenido no relacionado en lugar del texto del artículo.",
+      "Se ha mejorado la apertura de artículos en Noticias: cuando falla la extracción del texto, ahora se muestra correctamente la página del artículo en lugar de quedarse solo en el título o en una breve vista previa."
+    ],
+    "pt": [
+      "Foram corrigidos alguns problemas nas Notícias que podiam mostrar elementos da página ou conteúdo não relacionado em vez do texto do artigo.",
+      "Foi melhorada a abertura de artigos nas Notícias: quando a extração do texto falha, a página do artigo é agora apresentada corretamente em vez de ficar apenas no título ou numa breve pré-visualização."
+    ],
+    "pt_BR": [
+      "Foram corrigidos alguns problemas nas Notícias que podiam mostrar elementos da página ou conteúdo não relacionado no lugar do texto do artigo.",
+      "Foi melhorada a abertura de artigos nas Notícias: quando a extração do texto falha, a página do artigo agora é exibida corretamente em vez de ficar apenas no título ou em uma breve prévia."
+    ],
+    "pl": [
+      "Naprawiono problemy w Wiadomościach, które mogły powodować wyświetlanie elementów strony lub niepowiązanych treści zamiast tekstu artykułu.",
+      "Ulepszono otwieranie artykułów w Wiadomościach: gdy nie uda się wyodrębnić tekstu, wyświetlana jest teraz poprawnie strona artykułu zamiast samego tytułu lub krótkiego podglądu."
+    ],
+    "cs": [
+      "Opraveny některé problémy ve Zprávách, kvůli kterým se místo textu článku mohly zobrazovat prvky stránky nebo nesouvisející obsah.",
+      "Vylepšeno otevírání článků ve Zprávách: pokud se nepodaří získat text, nyní se správně zobrazí stránka článku místo pouhého názvu nebo krátkého náhledu."
+    ],
+    "de": [
+      "Einige Probleme in den Nachrichten wurden behoben, durch die Seitenelemente oder unpassende Inhalte anstelle des eigentlichen Artikeltexts angezeigt werden konnten.",
+      "Das Öffnen von Artikeln in den Nachrichten wurde verbessert: Wenn die Textextraktion fehlschlägt, wird nun die Artikelseite korrekt angezeigt, anstatt nur beim Titel oder einer kurzen Vorschau zu bleiben."
+    ],
+    "zh_CN": [
+      "修复了“新闻”中的一些问题，这些问题可能导致显示网页元素或无关内容，而不是文章正文。",
+      "改进了“新闻”中的文章打开方式：当正文提取失败时，现在会正确显示文章网页，而不会只停留在标题或简短预览。"
+    ],
+    "uk": [
+      "Виправлено деякі проблеми в Новинах, через які замість тексту статті могли відображатися елементи сторінки або сторонній вміст.",
+      "Покращено відкриття статей у Новинах: якщо не вдається витягти текст, тепер коректно показується сторінка статті, а не лише заголовок або короткий попередній перегляд."
+    ]
+  },
+  {
     "version": "0.4.0",
     "date": "2026-09-01",
     "it": [

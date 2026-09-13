@@ -1135,6 +1135,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private func apply(arguments: Any?) {
     guard let map = arguments as? [String: Any] else { return }
     debugTag = map["debugTag"] as? String
+    if debugTag == "document" { tableView.accessibilityContainerType = .none }
     clearTextLabel = map["clearTextLabel"] as? String ?? clearTextLabel
     clearSearchLabel = map["clearSearchLabel"] as? String ?? clearSearchLabel
     configurePersistentTopAction(from: map)
