@@ -199,11 +199,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
-      // Tutti i canali TV usano sempre MediaKit, anche quando il video è
-      // disattivato. just_audio/AVPlayer può perdere immediatamente la
-      // connessione con alcuni master HLS televisivi (in particolare i live
-      // Mediaset). MediaKit apre invece lo stesso master nei due modi; quando
-      // il video è spento viene disabilitata soltanto la traccia video.
+      // Su iOS manteniamo MediaKit per i canali TV: AVPlayer può perdere
+      // immediatamente la connessione con alcuni master HLS televisivi.
+      // Su Android, invece, i normali HLS tornano alla pipeline nativa già
+      // esistente (video_player con video attivo, just_audio in audio-only),
+      // che preserva meglio la resa audio. DASH/MPD e Rai AD restano MediaKit.
       if (_requiresTvMediaKitPlayback) {
         await AppLogger.log(
           'RadioPlayer: TV MediaKit playback selected '
@@ -1318,7 +1318,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       TvService().isRaiAudioDescriptionChannel(widget.tvChannel!);
 
   bool get _requiresTvMediaKitPlayback =>
-      widget.isVideoSupported && widget.tvChannel != null;
+      widget.isVideoSupported &&
+      widget.tvChannel != null &&
+      !Platform.isAndroid;
 
   bool get _requiresVideoPlayback =>
       widget.isVideoSupported &&
