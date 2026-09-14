@@ -781,6 +781,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return 'it-IT-IsabellaNeural';
   }
 
+  bool _isRepubblicaUrl(String url) {
+    final uri = Uri.tryParse(url.trim());
+    if (uri == null) return false;
+    final host = uri.host.toLowerCase();
+    return host == 'repubblica.it' || host.endsWith('.repubblica.it');
+  }
+
   bool _isGoogleNewsUrl(String url) {
     final uri = Uri.tryParse(url.trim());
     if (uri == null) return false;
@@ -1061,7 +1068,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       'generation=$generation url=$pageUrl',
     ));
     try {
-      for (int i = 0; i < 4; i++) {
+      // Repubblica tende a restituire rapidamente estratti brevi o
+      // incompleti. Due tentativi lasciano tempo al caricamento dinamico
+      // senza ritardare inutilmente il fallback alla WebView ripulita.
+      final maxVisibleExtractionAttempts =
+          _isRepubblicaUrl(pageUrl) ? 2 : 4;
+      for (int i = 0; i < maxVisibleExtractionAttempts; i++) {
         await Future.delayed(const Duration(milliseconds: 1500));
         if (!mounted || generation != _webViewPageGeneration) {
           unawaited(AppLogger.log(
@@ -1312,6 +1324,55 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                   removeOrHide(el);
                 }
               });
+
+              // Nel fallback WebView mostriamo la pagina vera, ma senza il
+              // "chrome" del sito che VoiceOver leggerebbe come parte
+              // dell'articolo. Non tocchiamo il corpo dell'articolo.
+              var articleRoot = document.querySelector('article') ||
+                                document.querySelector('main article') ||
+                                document.querySelector('[role="main"] article') ||
+                                document.querySelector('main') ||
+                                document.querySelector('[role="main"]');
+
+              document.querySelectorAll('nav, footer, aside').forEach(function(el) {
+                if (!articleRoot || !articleRoot.contains(el)) removeOrHide(el);
+              });
+              document.querySelectorAll('header').forEach(function(el) {
+                if (!articleRoot || !articleRoot.contains(el)) removeOrHide(el);
+              });
+
+              var chromeSelectors = [
+                '[id*="paywall" i]', '[class*="paywall" i]',
+                '[id*="subscription" i]', '[class*="subscription" i]',
+                '[id*="subscribe" i]', '[class*="subscribe" i]',
+                '[id*="newsletter" i]', '[class*="newsletter" i]',
+                '[id*="social" i]', '[class*="social" i]',
+                '[id*="share" i]', '[class*="share" i]',
+                '[id*="login" i]', '[class*="login" i]',
+                '[id*="register" i]', '[class*="register" i]'
+              ];
+              chromeSelectors.forEach(function(selector) {
+                try {
+                  document.querySelectorAll(selector).forEach(function(el) {
+                    // Evita di eliminare per errore il contenitore principale
+                    // dell'articolo se il sito usa classi molto generiche.
+                    if (el !== articleRoot) removeOrHide(el);
+                  });
+                } catch (e) {}
+              });
+
+              var noisyControls = document.querySelectorAll(
+                'a, button, [role="button"], form'
+              );
+              noisyControls.forEach(function(el) {
+                var t = textOf(el);
+                if (!t || t.length > 220) return;
+                if (/^(abbonati|abbonamento|accedi|login|registrati|iscriviti|newsletter|condividi|share|seguici|sostieni|menu|leggi anche|scopri di pi[uù])\b/.test(t) ||
+                    /\b(abbonati ora|abbonati per leggere|accedi per continuare|registrati per continuare|iscriviti alla newsletter)\b/.test(t)) {
+                  removeOrHide(el);
+                }
+              });
+
               if (document.documentElement) {
                 document.documentElement.style.setProperty('overflow', 'auto', 'important');
               }

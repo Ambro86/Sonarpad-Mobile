@@ -361,7 +361,7 @@ private final class SonarpadPersistentAccessibilityActionElement: UIAccessibilit
   }
 }
 
-private final class SonarpadAccessibleTableCell: UITableViewCell {
+private class SonarpadAccessibleTableCell: UITableViewCell {
   var rowId = ""
   var activationHandler: (() -> Void)?
   var incrementHandler: (() -> Void)?
@@ -397,6 +397,21 @@ private final class SonarpadAccessibleTableCell: UITableViewCell {
     accessoryView = nil
     accessibilityCustomActions = nil
     accessibilityTraits = []
+  }
+}
+
+// Document paragraphs are visually backed by UITableView rows for efficient
+// scrolling, but semantically they are reading content, not list items.
+// Suppress only the row/column position metadata that VoiceOver uses for
+// announcements such as “285 of 306”; keep the cell itself and all focus,
+// activation and scrolling behavior unchanged.
+private final class SonarpadDocumentParagraphCell: SonarpadAccessibleTableCell, UIAccessibilityContainerDataTableCell {
+  func accessibilityRowRange() -> NSRange {
+    NSRange(location: NSNotFound, length: 0)
+  }
+
+  func accessibilityColumnRange() -> NSRange {
+    NSRange(location: NSNotFound, length: 0)
   }
 }
 
@@ -1135,7 +1150,6 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   private func apply(arguments: Any?) {
     guard let map = arguments as? [String: Any] else { return }
     debugTag = map["debugTag"] as? String
-    if debugTag == "document" { tableView.accessibilityContainerType = .none }
     clearTextLabel = map["clearTextLabel"] as? String ?? clearTextLabel
     clearSearchLabel = map["clearSearchLabel"] as? String ?? clearSearchLabel
     configurePersistentTopAction(from: map)
@@ -1305,9 +1319,16 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       return cell
     }
 
-    let identifier = "SonarpadAccessibleTableCell"
-    let cell = (tableView.dequeueReusableCell(withIdentifier: identifier) as? SonarpadAccessibleTableCell)
-      ?? SonarpadAccessibleTableCell(style: .subtitle, reuseIdentifier: identifier)
+    let isDocumentParagraph = debugTag == "document" && row.id.hasPrefix("paragraph_")
+    let identifier = isDocumentParagraph ? "SonarpadDocumentParagraphCell" : "SonarpadAccessibleTableCell"
+    let cell: SonarpadAccessibleTableCell
+    if isDocumentParagraph {
+      cell = (tableView.dequeueReusableCell(withIdentifier: identifier) as? SonarpadDocumentParagraphCell)
+        ?? SonarpadDocumentParagraphCell(style: .subtitle, reuseIdentifier: identifier)
+    } else {
+      cell = (tableView.dequeueReusableCell(withIdentifier: identifier) as? SonarpadAccessibleTableCell)
+        ?? SonarpadAccessibleTableCell(style: .subtitle, reuseIdentifier: identifier)
+    }
     configure(cell: cell, with: row, at: indexPath)
     return cell
   }
