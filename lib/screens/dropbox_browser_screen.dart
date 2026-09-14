@@ -10,6 +10,31 @@ import '../services/document_library_service.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
+const Set<String> _dropboxImportExtensions = {
+  'pdf',
+  'epub',
+  'txt',
+  'rtf',
+  'docx',
+  'doc',
+  'mp4',
+  'avi',
+  'mov',
+  'mkv',
+  'm4v',
+  'webm',
+  'mpg',
+  'mpeg',
+  'ts',
+  'm2ts',
+  'mts',
+  'wmv',
+  'asf',
+  'flv',
+  'vob',
+  '3gp',
+};
+
 class DropboxBrowserScreen extends StatefulWidget {
   final DocumentLibraryService documentService;
 
@@ -114,14 +139,14 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
 
     try {
       final entries = await _dropbox.listFolder(path);
-      // Filtra cartelle o file supportati
-      final allowed = ['pdf', 'epub', 'txt', 'rtf', 'docx', 'doc'];
-
+      // Mostra cartelle, documenti e i formati video già supportati
+      // dalla libreria Documenti.
       final filtered = entries.where((e) {
         if (e['.tag'] == 'folder') return true;
-        final name = (e['name'] as String).toLowerCase();
-        final ext = name.split('.').last;
-        return allowed.contains(ext);
+        final name = e['name'];
+        if (name is! String) return false;
+        final ext = p.extension(name).replaceFirst('.', '').toLowerCase();
+        return _dropboxImportExtensions.contains(ext);
       }).toList();
 
       // Ordina cartelle prima, poi file alfabetico
@@ -162,6 +187,17 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           _isAuthenticating = false;
         });
       }
+    }
+  }
+
+  Future<void> _goBack() async {
+    if (_currentPath.isNotEmpty) {
+      final parent = p.posix.dirname(_currentPath);
+      await _loadFolder(parent == '/' || parent == '.' ? '' : parent);
+      return;
+    }
+    if (mounted) {
+      await Navigator.of(context).maybePop();
     }
   }
 
@@ -216,8 +252,13 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            _goBack();
+          },
+        ),
         title: Text(
-          _currentPath.isEmpty ? 'Dropbox' : p.basename(_currentPath),
+          _currentPath.isEmpty ? 'Dropbox' : p.posix.basename(_currentPath),
         ),
         actions: [
           if (_dropbox.isAuthenticated)
@@ -301,8 +342,6 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
           value: _searchController.text,
           clearAsSearch: true,
         ),
-        if (_currentPath.isNotEmpty)
-          AccessibleListRow(id: 'back', title: l10n.goBack),
         if (visibleEntries.isEmpty)
           AccessibleListRow(
             id: 'empty',
@@ -328,9 +367,6 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             final value = event.value?.toString() ?? '';
             _searchController.text = value;
             setState(() => _searchQuery = value);
-          } else if (event.id == 'back' && event.type == 'activate') {
-            final parent = p.dirname(_currentPath);
-            await _loadFolder(parent == '/' ? '' : parent);
           } else if (event.type == 'activate' && event.id?.startsWith('entry_') == true) {
             final i = int.tryParse(event.id!.substring(6));
             if (i == null || i >= visibleEntries.length) return;
@@ -390,15 +426,6 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             ),
           ),
         ),
-        if (_currentPath.isNotEmpty)
-          ListTile(
-            leading: const Icon(Icons.drive_folder_upload, size: 40),
-            title: Text(l10n.goBack),
-            onTap: () {
-              final parent = p.dirname(_currentPath);
-              _loadFolder(parent == '/' ? '' : parent);
-            },
-          ),
         Expanded(
           child: visibleEntries.isEmpty
               ? Center(
